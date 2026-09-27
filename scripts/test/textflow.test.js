@@ -221,6 +221,102 @@ test('apply keeps pinned beats and reports orphans', () => {
   assert.ok(!project.beats.c1.some((beat) => beat.pinned), 'orphan kept in the beats');
 });
 
+test('line chunks keep every chunk under the max duration and inside the cue', () => {
+  const result = flow('Hello world this is a test of the telop motion engine', {
+    start: 0,
+    end: 8,
+    settings: { chunk: 'line', maxChunkDuration: 1 },
+  });
+  assert.ok(result.pages.length >= 2, `chunks ${result.pages.length}`);
+  assert.ok(result.pages.every((chunk) => chunk.kind === 'page'));
+  assert.ok(result.pages.every((chunk) => ['line', 'phrase', 'word'].includes(chunk.chunk)));
+  for (const chunk of result.pages) {
+    const duration = chunk.to - chunk.from;
+    assert.ok(duration > 0 && duration < 1, `chunk "${chunk.text}" lasts ${duration}`);
+    assert.ok(chunk.from >= -1e-6 && chunk.to <= 8 + 1e-6, `chunk outside the cue: ${chunk.from}..${chunk.to}`);
+  }
+});
+
+test('phrase chunks split Japanese lines into short telop units', () => {
+  const result = flow('今日は晴れです。公園へ行きます。写真を撮ります。', {
+    start: 0,
+    end: 6,
+    settings: { chunk: 'phrase', maxChunkDuration: 1 },
+  });
+  assert.ok(result.pages.length >= 3, `chunks ${result.pages.length}`);
+  assert.ok(result.pages.every((chunk) => chunk.to - chunk.from < 1));
+  assert.ok(result.pages.every((chunk) => chunk.text.trim().length > 0));
+  assert.ok(result.pages.map((chunk) => chunk.text).join('').includes('公園'));
+});
+
+test('a chunk whose reading estimate exceeds the cap is divided into words', () => {
+  const result = flow('one two three four five six seven eight', {
+    start: 0,
+    end: 4,
+    settings: { chunk: 'phrase', maxChunkDuration: 1 },
+  });
+  assert.ok(result.pages.length >= 3, `chunks ${result.pages.length}`);
+  assert.ok(result.pages.every((chunk) => chunk.to - chunk.from < 1));
+  assert.ok(result.pages.some((chunk) => chunk.chunk === 'word'));
+});
+
+test('restructure keeps chunk levels on the beats and stable ids', () => {
+  const cue = { id: 'c1', start: 0, end: 5, text: 'Hello world this is the telop engine' };
+  const options = {
+    style: { size: 96, lineHeight: 1.2, maxWidth: 0.9 },
+    frame: { width: 1920, height: 1080 },
+    measure,
+    settings: { chunk: 'phrase', maxChunkDuration: 1 },
+  };
+  const first = textflow.restructure(cue, options);
+  assert.ok(first.beats.length >= 3, `beats ${first.beats.length}`);
+  for (const beat of first.beats) {
+    assert.equal(beat.kind, 'page');
+    assert.ok(['phrase', 'word'].includes(beat.chunk));
+    assert.ok(beat.end - beat.start < 1);
+    assert.ok(beat.start >= 0 && beat.end <= 5);
+  }
+  const again = textflow.restructure(cue, options);
+  assert.deepEqual(again.beats.map((beat) => beat.id), first.beats.map((beat) => beat.id));
+});
+
+test('beatCues flattens beats into SRT-ready cues', () => {
+  const project = {
+    script: {
+      cues: [
+        { id: 'c1', start: 0, end: 4, text: 'Hello world' },
+        { id: 'c2', start: 5, end: 7, text: 'No beats here' },
+      ],
+    },
+    beats: {
+      c1: [
+        { id: 'c1:page1', start: 0.5, end: 1.1, text: '', lines: [], kind: 'emphasis' },
+        { id: 'c1:page2', start: 0, end: 0.5, text: 'Hello', lines: ['Hello'], kind: 'page' },
+        { id: 'c1:page3', start: 1.1, end: 1.7, text: 'world', lines: ['world'], kind: 'page' },
+      ],
+    },
+  };
+  const cues = textflow.beatCues(project);
+  assert.equal(cues.length, 3);
+  assert.deepEqual(cues.map((cue) => cue.text), ['Hello', 'world', 'No beats here']);
+  assert.equal(cues[0].start, 0);
+  assert.equal(cues[2].start, 5);
+});
+
+test('chunkThemes expose a valid level and copy their styles', () => {
+  const themes = textflow.chunkThemes();
+  assert.ok(themes.length >= 3);
+  for (const theme of themes) {
+    assert.ok(['page', 'line', 'phrase'].includes(theme.chunk));
+    assert.ok(theme.style == null || typeof theme.style === 'object');
+  }
+  const styled = themes.find((theme) => theme.style);
+  const copy = textflow.chunkThemes();
+  const same = copy.find((theme) => theme.id === styled.id);
+  assert.notEqual(same.style, styled.style);
+  assert.deepEqual(same.style, styled.style);
+});
+
 test('detectLang picks Japanese for CJK text and the fallback otherwise', () => {
   assert.equal(textflow.detectLang('こんにちは世界', 'en'), 'ja');
   assert.equal(textflow.detectLang('Hello world', 'en'), 'en');

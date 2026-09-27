@@ -311,6 +311,7 @@
     const exit = groupInstance(style, 'exit');
     const location = groupInstance(style, 'location');
     const holds = groupInstance(style, 'hold');
+    const customMotions = Array.isArray(style.motions) ? style.motions : [];
 
     const animationType = (animation && animation.type) || 'stagger';
     const layoutParams = (layoutInstance && layoutInstance.params) || {};
@@ -557,6 +558,43 @@
         });
       }
 
+      // Custom animations added by hand from the Motion gallery. Each entry
+      // runs its own effect over its own window, on top of the built-in ones.
+      for (const motion of customMotions) {
+        if (!motion || !motion.type || motion.enabled === false) continue;
+        const phase = motion.phase === 'exit' ? 'exit' : motion.phase === 'hold' ? 'hold' : 'enter';
+        const entry = fx.get(phase, motion.type);
+        if (!entry || !entry.cpu) continue;
+        const motionDuration = Math.max(0.001, num(motion.duration, 0.6));
+        const motionDelay = num(motion.delay, 0);
+        const startAt = (motion.from === 'end' ? duration : 0) + motionDelay;
+        const motionRng = rng.rngFor(seed, `${beat.id || scene.beatId}|${motion.id || motion.type}`, phase);
+        const info = {
+          i: index,
+          N,
+          letter,
+          frame,
+          shortSide,
+          blockCenter: { x: anchorX, y: anchorY },
+          letterX: state.x,
+          letterY: state.y,
+          beatDuration: motionDuration,
+        };
+        if (phase === 'hold') {
+          const localHold = local - startAt;
+          if (localHold < 0 || localHold > motionDuration) continue;
+          const fade = Math.min(0.15, motionDuration / 2);
+          const env = clamp01(localHold / Math.max(0.001, fade)) * (1 - clamp01((localHold - (motionDuration - fade)) / Math.max(0.001, fade)));
+          entry.cpu(state, localHold, env, motion.params || {}, motionRng, { ...info, env });
+        } else {
+          const localPhase = local - startAt;
+          if (localPhase < 0) continue;
+          const progress = clamp01(localPhase / motionDuration);
+          const easeFn = easing.get(motion.ease || (phase === 'enter' ? 'easeOutCubic' : 'easeInCubic'));
+          entry.cpu(state, easeFn(progress), motion.params || {}, motionRng, info);
+        }
+      }
+
       if (animation.follow && startFormation) {
         const amount = animation.follow.amount;
         const decay = animation.follow.decay;
@@ -590,10 +628,53 @@
     return evaluateBeat(scene, t, ctx);
   }
 
+  // PowerPoint-like gallery of text animations built from the existing effect
+  // types. "entrance" runs at the beat start, "emphasis" during the beat and
+  // "exit" ends at the beat end.
+  const MOTION_PRESETS = [
+    { id: 'fadeIn', group: 'entrance', phase: 'enter', type: 'fade', from: 'start', delay: 0, duration: 0.5, ease: 'easeOutCubic', params: {} },
+    { id: 'flyIn', group: 'entrance', phase: 'enter', type: 'slide', from: 'start', delay: 0, duration: 0.5, ease: 'easeOutCubic', params: { dir: 'up', distance: 0.25 } },
+    { id: 'floatIn', group: 'entrance', phase: 'enter', type: 'slide', from: 'start', delay: 0, duration: 0.9, ease: 'easeOutCubic', params: { dir: 'down', distance: 0.08 } },
+    { id: 'zoomIn', group: 'entrance', phase: 'enter', type: 'zoomIn', from: 'start', delay: 0, duration: 0.5, ease: 'easeOutCubic', params: {} },
+    { id: 'growTurn', group: 'entrance', phase: 'enter', type: 'rotateIn', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: {} },
+    { id: 'blurIn', group: 'entrance', phase: 'enter', type: 'blurIn', from: 'start', delay: 0, duration: 0.5, ease: 'easeOutCubic', params: {} },
+    { id: 'bounceIn', group: 'entrance', phase: 'enter', type: 'dropBounce', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: {} },
+    { id: 'popIn', group: 'entrance', phase: 'enter', type: 'elasticPop', from: 'start', delay: 0, duration: 0.7, ease: 'easeOutCubic', params: {} },
+    { id: 'waveIn', group: 'entrance', phase: 'enter', type: 'waveRise', from: 'start', delay: 0, duration: 0.7, ease: 'easeOutCubic', params: {} },
+    { id: 'typewriter', group: 'entrance', phase: 'enter', type: 'typewriter', from: 'start', delay: 0, duration: 0.9, ease: 'linear', params: {} },
+    { id: 'flipIn', group: 'entrance', phase: 'enter', type: 'flip3D', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: {} },
+    { id: 'glitchIn', group: 'entrance', phase: 'enter', type: 'glitchIn', from: 'start', delay: 0, duration: 0.6, ease: 'linear', params: {} },
+    { id: 'pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'sway', group: 'emphasis', phase: 'hold', type: 'sway', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'bob', group: 'emphasis', phase: 'hold', type: 'floatBob', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'breathe', group: 'emphasis', phase: 'hold', type: 'breathing', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'jelly', group: 'emphasis', phase: 'hold', type: 'jelly', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'shake', group: 'emphasis', phase: 'hold', type: 'jitter', from: 'start', delay: 0.4, duration: 1, ease: 'linear', params: {} },
+    { id: 'twist', group: 'emphasis', phase: 'hold', type: 'twist', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'drift', group: 'emphasis', phase: 'hold', type: 'drift', from: 'start', delay: 0.4, duration: 1.6, ease: 'linear', params: {} },
+    { id: 'wave', group: 'emphasis', phase: 'hold', type: 'sineWave', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'fadeOut', group: 'exit', phase: 'exit', type: 'fade', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
+    { id: 'flyOut', group: 'exit', phase: 'exit', type: 'slide', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: { dir: 'down', distance: 0.3 } },
+    { id: 'zoomOut', group: 'exit', phase: 'exit', type: 'zoomOut', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
+    { id: 'shrinkOut', group: 'exit', phase: 'exit', type: 'shrinkToCenter', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
+    { id: 'blurOut', group: 'exit', phase: 'exit', type: 'blurOut', from: 'end', delay: -0.5, duration: 0.5, ease: 'easeInCubic', params: {} },
+    { id: 'dissolve', group: 'exit', phase: 'exit', type: 'dissolve', from: 'end', delay: -0.6, duration: 0.6, ease: 'linear', params: {} },
+    { id: 'wipe', group: 'exit', phase: 'exit', type: 'wipe', from: 'end', delay: -0.6, duration: 0.6, ease: 'easeInCubic', params: {} },
+    { id: 'explode', group: 'exit', phase: 'exit', type: 'explode', from: 'end', delay: -0.6, duration: 0.6, ease: 'easeInCubic', params: {} },
+    { id: 'melt', group: 'exit', phase: 'exit', type: 'melt', from: 'end', delay: -0.8, duration: 0.8, ease: 'linear', params: {} },
+    { id: 'burn', group: 'exit', phase: 'exit', type: 'burnAway', from: 'end', delay: -0.7, duration: 0.7, ease: 'linear', params: {} },
+  ];
+
+  function motionPresets() {
+    return MOTION_PRESETS.map((preset) => ({ ...preset, params: { ...preset.params } }));
+  }
+
   return {
     GROUP_NAMES: GROUPS,
     evaluateBeat,
     evaluateScene,
+    MOTION_PRESETS,
+    motionPresets,
     motionDef,
     groupInstance,
     staggerRanks,

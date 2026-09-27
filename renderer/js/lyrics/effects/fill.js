@@ -159,11 +159,8 @@
     cost: 0,
   });
 
-  function toRgba(value, fallback) {
-    if (Array.isArray(value) && value.length === 4) return value;
-    if (value == null) return fallback || [1, 1, 1, 1];
-    const rgba = color.parse(value);
-    return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+  function toRgba(value, fallback, ctx) {
+    return color.toRgba(value, fallback || [1, 1, 1, 1], ctx);
   }
 
   function num(value, fallback) {
@@ -176,14 +173,14 @@
     const type = TYPES[(instance && instance.type) || 'solid'] || 1;
     const context = ctx || {};
     const colors = context.colors || {};
-    let colorA = toRgba(colors.fill, [1, 1, 1, 1]);
-    let colorB = toRgba(colors.fill2 || colors.fill, [1, 1, 1, 1]);
-    let colorC = toRgba(colors.glow || colors.fill, [1, 1, 1, 1]);
-    let colorD = toRgba(colors.stroke || colors.fill, [1, 1, 1, 1]);
+    let colorA = toRgba(colors.fill, [1, 1, 1, 1], context);
+    let colorB = toRgba(colors.fill2 || colors.fill, [1, 1, 1, 1], context);
+    let colorC = toRgba(colors.glow || colors.fill, [1, 1, 1, 1], context);
+    let colorD = toRgba(colors.stroke || colors.fill, [1, 1, 1, 1], context);
     let params4 = [0, 0, 0, 0];
     if (type === 2 && context.category) {
-      colorA = toRgba(context.category.tint, colorA);
-      colorB = toRgba(context.category.tint2 || context.category.tint, colorB);
+      colorA = toRgba(context.category.tint, colorA, context);
+      colorB = toRgba(context.category.tint2 || context.category.tint, colorB, context);
     }
     if (type === 3) params4 = [(num(params.angle, 0) * Math.PI) / 180, num(params.speed, 0.3), 0, 0];
     else if (type === 4) params4 = [num(params.saturation, 0.7), num(params.lightness, 0.6), num(params.speed, 0.5), params.perLetter ? 1 : 0];
@@ -191,9 +188,9 @@
     else if (type === 6) {
       params4 = [0, num(params.sharpness, 0.6), 0, 0];
       if (Array.isArray(params.envColors) && params.envColors.length >= 3) {
-        colorA = toRgba(params.envColors[0].color || params.envColors[0]);
-        colorB = toRgba(params.envColors[1].color || params.envColors[1]);
-        colorC = toRgba(params.envColors[2].color || params.envColors[2]);
+        colorA = toRgba(params.envColors[0].color || params.envColors[0], null, context);
+        colorB = toRgba(params.envColors[1].color || params.envColors[1], null, context);
+        colorC = toRgba(params.envColors[2].color || params.envColors[2], null, context);
       } else {
         colorA = [0.75, 0.82, 0.95, 1];
         colorB = [0.35, 0.4, 0.5, 1];
@@ -212,10 +209,10 @@
     else if (type === 12) params4 = [num(params.scale, 1), num(params.pan && params.pan.x, 0), num(params.pan && params.pan.y, 0), 0];
     else if (type === 13) {
       params4 = [0, num(params.softness, 0.05), 0, 0];
-      if (colors.fill) colorA = toRgba(colors.fill);
-      colorB = toRgba(colors.fill2 || colors.fill, colorA);
-      if (params.colorBefore) colorA = toRgba(params.colorBefore);
-      if (params.colorAfter) colorB = toRgba(params.colorAfter);
+      if (colors.fill) colorA = toRgba(colors.fill, null, context);
+      colorB = toRgba(colors.fill2 || colors.fill, colorA, context);
+      if (params.colorBefore) colorA = toRgba(params.colorBefore, null, context);
+      if (params.colorAfter) colorB = toRgba(params.colorAfter, null, context);
     }
     return {
       u_type: type,

@@ -43,6 +43,14 @@
       stackedWords: [0.45, 0.8],
       wave: [0.55, 0.75],
       vertical: [0.25, 0.85, { vertical: true, maxLetters: 14 }],
+      arc: [0.45, 0.7, { maxLetters: 24 }],
+      circle: [0.5, 0.6, { maxLetters: 24 }],
+      diagonal: [0.55, 0.6],
+      grid: [0.5, 0.55, { maxLetters: 32 }],
+      staircase: [0.6, 0.5],
+      spiral: [0.7, 0.45, { maxLetters: 24 }],
+      path: [0.6, 0.5],
+      scatter: [0.8, 0.3, { maxLetters: 20 }],
     },
     enter: {
       fade: [0.2, 0.9],
@@ -211,7 +219,7 @@
       if (exclude && exclude.has(type)) continue;
       if (!allowed(group, traits, context, direction)) continue;
       const fit = scoreEntry(traits, axes);
-      scored.push({ type, weight: Math.pow(fit, 3) * (0.7 + random() * 0.6) });
+      scored.push({ type, weight: Math.pow(fit, 2) * (0.6 + random() * 0.8) });
     }
     if (!scored.length) return null;
     const total = scored.reduce((sum, entry) => sum + entry.weight, 0);
@@ -354,7 +362,8 @@
     const fontId = pick(random, pool);
     const portrait = context.aspect === '9:16';
     const base = portrait ? lerp(94, 60, axes.density) : lerp(122, 84, axes.density);
-    const size = Math.round(base / 2) * 2;
+    // jitter the size per generation so re-rolls do not all land on the same value
+    const size = Math.round((base * (0.85 + random() * 0.3)) / 2) * 2;
     const weight = axes.energy > 0.6 || axes.softness < 0.35 ? 700 : 400;
     const letterSpacing = round(lerp(0, 0.06, axes.softness * (1 - axes.density)) * 100) / 100;
     return { fontId, size, weight, letterSpacing, lineHeight: 1.2, align: 'center', maxWidth: 0.86 };

@@ -108,6 +108,16 @@ SA.io = (() => {
     });
   }
 
+  async function exportSrtBeats(project) {
+    const cues = SA.textflow && SA.textflow.beatCues ? SA.textflow.beatCues(project) : project.script.cues || [];
+    const text = SA.srt.stringify(cues, {});
+    return SA.platform.saveFile({
+      bytes: new TextEncoder().encode(text),
+      name: `${sanitizeName(project.meta && project.meta.title)}-beats.srt`,
+      mime: 'application/x-subrip',
+    });
+  }
+
   async function exportLyrics(project, format, options) {
     const opts = options || {};
     const kind = SA.lyricsFile.extension(format);
@@ -162,5 +172,5 @@ SA.io = (() => {
     autosaveTimer = null;
   }
 
-  return { save, open, loadFromObject, importSrt, readSrt, readLyrics, importProfile, newProject, exportSrt, exportLyrics, loadAutosave, saveAutosave, startAutosave, stopAutosave, fileName };
+  return { save, open, loadFromObject, importSrt, readSrt, readLyrics, importProfile, newProject, exportSrt, exportSrtBeats, exportLyrics, loadAutosave, saveAutosave, startAutosave, stopAutosave, fileName };
 })();

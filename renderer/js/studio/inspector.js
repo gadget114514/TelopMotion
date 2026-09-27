@@ -551,6 +551,145 @@ SA.inspector = (() => {
     container.appendChild(details);
   }
 
+  function motionList() {
+    const style = resolvedStyle();
+    return Array.isArray(style.motions) ? style.motions : [];
+  }
+
+  function addMotion(preset) {
+    if (!preset || !SA.fx) return;
+    const phase = preset.phase || 'enter';
+    const entry = {
+      id: `m_${Math.random().toString(36).slice(2, 8)}`,
+      phase,
+      type: preset.type,
+      from: preset.from === 'end' ? 'end' : 'start',
+      delay: Number(preset.delay) || 0,
+      duration: Number(preset.duration) || 0.6,
+      ease: preset.ease || (phase === 'enter' ? 'easeOutCubic' : phase === 'exit' ? 'easeInCubic' : 'linear'),
+      params: { ...(SA.fx.paramDefaults(phase, preset.type) || {}), ...(preset.params || {}) },
+      enabled: true,
+    };
+    writeProp('motions', [...motionList(), entry]);
+  }
+
+  function renderCustomMotions(container) {
+    const style = resolvedStyle();
+    const list = motionList();
+    const body = section(container, 'motions', t('studio.motion.title'));
+    if (!list.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.motion.empty');
+      body.appendChild(empty);
+    }
+    list.forEach((motion, index) => {
+      const phase = motion.phase === 'exit' ? 'exit' : motion.phase === 'hold' ? 'hold' : 'enter';
+      const box = document.createElement('div');
+      box.className = 'insp-stack-item';
+      const head = document.createElement('div');
+      head.className = 'insp-stack-head';
+      const name = document.createElement('span');
+      name.className = 'insp-inherit';
+      name.textContent = SA.controls.typeLabel(phase, motion.type);
+      head.appendChild(name);
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'btn btn-mini';
+      up.textContent = '↑';
+      up.addEventListener('click', () => {
+        if (index <= 0) return;
+        const next = [...list];
+        [next[index - 1], next[index]] = [next[index], next[index - 1]];
+        writeProp('motions', next);
+      });
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'btn btn-mini';
+      down.textContent = '↓';
+      down.addEventListener('click', () => {
+        if (index >= list.length - 1) return;
+        const next = [...list];
+        [next[index + 1], next[index]] = [next[index], next[index + 1]];
+        writeProp('motions', next);
+      });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.addEventListener('click', () => writeProp('motions', list.filter((entry, i) => i !== index)));
+      head.appendChild(up);
+      head.appendChild(down);
+      head.appendChild(remove);
+      box.appendChild(head);
+
+      const update = (patch, coalesceKey) => {
+        const next = list.map((entry, i) => (i === index ? { ...entry, ...patch } : entry));
+        writeProp('motions', next, { coalesceKey });
+      };
+      const enabledRow = document.createElement('label');
+      enabledRow.className = 'ctrl-bool-row';
+      enabledRow.textContent = t('studio.inspector.enabled');
+      enabledRow.appendChild(SA.controls.boolControl(motion.enabled !== false, (value) => update({ enabled: value })));
+      box.appendChild(enabledRow);
+      box.appendChild(
+        fieldRow(
+          t('studio.motion.from'),
+          selectControl(
+            motion.from === 'end' ? 'end' : 'start',
+            ['start', 'end'],
+            (value) => t(value === 'end' ? 'studio.motion.fromEnd' : 'studio.motion.fromStart'),
+            (value) => update({ from: value })
+          )
+        )
+      );
+      box.appendChild(
+        fieldRow(
+          t('studio.inspector.delay'),
+          numberField(motion.delay == null ? 0 : motion.delay, { step: 0.05, default: 0, kind: 'number' }, (value) => update({ delay: value }, `motion:${motion.id}:delay`))
+        )
+      );
+      box.appendChild(
+        fieldRow(
+          t('studio.inspector.duration'),
+          numberField(
+            motion.duration == null ? 0.6 : motion.duration,
+            { min: 0.05, step: 0.05, default: 0.6, kind: 'number' },
+            (value) => update({ duration: value }, `motion:${motion.id}:duration`)
+          )
+        )
+      );
+      if (phase !== 'hold') {
+        box.appendChild(
+          fieldRow(
+            t('studio.inspector.ease'),
+            SA.controls.easeControl(motion.ease || (phase === 'enter' ? 'easeOutCubic' : 'easeInCubic'), (value) => update({ ease: value }, `motion:${motion.id}:ease`))
+          )
+        );
+      }
+      const descriptor = SA.fx.get(phase, motion.type);
+      const defaults = SA.fx.paramDefaults(phase, motion.type);
+      const params = { ...defaults, ...(motion.params || {}) };
+      for (const param of SA.controls.paramEntries(descriptor)) {
+        const control = SA.controls.paramControl(
+          phase,
+          param,
+          params[param.key],
+          (value) => update({ params: { ...params, [param.key]: value } }, `motion:${motion.id}:${param.key}`),
+          { palette: style.palette || null, slotLabel: t('studio.inspector.palette') }
+        );
+        box.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+      }
+      body.appendChild(box);
+    });
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-mini';
+    add.textContent = `+ ${t('studio.motion.add')}`;
+    add.addEventListener('click', () => SA.motionDialog.open());
+    body.appendChild(add);
+  }
+
   function instanceFor(group) {
     const style = resolvedStyle();
     const value = style[group];
@@ -589,7 +728,10 @@ SA.inspector = (() => {
     for (const param of SA.controls.paramEntries(descriptor)) {
       const value = params[param.key] != null ? params[param.key] : param.default;
       const propPath = `${group}.params.${param.key}`;
-      const control = SA.controls.paramControl(group, param, value, (next) => writeProp(propPath, next));
+      const control = SA.controls.paramControl(group, param, value, (next) => writeProp(propPath, next), {
+        palette: style.palette || null,
+        slotLabel: t('studio.inspector.palette'),
+      });
       row(body, propPath, SA.controls.labelFor(param.key), control);
     }
     if (MOTION_GROUPS.includes(group)) renderMotion(container, group, instance);
@@ -623,10 +765,16 @@ SA.inspector = (() => {
       for (const param of SA.controls.paramEntries(descriptor)) {
         const value = params[param.key] != null ? params[param.key] : param.default;
         const propPath = `${group}.${index}.params.${param.key}`;
-        const control = SA.controls.paramControl(group, param, value, (next) => {
-          const nextList = list.map((entry, i) => (i === index ? { ...entry, params: { ...(entry.params || {}), [param.key]: next } } : entry));
-          writeProp(group, nextList, { coalesceKey: `${group}:${index}:${param.key}` });
-        });
+        const control = SA.controls.paramControl(
+          group,
+          param,
+          value,
+          (next) => {
+            const nextList = list.map((entry, i) => (i === index ? { ...entry, params: { ...(entry.params || {}), [param.key]: next } } : entry));
+            writeProp(group, nextList, { coalesceKey: `${group}:${index}:${param.key}` });
+          },
+          { palette: style.palette || null, slotLabel: t('studio.inspector.palette') }
+        );
         row(box, propPath, SA.controls.labelFor(param.key), control);
       }
       body.appendChild(box);
@@ -1031,6 +1179,7 @@ SA.inspector = (() => {
       if (STACK_GROUPS.includes(group)) renderStackGroup(el.body, group);
       else renderGroup(el.body, group);
     }
+    renderCustomMotions(el.body);
     renderColor(el.body);
     renderPalette(el.body);
     lastSelection = key;
@@ -1042,5 +1191,5 @@ SA.inspector = (() => {
     render();
   }
 
-  return { init, render, selectAt, cycleLevel, selectionInfo, scopeOf, localTimeFor, readEffective, valueFor, writeProp, isSetAtScope };
+  return { init, render, selectAt, cycleLevel, selectionInfo, scopeOf, localTimeFor, readEffective, valueFor, writeProp, isSetAtScope, addMotion };
 })();

@@ -9,7 +9,6 @@ SA.timeline = (() => {
   const AUDIO_H = 30;
   const LANE_H = 22;
   const LAYER_H = 22;
-  const GUTTER = 150;
   const KEY_SIZE = 5;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 800;
@@ -18,6 +17,8 @@ SA.timeline = (() => {
 
   const el = {};
   let ctx = null;
+  let rulerCtx = null;
+  let fixedHeight = RULER_H;
   let dpr = 1;
   let pxPerSecond = 120;
   let scrollX = 0;
@@ -226,15 +227,27 @@ SA.timeline = (() => {
 
   function resize() {
     if (!el.canvas) return { width: 600, height: 200 };
-    const width = Math.max(240, el.body.clientWidth || el.canvas.parentElement.clientWidth || 600);
-    const height = Math.max(RULER_H + ROW_H, layoutRows());
+    // use the scroll container's content width so the canvas never overflows
+    // horizontally (a mismatched width used to shift the 0 s position).
+    const width = Math.max(240, (el.scroll && el.scroll.clientWidth) || el.canvas.parentElement.clientWidth || 600);
+    const fullHeight = Math.max(RULER_H + ROW_H, layoutRows());
+    const audioRow = rows.find((row) => row.type === 'audio');
+    fixedHeight = RULER_H + (audioRow ? AUDIO_H : 0);
+    const rowsHeight = Math.max(ROW_H, fullHeight - fixedHeight);
     dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (el.rulerCanvas && rulerCtx) {
+      el.rulerCanvas.width = Math.round(width * dpr);
+      el.rulerCanvas.height = Math.round(fixedHeight * dpr);
+      el.rulerCanvas.style.width = `${width}px`;
+      el.rulerCanvas.style.height = `${fixedHeight}px`;
+      rulerCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
     el.canvas.width = Math.round(width * dpr);
-    el.canvas.height = Math.round(height * dpr);
+    el.canvas.height = Math.round(rowsHeight * dpr);
     el.canvas.style.width = `${width}px`;
-    el.canvas.style.height = `${height}px`;
+    el.canvas.style.height = `${rowsHeight}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { width, height };
+    return { width, height: fullHeight };
   }
 
   // --- drawing -----------------------------------------------------------------
@@ -716,25 +729,76 @@ SA.timeline = (() => {
     }
   }
 
+  // Runs draw helpers against a specific canvas while keeping the absolute
+  // row coordinates used everywhere else.
+  function withCtx(target, run) {
+    const previous = ctx;
+    ctx = target;
+    try {
+      run();
+    } finally {
+      ctx = previous;
+    }
+  }
+
+  function drawPlayhead(size, yEnd, head) {
+    const playheadX = xOf(SA.store.state.playhead);
+    if (playheadX < -1 || playheadX > size.width + 1) return;
+    ctx.strokeStyle = '#ff4d4d';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(playheadX + 0.5, head ? 2 : 0);
+    ctx.lineTo(playheadX + 0.5, yEnd);
+    ctx.stroke();
+    if (!head) return;
+    ctx.fillStyle = '#ff4d4d';
+    ctx.beginPath();
+    ctx.moveTo(playheadX - 5, 2);
+    ctx.lineTo(playheadX + 5, 2);
+    ctx.lineTo(playheadX, 10);
+    ctx.closePath();
+    ctx.fill();
+  }
+
   function draw() {
     if (!ctx) return;
+    const size = resize();
     if (!project()) {
-      const size = resize();
+      if (rulerCtx) {
+        rulerCtx.clearRect(0, 0, size.width, fixedHeight);
+        rulerCtx.fillStyle = '#10131b';
+        rulerCtx.fillRect(0, 0, size.width, fixedHeight);
+      }
       ctx.clearRect(0, 0, size.width, size.height);
+      ctx.fillStyle = '#10131b';
+      ctx.fillRect(0, 0, size.width, size.height);
       ctx.fillStyle = '#8d96ab';
       ctx.font = '12px "Segoe UI", Arial, sans-serif';
-      ctx.fillText(t('studio.timeline.empty'), 12, RULER_H + 16);
+      ctx.fillText(t('studio.timeline.empty'), 12, 16);
       return;
     }
     const doc = project();
-    const size = resize();
     hitRegions = [];
     keyRegions = [];
+    const peaks = SA.preview && SA.preview.getPeaks ? SA.preview.getPeaks() : null;
+    // fixed part: ruler and audio stay visible while the rows scroll
+    if (el.rulerCanvas && rulerCtx) {
+      rulerCtx.clearRect(0, 0, size.width, fixedHeight);
+      rulerCtx.fillStyle = '#10131b';
+      rulerCtx.fillRect(0, 0, size.width, fixedHeight);
+      withCtx(rulerCtx, () => {
+        drawRuler(size);
+        drawAudio(size, peaks);
+        drawMarkers(size);
+        drawPlayhead(size, fixedHeight, true);
+      });
+    }
+    // scrollable part: every row is drawn with the shared absolute coordinates
     ctx.clearRect(0, 0, size.width, size.height);
     ctx.fillStyle = '#10131b';
     ctx.fillRect(0, 0, size.width, size.height);
-    drawRuler(size);
-    drawAudio(size, SA.preview && SA.preview.getPeaks ? SA.preview.getPeaks() : null);
+    ctx.save();
+    ctx.translate(0, -fixedHeight);
     for (const row of rows) {
       if (row.type === 'cue') drawCue(size, doc, cueList().find((entry) => entry.id === row.cueId), row);
       else if (row.type === 'layer') drawLayer(size, row);
@@ -743,29 +807,17 @@ SA.timeline = (() => {
       else if (row.type === 'lane' || row.type === 'lane-empty') drawLane(size, row);
     }
     drawMarkers(size);
-    const playheadX = xOf(SA.store.state.playhead);
-    if (playheadX >= 0 && playheadX <= size.width) {
-      ctx.strokeStyle = '#ff4d4d';
-      ctx.lineWidth = 1.4;
-      ctx.beginPath();
-      ctx.moveTo(playheadX + 0.5, 2);
-      ctx.lineTo(playheadX + 0.5, size.height);
-      ctx.stroke();
-      ctx.fillStyle = '#ff4d4d';
-      ctx.beginPath();
-      ctx.moveTo(playheadX - 5, 2);
-      ctx.lineTo(playheadX + 5, 2);
-      ctx.lineTo(playheadX, 10);
-      ctx.closePath();
-      ctx.fill();
-    }
+    drawPlayhead(size, size.height, false);
+    ctx.restore();
   }
 
   // --- interactions ------------------------------------------------------------
 
   function localPoint(event) {
-    const rect = el.canvas.getBoundingClientRect();
-    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    const target = event.currentTarget === el.rulerCanvas ? el.rulerCanvas : el.canvas;
+    const rect = target.getBoundingClientRect();
+    const offset = target === el.rulerCanvas ? 0 : fixedHeight;
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top + offset };
   }
 
   function keyAt(point) {
@@ -810,7 +862,7 @@ SA.timeline = (() => {
     if (event.shiftKey && (hit.type === 'lane' || hit.type === 'empty')) {
       drag = { type: 'box', start: point, additive: true };
       try {
-        el.canvas.setPointerCapture(event.pointerId);
+        if (event.currentTarget) event.currentTarget.setPointerCapture(event.pointerId);
       } catch {
         /* synthetic */
       }
@@ -818,7 +870,7 @@ SA.timeline = (() => {
     }
     if (!event.shiftKey) selectedKeys.clear();
     try {
-      el.canvas.setPointerCapture(event.pointerId);
+      if (event.currentTarget) event.currentTarget.setPointerCapture(event.pointerId);
     } catch {
       /* synthetic */
     }
@@ -885,6 +937,7 @@ SA.timeline = (() => {
       drag.current = point;
       draw();
       ctx.save();
+      ctx.translate(0, -fixedHeight);
       ctx.strokeStyle = '#ff8a3d';
       ctx.setLineDash([4, 3]);
       ctx.strokeRect(Math.min(drag.start.x, point.x), Math.min(drag.start.y, point.y), Math.abs(point.x - drag.start.x), Math.abs(point.y - drag.start.y));
@@ -926,7 +979,8 @@ SA.timeline = (() => {
   function onPointerUp(event) {
     if (!drag) return;
     try {
-      if (el.canvas.hasPointerCapture(event.pointerId)) el.canvas.releasePointerCapture(event.pointerId);
+      const target = event.currentTarget;
+      if (target && target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
     } catch {
       /* synthetic */
     }
@@ -1171,6 +1225,7 @@ SA.timeline = (() => {
       add(t('studio.beat.splitAtPlayhead'), () => SA.store.commands.splitBeat(cueId, hit.beatId, SA.store.state.playhead));
       add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
+      add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
     } else {
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
@@ -1180,6 +1235,7 @@ SA.timeline = (() => {
       });
       add(t('studio.beat.deleteCue'), () => SA.store.commands.deleteCue(cueId));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
+      add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
     }
     el.body.appendChild(menu);
     positionMenu(event);
@@ -1313,7 +1369,7 @@ SA.timeline = (() => {
   }
 
   function fit() {
-    const width = el.body ? el.body.clientWidth - GUTTER : 600;
+    const width = (el.scroll && el.scroll.clientWidth) || (el.body ? el.body.clientWidth : 600) || 600;
     const total = duration() || 1;
     setZoom(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, width / total)));
     scrollX = 0;
@@ -1386,52 +1442,56 @@ SA.timeline = (() => {
     }
   }
 
-  function bind() {
-    el.canvas.addEventListener('pointerdown', onPointerDown);
-    el.canvas.addEventListener('pointermove', onPointerMove);
-    el.canvas.addEventListener('pointerup', onPointerUp);
-    el.canvas.addEventListener('pointercancel', onPointerUp);
-    el.canvas.addEventListener('dblclick', onDoubleClick);
-    el.canvas.addEventListener('contextmenu', showMenu);
-    el.canvas.addEventListener('dragover', (event) => {
-      const types = event.dataTransfer ? event.dataTransfer.types || [] : [];
-      if (types.indexOf('text/x-sa-media') >= 0 || types.indexOf('text/plain') >= 0) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'copy';
-      }
-    });
-    el.canvas.addEventListener('drop', (event) => {
-      const transfer = event.dataTransfer;
-      if (!transfer) return;
-      const id = transfer.getData('text/x-sa-media') || transfer.getData('text/plain');
-      const doc = project();
-      const entry = doc && doc.media && (doc.media.videos || []).find((video) => video.id === id);
-      if (!entry) return;
+  function onWheel(event) {
+    if (event.ctrlKey) {
       event.preventDefault();
-      const point = localPoint(event);
-      const firstCue = rows.find((row) => row.type === 'cue');
-      const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
-      const layer = SA.layersDialog.defaults(slot);
-      layer.type = 'video';
-      layer.src = entry.src;
-      layer.fit = 'cover';
-      SA.store.commands.addLayer(layer);
-      SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
-    });
-    el.canvas.addEventListener(
-      'wheel',
-      (event) => {
-        if (event.ctrlKey) {
+      setZoom(pxPerSecond * (event.deltaY < 0 ? 1.15 : 0.87), localPoint(event).x);
+    } else if (event.shiftKey) {
+      event.preventDefault();
+      scrollX = Math.max(0, scrollX + event.deltaY);
+      draw();
+    } else if (event.currentTarget === el.rulerCanvas && el.scroll) {
+      // the ruler sits outside the scroll container: forward plain wheel down
+      el.scroll.scrollTop += event.deltaY;
+    }
+  }
+
+  function bind() {
+    const surfaces = [el.canvas, el.rulerCanvas].filter(Boolean);
+    for (const surface of surfaces) {
+      surface.addEventListener('pointerdown', onPointerDown);
+      surface.addEventListener('pointermove', onPointerMove);
+      surface.addEventListener('pointerup', onPointerUp);
+      surface.addEventListener('pointercancel', onPointerUp);
+      surface.addEventListener('dblclick', onDoubleClick);
+      surface.addEventListener('contextmenu', showMenu);
+      surface.addEventListener('dragover', (event) => {
+        const types = event.dataTransfer ? event.dataTransfer.types || [] : [];
+        if (types.indexOf('text/x-sa-media') >= 0 || types.indexOf('text/plain') >= 0) {
           event.preventDefault();
-          setZoom(pxPerSecond * (event.deltaY < 0 ? 1.15 : 0.87), localPoint(event).x);
-        } else if (event.shiftKey) {
-          event.preventDefault();
-          scrollX = Math.max(0, scrollX + event.deltaY);
-          draw();
+          event.dataTransfer.dropEffect = 'copy';
         }
-      },
-      { passive: false }
-    );
+      });
+      surface.addEventListener('drop', (event) => {
+        const transfer = event.dataTransfer;
+        if (!transfer) return;
+        const id = transfer.getData('text/x-sa-media') || transfer.getData('text/plain');
+        const doc = project();
+        const entry = doc && doc.media && (doc.media.videos || []).find((video) => video.id === id);
+        if (!entry) return;
+        event.preventDefault();
+        const point = localPoint(event);
+        const firstCue = rows.find((row) => row.type === 'cue');
+        const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
+        const layer = SA.layersDialog.defaults(slot);
+        layer.type = 'video';
+        layer.src = entry.src;
+        layer.fit = 'cover';
+        SA.store.commands.addLayer(layer);
+        SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
+      });
+      surface.addEventListener('wheel', onWheel, { passive: false });
+    }
     document.addEventListener('keydown', onKeyDown);
     if (el.zoom) el.zoom.addEventListener('input', () => setZoom(Number(el.zoom.value)));
     if (el.fit) el.fit.addEventListener('click', fit);
@@ -1457,7 +1517,9 @@ SA.timeline = (() => {
 
   function init() {
     el.body = document.querySelector('.timeline-body');
+    el.scroll = document.getElementById('timeline-scroll');
     el.canvas = document.getElementById('timeline-canvas');
+    el.rulerCanvas = document.getElementById('timeline-ruler');
     el.zoom = document.getElementById('tl-zoom');
     el.zoomLabel = document.getElementById('tl-zoom-label');
     el.fit = document.getElementById('tl-fit');
@@ -1468,6 +1530,7 @@ SA.timeline = (() => {
     el.addProperty = document.getElementById('tl-add-property');
     if (!el.canvas) return;
     ctx = el.canvas.getContext('2d');
+    if (el.rulerCanvas) rulerCtx = el.rulerCanvas.getContext('2d');
     try {
       const stored = Math.round(Number(localStorage.getItem(LS_ZOOM)));
       if (stored >= MIN_ZOOM && stored <= MAX_ZOOM) pxPerSecond = stored;

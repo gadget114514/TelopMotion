@@ -88,3 +88,14 @@ test('resolve handles palette and category values', () => {
   const fallback = color.resolve({ kind: 'category', which: 'tint' }, {});
   assert.strictEqual(color.toHex(fallback.rgba), '#ff8a3d');
 });
+
+test('toRgba resolves palette references against the scoped palette', () => {
+  const ctx = { palette: { colors: ['#111111', '#222222', '#ff0000'] } };
+  assert.deepStrictEqual(color.toRgba({ kind: 'palette', index: 2 }, null, ctx), [1, 0, 0, 1]);
+  assert.deepStrictEqual(color.toRgba({ kind: 'solid', value: '#00ff00', alpha: 1 }, null, ctx), [0, 1, 0, 1]);
+  assert.deepStrictEqual(color.toRgba('#0000ff', null, ctx), [0, 0, 1, 1]);
+  assert.deepStrictEqual(color.toRgba([0.1, 0.2, 0.3, 0.4], null, ctx), [0.1, 0.2, 0.3, 0.4]);
+  assert.deepStrictEqual(color.toRgba(null, [1, 2, 3, 4], ctx), [1, 2, 3, 4]);
+  const shifted = color.toRgba({ kind: 'palette', index: 1 }, null, ctx);
+  assert.ok(Math.abs(shifted[0] - shifted[1]) < 1e-6 && Math.abs(shifted[1] - shifted[2]) < 1e-6, 'palette slot 1 is grey');
+});

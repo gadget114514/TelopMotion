@@ -110,6 +110,7 @@ SA.menu = (() => {
         itemSeparator(),
         { key: 'studio.output.exportLyrics', items: () => [
           { key: 'studio.output.exportSrt', action: 'exportSrt' },
+          { key: 'studio.output.exportSrtBeats', action: 'exportSrtBeats' },
           { key: 'studio.output.exportLrc', action: 'exportLyrics', args: ['lrc'] },
           { key: 'studio.output.exportJson', action: 'exportLyrics', args: ['json'] },
         ], enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },

@@ -102,11 +102,8 @@
     cost: 2,
   });
 
-  function toRgba(value, fallback) {
-    if (Array.isArray(value) && value.length === 4) return value;
-    if (value == null || value === '') return fallback;
-    const rgba = color.parse(String(value));
-    return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+  function toRgba(value, fallback, ctx) {
+    return color.toRgba(value, fallback, ctx);
   }
 
   function num(value, fallback) {
@@ -121,31 +118,31 @@
     const maxDistance = Math.max(1, context.maxDistance || 108);
     const toNorm = (px) => px / maxDistance;
     const defaultColor = type === 4 ? [1, 1, 1, 1] : [0, 0, 0, 1];
-    const base = toRgba(context.colorSet && context.colorSet.stroke, defaultColor);
+    const base = toRgba(context.colorSet && context.colorSet.stroke, defaultColor, context);
     let edgeColor = base;
     let params4 = [0, 0, 0, 0];
     let direction = [1, 1];
     let offset = [0, 0];
     if (type === 1) {
       params4 = [toNorm(num(params.width, 3)), 0, 0, num(params.softness, 0.35)];
-      edgeColor = toRgba(params.color, base);
+      edgeColor = toRgba(params.color, base, context);
     } else if (type === 2 || type === 3) {
       params4 = [0, toNorm(num(params.radius, 14)), num(params.intensity, 1), 0];
-      edgeColor = toRgba(params.color, type === 2 ? [1, 0.8, 0.4, 1] : [1, 1, 1, 1]);
+      edgeColor = toRgba(params.color, type === 2 ? [1, 0.8, 0.4, 1] : [1, 1, 1, 1], context);
     } else if (type === 4) {
       params4 = [((num(params.lightAngle, -60) + 180) * Math.PI) / 180, Math.max(0.4, 1 + num(params.depth, 0.6)), 0, 0];
-      edgeColor = toRgba(params.highlight, [1, 1, 1, 1]);
+      edgeColor = toRgba(params.highlight, [1, 1, 1, 1], context);
     } else if (type === 5 || type === 6) {
       const angle = ((num(params.angle, 135) + 180) * Math.PI) / 180;
       direction = [Math.cos(angle), -Math.sin(angle)];
       params4 = [toNorm(num(type === 5 ? params.depth : params.length, type === 5 ? 16 : 40)), 0, 0, 0];
-      edgeColor = toRgba(params.color || params.colorNear, base);
+      edgeColor = toRgba(params.color || params.colorNear, base, context);
     } else if (type === 7) {
       const x = num(params.offset && params.offset.x, 6);
       const y = num(params.offset && params.offset.y, 8);
       offset = [x / context.width || 0.003, -y / (context.height || 1080)];
       params4 = [0, toNorm(num(params.blur, 10)), num(params.opacity, 0.6), 0];
-      edgeColor = toRgba(params.color, [0, 0, 0, 1]);
+      edgeColor = toRgba(params.color, [0, 0, 0, 1], context);
     }
     return {
       u_type: type,

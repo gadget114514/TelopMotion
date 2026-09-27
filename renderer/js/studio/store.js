@@ -512,17 +512,22 @@ SA.store = (() => {
         },
       });
     },
-    restructureCue(cueId) {
+    restructureCue(cueId, options) {
       const cue = findCue(cueId);
       if (!cue || !SA.textflow) return;
+      const opts = options || {};
       dispatch({
-        label: 'restructure cue',
-        areas: ['script'],
+        label: opts.label || 'restructure cue',
+        areas: opts.style ? ['script', 'style'] : ['script'],
         do(project) {
           const target = project.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
-          const options = SA.textflow.cueOptions(project, target);
-          const result = SA.textflow.restructure(target, options);
+          if (opts.chunk) target.textFlow = { ...(target.textFlow || {}), chunk: opts.chunk };
+          if (opts.style) project.cueStyles[cueId] = SA.project.mergeDeep(project.cueStyles[cueId] || {}, opts.style);
+          const resolved = SA.textflow.cueOptions(project, target);
+          if (opts.settings) resolved.settings = SA.project.mergeDeep(resolved.settings, opts.settings);
+          if (opts.chunk) resolved.settings = { ...resolved.settings, chunk: opts.chunk };
+          const result = SA.textflow.restructure(target, resolved);
           const merged = SA.textflow.mergePinned(project.beats[cueId], result.beats, target);
           project.beats[cueId] = merged.beats;
           if (merged.orphans.length) project.orphanBeats[cueId] = merged.orphans;
@@ -530,6 +535,17 @@ SA.store = (() => {
           else delete project.beatWarnings[cueId];
         },
       });
+    },
+    restructureCueRandom(cueId) {
+      const cue = findCue(cueId);
+      if (!cue || !SA.textflow || !SA.textflow.chunkThemes) return;
+      const themes = SA.textflow.chunkThemes();
+      const current = (cue.textFlow && cue.textFlow.chunk) || 'page';
+      const choices = themes.filter((theme) => theme.chunk !== current);
+      const pool = choices.length ? choices : themes;
+      const theme = pool[Math.floor(Math.random() * pool.length)] || themes[0];
+      if (!theme) return;
+      commands.restructureCue(cueId, { chunk: theme.chunk, style: theme.style, label: 'random split' });
     },
     restructureAll() {
       dispatch({

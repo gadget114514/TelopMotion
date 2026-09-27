@@ -560,6 +560,10 @@ SA.lyricsEngine = (() => {
               width: state.width,
               height: state.height,
               time: t,
+              palette: style.palette || null,
+              palettes: project.palettes || [],
+              categoryColors: project.categoryColors || {},
+              category: beat.meta && beat.meta.category,
               sdfTexture: sdfTarget ? sdfTarget.texture : null,
             })
           );
@@ -575,6 +579,9 @@ SA.lyricsEngine = (() => {
                 ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
                 : null,
             time: t,
+            palette: style.palette || null,
+            palettes: project.palettes || [],
+            categoryColors: project.categoryColors || {},
             progress: Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start))),
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
           })
@@ -592,6 +599,10 @@ SA.lyricsEngine = (() => {
             envelope: instance.envelope == null ? 1 : instance.envelope,
             progress,
             time: t,
+            palette: style.palette || null,
+            palettes: project.palettes || [],
+            categoryColors: project.categoryColors || {},
+            category: beat.meta && beat.meta.category,
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
           });
           if (uniforms.bloom) bloomNeeded = true;

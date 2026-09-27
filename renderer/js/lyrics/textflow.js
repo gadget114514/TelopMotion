@@ -20,6 +20,9 @@
     readingSpeed: { ja: 8, en: 3.2, es: 3, fr: 3, ru: 2.8 },
     minPageDuration: 1.2,
     pageTransition: 'full',
+    chunk: 'page',
+    maxChunkDuration: 1,
+    minChunkDuration: 0.2,
     longHold: { mode: 'hold', threshold: 6, interval: 4, repeatEffect: 'same' },
     recap: {
       mode: 'off',
@@ -465,6 +468,209 @@
     return { durations, compressed };
   }
 
+  // ---------------------------------------------------------------------------
+  // Telop chunks (one line, or one phrase, per beat)
+  // ---------------------------------------------------------------------------
+
+  // Splits a line into phrase-like groups. A boundary is used where breaking is
+  // cheap for the language (after a sentence, a comma or a Japanese particle,
+  // before a conjunction). Returns groups of units.
+  function phraseGroups(units) {
+    const groups = [];
+    let current = [];
+    for (let i = 0; i < units.length; i += 1) {
+      current.push(units[i]);
+      const next = units[i + 1];
+      if (!next) break;
+      if (next.hardBreak || next.hardPage) {
+        groups.push(current);
+        current = [];
+        continue;
+      }
+      if (next.penalty !== Infinity && next.penalty <= 1.5) {
+        groups.push(current);
+        current = [];
+      }
+    }
+    if (current.length) groups.push(current);
+    return groups;
+  }
+
+  // Splits a line into word-like groups, keeping Japanese particles and
+  // trailing punctuation with the word before them.
+  function wordGroups(units, lang) {
+    const groups = [];
+    for (const unit of units) {
+      const previous = groups[groups.length - 1];
+      const particle = lang === 'ja' && (JA_PARTICLES.includes(unit.text) || /^[、。，．・：；！？）」』】〕〉》]/.test(unit.text));
+      const punctuation = lang !== 'ja' && /^[.,;:!?…%)\]}"']/.test(unit.text);
+      if (previous && (particle || punctuation)) previous.push(unit);
+      else groups.push([unit]);
+    }
+    return groups;
+  }
+
+  function chunkFromUnits(level, group) {
+    const text = lineText(group).trim();
+    return text ? { level, text, lines: [text] } : null;
+  }
+
+  function chunkSourcesForLine(text, level, lang) {
+    const source = String(text || '').trim();
+    if (!source) return [];
+    if (level === 'line') return [{ level: 'line', text: source, lines: [source] }];
+    return phraseGroups(buildUnits([[source]], lang))
+      .map((group) => chunkFromUnits('phrase', group))
+      .filter(Boolean);
+  }
+
+  function subdivideChunk(chunk, lang) {
+    if (chunk.level === 'line') {
+      const groups = phraseGroups(buildUnits([[chunk.text]], lang));
+      if (groups.length > 1) return groups.map((group) => chunkFromUnits('phrase', group)).filter(Boolean);
+      return subdivideChunk({ ...chunk, level: 'phrase' }, lang);
+    }
+    if (chunk.level === 'phrase') {
+      const groups = wordGroups(buildUnits([[chunk.text]], lang), lang);
+      if (groups.length > 1) return groups.map((group) => chunkFromUnits('word', group)).filter(Boolean);
+      return null;
+    }
+    return null;
+  }
+
+  // Distributes the cue window across chunks in proportion to their reading
+  // time. A chunk never gets the whole maxChunkDuration: it is capped just
+  // below it, and the excess is redistributed over the remaining chunks.
+  function fitDurations(readings, window, maxDuration) {
+    const count = readings.length;
+    const durations = new Array(count).fill(0);
+    if (!count) return durations;
+    const weights = readings.map((value) => Math.max(1e-6, value));
+    let budget = Math.max(0, window);
+    let openReading = weights.reduce((sum, value) => sum + value, 0);
+    let open = weights.map((_, index) => index);
+    for (let guard = 0; guard < count + 1 && open.length; guard += 1) {
+      let capped = false;
+      for (const index of open) {
+        const share = openReading > 0 ? (budget * weights[index]) / openReading : budget / open.length;
+        if (share >= maxDuration - 1e-9) {
+          durations[index] = Math.max(0, maxDuration - 0.01);
+          budget = Math.max(0, budget - durations[index]);
+          openReading = Math.max(0, openReading - weights[index]);
+          capped = true;
+        }
+      }
+      if (!capped) {
+        for (const index of open) {
+          durations[index] = openReading > 0 ? (budget * weights[index]) / openReading : budget / open.length;
+        }
+        break;
+      }
+      open = open.filter((index) => durations[index] === 0);
+      if (budget <= 0 || openReading <= 0) {
+        for (const index of open) durations[index] = 0;
+        break;
+      }
+    }
+    return durations;
+  }
+
+  function timeChunks(sources, start, end, settings, lang) {
+    const window = Math.max(0.1, end - start);
+    const maxDuration = Math.max(0.2, Number(settings.maxChunkDuration) || DEFAULTS.maxChunkDuration);
+    const speeds = settings.readingSpeed || DEFAULTS.readingSpeed;
+    const list = sources.map((source) => ({ ...source, reading: readingTime(source.text, lang, speeds) }));
+    for (let guard = 0; guard < 400; guard += 1) {
+      const index = list.findIndex((chunk) => !chunk.atomic && chunk.reading >= maxDuration - 1e-9);
+      if (index < 0) break;
+      const parts = subdivideChunk(list[index], lang);
+      if (!parts) {
+        list[index].atomic = true;
+        continue;
+      }
+      list.splice(index, 1, ...parts.map((part) => ({ ...part, reading: readingTime(part.text, lang, speeds) })));
+    }
+    if (!list.length) return { items: [], warning: null };
+    const durations = fitDurations(list.map((chunk) => chunk.reading), window, maxDuration);
+    const total = durations.reduce((sum, value) => sum + value, 0);
+    const leftover = Math.max(0, window - total);
+    const gap = list.length > 1 ? leftover / (list.length - 1) : 0;
+    const items = [];
+    let cursor = start;
+    for (let i = 0; i < list.length; i += 1) {
+      const to = cursor + durations[i];
+      items.push({ level: list[i].level, text: list[i].text, lines: list[i].lines, reading: list[i].reading, from: cursor, to });
+      cursor = to + gap;
+    }
+    const minimum = Math.min(settings.minChunkDuration || DEFAULTS.minChunkDuration, window / list.length);
+    const warning = durations.some((duration) => duration < minimum - 1e-9)
+      ? { code: 'tooFast', message: 'The chunks are too fast to read' }
+      : null;
+    return { items, warning };
+  }
+
+  // Named split styles: the chunk level plus a short enter/exit motion that
+  // keeps each chunk readable under the maxChunkDuration cap.
+  const CHUNK_THEMES = [
+    { id: 'pageFlow', chunk: 'page', style: null },
+    {
+      id: 'lineSlide',
+      chunk: 'line',
+      style: {
+        enter: { type: 'slide', params: { dir: 'up', distance: 0.12 }, motion: { in: { duration: 0.22, ease: 'easeOutCubic' } } },
+        exit: { type: 'fade', params: {}, motion: { out: { duration: 0.18, ease: 'easeInCubic' } } },
+      },
+    },
+    {
+      id: 'lineBlur',
+      chunk: 'line',
+      style: {
+        enter: { type: 'blurIn', params: { radius: 10 }, motion: { in: { duration: 0.22, ease: 'easeOutCubic' } } },
+        exit: { type: 'blurOut', params: { radius: 8 }, motion: { out: { duration: 0.16, ease: 'easeInCubic' } } },
+      },
+    },
+    {
+      id: 'phraseSlide',
+      chunk: 'phrase',
+      style: {
+        enter: { type: 'slide', params: { dir: 'up', distance: 0.08 }, motion: { in: { duration: 0.18, ease: 'easeOutCubic' } } },
+        exit: { type: 'fade', params: {}, motion: { out: { duration: 0.14, ease: 'easeInCubic' } } },
+      },
+    },
+    {
+      id: 'phrasePop',
+      chunk: 'phrase',
+      style: {
+        enter: { type: 'zoomIn', params: { from: 0.7 }, motion: { in: { duration: 0.16, ease: 'easeOutBack' } } },
+        exit: { type: 'zoomOut', params: { to: 0.85 }, motion: { out: { duration: 0.12, ease: 'easeInCubic' } } },
+      },
+    },
+  ];
+
+  function chunkThemes() {
+    return CHUNK_THEMES.map((theme) => ({ ...theme, style: theme.style ? JSON.parse(JSON.stringify(theme.style)) : null }));
+  }
+
+  // Flattens the beats of a project into SRT-ready cues (one entry per beat).
+  function beatCues(project) {
+    const output = [];
+    const cues = project && project.script ? project.script.cues || [] : [];
+    for (const cue of cues) {
+      const beats = project.beats && project.beats[cue.id];
+      if (!beats || !beats.length) {
+        if (cue.text) output.push({ start: cue.start, end: cue.end, text: cue.text });
+        continue;
+      }
+      for (const beat of [...beats].sort((a, b) => a.start - b.start)) {
+        const lines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : String(beat.text || '').split(/\r?\n/);
+        const text = lines.join('\n').trim();
+        if (!text) continue;
+        output.push({ start: beat.start, end: beat.end, text });
+      }
+    }
+    return output.sort((a, b) => a.start - b.start || a.end - b.end);
+  }
+
   function flow(input, options) {
     const source = String((input && input.text) || '');
     const start = Number((input && input.start) || 0);
@@ -594,8 +800,9 @@
     }
 
     // --- timing --------------------------------------------------------------
+    const chunkMode = settings.chunk && settings.chunk !== 'page';
     const naturalHold = budget - naturalTotal;
-    const useNatural = holdMode !== 'hold' && naturalHold > (settings.longHold.threshold || 6);
+    const useNatural = !chunkMode && holdMode !== 'hold' && naturalHold > (settings.longHold.threshold || 6);
     let cursor = start;
     if (useNatural) {
       basePages.forEach((page) => {
@@ -624,6 +831,37 @@
         page.to = cursor + timing.durations[index];
         cursor = page.to;
       });
+    }
+
+    // --- telop chunks --------------------------------------------------------
+    // Each timed page is split into line / phrase chunks. A chunk whose reading
+    // estimate or share would reach maxChunkDuration is divided further (line
+    // -> phrase -> word) so every chunk stays on screen for less than a second.
+    if (chunkMode && basePages.length) {
+      const expanded = [];
+      for (const page of basePages) {
+        const sources = [];
+        for (const line of page.lines) sources.push(...chunkSourcesForLine(line, settings.chunk, lang));
+        const timed = timeChunks(sources, page.from, page.to, settings, lang);
+        if (timed.warning) warnings.push(timed.warning);
+        for (const chunk of timed.items) {
+          expanded.push({
+            kind: 'page',
+            chunk: chunk.level,
+            text: chunk.text,
+            lines: chunk.lines,
+            fontScale: page.fontScale,
+            reading: chunk.reading,
+            from: chunk.from,
+            to: chunk.to,
+          });
+        }
+      }
+      if (expanded.length) {
+        pages.splice(0, pages.length, ...expanded);
+        basePages.length = 0;
+        basePages.push(...expanded);
+      }
     }
 
     // --- repeats -------------------------------------------------------------
@@ -736,6 +974,7 @@
         id: beatId(cue.id, kind, index),
         cueId: cue.id,
         kind,
+        chunk: page.chunk || undefined,
         index,
         start: page.from,
         end: page.to,
@@ -870,5 +1109,7 @@
     gatherPlan,
     normalizeText,
     lineText,
+    chunkThemes,
+    beatCues,
   };
 });

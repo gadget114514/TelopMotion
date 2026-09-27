@@ -217,12 +217,36 @@ body {
   grid-column: 1 / -1;
   border-top: 1px solid var(--line);
   background: var(--bg-soft);
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .timeline-body {
   padding: 0 12px 12px;
   gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.timeline-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-soft);
+}
+
+.timeline-ruler {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: block;
+  border-bottom: 1px solid var(--line);
 }
 
 .timeline-head {
@@ -263,8 +287,6 @@ body {
 
 #timeline-canvas {
   display: block;
-  border: 1px solid var(--line);
-  border-radius: 8px;
   background: var(--bg-soft);
   cursor: default;
 }
@@ -1126,6 +1148,79 @@ body {
   align-items: center;
   gap: 6px;
   min-height: 22px;
+}
+
+.motion-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 2px 0 6px;
+}
+
+.color-popover {
+  position: fixed;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 214px;
+  padding: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.5);
+}
+
+.color-sv,
+.color-hue {
+  display: block;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.color-swatch {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.color-swatch:hover {
+  border-color: var(--accent);
+}
+
+.color-slot-index {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0 2px;
+  font-size: 8px;
+  line-height: 1.2;
+  color: #0b0d12;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.color-hex-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.color-rgb {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .palette-dot {

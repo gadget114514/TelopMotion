@@ -225,6 +225,58 @@ test('every layout type and location type evaluates without NaN', () => {
   }
 });
 
+test('custom motions run only inside their own window', () => {
+  const base = { enter: { type: 'fade', motion: { in: { duration: 0.01, delay: 0, ease: 'linear' } }, params: {} }, animation: { type: 'simultaneous' } };
+  const plain = makeScene('AB', base);
+  const withMotion = makeScene('AB', {
+    ...base,
+    motions: [{ id: 'm1', phase: 'hold', type: 'floatBob', from: 'start', delay: 1, duration: 0.8, params: { amp: 0.05, speed: 0.5 } }],
+  });
+  const before = evaluate(withMotion, 0.5);
+  const during = evaluate(withMotion, 1.4);
+  const after = evaluate(withMotion, 2.5);
+  assertFinite(during, 'custom hold');
+  for (let i = 0; i < before.letters.length; i += 1) {
+    assert.ok(Math.abs(before.letters[i].x - evaluate(plain, 0.5).letters[i].x) < 1e-9, 'motion leaked before its window');
+    assert.ok(Math.abs(after.letters[i].x - evaluate(plain, 2.5).letters[i].x) < 1e-9, 'motion leaked after its window');
+  }
+  const moved = during.letters.some((state, i) => Math.abs(state.x - before.letters[i].x) > 1e-6 || Math.abs(state.y - before.letters[i].y) > 1e-6);
+  assert.ok(moved, 'hold motion did not move the letters');
+});
+
+test('custom exit motions move the letters toward the end', () => {
+  const scene = makeScene('AB', {
+    enter: { type: 'fade', motion: { in: { duration: 0.01 } } },
+    animation: { type: 'simultaneous' },
+    motions: [{ id: 'm2', phase: 'exit', type: 'slide', from: 'end', delay: -0.5, duration: 0.5, ease: 'linear', params: { dir: 'down', distance: 0.3 } }],
+  });
+  const midway = evaluate(scene, 9.75);
+  const end = evaluate(scene, 9.99);
+  assertFinite(end, 'custom exit');
+  assert.ok(end.letters[0].y > midway.letters[0].y, `y did not move down (${midway.letters[0].y} -> ${end.letters[0].y})`);
+});
+
+test('motion presets reference registered effects and valid phases', () => {
+  const presets = motion.motionPresets();
+  assert.ok(presets.length >= 20);
+  for (const preset of presets) {
+    assert.ok(['entrance', 'emphasis', 'exit'].includes(preset.group), preset.id);
+    assert.ok(['enter', 'hold', 'exit'].includes(preset.phase), preset.id);
+    assert.ok(fx.get(preset.phase, preset.type), `${preset.id} has no ${preset.phase}.${preset.type}`);
+    assert.ok(Number.isFinite(preset.duration) && preset.duration > 0, preset.id);
+  }
+});
+
+test('every motion preset evaluates without NaN', () => {
+  for (const preset of motion.motionPresets()) {
+    const scene = makeScene('ABCDE', {
+      animation: { type: 'simultaneous' },
+      motions: [{ ...preset, params: {} }],
+    });
+    for (const time of [0, 0.2, 5, 9.8, 10]) assertFinite(evaluate(scene, time), `preset ${preset.id} @${time}`);
+  }
+});
+
 test('stagger ranks support every documented order', () => {
   const letters = makeScene('ABCDEFGH').letters;
   for (const order of ['ltr', 'rtl', 'center-out', 'edges-in', 'random', 'word', 'line', 'strokeLength', 'oddEven', 'vertical-reading']) {

@@ -1019,6 +1019,14 @@
     else toast('studio.toast.srtExported', { path: result.filePath });
   }
 
+  async function exportSrtBeats() {
+    const doc = project();
+    if (!doc) return;
+    const result = await SA.io.exportSrtBeats(doc);
+    if (result.canceled) toast('studio.toast.cancelled');
+    else toast('studio.toast.srtExported', { path: result.filePath });
+  }
+
   async function exportLyrics(format) {
     const doc = project();
     if (!doc) return;
@@ -1229,6 +1237,7 @@
       audio: () => SA.audioDialog.open(),
       credits: () => SA.creditsDialog.open(),
       exportSrt,
+      exportSrtBeats,
       exportLyrics,
       exportVideo: () => SA.exportDialog.open(),
       openExport: () => SA.exportDialog.open(),

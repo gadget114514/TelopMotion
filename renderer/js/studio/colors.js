@@ -284,6 +284,29 @@ SA.colors = (() => {
     popover.appendChild(paletteRow);
     popover.appendChild(categoryLabel);
     popover.appendChild(categoryRow);
+    // optional palette-reference slots: picking one stores { kind: 'palette', index }
+    const slots = Array.isArray(opts.slots) ? opts.slots : [];
+    if (slots.length && typeof opts.onSlot === 'function') {
+      const slotLabel = document.createElement('div');
+      slotLabel.className = 'insp-inherit';
+      slotLabel.textContent = opts.slotLabel || `${t('color.palette')} P1–P${slots.length}`;
+      const slotRow = document.createElement('div');
+      slotRow.className = 'color-swatches';
+      slots.forEach((color, index) => {
+        const swatch = swatchButton(color, () => {
+          opts.onSlot(index);
+          closePopover();
+        });
+        swatch.title = `${t('color.palette')} ${index + 1} · ${color}`;
+        const badge = document.createElement('span');
+        badge.className = 'color-slot-index';
+        badge.textContent = String(index + 1);
+        swatch.appendChild(badge);
+        slotRow.appendChild(swatch);
+      });
+      popover.appendChild(slotLabel);
+      popover.appendChild(slotRow);
+    }
     popover.appendChild(buttons);
     document.body.appendChild(popover);
     const rect = opts.anchor ? opts.anchor.getBoundingClientRect() : null;

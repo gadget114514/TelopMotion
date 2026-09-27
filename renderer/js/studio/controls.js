@@ -130,24 +130,44 @@ SA.controls = (() => {
     return wrap;
   }
 
-  function colorControl(value, onChange) {
+  // Color parameters accept a hex string or a ColorValue:
+  // { kind: 'solid', value, alpha } / { kind: 'palette', index } / { kind: 'category' }.
+  function colorControl(value, onChange, options) {
+    const opts = options || {};
+    const paletteColors = opts.palette && Array.isArray(opts.palette.colors) ? opts.palette.colors : [];
     const wrap = document.createElement('div');
     wrap.className = 'ctrl-color';
-    const colorValue = value && typeof value === 'object' ? value.value || value.color : value;
-    const hex = typeof colorValue === 'string' && /^#/.test(colorValue) ? colorValue : '#ffffff';
+    const resolveParts = (next) => {
+      if (next && typeof next === 'object' && next.kind === 'palette') {
+        const index = Math.abs(Math.floor(next.index || 0));
+        const resolved = paletteColors.length ? paletteColors[index % paletteColors.length] : null;
+        return { hex: resolved || '#ffffff', ref: `P${index + 1}` };
+      }
+      if (next && typeof next === 'object' && next.kind === 'category') {
+        return { hex: '#ff8a3d', ref: opts.categoryLabel || 'Cat' };
+      }
+      const inner = next && typeof next === 'object' ? next.value || next.color : next;
+      return { hex: typeof inner === 'string' && /^#/.test(inner) ? inner : '#ffffff', ref: null };
+    };
+    let parts = resolveParts(value);
     const swatch = document.createElement('button');
     swatch.type = 'button';
     swatch.className = 'ctrl-swatch';
-    swatch.style.background = hex;
+    swatch.style.background = parts.hex;
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'ctrl-hex';
-    input.value = typeof value === 'string' ? value : hex;
+    input.value = parts.ref || parts.hex;
     input.addEventListener('keydown', (event) => event.stopPropagation());
+    const paint = (next) => {
+      parts = resolveParts(next);
+      swatch.style.background = parts.hex;
+      input.value = parts.ref || parts.hex;
+    };
     const commitHex = () => {
       const next = input.value.trim();
       onChange(next || null);
-      swatch.style.background = /^#/.test(next) ? next : '#ffffff';
+      paint(next);
     };
     input.addEventListener('change', commitHex);
     swatch.addEventListener('click', () => {
@@ -156,13 +176,19 @@ SA.controls = (() => {
         return;
       }
       SA.colors.openPicker({
-        value: input.value,
+        value: parts.hex,
         anchor: swatch,
+        slots: paletteColors,
+        slotLabel: opts.slotLabel,
+        onSlot(index) {
+          const next = { kind: 'palette', index };
+          onChange(next);
+          paint(next);
+        },
         onChange(next) {
           const hexValue = typeof next === 'string' ? next : next && next.value ? next.value : '#ffffff';
-          input.value = hexValue;
           onChange(next);
-          swatch.style.background = hexValue;
+          paint(typeof next === 'string' ? next : { ...next, value: hexValue });
         },
       });
     });
@@ -253,7 +279,7 @@ SA.controls = (() => {
     select: (param, value, onChange) =>
       selectControl(param, value, onChange, (param.options || []).map((option) => ({ value: option, label: valueLabel(option) }))),
     bool: (param, value, onChange) => boolControl(value, onChange),
-    color: (param, value, onChange) => colorControl(value, onChange),
+    color: (param, value, onChange, options) => colorControl(value, onChange, options),
     vec2: (param, value, onChange) => vec2Control(value, onChange, param),
     ease: (param, value, onChange) => easeControl(value, onChange),
     points: (param, value, onChange) => pointsControl(value, onChange),
@@ -268,9 +294,9 @@ SA.controls = (() => {
     gradient: (param, value, onChange) => gradientControl(value, onChange),
   };
 
-  function paramControl(group, param, value, onChange) {
+  function paramControl(group, param, value, onChange, options) {
     const builder = CONTROL_FOR[param.kind] || CONTROL_FOR.text;
-    return builder(param, value, onChange);
+    return builder(param, value, onChange, options);
   }
 
   function paramEntries(descriptor) {

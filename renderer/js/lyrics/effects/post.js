@@ -75,11 +75,8 @@
     });
   }
 
-  function toRgb(value, fallback) {
-    if (Array.isArray(value) && value.length >= 3) return [value[0], value[1], value[2], value[3] == null ? 1 : value[3]];
-    if (value == null || value === '') return fallback;
-    const rgba = color.parse(String(value));
-    return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+  function toRgb(value, fallback, ctx) {
+    return color.toRgba(value, fallback, ctx);
   }
 
   function num(value, fallback) {
@@ -119,14 +116,14 @@
     else if (type === 'godRays') p4 = [0, 0, 0, envelope * num(params.weight, 1)];
     else if (type === 'lightSweep') {
       p4 = [((num(params.angle, -30) + 180) * Math.PI) / 180, num(params.width, 0.12), num(params.speed, 0.6), envelope];
-      colorA = toRgb(params.color, [1, 0.95, 0.8, 1]);
+      colorA = toRgb(params.color, [1, 0.95, 0.8, 1], context);
     } else if (type === 'kaleidoscope') p4 = [num(params.segments, 6), ((num(params.rotation, 0) + 180) * Math.PI) / 180, 0, envelope];
     else if (type === 'mirror') p4 = [params.axis === 'y' ? 1 : 0, num(params.offset, 0), 0, envelope];
     else if (type === 'pixelSort') p4 = [num(params.threshold, 0.55), num(params.length, 24), ((num(params.direction, 90) + 180) * Math.PI) / 180, envelope];
     else if (type === 'lensDistortion') p4 = [num(params.k1, 0.15), num(params.k2, 0), num(params.chroma, 0.2), envelope];
     else if (type === 'colorGrade') {
       p4 = [num(params.lift, 0), num(params.saturation, 1), num(params.posterize, 0) > 0 ? Math.max(2, num(params.posterize, 0)) : 0, envelope];
-      colorA = toRgb(params.duotone, null) || colorA;
+      colorA = toRgb(params.duotone, null, context) || colorA;
     } else if (type === 'displacementMap') p4 = [0, num(params.scroll, 0.2), 0, envelope * num(params.amount, 0.3)];
     else if (type === 'bloom') p4 = [num(params.threshold, 0.6), num(params.intensity, 0.7), num(params.radius, 0.5), envelope];
     else if (type === 'chromaticAberration') {
@@ -138,16 +135,16 @@
     else if (type === 'heatHaze') p4 = [num(params.amount, 0.3), num(params.speed, 0.5), 0, envelope * num(params.amount, 0.3)];
     else if (type === 'lightLeak') {
       const fallbackColor = [1, 0.6, 0.3, 1];
-      colorA = toRgb(params.color, fallbackColor);
+      colorA = toRgb(params.color, fallbackColor, context);
       p4 = [num(params.x, 0.85), num(params.y, 0.2), 0, envelope * num(params.intensity, 0.6)];
     } else if (type === 'vignette') p4 = [num(params.amount, 0.5), 1 - num(params.softness, 0.5), 0, envelope];
     else if (type === 'sparkles') {
       p4 = [num(params.count, 24), num(params.size, 2), 0, envelope];
-      colorA = toRgb(params.color, [1, 1, 0.9, 1]);
+      colorA = toRgb(params.color, [1, 1, 0.9, 1], context);
     } else if (type === 'lensFlare') {
       const position = params.position || { x: 0.4, y: 0.35 };
       p4 = [num(position.x, 0.4), num(position.y, 0.35), 0, envelope];
-      colorA = toRgb(params.color, [1, 0.95, 0.85, 1]);
+      colorA = toRgb(params.color, [1, 0.95, 0.85, 1], context);
     }
     return {
       u_type: code,

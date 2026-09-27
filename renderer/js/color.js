@@ -268,7 +268,7 @@
   }
 
   function localColors(context) {
-    const local = context && context.localPalette;
+    const local = context && (context.localPalette || context.palette);
     if (local && Array.isArray(local.colors) && local.colors.length) return local.colors;
     return null;
   }
@@ -316,6 +316,20 @@
     return { kind: 'solid', rgba: withAlpha(parse(value.value), value.alpha) };
   }
 
+  // Accepts an rgba array, a hex string or a ColorValue (solid / palette /
+  // category) and returns an [r, g, b, a] array. Used by the effect uniforms so
+  // color parameters can reference the scoped palette.
+  function toRgba(value, fallback, ctx) {
+    if (Array.isArray(value) && value.length >= 3) return [value[0], value[1], value[2], value[3] == null ? 1 : value[3]];
+    if (value == null || value === '') return fallback;
+    if (typeof value === 'object' && value.kind) {
+      const rgba = resolve(value, ctx).rgba;
+      return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+    }
+    const rgba = parse(String(value));
+    return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+  }
+
   return {
     parse,
     toHex,
@@ -329,5 +343,6 @@
     sampleGradient,
     lerpColorValue,
     resolve,
+    toRgba,
   };
 });

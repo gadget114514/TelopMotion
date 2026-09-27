@@ -73,11 +73,8 @@
     cost: 2,
   });
 
-  function toRgb(value, fallback) {
-    if (Array.isArray(value) && value.length >= 3) return [value[0], value[1], value[2], value[3] == null ? 1 : value[3]];
-    if (value == null || value === '') return fallback;
-    const rgba = color.parse(String(value));
-    return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+  function toRgb(value, fallback, ctx) {
+    return color.toRgba(value, fallback, ctx);
   }
 
   function num(value, fallback) {
@@ -99,7 +96,7 @@
     }
     let p4 = [num(params.scale, 3), 0, 0, 0];
     if (type === 1) {
-      colorA = toRgb(params.color, colorA);
+      colorA = toRgb(params.color, colorA, context);
     } else if (type === 2) {
       const stops = Array.isArray(params.colors)
         ? params.colors
@@ -107,8 +104,8 @@
           ? params.colors.stops
           : null;
       if (stops && stops.length >= 2) {
-        colorA = toRgb(stops[0].color || stops[0]);
-        colorB = toRgb(stops[1].color || stops[1]);
+        colorA = toRgb(stops[0].color || stops[0], null, context);
+        colorB = toRgb(stops[1].color || stops[1], null, context);
       }
       p4 = [num(params.scale, 3), num(params.speed, 0.3), 0, 0];
     } else if (type === 3 || type === 4 || type === 5) {
