@@ -1,0 +1,20 @@
+1
+00:00:01,000 --> 00:00:03,500
+Hello world
+
+2
+00:00:04.250 --> 00:00:06.75
+Second line
+wrapped in two lines
+
+not-a-number
+00:00:07,000 --> 00:00:08,000 X1:100 X2:900
+Position suffix ignored
+
+4
+00:00:09,000 --> 00:00:08,500
+Broken timing
+
+5
+00:00:11,000 --> 00:00:12,000
+Last cue

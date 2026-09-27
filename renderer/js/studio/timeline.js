@@ -1,0 +1,1520 @@
+window.SA = window.SA || {};
+
+SA.timeline = (() => {
+  'use strict';
+
+  const LS_ZOOM = 'sa.studio.timeline.zoom';
+  const ROW_H = 26;
+  const RULER_H = 24;
+  const AUDIO_H = 30;
+  const LANE_H = 22;
+  const LAYER_H = 22;
+  const GUTTER = 150;
+  const KEY_SIZE = 5;
+  const MIN_ZOOM = 10;
+  const MAX_ZOOM = 800;
+  const SNAP_PX = 7;
+  const TICK_STEPS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
+
+  const el = {};
+  let ctx = null;
+  let dpr = 1;
+  let pxPerSecond = 120;
+  let scrollX = 0;
+  let hitRegions = [];
+  let keyRegions = [];
+  let rows = [];
+  let cueRects = new Map();
+  let drag = null;
+  let menu = null;
+  let editing = null;
+  let expanded = new Set();
+  let selectedKeys = new Set();
+  let clipboard = [];
+  let markerId = 0;
+  let lastVersion = {};
+  let lastPlayhead = -1;
+
+  function t(key, vars) {
+    return SA.i18n.t(key, vars);
+  }
+
+  function project() {
+    return SA.store.state.project;
+  }
+
+  function duration() {
+    return SA.preview ? SA.preview.duration() : 0;
+  }
+
+  function fps() {
+    const doc = project();
+    return (doc && doc.output && doc.output.fps) || 30;
+  }
+
+  function cueList() {
+    const doc = project();
+    return doc && doc.script ? doc.script.cues || [] : [];
+  }
+
+  function layerList(slot) {
+    const doc = project();
+    const list = (doc && doc.layers) || [];
+    return list.filter((layer) => (layer && (layer.slot === 'foreground') === (slot === 'foreground')));
+  }
+
+  function fillerClips() {
+    const doc = project();
+    if (!doc || !SA.fillers) return [];
+    const cues = (doc.script && doc.script.cues) || [];
+    if (!cues.length) return [];
+    return SA.fillers.clips(cues, duration(), SA.fillers.settingsFor(doc));
+  }
+
+  function creditClips() {
+    const doc = project();
+    if (!doc || !SA.credits) return [];
+    const list = SA.credits.elements(doc).map((element) => ({ mode: element.mode, start: element.start, end: element.end }));
+    const settings = SA.credits.settingsFor(doc);
+    const always = settings.modes.always;
+    if (always && always.enabled) list.push({ mode: 'always', start: always.from || 0, end: always.to == null ? duration() : always.to });
+    return list;
+  }
+
+  function fillerTypeLabel(type) {
+    const key = `filler.type.${type}`;
+    const translated = t(key);
+    if (translated !== key) return translated;
+    return SA.controls ? SA.controls.prettify(type) : String(type || '');
+  }
+
+  const CREDIT_LABELS = { element: 'credits.modeElement', end: 'credits.modeEnd', always: 'credits.modeAlways' };
+
+  function creditModeLabel(mode) {
+    return t(CREDIT_LABELS[mode] || 'credits.title');
+  }
+
+  function beatsFor(projectDoc, cue) {
+    const list = projectDoc.beats && projectDoc.beats[cue.id];
+    if (list && list.length) return list;
+    const beat = SA.lyricsEngine.beatForCue(cue);
+    return beat ? [beat] : [];
+  }
+
+  function originFor(path, cueId) {
+    const doc = project();
+    if (!doc) return 0;
+    const beatId = (String(path).split('/beat:')[1] || '').split('/')[0];
+    if (beatId && doc.beats[cueId]) {
+      const beat = doc.beats[cueId].find((entry) => entry.id === beatId);
+      if (beat) return beat.start;
+    }
+    const cue = cueList().find((entry) => entry.id === cueId);
+    return cue ? cue.start : 0;
+  }
+
+  function timeAt(x) {
+    return Math.max(0, (x + scrollX) / pxPerSecond);
+  }
+
+  function xOf(time) {
+    return time * pxPerSecond - scrollX;
+  }
+
+  function formatClock(seconds) {
+    return SA.preview ? SA.preview.formatClock(seconds) : `${Math.floor(seconds)}s`;
+  }
+
+  function snapFrame(time) {
+    const step = 1 / fps();
+    return Math.round(time / step) * step;
+  }
+
+  function snapTime(time, exclude) {
+    const doc = project();
+    if (!doc || SA.store.state.view.snapping === false) return snapFrame(time);
+    const threshold = SNAP_PX / pxPerSecond;
+    const candidates = [0, SA.store.state.playhead];
+    for (const cue of doc.script.cues) {
+      if (exclude && exclude.cueId === cue.id) continue;
+      candidates.push(cue.start, cue.end);
+    }
+    for (const marker of doc.markers || []) candidates.push(marker.t);
+    let best = time;
+    let bestDistance = threshold;
+    for (const candidate of candidates) {
+      const distance = Math.abs(candidate - time);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = candidate;
+      }
+    }
+    if (best !== time) return best;
+    const whole = Math.round(time);
+    if (Math.abs(whole - time) < threshold) return whole;
+    return snapFrame(time);
+  }
+
+  function versionChanged() {
+    const version = SA.store.state.version || {};
+    let changed = false;
+    for (const key of Object.keys(version)) {
+      if (version[key] !== lastVersion[key]) {
+        changed = true;
+        break;
+      }
+    }
+    lastVersion = { ...version };
+    const playhead = SA.store.state.playhead;
+    if (playhead !== lastPlayhead) {
+      lastPlayhead = playhead;
+      changed = true;
+    }
+    return changed;
+  }
+
+  // --- layout ------------------------------------------------------------------
+
+  function layoutRows() {
+    const doc = project();
+    rows = [];
+    let y = RULER_H;
+    rows.push({ type: 'ruler', y, h: RULER_H });
+    if (SA.preview && SA.preview.getPeaks && SA.preview.getPeaks()) {
+      rows.push({ type: 'audio', y, h: AUDIO_H });
+      y += AUDIO_H;
+    }
+    for (const layer of layerList('foreground')) {
+      rows.push({ type: 'layer', y, h: LAYER_H, layerId: layer.id, slot: 'foreground' });
+      y += LAYER_H;
+    }
+    for (const cue of cueList()) {
+      const cueRow = { type: 'cue', y, h: ROW_H, cueId: cue.id };
+      rows.push(cueRow);
+      cueRects.set(cue.id, cueRow);
+      y += ROW_H;
+      if (!expanded.has(cue.id)) continue;
+      const tracks = doc.keyframes || {};
+      const entries = [];
+      for (const [path, props] of Object.entries(tracks)) {
+        if (!path.startsWith(`cue:${cue.id}/`) && path !== `cue:${cue.id}`) continue;
+        for (const propPath of Object.keys(props)) {
+          if (!props[propPath] || !props[propPath].length) continue;
+          entries.push({ path, propPath });
+        }
+      }
+      entries.sort((a, b) => (a.path + a.propPath).localeCompare(b.path + b.propPath));
+      for (const entry of entries) {
+        rows.push({ type: 'lane', y, h: LANE_H, cueId: cue.id, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, cue.id) });
+        y += LANE_H;
+      }
+      if (!entries.length) {
+        rows.push({ type: 'lane-empty', y, h: LANE_H, cueId: cue.id });
+        y += LANE_H;
+      }
+    }
+    rows.push({ type: 'fillers', y, h: LAYER_H });
+    y += LAYER_H;
+    rows.push({ type: 'credits', y, h: LAYER_H });
+    y += LAYER_H;
+    for (const layer of layerList('background')) {
+      rows.push({ type: 'layer', y, h: LAYER_H, layerId: layer.id, slot: 'background' });
+      y += LAYER_H;
+    }
+    return y + 6;
+  }
+
+  function resize() {
+    if (!el.canvas) return { width: 600, height: 200 };
+    const width = Math.max(240, el.body.clientWidth || el.canvas.parentElement.clientWidth || 600);
+    const height = Math.max(RULER_H + ROW_H, layoutRows());
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    el.canvas.width = Math.round(width * dpr);
+    el.canvas.height = Math.round(height * dpr);
+    el.canvas.style.width = `${width}px`;
+    el.canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { width, height };
+  }
+
+  // --- drawing -----------------------------------------------------------------
+
+  function tickStep() {
+    for (const step of TICK_STEPS) {
+      if (step * pxPerSecond >= 64) return step;
+    }
+    return TICK_STEPS[TICK_STEPS.length - 1];
+  }
+
+  function drawRuler(size) {
+    const total = Math.max(duration(), 1);
+    ctx.fillStyle = '#0d1017';
+    ctx.fillRect(0, 0, size.width, RULER_H);
+    ctx.strokeStyle = '#252c3d';
+    ctx.beginPath();
+    ctx.moveTo(0, RULER_H - 0.5);
+    ctx.lineTo(size.width, RULER_H - 0.5);
+    ctx.stroke();
+    const step = tickStep();
+    const start = Math.floor(scrollX / pxPerSecond / step) * step;
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'top';
+    for (let time = start; time <= total + step; time += step) {
+      const x = Math.round(xOf(time));
+      if (x < -40 || x > size.width + 40) continue;
+      ctx.strokeStyle = '#39435c';
+      ctx.beginPath();
+      ctx.moveTo(x + 0.5, RULER_H - 9);
+      ctx.lineTo(x + 0.5, RULER_H);
+      ctx.stroke();
+      if (step * pxPerSecond >= 40) {
+        ctx.fillStyle = '#8d96ab';
+        ctx.fillText(formatClock(time), x + 3, 4);
+      }
+    }
+  }
+
+  function drawAudio(size, peaks) {
+    const row = rows.find((entry) => entry.type === 'audio');
+    if (!row) return;
+    ctx.fillStyle = '#0d1017';
+    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.strokeStyle = '#252c3d';
+    ctx.beginPath();
+    ctx.moveTo(0, row.y + row.h - 0.5);
+    ctx.lineTo(size.width, row.y + row.h - 0.5);
+    ctx.stroke();
+    if (!peaks) return;
+    const samplesPerSecond = peaks.sampleRate / peaks.block;
+    const total = peaks.peaks.length / samplesPerSecond;
+    if (!total) return;
+    const middle = row.y + row.h / 2;
+    const adjacent = Math.max(1, Math.round(samplesPerSecond / pxPerSecond));
+    ctx.strokeStyle = '#3f6f8f';
+    ctx.beginPath();
+    for (let x = 0; x < size.width; x += 1) {
+      const time = timeAt(x);
+      if (time < 0 || time > total) continue;
+      const index = Math.floor(time * samplesPerSecond);
+      let max = 0;
+      for (let i = index; i < Math.min(peaks.peaks.length, index + adjacent); i += 1) {
+        if (peaks.peaks[i] > max) max = peaks.peaks[i];
+      }
+      const half = (row.h / 2 - 3) * Math.min(1, max * 1.4);
+      ctx.moveTo(x + 0.5, middle - half);
+      ctx.lineTo(x + 0.5, middle + half);
+    }
+    ctx.stroke();
+    hitRegions.push({ type: 'audio', x: 0, y: row.y, w: size.width, h: row.h });
+  }
+
+  function rounded(px, py, pw, ph, radius) {
+    ctx.beginPath();
+    ctx.moveTo(px + radius, py);
+    ctx.lineTo(px + pw - radius, py);
+    ctx.quadraticCurveTo(px + pw, py, px + pw, py + radius);
+    ctx.lineTo(px + pw, py + ph - radius);
+    ctx.quadraticCurveTo(px + pw, py + ph, px + pw - radius, py + ph);
+    ctx.lineTo(px + radius, py + ph);
+    ctx.quadraticCurveTo(px, py + ph, px, py + ph - radius);
+    ctx.lineTo(px, py + radius);
+    ctx.quadraticCurveTo(px, py, px + radius, py);
+    ctx.closePath();
+  }
+
+  function categoryColor(cue) {
+    const category = cue.meta && cue.meta.category;
+    const table = SA.project.DEFAULT_CATEGORY_COLORS;
+    const entry = category && table[category];
+    return entry ? entry.tint : '#ff8a3d';
+  }
+
+  function drawCue(size, projectDoc, cue, row) {
+    const y = row.y;
+    const height = ROW_H - 4;
+    const x = xOf(cue.start);
+    const width = Math.max(2, (cue.end - cue.start) * pxPerSecond);
+    const selected = (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`));
+    const warnings = (projectDoc.beatWarnings && projectDoc.beatWarnings[cue.id]) || [];
+    const tint = categoryColor(cue);
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, RULER_H, size.width, size.height - RULER_H);
+    ctx.clip();
+    if (x + width >= 0 && x <= size.width) {
+      ctx.fillStyle = 'rgba(21, 25, 36, 0.92)';
+      rounded(x, y + 2, width, height, 6);
+      ctx.fill();
+      ctx.strokeStyle = warnings.length ? '#ff5c5c' : selected ? '#ff8a3d' : tint;
+      ctx.lineWidth = selected || warnings.length ? 1.6 : 1;
+      ctx.stroke();
+
+      const beats = beatsFor(projectDoc, cue);
+      const inner = x + 3;
+      const innerWidth = Math.max(0, width - 6);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + 2, y, width - 4, height + 4);
+      ctx.clip();
+      ctx.fillStyle = 'rgba(233, 236, 244, 0.45)';
+      ctx.font = '11px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+      ctx.textBaseline = 'top';
+      ctx.fillText((cue.text || '').split('\n')[0], x + 6, y + 4);
+      ctx.restore();
+      if (beats.length) {
+        const total = Math.max(0.001, cue.end - cue.start);
+        for (const beat of beats) {
+          const bx = inner + ((beat.start - cue.start) / total) * innerWidth;
+          const bw = Math.max(1.5, ((beat.end - beat.start) / total) * innerWidth);
+          if (bx + bw < 0 || bx > size.width) continue;
+          const selectedBeat = (SA.store.state.selection.paths || []).includes(`cue:${cue.id}/beat:${beat.id}`);
+          ctx.fillStyle = beat.pinned
+            ? 'rgba(255, 138, 61, 0.34)'
+            : beat.kind === 'recap'
+              ? 'rgba(176, 107, 255, 0.28)'
+              : beat.kind === 'repeat'
+                ? 'rgba(77, 200, 255, 0.24)'
+                : beat.kind === 'emphasis'
+                  ? 'rgba(255, 92, 138, 0.24)'
+                  : 'rgba(255, 255, 255, 0.10)';
+          rounded(bx, y + 2, bw, height - 8, 3);
+          ctx.fill();
+          ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.16)';
+          ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
+          ctx.stroke();
+          if (beat.pinned) {
+            ctx.fillStyle = '#ff8a3d';
+            ctx.beginPath();
+            ctx.arc(bx + 3, y + 5.5, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          if (bw > 26) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(bx + 3, y + 2, bw - 6, height - 8);
+            ctx.clip();
+            ctx.fillStyle = '#d6dbe9';
+            ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+            ctx.textBaseline = 'middle';
+            const label = beat.text ? beat.text.replace(/\s+/g, ' ').slice(0, Math.floor(bw / 6)) : t(`studio.beat.${beat.kind}`);
+            ctx.fillText(label, bx + 4, y + height / 2 - 0.5);
+            ctx.restore();
+          }
+          hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw });
+        }
+      }
+      if (warnings.length) {
+        ctx.fillStyle = '#ff5c5c';
+        ctx.beginPath();
+        ctx.moveTo(x + width - 11, y + 4);
+        ctx.lineTo(x + width - 4, y + 4);
+        ctx.lineTo(x + width - 7.5, y + 10);
+        ctx.closePath();
+        ctx.fill();
+      }
+      hitRegions.push({ type: 'cue', x, y, w: width, h: height, cueId: cue.id, edgeLeft: x, edgeRight: x + width });
+    }
+    ctx.restore();
+
+    // twisty (in the gutter)
+    const twistyX = 8;
+    const twistyY = y + ROW_H / 2 - 2;
+    ctx.save();
+    ctx.fillStyle = expanded.has(cue.id) ? '#ff8a3d' : '#8d96ab';
+    ctx.beginPath();
+    if (expanded.has(cue.id)) {
+      ctx.moveTo(twistyX, twistyY);
+      ctx.lineTo(twistyX + 7, twistyY);
+      ctx.lineTo(twistyX + 3.5, twistyY + 6);
+    } else {
+      ctx.moveTo(twistyX, twistyY);
+      ctx.lineTo(twistyX + 6, twistyY + 3.5);
+      ctx.lineTo(twistyX, twistyY + 7);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    hitRegions.push({ type: 'twisty', x: 2, y, w: 16, h: ROW_H, cueId: cue.id });
+    ctx.save();
+    ctx.fillStyle = '#8d96ab';
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    const label = `${formatClock(cue.start)} ${(cue.text || '').split('\n')[0].slice(0, 14)}`;
+    ctx.fillText(label, 22, y + ROW_H / 2);
+    ctx.restore();
+  }
+
+  function layerTypeLabel(layer) {
+    if (layer.type === 'solid') return t('layers.typeSolid');
+    if (layer.type === 'video') return t('layers.typeVideo');
+    return t('layers.typeImage');
+  }
+
+  function drawLayer(size, row) {
+    const doc = project();
+    const layer = ((doc && doc.layers) || []).find((entry) => entry.id === row.layerId);
+    if (!layer) return;
+    const y = row.y;
+    const height = LAYER_H - 3;
+    const total = Math.max(1, duration());
+    const start = Math.max(0, layer.start == null ? 0 : layer.start);
+    const end = layer.end == null ? Math.max(total, start + 1) : Math.max(start + 0.1, layer.end);
+    const x = xOf(start);
+    const width = Math.max(3, (end - start) * pxPerSecond);
+    const selected = (SA.store.state.selection.paths || []).some((path) => path === `layer:${layer.id}`);
+    const foreground = layer.slot === 'foreground';
+    const enabled = layer.enabled !== false;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, RULER_H, size.width, size.height - RULER_H);
+    ctx.clip();
+    if (x + width >= 0 && x <= size.width) {
+      ctx.fillStyle = enabled ? (foreground ? 'rgba(30, 64, 52, 0.92)' : 'rgba(28, 46, 74, 0.92)') : 'rgba(30, 34, 44, 0.7)';
+      rounded(x, y + 1.5, width, height, 4);
+      ctx.fill();
+      ctx.strokeStyle = selected ? '#ff8a3d' : enabled ? (foreground ? '#4dc8a0' : '#4d8fc8') : '#4a5266';
+      ctx.lineWidth = selected ? 1.6 : 1;
+      if (!enabled) ctx.setLineDash([3, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + 2, y, width - 4, height + 3);
+      ctx.clip();
+      ctx.fillStyle = enabled ? '#d6dbe9' : '#8d96ab';
+      ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+      ctx.textBaseline = 'middle';
+      const label = `${foreground ? 'FG' : 'BG'} · ${layerTypeLabel(layer)}${layer.src || layer.type !== 'solid' ? '' : ` ${layer.color || ''}`}`;
+      ctx.fillText(label, x + 5, y + height / 2 + 0.5);
+      ctx.restore();
+      hitRegions.push({ type: 'layer', x, y: row.y, w: width, h: LAYER_H, layerId: layer.id, edgeLeft: x, edgeRight: x + width });
+    }
+    ctx.restore();
+    // eye toggle in the gutter
+    const eyeX = 9;
+    const eyeY = y + LAYER_H / 2;
+    ctx.save();
+    ctx.strokeStyle = enabled ? '#4dc8a0' : '#6b7386';
+    ctx.fillStyle = enabled ? '#4dc8a0' : 'transparent';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.arc(eyeX, eyeY, 4, 0, Math.PI * 2);
+    ctx.stroke();
+    if (enabled) {
+      ctx.beginPath();
+      ctx.arc(eyeX, eyeY, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    hitRegions.push({ type: 'layer-eye', x: 2, y, w: 16, h: LAYER_H, layerId: layer.id });
+    ctx.save();
+    ctx.fillStyle = enabled ? '#8d96ab' : '#5a6175';
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    const gutter = `${formatClock(start)} ${foreground ? 'FG' : 'BG'}`;
+    ctx.fillText(gutter, 22, y + LAYER_H / 2);
+    ctx.restore();
+  }
+
+  function drawFillers(size, row) {
+    const clips = fillerClips();
+    ctx.fillStyle = '#0d1017';
+    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.strokeStyle = '#1c2230';
+    ctx.beginPath();
+    ctx.moveTo(0, row.y + row.h - 0.5);
+    ctx.lineTo(size.width, row.y + row.h - 0.5);
+    ctx.stroke();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, row.y, size.width, row.h);
+    ctx.clip();
+    for (const clip of clips) {
+      const x = xOf(clip.from);
+      const w = Math.max(3, (clip.to - clip.from) * pxPerSecond);
+      if (x + w < 0 || x > size.width) continue;
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `filler:${clip.key}`);
+      ctx.fillStyle = clip.pinned ? 'rgba(58, 44, 30, 0.92)' : 'rgba(28, 46, 74, 0.85)';
+      rounded(x, row.y + 2, w, row.h - 5, 4);
+      ctx.fill();
+      ctx.strokeStyle = selected ? '#ff8a3d' : clip.pinned ? '#ffc247' : '#4d8fc8';
+      ctx.lineWidth = selected ? 1.6 : 1;
+      ctx.stroke();
+      if (clip.pinned) {
+        ctx.fillStyle = '#ffc247';
+        ctx.beginPath();
+        ctx.arc(x + 4, row.y + 6, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      if (w > 34) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 3, row.y, w - 6, row.h);
+        ctx.clip();
+        ctx.fillStyle = '#d6dbe9';
+        ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(fillerTypeLabel(clip.spec && clip.spec.type), x + 6, row.y + row.h / 2 + 0.5);
+        ctx.restore();
+      }
+      hitRegions.push({ type: 'filler', x, y: row.y, w, h: row.h, key: clip.key });
+    }
+    ctx.restore();
+    ctx.fillStyle = '#8d96ab';
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${t('filler.track')}${clips.length ? ` (${clips.length})` : ''}`, 22, row.y + row.h / 2);
+  }
+
+  function drawCredits(size, row) {
+    const clips = creditClips();
+    ctx.fillStyle = '#0d1017';
+    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.strokeStyle = '#1c2230';
+    ctx.beginPath();
+    ctx.moveTo(0, row.y + row.h - 0.5);
+    ctx.lineTo(size.width, row.y + row.h - 0.5);
+    ctx.stroke();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, row.y, size.width, row.h);
+    ctx.clip();
+    for (const clip of clips) {
+      const x = xOf(clip.start);
+      const w = Math.max(3, (clip.end - clip.start) * pxPerSecond);
+      if (x + w < 0 || x > size.width) continue;
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `credit:${clip.mode}`);
+      ctx.fillStyle = clip.mode === 'end' ? 'rgba(58, 44, 30, 0.92)' : clip.mode === 'always' ? 'rgba(30, 52, 44, 0.9)' : 'rgba(44, 32, 64, 0.92)';
+      rounded(x, row.y + 2, w, row.h - 5, 4);
+      ctx.fill();
+      ctx.strokeStyle = selected ? '#ff8a3d' : clip.mode === 'end' ? '#ffc247' : clip.mode === 'always' ? '#4dc8a0' : '#b06bff';
+      ctx.lineWidth = selected ? 1.6 : 1;
+      ctx.stroke();
+      if (w > 34) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 3, row.y, w - 6, row.h);
+        ctx.clip();
+        ctx.fillStyle = '#d6dbe9';
+        ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(creditModeLabel(clip.mode), x + 6, row.y + row.h / 2 + 0.5);
+        ctx.restore();
+      }
+      hitRegions.push({ type: 'credit', x, y: row.y, w, h: row.h, mode: clip.mode });
+    }
+    ctx.restore();
+    ctx.fillStyle = '#8d96ab';
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${t('credits.track')}${clips.length ? ` (${clips.length})` : ''}`, 22, row.y + row.h / 2);
+  }
+
+  function laneLabel(path) {
+    const parts = String(path).split('/');
+    const tail = parts.slice(1).map((part) => part.replace(':', ' ')).join(' · ');
+    return tail || path;
+  }
+
+  function drawLane(size, row) {
+    const doc = project();
+    if (row.type === 'lane-empty') {
+      ctx.fillStyle = '#0d1017';
+      ctx.fillRect(0, row.y, size.width, row.h);
+      ctx.fillStyle = '#5d6785';
+      ctx.font = '10px "Segoe UI", Arial, sans-serif';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(t('studio.timeline.noKeys'), 22, row.y + row.h / 2);
+      return;
+    }
+    const cue = cueList().find((entry) => entry.id === row.cueId);
+    if (!cue) return;
+    const track = ((doc.keyframes[row.path] || {})[row.propPath] || []).slice();
+    ctx.fillStyle = row.y % 2 === 0 ? '#0f121a' : '#0d1017';
+    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.strokeStyle = '#1c2230';
+    ctx.beginPath();
+    ctx.moveTo(0, row.y + row.h - 0.5);
+    ctx.lineTo(size.width, row.y + row.h - 0.5);
+    ctx.stroke();
+    const start = xOf(cue.start);
+    const end = xOf(cue.end);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
+    ctx.strokeRect(start, row.y + 2, Math.max(2, end - start), row.h - 4);
+    ctx.save();
+    ctx.fillStyle = '#6f7a94';
+    ctx.font = '10px "Segoe UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, 22, row.y + row.h / 2);
+    ctx.restore();
+    const segments = [];
+    const middle = row.y + row.h / 2;
+    for (let i = 0; i < track.length; i += 1) {
+      const key = track[i];
+      const x = xOf(row.origin + key.t);
+      if (i > 0) {
+        const previous = track[i - 1];
+        const px = xOf(row.origin + previous.t);
+        segments.push({ x0: px, x1: x });
+      }
+      const selected = selectedKeys.has(`${row.path}|${row.propPath}|${i}`);
+      ctx.save();
+      ctx.translate(x, middle);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillStyle = selected ? '#ff8a3d' : '@' === key.ease || key.ease === 'hold' ? '#4dc8ff' : '#d6dbe9';
+      ctx.strokeStyle = '#0b0d12';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.rect(-KEY_SIZE, -KEY_SIZE, KEY_SIZE * 2, KEY_SIZE * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+      keyRegions.push({ x, y: middle, path: row.path, propPath: row.propPath, index: i, cueId: row.cueId, origin: row.origin, key });
+    }
+    ctx.save();
+    ctx.strokeStyle = 'rgba(214, 219, 233, 0.25)';
+    ctx.lineWidth = 1;
+    for (const segment of segments) {
+      ctx.beginPath();
+      ctx.moveTo(segment.x0, middle);
+      ctx.lineTo(segment.x1, middle);
+      ctx.stroke();
+    }
+    ctx.restore();
+    hitRegions.push({ type: 'lane', x: 0, y: row.y, w: size.width, h: row.h, cueId: row.cueId, path: row.path, propPath: row.propPath, origin: row.origin });
+  }
+
+  function drawMarkers(size) {
+    const doc = project();
+    const maxDuration = doc.output && doc.output.maxDuration;
+    if (maxDuration && maxDuration > 0) {
+      const limitX = xOf(maxDuration);
+      if (limitX >= -1 && limitX <= size.width + 1) {
+        ctx.save();
+        ctx.strokeStyle = '#ff8a3d';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(limitX, RULER_H);
+        ctx.lineTo(limitX, size.height);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+    for (const marker of doc.markers || []) {
+      const x = xOf(marker.t);
+      if (x < -10 || x > size.width + 10) continue;
+      ctx.fillStyle = '#4dc8ff';
+      ctx.beginPath();
+      ctx.moveTo(x, RULER_H - 12);
+      ctx.lineTo(x + 4, RULER_H - 8);
+      ctx.lineTo(x, RULER_H - 4);
+      ctx.lineTo(x - 4, RULER_H - 8);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  function draw() {
+    if (!ctx) return;
+    if (!project()) {
+      const size = resize();
+      ctx.clearRect(0, 0, size.width, size.height);
+      ctx.fillStyle = '#8d96ab';
+      ctx.font = '12px "Segoe UI", Arial, sans-serif';
+      ctx.fillText(t('studio.timeline.empty'), 12, RULER_H + 16);
+      return;
+    }
+    const doc = project();
+    const size = resize();
+    hitRegions = [];
+    keyRegions = [];
+    ctx.clearRect(0, 0, size.width, size.height);
+    ctx.fillStyle = '#10131b';
+    ctx.fillRect(0, 0, size.width, size.height);
+    drawRuler(size);
+    drawAudio(size, SA.preview && SA.preview.getPeaks ? SA.preview.getPeaks() : null);
+    for (const row of rows) {
+      if (row.type === 'cue') drawCue(size, doc, cueList().find((entry) => entry.id === row.cueId), row);
+      else if (row.type === 'layer') drawLayer(size, row);
+      else if (row.type === 'fillers') drawFillers(size, row);
+      else if (row.type === 'credits') drawCredits(size, row);
+      else if (row.type === 'lane' || row.type === 'lane-empty') drawLane(size, row);
+    }
+    drawMarkers(size);
+    const playheadX = xOf(SA.store.state.playhead);
+    if (playheadX >= 0 && playheadX <= size.width) {
+      ctx.strokeStyle = '#ff4d4d';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(playheadX + 0.5, 2);
+      ctx.lineTo(playheadX + 0.5, size.height);
+      ctx.stroke();
+      ctx.fillStyle = '#ff4d4d';
+      ctx.beginPath();
+      ctx.moveTo(playheadX - 5, 2);
+      ctx.lineTo(playheadX + 5, 2);
+      ctx.lineTo(playheadX, 10);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  // --- interactions ------------------------------------------------------------
+
+  function localPoint(event) {
+    const rect = el.canvas.getBoundingClientRect();
+    return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+  }
+
+  function keyAt(point) {
+    for (let i = keyRegions.length - 1; i >= 0; i -= 1) {
+      const region = keyRegions[i];
+      if (Math.abs(point.x - region.x) <= KEY_SIZE + 2 && Math.abs(point.y - region.y) <= KEY_SIZE + 2) return region;
+    }
+    return null;
+  }
+
+  function hitTest(point) {
+    const ruler = rows.find((row) => row.type === 'ruler');
+    if (ruler && point.y < RULER_H) return { type: 'ruler' };
+    const key = keyAt(point);
+    if (key) return { type: 'key', ...key };
+    let found = null;
+    for (const region of hitRegions) {
+      if (point.y < region.y || point.y > region.y + region.h) continue;
+      if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
+      if (region.type === 'beat') {
+        if (Math.abs(point.x - region.edgeLeft) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'start' };
+        if (Math.abs(point.x - region.edgeRight) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'end' };
+      }
+      if (region.type === 'cue') {
+        if (Math.abs(point.x - region.edgeLeft) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'start' };
+        if (Math.abs(point.x - region.edgeRight) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'end' };
+      }
+      if (region.type === 'layer') {
+        if (Math.abs(point.x - region.edgeLeft) <= 4) return { type: 'layer-edge', layerId: region.layerId, edge: 'start' };
+        if (Math.abs(point.x - region.edgeRight) <= 4) return { type: 'layer-edge', layerId: region.layerId, edge: 'end' };
+      }
+      found = region;
+    }
+    return found || { type: 'empty' };
+  }
+
+  function onPointerDown(event) {
+    if (event.button !== 0) return;
+    hideMenu();
+    const point = localPoint(event);
+    const hit = hitTest(point);
+    if (event.shiftKey && (hit.type === 'lane' || hit.type === 'empty')) {
+      drag = { type: 'box', start: point, additive: true };
+      try {
+        el.canvas.setPointerCapture(event.pointerId);
+      } catch {
+        /* synthetic */
+      }
+      return;
+    }
+    if (!event.shiftKey) selectedKeys.clear();
+    try {
+      el.canvas.setPointerCapture(event.pointerId);
+    } catch {
+      /* synthetic */
+    }
+    if (hit.type === 'ruler') {
+      drag = { type: 'scrub' };
+      SA.preview.seek(snapFrame(timeAt(point.x)));
+    } else if (hit.type === 'audio') {
+      drag = { type: 'scrub' };
+      SA.preview.seek(snapFrame(timeAt(point.x)));
+    } else if (hit.type === 'twisty') {
+      if (expanded.has(hit.cueId)) expanded.delete(hit.cueId);
+      else expanded.add(hit.cueId);
+      drag = null;
+      draw();
+    } else if (hit.type === 'divider') {
+      drag = { type: 'divider', cueId: hit.cueId, beatId: hit.beatId, edge: hit.edge };
+    } else if (hit.type === 'cue-edge') {
+      const cue = cueList().find((entry) => entry.id === hit.cueId);
+      drag = { type: 'cue-edge', cueId: hit.cueId, edge: hit.edge, original: cue ? { ...cue } : null };
+    } else if (hit.type === 'cue') {
+      SA.store.setSelection([`cue:${hit.cueId}`], 'cue');
+      const cue = cueList().find((entry) => entry.id === hit.cueId);
+      if (cue) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
+    } else if (hit.type === 'layer-eye') {
+      const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
+      if (layer) SA.store.commands.setLayer(hit.layerId, { enabled: layer.enabled === false });
+      drag = null;
+      draw();
+    } else if (hit.type === 'layer-edge') {
+      const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
+      if (layer) drag = { type: 'layer-edge', layerId: hit.layerId, edge: hit.edge, original: { ...layer } };
+    } else if (hit.type === 'layer') {
+      SA.store.setSelection([`layer:${hit.layerId}`], 'layer');
+      const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
+      if (layer) drag = { type: 'layer-move', layerId: hit.layerId, start: timeAt(point.x), original: { start: layer.start, end: layer.end } };
+    } else if (hit.type === 'filler') {
+      SA.store.setSelection([`filler:${hit.key}`], 'filler');
+      drag = null;
+      draw();
+    } else if (hit.type === 'credit') {
+      SA.store.setSelection([`credit:${hit.mode}`], 'credit');
+      drag = null;
+      draw();
+    } else if (hit.type === 'beat') {
+      SA.store.setSelection([`cue:${hit.cueId}/beat:${hit.beatId}`], 'beat');
+    } else if (hit.type === 'key') {
+      selectedKeys.add(`${hit.path}|${hit.propPath}|${hit.index}`);
+      SA.store.setSelection([hit.path], hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
+      drag = { type: 'key', path: hit.path, propPath: hit.propPath, index: hit.index, origin: hit.origin, key: { ...hit.key } };
+      draw();
+    } else if (hit.type === 'lane') {
+      SA.store.setSelection([hit.path], hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
+    } else {
+      SA.store.setSelection([], null);
+    }
+  }
+
+  function onPointerMove(event) {
+    if (!drag) return;
+    const point = localPoint(event);
+    if (drag.type === 'scrub') {
+      SA.preview.seek(snapFrame(timeAt(point.x)));
+    } else if (drag.type === 'box') {
+      drag.current = point;
+      draw();
+      ctx.save();
+      ctx.strokeStyle = '#ff8a3d';
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(Math.min(drag.start.x, point.x), Math.min(drag.start.y, point.y), Math.abs(point.x - drag.start.x), Math.abs(point.y - drag.start.y));
+      ctx.restore();
+    } else if (drag.type === 'divider') {
+      SA.store.commands.moveBeatEdge(drag.cueId, drag.beatId, drag.edge, snapTime(timeAt(point.x)), { coalesceKey: `beat:${drag.beatId}:${drag.edge}` });
+    } else if (drag.type === 'cue-move' && drag.original) {
+      const delta = timeAt(point.x) - drag.start;
+      const next = Math.max(0, snapTime(drag.original.start + delta, { cueId: drag.cueId }));
+      SA.store.commands.moveCue(drag.cueId, next, { coalesceKey: `cue:${drag.cueId}:move` });
+    } else if (drag.type === 'cue-edge' && drag.original) {
+      const time = drag.edge === 'start' ? Math.max(0, snapTime(timeAt(point.x), { cueId: drag.cueId })) : snapTime(timeAt(point.x), { cueId: drag.cueId });
+      SA.store.commands.trimCue(drag.cueId, drag.edge, time, { coalesceKey: `cue:${drag.cueId}:trim:${drag.edge}` });
+    } else if (drag.type === 'layer-move' && drag.original) {
+      const origin = drag.original.start == null ? 0 : drag.original.start;
+      const span = drag.original.end == null ? null : drag.original.end - origin;
+      const delta = timeAt(point.x) - drag.start;
+      const start = Math.max(0, snapTime(origin + delta));
+      const end = span == null ? null : start + span;
+      SA.store.commands.setLayer(drag.layerId, { start, end }, { coalesceKey: `layer:${drag.layerId}:move` });
+    } else if (drag.type === 'layer-edge' && drag.original) {
+      const time = snapTime(timeAt(point.x));
+      if (drag.edge === 'start') SA.store.commands.setLayer(drag.layerId, { start: Math.max(0, time) }, { coalesceKey: `layer:${drag.layerId}:trim:start` });
+      else
+        SA.store.commands.setLayer(drag.layerId, { end: Math.max((drag.original.start || 0) + 0.1, time) }, {
+          coalesceKey: `layer:${drag.layerId}:trim:end`,
+        });
+    } else if (drag.type === 'key' && drag.key) {
+      const time = snapFrame(timeAt(point.x) - drag.origin);
+      if (Math.abs(time - drag.key.t) < 1e-4) return;
+      SA.store.commands.moveKeyframe(drag.path, drag.propPath, drag.index, time);
+      const track = ((project().keyframes[drag.path] || {})[drag.propPath] || []);
+      const index = track.findIndex((key) => Math.abs(key.t - time) < 1e-4);
+      if (index >= 0) drag.index = index;
+      drag.key.t = time;
+    }
+  }
+
+  function onPointerUp(event) {
+    if (!drag) return;
+    try {
+      if (el.canvas.hasPointerCapture(event.pointerId)) el.canvas.releasePointerCapture(event.pointerId);
+    } catch {
+      /* synthetic */
+    }
+    if (drag.type === 'box' && drag.current) {
+      const x0 = Math.min(drag.start.x, drag.current.x);
+      const x1 = Math.max(drag.start.x, drag.current.x);
+      const y0 = Math.min(drag.start.y, drag.current.y);
+      const y1 = Math.max(drag.start.y, drag.current.y);
+      for (const region of keyRegions) {
+        if (region.x >= x0 && region.x <= x1 && region.y >= y0 && region.y <= y1) {
+          selectedKeys.add(`${region.path}|${region.propPath}|${region.index}`);
+        }
+      }
+    }
+    drag = null;
+    draw();
+  }
+
+  function onDoubleClick(event) {
+    const point = localPoint(event);
+    const hit = hitTest(point);
+    if (hit.type === 'beat') {
+      const beat = ((project().beats[hit.cueId] || []).find((entry) => entry.id === hit.beatId)) || null;
+      if (beat) editBeat(hit.cueId, hit.beatId, hit);
+      return;
+    }
+    if (hit.type === 'cue') {
+      const cue = cueList().find((entry) => entry.id === hit.cueId);
+      if (cue) editCueText(hit.cueId, hit);
+    }
+  }
+
+  function editBeat(cueId, beatId, region) {
+    if (editing) editing.remove();
+    const beat = (project().beats[cueId] || []).find((entry) => entry.id === beatId);
+    if (!beat) return;
+    const input = document.createElement('textarea');
+    input.className = 'timeline-edit';
+    input.value = beat.text || '';
+    input.style.left = `${Math.max(4, region.x)}px`;
+    input.style.top = `${Math.max(0, region.y - 2)}px`;
+    input.style.width = `${Math.max(140, region.w)}px`;
+    el.body.appendChild(input);
+    editing = input;
+    input.focus();
+    input.select();
+    let done = false;
+    const commit = () => {
+      if (done) return;
+      done = true;
+      editing = null;
+      const value = input.value;
+      input.remove();
+      SA.store.commands.editBeatText(cueId, beatId, value, { coalesceKey: `beat:${beatId}:text` });
+    };
+    input.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        commit();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        done = true;
+        editing = null;
+        input.remove();
+      }
+    });
+    input.addEventListener('blur', commit);
+  }
+
+  function editCueText(cueId, region) {
+    if (editing) editing.remove();
+    const cue = cueList().find((entry) => entry.id === cueId);
+    if (!cue) return;
+    const input = document.createElement('textarea');
+    input.className = 'timeline-edit';
+    input.value = cue.text || '';
+    input.style.left = `${Math.max(4, region.x)}px`;
+    input.style.top = `${Math.max(0, region.y - 2)}px`;
+    input.style.width = `${Math.max(160, region.w)}px`;
+    el.body.appendChild(input);
+    editing = input;
+    input.focus();
+    input.select();
+    let done = false;
+    const commit = () => {
+      if (done) return;
+      done = true;
+      editing = null;
+      const value = input.value;
+      input.remove();
+      SA.store.commands.editCueText(cueId, value, { coalesceKey: `cue:${cueId}:text` });
+    };
+    input.addEventListener('keydown', (event) => {
+      event.stopPropagation();
+      if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();
+        commit();
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        done = true;
+        editing = null;
+        input.remove();
+      }
+    });
+    input.addEventListener('blur', commit);
+  }
+
+  // --- context menu ------------------------------------------------------------
+
+  function hideMenu() {
+    if (menu) menu.remove();
+    menu = null;
+  }
+
+  function showMenu(event) {
+    event.preventDefault();
+    hideMenu();
+    const point = localPoint(event);
+    const hit = hitTest(point);
+    if (hit.type === 'empty') return;
+    menu = document.createElement('div');
+    menu.className = 'timeline-menu';
+    menu.id = 'timeline-menu';
+    const add = (label, run) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = label;
+      button.addEventListener('click', () => {
+        hideMenu();
+        run();
+      });
+      menu.appendChild(button);
+    };
+    const addEaseMenu = (path, propPath, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = t('studio.timeline.ease');
+      button.addEventListener('mouseenter', () => {
+        hideMenu();
+        menu = document.createElement('div');
+        menu.className = 'timeline-menu';
+        for (const name of ['hold'].concat(SA.easing.names)) {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'menu-item';
+          item.textContent = name.startsWith('ease') ? name : SA.controls.prettify(name);
+          item.addEventListener('click', () => {
+            hideMenu();
+            SA.store.commands.setKeyframeEase(path, propPath, index, name);
+          });
+          menu.appendChild(item);
+        }
+        el.body.appendChild(menu);
+        const rect = el.body.getBoundingClientRect();
+        menu.style.left = `${Math.max(0, event.clientX - rect.left + 120)}px`;
+        menu.style.top = `${Math.max(0, event.clientY - rect.top)}px`;
+      });
+      menu.appendChild(button);
+    };
+    if (hit.type === 'key') {
+      selectedKeys.add(`${hit.path}|${hit.propPath}|${hit.index}`);
+      addEaseMenu(hit.path, hit.propPath, hit.index);
+      add(t('studio.timeline.copyKeys'), () => copyKeys());
+      add(t('studio.timeline.deleteKeys'), () => deleteSelectedKeys());
+      draw();
+      void point;
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
+    if (hit.type === 'layer' || hit.type === 'layer-edge' || hit.type === 'layer-eye') {
+      const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
+      if (!layer) return;
+      SA.store.setSelection([`layer:${layer.id}`], 'layer');
+      add(layer.enabled === false ? t('layers.show') : t('layers.hide'), () => SA.store.commands.setLayer(layer.id, { enabled: layer.enabled === false }));
+      add(t('layers.edit'), () => SA.layersDialog.open());
+      add(t('layers.remove'), () => SA.store.commands.removeLayer(layer.id));
+      draw();
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
+    const addTypeMenu = (clip) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = t('filler.changeType');
+      button.addEventListener('mouseenter', () => {
+        hideMenu();
+        menu = document.createElement('div');
+        menu.className = 'timeline-menu';
+        for (const type of SA.fillerRender.types()) {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'menu-item';
+          item.textContent = fillerTypeLabel(type);
+          item.addEventListener('click', () => {
+            hideMenu();
+            const params = { ...SA.fillerRender.paramDefaults(type), ...(clip.spec && clip.spec.type === type ? clip.spec.params || {} : {}) };
+            SA.store.commands.setFillerClip(clip.key, { ...(clip.spec || {}), type, params });
+          });
+          menu.appendChild(item);
+        }
+        el.body.appendChild(menu);
+        const rect = el.body.getBoundingClientRect();
+        menu.style.left = `${Math.max(0, event.clientX - rect.left + 120)}px`;
+        menu.style.top = `${Math.max(0, event.clientY - rect.top)}px`;
+      });
+      menu.appendChild(button);
+    };
+    if (hit.type === 'filler') {
+      const clip = fillerClips().find((entry) => entry.key === hit.key);
+      if (!clip) return;
+      SA.store.setSelection([`filler:${clip.key}`], 'filler');
+      if (clip.pinned) add(t('filler.unpin'), () => SA.store.commands.setFillerClip(clip.key, null));
+      else add(t('filler.pin'), () => SA.store.commands.setFillerClip(clip.key, clip.spec));
+      addTypeMenu(clip);
+      add(t('filler.applyKind', { kind: t(`filler.kind.${clip.kind}`) }), () => {
+        SA.store.commands.setFillers({ byKind: { [clip.kind]: clip.spec } });
+      });
+      draw();
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
+    if (hit.type === 'credit') {
+      SA.store.setSelection([`credit:${hit.mode}`], 'credit');
+      add(t('credits.edit'), () => SA.creditsDialog.open(hit.mode));
+      draw();
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
+    const cueId = hit.cueId;
+    if (!cueId) return;
+    if (hit.type === 'beat') {
+      const beat = (project().beats[cueId] || []).find((entry) => entry.id === hit.beatId);
+      add(beat && beat.pinned ? t('studio.beat.unpin') : t('studio.beat.pin'), () => SA.store.commands.setBeatPinned(cueId, hit.beatId, !(beat && beat.pinned)));
+      add(t('studio.beat.splitAtPlayhead'), () => SA.store.commands.splitBeat(cueId, hit.beatId, SA.store.state.playhead));
+      add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
+      add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
+    } else {
+      add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
+      add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
+      add(t('studio.beat.duplicateCue'), () => {
+        const cue = cueList().find((entry) => entry.id === cueId);
+        if (cue) copyCue(cue);
+      });
+      add(t('studio.beat.deleteCue'), () => SA.store.commands.deleteCue(cueId));
+      add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
+    }
+    el.body.appendChild(menu);
+    positionMenu(event);
+  }
+
+  function positionMenu(event) {
+    const bodyRect = el.body.getBoundingClientRect();
+    menu.style.left = `${Math.max(0, event.clientX - bodyRect.left)}px`;
+    menu.style.top = `${Math.max(0, event.clientY - bodyRect.top)}px`;
+  }
+
+  function copyCue(cue) {
+    const cues = cueList();
+    const maxEnd = cues.reduce((max, entry) => Math.max(max, entry.end), 0);
+    const shift = maxEnd + 0.3 - cue.start;
+    const clone = JSON.parse(JSON.stringify(cue));
+    clone.id = `${cue.id}_dup${Math.random().toString(16).slice(2, 6)}`;
+    clone.start += shift;
+    clone.end += shift;
+    SA.store.commands.addCue(clone);
+  }
+
+  // --- keyframe clipboard ------------------------------------------------------
+
+  function copyKeys() {
+    clipboard = [];
+    for (const id of selectedKeys) {
+      const [path, propPath, indexText] = id.split('|');
+      const track = (project().keyframes[path] || {})[propPath];
+      const key = track && track[Number(indexText)];
+      if (key) clipboard.push({ path, propPath, t: key.t, value: key.value, ease: key.ease, offset: 0 });
+    }
+    const first = clipboard.length ? Math.min(...clipboard.map((entry) => entry.t)) : 0;
+    clipboard.forEach((entry) => {
+      entry.offset = entry.t - first;
+    });
+    SA.studio.toast('studio.timeline.copied', { n: clipboard.length });
+  }
+
+  function pasteKeys() {
+    if (!clipboard.length) return;
+    const doc = project();
+    const playhead = SA.store.state.playhead;
+    for (const entry of clipboard) {
+      const origin = originFor(entry.path, entry.path.split('/')[0].replace('cue:', ''));
+      const local = Math.max(0, playhead - origin) + entry.offset;
+      SA.store.commands.setKeyframe(entry.path, entry.propPath, snapFrame(local), entry.value, entry.ease || 'linear');
+    }
+    void doc;
+    SA.studio.toast('studio.timeline.pasted', { n: clipboard.length });
+  }
+
+  function deleteSelectedKeys() {
+    const entries = [...selectedKeys]
+      .map((id) => {
+        const [path, propPath, indexText] = id.split('|');
+        return { path, propPath, index: Number(indexText) };
+      })
+      .sort((a, b) => (a.path === b.path && a.propPath === b.propPath ? b.index - a.index : 0));
+    for (const entry of entries) {
+      SA.store.commands.deleteKeyframe(entry.path, entry.propPath, entry.index);
+    }
+    selectedKeys.clear();
+    draw();
+  }
+
+  function addCue() {
+    const doc = project();
+    if (!doc) return;
+    const cues = cueList();
+    const playhead = Math.max(0, Number(SA.store.state.playhead) || 0);
+    const lastEnd = cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
+    let start = 0;
+    if (cues.length) start = playhead >= lastEnd ? playhead : lastEnd + 0.3;
+    const timing = (doc.script && doc.script.options && doc.script.options.timing) || {};
+    const length = timing.perCue == null ? 2.8 : timing.perCue;
+    const cue = {
+      id: `cue_${Math.random().toString(16).slice(2, 10)}`,
+      start,
+      end: start + Math.max(0.5, length),
+      text: t('studio.timeline.newCueText'),
+      spans: [],
+      fx: {},
+      meta: { kind: 'custom' },
+    };
+    SA.store.commands.addCue(cue);
+    SA.store.setSelection([`cue:${cue.id}`], 'cue');
+    if (SA.preview) SA.preview.seek(start);
+  }
+
+  function addMarker() {
+    const doc = project();
+    if (!doc) return;
+    const time = snapFrame(SA.store.state.playhead);
+    storeDispatch('marker', (projectDoc) => {
+      projectDoc.markers = projectDoc.markers || [];
+      projectDoc.markers.push({ t: time, label: `M${(projectDoc.markers.length || 0) + 1}` });
+      projectDoc.markers.sort((a, b) => a.t - b.t);
+    });
+  }
+
+  function storeDispatch(label, run) {
+    SA.store.dispatch({
+      label,
+      areas: ['project'],
+      do(projectDoc) {
+        run(projectDoc);
+      },
+    });
+  }
+
+  // --- zoom / fit --------------------------------------------------------------
+
+  function setZoom(value, anchorX) {
+    const next = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, value));
+    if (anchorX != null) {
+      const time = timeAt(anchorX);
+      pxPerSecond = next;
+      scrollX = Math.max(0, time * pxPerSecond - anchorX);
+    } else {
+      pxPerSecond = next;
+    }
+    try {
+      localStorage.setItem(LS_ZOOM, String(Math.round(pxPerSecond)));
+    } catch {
+      /* ignore */
+    }
+    if (el.zoom) el.zoom.value = String(Math.round(pxPerSecond));
+    if (el.zoomLabel) el.zoomLabel.textContent = `${Math.round(pxPerSecond)} px/s`;
+    draw();
+  }
+
+  function fit() {
+    const width = el.body ? el.body.clientWidth - GUTTER : 600;
+    const total = duration() || 1;
+    setZoom(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, width / total)));
+    scrollX = 0;
+    draw();
+  }
+
+  // --- property add ------------------------------------------------------------
+
+  function propertyOptions() {
+    const sel = SA.inspector ? SA.inspector.selectionInfo() : { kind: 'none' };
+    const options = ['transform.x', 'transform.y', 'transform.rotate', 'transform.scale', 'transform.opacity'];
+    if (sel.kind === 'none') return options;
+    const style = SA.project.resolveStyle(project(), sel.path);
+    for (const group of ['enter', 'exit', 'hold', 'fill', 'layout']) {
+      const instance = style[group];
+      if (!instance || !instance.type) continue;
+      const descriptor = SA.fx.get(group, instance.type);
+      for (const param of (descriptor && descriptor.params) || []) {
+        if (['number', 'int', 'vec2', 'color'].includes(param.kind)) options.push(`${group}.params.${param.key}`);
+      }
+    }
+    return options;
+  }
+
+  function refreshPropertySelect() {
+    if (!el.prop) return;
+    const options = propertyOptions();
+    el.prop.innerHTML = '';
+    for (const option of options) {
+      const node = document.createElement('option');
+      node.value = option;
+      node.textContent = SA.controls ? SA.controls.labelFor(option.split('.').pop()) : option;
+      el.prop.appendChild(node);
+    }
+  }
+
+  function addPropertyKey() {
+    const sel = SA.inspector ? SA.inspector.selectionInfo() : { kind: 'none' };
+    if (sel.kind === 'none' || !el.prop || !el.prop.value) {
+      SA.studio.toast('studio.timeline.selectFirst');
+      return;
+    }
+    const propPath = el.prop.value;
+    const value = SA.inspector.valueFor(propPath);
+    if (value === undefined || value === null || typeof value === 'object') {
+      SA.studio.toast('studio.timeline.notKeyframable');
+      return;
+    }
+    const local = SA.inspector.localTimeFor(sel.cueId, sel.beatId);
+    SA.store.commands.setKeyframe(sel.path, propPath, snapFrame(local), value, 'linear');
+    if (sel.cueId) expanded.add(sel.cueId);
+    draw();
+  }
+
+  // --- wiring ------------------------------------------------------------------
+
+  function onKeyDown(event) {
+    const target = event.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;
+    const mod = event.ctrlKey || event.metaKey;
+    if (mod && event.key.toLowerCase() === 'c' && selectedKeys.size) {
+      event.preventDefault();
+      copyKeys();
+    } else if (mod && event.key.toLowerCase() === 'v' && clipboard.length) {
+      event.preventDefault();
+      pasteKeys();
+    } else if ((event.key === 'Delete' || event.key === 'Backspace') && selectedKeys.size) {
+      event.preventDefault();
+      deleteSelectedKeys();
+    }
+  }
+
+  function bind() {
+    el.canvas.addEventListener('pointerdown', onPointerDown);
+    el.canvas.addEventListener('pointermove', onPointerMove);
+    el.canvas.addEventListener('pointerup', onPointerUp);
+    el.canvas.addEventListener('pointercancel', onPointerUp);
+    el.canvas.addEventListener('dblclick', onDoubleClick);
+    el.canvas.addEventListener('contextmenu', showMenu);
+    el.canvas.addEventListener('dragover', (event) => {
+      const types = event.dataTransfer ? event.dataTransfer.types || [] : [];
+      if (types.indexOf('text/x-sa-media') >= 0 || types.indexOf('text/plain') >= 0) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy';
+      }
+    });
+    el.canvas.addEventListener('drop', (event) => {
+      const transfer = event.dataTransfer;
+      if (!transfer) return;
+      const id = transfer.getData('text/x-sa-media') || transfer.getData('text/plain');
+      const doc = project();
+      const entry = doc && doc.media && (doc.media.videos || []).find((video) => video.id === id);
+      if (!entry) return;
+      event.preventDefault();
+      const point = localPoint(event);
+      const firstCue = rows.find((row) => row.type === 'cue');
+      const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
+      const layer = SA.layersDialog.defaults(slot);
+      layer.type = 'video';
+      layer.src = entry.src;
+      layer.fit = 'cover';
+      SA.store.commands.addLayer(layer);
+      SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
+    });
+    el.canvas.addEventListener(
+      'wheel',
+      (event) => {
+        if (event.ctrlKey) {
+          event.preventDefault();
+          setZoom(pxPerSecond * (event.deltaY < 0 ? 1.15 : 0.87), localPoint(event).x);
+        } else if (event.shiftKey) {
+          event.preventDefault();
+          scrollX = Math.max(0, scrollX + event.deltaY);
+          draw();
+        }
+      },
+      { passive: false }
+    );
+    document.addEventListener('keydown', onKeyDown);
+    if (el.zoom) el.zoom.addEventListener('input', () => setZoom(Number(el.zoom.value)));
+    if (el.fit) el.fit.addEventListener('click', fit);
+    if (el.addCue) el.addCue.addEventListener('click', addCue);
+    if (el.restructure) {
+      el.restructure.addEventListener('click', () => {
+        SA.store.commands.restructureAll();
+        SA.studio.toast('studio.toast.beatsRestructured');
+      });
+    }
+    if (el.marker) el.marker.addEventListener('click', addMarker);
+    if (el.addProperty) {
+      el.addProperty.addEventListener('click', addPropertyKey);
+    }
+    if (el.prop) {
+      el.prop.addEventListener('focus', refreshPropertySelect);
+      el.prop.addEventListener('pointerdown', refreshPropertySelect);
+    }
+    document.addEventListener('click', (event) => {
+      if (menu && !menu.contains(event.target)) hideMenu();
+    });
+  }
+
+  function init() {
+    el.body = document.querySelector('.timeline-body');
+    el.canvas = document.getElementById('timeline-canvas');
+    el.zoom = document.getElementById('tl-zoom');
+    el.zoomLabel = document.getElementById('tl-zoom-label');
+    el.fit = document.getElementById('tl-fit');
+    el.addCue = document.getElementById('tl-add-cue');
+    el.restructure = document.getElementById('tl-restructure');
+    el.marker = document.getElementById('tl-marker');
+    el.prop = document.getElementById('tl-prop');
+    el.addProperty = document.getElementById('tl-add-property');
+    if (!el.canvas) return;
+    ctx = el.canvas.getContext('2d');
+    try {
+      const stored = Math.round(Number(localStorage.getItem(LS_ZOOM)));
+      if (stored >= MIN_ZOOM && stored <= MAX_ZOOM) pxPerSecond = stored;
+    } catch {
+      /* ignore */
+    }
+    if (el.zoom) el.zoom.value = String(pxPerSecond);
+    if (el.zoomLabel) el.zoomLabel.textContent = `${Math.round(pxPerSecond)} px/s`;
+    lastVersion = { ...(SA.store.state.version || {}) };
+    lastPlayhead = SA.store.state.playhead;
+    bind();
+    SA.store.subscribe('timeline', () => {
+      if (versionChanged()) draw();
+    });
+    window.addEventListener('resize', draw);
+    draw();
+  }
+
+  return {
+    init,
+    draw,
+    fit,
+    setZoom,
+    getZoom: () => pxPerSecond,
+    getScrollX: () => scrollX,
+    setScrollX: (value) => {
+      scrollX = Math.max(0, value);
+      draw();
+    },
+    toggleExpand: (cueId) => {
+      if (expanded.has(cueId)) expanded.delete(cueId);
+      else expanded.add(cueId);
+      draw();
+    },
+    selectedKeys: () => [...selectedKeys],
+    selectKey: (path, propPath, index) => {
+      selectedKeys.add(`${path}|${propPath}|${index}`);
+      draw();
+    },
+    copyKeys,
+    pasteKeys,
+    deleteKeys: deleteSelectedKeys,
+    snapTime,
+    snapFrame,
+    originFor,
+    reload: refreshPropertySelect,
+    addMarker,
+    _markerId: () => markerId,
+  };
+})();

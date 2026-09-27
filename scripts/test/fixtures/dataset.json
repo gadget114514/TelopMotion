@@ -1,0 +1,24 @@
+{
+  "profile": {
+    "handle": "fixture",
+    "displayName": "Fixture Artist",
+    "description": "Test profile for script generation",
+    "avatar": null,
+    "isVerified": true,
+    "followers": 1500,
+    "following": 12,
+    "totalClips": 8
+  },
+  "songs": [
+    { "id": "s1", "title": "Big Hit", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-01-05T15:00:00Z", "plays": 120000, "likes": 4300, "comments": 210, "duration": 210, "tags": ["pop", "synthwave"], "model": "v4", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s2", "title": "Second Wind", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-01-06T15:00:00Z", "plays": 88000, "likes": 2900, "comments": 140, "duration": 195, "tags": ["rock", "anthem"], "model": "v4", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s3", "title": "Quiet Loop", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-02-01T15:00:00Z", "plays": 900, "likes": 220, "comments": 12, "duration": 180, "tags": ["ambient"], "model": "v3.5", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s4", "title": "Hidden Treasure", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-02-02T15:00:00Z", "plays": 120, "likes": 30, "comments": 4, "duration": 165, "tags": ["jazz"], "model": "v4", "caption": "", "isContest": true, "isPinned": false },
+    { "id": "s5", "title": "Night Drive", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-03-10T15:00:00Z", "plays": 45000, "likes": 1500, "comments": 80, "duration": 240, "tags": ["electronic", "night"], "model": "v4.5", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s6", "title": "Morning Light", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-03-11T15:00:00Z", "plays": 22000, "likes": 950, "comments": 46, "duration": 205, "tags": ["folk"], "model": "v4", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s7", "title": "Deep Cut", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-04-01T15:00:00Z", "plays": 5400, "likes": 410, "comments": 33, "duration": 190, "tags": ["lo-fi", "chill"], "model": "v3.5", "caption": "", "isContest": false, "isPinned": false },
+    { "id": "s8", "title": "Finale", "image": "", "imageLarge": "", "audio": "", "video": "", "createdAt": "2025-04-02T15:00:00Z", "plays": 3100, "likes": 260, "comments": 21, "duration": 175, "tags": ["orchestral"], "model": "v4.5", "caption": "", "isContest": false, "isPinned": false }
+  ],
+  "fetchedAt": "2025-04-03T00:00:00Z",
+  "source": "fixture"
+}

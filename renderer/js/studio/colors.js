@@ -1,0 +1,703 @@
+window.SA = window.SA || {};
+
+SA.colors = (() => {
+  'use strict';
+
+  const LS_RECENT = 'sa.colors.recent';
+  const LS_PALETTES = 'sa.palettes';
+  const BUILTIN_PALETTES = [
+    { id: 'sunoDark', name: 'Suno Dark', builtin: true, colors: ['#0b0d12', '#151924', '#1b2130', '#252c3d', '#8d96ab', '#e9ecf4', '#ff8a3d', '#ff4d8d'] },
+    { id: 'neon', name: 'Neon', builtin: true, colors: ['#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#f9f002'] },
+    { id: 'pastel', name: 'Pastel', builtin: true, colors: ['#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4', '#e6d9ff', '#ffdcc4'] },
+    { id: 'mono', name: 'Mono', builtin: true, colors: ['#0b0d12', '#2c3242', '#59617a', '#8d96ab', '#c3cad8', '#eef1f8'] },
+    { id: 'gold', name: 'Gold', builtin: true, colors: ['#2b1d05', '#7a4f12', '#cd7f32', '#ffc247', '#ffe9a8', '#fff8e0'] },
+    { id: 'category', name: 'Category', builtin: true, colors: ['#4d8dff', '#5fd44d', '#ff5c8a', '#ffc247', '#b06bff', '#4dc8ff', '#ff5cd0', '#7c8cff', '#2ee6c0'] },
+  ];
+
+  let popover = null;
+  let onChangeHandler = null;
+
+  function t(key, vars) {
+    return SA.i18n.t(key, vars);
+  }
+
+  function project() {
+    return SA.store.state.project;
+  }
+
+  function allPalettes() {
+    const doc = project();
+    const projectList = (doc && doc.palettes) || [];
+    const merged = new Map();
+    for (const entry of BUILTIN_PALETTES) merged.set(entry.id, { ...entry });
+    for (const entry of customPalettes()) merged.set(entry.id, { ...entry, builtin: false });
+    for (const entry of projectList) merged.set(entry.id, { ...entry, builtin: false });
+    return [...merged.values()];
+  }
+
+  function customPalettes() {
+    let stored = [];
+    try {
+      stored = JSON.parse(localStorage.getItem(LS_PALETTES) || '[]');
+    } catch {
+      stored = [];
+    }
+    return Array.isArray(stored) ? stored : [];
+  }
+
+  function saveCustomPalettes(list) {
+    try {
+      localStorage.setItem(LS_PALETTES, JSON.stringify(list));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function recents() {
+    try {
+      return JSON.parse(localStorage.getItem(LS_RECENT) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function pushRecent(hex) {
+    if (!/^#[0-9a-f]{3,8}$/i.test(String(hex || ''))) return;
+    const list = recents().filter((entry) => entry.toLowerCase() !== hex.toLowerCase());
+    list.unshift(hex);
+    try {
+      localStorage.setItem(LS_RECENT, JSON.stringify(list.slice(0, 12)));
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function closePopover() {
+    if (popover) popover.remove();
+    popover = null;
+    onChangeHandler = null;
+  }
+
+  function updateFromHex(hex) {
+    const rgba = SA.color.parse(hex);
+    return { hex: SA.color.toHex({ ...rgba, a: 1 }), rgba, hsv: SA.color.rgbToHsv(rgba) };
+  }
+
+  // --- color picker ------------------------------------------------------------
+
+  function openPicker(options) {
+    const opts = options || {};
+    closePopover();
+    const current = updateFromHex(opts.value || '#ffffff');
+    popover = document.createElement('div');
+    popover.className = 'color-popover';
+    const sv = document.createElement('canvas');
+    sv.width = 180;
+    sv.height = 120;
+    sv.className = 'color-sv';
+    const hue = document.createElement('canvas');
+    hue.width = 180;
+    hue.height = 14;
+    hue.className = 'color-hue';
+    const alpha = document.createElement('input');
+    alpha.type = 'range';
+    alpha.min = '0';
+    alpha.max = '1';
+    alpha.step = '0.01';
+    alpha.value = String(opts.alpha == null ? (current.rgba.a == null ? 1 : current.rgba.a) : opts.alpha);
+    const hexRow = document.createElement('div');
+    hexRow.className = 'color-hex-row';
+    const hexInput = document.createElement('input');
+    hexInput.type = 'text';
+    hexInput.className = 'ctrl-hex';
+    hexInput.value = current.hex;
+    const rgbLabel = document.createElement('span');
+    rgbLabel.className = 'color-rgb';
+    const recentRow = document.createElement('div');
+    recentRow.className = 'color-swatches';
+    const paletteRow = document.createElement('div');
+    paletteRow.className = 'color-swatches';
+    const categoryRow = document.createElement('div');
+    categoryRow.className = 'color-swatches';
+    const buttons = document.createElement('div');
+    buttons.className = 'dialog-actions';
+    const apply = document.createElement('button');
+    apply.type = 'button';
+    apply.className = 'btn btn-primary btn-mini';
+    apply.textContent = t('color.apply');
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn-mini';
+    cancel.textContent = t('color.cancel');
+    buttons.appendChild(cancel);
+    buttons.appendChild(apply);
+    let hsv = current.hsv;
+    let alphaValue = Number(alpha.value);
+    let hex = current.hex;
+
+    function drawSv() {
+      const ctx = sv.getContext('2d');
+      const width = sv.width;
+      const height = sv.height;
+      for (let x = 0; x < width; x += 2) {
+        for (let y = 0; y < height; y += 2) {
+          const rgb = SA.color.hsvToRgb({ h: hsv.h, s: x / width, v: 1 - y / height });
+          ctx.fillStyle = `rgb(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)})`;
+          ctx.fillRect(x, y, 2, 2);
+        }
+      }
+      const markerX = hsv.s * width;
+      const markerY = (1 - hsv.v) * height;
+      ctx.strokeStyle = '#0b0d12';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(markerX, markerY, 5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    function drawHue() {
+      const ctx = hue.getContext('2d');
+      const gradient = ctx.createLinearGradient(0, 0, hue.width, 0);
+      for (let i = 0; i <= 6; i += 1) {
+        const rgb = SA.color.hsvToRgb({ h: i / 6, s: 1, v: 1 });
+        gradient.addColorStop(i / 6, `rgb(${Math.round(rgb.r * 255)}, ${Math.round(rgb.g * 255)}, ${Math.round(rgb.b * 255)})`);
+      }
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, hue.width, hue.height);
+      ctx.strokeStyle = '#e9ecf4';
+      ctx.strokeRect(hsv.h * hue.width - 1, 0, 2, hue.height);
+    }
+
+    function refresh() {
+      const rgba = SA.color.hsvToRgb(hsv);
+      hex = SA.color.toHex({ ...rgba, a: 1 });
+      hexInput.value = hex;
+      rgbLabel.textContent = `${Math.round(rgba.r * 255)}, ${Math.round(rgba.g * 255)}, ${Math.round(rgba.b * 255)} · α ${alphaValue.toFixed(2)}`;
+      drawSv();
+      drawHue();
+    }
+
+    function dragCanvas(canvas, handler) {
+      const run = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        handler((event.clientX - rect.left) / Math.max(1, rect.width), (event.clientY - rect.top) / Math.max(1, rect.height));
+        refresh();
+      };
+      canvas.addEventListener('pointerdown', (event) => {
+        run(event);
+        const move = (moveEvent) => run(moveEvent);
+        const up = () => {
+          canvas.removeEventListener('pointermove', move);
+          canvas.removeEventListener('pointerup', up);
+          window.removeEventListener('pointerup', up);
+        };
+        canvas.addEventListener('pointermove', move);
+        canvas.addEventListener('pointerup', up);
+        window.addEventListener('pointerup', up);
+      });
+    }
+
+    dragCanvas(sv, (x, y) => {
+      hsv = { ...hsv, s: Math.max(0, Math.min(1, x)), v: Math.max(0, Math.min(1, 1 - y)) };
+    });
+    dragCanvas(hue, (x) => {
+      hsv = { ...hsv, h: Math.max(0, Math.min(1, x)) };
+    });
+    alpha.addEventListener('input', () => {
+      alphaValue = Number(alpha.value);
+      refresh();
+    });
+    hexInput.addEventListener('change', () => {
+      const parsed = updateFromHex(hexInput.value);
+      hsv = parsed.hsv;
+      refresh();
+    });
+    for (const entry of recents()) {
+      const swatch = swatchButton(entry, () => {
+        const parsed = updateFromHex(entry);
+        hsv = parsed.hsv;
+        refresh();
+      });
+      recentRow.appendChild(swatch);
+    }
+    for (const palette of allPalettes()) {
+      for (const color of palette.colors.slice(0, 8)) {
+        paletteRow.appendChild(
+          swatchButton(color, () => {
+            const parsed = updateFromHex(color);
+            hsv = parsed.hsv;
+            refresh();
+          })
+        );
+      }
+    }
+    for (const [name, entry] of Object.entries(SA.project.DEFAULT_CATEGORY_COLORS)) {
+      const swatch = swatchButton(entry.tint, () => {
+        const parsed = updateFromHex(entry.tint);
+        hsv = parsed.hsv;
+        refresh();
+      });
+      swatch.title = name;
+      categoryRow.appendChild(swatch);
+    }
+    const eyedrop = document.createElement('button');
+    eyedrop.type = 'button';
+    eyedrop.className = 'btn btn-mini';
+    eyedrop.textContent = t('color.eyedropper');
+    eyedrop.addEventListener('click', async () => {
+      if (!window.EyeDropper) return;
+      try {
+        const result = await new window.EyeDropper().open();
+        const parsed = updateFromHex(result.sRGBHex);
+        hsv = parsed.hsv;
+        refresh();
+      } catch {
+        /* canceled */
+      }
+    });
+    buttons.insertBefore(eyedrop, cancel);
+    apply.addEventListener('click', () => {
+      pushRecent(hex);
+      const value = opts.gradientStop ? hex : { kind: 'solid', value: hex, alpha: alphaValue };
+      if (opts.onChange) opts.onChange(value);
+      closePopover();
+    });
+    cancel.addEventListener('click', closePopover);
+    popover.appendChild(sv);
+    popover.appendChild(hue);
+    popover.appendChild(alpha);
+    popover.appendChild(hexRow);
+    hexRow.appendChild(hexInput);
+    hexRow.appendChild(rgbLabel);
+    const recentLabel = document.createElement('div');
+    recentLabel.className = 'insp-inherit';
+    recentLabel.textContent = t('color.recent');
+    const paletteLabel = document.createElement('div');
+    paletteLabel.className = 'insp-inherit';
+    paletteLabel.textContent = t('color.palette');
+    const categoryLabel = document.createElement('div');
+    categoryLabel.className = 'insp-inherit';
+    categoryLabel.textContent = t('color.category');
+    popover.appendChild(recentLabel);
+    popover.appendChild(recentRow);
+    popover.appendChild(paletteLabel);
+    popover.appendChild(paletteRow);
+    popover.appendChild(categoryLabel);
+    popover.appendChild(categoryRow);
+    popover.appendChild(buttons);
+    document.body.appendChild(popover);
+    const rect = opts.anchor ? opts.anchor.getBoundingClientRect() : null;
+    popover.style.left = `${rect ? Math.min(window.innerWidth - 230, rect.left) : 40}px`;
+    popover.style.top = `${rect ? Math.min(window.innerHeight - 340, rect.bottom + 6) : 60}px`;
+    refresh();
+    void onChangeHandler;
+  }
+
+  function swatchButton(color, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'color-swatch';
+    button.style.background = color;
+    button.title = color;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  // --- gradient editor ---------------------------------------------------------
+
+  function normalizeGradient(value) {
+    if (value && value.kind === 'gradient') {
+      return {
+        kind: 'gradient',
+        type: value.type || 'linear',
+        angle: value.angle == null ? 90 : value.angle,
+        space: value.space || 'element',
+        stops: (value.stops || []).map((stop, index) => ({
+          pos: stop.pos == null ? index / Math.max(1, (value.stops.length - 1)) : stop.pos,
+          color: typeof stop.color === 'string' ? stop.color : stop.color && stop.color.value ? stop.color.value : '#ffffff',
+          alpha: stop.alpha == null ? 1 : stop.alpha,
+        })),
+      };
+    }
+    return {
+      kind: 'gradient',
+      type: 'linear',
+      angle: 90,
+      space: 'element',
+      stops: [
+        { pos: 0, color: '#ffffff', alpha: 1 },
+        { pos: 1, color: '#ff8a3d', alpha: 1 },
+      ],
+    };
+  }
+
+  function openGradient(options) {
+    const opts = options || {};
+    closePopover();
+    const state = normalizeGradient(opts.value);
+    let selected = 0;
+    popover = document.createElement('div');
+    popover.className = 'color-popover gradient-popover';
+    const head = document.createElement('div');
+    head.className = 'gradient-head';
+    const typeSelect = SA.controls.selectControl({}, state.type, (value) => {
+      state.type = value;
+      renderBar();
+    }, ['linear', 'radial', 'angular'].map((value) => ({ value, label: value })));
+    const angleInput = SA.controls.numberControl({ min: -180, max: 180, step: 1, default: 90 }, state.angle, (value) => {
+      state.angle = value;
+      renderBar();
+    });
+    const spaceSelect = SA.controls.selectControl({}, state.space, (value) => {
+      state.space = value;
+      renderBar();
+    }, ['element', 'line', 'screen'].map((value) => ({ value, label: value })));
+    head.appendChild(typeSelect);
+    head.appendChild(angleInput);
+    head.appendChild(spaceSelect);
+    const bar = document.createElement('div');
+    bar.className = 'gradient-bar';
+    const stopList = document.createElement('div');
+    stopList.className = 'gradient-stops';
+    const actions = document.createElement('div');
+    actions.className = 'dialog-actions';
+    const addStop = document.createElement('button');
+    addStop.type = 'button';
+    addStop.className = 'btn btn-mini';
+    addStop.textContent = t('color.addStop');
+    const reverse = document.createElement('button');
+    reverse.type = 'button';
+    reverse.className = 'btn btn-mini';
+    reverse.textContent = t('color.reverse');
+    const distribute = document.createElement('button');
+    distribute.type = 'button';
+    distribute.className = 'btn btn-mini';
+    distribute.textContent = t('color.distribute');
+    const save = document.createElement('button');
+    save.type = 'button';
+    save.className = 'btn btn-primary btn-mini';
+    save.textContent = t('color.apply');
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn-mini';
+    cancel.textContent = t('color.cancel');
+
+    function cssGradient() {
+      const stops = state.stops
+        .map((stop) => `${stop.color} ${Math.round(stop.pos * 100)}%`)
+        .join(', ');
+      return `linear-gradient(90deg, ${stops})`;
+    }
+
+    function renderBar() {
+      bar.style.background = cssGradient();
+      stopList.innerHTML = '';
+      state.stops.forEach((stop, index) => {
+        const row = document.createElement('div');
+        row.className = `gradient-stop${index === selected ? ' is-active' : ''}`;
+        const swatch = swatchButton(stop.color, () => {
+          selected = index;
+          openPicker({
+            value: stop.color,
+            gradientStop: true,
+            onChange(hexValue) {
+              stop.color = hexValue;
+              renderBar();
+            },
+          });
+        });
+        const pos = SA.controls.numberControl({ min: 0, max: 1, step: 0.01, default: stop.pos }, stop.pos, (value) => {
+          stop.pos = Math.max(0, Math.min(1, value));
+          renderBar();
+        });
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-mini';
+        remove.textContent = '✕';
+        remove.autocomplete = 'off';
+        remove.addEventListener('click', () => {
+          if (state.stops.length <= 2) return;
+          state.stops.splice(index, 1);
+          selected = 0;
+          renderBar();
+        });
+        row.appendChild(swatch);
+        row.appendChild(pos);
+        row.appendChild(remove);
+        stopList.appendChild(row);
+      });
+    }
+
+    addStop.addEventListener('click', () => {
+      const last = state.stops[state.stops.length - 1];
+      state.stops.push({ pos: Math.min(1, (last ? last.pos : 1) * 0.5), color: last ? last.color : '#ffffff', alpha: 1 });
+      selected = state.stops.length - 1;
+      renderBar();
+    });
+    reverse.addEventListener('click', () => {
+      state.stops.forEach((stop) => {
+        stop.pos = 1 - stop.pos;
+      });
+      state.stops.sort((a, b) => a.pos - b.pos);
+      renderBar();
+    });
+    distribute.addEventListener('click', () => {
+      state.stops.forEach((stop, index) => {
+        stop.pos = index / Math.max(1, state.stops.length - 1);
+      });
+      renderBar();
+    });
+    save.addEventListener('click', () => {
+      if (opts.onChange) opts.onChange(JSON.parse(JSON.stringify(state)));
+      closePopover();
+    });
+    cancel.addEventListener('click', closePopover);
+    bar.addEventListener('click', (event) => {
+      const rect = bar.getBoundingClientRect();
+      const pos = Math.max(0, Math.min(1, (event.clientX - rect.left) / Math.max(1, rect.width)));
+      state.stops.push({ pos, color: '#ffffff', alpha: 1 });
+      state.stops.sort((a, b) => a.pos - b.pos);
+      selected = state.stops.findIndex((stop) => stop.pos === pos);
+      renderBar();
+    });
+    actions.appendChild(addStop);
+    actions.appendChild(reverse);
+    actions.appendChild(distribute);
+    actions.appendChild(cancel);
+    actions.appendChild(save);
+    popover.appendChild(head);
+    popover.appendChild(bar);
+    popover.appendChild(stopList);
+    popover.appendChild(actions);
+    document.body.appendChild(popover);
+    const rect = opts.anchor ? opts.anchor.getBoundingClientRect() : null;
+    popover.style.left = `${rect ? Math.min(window.innerWidth - 300, rect.left) : 40}px`;
+    popover.style.top = `${rect ? Math.min(window.innerHeight - 360, rect.bottom + 6) : 60}px`;
+    renderBar();
+  }
+
+  // --- palette dialog ----------------------------------------------------------
+
+  function paletteDialog() {
+    const root = document.getElementById('dialog-root');
+    if (!root) return;
+    root.innerHTML = '';
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog';
+    dialog.innerHTML = `<h3>${t('color.palettes')}</h3>`;
+    const list = document.createElement('div');
+    list.className = 'palette-list';
+    const custom = customPalettes();
+    const renderList = () => {
+      list.innerHTML = '';
+      for (const palette of [...BUILTIN_PALETTES.map((entry) => ({ ...entry })), ...custom]) {
+        const row = document.createElement('div');
+        row.className = 'palette-row';
+        const name = document.createElement('span');
+        name.textContent = palette.name;
+        row.appendChild(name);
+        for (const color of palette.colors.slice(0, 8)) {
+          row.appendChild(swatchButton(color, () => {}));
+        }
+        if (!palette.builtin) {
+          const rename = document.createElement('button');
+          rename.type = 'button';
+          rename.className = 'btn btn-mini';
+          rename.textContent = t('color.rename');
+          rename.addEventListener('click', () => {
+            const next = window.prompt(t('color.paletteName'), palette.name);
+            if (!next) return;
+            palette.name = next;
+            saveCustomPalettes(custom);
+            renderList();
+          });
+          const remove = document.createElement('button');
+          remove.type = 'button';
+          remove.className = 'btn btn-mini';
+          remove.textContent = '✕';
+          remove.addEventListener('click', () => {
+            const index = custom.indexOf(palette);
+            if (index >= 0) custom.splice(index, 1);
+            saveCustomPalettes(custom);
+            renderList();
+          });
+          row.appendChild(rename);
+          row.appendChild(remove);
+        }
+        list.appendChild(row);
+      }
+    };
+    renderList();
+    const actions = document.createElement('div');
+    actions.className = 'dialog-actions';
+    const create = document.createElement('button');
+    create.type = 'button';
+    create.className = 'btn btn-mini';
+    create.textContent = t('color.newPalette');
+    create.addEventListener('click', () => {
+      const name = window.prompt(t('color.paletteName'), 'My palette');
+      if (!name) return;
+      const colors = window.prompt(t('color.paletteColors'), '#ff8a3d,#ff4d8d,#4d8dff');
+      const entry = {
+        id: `p_${Math.random().toString(16).slice(2, 8)}`,
+        name,
+        builtin: false,
+        colors: String(colors || '').split(',').map((value) => value.trim()).filter(Boolean).slice(0, 12),
+      };
+      custom.push(entry);
+      saveCustomPalettes(custom);
+      renderList();
+    });
+    const exportButton = document.createElement('button');
+    exportButton.type = 'button';
+    exportButton.className = 'btn btn-mini';
+    exportButton.textContent = t('color.exportPalettes');
+    exportButton.addEventListener('click', async () => {
+      const bytes = new TextEncoder().encode(JSON.stringify({ palettes: custom }, null, 2));
+      await SA.platform.saveFile({ bytes, name: 'sunostudio-palettes.json', mime: 'application/json' });
+    });
+    const importButton = document.createElement('button');
+    importButton.type = 'button';
+    importButton.className = 'btn btn-mini';
+    importButton.textContent = t('color.importPalettes');
+    importButton.addEventListener('click', async () => {
+      const picked = await SA.platform.readFile('.json,application/json');
+      if (!picked) return;
+      try {
+        const parsed = JSON.parse(new TextDecoder().decode(picked.bytes));
+        const incoming = Array.isArray(parsed) ? parsed : parsed.palettes;
+        if (!Array.isArray(incoming)) return;
+        for (const entry of incoming) {
+          if (!entry || !entry.name || !Array.isArray(entry.colors)) continue;
+          custom.push({ id: entry.id || `p_${Math.random().toString(16).slice(2, 8)}`, name: entry.name, builtin: false, colors: entry.colors.slice(0, 12) });
+        }
+        saveCustomPalettes(custom);
+        renderList();
+      } catch {
+        /* ignore invalid files */
+      }
+    });
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'btn btn-primary btn-mini';
+    close.textContent = t('color.close');
+    close.addEventListener('click', () => {
+      root.hidden = true;
+    });
+    actions.appendChild(create);
+    actions.appendChild(importButton);
+    actions.appendChild(exportButton);
+    actions.appendChild(close);
+    dialog.appendChild(list);
+    dialog.appendChild(actions);
+    root.appendChild(dialog);
+    root.hidden = false;
+  }
+
+  // --- card theme --------------------------------------------------------------
+
+  function themeDialog() {
+    const root = document.getElementById('dialog-root');
+    const doc = project();
+    if (!root || !doc) return;
+    const theme = SA.card.theme(doc);
+    const fields = ['bg', 'bgSoft', 'card', 'card2', 'line', 'text', 'muted', 'accent', 'accent2'];
+    root.innerHTML = '';
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog dialog-wide';
+    dialog.innerHTML = `<h3>${t('color.cardTheme')}</h3>`;
+    const grid = document.createElement('div');
+    grid.className = 'theme-grid';
+    const preview = document.createElement('canvas');
+    preview.width = 320;
+    preview.height = 180;
+    preview.className = 'theme-preview';
+    const state = { ...theme, tiers: { ...theme.tiers } };
+    const drawPreview = () => {
+      const ctx = preview.getContext('2d');
+      ctx.fillStyle = state.bg;
+      ctx.fillRect(0, 0, preview.width, preview.height);
+      ctx.fillStyle = state.card;
+      ctx.fillRect(12, 14, preview.width - 24, preview.height - 28);
+      ctx.fillStyle = state.accent;
+      ctx.fillRect(12, 14, preview.width - 24, 6);
+      ctx.fillStyle = state.text;
+      ctx.font = '600 18px sans-serif';
+      ctx.fillText('TelopMotion', 24, 58);
+      ctx.font = '12px sans-serif';
+      ctx.fillStyle = state.muted;
+      ctx.fillText('@handle · 32 achievements', 24, 78);
+      ctx.fillStyle = state.card2;
+      ctx.fillRect(24, 96, 80, 60);
+      ctx.fillStyle = state.accent2;
+      ctx.fillRect(116, 96, 80, 60);
+      ctx.fillStyle = state.line;
+      ctx.fillRect(208, 96, 80, 60);
+    };
+    for (const field of fields) {
+      const row = document.createElement('div');
+      row.className = 'ctrl-row';
+      const label = document.createElement('label');
+      label.className = 'ctrl-label';
+      label.textContent = field;
+      const swatch = swatchButton(state[field], () => {
+        openPicker({
+          value: state[field],
+          anchor: swatch,
+          onChange(value) {
+            state[field] = typeof value === 'string' ? value : value.value;
+            swatch.style.background = state[field];
+            drawPreview();
+          },
+        });
+      });
+      row.appendChild(label);
+      row.appendChild(swatch);
+      grid.appendChild(row);
+    }
+    const actions = document.createElement('div');
+    actions.className = 'dialog-actions';
+    const cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn btn-mini';
+    cancel.textContent = t('color.cancel');
+    cancel.addEventListener('click', () => {
+      root.hidden = true;
+    });
+    const apply = document.createElement('button');
+    apply.type = 'button';
+    apply.className = 'btn btn-primary btn-mini';
+    apply.textContent = t('color.apply');
+    apply.addEventListener('click', () => {
+      SA.store.dispatch({
+        label: 'card theme',
+        areas: ['style'],
+        do(projectDoc) {
+          projectDoc.cardTheme = { ...state, tiers: { ...state.tiers } };
+        },
+      });
+      root.hidden = true;
+    });
+    actions.appendChild(cancel);
+    actions.appendChild(apply);
+    dialog.appendChild(grid);
+    dialog.appendChild(preview);
+    dialog.appendChild(actions);
+    root.appendChild(dialog);
+    root.hidden = false;
+    drawPreview();
+  }
+
+  return {
+    BUILTIN_PALETTES,
+    allPalettes,
+    customPalettes,
+    saveCustomPalettes,
+    openPicker,
+    openGradient,
+    paletteDialog,
+    themeDialog,
+    closePopover,
+    recents,
+  };
+})();

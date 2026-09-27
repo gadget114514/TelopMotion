@@ -1,0 +1,298 @@
+window.SA = window.SA || {};
+
+SA.controls = (() => {
+  'use strict';
+
+  function t(key, vars) {
+    return SA.i18n.t(key, vars);
+  }
+
+  function prettify(name) {
+    return String(name || '')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/[_-]+/g, ' ')
+      .replace(/^\w/, (char) => char.toUpperCase());
+  }
+
+  function labelFor(key) {
+    const translated = t(`fx.param.${key}`);
+    return translated === `fx.param.${key}` ? prettify(key) : translated;
+  }
+
+  function typeLabel(group, type) {
+    const key = `fx.${group}.${type}`;
+    const translated = t(key);
+    return translated === key ? prettify(type) : translated;
+  }
+
+  function valueLabel(value) {
+    const key = `fx.value.${value}`;
+    const translated = t(key);
+    return translated === key ? prettify(value) : translated;
+  }
+
+  function clampNumber(value, param) {
+    let number = Number(value);
+    if (!Number.isFinite(number)) number = param.default == null ? 0 : param.default;
+    if (param.min != null) number = Math.max(param.min, number);
+    if (param.max != null) number = Math.min(param.max, number);
+    return number;
+  }
+
+  function row(container, param) {
+    const node = document.createElement('div');
+    node.className = 'ctrl-row';
+    node.dataset.prop = param.propPath || param.key;
+    const label = document.createElement('label');
+    label.className = 'ctrl-label';
+    label.textContent = labelFor(param.key);
+    node.appendChild(label);
+    node.appendChild(param.control);
+    container.appendChild(node);
+    return node;
+  }
+
+  // --- numbers -----------------------------------------------------------------
+
+  function numberControl(param, value, onChange, options) {
+    const opts = options || {};
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-number';
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = param.step == null ? 0.01 : param.step;
+    if (param.min != null) input.min = String(param.min);
+    if (param.max != null) input.max = String(param.max);
+    input.value = Number.isFinite(Number(value)) ? String(Number(value)) : '';
+    input.addEventListener('keydown', (event) => event.stopPropagation());
+    input.addEventListener('change', () => onChange(clampNumber(input.value, param)));
+    wrap.appendChild(input);
+    if (param.min != null && param.max != null && !opts.noSlider) {
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = String(param.min);
+      slider.max = String(param.max);
+      slider.step = String(param.step == null ? 0.01 : param.step);
+      slider.value = String(Number.isFinite(Number(value)) ? Number(value) : param.default);
+      slider.addEventListener('input', () => {
+        input.value = slider.value;
+      });
+      slider.addEventListener('change', () => onChange(clampNumber(slider.value, param)));
+      slider.addEventListener('pointerdown', (event) => event.stopPropagation());
+      wrap.appendChild(slider);
+    }
+    return wrap;
+  }
+
+  // --- selects / bools ---------------------------------------------------------
+
+  function selectControl(param, value, onChange, entries) {
+    const select = document.createElement('select');
+    for (const entry of entries) {
+      const option = document.createElement('option');
+      option.value = entry.value;
+      option.textContent = entry.label;
+      select.appendChild(option);
+    }
+    select.value = value == null ? '' : String(value);
+    select.addEventListener('change', () => onChange(select.value));
+    select.addEventListener('keydown', (event) => event.stopPropagation());
+    return select;
+  }
+
+  function boolControl(value, onChange) {
+    const wrap = document.createElement('label');
+    wrap.className = 'ctrl-bool';
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = !!value;
+    input.addEventListener('change', () => onChange(input.checked));
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function vec2Control(value, onChange, param) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-vec2';
+    const current = value && typeof value === 'object' ? value : { x: 0, y: 0 };
+    for (const axis of ['x', 'y']) {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.step = param && param.step != null ? param.step : 0.01;
+      input.value = String(Number(current[axis]) || 0);
+      input.title = axis.toUpperCase();
+      input.addEventListener('keydown', (event) => event.stopPropagation());
+      input.addEventListener('change', () => {
+        onChange({ ...current, [axis]: Number(input.value) || 0 });
+      });
+      wrap.appendChild(input);
+    }
+    return wrap;
+  }
+
+  function colorControl(value, onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-color';
+    const colorValue = value && typeof value === 'object' ? value.value || value.color : value;
+    const hex = typeof colorValue === 'string' && /^#/.test(colorValue) ? colorValue : '#ffffff';
+    const swatch = document.createElement('button');
+    swatch.type = 'button';
+    swatch.className = 'ctrl-swatch';
+    swatch.style.background = hex;
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ctrl-hex';
+    input.value = typeof value === 'string' ? value : hex;
+    input.addEventListener('keydown', (event) => event.stopPropagation());
+    const commitHex = () => {
+      const next = input.value.trim();
+      onChange(next || null);
+      swatch.style.background = /^#/.test(next) ? next : '#ffffff';
+    };
+    input.addEventListener('change', commitHex);
+    swatch.addEventListener('click', () => {
+      if (typeof SA === 'undefined' || !SA.colors) {
+        input.focus();
+        return;
+      }
+      SA.colors.openPicker({
+        value: input.value,
+        anchor: swatch,
+        onChange(next) {
+          const hexValue = typeof next === 'string' ? next : next && next.value ? next.value : '#ffffff';
+          input.value = hexValue;
+          onChange(next);
+          swatch.style.background = hexValue;
+        },
+      });
+    });
+    wrap.appendChild(swatch);
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function gradientControl(value, onChange, anchor) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-color';
+    const swatch = document.createElement('button');
+    swatch.type = 'button';
+    swatch.className = 'ctrl-swatch ctrl-gradient';
+    const stops = value && value.kind === 'gradient' && value.stops ? value.stops : [];
+    swatch.style.background = stops.length
+      ? `linear-gradient(90deg, ${stops.map((stop) => `${stop.color || '#ffffff'} ${Math.round((stop.pos || 0) * 100)}%`).join(', ')})`
+      : 'linear-gradient(90deg, #ffffff, #ff8a3d)';
+    const label = document.createElement('span');
+    label.className = 'ctrl-points-preview';
+    label.textContent = value && value.kind === 'gradient' ? `${value.type} ${value.angle == null ? 90 : value.angle}° · ${stops.length} stops` : '—';
+    swatch.addEventListener('click', () => {
+      if (typeof SA === 'undefined' || !SA.colors) return;
+      SA.colors.openGradient({
+        value,
+        anchor: anchor || swatch,
+        onChange(next) {
+          onChange(next);
+          const nextStops = next.stops || [];
+          swatch.style.background = `linear-gradient(90deg, ${nextStops.map((stop) => `${stop.color} ${Math.round((stop.pos || 0) * 100)}%`).join(', ')})`;
+          label.textContent = `${next.type} ${next.angle == null ? 90 : next.angle}° · ${nextStops.length} stops`;
+        },
+      });
+    });
+    wrap.appendChild(swatch);
+    wrap.appendChild(label);
+    return wrap;
+  }
+
+  function textControl(value, onChange, options) {
+    const wrapper = document.createElement(options && options.multiline ? 'textarea' : 'input');
+    if (!options || !options.multiline) wrapper.type = 'text';
+    wrapper.className = 'ctrl-text';
+    wrapper.value = value == null ? '' : String(value);
+    wrapper.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !(options && options.multiline)) wrapper.blur();
+      event.stopPropagation();
+    });
+    wrapper.addEventListener('change', () => onChange(wrapper.value));
+    return wrapper;
+  }
+
+  function easeControl(value, onChange) {
+    const names = SA.easing.names.concat(['cubic-bezier', 'spring', 'steps', 'hold']);
+    const current = SA.easing.canonical ? SA.easing.canonical(value) : value;
+    return selectControl(
+      { default: 'linear' },
+      current,
+      onChange,
+      names.map((name) => ({ value: name, label: name.startsWith('ease') ? name : prettify(name) }))
+    );
+  }
+
+  function pointsControl(value, onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-points';
+    const points = Array.isArray(value) ? value : [];
+    const preview = document.createElement('span');
+    preview.className = 'ctrl-points-preview';
+    preview.textContent = points.map((point) => `${Math.round(point.x * 100)},${Math.round(point.y * 100)}`).join(' ');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'btn btn-mini';
+    button.textContent = t('studio.inspector.editPoints');
+    button.addEventListener('click', () => {
+      SA.overlay.beginPathEdit(points, onChange);
+    });
+    wrap.appendChild(preview);
+    wrap.appendChild(button);
+    return wrap;
+  }
+
+  // --- generic descriptor form -------------------------------------------------
+
+  const CONTROL_FOR = {
+    number: (param, value, onChange) => numberControl(param, value, onChange),
+    int: (param, value, onChange) => numberControl(param, value, (next) => onChange(Math.round(next))),
+    select: (param, value, onChange) =>
+      selectControl(param, value, onChange, (param.options || []).map((option) => ({ value: option, label: valueLabel(option) }))),
+    bool: (param, value, onChange) => boolControl(value, onChange),
+    color: (param, value, onChange) => colorControl(value, onChange),
+    vec2: (param, value, onChange) => vec2Control(value, onChange, param),
+    ease: (param, value, onChange) => easeControl(value, onChange),
+    points: (param, value, onChange) => pointsControl(value, onChange),
+    text: (param, value, onChange) => textControl(value, onChange),
+    font: (param, value, onChange) =>
+      selectControl(
+        param,
+        value,
+        onChange,
+        (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }))
+      ),
+    gradient: (param, value, onChange) => gradientControl(value, onChange),
+  };
+
+  function paramControl(group, param, value, onChange) {
+    const builder = CONTROL_FOR[param.kind] || CONTROL_FOR.text;
+    return builder(param, value, onChange);
+  }
+
+  function paramEntries(descriptor) {
+    return (descriptor && descriptor.params) || [];
+  }
+
+  return {
+    prettify,
+    labelFor,
+    typeLabel,
+    valueLabel,
+    row,
+    numberControl,
+    selectControl,
+    boolControl,
+    vec2Control,
+    colorControl,
+    gradientControl,
+    textControl,
+    easeControl,
+    pointsControl,
+    paramControl,
+    paramEntries,
+  };
+})();

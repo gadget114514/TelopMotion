@@ -1,0 +1,248 @@
+window.SA = window.SA || {};
+
+SA.lyricsScene = (() => {
+  'use strict';
+
+  const MAX_SCENES = 48;
+  const cache = new Map();
+
+  function hash(keyParts) {
+    return SA.rng.hash32(...keyParts);
+  }
+
+  function letterPath(cueId, beatId, lineIdx, wordIdx, letterIdx) {
+    return `cue:${cueId}/beat:${beatId}/line:${lineIdx}/word:${wordIdx}/letter:${letterIdx}`;
+  }
+
+  function sampleCount(area, size) {
+    const byArea = Math.round(Math.max(64, Math.min(512, area / 24)));
+    const rounded = Math.max(64, Math.round(byArea / 16) * 16);
+    return Math.min(512, Math.max(64, rounded));
+  }
+
+  function resolveFillColor(project, style, beat) {
+    const colorSet = style.color || {};
+    const category = (beat.meta && beat.meta.category) || null;
+    const categoryColors = SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {});
+    let value = colorSet.fill;
+    if (colorSet.useCategory && category) value = { kind: 'category', which: 'tint' };
+    if (!value || !value.kind) {
+      value = { kind: 'solid', value: typeof value === 'string' ? value : '#eef2ff', alpha: 1 };
+    }
+    const resolved = SA.color.resolve(value, { palettes: project.palettes || [], categoryColors, category, t: 0 });
+    if (resolved.kind === 'gradient') {
+      const stop = resolved.stops && resolved.stops.length ? resolved.stops[0].rgba : { r: 1, g: 1, b: 1, a: 1 };
+      return { r: stop.r, g: stop.g, b: stop.b, a: stop.a == null ? 1 : stop.a };
+    }
+    return { r: resolved.rgba.r, g: resolved.rgba.g, b: resolved.rgba.b, a: resolved.rgba.a == null ? 1 : resolved.rgba.a };
+  }
+
+  function buildLetterMesh(letter) {
+    if (letter.mesh) return letter.mesh;
+    const geometry = SA.geometry;
+    let contours = [];
+    let scale = 1;
+    let bucketSize = letter.size;
+    if (letter.src === 'font' && letter.glyph && letter.fontId != null) {
+      const bucket = geometry.bucket(letter.size);
+      bucketSize = Math.pow(2, bucket / 4);
+      scale = letter.size / bucketSize;
+      const cacheKey = geometry.cacheKey(letter.fontId, letter.glyph.index, letter.size);
+      contours = geometry.cached(cacheKey, () => {
+        const path = letter.glyph.getPath(0, 0, bucketSize);
+        return geometry.glyphContours(path, geometry.DEFAULT_TOLERANCE / scale);
+      });
+    } else if (letter.raster) {
+      contours = letter.raster.contours;
+    }
+    const groups = geometry.groupContours(contours);
+    const fill = geometry.triangulate(groups);
+    const stroke = geometry.strokeRibbon(contours, Math.max(1, letter.size * 0.025));
+    const pieces = geometry.pieces(fill);
+    let meshBBox = null;
+    for (const contour of contours) {
+      const box = geometry.bounds(contour.points);
+      if (!meshBBox) meshBBox = { ...box };
+      else {
+        meshBBox.x0 = Math.min(meshBBox.x0, box.x0);
+        meshBBox.y0 = Math.min(meshBBox.y0, box.y0);
+        meshBBox.x1 = Math.max(meshBBox.x1, box.x1);
+        meshBBox.y1 = Math.max(meshBBox.y1, box.y1);
+        meshBBox.width = meshBBox.x1 - meshBBox.x0;
+        meshBBox.height = meshBBox.y1 - meshBBox.y0;
+      }
+    }
+    letter.mesh = {
+      contours,
+      groups,
+      fill,
+      stroke,
+      pieces,
+      needsStencil: fill.needsStencil,
+      scale,
+      bucketSize,
+      bbox: meshBBox || { x0: 0, y0: 0, x1: 0, y1: 0, width: 0, height: 0 },
+    };
+    return letter.mesh;
+  }
+
+  function buildLetterSamples(letter) {
+    if (!letter.samples) letter.samples = { interior: null, outline: null };
+    return letter.samples;
+  }
+
+  function buildScene(project, beat, fonts, options) {
+    if (!project || !beat) throw Object.assign(new Error('missing project or beat'), { code: 'scene-input' });
+    const opts = options || {};
+    const output = project.output || { width: 1920, height: 1080, aspect: '16:9' };
+    const cueId = beat.cueId;
+    const beatId = beat.id;
+    const beatPath = `cue:${cueId}/beat:${beatId}`;
+    const style = SA.project.resolveStyle(project, beatPath);
+    const textStyle = style.text || {};
+    const direction = opts.direction || textStyle.direction || beat.direction || 'horizontal';
+    const fontList = Array.isArray(fonts) ? fonts : fonts ? [fonts] : [];
+    const fontIds = fontList.map((entry) => entry.id).join(',');
+    const beatLines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
+    const layoutTextSource = beatLines ? beatLines.join('\n') : beat.text || '';
+    const key = hash([
+      cueId,
+      beatId,
+      beat.text || '',
+      beatLines ? JSON.stringify(beatLines) : '',
+      beat.fontScale || 1,
+      direction,
+      fontIds,
+      JSON.stringify(style),
+      output.aspect,
+      output.width,
+      output.height,
+    ]);
+    const cached = cache.get(key);
+    if (cached) return cached;
+
+    const size = (textStyle.size || 96) * (beat.fontScale || 1);
+    const fillColor = resolveFillColor(project, style, beat);
+    const layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
+      size,
+      lang: (project.meta && project.meta.lang) || 'en',
+      direction,
+      maxWidth: textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width : undefined,
+    });
+
+    const scene = {
+      key,
+      cueId,
+      beatId,
+      kind: beat.kind || 'single',
+      start: beat.start,
+      end: beat.end,
+      text: beat.text || '',
+      style,
+      lines: [],
+      words: [],
+      letters: [],
+      blockBBox: layout.bbox,
+      layout,
+      size,
+      direction,
+      fillColor,
+    };
+
+    for (let lineIdx = 0; lineIdx < layout.lines.length; lineIdx += 1) {
+      const layoutLine = layout.lines[lineIdx];
+      const line = { index: lineIdx, words: [], width: layoutLine.width, height: layoutLine.height, baseline: layoutLine.baseline, y: layoutLine.y, vertical: !!layoutLine.vertical };
+      for (let wordIdx = 0; wordIdx < layoutLine.words.length; wordIdx += 1) {
+        const layoutWord = layoutLine.words[wordIdx];
+        if (layoutWord.isSpace) continue;
+        const word = { index: wordIdx, lineIndex: lineIdx, letters: [], width: layoutWord.width };
+        for (let letterIdx = 0; letterIdx < layoutWord.letters.length; letterIdx += 1) {
+          const source = layoutWord.letters[letterIdx];
+          const box = {
+            x: source.x + source.bbox.x1 + (source.offsetX || 0),
+            y: source.y + source.bbox.y1 + (source.offsetY || 0),
+            w: Math.max(0, source.bbox.x2 - source.bbox.x1),
+            h: Math.max(0, source.bbox.y2 - source.bbox.y1),
+          };
+          box.cx = box.x + box.w / 2;
+          box.cy = box.y + box.h / 2;
+          const path = letterPath(cueId, beatId, lineIdx, wordIdx, letterIdx);
+          const letter = {
+            path,
+            cueId,
+            beatId,
+            lineIdx,
+            wordIdx,
+            letterIdx,
+            globalIdx: scene.letters.length,
+            char: source.char,
+            renderedChar: source.renderedChar,
+            glyph: source.glyph,
+            fontId: source.fontId,
+            src: source.src,
+            raster: source.raster,
+            size,
+            advance: source.advance,
+            advanceWithSpacing: source.advanceWithSpacing,
+            vertRotate: !!source.vertRotate,
+            quadrant: !!source.quadrant,
+            offsetX: source.offsetX || 0,
+            offsetY: source.offsetY || 0,
+            local: {
+              x: box.x,
+              y: box.y,
+              w: box.w,
+              h: box.h,
+              cx: box.cx,
+              cy: box.cy,
+              penX: source.x,
+              penY: source.y,
+            },
+            bbox: { x1: source.bbox.x1, y1: source.bbox.y1, x2: source.bbox.x2, y2: source.bbox.y2 },
+            color: fillColor,
+            style,
+            mesh: null,
+            samples: null,
+          };
+          word.letters.push(letter);
+          scene.letters.push(letter);
+        }
+        line.words.push(word);
+        scene.words.push(word);
+      }
+      scene.lines.push(line);
+    }
+
+    if (cache.size >= MAX_SCENES) cache.clear();
+    cache.set(key, scene);
+    return scene;
+  }
+
+  function meshOf(letter) {
+    return buildLetterMesh(letter);
+  }
+
+  function samplesOf(letter, count) {
+    const samples = buildLetterSamples(letter);
+    const mesh = buildLetterMesh(letter);
+    const wanted = count || sampleCount(mesh.bbox ? mesh.bbox.width * mesh.bbox.height : 0, letter.size);
+    if (!samples.interior || samples.interior.length < wanted * 2) {
+      const random = SA.rng.rngFor(0x5eed, letter.path, 'samples');
+      const positions = mesh.fill.positions;
+      const scaled = { positions: new Float32Array(positions.length), indices: mesh.fill.indices };
+      for (let i = 0; i < positions.length; i += 1) scaled.positions[i] = positions[i] * mesh.scale;
+      samples.interior = SA.geometry.sampleInterior(scaled, wanted, random);
+      samples.outline = SA.geometry.sampleOutline(mesh.contours, Math.max(32, Math.round(wanted / 2)));
+      if (mesh.scale !== 1) {
+        for (let i = 0; i < samples.outline.length; i += 1) samples.outline[i] *= mesh.scale;
+      }
+    }
+    return samples;
+  }
+
+  function clearCache() {
+    cache.clear();
+  }
+
+  return { buildScene, meshOf, samplesOf, letterPath, clearCache, hash };
+})();

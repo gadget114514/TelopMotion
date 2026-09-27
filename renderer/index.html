@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data: blob:; media-src https: blob:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<title>TelopMotion</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<svg class="svg-defs" aria-hidden="true">
+  <symbol id="ic-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="ic-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></symbol>
+  <symbol id="ic-pause" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="9" x2="10" y2="15"/><line x1="14" y1="9" x2="14" y2="15"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+  <symbol id="ic-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.5 13.5 17 22l-5-3-5 3 1.5-8.5"/></symbol>
+  <symbol id="ic-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="ic-shuffle" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></symbol>
+  <symbol id="ic-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+  <symbol id="ic-gem" viewBox="0 0 24 24"><polygon points="6 3 18 3 22 9 12 21 2 9 6 3"/><polyline points="2 9 22 9"/><polyline points="12 21 8 9"/><polyline points="12 21 16 9"/></symbol>
+  <symbol id="ic-external" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+  <symbol id="ic-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+  <symbol id="ic-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="ic-verified" viewBox="0 0 24 24"><path d="M12 2 14.5 4.5 18 4l1 3.5 3 2-1.5 3.5L21 17l-3.5 1-2 3-3.5-1.5L8.5 21l-2-3L3 17l.5-4L2 9.5l3-2L6 4l3.5.5z"/><polyline points="9 12 11 14 15 9"/></symbol>
+  <symbol id="ic-comment" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+  <symbol id="ic-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+</svg>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark"><svg class="icon"><use href="#ic-music"></use></svg></span>
+    <div class="brand-text">
+      <h1 data-i18n="app.title">TelopMotion</h1>
+      <p data-i18n="app.subtitle"></p>
+    </div>
+  </div>
+  <div class="topbar-tools">
+    <select id="cache-select" class="select" hidden></select>
+    <select id="lang-select" class="select" aria-label="Language"></select>
+  </div>
+</header>
+
+<section class="searchbar">
+  <form id="profile-form" class="profile-form" autocomplete="off">
+    <svg class="icon search-icon"><use href="#ic-search"></use></svg>
+    <input id="profile-input" type="text" spellcheck="false" data-i18n-placeholder="input.placeholder" />
+    <button type="submit" class="btn btn-primary" data-i18n="input.load">Load</button>
+  </form>
+  <div id="status" class="status" role="status" hidden></div>
+  <section id="web-import" class="web-import">
+    <svg class="icon web-import-icon"><use href="#ic-upload"></use></svg>
+    <p class="web-import-hint" data-i18n="web.importHint"></p>
+    <button id="web-import-btn" type="button" class="btn btn-primary" data-i18n="web.import"></button>
+  </section>
+</section>
+
+<main class="page">
+  <section id="empty" class="card placeholder-card">
+    <svg class="icon placeholder-icon"><use href="#ic-music"></use></svg>
+    <h2 data-i18n="empty.title"></h2>
+    <p data-i18n="empty.body"></p>
+  </section>
+
+  <section id="error" class="card error-card" hidden>
+    <h2 data-i18n="error.title"></h2>
+    <p id="error-text"></p>
+  </section>
+
+  <div id="content" hidden>
+    <div class="overview">
+      <section class="hero card">
+        <img id="hero-avatar" class="hero-avatar" alt="" />
+        <div class="hero-info">
+          <div class="hero-name-row">
+            <h2 id="hero-name"></h2>
+            <svg id="hero-verified" class="icon verified" hidden><use href="#ic-verified"></use></svg>
+            <span id="hero-handle" class="handle"></span>
+          </div>
+          <p id="hero-desc" class="hero-desc"></p>
+          <p id="hero-since" class="hero-since"></p>
+        </div>
+        <div class="hero-actions">
+          <div id="snapshot-split" class="split">
+            <button id="btn-snapshot" class="btn btn-ghost" aria-haspopup="true" aria-expanded="false"><svg class="icon"><use href="#ic-camera"></use></svg><span data-i18n="actions.saveImage"></span><span class="split-caret">▾</span></button>
+            <div id="snapshot-menu" class="split-menu" hidden>
+              <button type="button" data-image-aspect="16:9" data-image-type="image/jpeg" data-i18n="image.jpg169"></button>
+              <button type="button" data-image-aspect="16:9" data-image-type="image/png" data-i18n="image.png169"></button>
+              <button type="button" data-image-aspect="9:16" data-image-type="image/jpeg" data-i18n="image.jpg916"></button>
+              <button type="button" data-image-aspect="9:16" data-image-type="image/png" data-i18n="image.png916"></button>
+            </div>
+          </div>
+          <button id="btn-studio" class="btn btn-primary"><svg class="icon"><use href="#ic-play"></use></svg><span data-i18n="actions.studio"></span></button>
+          <button id="btn-open" class="btn btn-ghost"><svg class="icon"><use href="#ic-external"></use></svg><span data-i18n="profile.open"></span></button>
+          <button id="btn-refresh" class="btn btn-ghost"><svg class="icon"><use href="#ic-refresh"></use></svg><span data-i18n="input.refresh"></span></button>
+          <button id="btn-export" class="btn btn-ghost"><svg class="icon"><use href="#ic-download"></use></svg><span data-i18n="actions.export"></span></button>
+          <button id="btn-import" class="btn btn-ghost"><svg class="icon"><use href="#ic-upload"></use></svg><span data-i18n="actions.import"></span></button>
+        </div>
+      </section>
+
+      <section id="stat-grid" class="stat-grid"></section>
+    </div>
+
+    <section class="card achievements-card">
+      <div class="section-head">
+        <div class="completion">
+          <div id="ring" class="ring"><div class="ring-inner"><span id="ring-label">0%</span></div></div>
+          <div>
+            <h2 data-i18n="achievements.title"></h2>
+            <p id="completion-text" class="muted"></p>
+          </div>
+        </div>
+        <div id="filter-chips" class="chips"></div>
+      </div>
+      <div id="badge-grid" class="badge-grid"></div>
+    </section>
+
+    <section class="card songs-card">
+      <div class="section-head">
+        <h2><span data-i18n="songs.title"></span> <span id="songs-count" class="muted"></span></h2>
+        <div class="songs-tools">
+          <input id="songs-search" type="text" class="input" spellcheck="false" data-i18n-placeholder="songs.search" />
+          <select id="songs-sort" class="select"></select>
+        </div>
+      </div>
+      <div id="song-list" class="song-list"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <p data-i18n="footer.source"></p>
+  <p id="footer-updated" class="muted"></p>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+<audio id="player" preload="none"></audio>
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/format.js"></script>
+<script src="js/achievements.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/suno.js"></script>
+<script src="js/card/palette.js"></script>
+<script src="js/card/canvas-card.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
