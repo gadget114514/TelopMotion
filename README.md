@@ -88,12 +88,6 @@ npm start
 
 The app opens in the Studio. Import lyrics with *File → Import lyrics (SRT / LRC / JSON)…*, or press **Start without data** to build a project by hand. To use the achievement card, open *File → TelopMotion (static image)…*, paste a profile URL in the format `suno.com/@handle` (or just `@handle`) and press Load; **Open Studio** brings the profile data back into the Studio.
 
-## Snapshots
-
-Press **Save image ▾** and pick **16:9 JPG / 16:9 PNG / 9:16 JPG / 9:16 PNG**. The card is drawn on a canvas (no hidden window), waits for the avatar, and matches the on-screen layout: profile header, stats, completion ring, and all 32 badges with progress bars.
-
-![Example snapshot](snapshot/achievement-card.jpg)
-
 ## Building Windows installers
 
 ```bash
