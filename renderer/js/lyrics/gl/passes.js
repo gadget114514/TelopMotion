@@ -638,7 +638,8 @@ SA.glPasses = (() => {
       targets.postB = scene;
     }
 
-    function commitLayer(opacity) {
+    function commitLayer(opacity, transform) {
+      const t = transform || {};
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       bind(targets.scene, null);
@@ -647,6 +648,9 @@ SA.glPasses = (() => {
       gl.useProgram(programs.copy.program);
       gl.uniform1i(programs.copy.uniforms.u_texture, 0);
       gl.uniform1f(programs.copy.uniforms.u_opacity, opacity == null ? 1 : opacity);
+      if (programs.copy.uniforms.u_offset) gl.uniform2f(programs.copy.uniforms.u_offset, t.dx || 0, t.dy || 0);
+      if (programs.copy.uniforms.u_scale) gl.uniform1f(programs.copy.uniforms.u_scale, t.scale == null ? 1 : t.scale);
+      if (programs.copy.uniforms.u_angle) gl.uniform1f(programs.copy.uniforms.u_angle, ((t.rotate || 0) * Math.PI) / 180);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
     }
@@ -701,6 +705,9 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, targets.scene.texture);
       gl.uniform1i(programs.copy.uniforms.u_texture, 0);
       gl.uniform1f(programs.copy.uniforms.u_opacity, 1);
+      if (programs.copy.uniforms.u_offset) gl.uniform2f(programs.copy.uniforms.u_offset, 0, 0);
+      if (programs.copy.uniforms.u_scale) gl.uniform1f(programs.copy.uniforms.u_scale, 1);
+      if (programs.copy.uniforms.u_angle) gl.uniform1f(programs.copy.uniforms.u_angle, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
     }

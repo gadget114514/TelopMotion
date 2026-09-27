@@ -91,6 +91,25 @@
 
   fx.register({
     group: 'hold',
+    type: 'opacityPulse',
+    tags: ['basic'],
+    params: [
+      { key: 'min', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35, random: [0.15, 0.6] },
+      { key: 'period', kind: 'number', min: 0.2, max: 6, step: 0.1, default: 1.6, random: [0.8, 3] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 0.8 },
+    ],
+    cpu(state, h, env, params) {
+      const min = clamp01(params.min == null ? 0.35 : params.min);
+      const period = Math.max(0.2, params.period == null ? 1.6 : params.period);
+      const speed = params.speed == null ? 0.8 : params.speed;
+      const wave = 0.5 - 0.5 * Math.cos((TAU * speed * h) / period);
+      const level = min + (1 - min) * wave;
+      state.opacity *= 1 - env * (1 - level);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
     type: 'kenBurns',
     params: [
       { key: 'zoom', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.15, random: [0.05, 0.35] },

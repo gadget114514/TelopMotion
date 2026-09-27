@@ -187,7 +187,7 @@ SA.videoExport = (() => {
     const transparent = !!opts.transparent;
     const onProgress = opts.onProgress || (() => {});
     const signal = opts.signal || { aborted: false };
-    const baseName = (opts.name || 'sunostudio').replace(/\.[a-z0-9]+$/i, '');
+    const baseName = (opts.name || 'telopmotion').replace(/\.[a-z0-9]+$/i, '');
 
     if (transparent) {
       return exportPngZip({ ...opts, width, height, fps, range, total, baseName, onProgress, signal });

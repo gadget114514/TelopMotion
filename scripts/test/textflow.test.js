@@ -191,7 +191,7 @@ test('restructure creates stable beat ids and kinds', () => {
   assert.deepEqual(again.beats.map((beat) => beat.id), first.beats.map((beat) => beat.id));
 });
 
-test('apply keeps pinned beats and reports orphans', () => {
+test('apply keeps pinned (edited) beats even when the cue text changes', () => {
   const project = {
     output: { width: 1920, height: 1080, aspect: '16:9' },
     meta: { lang: 'en' },
@@ -215,10 +215,14 @@ test('apply keeps pinned beats and reports orphans', () => {
   assert.equal(kept.end, 3.4);
   assert.ok(!project.beats.c1.some((beat) => !beat.pinned && beat.start < kept.end - 1e-4 && beat.end > kept.start + 1e-4), 'overlapping beat kept');
 
+  const pinnedText = kept.text;
   project.script.cues[0].text = 'Completely different text now.';
   textflow.apply(project, { measure, style: project.style.text });
-  assert.ok(project.orphanBeats.c1 && project.orphanBeats.c1.length === 1, 'orphan not reported');
-  assert.ok(!project.beats.c1.some((beat) => beat.pinned), 'orphan kept in the beats');
+  // a pinned beat carries its own text (the cue owns only the timing), so it
+  // survives restructures instead of being orphaned
+  const survived = project.beats.c1.find((beat) => beat.pinned && beat.text === pinnedText);
+  assert.ok(survived, 'edited beat was lost after the cue text changed');
+  assert.ok(!project.orphanBeats.c1 || project.orphanBeats.c1.length === 0, 'edited beat was orphaned');
 });
 
 test('line chunks keep every chunk under the max duration and inside the cue', () => {

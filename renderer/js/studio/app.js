@@ -7,7 +7,7 @@
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
   const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location'];
 
   const el = {};
@@ -51,7 +51,7 @@
     el.transport = document.querySelector('.transport');
     el.welcome = document.getElementById('welcome');
     el.welcomeStart = document.getElementById('welcome-start');
-    el.welcomeImport = document.getElementById('welcome-import');
+
     el.welcomeOpen = document.getElementById('welcome-open');
     el.welcomeLyrics = document.getElementById('welcome-lyrics');
     el.tpStart = document.getElementById('tp-start');
@@ -844,12 +844,19 @@
       intensity: opts.intensity == null ? lastRandom.intensity : Number(opts.intensity),
       locks: opts.locks == null ? lastRandom.locks : opts.locks,
     };
+    // effect colors should come from the current palette, not the raw color pool
+    const resolvedPalette = (doc.style && doc.style.palette) || null;
+    const paletteColors = resolvedPalette && Array.isArray(resolvedPalette.colors) ? resolvedPalette.colors : [];
+    const colors = paletteColors.length
+      ? [paletteColors[2], paletteColors[3], paletteColors[5] || paletteColors[3]].filter(Boolean)
+      : [];
     SA.random.apply(doc, {
       scope,
       paths,
       seed: lastRandom.seed,
       intensity: lastRandom.intensity,
       locks: lastRandom.locks,
+      colors,
       avoidRepeats: true,
       overwriteManual: !!opts.overwriteManual,
     });
@@ -924,86 +931,59 @@
           for (const group of AUTO_DIRECT_GROUPS) delete container[group];
           if (!Object.keys(container).length) delete projectDoc.cueStyles[cue.id];
         }
-        // 2) per-beat motion and colors: every beat (line) gets its own draw
+        // 2) per-cue motion inside the same theme: typeface, palette, color,
+        // layout, edge, post and background stay fixed for the whole song;
+        // only the entrance/exit change by section, and the beats breathe
+        // just a little (plus a rare subtle accent).
         projectDoc.beatStyles = projectDoc.beatStyles || {};
         for (const [beatId, existing] of Object.entries(projectDoc.beatStyles)) {
           for (const group of AUTO_DIRECT_BEAT_GROUPS) delete existing[group];
           if (!Object.keys(existing).length) delete projectDoc.beatStyles[beatId];
         }
+        const energy = Math.max(0, Math.min(1, Number(axes.energy) || 0.5));
+        const baseSize = Number((themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
         projectDoc.script.cues.forEach((cue, cueIndex) => {
           const cueContext = SA.moods.contextForCue(projectDoc, cue);
+          const generated = SA.moods.generate({ axes, seed: seed + cueIndex * 131 + 1, direction, context: cueContext }).style;
+          projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
+            enter: generated.enter,
+            exit: generated.exit,
+          });
           const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
           beats.forEach((beat, beatIndex) => {
             const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
-            const generated = SA.moods.generate({ axes, seed: beatSeed, direction, context: cueContext }).style;
-            // a fresh palette and a hue-shifted text color per beat, so the
-            // line colors really change while staying bright and readable
-            const palette = SA.moods.generatePalette(SA.rng.rngFor(beatSeed, beat.id, 'palette'), axes);
-            const colorRng = SA.rng.rngFor(beatSeed, beat.id, 'color');
-            const vary = (hex, hue, satMin, valMin) => {
-              const rgba = SA.color.parse(hex || '#eef2ff');
-              const hsv = SA.color.rgbToHsv(rgba);
-              const shifted = {
-                h: hsv.h + (colorRng() * 2 - 1) * hue,
-                s: Math.max(satMin, Math.min(1, hsv.s * (0.85 + colorRng() * 0.5))),
-                v: Math.max(valMin, Math.min(1, hsv.v * (0.92 + colorRng() * 0.16))),
-                a: 1,
-              };
-              return SA.color.toHex({ ...SA.color.hsvToRgb(shifted), a: 1 });
-            };
-            // keep every per-beat motion inside the beat so the line settles and
-            // stays readable before the next beat arrives
+            const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
+            const size = Math.round(baseSize * (0.9 + beatRng() * 0.25));
+            const beatPatch = { text: { size } };
             const beatDuration = Math.max(0.2, beat.end - beat.start);
-            const inDuration = Math.round(Math.min(0.5, beatDuration * 0.35) * 100) / 100;
-            const outDuration = Math.round(Math.min(0.4, beatDuration * 0.25) * 100) / 100;
-            const enter = {
-              ...generated.enter,
-              motion: { ...(generated.enter.motion || {}), in: { ...((generated.enter.motion || {}).in || {}), duration: inDuration } },
-            };
-            const exit = {
-              ...generated.exit,
-              motion: { ...(generated.exit.motion || {}), out: { ...((generated.exit.motion || {}).out || {}), duration: outDuration } },
-            };
-            const layoutMotion = (generated.layout && generated.layout.motion) || {};
-            const layout = {
-              ...(generated.layout || {}),
-              motion: {
-                ...layoutMotion,
-                in: { ...(layoutMotion.in || {}), duration: inDuration },
-                out: { ...(layoutMotion.out || {}), duration: outDuration },
-              },
-            };
-            const swatches = palette.colors || [];
-            const textHex = vary(swatches[2] || '#eef2ff', 80, 0.35, 0.75);
-            const accentHex = vary(swatches[3] || textHex, 80, 0.35, 0.7);
-            const variant = Math.floor(colorRng() * 3);
-            const color =
-              variant === 0
-                ? { kind: 'solid', value: textHex, alpha: 1 }
-                : variant === 1
-                  ? { kind: 'solid', value: accentHex, alpha: 1 }
-                  : {
-                      kind: 'gradient',
-                      type: 'linear',
-                      angle: Math.round(colorRng() * 360),
-                      stops: [
-                        { pos: 0, color: textHex, alpha: 1 },
-                        { pos: 1, color: accentHex, alpha: 1 },
-                      ],
-                    };
-            projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, {
-              layout,
-              location: generated.location,
-              edge: generated.edge,
-              animation: generated.animation,
-              enter,
-              exit,
-              hold: generated.hold,
-              post: generated.post,
-              color,
-              palette,
-            });
+            if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
+              beatPatch.hold = [
+                {
+                  type: 'pulse',
+                  params: { amount: Math.round((0.02 + energy * 0.08) * 1000) / 1000, bpm: Math.round(bpm) },
+                  enabled: true,
+                },
+              ];
+            }
+            projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);
           });
+        });
+
+        // gaps between the lyrics get their own animated shapes/patterns, so
+        // the background keeps moving where there is no text (and the timeline
+        // shows the filler clips)
+        projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, {
+          enabled: true,
+          minGap: 0.8,
+          margin: 0.15,
+          byKind: {
+            intro: { type: 'shapes', params: { set: 'burst', count: 22, speed: 1.1, opacity: 0.5 } },
+            interlude: analysis
+              ? { type: 'spectrum', params: { mode: 'bars', bars: 48, falloff: 1.1 } }
+              : { type: 'particles', params: { count: 40, flow: 'drift', size: 3 } },
+            outro: { type: 'pattern', params: { mode: 'rings', count: 18, size: 1.2, speed: 0.5, opacity: 0.4 } },
+          },
+          longGap: { threshold: 5, spec: { type: 'pattern', params: { mode: 'grid', count: 36, size: 1, speed: 0.4, opacity: 0.35 } } },
         });
       },
     });
@@ -1195,7 +1175,7 @@
       welcomeDismissed = true;
       renderPreview();
     });
-    el.welcomeImport.addEventListener('click', importProfile);
+
     el.welcomeOpen.addEventListener('click', openProject);
     el.welcomeLyrics.addEventListener('click', importLyrics);
     el.tpStart.addEventListener('click', () => seek(0));
@@ -1303,11 +1283,8 @@
       openRecent,
       saveProject,
       saveProjectAs,
-      importProfile,
       importLyrics,
       importAudio,
-      openAchievements,
-      generateScript: generateScriptDialog,
       distributeCues,
       restructureBeats,
       randomStyle: () => runRandomize('project', {}),
@@ -1318,7 +1295,6 @@
       autoDirect,
       applyPreset: presetDialog,
       fitAudio,
-      cardTheme: () => SA.colors.themeDialog(),
       palettes: () => SA.colors.paletteDialog(),
       themes: () => SA.themes.dialog(),
       editTheme: () => SA.themeEditor.open(null),
@@ -1375,12 +1351,13 @@
         platform.waitForHandoff(),
         new Promise((resolve) => setTimeout(() => resolve(null), 900)),
       ]);
-      if (payload && (payload.data || payload.dataset)) handoff = { dataset: payload.data || payload.dataset, lang: payload.lang };
+      if (payload && payload.cues) handoff = { cues: payload.cues, lang: payload.lang };
     }
 
     let projectDoc = null;
-    if (handoff && handoff.dataset) {
-      projectDoc = SA.project.create({ dataset: handoff.dataset, lang: handoff.lang || i18n.lang(), aspect: '16:9' });
+    if (handoff && handoff.cues) {
+      projectDoc = SA.project.create({ lang: handoff.lang || i18n.lang(), aspect: '16:9' });
+      projectDoc.script.cues = handoff.cues.map((cue) => ({ ...cue }));
     } else {
       projectDoc = await SA.io.loadAutosave();
     }

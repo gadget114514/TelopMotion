@@ -195,23 +195,49 @@ SA.preview = (() => {
     if (el.aspect) el.aspect.textContent = doc ? doc.output.aspect : '16:9';
   }
 
+  // Every font referenced by the theme, a cue or a beat has to be loaded:
+  // per-beat styles switch typefaces.
+  function collectFontIds(doc) {
+    const ids = new Set();
+    const add = (style) => {
+      const id = style && style.text && style.text.fontId;
+      if (id) ids.add(id);
+    };
+    add(doc.style);
+    for (const style of Object.values(doc.cueStyles || {})) add(style);
+    for (const style of Object.values(doc.beatStyles || {})) add(style);
+    for (const style of Object.values(doc.beatKindStyle || {})) add(style);
+    return [...ids];
+  }
+
   async function ensureFonts() {
     const doc = project();
     if (!doc) return;
     const cues = doc.script ? doc.script.cues || [] : [];
     const text = cues.map((cue) => cue.text || '').join('\n');
     const textStyle = (doc.style && doc.style.text) || {};
-    const fontId = textStyle.fontId || 'NotoSans-Regular';
-    const key = `${fontId}|${textStyle.weight || 400}|${SA.rng.hash32(text)}|${cues.length}`;
+    const fontIds = collectFontIds(doc);
+    if (!fontIds.length) fontIds.push(textStyle.fontId || 'NotoSans-Regular');
+    const key = `${fontIds.join(',')}|${textStyle.weight || 400}|${SA.rng.hash32(text)}|${cues.length}`;
     if (key === fontsKey && fonts) return;
     fontsKey = key;
     const request = ++fontRequest;
     setStatus('studio.preview.loadingFont');
     try {
-      const loaded = await SA.lyricsFont.ensure(text, fontId, { weight: textStyle.weight || 400 });
+      const list = [];
+      const seen = new Set();
+      const push = (entry) => {
+        if (entry && entry.font && !seen.has(entry.id)) {
+          seen.add(entry.id);
+          list.push(entry);
+        }
+      };
+      for (const id of fontIds) push(await SA.lyricsFont.load(id).catch(() => null));
+      const fallback = await SA.lyricsFont.ensure(text, textStyle.fontId || fontIds[0], { weight: textStyle.weight || 400 });
+      for (const entry of fallback) push(entry);
       if (request !== fontRequest) return;
-      fonts = loaded;
-      SA.lyricsFont.setActive(loaded);
+      fonts = list;
+      SA.lyricsFont.setActive(list);
       const doc2 = project();
       if (doc2 && SA.textflow) {
         SA.textflow.apply(doc2);

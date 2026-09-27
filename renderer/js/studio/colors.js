@@ -577,7 +577,7 @@ SA.colors = (() => {
     exportButton.textContent = t('color.exportPalettes');
     exportButton.addEventListener('click', async () => {
       const bytes = new TextEncoder().encode(JSON.stringify({ palettes: custom }, null, 2));
-      await SA.platform.saveFile({ bytes, name: 'sunostudio-palettes.json', mime: 'application/json' });
+      await SA.platform.saveFile({ bytes, name: 'telopmotion-palettes.json', mime: 'application/json' });
     });
     const importButton = document.createElement('button');
     importButton.type = 'button';

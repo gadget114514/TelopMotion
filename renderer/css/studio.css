@@ -250,6 +250,39 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
+.timeline-hscroll {
+  position: relative;
+  flex: none;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 5px;
+  background: #0d1017;
+  border: 1px solid var(--line);
+}
+
+.timeline-hscroll[hidden] {
+  display: none;
+}
+
+.timeline-hscroll-thumb {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  min-width: 24px;
+  border-radius: 5px;
+  background: #47516b;
+  cursor: grab;
+}
+
+.timeline-hscroll-thumb:hover {
+  background: #5b678a;
+}
+
+.timeline-hscroll-thumb.is-dragging {
+  background: var(--accent);
+  cursor: grabbing;
+}
+
 .timeline-head {
   display: flex;
   align-items: center;

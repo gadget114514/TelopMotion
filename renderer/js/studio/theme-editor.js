@@ -515,6 +515,10 @@ SA.themeEditor = (() => {
       axes.appendChild(row);
     }
     dialog.appendChild(axes);
+    const axesHint = document.createElement('div');
+    axesHint.className = 'insp-inherit';
+    axesHint.textContent = t('studio.themeEditor.axesHint');
+    dialog.appendChild(axesHint);
 
     const tools = document.createElement('div');
     tools.className = 'theme-editor-tools';

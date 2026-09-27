@@ -125,9 +125,9 @@ SA.themes = (() => {
   }
 
   async function exportFile() {
-    const payload = { kind: 'sunostudio-themes', version: 1, themes: userThemes() };
+    const payload = { kind: 'telopmotion-themes', version: 1, themes: userThemes() };
     const bytes = new TextEncoder().encode(JSON.stringify(payload, null, 2));
-    return SA.platform.saveFile({ bytes, name: 'sunostudio-themes.json', mime: 'application/json' });
+    return SA.platform.saveFile({ bytes, name: 'telopmotion-themes.json', mime: 'application/json' });
   }
 
   async function importFile() {

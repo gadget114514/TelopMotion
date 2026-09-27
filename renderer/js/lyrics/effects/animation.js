@@ -31,6 +31,21 @@
     defaults: { motion: { stagger: { each: 0 } } },
   });
 
+  // Shows the same string several times with a fading offset/scale trail.
+  // Manual only (overlapping copies are hard to read in automatic styles).
+  fx.register({
+    group: 'animation',
+    type: 'echo',
+    tags: ['overlap'],
+    params: [
+      { key: 'count', kind: 'int', min: 2, max: 6, step: 1, default: 3 },
+      { key: 'offset', kind: 'number', min: 0, max: 0.3, step: 0.01, default: 0.06, unit: 'frame' },
+      { key: 'scale', kind: 'number', min: 0.6, max: 1.3, step: 0.01, default: 0.94 },
+      { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },
+      { key: 'delay', kind: 'number', min: 0, max: 1, step: 0.02, default: 0.1 },
+    ],
+  });
+
   fx.register({
     group: 'animation',
     type: 'cascade',

@@ -394,13 +394,31 @@ SA.inspector = (() => {
       });
     }, ['custom', 'intro', 'badge', 'stat', 'song', 'completion', 'outro'].map((value) => ({ value, label: SA.controls.prettify(value) })));
     row(body, 'meta.kind', t('studio.inspector.kind'), kindSelect);
+    const actions = document.createElement('div');
+    actions.className = 'layer-order';
+    const addBeat = document.createElement('button');
+    addBeat.type = 'button';
+    addBeat.className = 'btn btn-mini';
+    addBeat.textContent = `+ ${t('studio.beat.addBeat')}`;
+    addBeat.addEventListener('click', () => SA.store.commands.addBeat(sel.cueId));
+    const removeCue = document.createElement('button');
+    removeCue.type = 'button';
+    removeCue.className = 'btn btn-mini';
+    removeCue.textContent = t('studio.beat.deleteCue');
+    removeCue.addEventListener('click', () => SA.store.commands.deleteCue(sel.cueId));
+    actions.appendChild(addBeat);
+    actions.appendChild(removeCue);
+    body.appendChild(actions);
   }
 
   function renderBeatSection(container) {
     const sel = selectionInfo();
     if (!sel.beatId) return;
     const doc = project();
-    const beat = (doc.beats[sel.cueId] || []).find((entry) => entry.id === sel.beatId);
+    const cue = doc.script.cues.find((entry) => entry.id === sel.cueId);
+    const beat =
+      (doc.beats[sel.cueId] || []).find((entry) => entry.id === sel.beatId) ||
+      (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
     if (!beat) return;
     const body = section(container, 'beat', `${t('studio.inspector.beat')} · ${t(`studio.beat.${beat.kind}`)}`);
     const head = document.createElement('div');
@@ -417,6 +435,7 @@ SA.inspector = (() => {
     button('studio.beat.splitAtPlayhead', () => SA.store.commands.splitBeat(sel.cueId, beat.id, SA.store.state.playhead));
     button('studio.beat.mergeNext', () => SA.store.commands.mergeBeats(sel.cueId, beat.id));
     button('studio.beat.restructureCue', () => SA.store.commands.restructureCue(sel.cueId));
+    button('studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id));
     body.appendChild(head);
     const beatText = SA.controls.textControl(beat.text || '', (value) => {
       SA.store.commands.editBeatText(sel.cueId, beat.id, value, { coalesceKey: `beat:${beat.id}:text` });
@@ -692,6 +711,128 @@ SA.inspector = (() => {
     body.appendChild(add);
   }
 
+  // Clones: draw the same string several times with per-copy offsets.
+  function renderClones(container) {
+    const style = resolvedStyle();
+    const list = Array.isArray(style.clones) ? style.clones : [];
+    const body = section(container, 'clones', t('studio.clones.title'));
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit';
+    hint.textContent = t('studio.clones.hint');
+    body.appendChild(hint);
+    if (!list.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.clones.empty');
+      body.appendChild(empty);
+    }
+    list.forEach((clone, index) => {
+      const box = document.createElement('div');
+      box.className = 'insp-stack-item';
+      const head = document.createElement('div');
+      head.className = 'insp-stack-head';
+      const name = document.createElement('span');
+      name.className = 'insp-inherit';
+      name.textContent = `${t('studio.clones.title')} ${index + 1}`;
+      head.appendChild(name);
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'btn btn-mini';
+      up.textContent = '↑';
+      up.addEventListener('click', () => {
+        if (index <= 0) return;
+        const next = [...list];
+        [next[index - 1], next[index]] = [next[index], next[index - 1]];
+        writeProp('clones', next);
+      });
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'btn btn-mini';
+      down.textContent = '↓';
+      down.addEventListener('click', () => {
+        if (index >= list.length - 1) return;
+        const next = [...list];
+        [next[index + 1], next[index]] = [next[index], next[index + 1]];
+        writeProp('clones', next);
+      });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.addEventListener('click', () => writeProp('clones', list.filter((entry, i) => i !== index)));
+      head.appendChild(up);
+      head.appendChild(down);
+      head.appendChild(remove);
+      box.appendChild(head);
+      const key = clone.id || `clone_${index}`;
+      const update = (patch, coalesceKey) => {
+        const next = list.map((entry, i) => (i === index ? { ...entry, ...patch } : entry));
+        writeProp('clones', next, { coalesceKey });
+      };
+      const enabledRow = document.createElement('label');
+      enabledRow.className = 'ctrl-bool-row';
+      enabledRow.textContent = t('studio.inspector.enabled');
+      enabledRow.appendChild(SA.controls.boolControl(clone.enabled !== false, (value) => update({ enabled: value })));
+      box.appendChild(enabledRow);
+      const fields = [
+        ['dx', clone.dx == null ? 0 : clone.dx, { step: 0.01, default: 0 }],
+        ['dy', clone.dy == null ? 0 : clone.dy, { step: 0.01, default: 0 }],
+        ['scale', clone.scale == null ? 1 : clone.scale, { min: 0.05, step: 0.05, default: 1 }],
+        ['rotate', clone.rotate == null ? 0 : clone.rotate, { step: 1, default: 0 }],
+        ['opacity', clone.opacity == null ? 0.5 : clone.opacity, { min: 0, max: 1, step: 0.05, default: 0.5 }],
+        ['hue', clone.hue == null ? 0 : clone.hue, { step: 5, default: 0 }],
+        ['delay', clone.delay == null ? 0 : clone.delay, { min: 0, step: 0.05, default: 0 }],
+      ];
+      for (const [field, value, param] of fields) {
+        const control = SA.controls.numberControl(param, value, (next) => update({ [field]: next }, `${key}:${field}`));
+        box.appendChild(fieldRow(t(`studio.clones.${field}`), control));
+      }
+      const motion = clone.motion || {};
+      box.appendChild(
+        fieldRow(
+          t('studio.clones.motion'),
+          SA.controls.selectControl({}, motion.type || 'none', (value) => update({ motion: { ...motion, type: value } }), ['none', 'drift', 'float', 'pulse', 'orbit', 'spin'].map((value) => ({ value, label: SA.controls.valueLabel(value) })))
+        )
+      );
+      box.appendChild(
+        fieldRow(
+          t('studio.clones.amount'),
+          SA.controls.numberControl({ min: 0, step: 0.005, default: 0.02 }, motion.amount == null ? 0.02 : motion.amount, (next) => update({ motion: { ...motion, amount: next } }, `${key}:amount`))
+        )
+      );
+      box.appendChild(
+        fieldRow(
+          t('studio.clones.speed'),
+          SA.controls.numberControl({ min: 0, step: 0.05, default: 0.5 }, motion.speed == null ? 0.5 : motion.speed, (next) => update({ motion: { ...motion, speed: next } }, `${key}:speed`))
+        )
+      );
+      body.appendChild(box);
+    });
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-mini';
+    add.textContent = `+ ${t('studio.clones.add')}`;
+    add.addEventListener('click', () => {
+      const id = `clone_${Math.random().toString(36).slice(2, 8)}`;
+      writeProp('clones', [
+        ...list,
+        {
+          id,
+          dx: 0,
+          dy: 0.05,
+          scale: 0.94,
+          rotate: 0,
+          opacity: 0.4,
+          hue: 25,
+          delay: 0.08,
+          motion: { type: 'drift', amount: 0.015, speed: 0.6 },
+          enabled: true,
+        },
+      ]);
+    });
+    body.appendChild(add);
+  }
+
   function instanceFor(group) {
     const style = resolvedStyle();
     const value = style[group];
@@ -813,6 +954,83 @@ SA.inspector = (() => {
     catRow.textContent = t('studio.inspector.useCategory');
     catRow.appendChild(SA.controls.boolControl(useCategory, (value) => writeProp('color.useCategory', value)));
     body.appendChild(catRow);
+  }
+
+  // Quick background / foreground layer list so the layers can be changed
+  // without opening the Layers dialog.
+  function renderLayersSummary(container) {
+    const doc = project();
+    const layers = Array.isArray(doc && doc.layers) ? doc.layers : [];
+    const body = section(container, 'layers', t('layers.title'));
+    if (!layers.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('layers.empty');
+      body.appendChild(empty);
+    }
+    const move = (from, to) => {
+      if (to < 0 || to >= layers.length) return;
+      const next = [...layers];
+      [next[from], next[to]] = [next[to], next[from]];
+      SA.store.commands.setLayers(next);
+    };
+    layers.forEach((layer, index) => {
+      const line = document.createElement('div');
+      line.className = 'ctrl-row';
+      const label = document.createElement('span');
+      label.className = 'ctrl-label';
+      const slot = layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground');
+      const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
+      label.textContent = `${slot} · ${type}`;
+      line.appendChild(label);
+      const actions = document.createElement('span');
+      actions.className = 'layer-order';
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'btn btn-mini';
+      toggle.textContent = layer.enabled === false ? t('layers.show') : t('layers.hide');
+      toggle.addEventListener('click', () => SA.store.commands.setLayer(layer.id, { enabled: layer.enabled === false }));
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'btn btn-mini';
+      up.textContent = '↑';
+      up.addEventListener('click', () => move(index, index - 1));
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'btn btn-mini';
+      down.textContent = '↓';
+      down.addEventListener('click', () => move(index, index + 1));
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.addEventListener('click', () => SA.store.commands.removeLayer(layer.id));
+      actions.appendChild(toggle);
+      actions.appendChild(up);
+      actions.appendChild(down);
+      actions.appendChild(remove);
+      line.appendChild(actions);
+      body.appendChild(line);
+    });
+    const actions = document.createElement('div');
+    actions.className = 'layer-order';
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'btn btn-mini';
+    edit.textContent = t('layers.edit');
+    edit.addEventListener('click', () => SA.layersDialog.open());
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-mini';
+    add.textContent = `+ ${t('layers.add')}`;
+    add.addEventListener('click', () => {
+      const layer = SA.layersDialog.defaults('background');
+      SA.store.commands.addLayer(layer);
+      SA.layersDialog.open();
+    });
+    actions.appendChild(add);
+    actions.appendChild(edit);
+    body.appendChild(actions);
   }
 
   function renderLayerSection(container) {
@@ -1153,6 +1371,22 @@ SA.inspector = (() => {
       actions.appendChild(resetButton);
     }
     body.appendChild(actions);
+    // theme editing entry points: current look -> new theme, or the theme list
+    const themeActions = document.createElement('div');
+    themeActions.className = 'insp-actions';
+    const editTheme = document.createElement('button');
+    editTheme.type = 'button';
+    editTheme.className = 'btn btn-mini';
+    editTheme.textContent = t('studio.settings.editTheme');
+    editTheme.addEventListener('click', () => SA.themeEditor.open(null));
+    const themeList = document.createElement('button');
+    themeList.type = 'button';
+    themeList.className = 'btn btn-mini';
+    themeList.textContent = t('studio.settings.themes');
+    themeList.addEventListener('click', () => SA.themes.dialog());
+    themeActions.appendChild(editTheme);
+    themeActions.appendChild(themeList);
+    body.appendChild(themeActions);
   }
 
   function render() {
@@ -1181,11 +1415,13 @@ SA.inspector = (() => {
     renderBeatSection(el.body);
     renderTransform(el.body);
     renderTextSection(el.body);
+    renderLayersSummary(el.body);
     for (const group of CONTROL_GROUPS) {
       if (STACK_GROUPS.includes(group)) renderStackGroup(el.body, group);
       else renderGroup(el.body, group);
     }
     renderCustomMotions(el.body);
+    renderClones(el.body);
     renderColor(el.body);
     renderPalette(el.body);
     lastSelection = key;

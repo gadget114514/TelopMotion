@@ -73,6 +73,22 @@
     cost: 2,
   });
 
+  // Animated background patterns (grid / dots / stripes / rings).
+  fx.register({
+    group: 'background',
+    type: 'pattern',
+    tags: ['featured'],
+    params: [
+      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings'], default: 'grid' },
+      { key: 'count', kind: 'int', min: 4, max: 120, step: 1, default: 24 },
+      { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
+      { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.55 },
+      { key: 'color', kind: 'color', default: null },
+    ],
+    cost: 2,
+  });
+
   // Animated shapes drawn behind the lyrics (reuses the filler shape renderer).
   fx.register({
     group: 'background',

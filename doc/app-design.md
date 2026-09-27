@@ -115,7 +115,7 @@ Use these terms in code (identifiers), UI (i18n keys), docs, and commits. Don't 
 | **Studio** | スタジオ | The editor page `studio.html`, §10. |
 | **Menu bar, Media panel, Preview, Transport, Inspector, Timeline** | メニューバー、メディアパネル、プレビュー、トランスポート、インスペクター、タイムライン | The Studio's areas (§10.2–10.7). Transport = play/pause/seek controls. |
 | **Track / Clip / Lane** | トラック／クリップ／レーン | Timeline row / block on a row (cue, beat, filler, credit, layer) / per-property keyframe row. |
-| **Project** | プロジェクト | The `.sunostudio.json` document, §4.5. |
+| **Project** | プロジェクト | The `.telopmotion.json` document, §4.5. |
 | **Handoff** | 受け渡し | Passing the dataset from the Achievements page to the Studio. |
 | **Platform** | プラットフォーム | `SA.platform`: the Electron or web adapter, §5.1. |
 | **Electron build / Web build** | Electron版／Web版 | The same `renderer/`, run in Electron or served from GitHub Pages. |
@@ -324,10 +324,10 @@ A file is valid when `Array.isArray(songs) && profile` (the same check as in `ma
 
 Layout is special: the `in` progress moves letters from the start formation to the target, and the `out` progress moves them from the target to the exit formation.
 
-### 4.5 Project (`.sunostudio.json`, handled by `js/studio/project.js`)
+### 4.5 Project (`.telopmotion.json`, handled by `js/studio/project.js`)
 ```js
 {
-  format: 'sunostudio', version: 1,
+  format: 'telopmotion', version: 1,
   meta: { title, createdAt, updatedAt, lang },
   output: { aspect: '16:9'|'9:16', fps: 30|60, width, height /*derived*/, durationMode: 'cues'|'audio'|'max', range: null|{from,to},
             maxDuration: null|seconds,            // §7.17 user-set upper limit (null = unlimited)
@@ -1358,7 +1358,7 @@ The Studio is the main mode and does **not require Suno profile data**. Lyrics c
 
 - **SRT** (§4.3): the existing parser. `<b>/<i>/<u>/<font color>` become `spans`, `{fx:…}` tags become `cue.fx`, `\N`/`\n`/`\h` are unescaped.
 - **LRC** (new): `[mm:ss.xx]`, `[mm:ss.xxx]`, `[h:mm:ss.xx]` and multiple time tags per line are supported. Metadata tags (`[ti:]`, `[ar:]`, `[al:]`, `[by:]`, `[length:]`) land in `meta`; `[offset:+/-ms]` is applied to every tag (positive = show earlier). A time tag with no text is an **instrumental marker**: it closes the previous cue and creates nothing. Each cue ends at the next tag; the last cue gets an estimated reading length. Enhanced word tags (`<mm:ss.xx>`) are stripped from the text and kept as `cue.words` for future word-level timing.
-- **JSON**: an array of entries or an object with `cues` / `segments` (Whisper) / `lines` / `lyrics`. Entry keys: `text|lyric|line|content|value`; `start|startTime|from|time|t`; `end|endTime|to` and `duration|length`. Times are seconds, `mm:ss.xx` / `hh:mm:ss.xx` strings, or milliseconds when `unit: 'ms'` is given or the file clearly uses ms (all integers and ≥ 60 000). Missing ends fall back to the next start and then to the same estimate as LRC. A Studio project file (`.sunostudio.json`) is detected and reported instead of being parsed as lyrics.
+- **JSON**: an array of entries or an object with `cues` / `segments` (Whisper) / `lines` / `lyrics`. Entry keys: `text|lyric|line|content|value`; `start|startTime|from|time|t`; `end|endTime|to` and `duration|length`. Times are seconds, `mm:ss.xx` / `hh:mm:ss.xx` strings, or milliseconds when `unit: 'ms'` is given or the file clearly uses ms (all integers and ≥ 60 000). Missing ends fall back to the next start and then to the same estimate as LRC. A Studio project file (`.telopmotion.json`) is detected and reported instead of being parsed as lyrics.
 
 **Export:** *Output → Export lyrics* writes SRT (with optional `{fx:}` tags), LRC (`[mm:ss.xx]` + optional metadata) or JSON (`{ cues: [{ start, end, text }] }`, or ms with `unit: 'ms'`).
 
@@ -1594,7 +1594,7 @@ A custom DOM menu bar (not the native Electron menu, so it works the same on the
 - **Images:** thumbnails of the uploaded images, the avatar and song covers (loaded with `platform.loadImage`). Drag an image onto the preview background to set `background: image`, or onto the letters to set `fill: textureFill`.
 - **Fonts:** the built-in and user fonts, each previewed with the sample "Aa あア 123" (drawn on a canvas). Click to apply to the selection; drag onto a letter or cue to apply to it.
 - **Subtitles:** the imported .srt files; "Use" replaces the script with an undoable command.
-- **Storage:** media files are kept in IndexedDB `sa-studio/blobs` (web) or `userData/studio-media/<hash>` (Electron, through new IPC `media:put`/`media:get`). The project stores only `dataRef` keys. "Save project as" can optionally save a `.sunostudio.zip`-like bundle: skip this in v1 and document it.
+- **Storage:** media files are kept in IndexedDB `sa-studio/blobs` (web) or `userData/studio-media/<hash>` (Electron, through new IPC `media:put`/`media:get`). The project stores only `dataRef` keys. "Save project as" can optionally save a `.telopmotion.zip`-like bundle: skip this in v1 and document it.
 
 ### 10.5 `preview.js` — Preview (center)
 - **Stage:** the WebGL canvas at output resolution × preview scale. The preview scale is Auto: if the average frame time over 30 frames is above 20 ms, drop to 0.5, and then to 0.25.
@@ -1715,7 +1715,7 @@ A custom DOM menu bar (not the native Electron menu, so it works the same on the
 - **Re-roll** = the same scope with `seed + 1`. The seed is shown in the dialog and can be edited, so results can be reproduced.
 
 ### 10.10 `io.js` — project files and autosave
-- **Save:** `JSON.stringify(project)` → `platform.saveFile` (`.sunostudio.json`). Media blobs are not included in v1; the file only references them.
+- **Save:** `JSON.stringify(project)` → `platform.saveFile` (`.telopmotion.json`). Media blobs are not included in v1; the file only references them.
   - On open, missing media are listed with "Relink…" buttons.
 - **Open:** `platform.readFile` → `project.migrate` → `store.load`.
 - **Autosave:** every 30 s and on `visibilitychange`/`beforeunload`, when something has changed. Kept in IndexedDB `sa-studio/autosave` (web) or `userData/studio-autosave.json` (Electron, through new IPC `studio:autosave-write/read`).

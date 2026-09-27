@@ -52,7 +52,7 @@
     if (format === 'json') {
       const raw = tryJson(source);
       if (raw == null) return { format, cues: [], warnings: [{ code: 'invalid-json', line: 1, message: 'The file is not valid JSON' }] };
-      if (raw.format === 'sunostudio') return { format, cues: [], warnings: [], project: true };
+      if (raw.format === 'telopmotion') return { format, cues: [], warnings: [], project: true };
       const result = lyricsJson.parse(raw);
       return { format, cues: result.cues, warnings: result.warnings };
     }

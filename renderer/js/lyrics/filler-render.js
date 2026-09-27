@@ -67,6 +67,15 @@
     return sum / (hi - lo);
   }
 
+  // Without an audio track there is no analysis frame; synthesize a moving
+  // spectrum so level meters still animate.
+  function synthesizedBand(index, count, time) {
+    const shape = 0.25 + 0.6 * Math.pow(Math.sin(((index + 0.5) / count) * Math.PI), 0.7);
+    const wobble = 0.55 + 0.45 * Math.sin(time * 2.1 + index * 0.55);
+    const pulse = 0.6 + 0.4 * Math.sin(time * 3.4 + index * 0.23);
+    return Math.max(0.06, Math.min(1, shape * wobble * pulse));
+  }
+
   function arcShapes(parts, options) {
     const { x, y, r, from, to, thickness, color, opacity } = options;
     const steps = Math.max(6, Math.round(Math.abs(to - from) * 48));
@@ -175,11 +184,12 @@
     const bars = Math.max(8, Math.min(128, Math.round(num(params.bars, 48))));
     const falloff = Math.max(0.05, num(params.falloff, 1));
     const frame = frameAt(ctx.analysis, ctx.time);
+    const spectrum = (index) => (frame ? bandValue(frame, index, bars) : synthesizedBand(index, bars, ctx.time) * 0.9);
     const shapes = [];
     if (mode === 'radial') {
       for (let i = 0; i < bars; i += 1) {
         const angle = (i / bars) * TAU - Math.PI / 2;
-        const value = Math.pow(clamp01(bandValue(frame, i, bars) * 2.4 * falloff), 1.2);
+        const value = Math.pow(clamp01(spectrum(i) * 2.4 * falloff), 1.2);
         const r0 = height * 0.12;
         const r1 = r0 + height * 0.22 * value;
         shapes.push({
@@ -198,7 +208,7 @@
     if (mode === 'blob') {
       for (let i = 0; i < bars; i += 1) {
         const angle = (i / bars) * TAU - Math.PI / 2;
-        const value = clamp01(bandValue(frame, i, bars) * 2.6 * falloff);
+        const value = clamp01(spectrum(i) * 2.6 * falloff);
         const r = height * 0.08 + height * 0.16 * value;
         shapes.push({ kind: 'circle', x: width / 2 + Math.cos(angle) * r, y: height / 2 + Math.sin(angle) * r, r: height * 0.012 + value * height * 0.02, color, opacity: 0.7 });
       }
@@ -208,7 +218,7 @@
     const span = width - margin * 2;
     const barWidth = (span / bars) * 0.72;
     for (let i = 0; i < bars; i += 1) {
-      const value = Math.pow(clamp01(bandValue(frame, i, bars) * 2.4 * falloff), 1.2);
+      const value = Math.pow(clamp01(spectrum(i) * 2.4 * falloff), 1.2);
       const h = Math.max(height * 0.004, height * 0.34 * value);
       shapes.push({
         kind: 'rect',
@@ -299,6 +309,73 @@
         const angle = ctx.time * speed * (0.4 + rr) + rr * TAU;
         shapes.push({ kind: 'circle', x: width / 2 + Math.cos(angle) * radius, y: height / 2 + Math.sin(angle) * radius, r: short * (0.008 + rr * 0.012), color, opacity: 0.85 });
       }
+    }
+    return { shapes, texts: [] };
+  }
+
+  // Animated background patterns (grid / dots / stripes / rings).
+  function patternShapes(params, ctx) {
+    const width = ctx.frame.width;
+    const height = ctx.frame.height;
+    const color = colorOf(params, ctx, '#8d96ab');
+    const mode = params.mode || 'grid';
+    const count = Math.max(4, Math.min(120, Math.round(num(params.count, 24))));
+    const size = Math.max(0.2, num(params.size, 1)) * (height / 1080);
+    const speed = num(params.speed, 0.4);
+    const opacity = num(params.opacity, 0.5);
+    const shapes = [];
+    const short = Math.min(width, height);
+    if (mode === 'stripes') {
+      const bar = Math.max(1, short * 0.02 * size);
+      for (let i = 0; i < count; i += 1) {
+        const phase = ((ctx.time * speed * 0.1 + i / count) % 1 + 1) % 1;
+        shapes.push({ kind: 'rect', x: phase * width * 1.2 - width * 0.1, y: 0, w: bar, h: height, radius: bar / 2, color, opacity: opacity * (0.45 + 0.55 * ((i % 3) / 2)) });
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'dots') {
+      const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+      const rows = Math.max(2, Math.ceil(count / cols));
+      for (let i = 0; i < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        const pulse = 0.5 + 0.5 * Math.sin(ctx.time * speed * 2 + (gx - gy) * 0.6);
+        shapes.push({
+          kind: 'circle',
+          x: (width * (gx + 0.5)) / cols,
+          y: (height * (gy + 0.5)) / rows,
+          r: short * 0.004 * size * (0.6 + 0.9 * pulse),
+          color,
+          opacity: opacity * (0.4 + 0.6 * pulse),
+        });
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'rings') {
+      for (let i = 0; i < count; i += 1) {
+        const phase = ((ctx.time * speed * 0.25 + i / count) % 1 + 1) % 1;
+        shapes.push({ kind: 'ring', x: width / 2, y: height / 2, r: phase * short * 0.7, thickness: Math.max(1, short * 0.002 * size), color, opacity: opacity * (0.5 + 0.5 * (1 - phase)) });
+      }
+      return { shapes, texts: [] };
+    }
+    const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+    const rows = Math.max(2, Math.ceil(count / cols));
+    const cellW = width / cols;
+    const cellH = height / rows;
+    for (let i = 0; i < count; i += 1) {
+      const gx = i % cols;
+      const gy = Math.floor(i / cols);
+      const pulse = 0.5 + 0.5 * Math.sin(ctx.time * speed * 1.6 + (gx + gy) * 0.7);
+      shapes.push({
+        kind: 'rect',
+        x: gx * cellW + cellW * 0.12,
+        y: gy * cellH + cellH * 0.12,
+        w: cellW * 0.76,
+        h: cellH * 0.76,
+        radius: Math.min(cellW, cellH) * 0.12,
+        color,
+        opacity: opacity * (0.3 + 0.7 * pulse),
+      });
     }
     return { shapes, texts: [] };
   }
@@ -397,6 +474,7 @@
     if (type === 'spectrum') return spectrumShapes(params, ctx);
     if (type === 'sineWave') return sineWaveShapes(params, ctx);
     if (type === 'shapes') return shapesShapes(params, ctx);
+    if (type === 'pattern') return patternShapes(params, ctx);
     if (type === 'particles') return particlesShapes(params, ctx);
     if (type === 'progress') return progressShapes(params, ctx);
     if (type === 'instrumental') {
@@ -414,7 +492,7 @@
     return { shapes: [], texts: [] };
   }
 
-  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'particles', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
+  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
 
   const PARAMS = {
     none: [],
@@ -446,6 +524,14 @@
       { key: 'count', kind: 'int', min: 1, max: 48, step: 1, default: 8 },
       { key: 'speed', kind: 'number', min: 0, max: 4, step: 0.1, default: 1 },
       { key: 'color', kind: 'color', default: '#ff8a3d' },
+    ],
+    pattern: [
+      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings'], default: 'grid' },
+      { key: 'count', kind: 'int', min: 4, max: 120, step: 1, default: 24 },
+      { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
+      { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.6 },
+      { key: 'color', kind: 'color', default: '#8d96ab' },
     ],
     particles: [
       { key: 'count', kind: 'int', min: 1, max: 120, step: 1, default: 24 },

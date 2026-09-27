@@ -242,9 +242,21 @@ SA.glShaders = (() => {
   in vec2 v_uv;
   uniform sampler2D u_texture;
   uniform float u_opacity;
+  uniform vec2 u_offset;
+  uniform float u_scale;
+  uniform float u_angle;
   out vec4 fragColor;
   void main() {
-    fragColor = texture(u_texture, v_uv) * u_opacity;
+    vec2 p = v_uv - 0.5;
+    float c = cos(u_angle);
+    float s = sin(u_angle);
+    p = mat2(c, -s, s, c) * p;
+    vec2 uv = p / max(0.0001, u_scale) + 0.5 + u_offset;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+      fragColor = vec4(0.0);
+      return;
+    }
+    fragColor = texture(u_texture, uv) * u_opacity;
   }`;
 
   // --- fill pass ---------------------------------------------------------------

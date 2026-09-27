@@ -8,7 +8,7 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  const FORMAT = 'sunostudio';
+  const FORMAT = 'telopmotion';
   const VERSION = 1;
 
   const DEFAULT_CATEGORY_COLORS = {

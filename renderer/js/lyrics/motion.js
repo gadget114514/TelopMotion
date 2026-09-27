@@ -195,6 +195,22 @@
     }
   }
 
+  // Applies the scope style transform (cue / beat level) to a letter state.
+  function applyStyleTransform(state, transform) {
+    if (!transform) return;
+    state.x += num(transform.x);
+    state.y += num(transform.y);
+    state.rot += num(transform.rotate);
+    const scale = transform.scale == null ? 1 : num(transform.scale, 1);
+    if (transform.scaleX != null) state.scaleX *= num(transform.scaleX, 1);
+    else state.scaleX *= scale;
+    if (transform.scaleY != null) state.scaleY *= num(transform.scaleY, 1);
+    else state.scaleY *= scale;
+    if (transform.opacity != null) state.opacity *= num(transform.opacity, 1);
+    state.tiltX += num(transform.tiltX);
+    state.tiltY += num(transform.tiltY);
+  }
+
   function collectKeyframes(letter, project, local, paramOverrides) {
     const deltas = { dx: 0, dy: 0, rot: 0, tiltX: 0, tiltY: 0, scale: 1, scaleX: 1, scaleY: 1, opacity: 1, colorMix: null };
     if (!project || !project.keyframes) return deltas;
@@ -604,6 +620,7 @@
       }
 
       applyOverrides(state, letter, project, centers);
+      applyStyleTransform(state, style.transform);
       applyKeyframeDeltas(state, keyframeDeltas);
 
       state.opacity = clamp01(state.opacity);
@@ -645,6 +662,8 @@
     { id: 'flipIn', group: 'entrance', phase: 'enter', type: 'flip3D', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: {} },
     { id: 'glitchIn', group: 'entrance', phase: 'enter', type: 'glitchIn', from: 'start', delay: 0, duration: 0.6, ease: 'linear', params: {} },
     { id: 'pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
+    { id: 'opacityPulse', group: 'emphasis', phase: 'hold', type: 'opacityPulse', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: {} },
+    { id: 'growShrink', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.2, duration: 1.6, ease: 'linear', params: { amount: 0.18, bpm: 90 } },
     { id: 'sway', group: 'emphasis', phase: 'hold', type: 'sway', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'bob', group: 'emphasis', phase: 'hold', type: 'floatBob', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'breathe', group: 'emphasis', phase: 'hold', type: 'breathing', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },

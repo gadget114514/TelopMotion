@@ -7,7 +7,7 @@ const project = require('../../renderer/js/studio/project');
 
 test('defaults produce a valid version 1 project', () => {
   const doc = project.defaults();
-  assert.strictEqual(doc.format, 'sunostudio');
+  assert.strictEqual(doc.format, 'telopmotion');
   assert.strictEqual(doc.version, 1);
   assert.strictEqual(doc.output.aspect, '16:9');
   assert.strictEqual(doc.output.width, 1920);
@@ -31,7 +31,7 @@ test('mergeDeep merges objects and replaces arrays', () => {
 });
 
 test('migrate fills missing fields, keeps unknown fields and bumps the version', () => {
-  const raw = { format: 'sunostudio', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
+  const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
   assert.strictEqual(result.ok, true);
   assert.strictEqual(result.project.version, 1);
@@ -43,7 +43,7 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
 
 test('migrate rejects other formats and newer versions', () => {
   assert.strictEqual(project.migrate({ format: 'other', version: 1 }).ok, false);
-  assert.strictEqual(project.migrate({ format: 'sunostudio', version: 99 }).ok, false);
+  assert.strictEqual(project.migrate({ format: 'telopmotion', version: 99 }).ok, false);
   assert.strictEqual(project.migrate(null).ok, false);
 });
 

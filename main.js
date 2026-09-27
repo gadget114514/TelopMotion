@@ -3,56 +3,27 @@
 const { app, BrowserWindow, ipcMain, dialog, shell, session, nativeImage } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
-const { normalizeHandle, fetchAll, fetchClip } = require('./lib/suno-core');
-
 const SMOKE = !!process.env.SA_SMOKE;
 const SUNO_URL_RE = /^https:\/\/(?:www\.)?suno\.com\//i;
 
-function cacheDir() {
-  return path.join(app.getPath('userData'), 'cache');
-}
+const FIXTURE_CUES = [
+  { id: 'c1', start: 0, end: 4, text: 'First line of the song' },
+  { id: 'c2', start: 4.5, end: 8, text: 'Second line of the song' },
+  { id: 'c3', start: 8.5, end: 12, text: 'Third line of the song' },
+  { id: 'c4', start: 12.5, end: 16, text: 'Fourth line of the song' },
+  { id: 'c5', start: 16.5, end: 20, text: 'Fifth line of the song' },
+  { id: 'c6', start: 20.5, end: 24, text: 'Sixth line of the song' },
+  { id: 'c7', start: 24.5, end: 28, text: 'Seventh line of the song' },
+  { id: 'c8', start: 28.5, end: 32, text: 'Eighth line of the song' },
+  { id: 'c9', start: 32.5, end: 36, text: 'Ninth line of the song' },
+  { id: 'c10', start: 36.5, end: 40, text: 'Tenth line of the song' },
+  { id: 'c11', start: 40.5, end: 44, text: 'Eleventh line of the song' },
+  { id: 'c12', start: 44.5, end: 48, text: 'Twelfth line of the song' },
+];
 
-function cachePath(handle) {
-  return path.join(cacheDir(), `${handle.toLowerCase()}.json`);
-}
-
-function readCache(handle) {
-  try {
-    return JSON.parse(fs.readFileSync(cachePath(handle), 'utf8'));
-  } catch {
-    return null;
-  }
-}
-
-function writeCache(handle, data) {
-  try {
-    fs.mkdirSync(cacheDir(), { recursive: true });
-    fs.writeFileSync(cachePath(handle), JSON.stringify(data, null, 2));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function listCache() {
-  try {
-    return fs
-      .readdirSync(cacheDir())
-      .filter((file) => file.toLowerCase().endsWith('.json'))
-      .map((file) => file.replace(/\.json$/i, ''))
-      .sort((a, b) => a.localeCompare(b));
-  } catch {
-    return [];
-  }
-}
-
-function removeCache(handle) {
-  try {
-    fs.unlinkSync(cachePath(handle));
-    return true;
-  } catch {
-    return false;
-  }
+async function primeStudio(win, query, lang) {
+  await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: query || {} });
+  win.webContents.send('studio:data', { cues: FIXTURE_CUES.map((cue) => ({ ...cue })), lang: lang || 'ja' });
 }
 
 function ok(data) {
@@ -96,93 +67,6 @@ async function fetchImageDataUrl(rawUrl) {
 }
 
 function registerIpc() {
-  ipcMain.handle('suno:fetch', async (event, payload) => {
-    try {
-      const handle = normalizeHandle(payload && payload.handle);
-      if (!handle) throw Object.assign(new Error('invalid-handle'), { code: 'invalid-handle' });
-      const data = await fetchAll(handle, {
-        onProgress: (progress) => {
-          if (!event.sender.isDestroyed()) {
-            event.sender.send('suno:progress', { handle, ...progress });
-          }
-        },
-      });
-      writeCache(handle, data);
-      return ok(data);
-    } catch (error) {
-      return fail(error);
-    }
-  });
-
-  ipcMain.handle('suno:clip', async (_event, payload) => {
-    try {
-      return ok(await fetchClip(payload && payload.id));
-    } catch (error) {
-      return fail(error);
-    }
-  });
-
-  ipcMain.handle('cache:list', () => ok(listCache()));
-
-  ipcMain.handle('cache:load', (_event, payload) => {
-    const handle = normalizeHandle(payload && payload.handle);
-    if (!handle) return fail(Object.assign(new Error('invalid-handle'), { code: 'invalid-handle' }));
-    const data = readCache(handle);
-    if (!data) return fail(Object.assign(new Error('cache-miss'), { code: 'cache-miss' }));
-    return ok(data);
-  });
-
-  ipcMain.handle('cache:remove', (_event, payload) => {
-    const handle = normalizeHandle(payload && payload.handle);
-    if (!handle) return fail(Object.assign(new Error('invalid-handle'), { code: 'invalid-handle' }));
-    return ok(removeCache(handle));
-  });
-
-  ipcMain.handle('cache:export', async (event, payload) => {
-    try {
-      const data = payload && payload.data;
-      if (!data || !Array.isArray(data.songs) || !data.profile) {
-        return fail(Object.assign(new Error('nothing-to-export'), { code: 'nothing-to-export' }));
-      }
-      const handle = normalizeHandle(data.profile.handle) || 'profile';
-      const owner = BrowserWindow.fromWebContents(event.sender);
-      const result = await dialog.showSaveDialog(owner, {
-        title: 'Export profile data',
-        defaultPath: `suno-${handle}.json`,
-        filters: [{ name: 'JSON', extensions: ['json'] }],
-      });
-      if (result.canceled || !result.filePath) return ok({ canceled: true });
-      fs.writeFileSync(result.filePath, JSON.stringify(data, null, 2));
-      return ok({ canceled: false, filePath: result.filePath });
-    } catch (error) {
-      return fail(error);
-    }
-  });
-
-  ipcMain.handle('cache:import', async (event) => {
-    try {
-      const owner = BrowserWindow.fromWebContents(event.sender);
-      const result = await dialog.showOpenDialog(owner, {
-        title: 'Import profile data',
-        properties: ['openFile'],
-        filters: [{ name: 'JSON', extensions: ['json'] }],
-      });
-      if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
-      const data = JSON.parse(fs.readFileSync(result.filePaths[0], 'utf8'));
-      if (!data || !Array.isArray(data.songs) || !data.profile) {
-        return fail(Object.assign(new Error('invalid-file'), { code: 'invalid-file' }));
-      }
-      const handle = normalizeHandle(data.profile.handle);
-      if (handle) {
-        data.profile.handle = handle;
-        writeCache(handle, data);
-      }
-      return ok({ canceled: false, data });
-    } catch (error) {
-      return fail(error);
-    }
-  });
-
   ipcMain.handle('file:open', async (event, payload) => {
     try {
       const owner = BrowserWindow.fromWebContents(event.sender);
@@ -410,7 +294,6 @@ function createWindow() {
     },
   });
 
-  const startPage = SMOKE && !process.env.SA_SMOKE_HOME ? 'index.html' : 'studio.html';
   if (SMOKE && process.env.SA_SMOKE_HOME) {
     try {
       fs.rmSync(path.join(app.getPath('userData'), 'studio-autosave.json'), { force: true });
@@ -418,7 +301,7 @@ function createWindow() {
       /* ignore */
     }
   }
-  win.loadFile(path.join(__dirname, 'renderer', startPage));
+  win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
 
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (SUNO_URL_RE.test(url)) shell.openExternal(url);
@@ -456,7 +339,7 @@ function createWindow() {
             const startButton = document.getElementById('welcome-start');
             const initial = {
               page: location.pathname.split('/').pop(),
-              dataset: !!project.dataset,
+              cues: project.script ? project.script.cues.length : 0,
               welcome: welcome ? !welcome.hidden : false,
               hasStart: !!startButton,
               hasLyricsFile: typeof window.SA.lyricsFile === 'object',
@@ -503,114 +386,10 @@ function createWindow() {
             });
           })()`);
           console.log('SMOKE_HOME=' + homeReport);
-          const homeFixture = {
-            profile: { handle: 'homecheck', displayName: 'Home Check', followers: 1 },
-            songs: [],
-            fetchedAt: new Date().toISOString(),
-            source: 'smoke',
-          };
-          await win.loadFile(path.join(__dirname, 'renderer', 'index.html'), { query: { home: '1' } });
-          win.webContents.send('studio:data', { data: homeFixture, lang: 'en' });
-          await new Promise((resolve) => setTimeout(resolve, 900));
-          const reverse = await win.webContents.executeJavaScript(`(() => {
-            const data = window.SA.app && window.SA.app.currentData ? window.SA.app.currentData() : null;
-            return JSON.stringify({
-              handle: data && data.profile ? data.profile.handle : null,
-              content: !document.getElementById('content').hidden,
-            });
-          })()`);
-          console.log('SMOKE_HOME_REVERSE=' + reverse);
-          await win.loadFile(path.join(__dirname, 'renderer', 'index.html'));
         }
-        const preloadOk = await win.webContents.executeJavaScript('typeof window.sunoApi === "object"');
-        const appOk = await win.webContents.executeJavaScript('typeof window.SA === "object" && typeof window.SA.app === "object"');
-        console.log(`SMOKE_PRELOAD=${preloadOk} SMOKE_APP=${appOk}`);
-        const report = await win.webContents.executeJavaScript(`(async () => {
-          await window.SA.app.openProfile('suno');
-          const started = Date.now();
-          while (document.getElementById('content').hidden && Date.now() - started < 30000) {
-            await new Promise((resolve) => setTimeout(resolve, 200));
-          }
-          return JSON.stringify({
-            content: !document.getElementById('content').hidden,
-            name: document.getElementById('hero-name').textContent,
-            badges: document.querySelectorAll('#badge-grid .badge').length,
-            unlocked: document.querySelectorAll('#badge-grid .badge.is-unlocked').length,
-            songs: document.querySelectorAll('#song-list .song').length,
-            stats: document.getElementById('stat-grid').textContent.replace(/\\s+/g, ' ').trim(),
-          });
-        })()`);
-        console.log(`SMOKE_FLOW=${report}`);
-        const langReport = await win.webContents.executeJavaScript(`(() => {
-          const select = document.getElementById('lang-select');
-          const original = select.value;
-          const missing = [];
-          for (const language of window.SA.i18n.languages) {
-            select.value = language.code;
-            select.dispatchEvent(new Event('change'));
-            const nodes = document.querySelectorAll(
-              '[data-i18n], #badge-grid h3, #badge-grid .badge-desc, #filter-chips .chip, #songs-sort option, #stat-grid .stat-label'
-            );
-            for (const node of nodes) {
-              const text = (node.textContent || '').trim();
-              if (!text || /^[a-z]+\\.[a-zA-Z_]+/.test(text)) missing.push(language.code + ':' + text);
-            }
-          }
-          select.value = original;
-          select.dispatchEvent(new Event('change'));
-          return JSON.stringify({ missing: [...new Set(missing)].slice(0, 8), count: missing.length });
-        })()`);
-        console.log(`SMOKE_LANGS=${langReport}`);
-        if (process.env.SA_SMOKE_SNAPSHOT) {
-          const lang = process.env.SA_SNAPSHOT_LANG || 'ja';
-          const encoded = await win.webContents.executeJavaScript(`(async () => {
-            const data = window.SA.app.currentData();
-            const evaluation = window.SA.achievements.evaluate(data);
-            const avatar = await window.SA.platform.loadImage(data.profile.avatar, data.profile.displayName);
-            const out = {};
-            for (const aspect of ['16:9', '9:16']) {
-              const blob = await window.SA.card.renderToBlob({ dataset: data, evaluation, aspect, theme: window.SA.card.theme(), images: { avatar }, lang: ${JSON.stringify(lang)}, generatedAt: new Date().toISOString(), type: 'image/jpeg', quality: 0.9 });
-              const bytes = new Uint8Array(await blob.arrayBuffer());
-              let binary = '';
-              for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-              out[aspect] = btoa(binary);
-            }
-            return JSON.stringify(out);
-          })()`);
-          const cards = JSON.parse(encoded);
-          for (const [aspect, base64] of Object.entries(cards)) {
-            const jpeg = Buffer.from(base64, 'base64');
-            const cardPath = path.join(app.getPath('temp'), `suno-card-smoke-${aspect.replace(':', 'x')}.jpg`);
-            fs.writeFileSync(cardPath, jpeg);
-            console.log(`SMOKE_SNAPSHOT=${cardPath} aspect=${aspect} bytes=${jpeg.length} magic=${jpeg[0].toString(16)}${jpeg[1].toString(16)}`);
-          }
-        }
-        if (process.env.SA_SMOKE_LAYOUT) {
-          win.setContentSize(1920, 1080);
-          win.setOpacity(0);
-          win.showInactive();
-          await new Promise((resolve) => setTimeout(resolve, 350));
-          const metrics = await win.webContents.executeJavaScript(`(() => {
-            const bottom = (sel) => {
-              const node = document.querySelector(sel);
-              return node ? Math.round(node.getBoundingClientRect().bottom) : null;
-            };
-            return JSON.stringify({
-              viewport: [window.innerWidth, window.innerHeight],
-              achievementsBottom: bottom('.achievements-card'),
-              songsTop: Math.round(document.querySelector('.songs-card').getBoundingClientRect().top),
-              badgeColumns: getComputedStyle(document.getElementById('badge-grid')).gridTemplateColumns.split(' ').length,
-              overviewColumns: getComputedStyle(document.querySelector('.overview')).gridTemplateColumns.split(' ').length,
-            });
-          })()`);
-          console.log(`SMOKE_LAYOUT=${metrics}`);
-          const layoutImage = await win.webContents.capturePage({ x: 0, y: 0, width: 1920, height: 1080 });
-          fs.writeFileSync(path.join(app.getPath('temp'), 'suno-layout-smoke.jpg'), layoutImage.toJPEG(85));
-        }
+
         if (process.env.SA_SMOKE_STUDIO) {
-          const datasetJson = await win.webContents.executeJavaScript('JSON.stringify(window.SA.app.currentData())');
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, {}, 'ja');
           const studio = await win.webContents.executeJavaScript(`(async () => {
             await new Promise((resolve) => setTimeout(resolve, 500));
             const before = {
@@ -631,9 +410,6 @@ function createWindow() {
             const undone = window.SA.store.state.project.output.fps;
             window.SA.store.redo();
             const redone = window.SA.store.state.project.output.fps;
-            const project = window.SA.store.state.project;
-            const cues = window.SA.scriptGen.build(window.SA.achievements.evaluate(project.dataset), project.dataset, {}, window.SA.i18n.t, window.SA.format);
-            window.SA.store.commands.generateScript(cues, {});
             const cueCount = window.SA.store.state.project.script.cues.length;
             await window.SA.io.saveAutosave(window.SA.store.state.project);
             const missing = [];
@@ -686,9 +462,7 @@ function createWindow() {
         }
 
         if (process.env.SA_SMOKE_SHOT) {
-          const datasetJson = await win.webContents.executeJavaScript('JSON.stringify(window.SA.app.currentData())');
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'en' });
+          await primeStudio(win, {}, 'en');
           win.setContentSize(1600, 1000);
           win.setOpacity(1);
           win.show();
@@ -702,11 +476,8 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return 'project-not-ready';
-            const project = window.SA.store.state.project;
-            const cues = window.SA.scriptGen.build(window.SA.achievements.evaluate(project.dataset), project.dataset, {}, window.SA.i18n.t, window.SA.format);
-            window.SA.store.commands.generateScript(cues, {});
             const doc = window.SA.store.state.project;
             const cue = doc.script.cues.find((entry) => (doc.beats[entry.id] || []).some((beat) => beat.text)) || doc.script.cues[0];
             await window.SA.preview.ensureFonts();
@@ -812,15 +583,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, {}, 'ja');
           const lyrics = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -831,7 +594,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             const doc = JSON.parse(JSON.stringify(window.SA.store.state.project));
             doc.script.cues = [{ id: 'smoke_cue', start: 0, end: 30, text: 'O 8 A あ 愛', spans: [], fx: {}, meta: { kind: 'custom' } }];
@@ -957,15 +720,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, {}, 'ja');
           const beatsReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -976,7 +731,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             const en = 'A journey of a thousand miles begins with a single step but every step is a story worth telling to someone.';
             const ja = '今日はとても良い天気なので、公園へ行って、写真を撮りました。明日も晴れるといいですね。それではまた会いましょう。';
@@ -1087,15 +842,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { motion: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { motion: '1' }, 'ja');
           const motionReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1106,7 +853,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             const CUE = 5;
             const styles = {
@@ -1209,15 +956,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { shaders: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { shaders: '1' }, 'ja');
           const shaderReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1228,7 +967,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             window.SA.store.commands.generateScript([
               { id: 's1', start: 0, end: 10, text: 'Shader coverage test', meta: { kind: 'custom' } },
@@ -1277,6 +1016,13 @@ function createWindow() {
             for (const type of ['particlesAssemble', 'shatterRebuild', 'strokeDrawOn', 'morphFromPrevious']) {
               results.representation.push({ type, ...render({ enter: { type, motion: { in: { duration: 1 } } } }, 11.5) });
             }
+            results.echo = render({ animation: { type: 'echo', params: { count: 4, offset: 0.08, opacity: 0.5 } } });
+            results.clones = render({
+              clones: [
+                { id: 'c1', dx: 0.06, dy: 0.05, scale: 0.9, rotate: -4, opacity: 0.5, hue: 30, delay: 0, motion: { type: 'drift', amount: 0.01, speed: 1 } },
+                { id: 'c2', dx: -0.06, dy: -0.04, scale: 0.8, rotate: 4, opacity: 0.35, hue: -40, delay: 0.1, motion: { type: 'orbit', amount: 0.01, speed: 0.8 } },
+              ],
+            });
             capturePng({ fill: { type: 'chrome', params: {} }, edge: [{ type: 'outline', params: {} }] }, 16, 'chrome');
             capturePng({ fill: { type: 'fire', params: {} }, edge: [{ type: 'neonGlow', params: { bloom: true } }] }, 16, 'fire');
             capturePng({ post: [{ type: 'glitchBlocks', params: {} }] }, 16, 'glitch');
@@ -1303,15 +1049,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { edit: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { edit: '1' }, 'ja');
           const editReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1322,7 +1060,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             window.SA.store.commands.generateScript([{ id: 'e1', start: 0, end: 12, text: 'Edit me', meta: { kind: 'custom' } }], {});
             await window.SA.preview.ensureFonts();
@@ -1455,15 +1193,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { timeline: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { timeline: '1' }, 'ja');
           const timelineReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1474,11 +1204,8 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
-            const project0 = window.SA.store.state.project;
-            const generated = window.SA.scriptGen.build(window.SA.achievements.evaluate(project0.dataset), project0.dataset, {}, window.SA.i18n.t, window.SA.format);
-            window.SA.store.commands.generateScript(generated, {});
             const cues = window.SA.store.state.project.script.cues;
             if (!cues.length) return JSON.stringify({ error: 'no-cues' });
             await window.SA.preview.ensureFonts();
@@ -1572,6 +1299,49 @@ function createWindow() {
                 if (data[i] + data[i + 1] + data[i + 2] > 90) ink += 1;
               }
             }
+            // Horizontal scrollbar + zoom-out fit: at the minimum zoom every cue
+            // fits, and a horizontal scrollbar appears when zoomed in.
+            const hscrollEl = document.getElementById('timeline-hscroll');
+            const thumbEl = document.getElementById('timeline-hscroll-thumb');
+            const scrollEl = document.getElementById('timeline-scroll');
+            const totalDuration = window.SA.preview.duration();
+            const availableWidth = (scrollEl ? scrollEl.clientWidth : 0) - 150;
+            window.SA.timeline.setZoom(60);
+            window.SA.timeline.draw();
+            const hscrollVisible = !!(hscrollEl && !hscrollEl.hidden);
+            const hscrollThumb = thumbEl ? thumbEl.offsetWidth : 0;
+            window.SA.timeline.setScrollX(999999);
+            const maxScroll = window.SA.timeline.getScrollX();
+            window.SA.timeline.setScrollX(0);
+            window.SA.timeline.setZoom(1);
+            const zoomAtMin = window.SA.timeline.getZoom();
+            const fitsAtMin = zoomAtMin * totalDuration <= availableWidth + 2;
+            // Editing a beat text must change the rendered frame and survive a
+            // restructure (the cue keeps only the timing).
+            const editCue = window.SA.store.state.project.script.cues[0];
+            const editBeat = (window.SA.store.state.project.beats[editCue.id] || [])[0];
+            let beatEditDiff = null;
+            let beatEditSurvives = null;
+            if (editBeat) {
+              const at = editBeat.start + (editBeat.end - editBeat.start) * 0.6;
+              const beforeShot = window.SA.preview.captureRGBA(at);
+              window.SA.store.commands.editBeatText(editCue.id, editBeat.id, 'ZZTESTZZ', {});
+              const afterShot = window.SA.preview.captureRGBA(at);
+              const storedText = (window.SA.store.state.project.beats[editCue.id] || [])[0].text;
+              const renderedChars = afterShot && afterShot.frame && afterShot.frame.cues[0] ? afterShot.frame.cues[0].letters.map((letter) => letter.char).join('') : '';
+              window.__beatEditDebug = { storedText, renderedChars };
+              if (beforeShot && afterShot) {
+                let diff = 0;
+                const length = Math.min(beforeShot.data.length, afterShot.data.length);
+                for (let i = 0; i < length; i += 4 * 64) {
+                  if (Math.abs(beforeShot.data[i] - afterShot.data[i]) + Math.abs(beforeShot.data[i + 1] - afterShot.data[i + 1]) + Math.abs(beforeShot.data[i + 2] - afterShot.data[i + 2]) > 40) diff += 1;
+                }
+                beatEditDiff = diff;
+              }
+              window.SA.store.commands.restructureCue(editCue.id);
+              const kept = (window.SA.store.state.project.beats[editCue.id] || []).find((entry) => entry.text === 'ZZTESTZZ');
+              beatEditSurvives = !!kept;
+            }
             // Selecting a beat on the timeline must show the beat in the inspector.
             const selCue = window.SA.store.state.project.script.cues[0];
             const selBeat = (window.SA.store.state.project.beats[selCue.id] || [])[0];
@@ -1588,6 +1358,14 @@ function createWindow() {
             }
             return JSON.stringify({
               inspectorBeat,
+              beatEditDiff,
+              beatEditSurvives,
+              beatEditDebug: window.__beatEditDebug,
+              hscrollVisible,
+              hscrollThumb,
+              maxScroll: Math.round(maxScroll),
+              zoomAtMin: Math.round(zoomAtMin * 100) / 100,
+              fitsAtMin,
               snapped: Math.round(snapped * 1000) / 1000,
               frameSnapped: Math.round(frameSnapped * 1000) / 1000,
               moved: moved ? Math.round(moved.start * 100) / 100 : null,
@@ -1619,15 +1397,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { random: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { random: '1' }, 'ja');
           const randomReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1638,11 +1408,8 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
-            const project = window.SA.store.state.project;
-            const generated = window.SA.scriptGen.build(window.SA.achievements.evaluate(project.dataset), project.dataset, {}, window.SA.i18n.t, window.SA.format);
-            window.SA.store.commands.generateScript(generated, {});
             await window.SA.preview.ensureFonts();
             const store = window.SA.store;
             const resolved = () => JSON.stringify(SA.project.resolveStyle(store.state.project, 'cue:' + store.state.project.script.cues[0].id));
@@ -1676,7 +1443,7 @@ function createWindow() {
             const guardKept = guard && guard.transform && guard.transform.x === 33 && !guard.enter;
             window.SA.random.apply(store.state.project, { scope: 'elements', paths: [path], seed: 5, overwriteManual: true });
             const forced = JSON.parse(JSON.stringify(store.state.project.overrides[path]));
-            const forcedWrote = !!(forced && forced.enter);
+            const forcedWrote = !!(forced && Object.keys(forced).some((group) => group !== 'transform'));
             // Palettes round-trip through localStorage and the built-in list.
             window.SA.colors.saveCustomPalettes([{ id: 'smoke1', name: 'Smoke', builtin: false, colors: ['#112233', '#445566'] }]);
             const custom = window.SA.colors.customPalettes();
@@ -1684,9 +1451,6 @@ function createWindow() {
             const paletteCount = custom.length;
             const paletteAll = window.SA.colors.allPalettes().length;
             window.SA.colors.saveCustomPalettes([]);
-            // Card theme applies to the card.
-            store.dispatch({ label: 'theme', areas: ['style'], do(doc) { doc.cardTheme = { ...doc.cardTheme, accent: '#00ff00' }; } });
-            const themeAccent = window.SA.card.theme(store.state.project).accent;
             // A gradient fill renders.
             const cueStyle = { fill: { type: 'gradientSweep', params: { angle: 30, speed: 0.4 } }, color: { fill: { kind: 'gradient', type: 'linear', angle: 30, stops: [{ pos: 0, color: '#ff0000', alpha: 1 }, { pos: 1, color: '#00ff00', alpha: 1 }] } } };
             store.commands.setStyle({ cueId: cue.id }, cueStyle);
@@ -1745,6 +1509,18 @@ function createWindow() {
               const c = beatStyles[b.id] && beatStyles[b.id].color;
               return c && c.value ? c.value : c && c.stops ? c.stops.map((s) => s.color).join('-') : null;
             }));
+            const autoFonts = new Set(allBeats.map((b) => (beatStyles[b.id] && beatStyles[b.id].text ? beatStyles[b.id].text.fontId : null)));
+            const autoSizes = allBeats.map((b) => (beatStyles[b.id] && beatStyles[b.id].text ? beatStyles[b.id].text.size : 0)).filter((value) => value);
+            const autoSizeRange = autoSizes.length ? [Math.min(...autoSizes), Math.max(...autoSizes)] : [];
+            // the theme (font, location, palette) must stay identical across beats
+            const beatResolved = allBeats.map((b) =>
+              window.SA.project.resolveStyle(store.state.project, 'cue:' + b.cueId + '/beat:' + b.id)
+            );
+            const themeFont = store.state.project.style.text && store.state.project.style.text.fontId;
+            const autoFontStable = beatResolved.every((s) => !s.text || !s.text.fontId || s.text.fontId === themeFont);
+            const autoLocationKinds = new Set(beatResolved.map((s) => JSON.stringify(s.location || null))).size;
+            const autoPaletteKinds = new Set(beatResolved.map((s) => (s.palette && s.palette.id) || null)).size;
+            const autoPostKinds = new Set(beatResolved.map((s) => JSON.stringify((s.post || []).map((entry) => entry.type)))).size;
             const sampleBeats = allBeats.slice(0, 4);
             const shots = sampleBeats.map((b) => window.SA.preview.captureRGBA(b.start + (b.end - b.start) * 0.75)).filter(Boolean);
             let autoPng = null;
@@ -1779,6 +1555,12 @@ function createWindow() {
               autoBeatPixelDiff: beatPixelDiff,
               autoPalettes: autoPalettes.size,
               autoColors: autoColors.size,
+              autoFonts: autoFonts.size,
+              autoSizeRange,
+              autoFontStable,
+              autoLocationKinds,
+              autoPaletteKinds,
+              autoPostKinds,
               presets: presets.length,
               presetApplied: afterPresets.enter && afterPresets.enter.type === 'elasticPop',
               deterministic,
@@ -1791,7 +1573,6 @@ function createWindow() {
               paletteRoundTrip,
               paletteCount,
               paletteAll,
-              themeAccent,
               ink,
               glError: window.SA.preview.debugError(),
               png: canvas.toDataURL('image/png'),
@@ -1819,15 +1600,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { export: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'ja' });
+          await primeStudio(win, { export: '1' }, 'ja');
           const exportReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1838,7 +1611,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             window.SA.store.commands.generateScript([{ id: 'x1', start: 0, end: 1.2, text: 'Export test', meta: { kind: 'custom' } }], {});
             await window.SA.preview.ensureFonts();
@@ -1947,15 +1720,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { layers: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'en' });
+          await primeStudio(win, { layers: '1' }, 'en');
           const layersReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -1966,7 +1731,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             const project = window.SA.store.state.project;
             window.SA.store.commands.generateScript([{ id: 'x1', start: 0, end: 1.5, text: 'Layer test', meta: { kind: 'custom' } }], {});
@@ -2168,15 +1933,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { audio: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'en' });
+          await primeStudio(win, { audio: '1' }, 'en');
           const audioReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -2187,7 +1944,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             const sampleRate = 16000;
             const samples = sampleRate * 2;
@@ -2279,15 +2036,7 @@ function createWindow() {
           win.setOpacity(0);
           win.showInactive();
           await new Promise((resolve) => setTimeout(resolve, 400));
-          const datasetJson = await win.webContents.executeJavaScript(`(() => {
-            if (window.SA.app && typeof window.SA.app.currentData === 'function' && window.SA.app.currentData()) {
-              return JSON.stringify(window.SA.app.currentData());
-            }
-            const project = window.SA.store && window.SA.store.state.project;
-            return project && project.dataset ? JSON.stringify(project.dataset) : 'null';
-          })()`);
-          await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'), { query: { fillers: '1' } });
-          win.webContents.send('studio:data', { data: JSON.parse(datasetJson), lang: 'en' });
+          await primeStudio(win, { fillers: '1' }, 'en');
           const fillersReport = await win.webContents.executeJavaScript(`(async () => {
             const until = async (test, timeout) => {
               const started = Date.now();
@@ -2298,7 +2047,7 @@ function createWindow() {
               }
               return null;
             };
-            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.dataset);
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
             window.SA.store.commands.generateScript([
               { id: 'x1', start: 2, end: 3.2, text: 'First line', meta: { kind: 'custom' } },
@@ -2426,27 +2175,6 @@ function createWindow() {
             console.log(`SMOKE_FILLERS_PNG=${target} bytes=${png.length}`);
           }
           console.log('SMOKE_FILLERS=' + JSON.stringify(parsedFillers));
-        }
-
-        if (process.env.SA_SMOKE_ERRORS) {
-          const notFound = await win.webContents.executeJavaScript(`(async () => {
-            await window.SA.app.openProfile('zzzznonexistentzzzz9');
-            return JSON.stringify({
-              errorVisible: !document.getElementById('error').hidden,
-              errorText: document.getElementById('error-text').textContent,
-              contentHidden: document.getElementById('content').hidden,
-            });
-          })()`);
-          console.log(`SMOKE_NOTFOUND=${notFound}`);
-          const invalid = await win.webContents.executeJavaScript(`(async () => {
-            await window.SA.app.openProfile('!!! not a handle !!!');
-            return JSON.stringify({
-              errorVisible: !document.getElementById('error').hidden,
-              errorText: document.getElementById('error-text').textContent,
-            });
-          })()`);
-          console.log(`SMOKE_INVALID=${invalid}`);
-          await win.webContents.executeJavaScript("window.SA.app.openProfile('suno')");
         }
       } catch (error) {
         console.error(`SMOKE_ERROR=${error.message}`);

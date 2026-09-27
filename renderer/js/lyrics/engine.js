@@ -186,6 +186,95 @@ SA.lyricsEngine = (() => {
       return previous;
     }
 
+    // `animation: echo` shows the same string several times with a fading
+    // scale/offset trail (drawn behind the main text).
+    function echoPlan(animation, beat, time, width, height) {
+      if (!animation || animation.type !== 'echo' || animation.enabled === false) return [];
+      const params = animation.params || {};
+      const count = Math.max(2, Math.min(6, Math.round(Number(params.count) || 3)));
+      const offset = Number(params.offset == null ? 0.06 : params.offset);
+      const scale = Number(params.scale == null ? 0.94 : params.scale);
+      const baseOpacity = params.opacity == null ? 0.35 : Number(params.opacity);
+      const delay = Number(params.delay == null ? 0.1 : params.delay);
+      const shortSide = Math.min(width, height);
+      const duration = Math.max(0.001, beat.end - beat.start);
+      const progress = Math.min(1, Math.max(0, (time - beat.start) / duration));
+      const copies = [];
+      for (let i = 1; i < count; i += 1) {
+        const appear = Math.min(1, Math.max(0, (progress - delay * i * 0.5) / 0.25));
+        if (appear <= 0) continue;
+        copies.push({
+          dx: (offset * i * shortSide * 0.7) / Math.max(1, width),
+          dy: (-offset * i * shortSide * 0.7) / Math.max(1, height),
+          scale: Math.pow(scale, i),
+          opacity: baseOpacity * appear * (1 - (i - 1) / count),
+        });
+      }
+      return copies;
+    }
+
+    // --- text clones (style.clones) -----------------------------------------
+    // Each clone redraws the text mask with its own offset / scale / rotation,
+    // color, opacity and motion, behind the main text.
+    function cloneEnvelope(clone, t, beat) {
+      const delay = Number(clone.delay) || 0;
+      return Math.min(1, Math.max(0, (t - (beat.start + delay)) / 0.25));
+    }
+
+    function cloneMotionState(clone, t) {
+      const motion = clone.motion || {};
+      const type = motion.type || 'none';
+      const amount = Number(motion.amount) || 0;
+      const speed = Number(motion.speed) || 0.5;
+      if (!amount || type === 'none') return { dx: 0, dy: 0, scale: 1, rotate: 0 };
+      if (type === 'drift') return { dx: amount * Math.sin(t * speed), dy: amount * 0.6 * Math.cos(t * speed * 0.8), scale: 1, rotate: 0 };
+      if (type === 'float') return { dx: 0, dy: amount * Math.sin(t * speed), scale: 1, rotate: 0 };
+      if (type === 'pulse') return { dx: 0, dy: 0, scale: 1 + amount * Math.sin(t * speed * 2), rotate: 0 };
+      if (type === 'orbit') return { dx: amount * Math.cos(t * speed), dy: amount * Math.sin(t * speed), scale: 1, rotate: 0 };
+      if (type === 'spin') return { dx: 0, dy: 0, scale: 1, rotate: amount * 90 * Math.sin(t * speed) };
+      return { dx: 0, dy: 0, scale: 1, rotate: 0 };
+    }
+
+    function cloneTransform(clone, t, width, height) {
+      const motion = cloneMotionState(clone, t);
+      const shortSide = Math.min(width, height);
+      return {
+        dx: ((Number(clone.dx) || 0) + motion.dx) * (shortSide / Math.max(1, width)),
+        dy: ((Number(clone.dy) || 0) + motion.dy) * (shortSide / Math.max(1, height)),
+        scale: (Number(clone.scale) || 1) * motion.scale,
+        rotate: (Number(clone.rotate) || 0) + motion.rotate,
+      };
+    }
+
+    function cloneColors(colors, clone, style, project) {
+      const source = colors || { fill: [1, 1, 1, 1], fill2: [1, 1, 1, 1], stroke: [1, 1, 1, 1] };
+      if (clone.color) {
+        const resolved = SA.color.resolve(clone.color, {
+          palette: (style && style.palette) || null,
+          palettes: (project && project.palettes) || [],
+        });
+        const rgba = resolved && resolved.rgba;
+        if (rgba) {
+          const array = [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+          return { fill: array, fill2: array, stroke: array, glow: array };
+        }
+      }
+      const hue = Number(clone.hue) || 0;
+      if (!hue) return source;
+      const shift = (rgba) => {
+        if (!rgba) return rgba;
+        const hsv = SA.color.rgbToHsv({ r: rgba[0], g: rgba[1], b: rgba[2] });
+        const rgb = SA.color.hsvToRgb({ h: hsv.h + hue, s: hsv.s, v: hsv.v });
+        return [rgb.r, rgb.g, rgb.b, rgba[3] == null ? 1 : rgba[3]];
+      };
+      return {
+        fill: shift(source.fill),
+        fill2: shift(source.fill2),
+        stroke: shift(source.stroke),
+        glow: shift(source.glow || source.fill),
+      };
+    }
+
     function needsPrevious(scene) {
       const style = (scene && scene.style) || {};
       const from = style.layout && style.layout.params && style.layout.params.from;
@@ -415,12 +504,39 @@ SA.lyricsEngine = (() => {
       }
     }
 
+    function relativeLuminance(rgba) {
+      const channel = (value) => (value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
+      return 0.2126 * channel(rgba[0] || 0) + 0.7152 * channel(rgba[1] || 0) + 0.0722 * channel(rgba[2] || 0);
+    }
+
+    function contrastRatio(a, b) {
+      const first = relativeLuminance(a);
+      const second = relativeLuminance(b);
+      const high = Math.max(first, second);
+      const low = Math.min(first, second);
+      return (high + 0.05) / (low + 0.05);
+    }
+
+    // Resolves the text color of the current beat so the background shapes can
+    // pick a contrasting color.
+    function textColorHex(style) {
+      const value = style && style.color ? style.color.fill || style.color.stroke : null;
+      if (!value) return null;
+      const resolved = SA.color.resolve(value, {
+        palette: (style && style.palette) || null,
+        palettes: (state.project && state.project.palettes) || [],
+        categoryColors: (state.project && state.project.categoryColors) || {},
+      });
+      const rgba = resolved && resolved.rgba;
+      return rgba ? SA.color.toHex({ r: rgba.r, g: rgba.g, b: rgba.b, a: 1 }) : null;
+    }
+
     // Animated shapes for the `background: shapes` treatment: the filler shape
     // list is drawn into a layer and composited behind the lyrics.
     function drawBackgroundShapes(background, style, beat, t) {
       if (!shapesPass || !pipeline || !SA.fillerRender) return;
       const params = (background && background.params) || {};
-      const kind = params.kind || 'shapes';
+      const kind = background && background.type === 'pattern' ? 'pattern' : params.kind || 'shapes';
       const palette = style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : [];
       const fallback = palette[3] || palette[2] || '#eef2ff';
       let fill = fallback;
@@ -430,6 +546,35 @@ SA.lyricsEngine = (() => {
           palettes: (state.project && state.project.palettes) || [],
         });
         if (rgba) fill = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
+      } else {
+        // derive the shape color from the text color: complementary hue and much
+        // lower brightness, so background shapes never match the lyrics
+        const textHex = textColorHex(style);
+        if (textHex) {
+          const hsv = SA.color.rgbToHsv(SA.color.parse(textHex));
+          const contrast = {
+            h: hsv.h + 150,
+            s: Math.max(0.2, Math.min(0.7, hsv.s * 0.85)),
+            v: Math.max(0.16, Math.min(0.5, hsv.v * 0.5)),
+            a: 1,
+          };
+          fill = SA.color.toHex({ ...SA.color.hsvToRgb(contrast), a: 1 });
+        }
+      }
+      // guarantee a minimum contrast between the shapes and the lyrics
+      const textRgba = SA.color.toRgba(style && style.color ? style.color.fill || style.color.stroke : null, null, {
+        palette: (style && style.palette) || null,
+        palettes: (state.project && state.project.palettes) || [],
+        categoryColors: (state.project && state.project.categoryColors) || {},
+      });
+      if (textRgba) {
+        const parsed = SA.color.parse(fill);
+        if (contrastRatio([parsed.r, parsed.g, parsed.b], textRgba) < 3) {
+          const hsv = SA.color.rgbToHsv({ r: parsed.r, g: parsed.g, b: parsed.b });
+          hsv.v = relativeLuminance(textRgba) > 0.45 ? 0.3 : 0.75;
+          const next = SA.color.hsvToRgb(hsv);
+          fill = SA.color.toHex({ r: next.r, g: next.g, b: next.b, a: 1 });
+        }
       }
       const duration = Math.max(0.001, beat.end - beat.start);
       const progress = Math.min(1, Math.max(0, (t - beat.start) / duration));
@@ -545,6 +690,9 @@ SA.lyricsEngine = (() => {
         foregroundDrawn = true;
       };
       pipeline.beginScene(CLEAR_COLOR);
+      // Evaluate every active beat first: overlapping cues must all render, so
+      // every background goes down first and each cue's text follows on top.
+      const activeBeats = [];
       for (const beat of beats) {
         const scene = buildBeatScene(project, beat, fonts);
         if (!scene.letters.length) continue;
@@ -552,9 +700,16 @@ SA.lyricsEngine = (() => {
         if (!result.active || !result.letters.length) continue;
         const baseStyle = scene.style || {};
         const style = state.analysis && SA.audioDriver ? SA.audioDriver.resolveStyle(baseStyle, state.analysis, t) : baseStyle;
+        activeBeats.push({ beat, scene, result, style });
+      }
+      // stack, back to front: background layers -> cue background (shape
+      // animation) -> lyrics -> foreground layers
+      for (const active of activeBeats) {
+        const { beat, style } = active;
+        drawBackgroundLayers();
         const background = SA.fx.withDefaults(style.background, 'background');
         if (background && background.type && background.type !== 'none') {
-          if (background.type === 'shapes') {
+          if (background.type === 'shapes' || background.type === 'pattern') {
             drawBackgroundShapes(background, style, beat, t);
           } else {
             const badgeRect = badgeRectFor(project, beat, project.output ? project.output.aspect : '16:9');
@@ -575,7 +730,9 @@ SA.lyricsEngine = (() => {
             );
           }
         }
-        drawBackgroundLayers();
+      }
+      for (const active of activeBeats) {
+        const { beat, scene, result, style } = active;
         pipeline.beginLayer();
         const variant = morphVariantFor(project, beat, scene);
         pipeline.text(scene, result.letters, variant);
@@ -589,11 +746,40 @@ SA.lyricsEngine = (() => {
               defaultFill: '#eef2ff',
             })
           : { arrays: { fill: [0.93, 0.95, 1, 1], fill2: [0.93, 0.95, 1, 1], stroke: [1, 1, 1, 1] } };
+        const sdfTarget = pipeline.sdf();
+        const maxDistance = Math.max(state.width, state.height) * 0.1;
+        const progress = Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start)));
+        const fillInstance = SA.fx.withDefaults(style.fill, 'fill');
+        const category =
+          beat.meta && beat.meta.category
+            ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
+            : null;
+        // clones: the same string drawn several times behind the main text with
+        // per-copy offset / scale / rotation / color / opacity / motion
+        const clones = Array.isArray(style.clones) ? style.clones : [];
+        for (const clone of clones) {
+          if (!clone || clone.enabled === false) continue;
+          const env = cloneEnvelope(clone, t, beat);
+          if (env <= 0) continue;
+          const transform = cloneTransform(clone, t, state.width, state.height);
+          pipeline.beginLayer();
+          pipeline.fill(
+            SA.fx.fillUniforms(fillInstance, {
+              colors: cloneColors(colorSet.arrays, clone, style, project),
+              category,
+              time: t,
+              palette: style.palette || null,
+              palettes: project.palettes || [],
+              categoryColors: project.categoryColors || {},
+              progress,
+              sdfTexture: sdfTarget ? sdfTarget.texture : null,
+            })
+          );
+          pipeline.commitLayer((clone.opacity == null ? 0.5 : Number(clone.opacity)) * env, transform);
+        }
         pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
         pipeline.representation(scene, result.letters, 'pieces', variant);
         pipeline.representation(scene, result.letters, 'particles', variant);
-        const sdfTarget = pipeline.sdf();
-        const maxDistance = Math.max(state.width, state.height) * 0.1;
         const edges = (style.edge || [])
           .filter((instance) => instance && instance.enabled !== false)
           .map((instance) =>
@@ -613,19 +799,15 @@ SA.lyricsEngine = (() => {
         if (sdfTarget) {
           for (const edge of edges) if (!edge.top) pipeline.edge(edge);
         }
-        const fillInstance = SA.fx.withDefaults(style.fill, 'fill');
         pipeline.fill(
           SA.fx.fillUniforms(fillInstance, {
             colors: colorSet.arrays,
-            category:
-              beat.meta && beat.meta.category
-                ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
-                : null,
+            category,
             time: t,
             palette: style.palette || null,
             palettes: project.palettes || [],
             categoryColors: project.categoryColors || {},
-            progress: Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start))),
+            progress,
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
           })
         );
@@ -635,7 +817,6 @@ SA.lyricsEngine = (() => {
         for (const instance of style.edge || []) {
           if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
         }
-        const progress = Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start)));
         for (const instance of style.post || []) {
           if (!instance || instance.enabled === false) continue;
           const uniforms = SA.fx.postUniforms(instance, {
@@ -656,8 +837,8 @@ SA.lyricsEngine = (() => {
             pipeline.post(uniforms);
           }
         }
+        for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
         pipeline.commitLayer(1);
-        drawForegroundLayers();
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
         for (let i = 0; i < scene.letters.length; i += 1) {
           const letter = scene.letters[i];

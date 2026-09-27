@@ -10,7 +10,7 @@ SA.io = (() => {
   }
 
   function fileName(project) {
-    return `${sanitizeName(project.meta && project.meta.title)}.sunostudio.json`;
+    return `${sanitizeName(project.meta && project.meta.title)}.telopmotion.json`;
   }
 
   function toBytes(project) {

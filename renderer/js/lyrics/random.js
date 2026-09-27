@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'));
   else {
     root.SA = root.SA || {};
-    root.SA.random = factory(root.SA.rng, root.SA.fx);
+    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods) {
   'use strict';
 
   const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background'];
@@ -33,8 +33,15 @@
     if (param.kind === 'number' || param.kind === 'int') {
       const min = param.min == null ? 0 : param.min;
       const max = param.max == null ? min + 1 : param.max;
-      const value = min + (max - min) * Math.pow(random(), 1 / level);
-      return param.kind === 'int' ? Math.round(value) : Math.round(value * 100) / 100;
+      const fallback = param.default == null ? min : param.default;
+      // stay inside the author's recommended range; without one keep the default
+      const range = Array.isArray(param.random) && param.random.length >= 2 ? param.random : null;
+      if (!range) return param.kind === 'int' ? Math.round(fallback) : fallback;
+      const bias = ((level - 1) / 2) * 0.6;
+      const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * Math.min(1, Math.max(0, bias + random() * 0.4))));
+      if (param.kind === 'int') return Math.round(value);
+      const factor = Math.pow(10, Math.abs(value) < 0.1 ? 4 : 2);
+      return Math.round(value * factor) / factor;
     }
     if (param.kind === 'select') return pick(random, param.options || [param.default]);
     if (param.kind === 'bool') return random() < 0.5;
@@ -43,7 +50,7 @@
       return pick(random, COLOR_POOL);
     }
     if (param.kind === 'vec2') {
-      return { x: Math.round((random() * 2 - 1) * 100) / 100, y: Math.round((random() * 2 - 1) * 100) / 100 };
+      return param.default && typeof param.default === 'object' ? { ...param.default } : { x: 0, y: 0 };
     }
     if (param.kind === 'ease') return pick(random, EASE_POOL.enter);
     if (param.kind === 'points') return param.default;
@@ -70,6 +77,8 @@
       // (pixelate, halftone, dissolves, scatter, echo trails...). They stay
       // available for manual use in the inspector.
       if (descriptor.tags.includes('degrade') || descriptor.tags.includes('overlap')) return false;
+      // fills that need an image or hard-coded colors break automatic looks
+      if (group === 'fill' && (descriptor.type === 'textureFill' || descriptor.type === 'karaokeWipe')) return false;
       if (allowTags && allowTags.length && !descriptor.tags.some((tag) => allowTags.includes(tag))) return false;
       return allowedFor(group, descriptor.type, context);
     });
@@ -128,7 +137,8 @@
     if (!descriptor) return null;
     const colors = options.colors || [];
     if (STACK_GROUPS.includes(group)) {
-      const count = 1 + Math.floor(random() * (group === 'post' ? 2 : 1.5));
+      // at most two effects per stack: restraint is what makes it look designed
+      const count = group === 'post' ? (random() < 0.7 ? 1 : 2) : random() < 0.75 ? 1 : 2;
       const stack = [];
       for (let i = 0; i < count; i += 1) {
         const item = pickType(group, null, random, options.allowTags, context);
@@ -159,6 +169,19 @@
     return mergeDeep(project.style, (project.cueStyles || {})[cueId] || {});
   }
 
+  // cue / element rolls only touch one or two groups, staying inside the mood
+  const REROLL_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post'];
+
+  function chooseRerollGroups(random, locks) {
+    const pool = REROLL_GROUPS.filter((group) => !locks.has(group));
+    const count = 1 + Math.floor(random() * 2);
+    const picked = [];
+    while (picked.length < count && pool.length) {
+      picked.push(pool.splice(Math.floor(random() * pool.length), 1)[0]);
+    }
+    return picked;
+  }
+
   function randomize(options) {
     const opts = options || {};
     const project = opts.project;
@@ -184,12 +207,22 @@
     const patches = [];
     for (const target of targets) {
       if (target.manual && !opts.overwriteManual) continue;
-      const style = {};
-      for (const group of GROUPS) {
-        if (locks.has(group)) continue;
-        const random = rng.rngFor(seed, target.key, group);
-        const patch = groupPatch(group, target.base && target.base[group], random, { ...opts, colors }, target.context);
-        if (patch) Object.assign(style, patch);
+      let style = {};
+      if (target.scope === 'project' && moods && moods.generate) {
+        // the whole look comes from the mood generator: restrained, coherent
+        const axisRun = moods.randomAxes ? moods.randomAxes(rng.rngFor(seed, target.key, 'axes')) : null;
+        const axes = moods.normalizeAxes(axisRun ? axisRun.axes : {});
+        if (intensity >= 2) axes.energy = Math.min(1, axes.energy * 1.12);
+        style = moods.generate({ axes, seed, context: target.context, direction: axisRun && axisRun.direction }).style;
+        for (const group of locks) delete style[group];
+      } else {
+        const groups = target.scope === 'project' ? GROUPS : chooseRerollGroups(rng.rngFor(seed, target.key, 'groups'), locks);
+        for (const group of groups) {
+          if (locks.has(group)) continue;
+          const random = rng.rngFor(seed, target.key, group);
+          const patch = groupPatch(group, target.base && target.base[group], random, { ...opts, colors }, target.context);
+          if (patch) Object.assign(style, patch);
+        }
       }
       if (Object.keys(style).length) patches.push({ scope: target.scope, path: target.path || null, style });
     }
@@ -237,12 +270,17 @@
       do(projectDoc) {
         for (const patch of byScope) {
           if (patch.scope === 'project') {
+            // replace the whole group: stale params from a previous effect type
+            // must not linger behind the new one
+            for (const group of Object.keys(patch.style)) delete projectDoc.style[group];
             projectDoc.style = SA.project.mergeDeep(projectDoc.style, patch.style);
           } else if (patch.scope === 'element' && patch.path) {
             const overrides = projectDoc.overrides[patch.path] || (projectDoc.overrides[patch.path] = {});
             for (const [group, instance] of Object.entries(patch.style)) overrides[group] = JSON.parse(JSON.stringify(instance));
           } else if (patch.scope && patch.scope.cueId) {
-            projectDoc.cueStyles[patch.scope.cueId] = SA.project.mergeDeep(projectDoc.cueStyles[patch.scope.cueId] || {}, patch.style);
+            const container = projectDoc.cueStyles[patch.scope.cueId] || (projectDoc.cueStyles[patch.scope.cueId] = {});
+            for (const group of Object.keys(patch.style)) delete container[group];
+            projectDoc.cueStyles[patch.scope.cueId] = SA.project.mergeDeep(container, patch.style);
           }
         }
       },

@@ -44,7 +44,7 @@ test('parse reports empty and unreadable files', () => {
 });
 
 test('parse flags Studio project files', () => {
-  const project = lyricsFile.parse(JSON.stringify({ format: 'sunostudio', version: 1, script: { cues: [] } }), 'p.json');
+  const project = lyricsFile.parse(JSON.stringify({ format: 'telopmotion', version: 1, script: { cues: [] } }), 'p.json');
   assert.strictEqual(project.project, true);
   assert.strictEqual(project.cues.length, 0);
 });

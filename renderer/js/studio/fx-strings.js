@@ -12,7 +12,7 @@
   const en = {
     animation: {
       stagger: 'Stagger', simultaneous: 'Simultaneous', cascade: 'Cascade', spring: 'Spring', followThrough: 'Follow-through',
-      stopMotion: 'Stop motion', timeWarp: 'Time warp', loop: 'Loop',
+      stopMotion: 'Stop motion', timeWarp: 'Time warp', loop: 'Loop', echo: 'Echo',
     },
     layout: {
       row: 'Row', vertical: 'Vertical', circle: 'Circle', arc: 'Arc', spiral: 'Spiral', wave: 'Wave', diagonal: 'Diagonal',
@@ -31,7 +31,7 @@
       particlesDisperse: 'Particles disperse', melt: 'Melt', burnAway: 'Burn away', strokeErase: 'Stroke erase',
     },
     hold: {
-      none: 'None', floatBob: 'Float bob', sineWave: 'Sine wave', jitter: 'Jitter', pulse: 'Pulse', kenBurns: 'Ken Burns',
+      none: 'None', floatBob: 'Float bob', sineWave: 'Sine wave', jitter: 'Jitter', pulse: 'Pulse', opacityPulse: 'Opacity pulse', kenBurns: 'Ken Burns',
       drift: 'Drift', sway: 'Sway', marquee: 'Marquee', jelly: 'Jelly', wobbleWarp: 'Wobble warp', twist: 'Twist',
       breathing: 'Breathing', orbit3D: '3D orbit', pathFollow: 'Path follow',
     },
@@ -60,7 +60,7 @@
       vignette: 'Vignette', sparkles: 'Sparkles', lensFlare: 'Lens flare',
     },
     background: {
-      none: 'None', solid: 'Solid', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes',
+      none: 'None', solid: 'Solid', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
     },
     param: {
       order: 'Order', each: 'Interval', ease: 'Ease', from: 'Start', unit: 'Unit', exitOrder: 'Exit order', overlap: 'Overlap',
@@ -71,7 +71,7 @@
       angle: 'Angle', followAngle: 'Follow angle', step: 'Step', cols: 'Columns', gap: 'Gap', fillWidth: 'Row width',
       spread: 'Spread', safeArea: 'Safe area', points: 'Points', smooth: 'Smooth', cursor: 'Cursor', cursorColor: 'Cursor color',
       dir: 'Direction', distance: 'Distance', height: 'Height', axis: 'Axis', charset: 'Character set', rate: 'Rate',
-      intensity: 'Intensity', flickers: 'Flickers', width: 'Width', fillDelay: 'Fill delay', count: 'Count', kind: 'Kind', set: 'Set',
+      intensity: 'Intensity', flickers: 'Flickers', width: 'Width', fillDelay: 'Fill delay', count: 'Count', kind: 'Kind', set: 'Set', mode: 'Mode', min: 'Minimum', delay: 'Delay',
       turbulence: 'Turbulence', spin: 'Spin', scale: 'Scale', edgeColor: 'Edge color', edgeWidth: 'Edge width', gravity: 'Gravity',
       drift: 'Drift', drip: 'Drip', emberColor: 'Ember color', charColor: 'Character color', speed: 'Speed', freq: 'Frequency',
       bpm: 'BPM', zoom: 'Zoom', pan: 'Pan', vx: 'X speed', vy: 'Y speed', tilt: 'Tilt', offsetX: 'X offset', offsetY: 'Y offset',
@@ -100,13 +100,14 @@
       strokeLength: 'Stroke length', symbols: 'Symbols', up: 'Up', vertical: 'Vertical', 'vertical-reading': 'Vertical writing',
       wave: 'Wave', word: 'Word', x: 'X', y: 'Y', shapes: 'Shapes', particles: 'Particles', waveform: 'Waveform', spectrum: 'Spectrum',
       sineWave: 'Sine wave', progress: 'Progress', circles: 'Circles', polygons: 'Polygons', lines: 'Lines', burst: 'Burst', orbit: 'Orbit',
+      dots: 'Dots', stripes: 'Stripes', rings: 'Rings',
     },
   };
 
   const ja = {
     animation: {
       stagger: 'スタッガー', simultaneous: '同時', cascade: 'カスケード', spring: 'スプリング', followThrough: 'フォロースルー',
-      stopMotion: 'ストップモーション', timeWarp: 'タイムワープ', loop: 'ループ',
+      stopMotion: 'ストップモーション', timeWarp: 'タイムワープ', loop: 'ループ', echo: 'エコー',
     },
     layout: {
       row: '行', vertical: '縦組み', circle: '円', arc: '円弧', spiral: '渦巻き', wave: '波', diagonal: '斜め',
@@ -126,7 +127,7 @@
       strokeErase: 'ストローク消去',
     },
     hold: {
-      none: 'なし', floatBob: '浮遊', sineWave: 'サイン波', jitter: 'ジッター', pulse: 'パルス', kenBurns: 'ケン・バーンズ',
+      none: 'なし', floatBob: '浮遊', sineWave: 'サイン波', jitter: 'ジッター', pulse: 'パルス', opacityPulse: '透明度パルス', kenBurns: 'ケン・バーンズ',
       drift: 'ドリフト', sway: 'スウェイ', marquee: 'マーキー', jelly: 'ゼリー', wobbleWarp: 'うねりワープ', twist: 'ツイスト',
       breathing: 'ブリージング', orbit3D: '3Dオービット', pathFollow: 'パス追従',
     },
@@ -156,7 +157,7 @@
       lensFlare: 'レンズフレア',
     },
     background: {
-      none: 'なし', solid: '単色', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形',
+      none: 'なし', solid: '単色', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
     },
     param: {
       order: '順序', each: '間隔', ease: 'イージング', from: '開始位置', unit: '単位', exitOrder: '退場順序', overlap: '重なり',
@@ -167,7 +168,7 @@
       followAngle: '追従角度', step: '段差', cols: '列数', gap: '間隔', fillWidth: '行幅', spread: '広がり',
       safeArea: '安全領域', points: 'ポイント', smooth: 'なめらか', cursor: 'カーソル', cursorColor: 'カーソル色',
       dir: '方向', distance: '距離', height: '高さ', axis: '軸', charset: '文字セット', rate: '頻度', intensity: '強度',
-      flickers: '明滅回数', width: '幅', fillDelay: '塗り開始', count: '数', kind: '種類', set: 'セット', turbulence: '乱流', spin: 'スピン', scale: 'スケール',
+      flickers: '明滅回数', width: '幅', fillDelay: '塗り開始', count: '数', kind: '種類', set: 'セット', mode: 'モード', min: '最小', delay: '遅延', turbulence: '乱流', spin: 'スピン', scale: 'スケール',
       edgeColor: '縁の色', edgeWidth: '縁の幅', gravity: '重力', drift: '漂流', drip: '滴り', emberColor: '火の粉の色',
       charColor: '文字の色', speed: '速度', freq: '周波数', bpm: 'BPM', zoom: 'ズーム', pan: 'パン', vx: '横速度', vy: '縦速度',
       tilt: '傾き', offsetX: 'Xオフセット', offsetY: 'Yオフセット', x: 'X', y: 'Y', saturation: '彩度', lightness: '明度',
@@ -196,13 +197,14 @@
       staircase: '階段', strokeLength: 'ストローク長', symbols: '記号', up: '上', vertical: '縦組み',
       'vertical-reading': '縦書き', wave: '波', word: '単語', x: 'X', y: 'Y', shapes: '図形', particles: 'パーティクル', waveform: '波形',
       spectrum: 'スペクトラム', sineWave: 'サイン波', progress: '進捗', circles: '円', polygons: '多角形', lines: '線', burst: 'バースト', orbit: '軌道',
+      dots: 'ドット', stripes: 'ストライプ', rings: 'リング',
     },
   };
 
   const es = {
     animation: {
       stagger: 'Escalonado', simultaneous: 'Simultáneo', cascade: 'Cascada', spring: 'Resorte', followThrough: 'Continuación',
-      stopMotion: 'Stop motion', timeWarp: 'Distorsión temporal', loop: 'Bucle',
+      stopMotion: 'Stop motion', timeWarp: 'Distorsión temporal', loop: 'Bucle', echo: 'Eco',
     },
     layout: {
       row: 'Fila', vertical: 'Vertical', circle: 'Círculo', arc: 'Arco', spiral: 'Espiral', wave: 'Onda', diagonal: 'Diagonal',
@@ -223,7 +225,7 @@
       burnAway: 'Consumir por fuego', strokeErase: 'Borrado de trazo',
     },
     hold: {
-      none: 'Ninguno', floatBob: 'Flotación', sineWave: 'Onda senoidal', jitter: 'Vibración', pulse: 'Pulso',
+      none: 'Ninguno', floatBob: 'Flotación', sineWave: 'Onda senoidal', jitter: 'Vibración', pulse: 'Pulso', opacityPulse: 'Pulso de opacidad',
       kenBurns: 'Ken Burns', drift: 'Deriva', sway: 'Balanceo', marquee: 'Marquesina', jelly: 'Gelatina',
       wobbleWarp: 'Deformación ondulante', twist: 'Torsión', breathing: 'Respiración', orbit3D: 'Órbita 3D',
       pathFollow: 'Seguir trayectoria',
@@ -255,7 +257,7 @@
       vignette: 'Viñeta', sparkles: 'Destellos', lensFlare: 'Reflejo de lente',
     },
     background: {
-      none: 'Ninguno', solid: 'Sólido', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas',
+      none: 'Ninguno', solid: 'Sólido', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
       cover: 'Portada de la canción', image: 'Imagen',
     },
     param: {
@@ -268,7 +270,7 @@
       step: 'Escalón', cols: 'Columnas', gap: 'Separación', fillWidth: 'Ancho de fila', spread: 'Dispersión',
       safeArea: 'Zona segura', points: 'Puntos', smooth: 'Suavizado', cursor: 'Cursor', cursorColor: 'Color del cursor',
       dir: 'Dirección', distance: 'Distancia', height: 'Altura', axis: 'Eje', charset: 'Juego de caracteres', rate: 'Frecuencia',
-      intensity: 'Intensidad', flickers: 'Parpadeos', width: 'Ancho', fillDelay: 'Retardo de relleno', count: 'Cantidad', kind: 'Clase', set: 'Conjunto',
+      intensity: 'Intensidad', flickers: 'Parpadeos', width: 'Ancho', fillDelay: 'Retardo de relleno', count: 'Cantidad', kind: 'Clase', set: 'Conjunto', mode: 'Modo', min: 'Mínimo', delay: 'Retardo',
       turbulence: 'Turbulencia', spin: 'Giro', scale: 'Escala', edgeColor: 'Color del borde', edgeWidth: 'Ancho del borde',
       gravity: 'Gravedad', drift: 'Deriva', drip: 'Goteo', emberColor: 'Color de brasas', charColor: 'Color del texto',
       speed: 'Velocidad', freq: 'Frecuencia', bpm: 'BPM', zoom: 'Zoom', pan: 'Desplazamiento', vx: 'Velocidad X', vy: 'Velocidad Y',
@@ -300,14 +302,14 @@
       staircase: 'Escalera', strokeLength: 'Longitud del trazo', symbols: 'Símbolos', up: 'Arriba', vertical: 'Vertical',
       'vertical-reading': 'Escritura vertical', wave: 'Onda', word: 'Palabra', x: 'X', y: 'Y', shapes: 'Formas', particles: 'Partículas',
       waveform: 'Forma de onda', spectrum: 'Espectro', sineWave: 'Onda senoidal', progress: 'Progreso', circles: 'Círculos',
-      polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita',
+      polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita', dots: 'Puntos', stripes: 'Rayas', rings: 'Anillos',
     },
   };
 
   const fr = {
     animation: {
       stagger: 'Décalage', simultaneous: 'Simultané', cascade: 'Cascade', spring: 'Ressort', followThrough: 'Continuité',
-      stopMotion: 'Stop motion', timeWarp: 'Distorsion temporelle', loop: 'Boucle',
+      stopMotion: 'Stop motion', timeWarp: 'Distorsion temporelle', loop: 'Boucle', echo: 'Écho',
     },
     layout: {
       row: 'Ligne', vertical: 'Vertical', circle: 'Cercle', arc: 'Arc', spiral: 'Spirale', wave: 'Vague', diagonal: 'Diagonale',
@@ -328,7 +330,7 @@
       strokeErase: 'Effacement du tracé',
     },
     hold: {
-      none: 'Aucun', floatBob: 'Flottement', sineWave: 'Onde sinusoïdale', jitter: 'Tremblement', pulse: 'Pulsation',
+      none: 'Aucun', floatBob: 'Flottement', sineWave: 'Onde sinusoïdale', jitter: 'Tremblement', pulse: 'Pulsation', opacityPulse: "Pulsation d'opacité",
       kenBurns: 'Ken Burns', drift: 'Dérive', sway: 'Balancement', marquee: 'Marquise', jelly: 'Gelée',
       wobbleWarp: 'Déformation ondulante', twist: 'Torsion', breathing: 'Respiration', orbit3D: 'Orbite 3D',
       pathFollow: 'Suivi de chemin',
@@ -360,7 +362,7 @@
       lightLeak: 'Fuite de lumière', vignette: 'Vignettage', sparkles: 'Étincelles', lensFlare: 'Reflet de lentille',
     },
     background: {
-      none: 'Aucun', solid: 'Uni', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes',
+      none: 'Aucun', solid: 'Uni', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
       image: 'Image',
     },
     param: {
@@ -374,7 +376,7 @@
       spread: 'Dispersion', safeArea: 'Zone sûre', points: 'Points', smooth: 'Lissage', cursor: 'Curseur',
       cursorColor: 'Couleur du curseur', dir: 'Direction', distance: 'Distance', height: 'Hauteur', axis: 'Axe',
       charset: 'Jeu de caractères', rate: 'Fréquence', intensity: 'Intensité', flickers: 'Scintillements', width: 'Largeur',
-      fillDelay: 'Délai de remplissage', count: 'Nombre', kind: 'Sorte', set: 'Ensemble', turbulence: 'Turbulence', spin: 'Rotation', scale: 'Échelle',
+      fillDelay: 'Délai de remplissage', count: 'Nombre', kind: 'Sorte', set: 'Ensemble', mode: 'Mode', min: 'Minimum', delay: 'Délai', turbulence: 'Turbulence', spin: 'Rotation', scale: 'Échelle',
       edgeColor: 'Couleur du bord', edgeWidth: 'Largeur du bord', gravity: 'Gravité', drift: 'Dérive', drip: 'Coulure',
       emberColor: 'Couleur des braises', charColor: 'Couleur du texte', speed: 'Vitesse', freq: 'Fréquence', bpm: 'BPM', zoom: 'Zoom',
       pan: 'Panoramique', vx: 'Vitesse X', vy: 'Vitesse Y', tilt: 'Inclinaison', offsetX: 'Décalage X', offsetY: 'Décalage Y',
@@ -405,13 +407,14 @@
       strokeLength: 'Longueur du tracé', symbols: 'Symboles', up: 'Haut', vertical: 'Vertical', 'vertical-reading': 'Écriture verticale',
       wave: 'Vague', word: 'Mot', x: 'X', y: 'Y', shapes: 'Formes', particles: 'Particules', waveform: "Forme d'onde", spectrum: 'Spectre',
       sineWave: 'Onde sinusoïdale', progress: 'Progression', circles: 'Cercles', polygons: 'Polygones', lines: 'Lignes', burst: 'Éclat', orbit: 'Orbite',
+      dots: 'Points', stripes: 'Rayures', rings: 'Anneaux',
     },
   };
 
   const ru = {
     animation: {
       stagger: 'Каскадная задержка', simultaneous: 'Одновременно', cascade: 'Каскад', spring: 'Пружина',
-      followThrough: 'Инерция', stopMotion: 'Стоп-моушен', timeWarp: 'Искажение времени', loop: 'Цикл',
+      followThrough: 'Инерция', stopMotion: 'Стоп-моушен', timeWarp: 'Искажение времени', loop: 'Цикл', echo: 'Эхо',
     },
     layout: {
       row: 'Строка', vertical: 'Вертикально', circle: 'Круг', arc: 'Дуга', spiral: 'Спираль', wave: 'Волна',
@@ -432,7 +435,7 @@
       strokeErase: 'Стирание обводки',
     },
     hold: {
-      none: 'Нет', floatBob: 'Покачивание', sineWave: 'Синусоида', jitter: 'Дрожание', pulse: 'Пульсация',
+      none: 'Нет', floatBob: 'Покачивание', sineWave: 'Синусоида', jitter: 'Дрожание', pulse: 'Пульсация', opacityPulse: 'Пульс прозрачности',
       kenBurns: 'Кен Бёрнс', drift: 'Дрейф', sway: 'Качание', marquee: 'Бегущая строка', jelly: 'Желе',
       wobbleWarp: 'Волнистая деформация', twist: 'Скручивание', breathing: 'Дыхание', orbit3D: '3D-орбита',
       pathFollow: 'Движение по пути',
@@ -464,7 +467,7 @@
       lensFlare: 'Блик объектива',
     },
     background: {
-      none: 'Нет', solid: 'Сплошной', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры',
+      none: 'Нет', solid: 'Сплошной', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
       cover: 'Обложка трека', image: 'Изображение',
     },
     param: {
@@ -477,7 +480,7 @@
       cols: 'Колонки', gap: 'Отступ', fillWidth: 'Ширина строки', spread: 'Разлёт', safeArea: 'Безопасная зона', points: 'Точки',
       smooth: 'Сглаживание', cursor: 'Курсор', cursorColor: 'Цвет курсора', dir: 'Направление', distance: 'Расстояние',
       height: 'Высота', axis: 'Ось', charset: 'Набор символов', rate: 'Частота', intensity: 'Интенсивность',
-      flickers: 'Мерцания', width: 'Ширина', fillDelay: 'Задержка заливки', count: 'Количество', kind: 'Вид', set: 'Набор', turbulence: 'Турбулентность',
+      flickers: 'Мерцания', width: 'Ширина', fillDelay: 'Задержка заливки', count: 'Количество', kind: 'Вид', set: 'Набор', mode: 'Режим', min: 'Минимум', delay: 'Задержка', turbulence: 'Турбулентность',
       spin: 'Вращение', scale: 'Масштаб', edgeColor: 'Цвет края', edgeWidth: 'Ширина края', gravity: 'Гравитация', drift: 'Дрейф',
       drip: 'Стёк', emberColor: 'Цвет искр', charColor: 'Цвет текста', speed: 'Скорость', freq: 'Частота', bpm: 'BPM',
       zoom: 'Зум', pan: 'Панорама', vx: 'Скорость X', vy: 'Скорость Y', tilt: 'Наклон', offsetX: 'Смещение X',
@@ -508,7 +511,7 @@
       strokeLength: 'Длина обводки', symbols: 'Символы', up: 'Вверх', vertical: 'Вертикально',
       'vertical-reading': 'Вертикальное письмо', wave: 'Волна', word: 'Слово', x: 'X', y: 'Y', shapes: 'Фигуры', particles: 'Частицы',
       waveform: 'Волновая форма', spectrum: 'Спектр', sineWave: 'Синусоида', progress: 'Прогресс', circles: 'Круги',
-      polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита',
+      polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца',
     },
   };
 

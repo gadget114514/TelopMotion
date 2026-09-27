@@ -90,11 +90,11 @@
       sway: [0.4, 0.8],
       sineWave: [0.45, 0.8],
       pathFollow: [0.5, 0.6],
-      twist: [0.6, 0.5],
+      twist: [0.6, 0.5, { minEnergy: 0.72 }],
       jelly: [0.7, 0.4],
-      wobbleWarp: [0.75, 0.3],
+      wobbleWarp: [0.75, 0.3, { minEnergy: 0.72 }],
       pulse: [0.8, 0.2],
-      jitter: [0.95, 0.1],
+      jitter: [0.95, 0.1, { minEnergy: 0.72 }],
     },
     location: {
       center: [0.4, 0.7],
@@ -109,11 +109,11 @@
       glass: [0.45, 0.8],
       caustics: [0.5, 0.8],
       gradientSweep: [0.6, 0.6],
-      holographic: [0.65, 0.5],
-      rainbowFlow: [0.7, 0.5],
+      holographic: [0.65, 0.5, { minEnergy: 0.72 }],
+      rainbowFlow: [0.7, 0.5, { minEnergy: 0.72 }],
       chrome: [0.8, 0.2],
       goldFoil: [0.8, 0.2],
-      fire: [1, 0.05],
+      fire: [1, 0.05, { minEnergy: 0.72 }],
     },
     edge: {
       dropShadow: [0.35, 0.85],
@@ -130,15 +130,15 @@
       colorGrade: [0.4, 0.7],
       sparkles: [0.5, 0.7],
       halftone: [0.6, 0.4],
-      heatHaze: [0.5, 0.5],
+      heatHaze: [0.5, 0.5, { minEnergy: 0.72 }],
       lightLeak: [0.62, 0.65],
       lightSweep: [0.78, 0.45],
-      lensDistortion: [0.6, 0.4],
-      zoomBlur: [0.6, 0.5],
+      lensDistortion: [0.6, 0.4, { minEnergy: 0.72 }],
+      zoomBlur: [0.6, 0.5, { minEnergy: 0.72 }],
       pixelate: [0.7, 0.3],
       chromaticAberration: [0.7, 0.3],
-      crt: [0.7, 0.3],
-      rgbShift: [0.8, 0.2],
+      crt: [0.7, 0.3, { minEnergy: 0.72 }],
+      rgbShift: [0.8, 0.2, { minEnergy: 0.72 }],
       digitalNoise: [0.85, 0.15],
       glitchBlocks: [0.95, 0.1],
     },
@@ -146,6 +146,7 @@
       noiseGradient: [0.4, 0.8],
       solid: [0.4, 0.6],
       shapes: [0.5, 0.6],
+      pattern: [0.5, 0.6],
       card: [0.5, 0.7, { needsCard: true }],
     },
   };
@@ -196,13 +197,15 @@
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
   }
 
-  function allowed(group, traits, context, direction) {
+  function allowed(group, traits, context, direction, axes) {
     const flags = traits[2] || {};
     if (direction === 'vertical' && group === 'layout' && !flags.vertical) return false;
     if (direction === 'horizontal' && group === 'layout' && flags.vertical) return false;
     if (flags.needsCard && !context.hasCard) return false;
     if (flags.needsBadge && !context.badgeId) return false;
     if (flags.maxLetters != null && context.letterCount > flags.maxLetters) return false;
+    // effects that only look good loud are gated behind high energy
+    if (flags.minEnergy != null && (!axes || axes.energy < flags.minEnergy)) return false;
     return true;
   }
 
@@ -210,7 +213,7 @@
     const energy = traits[0];
     const softness = traits[1];
     const distance = Math.abs(energy - axes.energy) * 0.9 + Math.abs(softness - axes.softness) * 0.7;
-    return Math.max(0.05, 1 - distance / 1.6);
+    return Math.max(0.02, 1 - distance / 1.6);
   }
 
   function pickEntry(random, group, axes, context, direction, exclude) {
@@ -218,14 +221,15 @@
     const scored = [];
     for (const [type, traits] of Object.entries(pool)) {
       if (exclude && exclude.has(type)) continue;
-      if (!allowed(group, traits, context, direction)) continue;
+      if (!allowed(group, traits, context, direction, axes)) continue;
       // skip glyph-destroying or overlapping effects (pixelate, halftone,
       // dissolves, scatter, echo trails...) when generating automatically;
       // they remain selectable by hand
       const descriptor = fx.get(group, type);
       if (descriptor && (descriptor.tags.includes('degrade') || descriptor.tags.includes('overlap'))) continue;
       const fit = scoreEntry(traits, axes);
-      scored.push({ type, weight: Math.pow(fit, 2) * (0.6 + random() * 0.8) });
+      // a sharp exponent keeps the mood's character instead of near-uniform picks
+      scored.push({ type, weight: Math.pow(fit, 4) * (0.7 + random() * 0.6) });
     }
     if (!scored.length) return null;
     const total = scored.reduce((sum, entry) => sum + entry.weight, 0);
@@ -237,6 +241,8 @@
     return scored[scored.length - 1].type;
   }
 
+  // Numeric parameters stay inside the author's recommended range
+  // (`param.random`); without one the author's default is kept.
   function sampleParams(random, group, type, axes, colors) {
     const descriptor = fx.get(group, type);
     const params = {};
@@ -245,43 +251,47 @@
       if (param.kind === 'number' || param.kind === 'int') {
         const min = param.min == null ? 0 : param.min;
         const max = param.max == null ? min + 1 : param.max;
-        const zeroCentered = param.default === 0 && min < 0 && max > 0;
-        let value;
-        if (zeroCentered) {
-          // offsets and curves stay near zero so text never leaves the frame
-          const span = Math.min(group === 'location' ? 0.04 : 0.08, (max - min) * 0.06);
-          value = (random() * 2 - 1) * span;
-        } else if (param.unit === 'frame') {
-          const base = param.default == null ? 0 : param.default;
-          value = base + (random() * 2 - 1) * (max - min) * 0.05;
-        } else {
-          const level = 0.18 + 0.64 * Math.pow(random(), 1 / (0.5 + axes.energy));
-          value = min + (max - min) * level;
+        const fallback = param.default == null ? min : param.default;
+        const range = Array.isArray(param.random) && param.random.length >= 2 ? param.random : null;
+        if (!range) {
+          params[param.key] = param.kind === 'int' ? Math.round(fallback) : fallback;
+          continue;
         }
-        value = Math.max(min, Math.min(max, value));
-        params[param.key] = param.kind === 'int' ? Math.round(value) : round(value, 2);
+        const bias = clamp01(axes.energy * 0.5 + (1 - axes.softness) * 0.25 + axes.density * 0.25);
+        const t = clamp01(bias * 0.6 + random() * 0.4);
+        const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * t));
+        params[param.key] = param.kind === 'int' ? Math.round(value) : round(value, Math.abs(value) < 0.1 ? 4 : 2);
       } else if (param.kind === 'select') {
         params[param.key] = pick(random, param.options || [param.default]);
       } else if (param.kind === 'bool') {
-        params[param.key] = param.key === 'enabled' ? true : random() < 0.4 + axes.energy * 0.3;
+        params[param.key] = param.key === 'enabled' ? true : random() < 0.3;
       } else if (param.kind === 'color') {
         params[param.key] = pick(random, colors && colors.length ? colors : ['#ffd7a8']);
       } else if (param.kind === 'vec2') {
-        const amount = 0.04 + axes.energy * 0.2;
-        params[param.key] = { x: round((random() * 2 - 1) * amount, 2), y: round((random() * 2 - 1) * amount, 2) };
+        params[param.key] = param.default && typeof param.default === 'object' ? { ...param.default } : { x: 0, y: 0 };
       }
     }
     return params;
+  }
+
+  const SHADOW_TYPES = new Set(['dropShadow', 'longShadow', 'extrude']);
+
+  function colorPoolFor(type, colors) {
+    if (Array.isArray(colors)) return colors;
+    if (!colors || !colors.bright) return [];
+    return SHADOW_TYPES.has(type) && colors.dark ? [colors.dark, ...colors.bright] : colors.bright;
   }
 
   // line-level motion: short entrances, small stagger, so a phrase reads at once
   function motionFor(random, group, axes) {
     const inBase = lerp(0.95, 0.3, axes.speed);
     const outBase = inBase * 0.7;
-    const easeIn = pick(random, axes.speed > 0.55 ? ['expoOut', 'quartOut', 'backOut'] : ['quartOut', 'cubicOut', 'sineInOut']);
-    const easeOut = pick(random, axes.speed > 0.55 ? ['quartIn', 'cubicIn', 'backIn'] : ['sineInOut', 'cubicIn']);
+    const bouncy = axes.energy > 0.7;
+    const easeIn = pick(random, bouncy ? ['expoOut', 'quartOut', 'backOut'] : ['quartOut', 'cubicOut', 'sineInOut']);
+    const easeOut = pick(random, bouncy ? ['quartIn', 'cubicIn', 'backIn'] : ['sineInOut', 'cubicIn']);
     const jitter = () => 0.85 + random() * 0.35;
-    const loopPeriod = group === 'hold' ? round(lerp(3.4, 1, axes.speed) * jitter(), 1) : 0;
+    // loops are off by default; only energetic moods get a slow idle loop
+    const loopPeriod = group === 'hold' && axes.energy > 0.75 ? round(lerp(3.4, 1.6, axes.speed) * jitter(), 1) : 0;
     return {
       in: { duration: round(inBase * jitter(), 2), delay: 0, ease: easeIn },
       out: { duration: round(outBase * jitter(), 2), delay: 0, ease: easeOut },
@@ -299,7 +309,7 @@
   function instanceFor(random, group, axes, context, direction, colors, exclude) {
     const type = pickEntry(random, group, axes, context, direction, exclude);
     if (!type) return null;
-    return { type, params: sampleParams(random, group, type, axes, colors), enabled: true, motion: motionFor(random, group, axes) };
+    return { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors)), enabled: true, motion: motionFor(random, group, axes) };
   }
 
   function paletteFor(axes, random) {
@@ -338,9 +348,10 @@
   // a random palette that keeps the mood's character: derived from a matching template
   function generatePalette(random, axes, name) {
     const base = paletteFor(axes, random);
-    const hueShift = (random() * 2 - 1) * 0.2;
-    const satScale = 0.8 + random() * 0.5;
-    const lightScale = 0.88 + random() * 0.28;
+    // subtle variation only: the curated palette harmony must survive
+    const hueShift = (random() * 2 - 1) * 0.055;
+    const satScale = 0.9 + random() * 0.2;
+    const lightScale = 0.94 + random() * 0.12;
     const colors = base.colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale));
     colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.id, colors };
@@ -410,15 +421,30 @@
         motion,
       };
     }
-    if (random() < 0.35) {
+    if (random() < 0.5) {
+      if (random() < 0.5) {
+        return {
+          type: 'pattern',
+          params: {
+            mode: pick(random, ['grid', 'dots', 'stripes', 'rings']),
+            count: Math.round(10 + random() * 30),
+            size: round(0.6 + random() * 1.4, 2),
+            speed: round(0.15 + random() * 0.7, 2),
+            opacity: round(0.2 + random() * 0.35, 2),
+            color: null,
+          },
+          enabled: true,
+          motion,
+        };
+      }
       return {
         type: 'shapes',
         params: {
           kind: random() < 0.6 ? 'shapes' : 'particles',
           set: pick(random, ['circles', 'polygons', 'lines', 'burst', 'grid', 'orbit']),
-          count: Math.round(6 + random() * 14),
-          speed: round(0.3 + random() * 0.9, 2),
-          opacity: round(0.25 + random() * 0.35, 2),
+          count: Math.round(8 + random() * 18),
+          speed: round(0.4 + random() * 1.1, 2),
+          opacity: round(0.3 + random() * 0.35, 2),
           color: null,
         },
         enabled: true,
@@ -464,7 +490,8 @@
     const r = typeof random === 'function' ? random : Math.random;
     const preset = PRESETS[Math.min(PRESETS.length - 1, Math.floor(r() * PRESETS.length))];
     const axes = {};
-    for (const axis of AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.28);
+    // small jitter only: the preset keeps its character
+    for (const axis of AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.12);
     return { axes, direction: preset.direction || 'horizontal' };
   }
 
@@ -503,28 +530,54 @@
     const style = {};
     const palette = generatePalette(random, axes);
     style.palette = palette;
-    const swatches = palette.colors;
+    // effect colors come from the readable part of the palette (text / accent),
+    // plus one dark tone for shadows and extruded edges only
+    const bright = [palette.colors[2], palette.colors[3], palette.colors[5] || palette.colors[3]].filter(Boolean);
+    const dark = palette.colors[4] || palette.colors[0];
+    const colors = { bright, dark };
     style.color = colorSetFor(random, palette);
+    // one hero effect per theme; everything else stays quiet
+    const hero = pick(random, ['enter', 'fill', 'edge', 'post']);
     for (const group of SINGLE_GROUPS) {
       if (group === 'layout' && direction === 'vertical') {
         style.layout = {
           type: 'vertical',
-          params: sampleParams(random, 'layout', 'vertical', axes, swatches),
+          params: sampleParams(random, 'layout', 'vertical', axes, bright),
           enabled: true,
           motion: motionFor(random, 'layout', axes),
         };
         continue;
       }
-      const instance = instanceFor(random, group, axes, context, direction, swatches);
+      if (group === 'fill' && hero !== 'fill') {
+        style.fill = { type: 'solid', params: {}, enabled: true, motion: motionFor(random, 'fill', axes) };
+        continue;
+      }
+      const instance = instanceFor(random, group, axes, context, direction, colors);
       if (instance) style[group] = instance;
     }
-    for (const group of STACK_GROUPS) {
-      const count = group === 'edge' ? (random() < 0.55 ? 1 : 2) : random() < 0.5 ? 1 : 2;
+    // holds: usually none, at most one gentle idle
+    if (random() < 0.4) {
+      const type = pick(random, ['breathing', 'floatBob', 'drift', 'sway', 'sineWave']);
+      style.hold = [{ type, params: sampleParams(random, 'hold', type, axes, bright), enabled: true, motion: motionFor(random, 'hold', axes) }];
+    }
+    for (const group of ['edge', 'post']) {
+      const isHero = hero === group;
+      if (!isHero && random() >= 0.35) continue;
+      const count = isHero ? (random() < 0.5 ? 2 : 1) : 1;
+      const basic = group === 'edge' ? ['outline', 'dropShadow'] : ['vignette', 'filmGrain', 'colorGrade'];
       const stack = [];
       const used = new Set();
       for (let i = 0; i < count; i += 1) {
-        const instance = instanceFor(random, group, axes, context, direction, swatches, used);
+        const instance = isHero
+          ? instanceFor(random, group, axes, context, direction, colors, used)
+          : {
+              type: pick(random, basic),
+              params: {},
+              enabled: true,
+              motion: motionFor(random, group, axes),
+            };
         if (!instance) break;
+        if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors));
         used.add(instance.type);
         stack.push(instance);
       }

@@ -48,6 +48,21 @@ SA.store = (() => {
     else list.splice(index, 1);
   }
 
+  // Beats shown for a cue with no stored beats are synthetic. Editing one has
+  // to materialize it into project.beats first, otherwise the edit is lost.
+  function materializeBeat(project, cueId, beatId) {
+    const existing = findBeat(project, cueId, beatId);
+    if (existing) return existing;
+    const cue = (project.script && project.script.cues || []).find((entry) => entry.id === cueId);
+    const synthetic = cue && typeof SA !== 'undefined' && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null;
+    if (!synthetic || synthetic.id !== beatId) return null;
+    project.beats = project.beats || {};
+    const list = [...beatList(project, cueId), clone(synthetic)];
+    list.sort((a, b) => a.start - b.start || a.end - b.end);
+    project.beats[cueId] = list;
+    return findBeat(project, cueId, beatId);
+  }
+
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
   }
@@ -382,6 +397,69 @@ SA.store = (() => {
         },
       });
     },
+    addBeat(cueId) {
+      const cue = findCue(cueId);
+      if (!cue) return;
+      const before = clone(beatList(state.project, cueId));
+      dispatch({
+        label: 'add beat',
+        areas: ['script'],
+        do(project) {
+          project.beats = project.beats || {};
+          let list = [...beatList(project, cueId)].sort((a, b) => a.start - b.start || a.end - b.end);
+          if (!list.length) {
+            const synthetic = SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null;
+            if (synthetic) list = [clone(synthetic)];
+          }
+          const cueLength = Math.max(0.5, cue.end - cue.start);
+          const span = Math.max(0.5, Math.min(2, cueLength * 0.25));
+          const last = list[list.length - 1];
+          if (last && Math.abs(last.end - cue.end) < 1e-4) {
+            last.end = Math.max(last.start + 0.2, cue.end - span);
+            last.pinned = true;
+          }
+          const start = list.length ? Math.max(cue.start, list[list.length - 1].end) : cue.start;
+          const end = Math.max(start + 0.2, cue.end);
+          const kind = 'page';
+          const index = list.filter((entry) => entry.kind === kind).length;
+          list.push({
+            id: `${cueId}:${kind}${index}`,
+            cueId,
+            kind,
+            index,
+            start,
+            end,
+            text: 'New line',
+            lines: ['New line'],
+            fontScale: 1,
+            pinned: true,
+          });
+          list.sort((a, b) => a.start - b.start || a.end - b.end);
+          project.beats[cueId] = list;
+        },
+        undo(project) {
+          project.beats = project.beats || {};
+          project.beats[cueId] = clone(before);
+        },
+      });
+    },
+    deleteBeat(cueId, beatId) {
+      const beat = findBeat(state.project, cueId, beatId);
+      if (!beat) return;
+      const before = clone(beatList(state.project, cueId));
+      dispatch({
+        label: 'delete beat',
+        areas: ['script'],
+        do(project) {
+          project.beats = project.beats || {};
+          project.beats[cueId] = beatList(project, cueId).filter((entry) => entry.id !== beatId);
+        },
+        undo(project) {
+          project.beats = project.beats || {};
+          project.beats[cueId] = clone(before);
+        },
+      });
+    },
     deleteCue(cueId) {
       const cue = findCue(cueId);
       if (!cue) return;
@@ -563,34 +641,42 @@ SA.store = (() => {
       });
     },
     editBeatText(cueId, beatId, text, options) {
-      const beat = findBeat(state.project, cueId, beatId);
-      if (!beat) return;
-      const before = clone(beat);
+      const cue = findCue(cueId);
+      const existing = findBeat(state.project, cueId, beatId);
+      const synthetic = existing || (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
+      if (!synthetic) return;
+      const before = clone(synthetic);
+      const existedBefore = !!existing;
       dispatch({
         label: 'edit beat text',
         areas: ['script'],
         coalesceKey: options && options.coalesceKey,
         do(project) {
-          const target = findBeat(project, cueId, beatId);
+          const target = materializeBeat(project, cueId, beatId);
           if (!target) return;
           target.text = String(text);
           target.lines = String(text).split(/\r?\n/).filter((line) => line.length);
           target.pinned = true;
         },
         undo(project) {
-          replaceBeat(project, cueId, beatId, clone(before));
+          const list = beatList(project, cueId).filter((entry) => entry.id !== beatId);
+          if (existedBefore) list.push(clone(before));
+          list.sort((a, b) => a.start - b.start || a.end - b.end);
+          project.beats = project.beats || {};
+          project.beats[cueId] = list;
         },
       });
     },
     moveBeatEdge(cueId, beatId, edge, time, options) {
       const cue = findCue(cueId);
-      const beat = findBeat(state.project, cueId, beatId);
+      const beat = findBeat(state.project, cueId, beatId) || (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
       if (!cue || !beat) return;
       dispatch({
         label: 'move beat edge',
         areas: ['script'],
         coalesceKey: options && options.coalesceKey,
         do(project) {
+          materializeBeat(project, cueId, beatId);
           const list = [...beatList(project, cueId)].sort((a, b) => a.start - b.start);
           const index = list.findIndex((entry) => entry.id === beatId);
           if (index < 0) return;
@@ -712,13 +798,14 @@ SA.store = (() => {
       });
     },
     setBeatPinned(cueId, beatId, pinned) {
-      const beat = findBeat(state.project, cueId, beatId);
+      const cue = findCue(cueId);
+      const beat = findBeat(state.project, cueId, beatId) || (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
       if (!beat || !!beat.pinned === !!pinned) return;
       dispatch({
         label: 'pin beat',
         areas: ['script'],
         do(project) {
-          const target = findBeat(project, cueId, beatId);
+          const target = materializeBeat(project, cueId, beatId);
           if (target) target.pinned = !!pinned;
         },
       });

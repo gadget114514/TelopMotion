@@ -60,7 +60,6 @@
           <div class="welcome-actions">
             <button id="welcome-start" class="btn btn-primary" data-i18n="studio.welcome.startEmpty"></button>
             <button id="welcome-lyrics" class="btn" data-i18n="studio.welcome.importLyrics"></button>
-            <button id="welcome-import" class="btn" data-i18n="studio.welcome.importJson"></button>
             <button id="welcome-open" class="btn" data-i18n="studio.welcome.openProject"></button>
           </div>
         </div>
@@ -105,18 +104,22 @@
         <button id="tl-add-cue" class="btn btn-mini" data-i18n="studio.timeline.addCue"></button>
         <button id="tl-restructure" class="btn btn-mini" data-i18n="studio.timeline.restructure"></button>
         <button id="tl-auto-direct" class="btn btn-mini btn-primary" data-i18n="studio.timeline.autoDirect"></button>
+        <button id="tl-theme" class="btn btn-mini" data-i18n="studio.timeline.theme"></button>
         <button id="tl-marker" class="btn btn-mini" data-i18n="studio.timeline.marker"></button>
         <select id="tl-prop" class="timeline-prop"></select>
         <button id="tl-add-property" class="btn btn-mini" data-i18n="studio.timeline.addProperty"></button>
         <label class="timeline-zoom">
           <span data-i18n="studio.timeline.zoom"></span>
-          <input id="tl-zoom" type="range" min="10" max="800" step="5" value="120" />
+          <input id="tl-zoom" type="range" min="1" max="800" step="1" value="120" />
           <span id="tl-zoom-label">120 px/s</span>
         </label>
       </div>
       <div id="timeline-scroll" class="timeline-scroll">
         <canvas id="timeline-ruler" class="timeline-ruler"></canvas>
         <canvas id="timeline-canvas"></canvas>
+      </div>
+      <div id="timeline-hscroll" class="timeline-hscroll" hidden>
+        <div id="timeline-hscroll-thumb" class="timeline-hscroll-thumb"></div>
       </div>
     </div>
   </section>
@@ -134,13 +137,11 @@
 <script src="vendor/webm-muxer.js"></script>
 <script src="vendor/tiny-segmenter.js"></script>
 <script src="js/format.js"></script>
-<script src="js/achievements.js"></script>
 <script src="js/platform.js"></script>
 <script src="js/srt.js"></script>
 <script src="js/lrc.js"></script>
 <script src="js/lyrics-json.js"></script>
 <script src="js/lyrics-file.js"></script>
-<script src="js/script-gen.js"></script>
 <script src="js/color.js"></script>
 <script src="js/lyrics/rng.js"></script>
 <script src="js/lyrics/easing.js"></script>
@@ -168,8 +169,8 @@
 <script src="js/lyrics/effects/background.js"></script>
 <script src="js/lyrics/effects/color.js"></script>
 <script src="js/lyrics/motion.js"></script>
-<script src="js/lyrics/random.js"></script>
 <script src="js/lyrics/moods.js"></script>
+<script src="js/lyrics/random.js"></script>
 <script src="js/lyrics/font.js"></script>
 <script src="js/lyrics/scene.js"></script>
 <script src="js/lyrics/gl/context.js"></script>
@@ -180,8 +181,6 @@
 <script src="js/lyrics/gl/shapes.js"></script>
 <script src="js/lyrics/engine.js"></script>
 <script src="js/lyrics/canvas2d-fallback.js"></script>
-<script src="js/card/palette.js"></script>
-<script src="js/card/canvas-card.js"></script>
 <script src="js/studio/project.js"></script>
 <script src="js/studio/store.js"></script>
 <script src="js/studio/io.js"></script>

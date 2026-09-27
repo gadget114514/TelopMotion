@@ -52,15 +52,6 @@ SA.menu = (() => {
     }));
   }
 
-  function imageItems() {
-    return [
-      { key: 'studio.output.image169Jpg', action: 'saveImage', args: ['16:9', 'image/jpeg'] },
-      { key: 'studio.output.image169Png', action: 'saveImage', args: ['16:9', 'image/png'] },
-      { key: 'studio.output.image916Jpg', action: 'saveImage', args: ['9:16', 'image/jpeg'] },
-      { key: 'studio.output.image916Png', action: 'saveImage', args: ['9:16', 'image/png'] },
-    ];
-  }
-
   const MENUS = [
     {
       id: 'file',
@@ -71,19 +62,15 @@ SA.menu = (() => {
         { key: 'studio.file.save', action: 'saveProject', shortcut: 'Ctrl+S' },
         { key: 'studio.file.saveAs', action: 'saveProjectAs' },
         itemSeparator(),
-        { key: 'studio.file.importJson', action: 'importProfile' },
         { key: 'studio.file.importLyrics', action: 'importLyrics' },
         { key: 'studio.file.importAudio', action: 'importAudio' },
         { key: 'studio.file.recent', items: recentItems },
-        itemSeparator(),
-        { key: 'studio.file.achievement', action: 'openAchievements' },
       ],
     },
     {
       id: 'generate',
       labelKey: 'studio.menu.generate',
       items: () => [
-        { key: 'studio.generate.script', action: 'generateScript', enabled: () => !!SA.store.state.project },
         { key: 'studio.generate.distribute', action: 'distributeCues', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
         { key: 'studio.generate.restructure', action: 'restructureBeats', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
         { key: 'studio.generate.credits', action: 'credits', enabled: () => !!SA.store.state.project },
@@ -105,8 +92,6 @@ SA.menu = (() => {
       id: 'output',
       labelKey: 'studio.menu.output',
       items: () => [
-        { key: 'studio.output.saveImage', items: imageItems, enabled: () => !!(SA.store.state.project && SA.store.state.project.dataset) },
-        { key: 'studio.output.cardTheme', action: 'cardTheme', enabled: () => !!SA.store.state.project },
         itemSeparator(),
         { key: 'studio.output.exportLyrics', items: () => [
           { key: 'studio.output.exportSrt', action: 'exportSrt' },

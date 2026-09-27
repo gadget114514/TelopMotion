@@ -41,12 +41,17 @@ test('randomize is reproducible for the same seed', () => {
 
 test('randomize respects locked groups', () => {
   const project = fixtureProject();
-  const result = random.randomize({ project, scope: 'cues', seed: 7, locks: ['fill', 'post', 'layout'] });
+  const result = random.randomize({
+    project,
+    scope: 'cues',
+    seed: 7,
+    locks: ['fill', 'post', 'layout', 'animation', 'exit', 'hold', 'edge'],
+  });
   for (const patch of result.patches) {
     assert.equal(patch.style.fill, undefined, 'fill is locked');
     assert.equal(patch.style.post, undefined, 'post is locked');
     assert.equal(patch.style.layout, undefined, 'layout is locked');
-    assert.ok(patch.style.enter, 'enter is not locked');
+    assert.ok(patch.style.enter, 'the only unlocked rollable group is picked');
   }
 });
 
@@ -102,7 +107,13 @@ test('every random pick is a registered type with sampled params', () => {
 test('avoidRepeats prefers a different type than the current one when possible', () => {
   const project = fixtureProject();
   project.style = projectModule.mergeDeep(project.style, { enter: { type: 'fade' } });
-  const result = random.randomize({ project, scope: 'cues', seed: 5, avoidRepeats: true });
+  const result = random.randomize({
+    project,
+    scope: 'cues',
+    seed: 5,
+    avoidRepeats: true,
+    locks: ['animation', 'exit', 'hold', 'fill', 'edge', 'post'],
+  });
   const enterTypes = result.patches.map((patch) => patch.style.enter && patch.style.enter.type);
   assert.ok(enterTypes.every((type) => type && type !== 'fade'), `types: ${enterTypes.join(',')}`);
 });
@@ -121,15 +132,28 @@ test('layout fit rules keep vertical and circle for short texts', () => {
   }
 });
 
-test('intensity biases numeric ranges toward the high end', () => {
-  const param = { key: 'amount', kind: 'number', min: 0, max: 1, default: 0.5 };
+test('intensity biases the recommended range but never leaves it', () => {
+  const param = { key: 'amount', kind: 'number', min: 0, max: 1, default: 0.5, random: [0.1, 0.9] };
   let low = 0;
   let high = 0;
   for (let i = 0; i < 200; i += 1) {
-    low += random.sampleParam(param, rng.mulberry32(i), 1, []);
-    high += random.sampleParam(param, rng.mulberry32(i), 3, []);
+    const lowValue = random.sampleParam(param, rng.mulberry32(i), 1, []);
+    const highValue = random.sampleParam(param, rng.mulberry32(i), 3, []);
+    assert.ok(lowValue >= 0.1 && lowValue <= 0.9, `low sample ${lowValue}`);
+    assert.ok(highValue >= 0.1 && highValue <= 0.9, `high sample ${highValue}`);
+    low += lowValue;
+    high += highValue;
   }
   assert.ok(high > low, `high ${high} > low ${low}`);
+});
+
+test('numeric parameters without a recommended range keep their default', () => {
+  const param = { key: 'posterize', kind: 'number', min: 0, max: 32, default: 0 };
+  for (let i = 0; i < 50; i += 1) {
+    assert.strictEqual(random.sampleParam(param, rng.mulberry32(i), 3, []), 0);
+  }
+  const vec = { key: 'offset', kind: 'vec2', default: { x: 6, y: 8 } };
+  assert.deepStrictEqual(random.sampleParam(vec, rng.mulberry32(1), 3, []), { x: 6, y: 8 });
 });
 
 test('presets are JSON-safe partial style sets', () => {

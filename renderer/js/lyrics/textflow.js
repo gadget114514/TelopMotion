@@ -1111,10 +1111,11 @@
     const pinned = (previous || []).filter((beat) => beat && beat.pinned);
     const kept = [];
     const orphans = [];
-    const cueText = normalizeText(cue.text);
     for (const beat of pinned) {
       const text = normalizeText(beat.text);
-      if (text && cueText.includes(text)) kept.push({ ...beat });
+      // edited beats carry their own text; the cue only owns the timing, so a
+      // pinned beat survives even when the cue text no longer contains it
+      if (text) kept.push({ ...beat });
       else orphans.push({ ...beat });
     }
     let remaining = fresh.filter((beat) => {

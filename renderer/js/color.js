@@ -295,10 +295,17 @@
         const index = Math.abs(Math.floor(stop.paletteIndex)) % colors.length;
         return { ...stop, color: colors[index] };
       });
+      // animated gradients: angleSpeed rotates the direction, shiftSpeed pans
+      // the gradient across the element (both driven by context.t)
+      const animate = value.animate || {};
+      const time = Number(context.t) || 0;
+      const angle = (value.angle == null ? 90 : value.angle) + (Number(animate.angleSpeed) || 0) * time;
+      const shift = (Number(animate.shiftSpeed) || 0) * time;
       return {
         kind: 'gradient',
         type: value.type || 'linear',
-        angle: value.angle == null ? 90 : value.angle,
+        angle,
+        shift,
         space: value.space || 'element',
         stops: stops.map((stop) => normalizeStop(stop)),
       };

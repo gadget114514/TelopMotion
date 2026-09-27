@@ -48,7 +48,7 @@ One SRT cue becomes **beats**: split into pages that fit the safe area (with lan
 
 - **Achievement card**: 16:9 JPG/PNG and 9:16 JPG/PNG (Output menu)
 - **Lyrics**: SRT (with or without `{fx:}` tags), LRC and JSON (Output → Export lyrics)
-- **Project**: `.sunostudio.json`
+- **Project**: `.telopmotion.json`
 - **Video**: MP4 (H.264 + AAC; Opus fallback) and WebM (VP9 + Opus) via WebCodecs, with a streaming save target in Electron and the File System Access API on the web. Choose format, resolution (720p/1080p/1440p), fps (30/60), bitrate, audio, and quality in the export dialog (Ctrl+E); the progress bar shows the ETA and cancels cleanly
 - **Transparent export**: a store-only PNG-sequence `.zip` (guaranteed) for alpha output; VP9-alpha WebM is best-effort and depends on the platform
 - **Layers**: background and foreground layers (solid colours and images with alpha), each with opacity, blend (normal/add/multiply/screen), fit (cover/contain/stretch/actual), corner radius and transform (position/scale/rotation); edit them in Settings → Layers…, images are embedded as data URLs so they travel with the project, and layers render in the preview and in video exports identically; **video layers** (MP4/WebM) add speed/offset and playback in the preview, and exports seek them frame-accurately so the rendered frames match

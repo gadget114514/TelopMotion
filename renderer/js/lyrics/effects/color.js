@@ -30,6 +30,8 @@
           kind: 'gradient',
           stops: stops.map((stop) => stop.rgba),
           positions: stops.map((stop) => stop.pos),
+          angle: resolved.angle == null ? 90 : resolved.angle,
+          shift: resolved.shift || 0,
           rgba: first || { r: 1, g: 1, b: 1, a: 1 },
           rgba2: last || first || { r: 1, g: 1, b: 1, a: 1 },
         };

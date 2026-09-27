@@ -134,7 +134,7 @@ SA.exportDialog = (() => {
         format: settings.format,
         transparent: settings.transparent,
         audioBuffer,
-        name: SA.io.fileName(doc).replace(/\.sunostudio\.json$/, ''),
+        name: SA.io.fileName(doc).replace(/\.telopmotion\.json$/, ''),
         signal,
         prepareFrame: (time) => (typeof engine.prepareLayers === 'function' ? engine.prepareLayers(time, { playback: 'export' }) : Promise.resolve(0)),
         renderFrame: (time) => {

@@ -137,6 +137,11 @@ SA.controls = (() => {
     const paletteColors = opts.palette && Array.isArray(opts.palette.colors) ? opts.palette.colors : [];
     const wrap = document.createElement('div');
     wrap.className = 'ctrl-color';
+    const stopColor = (stop) => {
+      if (!stop) return '#ffffff';
+      if (stop.paletteIndex != null && paletteColors.length) return paletteColors[Math.abs(Math.floor(stop.paletteIndex)) % paletteColors.length];
+      return typeof stop.color === 'string' && /^#/.test(stop.color) ? stop.color : '#ffffff';
+    };
     const resolveParts = (next) => {
       if (next && typeof next === 'object' && next.kind === 'palette') {
         const index = Math.abs(Math.floor(next.index || 0));
@@ -146,14 +151,22 @@ SA.controls = (() => {
       if (next && typeof next === 'object' && next.kind === 'category') {
         return { hex: '#ff8a3d', ref: opts.categoryLabel || 'Cat' };
       }
+      if (next && typeof next === 'object' && next.kind === 'gradient') {
+        const colors = (next.stops || []).map(stopColor);
+        return { hex: colors[0] || '#ffffff', ref: null, gradient: colors.length > 1 ? colors : null };
+      }
       const inner = next && typeof next === 'object' ? next.value || next.color : next;
       return { hex: typeof inner === 'string' && /^#/.test(inner) ? inner : '#ffffff', ref: null };
     };
+    const swatchBackground = (resolved) =>
+      resolved.gradient
+        ? `linear-gradient(90deg, ${resolved.gradient.map((color, index) => `${color} ${Math.round((index / Math.max(1, resolved.gradient.length - 1)) * 100)}%`).join(', ')})`
+        : resolved.hex;
     let parts = resolveParts(value);
     const swatch = document.createElement('button');
     swatch.type = 'button';
     swatch.className = 'ctrl-swatch';
-    swatch.style.background = parts.hex;
+    swatch.style.background = swatchBackground(parts);
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'ctrl-hex';
@@ -161,7 +174,7 @@ SA.controls = (() => {
     input.addEventListener('keydown', (event) => event.stopPropagation());
     const paint = (next) => {
       parts = resolveParts(next);
-      swatch.style.background = parts.hex;
+      swatch.style.background = swatchBackground(parts);
       input.value = parts.ref || parts.hex;
     };
     const commitHex = () => {
