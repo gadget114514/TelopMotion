@@ -4,6 +4,8 @@ A desktop app for **lyric videos**, with a Suno achievement card generator as a 
 
 ![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green)
 
+**[Web version → https://gadget114514.github.io/TelopMotion/](https://gadget114514.github.io/TelopMotion/)**
+
 ## Features
 
 - **Studio (main)**: turn lyrics into a video project — SRT / LRC / JSON import, text restructuring into beats (pages, recap, repeats), vector text rendering with WebGL2 shaders, motion and effect groups, a timeline with keyframes, an inspector with manual editing, and playback in sync with an audio track
