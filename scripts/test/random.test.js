@@ -50,6 +50,22 @@ test('randomize respects locked groups', () => {
   }
 });
 
+test('automatic randomization never picks glyph-destroying effects', () => {
+  const project = fixtureProject();
+  for (let seed = 1; seed <= 40; seed += 1) {
+    const result = random.randomize({ project, scope: 'cues', seed, intensity: 2 });
+    for (const patch of result.patches) {
+      for (const [group, value] of Object.entries(patch.style)) {
+        const instances = Array.isArray(value) ? value : [value];
+        for (const instance of instances) {
+          const descriptor = instance && instance.type ? fx.get(group, instance.type) : null;
+          assert.ok(!descriptor || !descriptor.tags.includes('degrade'), `seed ${seed} picked ${group}.${instance.type}`);
+        }
+      }
+    }
+  }
+});
+
 test('randomize never touches manual overrides unless asked', () => {
   const project = fixtureProject();
   const path = 'cue:c1/beat:c1:single0/line:0/word:1/letter:0';

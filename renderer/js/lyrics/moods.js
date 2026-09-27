@@ -218,6 +218,10 @@
     for (const [type, traits] of Object.entries(pool)) {
       if (exclude && exclude.has(type)) continue;
       if (!allowed(group, traits, context, direction)) continue;
+      // skip glyph-destroying effects (pixelate, halftone, dissolves...) when
+      // generating automatically; they remain selectable by hand
+      const descriptor = fx.get(group, type);
+      if (descriptor && descriptor.tags.includes('degrade')) continue;
       const fit = scoreEntry(traits, axes);
       scored.push({ type, weight: Math.pow(fit, 2) * (0.6 + random() * 0.8) });
     }

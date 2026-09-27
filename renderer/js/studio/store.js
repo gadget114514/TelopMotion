@@ -523,6 +523,12 @@ SA.store = (() => {
           const target = project.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
           if (opts.chunk) target.textFlow = { ...(target.textFlow || {}), chunk: opts.chunk };
+          if (opts.recap != null) {
+            target.textFlow = {
+              ...(target.textFlow || {}),
+              recap: { minPages: 1, ...((target.textFlow && target.textFlow.recap) || {}), mode: opts.recap ? 'end' : 'off' },
+            };
+          }
           if (opts.style) project.cueStyles[cueId] = SA.project.mergeDeep(project.cueStyles[cueId] || {}, opts.style);
           const resolved = SA.textflow.cueOptions(project, target);
           if (opts.settings) resolved.settings = SA.project.mergeDeep(resolved.settings, opts.settings);

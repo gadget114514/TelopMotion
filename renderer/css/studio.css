@@ -224,7 +224,8 @@ body {
 }
 
 .timeline-body {
-  padding: 0 12px 12px;
+  /* start the time axis at the left edge of the preview column */
+  padding: 0 12px 12px calc(12px + var(--media-w) + var(--split));
   gap: 6px;
   flex: 1;
   min-height: 0;

@@ -303,6 +303,19 @@ test('beatCues flattens beats into SRT-ready cues', () => {
   assert.equal(cues[2].start, 5);
 });
 
+test('chunk mode still produces the full-text recap at the end', () => {
+  const result = flow('one two three four five six seven eight nine ten', {
+    start: 0,
+    end: 8,
+    settings: { chunk: 'phrase', maxChunkDuration: 1, recap: { mode: 'end', minPages: 1 } },
+  });
+  assert.ok(result.recap, 'recap missing');
+  assert.ok(Math.abs(result.recap.to - 8) < 1e-6);
+  assert.ok(result.pages.some((page) => page.kind === 'recap'));
+  const recapText = result.recap.lines.join(' ');
+  assert.ok(recapText.includes('one') && recapText.includes('ten'), `recap text: ${recapText}`);
+});
+
 test('chunkThemes expose a valid level and copy their styles', () => {
   const themes = textflow.chunkThemes();
   assert.ok(themes.length >= 3);

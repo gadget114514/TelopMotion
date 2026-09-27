@@ -66,6 +66,9 @@
   function candidatesFor(group, allowTags, context) {
     const list = fx.list(group);
     const filtered = list.filter((descriptor) => {
+      // never pick glyph-destroying effects automatically (pixelate, halftone,
+      // dissolves...). They stay available for manual use in the inspector.
+      if (descriptor.tags.includes('degrade')) return false;
       if (allowTags && allowTags.length && !descriptor.tags.some((tag) => allowTags.includes(tag))) return false;
       return allowedFor(group, descriptor.type, context);
     });

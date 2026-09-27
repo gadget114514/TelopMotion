@@ -9,6 +9,9 @@ SA.timeline = (() => {
   const AUDIO_H = 30;
   const LANE_H = 22;
   const LAYER_H = 22;
+  const LABEL_W = 150;
+  const TAG_W = 12;
+  const TAG_GAP = 2;
   const KEY_SIZE = 5;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 800;
@@ -114,16 +117,29 @@ SA.timeline = (() => {
     return cue ? cue.start : 0;
   }
 
+  // The left LABEL_W pixels are a fixed row-label column: the time axis starts
+  // to its right and never overlaps the labels.
   function timeAt(x) {
-    return Math.max(0, (x + scrollX) / pxPerSecond);
+    return Math.max(0, (x - LABEL_W + scrollX) / pxPerSecond);
   }
 
   function xOf(time) {
-    return time * pxPerSecond - scrollX;
+    return LABEL_W + time * pxPerSecond - scrollX;
   }
 
   function formatClock(seconds) {
     return SA.preview ? SA.preview.formatClock(seconds) : `${Math.floor(seconds)}s`;
+  }
+
+  // Truncates a label with an ellipsis so it never leaves the fixed label
+  // column and overlaps the time-based blocks.
+  function fitLabel(text, maxWidth) {
+    const value = String(text == null ? '' : text);
+    if (!ctx || maxWidth <= 0) return '';
+    if (ctx.measureText(value).width <= maxWidth) return value;
+    let end = value.length;
+    while (end > 1 && ctx.measureText(`${value.slice(0, end)}…`).width > maxWidth) end -= 1;
+    return `${value.slice(0, end)}…`;
   }
 
   function snapFrame(time) {
@@ -269,12 +285,12 @@ SA.timeline = (() => {
     ctx.lineTo(size.width, RULER_H - 0.5);
     ctx.stroke();
     const step = tickStep();
-    const start = Math.floor(scrollX / pxPerSecond / step) * step;
+    const start = Math.floor(Math.max(0, (scrollX - LABEL_W) / pxPerSecond) / step) * step;
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'top';
     for (let time = start; time <= total + step; time += step) {
       const x = Math.round(xOf(time));
-      if (x < -40 || x > size.width + 40) continue;
+      if (x < LABEL_W - 1 || x > size.width + 40) continue;
       ctx.strokeStyle = '#39435c';
       ctx.beginPath();
       ctx.moveTo(x + 0.5, RULER_H - 9);
@@ -305,7 +321,7 @@ SA.timeline = (() => {
     const adjacent = Math.max(1, Math.round(samplesPerSecond / pxPerSecond));
     ctx.strokeStyle = '#3f6f8f';
     ctx.beginPath();
-    for (let x = 0; x < size.width; x += 1) {
+    for (let x = LABEL_W; x < size.width; x += 1) {
       const time = timeAt(x);
       if (time < 0 || time > total) continue;
       const index = Math.floor(time * samplesPerSecond);
@@ -318,7 +334,7 @@ SA.timeline = (() => {
       ctx.lineTo(x + 0.5, middle + half);
     }
     ctx.stroke();
-    hitRegions.push({ type: 'audio', x: 0, y: row.y, w: size.width, h: row.h });
+    hitRegions.push({ type: 'audio', x: LABEL_W, y: row.y, w: size.width - LABEL_W, h: row.h });
   }
 
   function rounded(px, py, pw, ph, radius) {
@@ -353,9 +369,10 @@ SA.timeline = (() => {
 
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, RULER_H, size.width, size.height - RULER_H);
+    // time-based content is clipped to the right of the fixed label column
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
     ctx.clip();
-    if (x + width >= 0 && x <= size.width) {
+    if (x + width >= LABEL_W && x <= size.width) {
       ctx.fillStyle = 'rgba(21, 25, 36, 0.92)';
       rounded(x, y + 2, width, height, 6);
       ctx.fill();
@@ -366,6 +383,9 @@ SA.timeline = (() => {
       const beats = beatsFor(projectDoc, cue);
       const inner = x + 3;
       const innerWidth = Math.max(0, width - 6);
+      const beatStyles = projectDoc.beatStyles || {};
+      // pushed before the beats so a click on a beat block wins over the cue
+      hitRegions.push({ type: 'cue', x, y, w: width, h: height, cueId: cue.id, edgeLeft: x, edgeRight: x + width });
       ctx.save();
       ctx.beginPath();
       ctx.rect(x + 2, y, width - 4, height + 4);
@@ -377,6 +397,7 @@ SA.timeline = (() => {
       ctx.restore();
       if (beats.length) {
         const total = Math.max(0.001, cue.end - cue.start);
+        let beatIndex = 0;
         for (const beat of beats) {
           const bx = inner + ((beat.start - cue.start) / total) * innerWidth;
           const bw = Math.max(1.5, ((beat.end - beat.start) / total) * innerWidth);
@@ -396,10 +417,26 @@ SA.timeline = (() => {
           ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.16)';
           ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
           ctx.stroke();
+          if (beatIndex > 0) {
+            // clear division between this beat and the previous one
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(bx + 0.5, y + 4);
+            ctx.lineTo(bx + 0.5, y + height - 4);
+            ctx.stroke();
+          }
           if (beat.pinned) {
             ctx.fillStyle = '#ff8a3d';
             ctx.beginPath();
             ctx.arc(bx + 3, y + 5.5, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          const hasMotions = !!(beatStyles[beat.id] && Array.isArray(beatStyles[beat.id].motions) && beatStyles[beat.id].motions.length);
+          if (hasMotions) {
+            ctx.fillStyle = '#4dc8ff';
+            ctx.beginPath();
+            ctx.arc(bx + bw - 3, y + 5.5, 1.8, 0, Math.PI * 2);
             ctx.fill();
           }
           if (bw > 26) {
@@ -414,9 +451,30 @@ SA.timeline = (() => {
             ctx.fillText(label, bx + 4, y + height / 2 - 0.5);
             ctx.restore();
           }
-          hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw });
+          hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
+          beatIndex += 1;
         }
       }
+      // cue tag: a small handle just before the cue start (inside the block when
+      // there is no room to the left). Clicking it selects the cue.
+      const tagLeft = x - TAG_W - TAG_GAP;
+      const tagX = tagLeft >= LABEL_W + 2 ? tagLeft : x + TAG_GAP;
+      const tagY = y + 3;
+      const tagH = height - 6;
+      ctx.fillStyle = selected ? '#ff8a3d' : tint;
+      rounded(tagX, tagY, TAG_W, tagH, 3);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(11, 13, 18, 0.65)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(11, 13, 18, 0.8)';
+      ctx.beginPath();
+      for (let i = -1; i <= 1; i += 1) {
+        ctx.moveTo(tagX + 3, tagY + tagH / 2 + i * 3 - 0.5);
+        ctx.lineTo(tagX + TAG_W - 3, tagY + tagH / 2 + i * 3 - 0.5);
+      }
+      ctx.stroke();
+      hitRegions.push({ type: 'cue-head', cueId: cue.id, x: tagX, y, w: TAG_W, h: height });
       if (warnings.length) {
         ctx.fillStyle = '#ff5c5c';
         ctx.beginPath();
@@ -426,9 +484,19 @@ SA.timeline = (() => {
         ctx.closePath();
         ctx.fill();
       }
-      hitRegions.push({ type: 'cue', x, y, w: width, h: height, cueId: cue.id, edgeLeft: x, edgeRight: x + width });
     }
     ctx.restore();
+
+    // fixed label column: highlight the selected cue's row label
+    if (selected) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 138, 61, 0.08)';
+      ctx.fillRect(0, y, LABEL_W - 2, ROW_H);
+      ctx.restore();
+    }
+    // pushed last so the label cell wins over cue/beat blocks under the column;
+    // the twisty region is pushed above this one and stays clickable
+    hitRegions.push({ type: 'cue-label', cueId: cue.id, x: 0, y, w: LABEL_W - 2, h: ROW_H });
 
     // twisty (in the gutter)
     const twistyX = 8;
@@ -453,8 +521,8 @@ SA.timeline = (() => {
     ctx.fillStyle = '#8d96ab';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    const label = `${formatClock(cue.start)} ${(cue.text || '').split('\n')[0].slice(0, 14)}`;
-    ctx.fillText(label, 22, y + ROW_H / 2);
+    const label = `${formatClock(cue.start)} ${(cue.text || '').split('\n')[0]}`;
+    ctx.fillText(fitLabel(label, LABEL_W - 26), 22, y + ROW_H / 2);
     ctx.restore();
   }
 
@@ -480,7 +548,7 @@ SA.timeline = (() => {
     const enabled = layer.enabled !== false;
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, RULER_H, size.width, size.height - RULER_H);
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
     ctx.clip();
     if (x + width >= 0 && x <= size.width) {
       ctx.fillStyle = enabled ? (foreground ? 'rgba(30, 64, 52, 0.92)' : 'rgba(28, 46, 74, 0.92)') : 'rgba(30, 34, 44, 0.7)';
@@ -526,14 +594,14 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const gutter = `${formatClock(start)} ${foreground ? 'FG' : 'BG'}`;
-    ctx.fillText(gutter, 22, y + LAYER_H / 2);
+    ctx.fillText(fitLabel(gutter, LABEL_W - 26), 22, y + LAYER_H / 2);
     ctx.restore();
   }
 
   function drawFillers(size, row) {
     const clips = fillerClips();
     ctx.fillStyle = '#0d1017';
-    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
     ctx.strokeStyle = '#1c2230';
     ctx.beginPath();
     ctx.moveTo(0, row.y + row.h - 0.5);
@@ -541,7 +609,7 @@ SA.timeline = (() => {
     ctx.stroke();
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, row.y, size.width, row.h);
+    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
     ctx.clip();
     for (const clip of clips) {
       const x = xOf(clip.from);
@@ -577,13 +645,13 @@ SA.timeline = (() => {
     ctx.fillStyle = '#8d96ab';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${t('filler.track')}${clips.length ? ` (${clips.length})` : ''}`, 22, row.y + row.h / 2);
+    ctx.fillText(fitLabel(`${t('filler.track')}${clips.length ? ` (${clips.length})` : ''}`, LABEL_W - 26), 22, row.y + row.h / 2);
   }
 
   function drawCredits(size, row) {
     const clips = creditClips();
     ctx.fillStyle = '#0d1017';
-    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
     ctx.strokeStyle = '#1c2230';
     ctx.beginPath();
     ctx.moveTo(0, row.y + row.h - 0.5);
@@ -591,7 +659,7 @@ SA.timeline = (() => {
     ctx.stroke();
     ctx.save();
     ctx.beginPath();
-    ctx.rect(0, row.y, size.width, row.h);
+    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
     ctx.clip();
     for (const clip of clips) {
       const x = xOf(clip.start);
@@ -621,7 +689,7 @@ SA.timeline = (() => {
     ctx.fillStyle = '#8d96ab';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${t('credits.track')}${clips.length ? ` (${clips.length})` : ''}`, 22, row.y + row.h / 2);
+    ctx.fillText(fitLabel(`${t('credits.track')}${clips.length ? ` (${clips.length})` : ''}`, LABEL_W - 26), 22, row.y + row.h / 2);
   }
 
   function laneLabel(path) {
@@ -634,18 +702,18 @@ SA.timeline = (() => {
     const doc = project();
     if (row.type === 'lane-empty') {
       ctx.fillStyle = '#0d1017';
-      ctx.fillRect(0, row.y, size.width, row.h);
+      ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
       ctx.fillStyle = '#5d6785';
       ctx.font = '10px "Segoe UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
-      ctx.fillText(t('studio.timeline.noKeys'), 22, row.y + row.h / 2);
+      ctx.fillText(fitLabel(t('studio.timeline.noKeys'), LABEL_W - 26), 22, row.y + row.h / 2);
       return;
     }
     const cue = cueList().find((entry) => entry.id === row.cueId);
     if (!cue) return;
     const track = ((doc.keyframes[row.path] || {})[row.propPath] || []).slice();
     ctx.fillStyle = row.y % 2 === 0 ? '#0f121a' : '#0d1017';
-    ctx.fillRect(0, row.y, size.width, row.h);
+    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
     ctx.strokeStyle = '#1c2230';
     ctx.beginPath();
     ctx.moveTo(0, row.y + row.h - 0.5);
@@ -653,14 +721,27 @@ SA.timeline = (() => {
     ctx.stroke();
     const start = xOf(cue.start);
     const end = xOf(cue.end);
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
+    ctx.clip();
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.06)';
     ctx.strokeRect(start, row.y + 2, Math.max(2, end - start), row.h - 4);
+    ctx.restore();
     ctx.save();
     ctx.fillStyle = '#6f7a94';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, 22, row.y + row.h / 2);
+    ctx.fillText(
+      fitLabel(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, LABEL_W - 26),
+      22,
+      row.y + row.h / 2
+    );
     ctx.restore();
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
+    ctx.clip();
     const segments = [];
     const middle = row.y + row.h / 2;
     for (let i = 0; i < track.length; i += 1) {
@@ -695,6 +776,7 @@ SA.timeline = (() => {
       ctx.stroke();
     }
     ctx.restore();
+    ctx.restore();
     hitRegions.push({ type: 'lane', x: 0, y: row.y, w: size.width, h: row.h, cueId: row.cueId, path: row.path, propPath: row.propPath, origin: row.origin });
   }
 
@@ -703,7 +785,7 @@ SA.timeline = (() => {
     const maxDuration = doc.output && doc.output.maxDuration;
     if (maxDuration && maxDuration > 0) {
       const limitX = xOf(maxDuration);
-      if (limitX >= -1 && limitX <= size.width + 1) {
+      if (limitX >= LABEL_W - 1 && limitX <= size.width + 1) {
         ctx.save();
         ctx.strokeStyle = '#ff8a3d';
         ctx.lineWidth = 1.5;
@@ -717,7 +799,7 @@ SA.timeline = (() => {
     }
     for (const marker of doc.markers || []) {
       const x = xOf(marker.t);
-      if (x < -10 || x > size.width + 10) continue;
+      if (x < LABEL_W || x > size.width + 10) continue;
       ctx.fillStyle = '#4dc8ff';
       ctx.beginPath();
       ctx.moveTo(x, RULER_H - 12);
@@ -743,7 +825,7 @@ SA.timeline = (() => {
 
   function drawPlayhead(size, yEnd, head) {
     const playheadX = xOf(SA.store.state.playhead);
-    if (playheadX < -1 || playheadX > size.width + 1) return;
+    if (playheadX < LABEL_W || playheadX > size.width + 1) return;
     ctx.strokeStyle = '#ff4d4d';
     ctx.lineWidth = 1.4;
     ctx.beginPath();
@@ -792,6 +874,14 @@ SA.timeline = (() => {
         drawMarkers(size);
         drawPlayhead(size, fixedHeight, true);
       });
+      // fixed label column on top of the ruler
+      rulerCtx.fillStyle = '#0d1017';
+      rulerCtx.fillRect(0, 0, LABEL_W, fixedHeight);
+      rulerCtx.strokeStyle = '#252c3d';
+      rulerCtx.beginPath();
+      rulerCtx.moveTo(LABEL_W - 0.5, 0);
+      rulerCtx.lineTo(LABEL_W - 0.5, fixedHeight);
+      rulerCtx.stroke();
     }
     // scrollable part: every row is drawn with the shared absolute coordinates
     ctx.clearRect(0, 0, size.width, size.height);
@@ -799,6 +889,14 @@ SA.timeline = (() => {
     ctx.fillRect(0, 0, size.width, size.height);
     ctx.save();
     ctx.translate(0, -fixedHeight);
+    // fixed label column background and separator (labels are drawn on top)
+    ctx.fillStyle = '#0d1017';
+    ctx.fillRect(0, 0, LABEL_W, size.height);
+    ctx.strokeStyle = '#252c3d';
+    ctx.beginPath();
+    ctx.moveTo(LABEL_W - 0.5, 0);
+    ctx.lineTo(LABEL_W - 0.5, size.height);
+    ctx.stroke();
     for (const row of rows) {
       if (row.type === 'cue') drawCue(size, doc, cueList().find((entry) => entry.id === row.cueId), row);
       else if (row.type === 'layer') drawLayer(size, row);
@@ -830,13 +928,24 @@ SA.timeline = (() => {
 
   function hitTest(point) {
     const ruler = rows.find((row) => row.type === 'ruler');
-    if (ruler && point.y < RULER_H) return { type: 'ruler' };
+    if (ruler && point.y < RULER_H && point.x >= LABEL_W) return { type: 'ruler' };
     const key = keyAt(point);
     if (key) return { type: 'key', ...key };
+    // the cue tag wins over every other region it touches
+    for (const region of hitRegions) {
+      if (region.type !== 'cue-head') continue;
+      if (point.y < region.y || point.y > region.y + region.h) continue;
+      if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
+      return { type: 'cue', cueId: region.cueId, head: true, x: region.x, y: region.y, w: region.w, h: region.h };
+    }
     let found = null;
     for (const region of hitRegions) {
       if (point.y < region.y || point.y > region.y + region.h) continue;
       if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
+      if (region.type === 'cue-label') {
+        found = { type: 'cue', cueId: region.cueId, label: true, x: region.x, y: region.y, w: region.w, h: region.h };
+        continue;
+      }
       if (region.type === 'beat') {
         if (Math.abs(point.x - region.edgeLeft) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'start' };
         if (Math.abs(point.x - region.edgeRight) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'end' };
@@ -893,7 +1002,8 @@ SA.timeline = (() => {
     } else if (hit.type === 'cue') {
       SA.store.setSelection([`cue:${hit.cueId}`], 'cue');
       const cue = cueList().find((entry) => entry.id === hit.cueId);
-      if (cue) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
+      // the label cell selects the cue; the tag and the block also move it
+      if (cue && !hit.label) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
     } else if (hit.type === 'layer-eye') {
       const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
       if (layer) SA.store.commands.setLayer(hit.layerId, { enabled: layer.enabled === false });
@@ -916,6 +1026,9 @@ SA.timeline = (() => {
       draw();
     } else if (hit.type === 'beat') {
       SA.store.setSelection([`cue:${hit.cueId}/beat:${hit.beatId}`], 'beat');
+      // dragging a beat block moves the whole cue, so moving still feels natural
+      const cue = cueList().find((entry) => entry.id === hit.cueId);
+      if (cue) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
     } else if (hit.type === 'key') {
       selectedKeys.add(`${hit.path}|${hit.propPath}|${hit.index}`);
       SA.store.setSelection([hit.path], hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
@@ -1226,6 +1339,14 @@ SA.timeline = (() => {
       add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
+      addRecapItem(add, cueId);
+      add(t('studio.motion.addHere'), () => {
+        SA.store.setSelection([`cue:${cueId}/beat:${hit.beatId}`], 'beat');
+        SA.motionDialog.open();
+      });
+      if (hit.hasMotions) {
+        add(t('studio.motion.clearHere'), () => SA.store.commands.setStyleProp({ cueId, beatId: hit.beatId }, 'motions', undefined));
+      }
     } else {
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
@@ -1236,6 +1357,11 @@ SA.timeline = (() => {
       add(t('studio.beat.deleteCue'), () => SA.store.commands.deleteCue(cueId));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
+      addRecapItem(add, cueId);
+      add(t('studio.motion.addHere'), () => {
+        SA.store.setSelection([`cue:${cueId}`], 'cue');
+        SA.motionDialog.open();
+      });
     }
     el.body.appendChild(menu);
     positionMenu(event);
@@ -1245,6 +1371,18 @@ SA.timeline = (() => {
     const bodyRect = el.body.getBoundingClientRect();
     menu.style.left = `${Math.max(0, event.clientX - bodyRect.left)}px`;
     menu.style.top = `${Math.max(0, event.clientY - bodyRect.top)}px`;
+  }
+
+  function recapEnabled(cueId) {
+    const cue = cueList().find((entry) => entry.id === cueId);
+    const mode = cue && cue.textFlow && cue.textFlow.recap ? cue.textFlow.recap.mode : null;
+    return !!mode && mode !== 'off';
+  }
+
+  // Adds / removes the full-text recap ("show the whole line again") for a cue.
+  function addRecapItem(add, cueId) {
+    const enabled = recapEnabled(cueId);
+    add(t(enabled ? 'studio.beat.recapOff' : 'studio.beat.recapOn'), () => SA.store.commands.restructureCue(cueId, { recap: !enabled }));
   }
 
   function copyCue(cue) {
@@ -1354,7 +1492,7 @@ SA.timeline = (() => {
     if (anchorX != null) {
       const time = timeAt(anchorX);
       pxPerSecond = next;
-      scrollX = Math.max(0, time * pxPerSecond - anchorX);
+      scrollX = Math.max(0, LABEL_W + time * pxPerSecond - anchorX);
     } else {
       pxPerSecond = next;
     }
@@ -1369,9 +1507,9 @@ SA.timeline = (() => {
   }
 
   function fit() {
-    const width = (el.scroll && el.scroll.clientWidth) || (el.body ? el.body.clientWidth : 600) || 600;
+    const available = ((el.scroll && el.scroll.clientWidth) || (el.body ? el.body.clientWidth : 600) || 600) - LABEL_W;
     const total = duration() || 1;
-    setZoom(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, width / total)));
+    setZoom(Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, Math.max(80, available) / total)));
     scrollX = 0;
     draw();
   }
