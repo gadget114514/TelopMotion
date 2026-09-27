@@ -7,7 +7,7 @@
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
   const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location'];
 
   const el = {};
@@ -888,6 +888,7 @@
     const context = SA.moods.contextFor(doc);
     // the theme itself: every group generated from the axes and the seed
     const themeStyle = SA.moods.generate({ axes, seed, direction, context }).style;
+    const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
     // keep the font size in a readable range that matches the frame
     const portrait = doc.output && doc.output.aspect === '9:16';
     if (themeStyle.text) {
@@ -915,6 +916,8 @@
         // 1) rebuild the theme from scratch so re-rolls never keep stale groups
         for (const group of AUTO_DIRECT_GROUPS) delete projectDoc.style[group];
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, themeStyle);
+        // remember which theme was applied so the UI can show it
+        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName };
         for (const cue of projectDoc.script.cues) {
           const container = projectDoc.cueStyles[cue.id];
           if (!container) continue;
@@ -990,6 +993,8 @@
                     };
             projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, {
               layout,
+              location: generated.location,
+              edge: generated.edge,
               animation: generated.animation,
               enter,
               exit,
@@ -1003,7 +1008,7 @@
       },
     });
     lastRandom = { scope: '__auto', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS };
-    toast('studio.toast.autoDirected', { seed });
+    toast('studio.toast.autoDirected', { seed, theme: themeName });
   }
 
   function randomDialog() {
@@ -1316,6 +1321,7 @@
       cardTheme: () => SA.colors.themeDialog(),
       palettes: () => SA.colors.paletteDialog(),
       themes: () => SA.themes.dialog(),
+      editTheme: () => SA.themeEditor.open(null),
       layers: () => SA.layersDialog.open(),
       audio: () => SA.audioDialog.open(),
       credits: () => SA.creditsDialog.open(),

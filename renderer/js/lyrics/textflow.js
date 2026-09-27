@@ -555,11 +555,11 @@
   // The beat count comes from the cue duration, the words are shared between
   // the beats by reading weight (TinySegmenter words for Japanese), and
   // explicit line/page breaks and sentence ends act as preferred boundaries.
-  function targetChunkSources(units, target, lang, speeds, cueDuration) {
+  function targetChunkSources(units, target, lang, speeds, count) {
     if (!units.length) return [];
-    const count = Math.max(1, Math.round(Math.max(0.2, cueDuration) / target) || 1);
+    const beats = Math.max(1, Math.round(count) || 1);
     const totalReading = units.reduce((sum, unit) => sum + readingTime(unit.text, lang, speeds), 0) || units.length;
-    const perBeat = totalReading / count;
+    const perBeat = totalReading / beats;
     const chunks = [];
     let current = [];
     let reading = 0;
@@ -909,9 +909,14 @@
       const expanded = [];
       const targetDuration = Number(settings.targetChunkDuration) || 0;
       if (targetDuration > 0) {
-        // one beat per ~targetDuration (a musical bar): TinySegmenter words for
-        // Japanese, fitted to the safe area and spread evenly over the cue
-        const sources = targetChunkSources(units, targetDuration, lang, settings.readingSpeed, budget);
+        // one beat per musical bar: beats are cut on the bar grid when the cue
+        // crosses a bar line, with TinySegmenter words for Japanese
+        const boundaries = [];
+        for (let at = Math.ceil((start + 1e-6) / targetDuration) * targetDuration; at < start + budget - 1e-6; at += targetDuration) {
+          boundaries.push(at);
+        }
+        const count = Math.max(1, boundaries.length + 1);
+        const sources = targetChunkSources(units, targetDuration, lang, settings.readingSpeed, count);
         for (const source of sources) {
           const chunkUnits = buildUnits([[source.text]], lang);
           const fit = fitCheck(chunkUnits, measurer, size, maxWidth, settings.maxLines, settings.minFontScale);
@@ -924,11 +929,16 @@
             source.fontScale = settings.minFontScale;
           }
         }
-        const count = Math.max(1, sources.length);
-        const slot = budget / count;
+        const edges = [start];
+        if (sources.length === count) {
+          for (const boundary of boundaries) edges.push(boundary);
+        } else {
+          for (let i = 1; i < sources.length; i += 1) edges.push(start + (budget * i) / Math.max(1, sources.length));
+        }
+        edges.push(start + budget);
         sources.forEach((source, index) => {
-          const from = start + index * slot;
-          const to = index === count - 1 ? start + budget : from + slot;
+          const from = edges[index];
+          const to = edges[index + 1] == null ? start + budget : edges[index + 1];
           expanded.push({
             kind: 'page',
             chunk: source.level,
@@ -940,7 +950,7 @@
             to,
           });
         });
-        const tooFast = slot < settings.minChunkDuration - 1e-9;
+        const tooFast = edges.some((edge, index) => index > 0 && edge - edges[index - 1] < settings.minChunkDuration - 1e-9);
         if (tooFast) warnings.push({ code: 'tooFast', message: 'The beats are too fast to read' });
       } else {
         for (const page of basePages) {

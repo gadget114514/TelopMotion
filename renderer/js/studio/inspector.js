@@ -1098,6 +1098,10 @@ SA.inspector = (() => {
     const body = section(container, 'palette', t('studio.inspector.palette'));
     const style = resolvedStyle();
     const effective = style.palette && Array.isArray(style.palette.colors) && style.palette.colors.length ? style.palette : null;
+    const nameNode = document.createElement('div');
+    nameNode.className = 'insp-inherit';
+    nameNode.textContent = effective ? `${effective.name || effective.id}` : t('studio.inspector.paletteNone');
+    body.appendChild(nameNode);
     const swatches = document.createElement('div');
     swatches.className = 'palette-swatches';
     if (effective) {

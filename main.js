@@ -1722,6 +1722,24 @@ function createWindow() {
             const autoBeatAvg = autoDurations.length
               ? Math.round((autoDurations.reduce((sum, value) => sum + value, 0) / autoDurations.length) * 100) / 100
               : 0;
+            const perCue = store.state.project.script.cues.map((c) => (store.state.project.beats[c.id] || []).length);
+            const splitCues = perCue.filter((n) => n > 1).length;
+            const maxBeats = perCue.length ? Math.max(...perCue) : 0;
+            const cueWithBeats = store.state.project.script.cues.find((c) => (store.state.project.beats[c.id] || []).length > 1);
+            let beatPixelDiff = null;
+            if (cueWithBeats) {
+              const bs = store.state.project.beats[cueWithBeats.id];
+              const shotA = window.SA.preview.captureRGBA(bs[0].start + (bs[0].end - bs[0].start) * 0.7);
+              const shotB = window.SA.preview.captureRGBA(bs[1].start + (bs[1].end - bs[1].start) * 0.7);
+              if (shotA && shotB) {
+                let diff = 0;
+                const length = Math.min(shotA.data.length, shotB.data.length);
+                for (let i = 0; i < length; i += 4 * 64) {
+                  if (Math.abs(shotA.data[i] - shotB.data[i]) + Math.abs(shotA.data[i + 1] - shotB.data[i + 1]) + Math.abs(shotA.data[i + 2] - shotB.data[i + 2]) > 40) diff += 1;
+                }
+                beatPixelDiff = diff;
+              }
+            }
             const autoPalettes = new Set(allBeats.map((b) => beatStyles[b.id] && beatStyles[b.id].palette && beatStyles[b.id].palette.id));
             const autoColors = new Set(allBeats.map((b) => {
               const c = beatStyles[b.id] && beatStyles[b.id].color;
@@ -1756,6 +1774,9 @@ function createWindow() {
               autoLines,
               autoSplits,
               autoBeatAvg,
+              autoPerCueMax: maxBeats,
+              autoSplitCues: splitCues,
+              autoBeatPixelDiff: beatPixelDiff,
               autoPalettes: autoPalettes.size,
               autoColors: autoColors.size,
               presets: presets.length,

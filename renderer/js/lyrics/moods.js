@@ -338,9 +338,9 @@
   // a random palette that keeps the mood's character: derived from a matching template
   function generatePalette(random, axes, name) {
     const base = paletteFor(axes, random);
-    const hueShift = (random() * 2 - 1) * 0.12;
-    const satScale = 0.85 + random() * 0.4;
-    const lightScale = 0.92 + random() * 0.22;
+    const hueShift = (random() * 2 - 1) * 0.2;
+    const satScale = 0.8 + random() * 0.5;
+    const lightScale = 0.88 + random() * 0.28;
     const colors = base.colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale));
     colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.id, colors };
@@ -464,7 +464,7 @@
     const r = typeof random === 'function' ? random : Math.random;
     const preset = PRESETS[Math.min(PRESETS.length - 1, Math.floor(r() * PRESETS.length))];
     const axes = {};
-    for (const axis of AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.18);
+    for (const axis of AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.28);
     return { axes, direction: preset.direction || 'horizontal' };
   }
 
@@ -501,7 +501,7 @@
     const direction = opts.direction === 'vertical' ? 'vertical' : opts.direction === 'horizontal' ? 'horizontal' : null;
     const random = rng.rngFor(seed, 'mood', 'theme');
     const style = {};
-    const palette = generatePalette(random, axes, 'theme');
+    const palette = generatePalette(random, axes);
     style.palette = palette;
     const swatches = palette.colors;
     style.color = colorSetFor(random, palette);
