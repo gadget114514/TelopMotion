@@ -256,7 +256,7 @@
   fx.register({
     group: 'enter',
     type: 'morphFromPrevious',
-    tags: ['morph'],
+    tags: ['morph', 'overlap'],
     cost: 2,
     params: [{ key: 'points', kind: 'int', min: 512, max: 4096, step: 128, default: 1024 }],
     cpu(state, p) {

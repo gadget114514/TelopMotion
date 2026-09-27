@@ -362,6 +362,8 @@ SA.inspector = (() => {
     }
   }
 
+  // The cue only controls its lifetime (time span). Text, motion and style are
+  // edited on the selected beat.
   function renderCueSection(container) {
     const sel = selectionInfo();
     if (!sel.cueId) return;
@@ -369,18 +371,10 @@ SA.inspector = (() => {
     const cue = doc.script.cues.find((entry) => entry.id === sel.cueId);
     if (!cue) return;
     const body = section(container, 'cue', t('studio.inspector.cue'));
-    const text = SA.controls.textControl(cue.text || '', (value) => {
-      SA.store.commands.editCueText(sel.cueId, value, { coalesceKey: `cue:${sel.cueId}:text` });
-    }, { multiline: true });
-    text.classList.add('cue-text');
-    const textRow = document.createElement('div');
-    textRow.className = 'ctrl-row ctrl-row-block';
-    const labelNode = document.createElement('label');
-    labelNode.className = 'ctrl-label';
-    labelNode.textContent = t('studio.inspector.text');
-    textRow.appendChild(labelNode);
-    textRow.appendChild(text);
-    body.appendChild(textRow);
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit';
+    hint.textContent = t('studio.inspector.cueHint');
+    body.appendChild(hint);
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: cue.start }, cue.start, (value) => {
       SA.store.commands.moveCue(sel.cueId, value, { coalesceKey: `cue:${sel.cueId}:start` });
     });
@@ -429,6 +423,14 @@ SA.inspector = (() => {
     }, { multiline: true });
     beatText.classList.add('cue-text');
     body.appendChild(beatText);
+    const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: beat.start }, beat.start, (value) => {
+      SA.store.commands.moveBeatEdge(sel.cueId, beat.id, 'start', value, { coalesceKey: `beat:${beat.id}:start` });
+    });
+    row(body, `beat:${beat.id}:start`, t('studio.inspector.start'), startControl, { noKey: true, noReset: true });
+    const endControl = SA.controls.numberControl({ min: 0, step: 0.05, default: beat.end }, beat.end, (value) => {
+      SA.store.commands.moveBeatEdge(sel.cueId, beat.id, 'end', value, { coalesceKey: `beat:${beat.id}:end` });
+    });
+    row(body, `beat:${beat.id}:end`, t('studio.inspector.end'), endControl, { noKey: true, noReset: true });
   }
 
   function renderTransform(container) {

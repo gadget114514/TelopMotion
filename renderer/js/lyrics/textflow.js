@@ -1,11 +1,17 @@
 (function (root, factory) {
-  const api = factory();
-  if (typeof module === 'object' && module.exports) module.exports = api;
-  else {
+  if (typeof module === 'object' && module.exports) {
+    let tiny = null;
+    try {
+      tiny = require('../../vendor/tiny-segmenter.js');
+    } catch {
+      tiny = null;
+    }
+    module.exports = factory(tiny);
+  } else {
     root.SA = root.SA || {};
-    root.SA.textflow = api;
+    root.SA.textflow = factory(root.TinySegmenter || null);
   }
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (TinySegmenter) {
   'use strict';
 
   // ---------------------------------------------------------------------------
@@ -23,6 +29,7 @@
     chunk: 'page',
     maxChunkDuration: 1,
     minChunkDuration: 0.2,
+    targetChunkDuration: 0,
     longHold: { mode: 'hold', threshold: 6, interval: 4, repeatEffect: 'same' },
     recap: {
       mode: 'off',
@@ -195,7 +202,27 @@
   // Tokenization and break penalties
   // ---------------------------------------------------------------------------
 
+  // TinySegmenter instance (Japanese). Falls back to Intl.Segmenter when the
+  // vendored tokenizer is missing.
+  let tinySegmenter = null;
+
+  function segmentJa(text) {
+    if (!TinySegmenter) return null;
+    try {
+      if (!tinySegmenter) tinySegmenter = new TinySegmenter();
+      const segments = tinySegmenter.segment(String(text));
+      if (Array.isArray(segments) && segments.length) return segments;
+    } catch {
+      /* fall through to Intl */
+    }
+    return null;
+  }
+
   function segmentWords(text, lang) {
+    if (lang === 'ja') {
+      const tiny = segmentJa(text);
+      if (tiny) return tiny;
+    }
     const segmenter = segmenterFor(lang || 'en', 'word');
     if (segmenter) return [...segmenter.segment(String(text))].map((entry) => entry.segment);
     return String(text).split(/(\s+)/).filter(Boolean);
@@ -524,6 +551,47 @@
       .filter(Boolean);
   }
 
+  // Splits the cue text into beats that each show for about `target` seconds.
+  // The beat count comes from the cue duration, the words are shared between
+  // the beats by reading weight (TinySegmenter words for Japanese), and
+  // explicit line/page breaks and sentence ends act as preferred boundaries.
+  function targetChunkSources(units, target, lang, speeds, cueDuration) {
+    if (!units.length) return [];
+    const count = Math.max(1, Math.round(Math.max(0.2, cueDuration) / target) || 1);
+    const totalReading = units.reduce((sum, unit) => sum + readingTime(unit.text, lang, speeds), 0) || units.length;
+    const perBeat = totalReading / count;
+    const chunks = [];
+    let current = [];
+    let reading = 0;
+    const flush = () => {
+      if (!current.length) return;
+      const text = lineText(current).trim();
+      if (text) chunks.push({ level: 'word', text, lines: [text] });
+      current = [];
+      reading = 0;
+    };
+    for (const unit of units) {
+      if (unit.hardPage || (unit.hardBreak && current.length)) flush();
+      current.push(unit);
+      reading += readingTime(unit.text, lang, speeds);
+      const sentenceEnd = SENTENCE_END.test(unit.text) || /[.!?…]["')\]]?$/.test(unit.text);
+      if (reading >= perBeat || (sentenceEnd && reading >= perBeat * 0.6)) flush();
+    }
+    flush();
+    // Merge an over-short tail into the previous beat so the last beat is not a
+    // stray word (unless the text is genuinely one word long).
+    if (chunks.length > 1) {
+      const last = chunks[chunks.length - 1];
+      if (readingTime(last.text, lang, speeds) < perBeat * 0.35) {
+        const previous = chunks[chunks.length - 2];
+        previous.text = `${previous.text} ${last.text}`.trim();
+        previous.lines = [previous.text];
+        chunks.pop();
+      }
+    }
+    return chunks;
+  }
+
   function subdivideChunk(chunk, lang) {
     if (chunk.level === 'line') {
       const groups = phraseGroups(buildUnits([[chunk.text]], lang));
@@ -839,22 +907,59 @@
     // -> phrase -> word) so every chunk stays on screen for less than a second.
     if (chunkMode && basePages.length) {
       const expanded = [];
-      for (const page of basePages) {
-        const sources = [];
-        for (const line of page.lines) sources.push(...chunkSourcesForLine(line, settings.chunk, lang));
-        const timed = timeChunks(sources, page.from, page.to, settings, lang);
-        if (timed.warning) warnings.push(timed.warning);
-        for (const chunk of timed.items) {
+      const targetDuration = Number(settings.targetChunkDuration) || 0;
+      if (targetDuration > 0) {
+        // one beat per ~targetDuration (a musical bar): TinySegmenter words for
+        // Japanese, fitted to the safe area and spread evenly over the cue
+        const sources = targetChunkSources(units, targetDuration, lang, settings.readingSpeed, budget);
+        for (const source of sources) {
+          const chunkUnits = buildUnits([[source.text]], lang);
+          const fit = fitCheck(chunkUnits, measurer, size, maxWidth, settings.maxLines, settings.minFontScale);
+          if (fit) {
+            source.lines = fit.lines.map((line) => lineText(line));
+            source.fontScale = fit.scale;
+          } else {
+            const scaled = greedyLines(chunkUnits, measurer, size * settings.minFontScale, maxWidth, 0);
+            source.lines = scaled.lines.map((line) => lineText(line));
+            source.fontScale = settings.minFontScale;
+          }
+        }
+        const count = Math.max(1, sources.length);
+        const slot = budget / count;
+        sources.forEach((source, index) => {
+          const from = start + index * slot;
+          const to = index === count - 1 ? start + budget : from + slot;
           expanded.push({
             kind: 'page',
-            chunk: chunk.level,
-            text: chunk.text,
-            lines: chunk.lines,
-            fontScale: page.fontScale,
-            reading: chunk.reading,
-            from: chunk.from,
-            to: chunk.to,
+            chunk: source.level,
+            text: source.text,
+            lines: source.lines || [source.text],
+            fontScale: source.fontScale == null ? 1 : source.fontScale,
+            reading: readingTime(source.text, lang, settings.readingSpeed),
+            from,
+            to,
           });
+        });
+        const tooFast = slot < settings.minChunkDuration - 1e-9;
+        if (tooFast) warnings.push({ code: 'tooFast', message: 'The beats are too fast to read' });
+      } else {
+        for (const page of basePages) {
+          const sources = [];
+          for (const line of page.lines) sources.push(...chunkSourcesForLine(line, settings.chunk, lang));
+          const timed = timeChunks(sources, page.from, page.to, settings, lang);
+          if (timed.warning) warnings.push(timed.warning);
+          for (const chunk of timed.items) {
+            expanded.push({
+              kind: 'page',
+              chunk: chunk.level,
+              text: chunk.text,
+              lines: chunk.lines,
+              fontScale: page.fontScale,
+              reading: chunk.reading,
+              from: chunk.from,
+              to: chunk.to,
+            });
+          }
         }
       }
       if (expanded.length) {

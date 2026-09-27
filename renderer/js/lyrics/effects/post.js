@@ -24,8 +24,8 @@
     { type: 'shockwave', code: 14, tags: ['featured'], cost: 2, target: 'frame', params: [['center', 'vec2', { x: 0.5, y: 0.5 }], ['radius', 'number', 0.25, 0, 1], ['width', 'number', 0.06, 0.005, 0.5], ['strength', 'number', 0.6, 0, 2]] },
     { type: 'zoomBlur', code: 15, tags: ['featured'], cost: 4, target: 'frame', params: [['center', 'vec2', { x: 0.5, y: 0.5 }], ['strength', 'number', 0.4, 0, 1.5]] },
     { type: 'motionBlur', code: 16, tags: ['featured'], cost: 4, target: 'frame', params: [['samples', 'int', 8, 4, 16], ['shutter', 'number', 0.5, 0, 1], ['angle', 'number', 0, -180, 180]] },
-    { type: 'echoTrail', code: 17, tags: ['featured'], cost: 4, target: 'frame', params: [['copies', 'int', 4, 2, 8], ['spacing', 'number', 0.08, 0.01, 0.4], ['decay', 'number', 0.6, 0, 1], ['tint', 'color', null]] },
-    { type: 'godRays', code: 18, cost: 4, target: 'text', params: [['center', 'vec2', { x: 0.5, y: 0.4 }], ['decay', 'number', 0.9, 0.5, 1], ['density', 'number', 0.6, 0.1, 1], ['weight', 'number', 1, 0, 2]] },
+    { type: 'echoTrail', code: 17, tags: ['featured', 'overlap'], cost: 4, target: 'frame', params: [['copies', 'int', 4, 2, 8], ['spacing', 'number', 0.08, 0.01, 0.4], ['decay', 'number', 0.6, 0, 1], ['tint', 'color', null]] },
+    { type: 'godRays', code: 18, tags: ['overlap'], cost: 4, target: 'text', params: [['center', 'vec2', { x: 0.5, y: 0.4 }], ['decay', 'number', 0.9, 0.5, 1], ['density', 'number', 0.6, 0.1, 1], ['weight', 'number', 1, 0, 2]] },
     { type: 'lightSweep', code: 19, tags: ['featured'], cost: 2, target: 'text', params: [['angle', 'number', -30, -180, 180], ['width', 'number', 0.12, 0.01, 0.5], ['speed', 'number', 0.6, 0, 3], ['color', 'color', null]] },
     { type: 'kaleidoscope', code: 20, cost: 2, target: 'frame', params: [['segments', 'int', 6, 2, 16], ['rotation', 'number', 0, -180, 180]] },
     { type: 'mirror', code: 21, cost: 1, target: 'frame', params: [['axis', 'select', 'x', null, null, ['x', 'y']], ['offset', 'number', 0, -1, 1]] },
@@ -40,10 +40,10 @@
     { type: 'halftone', code: 30, tags: ['degrade'], cost: 2, target: 'frame', params: [['dotSize', 'number', 8, 2, 40], ['angle', 'number', 0, -180, 180]] },
     { type: 'pixelate', code: 31, tags: ['degrade'], cost: 1, target: 'frame', params: [['size', 'number', 8, 2, 64]] },
     { type: 'heatHaze', code: 32, cost: 1, target: 'frame', params: [['amount', 'number', 0.3, 0, 1], ['speed', 'number', 0.5, 0, 2]] },
-    { type: 'lightLeak', code: 33, cost: 2, target: 'frame', params: [['color', 'color', null], ['x', 'number', 0.85, 0, 1], ['y', 'number', 0.2, 0, 1], ['intensity', 'number', 0.6, 0, 2]] },
+    { type: 'lightLeak', code: 33, tags: ['overlap'], cost: 2, target: 'frame', params: [['color', 'color', null], ['x', 'number', 0.85, 0, 1], ['y', 'number', 0.2, 0, 1], ['intensity', 'number', 0.6, 0, 2]] },
     { type: 'vignette', code: 34, cost: 1, target: 'frame', params: [['amount', 'number', 0.5, 0, 1], ['softness', 'number', 0.5, 0, 1]] },
     { type: 'sparkles', code: 35, cost: 2, target: 'text', params: [['count', 'number', 24, 4, 64], ['size', 'number', 2, 0.5, 8], ['color', 'color', null]] },
-    { type: 'lensFlare', code: 36, cost: 2, target: 'frame', params: [['position', 'vec2', { x: 0.4, y: 0.35 }], ['color', 'color', null]] },
+    { type: 'lensFlare', code: 36, tags: ['overlap'], cost: 2, target: 'frame', params: [['position', 'vec2', { x: 0.4, y: 0.35 }], ['color', 'color', null]] },
   ];
 
   const CODE_BY_TYPE = {};

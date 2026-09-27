@@ -73,6 +73,22 @@
     cost: 2,
   });
 
+  // Animated shapes drawn behind the lyrics (reuses the filler shape renderer).
+  fx.register({
+    group: 'background',
+    type: 'shapes',
+    tags: ['featured'],
+    params: [
+      { key: 'kind', kind: 'select', options: ['shapes', 'particles', 'waveform', 'spectrum', 'sineWave', 'progress'], default: 'shapes' },
+      { key: 'set', kind: 'select', options: ['circles', 'polygons', 'lines', 'burst', 'grid', 'orbit'], default: 'circles' },
+      { key: 'count', kind: 'int', min: 1, max: 48, step: 1, default: 10 },
+      { key: 'speed', kind: 'number', min: 0, max: 4, step: 0.1, default: 0.8 },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.45 },
+      { key: 'color', kind: 'color', default: null },
+    ],
+    cost: 2,
+  });
+
   function toRgb(value, fallback, ctx) {
     return color.toRgba(value, fallback, ctx);
   }

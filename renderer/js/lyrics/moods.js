@@ -145,6 +145,7 @@
     background: {
       noiseGradient: [0.4, 0.8],
       solid: [0.4, 0.6],
+      shapes: [0.5, 0.6],
       card: [0.5, 0.7, { needsCard: true }],
     },
   };
@@ -218,10 +219,11 @@
     for (const [type, traits] of Object.entries(pool)) {
       if (exclude && exclude.has(type)) continue;
       if (!allowed(group, traits, context, direction)) continue;
-      // skip glyph-destroying effects (pixelate, halftone, dissolves...) when
-      // generating automatically; they remain selectable by hand
+      // skip glyph-destroying or overlapping effects (pixelate, halftone,
+      // dissolves, scatter, echo trails...) when generating automatically;
+      // they remain selectable by hand
       const descriptor = fx.get(group, type);
-      if (descriptor && descriptor.tags.includes('degrade')) continue;
+      if (descriptor && (descriptor.tags.includes('degrade') || descriptor.tags.includes('overlap'))) continue;
       const fit = scoreEntry(traits, axes);
       scored.push({ type, weight: Math.pow(fit, 2) * (0.6 + random() * 0.8) });
     }
@@ -403,6 +405,21 @@
           focusBadge: true,
           zoom: round(1.2 + random() * 0.6, 2),
           parallax: round(0.05 + random() * 0.15, 2),
+        },
+        enabled: true,
+        motion,
+      };
+    }
+    if (random() < 0.35) {
+      return {
+        type: 'shapes',
+        params: {
+          kind: random() < 0.6 ? 'shapes' : 'particles',
+          set: pick(random, ['circles', 'polygons', 'lines', 'burst', 'grid', 'orbit']),
+          count: Math.round(6 + random() * 14),
+          speed: round(0.3 + random() * 0.9, 2),
+          opacity: round(0.25 + random() * 0.35, 2),
+          color: null,
         },
         enabled: true,
         motion,

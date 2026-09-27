@@ -1572,7 +1572,22 @@ function createWindow() {
                 if (data[i] + data[i + 1] + data[i + 2] > 90) ink += 1;
               }
             }
+            // Selecting a beat on the timeline must show the beat in the inspector.
+            const selCue = window.SA.store.state.project.script.cues[0];
+            const selBeat = (window.SA.store.state.project.beats[selCue.id] || [])[0];
+            let inspectorBeat = null;
+            if (selBeat) {
+              window.SA.store.setSelection(['cue:' + selCue.id + '/beat:' + selBeat.id], 'beat');
+              await new Promise((resolve) => setTimeout(resolve, 50));
+              const inspBody = document.getElementById('inspector-body');
+              inspectorBeat = {
+                id: selBeat.id,
+                breadcrumb: (inspBody.querySelector('.insp-breadcrumb') || {}).textContent || '',
+                beatActions: !!inspBody.querySelector('.insp-beat-actions'),
+              };
+            }
             return JSON.stringify({
+              inspectorBeat,
               snapped: Math.round(snapped * 1000) / 1000,
               frameSnapped: Math.round(frameSnapped * 1000) / 1000,
               moved: moved ? Math.round(moved.start * 100) / 100 : null,
@@ -1688,7 +1703,61 @@ function createWindow() {
             const image = ctx.createImageData(capture.width, capture.height);
             image.data.set(capture.data);
             ctx.putImageData(image, 0, 0);
+            // Auto-direct: one beat per line, each beat gets its own motion and colors.
+            const autoBtn = document.getElementById('tl-auto-direct');
+            if (autoBtn) autoBtn.click();
+            await new Promise((resolve) => setTimeout(resolve, 400));
+            const allBeats = [];
+            for (const c of store.state.project.script.cues) {
+              for (const b of (store.state.project.beats[c.id] || [])) allBeats.push(b);
+            }
+            const beatStyles = store.state.project.beatStyles || {};
+            const autoStyled = allBeats.filter((b) => {
+              const s = beatStyles[b.id];
+              return !!(s && s.enter && s.exit && s.post !== undefined && s.color && s.palette);
+            }).length;
+            const autoLines = allBeats.length > 0 && allBeats.every((b) => ['line', 'phrase', 'word'].includes(b.chunk));
+            const autoSplits = [...new Set(allBeats.map((b) => b.chunk))];
+            const autoDurations = allBeats.map((b) => b.end - b.start);
+            const autoBeatAvg = autoDurations.length
+              ? Math.round((autoDurations.reduce((sum, value) => sum + value, 0) / autoDurations.length) * 100) / 100
+              : 0;
+            const autoPalettes = new Set(allBeats.map((b) => beatStyles[b.id] && beatStyles[b.id].palette && beatStyles[b.id].palette.id));
+            const autoColors = new Set(allBeats.map((b) => {
+              const c = beatStyles[b.id] && beatStyles[b.id].color;
+              return c && c.value ? c.value : c && c.stops ? c.stops.map((s) => s.color).join('-') : null;
+            }));
+            const sampleBeats = allBeats.slice(0, 4);
+            const shots = sampleBeats.map((b) => window.SA.preview.captureRGBA(b.start + (b.end - b.start) * 0.75)).filter(Boolean);
+            let autoPng = null;
+            if (shots.length) {
+              const tileW = shots[0].width;
+              const tileH = shots[0].height;
+              const autoCanvas = document.createElement('canvas');
+              autoCanvas.width = tileW * 2;
+              autoCanvas.height = tileH * 2;
+              const autoCtx = autoCanvas.getContext('2d');
+              shots.forEach((shot, i) => {
+                const tile = document.createElement('canvas');
+                tile.width = shot.width;
+                tile.height = shot.height;
+                const tileCtx = tile.getContext('2d');
+                const image = tileCtx.createImageData(shot.width, shot.height);
+                image.data.set(shot.data);
+                tileCtx.putImageData(image, 0, 0);
+                autoCtx.drawImage(tile, (i % 2) * tileW, Math.floor(i / 2) * tileH);
+              });
+              autoPng = autoCanvas.toDataURL('image/png');
+            }
             return JSON.stringify({
+              autoPng,
+              autoBeatCount: allBeats.length,
+              autoStyled,
+              autoLines,
+              autoSplits,
+              autoBeatAvg,
+              autoPalettes: autoPalettes.size,
+              autoColors: autoColors.size,
               presets: presets.length,
               presetApplied: afterPresets.enter && afterPresets.enter.type === 'elasticPop',
               deterministic,
@@ -1708,6 +1777,13 @@ function createWindow() {
             });
           })()`);
           const parsedRandom = JSON.parse(randomReport);
+          if (parsedRandom.autoPng) {
+            const png = Buffer.from(parsedRandom.autoPng.split(',')[1], 'base64');
+            const target = path.join(app.getPath('temp'), 'suno-autodirect-smoke.png');
+            fs.writeFileSync(target, png);
+            delete parsedRandom.autoPng;
+            console.log(`SMOKE_AUTODIRECT_PNG=${target} bytes=${png.length}`);
+          }
           if (parsedRandom.png) {
             const png = Buffer.from(parsedRandom.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-random-smoke.png');

@@ -415,6 +415,45 @@ SA.lyricsEngine = (() => {
       }
     }
 
+    // Animated shapes for the `background: shapes` treatment: the filler shape
+    // list is drawn into a layer and composited behind the lyrics.
+    function drawBackgroundShapes(background, style, beat, t) {
+      if (!shapesPass || !pipeline || !SA.fillerRender) return;
+      const params = (background && background.params) || {};
+      const kind = params.kind || 'shapes';
+      const palette = style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : [];
+      const fallback = palette[3] || palette[2] || '#eef2ff';
+      let fill = fallback;
+      if (params.color) {
+        const rgba = SA.color.toRgba(params.color, null, {
+          palette: style ? style.palette : null,
+          palettes: (state.project && state.project.palettes) || [],
+        });
+        if (rgba) fill = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
+      }
+      const duration = Math.max(0.001, beat.end - beat.start);
+      const progress = Math.min(1, Math.max(0, (t - beat.start) / duration));
+      const spec = { type: kind, params: { ...params, color: fill } };
+      const list = SA.fillerRender.drawList(spec, {
+        time: t,
+        frame: { width: state.width, height: state.height },
+        clip: { key: `bg:${beat.id}`, from: beat.start, to: beat.end, spec },
+        duration,
+        nextStart: null,
+        nextText: '',
+        prevText: '',
+        analysis: state.analysis,
+        progress,
+        seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
+        color: fill,
+      });
+      if (!list || (!(list.shapes && list.shapes.length) && !(list.texts && list.texts.length))) return;
+      pipeline.beginLayer();
+      drawPrimitives(list.shapes || []);
+      drawTexts(list.texts || []);
+      pipeline.commitLayer(params.opacity == null ? 0.45 : params.opacity);
+    }
+
     function fillerContext(t, clip, duration) {
       const project = state.project;
       const cues = (project.script && project.script.cues) || [];
@@ -515,22 +554,26 @@ SA.lyricsEngine = (() => {
         const style = state.analysis && SA.audioDriver ? SA.audioDriver.resolveStyle(baseStyle, state.analysis, t) : baseStyle;
         const background = SA.fx.withDefaults(style.background, 'background');
         if (background && background.type && background.type !== 'none') {
-          const badgeRect = badgeRectFor(project, beat, project.output ? project.output.aspect : '16:9');
-          const zoom = Math.max(0.05, (background.params && background.params.zoom) || 1.6);
-          const focusX = badgeRect ? (badgeRect.x + badgeRect.w / 2) / state.width - 0.5 : 0;
-          const focusY = badgeRect ? (badgeRect.y + badgeRect.h / 2) / state.height - 0.5 : 0;
-          const theme = SA.card && SA.card.theme ? SA.card.theme(project) : null;
-          pipeline.drawBackground(
-            SA.fx.backgroundUniforms(background, {
-              theme,
-              cardTheme: theme,
-              focusX: focusX / zoom,
-              focusY: focusY / zoom,
-              palette: style.palette || null,
-              time: t,
-            }),
-            card
-          );
+          if (background.type === 'shapes') {
+            drawBackgroundShapes(background, style, beat, t);
+          } else {
+            const badgeRect = badgeRectFor(project, beat, project.output ? project.output.aspect : '16:9');
+            const zoom = Math.max(0.05, (background.params && background.params.zoom) || 1.6);
+            const focusX = badgeRect ? (badgeRect.x + badgeRect.w / 2) / state.width - 0.5 : 0;
+            const focusY = badgeRect ? (badgeRect.y + badgeRect.h / 2) / state.height - 0.5 : 0;
+            const theme = SA.card && SA.card.theme ? SA.card.theme(project) : null;
+            pipeline.drawBackground(
+              SA.fx.backgroundUniforms(background, {
+                theme,
+                cardTheme: theme,
+                focusX: focusX / zoom,
+                focusY: focusY / zoom,
+                palette: style.palette || null,
+                time: t,
+              }),
+              card
+            );
+          }
         }
         drawBackgroundLayers();
         pipeline.beginLayer();

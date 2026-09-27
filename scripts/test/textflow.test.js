@@ -303,6 +303,28 @@ test('beatCues flattens beats into SRT-ready cues', () => {
   assert.equal(cues[2].start, 5);
 });
 
+test('Japanese words come from TinySegmenter', () => {
+  const units = textflow.buildUnits([['東京都に行く']], 'ja');
+  assert.deepEqual(units.map((unit) => unit.text), ['東京都', 'に', '行く']);
+  const sentence = textflow.buildUnits([['今日は晴れです。公園へ行きます。']], 'ja');
+  assert.ok(sentence.some((unit) => unit.text === '公園'));
+});
+
+test('targetChunkDuration splits the cue into about three second beats', () => {
+  const result = flow('one two three four five six seven eight nine ten eleven twelve', {
+    start: 0,
+    end: 12,
+    settings: { chunk: 'phrase', targetChunkDuration: 3 },
+  });
+  assert.equal(result.pages.length, 4, `beats ${result.pages.length}`);
+  const durations = result.pages.map((page) => page.to - page.from);
+  for (const duration of durations) assert.ok(Math.abs(duration - 3) < 1.2, `beat ${duration}s`);
+  const sum = durations.reduce((total, value) => total + value, 0);
+  assert.ok(Math.abs(sum - 12) < 1e-6, `beats cover ${sum}s`);
+  assert.ok(result.pages.every((page) => page.chunk === 'word'));
+  assert.ok(result.pages.every((page) => page.text.trim().length > 0));
+});
+
 test('chunk mode still produces the full-text recap at the end', () => {
   const result = flow('one two three four five six seven eight nine ten', {
     start: 0,

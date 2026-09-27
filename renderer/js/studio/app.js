@@ -7,6 +7,7 @@
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
   const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location'];
 
   const el = {};
@@ -856,12 +857,17 @@
   }
 
   function reroll() {
+    if (lastRandom.scope === '__auto') {
+      autoDirect({ seed: lastRandom.seed + 1 });
+      return;
+    }
     lastRandom = { ...lastRandom, seed: lastRandom.seed + 1 };
     runRandomize(lastRandom.scope, lastRandom);
   }
 
-  function autoDirect() {
+  function autoDirect(options) {
     const doc = project();
+    const opts = options || {};
     if (!doc) return;
     if (!doc.script.cues.length) {
       toast('studio.toast.noCues');
@@ -878,48 +884,125 @@
       axes = picked.axes;
       direction = picked.direction;
     }
-    const seed = Math.floor(Math.random() * 900000) + 1000;
+    const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
-    // 1) the theme itself: every group generated from the axes and the seed
+    // the theme itself: every group generated from the axes and the seed
     const themeStyle = SA.moods.generate({ axes, seed, direction, context }).style;
-    // 2) per-cue motion inside the same mood; the theme keeps layout/fill/background/edge/location
-    const cueStyles = {};
-    doc.script.cues.forEach((cue, index) => {
-      const generated = SA.moods.generate({
-        axes,
-        seed: seed + index + 1,
-        direction,
-        context: SA.moods.contextForCue(doc, cue),
-      }).style;
-      cueStyles[cue.id] = {
-        animation: generated.animation,
-        enter: generated.enter,
-        exit: generated.exit,
-        hold: generated.hold,
-        post: generated.post,
+    // keep the font size in a readable range that matches the frame
+    const portrait = doc.output && doc.output.aspect === '9:16';
+    if (themeStyle.text) {
+      const minSize = portrait ? 52 : 72;
+      const maxSize = portrait ? 96 : 124;
+      themeStyle.text = {
+        ...themeStyle.text,
+        size: Math.max(minSize, Math.min(maxSize, Number(themeStyle.text.size) || (portrait ? 72 : 96))),
       };
-    });
+    }
     store.dispatch({
       label: 'auto direct',
-      areas: ['style'],
+      areas: ['script', 'style'],
       do(projectDoc) {
-        // rebuild the effect layer from scratch so re-rolls never keep stale groups
+        // 0) one beat per musical bar: the bar length comes from the audio BPM
+        // when a track is loaded (4/4 assumed), otherwise from a 120 BPM default
+        const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
+        const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 120;
+        const barDuration = Math.round((60 / bpm) * 4 * 1000) / 1000;
+        projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', targetChunkDuration: barDuration };
+        for (const cue of projectDoc.script.cues) {
+          cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', targetChunkDuration: barDuration };
+        }
+        if (SA.textflow) SA.textflow.apply(projectDoc);
+        // 1) rebuild the theme from scratch so re-rolls never keep stale groups
         for (const group of AUTO_DIRECT_GROUPS) delete projectDoc.style[group];
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, themeStyle);
         for (const cue of projectDoc.script.cues) {
           const container = projectDoc.cueStyles[cue.id];
-          if (container) {
-            for (const group of AUTO_DIRECT_GROUPS) delete container[group];
-            if (!Object.keys(container).length) delete projectDoc.cueStyles[cue.id];
-          }
-          const patch = cueStyles[cue.id];
-          if (patch) {
-            projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, patch);
-          }
+          if (!container) continue;
+          for (const group of AUTO_DIRECT_GROUPS) delete container[group];
+          if (!Object.keys(container).length) delete projectDoc.cueStyles[cue.id];
         }
+        // 2) per-beat motion and colors: every beat (line) gets its own draw
+        projectDoc.beatStyles = projectDoc.beatStyles || {};
+        for (const [beatId, existing] of Object.entries(projectDoc.beatStyles)) {
+          for (const group of AUTO_DIRECT_BEAT_GROUPS) delete existing[group];
+          if (!Object.keys(existing).length) delete projectDoc.beatStyles[beatId];
+        }
+        projectDoc.script.cues.forEach((cue, cueIndex) => {
+          const cueContext = SA.moods.contextForCue(projectDoc, cue);
+          const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+          beats.forEach((beat, beatIndex) => {
+            const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
+            const generated = SA.moods.generate({ axes, seed: beatSeed, direction, context: cueContext }).style;
+            // a fresh palette and a hue-shifted text color per beat, so the
+            // line colors really change while staying bright and readable
+            const palette = SA.moods.generatePalette(SA.rng.rngFor(beatSeed, beat.id, 'palette'), axes);
+            const colorRng = SA.rng.rngFor(beatSeed, beat.id, 'color');
+            const vary = (hex, hue, satMin, valMin) => {
+              const rgba = SA.color.parse(hex || '#eef2ff');
+              const hsv = SA.color.rgbToHsv(rgba);
+              const shifted = {
+                h: hsv.h + (colorRng() * 2 - 1) * hue,
+                s: Math.max(satMin, Math.min(1, hsv.s * (0.85 + colorRng() * 0.5))),
+                v: Math.max(valMin, Math.min(1, hsv.v * (0.92 + colorRng() * 0.16))),
+                a: 1,
+              };
+              return SA.color.toHex({ ...SA.color.hsvToRgb(shifted), a: 1 });
+            };
+            // keep every per-beat motion inside the beat so the line settles and
+            // stays readable before the next beat arrives
+            const beatDuration = Math.max(0.2, beat.end - beat.start);
+            const inDuration = Math.round(Math.min(0.5, beatDuration * 0.35) * 100) / 100;
+            const outDuration = Math.round(Math.min(0.4, beatDuration * 0.25) * 100) / 100;
+            const enter = {
+              ...generated.enter,
+              motion: { ...(generated.enter.motion || {}), in: { ...((generated.enter.motion || {}).in || {}), duration: inDuration } },
+            };
+            const exit = {
+              ...generated.exit,
+              motion: { ...(generated.exit.motion || {}), out: { ...((generated.exit.motion || {}).out || {}), duration: outDuration } },
+            };
+            const layoutMotion = (generated.layout && generated.layout.motion) || {};
+            const layout = {
+              ...(generated.layout || {}),
+              motion: {
+                ...layoutMotion,
+                in: { ...(layoutMotion.in || {}), duration: inDuration },
+                out: { ...(layoutMotion.out || {}), duration: outDuration },
+              },
+            };
+            const swatches = palette.colors || [];
+            const textHex = vary(swatches[2] || '#eef2ff', 80, 0.35, 0.75);
+            const accentHex = vary(swatches[3] || textHex, 80, 0.35, 0.7);
+            const variant = Math.floor(colorRng() * 3);
+            const color =
+              variant === 0
+                ? { kind: 'solid', value: textHex, alpha: 1 }
+                : variant === 1
+                  ? { kind: 'solid', value: accentHex, alpha: 1 }
+                  : {
+                      kind: 'gradient',
+                      type: 'linear',
+                      angle: Math.round(colorRng() * 360),
+                      stops: [
+                        { pos: 0, color: textHex, alpha: 1 },
+                        { pos: 1, color: accentHex, alpha: 1 },
+                      ],
+                    };
+            projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, {
+              layout,
+              animation: generated.animation,
+              enter,
+              exit,
+              hold: generated.hold,
+              post: generated.post,
+              color,
+              palette,
+            });
+          });
+        });
       },
     });
-    lastRandom = { scope: 'cues', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS };
+    lastRandom = { scope: '__auto', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS };
     toast('studio.toast.autoDirected', { seed });
   }
 

@@ -12,6 +12,7 @@
     { type: 'vertical', params: [{ key: 'columnGap', kind: 'number', min: 0.5, max: 3, step: 0.05, default: 1.2 }] },
     {
       type: 'circle',
+      tags: ['overlap'],
       params: [
         { key: 'radius', kind: 'number', min: 0.05, max: 1, step: 0.01, default: 0.28, unit: 'frame' },
         { key: 'startAngle', kind: 'number', min: -360, max: 360, step: 1, default: -90 },
@@ -21,6 +22,7 @@
     },
     {
       type: 'arc',
+      tags: ['overlap'],
       params: [
         { key: 'radius', kind: 'number', min: 0.1, max: 1.5, step: 0.01, default: 0.6 },
         { key: 'sweep', kind: 'number', min: 10, max: 360, step: 1, default: 120 },
@@ -29,6 +31,7 @@
     },
     {
       type: 'spiral',
+      tags: ['overlap'],
       params: [
         { key: 'r0', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
         { key: 'r1', kind: 'number', min: 0.05, max: 1, step: 0.01, default: 0.35 },
@@ -45,12 +48,13 @@
     },
     {
       type: 'diagonal',
+      tags: ['overlap'],
       params: [
         { key: 'angle', kind: 'number', min: -90, max: 90, step: 1, default: -20 },
         { key: 'followAngle', kind: 'bool', default: false },
       ],
     },
-    { type: 'staircase', params: [{ key: 'step', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.35, unit: 'size' }] },
+    { type: 'staircase', tags: ['overlap'], params: [{ key: 'step', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.35, unit: 'size' }] },
     {
       type: 'grid',
       params: [
@@ -61,12 +65,13 @@
     { type: 'stackedWords', params: [{ key: 'fillWidth', kind: 'number', min: 0.3, max: 1, step: 0.01, default: 0.8 }] },
     {
       type: 'scatter',
+      tags: ['overlap'],
       params: [
         { key: 'spread', kind: 'number', min: 0.05, max: 1, step: 0.01, default: 0.35 },
         { key: 'safeArea', kind: 'number', min: 0.05, max: 0.2, step: 0.005, default: 0.08 },
       ],
     },
-    { type: 'path', params: [{ key: 'points', kind: 'points', default: [{ x: 0.1, y: 0.7 }, { x: 0.4, y: 0.3 }, { x: 0.9, y: 0.6 }] }, { key: 'smooth', kind: 'bool', default: true }] },
+    { type: 'path', tags: ['overlap'], params: [{ key: 'points', kind: 'points', default: [{ x: 0.1, y: 0.7 }, { x: 0.4, y: 0.3 }, { x: 0.9, y: 0.6 }] }, { key: 'smooth', kind: 'bool', default: true }] },
   ];
 
   for (const target of TARGETS) {
