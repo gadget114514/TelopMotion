@@ -139,6 +139,7 @@ main.js                 Electron main process: window, IPC, dialogs, cache, auto
 preload.js              contextBridge API exposed to the renderer
 lib/suno-core.js        Fetching, pagination, normalization (shared with the CLI)
 scripts/scrape.js       Command-line scraper
+scripts/fx400.js        FX 400: deterministic catalog of representative effects + test project
 scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
 renderer/               UI: index.html (achievement card, secondary), studio.html (Studio, main), css/, js/
@@ -172,6 +173,18 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .     # regenerate snapshot/studio-overv
 SA_SMOKE=1 SA_SMOKE_AUDIO=1 npx electron .    # audio-reactive bindings and the Media audio tab
 SA_SMOKE=1 SA_SMOKE_FILLERS=1 npx electron .  # filler clips, credits modes, timeline and inspector
 ```
+
+### FX 400 (representative effects)
+
+`test/test_1_to_400.srt` has 400 numbered two-second cues. `scripts/fx400.js` builds a deterministic, numbered catalog of 400 representative effects (every registered effect type plus parameter step variants) and a project where cue n carries effect n, so the effects can be checked visually in the Studio:
+
+```bash
+npm run fx400 -- build                 # writes test/fx400.catalog.json, test/fx400.md and test/fx400.telopmotion.json
+npm run fx400 -- show 42               # prints the recipe for effect 42
+npm run fx400 -- apply 42 --project <file> --cue 12 --out <file>   # applies effect 42 to one cue
+```
+
+Open `test/fx400.telopmotion.json` from *File → Open project…* and play the timeline (or scrub) to review the effects. Background effects are applied as clips on the bg track (project version 2 has no cue-level screen background).
 
 ## Notes
 
