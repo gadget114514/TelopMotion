@@ -1,0 +1,17 @@
+{
+  "//": "Known duplicate signatures (§8.1 step 3 / §8.3 human review). Each entry removes one duplicate signature from its group. Update after the manual review.",
+  "aliases": [
+    {
+      "group": "repeat",
+      "match": "repeat|tunnel|*|*",
+      "sameAs": "repeat|stackV|*|size:progress",
+      "note": "tunnel ≈ stackV + size progress"
+    },
+    {
+      "group": "repeat",
+      "match": "repeat|fill|*|*",
+      "sameAs": "repeat|brick|*|static",
+      "note": "many fill ≈ many brick + static"
+    }
+  ]
+}

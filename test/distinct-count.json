@@ -1,0 +1,80 @@
+{
+  "groups": {
+    "animation": 21,
+    "layout": 26,
+    "enter": 76,
+    "exit": 34,
+    "hold": 72,
+    "location": 10,
+    "fill": 17,
+    "edge": 41,
+    "post": 80,
+    "background": 49,
+    "repeat": 585
+  },
+  "repeat": {
+    "arrangements": 119,
+    "variations": 80,
+    "signatures": 587,
+    "raw": 1950,
+    "discounted": 587,
+    "byBin": {
+      "pair": {
+        "arrangements": 19,
+        "variations": 5,
+        "raw": 95
+      },
+      "few": {
+        "arrangements": 45,
+        "variations": 23,
+        "raw": 1035
+      },
+      "tri": {
+        "arrangements": 10,
+        "variations": 17,
+        "raw": 170
+      },
+      "quad": {
+        "arrangements": 10,
+        "variations": 23,
+        "raw": 230
+      },
+      "many": {
+        "arrangements": 35,
+        "variations": 12,
+        "raw": 420
+      }
+    },
+    "byMode": {
+      "normal": {
+        "arrangements": 84,
+        "variations": 23,
+        "raw": 1530,
+        "discounted": 444
+      },
+      "many": {
+        "arrangements": 35,
+        "variations": 12,
+        "raw": 420,
+        "discounted": 143
+      }
+    }
+  },
+  "existing": {
+    "groups": {
+      "animation": 21,
+      "layout": 26,
+      "enter": 76,
+      "exit": 34,
+      "hold": 72,
+      "location": 10,
+      "fill": 17,
+      "edge": 41,
+      "post": 80,
+      "background": 49
+    },
+    "total": 426
+  },
+  "total": 1011,
+  "aliases": 2
+}
