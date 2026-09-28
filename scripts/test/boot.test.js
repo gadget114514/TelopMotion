@@ -65,18 +65,18 @@ test('boot progress is monotonic, clamps and finishes', (t) => {
 
   assert.equal(boot.progress(), 0);
   boot.set(30, 'studio.boot.project');
-  assert.equal(nodes['boot-fill'].style.width, '30%');
+  assert.equal(nodes['boot-fill'].style.transform, 'scaleX(0.3)');
   assert.equal(nodes['boot-bar'].attrs['aria-valuenow'], '30');
   assert.equal(nodes['boot-status'].textContent, 'studio.boot.project');
 
   boot.set(12); // never goes backwards
-  assert.equal(nodes['boot-fill'].style.width, '30%');
+  assert.equal(nodes['boot-fill'].style.transform, 'scaleX(0.3)');
   boot.busy(true); // indeterminate shimmer while a long step runs
   assert.ok(nodes.boot.classList.contains('is-busy'));
   boot.busy(false);
   assert.equal(nodes.boot.classList.contains('is-busy'), false);
   boot.set(180); // clamps at 100
-  assert.equal(nodes['boot-fill'].style.width, '100%');
+  assert.equal(nodes['boot-fill'].style.transform, 'scaleX(1)');
   assert.equal(boot.progress(), 100);
 
   boot.busy(true);
@@ -90,4 +90,43 @@ test('boot progress is monotonic, clamps and finishes', (t) => {
 
   boot.set(50); // finished: further updates are ignored
   assert.equal(boot.progress(), 100);
+});
+
+test('boot bar creeps toward the next step on the compositor', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const animations = [];
+  const fill = fakeElement();
+  fill.animate = (keyframes, options) => {
+    const animation = { keyframes, options, cancelled: false, cancel() { this.cancelled = true; } };
+    animations.push(animation);
+    return animation;
+  };
+  const nodes = { boot: fakeElement(), 'boot-status': fakeElement(), 'boot-bar': fakeElement(), 'boot-fill': fill };
+  globalThis.document = { getElementById: (id) => nodes[id] || null };
+  globalThis.SA = globalThis.SA || {};
+  globalThis.SA.i18n = { t: (key) => key };
+  delete require.cache[require.resolve('../../renderer/js/studio/boot.js')];
+  require('../../renderer/js/studio/boot.js');
+  const boot = globalThis.SA.boot;
+
+  // jump to 20, then creep 90% of the way to 60 over 5 s without reaching it
+  boot.set(20, 'studio.boot.fonts', 60, 5000);
+  const first = animations[0];
+  assert.equal(first.options.duration, 5000);
+  assert.equal(first.options.fill, 'forwards');
+  assert.deepEqual(first.keyframes.map((frame) => frame.transform), ['scaleX(0)', 'scaleX(0.2)', 'scaleX(0.56)']);
+  assert.equal(fill.style.transform, 'scaleX(0.56)');
+  assert.equal(boot.progress(), 20); // the reported progress is the step, not the creep
+
+  // a later step replaces the running creep
+  boot.set(60);
+  assert.ok(first.cancelled);
+  assert.equal(animations[1].options.duration, 220);
+  assert.equal(fill.style.transform, 'scaleX(0.6)');
+
+  boot.finish();
+  assert.equal(fill.style.transform, 'scaleX(1)');
+  t.mock.timers.tick(400);
+  t.mock.timers.tick(260);
+  assert.equal(nodes.boot.hidden, true);
 });

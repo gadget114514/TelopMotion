@@ -100,12 +100,15 @@ body {
 
 .boot-fill {
   position: relative;
-  width: 4%;
+  width: 100%;
   height: 100%;
-  border-radius: inherit;
   overflow: hidden;
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  transition: width 220ms ease;
+  /* boot.js animates scaleX on the compositor so the bar moves even while the
+     main thread parses fonts; the rounded .boot-bar clips the ends */
+  transform: scaleX(0.04);
+  transform-origin: left center;
+  will-change: transform;
 }
 
 /* the shimmer must keep moving while the main thread parses fonts, so it is a

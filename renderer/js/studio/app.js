@@ -1476,14 +1476,14 @@
   async function startup() {
     const boot = SA.boot || { set() {}, busy() {}, finish() {} };
     try {
-      boot.set(6, 'studio.boot.loading');
+      boot.set(6, 'studio.boot.loading', 16, 1500);
       cacheElements();
       if (SA.debugConsole) SA.debugConsole.init();
       loadLayout();
       applyLayout();
       i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
       applyStaticText();
-      boot.set(16, 'studio.boot.interface');
+      boot.set(16, 'studio.boot.interface', 34, 3000);
       bindEvents();
       SA.preview.init();
       SA.timeline.init();
@@ -1491,7 +1491,7 @@
       SA.overlay.init();
       SA.menu.init({ handlers: menuHandlers() });
       platform.recent.list().then(SA.menu.setRecent).catch(() => {});
-      boot.set(34, 'studio.boot.preview');
+      boot.set(34, 'studio.boot.preview', 58, 3000);
 
       let handoff = null;
       if (!platform.isElectron) {
@@ -1512,7 +1512,7 @@
         projectDoc = await SA.io.loadAutosave();
       }
 
-      boot.set(58, 'studio.boot.project');
+      boot.set(58, 'studio.boot.project', 74, 3000);
       if (projectDoc) {
         store.load(projectDoc);
       } else {
@@ -1520,7 +1520,7 @@
       }
       if (SA.textflow && store.state.project) SA.textflow.apply(store.state.project);
       SA.io.startAutosave(project, autosaveEnabled ? 30 : 999999);
-      boot.set(74, 'studio.boot.fonts');
+      boot.set(74, 'studio.boot.fonts', 96, 20000);
       renderAll();
       // fonts decide what the preview can draw: wait until every request has
       // settled (a textflow pass can start a second one) before revealing the

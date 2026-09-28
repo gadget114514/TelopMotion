@@ -9,12 +9,17 @@ SA.boot = (() => {
 
   const MIN_VISIBLE = 400; // ms: keep the screen readable when startup is fast
   const FADE = 260; // ms: must match the .boot transition in studio.css
+  const JUMP = 220; // ms: glide to a newly reported step
+  const CREEP = 8000; // ms: default time to creep toward the next step
+  const CREEP_SHARE = 0.9; // the creep never quite reaches the next step
 
   let root = null;
   let status = null;
   let bar = null;
   let fill = null;
   let value = 0;
+  let shown = 0; // what the bar draws once the current jump lands
+  let creep = null;
   let started = 0;
   let finished = false;
 
@@ -40,13 +45,43 @@ SA.boot = (() => {
     }
   }
 
+  // the bar is a scaleX transform animated with the Web Animations API: a
+  // transform animation runs on the compositor, so the bar keeps moving while
+  // the main thread is blocked (font parsing), where a width transition froze
+  function currentShown() {
+    if (!creep || !fill || typeof getComputedStyle !== 'function') return shown;
+    const match = /matrix\(([^,]+)/.exec(getComputedStyle(fill).transform || '');
+    const scale = match ? Number(match[1]) : NaN;
+    return Number.isFinite(scale) ? Math.max(0, Math.min(100, scale * 100)) : shown;
+  }
+
+  function draw(target, toward, over) {
+    if (!fill) return;
+    const from = currentShown();
+    const to = Math.max(from, target);
+    const end = toward > to ? to + (toward - to) * CREEP_SHARE : to;
+    shown = to;
+    if (creep) creep.cancel();
+    creep = null;
+    fill.style.transform = `scaleX(${end / 100})`;
+    if (typeof fill.animate !== 'function') return;
+    const duration = end > to ? Math.max(JUMP * 2, over) : JUMP;
+    const keyframes = [{ transform: `scaleX(${from / 100})`, offset: 0, easing: 'ease-out' }];
+    if (end > to) keyframes.push({ transform: `scaleX(${to / 100})`, offset: JUMP / duration, easing: 'cubic-bezier(0.2, 0.6, 0.35, 1)' });
+    keyframes.push({ transform: `scaleX(${end / 100})`, offset: 1 });
+    creep = fill.animate(keyframes, { duration, fill: 'forwards' });
+  }
+
   // percent never goes backwards and is clamped to 0-100, so the bar can be
-  // driven from independent startup steps without tracking order
-  function set(percent, statusKey) {
+  // driven from independent startup steps without tracking order. `toward`
+  // (the next step's percent) makes the bar creep on over `over` ms while the
+  // step runs, so a long step never looks frozen.
+  function set(percent, statusKey, toward, over) {
     if (finished || !nodes()) return;
     const number = Number(percent);
     if (Number.isFinite(number)) value = Math.max(value, Math.max(0, Math.min(100, Math.round(number))));
-    if (fill) fill.style.width = `${value}%`;
+    const next = Number(toward);
+    draw(value, Number.isFinite(next) ? Math.min(100, next) : value, Number(over) > 0 ? Number(over) : CREEP);
     if (bar) bar.setAttribute('aria-valuenow', String(value));
     if (statusKey) statusText(statusKey);
   }
@@ -57,7 +92,7 @@ SA.boot = (() => {
     if (!nodes()) return;
     root.classList.remove('is-busy');
     value = 100;
-    if (fill) fill.style.width = '100%';
+    draw(100, 100, 0);
     if (bar) bar.setAttribute('aria-valuenow', '100');
     statusText('studio.boot.ready');
     const wait = Math.max(0, MIN_VISIBLE - (now() - started));
