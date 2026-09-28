@@ -1273,5 +1273,7 @@ SA.glShaders = (() => {
     BACKGROUND_FRAG,
     REP_VERT,
     REP_FRAG,
+    BG_VERT,
+    BG_FRAG,
   };
 })();
