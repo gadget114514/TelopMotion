@@ -78,3 +78,33 @@ test('the shader carries the shape layer branch', () => {
   // no reserved words in a declaration
   assert.ok(!/\b(half|fixed|input|output|filter)\s+\w+\s*=/.test(post), 'the shader declares a reserved word');
 });
+
+test('the shape layer is also a user-placeable background clip', () => {
+  const entry = fx.get('background', 'shapeLayer');
+  assert.ok(entry, 'background.shapeLayer is not registered');
+  assert.equal(entry.pack, 'pro');
+  const follow = entry.params.find((param) => param.key === 'followText');
+  assert.deepEqual(follow.options, shapeLayer.FOLLOW_MODES);
+  assert.equal(follow.default, 'block');
+  for (const key of ['dashOn', 'dashOff', 'dashOffset', 'pathOp', 'pathOpAmount', 'pathOpFreq', 'repeatOffset', 'corner']) {
+    assert.ok(entry.params.some((param) => param.key === key), `background.shapeLayer has no ${key}`);
+  }
+  const defaults = fx.paramDefaults('background', 'shapeLayer');
+  assert.equal(defaults.shape, 'box');
+  assert.equal(defaults.followText, 'block');
+  assert.equal(defaults.trimEnd, 1);
+  assert.equal(defaults.dashOn, 0);
+  assert.equal(fx.withDefaults({ type: 'shapeLayer', params: {} }, 'background').params.stroke, 4);
+});
+
+test('the engine and the studio wire the placeable clip', () => {
+  const engine = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
+  for (const token of ['SA.shapeOps.expand', 'textBoxesForClip', 'textBoxesPx', "'shapeLayer'", 'boxes: boxes ? boxes.lines : null', 'textBoxCache']) {
+    assert.ok(engine.includes(token), `engine.js has no ${token}`);
+  }
+  const inspector = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'inspector.js'), 'utf8');
+  assert.ok(inspector.includes("SA.fx.list('background', UI_PACKS)"), 'the clip type list does not offer the extended background types');
+  assert.ok(inspector.includes('type === \'shapeLayer\''), 'the inspector does not treat shapeLayer as an fx clip');
+  const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
+  assert.ok(timeline.includes('addClipTypeMenu'), 'the timeline has no clip type menu');
+});

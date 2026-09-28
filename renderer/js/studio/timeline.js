@@ -1587,10 +1587,46 @@ SA.timeline = (() => {
       });
       menu.appendChild(button);
     };
+    // Background / backdrop clips: every background primitive is offered (the
+    // extended pack included) plus the user-placeable shape layer on the
+    // backdrop track.
+    const addClipTypeMenu = (clip, kind) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = t('filler.changeType');
+      button.addEventListener('mouseenter', () => {
+        hideMenu();
+        menu = document.createElement('div');
+        menu.className = 'timeline-menu';
+        const options =
+          kind === 'background'
+            ? SA.fx.list('background', { packs: ['font', 'pro'] }).map((descriptor) => ({ type: descriptor.type, fx: true }))
+            : [...new Set([...SA.fillerRender.types(), 'shapeLayer'])].map((type) => ({ type, fx: type === 'shapeLayer' }));
+        for (const option of options) {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'menu-item';
+          item.textContent = option.fx ? SA.controls.typeLabel('background', option.type) : fillerTypeLabel(option.type);
+          item.addEventListener('click', () => {
+            hideMenu();
+            const params = option.fx ? {} : { ...SA.fillerRender.paramDefaults(option.type), ...(clip.spec && clip.spec.type === option.type ? clip.spec.params || {} : {}) };
+            SA.store.commands.updateClip(clip.id, { spec: { type: option.type, params } });
+          });
+          menu.appendChild(item);
+        }
+        el.body.appendChild(menu);
+        const rect = el.body.getBoundingClientRect();
+        menu.style.left = `${Math.max(0, event.clientX - rect.left + 120)}px`;
+        menu.style.top = `${Math.max(0, event.clientY - rect.top)}px`;
+      });
+      menu.appendChild(button);
+    };
     if (hit.type === 'clip' || hit.type === 'clip-edge') {
       const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
       if (!clip) return;
       SA.store.setSelection([`clip:${clip.id}`], 'clip');
+      if (hit.kind === 'background' || hit.kind === 'backdrop') addClipTypeMenu(clip, hit.kind);
       add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
       add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
       add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));

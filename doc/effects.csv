@@ -236,6 +236,7 @@
 背景,パーティクルフィールド,background.particleField,パーティクル（ボケ・星・雪・塵・火の粉・雨・ハイパースペース）。
 背景,パースグリッド,background.perspectiveGrid,パースグリッド（シンセウェーブの定番）。
 背景,トンネル,background.tunnel,トンネル（円・四角・六角、縞とねじれ）。
+背景,シェイプクリップ,background.shapeLayer,ユーザーが置けるシェイプクリップ。下線・枠・カギ括弧・リングなどを文字ブロック／行に合わせて描き、トリム（弧長）・破線・パス変形で動かす。
 文字背景の形,なし,bgShape.none,文字背景なし。
 文字背景の形,四角,bgShape.square,四角で囲む。
 文字背景の形,角丸,bgShape.rounded,角丸の四角で囲む。
@@ -264,6 +265,7 @@
 文字背景の動き,にじみ,bgMotion.bleed,にじみ出る。
 文字背景の動き,浮かぶ,bgMotion.float,浮遊する。
 文字背景の動き,落下,bgMotion.fall,落下する。
+文字背景の動き,描画,bgMotion.draw,輪郭線が弧長に沿って描かれ、引き終わると内部が現れる。
 リピート（複製配置）,縦積み,repeat.stackV,文字列を縦に積み重ねて複製する。
 リピート（複製配置）,横並び,repeat.rowH,文字列を横に並べて複製する。
 リピート（複製配置）,斜め,repeat.diagonal,斜め方向へ複製する。

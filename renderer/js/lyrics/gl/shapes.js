@@ -302,6 +302,11 @@ void main() {
         opacity: opts.opacity,
         stroke: opts.stroke,
         strokeColor: opts.strokeColor,
+        strokeOpacity: opts.strokeOpacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
       });
     }
 
@@ -317,6 +322,11 @@ void main() {
         opacity: opts.opacity,
         stroke: opts.stroke,
         strokeColor: opts.strokeColor,
+        strokeOpacity: opts.strokeOpacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
       });
     }
 
@@ -333,6 +343,10 @@ void main() {
         stroke,
         strokeColor: opts.color,
         strokeOpacity: opts.opacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
       });
     }
 
@@ -357,6 +371,10 @@ void main() {
         lineWidth,
         color: opts.color,
         opacity: opts.opacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
       });
     }
 
@@ -374,6 +392,11 @@ void main() {
         opacity: opts.opacity,
         stroke: opts.stroke,
         strokeColor: opts.strokeColor,
+        strokeOpacity: opts.strokeOpacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
       });
     }
 

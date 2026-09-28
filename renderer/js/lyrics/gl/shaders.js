@@ -1310,6 +1310,8 @@ SA.glShaders = (() => {
   out float v_amount;
   out float v_letter;
   out vec4 v_color;
+  out vec4 v_trim;
+  out vec4 v_dash;
   ${COMMON}
   vec4 stateAt(int row) { return texelFetch(u_state, ivec2(int(a_letter + 0.5), row), 0); }
   vec4 bgAt(int row) { return texelFetch(u_bgState, ivec2(int(a_letter + 0.5), row), 0); }
@@ -1323,12 +1325,16 @@ SA.glShaders = (() => {
     vec4 b2 = bgAt(2);
     vec4 b3 = bgAt(3);
     vec4 b4 = bgAt(4);
+    vec4 b5 = bgAt(5);
+    vec4 b6 = bgAt(6);
     v_shape = b1.y;
     v_seed = b3.y;
     v_clip = b3.x;
     v_clipDir = b4.xy;
     v_amount = b4.z;
     v_color = b2;
+    v_trim = b5;
+    v_dash = b6;
     vec2 unit = u_unitMode > 0.5 ? a_em : a_cell;
     vec2 halfSize = max(vec2(b0.x, b0.y) * unit * 0.5, vec2(0.001));
     v_half = halfSize / max(min(halfSize.x, halfSize.y), 0.001);
@@ -1355,6 +1361,8 @@ SA.glShaders = (() => {
   in float v_amount;
   in float v_letter;
   in vec4 v_color;
+  in vec4 v_trim;
+  in vec4 v_dash;
   layout(location = 0) out vec4 fragColor;
   layout(location = 1) out vec4 o_info;
   ${COMMON}
@@ -1464,6 +1472,13 @@ SA.glShaders = (() => {
     return 1e9;
   }
 
+  // normalised position along the outline: the angle around the centre for the
+  // closed shapes, the long axis for the bar. Trim / dash cut by it.
+  float shapeParam(vec2 q, int shape) {
+    if (shape == 6) return clamp(q.x / max(abs(v_half.x), 1e-4) * 0.5 + 0.5, 0.0, 1.0);
+    return atan(q.y, q.x) / TAU + 0.5;
+  }
+
   void main() {
     float opacity = v_color.a;
     if (opacity <= 0.002 || v_shape < 0.5) {
@@ -1475,7 +1490,30 @@ SA.glShaders = (() => {
     float d = shapeDistance(q, int(v_shape + 0.5), v_seed, v_amount);
     d /= max(min(v_half.x, v_half.y), 0.001);
     float aa = max(fwidth(d), 0.004);
-    float alpha = 1.0 - smoothstep(-aa, aa, d);
+    float inside = 1.0 - smoothstep(-aa, aa, d);
+    // trim / dash cut the outline by its arc length; stroke draws an outline
+    // band and v_dash.w is the interior fill amount (bgMotion.draw walks the
+    // trim end first and only fills once the line is complete)
+    float trimStart = v_trim.x;
+    float trimEnd = v_trim.y;
+    float stroke = max(v_trim.w, 0.0);
+    float dashOn = max(v_dash.x, 0.0);
+    bool trimmed = trimStart > 0.001 || trimEnd < 0.999 || dashOn > 0.0001;
+    float arc = 1.0;
+    if (trimmed) {
+      float t = shapeParam(q, int(v_shape + 0.5));
+      float feather = max(fwidth(t), 0.004);
+      float tt = fract(t + v_trim.z);
+      arc = smoothstep(trimStart - feather, trimStart + feather, tt) * (1.0 - smoothstep(trimEnd - feather, trimEnd + feather, tt));
+      if (dashOn > 0.0001) {
+        float period = max(dashOn + max(v_dash.y, 0.0), 1e-4);
+        if (mod(tt * period + v_dash.z, period) > dashOn) arc = 0.0;
+      }
+    }
+    float fill = inside * clamp(v_dash.w, 0.0, 1.0) * (trimmed ? arc : 1.0);
+    float outline = 0.0;
+    if (stroke > 0.0001) outline = (1.0 - smoothstep(-aa, aa, abs(d) - stroke)) * arc;
+    float alpha = max(fill, outline);
     if (v_clip > -0.999) {
       float side = dot(v_local, normalize(v_clipDir + vec2(1e-6)));
       alpha *= smoothstep(v_clip - 0.05, v_clip + 0.05, side);

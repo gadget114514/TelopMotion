@@ -21,6 +21,10 @@ SA.glPasses = (() => {
   // origin and half-size, row 8 the wipe / flash / mask fields.
   const STATE_ROWS = 9;
 
+  // Text background state texture: 7 RGBA rows. Rows 0-4 are the original
+  // layout, row 5 the trim / outline stroke and row 6 the dash / fill amount.
+  const BG_STATE_ROWS = 7;
+
   // At most three deformations survive per letter; the largest |amount| wins
   // inside each group. A block-space deformation (warp, font size) reserves one
   // slot, so a strong letter deformation can never hide the block scale.
@@ -749,10 +753,10 @@ SA.glPasses = (() => {
     function ensureBgStateTexture(count) {
       if (count <= bgStateCapacity) return;
       bgStateCapacity = Math.max(16, count);
-      bgStateData = new Float32Array(bgStateCapacity * 5 * 4);
+      bgStateData = new Float32Array(bgStateCapacity * BG_STATE_ROWS * 4);
       if (!bgStateTexture) bgStateTexture = SA.gl.createTexture(gl, {});
       gl.bindTexture(gl.TEXTURE_2D, bgStateTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, bgStateCapacity, 5, 0, gl.RGBA, gl.FLOAT, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, bgStateCapacity, BG_STATE_ROWS, 0, gl.RGBA, gl.FLOAT, null);
     }
 
     function uploadBgState(states) {
@@ -782,9 +786,21 @@ SA.glPasses = (() => {
         bgStateData[(4 * stride + i) * 4 + 1] = dir[1];
         bgStateData[(4 * stride + i) * 4 + 2] = state.amount == null ? 5 : state.amount;
         bgStateData[(4 * stride + i) * 4 + 3] = state.roughness == null ? 0.5 : state.roughness;
+        // row 5: trim (start, end, offset) + outline stroke; row 6: dash
+        // (on, off, offset) + the interior fill amount (bgMotion.draw)
+        const trim = Array.isArray(state.trim) ? state.trim : [0, 1, 0];
+        const dash = Array.isArray(state.dash) ? state.dash : [0, 0, 0];
+        bgStateData[(5 * stride + i) * 4] = trim[0];
+        bgStateData[(5 * stride + i) * 4 + 1] = trim[1];
+        bgStateData[(5 * stride + i) * 4 + 2] = trim[2] == null ? 0 : trim[2];
+        bgStateData[(5 * stride + i) * 4 + 3] = state.stroke == null ? 0 : state.stroke;
+        bgStateData[(6 * stride + i) * 4] = dash[0];
+        bgStateData[(6 * stride + i) * 4 + 1] = dash[1] == null ? 0 : dash[1];
+        bgStateData[(6 * stride + i) * 4 + 2] = dash[2] == null ? 0 : dash[2];
+        bgStateData[(6 * stride + i) * 4 + 3] = state.fill == null ? 1 : state.fill;
       }
       gl.bindTexture(gl.TEXTURE_2D, bgStateTexture);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, bgStateData.subarray(0, states.length * 5 * 4));
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, BG_STATE_ROWS, gl.RGBA, gl.FLOAT, bgStateData.subarray(0, states.length * BG_STATE_ROWS * 4));
       gl.activeTexture(gl.TEXTURE0);
     }
 
@@ -1048,7 +1064,7 @@ SA.glPasses = (() => {
       dispose,
       targets: () => targets,
       debugError: () => gl.getError(),
-      _test: { deformSlots, packStateRows, STATE_ROWS },
+      _test: { deformSlots, packStateRows, STATE_ROWS, BG_STATE_ROWS },
     };
   }
 
@@ -1144,6 +1160,6 @@ SA.glPasses = (() => {
     DEFORM_CODES,
     REP_CODES,
     // pure helpers, exposed for the unit tests (no GL context needed)
-    _test: { deformSlots, packStateRows, STATE_ROWS },
+    _test: { deformSlots, packStateRows, STATE_ROWS, BG_STATE_ROWS },
   };
 })();

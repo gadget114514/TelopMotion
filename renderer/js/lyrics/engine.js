@@ -96,6 +96,7 @@ SA.lyricsEngine = (() => {
       cardCache: null,
       analysis: null,
       morphSources: null,
+      textBoxCache: null,
     };
     canvas.width = state.width;
     canvas.height = state.height;
@@ -713,8 +714,11 @@ SA.lyricsEngine = (() => {
       for (const shape of shapes) {
         if (!shape) continue;
         if (shape.kind === 'rect') shapesPass.rect(shape);
-        else if (shape.kind === 'circle') shapesPass.circle(shape);
-        else if (shape.kind === 'ring') shapesPass.ring(shape);
+        else if (shape.kind === 'circle') {
+          // shape-ops expands a ring into a circle with a ring thickness
+          if ((shape.ring || 0) > 0) shapesPass.ring({ ...shape, r: shape.radius, thickness: shape.ring });
+          else shapesPass.circle(shape);
+        } else if (shape.kind === 'ring') shapesPass.ring(shape);
         else if (shape.kind === 'capsule') shapesPass.capsule(shape);
         else if (shape.kind === 'polygon') shapesPass.polygon(shape);
       }
@@ -826,7 +830,7 @@ SA.lyricsEngine = (() => {
     }
 
     function drawShapeClip(clip, t, duration) {
-      if (!shapesPass || !pipeline || !SA.fillerRender) return;
+      if (!pipeline) return;
       const spec = clip.spec || { type: 'none', params: {} };
       const envelope = clipEnvelope(t, clip);
       if (envelope <= 0) return;
@@ -840,6 +844,35 @@ SA.lyricsEngine = (() => {
       // the shape group's own opacity folds into the layer opacity so the two
       // sliders never multiply the same value twice
       const { opacity: innerOpacity, ...restParams } = spec.params || {};
+      const layerOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * (innerOpacity == null ? 1 : innerOpacity) * envelope));
+      // a user-placed shape layer (shape-ops): expanded against the current
+      // text box and drawn with the shape pass behind / over the lyrics
+      if (spec.type === 'shapeLayer') {
+        if (!SA.shapeOps || !shapesPass || !SA.fx) return;
+        const resolved = SA.fx.withDefaults({ type: 'shapeLayer', params: restParams }, 'background');
+        if (!resolved || !SA.shapeOps.SHAPES.includes(resolved.params.shape)) return;
+        const params = { ...resolved.params, color: fill };
+        const boxes = params.followText === 'line' || params.followText === 'block' ? textBoxesForClip(t) : null;
+        // the drive follows the text on screen (each cue draws its own shape);
+        // without a beat it falls back to the clip's own progress
+        const beatSpan = onScreen ? Math.max(0.001, onScreen.end - onScreen.start) : 0;
+        const driveProgress = onScreen ? Math.min(1, Math.max(0, (t - onScreen.start) / beatSpan)) : progress;
+        const features = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
+        const primitives = SA.shapeOps.expand(params, {
+          box: boxes ? boxes.box : null,
+          boxes: boxes ? boxes.lines : null,
+          frame: { width: state.width, height: state.height },
+          progress: driveProgress,
+          time: t,
+          bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+        });
+        if (!primitives.length) return;
+        pipeline.beginLayer();
+        drawPrimitives(primitives);
+        pipeline.commitLayer(layerOpacity);
+        return;
+      }
+      if (!shapesPass || !SA.fillerRender) return;
       const params = { ...restParams, color: fill };
       const list = SA.fillerRender.drawList({ type: spec.type, params }, {
         time: t,
@@ -858,9 +891,7 @@ SA.lyricsEngine = (() => {
       pipeline.beginLayer();
       drawPrimitives(list.shapes || []);
       drawTexts(list.texts || []);
-      const base = clip.opacity == null ? 1 : clip.opacity;
-      const inner = innerOpacity == null ? 1 : innerOpacity;
-      pipeline.commitLayer(Math.max(0, Math.min(1, base * inner * envelope)));
+      pipeline.commitLayer(layerOpacity);
     }
 
     function drawBackgroundClip(clip, t, card) {
@@ -870,7 +901,7 @@ SA.lyricsEngine = (() => {
       const style = SA.project.resolveStyle(state.project, '');
       const palette = style && style.palette ? style.palette : projectPalette();
       const colors = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null;
-      if (spec.type === 'shapes' || spec.type === 'pattern') {
+      if (spec.type === 'shapes' || spec.type === 'pattern' || spec.type === 'shapeLayer') {
         drawShapeClip(clip, t, naturalDuration());
         return;
       }
@@ -994,6 +1025,63 @@ SA.lyricsEngine = (() => {
         x1: x1 / width,
         y1: 1 - y0 / height,
       };
+    }
+
+    // The same bounds in frame pixels (y down), split per line. Backdrop shape
+    // clips (background.shapeLayer + followText) are laid out against these.
+    function textBoxesPx(scene, states) {
+      const lines = new Map();
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (let i = 0; i < scene.letters.length; i += 1) {
+        const letter = scene.letters[i];
+        const letterState = states[i];
+        if (!letter || !letterState) continue;
+        if ((letterState.opacity == null ? 1 : letterState.opacity) <= 0.01) continue;
+        const scaleX = Math.abs(letterState.scaleX == null ? 1 : letterState.scaleX);
+        const scaleY = Math.abs(letterState.scaleY == null ? 1 : letterState.scaleY);
+        const halfW = Math.max(6, (letter.local.w * scaleX) / 2 + 6);
+        const halfH = Math.max(6, (letter.size * scaleY) / 2 + 4);
+        const x = letterState.x || 0;
+        const y = letterState.y || 0;
+        x0 = Math.min(x0, x - halfW);
+        x1 = Math.max(x1, x + halfW);
+        y0 = Math.min(y0, y - halfH);
+        y1 = Math.max(y1, y + halfH);
+        const key = letter.lineIdx == null ? 0 : letter.lineIdx;
+        const line = lines.get(key) || { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+        line.x0 = Math.min(line.x0, x - halfW);
+        line.y0 = Math.min(line.y0, y - halfH);
+        line.x1 = Math.max(line.x1, x + halfW);
+        line.y1 = Math.max(line.y1, y + halfH);
+        lines.set(key, line);
+      }
+      if (!Number.isFinite(x0)) return null;
+      return {
+        box: { x0, y0, x1, y1 },
+        lines: [...lines.values()].sort((a, b) => a.y0 - b.y0),
+      };
+    }
+
+    // Text bounds of the beat on screen, for clips that follow the text. The
+    // scene is cached by buildBeatScene and the result is memoised for the
+    // frame, so several clips and the text pass share one evaluation.
+    function textBoxesForClip(t) {
+      const active = activeBeats(state.project, t);
+      if (!active.length) return null;
+      const beat = active[0];
+      const key = `${beat.id}|${t}`;
+      if (state.textBoxCache && state.textBoxCache.key === key) return state.textBoxCache.value;
+      let value = null;
+      const scene = buildBeatScene(state.project, beat, state.assets.fonts || []);
+      if (scene && scene.letters.length) {
+        const result = evaluateBeatState(state.project, beat, scene, t, active);
+        if (result && result.active) value = textBoxesPx(scene, result.letters);
+      }
+      state.textBoxCache = { key, value };
+      return value;
     }
 
     // The shape layer paints in the palette's accent colour unless the post

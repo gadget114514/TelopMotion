@@ -72,6 +72,47 @@ test('the drive maps the beat progress to the trim', () => {
   assert.deepEqual(ops.trimForDrive({ ...spec, drive: 'beat' }, { time: 0.75, bpm: 120 }), [0.1, 0.9, 0.5]);
 });
 
+test('a named shape fits the text box handed in by the engine', () => {
+  const box = { x0: 100, y0: 200, x1: 500, y1: 300 };
+  const opts = { box, progress: 1 };
+  const underline = ops.expand({ shape: 'underline', stroke: 4, padding: 0.1 }, opts);
+  assert.equal(underline.length, 1);
+  assert.equal(underline[0].kind, 'capsule');
+  // padding is a fraction of the shorter box side (100px -> 10px)
+  assert.deepEqual([underline[0].p0.y, underline[0].p1.y], [310, 310]);
+  assert.deepEqual([underline[0].p0.x, underline[0].p1.x], [90, 510]);
+  const boxed = ops.expand({ shape: 'box', stroke: 6, padding: 0, corner: 0.2 }, opts);
+  assert.deepEqual([boxed[0].kind, boxed[0].x, boxed[0].y, boxed[0].w, boxed[0].h], ['rect', 100, 200, 400, 100]);
+  assert.equal(boxed[0].stroke, 6);
+  const ring = ops.expand({ shape: 'ring', stroke: 5, padding: 0 }, opts);
+  assert.equal(ring[0].kind, 'circle');
+  assert.equal(ring[0].ring, 5);
+  assert.equal(ring[0].radius, 200, 'the ring covers the longer box side');
+  const brackets = ops.expand({ shape: 'brackets', stroke: 3, padding: 0 }, opts);
+  assert.equal(brackets.length, 6, 'brackets are two risers and four arms');
+  assert.ok(ops.expand({ shape: 'box' }, {}).length === 0, 'no box on screen means nothing to draw');
+});
+
+test('followText line repeats the shape for every line box', () => {
+  const box = { x0: 0, y0: 0, x1: 400, y1: 100 };
+  const boxes = [box, { x0: 0, y0: 120, x1: 300, y1: 220 }];
+  const block = ops.expand({ shape: 'strike', stroke: 2, padding: 0 }, { box, boxes });
+  assert.equal(block.length, 1);
+  const line = ops.expand({ shape: 'strike', stroke: 2, padding: 0, followText: 'line' }, { box, boxes });
+  assert.equal(line.length, 2);
+  assert.ok(line[1].p0.y > line[0].p0.y, 'the second line sits lower');
+  assert.deepEqual(ops.FOLLOW_MODES, ['block', 'line']);
+});
+
+test('the drive and the dash reach the expanded primitives', () => {
+  const box = { x0: 0, y0: 0, x1: 100, y1: 100 };
+  const half = ops.expand({ shape: 'box', drive: 'enter', trimStart: 0.2, trimEnd: 0.8, dashOn: 0.1, dashOffset: 0.25 }, { box, progress: 0.5 });
+  assert.deepEqual(half[0].trim, [0.2, 0.5, 0]);
+  assert.deepEqual(half[0].dash, [0.1, 0.1, 0.25]);
+  const hold = ops.expand({ shape: 'box', drive: 'hold', speed: 1, trimOffset: 0.5 }, { box, time: 0.25 });
+  assert.deepEqual(hold[0].trim, [0, 1, 0.75]);
+});
+
 test('the shape pass carries the trim, dash, cap and path op', () => {
   const source = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'shapes.js'), 'utf8');
   for (const token of ['u_trim', 'u_dash', 'u_cap', 'u_warp', 'pathParam', 'warpPoint']) {
@@ -81,4 +122,13 @@ test('the shape pass carries the trim, dash, cap and path op', () => {
   assert.ok(source.includes('opts.trim || [0, 1, 0]'), 'the trim default changed');
   assert.ok(source.includes("Array.isArray(opts.dash) ? opts.dash : [0, 0, 0]"), 'the dash default changed');
   assert.ok(source.includes("opts.cap === 'butt' ? 0 : 1"), 'the cap default changed');
+  // every primitive wrapper forwards the shape-op uniforms
+  for (const wrapper of ['rect', 'circle', 'ring', 'capsule', 'polygon']) {
+    const start = source.indexOf(`function ${wrapper}(options)`);
+    assert.ok(start > 0, `shapes.js has no ${wrapper} wrapper`);
+    const body = source.slice(start, source.indexOf('\n    }', start));
+    for (const token of ['trim: opts.trim', 'dash: opts.dash', 'pathOp: opts.pathOp']) {
+      assert.ok(body.includes(token), `${wrapper} does not forward ${token}`);
+    }
+  }
 });

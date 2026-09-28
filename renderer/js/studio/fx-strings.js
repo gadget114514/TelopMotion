@@ -531,7 +531,7 @@
       },
       bgMotion: {
         follow: 'Follow', fade: 'Fade', pop: 'Pop', stamp: 'Stamp', wipe: 'Wipe', spin: 'Spin', grow: 'Grow', none: 'None',
-        flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall',
+        flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall', draw: 'Draw',
       },
       edge: { drip: 'Drip' },
       fill: { ink: 'Ink' },
@@ -555,6 +555,8 @@
       thickness: 'Thickness', wobble: 'Wobble', skip: 'Skip', grow: 'Grow', shape: 'Shape', fade: 'Fade', duration: 'Duration', pulse: 'Pulse', hold: 'Hold',
       style: 'Style', bend: 'Bend', hDistort: 'Horizontal distortion', vDistort: 'Vertical distortion',
       animate: 'Animation', sync: 'Sync', perLetterPhase: 'Per-letter phase', fill: 'Fill amount', max: 'Maximum',
+      followText: 'Follow text', corner: 'Corner radius', dashOn: 'Dash on', dashOff: 'Dash off', dashOffset: 'Dash offset',
+      repeatOffset: 'Repeat offset', pathOp: 'Path op', pathOpAmount: 'Path op amount', pathOpFreq: 'Path op frequency',
     },
     values: {
       cell: 'Cell', em: 'Em', behind: 'Behind', front: 'Front', cycle: 'Cycle', charClass: 'Character class',
@@ -568,7 +570,7 @@
       bend: 'Bend', bulge: 'Bulge', pinch: 'Pinch', taper: 'Taper', shearWave: 'Shear wave', ripple: 'Ripple',
       squash: 'Squash', flag: 'Flag', zigzag: 'Zigzag', arch: 'Arch', fish: 'Fish-eye curve', rise: 'Rise',
       fisheye: 'Fish-eye', inflate: 'Inflate', squeeze: 'Squeeze', twistBlock: 'Block twist', bulgeBlock: 'Block bulge',
-      flagBlock: 'Block flag', waveBlock: 'Block wave',
+      flagBlock: 'Block flag', waveBlock: 'Block wave', pucker: 'Pucker',
     },
   };
   const ADD_JA = {
@@ -580,7 +582,7 @@
       },
       bgMotion: {
         follow: '文字に追従', fade: 'フェード', pop: 'ポップ', stamp: 'スタンプ', wipe: 'ワイプ', spin: '回転', grow: '伸びる',
-        none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下',
+        none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下', draw: '描画',
       },
       edge: { drip: '滴り' },
       fill: { ink: '墨' },
@@ -604,6 +606,8 @@
       thickness: '太さ', wobble: '揺れ', skip: '間引き', grow: '伸び', shape: '形', fade: 'フェード', duration: '長さ', pulse: 'パルス', hold: '保持',
       style: 'スタイル', bend: '曲げ', hDistort: '横ゆがみ', vDistort: '縦ゆがみ',
       animate: 'アニメーション', sync: '同期', perLetterPhase: '文字ごとの位相', fill: '埋める割合', max: '最大',
+      followText: '文字に合わせる', corner: '角の丸み', dashOn: '破線の長さ', dashOff: '破線の間隔', dashOffset: '破線の位置',
+      repeatOffset: 'リピート間隔', pathOp: 'パス変形', pathOpAmount: 'パス変形の量', pathOpFreq: 'パス変形の波長',
     },
     values: {
       cell: 'セル', em: 'em', behind: '文字の後ろ', front: '文字の前', cycle: '巡回', charClass: '文字種',
@@ -617,7 +621,7 @@
       bend: '曲げ', bulge: '膨張', pinch: 'しぼみ', taper: '先細り', shearWave: 'せん断波', ripple: '波紋',
       squash: '押しつぶし', flag: '旗', zigzag: 'ジグザグ', arch: 'アーチ', fish: '魚眼カーブ', rise: '浮き上がり',
       fisheye: '魚眼', inflate: 'ふくらみ', squeeze: '圧縮', twistBlock: '行のねじれ', bulgeBlock: '行の膨張',
-      flagBlock: '行の旗', waveBlock: '行の波',
+      flagBlock: '行の旗', waveBlock: '行の波', pucker: 'ふくらみ',
     },
   };
 
@@ -1036,7 +1040,7 @@
   };
 
   const ADD_SHAPE_EN = {
-    types: { post: { shapeLayer: 'Shape layer' } },
+    types: { post: { shapeLayer: 'Shape layer' }, background: { shapeLayer: 'Shape layer (clip)' } },
     params: {
       shape: 'Shape', drive: 'Drive', trimStart: 'Trim start', trimEnd: 'Trim end', trimOffset: 'Trim offset',
       feather: 'Feather', stroke: 'Stroke width', padding: 'Padding', repeat: 'Repeats', repeatScale: 'Repeat scale',
@@ -1048,7 +1052,7 @@
     },
   };
   const ADD_SHAPE_JA = {
-    types: { post: { shapeLayer: 'シェイプレイヤー' } },
+    types: { post: { shapeLayer: 'シェイプレイヤー' }, background: { shapeLayer: 'シェイプクリップ' } },
     params: {
       shape: '形', drive: '動かす基準', trimStart: 'トリム開始', trimEnd: 'トリム終了', trimOffset: 'トリム位置',
       feather: 'ぼかし', stroke: '線幅', padding: '余白', repeat: 'リピート数', repeatScale: 'リピート倍率',
@@ -1060,7 +1064,7 @@
     },
   };
   const ADD_SHAPE_ES = {
-    types: { post: { shapeLayer: 'Capa de forma' } },
+    types: { post: { shapeLayer: 'Capa de forma' }, background: { shapeLayer: 'Capa de forma (clip)' } },
     params: {
       shape: 'Forma', drive: 'Impulso', trimStart: 'Inicio del trazado', trimEnd: 'Fin del trazado', trimOffset: 'Desfase del trazado',
       feather: 'Suavizado', stroke: 'Grosor', padding: 'Margen', repeat: 'Repeticiones', repeatScale: 'Escala de repetición',
@@ -1072,7 +1076,7 @@
     },
   };
   const ADD_SHAPE_FR = {
-    types: { post: { shapeLayer: 'Calque de forme' } },
+    types: { post: { shapeLayer: 'Calque de forme' }, background: { shapeLayer: 'Calque de forme (clip)' } },
     params: {
       shape: 'Forme', drive: 'Déclencheur', trimStart: 'Début du tracé', trimEnd: 'Fin du tracé', trimOffset: 'Décalage du tracé',
       feather: 'Adoucissement', stroke: 'Épaisseur', padding: 'Marge', repeat: 'Répétitions', repeatScale: 'Échelle de répétition',
@@ -1084,7 +1088,7 @@
     },
   };
   const ADD_SHAPE_RU = {
-    types: { post: { shapeLayer: 'Слой фигуры' } },
+    types: { post: { shapeLayer: 'Слой фигуры' }, background: { shapeLayer: 'Слой фигуры (клип)' } },
     params: {
       shape: 'Фигура', drive: 'Привод', trimStart: 'Начало обводки', trimEnd: 'Конец обводки', trimOffset: 'Смещение обводки',
       feather: 'Смягчение', stroke: 'Толщина', padding: 'Отступ', repeat: 'Повторы', repeatScale: 'Масштаб повторов',

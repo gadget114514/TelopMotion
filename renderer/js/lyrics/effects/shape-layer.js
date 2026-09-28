@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../shape-ops'));
   else {
     root.SA = root.SA || {};
-    root.SA.shapeLayer = factory(root.SA.fx);
+    root.SA.shapeLayer = factory(root.SA.fx, root.SA.shapeOps);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx) {
+})(typeof self !== 'undefined' ? self : this, function (fx, shapeOps) {
   'use strict';
 
   // A shape drawn over the finished frame: underline, box, brackets, rings,
@@ -12,7 +12,14 @@
   // it on (an underline sweeping in, a frame being drawn, a ring bursting).
   // The shape follows the text block: the engine hands the current text bounds
   // in through `context.textBox`.
-  const SHAPES = ['underline', 'strike', 'box', 'brackets', 'circle', 'ring', 'burst', 'cross', 'diagonal'];
+  //
+  // The same vocabulary is registered as `background.shapeLayer`, a backdrop
+  // clip the user places on the timeline: shape-ops expands it against the
+  // current text box (`followText: block / line`) and the GL shape pass draws
+  // it behind the lyrics.
+  const SHAPES = (shapeOps && shapeOps.SHAPES) || ['underline', 'strike', 'box', 'brackets', 'circle', 'ring', 'burst', 'cross', 'diagonal'];
+  const FOLLOW_MODES = (shapeOps && shapeOps.FOLLOW_MODES) || ['block', 'line'];
+  const PATH_OPS = (shapeOps && shapeOps.PATH_OPS) || ['none', 'wiggle', 'zigzag', 'pucker', 'twist'];
   const SHAPE_CODES = {};
   SHAPES.forEach((name, index) => {
     SHAPE_CODES[name] = index;
@@ -75,6 +82,42 @@
     },
   });
 
+  // The same shape layer as a backdrop clip: the user places it on the
+  // background / backdrop track and it fits the current text (block or line).
+  fx.register({
+    group: 'background',
+    type: 'shapeLayer',
+    tags: ['pro', 'shape'],
+    pack: 'pro',
+    cost: 3,
+    params: [
+      { key: 'shape', kind: 'select', options: SHAPES, default: 'box', section: 'shape' },
+      { key: 'followText', kind: 'select', options: FOLLOW_MODES, default: 'block', section: 'shape' },
+      { key: 'drive', kind: 'select', options: DRIVES, default: 'enter', section: 'shape' },
+      { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.6, section: 'shape' },
+      { key: 'trimStart', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'trimEnd', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'shape' },
+      { key: 'trimOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'dashOn', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'dashOff', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'dashOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'pathOp', kind: 'select', options: PATH_OPS, default: 'none', section: 'shape' },
+      { key: 'pathOpAmount', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, section: 'shape' },
+      { key: 'pathOpFreq', kind: 'number', min: 0.2, max: 8, step: 0.1, default: 2, section: 'shape' },
+      { key: 'stroke', kind: 'number', min: 0.5, max: 40, step: 0.5, default: 4, section: 'look' },
+      { key: 'corner', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.12, section: 'look' },
+      { key: 'padding', kind: 'number', min: -0.2, max: 0.6, step: 0.01, default: 0.08, section: 'look' },
+      { key: 'repeat', kind: 'int', min: 1, max: 12, step: 1, default: 1, section: 'look' },
+      { key: 'repeatOffset', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, section: 'look' },
+      { key: 'repeatScale', kind: 'number', min: 0.1, max: 2, step: 0.05, default: 1, section: 'look' },
+      { key: 'repeatRotate', kind: 'number', min: -180, max: 180, step: 5, default: 0, section: 'look' },
+      { key: 'repeatOpacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5, section: 'look' },
+      { key: 'cap', kind: 'select', options: ['butt', 'round'], default: 'round', section: 'look' },
+      { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'look' },
+      { key: 'color', kind: 'color', default: null, section: 'look' },
+    ],
+  });
+
   fx.postExtensions = fx.postExtensions || {};
   fx.postExtensions.shapeLayer = {
     code: 46,
@@ -108,5 +151,5 @@
     },
   };
 
-  return { SHAPES, SHAPE_CODES, DRIVES };
+  return { SHAPES, SHAPE_CODES, DRIVES, FOLLOW_MODES, PATH_OPS };
 });

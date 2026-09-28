@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../rng'), require('../easing'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../rng'), require('../easing'), require('../../color'), require('../shape-ops'));
   else {
     root.SA = root.SA || {};
-    root.SA.textBg = factory(root.SA.fx, root.SA.rng, root.SA.easing, root.SA.color);
+    root.SA.textBg = factory(root.SA.fx, root.SA.rng, root.SA.easing, root.SA.color, root.SA.shapeOps);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, rng, easing, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, rng, easing, color, shapeOps) {
   'use strict';
 
   // Shape indices must match the constants used by BG_FRAG.
@@ -56,6 +56,17 @@
     { key: 'varySize', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
     { key: 'varyOffset', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
     { key: 'varyRotation', kind: 'number', min: 0, max: 180, step: 1, default: 0 },
+    // trim / dash cut the outline by its arc length; `stroke` draws the outline
+    // and `fill` the interior, so `bgMotion.draw` can trace the line first and
+    // let the shape appear when the line is complete
+    { key: 'stroke', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0 },
+    { key: 'fill', kind: 'number', min: 0, max: 1, step: 0.01, default: 1 },
+    { key: 'trimStart', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+    { key: 'trimEnd', kind: 'number', min: 0, max: 1, step: 0.01, default: 1 },
+    { key: 'trimOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
+    { key: 'dashOn', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+    { key: 'dashOff', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+    { key: 'dashOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
   ];
 
   const TYPE_PARAMS = {
@@ -111,7 +122,7 @@
     fall: [{ key: 'from', kind: 'number', min: 0.05, max: 1.5, step: 0.01, default: 0.6 }],
   };
 
-  const MOTIONS = ['follow', 'fade', 'pop', 'stamp', 'wipe', 'spin', 'grow', 'none', 'flicker', 'bleed', 'float', 'fall'];
+  const MOTIONS = ['follow', 'fade', 'pop', 'stamp', 'wipe', 'spin', 'grow', 'none', 'flicker', 'bleed', 'float', 'fall', 'draw'];
 
   for (const motion of MOTIONS) {
     fx.register({
@@ -119,6 +130,9 @@
       type: motion,
       tags: motion === 'follow' || motion === 'none' ? ['basic'] : [],
       params: [...MOTION_PARAMS, ...(MOTION_EXTRA[motion] || [])],
+      // the extended motions stay behind the pro pack so the earlier generated
+      // pools (FX 400 / 800) keep their exact type list
+      pack: ['draw'].includes(motion) ? 'pro' : null,
       cost: ['flicker', 'bleed'].includes(motion) ? 1 : 0,
     });
   }
@@ -232,6 +246,12 @@
     const holdMode = motionParams.hold || 'none';
     const holdAmount = clamp01(motionParams.holdAmount == null ? 0.3 : motionParams.holdAmount);
     const seed = num(opts.seed, 12345);
+    // trim / dash cut the outline by its arc length; the trim range is static
+    // unless `bgMotion.draw` grows it
+    const trimRange = shapeOps ? shapeOps.normalizeTrim(shapeParams) : [0, 1, 0];
+    const dash = shapeOps ? shapeOps.normalizeDash(shapeParams) : [0, 0, 0];
+    let stroke = Math.max(0, Math.min(0.5, num(shapeParams.stroke, 0)));
+    const fillBase = clamp01(shapeParams.fill == null ? 1 : shapeParams.fill);
     const states = [];
     for (let index = 0; index < letters.length; index += 1) {
       const entryRef = letters[index];
@@ -305,6 +325,9 @@
         const squash = bump(pin, 0.9, 0.1);
         scaleY *= 1 - 0.15 * squash;
         opacity *= Math.min(1, pin * 5);
+      } else if (mode === 'draw') {
+        // the outline is traced first, then the fill appears (see below)
+        opacity *= e > 0.001 ? 1 : 0;
       }
       if (mode === 'follow' || exitMode === 'withText') {
         opacity *= num(state.opacity, 1);
@@ -353,6 +376,14 @@
       const rotAdd = vary && vary.rotAdd ? vary.rotAdd : 0;
       const varyColor = vary && vary.color ? vary.color : null;
       const wobbleSeed = (num(shapeParams.seedShift, 0) * 131 + index * 17.13) % 1000;
+      // the draw motion walks the trim end around the outline and only fills
+      // the shape once the line is complete
+      let trim = trimRange;
+      let fill = fillBase;
+      if (mode === 'draw') {
+        trim = [trimRange[0], trimRange[0] + (trimRange[1] - trimRange[0]) * smooth, trimRange[2]];
+        fill = fillBase * clamp01((smooth - 0.6) / 0.4);
+      }
       states.push({
         sizeX: width * sizeMul[0],
         sizeY: height * sizeMul[1],
@@ -370,6 +401,10 @@
         scaleWithLetter: shapeParams.scaleWithLetter !== false,
         fgColor: vary && vary.fgColor ? vary.fgColor : null,
         params: shapeParams,
+        trim,
+        dash,
+        stroke: mode === 'draw' && stroke <= 0.001 ? 0.07 : stroke,
+        fill,
       });
     }
     return { unit, type: shapeInstance.type, shapeIndex: typeIndex, motion: mode, states, params: shapeParams, motionParams };

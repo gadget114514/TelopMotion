@@ -1244,26 +1244,29 @@ SA.inspector = (() => {
     body.appendChild(summary);
 
     const spec = clip.spec || { type: 'none', params: {} };
+    // `shapes` / `pattern` (and the pro primitives) live in the fx background
+    // group; `shapeLayer` is the user-placeable shape clip built by shape-ops.
+    const fxBackground = isBackground || spec.type === 'shapeLayer';
     const usedTypes = isBackground
-      ? SA.fx.list('background').map((descriptor) => descriptor.type)
-      : ['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []);
+      ? SA.fx.list('background', UI_PACKS).map((descriptor) => descriptor.type)
+      : [...new Set(['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []).concat('shapeLayer'))];
     const typeSelect = selectControl(
       spec.type || 'none',
       [...new Set(usedTypes)],
-      (type) => (isBackground ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type)),
+      (type) => (isBackground || type === 'shapeLayer' ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type)),
       (type) => {
-        const params = isBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(type) : {};
+        const params = isBackground || type === 'shapeLayer' ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(type) : {};
         SA.store.commands.updateClip(clip.id, { spec: { type, params } });
       }
     );
     body.appendChild(fieldRow(t('studio.inspector.type'), typeSelect));
 
-    const descriptor = isBackground ? SA.fx.get('background', spec.type) : { params: SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : [] };
-    const defaults = isBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
+    const descriptor = fxBackground ? SA.fx.get('background', spec.type) : { params: SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : [] };
+    const defaults = fxBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
     const params = { ...defaults, ...(spec.params || {}) };
     for (const param of SA.controls.paramEntries(descriptor)) {
       const value = params[param.key] != null ? params[param.key] : param.default;
-      const control = SA.controls.paramControl(isBackground ? 'background' : kind, param, value, (next) => {
+      const control = SA.controls.paramControl(fxBackground ? 'background' : kind, param, value, (next) => {
         SA.store.commands.updateClip(
           clip.id,
           { spec: { ...spec, params: { ...params, [param.key]: next } } },

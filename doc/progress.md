@@ -372,3 +372,16 @@ FX 800 の800デモを**動きの大きさ**で分類し、**テーマと5軸**�
 - テスト: `scripts/test/{selector,shape-layer,axes,ae-primitives,staged-looks}.test.js`。`fx-i18n` は `packs: 'all'` で全パックを検査。全 362 件パス。
 - 検証: `npm run check`（134ファイル）、`npm test`（362件）、`SA_SMOKE=1 SA_SMOKE_AESTAGE=1`（glError 0・trackingOk・drawOk・コンタクトシート `snapshot/aestage-sheet.png`）、`npm run fx800` のカタログ不変、`node scripts/effects-csv.js`（275型・説明の欠け0）。
 - 残り: Phase 3 の残り（`shape-ops.js` のリピーター/パス変形、`background.shapeLayer` のクリップ化と `followText`、文字背景の trim/dash、`gl/shapes.js` の弧長パラメータ）。
+
+## 追加: シェイプクリップと文字背景の描画モーション（このコミット）
+
+Phase 3 の残りのうち、ユーザーがタイムラインから置けるシェイプクリップと、文字背景の線が描かれて現れる動き。
+
+- `renderer/js/lyrics/shape-ops.js`: `expand` に名前付きシェイプ（`SHAPES`: underline / strike / box / brackets / circle / ring / burst / cross / diagonal）を追加。`followText: block` はブロックの文字 bbox、`line` は行ごとの bbox に合わせ、`padding`（短辺比）・`corner`・`stroke` を反映して低レベルプリミティブへ展開する。`dashOn / dashOff / dashOffset` を正規化し、`drive`（enter / exit / hold / beat）でトリムを進捗へ写す。画面に文字が無いときは空を返す。
+- `renderer/js/lyrics/effects/shape-layer.js`: `background.shapeLayer`（pack `pro`）を登録。post と同じ形9種に `followText`・`dash*`・`pathOp*`・`corner`・`repeatOffset` を加えたパラメータを持つ。`followText`・`SHAPES`・`PATH_OPS` は shape-ops と共有。
+- `renderer/js/lyrics/engine.js`: `drawShapeClip` が `spec.type === 'shapeLayer'` のとき `SA.shapeOps.expand` でクリップを展開し、シェイプパスでテキストの背後へ描く。`textBoxesPx` / `textBoxesForClip` が可視文字の bbox（px・行ごと）を評価して渡す（フレーム内で1回だけ評価するメモ化つき）。`drawPrimitives` は ring 太さ付きの circle を `ring` として描き、`gl/shapes.js` の各ラッパー（rect / circle / ring / capsule / polygon）は `trim / dash / cap / pathOp` を `drawShape` へ転送する。`drawBackgroundClip` は `shapeLayer` もシェイプ経路へ回す。
+- Studio: 背景クリップの種類に拡張パック（`UI_PACKS`）を含め、タイムラインの右クリック「種類を変更」を背景／後景クリップにも追加（背景は background プリミティブ全種、後景はフィラータイプ＋シェイプクリップ）。`fx-strings.js` に型・パラメータ・値のラベルを5言語で追加。
+- `renderer/js/lyrics/effects/text-bg.js`: `bgShape` に `stroke`（輪郭の太さ）・`fill`（内部の塗り）・`trimStart / trimEnd / trimOffset`・`dashOn / dashOff / dashOffset` を追加し、状態（bgState 5→7行目）へ載せる。`bgMotion.draw`（pack `pro`）はトリムの終端を進捗で伸ばして輪郭を描き、線が引き終わったら内部を埋める（`fill` は 60% から）。輪郭が未指定でも線が見えるよう最小の太さを入れる。
+- `renderer/js/lyrics/gl/{passes,shaders}.js`: bgState を7行へ拡張（行5 = trim/線幅、行6 = dash/fill）。`BG_FRAG` は `shapeParam`（閉じた形は中心角、帯は長軸）で弧長位置を出し、トリム・破線で輪郭と塗りを切り、`stroke` の帯を合成する。既定値は恒等なので既存の描画は不変。
+- テスト: `shape-ops` に名前付きシェイプ／followText／drive・dash の展開、`shape-layer` に background 登録とエンジン／Studio の配線、`text-bg` に trim/dash/stroke の状態と draw（輪郭→塗り）・bgState 7行とシェーダの検査を追加。全 377 件パス。
+- 検証: `npm run check`（135ファイル）、`npm test`（377件）、`node scripts/effects-csv.js`（277型・説明の欠け0）。`test/fx400.catalog.json` / `test/fx400.telopmotion.json` は bgShape の新パラメータの既定値（恒等）を反映して再生成（既定値は従来と同じなので見た目は不変）。Electron スモーク（`SA_SMOKE_AESTAGE` など）は未実施。

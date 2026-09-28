@@ -11356,7 +11356,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11415,7 +11423,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11474,7 +11490,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11533,7 +11557,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11592,7 +11624,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11651,7 +11691,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11710,7 +11758,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11769,7 +11825,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11829,6 +11893,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "seedShift": 0
           },
           "motion": {}
@@ -11888,7 +11960,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -11948,6 +12028,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "spikes": 0.5,
             "seedShift": 0
           },
@@ -12009,6 +12097,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "count": 3,
             "seedShift": 0
           },
@@ -12069,7 +12165,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12128,7 +12232,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12188,6 +12300,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "jag": 0.4,
             "seedShift": 0
           },
@@ -12249,6 +12369,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "seedShift": 0
           },
           "motion": {}
@@ -12308,7 +12436,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12367,7 +12503,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12426,7 +12570,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12485,7 +12637,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12544,7 +12704,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12603,7 +12771,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12662,7 +12838,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12721,7 +12905,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12781,6 +12973,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "seedShift": 0
           },
           "motion": {}
@@ -12840,7 +13040,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -12900,6 +13108,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "spikes": 0.5,
             "seedShift": 0
           },
@@ -12961,6 +13177,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "count": 3,
             "seedShift": 0
           },
@@ -13021,7 +13245,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -13080,7 +13312,15 @@
             ],
             "varySize": 0,
             "varyOffset": 0,
-            "varyRotation": 0
+            "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
           },
           "motion": {}
         }
@@ -13140,6 +13380,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "jag": 0.4,
             "seedShift": 0
           },
@@ -13201,6 +13449,14 @@
             "varySize": 0,
             "varyOffset": 0,
             "varyRotation": 0,
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0,
             "seedShift": 0
           },
           "motion": {}

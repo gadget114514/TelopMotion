@@ -3,8 +3,8 @@
   "version": 2,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-09-28T02:09:03.265Z",
-    "updatedAt": "2026-09-28T02:09:03.265Z",
+    "createdAt": "2026-09-28T16:30:27.607Z",
+    "updatedAt": "2026-09-28T16:30:27.607Z",
     "lang": "ja"
   },
   "output": {
@@ -8262,7 +8262,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8302,7 +8310,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8342,7 +8358,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8382,7 +8406,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8422,7 +8454,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8462,7 +8502,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8502,7 +8550,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8542,7 +8598,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8583,6 +8647,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "seedShift": 0
         },
         "motion": {}
@@ -8623,7 +8695,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8664,6 +8744,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "spikes": 0.5,
           "seedShift": 0
         },
@@ -8706,6 +8794,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "count": 3,
           "seedShift": 0
         },
@@ -8747,7 +8843,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8787,7 +8891,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8828,6 +8940,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "jag": 0.4,
           "seedShift": 0
         },
@@ -8870,6 +8990,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "seedShift": 0
         },
         "motion": {}
@@ -8910,7 +9038,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8950,7 +9086,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -8990,7 +9134,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9030,7 +9182,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9070,7 +9230,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9110,7 +9278,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9150,7 +9326,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9190,7 +9374,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9231,6 +9423,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "seedShift": 0
         },
         "motion": {}
@@ -9271,7 +9471,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9312,6 +9520,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "spikes": 0.5,
           "seedShift": 0
         },
@@ -9354,6 +9570,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "count": 3,
           "seedShift": 0
         },
@@ -9395,7 +9619,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9435,7 +9667,15 @@
           ],
           "varySize": 0,
           "varyOffset": 0,
-          "varyRotation": 0
+          "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
         },
         "motion": {}
       }
@@ -9476,6 +9716,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "jag": 0.4,
           "seedShift": 0
         },
@@ -9518,6 +9766,14 @@
           "varySize": 0,
           "varyOffset": 0,
           "varyRotation": 0,
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0,
           "seedShift": 0
         },
         "motion": {}
