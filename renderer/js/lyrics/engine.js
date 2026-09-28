@@ -157,7 +157,13 @@ SA.lyricsEngine = (() => {
     }
 
     function buildBeatScene(project, beat, fonts) {
-      return SA.lyricsScene.buildScene(project, beat, fonts, { direction: sceneDirection(project, beat) });
+      // The scene is built in the pixels of the frame being rendered. The
+      // preview may run below output resolution (quality: half / quarter), so
+      // the scene scale keeps text, motion, overlay and GL coordinates aligned.
+      const output = project && project.output ? project.output : null;
+      const outputWidth = output && output.width ? output.width : 0;
+      const scale = outputWidth > 0 ? state.width / outputWidth : 1;
+      return SA.lyricsScene.buildScene(project, beat, fonts, { direction: sceneDirection(project, beat), scale });
     }
 
     function allBeats(project) {

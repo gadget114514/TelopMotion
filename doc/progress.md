@@ -260,3 +260,50 @@ P1–P13 と P12 の残り（fx 翻訳表・スクリーンショット・メデ
 新セッション開始時の指示例: 「`doc/app-design.md` と `doc/progress.md` を読んで、P10b を実装して。完了したら npm run check / npm test / Electron smoke で検証し、1コミットにまとめて」。
 
 なお、作業上の注意（重要）: 非 ASCII を含むファイルを PowerShell の文字列置換で編集しないこと（文字化けする）。Node のスクリプトか edit/write ツールを使う。
+
+## 追加: 後景パターンの1404種ライブラリ（このコミット）
+
+後景（backdrop）トラックの `pattern` のモードが4種類だけで、長い曲や FX 400/800 のデモで同じタイルに見える問題への対応。**大きさ・本数の段階差を別のパターンとして数え、全種類をアニメーションさせる**。
+
+- `renderer/js/lyrics/pattern-variants.js`（新規・UMD・依存なし）: 決定的なパターン種ライブラリ。`mode`（grid / dots / stripes / rings / triangles / diamonds / hexes / rain / checks / polka / sineCurve / waves / randomFill）× `size`（log1.4 の9段階 0.2–2.95）× `count`（4–120 の12段階）= **1404種類**。`at(n)` / `count()` / `variants()` / `keyOf` を公開。速度は 0.25 / 0.5 / 0.9 / 1.6 のみで**静止する種類を作らない**（後景が必ず動く）。不透明度は署名には含めず、隣の種類が同じに見えないよう巡回させる。
+- `renderer/js/lyrics/filler-render.js` の `patternShapes`: `size` を全モードで効かせる（grid/checks/randomFill はタイルの塗り比率、stripes はデューティ比、dots は半径、polka は水玉の半径、rings は太さ、triangles/diamonds/hexes は多角形の半径、rain は筋の長さ、sineCurve/waves は振幅と線・帯の太さ）。`count` は要素数。新モードはチェッカー（明滅が走る）、水玉（横に流れる）、サインカーブ（位相が流れる）、ウェーブ（太い帯がうねる）、ランダムフィル（セルごとに明滅するモザイク）。どの段階でも潰れず、大きさを変えるだけでも別のパターンに見える。
+- `renderer/js/lyrics/moods.js`: 後景の `pattern` はライブラリから選ぶ。`rerollClipSpec(kind, { index })` に通し番号を渡すと重複なしに巡回し、番号なし（手動再抽選）はライブラリからランダムに1つ選ぶ。
+- `renderer/js/studio/app.js`: おまかせの後景クリップ生成でキュー番号＋seed オフセットを渡す（400キューの曲で1404種から一巡）。
+- `scripts/fx400mix.js` / `scripts/fx800.js`: デモの背景パターンにも同じライブラリを適用（背景プールの pattern は1エントリに統合。支えの背景はデモ n が `at(n)` の mode/size/count/speed を取り、見本（headline）の pattern は実演するモード＋既定値で固定）。400デモ全体でも、800デモ全体でも同じ背景が出ない（各200デモ区切りの中も重複0）。md 一覧は `背景:パターン(ひし形 0.2x4)` のように段階を表示する。
+- `scripts/distinct-count.js`: `background.pattern` を「1404種＋基本形」= 1405 シグネチャとして数える。`test/distinct-count.md` は **background 1450 / 合計 2412**。受け入れ条件に「後景パターン400以上」を追加（`doc/repeat-design.md` §8.1 / §8.4）。
+- テスト: `scripts/test/pattern-variants.test.js`（1404種・宣言レンジ内・巡回・**全モードが正の速度で動くこと**・描画の段階差・後景生成の重複なし）、`fx400mix.test.js` / `fx800.test.js` に背景パターンの重複なし、`distinct-count.test.js` に `background >= 400`。
+- 検証: `npm run check`（116 files）、`npm test`（300 tests）、`npm run distinct`（background 1450 / total 2412 / acceptance ok）。`node scripts/fx400mix.js build` / `node scripts/fx800.js build` でカタログとプロジェクトを再生成（出力先 `demo/`、最小ペア距離 6.7、背景パターンの重複0）。
+
+## 追加: デモの文字サイズ・文字色のはっきりした段階（このコミット）
+
+FX 400 MIX / FX 800 のデモで「色とフォントサイズの違いが見えない」問題への対応。デモの文字サイズが 84–96 に固まり、文字色もほぼ白（パレットのテキスト役）ばかりだった。
+
+- `scripts/fx400mix.js`: `SIZE_STOPS = [56, 70, 88, 110, 138]`（約 1.3 倍刻み。`doc/repeat-design.md` §2 と同じ間隔）と `FILL_STEPS`（アクセント色 / テキスト色 / アクセント色2 と各グラデ、計 6 役）を追加。デモ番号 n で巡回し、`SIZE_STRIDE=2` なので隣のデモとは最低 2 段（1.56 倍）違う大きさになる。`keepOnScreen` は自由値を丸めるのをやめ、収まらないときはラダーの 1 段下へ落とす（前のデモと同じ大きさになるときだけもう 1 段下げる）。背景パレットも前のデモと同じ名前なら再抽選する。
+- 署名に `size` / `color` スロットを追加（`SLOT_WEIGHTS.size = 1.2`、`.color = 0.9`）。md 一覧の「組み合わせ」に `サイズ` と `色` を表示。
+- テスト: `fx400mix.test.js` / `fx800.test.js` に「サイズはラダーの段のみ・5 段すべて出る・隣はサイズと色の両方は同じにならない」を追加（400 デモで隣接同サイズ 8/399・同色 0）。
+- 生成物の置き場: FX 400 MIX / FX 800 のプロジェクト・SRT・カタログ・一覧・プレビューは `demo/`（`demo/README.md` に索引）。`main.js` に `SA_SMOKE_FXDEMO` を追加し、デモの先頭 16 キューをフル解像度で撮って 4×4 のコンタクトシート `demo/fx800-preview-<part>.png` を書き出す。
+- 分かった問題（修正済み）: Studio のプレビュー品質 half / quarter では、テキストが出力解像度の座標のまま縮小フレームに描かれて 2〜4 倍に拡大されていた（同じキューでも full と quarter で大きさが違った）。
+- 修正: `renderer/js/lyrics/scene.js` の `buildScene` に `scale` を追加し、シーン全体（文字サイズ・行送り・`maxWidth`・各レターの `local`）を「実際に描くフレームの画素」で組むようにした。シーンはスケールごとにキャッシュする。`engine.js` と `canvas2d-fallback.js` は `state.width / project.output.width` を渡す（出力解像度の書き出しでは 1 のままで従来どおり）。これでモーション評価の frame・GL の `u_resolution`・オーバーレイの当たり判定がすべて同じ座標系になる。
+- 検証: `SA_SMOKE=1 SA_SMOKE_QUALITY=1` を追加（同一キューを full / half / quarter で撮り、縮小フレームを full の縮小コピーと画素比較）。修正前は mismatch 3.5%（half）/ 7.1%（quarter）・インク量 3.5〜6 倍で不合格、修正後は 0.2% / 0.5% で合格。`scripts/test/scene-scale.test.js` でシーンのスケール（全寸法が比例・スケールごとのキャッシュ・不正値は 1）を単体テスト。
+- 検証: `npm run check`（115 files）、`npm test`（293 tests）、`node scripts/fx400mix.js build` / `node scripts/fx800.js build`（出力 `demo/`、最小ペア距離 6.7）、`SA_SMOKE=1 SA_SMOKE_FXDEMO=1`（4 プロジェクト分のプレビュー、glError 0）。縮小プレビューの座標ずれもこの作業で修正（`scene.js` の `scale`、`SA_SMOKE_QUALITY`）。
+
+## 追加: 縮小プレビュー（half / quarter）の座標系を修正（このコミット）
+
+プレビュー品質を half / quarter にすると、テキストだけ出力解像度（1920×1080 など）の座標で組まれ、縮小フレームに 2〜4 倍の大きさで描かれていた（ハンドル・オーバーレイ・グリッドも同様にずれる）。
+
+- `renderer/js/lyrics/scene.js`: `buildScene(project, beat, fonts, { scale })` を追加。文字サイズ・行送り・`maxWidth`・`blockBBox`・各レターの `local` を、実際に描くフレームの画素で組む。スケールはシーンキャッシュのキーに含め、非正の値は 1 に落とす。
+- `renderer/js/lyrics/engine.js` / `canvas2d-fallback.js`: `state.width / project.output.width` を `scale` として渡す（出力解像度の書き出しは従来どおり 1）。これでモーション評価の `frame`・GL の `u_resolution`・オーバーレイの座標が一致する。**画面収録の 720p / 1440p 書き出しも同じ式で正しくなる**（エクスポート用エンジンは出力解像度と別のサイズで作られるため）。
+- `main.js`: `SA_SMOKE_QUALITY` を追加。同じキューを full / half / quarter で撮り、縮小フレームを full の縮小コピーと画素比較して `SMOKE_QUALITY=` に出す（mismatch < 2%、インク量差 < 1% で合格）。修正前は half 3.5% / quarter 7.1% で不合格、修正後は 0.2% / 0.5% で合格。`SA_SMOKE_LYRICS` の画素サンプリングも capture 座標 1:1 に合わせた（縮小プレビューでも正しくサンプルできる）。
+- テスト: `scripts/test/scene-scale.test.js`（全寸法が比例・スケールごとにキャッシュ・不正値は 1）。
+- 検証: `npm run check`（118 files）、`npm test`（302 tests）、`SA_SMOKE=1 SA_SMOKE_QUALITY=1`（full/half/quarter 合格、glError 0）、`SA_SMOKE=1 SA_SMOKE_LYRICS=1`（quarter サイズの capture でもグリフと穴が一致）、`SA_SMOKE=1 SA_SMOKE_FXDEMO=1 SA_SMOKE_FXDEMO_SCALE=quarter`（コンタクトシートが full と同配置）。
+
+## 追加: 800ルックのおまかせ（このコミット）
+
+FX 800 の800デモを**動きの大きさ**で分類し、**テーマと5軸**に結びつけて、`おまかせ` の抽選プールにする。流れは「5軸とテーマを決める → 800から1ルックを抽選 → 見た目の構造はそのまま適用 → パレットと文字を軸で微調整」。
+
+- `scripts/looks-classify.js`（新規）: 各デモを `SA.motion` の実測にかけ、ビートの9フレーム標本からレターの移動・拡大縮小・回転・奥行き・変形の**最大振幅**を測る（基準状態に依存しない総当たり比較なので、円形配置のような「静止しているが位置が違う」見た目を動きと誤認しない）。振幅は `MOTION_REF = 1.6` で 0–1 に正規化し、**静止 / 小 / 中 / 大 / 特大**の5段階に分類（800デモで各バケットに十分な数が入る）。5軸は、タイプ特性（`moods.TRAITS`）・登場/退場/保持の時間・構造（repeat の本数、文字背景、スタック数、配置、文字サイズ）・背景パレットの明度から導出。テーマ（ジャンル10種）への適合度は軸距離の指数＋元がそのジャンルのデモなら重み1。
+- `renderer/js/lyrics/looks.js`（新規・UMD）: 実行時プール。`load()` が `renderer/data/fx800.looks.json` を読む（Electron は `platform.readAsset('data/…')`、Web は fetch。`main.js` の `ASSET_ROOTS` に `data` を追加）。`pick({axes, genre, seed, exclude})` は「energy は実測の動き、残り4軸は特性、テーマは倍率」の重み付き抽選。`compose(entry, {axes, seed, genre})` は構造をデモのままにし、**色パレットと文字（サイズ/字間/太さ）を軸から生成**したスタイルと背景クリップを返す（フォントはデモのものを残す）。`stripDefaults` / `expand` は効果グループをレジストリ既定値との**差分**で保存・復元する（`type` は既定と同じでも保持。落とすと復元時に別タイプの既定が当たる）。
+- `scripts/fx800.js build`: カタログ生成後に分類を実行し、`renderer/data/fx800.looks.json`（差分エンコード、約0.8MB）を書き出す。`demo/fx800.md` には各デモの動きの段階（例: 中 (0.87)）と凡例を追加。
+- `renderer/js/studio/app.js` のおまかせ: 抽選の単位は**曲全体で1ルック**。キューごとの enter/exit 生成はやめて見た目の一貫性を守り、ビートのサイズ揺らぎと稀な拍の脈動だけ残す。再ロールは直前のルックを除外して引き直す。プールが読めないときは従来の生成のみにフォールバック。トーストは `studio.toast.autoDirectedLook`（5言語）でルック番号と名前を表示し、`styleMode.look` に番号・名前・動きバケットを保存する。
+- テスト: `scripts/test/looks.test.js`（800件の分類・全バケット使用・軸/テーマの範囲とソート・カタログとの差分同期と再分類の一致・expand の復元・seed 再現性と多様性・軸とテーマへの追従・除外と全除外・compose の微調整）。
+- 検証: `npm run check`（117 files）、`npm test`（300 tests）、`SA_SMOKE=1 SA_SMOKE_RANDOM=1`（look No.252 `enter.flip3D`、autoLookCount 800、autoLookMatch true、autoEnterKinds 1 / autoExitKinds 1、glError 0）。`node scripts/fx800.js build` は出力先を一時ディレクトリにして、looks と動き列つき md の生成を確認。

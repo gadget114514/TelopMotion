@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants) {
   'use strict';
 
   const AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
@@ -584,16 +584,28 @@
 
   const CLIP_MODES = {
     shapes: ['circles', 'polygons', 'lines', 'burst', 'grid', 'orbit'],
-    pattern: ['grid', 'dots', 'stripes', 'rings'],
+    pattern: ['grid', 'dots', 'stripes', 'rings', 'triangles', 'diamonds', 'hexes', 'rain', 'checks', 'polka', 'sineCurve', 'waves', 'randomFill'],
     particles: ['rise', 'fall', 'drift', 'vortex'],
     spectrum: ['bars', 'radial', 'blob'],
     waveform: ['line', 'mirror', 'circle'],
   };
 
-  function sampleClipParams(type, axes, random) {
+  function sampleClipParams(type, axes, random, index) {
     const density = axes.density;
     const speed = axes.speed;
     const params = { color: null };
+    if (type === 'pattern') {
+      // backdrop patterns cycle through the 400+ kind library (pattern-variants)
+      // so a per-cue run of clips never shows the same look twice; without an
+      // index (a manual re-roll) the look is drawn from the same library
+      const variant = patternVariants.at(Number.isFinite(index) ? index : Math.floor(random() * patternVariants.count()));
+      params.mode = variant.mode;
+      params.count = variant.count;
+      params.size = variant.size;
+      params.speed = variant.speed;
+      params.opacity = variant.opacity;
+      return params;
+    }
     if (CLIP_MODES[type]) {
       const modes = CLIP_MODES[type];
       params[type === 'particles' ? 'flow' : 'mode'] = pick(random, modes);
@@ -615,7 +627,7 @@
     return params;
   }
 
-  function clipSpec(kind, axes, random, genre) {
+  function clipSpec(kind, axes, random, genre, options) {
     const palette = paletteFor(axes, random, genre && genre.palettes);
     const colors = palette.colors;
     const overrides = genre && genre.clips ? genre.clips[kind] : null;
@@ -643,7 +655,7 @@
     }
     if (!pool.length) return null;
     const type = pick(random, pool);
-    const params = sampleClipParams(type, axes, random);
+    const params = sampleClipParams(type, axes, random, options && options.index);
     const flowOverride = overrides && overrides[type];
     if (flowOverride && typeof flowOverride === 'object') {
       for (const [key, values] of Object.entries(flowOverride)) {
@@ -661,7 +673,7 @@
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
-    return clipSpec(kind, axes, random, genre);
+    return clipSpec(kind, axes, random, genre, { index: opts.index });
   }
 
   // --- genre helpers -----------------------------------------------------------

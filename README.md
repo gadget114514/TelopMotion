@@ -29,6 +29,7 @@ The Studio turns lyrics into a video project:
 
 - **Media** (left): profile data (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
 - **Preview** (center): the rendered frame at output resolution; the overlay shows selection handles, guides and the `path` layout points
+- **Preview quality** (*Settings → Quality*, auto/full/half/quarter): the scene is laid out at the size of the frame actually rendered, so a reduced quality draws the same picture smaller and faster instead of a differently-scaled one (the same rule covers video exports at 720p/1440p and the 2D fallback)
 - **Inspector** (right): cue/beat text and timing, text style, transform, overrides, every effect group with its parameters and motion (in/out easing, stagger, loop), colors, and ◆ keyframe buttons
 - **Timeline** (bottom): ruler, audio waveform, cue blocks with beat sub-blocks, element lanes with keyframes (drag, copy/paste, ease, delete), markers, snapping to seconds and frames
 
@@ -140,14 +141,19 @@ preload.js              contextBridge API exposed to the renderer
 lib/suno-core.js        Fetching, pagination, normalization (shared with the CLI)
 scripts/scrape.js       Command-line scraper
 scripts/fx400.js        FX 400: deterministic catalog of representative effects + test project
+scripts/fx400mix.js     FX 400 MIX: 400 complete-look demos (headline effect + supporting kit)
+scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-effect projects
+scripts/looks-classify.js  Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
 scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
+demo/                   Generated demo projects, cue lists, indexes and preview sheets
 renderer/               UI: index.html (achievement card, secondary), studio.html (Studio, main), css/, js/
 renderer/js/            Shared: format, platform, suno, srt, lrc, lyrics-json, lyrics-file, script-gen, color, achievements
-renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, motion, scene, engine
+renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, motion, scene, engine, looks, pattern-variants
 renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group
 renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes
 renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay
+renderer/data/          Generated runtime pool: fx800.looks.json (800 classified looks for Random look)
 renderer/fonts/         OFL fonts + SOURCES.md + OFL.txt
 renderer/vendor/        Vendored libraries + LICENSES.txt
 ```
@@ -165,26 +171,80 @@ SA_SMOKE=1 SA_SMOKE_SHADERS=1 npx electron .  # every fill/edge/post/background 
 SA_SMOKE=1 SA_SMOKE_EDIT=1 npx electron .     # selection, overrides, keyframes, orphans
 SA_SMOKE=1 SA_SMOKE_TIMELINE=1 npx electron . # cue edits + SRT, keyframe editing, waveform, snapping
 SA_SMOKE=1 SA_SMOKE_STUDIO=1 npx electron .   # Studio shell: menus, undo, autosave, i18n coverage
-SA_SMOKE=1 SA_SMOKE_RANDOM=1 npx electron .   # presets, seeded re-roll, locks, palettes
+SA_SMOKE=1 SA_SMOKE_RANDOM=1 npx electron .   # presets, seeded re-roll, locks, palettes, 800-look draw
 SA_SMOKE=1 SA_SMOKE_EXPORT=1 npx electron .   # MP4 + AAC, WebM + Opus, transparent PNG zip
 SA_SMOKE=1 SA_SMOKE_LAYERS=1 npx electron .   # image/solid/video layers, motion, blends, filters
 SA_SMOKE=1 SA_SMOKE_HOME=1 npx electron .     # Studio-first boot without data + lyrics import (SRT/LRC/JSON)
 SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .     # regenerate snapshot/studio-overview.png (README)
+SA_SMOKE=1 SA_SMOKE_QUALITY=1 npx electron .  # full / half / quarter previews render the same frame
 SA_SMOKE=1 SA_SMOKE_AUDIO=1 npx electron .    # audio-reactive bindings and the Media audio tab
 SA_SMOKE=1 SA_SMOKE_FILLERS=1 npx electron .  # filler clips, credits modes, timeline and inspector
 ```
 
 ### FX 400 (representative effects)
 
-`test/test_1_to_400.srt` has 400 numbered two-second cues. `scripts/fx400.js` builds a deterministic, numbered catalog of 400 representative effects (every registered effect type plus parameter step variants) and a project where cue n carries effect n, so the effects can be checked visually in the Studio:
+`test/test_1_to_400.srt` has 400 numbered two-second cues. `scripts/fx400.js` builds a deterministic, numbered catalog of 400 representative effects and a project where cue n carries effect n, so the effects can be checked visually in the Studio:
 
 ```bash
-npm run fx400 -- build                 # writes test/fx400.catalog.json, test/fx400.md and test/fx400.telopmotion.json
-npm run fx400 -- show 42               # prints the recipe for effect 42
+npm run fx400 -- build                    # writes test/fx400.catalog.json, test/fx400.md and test/fx400.telopmotion.json
+npm run fx400 -- build --text raw         # keep the SRT text (default is a longer sample so letter effects are visible)
+npm run fx400 -- show 42                  # prints the recipe for effect 42
 npm run fx400 -- apply 42 --project <file> --cue 12 --out <file>   # applies effect 42 to one cue
 ```
 
+Motion-driven groups (animation, layout, enter, exit, hold, location) are measured with the real motion evaluator against the plain default look: candidates below the perceptual threshold are dropped and near-identical variants are de-duplicated, so the catalog only contains effects that can be told apart. Shader groups keep type identity and only add strong parameter steps. The MD index records the measured score, the verification method and the types that could not produce a visible effect (`hold.none`, `fill.solid`, …).
+
 Open `test/fx400.telopmotion.json` from *File → Open project…* and play the timeline (or scrub) to review the effects. Background effects are applied as clips on the bg track (project version 2 has no cue-level screen background).
+
+### FX 800 (four 200-effect demos)
+
+`scripts/fx800.js` extends the FX MIX sampler to **800 numbered, named demos** — one complete look each (a headline effect plus a supporting kit drawn from the whole registry), sampled so that no two demos are close and each demo differs from the one before it in almost every slot — and splits them into four Studio projects of 200 cues:
+
+| Demo | Numbers | Project | Cue list |
+|---:|---|---|---|
+| 1 | No.1–200 | `demo/fx800-1.telopmotion.json` | `demo/fx800-1.srt` |
+| 2 | No.201–400 | `demo/fx800-2.telopmotion.json` | `demo/fx800-2.srt` |
+| 3 | No.401–600 | `demo/fx800-3.telopmotion.json` | `demo/fx800-3.srt` |
+| 4 | No.601–800 | `demo/fx800-4.telopmotion.json` | `demo/fx800-4.srt` |
+
+Each project runs 10 minutes at 3 seconds per cue; the cue text carries the demo number and name. `demo/fx800.md` is the numbered index (number, name, supporting kit) and `demo/fx800.catalog.json` stores the full recipes. Every demo's text size steps through the five-look ladder (56 / 70 / 88 / 110 / 138, about 1.3× apart) and its colour cycles through the six readable palette roles, so no two neighbours share both. `SA_SMOKE=1 SA_SMOKE_FXDEMO=1 npx electron .` renders a contact sheet of the first 16 cues to `demo/fx800-preview-1.png` (`_FILE`, `_FROM`, `_COUNT`, `_COLUMNS`, `_TILE`, `_OUT` override).
+
+Pattern backgrounds come from a **1404-kind library** (`renderer/js/lyrics/pattern-variants.js`: 13 animated modes — grid, dots, stripes, rings, triangles, diamonds, hexes, rain, checker, polka, sine curves, waves and random fill — × 9 size steps × 12 element counts) and each demo takes its own step, so a 400/800 demo run never shows the same tiling twice. The same library feeds the backdrop pattern clips that *Random* (auto-direct) creates on the backdrop track; no variant is static, so a backdrop always moves.
+
+```bash
+npm run fx800 -- build                     # writes the catalog, index, four projects and the looks pool
+npm run fx800 -- show 642                  # prints demo 642 (name, part, recipe)
+npm run fx800 -- list --part 3             # lists No.401–600
+npm run fx800 -- apply 642 --project <file> --cue 12 --out <file>   # reuse one demo
+```
+
+### Random look (おまかせ)
+
+`npm run fx800 -- build` also classifies every demo and writes the runtime pool
+`renderer/data/fx800.looks.json`: each of the 800 looks carries its measured
+**motion magnitude** (the SA.motion evaluator samples nine frames of a two-second
+beat and takes the largest travel / scale / rotation / deform amplitude, bucketed
+as still / small / medium / large / extreme), a **five-axis profile** (speed,
+energy, softness, density, brightness) and **theme affinities** (the genre
+profiles). The styles are stored as deltas against the effect registry defaults,
+which keeps the whole pool at ~0.8 MB.
+
+The Studio's *Random look* button (Generate menu, timeline ✨, or the Re-roll
+button) loads the pool and:
+
+1. draws one of the 800 by the song's theme and the five axes — a high `energy` /
+   `speed` target prefers big-motion looks, `softness` the texture, `density` the
+   busyness, `brightness` the tone; a themed draw weights looks that fit that genre
+2. applies that look to the whole song (entrance, exit, hold, fill, edge, post,
+   repeat, text background, background clip), so the demo's headline effect stays
+   the face of the song
+3. adjusts the fine parameters from the same axes — the palette is regenerated,
+   the text size / spacing follow the density and softness axes, and the demo's
+   typeface survives
+
+Re-rolling excludes the look that is on screen and draws another one. If the pool
+cannot be loaded, the button falls back to the generator-only theme as before.
+`demo/fx800.md` lists the motion class of every demo.
 
 ## Notes
 

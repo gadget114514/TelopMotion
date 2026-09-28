@@ -337,6 +337,7 @@ many では、方向の違い（上下・左右の鏡像）は質感に埋もれ
    - 次の量を §2 の境界で量子化し、連結する：本数ビン、外接矩形の縦横比、放射分布8ビン、速度（log2）、方向（4方向）、大きさ（log1.4）、Copy ごとの色名、書体クラスの並び、decor の並び、Rule の型。
    - many では、Copy ごとの並びの代わりに「質感の特徴量」を使う：色名ヒストグラム、大きさの分散のバケット、市松か縞かの判定。
    - fill・edge・post は type と主要な select 値をカテゴリ値として使う。
+   - 後景の `background.pattern` は `lyrics/pattern-variants.js` の mode × size × count（1404種類）を代表値として使う。大きさの段階差も別のパターンとして数える。
 3. **既知の重複の統合**：`merge-table.json` で統合する（例：`tunnel` ≈ `stackV + size.progress`、many の `fill` ≈ many の `brick` + static）。この表は人手確認で更新する。
 4. **出力**：グループごと・モードごとのシグネチャ数と合計を JSON と Markdown で出す。
 
@@ -355,6 +356,7 @@ many では、方向の違い（上下・左右の鏡像）は質感に埋もれ
 
 ### 8.4 受け入れ条件
 - Repeat の Signature 数が300以上
+- 後景パターン（`background.pattern`）の Signature 数が **400以上**（mode × size × count の段階値）
 - 全体の Signature 数が **800以上**
 
 ## 9. フェーズ（各フェーズ1コミット。`npm test` と `npm run check` が通ること）

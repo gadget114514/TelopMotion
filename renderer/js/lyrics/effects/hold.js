@@ -82,7 +82,13 @@
     ],
     cpu(state, h, env, params, rng, info) {
       const amount = params.amount == null ? 0.06 : params.amount;
-      const bpm = params.bpm || 120;
+      // genre profiles may ask for 'audio' (the song tempo), as heartbeat does
+      let bpm = 120;
+      if (params.bpm === 'audio') {
+        bpm = info && info.audioFeatures && Number(info.audioFeatures.bpm) > 0 ? Number(info.audioFeatures.bpm) : 120;
+      } else if (Number(params.bpm) > 0) {
+        bpm = Number(params.bpm);
+      }
       const scale = 1 + amount * (0.5 + 0.5 * Math.cos(TAU * (bpm / 60) * h)) * env;
       state.scaleX *= scale;
       state.scaleY *= scale;

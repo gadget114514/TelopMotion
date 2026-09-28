@@ -100,7 +100,8 @@
       strokeLength: 'Stroke length', symbols: 'Symbols', up: 'Up', vertical: 'Vertical', 'vertical-reading': 'Vertical writing',
       wave: 'Wave', word: 'Word', x: 'X', y: 'Y', shapes: 'Shapes', particles: 'Particles', waveform: 'Waveform', spectrum: 'Spectrum',
       sineWave: 'Sine wave', progress: 'Progress', circles: 'Circles', polygons: 'Polygons', lines: 'Lines', burst: 'Burst', orbit: 'Orbit',
-      dots: 'Dots', stripes: 'Stripes', rings: 'Rings',
+      dots: 'Dots', stripes: 'Stripes', rings: 'Rings', triangles: 'Triangles', diamonds: 'Diamonds', hexes: 'Hexagons', rain: 'Rain',
+      checks: 'Checker', polka: 'Polka dots', sineCurve: 'Sine curves', waves: 'Waves', randomFill: 'Random fill',
     },
   };
 
@@ -197,7 +198,8 @@
       staircase: '階段', strokeLength: 'ストローク長', symbols: '記号', up: '上', vertical: '縦組み',
       'vertical-reading': '縦書き', wave: '波', word: '単語', x: 'X', y: 'Y', shapes: '図形', particles: 'パーティクル', waveform: '波形',
       spectrum: 'スペクトラム', sineWave: 'サイン波', progress: '進捗', circles: '円', polygons: '多角形', lines: '線', burst: 'バースト', orbit: '軌道',
-      dots: 'ドット', stripes: 'ストライプ', rings: 'リング',
+      dots: 'ドット', stripes: 'ストライプ', rings: 'リング', triangles: '三角形', diamonds: 'ひし形', hexes: '六角形', rain: '雨',
+      checks: 'チェッカー', polka: '水玉', sineCurve: 'サインカーブ', waves: 'ウェーブ', randomFill: 'ランダムフィル',
     },
   };
 
@@ -302,7 +304,8 @@
       staircase: 'Escalera', strokeLength: 'Longitud del trazo', symbols: 'Símbolos', up: 'Arriba', vertical: 'Vertical',
       'vertical-reading': 'Escritura vertical', wave: 'Onda', word: 'Palabra', x: 'X', y: 'Y', shapes: 'Formas', particles: 'Partículas',
       waveform: 'Forma de onda', spectrum: 'Espectro', sineWave: 'Onda senoidal', progress: 'Progreso', circles: 'Círculos',
-      polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita', dots: 'Puntos', stripes: 'Rayas', rings: 'Anillos',
+      polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita', dots: 'Puntos', stripes: 'Rayas', rings: 'Anillos', triangles: 'Triángulos', diamonds: 'Rombos', hexes: 'Hexágonos', rain: 'Lluvia',
+      checks: 'Damero', polka: 'Topos', sineCurve: 'Curvas sinusoidales', waves: 'Ondas', randomFill: 'Relleno aleatorio',
     },
   };
 
@@ -407,7 +410,8 @@
       strokeLength: 'Longueur du tracé', symbols: 'Symboles', up: 'Haut', vertical: 'Vertical', 'vertical-reading': 'Écriture verticale',
       wave: 'Vague', word: 'Mot', x: 'X', y: 'Y', shapes: 'Formes', particles: 'Particules', waveform: "Forme d'onde", spectrum: 'Spectre',
       sineWave: 'Onde sinusoïdale', progress: 'Progression', circles: 'Cercles', polygons: 'Polygones', lines: 'Lignes', burst: 'Éclat', orbit: 'Orbite',
-      dots: 'Points', stripes: 'Rayures', rings: 'Anneaux',
+      dots: 'Points', stripes: 'Rayures', rings: 'Anneaux', triangles: 'Triangles', diamonds: 'Losanges', hexes: 'Hexagones', rain: 'Pluie',
+      checks: 'Damier', polka: 'Pois', sineCurve: 'Courbes sinusoïdales', waves: 'Vagues', randomFill: 'Remplissage aléatoire',
     },
   };
 
@@ -511,7 +515,8 @@
       strokeLength: 'Длина обводки', symbols: 'Символы', up: 'Вверх', vertical: 'Вертикально',
       'vertical-reading': 'Вертикальное письмо', wave: 'Волна', word: 'Слово', x: 'X', y: 'Y', shapes: 'Фигуры', particles: 'Частицы',
       waveform: 'Волновая форма', spectrum: 'Спектр', sineWave: 'Синусоида', progress: 'Прогресс', circles: 'Круги',
-      polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца',
+      polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца', triangles: 'Треугольники', diamonds: 'Ромбы', hexes: 'Шестиугольники', rain: 'Дождь',
+      checks: 'Шахматный', polka: 'Горошек', sineCurve: 'Синусоиды', waves: 'Волны', randomFill: 'Случайная заливка',
     },
   };
 

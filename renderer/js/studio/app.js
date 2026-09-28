@@ -865,14 +865,14 @@
 
   function reroll() {
     if (lastRandom.scope === '__auto') {
-      autoDirect({ seed: lastRandom.seed + 1 });
+      autoDirect({ seed: lastRandom.seed + 1, exclude: lastRandom.lookN ? [lastRandom.lookN] : null });
       return;
     }
     lastRandom = { ...lastRandom, seed: lastRandom.seed + 1 };
     runRandomize(lastRandom.scope, lastRandom);
   }
 
-  function autoDirect(options) {
+  async function autoDirect(options) {
     const doc = project();
     const opts = options || {};
     if (!doc) return;
@@ -895,8 +895,32 @@
     }
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
-    // the theme itself: every group generated from the axes and the seed
-    const themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
+    // おまかせ: draw one of the 800 classified looks by theme + five axes, then
+    // adjust the fine parameters (palette, text) from the same axes. When the
+    // pool is unavailable, fall back to the generator-only theme. With music
+    // the axes own the draw (the random genre would only pull it off target);
+    // an explicit genre or a generated theme biases the draw as a theme.
+    const lookGenre = explicitGenre || (analysis ? null : genre);
+    let look = null;
+    let lookClip = null;
+    let themeStyle = null;
+    try {
+      const pool = SA.looks && SA.looks.load ? await SA.looks.load() : null;
+      if (pool) {
+        const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude });
+        if (entry) {
+          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context });
+          look = composed.look;
+          lookClip = composed.clip;
+          themeStyle = composed.style;
+        }
+      }
+    } catch (error) {
+      look = null;
+      lookClip = null;
+      themeStyle = null;
+    }
+    if (!themeStyle) themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
     // keep the font size in a readable range that matches the frame
     const portrait = doc.output && doc.output.aspect === '9:16';
@@ -927,7 +951,7 @@
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, themeStyle);
         // remember which theme was applied so the UI can show it, and so cue /
         // clip re-rolls can stay inside the same axes
-        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName, axes, direction, genre };
+        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName, axes, direction, genre, look: look ? { n: look.n, name: look.name, group: look.group, type: look.type, motion: look.motion } : null };
         for (const cue of projectDoc.script.cues) {
           const container = projectDoc.cueStyles[cue.id];
           if (!container) continue;
@@ -946,19 +970,24 @@
         const energy = Math.max(0, Math.min(1, Number(axes.energy) || 0.5));
         const baseSize = Number((themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
         projectDoc.script.cues.forEach((cue, cueIndex) => {
-          const cueContext = SA.moods.contextForCue(projectDoc, cue);
-          const generated = SA.moods.generate({
-            axes,
-            seed: seed + cueIndex * 131 + 1,
-            direction,
-            genre,
-            context: cueContext,
-            emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
-          }).style;
-          projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
-            enter: generated.enter,
-            exit: generated.exit,
-          });
+          // with a drawn look the entrance/exit are part of the look itself:
+          // only the beats breathe (size jitter and the rare pulse) so the
+          // whole song keeps the same face
+          if (!look) {
+            const cueContext = SA.moods.contextForCue(projectDoc, cue);
+            const generated = SA.moods.generate({
+              axes,
+              seed: seed + cueIndex * 131 + 1,
+              direction,
+              genre,
+              context: cueContext,
+              emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
+            }).style;
+            projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
+              enter: generated.enter,
+              exit: generated.exit,
+            });
+          }
           const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
           beats.forEach((beat, beatIndex) => {
             const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
@@ -1012,8 +1041,10 @@
         projectDoc.clips = (projectDoc.clips || []).filter((clip) => !managed.has(clip.trackId));
         const bgTrack = trackIdFor('background');
         if (bgTrack && total > 0) {
-          const result = SA.moods.rerollClipSpec('background', { axes, seed, genre });
-          const spec = result && result.spec && result.spec.type === 'noiseGradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } };
+          // the drawn look brings its own background clip; otherwise the axes
+          // roll one (noise gradients preferred, flat gradients as the floor)
+          const result = lookClip ? null : SA.moods.rerollClipSpec('background', { axes, seed, genre });
+          const spec = lookClip || (result && result.spec && result.spec.type === 'noiseGradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
           projectDoc.clips.push({
             id: SA.project.nextClipId(projectDoc, 'clip_bg'),
             trackId: bgTrack,
@@ -1029,7 +1060,7 @@
         const midTrack = trackIdFor('backdrop');
         if (midTrack && axes.density > 0.45) {
           cues.forEach((cue, index) => {
-            const result = SA.moods.rerollClipSpec('backdrop', { axes, seed: seed + index * 977 + 3, genre });
+            const result = SA.moods.rerollClipSpec('backdrop', { axes, seed: seed + index * 977 + 3, genre, index: seed + index });
             if (!result) return;
             projectDoc.clips.push({
               id: SA.project.nextClipId(projectDoc, 'clip_mid'),
@@ -1063,8 +1094,9 @@
         }
       },
     });
-    lastRandom = { scope: '__auto', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS };
-    toast('studio.toast.autoDirected', { seed, theme: themeName });
+    lastRandom = { scope: '__auto', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS, lookN: look ? look.n : null };
+    if (look) toast('studio.toast.autoDirectedLook', { seed, theme: themeName, look: `${look.n} ${look.name}` });
+    else toast('studio.toast.autoDirected', { seed, theme: themeName });
   }
 
   function genreDialog() {

@@ -95,6 +95,11 @@ SA.lyricsScene = (() => {
     if (!project || !beat) throw Object.assign(new Error('missing project or beat'), { code: 'scene-input' });
     const opts = options || {};
     const output = project.output || { width: 1920, height: 1080, aspect: '16:9' };
+    // The scene is laid out in the pixels of the frame the renderer draws into.
+    // Preview qualities below 100% render into a smaller frame, so the whole
+    // scene is built at that scale: the motion evaluator, the GL passes and the
+    // overlay then all share one coordinate space (see `renderScale`).
+    const scale = Number.isFinite(opts.scale) && opts.scale > 0 ? opts.scale : 1;
     const cueId = beat.cueId;
     const beatId = beat.id;
     const beatPath = `cue:${cueId}/beat:${beatId}`;
@@ -117,17 +122,18 @@ SA.lyricsScene = (() => {
       output.aspect,
       output.width,
       output.height,
+      scale,
     ]);
     const cached = cache.get(key);
     if (cached) return cached;
 
-    const size = (textStyle.size || 96) * (beat.fontScale || 1);
+    const size = (textStyle.size || 96) * (beat.fontScale || 1) * scale;
     const fillColor = resolveFillColor(project, style, beat);
     const layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
       size,
       lang: (project.meta && project.meta.lang) || 'en',
       direction,
-      maxWidth: textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width : undefined,
+      maxWidth: textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width * scale : undefined,
     });
 
     const scene = {
@@ -145,6 +151,7 @@ SA.lyricsScene = (() => {
       blockBBox: layout.bbox,
       layout,
       size,
+      scale,
       direction,
       fillColor,
     };

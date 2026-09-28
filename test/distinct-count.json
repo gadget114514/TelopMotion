@@ -9,7 +9,7 @@
     "fill": 17,
     "edge": 41,
     "post": 80,
-    "background": 49,
+    "background": 1450,
     "repeat": 585
   },
   "repeat": {
@@ -60,6 +60,13 @@
       }
     }
   },
+  "patterns": {
+    "variants": 1404,
+    "signatures": 1405,
+    "modes": 13,
+    "sizes": 9,
+    "counts": 12
+  },
   "existing": {
     "groups": {
       "animation": 21,
@@ -71,10 +78,10 @@
       "fill": 17,
       "edge": 41,
       "post": 80,
-      "background": 49
+      "background": 1450
     },
-    "total": 426
+    "total": 1827
   },
-  "total": 1011,
+  "total": 2412,
   "aliases": 2
 }

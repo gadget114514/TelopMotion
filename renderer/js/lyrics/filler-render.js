@@ -313,20 +313,32 @@
     return { shapes, texts: [] };
   }
 
-  // Animated background patterns (grid / dots / stripes / rings).
+  // Animated background patterns (grid / dots / stripes / rings / triangles /
+  // diamonds / hexes / rain / checks / polka / sineCurve / waves / randomFill).
+  // Every mode moves, and `size` drives the drawn element in every mode (tile
+  // fill, dot radius, stripe duty, ring thickness, polygon radius, rain drop
+  // length, checker fill, sine amplitude / ribbon thickness, mosaic tile size)
+  // so a size step alone reads as another backdrop pattern; `count` drives how
+  // many elements there are. pattern-variants.js enumerates the steps that are
+  // far enough apart to be told apart and never picks a static speed.
   function patternShapes(params, ctx) {
     const width = ctx.frame.width;
     const height = ctx.frame.height;
     const color = colorOf(params, ctx, '#8d96ab');
     const mode = params.mode || 'grid';
     const count = Math.max(4, Math.min(120, Math.round(num(params.count, 24))));
-    const size = Math.max(0.2, num(params.size, 1)) * (height / 1080);
+    const scale = Math.max(0.2, Math.min(3, num(params.size, 1)));
+    const size = scale * (height / 1080);
     const speed = num(params.speed, 0.4);
     const opacity = num(params.opacity, 0.5);
     const shapes = [];
     const short = Math.min(width, height);
     if (mode === 'stripes') {
-      const bar = Math.max(1, short * 0.02 * size);
+      // the duty cycle grows with size, so the bars thicken without ever
+      // merging into a solid field (which would erase the size difference)
+      const gap = (width * 1.2) / count;
+      const duty = Math.max(0.06, Math.min(0.7, 0.06 + 0.2 * scale));
+      const bar = Math.max(1, gap * duty);
       for (let i = 0; i < count; i += 1) {
         const phase = ((ctx.time * speed * 0.1 + i / count) % 1 + 1) % 1;
         shapes.push({ kind: 'rect', x: phase * width * 1.2 - width * 0.1, y: 0, w: bar, h: height, radius: bar / 2, color, opacity: opacity * (0.45 + 0.55 * ((i % 3) / 2)) });
@@ -358,6 +370,150 @@
       }
       return { shapes, texts: [] };
     }
+    if (mode === 'triangles' || mode === 'diamonds' || mode === 'hexes') {
+      // a grid of regular polygons; the radius grows with the size step
+      const sides = mode === 'triangles' ? 3 : mode === 'diamonds' ? 4 : 6;
+      const base = mode === 'triangles' ? 0.011 : mode === 'diamonds' ? 0.01 : 0.0095;
+      const spin = mode === 'diamonds' ? 45 : mode === 'hexes' ? 30 : 0;
+      const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+      const rows = Math.max(2, Math.ceil(count / cols));
+      for (let i = 0; i < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        const pulse = 0.5 + 0.5 * Math.sin(ctx.time * speed * 1.4 + (gx + gy) * 0.7);
+        shapes.push({
+          kind: 'polygon',
+          x: (width * (gx + 0.5)) / cols,
+          y: (height * (gy + 0.5)) / rows,
+          r: short * base * size * (0.7 + 0.5 * pulse),
+          sides,
+          rotation: spin + ctx.time * speed * 14 * (i % 2 ? 1 : -1),
+          color,
+          opacity: opacity * (0.4 + 0.6 * pulse),
+        });
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'rain') {
+      // falling streaks: count is the number of drops, size their length
+      const len = short * 0.05 * size;
+      const thickness = Math.max(1, short * 0.0016 * size);
+      const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+      const rows = Math.max(2, Math.ceil(count / cols));
+      for (let i = 0; i < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        const travel = ((ctx.time * (0.05 + speed * 0.12) + i / count + (gy % 3) * 0.21) % 1 + 1) % 1;
+        const x = (width * (gx + 0.5)) / cols;
+        const y = travel * (height + len) - len;
+        shapes.push({ kind: 'capsule', x0: x, y0: y, x1: x, y1: y + len, width: thickness, color, opacity: opacity * (0.35 + 0.65 * (1 - travel)) });
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'checks') {
+      // checkerboard: `count` tiles on alternate cells, brightness travelling
+      const cells = Math.max(4, count * 2);
+      const cols = Math.max(2, Math.round(Math.sqrt(cells * (width / height))));
+      const rows = Math.max(2, Math.ceil(cells / cols));
+      const fill = Math.max(0.1, Math.min(0.98, scale <= 1 ? 0.7 * Math.sqrt(scale) : 0.7 + (0.2 * (scale - 1)) / 2));
+      const cellW = width / cols;
+      const cellH = height / rows;
+      let drawn = 0;
+      for (let i = 0; i < cols * rows && drawn < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        if ((gx + gy) % 2 !== 0) continue;
+        const pulse = 0.5 + 0.5 * Math.sin(ctx.time * speed * 1.7 + (gx + gy) * 0.55);
+        shapes.push({
+          kind: 'rect',
+          x: gx * cellW + cellW * (1 - fill) * 0.5,
+          y: gy * cellH + cellH * (1 - fill) * 0.5,
+          w: cellW * fill,
+          h: cellH * fill,
+          radius: Math.min(cellW, cellH) * fill * 0.1,
+          color,
+          opacity: opacity * (0.25 + 0.75 * pulse),
+        });
+        drawn += 1;
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'polka') {
+      // staggered polka dots scrolling sideways; size sets the dot radius
+      const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+      const rows = Math.max(2, Math.ceil(count / cols));
+      const radius = short * 0.006 * size;
+      const drift = ctx.time * (0.03 + speed * 0.05);
+      for (let i = 0; i < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        const x = ((((gx + 0.5 + (gy % 2) * 0.5) / cols + drift) % 1) + 1) % 1 * width;
+        const pulse = 0.85 + 0.15 * Math.sin(ctx.time * speed * 1.8 + (gx + gy) * 0.5);
+        shapes.push({ kind: 'circle', x, y: (height * (gy + 0.5)) / rows, r: radius * pulse, color, opacity: opacity * (0.55 + 0.45 * pulse) });
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'sineCurve' || mode === 'waves') {
+      // stacked sine lines (sineCurve) or thick travelling ribbons (waves)
+      const band = mode === 'waves';
+      const segments = 32;
+      const amp = short * (band ? 0.045 : 0.035) * size;
+      const thickness = band ? Math.max(2, (height / count) * 0.42) : Math.max(1, short * 0.0016 * size);
+      const freq = band ? 1.5 : 2.5;
+      for (let i = 0; i < count; i += 1) {
+        const lineY = (height * (i + 0.5)) / count;
+        const phase = ctx.time * (0.3 + speed * 0.5) + i * 0.7;
+        const lineOpacity = opacity * (0.35 + 0.65 * (1 - i / Math.max(1, count - 1)));
+        for (let s = 0; s < segments; s += 1) {
+          const x0 = (width * s) / segments;
+          const x1 = (width * (s + 1)) / segments;
+          shapes.push({
+            kind: 'capsule',
+            x0,
+            y0: lineY + Math.sin(phase + (s / segments) * TAU * freq) * amp,
+            x1,
+            y1: lineY + Math.sin(phase + ((s + 1) / segments) * TAU * freq) * amp,
+            width: thickness,
+            color,
+            opacity: lineOpacity,
+          });
+        }
+      }
+      return { shapes, texts: [] };
+    }
+    if (mode === 'randomFill') {
+      // seeded mosaic: every cell fades in and out on its own phase, so the
+      // filled look keeps changing while the tiles stay put
+      const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
+      const rows = Math.max(2, Math.ceil(count / cols));
+      const fill = Math.max(0.1, Math.min(0.98, scale <= 1 ? 0.7 * Math.sqrt(scale) : 0.7 + (0.2 * (scale - 1)) / 2));
+      const cellW = width / cols;
+      const cellH = height / rows;
+      const seeds = seededRandom(hashString(`${(ctx.clip && ctx.clip.key) || 'randomFill'}|${count}|${scale}`));
+      const threshold = 0.35;
+      for (let i = 0; i < count; i += 1) {
+        const gx = i % cols;
+        const gy = Math.floor(i / cols);
+        const base = seeds();
+        const phase = seeds() * TAU;
+        const amount = 0.5 + 0.5 * Math.sin(ctx.time * speed * (0.4 + base * 1.2) + phase);
+        if (amount < threshold) continue;
+        const grow = (amount - threshold) / (1 - threshold);
+        shapes.push({
+          kind: 'rect',
+          x: gx * cellW + cellW * (1 - fill * grow) * 0.5,
+          y: gy * cellH + cellH * (1 - fill * grow) * 0.5,
+          w: cellW * fill * grow,
+          h: cellH * fill * grow,
+          radius: Math.min(cellW, cellH) * fill * grow * 0.12,
+          color,
+          opacity: opacity * (0.25 + 0.75 * grow),
+        });
+      }
+      return { shapes, texts: [] };
+    }
+    // grid: size scales the tile inside its cell (0.34x at 0.2 up to 0.95x at 3)
+    const fill = Math.max(0.1, Math.min(0.98, scale <= 1 ? 0.76 * Math.sqrt(scale) : 0.76 + (0.19 * (scale - 1)) / 2));
     const cols = Math.max(2, Math.round(Math.sqrt(count * (width / height))));
     const rows = Math.max(2, Math.ceil(count / cols));
     const cellW = width / cols;
@@ -368,11 +524,11 @@
       const pulse = 0.5 + 0.5 * Math.sin(ctx.time * speed * 1.6 + (gx + gy) * 0.7);
       shapes.push({
         kind: 'rect',
-        x: gx * cellW + cellW * 0.12,
-        y: gy * cellH + cellH * 0.12,
-        w: cellW * 0.76,
-        h: cellH * 0.76,
-        radius: Math.min(cellW, cellH) * 0.12,
+        x: gx * cellW + cellW * (1 - fill) * 0.5,
+        y: gy * cellH + cellH * (1 - fill) * 0.5,
+        w: cellW * fill,
+        h: cellH * fill,
+        radius: Math.min(cellW, cellH) * fill * 0.16,
         color,
         opacity: opacity * (0.3 + 0.7 * pulse),
       });
@@ -526,7 +682,7 @@
       { key: 'color', kind: 'color', default: '#ff8a3d' },
     ],
     pattern: [
-      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings'], default: 'grid' },
+      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings', 'triangles', 'diamonds', 'hexes', 'rain', 'checks', 'polka', 'sineCurve', 'waves', 'randomFill'], default: 'grid' },
       { key: 'count', kind: 'int', min: 4, max: 120, step: 1, default: 24 },
       { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },

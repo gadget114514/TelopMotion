@@ -54,10 +54,14 @@ SA.canvas2dFallback = (() => {
       const project = state.project;
       if (!project) return frame;
       const fonts = state.assets.fonts || [];
+      // Same rule as the WebGL engine: build the scene at the frame being
+      // rendered, so reduced preview qualities do not draw output-size text.
+      const output = project.output || null;
+      const sceneScale = output && output.width ? state.width / output.width : 1;
       for (const beat of SA.lyricsEngine.activeBeats(project, t)) {
         const style = SA.project && SA.project.resolveStyle ? SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`) : {};
         const direction = style && style.layout && style.layout.type === 'vertical' ? 'vertical' : undefined;
-        const scene = SA.lyricsScene.buildScene(project, beat, fonts, { direction });
+        const scene = SA.lyricsScene.buildScene(project, beat, fonts, { direction, scale: sceneScale });
         if (!scene.letters.length) continue;
         let result = null;
         if (typeof SA.motion !== 'undefined' && SA.motion) {

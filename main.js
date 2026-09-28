@@ -38,7 +38,7 @@ function fail(error) {
 
 const IMAGE_HOST_RE = /(^|\.)(suno\.ai|suno\.com|cloudfront\.net)$/i;
 const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
-const ASSET_ROOTS = ['fonts', 'vendor'];
+const ASSET_ROOTS = ['fonts', 'vendor', 'data'];
 const streams = new Map();
 
 async function fetchImageDataUrl(rawUrl) {
@@ -579,6 +579,205 @@ function createWindow() {
           );
         }
 
+        if (process.env.SA_SMOKE_FXDEMO) {
+          // FX demo contact sheet: renders the first cues of a demo project into
+          // one PNG so the colour and size steps can be checked at a glance.
+          // The frames are captured at full output resolution (reduced preview
+          // scales draw the text at the wrong size) and then drawn into the
+          // sheet at TILE x TILE * aspect.
+          // SA_SMOKE_FXDEMO_FILE / _FROM / _COUNT / _COLUMNS / _TILE / _OUT override.
+          const demoFile = process.env.SA_SMOKE_FXDEMO_FILE
+            ? path.resolve(process.env.SA_SMOKE_FXDEMO_FILE)
+            : path.join(__dirname, 'demo', 'fx800-1.telopmotion.json');
+          const demoFrom = Math.max(1, Number(process.env.SA_SMOKE_FXDEMO_FROM) || 1);
+          const demoLabel = Math.max(1, Number(process.env.SA_SMOKE_FXDEMO_LABEL) || demoFrom);
+          const demoCount = Math.max(1, Math.min(64, Number(process.env.SA_SMOKE_FXDEMO_COUNT) || 16));
+          const demoColumns = Math.max(1, Math.min(8, Number(process.env.SA_SMOKE_FXDEMO_COLUMNS) || 4));
+          const demoTile = Math.max(160, Math.min(1920, Number(process.env.SA_SMOKE_FXDEMO_TILE) || 480));
+          const demoScale = ['full', 'half', 'quarter'].includes(process.env.SA_SMOKE_FXDEMO_SCALE) ? process.env.SA_SMOKE_FXDEMO_SCALE : 'full';
+          const demoOut = process.env.SA_SMOKE_FXDEMO_OUT
+            ? path.resolve(process.env.SA_SMOKE_FXDEMO_OUT)
+            : path.join(__dirname, 'demo', `fx800-preview-${demoLabel}.png`);
+          const demoDoc = JSON.parse(fs.readFileSync(demoFile, 'utf8'));
+          win.setContentSize(1280, 900);
+          win.setOpacity(1);
+          win.show();
+          await primeStudio(win, {}, 'ja');
+          const sheet = await win.webContents.executeJavaScript(`(async () => {
+            const until = async (test, timeout) => {
+              const started = Date.now();
+              while (Date.now() - started < (timeout || 20000)) {
+                const value = test();
+                if (value) return value;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+              return null;
+            };
+            const ready = await until(() => window.SA.store && window.SA.store.state.project, 20000);
+            if (!ready) return JSON.stringify({ error: 'not-ready' });
+            window.SA.store.load(${JSON.stringify(demoDoc)});
+            const previousScale = window.SA.preview.getScaleMode();
+            window.SA.preview.setScale('${demoScale}');
+            await window.SA.preview.ensureFonts();
+            await new Promise((resolve) => setTimeout(resolve, 800));
+            const cues = window.SA.store.state.project.script.cues;
+            const from = ${demoFrom - 1};
+            const frames = [];
+            for (let i = 0; i < ${demoCount} && from + i < cues.length; i += 1) {
+              const cue = cues[from + i];
+              // hold phase: the enter has finished and the exit has not started
+              const mid = Math.max(cue.start, cue.end - 0.7);
+              window.SA.store.setSelection(['cue:' + cue.id], 'cue');
+              window.SA.preview.seek(mid);
+              const capture = window.SA.preview.captureRGBA(mid);
+              if (!capture) return JSON.stringify({ error: 'no-capture', n: ${demoLabel} + i });
+              frames.push({ n: ${demoLabel} + i, capture });
+              await new Promise((resolve) => setTimeout(resolve, 60));
+            }
+            if (!frames.length) return JSON.stringify({ error: 'no-frames' });
+            window.SA.preview.setScale(previousScale);
+            const width = frames[0].capture.width;
+            const height = frames[0].capture.height;
+            const tile = Math.round(${demoTile});
+            const columns = Math.min(${demoColumns}, frames.length);
+            const rows = Math.ceil(frames.length / columns);
+            const tileWidth = tile;
+            const tileHeight = Math.round((tile * height) / width);
+            const source = document.createElement('canvas');
+            source.width = width;
+            source.height = height;
+            const sourceCtx = source.getContext('2d');
+            const canvas = document.createElement('canvas');
+            canvas.width = tileWidth * columns;
+            canvas.height = tileHeight * rows;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < frames.length; i += 1) {
+              const frame = frames[i];
+              const x = (i % columns) * tileWidth;
+              const y = Math.floor(i / columns) * tileHeight;
+              sourceCtx.putImageData(new ImageData(new Uint8ClampedArray(frame.capture.data), width, height), 0, 0);
+              ctx.drawImage(source, 0, 0, width, height, x, y, tileWidth, tileHeight);
+              ctx.fillStyle = 'rgba(0, 0, 0, 0.62)';
+              ctx.fillRect(x + 6, y + 6, 72, 26);
+              ctx.fillStyle = '#ffffff';
+              ctx.font = 'bold 16px sans-serif';
+              ctx.fillText('No.' + frame.n, x + 10, y + 24);
+            }
+            return JSON.stringify({
+              status: 'ok',
+              frames: frames.length,
+              width: canvas.width,
+              height: canvas.height,
+              glError: window.SA.preview.debugError(),
+              data: canvas.toDataURL('image/png'),
+            });
+          })()`);
+          const report = typeof sheet === 'string' ? JSON.parse(sheet) : sheet;
+          if (report && report.status === 'ok' && report.data) {
+            const base64 = String(report.data).replace(/^data:image\/png;base64,/, '');
+            fs.mkdirSync(path.dirname(demoOut), { recursive: true });
+            fs.writeFileSync(demoOut, Buffer.from(base64, 'base64'));
+            console.log(`SMOKE_FXDEMO=${demoOut} frames=${report.frames} size=${report.width}x${report.height} glError=${report.glError} bytes=${fs.statSync(demoOut).size}`);
+          } else {
+            console.log(`SMOKE_FXDEMO_FAILED=${sheet}`);
+          }
+        }
+
+        if (process.env.SA_SMOKE_QUALITY) {
+          // Preview quality regression: the same cue rendered at full / half /
+          // quarter must show the same picture. The reduced frames are compared
+          // with a downscaled copy of the full frame (a mismatch is what the
+          // old bug produced: output-size text drawn into a smaller frame).
+          win.setOpacity(0);
+          win.showInactive();
+          await primeStudio(win, {}, 'ja');
+          const quality = await win.webContents.executeJavaScript(`(async () => {
+            const until = async (test, timeout) => {
+              const started = Date.now();
+              while (Date.now() - started < (timeout || 20000)) {
+                const value = test();
+                if (value) return value;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+              return null;
+            };
+            const ready = await until(() => window.SA.store && window.SA.store.state.project, 20000);
+            if (!ready) return JSON.stringify({ error: 'not-ready' });
+            const doc = window.SA.store.state.project;
+            const cue = doc.script.cues[0];
+            if (!cue) return JSON.stringify({ error: 'no-cue' });
+            await window.SA.preview.ensureFonts();
+            await new Promise((resolve) => setTimeout(resolve, 600));
+            const beats = doc.beats[cue.id] || [];
+            const beat = beats[beats.length - 1] || null;
+            const time = beat ? Math.max(beat.start, beat.end - 0.6) : cue.start + (cue.end - cue.start) * 0.75;
+            const previousScale = window.SA.preview.getScaleMode();
+            const captures = {};
+            for (const mode of ['full', 'half', 'quarter']) {
+              window.SA.preview.setScale(mode);
+              await new Promise((resolve) => setTimeout(resolve, 250));
+              const capture = window.SA.preview.captureRGBA(time);
+              if (!capture) return JSON.stringify({ error: 'no-capture', mode });
+              captures[mode] = capture;
+            }
+            window.SA.preview.setScale(previousScale);
+            const full = captures.full;
+            const source = document.createElement('canvas');
+            source.width = full.width;
+            source.height = full.height;
+            const sourceCtx = source.getContext('2d');
+            const image = sourceCtx.createImageData(full.width, full.height);
+            image.data.set(full.data);
+            sourceCtx.putImageData(image, 0, 0);
+            const stats = {};
+            let ok = true;
+            for (const mode of ['half', 'quarter']) {
+              const capture = captures[mode];
+              const down = document.createElement('canvas');
+              down.width = capture.width;
+              down.height = capture.height;
+              const downCtx = down.getContext('2d');
+              downCtx.imageSmoothingEnabled = true;
+              downCtx.imageSmoothingQuality = 'high';
+              downCtx.drawImage(source, 0, 0, capture.width, capture.height);
+              const expected = downCtx.getImageData(0, 0, capture.width, capture.height).data;
+              const actual = capture.data;
+              let inkExpected = 0;
+              let inkActual = 0;
+              let mismatch = 0;
+              let sum = 0;
+              const pixels = capture.width * capture.height;
+              for (let i = 0; i < expected.length; i += 4) {
+                const la = (expected[i] + expected[i + 1] + expected[i + 2]) / 3;
+                const lb = (actual[i] + actual[i + 1] + actual[i + 2]) / 3;
+                if (la > 40) inkExpected += 1;
+                if (lb > 40) inkActual += 1;
+                const delta = Math.abs(la - lb);
+                sum += delta;
+                if (delta > 32) mismatch += 1;
+              }
+              const inkDelta = Math.abs(inkExpected - inkActual) / Math.max(1, pixels);
+              const mismatchRatio = mismatch / Math.max(1, pixels);
+              const mean = sum / Math.max(1, pixels);
+              const pass = mismatchRatio < 0.02 && inkDelta < 0.01;
+              if (!pass) ok = false;
+              stats[mode] = {
+                size: [capture.width, capture.height],
+                inkFull: inkExpected,
+                ink: inkActual,
+                inkDelta: Number(inkDelta.toFixed(4)),
+                mismatch: Number(mismatchRatio.toFixed(4)),
+                mean: Number(mean.toFixed(2)),
+                pass,
+              };
+            }
+            return JSON.stringify({ ok, time, stats, glError: window.SA.preview.debugError() });
+          })()`);
+          console.log('SMOKE_QUALITY=' + quality);
+        }
+
         if (process.env.SA_SMOKE_LYRICS) {
           win.setOpacity(0);
           win.showInactive();
@@ -607,8 +806,9 @@ function createWindow() {
             const project = window.SA.store.state.project;
             const beat = window.SA.lyricsEngine.beatForCue(project.script.cues[0]);
             const scene = window.SA.lyricsScene.buildScene(project, beat, fonts);
-            const outputWidth = project.output.width;
-            const factor = capture.width / outputWidth;
+            // capture.frame letters are already in capture pixels (the scene is
+            // built at the render scale), so sample them 1:1
+            const factor = 1;
             const pixel = (x, y) => {
               const px = Math.max(0, Math.min(capture.width - 1, Math.round(x * factor)));
               const py = Math.max(0, Math.min(capture.height - 1, Math.round(y * factor)));
@@ -1467,10 +1667,12 @@ function createWindow() {
             const image = ctx.createImageData(capture.width, capture.height);
             image.data.set(capture.data);
             ctx.putImageData(image, 0, 0);
-            // Auto-direct: one beat per line, each beat gets its own motion and colors.
+            // おまかせ: draw one of the 800 classified looks by theme + five axes,
+            // then adjust the fine parameters (palette, text) from the same axes.
             const autoBtn = document.getElementById('tl-auto-direct');
             if (autoBtn) autoBtn.click();
-            await new Promise((resolve) => setTimeout(resolve, 400));
+            await until(() => store.state.project.styleMode && store.state.project.styleMode.look, 8000);
+            await new Promise((resolve) => setTimeout(resolve, 300));
             const allBeats = [];
             for (const c of store.state.project.script.cues) {
               for (const b of (store.state.project.beats[c.id] || [])) allBeats.push(b);
@@ -1478,7 +1680,7 @@ function createWindow() {
             const beatStyles = store.state.project.beatStyles || {};
             const autoStyled = allBeats.filter((b) => {
               const s = beatStyles[b.id];
-              return !!(s && s.enter && s.exit && s.post !== undefined && s.color && s.palette);
+              return !!(s && s.text && s.text.size);
             }).length;
             const autoLines = allBeats.length > 0 && allBeats.every((b) => ['line', 'phrase', 'word'].includes(b.chunk));
             const autoSplits = [...new Set(allBeats.map((b) => b.chunk))];
@@ -1489,6 +1691,14 @@ function createWindow() {
             const perCue = store.state.project.script.cues.map((c) => (store.state.project.beats[c.id] || []).length);
             const splitCues = perCue.filter((n) => n > 1).length;
             const maxBeats = perCue.length ? Math.max(...perCue) : 0;
+            // Backdrop patterns cycle the pattern-variants library: no repeats.
+            const midTrack = (store.state.project.tracks || []).find((entry) => entry.kind === 'backdrop');
+            const backdropClips = midTrack ? (store.state.project.clips || []).filter((clip) => clip.trackId === midTrack.id) : [];
+            const backdropPatterns = backdropClips.filter((clip) => clip.spec && clip.spec.type === 'pattern');
+            const backdropKeys = new Set(backdropPatterns.map((clip) => [clip.spec.params.mode, clip.spec.params.size, clip.spec.params.count].join('|')));
+            const backdropUnique = backdropKeys.size;
+            const backdropTotal = backdropClips.length;
+            const backdropVariants = window.SA.patternVariants ? window.SA.patternVariants.count() : 0;
             const cueWithBeats = store.state.project.script.cues.find((c) => (store.state.project.beats[c.id] || []).length > 1);
             let beatPixelDiff = null;
             if (cueWithBeats) {
@@ -1504,23 +1714,47 @@ function createWindow() {
                 beatPixelDiff = diff;
               }
             }
-            const autoPalettes = new Set(allBeats.map((b) => beatStyles[b.id] && beatStyles[b.id].palette && beatStyles[b.id].palette.id));
-            const autoColors = new Set(allBeats.map((b) => {
-              const c = beatStyles[b.id] && beatStyles[b.id].color;
-              return c && c.value ? c.value : c && c.stops ? c.stops.map((s) => s.color).join('-') : null;
-            }));
-            const autoFonts = new Set(allBeats.map((b) => (beatStyles[b.id] && beatStyles[b.id].text ? beatStyles[b.id].text.fontId : null)));
-            const autoSizes = allBeats.map((b) => (beatStyles[b.id] && beatStyles[b.id].text ? beatStyles[b.id].text.size : 0)).filter((value) => value);
-            const autoSizeRange = autoSizes.length ? [Math.min(...autoSizes), Math.max(...autoSizes)] : [];
             // the theme (font, location, palette) must stay identical across beats
             const beatResolved = allBeats.map((b) =>
               window.SA.project.resolveStyle(store.state.project, 'cue:' + b.cueId + '/beat:' + b.id)
             );
+            const autoPalettes = new Set(beatResolved.map((s) => (s.palette && s.palette.id) || null));
+            const autoColors = new Set(beatResolved.map((s) => JSON.stringify((s.color && s.color.fill) || null)));
+            const autoFonts = new Set(beatResolved.map((s) => (s.text && s.text.fontId) || null));
+            const autoSizes = allBeats.map((b) => (beatStyles[b.id] && beatStyles[b.id].text ? beatStyles[b.id].text.size : 0)).filter((value) => value);
+            const autoSizeRange = autoSizes.length ? [Math.min(...autoSizes), Math.max(...autoSizes)] : [];
             const themeFont = store.state.project.style.text && store.state.project.style.text.fontId;
             const autoFontStable = beatResolved.every((s) => !s.text || !s.text.fontId || s.text.fontId === themeFont);
             const autoLocationKinds = new Set(beatResolved.map((s) => JSON.stringify(s.location || null))).size;
             const autoPaletteKinds = new Set(beatResolved.map((s) => (s.palette && s.palette.id) || null)).size;
             const autoPostKinds = new Set(beatResolved.map((s) => JSON.stringify((s.post || []).map((entry) => entry.type)))).size;
+            const autoEnterKinds = new Set(beatResolved.map((s) => (s.enter && s.enter.type) || null)).size;
+            const autoExitKinds = new Set(beatResolved.map((s) => (s.exit && s.exit.type) || null)).size;
+            // おまかせ look: which of the 800 was drawn, and does the resolved
+            // style still carry its headline effect?
+            const lookPool = window.SA.looks && window.SA.looks.current ? window.SA.looks.current() : null;
+            const styleMode = store.state.project.styleMode || {};
+            const autoLook = styleMode.look || null;
+            const autoLookCount = lookPool ? lookPool.count() : 0;
+            let autoLookHeadline = null;
+            let autoLookMatch = null;
+            let autoLookMotion = null;
+            if (lookPool && autoLook) {
+              const entry = lookPool.get(autoLook.n);
+              if (entry) {
+                autoLookHeadline = entry.group + '.' + entry.type;
+                if (lookPool.data && lookPool.data.motion && lookPool.data.motion.buckets && entry.motion) {
+                  autoLookMotion = lookPool.data.motion.buckets[entry.motion.bucket] ? lookPool.data.motion.buckets[entry.motion.bucket].label : null;
+                }
+                const first = beatResolved[0];
+                if (first && ['hold', 'edge', 'post', 'bgEdge'].includes(entry.group)) {
+                  const list = Array.isArray(first[entry.group]) ? first[entry.group] : [];
+                  autoLookMatch = list.some((instance) => instance && instance.type === entry.type);
+                } else if (first && first[entry.group] && first[entry.group].type) {
+                  autoLookMatch = first[entry.group].type === entry.type;
+                }
+              }
+            }
             const sampleBeats = allBeats.slice(0, 4);
             const shots = sampleBeats.map((b) => window.SA.preview.captureRGBA(b.start + (b.end - b.start) * 0.75)).filter(Boolean);
             let autoPng = null;
@@ -1556,6 +1790,17 @@ function createWindow() {
               autoPalettes: autoPalettes.size,
               autoColors: autoColors.size,
               autoFonts: autoFonts.size,
+              autoLook,
+              autoLookCount,
+              autoLookHeadline,
+              autoLookMatch,
+              autoLookMotion,
+              autoEnterKinds,
+              autoExitKinds,
+              backdropTotal,
+              backdropPatterns: backdropPatterns.length,
+              backdropUnique,
+              backdropVariants,
               autoSizeRange,
               autoFontStable,
               autoLocationKinds,

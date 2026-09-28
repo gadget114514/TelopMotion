@@ -91,7 +91,7 @@
     type: 'pattern',
     tags: ['featured'],
     params: [
-      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings'], default: 'grid' },
+      { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings', 'triangles', 'diamonds', 'hexes', 'rain', 'checks', 'polka', 'sineCurve', 'waves', 'randomFill'], default: 'grid' },
       { key: 'count', kind: 'int', min: 4, max: 120, step: 1, default: 24 },
       { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },

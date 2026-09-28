@@ -1,0 +1,3495 @@
+{
+  "format": "telopmotion",
+  "version": 2,
+  "meta": {
+    "title": "TelopMotion 30秒デモ MIX D — ナイトドライブ",
+    "createdAt": "2026-09-28T04:22:49.690Z",
+    "updatedAt": "2026-09-28T04:22:49.690Z",
+    "lang": "ja"
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "demo30d_01",
+        "start": 0,
+        "end": 3,
+        "text": "TelopMotion",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_02",
+        "start": 3,
+        "end": 5.5,
+        "text": "光になれ",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_03",
+        "start": 5.5,
+        "end": 8,
+        "text": "答えなんて 要らない",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_04",
+        "start": 8,
+        "end": 10.5,
+        "text": "ずっと そばにいて",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_05",
+        "start": 10.5,
+        "end": 13,
+        "text": "振り向くな",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_06",
+        "start": 13,
+        "end": 15.5,
+        "text": "月夜に舞う",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_07",
+        "start": 15.5,
+        "end": 18,
+        "text": "ルールなんか 知るか！",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_08",
+        "start": 18,
+        "end": 20.5,
+        "text": "夏が はじまる",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_09",
+        "start": 20.5,
+        "end": 23,
+        "text": "涙が とまらない",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_10",
+        "start": 23,
+        "end": 25.5,
+        "text": "ボリューム上げて！",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_11",
+        "start": 25.5,
+        "end": 28,
+        "text": "ふわり 星をかぞえて",
+        "meta": {
+          "kind": "custom"
+        }
+      },
+      {
+        "id": "demo30d_12",
+        "start": 28,
+        "end": 30,
+        "text": "TelopMotion",
+        "meta": {
+          "kind": "custom"
+        }
+      }
+    ],
+    "sourceName": "demo30-D.srt"
+  },
+  "style": {
+    "text": {
+      "fontId": "DelaGothicOne-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "demo30d_01": {
+      "palette": {
+        "id": "demo30_galaxy",
+        "name": "galaxy",
+        "colors": [
+          "#3300cc",
+          "#cc00ff",
+          "#ffffff",
+          "#00ffff",
+          "#1a0066",
+          "#ffff66",
+          "#ff66ff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "scatterIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.44
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.63,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.5,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.017,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.6,
+          "fresnel": 0.4,
+          "speed": 0.3
+        },
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.035,
+            "speed": 0.6
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#00ffff",
+            "radius": 14,
+            "intensity": 0.8,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "bloom",
+          "enabled": true,
+          "params": {
+            "threshold": 0.6,
+            "intensity": 0.7,
+            "radius": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 44,
+            "size": 3,
+            "shape": "star",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 240,
+        "weight": 400,
+        "letterSpacing": 0.0297,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_02": {
+      "palette": {
+        "id": "demo30_laser",
+        "name": "laser",
+        "colors": [
+          "#000000",
+          "#001a4d",
+          "#00ffff",
+          "#ff00ff",
+          "#000000",
+          "#ff00ff",
+          "#ffffff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "neonFlicker",
+        "enabled": true,
+        "params": {
+          "flickers": 5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "params": {
+          "dir": "right",
+          "distance": 0.41
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.47,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.32,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.017,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "pulse",
+          "enabled": true,
+          "params": {
+            "amount": 0.08,
+            "bpm": 128
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#ff00ff",
+            "radius": 16,
+            "intensity": 1,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 3,
+            "angle": 0,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "bloom",
+          "enabled": true,
+          "params": {
+            "threshold": 0.6,
+            "intensity": 0.7,
+            "radius": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {
+          "color": null
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "wipe",
+        "params": {
+          "lead": 0.05,
+          "duration": 0.3,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "overshoot": 0.15,
+          "dir": "left"
+        },
+        "enabled": true
+      },
+      "bgEdge": [],
+      "text": {
+        "fontId": "NotoSansJP-Bold",
+        "size": 250,
+        "weight": 700,
+        "letterSpacing": 0.0084,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_03": {
+      "palette": {
+        "id": "demo30_acid",
+        "name": "acid",
+        "colors": [
+          "#0a0a0a",
+          "#2b0033",
+          "#39ff14",
+          "#ff00ff",
+          "#000000",
+          "#ff00ff",
+          "#39ff14"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "scramble",
+        "enabled": true,
+        "params": {
+          "charset": "latin",
+          "rate": 1.4
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "gravityFall",
+        "params": {
+          "gravity": 2.4,
+          "spin": 160
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.42,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.017,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "wobbleWarp",
+          "enabled": true,
+          "params": {
+            "amount": 0.1,
+            "scale": 2,
+            "speed": 1.2
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "extrude",
+          "enabled": true,
+          "params": {
+            "depth": 16,
+            "angle": 135,
+            "colorNear": null,
+            "colorFar": null
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "glitchSlice",
+          "enabled": true,
+          "params": {
+            "slices": 8,
+            "offset": 0.4,
+            "rate": 6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 3,
+            "angle": 0,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 200,
+        "weight": 700,
+        "letterSpacing": 0.006,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_04": {
+      "palette": {
+        "id": "demo30_hotpink",
+        "name": "hotpink",
+        "colors": [
+          "#ff0066",
+          "#ff3399",
+          "#ffffff",
+          "#ffe600",
+          "#990033",
+          "#ffffff",
+          "#ff66cc"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "elasticPop",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "blurOut",
+        "params": {
+          "radius": 14.25
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.8,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.624,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.064,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "heartbeat",
+          "enabled": true,
+          "params": {
+            "amount": 0.12,
+            "bpm": 110
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 8,
+            "color": "#990033",
+            "softness": 0.35,
+            "pattern": "solid",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 36,
+            "size": 4,
+            "shape": "heart",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "text": {
+        "fontId": "RocknRollOne-Regular",
+        "size": 200,
+        "weight": 400,
+        "letterSpacing": 0.030600000000000002,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_05": {
+      "palette": {
+        "id": "demo30_blood",
+        "name": "blood",
+        "colors": [
+          "#000000",
+          "#2a0000",
+          "#ff1a1a",
+          "#ffffff",
+          "#000000",
+          "#ff1a1a",
+          "#550000"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "glitchIn",
+        "enabled": true,
+        "params": {
+          "intensity": 0.5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "creepOut",
+        "params": {
+          "shift": 0.15
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.76,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.165,
+            "delay": 0,
+            "ease": "expoIn"
+          },
+          "stagger": {
+            "each": 0.068,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "shiver",
+          "enabled": true,
+          "params": {
+            "amount": 0.02,
+            "interval": 3
+          },
+          "motion": {}
+        },
+        {
+          "type": "jitter",
+          "enabled": true,
+          "params": {
+            "amp": 0.012,
+            "rate": 12
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "width": 0.35,
+            "grow": 0.5,
+            "color": null
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "vhsTracking",
+          "enabled": true,
+          "params": {
+            "amount": 0.3,
+            "noise": 0.2,
+            "rollSpeed": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 3,
+            "angle": 0,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {}
+      },
+      "bgMotion": {
+        "type": "bleed",
+        "params": {
+          "lead": -0.1,
+          "duration": 0.25,
+          "roughness": 0.7
+        }
+      },
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 250,
+        "weight": 400,
+        "letterSpacing": 0.009899999999999999,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_06": {
+      "palette": {
+        "id": "demo30_shu",
+        "name": "shu",
+        "colors": [
+          "#cc0000",
+          "#660000",
+          "#ffffff",
+          "#ffd700",
+          "#000000",
+          "#ffd700",
+          "#ffffff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "vertical",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "columnGap": 1.2
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "strokeDrawOn",
+        "enabled": true,
+        "params": {
+          "width": 4,
+          "fillDelay": 0.5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "params": {
+          "dir": "left"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.708,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.091,
+            "order": "vertical-reading",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": null,
+            "opacity": 0.6
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 36,
+            "size": 3,
+            "shape": "dot",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "stamp",
+        "params": {
+          "lead": 0.02,
+          "duration": 0.2,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "from": 1.7
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "NotoSerifJP-Regular",
+        "size": 170,
+        "weight": 400,
+        "letterSpacing": 0.0315,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "hold": [
+        {
+          "type": "sway",
+          "enabled": true,
+          "params": {
+            "angle": 3,
+            "speed": 0.7,
+            "amount": 0.04
+          },
+          "motion": {}
+        }
+      ],
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_07": {
+      "palette": {
+        "id": "demo30_riot",
+        "name": "riot",
+        "colors": [
+          "#ffe600",
+          "#ff3300",
+          "#000000",
+          "#ff0000",
+          "#ffffff",
+          "#ff0000",
+          "#000000"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "zoomIn",
+        "enabled": true,
+        "params": {
+          "from": 0.4
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "creepOut",
+        "params": {
+          "shift": 0.15
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.26,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.23,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.005,
+            "order": "word",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 10,
+            "color": "#ffffff",
+            "softness": 0.35,
+            "pattern": "solid",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "shockwave",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "radius": 0.25,
+            "width": 0.06,
+            "strength": 0.6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 3,
+            "angle": 0,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 160,
+        "weight": 700,
+        "letterSpacing": 0.0005,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "hold": [
+        {
+          "type": "shiver",
+          "enabled": true,
+          "params": {
+            "amount": 0.03,
+            "interval": 3
+          },
+          "motion": {}
+        },
+        {
+          "type": "pulse",
+          "enabled": true,
+          "params": {
+            "amount": 0.12,
+            "bpm": 180
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_08": {
+      "palette": {
+        "id": "demo30_sky",
+        "name": "sky",
+        "colors": [
+          "#0066ff",
+          "#00ccff",
+          "#ffffff",
+          "#ffe600",
+          "#003399",
+          "#ffffff",
+          "#00ccff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "dropBounce",
+        "enabled": true,
+        "params": {
+          "height": 0.5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "shrinkToCenter",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.48,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.43,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.01,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "wipe",
+        "params": {
+          "lead": 0.06,
+          "duration": 0.32,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "dir": "left"
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "RocknRollOne-Regular",
+        "size": 250,
+        "weight": 400,
+        "letterSpacing": 0.021,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "hold": [
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.03,
+            "speed": 0.8
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": null,
+            "opacity": 0.6
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "lensFlare",
+          "enabled": true,
+          "params": {
+            "position": {
+              "x": 0.4,
+              "y": 0.35
+            },
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 30,
+            "size": 3,
+            "shape": "star",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_09": {
+      "palette": {
+        "id": "demo30_tears",
+        "name": "tears",
+        "colors": [
+          "#000022",
+          "#0000cc",
+          "#00e5ff",
+          "#ffffff",
+          "#000011",
+          "#00e5ff",
+          "#3366ff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "waveRise",
+        "enabled": true,
+        "params": {
+          "amp": 0.12
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "melt",
+        "params": {
+          "drip": 0.9
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 1.01,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 1.116,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.113,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "sway",
+          "enabled": true,
+          "params": {
+            "angle": 3,
+            "speed": 0.7,
+            "amount": 0.06
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "echoTrail",
+          "enabled": true,
+          "params": {
+            "copies": 4,
+            "spacing": 0.08,
+            "decay": 0.6,
+            "tint": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "text": {
+        "fontId": "NotoSansJP-Bold",
+        "size": 200,
+        "weight": 400,
+        "letterSpacing": 0.0336,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#3366ff",
+            "radius": 8,
+            "intensity": 0.6,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_10": {
+      "palette": {
+        "id": "demo30_disco",
+        "name": "disco",
+        "colors": [
+          "#ff00cc",
+          "#6600ff",
+          "#ffff00",
+          "#00ffff",
+          "#330066",
+          "#ffffff",
+          "#ff6600"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "elasticPop",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.59
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.39,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.216,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.024,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "jelly",
+          "enabled": true,
+          "params": {
+            "amount": 0.18,
+            "freq": 3
+          },
+          "motion": {}
+        },
+        {
+          "type": "pulse",
+          "enabled": true,
+          "params": {
+            "amount": 0.1,
+            "bpm": 128
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 8,
+            "color": "#330066",
+            "softness": 0.35,
+            "pattern": "solid",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "shockwave",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "radius": 0.25,
+            "width": 0.06,
+            "strength": 0.6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 48,
+            "size": 3,
+            "shape": "star",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "bgMotion": {
+        "type": "fall",
+        "params": {
+          "lead": -0.15,
+          "duration": 0.8,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "from": 0.8
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 200,
+        "weight": 700,
+        "letterSpacing": 0.006,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_11": {
+      "palette": {
+        "id": "demo30_galaxy",
+        "name": "galaxy",
+        "colors": [
+          "#3300cc",
+          "#cc00ff",
+          "#ffffff",
+          "#00ffff",
+          "#1a0066",
+          "#ffff66",
+          "#ff66ff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "scatterIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "params": {
+          "dir": "left",
+          "distance": 0.3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.81,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.015,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.6,
+          "fresnel": 0.4,
+          "speed": 0.3
+        },
+        "motion": {}
+      },
+      "text": {
+        "fontId": "ZenMaruGothic-Regular",
+        "size": 200,
+        "weight": 400,
+        "letterSpacing": 0.0297,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "hold": [
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.035,
+            "speed": 0.6
+          },
+          "motion": {}
+        }
+      ],
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#00ffff",
+            "radius": 14,
+            "intensity": 0.8,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "bloom",
+          "enabled": true,
+          "params": {
+            "threshold": 0.6,
+            "intensity": 0.7,
+            "radius": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 44,
+            "size": 3,
+            "shape": "star",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    },
+    "demo30d_12": {
+      "palette": {
+        "id": "demo30_amp",
+        "name": "amp",
+        "colors": [
+          "#000000",
+          "#1a1a1a",
+          "#ffe600",
+          "#ff0000",
+          "#000000",
+          "#ff0000",
+          "#ffffff"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      },
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      },
+      "enter": {
+        "type": "shatterRebuild",
+        "enabled": true,
+        "params": {
+          "spread": 0.4,
+          "spin": 120
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "stagger": {
+            "each": 0.045,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          }
+        }
+      },
+      "exit": {
+        "type": "burnAway",
+        "params": {
+          "scale": 10,
+          "emberColor": "#4f3419",
+          "charColor": "#4f3419"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.34,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.182,
+            "delay": 0,
+            "ease": "expoIn"
+          },
+          "stagger": {
+            "each": 0.02,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      },
+      "fill": {
+        "type": "solid",
+        "enabled": true,
+        "params": {},
+        "motion": {}
+      },
+      "hold": [
+        {
+          "type": "jitter",
+          "enabled": true,
+          "params": {
+            "amp": 0.015,
+            "rate": 16
+          },
+          "motion": {}
+        },
+        {
+          "type": "pulse",
+          "enabled": true,
+          "params": {
+            "amount": 0.1,
+            "bpm": 150
+          },
+          "motion": {}
+        }
+      ],
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "enabled": true,
+          "params": {
+            "amount": 0.4,
+            "radial": 0,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        },
+        {
+          "type": "zoomBlur",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "strength": 0.4,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ],
+      "bgShape": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "solid",
+        "params": {}
+      },
+      "bgMotion": {
+        "type": "bleed",
+        "params": {
+          "lead": 0.02,
+          "duration": 0.2,
+          "roughness": 0.6
+        }
+      },
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 240,
+        "weight": 700,
+        "letterSpacing": 0.0022,
+        "lineHeight": 1.25,
+        "align": "center",
+        "maxWidth": 0.9
+      },
+      "edge": [
+        {
+          "type": "longShadow",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "angle": 135,
+            "color": null,
+            "fade": 0.7
+          },
+          "motion": {}
+        }
+      ],
+      "bgEdge": [],
+      "repeat": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "demo30d_01": [
+      {
+        "id": "demo30d_01:single0",
+        "cueId": "demo30d_01",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 3,
+        "text": "TelopMotion",
+        "lines": [
+          "TelopMotion"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_02": [
+      {
+        "id": "demo30d_02:single0",
+        "cueId": "demo30d_02",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 5.5,
+        "text": "光になれ",
+        "lines": [
+          "光になれ"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_03": [
+      {
+        "id": "demo30d_03:single0",
+        "cueId": "demo30d_03",
+        "kind": "single",
+        "index": 0,
+        "start": 5.5,
+        "end": 8,
+        "text": "答えなんて 要らない",
+        "lines": [
+          "答えなんて 要らない"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_04": [
+      {
+        "id": "demo30d_04:single0",
+        "cueId": "demo30d_04",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 10.5,
+        "text": "ずっと そばにいて",
+        "lines": [
+          "ずっと そばにいて"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_05": [
+      {
+        "id": "demo30d_05:single0",
+        "cueId": "demo30d_05",
+        "kind": "single",
+        "index": 0,
+        "start": 10.5,
+        "end": 13,
+        "text": "振り向くな",
+        "lines": [
+          "振り向くな"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_06": [
+      {
+        "id": "demo30d_06:single0",
+        "cueId": "demo30d_06",
+        "kind": "single",
+        "index": 0,
+        "start": 13,
+        "end": 15.5,
+        "text": "月夜に舞う",
+        "lines": [
+          "月夜に舞う"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_07": [
+      {
+        "id": "demo30d_07:single0",
+        "cueId": "demo30d_07",
+        "kind": "single",
+        "index": 0,
+        "start": 15.5,
+        "end": 18,
+        "text": "ルールなんか 知るか！",
+        "lines": [
+          "ルールなんか 知るか！"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_08": [
+      {
+        "id": "demo30d_08:single0",
+        "cueId": "demo30d_08",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 20.5,
+        "text": "夏が はじまる",
+        "lines": [
+          "夏が はじまる"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_09": [
+      {
+        "id": "demo30d_09:single0",
+        "cueId": "demo30d_09",
+        "kind": "single",
+        "index": 0,
+        "start": 20.5,
+        "end": 23,
+        "text": "涙が とまらない",
+        "lines": [
+          "涙が とまらない"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_10": [
+      {
+        "id": "demo30d_10:single0",
+        "cueId": "demo30d_10",
+        "kind": "single",
+        "index": 0,
+        "start": 23,
+        "end": 25.5,
+        "text": "ボリューム上げて！",
+        "lines": [
+          "ボリューム上げて！"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_11": [
+      {
+        "id": "demo30d_11:single0",
+        "cueId": "demo30d_11",
+        "kind": "single",
+        "index": 0,
+        "start": 25.5,
+        "end": 28,
+        "text": "ふわり 星をかぞえて",
+        "lines": [
+          "ふわり 星をかぞえて"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "demo30d_12": [
+      {
+        "id": "demo30d_12:single0",
+        "cueId": "demo30d_12",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 30,
+        "text": "TelopMotion",
+        "lines": [
+          "TelopMotion"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_bg_0",
+      "trackId": "bg",
+      "start": 0,
+      "end": 3,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#3300cc",
+        "#cc00ff"
+      ]
+    },
+    {
+      "id": "clip_mid_0",
+      "trackId": "mid",
+      "start": 0,
+      "end": 3,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "color": null,
+          "flow": "drift",
+          "count": 19,
+          "speed": 0.58,
+          "size": 2.68
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#00ffff",
+        "#ffff66"
+      ]
+    },
+    {
+      "id": "clip_bg_1",
+      "trackId": "bg",
+      "start": 3,
+      "end": 5.5,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#000000",
+        "#001a4d"
+      ]
+    },
+    {
+      "id": "clip_mid_1",
+      "trackId": "mid",
+      "start": 3,
+      "end": 5.5,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "color": null,
+          "mode": "mirror"
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff00ff",
+        "#ff00ff"
+      ]
+    },
+    {
+      "id": "clip_bg_2",
+      "trackId": "bg",
+      "start": 5.5,
+      "end": 8,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#0a0a0a",
+        "#2b0033"
+      ]
+    },
+    {
+      "id": "clip_mid_2",
+      "trackId": "mid",
+      "start": 5.5,
+      "end": 8,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "color": null,
+          "mode": "radial",
+          "bars": 66,
+          "falloff": 1.19
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff00ff",
+        "#ff00ff"
+      ]
+    },
+    {
+      "id": "clip_bg_3",
+      "trackId": "bg",
+      "start": 8,
+      "end": 10.5,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff0066",
+        "#ff3399"
+      ]
+    },
+    {
+      "id": "clip_mid_3",
+      "trackId": "mid",
+      "start": 8,
+      "end": 10.5,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "color": null,
+          "mode": "grid",
+          "count": 20,
+          "speed": 0.61
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffe600",
+        "#ffffff"
+      ]
+    },
+    {
+      "id": "clip_bg_4",
+      "trackId": "bg",
+      "start": 10.5,
+      "end": 13,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#000000",
+        "#2a0000"
+      ]
+    },
+    {
+      "id": "clip_mid_4",
+      "trackId": "mid",
+      "start": 10.5,
+      "end": 13,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "color": null,
+          "flow": "fall",
+          "count": 26,
+          "speed": 0.53,
+          "size": 2.68
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffffff",
+        "#ff1a1a"
+      ]
+    },
+    {
+      "id": "clip_bg_5",
+      "trackId": "bg",
+      "start": 13,
+      "end": 15.5,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#cc0000",
+        "#660000"
+      ]
+    },
+    {
+      "id": "clip_mid_5",
+      "trackId": "mid",
+      "start": 13,
+      "end": 15.5,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "color": null,
+          "mode": "randomFill",
+          "count": 6,
+          "size": 0.2,
+          "speed": 0.5,
+          "opacity": 0.7
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffd700",
+        "#ffd700"
+      ]
+    },
+    {
+      "id": "clip_bg_6",
+      "trackId": "bg",
+      "start": 15.5,
+      "end": 18,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffe600",
+        "#ff3300"
+      ]
+    },
+    {
+      "id": "clip_mid_6",
+      "trackId": "mid",
+      "start": 15.5,
+      "end": 18,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "color": null,
+          "mode": "mirror"
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff0000",
+        "#ff0000"
+      ]
+    },
+    {
+      "id": "clip_bg_7",
+      "trackId": "bg",
+      "start": 18,
+      "end": 20.5,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#0066ff",
+        "#00ccff"
+      ]
+    },
+    {
+      "id": "clip_mid_7",
+      "trackId": "mid",
+      "start": 18,
+      "end": 20.5,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "color": null,
+          "mode": "line"
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffe600",
+        "#ffffff"
+      ]
+    },
+    {
+      "id": "clip_bg_8",
+      "trackId": "bg",
+      "start": 20.5,
+      "end": 23,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#000022",
+        "#0000cc"
+      ]
+    },
+    {
+      "id": "clip_mid_8",
+      "trackId": "mid",
+      "start": 20.5,
+      "end": 23,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "color": null,
+          "flow": "fall",
+          "count": 20,
+          "speed": 0.51,
+          "size": 2.19
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ffffff",
+        "#00e5ff"
+      ]
+    },
+    {
+      "id": "clip_bg_9",
+      "trackId": "bg",
+      "start": 23,
+      "end": 25.5,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff00cc",
+        "#6600ff"
+      ]
+    },
+    {
+      "id": "clip_mid_9",
+      "trackId": "mid",
+      "start": 23,
+      "end": 25.5,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "color": null,
+          "mode": "radial",
+          "bars": 77,
+          "falloff": 1.31
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#00ffff",
+        "#ffffff"
+      ]
+    },
+    {
+      "id": "clip_bg_10",
+      "trackId": "bg",
+      "start": 25.5,
+      "end": 28,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#3300cc",
+        "#cc00ff"
+      ]
+    },
+    {
+      "id": "clip_mid_10",
+      "trackId": "mid",
+      "start": 25.5,
+      "end": 28,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "color": null,
+          "mode": "radial",
+          "bars": 54,
+          "falloff": 1.01
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#00ffff",
+        "#ffff66"
+      ]
+    },
+    {
+      "id": "clip_bg_11",
+      "trackId": "bg",
+      "start": 28,
+      "end": 30,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "scale": 1.6,
+          "speed": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#000000",
+        "#1a1a1a"
+      ]
+    },
+    {
+      "id": "clip_mid_11",
+      "trackId": "mid",
+      "start": 28,
+      "end": 30,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "color": null,
+          "mode": "bars",
+          "bars": 77,
+          "falloff": 1.34
+        }
+      },
+      "opacity": 0.55,
+      "fadeIn": 0.05,
+      "fadeOut": 0.05,
+      "colors": [
+        "#ff0000",
+        "#ff0000"
+      ]
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": false,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": false,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

@@ -60,6 +60,8 @@ test('hue shifts quantize to the basic colour names', () => {
 test('the acceptance targets are met', () => {
   const report = counting.countSignatures();
   assert.ok(report.repeat.signatures >= 300, `repeat signatures ${report.repeat.signatures}`);
+  assert.ok(report.groups.background >= 400, `background signatures ${report.groups.background}`);
+  assert.ok(report.patterns.variants >= 800, `pattern variants ${report.patterns.variants}`);
   assert.ok(report.total >= 800, `total signatures ${report.total}`);
   assert.ok(report.groups.post > 0 && report.groups.repeat > 0);
 });

@@ -22,6 +22,7 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 }
 const repeat = require(path.join(FX_DIR, 'repeat.js'));
 const rng = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js'));
+const patternVariants = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'pattern-variants.js'));
 
 const MERGE_TABLE_PATH = path.join(__dirname, 'merge-table.json');
 
@@ -283,6 +284,13 @@ function countExistingSignatures() {
     const signatures = new Set();
     for (const descriptor of list) {
       const params = descriptor.params || [];
+      // background.pattern: the mode x size x count variant library is the
+      // enumerated representative set (size steps count as distinct looks)
+      if (group === 'background' && descriptor.type === 'pattern') {
+        for (const variant of patternVariants.variants()) signatures.add(`${descriptor.type}#${variant.key}`);
+        signatures.add(`${descriptor.type}#${patternVariants.keyOf(fx.paramDefaults(group, descriptor.type))}`);
+        continue;
+      }
       // one representative per quantized value plus the descriptor default
       const choices = params.map((param) => paramCandidates(param));
       const combos = [[]];
@@ -338,9 +346,17 @@ function countSignatures() {
     groupCounts[alias.group] = Math.max(0, groupCounts[alias.group] - 1);
   }
   const total = Object.values(groupCounts).reduce((sum, value) => sum + value, 0);
+  const patterns = {
+    variants: patternVariants.count(),
+    signatures: patternVariants.count() + 1,
+    modes: patternVariants.MODES.length,
+    sizes: patternVariants.SIZE_STOPS.length,
+    counts: patternVariants.COUNT_STOPS.length,
+  };
   return {
     groups: groupCounts,
     repeat: repeatCounts,
+    patterns,
     existing: { groups: existing.groups, total: existing.total },
     total,
     aliases: aliases.length,
@@ -367,7 +383,11 @@ function toMarkdown(report) {
   lines.push('', `Normal mode: raw ${report.repeat.byMode.normal.raw} → discount x0.29 → ${report.repeat.byMode.normal.discounted}`);
   lines.push(`Many mode: raw ${report.repeat.byMode.many.raw} → discount x0.34 → ${report.repeat.byMode.many.discounted}`);
   lines.push('', `Merge table aliases applied: ${report.aliases}`);
-  lines.push('', 'Acceptance: repeat ≥ 300 and total ≥ 800 (doc/repeat-design.md §8.4).');
+  lines.push(
+    '',
+    `Background patterns: ${report.patterns.signatures} signatures (${report.patterns.variants} variants = ${report.patterns.modes} modes x ${report.patterns.sizes} sizes x ${report.patterns.counts} counts, plus the base form)`
+  );
+  lines.push('', 'Acceptance: repeat ≥ 300, background ≥ 400 and total ≥ 800 (doc/repeat-design.md §8.4).');
   lines.push('', 'The discount factors are the §7.4 placeholders until the §8.3 manual review replaces them.');
   lines.push('');
   lines.push('## Manual review (§8.3, pending)');
@@ -386,9 +406,10 @@ function main() {
   fs.writeFileSync(path.join(outDir, 'distinct-count.json'), `${JSON.stringify(report, null, 2)}\n`);
   fs.writeFileSync(path.join(outDir, 'distinct-count.md'), toMarkdown(report));
   console.log(`repeat: ${report.repeat.signatures} signatures (raw ${report.repeat.raw})`);
+  console.log(`background patterns: ${report.patterns.signatures} signatures (${report.patterns.variants} variants)`);
   console.log(`total:  ${report.total} signatures`);
   for (const [group, count] of Object.entries(report.groups).sort()) console.log(`  ${group}: ${count}`);
-  const ok = report.repeat.signatures >= 300 && report.total >= 800;
+  const ok = report.repeat.signatures >= 300 && report.groups.background >= 400 && report.total >= 800;
   console.log(ok ? 'acceptance: ok' : 'acceptance: FAILED');
   return ok ? 0 : 1;
 }
