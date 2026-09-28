@@ -1,4 +1,4 @@
-window.SA = window.SA || {};
+(typeof window !== 'undefined' ? window : globalThis).SA = (typeof window !== 'undefined' ? window : globalThis).SA || {};
 
 SA.store = (() => {
   'use strict';
@@ -305,6 +305,47 @@ SA.store = (() => {
     }
   }
 
+  function findClip(id) {
+    return ((state.project && state.project.clips) || []).find((clip) => clip && clip.id === id) || null;
+  }
+
+  function trackById(id) {
+    return ((state.project && state.project.tracks) || []).find((track) => track && track.id === id) || null;
+  }
+
+  function modeAxes() {
+    const mode = (state.project && state.project.styleMode) || {};
+    if (typeof SA === 'undefined' || !SA.moods) return { axes: mode.axes || {}, direction: mode.direction || 'horizontal', genre: mode.genre || null };
+    return { axes: SA.moods.normalizeAxes(mode.axes || {}), direction: mode.direction || 'horizontal', genre: mode.genre || null };
+  }
+
+  function clipDurationOf(clip) {
+    return Math.max(0.1, (Number(clip.end) || 0) - (Number(clip.start) || 0));
+  }
+
+  // Cues on a track may not overlap. Returns the overlapping cue, if any.
+  function overlappingCue(project, trackId, cueId, start, end) {
+    for (const cue of project.script.cues) {
+      if (cue.id === cueId) continue;
+      if (!subtitleCue(project, cue, trackId)) continue;
+      if (cue.start < end - 1e-4 && cue.end > start + 1e-4) return cue;
+    }
+    return null;
+  }
+
+  function subtitleCue(project, cue, trackId) {
+    const id = cue.trackId || 'sub1';
+    return id === trackId;
+  }
+
+  function nextTrackId(project, kind) {
+    const prefix = kind === 'subtitle' ? 'sub' : kind === 'backdrop' ? 'mid' : kind === 'filler' ? 'filler' : kind === 'background' ? 'bg' : 'trk';
+    const used = new Set((project.tracks || []).map((track) => track && track.id));
+    let index = 1;
+    while (used.has(`${prefix}${index}`)) index += 1;
+    return `${prefix}${index}`;
+  }
+
   const commands = {
     setProp(path, propPath, value, options) {
       dispatch({
@@ -391,7 +432,9 @@ SA.store = (() => {
         label: 'add cue',
         areas: ['script'],
         do(project) {
-          project.script.cues.push(clone(cue));
+          const entry = clone(cue);
+          if (!entry.trackId) entry.trackId = 'sub1';
+          project.script.cues.push(entry);
           project.script.cues.sort((a, b) => a.start - b.start);
           restructureProject(project);
         },
@@ -1107,6 +1150,298 @@ SA.store = (() => {
           const clips = project.fillers.clips || (project.fillers.clips = {});
           if (spec == null) delete clips[key];
           else clips[key] = { ...clone(spec), pinned: true };
+        },
+      });
+    },
+    updateTrack(id, patch, options) {
+      if (!trackById(id)) return;
+      dispatch({
+        label: `track ${id}`,
+        areas: ['project'],
+        coalesceKey: options && options.coalesceKey,
+        do(projectDoc) {
+          const target = (projectDoc.tracks || []).find((track) => track.id === id);
+          if (target) Object.assign(target, clone(patch));
+        },
+      });
+    },
+    addTrack(kind) {
+      const project = state.project;
+      if (!project) return null;
+      const trackKind = kind || 'subtitle';
+      const subtitle = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
+      const id = nextTrackId(project, trackKind);
+      const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景' };
+      const lastSubtitle = (project.tracks || []).reduce((at, track, i) => (track.kind === 'subtitle' ? i : at), -1);
+      const index = trackKind === 'subtitle' ? lastSubtitle + 1 : (project.tracks || []).length;
+      dispatch({
+        label: 'add track',
+        areas: ['project'],
+        do(projectDoc) {
+          projectDoc.tracks = projectDoc.tracks || [];
+          projectDoc.tracks.splice(Math.min(projectDoc.tracks.length, index), 0, {
+            id,
+            kind: trackKind,
+            name: `${labels[trackKind] || trackKind}${trackKind === 'subtitle' ? subtitle.length + 1 : ''}`,
+          });
+        },
+      });
+      return id;
+    },
+    removeTrack(id) {
+      const project = state.project;
+      if (!project) return;
+      const track = trackById(id);
+      if (!track) return;
+      const subtitles = (project.tracks || []).filter((entry) => entry && entry.kind === 'subtitle');
+      if (track.kind === 'subtitle' && subtitles.length <= 1) return;
+      if (!['subtitle', 'backdrop', 'filler', 'background'].includes(track.kind)) return;
+      const fallback = track.kind === 'subtitle' ? subtitles.find((entry) => entry.id !== id) : null;
+      dispatch({
+        label: 'remove track',
+        areas: ['project'],
+        do(projectDoc) {
+          projectDoc.tracks = (projectDoc.tracks || []).filter((entry) => entry.id !== id);
+          if (fallback) {
+            for (const cue of projectDoc.script.cues) {
+              if ((cue.trackId || 'sub1') === id) cue.trackId = fallback.id;
+            }
+          }
+          projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== id);
+        },
+      });
+    },
+    moveTrack(id, direction) {
+      const project = state.project;
+      if (!project) return;
+      const tracks = project.tracks || [];
+      const index = tracks.findIndex((track) => track.id === id);
+      if (index < 0) return;
+      const step = direction === 'up' ? -1 : 1;
+      const target = index + step;
+      if (target < 0 || target >= tracks.length) return;
+      if (tracks[index].kind !== tracks[target].kind) return;
+      dispatch({
+        label: 'move track',
+        areas: ['project'],
+        do(projectDoc) {
+          const list = projectDoc.tracks || [];
+          const at = list.findIndex((track) => track.id === id);
+          if (at < 0 || at + step < 0 || at + step >= list.length) return;
+          [list[at], list[at + step]] = [list[at + step], list[at]];
+        },
+      });
+    },
+    setCueTrack(cueId, trackId) {
+      const cue = findCue(cueId);
+      const track = trackById(trackId);
+      if (!cue || !track || track.kind !== 'subtitle') return;
+      if ((cue.trackId || 'sub1') === trackId) return;
+      if (overlappingCue(state.project, trackId, cueId, cue.start, cue.end)) return;
+      dispatch({
+        label: 'move cue to track',
+        areas: ['script'],
+        do(projectDoc) {
+          const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
+          if (target) target.trackId = trackId;
+        },
+      });
+    },
+    addClip(clip, trackId) {
+      if (!clip) return null;
+      const project = state.project;
+      if (!project) return null;
+      const id = clip.id || SA.project.nextClipId(project, 'clip');
+      const start = Math.max(0, Number(clip.start) || 0);
+      const end = Math.max(start + 0.1, Number(clip.end) || start + 1);
+      dispatch({
+        label: 'add clip',
+        areas: ['project'],
+        do(projectDoc) {
+          projectDoc.clips = projectDoc.clips || [];
+          projectDoc.clips.push({
+            id,
+            trackId: trackId || clip.trackId || 'bg',
+            start,
+            end,
+            spec: clip.spec ? clone(clip.spec) : { type: 'solid', params: {} },
+            opacity: clip.opacity == null ? 1 : clip.opacity,
+            fadeIn: clip.fadeIn == null ? 0.3 : clip.fadeIn,
+            fadeOut: clip.fadeOut == null ? 0.3 : clip.fadeOut,
+            colors: clip.colors ? clone(clip.colors) : null,
+          });
+        },
+      });
+      return id;
+    },
+    updateClip(id, patch, options) {
+      if (!findClip(id)) return;
+      dispatch({
+        label: `clip ${id}`,
+        areas: ['project'],
+        coalesceKey: options && options.coalesceKey,
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((clip) => clip.id === id);
+          if (target) Object.assign(target, clone(patch));
+        },
+      });
+    },
+    moveClip(id, start, options) {
+      const clip = findClip(id);
+      if (!clip) return;
+      const span = clipDurationOf(clip);
+      dispatch({
+        label: 'move clip',
+        areas: ['project'],
+        coalesceKey: options && options.coalesceKey,
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === id);
+          if (!target) return;
+          target.start = Math.max(0, start);
+          target.end = target.start + span;
+        },
+      });
+    },
+    trimClip(id, edge, time, options) {
+      const clip = findClip(id);
+      if (!clip) return;
+      dispatch({
+        label: 'trim clip',
+        areas: ['project'],
+        coalesceKey: options && options.coalesceKey,
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === id);
+          if (!target) return;
+          if (edge === 'start') target.start = Math.max(0, Math.min(time, target.end - 0.1));
+          else target.end = Math.max(target.start + 0.1, time);
+        },
+      });
+    },
+    splitClip(id, time) {
+      const clip = findClip(id);
+      if (!clip || time <= clip.start + 1e-4 || time >= clip.end - 1e-4) return;
+      const secondId = SA.project.nextClipId(state.project, 'clip');
+      dispatch({
+        label: 'split clip',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === id);
+          if (!target) return;
+          const second = clone(target);
+          second.id = secondId;
+          second.start = time;
+          projectDoc.clips.push(second);
+          target.end = time;
+        },
+      });
+    },
+    deleteClip(id) {
+      if (!findClip(id)) return;
+      dispatch({
+        label: 'delete clip',
+        areas: ['project'],
+        do(projectDoc) {
+          projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.id !== id);
+        },
+      });
+    },
+    duplicateClip(id) {
+      const clip = findClip(id);
+      if (!clip) return null;
+      const span = clipDurationOf(clip);
+      const start = clip.end;
+      const newId = SA.project.nextClipId(state.project, 'clip');
+      dispatch({
+        label: 'duplicate clip',
+        areas: ['project'],
+        do(projectDoc) {
+          projectDoc.clips = projectDoc.clips || [];
+          const copy = clone(clip);
+          copy.id = newId;
+          copy.start = start;
+          copy.end = start + span;
+          projectDoc.clips.push(copy);
+        },
+      });
+      return newId;
+    },
+    regenerateFillers() {
+      const project = state.project;
+      if (!project || typeof SA === 'undefined' || !SA.fillers) return;
+      const cues = (project.script && project.script.cues) || [];
+      const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+      const gaps = SA.fillers.gaps(cues, duration, SA.fillers.settingsFor(project));
+      dispatch({
+        label: 'regenerate fillers',
+        areas: ['project'],
+        do(projectDoc) {
+          const tracks = projectDoc.tracks || [];
+          const filler = tracks.find((track) => track.kind === 'filler');
+          if (!filler) return;
+          projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== filler.id);
+          for (const gap of gaps) {
+            projectDoc.clips.push({
+              id: SA.project.nextClipId(projectDoc, 'clip_filler'),
+              trackId: filler.id,
+              start: gap.from,
+              end: gap.to,
+              spec: clone(gap.spec || { type: 'none', params: {} }),
+              opacity: 1,
+              fadeIn: 0.3,
+              fadeOut: 0.3,
+              colors: null,
+            });
+          }
+        },
+      });
+    },
+    rerollCue(cueId) {
+      const cue = findCue(cueId);
+      if (!cue || typeof SA === 'undefined' || !SA.moods) return;
+      const mode = modeAxes();
+      dispatch({
+        label: 'reroll cue',
+        areas: ['style'],
+        do(projectDoc) {
+          const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
+          if (!target) return;
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          const context = SA.moods.contextForCue(projectDoc, target);
+          const emphasis = SA.moods.isEmphasis ? SA.moods.isEmphasis(target) : false;
+          const generated = SA.moods.generate({ axes: mode.axes, seed, direction: mode.direction, genre: mode.genre, context, emphasis }).style;
+          projectDoc.cueStyles[cueId] = SA.project.mergeDeep(projectDoc.cueStyles[cueId] || {}, {
+            enter: generated.enter,
+            exit: generated.exit,
+          });
+          const baseSize = Number(
+            (projectDoc.style && projectDoc.style.text && projectDoc.style.text.size) ||
+              (generated.text && generated.text.size) ||
+              96
+          );
+          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          beats.forEach((beat, index) => {
+            const random = SA.rng ? SA.rng.rngFor(seed + index + 1, beat.id, 'beat') : Math.random;
+            const size = Math.round(baseSize * (0.9 + random() * 0.25));
+            projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, { text: { size } });
+          });
+        },
+      });
+    },
+    rerollClip(clipId) {
+      const clip = findClip(clipId);
+      if (!clip || typeof SA === 'undefined' || !SA.moods || !SA.moods.rerollClipSpec) return;
+      const mode = modeAxes();
+      const kind = SA.project.trackKindOf(state.project, clip.trackId);
+      dispatch({
+        label: 'reroll clip',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          if (!target) return;
+          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed: Math.floor(Math.random() * 900000) + 1000, genre: mode.genre });
+          if (!result) return;
+          if (result.spec) target.spec = result.spec;
+          if (result.colors) target.colors = result.colors;
         },
       });
     },

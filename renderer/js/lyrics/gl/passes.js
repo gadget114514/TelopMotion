@@ -120,6 +120,50 @@ SA.glPasses = (() => {
     return { vao, positionBuffer, indexBuffer, count: indices.length };
   }
 
+  // One quad per letter for the text background pass.
+  function buildBgBatch(gl, scene) {
+    const positions = [];
+    const indices = [];
+    const corners = [
+      [-1, -1],
+      [1, -1],
+      [1, 1],
+      [-1, 1],
+    ];
+    for (let i = 0; i < scene.letters.length; i += 1) {
+      const letter = scene.letters[i];
+      const cell = SA.textBg ? SA.textBg.cellMetrics(letter) : { w: letter.size || 1, h: letter.size || 1, inkToCell: [0, 0] };
+      const em = Math.max(1, Number(letter.size) || 1);
+      const base = positions.length / 9;
+      for (const [cx, cy] of corners) {
+        positions.push(cx, cy, i, cell.inkToCell[0], cell.inkToCell[1], cell.w, cell.h, em, em);
+      }
+      indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    }
+    if (!positions.length) return null;
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(positions), gl.STATIC_DRAW);
+    const stride = 36;
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 1, gl.FLOAT, false, stride, 8);
+    gl.enableVertexAttribArray(2);
+    gl.vertexAttribPointer(2, 2, gl.FLOAT, false, stride, 12);
+    gl.enableVertexAttribArray(3);
+    gl.vertexAttribPointer(3, 2, gl.FLOAT, false, stride, 20);
+    gl.enableVertexAttribArray(4);
+    gl.vertexAttribPointer(4, 2, gl.FLOAT, false, stride, 28);
+    const indexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, Uint32Array.from(indices), gl.STATIC_DRAW);
+    gl.bindVertexArray(null);
+    return { vao, positionBuffer, indexBuffer, count: indices.length };
+  }
+
   function buildPiecesBatch(gl, scene) {
     const positions = [];
     for (let i = 0; i < scene.letters.length; i += 1) {
@@ -235,6 +279,7 @@ SA.glPasses = (() => {
       stroke: buildStrokeBatch(gl, scene),
       pieces: buildPiecesBatch(gl, scene),
       particles: buildParticlesBatch(gl, scene, variant && variant.sources),
+      bg: buildBgBatch(gl, scene),
     };
     variants.set(key, built);
     return built;
@@ -281,6 +326,7 @@ SA.glPasses = (() => {
     const opts = options || {};
     const programs = {
       text: createProgramSafe(gl, SA.glShaders.TEXT_VERT, SA.glShaders.TEXT_FRAG, ['a_pos', 'a_letter', 'a_bbox']),
+      bg: createProgramSafe(gl, SA.glShaders.BG_VERT, SA.glShaders.BG_FRAG, ['a_corner', 'a_letter', 'a_inkToCell', 'a_cell', 'a_em']),
       rep: createProgramSafe(gl, SA.glShaders.REP_VERT, SA.glShaders.REP_FRAG, ['a_pos', 'a_letter', 'a_bbox', 'a_extra', 'a_centroid']),
       fill: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.FILL_FRAG),
       edge: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.EDGE_FRAG),
@@ -305,9 +351,12 @@ SA.glPasses = (() => {
     let targets = null;
     let stateTexture = null;
     let colorTexture = null;
+    let bgStateTexture = null;
     let stateData = new Float32Array(4);
     let colorData = new Uint8Array(4);
+    let bgStateData = new Float32Array(4);
     let stateCapacity = 0;
+    let bgStateCapacity = 0;
     let cardTexture = null;
     let cardKey = null;
 
@@ -399,8 +448,10 @@ SA.glPasses = (() => {
       bind(targets.scene, color);
     }
 
-    function drawBackground(uniforms, card) {
-      gl.disable(gl.BLEND);
+    function drawBackground(uniforms, card, opacity) {
+      const alpha = opacity == null ? 1 : Math.max(0, Math.min(1, opacity));
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       bind(targets.scene, null);
       gl.useProgram(programs.background.program);
       applyUniforms(gl, programs.background, uniforms);
@@ -408,7 +459,9 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, card && card.texture ? card.texture : cardTexture || (cardTexture = makeFallbackTexture()));
       gl.uniform1i(programs.background.uniforms.u_card, 0);
       gl.uniform2f(programs.background.uniforms.u_resolution, width, height);
+      if (programs.background.uniforms.u_opacity) gl.uniform1f(programs.background.uniforms.u_opacity, alpha);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.disable(gl.BLEND);
     }
 
     function makeFallbackTexture() {
@@ -481,11 +534,12 @@ SA.glPasses = (() => {
       }
     }
 
-    function uploadState(states, batch) {
+    function uploadState(states, batch, colorOverride) {
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
       packStates(states);
-      colorData.set(batch.colors.subarray(0, Math.min(batch.colors.length, colorData.length)));
+      if (colorOverride) colorData.set(colorOverride.subarray(0, Math.min(colorOverride.length, colorData.length)));
+      else colorData.set(batch.colors.subarray(0, Math.min(batch.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * 5 * 4));
       gl.bindTexture(gl.TEXTURE_2D, colorTexture);
@@ -496,7 +550,7 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, colorTexture);
     }
 
-    function text(scene, states, variant) {
+    function text(scene, states, variant, colorOverride) {
       if (!states.length) return;
       const batchSet = sceneBatches(gl, scene, variant);
       const batch = batchSet.mesh;
@@ -507,7 +561,7 @@ SA.glPasses = (() => {
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      uploadState(states, batch);
+      uploadState(states, batch, colorOverride);
       gl.useProgram(programs.text.program);
       gl.uniform1i(programs.text.uniforms.u_state, 0);
       gl.uniform1i(programs.text.uniforms.u_color, 1);
@@ -551,6 +605,102 @@ SA.glPasses = (() => {
       return sdfPass.run(targets.text.texture, width, height, Math.max(width, height) * 0.1);
     }
 
+    function ensureBgStateTexture(count) {
+      if (count <= bgStateCapacity) return;
+      bgStateCapacity = Math.max(16, count);
+      bgStateData = new Float32Array(bgStateCapacity * 5 * 4);
+      if (!bgStateTexture) bgStateTexture = SA.gl.createTexture(gl, {});
+      gl.bindTexture(gl.TEXTURE_2D, bgStateTexture);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, bgStateCapacity, 5, 0, gl.RGBA, gl.FLOAT, null);
+    }
+
+    function uploadBgState(states) {
+      ensureBgStateTexture(states.length);
+      const stride = states.length;
+      for (let i = 0; i < states.length; i += 1) {
+        const state = states[i] || {};
+        bgStateData[(0 * stride + i) * 4] = state.sizeX == null ? 1 : state.sizeX;
+        bgStateData[(0 * stride + i) * 4 + 1] = state.sizeY == null ? 1 : state.sizeY;
+        bgStateData[(0 * stride + i) * 4 + 2] = state.offsetX || 0;
+        bgStateData[(0 * stride + i) * 4 + 3] = state.offsetY || 0;
+        bgStateData[(1 * stride + i) * 4] = state.rotation || 0;
+        bgStateData[(1 * stride + i) * 4 + 1] = state.shapeIndex || 0;
+        bgStateData[(1 * stride + i) * 4 + 2] = state.motionScaleX == null ? 1 : state.motionScaleX;
+        bgStateData[(1 * stride + i) * 4 + 3] = state.motionScaleY == null ? 1 : state.motionScaleY;
+        const color = state.color || [1, 1, 1, 1];
+        bgStateData[(2 * stride + i) * 4] = color[0];
+        bgStateData[(2 * stride + i) * 4 + 1] = color[1];
+        bgStateData[(2 * stride + i) * 4 + 2] = color[2];
+        bgStateData[(2 * stride + i) * 4 + 3] = (color[3] == null ? 1 : color[3]) * (state.opacity == null ? 1 : state.opacity);
+        bgStateData[(3 * stride + i) * 4] = state.clip == null ? -1 : state.clip;
+        bgStateData[(3 * stride + i) * 4 + 1] = state.wobbleSeed || 0;
+        bgStateData[(3 * stride + i) * 4 + 2] = state.rotateWithLetter === false ? 0 : 1;
+        bgStateData[(3 * stride + i) * 4 + 3] = state.scaleWithLetter === false ? 0 : 1;
+        const dir = state.clipDir || [1, 0];
+        bgStateData[(4 * stride + i) * 4] = dir[0];
+        bgStateData[(4 * stride + i) * 4 + 1] = dir[1];
+        bgStateData[(4 * stride + i) * 4 + 2] = state.amount == null ? 5 : state.amount;
+        bgStateData[(4 * stride + i) * 4 + 3] = state.roughness == null ? 0.5 : state.roughness;
+      }
+      gl.bindTexture(gl.TEXTURE_2D, bgStateTexture);
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, bgStateData.subarray(0, states.length * 5 * 4));
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
+    // Renders the per-letter background shapes into the text mask target.
+    function textBackground(scene, states, bgStates, opts) {
+      if (!states.length || !bgStates || !bgStates.length) return;
+      const batchSet = sceneBatches(gl, scene);
+      const batch = batchSet.bg;
+      if (!batch || !batch.count) return;
+      const mesh = batchSet.mesh;
+      ensureStateTexture(states.length);
+      ensureColorTexture(states.length);
+      packStates(states);
+      if (mesh) colorData.set(mesh.colors.subarray(0, Math.min(mesh.colors.length, colorData.length)));
+      gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * 5 * 4));
+      uploadBgState(bgStates);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, targets.textFramebuffer);
+      gl.viewport(0, 0, width, height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      gl.useProgram(programs.bg.program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, bgStateTexture);
+      gl.uniform1i(programs.bg.uniforms.u_state, 0);
+      gl.uniform1i(programs.bg.uniforms.u_bgState, 1);
+      gl.uniform2f(programs.bg.uniforms.u_resolution, width, height);
+      gl.uniform1f(programs.bg.uniforms.u_perspective, 1200);
+      gl.uniform1f(programs.bg.uniforms.u_unitMode, opts && opts.unit === 'em' ? 1 : 0);
+      gl.bindVertexArray(batch.vao);
+      gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
+      gl.bindVertexArray(null);
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
+    // Punches the current text mask out of the layer (knockout backgrounds).
+    function knockout() {
+      if (!targets.text) return;
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ZERO, gl.ONE_MINUS_SRC_ALPHA);
+      bind(targets.layer, null);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, targets.text.texture);
+      gl.useProgram(programs.copy.program);
+      gl.uniform1i(programs.copy.uniforms.u_texture, 0);
+      gl.uniform1f(programs.copy.uniforms.u_opacity, 1);
+      if (programs.copy.uniforms.u_offset) gl.uniform2f(programs.copy.uniforms.u_offset, 0, 0);
+      if (programs.copy.uniforms.u_scale) gl.uniform1f(programs.copy.uniforms.u_scale, 1);
+      if (programs.copy.uniforms.u_angle) gl.uniform1f(programs.copy.uniforms.u_angle, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
     function fill(uniforms) {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -587,10 +737,13 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, targets.text.texture);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, (uniforms && uniforms.sdfTexture) || targets.text.texture);
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, targets.info.texture);
       gl.useProgram(programs.edge.program);
       applyUniforms(gl, programs.edge, { ...uniforms, u_resolution: [width, height] });
       gl.uniform1i(programs.edge.uniforms.u_text, 0);
       gl.uniform1i(programs.edge.uniforms.u_sdf, 1);
+      gl.uniform1i(programs.edge.uniforms.u_info, 2);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
     }
@@ -719,7 +872,9 @@ SA.glPasses = (() => {
       }
       disposeTargets();
       if (cardTexture) gl.deleteTexture(cardTexture);
+      if (bgStateTexture) gl.deleteTexture(bgStateTexture);
       cardTexture = null;
+      bgStateTexture = null;
     }
 
     createTargets();
@@ -734,6 +889,8 @@ SA.glPasses = (() => {
       uploadCard,
       beginLayer,
       text,
+      textBackground,
+      knockout,
       representation,
       sdf,
       fill,

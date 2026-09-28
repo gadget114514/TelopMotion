@@ -5,8 +5,8 @@ SA.themes = (() => {
 
   const LS_THEMES = 'sa.themes';
   // a theme owns exactly these groups; applying one replaces them instead of merging
-  const THEME_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color'];
-  const CAPTURE_GROUPS = [...THEME_GROUPS, 'text'];
+  const THEME_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const CAPTURE_GROUPS = THEME_GROUPS.filter((group) => group !== 'background').concat('text');
 
   function t(key, vars) {
     return SA.i18n.t(key, vars);
@@ -83,6 +83,8 @@ SA.themes = (() => {
         if (cueId) container = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
         for (const group of THEME_GROUPS) delete container[group];
         const merged = SA.project.mergeDeep(container, theme.style);
+        // backgrounds live on the background track now, not in the style
+        delete merged.background;
         if (cueId) projectDoc.cueStyles[cueId] = merged;
         else projectDoc.style = merged;
       },
@@ -90,12 +92,13 @@ SA.themes = (() => {
     return theme;
   }
 
-  function save(name, style, axes) {
+  function save(name, style, axes, genre) {
     const entry = {
       id: newId(),
       name: String(name || t('studio.themes.untitled')),
       builtin: false,
       axes: axes || null,
+      genre: genre || null,
       style: style || capture(),
       updatedAt: new Date().toISOString(),
     };

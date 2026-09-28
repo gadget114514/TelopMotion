@@ -343,6 +343,14 @@
     const enterDef = motionDef(enter, 'enter', duration);
     const exitDef = motionDef(exit, 'exit', duration);
     const locationDef = motionDef(location, 'location', duration);
+    // a few effects (creepOut) define their own fixed timing
+    const exitDescriptor = fx.get('exit', exitType);
+    if (exitDescriptor && Number.isFinite(exitDescriptor.fixedDuration)) {
+      exitDef.out.duration = Math.max(0.001, exitDescriptor.fixedDuration);
+      exitDef.out.delay = 0;
+    }
+    const analysis = options.analysis || null;
+    const audioFeatures = options.audioFeatures || null;
 
     const staggerParams = (animation && animation.params) || {};
     const staggerCfg = {
@@ -444,7 +452,8 @@
       if (animation.stopFps) local = Math.floor(local * animation.stopFps) / animation.stopFps;
       const holdLocal = Math.max(0, local - (enterDef.in.delay + enterDef.in.duration + offset));
 
-      const pe = clamp01((local - enterDef.in.delay - offset) / enterDef.in.duration);
+      const enterStart = enterDef.in.delay + offset;
+      const pe = clamp01((local - enterStart) / enterDef.in.duration);
       const exitStart = duration - exitDef.out.duration - exitDef.out.delay - (exitOrderReverse ? offset : offMax - offset);
       const px = clamp01((local - exitStart) / exitDef.out.duration);
       const enterEase = easing.get(enterDef.in.ease || 'easeOutCubic');
@@ -476,6 +485,7 @@
         local,
         pe,
         px,
+        timing: { enterStart, enterDur: enterDef.in.duration, exitStart, exitDur: exitDef.out.duration },
       };
 
       const target = targetFormation[index] || { x: 0, y: 0, rot: 0, scale: 1 };
@@ -516,6 +526,9 @@
         enterEntry.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, {
           i: index,
           N,
+          analysis,
+          audioFeatures,
+          local,
           letter,
           frame,
           shortSide,
@@ -548,6 +561,9 @@
         hold.entry.cpu(state, hold.h, hold.env, { ...(hold.instance.params || {}), ...(paramOverrides.hold || {}) }, hold.rng, {
           i: index,
           N,
+          analysis,
+          audioFeatures,
+          local,
           letter,
           frame,
           shortSide,
@@ -564,6 +580,9 @@
         exitEntry.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, {
           i: index,
           N,
+          analysis,
+          audioFeatures,
+          local,
           letter,
           frame,
           shortSide,
@@ -588,6 +607,9 @@
         const info = {
           i: index,
           N,
+          analysis,
+          audioFeatures,
+          local,
           letter,
           frame,
           shortSide,

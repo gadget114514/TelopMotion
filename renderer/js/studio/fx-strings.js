@@ -60,7 +60,7 @@
       vignette: 'Vignette', sparkles: 'Sparkles', lensFlare: 'Lens flare',
     },
     background: {
-      none: 'None', solid: 'Solid', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
+      none: 'None', solid: 'Solid', gradient: 'Gradient', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
     },
     param: {
       order: 'Order', each: 'Interval', ease: 'Ease', from: 'Start', unit: 'Unit', exitOrder: 'Exit order', overlap: 'Overlap',
@@ -157,7 +157,7 @@
       lensFlare: 'レンズフレア',
     },
     background: {
-      none: 'なし', solid: '単色', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
+      none: 'なし', solid: '単色', gradient: 'グラデーション', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
     },
     param: {
       order: '順序', each: '間隔', ease: 'イージング', from: '開始位置', unit: '単位', exitOrder: '退場順序', overlap: '重なり',
@@ -257,7 +257,7 @@
       vignette: 'Viñeta', sparkles: 'Destellos', lensFlare: 'Reflejo de lente',
     },
     background: {
-      none: 'Ninguno', solid: 'Sólido', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
+      none: 'Ninguno', solid: 'Sólido', gradient: 'Degradado', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
       cover: 'Portada de la canción', image: 'Imagen',
     },
     param: {
@@ -362,7 +362,7 @@
       lightLeak: 'Fuite de lumière', vignette: 'Vignettage', sparkles: 'Étincelles', lensFlare: 'Reflet de lentille',
     },
     background: {
-      none: 'Aucun', solid: 'Uni', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
+      none: 'Aucun', solid: 'Uni', gradient: 'Dégradé', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
       image: 'Image',
     },
     param: {
@@ -467,7 +467,7 @@
       lensFlare: 'Блик объектива',
     },
     background: {
-      none: 'Нет', solid: 'Сплошной', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
+      none: 'Нет', solid: 'Сплошной', gradient: 'Градиент', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
       cover: 'Обложка трека', image: 'Изображение',
     },
     param: {
@@ -514,6 +514,99 @@
       polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца',
     },
   };
+
+  // Text background + genre additions. All five languages receive the same key
+  // set; non-Japanese languages fall back to the English strings.
+  const ADD_EN = {
+    types: {
+      bgShape: {
+        none: 'None', square: 'Square', rounded: 'Rounded', circle: 'Circle', diamond: 'Diamond', ring: 'Ring', bar: 'Bar',
+        star: 'Star', blob: 'Blob', heart: 'Heart', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket',
+        paper: 'Paper', cloud: 'Cloud',
+      },
+      bgMotion: {
+        follow: 'Follow', fade: 'Fade', pop: 'Pop', stamp: 'Stamp', wipe: 'Wipe', spin: 'Spin', grow: 'Grow', none: 'None',
+        flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall',
+      },
+      edge: { drip: 'Drip' },
+      fill: { ink: 'Ink' },
+      enter: { flickerIn: 'Flicker in' },
+      exit: { creepOut: 'Creep out' },
+      hold: { heartbeat: 'Heartbeat', shiver: 'Shiver' },
+    },
+    params: {
+      unit: 'Unit', lockAspect: 'Lock aspect', rotateWithLetter: 'Rotate with letter', scaleWithLetter: 'Scale with letter',
+      knockout: 'Knockout', layer: 'Layer', skipSpaces: 'Skip spaces', skipRate: 'Skip rate',
+      fgAutoContrast: 'Auto text contrast', vary: 'Vary', varyColors: 'Vary colors', varyShape: 'Vary shape',
+      varyShapes: 'Shape candidates', varySize: 'Size wobble', varyOffset: 'Offset wobble', varyRotation: 'Rotation wobble',
+      seedShift: 'Seed shift', spikes: 'Spikes', jag: 'Jaggedness', lead: 'Lead', exit: 'Exit', exitDuration: 'Exit duration',
+      holdAmount: 'Hold amount', overshoot: 'Overshoot', turns: 'Turns', axis: 'Axis', roughness: 'Roughness', rise: 'Rise',
+      pattern: 'Pattern', dashLength: 'Dash length', gapRatio: 'Gap ratio', flow: 'Flow', cursorShape: 'Cursor shape',
+      blink: 'Blink', cursorAfter: 'Cursor after', interval: 'Interval', shift: 'Shift', height: 'Height', points: 'Points',
+      thickness: 'Thickness', wobble: 'Wobble', skip: 'Skip', grow: 'Grow', shape: 'Shape', fade: 'Fade', duration: 'Duration', pulse: 'Pulse', hold: 'Hold',
+    },
+    values: {
+      cell: 'Cell', em: 'Em', behind: 'Behind', front: 'Front', cycle: 'Cycle', charClass: 'Character class',
+      first: 'First', last: 'Last', withText: 'With text', shrink: 'Shrink', wobble: 'Wobble', beat: 'Beat',
+      heartbeat: 'Heartbeat', shiver: 'Shiver', drift: 'Drift', bar: 'Bar', block: 'Block', underscore: 'Underscore',
+      hide: 'Hide', blink: 'Blink', stay: 'Stay', solid: 'Solid', dashed: 'Dashed', dotted: 'Dotted', double: 'Double',
+      sketch: 'Sketch', dot: 'Dot', heart: 'Heart', square: 'Square', rounded: 'Rounded', diamond: 'Diamond',
+      blob: 'Blob', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket', paper: 'Paper', cloud: 'Cloud',
+      star: 'Star', fade: 'Fade', pulse: 'Pulse', spin: 'Spin',
+    },
+  };
+  const ADD_JA = {
+    types: {
+      bgShape: {
+        none: 'なし', square: '四角', rounded: '角丸', circle: '円', diamond: 'ひし形', ring: 'リング', bar: '帯',
+        star: '星', blob: '不定形', heart: 'ハート', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく',
+        bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
+      },
+      bgMotion: {
+        follow: '文字に追従', fade: 'フェード', pop: 'ポップ', stamp: 'スタンプ', wipe: 'ワイプ', spin: '回転', grow: '伸びる',
+        none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下',
+      },
+      edge: { drip: '滴り' },
+      fill: { ink: '墨' },
+      enter: { flickerIn: 'ちらつき登場' },
+      exit: { creepOut: '這い出し退場' },
+      hold: { heartbeat: '鼓動', shiver: '震え' },
+    },
+    params: {
+      unit: '単位', lockAspect: '縦横比を固定', rotateWithLetter: '文字の回転に追従', scaleWithLetter: '文字の拡大に追従',
+      knockout: '抜き文字', layer: 'レイヤー', skipSpaces: '空白を飛ばす', skipRate: '間引き率',
+      fgAutoContrast: '文字色を自動調整', vary: '文字ごとの変化', varyColors: '変化に使う色', varyShape: '形を変える',
+      varyShapes: '形の候補', varySize: '大きさの揺らぎ', varyOffset: '位置の揺らぎ', varyRotation: '回転の揺らぎ',
+      seedShift: '乱数シフト', spikes: 'トゲ', jag: 'ギザギザ', lead: '先行', exit: '消え方', exitDuration: '消える長さ',
+      holdAmount: 'ゆらぎ量', overshoot: '行き過ぎ', turns: '回転数', axis: '軸', roughness: '粗さ', rise: '浮き上がり',
+      pattern: '線種', dashLength: '破線の長さ', gapRatio: '隙間の割合', flow: '流れ', cursorShape: 'カーソルの形',
+      blink: '点滅', cursorAfter: '完了後', interval: '間隔', shift: 'ずれ', height: '高さ', points: '頂点数',
+      thickness: '太さ', wobble: '揺れ', skip: '間引き', grow: '伸び', shape: '形', fade: 'フェード', duration: '長さ', pulse: 'パルス', hold: '保持',
+    },
+    values: {
+      cell: 'セル', em: 'em', behind: '文字の後ろ', front: '文字の前', cycle: '巡回', charClass: '文字種',
+      first: '行頭', last: '行末', withText: '文字と一緒', shrink: '縮小', wobble: '揺れ', beat: 'ビート',
+      heartbeat: '鼓動', shiver: '震え', drift: '漂流', bar: '縦棒', block: 'ブロック', underscore: '下線',
+      hide: '隠す', blink: '点滅', stay: '表示', solid: '実線', dashed: '破線', dotted: '点線', double: '二重線',
+      sketch: '手描き', dot: '点', heart: 'ハート', square: '四角', rounded: '角丸', diamond: 'ひし形',
+      blob: '不定形', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく', bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
+      star: '星', fade: 'フェード', pulse: 'パルス', spin: '回転',
+    },
+  };
+
+  function applyFxAdditions(target, additions) {
+    for (const [group, table] of Object.entries(additions.types || {})) {
+      target[group] = { ...(target[group] || {}), ...table };
+    }
+    Object.assign(target.param, additions.params || {});
+    Object.assign(target.value, additions.values || {});
+  }
+
+  applyFxAdditions(en, ADD_EN);
+  applyFxAdditions(ja, ADD_JA);
+  applyFxAdditions(es, ADD_EN);
+  applyFxAdditions(fr, ADD_EN);
+  applyFxAdditions(ru, ADD_EN);
 
   return { en: { fx: en }, ja: { fx: ja }, es: { fx: es }, fr: { fx: fr }, ru: { fx: ru } };
 });

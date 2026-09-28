@@ -216,5 +216,26 @@
     },
   });
 
+  fx.register({
+    group: 'exit',
+    type: 'creepOut',
+    fixedDuration: 0.12,
+    params: [{ key: 'shift', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.15 }],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const shift = (params.shift == null ? 0.15 : params.shift) * info.shortSide;
+      const value = Math.sin((info.i + 1) * 12.9898) * 43758.5453;
+      const dir = value - Math.floor(value) < 0.5 ? -1 : 1;
+      if (progress < 0.5) {
+        const t = progress / 0.5;
+        state.scaleX *= 1 + 0.25 * t;
+        state.scaleY *= 1 + 0.25 * t;
+        state.x += shift * t * dir;
+      } else {
+        state.opacity = 0;
+      }
+    },
+  });
+
   return fx;
 });

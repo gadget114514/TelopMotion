@@ -21,6 +21,7 @@
     glass: 11,
     textureFill: 12,
     karaokeWipe: 13,
+    ink: 14,
   };
 
   fx.register({
@@ -159,6 +160,18 @@
     cost: 0,
   });
 
+  fx.register({
+    group: 'fill',
+    type: 'ink',
+    tags: ['featured'],
+    params: [
+      { key: 'scale', kind: 'number', min: 1, max: 10, step: 0.1, default: 3 },
+      { key: 'threshold', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.35 },
+      { key: 'softness', kind: 'number', min: 0.01, max: 0.4, step: 0.005, default: 0.08 },
+    ],
+    cost: 2,
+  });
+
   function toRgba(value, fallback, ctx) {
     return color.toRgba(value, fallback || [1, 1, 1, 1], ctx);
   }
@@ -213,6 +226,8 @@
       colorB = toRgba(colors.fill2 || colors.fill, colorA, context);
       if (params.colorBefore) colorA = toRgba(params.colorBefore, null, context);
       if (params.colorAfter) colorB = toRgba(params.colorAfter, null, context);
+    } else if (type === 14) {
+      params4 = [num(params.scale, 3), num(params.threshold, 0.35), num(params.softness, 0.08), 0];
     }
     return {
       u_type: type,
@@ -221,6 +236,7 @@
       u_colorC: colorC,
       u_colorD: colorD,
       u_params: params4,
+      u_maskTint: context.role === 'bg' && context.maskTint ? 1 : 0,
       u_time: context.time || 0,
       u_progress: context.progress == null ? 0 : context.progress,
       sdfTexture: context.sdfTexture || null,

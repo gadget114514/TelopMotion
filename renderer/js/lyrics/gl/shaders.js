@@ -102,6 +102,30 @@ SA.glShaders = (() => {
     if (mode == 5) return blendSoftLight(base, top);
     return blendNormal(base, top);
   }
+
+  float noise1(float x) { return noise(vec2(x, 0.37)); }
+  float fbm1(float x) { return fbm(vec2(x, 1.73), 3); }
+  float smin(float a, float b, float k) {
+    float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+    return mix(b, a, h) - k * h * (1.0 - h);
+  }
+
+  // Shared letter transform: optional scale, skew, rotation, translation and
+  // perspective tilt. Deformation stays with the text vertex shader.
+  vec2 letterTransform(vec2 p, vec4 s0, vec4 s1, vec4 s2, bool rotate, bool scale, float perspective) {
+    if (scale) p *= vec2(s0.w, s1.x);
+    p.x += p.y * s1.y;
+    if (rotate) {
+      float angle = radians(s0.z);
+      float c = cos(angle);
+      float s = sin(angle);
+      p = mat2(c, s, -s, c) * p;
+    }
+    p += s0.xy;
+    float z = -p.y * sin(radians(s2.x)) + p.x * sin(radians(s2.y));
+    float w = max(0.05, 1.0 + z / perspective);
+    return p / w;
+  }
   `;
 
   // --- text pass ---------------------------------------------------------------
@@ -172,15 +196,7 @@ SA.glShaders = (() => {
         p.x *= 1.0 - amount * 0.3;
       }
     }
-    p.x += p.y * s1.y;
-    float angle = radians(s0.z);
-    float c = cos(angle);
-    float s = sin(angle);
-    p = mat2(c, s, -s, c) * p;
-    p += s0.xy;
-    float z = -p.y * sin(radians(s2.x)) + p.x * sin(radians(s2.y));
-    float w = max(0.05, 1.0 + z / u_perspective);
-    p /= w;
+    p = letterTransform(p, s0, s1, s2, true, false, u_perspective);
     vec2 clip = (p / u_resolution) * 2.0 - 1.0;
     gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
   }`;
@@ -277,6 +293,7 @@ SA.glShaders = (() => {
   uniform vec4 u_colorC;
   uniform vec4 u_colorD;
   uniform vec4 u_params;
+  uniform float u_maskTint;
   out vec4 fragColor;
   ${COMMON}
 
@@ -357,6 +374,15 @@ SA.glShaders = (() => {
       float soft = max(u_params.y, 0.001);
       float t = smoothstep(u_progress - soft, u_progress + soft, local.x);
       color = mix(u_colorA, u_colorB, t);
+    } else if (type == 14) {
+      float threshold = clamp(u_params.y, 0.0, 1.0);
+      float soft = max(u_params.z, 0.001);
+      float n = fbm(v_uv * max(u_params.x, 1.0) * 8.0, 4) + 0.35 * clamp(-distance * 8.0, 0.0, 1.0);
+      color = vec4(u_colorA.rgb, u_colorA.a * smoothstep(threshold - soft, threshold + soft, n));
+    }
+    if (u_maskTint > 0.5) {
+      vec3 tint = text.rgb / max(text.a, 1e-4);
+      color.rgb *= mix(vec3(1.0), tint, 1.0);
     }
     fragColor = vec4(color.rgb * color.a * mask, color.a * mask);
   }`;
@@ -368,11 +394,13 @@ SA.glShaders = (() => {
   in vec2 v_uv;
   uniform sampler2D u_text;
   uniform sampler2D u_sdf;
+  uniform sampler2D u_info;
   uniform vec2 u_resolution;
   uniform float u_time;
   uniform int u_type;
   uniform vec4 u_color;
   uniform vec4 u_params;
+  uniform vec4 u_params2;
   uniform vec2 u_direction;
   uniform vec2 u_offset;
   out vec4 fragColor;
@@ -391,7 +419,42 @@ SA.glShaders = (() => {
     if (type == 1) {
       float width = max(u_params.x, 0.0005);
       float soft = max(u_params.w, 0.0);
-      alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(distance));
+      float aa = max(fwidth(distance), 0.0008);
+      float e = distance - u_params.z;
+      alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e));
+      int pattern = int(u_params2.x + 0.5);
+      if (pattern == 1) {
+        vec2 texel = 2.0 / u_resolution;
+        vec2 grad = normalize(vec2(
+          sdfAt(v_uv + vec2(texel.x, 0.0)) - sdfAt(v_uv - vec2(texel.x, 0.0)),
+          sdfAt(v_uv + vec2(0.0, texel.y)) - sdfAt(v_uv - vec2(0.0, texel.y))
+        ) + vec2(1e-6));
+        vec2 tangent = vec2(-grad.y, grad.x);
+        float s = dot(v_uv * u_resolution, tangent);
+        float dashLength = max(u_params.y, 1.0);
+        float gap = clamp(u_params2.y, 0.05, 0.95);
+        float phase = fract(s / dashLength - u_params2.z * u_time);
+        alpha *= 1.0 - smoothstep(gap - 0.02, gap, phase);
+      } else if (pattern == 2) {
+        vec2 texel = 2.0 / u_resolution;
+        vec2 grad = normalize(vec2(
+          sdfAt(v_uv + vec2(texel.x, 0.0)) - sdfAt(v_uv - vec2(texel.x, 0.0)),
+          sdfAt(v_uv + vec2(0.0, texel.y)) - sdfAt(v_uv - vec2(0.0, texel.y))
+        ) + vec2(1e-6));
+        vec2 tangent = vec2(-grad.y, grad.x);
+        float s = dot(v_uv * u_resolution, tangent);
+        float gap = clamp(u_params2.y, 0.05, 0.95);
+        float period = max(2.0 * width / max(1.0 - gap, 0.05), 1.0);
+        float u = (fract(s / period - u_params2.z * u_time) - 0.5) * period;
+        alpha = 1.0 - smoothstep(width - aa, width, length(vec2(u, abs(e))));
+      } else if (pattern == 3) {
+        float line = 1.0 - smoothstep(width / 3.0 - aa, width / 3.0, abs(e));
+        float second = 1.0 - smoothstep(width / 3.0 - aa, width / 3.0, abs(abs(e) - width * 1.33));
+        alpha = max(line, second);
+      } else if (pattern == 4) {
+        float sketch = (fbm(v_uv * u_resolution / 24.0 + floor(u_time * 8.0), 3) - 0.5) * width * 0.8;
+        alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e + sketch));
+      }
     } else if (type == 2) {
       alpha = exp(-max(distance, 0.0) / max(u_params.y, 0.001)) * clamp(u_params.z, 0.0, 3.0);
     } else if (type == 3) {
@@ -420,6 +483,29 @@ SA.glShaders = (() => {
       float d = sdfAt(uv);
       float blur = max(u_params.y, 0.001);
       alpha = (1.0 - smoothstep(-blur, blur, d)) * clamp(u_params.z, 0.0, 1.0) * (1.0 - inside);
+    } else if (type == 8) {
+      // drips running down from the glyph outline
+      vec2 px = v_uv * u_resolution;
+      float col = floor(px.x / 6.0);
+      float rnd = hash12(vec2(col, 3.7));
+      float len = max(u_params.x, 0.0) * rnd * rnd * min(1.0, u_time * max(u_params.z, 0.05));
+      float thickness = max(u_params.y, 0.05) * 6.0;
+      float d = 1e9;
+      float found = 0.0;
+      for (int k = 1; k <= 16; k += 1) {
+        float t = float(k) / 16.0;
+        vec2 uv = v_uv + vec2(0.0, t * len / u_resolution.y);
+        if (sdfAt(uv) < 0.0) {
+          float w = thickness * (1.0 - t) * (1.0 - t);
+          d = abs(px.x - (col + 0.5) * 6.0) - w;
+          found = 1.0;
+          break;
+        }
+      }
+      float bead = length(vec2(px.x - (col + 0.5) * 6.0, 0.0)) - thickness * 1.4;
+      d = min(d, bead + max(0.0, 1.0 - found) * 1e9);
+      alpha = (1.0 - smoothstep(-1.0, 1.0, d)) * found;
+      alpha *= step(0.0, sdfAt(v_uv));
     }
     if (alpha <= 0.002) discard;
     fragColor = vec4(color.rgb * color.a, color.a) * alpha;
@@ -730,6 +816,206 @@ SA.glShaders = (() => {
     fragColor = texture(u_text, v_uv) * u_intensity;
   }`;
 
+  // --- text background pass ----------------------------------------------------
+
+  const BG_VERT = `#version 300 es
+  precision highp float;
+  in vec2 a_corner;       // +-1 quad corner
+  in float a_letter;
+  in vec2 a_inkToCell;    // px from ink centre to cell centre
+  in vec2 a_cell;         // cell size in px
+  in vec2 a_em;           // em box in px
+  uniform sampler2D u_state;
+  uniform sampler2D u_bgState;
+  uniform vec2 u_resolution;
+  uniform float u_perspective;
+  uniform float u_unitMode;  // 0 = cell, 1 = em
+  out vec2 v_local;
+  out vec2 v_half;
+  out float v_shape;
+  out float v_seed;
+  out float v_clip;
+  out vec2 v_clipDir;
+  out float v_amount;
+  out float v_letter;
+  out vec4 v_color;
+  ${COMMON}
+  vec4 stateAt(int row) { return texelFetch(u_state, ivec2(int(a_letter + 0.5), row), 0); }
+  vec4 bgAt(int row) { return texelFetch(u_bgState, ivec2(int(a_letter + 0.5), row), 0); }
+  void main() {
+    v_letter = a_letter;
+    vec4 s0 = stateAt(0);
+    vec4 s1 = stateAt(1);
+    vec4 s2 = stateAt(2);
+    vec4 b0 = bgAt(0);
+    vec4 b1 = bgAt(1);
+    vec4 b2 = bgAt(2);
+    vec4 b3 = bgAt(3);
+    vec4 b4 = bgAt(4);
+    v_shape = b1.y;
+    v_seed = b3.y;
+    v_clip = b3.x;
+    v_clipDir = b4.xy;
+    v_amount = b4.z;
+    v_color = b2;
+    vec2 unit = u_unitMode > 0.5 ? a_em : a_cell;
+    vec2 halfSize = max(vec2(b0.x, b0.y) * unit * 0.5, vec2(0.001));
+    v_half = halfSize / max(min(halfSize.x, halfSize.y), 0.001);
+    vec2 q = a_corner * vec2(max(b1.z, 0.0), max(b1.w, 0.0));
+    v_local = q;
+    float angle = radians(b1.x);
+    float c = cos(angle);
+    float s = sin(angle);
+    vec2 local = mat2(c, s, -s, c) * (q * halfSize);
+    local += b0.zw * unit + a_inkToCell;
+    vec2 p = letterTransform(local, s0, s1, s2, b3.z > 0.5, b3.w > 0.5, u_perspective);
+    vec2 clip = (p / u_resolution) * 2.0 - 1.0;
+    gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
+  }`;
+
+  const BG_FRAG = `#version 300 es
+  precision highp float;
+  in vec2 v_local;
+  in vec2 v_half;
+  in float v_shape;
+  in float v_seed;
+  in float v_clip;
+  in vec2 v_clipDir;
+  in float v_amount;
+  in float v_letter;
+  in vec4 v_color;
+  layout(location = 0) out vec4 fragColor;
+  layout(location = 1) out vec4 o_info;
+  ${COMMON}
+
+  float sdBox(vec2 p, vec2 b) { vec2 d = abs(p) - b; return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0); }
+  float sdRoundBox(vec2 p, vec2 b, float r) { return sdBox(p, b - r) - r; }
+  float sdCircle(vec2 p, float r) { return length(p) - r; }
+  float sdEllipseApprox(vec2 p, vec2 r) { float k = length(p / r); return (k - 1.0) * min(r.x, r.y); }
+  float sdDiamond(vec2 p, vec2 b) { p = abs(p); return (p.x / b.x + p.y / b.y - 1.0) * min(b.x, b.y) * 0.7071; }
+  float sdRing(vec2 p, float r, float t) { return abs(length(p) - r + t * 0.5) - t * 0.5; }
+  float sdStar(vec2 p, float r, float n, float m) {
+    float an = PI / n;
+    float en = PI / m;
+    vec2 acs = vec2(cos(an), sin(an));
+    vec2 ecs = vec2(cos(en), sin(en));
+    float bn = mod(atan(p.x, p.y), 2.0 * an) - an;
+    p = length(p) * vec2(cos(bn), abs(sin(bn)));
+    p -= r * acs;
+    p += ecs * clamp(-dot(p, ecs), 0.0, r * acs.y / ecs.y);
+    return length(p) * sign(p.x);
+  }
+  float sdHeart(vec2 q) {
+    vec2 p = vec2(abs(q.x), -q.y + 0.55) / 1.25;
+    if (p.y + p.x > 1.0) return (sqrt(dot(p - vec2(0.25, 0.75), p - vec2(0.25, 0.75))) - sqrt(2.0) / 4.0) * 1.25;
+    vec2 a = p - vec2(0.0, 1.0);
+    vec2 b = p - 0.5 * max(p.x + p.y, 0.0);
+    return sqrt(min(dot(a, a), dot(b, b))) * sign(p.x - p.y) * 1.25;
+  }
+  float sdTriangleIsosceles(vec2 p, vec2 q) {
+    p.x = abs(p.x);
+    vec2 a = p - q * clamp(dot(p, q) / dot(q, q), 0.0, 1.0);
+    vec2 b = p - q * vec2(clamp(p.x / q.x, 0.0, 1.0), 1.0);
+    float s = -sign(q.y);
+    vec2 d = min(vec2(dot(a, a), s * (p.x * q.y - p.y * q.x)), vec2(dot(b, b), s * (p.y - q.y)));
+    return -sqrt(d.x) * sign(d.y);
+  }
+  float sdBlob(vec2 p, float wobble, float seed) {
+    float a = atan(p.y, p.x);
+    return length(p) - (0.85 + wobble * 0.25 * (fbm1(a * 1.5 + seed) - 0.5));
+  }
+  float sdSplatter(vec2 p, float spikes, float seed) {
+    float a = atan(p.y, p.x);
+    float r = 0.55 + spikes * 0.4 * pow(noise1(a * 3.0 + seed), 3.0);
+    float d = length(p) - r;
+    for (int i = 0; i < 5; i += 1) {
+      vec2 c = hash22(vec2(seed, float(i))) * 1.6 - 0.8;
+      d = min(d, length(p - c) - 0.05 - 0.07 * hash12(c));
+    }
+    return d;
+  }
+  float sdScratch(vec2 p, float count, float seed) {
+    float d = 1e9;
+    for (int i = 0; i < 6; i += 1) {
+      if (float(i) >= count) break;
+      float x = (float(i) - (count - 1.0) * 0.5) * 0.28;
+      vec2 a = vec2(x - 0.15, -0.9);
+      vec2 b = vec2(x + 0.15, 0.9);
+      vec2 pa = p - a;
+      vec2 ba = b - a;
+      float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+      float w = 0.06 * sin(h * PI);
+      d = min(d, length(pa - ba * h) - w - 0.015 * (fbm1(h * 20.0 + seed + float(i)) - 0.5));
+    }
+    return d;
+  }
+  float sdDrop(vec2 p) {
+    p.y += 0.2;
+    float c = length(p) - 0.55;
+    float tip = sdTriangleIsosceles(p - vec2(0.0, -0.35), vec2(0.4, 0.6));
+    return smin(c, tip, 0.1);
+  }
+  float sdBracket(vec2 p, vec2 b, float t, float len) {
+    float frame = abs(sdBox(p, b)) - t;
+    vec2 q = abs(p);
+    float keep = max(q.x - (b.x - len), q.y - (b.y - len));
+    return max(frame, -keep);
+  }
+  float sdPaper(vec2 p, vec2 b, float jag, float seed) {
+    vec2 j = (hash22(vec2(seed, floor(atan(p.y, p.x) * 2.0))) - 0.5) * jag * 0.12;
+    return sdBox(p + j, b);
+  }
+  float sdCloud(vec2 p) {
+    float d = 1e9;
+    for (int i = 0; i < 6; i += 1) {
+      float a = float(i) / 6.0 * TAU;
+      d = smin(d, length(p - vec2(cos(a) * 0.45, sin(a) * 0.3)) - 0.38, 0.15);
+    }
+    return d;
+  }
+
+  float shapeDistance(vec2 p, int shape, float seed, float amount) {
+    if (shape == 1) return sdBox(p, vec2(0.85));
+    if (shape == 2) return sdRoundBox(p, vec2(0.85), 0.28);
+    if (shape == 3) return sdEllipseApprox(p, vec2(0.9));
+    if (shape == 4) return sdDiamond(p, vec2(0.9));
+    if (shape == 5) return sdRing(p, 0.82, 0.24);
+    if (shape == 6) return sdRoundBox(p, vec2(0.95, 0.5), 0.45);
+    if (shape == 7) return sdStar(p, 0.95, clamp(amount, 3.0, 12.0), 2.0 + 3.0 * (clamp(amount, 3.0, 12.0) - 3.0) / 9.0);
+    if (shape == 8) return sdBlob(p, 0.3, seed);
+    if (shape == 9) return sdHeart(p);
+    if (shape == 10) return sdSplatter(p, clamp(amount, 0.0, 1.0), seed);
+    if (shape == 11) return sdScratch(p, clamp(amount, 1.0, 6.0), seed);
+    if (shape == 12) return sdDrop(p);
+    if (shape == 13) return sdBracket(p, vec2(0.95), 0.09, 0.42);
+    if (shape == 14) return sdPaper(p, vec2(0.85), clamp(amount, 0.0, 1.0), seed);
+    if (shape == 15) return sdCloud(p);
+    return 1e9;
+  }
+
+  void main() {
+    float opacity = v_color.a;
+    if (opacity <= 0.002 || v_shape < 0.5) {
+      fragColor = vec4(0.0);
+      o_info = vec4(0.0);
+      return;
+    }
+    vec2 q = v_local * v_half;
+    float d = shapeDistance(q, int(v_shape + 0.5), v_seed, v_amount);
+    d /= max(min(v_half.x, v_half.y), 0.001);
+    float aa = max(fwidth(d), 0.004);
+    float alpha = 1.0 - smoothstep(-aa, aa, d);
+    if (v_clip > -0.999) {
+      float side = dot(v_local, normalize(v_clipDir + vec2(1e-6)));
+      alpha *= smoothstep(v_clip - 0.05, v_clip + 0.05, side);
+    }
+    float a = alpha * opacity;
+    vec3 rgb = v_color.rgb;
+    fragColor = vec4(rgb * a, a);
+    float id = v_letter;
+    o_info = vec4(floor(id / 255.0), fract(id / 255.0), v_local.x * 0.5 + 0.5, v_local.y * 0.5 + 0.5);
+  }`;
+
   // --- background pass ---------------------------------------------------------
 
   const BACKGROUND_FRAG = `#version 300 es
@@ -742,6 +1028,7 @@ SA.glShaders = (() => {
   uniform vec4 u_colorA;
   uniform vec4 u_colorB;
   uniform vec4 u_params;    // zoom, offsetX, offsetY, dim
+  uniform float u_opacity;
   out vec4 fragColor;
   ${COMMON}
   void main() {
@@ -770,7 +1057,8 @@ SA.glShaders = (() => {
       alpha = 1.0;
       color = mix(color, color * 0.35, clamp(u_params.w, 0.0, 1.0));
     }
-    fragColor = vec4(color, alpha);
+    float opacity = clamp(u_opacity, 0.0, 1.0);
+    fragColor = vec4(color * opacity, alpha * opacity);
   }`;
 
   const TRANSFORM_COMMON = `

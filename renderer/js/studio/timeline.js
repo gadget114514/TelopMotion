@@ -7,12 +7,9 @@ SA.timeline = (() => {
   const ROW_H = 26;
   const RULER_H = 24;
   const AUDIO_H = 30;
-  const BACKDROP_H = 22;
   const LANE_H = 22;
   const LAYER_H = 22;
-  const LABEL_W = 150;
-  const TAG_W = 12;
-  const TAG_GAP = 2;
+  const LABEL_W = 90;
   const KEY_SIZE = 5;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 800;
@@ -68,12 +65,45 @@ SA.timeline = (() => {
     return list.filter((layer) => (layer && (layer.slot === 'foreground') === (slot === 'foreground')));
   }
 
-  function fillerClips() {
+  function trackList() {
     const doc = project();
-    if (!doc || !SA.fillers) return [];
-    const cues = (doc.script && doc.script.cues) || [];
-    if (!cues.length) return [];
-    return SA.fillers.clips(cues, duration(), SA.fillers.settingsFor(doc));
+    return (doc && doc.tracks) || [];
+  }
+
+  function clipsOnTrack(doc, trackId) {
+    return ((doc && doc.clips) || []).filter((clip) => clip && clip.trackId === trackId).sort((a, b) => a.start - b.start);
+  }
+
+  function trackTitle(track) {
+    if (!track) return '';
+    if (track.kind === 'foreground') return t('layers.slotForeground');
+    if (track.kind === 'background') return t('layers.slotBackground');
+    if (track.kind === 'backdrop') return t('studio.inspector.background');
+    if (track.kind === 'filler') return t('filler.track');
+    if (track.kind === 'subtitle') {
+      const suffix = track.name && /^字幕/.test(track.name) ? track.name.replace(/^字幕/, '') : '';
+      return suffix ? `${t('studio.track.subtitle')} ${suffix}` : track.name || t('studio.track.subtitle');
+    }
+    return track.name || track.id;
+  }
+
+  // Packs overlapping items into as few lanes as possible so a track only grows
+  // a row where it actually overlaps itself.
+  function packRows(items, startOf, endOf) {
+    const lanes = [];
+    const sorted = [...(items || [])].sort((a, b) => startOf(a) - startOf(b));
+    for (const item of sorted) {
+      const start = Number(startOf(item)) || 0;
+      const end = endOf(item) == null ? start + 0.1 : Number(endOf(item));
+      let lane = lanes.find((entry) => entry.end <= start + 1e-4);
+      if (!lane) {
+        lane = { end: -Infinity, items: [] };
+        lanes.push(lane);
+      }
+      lane.items.push(item);
+      lane.end = Math.max(lane.end, end);
+    }
+    return lanes.map((lane) => lane.items);
   }
 
   function creditClips() {
@@ -220,54 +250,76 @@ SA.timeline = (() => {
 
   // --- layout ------------------------------------------------------------------
 
+  function laneEntriesForCues(doc, cues) {
+    const entries = [];
+    for (const cue of cues) {
+      for (const [path, props] of Object.entries(doc.keyframes || {})) {
+        if (!path.startsWith(`cue:${cue.id}/`) && path !== `cue:${cue.id}`) continue;
+        for (const propPath of Object.keys(props)) {
+          if (!props[propPath] || !props[propPath].length) continue;
+          entries.push({ cueId: cue.id, path, propPath });
+        }
+      }
+    }
+    entries.sort((a, b) => (a.path + a.propPath).localeCompare(b.path + b.propPath));
+    return entries;
+  }
+
+  // One row per track, top to bottom. Tracks only grow extra rows when their own
+  // clips overlap.
   function layoutRows() {
     const doc = project();
     rows = [];
+    cueRects = new Map();
     let y = RULER_H;
     rows.push({ type: 'ruler', y, h: RULER_H });
     if (SA.preview && SA.preview.getPeaks && SA.preview.getPeaks()) {
       rows.push({ type: 'audio', y, h: AUDIO_H });
       y += AUDIO_H;
     }
-    for (const layer of layerList('foreground')) {
-      rows.push({ type: 'layer', y, h: LAYER_H, layerId: layer.id, slot: 'foreground' });
-      y += LAYER_H;
-    }
-    for (const cue of cueList()) {
-      const cueRow = { type: 'cue', y, h: ROW_H, cueId: cue.id };
-      rows.push(cueRow);
-      cueRects.set(cue.id, cueRow);
-      y += ROW_H;
-      if (!expanded.has(cue.id)) continue;
-      const tracks = doc.keyframes || {};
-      const entries = [];
-      for (const [path, props] of Object.entries(tracks)) {
-        if (!path.startsWith(`cue:${cue.id}/`) && path !== `cue:${cue.id}`) continue;
-        for (const propPath of Object.keys(props)) {
-          if (!props[propPath] || !props[propPath].length) continue;
-          entries.push({ path, propPath });
+    const tracks = trackList();
+    for (const track of tracks) {
+      if (!track) continue;
+      if (track.kind === 'foreground' || track.kind === 'background') {
+        const slot = track.kind === 'foreground' ? 'foreground' : 'background';
+        const layers = layerList(slot);
+        const packed = packRows(layers, (layer) => (layer.start == null ? 0 : layer.start), (layer) => (layer.end == null ? duration() : layer.end));
+        const laneCount = Math.max(1, packed.length);
+        for (let lane = 0; lane < laneCount; lane += 1) {
+          rows.push({ type: 'layer-track', y, h: LAYER_H, trackId: track.id, track, slot, layers: packed[lane] || [], first: lane === 0, last: lane === laneCount - 1 });
+          y += LAYER_H;
+        }
+        continue;
+      }
+      if (track.kind === 'subtitle') {
+        const cues = cueList().filter((cue) => (cue.trackId || 'sub1') === track.id);
+        rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: !expanded.has(track.id) });
+        y += ROW_H;
+        for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
+        if (!expanded.has(track.id)) continue;
+        const entries = laneEntriesForCues(doc, cues);
+        for (const entry of entries) {
+          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, cueId: entry.cueId, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, entry.cueId) });
+          y += LANE_H;
+        }
+        if (!entries.length) {
+          rows.push({ type: 'lane-empty', y, h: LANE_H, trackId: track.id });
+          y += LANE_H;
+        }
+        continue;
+      }
+      if (track.kind === 'backdrop' || track.kind === 'filler' || track.kind === 'background') {
+        const clips = clipsOnTrack(doc, track.id);
+        const packed = packRows(clips, (clip) => clip.start, (clip) => clip.end);
+        const laneCount = Math.max(1, packed.length);
+        for (let lane = 0; lane < laneCount; lane += 1) {
+          rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: track.kind, clips: packed[lane] || [], first: lane === 0, last: lane === laneCount - 1 });
+          y += LAYER_H;
         }
       }
-      entries.sort((a, b) => (a.path + a.propPath).localeCompare(b.path + b.propPath));
-      for (const entry of entries) {
-        rows.push({ type: 'lane', y, h: LANE_H, cueId: cue.id, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, cue.id) });
-        y += LANE_H;
-      }
-      if (!entries.length) {
-        rows.push({ type: 'lane-empty', y, h: LANE_H, cueId: cue.id });
-        y += LANE_H;
-      }
     }
-    rows.push({ type: 'backdrop', y, h: BACKDROP_H });
-    y += BACKDROP_H;
-    rows.push({ type: 'fillers', y, h: LAYER_H });
+    rows.push({ type: 'credits', y, h: LAYER_H, trackId: null });
     y += LAYER_H;
-    rows.push({ type: 'credits', y, h: LAYER_H });
-    y += LAYER_H;
-    for (const layer of layerList('background')) {
-      rows.push({ type: 'layer', y, h: LAYER_H, layerId: layer.id, slot: 'background' });
-      y += LAYER_H;
-    }
     return y + 6;
   }
 
@@ -388,22 +440,104 @@ SA.timeline = (() => {
     return entry ? entry.tint : '#ff8a3d';
   }
 
-  function drawCue(size, projectDoc, cue, row) {
+  function trackHidden(track) {
+    return !!(track && track.hidden);
+  }
+
+  // Thin per-track header: name, visibility eye and (for subtitle tracks) the
+  // keyframe twisty.
+  function drawTrackHeader(row, title, options) {
+    const opts = options || {};
+    const y = row.y;
+    const height = row.h;
+    const selected = (SA.store.state.selection.paths || []).some((path) => path === `track:${row.trackId}`);
+    ctx.save();
+    ctx.fillStyle = selected ? 'rgba(255, 138, 61, 0.1)' : opts.active ? 'rgba(255, 138, 61, 0.05)' : '#0d1017';
+    ctx.fillRect(0, y, LABEL_W - 1, height);
+    ctx.strokeStyle = '#1c2230';
+    ctx.beginPath();
+    ctx.moveTo(0, y + height - 0.5);
+    ctx.lineTo(LABEL_W - 1, y + height - 0.5);
+    ctx.stroke();
+    ctx.fillStyle = opts.hidden ? '#5a6175' : opts.color || '#8d96ab';
+    ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+    ctx.textBaseline = 'middle';
+    const labelX = opts.twisty ? 20 : 8;
+    ctx.fillText(fitLabel(title, LABEL_W - labelX - (opts.eye === false ? 6 : 20)), labelX, y + height / 2);
+    ctx.restore();
+    hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
+    if (opts.twisty) {
+      const twistyX = 7;
+      const twistyY = y + height / 2 - 2;
+      ctx.save();
+      ctx.fillStyle = opts.expanded ? '#ff8a3d' : '#8d96ab';
+      ctx.beginPath();
+      if (opts.expanded) {
+        ctx.moveTo(twistyX, twistyY);
+        ctx.lineTo(twistyX + 7, twistyY);
+        ctx.lineTo(twistyX + 3.5, twistyY + 6);
+      } else {
+        ctx.moveTo(twistyX, twistyY);
+        ctx.lineTo(twistyX + 6, twistyY + 3.5);
+        ctx.lineTo(twistyX, twistyY + 7);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      hitRegions.push({ type: 'track-twisty', trackId: row.trackId, x: 2, y, w: 16, h: height });
+    }
+    if (opts.eye !== false) {
+      const eyeX = LABEL_W - 12;
+      const eyeY = y + height / 2;
+      ctx.save();
+      ctx.strokeStyle = opts.hidden ? '#6b7386' : '#4dc8a0';
+      ctx.fillStyle = opts.hidden ? 'transparent' : '#4dc8a0';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(eyeX, eyeY, 4, 0, Math.PI * 2);
+      ctx.stroke();
+      if (!opts.hidden) {
+        ctx.beginPath();
+        ctx.arc(eyeX, eyeY, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      hitRegions.push({ type: 'track-eye', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
+    }
+  }
+
+  function drawCueTrack(size, projectDoc, row) {
     const y = row.y;
     const height = ROW_H - 4;
-    const x = xOf(cue.start);
-    const width = Math.max(2, (cue.end - cue.start) * pxPerSecond);
-    const selected = (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`));
-    const warnings = (projectDoc.beatWarnings && projectDoc.beatWarnings[cue.id]) || [];
-    const tint = categoryColor(cue);
-
+    drawTrackHeader(row, trackTitle(row.track), {
+      twisty: true,
+      expanded: expanded.has(row.trackId),
+      hidden: trackHidden(row.track),
+      color: trackHidden(row.track) ? '#5a6175' : '#8d96ab',
+    });
+    const selectedCue = row.cues.find((cue) =>
+      (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`))
+    );
+    const beatStyles = projectDoc.beatStyles || {};
     ctx.save();
     ctx.beginPath();
-    // time-based content is clipped to the right of the fixed label column
+    // time-based content is clipped to the right of the fixed header column
     ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
     ctx.clip();
-    if (x + width >= LABEL_W && x <= size.width) {
-      ctx.fillStyle = 'rgba(21, 25, 36, 0.92)';
+    if (selectedCue) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 138, 61, 0.08)';
+      ctx.fillRect(LABEL_W, y, Math.max(0, size.width - LABEL_W), row.h);
+      ctx.restore();
+    }
+    for (const cue of row.cues) {
+      const x = xOf(cue.start);
+      const width = Math.max(2, (cue.end - cue.start) * pxPerSecond);
+      if (x + width < LABEL_W || x > size.width) continue;
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`));
+      const warnings = (projectDoc.beatWarnings && projectDoc.beatWarnings[cue.id]) || [];
+      const tint = categoryColor(cue);
+      ctx.fillStyle = trackHidden(row.track) ? 'rgba(21, 25, 36, 0.55)' : 'rgba(21, 25, 36, 0.92)';
       rounded(x, y + 2, width, height, 6);
       ctx.fill();
       ctx.strokeStyle = warnings.length ? '#ff5c5c' : selected ? '#ff8a3d' : tint;
@@ -413,9 +547,8 @@ SA.timeline = (() => {
       const beats = beatsFor(projectDoc, cue);
       const inner = x + 3;
       const innerWidth = Math.max(0, width - 6);
-      const beatStyles = projectDoc.beatStyles || {};
       // pushed before the beats so a click on a beat block wins over the cue
-      hitRegions.push({ type: 'cue', x, y, w: width, h: height, cueId: cue.id, edgeLeft: x, edgeRight: x + width });
+      hitRegions.push({ type: 'cue', x, y, w: width, h: height, cueId: cue.id, trackId: row.trackId, edgeLeft: x, edgeRight: x + width });
       ctx.save();
       ctx.beginPath();
       ctx.rect(x + 2, y, width - 4, height + 4);
@@ -425,86 +558,62 @@ SA.timeline = (() => {
       ctx.textBaseline = 'top';
       ctx.fillText((cue.text || '').split('\n')[0], x + 6, y + 4);
       ctx.restore();
-      if (beats.length) {
-        const total = Math.max(0.001, cue.end - cue.start);
-        let beatIndex = 0;
-        for (const beat of beats) {
-          const bx = inner + ((beat.start - cue.start) / total) * innerWidth;
-          const bw = Math.max(1.5, ((beat.end - beat.start) / total) * innerWidth);
-          if (bx + bw < 0 || bx > size.width) continue;
-          const selectedBeat = (SA.store.state.selection.paths || []).includes(`cue:${cue.id}/beat:${beat.id}`);
-          ctx.fillStyle = beat.pinned
-            ? 'rgba(255, 138, 61, 0.34)'
-            : beat.kind === 'recap'
-              ? 'rgba(176, 107, 255, 0.28)'
-              : beat.kind === 'repeat'
-                ? 'rgba(77, 200, 255, 0.24)'
-                : beat.kind === 'emphasis'
-                  ? 'rgba(255, 92, 138, 0.24)'
-                  : 'rgba(255, 255, 255, 0.10)';
-          rounded(bx, y + 2, bw, height - 8, 3);
-          ctx.fill();
-          ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.16)';
-          ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
+      let beatIndex = 0;
+      for (const beat of beats) {
+        const bx = inner + ((beat.start - cue.start) / Math.max(0.001, cue.end - cue.start)) * innerWidth;
+        const bw = Math.max(1.5, ((beat.end - beat.start) / Math.max(0.001, cue.end - cue.start)) * innerWidth);
+        if (bx + bw < 0 || bx > size.width) continue;
+        const selectedBeat = (SA.store.state.selection.paths || []).includes(`cue:${cue.id}/beat:${beat.id}`);
+        ctx.fillStyle = beat.pinned
+          ? 'rgba(255, 138, 61, 0.34)'
+          : beat.kind === 'recap'
+            ? 'rgba(176, 107, 255, 0.28)'
+            : beat.kind === 'repeat'
+              ? 'rgba(77, 200, 255, 0.24)'
+              : beat.kind === 'emphasis'
+                ? 'rgba(255, 92, 138, 0.24)'
+                : 'rgba(255, 255, 255, 0.10)';
+        rounded(bx, y + 2, bw, height - 8, 3);
+        ctx.fill();
+        ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.16)';
+        ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
+        ctx.stroke();
+        if (beatIndex > 0) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(bx + 0.5, y + 4);
+          ctx.lineTo(bx + 0.5, y + height - 4);
           ctx.stroke();
-          if (beatIndex > 0) {
-            // clear division between this beat and the previous one
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(bx + 0.5, y + 4);
-            ctx.lineTo(bx + 0.5, y + height - 4);
-            ctx.stroke();
-          }
-          if (beat.pinned) {
-            ctx.fillStyle = '#ff8a3d';
-            ctx.beginPath();
-            ctx.arc(bx + 3, y + 5.5, 1.8, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          const hasMotions = !!(beatStyles[beat.id] && Array.isArray(beatStyles[beat.id].motions) && beatStyles[beat.id].motions.length);
-          if (hasMotions) {
-            ctx.fillStyle = '#4dc8ff';
-            ctx.beginPath();
-            ctx.arc(bx + bw - 3, y + 5.5, 1.8, 0, Math.PI * 2);
-            ctx.fill();
-          }
-          if (bw > 26) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(bx + 3, y + 2, bw - 6, height - 8);
-            ctx.clip();
-            ctx.fillStyle = '#d6dbe9';
-            ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
-            ctx.textBaseline = 'middle';
-            const label = beat.text ? beat.text.replace(/\s+/g, ' ').slice(0, Math.floor(bw / 6)) : t(`studio.beat.${beat.kind}`);
-            ctx.fillText(label, bx + 4, y + height / 2 - 0.5);
-            ctx.restore();
-          }
-          hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
-          beatIndex += 1;
         }
+        if (beat.pinned) {
+          ctx.fillStyle = '#ff8a3d';
+          ctx.beginPath();
+          ctx.arc(bx + 3, y + 5.5, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        const hasMotions = !!(beatStyles[beat.id] && Array.isArray(beatStyles[beat.id].motions) && beatStyles[beat.id].motions.length);
+        if (hasMotions) {
+          ctx.fillStyle = '#4dc8ff';
+          ctx.beginPath();
+          ctx.arc(bx + bw - 3, y + 5.5, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        if (bw > 26) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(bx + 3, y + 2, bw - 6, height - 8);
+          ctx.clip();
+          ctx.fillStyle = '#d6dbe9';
+          ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+          ctx.textBaseline = 'middle';
+          const label = beat.text ? beat.text.replace(/\s+/g, ' ').slice(0, Math.floor(bw / 6)) : t(`studio.beat.${beat.kind}`);
+          ctx.fillText(label, bx + 4, y + height / 2 - 0.5);
+          ctx.restore();
+        }
+        hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
+        beatIndex += 1;
       }
-      // cue tag: a small handle just before the cue start (inside the block when
-      // there is no room to the left). Clicking it selects the cue.
-      const tagLeft = x - TAG_W - TAG_GAP;
-      const tagX = tagLeft >= LABEL_W + 2 ? tagLeft : x + TAG_GAP;
-      const tagY = y + 3;
-      const tagH = height - 6;
-      ctx.fillStyle = selected ? '#ff8a3d' : tint;
-      rounded(tagX, tagY, TAG_W, tagH, 3);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(11, 13, 18, 0.65)';
-      ctx.lineWidth = 1;
-      ctx.stroke();
-      ctx.strokeStyle = 'rgba(11, 13, 18, 0.8)';
-      ctx.beginPath();
-      for (let i = -1; i <= 1; i += 1) {
-        ctx.moveTo(tagX + 3, tagY + tagH / 2 + i * 3 - 0.5);
-        ctx.lineTo(tagX + TAG_W - 3, tagY + tagH / 2 + i * 3 - 0.5);
-      }
-      ctx.stroke();
-      hitRegions.push({ type: 'cue-head', cueId: cue.id, x: tagX, y, w: TAG_W, h: height });
       if (warnings.length) {
         ctx.fillStyle = '#ff5c5c';
         ctx.beginPath();
@@ -516,44 +625,6 @@ SA.timeline = (() => {
       }
     }
     ctx.restore();
-
-    // fixed label column: highlight the selected cue's row label
-    if (selected) {
-      ctx.save();
-      ctx.fillStyle = 'rgba(255, 138, 61, 0.08)';
-      ctx.fillRect(0, y, LABEL_W - 2, ROW_H);
-      ctx.restore();
-    }
-    // pushed last so the label cell wins over cue/beat blocks under the column;
-    // the twisty region is pushed above this one and stays clickable
-    hitRegions.push({ type: 'cue-label', cueId: cue.id, x: 0, y, w: LABEL_W - 2, h: ROW_H });
-
-    // twisty (in the gutter)
-    const twistyX = 8;
-    const twistyY = y + ROW_H / 2 - 2;
-    ctx.save();
-    ctx.fillStyle = expanded.has(cue.id) ? '#ff8a3d' : '#8d96ab';
-    ctx.beginPath();
-    if (expanded.has(cue.id)) {
-      ctx.moveTo(twistyX, twistyY);
-      ctx.lineTo(twistyX + 7, twistyY);
-      ctx.lineTo(twistyX + 3.5, twistyY + 6);
-    } else {
-      ctx.moveTo(twistyX, twistyY);
-      ctx.lineTo(twistyX + 6, twistyY + 3.5);
-      ctx.lineTo(twistyX, twistyY + 7);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
-    hitRegions.push({ type: 'twisty', x: 2, y, w: 16, h: ROW_H, cueId: cue.id });
-    ctx.save();
-    ctx.fillStyle = '#8d96ab';
-    ctx.font = '10px "Segoe UI", Arial, sans-serif';
-    ctx.textBaseline = 'middle';
-    const label = `${formatClock(cue.start)} ${(cue.text || '').split('\n')[0]}`;
-    ctx.fillText(fitLabel(label, LABEL_W - 26), 22, y + ROW_H / 2);
-    ctx.restore();
   }
 
   function layerTypeLabel(layer) {
@@ -562,25 +633,30 @@ SA.timeline = (() => {
     return t('layers.typeImage');
   }
 
-  function drawLayer(size, row) {
-    const doc = project();
-    const layer = ((doc && doc.layers) || []).find((entry) => entry.id === row.layerId);
-    if (!layer) return;
+  function drawLayerTrack(size, row) {
+    const foreground = row.slot === 'foreground';
+    const anyEnabled = row.layers.some((layer) => layer.enabled !== false);
+    if (row.first) {
+      drawTrackHeader(row, trackTitle(row.track), {
+        color: foreground ? '#4dc8a0' : '#4d8fc8',
+        hidden: !anyEnabled,
+      });
+    }
     const y = row.y;
     const height = LAYER_H - 3;
     const total = Math.max(1, duration());
-    const start = Math.max(0, layer.start == null ? 0 : layer.start);
-    const end = layer.end == null ? Math.max(total, start + 1) : Math.max(start + 0.1, layer.end);
-    const x = xOf(start);
-    const width = Math.max(3, (end - start) * pxPerSecond);
-    const selected = (SA.store.state.selection.paths || []).some((path) => path === `layer:${layer.id}`);
-    const foreground = layer.slot === 'foreground';
-    const enabled = layer.enabled !== false;
     ctx.save();
     ctx.beginPath();
     ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
     ctx.clip();
-    if (x + width >= 0 && x <= size.width) {
+    for (const layer of row.layers) {
+      const start = Math.max(0, layer.start == null ? 0 : layer.start);
+      const end = layer.end == null ? Math.max(total, start + 1) : Math.max(start + 0.1, layer.end);
+      const x = xOf(start);
+      const width = Math.max(3, (end - start) * pxPerSecond);
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `layer:${layer.id}`);
+      const enabled = layer.enabled !== false;
+      if (x + width < 0 || x > size.width) continue;
       ctx.fillStyle = enabled ? (foreground ? 'rgba(30, 64, 52, 0.92)' : 'rgba(28, 46, 74, 0.92)') : 'rgba(30, 34, 44, 0.7)';
       rounded(x, y + 1.5, width, height, 4);
       ctx.fill();
@@ -602,169 +678,109 @@ SA.timeline = (() => {
       hitRegions.push({ type: 'layer', x, y: row.y, w: width, h: LAYER_H, layerId: layer.id, edgeLeft: x, edgeRight: x + width });
     }
     ctx.restore();
-    // eye toggle in the gutter
-    const eyeX = 9;
-    const eyeY = y + LAYER_H / 2;
-    ctx.save();
-    ctx.strokeStyle = enabled ? '#4dc8a0' : '#6b7386';
-    ctx.fillStyle = enabled ? '#4dc8a0' : 'transparent';
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.arc(eyeX, eyeY, 4, 0, Math.PI * 2);
-    ctx.stroke();
-    if (enabled) {
-      ctx.beginPath();
-      ctx.arc(eyeX, eyeY, 1.8, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-    hitRegions.push({ type: 'layer-eye', x: 2, y, w: 16, h: LAYER_H, layerId: layer.id });
-    ctx.save();
-    ctx.fillStyle = enabled ? '#8d96ab' : '#5a6175';
-    ctx.font = '10px "Segoe UI", Arial, sans-serif';
-    ctx.textBaseline = 'middle';
-    const gutter = `${formatClock(start)} ${foreground ? 'FG' : 'BG'}`;
-    ctx.fillText(fitLabel(gutter, LABEL_W - 26), 22, y + LAYER_H / 2);
-    ctx.restore();
   }
 
-  const BACKDROP_COLORS = {
-    none: 'rgba(40, 46, 60, 0.35)',
-    solid: 'rgba(77, 143, 200, 0.35)',
-    noiseGradient: 'rgba(111, 91, 255, 0.35)',
-    card: 'rgba(176, 107, 255, 0.35)',
-    cover: 'rgba(77, 200, 255, 0.35)',
-    image: 'rgba(46, 230, 192, 0.35)',
-    shapes: 'rgba(255, 138, 61, 0.42)',
-    pattern: 'rgba(95, 212, 77, 0.38)',
+  const CLIP_COLORS = {
+    none: ['rgba(40, 46, 60, 0.75)', '#5a6175'],
+    solid: ['rgba(40, 70, 96, 0.85)', '#4d8fc8'],
+    gradient: ['rgba(64, 56, 120, 0.85)', '#8a7cff'],
+    noiseGradient: ['rgba(64, 56, 120, 0.85)', '#8a7cff'],
+    card: ['rgba(90, 56, 128, 0.85)', '#b06bff'],
+    cover: ['rgba(40, 88, 110, 0.85)', '#4dc8ff'],
+    image: ['rgba(30, 96, 84, 0.85)', '#2ee6c0'],
+    shapes: ['rgba(110, 66, 36, 0.9)', '#ff8a3d'],
+    pattern: ['rgba(52, 92, 46, 0.9)', '#5fd44d'],
+    particles: ['rgba(110, 66, 36, 0.9)', '#ffb26b'],
+    spectrum: ['rgba(52, 92, 46, 0.9)', '#7ce0a4'],
+    waveform: ['rgba(64, 56, 120, 0.9)', '#9db2ff'],
+    sineWave: ['rgba(64, 56, 120, 0.9)', '#9db2ff'],
+    countdown: ['rgba(110, 90, 36, 0.9)', '#ffd166'],
+    progress: ['rgba(110, 90, 36, 0.9)', '#ffd166'],
+    credits: ['rgba(90, 56, 128, 0.85)', '#b06bff'],
+    cardPeek: ['rgba(90, 56, 128, 0.85)', '#b06bff'],
+    instrumental: ['rgba(52, 74, 96, 0.85)', '#9db2ff'],
+    nextLinePreview: ['rgba(52, 74, 96, 0.85)', '#9db2ff'],
+    previousLineGhost: ['rgba(52, 74, 96, 0.85)', '#9db2ff'],
+    combo: ['rgba(64, 56, 120, 0.85)', '#8a7cff'],
   };
 
-  // The backdrop track shows the background / middle-ground treatment of every
-  // beat (card, shapes, pattern, ...), switching at beat boundaries.
-  function drawBackdrop(size, row) {
-    const doc = project();
-    ctx.fillStyle = '#0d1017';
-    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
-    ctx.strokeStyle = '#1c2230';
-    ctx.beginPath();
-    ctx.moveTo(0, row.y + row.h - 0.5);
-    ctx.lineTo(size.width, row.y + row.h - 0.5);
-    ctx.stroke();
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
-    ctx.clip();
-    let current = null;
-    const flush = () => {
-      if (!current) return;
-      const x = xOf(current.from);
-      const w = Math.max(3, (current.to - current.from) * pxPerSecond);
-      if (x + w >= LABEL_W && x <= size.width) {
-        ctx.fillStyle = BACKDROP_COLORS[current.type] || BACKDROP_COLORS.none;
-        rounded(x, row.y + 2, w, row.h - 5, 4);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        if (w > 42 && current.type !== 'none') {
-          ctx.save();
-          ctx.beginPath();
-          ctx.rect(x + 3, row.y, w - 6, row.h);
-          ctx.clip();
-          ctx.fillStyle = '#d6dbe9';
-          ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
-          ctx.textBaseline = 'middle';
-          const label = SA.controls ? SA.controls.typeLabel('background', current.type) : current.type;
-          ctx.fillText(label, x + 6, row.y + row.h / 2 + 0.5);
-          ctx.restore();
-        }
-        hitRegions.push({ type: 'backdrop', cueId: current.cueId, beatId: current.beatId, x, y: row.y, w, h: row.h, edgeLeft: x, edgeRight: x + w });
-      }
-      current = null;
-    };
-    for (const cue of cueList()) {
-      for (const beat of beatsFor(doc, cue)) {
-        const style = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
-        const background = style && style.background;
-        const type = background && background.type && background.type !== 'none' ? background.type : 'none';
-        if (!current || current.type !== type || current.to < beat.start - 1e-4) {
-          flush();
-          current = { type, cueId: cue.id, beatId: beat.id, from: beat.start, to: beat.end };
-        } else {
-          current.to = beat.end;
-        }
-      }
-      flush();
-    }
-    flush();
-    ctx.restore();
-    ctx.save();
-    ctx.fillStyle = '#8d96ab';
-    ctx.font = '10px "Segoe UI", Arial, sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(fitLabel(t('studio.timeline.backdrop'), LABEL_W - 26), 22, row.y + row.h / 2);
-    ctx.restore();
+  function clipTypeLabel(clip) {
+    const type = clip && clip.spec && clip.spec.type ? clip.spec.type : 'none';
+    const translated = t(`filler.type.${type}`);
+    if (translated !== `filler.type.${type}`) return translated;
+    return SA.controls ? SA.controls.prettify(type) : String(type);
   }
 
-  function drawFillers(size, row) {
-    const clips = fillerClips();
-    ctx.fillStyle = '#0d1017';
-    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
-    ctx.strokeStyle = '#1c2230';
-    ctx.beginPath();
-    ctx.moveTo(0, row.y + row.h - 0.5);
-    ctx.lineTo(size.width, row.y + row.h - 0.5);
-    ctx.stroke();
+  // One generic renderer for backdrop / filler / background clips.
+  function drawClipTrack(size, row) {
+    if (row.first) {
+      const colors = { background: '#4d8fc8', backdrop: '#ff8a3d', filler: '#4dc8a0' };
+      drawTrackHeader(row, trackTitle(row.track), { color: colors[row.kind] || '#8d96ab', hidden: trackHidden(row.track) });
+    }
+    const y = row.y;
+    const height = LAYER_H - 3;
     ctx.save();
     ctx.beginPath();
-    ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
     ctx.clip();
-    for (const clip of clips) {
-      const x = xOf(clip.from);
-      const w = Math.max(3, (clip.to - clip.from) * pxPerSecond);
-      if (x + w < 0 || x > size.width) continue;
-      const selected = (SA.store.state.selection.paths || []).some((path) => path === `filler:${clip.key}`);
-      ctx.fillStyle = clip.pinned ? 'rgba(58, 44, 30, 0.92)' : 'rgba(28, 46, 74, 0.85)';
-      rounded(x, row.y + 2, w, row.h - 5, 4);
+    for (const clip of row.clips) {
+      const x = xOf(clip.start);
+      const width = Math.max(3, (clip.end - clip.start) * pxPerSecond);
+      if (x + width < 0 || x > size.width) continue;
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `clip:${clip.id}`);
+      const fill = CLIP_COLORS[(clip.spec && clip.spec.type) || 'none'] || CLIP_COLORS.none;
+      ctx.fillStyle = trackHidden(row.track) ? 'rgba(30, 34, 44, 0.6)' : fill[0];
+      rounded(x, y + 1.5, width, height, 4);
       ctx.fill();
-      ctx.strokeStyle = selected ? '#ff8a3d' : clip.pinned ? '#ffc247' : '#4d8fc8';
+      ctx.strokeStyle = selected ? '#ff8a3d' : fill[1];
       ctx.lineWidth = selected ? 1.6 : 1;
       ctx.stroke();
-      if (clip.pinned) {
-        ctx.fillStyle = '#ffc247';
+      // fade wedges show the envelope
+      const fadeIn = Math.max(0, Number(clip.fadeIn) || 0);
+      const fadeOut = Math.max(0, Number(clip.fadeOut) || 0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x + 1, y + 1.5, width - 2, height);
+      ctx.clip();
+      ctx.fillStyle = 'rgba(11, 13, 18, 0.45)';
+      if (fadeIn > 1e-4) {
+        const fw = Math.max(2, fadeIn * pxPerSecond);
         ctx.beginPath();
-        ctx.arc(x + 4, row.y + 6, 1.8, 0, Math.PI * 2);
+        ctx.moveTo(x, y + 1.5);
+        ctx.lineTo(x + Math.min(fw, width), y + 1.5);
+        ctx.lineTo(x, y + height + 1.5);
+        ctx.closePath();
         ctx.fill();
       }
-      if (w > 34) {
+      if (fadeOut > 1e-4) {
+        const fw = Math.max(2, fadeOut * pxPerSecond);
+        ctx.beginPath();
+        ctx.moveTo(x + width, y + 1.5);
+        ctx.lineTo(x + width - Math.min(fw, width), y + 1.5);
+        ctx.lineTo(x + width, y + height + 1.5);
+        ctx.closePath();
+        ctx.fill();
+      }
+      ctx.restore();
+      if (width > 34) {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(x + 3, row.y, w - 6, row.h);
+        ctx.rect(x + 3, y, width - 6, height);
         ctx.clip();
         ctx.fillStyle = '#d6dbe9';
         ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
         ctx.textBaseline = 'middle';
-        ctx.fillText(fillerTypeLabel(clip.spec && clip.spec.type), x + 6, row.y + row.h / 2 + 0.5);
+        ctx.fillText(clipTypeLabel(clip), x + 6, y + height / 2 + 0.5);
         ctx.restore();
       }
-      hitRegions.push({ type: 'filler', x, y: row.y, w, h: row.h, key: clip.key });
+      hitRegions.push({ type: 'clip', x, y, w: width, h: LAYER_H, clipId: clip.id, trackId: row.trackId, kind: row.kind, edgeLeft: x, edgeRight: x + width });
     }
     ctx.restore();
-    ctx.fillStyle = '#8d96ab';
-    ctx.font = '10px "Segoe UI", Arial, sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(fitLabel(`${t('filler.track')}${clips.length ? ` (${clips.length})` : ''}`, LABEL_W - 26), 22, row.y + row.h / 2);
   }
 
   function drawCredits(size, row) {
     const clips = creditClips();
-    ctx.fillStyle = '#0d1017';
-    ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
-    ctx.strokeStyle = '#1c2230';
-    ctx.beginPath();
-    ctx.moveTo(0, row.y + row.h - 0.5);
-    ctx.lineTo(size.width, row.y + row.h - 0.5);
-    ctx.stroke();
+    drawTrackHeader({ ...row, trackId: 'credits' }, t('credits.track'), { eye: false, color: '#b06bff' });
     ctx.save();
     ctx.beginPath();
     ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
@@ -794,10 +810,6 @@ SA.timeline = (() => {
       hitRegions.push({ type: 'credit', x, y: row.y, w, h: row.h, mode: clip.mode });
     }
     ctx.restore();
-    ctx.fillStyle = '#8d96ab';
-    ctx.font = '10px "Segoe UI", Arial, sans-serif';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(fitLabel(`${t('credits.track')}${clips.length ? ` (${clips.length})` : ''}`, LABEL_W - 26), 22, row.y + row.h / 2);
   }
 
   function laneLabel(path) {
@@ -814,7 +826,7 @@ SA.timeline = (() => {
       ctx.fillStyle = '#5d6785';
       ctx.font = '10px "Segoe UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
-      ctx.fillText(fitLabel(t('studio.timeline.noKeys'), LABEL_W - 26), 22, row.y + row.h / 2);
+      ctx.fillText(fitLabel(t('studio.timeline.noKeys'), LABEL_W - 16), 8, row.y + row.h / 2);
       return;
     }
     const cue = cueList().find((entry) => entry.id === row.cueId);
@@ -841,8 +853,8 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     ctx.fillText(
-      fitLabel(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, LABEL_W - 26),
-      22,
+      fitLabel(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, LABEL_W - 16),
+      8,
       row.y + row.h / 2
     );
     ctx.restore();
@@ -1038,10 +1050,9 @@ SA.timeline = (() => {
     ctx.lineTo(LABEL_W - 0.5, size.height);
     ctx.stroke();
     for (const row of rows) {
-      if (row.type === 'cue') drawCue(size, doc, cueList().find((entry) => entry.id === row.cueId), row);
-      else if (row.type === 'layer') drawLayer(size, row);
-      else if (row.type === 'backdrop') drawBackdrop(size, row);
-      else if (row.type === 'fillers') drawFillers(size, row);
+      if (row.type === 'cue-track') drawCueTrack(size, doc, row);
+      else if (row.type === 'layer-track') drawLayerTrack(size, row);
+      else if (row.type === 'clip-track') drawClipTrack(size, row);
       else if (row.type === 'credits') drawCredits(size, row);
       else if (row.type === 'lane' || row.type === 'lane-empty') drawLane(size, row);
     }
@@ -1072,47 +1083,26 @@ SA.timeline = (() => {
     if (ruler && point.y < RULER_H && point.x >= LABEL_W) return { type: 'ruler' };
     const key = keyAt(point);
     if (key) return { type: 'key', ...key };
-    // the cue tag wins over every other region it touches
-    for (const region of hitRegions) {
-      if (region.type !== 'cue-head') continue;
-      if (point.y < region.y || point.y > region.y + region.h) continue;
-      if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
-      return { type: 'cue', cueId: region.cueId, head: true, x: region.x, y: region.y, w: region.w, h: region.h };
-    }
-    // cue edges win over the beat edges that sit on them, so the cue length
-    // can be dragged even when beats cover the whole cue
+    // cue / layer / clip edges win over the beat edges that sit on them, so the
+    // clip length can be dragged even when beats cover the whole clip
     if (point.x >= LABEL_W) {
       for (const region of hitRegions) {
-        if (region.type !== 'cue') continue;
         if (point.y < region.y || point.y > region.y + region.h) continue;
-        if (Math.abs(point.x - region.edgeLeft) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'start' };
-        if (Math.abs(point.x - region.edgeRight) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'end' };
+        if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
+        if (region.type === 'cue') {
+          if (Math.abs(point.x - region.edgeLeft) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'start' };
+          if (Math.abs(point.x - region.edgeRight) <= 4) return { type: 'cue-edge', cueId: region.cueId, edge: 'end' };
+        }
+        if (region.type === 'clip') {
+          if (Math.abs(point.x - region.edgeLeft) <= 4) return { type: 'clip-edge', clipId: region.clipId, kind: region.kind, edge: 'start' };
+          if (Math.abs(point.x - region.edgeRight) <= 4) return { type: 'clip-edge', clipId: region.clipId, kind: region.kind, edge: 'end' };
+        }
       }
     }
     let found = null;
     for (const region of hitRegions) {
       if (point.y < region.y || point.y > region.y + region.h) continue;
       if (point.x < region.x - 2 || point.x > region.x + region.w + 2) continue;
-      if (region.type === 'cue-label') {
-        found = { type: 'cue', cueId: region.cueId, label: true, x: region.x, y: region.y, w: region.w, h: region.h };
-        continue;
-      }
-      if (region.type === 'backdrop') {
-        if (Math.abs(point.x - region.edgeLeft) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'start' };
-        if (Math.abs(point.x - region.edgeRight) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'end' };
-        found = {
-          type: 'beat',
-          cueId: region.cueId,
-          beatId: region.beatId,
-          x: region.x,
-          y: region.y,
-          w: region.w,
-          h: region.h,
-          edgeLeft: region.edgeLeft,
-          edgeRight: region.edgeRight,
-        };
-        continue;
-      }
       if (region.type === 'beat') {
         if (Math.abs(point.x - region.edgeLeft) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'start' };
         if (Math.abs(point.x - region.edgeRight) <= 3) return { type: 'divider', cueId: region.cueId, beatId: region.beatId, edge: 'end' };
@@ -1156,11 +1146,37 @@ SA.timeline = (() => {
     } else if (hit.type === 'audio') {
       drag = { type: 'scrub' };
       SA.preview.seek(snapFrame(timeAt(point.x)));
-    } else if (hit.type === 'twisty') {
-      if (expanded.has(hit.cueId)) expanded.delete(hit.cueId);
-      else expanded.add(hit.cueId);
+    } else if (hit.type === 'track-twisty') {
+      if (expanded.has(hit.trackId)) expanded.delete(hit.trackId);
+      else expanded.add(hit.trackId);
       drag = null;
       draw();
+    } else if (hit.type === 'track-header') {
+      SA.store.setSelection([`track:${hit.trackId}`], 'track');
+      drag = null;
+    } else if (hit.type === 'track-eye') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && (track.kind === 'foreground' || track.kind === 'background')) {
+        // layer tracks have no `hidden` flag: the eye toggles every layer
+        const slot = track.kind;
+        const layers = layerList(slot);
+        const enabled = layers.some((layer) => layer.enabled === false);
+        const next = ((project().layers) || []).map((layer) => ((layer.slot || 'background') === slot ? { ...layer, enabled } : layer));
+        SA.store.commands.setLayers(next);
+      } else if (track) {
+        SA.store.commands.updateTrack(hit.trackId, { hidden: !track.hidden });
+      }
+      drag = null;
+      draw();
+    } else if (hit.type === 'clip') {
+      SA.store.setSelection([`clip:${hit.clipId}`], 'clip');
+      const doc = project();
+      const clip = ((doc && doc.clips) || []).find((entry) => entry.id === hit.clipId);
+      drag = clip ? { type: 'clip-move', clipId: clip.id, start: timeAt(point.x), original: { start: clip.start, end: clip.end } } : null;
+    } else if (hit.type === 'clip-edge') {
+      const doc = project();
+      const clip = ((doc && doc.clips) || []).find((entry) => entry.id === hit.clipId);
+      if (clip) drag = { type: 'clip-edge', clipId: clip.id, edge: hit.edge, original: { start: clip.start, end: clip.end } };
     } else if (hit.type === 'divider') {
       drag = { type: 'divider', cueId: hit.cueId, beatId: hit.beatId, edge: hit.edge };
     } else if (hit.type === 'cue-edge') {
@@ -1169,8 +1185,7 @@ SA.timeline = (() => {
     } else if (hit.type === 'cue') {
       SA.store.setSelection([`cue:${hit.cueId}`], 'cue');
       const cue = cueList().find((entry) => entry.id === hit.cueId);
-      // the label cell selects the cue; the tag and the block also move it
-      if (cue && !hit.label) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
+      if (cue) drag = { type: 'cue-move', cueId: hit.cueId, trackId: cue.trackId || 'sub1', start: timeAt(point.x), original: { ...cue } };
     } else if (hit.type === 'layer-eye') {
       const layer = ((project().layers) || []).find((entry) => entry.id === hit.layerId);
       if (layer) SA.store.commands.setLayer(hit.layerId, { enabled: layer.enabled === false });
@@ -1214,8 +1229,9 @@ SA.timeline = (() => {
     const point = localPoint(event);
     const hit = hitTest(point);
     let cursor = 'default';
-    if (hit.type === 'cue-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
-    else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'filler' || hit.type === 'credit') cursor = 'pointer';
+    if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
+    else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
+    else if (hit.type === 'track-eye' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -1239,9 +1255,21 @@ SA.timeline = (() => {
     } else if (drag.type === 'divider') {
       SA.store.commands.moveBeatEdge(drag.cueId, drag.beatId, drag.edge, snapTime(timeAt(point.x)), { coalesceKey: `beat:${drag.beatId}:${drag.edge}` });
     } else if (drag.type === 'cue-move' && drag.original) {
+      const row = rows.find((entry) => entry.type === 'cue-track' && point.y >= entry.y && point.y <= entry.y + entry.h);
+      if (row && row.trackId !== drag.trackId) {
+        SA.store.commands.setCueTrack(drag.cueId, row.trackId);
+        drag.trackId = row.trackId;
+      }
       const delta = timeAt(point.x) - drag.start;
       const next = Math.max(0, snapTime(drag.original.start + delta, { cueId: drag.cueId }));
       SA.store.commands.moveCue(drag.cueId, next, { coalesceKey: `cue:${drag.cueId}:move` });
+    } else if (drag.type === 'clip-move' && drag.original) {
+      const delta = timeAt(point.x) - drag.start;
+      const next = Math.max(0, snapTime(drag.original.start + delta));
+      SA.store.commands.moveClip(drag.clipId, next, { coalesceKey: `clip:${drag.clipId}:move` });
+    } else if (drag.type === 'clip-edge' && drag.original) {
+      const time = snapTime(timeAt(point.x));
+      SA.store.commands.trimClip(drag.clipId, drag.edge, time, { coalesceKey: `clip:${drag.clipId}:trim:${drag.edge}` });
     } else if (drag.type === 'cue-edge' && drag.original) {
       const time = drag.edge === 'start' ? Math.max(0, snapTime(timeAt(point.x), { cueId: drag.cueId })) : snapTime(timeAt(point.x), { cueId: drag.cueId });
       SA.store.commands.trimCue(drag.cueId, drag.edge, time, { coalesceKey: `cue:${drag.cueId}:trim:${drag.edge}` });
@@ -1304,6 +1332,43 @@ SA.timeline = (() => {
     if (hit.type === 'cue') {
       const cue = cueList().find((entry) => entry.id === hit.cueId);
       if (cue) editCueText(hit.cueId, hit);
+      return;
+    }
+    if (hit.type === 'empty') addAtRow(point);
+  }
+
+  // Double-clicking empty space creates a clip on that track (or a cue on a
+  // subtitle track) at the clicked time.
+  function addAtRow(point) {
+    const row = rows.find((entry) => point.y >= entry.y && point.y <= entry.y + entry.h);
+    if (!row || point.x < LABEL_W) return;
+    const time = Math.max(0, snapFrame(timeAt(point.x)));
+    if (row.type === 'clip-track') {
+      const kind = row.kind;
+      const defaults =
+        kind === 'background'
+          ? { type: 'noiseGradient', params: { scale: 2, speed: 0.2 } }
+          : kind === 'backdrop'
+            ? { type: 'pattern', params: { mode: 'grid', count: 24, size: 1, speed: 0.4, opacity: 0.35 } }
+            : { type: 'particles', params: { count: 32, flow: 'rise', size: 2.4 } };
+      const id = SA.store.commands.addClip({ start: time, end: time + 2, spec: defaults, colors: null }, row.trackId);
+      if (id) SA.store.setSelection([`clip:${id}`], 'clip');
+      return;
+    }
+    if (row.type === 'cue-track') {
+      const cue = {
+        id: `cue_${Math.random().toString(16).slice(2, 10)}`,
+        start: time,
+        end: time + 2.8,
+        text: t('studio.timeline.newCueText'),
+        spans: [],
+        fx: {},
+        meta: { kind: 'custom' },
+        trackId: row.trackId,
+      };
+      SA.store.commands.addCue(cue);
+      SA.store.setSelection([`cue:${cue.id}`], 'cue');
+      if (SA.preview) SA.preview.seek(time);
     }
   }
 
@@ -1491,6 +1556,40 @@ SA.timeline = (() => {
       });
       menu.appendChild(button);
     };
+    if (hit.type === 'clip' || hit.type === 'clip-edge') {
+      const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
+      if (!clip) return;
+      SA.store.setSelection([`clip:${clip.id}`], 'clip');
+      add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
+      add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
+      add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));
+      if (hit.kind === 'filler') add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
+      add(t('studio.inspector.delete'), () => SA.store.commands.deleteClip(clip.id));
+      draw();
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-eye') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (!track) return;
+      if (track.kind === 'subtitle') {
+        add(t('studio.track.addSubtitle'), () => {
+          const id = SA.store.commands.addTrack('subtitle');
+          if (id) SA.store.setSelection([`track:${id}`], 'track');
+        });
+        add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
+        add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
+        add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
+      } else if (track.kind === 'filler') {
+        add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
+      }
+      add(track.hidden ? t('layers.show') : t('layers.hide'), () => SA.store.commands.updateTrack(track.id, { hidden: !track.hidden }));
+      draw();
+      el.body.appendChild(menu);
+      positionMenu(event);
+      return;
+    }
     if (hit.type === 'filler') {
       const clip = fillerClips().find((entry) => entry.key === hit.key);
       if (!clip) return;
@@ -1521,6 +1620,7 @@ SA.timeline = (() => {
       add(beat && beat.pinned ? t('studio.beat.unpin') : t('studio.beat.pin'), () => SA.store.commands.setBeatPinned(cueId, hit.beatId, !(beat && beat.pinned)));
       add(t('studio.beat.splitAtPlayhead'), () => SA.store.commands.splitBeat(cueId, hit.beatId, SA.store.state.playhead));
       add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
+      add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
       addRecapItem(add, cueId);
@@ -1534,6 +1634,7 @@ SA.timeline = (() => {
     } else {
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
+      add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));
       add(t('studio.beat.duplicateCue'), () => {
         const cue = cueList().find((entry) => entry.id === cueId);
         if (cue) copyCue(cue);
@@ -1741,7 +1842,8 @@ SA.timeline = (() => {
     }
     const local = SA.inspector.localTimeFor(sel.cueId, sel.beatId);
     SA.store.commands.setKeyframe(sel.path, propPath, snapFrame(local), value, 'linear');
-    if (sel.cueId) expanded.add(sel.cueId);
+    const cue = cueList().find((entry) => entry.id === sel.cueId);
+    if (cue) expanded.add(cue.trackId || 'sub1');
     draw();
   }
 
@@ -1802,7 +1904,7 @@ SA.timeline = (() => {
         if (!entry) return;
         event.preventDefault();
         const point = localPoint(event);
-        const firstCue = rows.find((row) => row.type === 'cue');
+        const firstCue = rows.find((row) => row.type === 'cue-track');
         const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
         const layer = SA.layersDialog.defaults(slot);
         layer.type = 'video';

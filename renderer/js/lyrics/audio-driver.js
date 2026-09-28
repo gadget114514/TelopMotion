@@ -90,8 +90,8 @@
     return { ...instance, params };
   }
 
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background'];
-  const STACK_GROUPS = ['hold', 'edge', 'post'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
 
   function resolveStyle(style, analysis, t) {
     if (!style || !analysis) return style;

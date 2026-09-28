@@ -185,12 +185,131 @@
     },
   ];
 
+  // Generic text-background presets (the table in the plan).
+  const BG_PRESETS = [
+    {
+      id: 'varietyBox',
+      label: 'fx.preset.varietyBox',
+      style: {
+        fill: { type: 'solid', params: {} },
+        bgShape: { type: 'square', params: { unit: 'cell', width: 1.15, height: 1.15, vary: 'alternate', skipSpaces: true } },
+        bgFill: { type: 'solid', params: {} },
+        bgMotion: { type: 'pop', params: { lead: 0.05, duration: 0.35, overshoot: 0.15 } },
+      },
+    },
+    {
+      id: 'marker',
+      label: 'fx.preset.marker',
+      style: {
+        fill: { type: 'solid', params: {} },
+        bgShape: { type: 'bar', params: { unit: 'cell', width: 1.2, height: 0.38, offset: { x: 0, y: 0.28 }, skipSpaces: true } },
+        bgFill: { type: 'gradientSweep', params: { angle: 0, speed: 0.2 } },
+        bgMotion: { type: 'grow', params: { axis: 'x', lead: 0.05, duration: 0.4 } },
+      },
+    },
+    {
+      id: 'badgeDots',
+      label: 'fx.preset.badgeDots',
+      style: {
+        fill: { type: 'solid', params: {} },
+        bgShape: {
+          type: 'circle',
+          params: { unit: 'em', width: 0.3, height: 0.3, offset: { x: 0.45, y: -0.45 }, layer: 'front', vary: 'cycle', skipSpaces: true },
+        },
+        bgFill: { type: 'solid', params: {} },
+        bgMotion: { type: 'pop', params: { lead: 0, duration: 0.3 } },
+      },
+    },
+    {
+      id: 'bubbleLetters',
+      label: 'fx.preset.bubbleLetters',
+      style: {
+        fill: { type: 'solid', params: {} },
+        bgShape: { type: 'circle', params: { unit: 'cell', width: 1.3, height: 1.3, vary: 'charClass', skipSpaces: true } },
+        bgFill: { type: 'solid', params: {} },
+        bgMotion: { type: 'stamp', params: { lead: 0.03, duration: 0.25, from: 1.7 } },
+      },
+    },
+    {
+      id: 'confetti',
+      label: 'fx.preset.confetti',
+      style: {
+        fill: { type: 'solid', params: {} },
+        edge: [{ type: 'outline', params: { width: 2.5 }, enabled: true }],
+        bgShape: {
+          type: 'paper',
+          params: { unit: 'em', width: 2.4, height: 2.4, opacity: 0.35, vary: 'random', varyRotation: 40, varyOffset: 0.3, skipSpaces: true },
+        },
+        bgFill: { type: 'solid', params: {} },
+        bgMotion: { type: 'spin', params: { turns: 0.25, lead: -0.1, duration: 0.5 } },
+      },
+    },
+    {
+      id: 'dashedFrame',
+      label: 'fx.preset.dashedFrame',
+      style: {
+        fill: { type: 'solid', params: {} },
+        bgShape: { type: 'rounded', params: { unit: 'cell', width: 1.2, height: 1.2, opacity: 0, skipSpaces: true } },
+        bgFill: { type: 'solid', params: {} },
+        bgEdge: [{ type: 'outline', params: { width: 2, pattern: 'dashed', dashLength: 12, flow: 1, offset: 2 }, enabled: true }],
+        bgMotion: { type: 'fade', params: { lead: 0.05, duration: 0.4 } },
+      },
+    },
+    {
+      id: 'typewriterCursor',
+      label: 'fx.preset.typewriterCursor',
+      style: {
+        enter: { type: 'typewriter', params: { cursor: true, cursorShape: 'block', blink: 0.5 }, motion: { in: { duration: 0.8 } } },
+        fill: { type: 'solid', params: {} },
+        bgShape: { type: 'rounded', params: { unit: 'cell', width: 1.1, height: 1.1, opacity: 0.85, skipSpaces: true } },
+        bgFill: { type: 'solid', params: { color: '#1a1a1a' } },
+        bgMotion: { type: 'follow', params: {} },
+      },
+    },
+  ];
+
+  // Genre presets are generated from the genre profiles when the mood
+  // generator is available (browser); the output is deterministic per genre.
+  const GENRE_PRESETS = [
+    { id: 'horrorBlood', genre: 'horror', signature: 'blood' },
+    { id: 'horrorRansom', genre: 'horror', signature: 'ransom' },
+    { id: 'horrorScratch', genre: 'horror', signature: 'claw' },
+    { id: 'loveHeartbeat', genre: 'love', signature: 'heartbeat' },
+    { id: 'loveHearts', genre: 'love', signature: 'heartAccent' },
+    { id: 'heartbreakTears', genre: 'heartbreak', signature: 'tears' },
+    { id: 'partyConfetti', genre: 'party', signature: 'confetti' },
+  ];
+
+  let genreCache = null;
+
+  function buildGenrePresets() {
+    if (genreCache) return genreCache;
+    if (typeof SA === 'undefined' || !SA.moods || !SA.genres) return [];
+    genreCache = GENRE_PRESETS.map((entry) => {
+      const genre = SA.genres.get(entry.genre);
+      const generated = SA.moods.generate({ genre: entry.genre, axes: genre && genre.axes, seed: 1, ensureSignature: false });
+      const style = JSON.parse(JSON.stringify(generated.style));
+      const signature = ((genre && genre.signature) || []).find((item) => item.id === entry.signature);
+      if (signature && signature.patch) {
+        for (const [key, value] of Object.entries(signature.patch)) {
+          style[key] = SA.project && SA.project.mergeDeep ? SA.project.mergeDeep(style[key] || {}, value) : value;
+        }
+      }
+      return { id: entry.id, label: `fx.preset.${entry.id}`, genre: entry.genre, style };
+    });
+    return genreCache;
+  }
+
+  function allPresets() {
+    return [...LIST, ...BG_PRESETS, ...buildGenrePresets()];
+  }
+
   function list() {
-    return LIST.map((entry) => ({ id: entry.id, label: entry.label, style: JSON.parse(JSON.stringify(entry.style)) }));
+    return allPresets().map((entry) => ({ id: entry.id, label: entry.label, style: JSON.parse(JSON.stringify(entry.style)) }));
   }
 
   function get(id) {
-    return LIST.find((entry) => entry.id === id) || null;
+    return allPresets().find((entry) => entry.id === id) || null;
   }
 
   function labelFor(preset) {

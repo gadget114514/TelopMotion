@@ -10,6 +10,9 @@
 
   const types = new Map();
   const groups = new Map();
+  // group aliases: bgFill -> fill, bgEdge -> edge. The base entry is reused
+  // with the alias group name patched in, so type lists never drift apart.
+  const aliases = new Map();
 
   const DEFAULT_MOTION = {
     in: { duration: 0.6, delay: 0, ease: 'easeOutCubic' },
@@ -30,7 +33,20 @@
     post: null,
     background: { type: 'none', params: {} },
     color: { params: {} },
+    bgShape: { type: 'none', params: {} },
+    bgFill: { type: 'solid', params: {} },
+    bgEdge: null,
+    bgMotion: { type: 'follow', params: {} },
   };
+
+  function alias(group, baseGroup) {
+    aliases.set(group, baseGroup);
+    return aliases.get(group);
+  }
+
+  function baseOf(group) {
+    return aliases.get(group) || group;
+  }
 
   function register(descriptor) {
     const entry = {
@@ -45,6 +61,7 @@
       cpu: descriptor.cpu || null,
       gpu: descriptor.gpu || null,
       anchor: descriptor.anchor || null,
+      fixedDuration: descriptor.fixedDuration == null ? null : Number(descriptor.fixedDuration),
     };
     if (!groups.has(entry.group)) groups.set(entry.group, new Map());
     groups.get(entry.group).set(entry.type, entry);
@@ -53,11 +70,20 @@
   }
 
   function get(group, type) {
-    return types.get(`${group}.${type}`) || null;
+    const entry = types.get(`${group}.${type}`);
+    if (entry) return entry;
+    const base = aliases.get(group);
+    if (!base) return null;
+    const source = types.get(`${base}.${type}`);
+    return source ? { ...source, group } : null;
   }
 
   function list(group) {
-    return [...(groups.get(group) || new Map()).values()];
+    const direct = groups.get(group);
+    if (direct) return [...direct.values()];
+    const base = aliases.get(group);
+    if (!base) return [];
+    return [...(groups.get(base) || new Map()).values()].map((entry) => ({ ...entry, group }));
   }
 
   function paramDefaults(group, type) {
@@ -93,7 +119,17 @@
       const entry = instance && get(group, instance.type);
       if (entry) cost += entry.cost;
     }
-    for (const group of ['hold', 'edge', 'post']) {
+    // the text background costs nothing until a shape is selected
+    const bgInstance = withDefaults(style.bgShape, 'bgShape');
+    const bgActive = !!(bgInstance && bgInstance.type && bgInstance.type !== 'none');
+    if (bgActive) {
+      for (const group of ['bgShape', 'bgFill', 'bgMotion']) {
+        const entry = get(group, (withDefaults(style[group], group) || {}).type);
+        if (entry) cost += entry.cost;
+      }
+    }
+    for (const group of ['hold', 'edge', 'post', 'bgEdge']) {
+      if (group === 'bgEdge' && !bgActive) continue;
       for (const instance of style[group] || []) {
         const entry = get(group, instance.type);
         if (entry) cost += entry.cost;
@@ -106,6 +142,8 @@
     DEFAULT_MOTION,
     GROUP_DEFAULTS,
     register,
+    alias,
+    baseOf,
     get,
     list,
     paramDefaults,
@@ -114,5 +152,6 @@
     costOf,
     types,
     groups,
+    aliases,
   };
 });

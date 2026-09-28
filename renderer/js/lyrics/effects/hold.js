@@ -249,5 +249,57 @@
     },
   });
 
+  function bump(phase, center, width) {
+    const t = (phase - center) / width;
+    return Math.exp(-t * t * 4);
+  }
+
+  fx.register({
+    group: 'hold',
+    type: 'heartbeat',
+    params: [
+      { key: 'amount', kind: 'number', min: 0, max: 0.2, step: 0.005, default: 0.06, random: [0.04, 0.08] },
+      { key: 'bpm', kind: 'text', default: '72' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const amount = params.amount == null ? 0.06 : params.amount;
+      const option = params.bpm;
+      let bpm = 72;
+      if (option === 'audio') {
+        bpm = info && info.audioFeatures && Number(info.audioFeatures.bpm) > 0 ? Number(info.audioFeatures.bpm) : 72;
+      } else if (Number.isFinite(Number(option)) && Number(option) > 0) {
+        bpm = Number(option);
+      }
+      const time = info && info.local != null ? info.local : h;
+      const phase = (((time * bpm) / 60) % 1 + 1) % 1;
+      const scale = 1 + amount * (bump(phase, 0, 0.1) + 0.6 * bump(phase, 0.18, 0.1)) * env;
+      state.scaleX *= scale;
+      state.scaleY *= scale;
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'shiver',
+    params: [
+      { key: 'amount', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.6, random: [0.4, 1] },
+      { key: 'interval', kind: 'number', min: 0.5, max: 10, step: 0.1, default: 3, random: [2, 5] },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const amount = params.amount == null ? 0.6 : params.amount;
+      const interval = Math.max(0.5, params.interval == null ? 3 : params.interval);
+      const size = info.shortSide;
+      const i = info.i;
+      state.x += amount * (noise1(Math.floor(h * 30), i) - 0.5) * size * 0.01 * env;
+      state.y += amount * (noise1(Math.floor(h * 30), i + 13.7) - 0.5) * size * 0.01 * env;
+      const n = Math.floor(h / interval);
+      const tn = n * interval + noise1(n, i + 2.3) * interval * 0.8;
+      if (h >= tn && h <= tn + 0.08) {
+        state.x += size * 0.08 * (noise1(n, i + 5.1) < 0.5 ? -1 : 1) * env;
+        state.rot += 6 * (noise1(n, i + 8.9) * 2 - 1) * env;
+      }
+    },
+  });
+
   return fx;
 });

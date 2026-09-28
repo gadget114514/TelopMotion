@@ -14,6 +14,7 @@ require('../../renderer/js/lyrics/effects/fill.js');
 require('../../renderer/js/lyrics/effects/edge.js');
 require('../../renderer/js/lyrics/effects/post.js');
 require('../../renderer/js/lyrics/effects/background.js');
+require('../../renderer/js/lyrics/effects/text-bg.js');
 const random = require('../../renderer/js/lyrics/random.js');
 const rng = require('../../renderer/js/lyrics/rng.js');
 const projectModule = require('../../renderer/js/studio/project.js');
@@ -160,7 +161,7 @@ test('presets are JSON-safe partial style sets', () => {
   const presets = require('../../renderer/js/lyrics/presets.js');
   const list = presets.list();
   assert.ok(list.length >= 14, `presets ${list.length}`);
-  const known = new Set(['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text']);
+  const known = new Set(['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion']);
   for (const preset of list) {
     assert.ok(preset.id && preset.style, preset.id);
     for (const key of Object.keys(preset.style)) assert.ok(known.has(key), `${preset.id}: ${key}`);
