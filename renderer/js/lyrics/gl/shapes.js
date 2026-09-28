@@ -36,7 +36,45 @@ uniform vec2 u_p1;
 uniform float u_lineWidth;
 uniform vec4 u_color;
 uniform vec4 u_strokeColor;
+uniform vec3 u_trim;      // trim start, end, offset along the path
+uniform vec3 u_dash;      // dash on, off, offset (fractions of the path)
+uniform float u_cap;      // 0 butt, 1 round
+uniform vec4 u_warp;      // path warp: code, amount, freq, time
 out vec4 outColor;
+
+const float PI_HALF = 1.5707963267948966;
+
+// the deformations the text warp uses, applied to the shape's plane
+vec2 warpPoint(vec2 p, float code, float amount, float freq, float time, float radius) {
+  if (code < 0.5 || abs(amount) < 0.0001) return p;
+  float half = max(radius, 1.0);
+  float u = p.x / half;
+  float v = p.y / half;
+  float r = clamp(length(vec2(u, v)), 0.0, 1.0);
+  if (code < 1.5) {                        // wiggle
+    p += vec2(sin(p.y * 0.06 * max(freq, 0.1) + time * 2.4), cos(p.x * 0.06 * max(freq, 0.1) + time * 2.0)) * amount * half * 0.25;
+  } else if (code < 2.5) {                 // zigzag
+    p.x += amount * half * 0.25 * (abs(fract(v * max(freq, 0.01)) - 0.5) * 4.0 - 1.0);
+  } else if (code < 3.5) {                 // pucker / bloat
+    p *= 1.0 + amount * (1.0 - r * r) * 0.8;
+  } else {                                 // twist
+    float angle = amount * PI_HALF * (1.0 - r);
+    float c = cos(angle);
+    float s = sin(angle);
+    p = mat2(c, -s, s, c) * p;
+  }
+  return p;
+}
+
+// normalised position along the outline: the angle around the centre for the
+// closed shapes, the projection for a segment
+float pathParam(vec2 p) {
+  if (u_shape == 2) {
+    vec2 ba = u_p1 - u_p0;
+    return clamp(dot(p - u_p0, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
+  }
+  return atan(p.y, p.x) / 6.283185307179586 + 0.5;
+}
 
 float sdSegment(vec2 p, vec2 a, vec2 b) {
   vec2 pa = p - a;
@@ -54,6 +92,7 @@ float sdPolygon(vec2 p, float r, float n, float rot) {
 
 void main() {
   vec2 p = (v_uv - 0.5) * 2.0 * u_half;
+  p = warpPoint(p, u_warp.x, u_warp.y, u_warp.z, u_warp.w, max(u_half.x, u_half.y));
   float d;
   if (u_shape == 0) {
     vec2 q = abs(p) - (u_half - vec2(u_radius));
@@ -71,6 +110,17 @@ void main() {
     color = u_strokeColor;
   }
   float alpha = color.a * (1.0 - smoothstep(-0.7, 0.7, d));
+  // trim path / dashes cut the outline by its own arc length
+  float t = pathParam(p);
+  float feather = max(fwidth(t), 0.004);
+  float tt = fract(t + u_trim.z);
+  float trim = smoothstep(u_trim.x - feather, u_trim.x + feather, tt) * (1.0 - smoothstep(u_trim.y - feather, u_trim.y + feather, tt));
+  alpha *= trim;
+  if (u_cap < 0.5 && u_shape == 2 && (t <= 0.0 || t >= 1.0)) alpha = 0.0;
+  if (u_dash.x > 0.0) {
+    float period = max(u_dash.x + u_dash.y, 1e-4);
+    if (mod(tt * period + u_dash.z, period) > u_dash.x) alpha = 0.0;
+  }
   if (alpha <= 0.001) discard;
   outColor = vec4(color.rgb * alpha, alpha);
 }`;
@@ -165,6 +215,10 @@ void main() {
         'u_lineWidth',
         'u_color',
         'u_strokeColor',
+        'u_trim',
+        'u_dash',
+        'u_cap',
+        'u_warp',
       ];
       const result = {};
       for (const name of names) result[name.replace(/^u_/, '')] = context.getUniformLocation(program, name);
@@ -217,6 +271,15 @@ void main() {
       gl.uniform4f(shapeUniforms.color, color[0], color[1], color[2], alpha);
       const strokeColor = parseColor(opts.strokeColor || opts.color || [1, 1, 1, 1], color);
       gl.uniform4f(shapeUniforms.strokeColor, strokeColor[0], strokeColor[1], strokeColor[2], (opts.strokeOpacity == null ? 1 : opts.strokeOpacity) * strokeColor[3]);
+      // trim / dash / cap / path warp all default to the identity, so a shape
+      // without them draws exactly as before
+      const trim = opts.trim || [0, 1, 0];
+      gl.uniform3f(shapeUniforms.trim, trim[0], trim[1], trim[2] == null ? 0 : trim[2]);
+      const dash = Array.isArray(opts.dash) ? opts.dash : [0, 0, 0];
+      gl.uniform3f(shapeUniforms.dash, dash[0], dash[1] == null ? 0 : dash[1], dash[2] == null ? 0 : dash[2]);
+      gl.uniform1f(shapeUniforms.cap, opts.cap === 'butt' ? 0 : 1);
+      const warp = Array.isArray(opts.pathOp) ? opts.pathOp : [0, 0, 0, 0];
+      gl.uniform4f(shapeUniforms.warp, warp[0], warp[1] == null ? 0 : warp[1], warp[2] == null ? 0 : warp[2], warp[3] == null ? 0 : warp[3]);
       gl.enable(gl.BLEND);
       gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
