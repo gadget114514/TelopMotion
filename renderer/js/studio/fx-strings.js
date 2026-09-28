@@ -535,9 +535,13 @@
       },
       edge: { drip: 'Drip' },
       fill: { ink: 'Ink' },
-      enter: { flickerIn: 'Flicker in' },
-      exit: { creepOut: 'Creep out' },
-      hold: { heartbeat: 'Heartbeat', shiver: 'Shiver' },
+      enter: { flickerIn: 'Flicker in', megaZoomIn: 'Mega zoom in' },
+      exit: { creepOut: 'Creep out', megaZoomOut: 'Mega zoom out' },
+      hold: {
+        heartbeat: 'Heartbeat', shiver: 'Shiver',
+        fontSize: 'Font size', fillScreen: 'Fill screen', squashStretch: 'Squash & stretch', swirl: 'Swirl',
+        warp: 'Warp', letterWarp: 'Letter warp',
+      },
     },
     params: {
       unit: 'Unit', lockAspect: 'Lock aspect', rotateWithLetter: 'Rotate with letter', scaleWithLetter: 'Scale with letter',
@@ -549,6 +553,8 @@
       pattern: 'Pattern', dashLength: 'Dash length', gapRatio: 'Gap ratio', flow: 'Flow', cursorShape: 'Cursor shape',
       blink: 'Blink', cursorAfter: 'Cursor after', interval: 'Interval', shift: 'Shift', height: 'Height', points: 'Points',
       thickness: 'Thickness', wobble: 'Wobble', skip: 'Skip', grow: 'Grow', shape: 'Shape', fade: 'Fade', duration: 'Duration', pulse: 'Pulse', hold: 'Hold',
+      style: 'Style', bend: 'Bend', hDistort: 'Horizontal distortion', vDistort: 'Vertical distortion',
+      animate: 'Animation', sync: 'Sync', perLetterPhase: 'Per-letter phase', fill: 'Fill amount', max: 'Maximum',
     },
     values: {
       cell: 'Cell', em: 'Em', behind: 'Behind', front: 'Front', cycle: 'Cycle', charClass: 'Character class',
@@ -558,6 +564,11 @@
       sketch: 'Sketch', dot: 'Dot', heart: 'Heart', square: 'Square', rounded: 'Rounded', diamond: 'Diamond',
       blob: 'Blob', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket', paper: 'Paper', cloud: 'Cloud',
       star: 'Star', fade: 'Fade', pulse: 'Pulse', spin: 'Spin',
+      grow: 'Grow', free: 'Free', sway: 'Sway', travel: 'Travel',
+      bend: 'Bend', bulge: 'Bulge', pinch: 'Pinch', taper: 'Taper', shearWave: 'Shear wave', ripple: 'Ripple',
+      squash: 'Squash', flag: 'Flag', zigzag: 'Zigzag', arch: 'Arch', fish: 'Fish-eye curve', rise: 'Rise',
+      fisheye: 'Fish-eye', inflate: 'Inflate', squeeze: 'Squeeze', twistBlock: 'Block twist', bulgeBlock: 'Block bulge',
+      flagBlock: 'Block flag', waveBlock: 'Block wave',
     },
   };
   const ADD_JA = {
@@ -573,9 +584,13 @@
       },
       edge: { drip: '滴り' },
       fill: { ink: '墨' },
-      enter: { flickerIn: 'ちらつき登場' },
-      exit: { creepOut: '這い出し退場' },
-      hold: { heartbeat: '鼓動', shiver: '震え' },
+      enter: { flickerIn: 'ちらつき登場', megaZoomIn: '巨大ズームイン' },
+      exit: { creepOut: '這い出し退場', megaZoomOut: '巨大ズームアウト' },
+      hold: {
+        heartbeat: '鼓動', shiver: '震え',
+        fontSize: '文字サイズ', fillScreen: '画面いっぱい', squashStretch: '伸び縮み', swirl: '渦変形',
+        warp: 'ワープ', letterWarp: '文字ワープ',
+      },
     },
     params: {
       unit: '単位', lockAspect: '縦横比を固定', rotateWithLetter: '文字の回転に追従', scaleWithLetter: '文字の拡大に追従',
@@ -587,6 +602,8 @@
       pattern: '線種', dashLength: '破線の長さ', gapRatio: '隙間の割合', flow: '流れ', cursorShape: 'カーソルの形',
       blink: '点滅', cursorAfter: '完了後', interval: '間隔', shift: 'ずれ', height: '高さ', points: '頂点数',
       thickness: '太さ', wobble: '揺れ', skip: '間引き', grow: '伸び', shape: '形', fade: 'フェード', duration: '長さ', pulse: 'パルス', hold: '保持',
+      style: 'スタイル', bend: '曲げ', hDistort: '横ゆがみ', vDistort: '縦ゆがみ',
+      animate: 'アニメーション', sync: '同期', perLetterPhase: '文字ごとの位相', fill: '埋める割合', max: '最大',
     },
     values: {
       cell: 'セル', em: 'em', behind: '文字の後ろ', front: '文字の前', cycle: '巡回', charClass: '文字種',
@@ -596,6 +613,11 @@
       sketch: '手描き', dot: '点', heart: 'ハート', square: '四角', rounded: '角丸', diamond: 'ひし形',
       blob: '不定形', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく', bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
       star: '星', fade: 'フェード', pulse: 'パルス', spin: '回転',
+      grow: '拡大', free: '自由', sway: '揺れ', travel: '流れる',
+      bend: '曲げ', bulge: '膨張', pinch: 'しぼみ', taper: '先細り', shearWave: 'せん断波', ripple: '波紋',
+      squash: '押しつぶし', flag: '旗', zigzag: 'ジグザグ', arch: 'アーチ', fish: '魚眼カーブ', rise: '浮き上がり',
+      fisheye: '魚眼', inflate: 'ふくらみ', squeeze: '圧縮', twistBlock: '行のねじれ', bulgeBlock: '行の膨張',
+      flagBlock: '行の旗', waveBlock: '行の波',
     },
   };
 
@@ -715,8 +737,366 @@
     },
   };
 
-  function applyFxAdditions(target, additions) {
-    for (const [group, table] of Object.entries(additions.types || {})) {
+  // --- extended / font pack additions -------------------------------------------
+  const ADD_EXT_EN = {
+    types: {
+      enter: { animator: 'Animator', riseIn: 'Rise in', fallIn: 'Fall in', popIn: 'Pop in', spinIn: 'Spin in', focusIn: 'Focus in', driftIn: 'Drift in', tiltIn: '3D tilt in' },
+      exit: { animator: 'Animator', riseOut: 'Rise out', fallOut: 'Fall out', zoomOutSoft: 'Soft zoom out', spinOut: 'Spin out', focusOut: 'Focus out' },
+      hold: {
+        animator: 'Animator', boil: 'Boil', floatLoop: 'Float loop', breatheLoop: 'Breathe loop', swayLoop: 'Sway loop', beatPulse: 'Beat pulse',
+        warpArc: 'Arc warp', warpArch: 'Arch warp', warpBulge: 'Bulge warp', warpFlag: 'Flag warp', warpWave: 'Wave warp', warpFish: 'Fish warp',
+        warpFisheye: 'Fisheye warp', warpInflate: 'Inflate warp', warpRise: 'Rise warp', warpSqueeze: 'Squeeze warp', warpTwist: 'Twist warp',
+        letterBend: 'Bend (letter)', letterBulge: 'Bulge (letter)', letterRipple: 'Ripple (letter)', letterFlag: 'Flag (letter)',
+        letterZigzag: 'Zigzag (letter)', letterTaper: 'Taper (letter)',
+      },
+      post: {
+        camera: 'Camera', cameraPushIn: 'Camera push in', cameraPullOut: 'Camera pull out', cameraPanLeft: 'Camera pan left', cameraPanRight: 'Camera pan right',
+        cameraTilt: 'Camera tilt', cameraHandheld: 'Camera handheld', cameraOrbit: 'Camera orbit', cameraPunch: 'Camera punch',
+        waveWarp: 'Wave warp', twirl: 'Twirl', turbulentDisplace: 'Turbulent displace', spinBlur: 'Spin blur', strobeFlash: 'Strobe flash',
+        anamorphicStreak: 'Anamorphic streak', radialWipe: 'Radial wipe', venetianBlinds: 'Venetian blinds',
+      },
+      background: {
+        fractalNoise: 'Fractal noise', rays: 'Rays', gradient4: '4-colour gradient', cellPattern: 'Cell pattern',
+        particleField: 'Particle field', perspectiveGrid: 'Perspective grid', tunnel: 'Tunnel',
+      },
+    },
+    params: {
+      animator: 'Animator', warp: 'Warp', camera: 'Camera', selector: 'Selector', transform: 'Transform', spacing: 'Spacing',
+      look: 'Look', mask: 'Mask', wiggle: 'Wiggle', dx: 'X offset', dy: 'Y offset', rotate: 'Rotation', skew: 'Skew', flash: 'Flash',
+      stretch: 'Stretch', swirl: 'Swirl', blend: 'Blend', jitter: 'Jitter', brightness: 'Brightness', contrast: 'Contrast',
+      ramp: 'Colour ramp', evolution: 'Evolution', subInfluence: 'Sub influence', subScale: 'Sub scale', subRotation: 'Sub rotation',
+      warp: 'Domain warp', rays: 'Rays', falloff: 'Falloff', glow: 'Glow', horizon: 'Horizon', lineWidth: 'Line width',
+      sunSize: 'Sun size', sun: 'Sun', density: 'Density', sizeVar: 'Size variation', layers: 'Layers', twinkle: 'Twinkle',
+      base: 'Base', dispersion: 'Dispersion', edge: 'Edge', rings: 'Rings', stripes: 'Stripes', twist: 'Twist', move: 'Move',
+      amount: 'Amount', speed: 'Speed', shake: 'Shake', seed: 'Seed', waveform: 'Waveform', pin: 'Pin edges',
+      bandWidth: 'Band width', feather: 'Feather', duty: 'Duty', fog: 'Fog', octaves: 'Octaves',
+    },
+    values: {
+      basic: 'Basic', abs: 'Absolute', ridged: 'Ridged', sharp: 'Sharp', two: 'Two colours', three: 'Three colours',
+      four: 'Four colours', mono: 'Monochrome', rays: 'Rays', lightRays: 'Light rays', spotlight: 'Spotlight',
+      cells: 'Cells', cracks: 'Cracks', plates: 'Plates', sparkle: 'Sparkle', bubbles: 'Bubbles',
+      bokeh: 'Bokeh', stars: 'Stars', snow: 'Snow', dust: 'Dust', embers: 'Embers', hyperspace: 'Hyperspace',
+      hex: 'Hexagon', sun: 'Sun', sine: 'Sine', triangle: 'Triangle', saw: 'Sawtooth',
+      pushIn: 'Push in', pullOut: 'Pull out', panLeft: 'Pan left', panRight: 'Pan right', panUp: 'Pan up', panDown: 'Pan down',
+      tilt: 'Tilt', zoomPunch: 'Zoom punch', handheld: 'Handheld', cw: 'Clockwise', ccw: 'Counter-clockwise', wiggle: 'Wiggle', float: 'Float',
+    },
+  };
+  const ADD_EXT_JA = {
+    types: {
+      enter: { animator: 'アニメーター', riseIn: '上昇イン', fallIn: '降下イン', popIn: 'ポップイン', spinIn: 'スピンイン', focusIn: 'フォーカスイン', driftIn: 'ドリフトイン', tiltIn: '3Dティルトイン' },
+      exit: { animator: 'アニメーター', riseOut: '上昇アウト', fallOut: '降下アウト', zoomOutSoft: 'ソフトズームアウト', spinOut: 'スピンアウト', focusOut: 'フォーカスアウト' },
+      hold: {
+        animator: 'アニメーター', boil: 'ボイル（煮沸）', floatLoop: '浮遊ループ', breatheLoop: '呼吸ループ', swayLoop: 'スウェイループ', beatPulse: 'ビートパルス',
+        warpArc: '円弧ワープ', warpArch: 'アーチワープ', warpBulge: '膨張ワープ', warpFlag: '旗ワープ', warpWave: '波ワープ', warpFish: '魚型ワープ',
+        warpFisheye: 'フィッシュアイワープ', warpInflate: 'インフレートワープ', warpRise: 'ライズワープ', warpSqueeze: 'スクイーズワープ', warpTwist: 'ツイストワープ',
+        letterBend: '文字ベンド', letterBulge: '文字バルジ', letterRipple: '文字リップル', letterFlag: '文字フラッグ',
+        letterZigzag: '文字ジグザグ', letterTaper: '文字テーパー',
+      },
+      post: {
+        camera: 'カメラ', cameraPushIn: 'カメラ寄り', cameraPullOut: 'カメラ引き', cameraPanLeft: 'カメラ左パン', cameraPanRight: 'カメラ右パン',
+        cameraTilt: 'カメラティルト', cameraHandheld: 'カメラ手持ち', cameraOrbit: 'カメラ旋回', cameraPunch: 'カメラパンチ',
+        waveWarp: '波ワープ', twirl: 'ツワール', turbulentDisplace: '乱流変位', spinBlur: 'スピンブラー', strobeFlash: 'ストロボ閃光',
+        anamorphicStreak: 'アナモルフィック光条', radialWipe: '放射ワイプ', venetianBlinds: 'ベネチアンブラインド',
+      },
+      background: {
+        fractalNoise: 'フラクタルノイズ', rays: '光線', gradient4: '4色グラデーション', cellPattern: 'セルパターン',
+        particleField: 'パーティクルフィールド', perspectiveGrid: 'パースグリッド', tunnel: 'トンネル',
+      },
+    },
+    params: {
+      animator: 'アニメーター', warp: 'ワープ', camera: 'カメラ', selector: 'セレクター', transform: 'トランスフォーム', spacing: '字間・行間',
+      look: 'ルック', mask: 'マスク', wiggle: 'ウィグル', dx: 'X移動', dy: 'Y移動', rotate: '回転', skew: '傾き', flash: '閃光',
+      stretch: '伸縮', swirl: '渦', blend: 'ブレンド', jitter: 'ゆらぎ', brightness: '明るさ', contrast: 'コントラスト',
+      ramp: 'カラーランプ', evolution: '進化（時間変化）', subInfluence: 'サブノイズの強さ', subScale: 'サブノイズの倍率', subRotation: 'サブノイズの回転',
+      warp: 'ドメインワープ', rays: '光線の本数', falloff: '減衰', glow: '発光', horizon: '地平線', lineWidth: '線幅',
+      sunSize: '太陽の大きさ', sun: '太陽', density: '密度', sizeVar: '大きさのばらつき', layers: '奥行きレイヤー', twinkle: 'またたき',
+      base: '下地の明るさ', dispersion: 'ばらつき', edge: 'エッジ', rings: 'リング数', stripes: '縞の数', twist: 'ねじれ', move: '動き',
+      shake: '手ぶれ', seed: 'シード', waveform: '波形', pin: '端を固定',
+      bandWidth: '帯の幅', feather: 'ぼかし幅', duty: '点灯時間', fog: 'フォグ', octaves: 'オクターブ',
+    },
+    values: {
+      basic: '基本', abs: '絶対値', ridged: 'リッジ', sharp: 'シャープ', two: '2色', three: '3色',
+      four: '4色', mono: 'モノクロ', rays: '光線', lightRays: '光芒', spotlight: 'スポットライト',
+      cells: 'セル', cracks: 'ひび割れ', plates: '板', sparkle: 'きらめき', bubbles: '泡',
+      bokeh: 'ボケ', stars: '星', snow: '雪', dust: '塵', embers: '火の粉', hyperspace: 'ハイパースペース',
+      hex: '六角形', sun: '太陽', sine: 'サイン波', triangle: '三角波', saw: 'のこぎり波',
+      pushIn: '寄り', pullOut: '引き', panLeft: '左パン', panRight: '右パン', panUp: '上パン', panDown: '下パン',
+      tilt: 'ティルト', zoomPunch: 'ズームパンチ', handheld: '手持ち', cw: '時計回り', ccw: '反時計回り', wiggle: 'ウィグル', float: '浮遊',
+    },
+  };
+  const ADD_EXT_ES = {
+    types: {
+      enter: { animator: 'Animador', riseIn: 'Entrada ascendente', fallIn: 'Entrada descendente', popIn: 'Aparición pop', spinIn: 'Entrada girando', focusIn: 'Enfoque de entrada', driftIn: 'Entrada con deriva', tiltIn: 'Entrada con inclinación 3D' },
+      exit: { animator: 'Animador', riseOut: 'Salida ascendente', fallOut: 'Salida descendente', zoomOutSoft: 'Alejamiento suave', spinOut: 'Salida girando', focusOut: 'Desenfoque de salida' },
+      hold: {
+        animator: 'Animador', boil: 'Ebullición', floatLoop: 'Flotar en bucle', breatheLoop: 'Respirar en bucle', swayLoop: 'Oscilar en bucle', beatPulse: 'Pulso al ritmo',
+        warpArc: 'Deformar en arco', warpArch: 'Deformar en arco alto', warpBulge: 'Deformar abombando', warpFlag: 'Deformar como bandera', warpWave: 'Deformar en onda', warpFish: 'Deformar como pez',
+        warpFisheye: 'Deformar ojo de pez', warpInflate: 'Inflar', warpRise: 'Elevar', warpSqueeze: 'Estrechar', warpTwist: 'Retorcer',
+        letterBend: 'Curvar (letra)', letterBulge: 'Abombar (letra)', letterRipple: 'Ondulación (letra)', letterFlag: 'Bandera (letra)',
+        letterZigzag: 'Zigzag (letra)', letterTaper: 'Ahusar (letra)',
+      },
+      post: {
+        camera: 'Cámara', cameraPushIn: 'Cámara acercando', cameraPullOut: 'Cámara alejando', cameraPanLeft: 'Cámara panorámica izquierda', cameraPanRight: 'Cámara panorámica derecha',
+        cameraTilt: 'Cámara inclinada', cameraHandheld: 'Cámara en mano', cameraOrbit: 'Cámara orbitando', cameraPunch: 'Golpe de cámara',
+        waveWarp: 'Deformación de onda', twirl: 'Remolino', turbulentDisplace: 'Desplazamiento turbulento', spinBlur: 'Desenfoque radial', strobeFlash: 'Destello estroboscópico',
+        anamorphicStreak: 'Destello anamórfico', radialWipe: 'Barrido radial', venetianBlinds: 'Persianas venecianas',
+      },
+      background: {
+        fractalNoise: 'Ruido fractal', rays: 'Rayos', gradient4: 'Degradado de 4 colores', cellPattern: 'Patrón celular',
+        particleField: 'Campo de partículas', perspectiveGrid: 'Rejilla en perspectiva', tunnel: 'Túnel',
+      },
+    },
+    params: {
+      animator: 'Animador', warp: 'Deformación', camera: 'Cámara', selector: 'Selector', transform: 'Transformación', spacing: 'Espaciado',
+      look: 'Aspecto', mask: 'Máscara', wiggle: 'Ondulación', dx: 'Desplazamiento X', dy: 'Desplazamiento Y', rotate: 'Rotación', skew: 'Inclinación', flash: 'Destello',
+      stretch: 'Estiramiento', swirl: 'Remolino', blend: 'Mezcla', jitter: 'Vibración', brightness: 'Brillo', contrast: 'Contraste',
+      ramp: 'Rampa de color', evolution: 'Evolución', subInfluence: 'Influencia secundaria', subScale: 'Escala secundaria', subRotation: 'Rotación secundaria',
+      warp: 'Deformación de dominio', rays: 'Rayos', falloff: 'Caída', glow: 'Resplandor', horizon: 'Horizonte', lineWidth: 'Grosor de línea',
+      sunSize: 'Tamaño del sol', sun: 'Sol', density: 'Densidad', sizeVar: 'Variación de tamaño', layers: 'Capas', twinkle: 'Centelleo',
+      base: 'Base', dispersion: 'Dispersión', edge: 'Borde', rings: 'Anillos', stripes: 'Franjas', twist: 'Torsión', move: 'Movimiento',
+      shake: 'Trepidación', seed: 'Semilla', waveform: 'Forma de onda', pin: 'Fijar bordes',
+      bandWidth: 'Ancho de banda', feather: 'Suavizado', duty: 'Duración', fog: 'Niebla', octaves: 'Octavas',
+    },
+    values: {
+      basic: 'Básico', abs: 'Absoluto', ridged: 'Crestas', sharp: 'Nítido', two: 'Dos colores', three: 'Tres colores',
+      four: 'Cuatro colores', mono: 'Monocromo', rays: 'Rayos', lightRays: 'Rayos de luz', spotlight: 'Foco',
+      cells: 'Células', cracks: 'Grietas', plates: 'Placas', sparkle: 'Destellos', bubbles: 'Burbujas',
+      bokeh: 'Bokeh', stars: 'Estrellas', snow: 'Nieve', dust: 'Polvo', embers: 'Brasas', hyperspace: 'Hiperespacio',
+      hex: 'Hexágono', sun: 'Sol', sine: 'Seno', triangle: 'Triangular', saw: 'Diente de sierra',
+      pushIn: 'Acercar', pullOut: 'Alejar', panLeft: 'Pan izquierda', panRight: 'Pan derecha', panUp: 'Pan arriba', panDown: 'Pan abajo',
+      tilt: 'Inclinar', zoomPunch: 'Golpe de zoom', handheld: 'En mano', cw: 'Horario', ccw: 'Antihorario', wiggle: 'Ondulación', float: 'Flotar',
+    },
+  };
+  const ADD_EXT_FR = {
+    types: {
+      enter: { animator: 'Animateur', riseIn: 'Entrée montante', fallIn: 'Entrée descendante', popIn: 'Apparition pop', spinIn: 'Entrée en rotation', focusIn: 'Mise au point d’entrée', driftIn: 'Entrée en dérive', tiltIn: 'Entrée inclinée 3D' },
+      exit: { animator: 'Animateur', riseOut: 'Sortie montante', fallOut: 'Sortie descendante', zoomOutSoft: 'Zoom arrière doux', spinOut: 'Sortie en rotation', focusOut: 'Flou de sortie' },
+      hold: {
+        animator: 'Animateur', boil: 'Bouillonnement', floatLoop: 'Flottement en boucle', breatheLoop: 'Respiration en boucle', swayLoop: 'Balancement en boucle', beatPulse: 'Pulsation rythmique',
+        warpArc: 'Déformation en arc', warpArch: 'Déformation en arche', warpBulge: 'Déformation bombée', warpFlag: 'Déformation en drapeau', warpWave: 'Déformation en vague', warpFish: 'Déformation en poisson',
+        warpFisheye: 'Déformation fisheye', warpInflate: 'Gonflement', warpRise: 'Élévation', warpSqueeze: 'Compression', warpTwist: 'Torsion',
+        letterBend: 'Courber (lettre)', letterBulge: 'Bomber (lettre)', letterRipple: 'Ondulation (lettre)', letterFlag: 'Drapeau (lettre)',
+        letterZigzag: 'Zigzag (lettre)', letterTaper: 'Effiler (lettre)',
+      },
+      post: {
+        camera: 'Caméra', cameraPushIn: 'Caméra avant', cameraPullOut: 'Caméra arrière', cameraPanLeft: 'Panoramique gauche', cameraPanRight: 'Panoramique droite',
+        cameraTilt: 'Caméra inclinée', cameraHandheld: 'Caméra à la main', cameraOrbit: 'Caméra en orbite', cameraPunch: 'Coup de caméra',
+        waveWarp: 'Déformation en vague', twirl: 'Tourbillon', turbulentDisplace: 'Déplacement turbulent', spinBlur: 'Flou radial', strobeFlash: 'Flash stroboscopique',
+        anamorphicStreak: 'Traînée anamorphique', radialWipe: 'Balayage radial', venetianBlinds: 'Stores vénitiens',
+      },
+      background: {
+        fractalNoise: 'Bruit fractal', rays: 'Rayons', gradient4: 'Dégradé 4 couleurs', cellPattern: 'Motif cellulaire',
+        particleField: 'Champ de particules', perspectiveGrid: 'Grille en perspective', tunnel: 'Tunnel',
+      },
+    },
+    params: {
+      animator: 'Animateur', warp: 'Déformation', camera: 'Caméra', selector: 'Sélecteur', transform: 'Transformation', spacing: 'Interlettrage',
+      look: 'Aspect', mask: 'Masque', wiggle: 'Ondulation', dx: 'Décalage X', dy: 'Décalage Y', rotate: 'Rotation', skew: 'Inclinaison', flash: 'Flash',
+      stretch: 'Étirement', swirl: 'Tourbillon', blend: 'Mélange', jitter: 'Tremblement', brightness: 'Luminosité', contrast: 'Contraste',
+      ramp: 'Rampé de couleur', evolution: 'Évolution', subInfluence: 'Influence secondaire', subScale: 'Échelle secondaire', subRotation: 'Rotation secondaire',
+      warp: 'Déformation de domaine', rays: 'Rayons', falloff: 'Atténuation', glow: 'Lueur', horizon: 'Horizon', lineWidth: 'Épaisseur du trait',
+      sunSize: 'Taille du soleil', sun: 'Soleil', density: 'Densité', sizeVar: 'Variation de taille', layers: 'Couches', twinkle: 'Scintillement',
+      base: 'Base', dispersion: 'Dispersion', edge: 'Bord', rings: 'Anneaux', stripes: 'Rayures', twist: 'Torsion', move: 'Mouvement',
+      shake: 'Secousse', seed: 'Graine', waveform: 'Forme d’onde', pin: 'Fixer les bords',
+      bandWidth: 'Largeur de bande', feather: 'Adoucissement', duty: 'Durée', fog: 'Brouillard', octaves: 'Octaves',
+    },
+    values: {
+      basic: 'Basique', abs: 'Absolu', ridged: 'Crêtes', sharp: 'Net', two: 'Deux couleurs', three: 'Trois couleurs',
+      four: 'Quatre couleurs', mono: 'Monochrome', rays: 'Rayons', lightRays: 'Rayons de lumière', spotlight: 'Projecteur',
+      cells: 'Cellules', cracks: 'Fissures', plates: 'Plaques', sparkle: 'Étincelles', bubbles: 'Bulles',
+      bokeh: 'Bokeh', stars: 'Étoiles', snow: 'Neige', dust: 'Poussière', embers: 'Braises', hyperspace: 'Hyperespace',
+      hex: 'Hexagone', sun: 'Soleil', sine: 'Sinus', triangle: 'Triangle', saw: 'Dent de scie',
+      pushIn: 'Avancer', pullOut: 'Reculer', panLeft: 'Pan gauche', panRight: 'Pan droite', panUp: 'Pan haut', panDown: 'Pan bas',
+      tilt: 'Incliner', zoomPunch: 'Coup de zoom', handheld: 'À la main', cw: 'Horaire', ccw: 'Antihoraire', wiggle: 'Ondulation', float: 'Flotter',
+    },
+  };
+  const ADD_EXT_RU = {
+    types: {
+      enter: { animator: 'Аниматор', riseIn: 'Появление снизу', fallIn: 'Появление сверху', popIn: 'Появление с увеличением', spinIn: 'Появление с вращением', focusIn: 'Наведение резкости', driftIn: 'Появление со сносом', tiltIn: 'Появление с наклоном 3D' },
+      exit: { animator: 'Аниматор', riseOut: 'Уход вверх', fallOut: 'Уход вниз', zoomOutSoft: 'Мягкий отъезд', spinOut: 'Уход с вращением', focusOut: 'Уход с размытием' },
+      hold: {
+        animator: 'Аниматор', boil: 'Кипение', floatLoop: 'Плавание в цикле', breatheLoop: 'Дыхание в цикле', swayLoop: 'Покачивание в цикле', beatPulse: 'Пульс в такт',
+        warpArc: 'Дуга', warpArch: 'Арка', warpBulge: 'Выпуклость', warpFlag: 'Флаг', warpWave: 'Волна', warpFish: 'Рыба',
+        warpFisheye: 'Рыбий глаз', warpInflate: 'Раздувание', warpRise: 'Подъём', warpSqueeze: 'Сжатие', warpTwist: 'Скручивание',
+        letterBend: 'Изгиб (буква)', letterBulge: 'Выпуклость (буква)', letterRipple: 'Рябь (буква)', letterFlag: 'Флаг (буква)',
+        letterZigzag: 'Зигзаг (буква)', letterTaper: 'Сужение (буква)',
+      },
+      post: {
+        camera: 'Камера', cameraPushIn: 'Камера вперёд', cameraPullOut: 'Камера назад', cameraPanLeft: 'Панорама влево', cameraPanRight: 'Панорама вправо',
+        cameraTilt: 'Наклон камеры', cameraHandheld: 'Ручная камера', cameraOrbit: 'Облёт камерой', cameraPunch: 'Удар камеры',
+        waveWarp: 'Волновая деформация', twirl: 'Вихрь', turbulentDisplace: 'Турбулентное смещение', spinBlur: 'Радиальное размытие', strobeFlash: 'Стробоскоп',
+        anamorphicStreak: 'Анаморфный блик', radialWipe: 'Круговой переход', venetianBlinds: 'Венецианские жалюзи',
+      },
+      background: {
+        fractalNoise: 'Фрактальный шум', rays: 'Лучи', gradient4: 'Градиент из 4 цветов', cellPattern: 'Клеточный узор',
+        particleField: 'Поле частиц', perspectiveGrid: 'Сетка в перспективе', tunnel: 'Туннель',
+      },
+    },
+    params: {
+      animator: 'Аниматор', warp: 'Деформация', camera: 'Камера', selector: 'Селектор', transform: 'Преобразование', spacing: 'Интервалы',
+      look: 'Вид', mask: 'Маска', wiggle: 'Дрожание', dx: 'Смещение X', dy: 'Смещение Y', rotate: 'Поворот', skew: 'Наклон', flash: 'Вспышка',
+      stretch: 'Растяжение', swirl: 'Вихрь', blend: 'Смешение', jitter: 'Дрожь', brightness: 'Яркость', contrast: 'Контраст',
+      ramp: 'Цветовая рампа', evolution: 'Эволюция', subInfluence: 'Влияние доп. шума', subScale: 'Масштаб доп. шума', subRotation: 'Поворот доп. шума',
+      warp: 'Искажение поля', rays: 'Лучи', falloff: 'Затухание', glow: 'Свечение', horizon: 'Горизонт', lineWidth: 'Толщина линии',
+      sunSize: 'Размер солнца', sun: 'Солнце', density: 'Плотность', sizeVar: 'Разброс размера', layers: 'Слои', twinkle: 'Мерцание',
+      base: 'Основа', dispersion: 'Разброс', edge: 'Край', rings: 'Кольца', stripes: 'Полосы', twist: 'Скручивание', move: 'Движение',
+      shake: 'Тряска', seed: 'Сид', waveform: 'Форма волны', pin: 'Закрепить края',
+      bandWidth: 'Ширина полосы', feather: 'Смягчение', duty: 'Длительность', fog: 'Туман', octaves: 'Октавы',
+    },
+    values: {
+      basic: 'Базовый', abs: 'Абсолютный', ridged: 'Гребни', sharp: 'Резкий', two: 'Два цвета', three: 'Три цвета',
+      four: 'Четыре цвета', mono: 'Монохром', rays: 'Лучи', lightRays: 'Световые лучи', spotlight: 'Прожектор',
+      cells: 'Ячейки', cracks: 'Трещины', plates: 'Плиты', sparkle: 'Искры', bubbles: 'Пузыри',
+      bokeh: 'Боке', stars: 'Звёзды', snow: 'Снег', dust: 'Пыль', embers: 'Искры огня', hyperspace: 'Гиперпространство',
+      hex: 'Шестиугольник', sun: 'Солнце', sine: 'Синус', triangle: 'Треугольник', saw: 'Пила',
+      pushIn: 'Наезд', pullOut: 'Отъезд', panLeft: 'Панорама влево', panRight: 'Панорама вправо', panUp: 'Панорама вверх', panDown: 'Панорама вниз',
+      tilt: 'Наклон', zoomPunch: 'Удар зума', handheld: 'Ручная', cw: 'По часовой', ccw: 'Против часовой', wiggle: 'Дрожание', float: 'Плавание',
+    },
+  };
+
+  const ADD_SEL_EN = {
+    types: {
+      enter: { rangeReveal: 'Range reveal', tracking: 'Tracking (in)', revealSweep: 'Sweep reveal', revealSoft: 'Soft reveal', revealRandom: 'Random reveal', trackIn: 'Tracking in' },
+      exit: { rangeReveal: 'Range reveal out', tracking: 'Tracking (out)', trackOut: 'Tracking out' },
+      hold: { rangeSelector: 'Range selector', tracking: 'Tracking (keep)', highlightSweep: 'Highlight sweep', waveLoop: 'Wave loop', beatHighlight: 'Beat highlight', trackBreath: 'Tracking breath', trackBeat: 'Tracking beat' },
+    },
+    params: {
+      selBasedOn: 'Based on', selShape: 'Shape', selStart: 'Range start', selEnd: 'Range end', selWidth: 'Band width',
+      selOffset: 'Offset', selSweep: 'Sweep', selSpeed: 'Sweep speed', selRandom: 'Randomize order', selSeed: 'Random seed',
+      selEaseHigh: 'Ease high', selEaseLow: 'Ease low', selAmount: 'Amount', colorMix: 'Highlight mix', trackAxis: 'Tracking axis', tracking: 'Tracking',
+    },
+    values: {
+      square: 'Square', rampUp: 'Ramp up', rampDown: 'Ramp down', round: 'Round', smooth: 'Smooth',
+      once: 'Once', loop: 'Loop', pingpong: 'Ping-pong', beat: 'Beat', pulse: 'Pulse', breathe: 'Breathe',
+    },
+  };
+  const ADD_SEL_JA = {
+    types: {
+      enter: { rangeReveal: 'レンジリビール', tracking: 'トラッキング（登場）', revealSweep: 'スイープ登場', revealSoft: 'ソフト登場', revealRandom: 'ランダム登場', trackIn: 'トラッキングイン' },
+      exit: { rangeReveal: 'レンジリビール（退場）', tracking: 'トラッキング（退場）', trackOut: 'トラッキングアウト' },
+      hold: { rangeSelector: 'レンジセレクター', tracking: 'トラッキング（保持）', highlightSweep: 'ハイライトスイープ', waveLoop: 'ウェーブループ', beatHighlight: 'ビートハイライト', trackBreath: 'トラッキング呼吸', trackBeat: 'トラッキングビート' },
+    },
+    params: {
+      selBasedOn: '基準', selShape: '形', selStart: '範囲の開始', selEnd: '範囲の終了', selWidth: '帯の幅',
+      selOffset: 'オフセット', selSweep: 'スイープ', selSpeed: 'スイープ速度', selRandom: '順序をランダム', selSeed: 'ランダムシード',
+      selEaseHigh: 'イーズ（上端）', selEaseLow: 'イーズ（下端）', selAmount: '強さ', colorMix: 'ハイライトの混色', trackAxis: 'トラッキング軸', tracking: 'トラッキング',
+    },
+    values: {
+      square: '矩形', rampUp: '上り', rampDown: '下り', round: '円弧', smooth: 'スムーズ',
+      once: '1回', loop: 'ループ', pingpong: '往復', beat: 'ビート', pulse: 'パルス', breathe: '呼吸',
+    },
+  };
+  const ADD_SEL_ES = {
+    types: {
+      enter: { rangeReveal: 'Revelado por rango', tracking: 'Espaciado (entrada)', revealSweep: 'Revelado en barrido', revealSoft: 'Revelado suave', revealRandom: 'Revelado aleatorio', trackIn: 'Espaciado de entrada' },
+      exit: { rangeReveal: 'Revelado por rango (salida)', tracking: 'Espaciado (salida)', trackOut: 'Espaciado de salida' },
+      hold: { rangeSelector: 'Selector de rango', tracking: 'Espaciado (mantener)', highlightSweep: 'Barrido de acento', waveLoop: 'Bucle de onda', beatHighlight: 'Acento al ritmo', trackBreath: 'Espaciado respirando', trackBeat: 'Espaciado al ritmo' },
+    },
+    params: {
+      selBasedOn: 'Basado en', selShape: 'Forma', selStart: 'Inicio del rango', selEnd: 'Fin del rango', selWidth: 'Ancho de banda',
+      selOffset: 'Desplazamiento', selSweep: 'Barrido', selSpeed: 'Velocidad', selRandom: 'Orden aleatorio', selSeed: 'Semilla',
+      selEaseHigh: 'Suavizado alto', selEaseLow: 'Suavizado bajo', selAmount: 'Intensidad', colorMix: 'Mezcla de acento', trackAxis: 'Eje de espaciado', tracking: 'Espaciado',
+    },
+    values: {
+      square: 'Cuadrado', rampUp: 'Subida', rampDown: 'Bajada', round: 'Redondo', smooth: 'Suave',
+      once: 'Una vez', loop: 'Bucle', pingpong: 'Vaivén', beat: 'Pulso', pulse: 'Pulso', breathe: 'Respirar',
+    },
+  };
+  const ADD_SEL_FR = {
+    types: {
+      enter: { rangeReveal: 'Révélation par plage', tracking: 'Interlettrage (entrée)', revealSweep: 'Révélation en balayage', revealSoft: 'Révélation douce', revealRandom: 'Révélation aléatoire', trackIn: 'Interlettrage d’entrée' },
+      exit: { rangeReveal: 'Révélation par plage (sortie)', tracking: 'Interlettrage (sortie)', trackOut: 'Interlettrage de sortie' },
+      hold: { rangeSelector: 'Sélecteur de plage', tracking: 'Interlettrage (maintien)', highlightSweep: 'Balayage d’accent', waveLoop: 'Boucle d’onde', beatHighlight: 'Accent rythmique', trackBreath: 'Interlettrage respirant', trackBeat: 'Interlettrage rythmé' },
+    },
+    params: {
+      selBasedOn: 'Basé sur', selShape: 'Forme', selStart: 'Début de plage', selEnd: 'Fin de plage', selWidth: 'Largeur de bande',
+      selOffset: 'Décalage', selSweep: 'Balayage', selSpeed: 'Vitesse', selRandom: 'Ordre aléatoire', selSeed: 'Graine',
+      selEaseHigh: 'Adoucissement haut', selEaseLow: 'Adoucissement bas', selAmount: 'Intensité', colorMix: 'Mélange d’accent', trackAxis: 'Axe d’interlettrage', tracking: 'Interlettrage',
+    },
+    values: {
+      square: 'Carré', rampUp: 'Montée', rampDown: 'Descente', round: 'Arrondi', smooth: 'Doux',
+      once: 'Une fois', loop: 'Boucle', pingpong: 'Va-et-vient', beat: 'Temps', pulse: 'Pulsation', breathe: 'Respiration',
+    },
+  };
+  const ADD_SEL_RU = {
+    types: {
+      enter: { rangeReveal: 'Раскрытие диапазоном', tracking: 'Трекинг (вход)', revealSweep: 'Раскрытие развёрткой', revealSoft: 'Мягкое раскрытие', revealRandom: 'Случайное раскрытие', trackIn: 'Трекинг входа' },
+      exit: { rangeReveal: 'Раскрытие диапазоном (выход)', tracking: 'Трекинг (выход)', trackOut: 'Трекинг выхода' },
+      hold: { rangeSelector: 'Селектор диапазона', tracking: 'Трекинг (удержание)', highlightSweep: 'Развёртка акцента', waveLoop: 'Волновой цикл', beatHighlight: 'Акцент в бит', trackBreath: 'Трекинг-дыхание', trackBeat: 'Трекинг в бит' },
+    },
+    params: {
+      selBasedOn: 'Основа', selShape: 'Форма', selStart: 'Начало диапазона', selEnd: 'Конец диапазона', selWidth: 'Ширина полосы',
+      selOffset: 'Смещение', selSweep: 'Развёртка', selSpeed: 'Скорость', selRandom: 'Случайный порядок', selSeed: 'Сид',
+      selEaseHigh: 'Сглаживание сверху', selEaseLow: 'Сглаживание снизу', selAmount: 'Сила', colorMix: 'Смешение акцента', trackAxis: 'Ось трекинга', tracking: 'Трекинг',
+    },
+    values: {
+      square: 'Квадрат', rampUp: 'Подъём', rampDown: 'Спад', round: 'Круг', smooth: 'Плавно',
+      once: 'Один раз', loop: 'Цикл', pingpong: 'Туда-обратно', beat: 'Бит', pulse: 'Пульс', breathe: 'Дыхание',
+    },
+  };
+
+  const ADD_SHAPE_EN = {
+    types: { post: { shapeLayer: 'Shape layer' } },
+    params: {
+      shape: 'Shape', drive: 'Drive', trimStart: 'Trim start', trimEnd: 'Trim end', trimOffset: 'Trim offset',
+      feather: 'Feather', stroke: 'Stroke width', padding: 'Padding', repeat: 'Repeats', repeatScale: 'Repeat scale',
+      repeatRotate: 'Repeat rotate', repeatOpacity: 'Repeat fade', cap: 'Cap',
+    },
+    values: {
+      underline: 'Underline', strike: 'Strike', box: 'Box', brackets: 'Brackets', burst: 'Burst', cross: 'Cross',
+      butt: 'Butt', enter: 'Enter', exit: 'Exit', hold: 'Hold',
+    },
+  };
+  const ADD_SHAPE_JA = {
+    types: { post: { shapeLayer: 'シェイプレイヤー' } },
+    params: {
+      shape: '形', drive: '動かす基準', trimStart: 'トリム開始', trimEnd: 'トリム終了', trimOffset: 'トリム位置',
+      feather: 'ぼかし', stroke: '線幅', padding: '余白', repeat: 'リピート数', repeatScale: 'リピート倍率',
+      repeatRotate: 'リピート回転', repeatOpacity: 'リピート減衰', cap: '線端',
+    },
+    values: {
+      underline: '下線', strike: '取り消し線', box: '枠', brackets: 'カギ括弧', burst: '集中線', cross: '十字',
+      butt: '切りっぱなし', enter: '登場', exit: '退場', hold: '保持',
+    },
+  };
+  const ADD_SHAPE_ES = {
+    types: { post: { shapeLayer: 'Capa de forma' } },
+    params: {
+      shape: 'Forma', drive: 'Impulso', trimStart: 'Inicio del trazado', trimEnd: 'Fin del trazado', trimOffset: 'Desfase del trazado',
+      feather: 'Suavizado', stroke: 'Grosor', padding: 'Margen', repeat: 'Repeticiones', repeatScale: 'Escala de repetición',
+      repeatRotate: 'Rotación de repetición', repeatOpacity: 'Fundido de repetición', cap: 'Extremo',
+    },
+    values: {
+      underline: 'Subrayado', strike: 'Tachado', box: 'Marco', brackets: 'Corchetes', burst: 'Ráfaga', cross: 'Cruz',
+      butt: 'Recto', enter: 'Entrada', exit: 'Salida', hold: 'Mantener',
+    },
+  };
+  const ADD_SHAPE_FR = {
+    types: { post: { shapeLayer: 'Calque de forme' } },
+    params: {
+      shape: 'Forme', drive: 'Déclencheur', trimStart: 'Début du tracé', trimEnd: 'Fin du tracé', trimOffset: 'Décalage du tracé',
+      feather: 'Adoucissement', stroke: 'Épaisseur', padding: 'Marge', repeat: 'Répétitions', repeatScale: 'Échelle de répétition',
+      repeatRotate: 'Rotation de répétition', repeatOpacity: 'Fondu de répétition', cap: 'Extrémité',
+    },
+    values: {
+      underline: 'Souligné', strike: 'Barré', box: 'Cadre', brackets: 'Crochets', burst: 'Rayons', cross: 'Croix',
+      butt: 'Droit', enter: 'Entrée', exit: 'Sortie', hold: 'Maintien',
+    },
+  };
+  const ADD_SHAPE_RU = {
+    types: { post: { shapeLayer: 'Слой фигуры' } },
+    params: {
+      shape: 'Фигура', drive: 'Привод', trimStart: 'Начало обводки', trimEnd: 'Конец обводки', trimOffset: 'Смещение обводки',
+      feather: 'Смягчение', stroke: 'Толщина', padding: 'Отступ', repeat: 'Повторы', repeatScale: 'Масштаб повторов',
+      repeatRotate: 'Поворот повторов', repeatOpacity: 'Затухание повторов', cap: 'Концы',
+    },
+    values: {
+      underline: 'Подчёркивание', strike: 'Зачёркивание', box: 'Рамка', brackets: 'Скобки', burst: 'Лучи', cross: 'Крест',
+      butt: 'Прямые', enter: 'Вход', exit: 'Выход', hold: 'Удержание',
+    },
+  };
+
+  function applyFxAdditions(target, additions) {    for (const [group, table] of Object.entries(additions.types || {})) {
       target[group] = { ...(target[group] || {}), ...table };
     }
     Object.assign(target.param, additions.params || {});
@@ -733,6 +1113,21 @@
   applyFxAdditions(es, ADD_ES_REPEAT);
   applyFxAdditions(fr, ADD_FR_REPEAT);
   applyFxAdditions(ru, ADD_RU_REPEAT);
+  applyFxAdditions(en, ADD_EXT_EN);
+  applyFxAdditions(ja, ADD_EXT_JA);
+  applyFxAdditions(es, ADD_EXT_ES);
+  applyFxAdditions(fr, ADD_EXT_FR);
+  applyFxAdditions(ru, ADD_EXT_RU);
+  applyFxAdditions(en, ADD_SEL_EN);
+  applyFxAdditions(ja, ADD_SEL_JA);
+  applyFxAdditions(es, ADD_SEL_ES);
+  applyFxAdditions(fr, ADD_SEL_FR);
+  applyFxAdditions(ru, ADD_SEL_RU);
+  applyFxAdditions(en, ADD_SHAPE_EN);
+  applyFxAdditions(ja, ADD_SHAPE_JA);
+  applyFxAdditions(es, ADD_SHAPE_ES);
+  applyFxAdditions(fr, ADD_SHAPE_FR);
+  applyFxAdditions(ru, ADD_SHAPE_RU);
 
   return { en: { fx: en }, ja: { fx: ja }, es: { fx: es }, fr: { fx: fr }, ru: { fx: ru } };
 });

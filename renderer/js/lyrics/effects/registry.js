@@ -68,10 +68,47 @@
       // static cost with a value derived from the params.
       normalize: typeof descriptor.normalize === 'function' ? descriptor.normalize : null,
       costOf: typeof descriptor.costOf === 'function' ? descriptor.costOf : null,
+      // `pack` groups the extended primitives and presets so
+      // the earlier catalogs keep the exact type list they were built on.
+      pack: descriptor.pack || null,
+      // presets carry the primitive they expand to; the params schema, cpu,
+      // normalize and cost all come from that primitive.
+      preset: descriptor.preset || null,
     };
     if (!groups.has(entry.group)) groups.set(entry.group, new Map());
     groups.get(entry.group).set(entry.type, entry);
     types.set(`${entry.group}.${entry.type}`, entry);
+    return entry;
+  }
+
+  function registerPreset(descriptor) {
+    const group = descriptor.group;
+    const source = types.get(`${group}.${descriptor.primitive}`);
+    if (!source) return null;
+    const params = { ...(descriptor.params || {}) };
+    const entry = register({
+      group,
+      type: descriptor.type,
+      label: descriptor.label || `fx.${group}.${descriptor.type}`,
+      params: source.params,
+      defaults: {
+        // defaults.params is the middle layer of withDefaults: primitive
+        // defaults -> preset params -> instance params
+        params,
+        motion: descriptor.motion ? JSON.parse(JSON.stringify(descriptor.motion)) : source.defaults.motion,
+      },
+      tags: descriptor.tags || source.tags,
+      cost: source.cost,
+      stackable: source.stackable,
+      cpu: source.cpu,
+      gpu: source.gpu,
+      anchor: source.anchor,
+      fixedDuration: source.fixedDuration,
+      normalize: source.normalize,
+      costOf: source.costOf,
+      pack: descriptor.pack || 'pro',
+      preset: { primitive: descriptor.primitive, params },
+    });
     return entry;
   }
 
@@ -84,12 +121,51 @@
     return source ? { ...source, group } : null;
   }
 
-  function list(group) {
+  // `options.packs` filters by pack ('all' includes everything). The default is
+  // the unpacked entries, so the catalogs built before the extended pack existed keep
+  // exactly the type list they were sampled from.
+  function packMatches(entry, packs) {
+    if (packs === 'all') return true;
+    if (!packs) return !entry.pack;
+    const list = Array.isArray(packs) ? packs : [packs];
+    if (list.includes('all')) return true;
+    return list.includes(entry.pack);
+  }
+
+  function list(group, options) {
+    const packs = options && options.packs;
     const direct = groups.get(group);
-    if (direct) return [...direct.values()];
+    if (direct) return [...direct.values()].filter((entry) => packMatches(entry, packs));
     const base = aliases.get(group);
     if (!base) return [];
-    return [...(groups.get(base) || new Map()).values()].map((entry) => ({ ...entry, group }));
+    return [...(groups.get(base) || new Map()).values()]
+      .filter((entry) => packMatches(entry, packs))
+      .map((entry) => ({ ...entry, group }));
+  }
+
+  function packOf(group, type) {
+    const entry = get(group, type);
+    return entry ? entry.pack : null;
+  }
+
+  // Instance of a preset -> the equivalent instance of its primitive (params
+  // resolved, motion kept). Non-presets pass through unchanged.
+  function expandPreset(instance, group) {
+    if (!instance || !instance.type) return instance;
+    const entry = get(group, instance.type);
+    if (!entry || !entry.preset) return instance;
+    const resolved = withDefaults(instance, group);
+    return {
+      type: entry.preset.primitive,
+      enabled: resolved.enabled !== false,
+      params: resolved.params,
+      motion: resolved.motion,
+    };
+  }
+
+  function isPreset(group, type) {
+    const entry = get(group, type);
+    return !!(entry && entry.preset);
   }
 
   function paramDefaults(group, type) {
@@ -110,7 +186,12 @@
     if (!source) return null;
     const entry = get(group, source.type);
     let params = { ...paramDefaults(group, source.type), ...(entry && entry.defaults.params ? entry.defaults.params : {}), ...(source.params || {}) };
-    if (entry && entry.normalize) params = entry.normalize(params, { type: source.type, group });
+    if (entry && entry.normalize) {
+      // presets resolve through their primitive, so a normalize hook that
+      // switches on the type always sees the type it was written for
+      const type = entry.preset ? entry.preset.primitive : source.type;
+      params = entry.normalize(params, { type, group });
+    }
     return {
       type: source.type,
       enabled: source.enabled !== false,
@@ -150,10 +231,14 @@
     DEFAULT_MOTION,
     GROUP_DEFAULTS,
     register,
+    registerPreset,
     alias,
     baseOf,
     get,
     list,
+    packOf,
+    isPreset,
+    expandPreset,
     paramDefaults,
     defaultsFor,
     withDefaults,

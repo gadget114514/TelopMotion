@@ -3,6 +3,10 @@ window.SA = window.SA || {};
 SA.inspector = (() => {
   'use strict';
 
+  // the Studio lists every effect pack: the built-ins, the font size pack and
+  // the extended primitives
+  const UI_PACKS = { packs: ['font', 'pro'] };
+
   const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold'];
   const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
   const GROUP_LABELS = {
@@ -894,7 +898,7 @@ SA.inspector = (() => {
     const instance = explicit || SA.fx.defaultsFor(group);
     const body = section(container, group, t(GROUP_LABELS[group]));
     const entries = [{ value: '__inherit', label: t('studio.inspector.inherited') }].concat(
-      SA.fx.list(group).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) }))
+      SA.fx.list(group, UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) }))
     );
     const typeControl = SA.controls.selectControl({}, explicit ? explicit.type : '__inherit', (next) => {
       const current = explicit || {};
@@ -943,7 +947,7 @@ SA.inspector = (() => {
         SA.controls.selectControl({}, instance.type, (next) => {
           const nextList = list.map((entry, i) => (i === index ? { ...entry, type: next, params: {} } : entry));
           writeProp(group, nextList, { coalesceKey: `${group}:${index}:type` });
-        }, SA.fx.list(group).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) })))
+        }, SA.fx.list(group, UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) })))
       );
       const remove = document.createElement('button');
       remove.type = 'button';
@@ -975,7 +979,7 @@ SA.inspector = (() => {
     add.type = 'button';
     add.className = 'btn btn-mini';
     add.textContent = `+ ${t('studio.inspector.add')}`;
-    const descriptors = SA.fx.list(group);
+    const descriptors = SA.fx.list(group, UI_PACKS);
     add.addEventListener('click', () => {
       if (!descriptors.length) return;
       writeProp(group, [...list, { type: descriptors[0].type, params: {}, enabled: true }]);

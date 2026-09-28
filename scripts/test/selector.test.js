@@ -1,0 +1,178 @@
+'use strict';
+
+// The range selector paints a band over the string and weights every letter by
+// its position: the shapes, the sweep modes and the randomized order must be
+// deterministic and symmetrical, the reveal must be the identity at the end of
+// the beat, and tracking must move the outer letters while the centre stays put.
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+
+const ROOT = path.join(__dirname, '..', '..');
+const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
+const fx = require(path.join(FX_DIR, 'registry.js'));
+for (const name of ['hold', 'enter', 'exit', 'selector']) require(path.join(FX_DIR, `${name}.js`));
+const selector = require(path.join(FX_DIR, 'selector.js'));
+
+function info(i, N, units) {
+  return { i, N, letter: { size: 96 }, units: units || { letter: { rank: i, count: N } } };
+}
+
+const BASE = { selStart: 0, selEnd: 1, selAmount: 1 };
+
+test('the square band covers the range it is given', () => {
+  const sel = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0.5, selShape: 'square' });
+  const weights = [0, 1, 2, 3].map((i) => selector.selectAt(info(i, 4), 0, sel, 0));
+  assert.deepEqual(weights, [1, 1, 0, 0]);
+});
+
+test('the shapes ramp, peak and plateau like the reference', () => {
+  const weights = (shape) => {
+    const sel = selector.normalizeSelector({ ...BASE, selShape: shape });
+    return [0, 1, 2, 3].map((i) => selector.selectAt(info(i, 4), 0, sel, 0));
+  };
+  const ramp = weights('rampUp');
+  assert.ok(ramp[0] < ramp[1] && ramp[1] < ramp[2] && ramp[2] < ramp[3], `ramp up rises (${ramp})`);
+  const down = weights('rampDown');
+  assert.ok(down[0] > down[1] && down[1] > down[2] && down[2] > down[3], `ramp down falls (${down})`);
+  const triangle = weights('triangle');
+  assert.ok(Math.abs(triangle[0] - triangle[3]) < 1e-6, 'the triangle is symmetric');
+  assert.ok(triangle[1] >= triangle[0] && triangle[1] >= triangle[3], 'and peaks in the middle');
+  const round = weights('round');
+  assert.ok(round[1] > round[0] && Math.abs(round[0] - round[3]) < 1e-6, 'round peaks in the middle too');
+  const smooth = weights('smooth');
+  for (const value of smooth) assert.ok(value >= 0 && value <= 1, `smooth stays in range (${value})`);
+  const square = weights('square');
+  assert.deepEqual(square, [1, 1, 1, 1], 'a full band covers every letter');
+});
+
+test('ease high / low harden the band edges', () => {
+  const soft = selector.normalizeSelector({ ...BASE, selEnd: 0.5, selEaseHigh: 0, selEaseLow: 0 });
+  const hard = selector.normalizeSelector({ ...BASE, selEnd: 0.5, selEaseHigh: 100, selEaseLow: 100 });
+  assert.ok(selector.selectAt(info(4, 8), 0, soft, 0) <= selector.selectAt(info(4, 8), 0, hard, 0));
+  const fraction = selector.selectAt(info(2, 5), 0, soft, 0);
+  assert.ok(fraction > 0 && fraction < 1, `partial units fade in (${fraction})`);
+});
+
+test('the sweep modes move the band deterministically', () => {
+  // a narrow band: start and end mark its centre, width its size
+  const once = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0, selWidth: 0.25, selSweep: 'once' });
+  const early = selector.selectAt(info(0, 8), 0, once, 0);
+  const middle = selector.selectAt(info(3, 8), 0.5, once, 0);
+  const late = selector.selectAt(info(7, 8), 1, once, 0);
+  assert.ok(early > 0.5, `the band starts on the first letters (${early})`);
+  assert.ok(middle > 0.5, `it passes through the middle (${middle})`);
+  assert.ok(late > 0.5, `and ends on the last ones (${late})`);
+  const loop = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0, selWidth: 0.25, selSweep: 'loop', selSpeed: 1 });
+  const a = selector.selectAt(info(3, 8), 0, loop, 0.25);
+  const b = selector.selectAt(info(3, 8), 0, loop, 0.25);
+  assert.equal(a, b, 'loop is a pure function of time');
+  const pingpong = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0, selWidth: 0.25, selSweep: 'pingpong', selSpeed: 1 });
+  const outward = selector.selectAt(info(7, 8), 0, pingpong, 1);
+  const back = selector.selectAt(info(7, 8), 0, pingpong, 1.5);
+  assert.notEqual(outward, back, 'pingpong reverses');
+  const beat = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0, selWidth: 0.25, selSweep: 'beat' });
+  const slow = selector.selectAt(info(2, 8), 0, beat, 0.1);
+  const fast = selector.selectAt(info(2, 8), 0, beat, 0.1 + 1 / selector.beatRate(info(2, 8)));
+  assert.notEqual(slow, fast);
+});
+
+test('words and lines move as units', () => {
+  const units = {
+    letter: { rank: 3, count: 8 },
+    word: { rank: 1, count: 2 },
+    line: { rank: 0, count: 3 },
+  };
+  const wordSel = selector.normalizeSelector({ ...BASE, selBasedOn: 'word', selStart: 0.6, selEnd: 1 });
+  const lineSel = selector.normalizeSelector({ ...BASE, selBasedOn: 'line', selStart: 0, selEnd: 0.2 });
+  const letterSel = selector.normalizeSelector({ ...BASE, selBasedOn: 'letter', selStart: 0.6, selEnd: 1 });
+  assert.ok(selector.selectAt(info(3, 8, units), 0, wordSel, 0) > 0.5, 'the second word is inside the band');
+  assert.ok(selector.selectAt(info(3, 8, units), 0, lineSel, 0) > 0.5, 'the first line is inside the band');
+  assert.ok(selector.selectAt(info(3, 8, units), 0, letterSel, 0) <= 0.5, 'the fourth letter is outside');
+  // every letter of a word shares the word weight
+  const wordInfo = info(2, 8, { letter: { rank: 2, count: 8 }, word: { rank: 1, count: 2 }, line: { rank: 0, count: 3 } });
+  assert.equal(selector.selectAt(info(3, 8, units), 0, wordSel, 0), selector.selectAt(wordInfo, 0, wordSel, 0));
+});
+
+test('randomize is a seeded shuffle and never repeats a rank', () => {
+  const sel = selector.normalizeSelector({ ...BASE, selRandom: true, selSeed: 0.25 });
+  const ranks = [0, 1, 2, 3, 4].map((i) => selector.shuffledRank(0.25, i, 5));
+  assert.deepEqual([...ranks].sort((a, b) => a - b), [0, 1, 2, 3, 4]);
+  assert.deepEqual([0, 1, 2, 3, 4].map((i) => selector.shuffledRank(0.25, i, 5)), ranks, 'deterministic');
+  const other = [0, 1, 2, 3, 4].map((i) => selector.shuffledRank(0.75, i, 5));
+  assert.notDeepEqual(other, ranks, 'the seed shuffles differently');
+  assert.equal(selector.unitPosition(info(3, 5), sel), ranks[3] / 4);
+});
+
+test('rangeReveal is the identity at the end of the beat and the offset at the start', () => {
+  const cpu = fx.get('enter', 'rangeReveal').cpu;
+  const params = { selStart: 0, selEnd: 1, opacity: 0, dy: 1, selShape: 'square' };
+  const sceneInfo = (i) => info(i, 6);
+  const stateAt = (p, i) => {
+    const state = { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, skewX: 0, tiltX: 0, tiltY: 0 };
+    cpu(state, p, params, () => 0.5, sceneInfo(i));
+    return state;
+  };
+  // at p = 1 every letter has landed (the band has swept past the whole string)
+  for (let i = 0; i < 6; i += 1) {
+    const state = stateAt(1, i);
+    assert.ok(Math.abs(state.opacity - 1) < 1e-6, `letter ${i} landed`);
+    assert.ok(Math.abs(state.y) < 1e-6, `letter ${i} is at its home position`);
+  }
+  // at p = 0 the whole string is still in the start state
+  for (let i = 0; i < 6; i += 1) {
+    const state = stateAt(0, i);
+    assert.ok(Math.abs(state.opacity - 0) < 1e-6, `letter ${i} is hidden`);
+    assert.ok(Math.abs(state.y - 96) < 1e-6, `letter ${i} is offset by one em`);
+  }
+  const exit = fx.get('exit', 'rangeReveal').cpu;
+  const exitState = (p, i) => {
+    const state = { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, skewX: 0, tiltX: 0, tiltY: 0 };
+    exit(state, p, params, () => 0.5, sceneInfo(i));
+    return state;
+  };
+  assert.ok(Math.abs(exitState(0, 2).opacity - 1) < 1e-6, 'the exit starts from the landed state');
+  assert.ok(Math.abs(exitState(1, 2).opacity - 0) < 1e-6, 'and ends hidden everywhere');
+});
+
+test('tracking spreads the outer letters and leaves the centre alone', () => {
+  const enter = fx.get('enter', 'tracking').cpu;
+  const at = (p, index, N) => {
+    const state = { x: 0, y: 0, opacity: 1 };
+    enter(state, p, { amount: 1, trackAxis: 'x' }, () => 0.5, {
+      i: index,
+      N,
+      letter: { size: 100 },
+      blockCenter: { x: 0, y: 0 },
+      letterX: index * 100,
+      letterY: 0,
+    });
+    return state.x;
+  };
+  assert.ok(at(0, 4, 9) > 300, 'the last letter starts far out');
+  assert.equal(at(0, 0, 9), 0, 'the first letter sits on the centre');
+  assert.equal(at(1, 4, 9), 0, 'and lands');
+  const hold = fx.get('hold', 'tracking').cpu;
+  const a = { x: 0, y: 0, opacity: 1 };
+  hold(a, 0, 1, { amount: 1, mode: 'breathe', freq: 0.5, trackAxis: 'y' }, () => 0.5, { i: 2, N: 5, letter: { size: 100 }, blockCenter: { x: 0, y: 0 }, letterX: 200, letterY: 40 });
+  assert.equal(a.x, 0, 'the vertical axis stays untouched');
+  const b = { x: 0, y: 0, opacity: 1 };
+  hold(b, 1 / 4, 1, { amount: 1, mode: 'breathe', freq: 0.5, trackAxis: 'y' }, () => 0.5, { i: 2, N: 5, letter: { size: 100 }, blockCenter: { x: 0, y: 0 }, letterX: 200, letterY: 40 });
+  assert.ok(Math.abs(b.y) > 0, 'the hold tracking opens the lines');
+});
+
+test('the hold selector applies the properties with the band weight only', () => {  const cpu = fx.get('hold', 'rangeSelector').cpu;
+  const run = (params, index, N) => {
+    const state = { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, colorMix: 0, skewX: 0, tiltX: 0, tiltY: 0 };
+    cpu(state, 0, 1, params, () => 0.5, info(index, N));
+    return state;
+  };
+  const inside = run({ selStart: 0, selEnd: 0.5, dy: 1, colorMix: 1, opacity: 0 }, 0, 4);
+  const outside = run({ selStart: 0, selEnd: 0.5, dy: 1, colorMix: 1, opacity: 0 }, 3, 4);
+  assert.equal(inside.opacity, 0, 'the selected letter fades');
+  assert.equal(inside.colorMix, 1, 'and takes the accent colour');
+  assert.equal(outside.opacity, 1, 'the unselected letter keeps its look');
+  assert.equal(outside.colorMix, 0);
+  assert.equal(run({ selStart: 0, selEnd: 1, selAmount: 0, dy: 1 }, 1, 4).y, 0, 'amount 0 is a no-op');
+});

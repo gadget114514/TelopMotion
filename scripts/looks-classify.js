@@ -191,6 +191,48 @@ function brightnessAxis(style) {
   return count ? clamp01(sum / count) : 0.35;
 }
 
+// How far a look strays from a plain line of text: the sixth axis. Distortion,
+// glitch, warps and heavy stacks read as odd; fades and rows read as plain.
+const WEIRD_GROUPS = {
+  animation: { stopMotion: 0.6, timeWarp: 0.5, echo: 0.5, cascade: 0.2, followThrough: 0.2 },
+  layout: { scatter: 0.6, spiral: 0.5, circle: 0.4, staircase: 0.3, grid: 0.3, wave: 0.3, arc: 0.3, path: 0.3 },
+  enter: { scramble: 0.8, glitchIn: 0.8, particlesAssemble: 0.7, shatterRebuild: 0.8, morphFromPrevious: 0.6, noiseDissolveIn: 0.5, flip3D: 0.5, elasticPop: 0.4 },
+  exit: { explode: 0.7, gravityFall: 0.6, dissolve: 0.6, particlesDisperse: 0.7, melt: 0.7, burnAway: 0.7, strokeErase: 0.5, creepOut: 0.4 },
+  hold: { letterWarp: 0.8, warp: 0.8, fontSize: 0.7, fillScreen: 0.7, swirl: 0.7, squashStretch: 0.6, jelly: 0.6, wobbleWarp: 0.5, twist: 0.5, shiver: 0.5, orbit3D: 0.4, marquee: 0.4 },
+  fill: { fire: 0.6, holographic: 0.5, marble: 0.5, glass: 0.5, rainbowFlow: 0.5, caustics: 0.4 },
+  edge: { neonGlow: 0.4, extrude: 0.5, longShadow: 0.4, bevel: 0.4, drip: 0.6 },
+  post: {
+    turbulentDisplace: 0.9, waveWarp: 0.8, twirl: 0.8, venetianBlinds: 0.8, strobeFlash: 0.8, glitchBlocks: 0.9, glitchSlice: 0.9,
+    vhsTracking: 0.8, scanTear: 0.8, dataSmear: 0.8, rgbShift: 0.8, kaleidoscope: 0.8, spinBlur: 0.7, radialWipe: 0.7,
+    digitalNoise: 0.7, pixelSort: 0.7, pixelate: 0.6, halftone: 0.6, crt: 0.6, heatHaze: 0.6, shockwave: 0.6, displacementMap: 0.6,
+    lensDistortion: 0.6, echoTrail: 0.6, godRays: 0.5, anamorphicStreak: 0.5, zoomBlur: 0.4, lightLeak: 0.4, lightSweep: 0.4,
+  },
+  background: { tunnel: 0.8, perspectiveGrid: 0.7, cellPattern: 0.6, particleField: 0.5, rays: 0.5, fractalNoise: 0.4, gradient4: 0.4, shapes: 0.4, pattern: 0.3 },
+};
+
+function weirdOf(entry) {
+  const style = (entry && entry.style) || {};
+  let sum = 0;
+  let weight = 0;
+  for (const [group, table] of Object.entries(WEIRD_GROUPS)) {
+    const list = Array.isArray(style[group]) ? style[group] : style[group] ? [style[group]] : [];
+    for (const instance of list) {
+      const value = table[instance && instance.type];
+      if (value == null) continue;
+      const w = group === entry.group ? 2.5 : 1;
+      sum += value * w;
+      weight += w;
+    }
+  }
+  const stack =
+    (Array.isArray(style.hold) ? style.hold.length : 0) +
+    (Array.isArray(style.edge) ? style.edge.length : 0) +
+    (Array.isArray(style.post) ? style.post.length : 0);
+  const busy = Math.min(0.2, stack * 0.05);
+  const base = weight ? sum / weight : 0.25;
+  return round(clamp01(base * 0.85 + busy + 0.05), 3);
+}
+
 function axesOf(entry, motionNorm) {
   const style = entry.style || {};
   let energySum = 0;
@@ -212,6 +254,7 @@ function axesOf(entry, motionNorm) {
     softness: round(clamp01(traitSoftness), 3),
     density: round(densityAxis(style), 3),
     brightness: round(brightnessAxis(style), 3),
+    weird: weirdOf(entry),
   };
 }
 
@@ -222,8 +265,10 @@ function axesDistance(a, b) {
   const source = a || {};
   const target = b || {};
   let sum = 0;
-  for (const key of moods.MATCH_AXES) sum += Math.abs(clamp01(source[key] == null ? 0.5 : source[key]) - clamp01(target[key] == null ? 0.5 : target[key]));
-  return sum / moods.MATCH_AXES.length;
+  // the sixth axis is matched too: a weird look must not answer a plain mood
+  const keys = [...moods.MATCH_AXES, 'weird'];
+  for (const key of keys) sum += Math.abs(clamp01(source[key] == null ? 0.5 : source[key]) - clamp01(target[key] == null ? 0.5 : target[key]));
+  return sum / keys.length;
 }
 
 function themesFor(entry, axes) {
@@ -307,6 +352,7 @@ module.exports = {
   motionLabel,
   motionBucket,
   axesOf,
+  weirdOf,
   themesFor,
   axesDistance,
   buildLooksData,

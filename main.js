@@ -1179,6 +1179,287 @@ function createWindow() {
           console.log('SMOKE_MOTION=' + JSON.stringify(parsedMotion));
         }
 
+        if (process.env.SA_SMOKE_FONT) {
+          win.setOpacity(0);
+          win.showInactive();
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          await primeStudio(win, { font: '1' }, 'ja');
+          const fontReport = await win.webContents.executeJavaScript(`(async () => {
+            const until = async (test, timeout) => {
+              const started = Date.now();
+              while (Date.now() - started < (timeout || 20000)) {
+                const value = test();
+                if (value) return value;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+              return null;
+            };
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
+            if (!ready) return JSON.stringify({ error: 'project-not-ready' });
+            const CUE = 6;
+            // simultaneous timing keeps every letter at the same block scale
+            const styles = {
+              f_size: {
+                animation: { type: 'simultaneous' },
+                hold: [{ type: 'fontSize', params: { from: 1, to: 2.8, period: 2, mode: 'pulse', ease: 'linear', sync: 'free' }, motion: { in: { duration: 0.4 }, out: { duration: 0.4 } } }],
+              },
+              f_fill: {
+                animation: { type: 'simultaneous' },
+                hold: [{ type: 'fillScreen', params: { fill: 0.92, max: 20, period: 2.4, mode: 'pulse', ease: 'linear', sync: 'free' }, motion: { in: { duration: 0.4 }, out: { duration: 0.4 } } }],
+              },
+              f_enter: {
+                animation: { type: 'simultaneous' },
+                enter: { type: 'megaZoomIn', params: { from: 10, fade: false }, motion: { in: { duration: 1.4, ease: 'linear' } } },
+              },
+              f_deform: {
+                animation: { type: 'simultaneous' },
+                hold: [
+                  { type: 'squashStretch', params: { amount: 0.5, speed: 0.8, phase: 0.5 } },
+                  { type: 'swirl', params: { angle: 60, freq: 1, speed: 0.7 } },
+                ],
+              },
+            };
+            const texts = {
+              f_size: 'Size pulse test',
+              f_fill: 'Fill the frame',
+              f_enter: 'Mega zoom in',
+              f_deform: 'Squash and swirl',
+            };
+            const doc = JSON.parse(JSON.stringify(window.SA.store.state.project));
+            doc.script.cues = Object.keys(styles).map((id, index) => ({
+              id,
+              start: index * CUE,
+              end: index * CUE + CUE - 0.2,
+              text: texts[id],
+              meta: { kind: 'custom' },
+            }));
+            doc.cueStyles = JSON.parse(JSON.stringify(styles));
+            doc.textFlow = {};
+            window.SA.store.load(doc);
+            await window.SA.preview.ensureFonts();
+            await new Promise((resolve) => setTimeout(resolve, 400));
+            window.SA.textflow.apply(window.SA.store.state.project);
+            window.SA.store.touch(['script']);
+            await new Promise((resolve) => setTimeout(resolve, 200));
+
+            const bounds = (capture) => {
+              let minX = capture.width;
+              let minY = capture.height;
+              let maxX = -1;
+              let maxY = -1;
+              let ink = 0;
+              for (let y = 0; y < capture.height; y += 2) {
+                for (let x = 0; x < capture.width; x += 2) {
+                  const i = (y * capture.width + x) * 4;
+                  const lum = (capture.data[i] + capture.data[i + 1] + capture.data[i + 2]) / 3;
+                  if (lum <= 80) continue;
+                  ink += 1;
+                  if (x < minX) minX = x;
+                  if (y < minY) minY = y;
+                  if (x > maxX) maxX = x;
+                  if (y > maxY) maxY = y;
+                }
+              }
+              if (maxX < 0) return { ink: 0, w: 0, h: 0 };
+              return { ink, w: maxX - minX, h: maxY - minY };
+            };
+            const indexOf = (id) => Object.keys(styles).indexOf(id);
+            const at = (id, t) => indexOf(id) * CUE + t;
+            const shot = (id, t) => {
+              const capture = window.SA.preview.captureRGBA(at(id, t));
+              if (!capture) return { id, t, error: 'no-capture' };
+              const box = bounds(capture);
+              return { id, t, ink: box.ink, w: box.w, h: box.h, ratio: Math.round((box.w / capture.width) * 100) / 100 };
+            };
+            const report = {
+              sizeTrough: shot('f_size', 0.5),
+              sizePeak: shot('f_size', 1.5),
+              fillTrough: shot('f_fill', 2.9),
+              fillPeak: shot('f_fill', 1.7),
+              enterEarly: shot('f_enter', 0.1),
+              enterSettled: shot('f_enter', 1.8),
+              deform: shot('f_deform', 2.5),
+            };
+            report.sizeOk = report.sizePeak.w > report.sizeTrough.w * 1.5;
+            report.fillOk = report.fillPeak.w > report.fillTrough.w * 1.5;
+            report.enterOk = report.enterEarly.w >= report.enterSettled.w * 1.5;
+            report.deformOk = report.deform.ink > 0 && report.deform.w > 0;
+            report.glError = window.SA.preview.debugError();
+            return JSON.stringify(report);
+          })()`);
+          console.log('SMOKE_FONT=' + fontReport);
+        }
+
+        if (process.env.SA_SMOKE_AESTAGE) {
+          win.setOpacity(0);
+          win.showInactive();
+          await new Promise((resolve) => setTimeout(resolve, 400));
+          await primeStudio(win, { aestage: '1' }, 'ja');
+          const stageReport = await win.webContents.executeJavaScript(`(async () => {
+            const until = async (test, timeout) => {
+              const started = Date.now();
+              while (Date.now() - started < (timeout || 20000)) {
+                const value = test();
+                if (value) return value;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+              return null;
+            };
+            const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
+            if (!ready) return JSON.stringify({ error: 'project-not-ready' });
+            const IDS = ['trackingTitle', 'karaokeSweep', 'waveThrough', 'impactBurst', 'frameDraw', 'bracketCallout', 'randomFlicker', 'beatStrike'];
+            const looks = IDS.map((id) => window.SA.presets.get(id)).filter(Boolean);
+            const missing = IDS.filter((id) => !window.SA.presets.get(id));
+            const CUE = 4;
+            const doc = JSON.parse(JSON.stringify(window.SA.store.state.project));
+            doc.script.cues = looks.map((look, index) => ({ id: look.id, start: index * CUE, end: index * CUE + CUE - 0.2, text: look.name, meta: { kind: 'custom', presetId: look.id } }));
+            doc.cueStyles = {};
+            doc.clips = (doc.clips || []).filter((clip) => clip.trackId !== 'bg');
+            doc.textFlow = {};
+            for (const look of looks) {
+              doc.cueStyles[look.id] = JSON.parse(JSON.stringify(look.style));
+              const background = look.style.background;
+              const cue = doc.script.cues.find((entry) => entry.id === look.id);
+              if (background && background.type && background.type !== 'none') {
+                doc.clips.push({ id: 'bg_' + look.id, trackId: 'bg', start: cue.start, end: cue.end, spec: { type: background.type, params: JSON.parse(JSON.stringify(background.params || {})) }, opacity: 1, fadeIn: 0.2, fadeOut: 0.2, colors: null });
+              }
+            }
+            window.SA.store.load(doc);
+            await window.SA.preview.ensureFonts();
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            window.SA.textflow.apply(window.SA.store.state.project);
+            window.SA.store.touch(['script']);
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
+            const capture = (id, t) => window.SA.preview.captureRGBA(id === null ? t : window.SA.store.state.project.script.cues.find((cue) => cue.id === id).start + t);
+            const stats = (shot) => {
+              let minX = shot.width;
+              let minY = shot.height;
+              let maxX = -1;
+              let maxY = -1;
+              let ink = 0;
+              let left = 0;
+              let right = 0;
+              let leftTint = 0;
+              let rightTint = 0;
+              for (let y = 0; y < shot.height; y += 2) {
+                for (let x = 0; x < shot.width; x += 2) {
+                  const i = (y * shot.width + x) * 4;
+                  const r = shot.data[i];
+                  const g = shot.data[i + 1];
+                  const b = shot.data[i + 2];
+                  const lum = (r + g + b) / 3;
+                  if (lum <= 80) continue;
+                  ink += 1;
+                  if (x < minX) minX = x;
+                  if (y < minY) minY = y;
+                  if (x > maxX) maxX = x;
+                  if (y > maxY) maxY = y;
+                  // the accent highlight is pink, the base text is white
+                  const tint = r - b;
+                  if (x < shot.width / 2) { left += 1; leftTint += tint; }
+                  else { right += 1; rightTint += tint; }
+                }
+              }
+              return {
+                ink,
+                w: maxX < 0 ? 0 : maxX - minX,
+                h: maxY < 0 ? 0 : maxY - minY,
+                tint: (left ? leftTint / left : 0) - (right ? rightTint / right : 0),
+              };
+            };
+            const shotOf = (id, t) => {
+              const shot = capture(id, t);
+              return shot ? stats(shot) : { ink: 0, w: 0, h: 0, tint: 0 };
+            };
+
+            const report = { missing, looks: [] };
+            const tiles = [];
+            for (const look of looks) {
+              const entry = { id: look.id, enter: shotOf(look.id, 0.25), hold: shotOf(look.id, 1.8), exit: shotOf(look.id, CUE - 0.5) };
+              // the shape layer is isolated by rendering the same look with and
+              // without its shape posts at two moments
+              const shapePosts = (look.style.post || []).filter((post) => post && post.type === 'shapeLayer');
+              if (shapePosts.length) {
+                const cue = window.SA.store.state.project.script.cues.find((item) => item.id === look.id);
+                const withShape = JSON.parse(JSON.stringify(window.SA.store.state.project.cueStyles[look.id]));
+                const without = JSON.parse(JSON.stringify(withShape));
+                without.post = withShape.post.filter((post) => post.type !== 'shapeLayer');
+                const at = (style, t) => {
+                  window.SA.store.state.project.cueStyles[look.id] = style;
+                  const shot = capture(look.id, t);
+                  return shot ? shot : null;
+                };
+                const meanDiff = (a, b) => {
+                  if (!a || !b) return 0;
+                  let sum = 0;
+                  let count = 0;
+                  for (let i = 0; i < a.data.length; i += 16) {
+                    sum += Math.abs(a.data[i] - b.data[i]) + Math.abs(a.data[i + 1] - b.data[i + 1]) + Math.abs(a.data[i + 2] - b.data[i + 2]);
+                    count += 3;
+                  }
+                  return count ? sum / count : 0;
+                };
+                const early = meanDiff(at(withShape, 0.2), at(without, 0.2));
+                const late = meanDiff(at(withShape, 1.8), at(without, 1.8));
+                window.SA.store.state.project.cueStyles[look.id] = withShape;
+                entry.shape = { early: Math.round(early * 100) / 100, late: Math.round(late * 100) / 100, posts: shapePosts.length };
+                // the shape must paint; the trim's growth is asserted exactly in
+                // scripts/test/shape-layer.test.js (per drive)
+                entry.shapeOk = late > 0.05;
+              }
+              if (look.id === 'karaokeSweep') {
+                const a = shotOf(look.id, 0.6);
+                const b = shotOf(look.id, 1.4);
+                entry.sweep = { a: Math.round(a.tint), b: Math.round(b.tint) };
+                entry.sweepOk = Math.abs(a.tint - b.tint) > 1.5 || Math.abs(a.ink - b.ink) > 40;
+              }
+              report.looks.push(entry);
+              tiles.push({ capture: capture(look.id, 0.25) }, { capture: capture(look.id, 1.8) }, { capture: capture(look.id, CUE - 0.5) });
+            }
+            report.trackingOk = report.looks.every((entry) => entry.id !== 'trackingTitle' || entry.enter.w >= entry.hold.w * 0.99);
+            report.drawOk = report.looks.every((entry) => entry.shapeOk !== false);
+            report.glError = window.SA.preview.debugError();
+
+            // contact sheet: 8 looks x 3 moments, tiles at half size
+            const first = tiles.find((tile) => tile.capture);
+            if (first) {
+              const tileW = Math.floor(first.capture.width / 2);
+              const tileH = Math.floor(first.capture.height / 2);
+              const cols = 3;
+              const canvas = document.createElement('canvas');
+              canvas.width = tileW * cols;
+              canvas.height = tileH * Math.ceil(tiles.length / cols);
+              const c2d = canvas.getContext('2d');
+              tiles.forEach((tile, index) => {
+                if (!tile.capture) return;
+                const off = document.createElement('canvas');
+                off.width = tile.capture.width;
+                off.height = tile.capture.height;
+                off.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(tile.capture.data), tile.capture.width, tile.capture.height), 0, 0);
+                c2d.drawImage(off, (index % cols) * tileW, Math.floor(index / cols) * tileH, tileW, tileH);
+              });
+              report.sheet = canvas.toDataURL('image/png');
+            }
+            return JSON.stringify(report);
+          })()`);
+          try {
+            const parsed = JSON.parse(stageReport);
+            if (parsed.sheet) {
+              const png = Buffer.from(parsed.sheet.split(',')[1], 'base64');
+              const sheetPath = path.join(__dirname, 'snapshot', 'aestage-sheet.png');
+              fs.mkdirSync(path.dirname(sheetPath), { recursive: true });
+              fs.writeFileSync(sheetPath, png);
+              parsed.sheetPath = sheetPath;
+              delete parsed.sheet;
+              console.log(`SMOKE_AESTAGE_PNG=${sheetPath} bytes=${png.length}`);
+            }
+            console.log('SMOKE_AESTAGE=' + JSON.stringify(parsed));
+          } catch (error) {
+            console.log('SMOKE_AESTAGE=' + stageReport);
+          }
+        }
+
         if (process.env.SA_SMOKE_SHADERS) {
           win.setOpacity(0);
           win.showInactive();

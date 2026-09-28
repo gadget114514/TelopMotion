@@ -237,5 +237,26 @@
     },
   });
 
+  // Block-space size exit: the text grows to a screen-filling scale and leaves
+  // (the camera flies into the letters). `zoomOut` only shrinks each glyph.
+  fx.register({
+    group: 'exit',
+    type: 'megaZoomOut',
+    tags: ['deform', 'size'],
+    pack: 'font',
+    cost: 2,
+    params: [
+      { key: 'to', kind: 'number', min: 0.05, max: 30, step: 0.05, default: 6, random: [2, 10] },
+      { key: 'fade', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const to = params.to == null ? 6 : Number(params.to);
+      const progress = clamp01(p);
+      const amount = (to - 1) * progress;
+      if (Math.abs(amount) > 0.0001) state.deform.push({ type: 'zoomBlock', amount, time: 0, param: 0 });
+      if (params.fade !== false) state.opacity *= 1 - progress;
+    },
+  });
+
   return fx;
 });

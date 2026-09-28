@@ -44,6 +44,15 @@
     { type: 'vignette', code: 34, cost: 1, target: 'frame', params: [['amount', 'number', 0.5, 0, 1], ['softness', 'number', 0.5, 0, 1]] },
     { type: 'sparkles', code: 35, cost: 2, target: 'text', params: [['count', 'number', 24, 4, 64], ['size', 'number', 2, 0.5, 8], ['shape', 'select', 'dot', null, null, ['dot', 'star', 'heart']], ['color', 'color', null]] },
     { type: 'lensFlare', code: 36, tags: ['overlap'], cost: 2, target: 'frame', params: [['position', 'vec2', { x: 0.4, y: 0.35 }], ['color', 'color', null]] },
+    // Distortion / transition primitives
+    { type: 'waveWarp', code: 37, pack: 'pro', tags: ['pro', 'distort'], cost: 3, target: 'frame', params: [['height', 'number', 24, 0, 240], ['width', 'number', 160, 8, 1200], ['angle', 'number', 0, -180, 180], ['speed', 'number', 0.5, 0, 4], ['waveform', 'select', 'sine', null, null, ['sine', 'triangle', 'square', 'saw']], ['pin', 'bool', false]] },
+    { type: 'twirl', code: 38, pack: 'pro', tags: ['pro', 'distort'], cost: 3, target: 'frame', params: [['center', 'vec2', { x: 0.5, y: 0.5 }], ['radius', 'number', 0.4, 0.02, 1.2], ['angle', 'number', 120, -360, 360], ['spin', 'number', 0, -180, 180]] },
+    { type: 'turbulentDisplace', code: 39, pack: 'pro', tags: ['pro', 'distort'], cost: 4, target: 'frame', params: [['amount', 'number', 20, 0, 100], ['size', 'number', 60, 4, 400], ['octaves', 'int', 3, 1, 6], ['evolution', 'number', 0.2, 0, 2]] },
+    { type: 'spinBlur', code: 40, pack: 'pro', tags: ['pro', 'blur'], cost: 4, target: 'frame', params: [['center', 'vec2', { x: 0.5, y: 0.5 }], ['angle', 'number', 6, 0, 45]] },
+    { type: 'strobeFlash', code: 41, pack: 'pro', tags: ['pro', 'light'], cost: 2, target: 'frame', params: [['bpm', 'text', 'audio'], ['intensity', 'number', 0.5, 0, 1], ['duty', 'number', 0.15, 0.02, 1], ['color', 'color', null]] },
+    { type: 'anamorphicStreak', code: 42, pack: 'pro', tags: ['pro', 'light', 'overlap'], cost: 4, target: 'frame', params: [['threshold', 'number', 0.6, 0, 1], ['length', 'number', 0.3, 0, 1], ['angle', 'number', 0, -180, 180], ['intensity', 'number', 0.6, 0, 1], ['tint', 'color', null]] },
+    { type: 'radialWipe', code: 43, pack: 'pro', tags: ['pro', 'transition', 'wipe'], cost: 2, target: 'text', params: [['startAngle', 'number', 0, -180, 180], ['direction', 'select', 'cw', null, null, ['cw', 'ccw']], ['feather', 'number', 0.08, 0, 0.5]] },
+    { type: 'venetianBlinds', code: 44, pack: 'pro', tags: ['pro', 'transition', 'wipe'], cost: 2, target: 'text', params: [['angle', 'number', 0, -180, 180], ['bandWidth', 'number', 40, 2, 240], ['feather', 'number', 0.08, 0, 0.5]] },
   ];
 
   const CODE_BY_TYPE = {};
@@ -71,6 +80,7 @@
       stackable: true,
       cost: entry.cost || 1,
       params,
+      pack: entry.pack || null,
       defaults: { target: entry.target },
     });
   }
@@ -90,8 +100,29 @@
     const code = CODE_BY_TYPE[type] || 34;
     const context = ctx || {};
     const envelope = context.envelope == null ? 1 : Math.max(0, context.envelope);
+    const entry = fx.get('post', type);
+    const entryTarget = entry && entry.defaults && entry.defaults.target;
+    const target =
+      (instance && instance.target) ||
+      (instance && instance.defaults && instance.defaults.target) ||
+      entryTarget ||
+      'text';
+    // extension packs (the camera) own their uniform layout
+    const extension = fx.postExtensions && fx.postExtensions[type];
+    if (extension) {
+      return {
+        u_type: extension.code,
+        ...extension.uniforms(params, context),
+        target,
+        bloom: false,
+      };
+    }
     let p4 = [0, 0, 0, envelope];
+    let p42 = [0, 0, 0, 0];
+    let p43 = [0, 0, 0, 0];
+    let mode = 0;
     let colorA = [1, 1, 1, 1];
+    let colorB = [1, 1, 1, 1];
     if (type === 'glitchBlocks') p4 = [num(params.blockSize, 24), num(params.rate, 6), 0, envelope * num(params.intensity, 0.5)];
     else if (type === 'rgbShift') p4 = [num(params.angle, 0), num(params.jitter, 0.3), 0, envelope * (num(params.amount, 3) / 10)];
     else if (type === 'scanTear') p4 = [num(params.lines, 24), num(params.speed, 1), 0, envelope * num(params.amount, 0.4)];
@@ -149,15 +180,63 @@
       const position = params.position || { x: 0.4, y: 0.35 };
       p4 = [num(position.x, 0.4), num(position.y, 0.35), 0, envelope];
       colorA = toRgb(params.color, [1, 0.95, 0.85, 1], context);
+    } else if (type === 'waveWarp') {
+      const waveform = { sine: 0, triangle: 1, square: 2, saw: 3 }[params.waveform];
+      // u_params.z is a direction angle in radians (no 180 offset: the shader
+      // uses cos/sin of it as the wave axis)
+      p4 = [num(params.height, 24), num(params.width, 160), (num(params.angle, 0) * Math.PI) / 180, envelope];
+      p42 = [num(params.speed, 0.5), params.pin ? 1 : 0, 0, 0];
+      p43 = [waveform == null ? 0 : waveform, 0, 0, 0];
+    } else if (type === 'twirl') {
+      const center = params.center || { x: 0.5, y: 0.5 };
+      p4 = [num(center.x, 0.5), num(center.y, 0.5), num(params.radius, 0.4), (num(params.angle, 120) * Math.PI) / 180];
+      p42 = [((num(params.spin, 0) * Math.PI) / 180) * (context.time || 0), 0, 0, 0];
+    } else if (type === 'turbulentDisplace') {
+      p4 = [0, num(params.size, 60), num(params.octaves, 3), envelope * num(params.amount, 20)];
+      p42 = [num(params.evolution, 0.2), 0, 0, 0];
+    } else if (type === 'spinBlur') {
+      const center = params.center || { x: 0.5, y: 0.5 };
+      p4 = [num(center.x, 0.5), num(center.y, 0.5), (num(params.angle, 6) * Math.PI) / 180, envelope];
+    } else if (type === 'strobeFlash') {
+      const bpmOption = params.bpm;
+      const features = context.audioFeatures || null;
+      const bpm =
+        bpmOption === 'audio'
+          ? features && Number(features.bpm) > 0
+            ? Number(features.bpm)
+            : 120
+          : num(bpmOption, 120);
+      p4 = [bpm, envelope * num(params.intensity, 0.5), num(params.duty, 0.15), 0];
+      colorA = toRgb(params.color, [1, 1, 1, 1], context);
+    } else if (type === 'anamorphicStreak') {
+      p4 = [num(params.threshold, 0.6), num(params.length, 0.3), (num(params.angle, 0) * Math.PI) / 180, envelope * num(params.intensity, 0.6)];
+      colorA = toRgb(params.tint, [0.8, 0.88, 1, 1], context);
+    } else if (type === 'radialWipe') {
+      p4 = [
+        (num(params.startAngle, 0) * Math.PI) / 180,
+        params.direction === 'ccw' ? 1 : 0,
+        num(params.feather, 0.08),
+        envelope * (context.progress == null ? 1 : context.progress),
+      ];
+    } else if (type === 'venetianBlinds') {
+      p4 = [
+        (num(params.angle, 0) * Math.PI) / 180,
+        num(params.bandWidth, 40),
+        num(params.feather, 0.08),
+        envelope * (context.progress == null ? 1 : context.progress),
+      ];
     }
     return {
       u_type: code,
       u_params: p4,
+      u_params2: p42,
+      u_params3: p43,
+      u_mode: mode,
       u_colorA: colorA,
-      u_colorB: [1, 1, 1, 1],
+      u_colorB: colorB,
       u_time: context.time || 0,
       sdfTexture: context.sdfTexture || null,
-      target: (instance && instance.target) || (instance && instance.defaults && instance.defaults.target) || 'text',
+      target,
       bloom: type === 'bloom' || type === 'godRays',
     };
   }

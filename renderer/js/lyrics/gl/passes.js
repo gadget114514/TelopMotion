@@ -4,11 +4,95 @@ SA.glPasses = (() => {
   'use strict';
 
   let batches = new WeakMap();
-  const DEFORM_CODES = { jelly: 1, wobbleWarp: 2, twist: 3, breathing: 4, melt: 5 };
   const REP_CODES = { mesh: 0, stroke: 1, pieces: 2, particles: 3 };
+  const FALLBACK_DEFORM_CODES = {
+    jelly: 1, wobbleWarp: 2, twist: 3, breathing: 4, melt: 5,
+    stretch: 15, skew: 16, swirl: 17,
+    zoomBlock: 31,
+  };
+  const DEFORM_CODES = typeof SA !== 'undefined' && SA.warp && SA.warp.DEFORM_CODES ? SA.warp.DEFORM_CODES : FALLBACK_DEFORM_CODES;
 
   function clamp01(value) {
     return Math.max(0, Math.min(1, value));
+  }
+
+  // Per-letter state texture: 9 RGBA rows. Rows 0-4 are the original layout,
+  // rows 5-6 hold the second and third deformation slots, row 7 the block-warp
+  // origin and half-size, row 8 the wipe / flash / mask fields.
+  const STATE_ROWS = 9;
+
+  // At most three deformations survive per letter; the largest |amount| wins
+  // inside each group. A block-space deformation (warp, font size) reserves one
+  // slot, so a strong letter deformation can never hide the block scale.
+  function deformSlots(state) {
+    const list = state && Array.isArray(state.deform) ? state.deform : null;
+    if (!list || !list.length) return null;
+    const letter = [];
+    const block = [];
+    for (const item of list) {
+      if (!item || typeof item !== 'object') continue;
+      const code = DEFORM_CODES[item.type] || 0;
+      if (!code) continue;
+      (code >= 20 ? block : letter).push({ code, item });
+    }
+    if (!letter.length && !block.length) return null;
+    // twist / twistBlock are degrees, so 12deg must not outrank an amount of 0.3
+    const magnitude = (entry) => {
+      const amount = Math.abs(Number(entry.item.amount) || 0);
+      return entry.code === 3 || entry.code === 30 ? amount / 90 : amount;
+    };
+    const byAmount = (a, b) => magnitude(b) - magnitude(a);
+    letter.sort(byAmount);
+    block.sort(byAmount);
+    const letterSlots = block.length ? letter.slice(0, 2) : letter.slice(0, 3);
+    return [...letterSlots, ...block.slice(0, 1)];
+  }
+
+  function deformParam(item) {
+    if (item.param != null) return item.param;
+    return item.freq || item.scale || item.seed || 0;
+  }
+
+  function packStateRows(states, data, stride) {
+    for (let i = 0; i < states.length; i += 1) {
+      const state = states[i];
+      const at = (row) => (row * stride + i) * 4;
+      data[at(0)] = state.x || 0;
+      data[at(0) + 1] = state.y || 0;
+      data[at(0) + 2] = state.rot || 0;
+      data[at(0) + 3] = state.scale == null ? (state.scaleX == null ? 1 : state.scaleX) : state.scale;
+      data[at(1)] = state.scaleY == null ? 1 : state.scaleY;
+      data[at(1) + 1] = state.skew || state.skewX || 0;
+      data[at(1) + 2] = state.opacity == null ? 1 : state.opacity;
+      data[at(1) + 3] = state.blur || 0;
+      data[at(2)] = state.tiltX || 0;
+      data[at(2) + 1] = state.tiltY || 0;
+      data[at(2) + 2] = state.visibleFrac == null ? 1 : state.visibleFrac;
+      data[at(2) + 3] = state.reprProgress == null ? 1 : state.reprProgress;
+      const slots = deformSlots(state);
+      for (let slot = 0; slot < 3; slot += 1) {
+        const row = slot === 0 ? 3 : slot === 1 ? 5 : 6;
+        const entry = slots && slots[slot];
+        data[at(row)] = entry ? entry.code : 0;
+        data[at(row) + 1] = entry ? Number(entry.item.amount) || 0 : 0;
+        data[at(row) + 2] = entry ? Number(entry.item.time) || 0 : 0;
+        data[at(row) + 3] = entry ? deformParam(entry.item) : 0;
+      }
+      const origin = state.warpOrigin || null;
+      const half = state.blockHalf || null;
+      data[at(7)] = origin ? origin.x || 0 : 0;
+      data[at(7) + 1] = origin ? origin.y || 0 : 0;
+      data[at(7) + 2] = half ? half.x || 0 : 0;
+      data[at(7) + 3] = half ? half.y || 0 : 0;
+      data[at(8)] = state.wipeMode == null ? 0 : state.wipeMode;
+      data[at(8) + 1] = state.wipeSoft == null ? 0 : state.wipeSoft;
+      data[at(8) + 2] = state.flash || 0;
+      data[at(8) + 3] = state.maskFrac == null ? 1 : state.maskFrac;
+      data[at(4)] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
+      data[at(4) + 1] = state.reprProgress == null ? 1 : state.reprProgress;
+      data[at(4) + 2] = state.colorMix || 0;
+      data[at(4) + 3] = (i % 97) / 97;
+    }
   }
 
   // --- batches -----------------------------------------------------------------
@@ -27,11 +111,14 @@ SA.glPasses = (() => {
       const halfW = Math.max(1, ((bb.x1 - bb.x0) / 2) * scale);
       const halfH = Math.max(1, ((bb.y1 - bb.y0) / 2) * scale);
       const base = positions.length / 5;
-      const source = mesh.fill.positions;
+      // the text pass draws the subdivided mesh: non-linear deformation of
+      // earcut's long slivers would show as faceted edges
+      const fill = mesh.fillFine || mesh.fill;
+      const source = fill.positions;
       for (let j = 0; j < source.length; j += 2) {
         positions.push(source[j] * scale - cx, source[j + 1] * scale - cy, i, halfW, halfH);
       }
-      const localIndices = mesh.fill.indices;
+      const localIndices = fill.indices;
       for (let j = 0; j < localIndices.length; j += 1) indices.push(base + localIndices[j]);
       const color = letter.color || { r: 1, g: 1, b: 1, a: 1 };
       colors[i * 4] = Math.round(clamp01(color.r) * 255);
@@ -301,7 +388,7 @@ SA.glPasses = (() => {
       const location = program.uniforms[name];
       if (location == null || value == null) continue;
       if (typeof value === 'number') {
-        if (/^u_(type|repMode|count|octaves)$/.test(name)) gl.uniform1i(location, Math.round(value));
+        if (/^u_(type|repMode|count|octaves|mode|mode2|mode3)$/.test(name)) gl.uniform1i(location, Math.round(value));
         else gl.uniform1f(location, value);
       } else if (Array.isArray(value)) {
         if (value.length === 2) gl.uniform2f(location, value[0], value[1]);
@@ -337,7 +424,10 @@ SA.glPasses = (() => {
       background: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.BACKGROUND_FRAG),
       copy: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COPY_FRAG),
       composite: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COMPOSITE_FRAG),
+      blurField: createProgramSafe(gl, SA.glShaders.BLUR_FIELD_VERT, SA.glShaders.BLUR_FIELD_FRAG, ['a_corner', 'a_letter', 'a_inkToCell', 'a_cell', 'a_em']),
+      blur: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.TEXT_VBLUR_FRAG),
     };
+    void opts;
     for (const [name, program] of Object.entries(programs)) {
       if (!program) {
         if (typeof console !== 'undefined') console.warn(`[gl] pipeline disabled: ${name} failed to compile`);
@@ -387,6 +477,9 @@ SA.glPasses = (() => {
         scene: make(width, height),
         postA: make(width, height),
         postB: make(width, height),
+        blurField: make(width, height),
+        blurA: make(width, height),
+        blurB: make(width, height),
         bloom,
       };
       stateTexture = SA.gl.createTexture(gl, {});
@@ -398,7 +491,7 @@ SA.glPasses = (() => {
 
     function disposeTargets() {
       if (!targets) return;
-      for (const key of ['text', 'info', 'layer', 'scene', 'postA', 'postB']) {
+      for (const key of ['text', 'info', 'layer', 'scene', 'postA', 'postB', 'blurField', 'blurA', 'blurB']) {
         if (targets[key]) SA.gl.deleteTarget(gl, targets[key]);
       }
       for (const target of targets.bloom || []) SA.gl.deleteTarget(gl, target);
@@ -463,7 +556,6 @@ SA.glPasses = (() => {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.disable(gl.BLEND);
     }
-
     function makeFallbackTexture() {
       const texture = SA.gl.createTexture(gl, {});
       gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -493,9 +585,9 @@ SA.glPasses = (() => {
     function ensureStateTexture(count) {
       if (count <= stateCapacity) return;
       stateCapacity = Math.max(16, count);
-      stateData = new Float32Array(stateCapacity * 5 * 4);
+      stateData = new Float32Array(stateCapacity * STATE_ROWS * 4);
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, stateCapacity, 5, 0, gl.RGBA, gl.FLOAT, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, stateCapacity, STATE_ROWS, 0, gl.RGBA, gl.FLOAT, null);
     }
 
     function ensureColorTexture(count) {
@@ -506,42 +598,14 @@ SA.glPasses = (() => {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, Math.max(16, count), 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
 
-    function packStates(states) {
-      const stride = states.length;
-      for (let i = 0; i < states.length; i += 1) {
-        const state = states[i];
-        stateData[(0 * stride + i) * 4] = state.x || 0;
-        stateData[(0 * stride + i) * 4 + 1] = state.y || 0;
-        stateData[(0 * stride + i) * 4 + 2] = state.rot || 0;
-        stateData[(0 * stride + i) * 4 + 3] = state.scale == null ? (state.scaleX == null ? 1 : state.scaleX) : state.scale;
-        stateData[(1 * stride + i) * 4] = state.scaleY == null ? 1 : state.scaleY;
-        stateData[(1 * stride + i) * 4 + 1] = state.skew || state.skewX || 0;
-        stateData[(1 * stride + i) * 4 + 2] = state.opacity == null ? 1 : state.opacity;
-        stateData[(1 * stride + i) * 4 + 3] = state.blur || 0;
-        stateData[(2 * stride + i) * 4] = state.tiltX || 0;
-        stateData[(2 * stride + i) * 4 + 1] = state.tiltY || 0;
-        stateData[(2 * stride + i) * 4 + 2] = state.visibleFrac == null ? 1 : state.visibleFrac;
-        stateData[(2 * stride + i) * 4 + 3] = state.reprProgress == null ? 1 : state.reprProgress;
-        const deform = Array.isArray(state.deform) && state.deform.length ? state.deform[0] : null;
-        stateData[(3 * stride + i) * 4] = deform ? DEFORM_CODES[deform.type] || 0 : 0;
-        stateData[(3 * stride + i) * 4 + 1] = deform ? deform.amount || 0 : 0;
-        stateData[(3 * stride + i) * 4 + 2] = deform ? deform.time || 0 : 0;
-        stateData[(3 * stride + i) * 4 + 3] = deform ? deform.freq || deform.scale || deform.seed || 0 : 0;
-        stateData[(4 * stride + i) * 4] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
-        stateData[(4 * stride + i) * 4 + 1] = state.reprProgress == null ? 1 : state.reprProgress;
-        stateData[(4 * stride + i) * 4 + 2] = state.colorMix || 0;
-        stateData[(4 * stride + i) * 4 + 3] = (i % 97) / 97;
-      }
-    }
-
     function uploadState(states, batch, colorOverride) {
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
-      packStates(states);
+      packStateRows(states, stateData, states.length);
       if (colorOverride) colorData.set(colorOverride.subarray(0, Math.min(colorOverride.length, colorData.length)));
       else colorData.set(batch.colors.subarray(0, Math.min(batch.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * 5 * 4));
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
       gl.bindTexture(gl.TEXTURE_2D, colorTexture);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 1, gl.RGBA, gl.UNSIGNED_BYTE, colorData.subarray(0, states.length * 4));
       gl.activeTexture(gl.TEXTURE0);
@@ -605,6 +669,83 @@ SA.glPasses = (() => {
       return sdfPass.run(targets.text.texture, width, height, Math.max(width, height) * 0.1);
     }
 
+    // Per-letter blur: renders the blur radius of every letter into a field
+    // (max blended, so a pixel sees the largest radius around it), then blurs
+    // the text colour with two 13-tap passes. The info attachment is left
+    // alone; only the colour attachment 0 is exchanged.
+    function letterBlur(scene, states, variant) {
+      if (!targets || !states || !states.length) return false;
+      let maxBlur = 0;
+      for (const state of states) {
+        const blur = Number(state && state.blur) || 0;
+        if (blur > maxBlur) maxBlur = blur;
+      }
+      if (maxBlur <= 0.25) return false;
+      const batch = sceneBatches(gl, scene, variant).bg;
+      if (!batch || !batch.count) return false;
+      ensureStateTexture(states.length);
+      ensureColorTexture(states.length);
+      packStateRows(states, stateData, states.length);
+      gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
+
+      // 1) the blur field: one expanded quad per letter, max blended
+      gl.bindFramebuffer(gl.FRAMEBUFFER, targets.blurField.framebuffer);
+      gl.viewport(0, 0, width, height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.enable(gl.BLEND);
+      gl.blendEquation(gl.MAX);
+      gl.blendFunc(gl.ONE, gl.ONE);
+      gl.useProgram(programs.blurField.program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, stateTexture);
+      gl.uniform1i(programs.blurField.uniforms.u_state, 0);
+      gl.uniform2f(programs.blurField.uniforms.u_resolution, width, height);
+      gl.bindVertexArray(batch.vao);
+      gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
+      gl.bindVertexArray(null);
+      gl.blendEquation(gl.FUNC_ADD);
+      gl.disable(gl.BLEND);
+
+      // 2) horizontal and vertical gaussian passes
+      const blurPass = (source, target, dx, dy) => {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+        gl.viewport(0, 0, target.width, target.height);
+        gl.disable(gl.BLEND);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, source.texture);
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, targets.blurField.texture);
+        gl.useProgram(programs.blur.program);
+        gl.uniform1i(programs.blur.uniforms.u_text, 0);
+        gl.uniform1i(programs.blur.uniforms.u_field, 1);
+        gl.uniform2f(programs.blur.uniforms.u_texel, 1 / Math.max(1, width), 1 / Math.max(1, height));
+        gl.uniform2f(programs.blur.uniforms.u_direction, dx, dy);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+      blurPass(targets.text, targets.blurA, 1, 0);
+      blurPass(targets.blurA, targets.blurB, 0, 1);
+
+      // 3) write the blurred colour back into attachment 0, keep the info
+      gl.bindFramebuffer(gl.FRAMEBUFFER, targets.textFramebuffer);
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0]);
+      gl.viewport(0, 0, width, height);
+      gl.disable(gl.BLEND);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, targets.blurB.texture);
+      gl.useProgram(programs.copy.program);
+      gl.uniform1i(programs.copy.uniforms.u_texture, 0);
+      gl.uniform1f(programs.copy.uniforms.u_opacity, 1);
+      if (programs.copy.uniforms.u_offset) gl.uniform2f(programs.copy.uniforms.u_offset, 0, 0);
+      if (programs.copy.uniforms.u_scale) gl.uniform1f(programs.copy.uniforms.u_scale, 1);
+      if (programs.copy.uniforms.u_angle) gl.uniform1f(programs.copy.uniforms.u_angle, 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+      gl.activeTexture(gl.TEXTURE0);
+      return true;
+    }
+
     function ensureBgStateTexture(count) {
       if (count <= bgStateCapacity) return;
       bgStateCapacity = Math.max(16, count);
@@ -656,10 +797,10 @@ SA.glPasses = (() => {
       const mesh = batchSet.mesh;
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
-      packStates(states);
+      packStateRows(states, stateData, states.length);
       if (mesh) colorData.set(mesh.colors.subarray(0, Math.min(mesh.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * 5 * 4));
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
       uploadBgState(bgStates);
       gl.bindFramebuffer(gl.FRAMEBUFFER, targets.textFramebuffer);
       gl.viewport(0, 0, width, height);
@@ -713,6 +854,8 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, (uniforms && uniforms.sdfTexture) || targets.text.texture);
       gl.activeTexture(gl.TEXTURE3);
       gl.bindTexture(gl.TEXTURE_2D, (uniforms && uniforms.imageTexture) || fallback());
+      gl.activeTexture(gl.TEXTURE4);
+      gl.bindTexture(gl.TEXTURE_2D, stateTexture);
       gl.useProgram(programs.fill.program);
       const values = { ...uniforms, u_resolution: [width, height] };
       applyUniforms(gl, programs.fill, values);
@@ -720,6 +863,7 @@ SA.glPasses = (() => {
       gl.uniform1i(programs.fill.uniforms.u_info, 1);
       gl.uniform1i(programs.fill.uniforms.u_sdf, 2);
       gl.uniform1i(programs.fill.uniforms.u_image, 3);
+      if (programs.fill.uniforms.u_state) gl.uniform1i(programs.fill.uniforms.u_state, 4);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
     }
@@ -890,6 +1034,7 @@ SA.glPasses = (() => {
       beginLayer,
       text,
       textBackground,
+      letterBlur,
       knockout,
       representation,
       sdf,
@@ -903,6 +1048,7 @@ SA.glPasses = (() => {
       dispose,
       targets: () => targets,
       debugError: () => gl.getError(),
+      _test: { deformSlots, packStateRows, STATE_ROWS },
     };
   }
 
@@ -921,9 +1067,9 @@ SA.glPasses = (() => {
     function ensureStateTexture(count) {
       if (count <= stateCapacity) return;
       stateCapacity = Math.max(16, count);
-      stateData = new Float32Array(stateCapacity * 5 * 4);
+      stateData = new Float32Array(stateCapacity * STATE_ROWS * 4);
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, stateCapacity, 5, 0, gl.RGBA, gl.FLOAT, null);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA32F, stateCapacity, STATE_ROWS, 0, gl.RGBA, gl.FLOAT, null);
     }
 
     function ensureColorTexture(count) {
@@ -934,30 +1080,10 @@ SA.glPasses = (() => {
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, colorCapacity, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
     }
 
+    // The fallback shares the 9-row layout of the full pipeline so the shader
+    // sees the same deform slots, block-warp origin and wipe fields.
     function packStates(states) {
-      const width = states.length;
-      for (let i = 0; i < states.length; i += 1) {
-        const state = states[i];
-        stateData[(0 * width + i) * 4] = state.x || 0;
-        stateData[(0 * width + i) * 4 + 1] = state.y || 0;
-        stateData[(0 * width + i) * 4 + 2] = state.rot || 0;
-        stateData[(0 * width + i) * 4 + 3] = state.scale == null ? (state.scaleX == null ? 1 : state.scaleX) : state.scale;
-        stateData[(1 * width + i) * 4] = state.scaleY == null ? 1 : state.scaleY;
-        stateData[(1 * width + i) * 4 + 1] = state.skew || state.skewX || 0;
-        stateData[(1 * width + i) * 4 + 2] = state.opacity == null ? 1 : state.opacity;
-        stateData[(1 * width + i) * 4 + 3] = state.blur || 0;
-        stateData[(2 * width + i) * 4] = state.tiltX || 0;
-        stateData[(2 * width + i) * 4 + 1] = state.tiltY || 0;
-        stateData[(2 * width + i) * 4 + 2] = state.visibleFrac == null ? 1 : state.visibleFrac;
-        stateData[(2 * width + i) * 4 + 3] = state.reprProgress == null ? 1 : state.reprProgress;
-        const deform = Array.isArray(state.deform) && state.deform.length ? state.deform[0] : null;
-        stateData[(3 * width + i) * 4] = deform ? DEFORM_CODES[deform.type] || 0 : 0;
-        stateData[(3 * width + i) * 4 + 1] = deform ? deform.amount || 0 : 0;
-        stateData[(3 * width + i) * 4 + 2] = deform ? deform.time || 0 : 0;
-        stateData[(3 * width + i) * 4 + 3] = deform ? deform.freq || deform.scale || deform.seed || 0 : 0;
-        stateData[(4 * width + i) * 4 + 1] = state.reprProgress == null ? 1 : state.reprProgress;
-        stateData[(4 * width + i) * 4 + 2] = state.colorMix || 0;
-      }
+      packStateRows(states, stateData, states.length);
     }
 
     function draw(glState, scene, states, resolution) {
@@ -968,7 +1094,7 @@ SA.glPasses = (() => {
       packStates(states);
       colorData.set(batch.colors.subarray(0, Math.min(batch.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
-      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 5, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * 5 * 4));
+      gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
       gl.bindTexture(gl.TEXTURE_2D, colorTexture);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, 1, gl.RGBA, gl.UNSIGNED_BYTE, colorData.subarray(0, states.length * 4));
 
@@ -1017,5 +1143,7 @@ SA.glPasses = (() => {
     clearBatches,
     DEFORM_CODES,
     REP_CODES,
+    // pure helpers, exposed for the unit tests (no GL context needed)
+    _test: { deformSlots, packStateRows, STATE_ROWS },
   };
 })();

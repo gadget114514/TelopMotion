@@ -163,6 +163,60 @@
     },
   };
 
+  // --- sixth axis: `weird` ------------------------------------------------------
+  // The extended primitives are *not* in the default pool (the earlier catalogs
+  // were sampled from the tables above). They open up as the sixth axis rises:
+  // `weird` says how far a look may stray, so a calm ballad never draws a
+  // turbulent, glitch-heavy or camera-flying staging while a weird-heavy song
+  // does. Each entry carries its own profile: [energy, softness, flags, weird].
+  //   flags.minWeird / maxWeird   gate the type by the sixth axis
+  //   flags.minEnergy / maxEnergy gate it by how loud the mood is
+  const EXT_REVEAL = 0.5;
+  const EXT_TRAITS = {
+    enter: {
+      animator: [0.5, 0.6, {}, 0.45],
+      rangeReveal: [0.45, 0.75, {}, 0.6],
+      tracking: [0.3, 0.9, {}, 0.55],
+      megaZoomIn: [0.8, 0.3, { minWeird: 0.55 }, 0.8],
+    },
+    exit: {
+      animator: [0.5, 0.6, {}, 0.45],
+      rangeReveal: [0.45, 0.75, {}, 0.6],
+      tracking: [0.3, 0.9, {}, 0.55],
+      megaZoomOut: [0.8, 0.3, { minWeird: 0.55 }, 0.8],
+    },
+    hold: {
+      animator: [0.4, 0.7, {}, 0.4],
+      rangeSelector: [0.45, 0.65, {}, 0.7],
+      warp: [0.55, 0.4, { minWeird: 0.55 }, 0.9],
+      letterWarp: [0.6, 0.45, { minWeird: 0.5 }, 0.85],
+      fontSize: [0.75, 0.3, { minWeird: 0.6 }, 0.85],
+      fillScreen: [0.85, 0.25, { minWeird: 0.6 }, 0.9],
+      squashStretch: [0.8, 0.4, { minWeird: 0.5 }, 0.75],
+      swirl: [0.7, 0.35, { minWeird: 0.55 }, 0.8],
+    },
+    post: {
+      camera: [0.55, 0.5, {}, 0.7],
+      waveWarp: [0.6, 0.5, { minWeird: 0.6 }, 0.85],
+      twirl: [0.65, 0.4, { minWeird: 0.6 }, 0.85],
+      turbulentDisplace: [0.7, 0.35, { minWeird: 0.6 }, 0.9],
+      spinBlur: [0.75, 0.4, { minWeird: 0.5 }, 0.8],
+      strobeFlash: [0.95, 0.1, { minWeird: 0.6, minEnergy: 0.6 }, 0.9],
+      anamorphicStreak: [0.7, 0.4, { minWeird: 0.5 }, 0.75],
+      radialWipe: [0.6, 0.5, { minWeird: 0.55 }, 0.8],
+      venetianBlinds: [0.65, 0.45, { minWeird: 0.55 }, 0.85],
+    },
+    background: {
+      fractalNoise: [0.35, 0.8, { minWeird: 0.5 }, 0.6],
+      rays: [0.6, 0.5, { minWeird: 0.5 }, 0.7],
+      gradient4: [0.4, 0.7, { minWeird: 0.5 }, 0.65],
+      cellPattern: [0.55, 0.45, { minWeird: 0.55 }, 0.8],
+      particleField: [0.5, 0.6, { minWeird: 0.5 }, 0.75],
+      perspectiveGrid: [0.6, 0.4, { minWeird: 0.55 }, 0.85],
+      tunnel: [0.7, 0.3, { minWeird: 0.6 }, 0.9],
+    },
+  };
+
   // Hue systems only: the brightness axis decides how light the background is
   // and whether the text is bright or dark. Roles: 0 background, 1 background 2,
   // 2 text, 3 accent, 4 stroke, 5 accent 2.
@@ -232,18 +286,35 @@
     if (flags.maxLetters != null && context.letterCount > flags.maxLetters) return false;
     // effects that only look good loud are gated behind high energy
     if (flags.minEnergy != null && (!axes || axes.energy < flags.minEnergy)) return false;
+    // the sixth axis gates the extended primitives: a calm look never draws a
+    // turbulent or glitch-heavy effect, a weird-heavy one can
+    if (flags.minWeird != null && (!axes || clamp01(axes.weird) < flags.minWeird)) return false;
+    if (flags.maxWeird != null && axes && clamp01(axes.weird) > flags.maxWeird) return false;
+    if (flags.maxEnergy != null && axes && clamp01(axes.energy) > flags.maxEnergy) return false;
     return true;
   }
 
   // softness owns the texture: how the effect looks, not how loud it is.
   // energy only nudges the pick inside that family (and gates the loud effects
-  // through `allowed`), so the two axes stay readable.
+  // through `allowed`), so the two axes stay readable. `weird` matches how far
+  // the effect strays from a plain line of text.
   function scoreEntry(traits, axes) {
     const energy = traits[0];
     const softness = traits[1];
+    const weird = traits[3] == null ? 0 : traits[3];
     const texture = 1 - Math.abs(softness - axes.softness) / 1.15;
     const force = 1 - Math.abs(energy - axes.energy) * 0.3;
-    return Math.max(0.02, texture * force);
+    const novelty = 1 - Math.abs(weird - clamp01(axes.weird)) * 0.7;
+    return Math.max(0.02, texture * force * novelty);
+  }
+
+  // the pool the picker draws from: the classic tables, plus the extended
+  // primitives once the sixth axis opens them up
+  function poolFor(group, axes) {
+    const base = TRAITS[group] || {};
+    const ext = EXT_TRAITS[group];
+    if (!ext || clamp01(axes ? axes.weird : 0) < EXT_REVEAL) return base;
+    return { ...base, ...ext };
   }
 
   function genreAffinity(genre, group, type) {
@@ -252,7 +323,7 @@
   }
 
   function pickEntry(random, group, axes, context, direction, exclude, genre) {
-    const pool = TRAITS[group] || {};
+    const pool = poolFor(group, axes);
     const allowedTags = genre && Array.isArray(genre.allowTags) ? new Set(genre.allowTags) : null;
     const build = (useGenre) => {
       const scored = [];
@@ -330,7 +401,12 @@
         }
         const bias = clamp01(axes.energy);
         const t = clamp01(bias * 0.6 + random() * 0.4);
-        const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * t));
+        // the sixth axis pushes a parameter towards either end of the author's
+        // range, so a weird look reads as "more of everything" without touching
+        // the classic draws (no random() is consumed while weird is 0)
+        const weird = axes ? clamp01(axes.weird) : 0;
+        const widened = weird > 0 && random() < weird ? (random() < 0.5 ? 0 : 1) : t;
+        const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * widened));
         params[param.key] = param.kind === 'int' ? Math.round(value) : round(value, Math.abs(value) < 0.1 ? 4 : 2);
       } else if (param.kind === 'select') {
         params[param.key] = pick(random, param.options || [param.default]);
@@ -1223,6 +1299,10 @@
     GROUPS,
     THEME_TEXT_GROUPS,
     TRAITS,
+    EXT_TRAITS,
+    EXT_REVEAL,
+    poolFor,
+    allowed,
     PALETTES,
     PALETTE_FAMILIES,
     generate,

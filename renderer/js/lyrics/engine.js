@@ -493,11 +493,13 @@ SA.lyricsEngine = (() => {
           continue;
         }
         pipeline.text(variantScene, variantResult.letters, variant);
+        pipeline.letterBlur(variantScene, variantResult.letters);
         const variantSdf = pipeline.sdf();
         for (const copy of list) drawCopy(copy, variantSdf);
       }
       if (byFont.size) {
         pipeline.text(scene, result.letters, variant, colorOverride);
+        pipeline.letterBlur(scene, result.letters);
         mainSdf = pipeline.sdf();
       }
       for (let index = plain.length - 1; index >= 0; index -= 1) {
@@ -960,6 +962,55 @@ SA.lyricsEngine = (() => {
 
     // --- text background -------------------------------------------------------
 
+    // Bounds of the visible letters in uv space (y up), for the shape layer.
+    function textBoxOf(scene, states) {
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (let i = 0; i < scene.letters.length; i += 1) {
+        const letter = scene.letters[i];
+        const letterState = states[i];
+        if (!letter || !letterState) continue;
+        if ((letterState.opacity == null ? 1 : letterState.opacity) <= 0.01) continue;
+        const scaleX = Math.abs(letterState.scaleX == null ? 1 : letterState.scaleX);
+        const scaleY = Math.abs(letterState.scaleY == null ? 1 : letterState.scaleY);
+        const halfW = Math.max(6, (letter.local.w * scaleX) / 2 + 6);
+        const halfH = Math.max(6, (letter.size * scaleY) / 2 + 4);
+        const x = letterState.x || 0;
+        const y = letterState.y || 0;
+        x0 = Math.min(x0, x - halfW);
+        x1 = Math.max(x1, x + halfW);
+        y0 = Math.min(y0, y - halfH);
+        y1 = Math.max(y1, y + halfH);
+      }
+      if (!Number.isFinite(x0)) return null;
+      const width = Math.max(1, state.width);
+      const height = Math.max(1, state.height);
+      return {
+        // world y grows downwards, the post uv grows upwards
+        x0: x0 / width,
+        y0: 1 - y1 / height,
+        x1: x1 / width,
+        y1: 1 - y0 / height,
+      };
+    }
+
+    // The shape layer paints in the palette's accent colour unless the post
+    // carries a colour of its own.
+    function shapeLayerColor(style) {
+      const resolved = SA.fx.resolveColorSet
+        ? SA.fx.resolveColorSet({ fill: { kind: 'palette', index: 3 } }, {
+            palettes: (state.project && state.project.palettes) || [],
+            palette: (style && style.palette) || null,
+            time: 0,
+            defaultFill: '#ffd166',
+          })
+        : null;
+      const rgba = resolved && resolved.arrays && resolved.arrays.fill;
+      return rgba && rgba.length >= 4 ? [rgba[0], rgba[1], rgba[2], rgba[3] == null ? 1 : rgba[3]] : [1, 0.82, 0.42, 1];
+    }
+
     function bgVariationFor(scene, shape, style, beat) {
       const project = state.project;
       const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
@@ -1195,6 +1246,9 @@ SA.lyricsEngine = (() => {
         const variant = morphVariantFor(project, beat, scene);
         const colorOverride = variation ? bgColorOverrideFor(scene, variation) : null;
         pipeline.text(scene, result.letters, variant, colorOverride);
+        // per-letter blur (blurIn / blurOut / focus / depth of field) runs on
+        // the text mask before the sdf so the edges follow the blurred shape
+        pipeline.letterBlur(scene, result.letters);
         const colorSet = SA.fx.resolveColorSet
           ? SA.fx.resolveColorSet(style.color, {
               palettes: project.palettes || [],
@@ -1280,6 +1334,7 @@ SA.lyricsEngine = (() => {
         for (const instance of style.edge || []) {
           if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
         }
+        const audioFeatures = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
         for (const instance of style.post || []) {
           if (!instance || instance.enabled === false) continue;
           const uniforms = SA.fx.postUniforms(instance, {
@@ -1291,6 +1346,9 @@ SA.lyricsEngine = (() => {
             categoryColors: project.categoryColors || {},
             category: beat.meta && beat.meta.category,
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
+            audioFeatures,
+            shapeColor: shapeLayerColor(style),
+            textBox: textBoxOf(scene, result.letters),
           });
           if (uniforms.bloom) bloomNeeded = true;
           if (uniforms.target === 'frame') {

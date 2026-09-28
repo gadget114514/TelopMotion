@@ -57,6 +57,9 @@ SA.lyricsScene = (() => {
     }
     const groups = geometry.groupContours(contours);
     const fill = geometry.triangulate(groups);
+    // a fine copy of the fill mesh for the text pass: non-linear deformation
+    // (bend, bulge, ripple...) needs more than earcut's long slivers
+    const fillFine = geometry.subdivide(fill, Math.max(2, letter.size * 0.08), 6000);
     const stroke = geometry.strokeRibbon(contours, Math.max(1, letter.size * 0.025));
     const pieces = geometry.pieces(fill);
     let meshBBox = null;
@@ -76,6 +79,7 @@ SA.lyricsScene = (() => {
       contours,
       groups,
       fill,
+      fillFine,
       stroke,
       pieces,
       needsStencil: fill.needsStencil,

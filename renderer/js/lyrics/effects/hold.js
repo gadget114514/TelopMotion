@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../easing'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx);
+    factory(root.SA.fx, root.SA.easing);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx) {
+})(typeof self !== 'undefined' ? self : this, function (fx, easing) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -304,6 +304,127 @@
         state.x += size * 0.08 * (noise1(n, i + 5.1) < 0.5 ? -1 : 1) * env;
         state.rot += 6 * (noise1(n, i + 8.9) * 2 - 1) * env;
       }
+    },
+  });
+
+  // --- dynamic font size / font deformation (pack 'font') ----------------------
+  // `zoomBlock` is the block-space size primitive: it scales the whole text
+  // block around its centre, so the letters grow *and* the gaps between them
+  // grow with them — what a font-size animation looks like. The per-letter
+  // scale of pulse / kenBurns only inflates each glyph in place, so the text
+  // can never fill the frame. The deformation codes live in warp.js.
+
+  function sizeWave(mode, h, rate) {
+    if (mode === 'grow') return clamp01(h * rate);
+    if (mode === 'shrink') return 1 - clamp01(h * rate);
+    return 0.5 - 0.5 * Math.cos(TAU * rate * h);
+  }
+
+  function sizeEase(mode, ease, value) {
+    return mode === 'pulse' ? value : easing.get(ease || 'easeInOutSine')(clamp01(value));
+  }
+
+  function sizeRate(info, sync, period) {
+    if (sync === 'beat' && info && info.audioFeatures) {
+      const bpm = Number(info.audioFeatures.bpm);
+      if (bpm > 0) return bpm / 60;
+    }
+    return 1 / Math.max(0.05, period);
+  }
+
+  function pushBlockScale(state, factor) {
+    const amount = factor - 1;
+    if (!Number.isFinite(amount) || Math.abs(amount) < 0.0001) return;
+    state.deform.push({ type: 'zoomBlock', amount, time: 0, param: 0 });
+  }
+
+  fx.register({
+    group: 'hold',
+    type: 'fontSize',
+    tags: ['deform', 'size'],
+    pack: 'font',
+    cost: 2,
+    params: [
+      { key: 'from', kind: 'number', min: 0.05, max: 12, step: 0.05, default: 1, random: [0.6, 1.2] },
+      { key: 'to', kind: 'number', min: 0.05, max: 12, step: 0.05, default: 2.4, random: [1.4, 4] },
+      { key: 'period', kind: 'number', min: 0.1, max: 10, step: 0.1, default: 2, random: [0.8, 3] },
+      { key: 'mode', kind: 'select', options: ['pulse', 'grow', 'shrink'], default: 'pulse' },
+      { key: 'ease', kind: 'ease', default: 'easeInOutSine' },
+      { key: 'sync', kind: 'select', options: ['free', 'beat'], default: 'free' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const from = params.from == null ? 1 : Number(params.from);
+      const to = params.to == null ? 2.4 : Number(params.to);
+      const rate = sizeRate(info, params.sync, params.period == null ? 2 : Number(params.period));
+      const wave = sizeEase(params.mode, params.ease, sizeWave(params.mode, h, rate));
+      pushBlockScale(state, from + (to - from) * wave * env);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'fillScreen',
+    tags: ['deform', 'size'],
+    pack: 'font',
+    cost: 2,
+    params: [
+      { key: 'fill', kind: 'number', min: 0.2, max: 1.2, step: 0.01, default: 0.95, random: [0.6, 1.1] },
+      { key: 'max', kind: 'number', min: 1, max: 30, step: 0.5, default: 12 },
+      { key: 'period', kind: 'number', min: 0.1, max: 10, step: 0.1, default: 2.4, random: [1, 4] },
+      { key: 'mode', kind: 'select', options: ['pulse', 'grow', 'shrink'], default: 'pulse' },
+      { key: 'ease', kind: 'ease', default: 'easeInOutCubic' },
+      { key: 'sync', kind: 'select', options: ['free', 'beat'], default: 'free' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const bbox = info && info.blockBBox;
+      if (!bbox) return;
+      const width = Math.max(1, Number(bbox.x2) - Number(bbox.x1));
+      const height = Math.max(1, Number(bbox.y2) - Number(bbox.y1));
+      const frame = info.frame || { width: 1920, height: 1080 };
+      const fill = params.fill == null ? 0.95 : Number(params.fill);
+      const cap = Math.max(1, params.max == null ? 12 : Number(params.max));
+      // the factor that makes the block span the requested part of the frame
+      const target = Math.min(cap, (fill * Math.min(frame.width / width, frame.height / height)) || 1);
+      const rate = sizeRate(info, params.sync, params.period == null ? 2.4 : Number(params.period));
+      const wave = sizeEase(params.mode, params.ease, sizeWave(params.mode, h, rate));
+      pushBlockScale(state, 1 + (target - 1) * wave * env);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'squashStretch',
+    tags: ['deform'],
+    pack: 'font',
+    cost: 1,
+    params: [
+      { key: 'amount', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, random: [0.08, 0.35] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 0.7 },
+      { key: 'phase', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const amount = (params.amount == null ? 0.2 : params.amount) * env;
+      if (amount < 0.0001) return;
+      const phase = (params.phase || 0) * ((info && info.i) || 0);
+      state.deform.push({ type: 'stretch', amount, time: (h + phase) * (params.speed || 0.7), param: 1 });
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'swirl',
+    tags: ['deform'],
+    pack: 'font',
+    cost: 1,
+    params: [
+      { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 45, random: [-70, 70] },
+      { key: 'freq', kind: 'number', min: 0.1, max: 4, step: 0.1, default: 1 },
+      { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 0.6 },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const amount = (params.angle == null ? 45 : params.angle) * env;
+      if (Math.abs(amount) < 0.001) return;
+      state.deform.push({ type: 'swirl', amount, time: h * (params.speed || 0.6), param: params.freq == null ? 1 : params.freq });
     },
   });
 

@@ -41,6 +41,8 @@ Animation · Layout · Enter · Exit · Hold · Location · Fill · Edge · Post
 
 Each group has its own easing (in/out), and Fill/Edge/Post have many types (gradients, chrome, fire, marble, holographic, outline, neon glow, bevel, extrude, drop shadow, glitch and dissolve families, bloom, film grain, vignette, and more).
 
+**Dynamic font size and font deformation**: the text block can scale around its own centre, so the letters and the gaps between them grow together — `hold.fontSize` pulses between two sizes, `hold.fillScreen` grows the block until it fills the frame (with a cap), and `enter.megaZoomIn` / `exit.megaZoomOut` fly the camera through screen-filling type. Deformations run in the vertex shader through three slots (`jelly`, `wobbleWarp`, `twist`, `breathing`, `squashStretch`, `swirl`, and the block / letter `hold.warp` / `hold.letterWarp` primitives in the registry); a block-space deformation reserves one slot so a font-size move can never be hidden by a letter deformation.
+
 ### Text restructuring
 
 One SRT cue becomes **beats**: split into pages that fit the safe area (with language-aware line breaking for Japanese and English), a full-text recap, repeats for long holds, and emphasis moments. Beats can be edited by hand (drag dividers, split, merge, edit text, pin) and the rest gets restructured around them.
@@ -167,6 +169,7 @@ SA_SMOKE=1 npx electron .           # fetch @suno, render badges, check the 5 la
 SA_SMOKE=1 SA_SMOKE_LYRICS=1 npx electron .   # fonts, vector text, holes, audio sync, WebGL fallback
 SA_SMOKE=1 SA_SMOKE_BEATS=1 npx electron .    # SRT restructuring: pages, repeats, recap, orphans
 SA_SMOKE=1 SA_SMOKE_MOTION=1 npx electron .   # formations, enter/exit/hold types, deform
+SA_SMOKE=1 SA_SMOKE_FONT=1 npx electron .     # dynamic font size: fillScreen/fontSize/megaZoom block scale, squash & swirl
 SA_SMOKE=1 SA_SMOKE_SHADERS=1 npx electron .  # every fill/edge/post/background type (gl.getError)
 SA_SMOKE=1 SA_SMOKE_EDIT=1 npx electron .     # selection, overrides, keyframes, orphans
 SA_SMOKE=1 SA_SMOKE_TIMELINE=1 npx electron . # cue edits + SRT, keyframe editing, waveform, snapping

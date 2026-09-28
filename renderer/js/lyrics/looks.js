@@ -134,7 +134,7 @@
     const target = axes || {};
     let sum = 0;
     let norm = 0;
-    for (const [key, weight] of [['speed', 1], ['softness', 1.4], ['density', 0.8], ['brightness', 0.6]]) {
+    for (const [key, weight] of [['speed', 1], ['softness', 1.4], ['density', 0.8], ['brightness', 0.6], ['weird', 0.9]]) {
       sum += Math.abs(clamp01(a[key] == null ? 0.5 : a[key]) - clamp01(target[key] == null ? 0.5 : target[key])) * weight;
       norm += weight;
     }

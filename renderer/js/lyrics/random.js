@@ -79,7 +79,10 @@
   }
 
   function candidatesFor(group, allowTags, context) {
-    const list = fx.list(group);
+    // the extended primitives join the pool only when the sixth axis opens them
+    // up (`weird`), so a plain look draws from the classic list alone
+    const weird = context && Number.isFinite(context.weird) ? context.weird : 0;
+    const list = fx.list(group, weird >= 0.5 ? { packs: 'all' } : undefined);
     const filtered = list.filter((descriptor) => {
       // never pick glyph-destroying or text-overlapping effects automatically
       // (pixelate, halftone, dissolves, scatter, echo trails...). They stay
@@ -268,7 +271,13 @@
     if (!project) return { patches: [], seed: 0 };
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 12345;
     const locks = expandLocks(opts.locks);
-    const intensity = opts.intensity || 1;
+    // the axes drive how loud the picks are: a high-energy, fast mood reaches
+    // for the strong end of every parameter range, a calm one stays low
+    const styleAxes = project.styleMode ? project.styleMode.axes : null;
+    const axisIntensity = styleAxes
+      ? 1 + Math.max(0, Math.min(1, Number(styleAxes.energy) || 0)) * 1.2 + Math.max(0, Math.min(1, Number(styleAxes.speed) || 0)) * 0.6
+      : 1;
+    const intensity = opts.intensity == null ? axisIntensity : opts.intensity;
     const colors = opts.colors || [];
     const targets = [];
 
@@ -326,7 +335,7 @@
   function contextForProject(project) {
     const cues = project.script.cues;
     const text = cues.map((cue) => cue.text || '').join('');
-    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9' };
+    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9', weird: weirdOfProject(project) };
   }
 
   function contextForCue(project, cue) {
@@ -337,6 +346,7 @@
       hasPrevious: !!(beats && beats.length > 1),
       badgeId: !!(cue.meta && cue.meta.badgeId),
       aspect: project.output ? project.output.aspect : '16:9',
+      weird: weirdOfProject(project),
     };
   }
 
@@ -349,7 +359,15 @@
       hasPrevious: true,
       badgeId: !!(cue && cue.meta && cue.meta.badgeId),
       aspect: project.output ? project.output.aspect : '16:9',
+      weird: weirdOfProject(project),
     };
+  }
+
+  // the sixth axis of the project's look: how far the automatic picks may stray
+  function weirdOfProject(project) {
+    const axes = project && project.styleMode ? project.styleMode.axes : null;
+    const value = axes && Number.isFinite(Number(axes.weird)) ? Number(axes.weird) : 0;
+    return Math.max(0, Math.min(1, value));
   }
 
   function countLetters(text) {

@@ -491,6 +491,69 @@
     return { positions: outPositions, indices: outIndices, centroids, triIds, areas };
   }
 
+  // --- subdivision ---------------------------------------------------------------
+  // Splits triangles until no edge exceeds `maxEdge`, sharing edge midpoints so
+  // no cracks open between neighbours. Split triangles stay coplanar, so the
+  // total area is unchanged. `maxTris` caps the output (per glyph) so a huge
+  // subdivision request cannot blow up the vertex buffer.
+  function subdivide(tris, maxEdge, maxTris) {
+    if (!tris || !tris.indices || !tris.indices.length) return tris;
+    const limit = Number(maxEdge);
+    if (!(limit > 0)) return tris;
+    const cap = Number.isFinite(Number(maxTris)) && Number(maxTris) > 0 ? Math.floor(Number(maxTris)) : Infinity;
+    const positions = Array.from(tris.positions);
+    const midpoints = new Map();
+    const output = [];
+    const queue = [];
+    for (let i = 0; i < tris.indices.length; i += 3) queue.push([tris.indices[i], tris.indices[i + 1], tris.indices[i + 2]]);
+    let count = queue.length;
+    const threshold = limit * (1 + 1e-6);
+
+    function midpoint(a, b) {
+      const key = a < b ? a * 4294967296 + b : b * 4294967296 + a;
+      const cached = midpoints.get(key);
+      if (cached != null) return cached;
+      const index = positions.length / 2;
+      positions.push((positions[a * 2] + positions[b * 2]) / 2, (positions[a * 2 + 1] + positions[b * 2 + 1]) / 2);
+      midpoints.set(key, index);
+      return index;
+    }
+
+    function edgeLength(a, b) {
+      return Math.hypot(positions[b * 2] - positions[a * 2], positions[b * 2 + 1] - positions[a * 2 + 1]);
+    }
+
+    for (let cursor = 0; cursor < queue.length; cursor += 1) {
+      const [a, b, c] = queue[cursor];
+      const ab = edgeLength(a, b);
+      const bc = edgeLength(b, c);
+      const ca = edgeLength(c, a);
+      const longest = Math.max(ab, bc, ca);
+      if (longest <= threshold || count + 1 > cap) {
+        output.push(a, b, c);
+        continue;
+      }
+      count += 1;
+      // split the longest edge; the new vertex sits on it, so both children
+      // cover exactly the same area as their parent
+      if (ab >= bc && ab >= ca) {
+        const m = midpoint(a, b);
+        queue.push([a, m, c], [m, b, c]);
+      } else if (bc >= ca) {
+        const m = midpoint(b, c);
+        queue.push([b, m, a], [m, c, a]);
+      } else {
+        const m = midpoint(c, a);
+        queue.push([c, m, b], [m, a, b]);
+      }
+    }
+    return {
+      positions: Float32Array.from(positions),
+      indices: Uint32Array.from(output),
+      needsStencil: !!tris.needsStencil,
+    };
+  }
+
   // --- measurement -------------------------------------------------------------
 
   function bounds(points) {
@@ -562,6 +625,7 @@
     sampleInterior,
     sampleOutline,
     pieces,
+    subdivide,
     bounds,
     centroid,
     pointInPolygon,

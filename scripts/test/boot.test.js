@@ -49,6 +49,26 @@ test('studio.html ships the boot overlay before the app scripts', () => {
   assert.equal((I18N.match(/boot: \{ loading:/g) || []).length, 5);
 });
 
+test('every effect module loads before the code that reads it, staged-presets last', () => {
+  const src = (file) => {
+    const index = HTML.indexOf(`js/lyrics/effects/${file}.js`);
+    assert.ok(index > 0, `studio.html does not load effects/${file}.js`);
+    return index;
+  };
+  // registry first, then the primitives, then the presets that reference them
+  assert.ok(src('registry') < src('enter'));
+  assert.ok(src('warp') < src('animator'), 'animator reads the warp helpers');
+  assert.ok(src('hold') < src('warp'), 'the warp holds extend hold.js');
+  assert.ok(src('post') < src('camera'), 'camera registers a post extension');
+  assert.ok(src('enter') < src('animator') && src('exit') < src('animator') && src('hold') < src('animator'));
+  for (const file of ['enter', 'exit', 'hold', 'warp', 'animator', 'camera', 'background', 'post']) {
+    assert.ok(src(file) < src('staged-presets'), `staged-presets must load after ${file}`);
+  }
+  // motion.js resolves effect types while evaluating a beat
+  assert.ok(src('animator') < HTML.indexOf('js/lyrics/motion.js'));
+  assert.ok(src('camera') < HTML.indexOf('js/lyrics/engine.js'));
+});
+
 test('boot progress is monotonic, clamps and finishes', (t) => {
   t.mock.timers.enable({ apis: ['setTimeout'] });
   const nodes = {

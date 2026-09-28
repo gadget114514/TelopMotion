@@ -311,5 +311,27 @@
     },
   });
 
+  // Block-space size entrance: the text starts at a screen-filling scale and
+  // settles to its layout size (the camera pulls back through the letters).
+  // `zoomIn` scales each glyph in place, so it cannot start bigger than itself.
+  fx.register({
+    group: 'enter',
+    type: 'megaZoomIn',
+    tags: ['deform', 'size'],
+    pack: 'font',
+    cost: 2,
+    params: [
+      { key: 'from', kind: 'number', min: 0.05, max: 30, step: 0.05, default: 6, random: [2, 10] },
+      { key: 'fade', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const from = params.from == null ? 6 : Number(params.from);
+      const progress = clamp01(p);
+      const amount = (from - 1) * (1 - progress);
+      if (Math.abs(amount) > 0.0001) state.deform.push({ type: 'zoomBlock', amount, time: 0, param: 0 });
+      if (params.fade !== false) state.opacity *= clamp01(progress * 1.5);
+    },
+  });
+
   return fx;
 });

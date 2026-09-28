@@ -21,7 +21,9 @@ SA.themes = (() => {
   }
 
   function builtinThemes() {
-    return SA.presets.list().map((preset) => ({
+    // the staged looks (pack 'pro') are complete performances, so the theme list
+    // shows them next to the classic presets
+    return SA.presets.list({ packs: 'all' }).map((preset) => ({
       id: `builtin:${preset.id}`,
       name: SA.presets.labelFor(preset),
       builtin: true,

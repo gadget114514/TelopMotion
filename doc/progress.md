@@ -338,3 +338,37 @@ FX 800 の800デモを**動きの大きさ**で分類し、**テーマと5軸**�
 - 生成ダイアログの `setOutput` + `generateScript` + fit-to-duration を1トランザクションにまとめ、1回の undo で戻るようにした。
 - テスト: `scripts/test/store.test.js` に8件（トランザクションのまとめ・分離・cancel・ネスト、no-op 除外、選択の剪定と復元、markClean と undo/redo、ラベル）。
 - 検証: `npm test`（320 tests）、`npm run check`（120 files）、`SA_SMOKE=1 SA_SMOKE_STUDIO=1`（editMenu「元に戻す: output」/ dirtyAfterRedo true / cleanAfterUndo true / langMissing 0）、`SA_SMOKE_EDIT=1`（overlay ドラッグ・undo、glError 0）、`SA_SMOKE_TIMELINE=1`（キーフレームのドラッグ/コピー/削除、glError 0）、`SA_SMOKE_BEATS=1`（moveBeatEdge + undo、split/merge の undo）。
+
+## 追加: フォントサイズのダイナミクスと文字変形（このコミット）
+
+「フォントが画面いっぱいになる」ような**文字サイズの大きな動き**が無い問題への対応。文字ごとの `scaleX/scaleY`（`pulse` / `kenBurns`）はグリフがその場で膨らむだけで、字間は広がらないため画面を埋められない。**ブロック中心まわりにテキスト全体を拡大する**本物のフォントサイズ変形を頂点シェーダに追加した。
+
+- `renderer/js/lyrics/effects/warp.js`: 変形コード表に letter `stretch`(15) / `skew`(16) / `swirl`(17)、block `zoomBlock`(31) を追加。`zoomBlock` は `q *= factor`（`q = p + ブロック中心オフセット`）で、文字と字間をまとめて拡大する唯一のコード。ブロックワープの style ドロップダウンからは除外（`BLOCK_WARP_STYLES`）。
+- `renderer/js/lyrics/motion.js`: ブロック変形が使う `warpOrigin` / `blockHalf` を state に設定（従来は未配線で block ワープが機能していなかった）。**符号が重要**: 変形は letter の平行移動より前に走るため、原点は `letter.pos - blockCenter`（`blockCenter = anchor`）。`anchor - pos` にすると逆に中心へ引き寄せられる（スモークで発見・修正済み）。hold/enter/exit/custom motion の info に `blockBBox` / `blockHalf` を追加。
+- `renderer/js/lyrics/effects/hold.js`（pack `font`）:
+  - `hold.fontSize`: `from`→`to` を `pulse` / `grow` / `shrink` で動かす（`period`・`ease`・`sync: free|beat`、beat は解析 BPM に同期）。
+  - `hold.fillScreen`: `fill`（既定 0.95）× `min(frameW/blockW, frameH/blockH)` を解き、文字ブロックが画面いっぱいになる倍率まで拡大（`max` で上限、`pulse`/`grow`/`shrink`）。
+  - `hold.squashStretch`: 縦伸び／横縮みの伸縮変形（文字ごとの `phase` 可）。
+  - `hold.swirl`: 半径方向に回転波を通す渦変形。
+- `renderer/js/lyrics/effects/enter.js` / `exit.js`（pack `font`）: `enter.megaZoomIn`（巨大なブロック倍率から着地＝カメラが引く）と `exit.megaZoomOut`（画面いっぱいまで拡大して消える）。`fade` の有無を選べる。
+- `renderer/js/lyrics/gl/shaders.js`: 新コードの分岐（`stretch` / `skew` / `swirl` / `zoomBlock`）。`zoomBlock` は歪みペアを掛けず early return。
+- `renderer/js/lyrics/gl/passes.js`: 変形スロットは最大3のまま、**block 変形が1枠を予約**する（letter の強い変形がフォントサイズを隠せない）。シンプルテキストパス（パイプライン不可時のフォールバック）も 9 行の state テクスチャに揃え、`packStateRows` を共有（従来は 5 行のままシェーダが 9 行を読んでいた）。
+- Studio UI: `hold` / `enter` / `exit` のタイプ一覧に `pack: 'font'` を含める（`inspector.js` / `theme-editor.js`。拡張パックは別作業のため含めない）。`fx-strings.js` に型・パラメータ・値の en/ja ラベルを追加（es/fr/ru は英語へフォールバック）。
+- `main.js`: `SA_SMOKE_FONT` を追加。同時刻の同時再生（`animation.simultaneous`）で `fontSize` / `fillScreen` の谷と山、`megaZoomIn` の初期と収束、`squashStretch`+`swirl` を撮り、明部画素のバウンディングボックス幅で判定（size 630→1768px=枠の92%、fill 576→1764px、megaZoom は初期が全幅クリップ→620px、glError 0）。
+- テスト: `scripts/test/font-anim.test.js`（コード表・各 CPU の倍率・beam 同期・`warpOrigin`/`blockHalf` の配線・シェーダ分岐、8件）。`fx-i18n.test.js` に font パックの全型・全パラメータ・全値 × 5言語の検査を追加。
+- 検証: `npm run check`（128 files）、`npm test`（335 tests、全パス）、`SA_SMOKE=1 SA_SMOKE_FONT=1`（sizeOk / fillOk / enterOk / deformOk / glError 0）、`SA_SMOKE_MOTION=1`・`SA_SMOKE_QUALITY=1`（回帰なし）。なお `post.js` の拡張タイプがテーブルで `pack: 'pro'` を宣言しているのに登録へ渡っていなかったため、登録に `pack: entry.pack` を追加した（拡張パックを既定リストから外す意図を通すため）。
+
+## 追加: レンジセレクター・シェイプレイヤー・6軸ゲート・演出プリセット（このコミット）
+
+- `renderer/js/lyrics/effects/selector.js`（新規・pack `pro`）: レンジセレクター。`hold.rangeSelector`（選択帯に入った文字だけを移動・拡大・回転・チルト・傾斜・不透明度・ぼかし・ハイライト混色・字間・ワイプ・マスクで動かす）、`enter/exit.rangeReveal`（帯を進捗で滑らせて順に登場／退場させる）、`enter/exit/hold.tracking`（ブロック中心からの距離で字間を開閉。縦組みは `trackAxis: y`）。shape 6種・sweep 4種（once / loop / pingpong / beat）・easeHigh/Low・width・offset・randomize（決定的な並べ替え）。
+- `renderer/js/lyrics/motion.js`: info に `units`（letter / word / line の順位と総数）を追加。
+- `renderer/js/lyrics/gl/passes.js` + `engine.js`: `letterBlur` を3か所（フォント違いコピー・本表・メイン）で `pipeline.text` の直後・`sdf()` の前に接続（blurIn / blurOut / フォーカスが実際に画面へ出る）。`deformSlots` / `packStateRows` / `STATE_ROWS` を `SA.glPasses._test` に公開し、twist は度→`|amount|/90` で比較。
+- `renderer/js/lyrics/effects/shape-layer.js`（新規・pack `pro`・post code 46）: フレームにストロークを描くシェイプレイヤー。形9種（下線・取り消し線・枠・カギ括弧・円・リング・集中線・十字・斜め）、弧長トリム（`drive: enter / exit / hold / beat`）、リピーター（≤12、外側ほど短く・薄く）、グロー。`engine.textBoxOf` が可視文字の bbox を uv で渡す。
+- `renderer/js/lyrics/effects/{warp,animator}.js`: テンポを `beatRate`（Hz・既定2）に統一、`letterWarp` の `perLetterPhase` を独立した位相（rad）に。
+- `renderer/js/lyrics/effects/{background,post,shape-layer}.js`: 拡張プリミティブ（背景7種・ポスト8種・シェイプレイヤー）を pack `pro` で登録。post は `u_params2/3`・`u_colorC/D`・`u_mode/mode2`・`u_camera` と `fx.postExtensions` を追加。
+- `renderer/js/lyrics/presets.js`: 演出プリセット 24種（`movieTitle` / `trailerGlitch` / `lofiDream` / … / `trackingTitle` / `karaokeSweep` / `beatStrike`）。`list({packs})` の既定は pack 無しのみ（FX400/800 のプールは不変）、`{packs:'all'}` で一覧表示。
+- `renderer/js/lyrics/moods.js` + `random.js` + `scripts/looks-classify.js`: 第6軸 `weird`。拡張プールは `weird ≥ 0.5` でのみ開き、`minWeird` / `minEnergy` でゲート、数値パラメータは両端へ振れる（`weird = 0` の生成は完全不変）。`renderer/data/fx800.looks.json` を再生成（800件に `weird`、デモ本体は不変）。
+- Studio: `inspector.js` / `theme-editor.js` は `UI_PACKS = { packs: ['font', 'pro'] }`。`studio.html` は hold → warp → animator → selector → camera → shape-layer → staged-presets の順で読み込み。`staged-presets.js` に selector 系プリセット10種。
+- テスト: `scripts/test/{selector,shape-layer,axes,ae-primitives,staged-looks}.test.js`。`fx-i18n` は `packs: 'all'` で全パックを検査。全 362 件パス。
+- 検証: `npm run check`（134ファイル）、`npm test`（362件）、`SA_SMOKE=1 SA_SMOKE_AESTAGE=1`（glError 0・trackingOk・drawOk・コンタクトシート `snapshot/aestage-sheet.png`）、`npm run fx800` のカタログ不変、`node scripts/effects-csv.js`（275型・説明の欠け0）。
+- 残り: Phase 3 の残り（`shape-ops.js` のリピーター/パス変形、`background.shapeLayer` のクリップ化と `followText`、文字背景の trim/dash、`gl/shapes.js` の弧長パラメータ）。

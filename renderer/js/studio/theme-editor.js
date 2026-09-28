@@ -3,6 +3,10 @@ window.SA = window.SA || {};
 SA.themeEditor = (() => {
   'use strict';
 
+  // the Studio lists every effect pack: the built-ins, the font size pack and
+  // the extended primitives
+  const UI_PACKS = { packs: ['font', 'pro'] };
+
   const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'bgShape', 'bgFill', 'bgMotion'];
   const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
   const ALL_GROUPS = [...SINGLE_GROUPS, ...STACK_GROUPS];
@@ -139,7 +143,7 @@ SA.themeEditor = (() => {
       instance.type = value;
       instance.params = {};
       refresh();
-    }, SA.fx.list(group).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) })));
+    }, SA.fx.list(group, UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) })));
     head.appendChild(select);
     if (STACK_GROUPS.includes(group)) {
       const remove = document.createElement('button');
@@ -169,7 +173,7 @@ SA.themeEditor = (() => {
       add.className = 'btn btn-mini';
       add.textContent = t('studio.themeEditor.add');
       add.addEventListener('click', () => {
-        const descriptor = SA.fx.list(group)[0];
+        const descriptor = SA.fx.list(group, UI_PACKS)[0];
         if (!descriptor) return;
         const list = draft.style[group] || (draft.style[group] = []);
         list.push({ type: descriptor.type, params: {}, enabled: true, motion: defaultMotion() });
@@ -188,7 +192,7 @@ SA.themeEditor = (() => {
         draft.style[group] = { type: value, params: {}, enabled: true, motion: instance ? ensureMotion(instance) : defaultMotion() };
       }
       refresh();
-    }, [{ value: '', label: t('studio.themeEditor.none') }, ...SA.fx.list(group).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) }))]);
+    }, [{ value: '', label: t('studio.themeEditor.none') }, ...SA.fx.list(group, UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) }))]);
     head.appendChild(select);
     body.appendChild(head);
     const current = draft.style[group];
