@@ -45,7 +45,13 @@ SA.themeEditor = (() => {
   }
 
   function defaultAxes() {
-    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6 };
+    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6, weird: 0 };
+  }
+
+  // weird is the user's choice: a genre, the music or a jitter never sets it,
+  // so those keep the value the slider holds
+  function keepWeird(axes) {
+    return { ...SA.moods.normalizeAxes(axes), weird: Number(draft.axes.weird) || 0 };
   }
 
   function contextFor(doc) {
@@ -361,6 +367,9 @@ SA.themeEditor = (() => {
       do(projectDoc) {
         for (const group of SA.themes.THEME_GROUPS) delete projectDoc.style[group];
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, style);
+        // the axes (weird included) follow the theme, so re-rolls, per-cue
+        // looks and おまかせ keep drawing inside what the editor set
+        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), axes: SA.moods.normalizeAxes(draft.axes), direction: draft.direction, genre: draft.genre || null };
       },
     });
     SA.studio.toast('studio.toast.themeApplied', { name: draft.name });
@@ -499,7 +508,7 @@ SA.themeEditor = (() => {
         draft.genre = entry.id;
         const genre = entry.id && SA.genres ? SA.genres.get(entry.id) : null;
         if (genre) {
-          draft.axes = SA.moods.normalizeAxes(genre.axes);
+          draft.axes = keepWeird(genre.axes);
           if (genre.direction) draft.direction = genre.direction;
         }
         render();
@@ -514,7 +523,7 @@ SA.themeEditor = (() => {
 
     const axes = document.createElement('div');
     axes.className = 'axis-grid';
-    for (const axis of SA.moods.MATCH_AXES) {
+    for (const axis of SA.moods.AXES) {
       const row = document.createElement('label');
       row.className = 'axis-row';
       const label = document.createElement('span');
@@ -586,7 +595,7 @@ SA.themeEditor = (() => {
       const r = Math.random;
       const next = {};
       for (const axis of SA.moods.MATCH_AXES) next[axis] = Math.max(0, Math.min(1, Number(draft.axes[axis] == null ? 0.5 : draft.axes[axis]) + (r() * 2 - 1) * 0.12));
-      draft.axes = next;
+      draft.axes = keepWeird(next);
       draft.features = null;
       draft.seed = seedNow();
       generateFromAxes();
@@ -602,7 +611,7 @@ SA.themeEditor = (() => {
         return;
       }
       const features = SA.audioAnalysis.features(analysis);
-      draft.axes = SA.moods.axesFromAudio(features);
+      draft.axes = keepWeird(SA.moods.axesFromAudio(features));
       draft.direction = 'horizontal';
       draft.features = features;
       draft.seed = seedNow();
