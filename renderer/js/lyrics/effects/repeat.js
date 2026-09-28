@@ -108,7 +108,8 @@
     params.sequence = sequence;
 
     const dirOptions = DIR_OPTIONS[type] || [];
-    params.dir = dirOptions.includes(params.dir) ? params.dir : dirOptions[0] || '';
+    if (dirOptions.length) params.dir = dirOptions.includes(params.dir) ? params.dir : dirOptions[0];
+    else delete params.dir;
     params.mainIndex = params.mainIndex === 'center' ? 'center' : 'end';
     const centerOk = params.dir === 'both' || type === 'radial' || type === 'brick' || type === 'fill';
     if (params.mainIndex === 'center' && !centerOk) params.mainIndex = 'end';

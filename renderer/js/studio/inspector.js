@@ -21,6 +21,7 @@ SA.inspector = (() => {
     bgFill: 'studio.inspector.bgFill',
     bgEdge: 'studio.inspector.bgEdge',
     bgMotion: 'studio.inspector.bgMotion',
+    repeat: 'studio.inspector.repeat',
   };
   const CONTROL_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
 
@@ -1547,7 +1548,7 @@ SA.inspector = (() => {
     heading('studio.inspector.sectionMotion');
     renderGroups(['animation', 'layout', 'enter', 'exit', 'hold', 'location']);
     heading('studio.inspector.sectionText');
-    renderGroups(['fill', 'edge']);
+    renderGroups(['fill', 'edge', 'repeat']);
     heading('studio.inspector.sectionBg');
     const style = resolvedStyle();
     const shape = style.bgShape;

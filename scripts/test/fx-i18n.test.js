@@ -12,7 +12,7 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 
 const STRINGS = require('../../renderer/js/studio/fx-strings.js');
 const LANGS = ['en', 'ja', 'es', 'fr', 'ru'];
-const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
 const labelGroup = (group) => fx.baseOf(group);
 
 function lookup(table, key) {

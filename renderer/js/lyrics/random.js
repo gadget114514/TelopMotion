@@ -1,14 +1,14 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'), require('./effects/repeat'));
   else {
     root.SA = root.SA || {};
-    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods);
+    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods, root.SA.repeat);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat) {
   'use strict';
 
-  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion'];
+  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
   const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
 
@@ -125,7 +125,8 @@
     };
   }
 
-  function instanceFor(group, descriptor, base, random, intensity, colors) {
+  function instanceFor(group, descriptor, base, random, intensity, colors, context) {
+    if (group === 'repeat') return repeatInstance(descriptor, random, context);
     const params = {};
     for (const param of descriptor.params || []) {
       if (param.random === undefined && param.kind !== 'bool') continue;
@@ -140,7 +141,78 @@
     return entry;
   }
 
+  // Repeat is sampled with its own distribution instead of sampleParam: copies
+  // follow 1:2:3:many = 35/30/20/15, variation is capped at two attributes and
+  // brick/fill stay rare because they take over the frame (§6.4).
+  function repeatInstance(descriptor, random, context) {
+    const type = descriptor.type;
+    const params = {};
+    const copiesRoll = random();
+    let copies = copiesRoll < 0.35 ? 1 : copiesRoll < 0.65 ? 2 : copiesRoll < 0.85 ? 3 : 'many';
+    if (context && context.aspect === '9:16' && type === 'rowH') copies = 1;
+    params.copies = copies;
+    const dirParam = (descriptor.params || []).find((param) => param.key === 'dir');
+    if (dirParam) params.dir = pick(random, dirParam.options || [dirParam.default]);
+    params.mainIndex = random() < 0.25 ? 'center' : 'end';
+    params.gap = pick(random, ['tight', 'normal', 'wide']);
+    params.sequence = pick(random, ['static', 'cascade', 'counterSlide', 'counterScroll', 'wave']);
+    params.seqSpeed = random() < 0.5 ? 'fast' : 'slow';
+    params.seqOrder = random() < 0.7 ? 'fromMain' : 'toMain';
+    params.copyOpacity = random() < 0.5 ? 'flat' : 'fade';
+    params.fit = random() < 0.75 ? 'shrink' : 'overflow';
+    const variationRoll = random();
+    if (variationRoll < 0.15) {
+      params.variationPreset = pick(random, ['perspectiveFade', 'popAlternate', 'ransomNote', 'heroOutline', 'rainbowStep', 'loudQuiet']);
+    } else {
+      const attrs = ['size', 'color', 'font', 'decor'];
+      const rules = ['progress', 'alternate', 'random', 'oddOne'];
+      params.var1Attr = pick(random, attrs);
+      params.var1Rule = pick(random, rules);
+      params.var1Level = random() < 0.3 ? 'strong' : 'normal';
+      params.var1ColorMode = random() < 0.5 ? 'hue' : 'light';
+      params.var1Target = random() < 0.7 ? 'main' : 'last';
+      if (variationRoll < 0.15 + 0.25) {
+        params.var2Attr = pick(random, attrs);
+        params.var2Rule = pick(random, rules);
+        params.var2Level = random() < 0.3 ? 'strong' : 'normal';
+        params.var2ColorMode = random() < 0.5 ? 'hue' : 'light';
+        params.var2Target = random() < 0.7 ? 'main' : 'last';
+      }
+    }
+    params.seedShift = Math.floor(random() * 1000);
+    const normalized = repeat.normalize(type, params);
+    return { type, params: normalized, enabled: true };
+  }
+
+  // Repeat never combines with a layout that already duplicates the string,
+  // with morphFromPrevious, or (fill only) with dissolves and mirrors.
+  const REPEAT_LAYOUT_CONFLICTS = ['circle', 'spiral', 'path', 'scatter'];
+  const REPEAT_FILL_POST = ['kaleidoscope', 'mirror'];
+
+  function repeatConflicts(style) {
+    const instance = style && style.repeat;
+    if (!instance || !instance.type || instance.type === 'none') return false;
+    const layoutType = style.layout && style.layout.type;
+    if (layoutType && REPEAT_LAYOUT_CONFLICTS.includes(layoutType)) return true;
+    if (style.enter && style.enter.type === 'morphFromPrevious') return true;
+    if (instance.type === 'fill') {
+      for (const post of style.post || []) {
+        const type = post && post.type;
+        if (!type) continue;
+        if (REPEAT_FILL_POST.includes(type) || /dissolve/i.test(type)) return true;
+      }
+    }
+    return false;
+  }
+
   function groupPatch(group, base, random, options, context) {
+    if (group === 'repeat') {
+      const all = candidatesFor('repeat', options.allowTags, context);
+      const rare = all.filter((entry) => entry.type !== 'brick' && entry.type !== 'fill');
+      const pool = rare.length ? rare : all;
+      const descriptor = random() < 0.1 && all.length > rare.length ? pick(random, all.filter((entry) => entry.type === 'brick' || entry.type === 'fill')) : pick(random, pool);
+      return { repeat: repeatInstance(descriptor, random, context) };
+    }
     const descriptor = pickType(group, base && base.type, random, options.allowTags, context);
     if (!descriptor) return null;
     const colors = options.colors || [];
@@ -151,11 +223,11 @@
       for (let i = 0; i < count; i += 1) {
         const item = pickType(group, null, random, options.allowTags, context);
         if (!item) continue;
-        stack.push(instanceFor(group, item, null, random, options.intensity, colors));
+        stack.push(instanceFor(group, item, null, random, options.intensity, colors, context));
       }
       return { [group]: stack };
     }
-    return { [group]: instanceFor(group, descriptor, base, random, options.intensity, colors) };
+    return { [group]: instanceFor(group, descriptor, base, random, options.intensity, colors, context) };
   }
 
   function mergeDeep(base, patch) {
@@ -224,16 +296,29 @@
         if (intensity >= 2) axes.energy = Math.min(1, axes.energy * 1.12);
         style = moods.generate({ axes, seed, context: target.context, direction: axisRun && axisRun.direction, genre: mode.genre || null }).style;
         for (const group of locks) delete style[group];
+        if (!locks.has('repeat') && rng.rngFor(seed, target.key, 'repeat')() < 0.3) {
+          const repeatPatch = groupPatch('repeat', target.base && target.base.repeat, rng.rngFor(seed, target.key, 'repeatParams'), { ...opts, colors }, target.context);
+          if (repeatPatch) Object.assign(style, repeatPatch);
+        }
       } else {
         const groups = target.scope === 'project' ? GROUPS : chooseRerollGroups(rng.rngFor(seed, target.key, 'groups'), locks);
+        // repeat is rolled for every target and replaces one of the two picks
+        if (!locks.has('repeat') && !groups.includes('repeat') && rng.rngFor(seed, target.key, 'repeat')() < 0.3) {
+          if (groups.length >= 2) groups.pop();
+          groups.push('repeat');
+        }
         for (const group of groups) {
           if (locks.has(group)) continue;
-          const random = rng.rngFor(seed, target.key, group);
+          const random = rng.rngFor(seed, target.key, group === 'repeat' ? 'repeatParams' : group);
           const patch = groupPatch(group, target.base && target.base[group], random, { ...opts, colors }, target.context);
           if (patch) Object.assign(style, patch);
         }
       }
-      if (Object.keys(style).length) patches.push({ scope: target.scope, path: target.path || null, style });
+      if (Object.keys(style).length) {
+        const merged = mergeDeep(target.base || {}, style);
+        if (repeatConflicts(merged)) style = { ...style, repeat: { type: 'none', params: {} } };
+        patches.push({ scope: target.scope, path: target.path || null, style });
+      }
     }
     return { patches, seed };
   }
@@ -241,7 +326,7 @@
   function contextForProject(project) {
     const cues = project.script.cues;
     const text = cues.map((cue) => cue.text || '').join('');
-    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId) };
+    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9' };
   }
 
   function contextForCue(project, cue) {
@@ -251,6 +336,7 @@
       cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(cue.text || ''),
       hasPrevious: !!(beats && beats.length > 1),
       badgeId: !!(cue.meta && cue.meta.badgeId),
+      aspect: project.output ? project.output.aspect : '16:9',
     };
   }
 
@@ -262,6 +348,7 @@
       cjk: /[\u3000-\u9fff\uff00-\uffef]/.test((cue && cue.text) || ''),
       hasPrevious: true,
       badgeId: !!(cue && cue.meta && cue.meta.badgeId),
+      aspect: project.output ? project.output.aspect : '16:9',
     };
   }
 

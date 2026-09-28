@@ -594,6 +594,122 @@
     },
   };
 
+  const ADD_EN_REPEAT = {
+    types: {
+      repeat: {
+        stackV: 'Vertical stack', rowH: 'Horizontal row', diagonal: 'Diagonal', grid: 'Grid', radial: 'Radial',
+        fan: 'Fan', tunnel: 'Tunnel', scatter: 'Scatter', brick: 'Brick', fill: 'Fill',
+      },
+    },
+    params: {
+      mainIndex: 'Main position', sequence: 'Sequence', seqSpeed: 'Sequence speed', seqOrder: 'Sequence order',
+      copyOpacity: 'Copy opacity', var1Attr: 'Variation 1', var1Rule: 'Rule 1', var1Level: 'Strength 1',
+      var1ColorMode: 'Colour mode 1', var1Target: 'Target 1', var2Attr: 'Variation 2', var2Rule: 'Rule 2',
+      var2Level: 'Strength 2', var2ColorMode: 'Colour mode 2', var2Target: 'Target 2', variationPreset: 'Variation preset',
+    },
+    values: {
+      stackV: 'Vertical stack', rowH: 'Horizontal row', radial: 'Radial', fan: 'Fan', tunnel: 'Tunnel',
+      brick: 'Brick', fill: 'Fill', end: 'End', tight: 'Tight', normal: 'Normal', wide: 'Wide', static: 'Static',
+      cascade: 'Cascade', counterSlide: 'Counter slide', counterScroll: 'Counter scroll', fromMain: 'From main',
+      toMain: 'To main', flat: 'Flat', hue: 'Hue', light: 'Lightness', oddOne: 'Odd one out', main: 'Main',
+      strong: 'Strong', custom: 'Custom', overflow: 'Overflow', size: 'Size', color: 'Colour', font: 'Typeface',
+      decor: 'Decoration', perspectiveFade: 'Perspective fade', popAlternate: 'Popup checker', ransomNote: 'Ransom note',
+      heroOutline: 'Hero outline', rainbowStep: 'Rainbow step', loudQuiet: 'Loud / quiet',
+    },
+  };
+  const ADD_JA_REPEAT = {
+    types: {
+      repeat: {
+        stackV: '縦積み', rowH: '横並び', diagonal: '斜め', grid: 'グリッド', radial: '放射',
+        fan: '扇', tunnel: 'トンネル', scatter: '散らし', brick: 'レンガ', fill: '敷き詰め',
+      },
+    },
+    params: {
+      mainIndex: '本体の位置', sequence: '時間の使い方', seqSpeed: '速さ', seqOrder: '順序',
+      copyOpacity: '複製の不透明度', var1Attr: '変化1', var1Rule: '規則1', var1Level: '強さ1',
+      var1ColorMode: '色の変化1', var1Target: '対象1', var2Attr: '変化2', var2Rule: '規則2',
+      var2Level: '強さ2', var2ColorMode: '色の変化2', var2Target: '対象2', variationPreset: 'プリセット',
+    },
+    values: {
+      stackV: '縦積み', rowH: '横並び', radial: '放射状', fan: '扇状', tunnel: 'トンネル',
+      brick: 'レンガ', fill: '敷き詰め', end: '端', tight: '狭い', normal: '標準', wide: '広い', static: '静止',
+      cascade: 'カスケード', counterSlide: '逆スライド', counterScroll: '逆スクロール', fromMain: '本体から',
+      toMain: '本体へ', flat: '一定', hue: '色相', light: '明度', oddOne: '1つだけ違う', main: '本体',
+      strong: '強', custom: 'カスタム', overflow: 'はみ出し', size: '大きさ', color: '色', font: '書体',
+      decor: '装飾', perspectiveFade: 'パースフェード', popAlternate: 'ポップ市松', ransomNote: '切り抜き文字',
+      heroOutline: 'ヒーロー縁取り', rainbowStep: '虹色ステップ', loudQuiet: '強弱',
+    },
+  };
+  const ADD_ES_REPEAT = {
+    types: {
+      repeat: {
+        stackV: 'Pila vertical', rowH: 'Fila horizontal', diagonal: 'Diagonal', grid: 'Cuadrícula', radial: 'Radial',
+        fan: 'Abanico', tunnel: 'Túnel', scatter: 'Dispersión', brick: 'Ladrillo', fill: 'Relleno',
+      },
+    },
+    params: {
+      mainIndex: 'Posición principal', sequence: 'Secuencia', seqSpeed: 'Velocidad', seqOrder: 'Orden',
+      copyOpacity: 'Opacidad de copias', var1Attr: 'Variación 1', var1Rule: 'Regla 1', var1Level: 'Intensidad 1',
+      var1ColorMode: 'Modo de color 1', var1Target: 'Objetivo 1', var2Attr: 'Variación 2', var2Rule: 'Regla 2',
+      var2Level: 'Intensidad 2', var2ColorMode: 'Modo de color 2', var2Target: 'Objetivo 2', variationPreset: 'Preset de variación',
+    },
+    values: {
+      stackV: 'Pila vertical', rowH: 'Fila horizontal', radial: 'Radial', fan: 'Abanico', tunnel: 'Túnel',
+      brick: 'Ladrillo', fill: 'Relleno', end: 'Final', tight: 'Ajustado', normal: 'Normal', wide: 'Amplio', static: 'Estático',
+      cascade: 'Cascada', counterSlide: 'Deslizamiento opuesto', counterScroll: 'Desplazamiento opuesto', fromMain: 'Desde el principal',
+      toMain: 'Hacia el principal', flat: 'Plano', hue: 'Tono', light: 'Luminosidad', oddOne: 'El diferente', main: 'Principal',
+      strong: 'Fuerte', custom: 'Personalizado', overflow: 'Desbordar', size: 'Tamaño', color: 'Color', font: 'Tipografía',
+      decor: 'Decoración', perspectiveFade: 'Fundido en perspectiva', popAlternate: 'Damero pop', ransomNote: 'Nota anónima',
+      heroOutline: 'Contorno del héroe', rainbowStep: 'Paso de arcoíris', loudQuiet: 'Fuerte / suave',
+    },
+  };
+  const ADD_FR_REPEAT = {
+    types: {
+      repeat: {
+        stackV: 'Empilement vertical', rowH: 'Ligne horizontale', diagonal: 'Diagonale', grid: 'Grille', radial: 'Radial',
+        fan: 'Éventail', tunnel: 'Tunnel', scatter: 'Dispersion', brick: 'Brique', fill: 'Remplissage',
+      },
+    },
+    params: {
+      mainIndex: 'Position principale', sequence: 'Séquence', seqSpeed: 'Vitesse', seqOrder: 'Ordre',
+      copyOpacity: 'Opacité des copies', var1Attr: 'Variation 1', var1Rule: 'Règle 1', var1Level: 'Intensité 1',
+      var1ColorMode: 'Mode couleur 1', var1Target: 'Cible 1', var2Attr: 'Variation 2', var2Rule: 'Règle 2',
+      var2Level: 'Intensité 2', var2ColorMode: 'Mode couleur 2', var2Target: 'Cible 2', variationPreset: 'Préréglage',
+    },
+    values: {
+      stackV: 'Empilement vertical', rowH: 'Ligne horizontale', radial: 'Radial', fan: 'Éventail', tunnel: 'Tunnel',
+      brick: 'Brique', fill: 'Remplissage', end: 'Fin', tight: 'Serré', normal: 'Normal', wide: 'Large', static: 'Statique',
+      cascade: 'Cascade', counterSlide: 'Glissement opposé', counterScroll: 'Défilement opposé', fromMain: 'Depuis le principal',
+      toMain: 'Vers le principal', flat: 'Uniforme', hue: 'Teinte', light: 'Luminosité', oddOne: 'L’intrus', main: 'Principal',
+      strong: 'Fort', custom: 'Personnalisé', overflow: 'Débordement', size: 'Taille', color: 'Couleur', font: 'Police',
+      decor: 'Décoration', perspectiveFade: 'Fondu perspective', popAlternate: 'Damier pop', ransomNote: 'Note anonyme',
+      heroOutline: 'Contour héros', rainbowStep: 'Pas arc-en-ciel', loudQuiet: 'Fort / doux',
+    },
+  };
+  const ADD_RU_REPEAT = {
+    types: {
+      repeat: {
+        stackV: 'Вертикальная стопка', rowH: 'Горизонтальный ряд', diagonal: 'Диагональ', grid: 'Сетка', radial: 'Радиально',
+        fan: 'Веер', tunnel: 'Туннель', scatter: 'Разброс', brick: 'Кирпич', fill: 'Заполнение',
+      },
+    },
+    params: {
+      mainIndex: 'Позиция основы', sequence: 'Последовательность', seqSpeed: 'Скорость', seqOrder: 'Порядок',
+      copyOpacity: 'Прозрачность копий', var1Attr: 'Вариация 1', var1Rule: 'Правило 1', var1Level: 'Сила 1',
+      var1ColorMode: 'Режим цвета 1', var1Target: 'Цель 1', var2Attr: 'Вариация 2', var2Rule: 'Правило 2',
+      var2Level: 'Сила 2', var2ColorMode: 'Режим цвета 2', var2Target: 'Цель 2', variationPreset: 'Пресет вариации',
+    },
+    values: {
+      stackV: 'Вертикальная стопка', rowH: 'Горизонтальный ряд', radial: 'Радиально', fan: 'Веер', tunnel: 'Туннель',
+      brick: 'Кирпич', fill: 'Заполнение', end: 'Конец', tight: 'Плотно', normal: 'Обычно', wide: 'Широко', static: 'Статично',
+      cascade: 'Каскад', counterSlide: 'Встречное скольжение', counterScroll: 'Встречная прокрутка', fromMain: 'От основы',
+      toMain: 'К основе', flat: 'Ровно', hue: 'Оттенок', light: 'Яркость', oddOne: 'Один отличается', main: 'Основная',
+      strong: 'Сильно', custom: 'Свой', overflow: 'За края', size: 'Размер', color: 'Цвет', font: 'Шрифт',
+      decor: 'Декор', perspectiveFade: 'Перспективное затухание', popAlternate: 'Поп-шахматка', ransomNote: 'Анонимная записка',
+      heroOutline: 'Контур героя', rainbowStep: 'Радужный шаг', loudQuiet: 'Громко / тихо',
+    },
+  };
+
   function applyFxAdditions(target, additions) {
     for (const [group, table] of Object.entries(additions.types || {})) {
       target[group] = { ...(target[group] || {}), ...table };
@@ -607,6 +723,11 @@
   applyFxAdditions(es, ADD_EN);
   applyFxAdditions(fr, ADD_EN);
   applyFxAdditions(ru, ADD_EN);
+  applyFxAdditions(en, ADD_EN_REPEAT);
+  applyFxAdditions(ja, ADD_JA_REPEAT);
+  applyFxAdditions(es, ADD_ES_REPEAT);
+  applyFxAdditions(fr, ADD_FR_REPEAT);
+  applyFxAdditions(ru, ADD_RU_REPEAT);
 
   return { en: { fx: en }, ja: { fx: ja }, es: { fx: es }, fr: { fx: fr }, ru: { fx: ru } };
 });

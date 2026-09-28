@@ -157,6 +157,76 @@ test('numeric parameters without a recommended range keep their default', () => 
   assert.deepStrictEqual(random.sampleParam(vec, rng.mulberry32(1), 3, []), { x: 6, y: 8 });
 });
 
+test('randomize fills repeat with the documented distribution', () => {
+  const project = fixtureProject();
+  let repeatPicks = 0;
+  let brickFill = 0;
+  const copies = new Map();
+  let variation1 = 0;
+  let variation2 = 0;
+  let preset = 0;
+  let targets = 0;
+  for (let seed = 1; seed <= 200; seed += 1) {
+    const result = random.randomize({ project, scope: 'cues', seed });
+    for (const patch of result.patches) {
+      targets += 1;
+      const instance = patch.style.repeat;
+      if (!instance || instance.type === 'none') continue;
+      repeatPicks += 1;
+      copies.set(instance.params.copies, (copies.get(instance.params.copies) || 0) + 1);
+      if (instance.type === 'brick' || instance.type === 'fill') brickFill += 1;
+      if (instance.params.variationPreset !== 'custom') preset += 1;
+      const attrs = [instance.params.var1Attr, instance.params.var2Attr].filter((attr) => attr && attr !== 'none');
+      assert.ok(attrs.length <= 2, `at most two variation attributes (${attrs.join(',')})`);
+      if (attrs.length) assert.notEqual(instance.params.var1Attr, instance.params.var2Attr, 'the two variations differ');
+      if (attrs.length === 1) variation1 += 1;
+      if (attrs.length === 2) variation2 += 1;
+      if (instance.type === 'brick' || instance.type === 'fill') assert.equal(instance.params.copies, 'many');
+    }
+  }
+  const rate = repeatPicks / targets;
+  assert.ok(rate > 0.2 && rate < 0.4, `repeat appears ${rate}`);
+  assert.ok(brickFill / repeatPicks <= 0.15, `brick/fill share ${brickFill / repeatPicks}`);
+  for (const value of [1, 2, 3, 'many']) assert.ok((copies.get(value) || 0) > 0, `copies ${value} occurs`);
+  assert.ok(variation1 > 0 && variation2 > 0 && preset > 0, 'all variation shapes occur');
+});
+
+test('repeat never combines with duplicated layouts or dissolves', () => {
+  const project = fixtureProject();
+  const conflicts = ['circle', 'spiral', 'path', 'scatter'];
+  for (let seed = 1; seed <= 60; seed += 1) {
+    const result = random.randomize({ project, scope: 'project', seed });
+    const patch = result.patches[0];
+    if (!patch) continue;
+    const merged = projectModule.mergeDeep(project.style, patch.style);
+    const repeat = merged.repeat;
+    if (!repeat || repeat.type === 'none') continue;
+    assert.ok(!conflicts.includes(merged.layout && merged.layout.type), `seed ${seed}: repeat with ${merged.layout.type}`);
+    assert.notEqual(merged.enter && merged.enter.type, 'morphFromPrevious', `seed ${seed}: repeat with morph`);
+    if (repeat.type === 'fill') {
+      for (const post of merged.post || []) {
+        assert.ok(!/dissolve/i.test(post.type) && post.type !== 'kaleidoscope' && post.type !== 'mirror', `seed ${seed}: fill with ${post.type}`);
+      }
+    }
+  }
+});
+
+test('9:16 rowH keeps a single copy', () => {
+  const project = fixtureProject();
+  project.output.aspect = '9:16';
+  let rowH = 0;
+  for (let seed = 1; seed <= 200 && rowH < 5; seed += 1) {
+    const result = random.randomize({ project, scope: 'cues', seed });
+    for (const patch of result.patches) {
+      const instance = patch.style.repeat;
+      if (!instance || instance.type !== 'rowH') continue;
+      rowH += 1;
+      assert.equal(instance.params.copies, 1, `seed ${seed}: rowH copies ${instance.params.copies}`);
+    }
+  }
+  assert.ok(rowH > 0, 'rowH was sampled');
+});
+
 test('presets are JSON-safe partial style sets', () => {
   const presets = require('../../renderer/js/lyrics/presets.js');
   const list = presets.list();
