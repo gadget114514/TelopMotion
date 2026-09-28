@@ -27,7 +27,7 @@ const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
 const requirePart = (relative) => require(path.join(ROOT, relative));
 
 const fx = require(path.join(FX_DIR, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat']) {
   require(path.join(FX_DIR, `${name}.js`));
 }
 const rng = requirePart('renderer/js/lyrics/rng.js');

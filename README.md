@@ -227,7 +227,7 @@ beat and takes the largest travel / scale / rotation / deform amplitude, buckete
 as still / small / medium / large / extreme), a **five-axis profile** (speed,
 energy, softness, density, brightness) and **theme affinities** (the genre
 profiles). The styles are stored as deltas against the effect registry defaults,
-which keeps the whole pool at ~0.8 MB.
+which keeps the whole pool at ~1.9 MB.
 
 The Studio's *Random look* button (Generate menu, timeline ✨, or the Re-roll
 button) loads the pool and:

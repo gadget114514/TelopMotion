@@ -28,7 +28,7 @@
   // ---------------------------------------------------------------------------
   // delta encoding (build writes deltas, runtime expands them)
 
-  function delta(value, base) {
+  function delta(value, base, depth) {
     if (value === undefined) return undefined;
     if (value === null) return base === null ? undefined : null;
     if (Array.isArray(value)) {
@@ -38,10 +38,19 @@
       return clone(value);
     }
     if (typeof value === 'object') {
+      const level = depth || 0;
+      // inside `params` / `motion` (depth 2+) an object is kept whole: the
+      // runtime merges parameters shallowly, so a partial nested object such as
+      // `offset: { y: 0.28 }` would lose the defaulted `x` when expanded
+      if (level >= 2) {
+        return JSON.stringify(value) === JSON.stringify(base) ? undefined : clone(value);
+      }
       const out = {};
       for (const key of Object.keys(value)) {
-        if (key === 'enabled' && value[key] === true) continue;
-        const next = delta(value[key], base ? base[key] : undefined);
+        // `enabled: true` is the runtime default only on the instance itself;
+        // inside `params` a key named `enabled` is an ordinary parameter
+        if (level === 0 && key === 'enabled' && value[key] === true) continue;
+        const next = delta(value[key], base ? base[key] : undefined, level + 1);
         if (next !== undefined) out[key] = next;
       }
       return Object.keys(out).length ? out : undefined;
@@ -51,7 +60,15 @@
 
   // a stored style holds only what differs from the registry defaults; `type`
   // is kept even when it equals the default, because it selects which registry
-  // descriptor the runtime must use to restore the missing parameters
+  // descriptor the runtime must use to restore the missing parameters.
+  // The delta base is the default of the type alone: using the instance itself
+  // (withDefaults(instance)) would merge the drawn parameters into the base and
+  // every value would compare equal, dropping the demo's parameters entirely.
+  function defaultInstance(instance, group) {
+    if (instance && instance.type) return fx.withDefaults({ type: instance.type }, group);
+    return fx.withDefaults(instance, group);
+  }
+
   function stripDefaults(style) {
     const out = {};
     if (!style) return out;
@@ -60,13 +77,13 @@
         const value = style[key];
         if (Array.isArray(value)) {
           out[key] = value.map((instance) => {
-            const base = fx.withDefaults(instance, key);
+            const base = defaultInstance(instance, key);
             const entry = delta(instance, base) || {};
             if (instance && instance.type) entry.type = instance.type;
             return entry;
           });
         } else if (value && typeof value === 'object') {
-          const base = fx.withDefaults(value, key) || { type: value.type, params: {} };
+          const base = defaultInstance(value, key) || { type: value.type, params: {} };
           const entry = delta(value, base) || {};
           if (value.type) entry.type = value.type;
           out[key] = entry;
@@ -180,6 +197,7 @@
   // the drawn 800 demo supplies the motion structure; the axes regenerate the
   // palette, the text metrics and (when the demo has none) the colour roles
   function compose(entry, options) {
+    if (!entry) return null;
     const opts = options || {};
     const style = expand(entry.style);
     const generated = moods.generate({

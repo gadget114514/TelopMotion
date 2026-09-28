@@ -60,6 +60,9 @@ test('the pool stays in sync with the catalog (delta encoding round trip)', () =
     const expected = JSON.parse(JSON.stringify(entry.style));
     delete expected.palette; // the palette is regenerated from the axes at draw time
     assert.deepEqual(looks.stripDefaults(expected), stored.style, `#${entry.n} style delta`);
+    // the parameters the demo draws must survive the encode/decode, not just the
+    // types: a base that includes the instance's own values would drop them all
+    assert.deepEqual(looks.expand(stored.style), looks.expand(expected), `#${entry.n} delta round trip`);
     assert.deepEqual(stored.clip, entry.clip || null, `#${entry.n} clip`);
   }
   // the classification itself is reproducible from the catalog
@@ -130,6 +133,7 @@ test('pick can exclude looks (re-roll) and falls back when everything is exclude
 test('compose keeps the drawn structure and adjusts palette and text from the axes', () => {
   const axes = { speed: 0.8, energy: 0.9, softness: 0.2, density: 0.7, brightness: 0.8 };
   const entry = pool.pick({ axes, seed: 99 });
+  assert.equal(looks.compose(null, { axes }), null, 'a missing entry is not an error');
   const first = pool.compose(entry, { axes, seed: 99, context: { cjk: true, letterCount: 12 } });
   assert.equal(first.look.n, entry.n);
   assert.ok(first.style.palette && first.style.palette.colors.length >= 4, 'palette from the axes');

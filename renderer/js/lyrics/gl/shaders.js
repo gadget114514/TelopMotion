@@ -723,7 +723,7 @@ SA.glShaders = (() => {
       color = src + src * amount * 1.5;
     } else if (type == 27) {
       float offset = amount * 5.0 / u_resolution.x * (1.0 + max(u_params.z, 0.0));
-      vec2 dir = normalize(vec2(cos(u_params.x), sin(u_params.y)) + vec2(1e-6));
+      vec2 dir = normalize(vec2(cos(u_params.x), sin(u_params.x)) + vec2(1e-6));
       color = vec4(sampleText(v_uv + dir * offset).r, sampleText(v_uv).g, sampleText(v_uv - dir * offset).b, src.a);
     } else if (type == 28) {
       float scan = 0.9 + 0.1 * sin(v_uv.y * u_resolution.y * 0.5);
