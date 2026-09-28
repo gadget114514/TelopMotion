@@ -26,7 +26,7 @@ SA.overlay = (() => {
     el.canvas.addEventListener('pointerdown', onPointerDown);
     el.canvas.addEventListener('pointermove', onPointerMove);
     el.canvas.addEventListener('pointerup', onPointerUp);
-    el.canvas.addEventListener('pointercancel', onPointerUp);
+    el.canvas.addEventListener('pointercancel', onPointerCancel);
     el.canvas.addEventListener('dblclick', onDoubleClick);
     SA.store.subscribe('overlay', () => draw());
   }
@@ -264,6 +264,10 @@ SA.overlay = (() => {
         if (Math.hypot(point.x - px, point.y - py) <= HANDLE * scale) {
           pathEdit.index = index;
           try { el.canvas.setPointerCapture(event.pointerId); } catch { /* synthetic pointer */ }
+          if (SA.store.beginTransaction) {
+            SA.store.beginTransaction('edit path');
+            pathEdit.transaction = true;
+          }
           return;
         }
       }
@@ -292,6 +296,10 @@ SA.overlay = (() => {
       },
       startAngle: Math.atan2(point.y - (hit.box.y + hit.box.h / 2), point.x - (hit.box.x + hit.box.w / 2)),
     };
+    if (SA.store.beginTransaction) {
+      SA.store.beginTransaction('transform');
+      drag.transaction = true;
+    }
   }
 
   function applyTransform(propPath, value) {
@@ -393,7 +401,23 @@ SA.overlay = (() => {
     if (pathEdit) {
       pathEdit.index = null;
       if (pathEdit.onChange) pathEdit.onChange(pathEdit.points, false);
+      if (pathEdit.transaction && SA.store.endTransaction) SA.store.endTransaction();
+      pathEdit.transaction = false;
     }
+    if (drag && drag.transaction && SA.store.endTransaction) SA.store.endTransaction();
+    drag = null;
+    guides = [];
+    draw();
+  }
+
+  function onPointerCancel(event) {
+    try { if (el.canvas && el.canvas.hasPointerCapture(event.pointerId)) el.canvas.releasePointerCapture(event.pointerId); } catch { /* synthetic pointer */ }
+    if (pathEdit) {
+      pathEdit.index = null;
+      if (pathEdit.transaction && SA.store.cancelTransaction) SA.store.cancelTransaction();
+      pathEdit.transaction = false;
+    }
+    if (drag && drag.transaction && SA.store.cancelTransaction) SA.store.cancelTransaction();
     drag = null;
     guides = [];
     draw();

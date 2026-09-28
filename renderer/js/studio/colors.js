@@ -311,9 +311,20 @@ SA.colors = (() => {
     document.body.appendChild(popover);
     const rect = opts.anchor ? opts.anchor.getBoundingClientRect() : null;
     popover.style.left = `${rect ? Math.min(window.innerWidth - 230, rect.left) : 40}px`;
-    popover.style.top = `${rect ? Math.min(window.innerHeight - 340, rect.bottom + 6) : 60}px`;
     refresh();
+    placeInViewport(popover, rect ? rect.bottom + 6 : 60);
     void onChangeHandler;
+  }
+
+  // keeps a fixed popover (and its Apply button) on screen: it opens below
+  // the anchor, moves up when it would run off the bottom, and scrolls
+  // inside itself when it is taller than the window
+  function placeInViewport(node, preferredTop) {
+    const margin = 8;
+    node.style.maxHeight = `${window.innerHeight - margin * 2}px`;
+    node.style.overflowY = 'auto';
+    const height = node.getBoundingClientRect().height;
+    node.style.top = `${Math.max(margin, Math.min(window.innerHeight - height - margin, preferredTop))}px`;
   }
 
   function swatchButton(color, onClick) {
@@ -495,8 +506,8 @@ SA.colors = (() => {
     document.body.appendChild(popover);
     const rect = opts.anchor ? opts.anchor.getBoundingClientRect() : null;
     popover.style.left = `${rect ? Math.min(window.innerWidth - 300, rect.left) : 40}px`;
-    popover.style.top = `${rect ? Math.min(window.innerHeight - 360, rect.bottom + 6) : 60}px`;
     renderBar();
+    placeInViewport(popover, rect ? rect.bottom + 6 : 60);
   }
 
   // --- palette dialog ----------------------------------------------------------

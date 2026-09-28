@@ -12,8 +12,8 @@ SA.menu = (() => {
   let submenuFor = null;
   let recent = [];
 
-  function t(key) {
-    return SA.i18n.t(key);
+  function t(key, vars) {
+    return SA.i18n.t(key, vars);
   }
 
   function itemSeparator() {
@@ -68,6 +68,24 @@ SA.menu = (() => {
       ],
     },
     {
+      id: 'edit',
+      labelKey: 'studio.menu.edit',
+      items: () => [
+        {
+          raw: SA.store.undoLabel() ? t('studio.edit.undoWith', { label: SA.store.undoLabel() }) : t('studio.edit.undo'),
+          action: 'undo',
+          shortcut: 'Ctrl+Z',
+          enabled: () => SA.store.canUndo(),
+        },
+        {
+          raw: SA.store.redoLabel() ? t('studio.edit.redoWith', { label: SA.store.redoLabel() }) : t('studio.edit.redo'),
+          action: 'redo',
+          shortcut: 'Ctrl+Y',
+          enabled: () => SA.store.canRedo(),
+        },
+      ],
+    },
+    {
       id: 'generate',
       labelKey: 'studio.menu.generate',
       items: () => [
@@ -83,6 +101,7 @@ SA.menu = (() => {
         ] },
         { key: 'studio.generate.randomSettings', action: 'randomSettings' },
         { key: 'studio.generate.reroll', action: 'reroll' },
+        { key: 'studio.generate.rerollColors', action: 'rerollColors', enabled: () => !!SA.store.state.project },
         itemSeparator(),
         { key: 'studio.generate.applyPreset', action: 'applyPreset', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
         { key: 'studio.generate.fitAudio', action: 'fitAudio', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length && SA.preview.getAudioDuration()) },

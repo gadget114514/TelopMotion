@@ -286,3 +286,39 @@ test('ballad and rock pick clearly different effects', () => {
   const rockRate = sample(rock);
   assert.ok(rockRate > balladRate * 2, `rock ${rockRate} vs ballad ${balladRate}`);
 });
+
+test('weird is a sixth axis that defaults to 0 and stays out of look matching', () => {
+  assert.deepEqual(moods.AXES, ['speed', 'energy', 'softness', 'density', 'brightness', 'weird']);
+  assert.deepEqual(moods.MATCH_AXES, ['speed', 'energy', 'softness', 'density', 'brightness']);
+  const axes = moods.normalizeAxes({ energy: 0.9 });
+  assert.equal(axes.weird, 0); // existing projects keep one look per song
+  assert.equal(axes.speed, 0.5);
+  assert.equal(moods.normalizeAxes({ weird: 2 }).weird, 1);
+});
+
+test('recolor moves every hex colour onto the new palette and keeps the rest', () => {
+  const from = ['#101018', '#202838', '#ffffff', '#ff0000', '#000000'];
+  const to = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008'];
+  const style = {
+    palette: { id: 'old', colors: from.slice() },
+    edge: [{ type: 'glow', params: { color: '#ff0000', size: 3, highlight: '#FF000080' } }],
+    fill: { type: 'tint', params: { tint: '#800000', mode: 'multiply' } },
+    color: { fill: { kind: 'palette', index: 2 } },
+    name: 'not #a colour',
+  };
+  const out = moods.recolor(style, from, to);
+  assert.equal(out.edge[0].params.color, '#00c060'); // exact palette colour -> same role
+  assert.equal(out.edge[0].params.highlight, '#00c06080'); // alpha survives, case ignored
+  assert.equal(out.edge[0].params.size, 3);
+  assert.deepEqual(out.palette.colors, to);
+  assert.deepEqual(out.color, style.color); // palette references are untouched
+  assert.equal(out.name, 'not #a colour');
+  // an off-palette colour keeps its offset: a darker red becomes a darker green
+  const tint = color.rgbToHsv(color.parse(out.fill.params.tint));
+  const accent = color.rgbToHsv(color.parse('#00c060'));
+  assert.ok(Math.abs(tint.h - accent.h) < 2, `hue ${tint.h} vs ${accent.h}`);
+  assert.ok(tint.v < accent.v, 'stays darker than the accent');
+  assert.equal(style.edge[0].params.color, '#ff0000'); // the input is not mutated
+  // nothing to map from: a plain copy
+  assert.deepEqual(moods.recolor(style, [], to), style);
+});

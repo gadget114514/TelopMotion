@@ -368,6 +368,37 @@
     return best;
   }
 
+  // Moves `fg` (a hex or rgba) away from every colour in `others` until it
+  // clears `target` against all of them: the value is stepped both ways and
+  // the smallest change that works wins, so the hue and most of the character
+  // survive. When no brightness clears it, the best minimum ratio is kept.
+  function separateFrom(fg, others, target) {
+    const minimum = target == null ? 3 : target;
+    const list = (others || []).map((entry) => (typeof entry === 'string' ? parse(entry) : entry)).filter(Boolean);
+    const front = typeof fg === 'string' ? parse(fg) : { ...fg };
+    const worst = (rgba) => (list.length ? Math.min(...list.map((other) => contrastRatio(rgba, other))) : Infinity);
+    if (worst(front) >= minimum) return toHex({ ...front, a: 1 });
+    const hsv = rgbToHsv(front);
+    let best = toHex({ ...front, a: 1 });
+    let bestRatio = worst(front);
+    for (let step = 1; step <= 40; step += 1) {
+      for (const direction of [-1, 1]) {
+        const value = hsv.v + direction * step * 0.025;
+        if (value < 0 || value > 1) continue;
+        // a very light colour also loses saturation so it can reach near-white
+        const saturation = direction > 0 && value > 0.85 ? hsv.s * Math.max(0.3, 1 - (value - 0.85) * 4) : hsv.s;
+        const candidate = hsvToRgb({ h: hsv.h, s: saturation, v: value, a: 1 });
+        const ratio = worst(candidate);
+        if (ratio >= minimum) return toHex({ ...candidate, a: 1 });
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = toHex({ ...candidate, a: 1 });
+        }
+      }
+    }
+    return best;
+  }
+
   function toRgba(value, fallback, ctx) {
     if (Array.isArray(value) && value.length >= 3) return [value[0], value[1], value[2], value[3] == null ? 1 : value[3]];
     if (value == null || value === '') return fallback;
@@ -396,5 +427,6 @@
     relativeLuminance,
     contrastRatio,
     ensureContrast,
+    separateFrom,
   };
 });

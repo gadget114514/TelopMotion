@@ -1120,6 +1120,19 @@ SA.timeline = (() => {
     return found || { type: 'empty' };
   }
 
+  // drags that change the project are wrapped in one history transaction, so a
+  // pointerup is a single undo step no matter how many pointermove commands ran
+  const TRANSACTION_DRAGS = {
+    'clip-move': 'move clip',
+    'clip-edge': 'trim clip',
+    divider: 'move beat edge',
+    'cue-edge': 'trim cue',
+    'cue-move': 'move cue',
+    'layer-move': 'move layer',
+    'layer-edge': 'trim layer',
+    key: 'move keyframe',
+  };
+
   function onPointerDown(event) {
     if (event.button !== 0) return;
     hideMenu();
@@ -1221,6 +1234,10 @@ SA.timeline = (() => {
     } else {
       SA.store.setSelection([], null);
     }
+    if (drag && TRANSACTION_DRAGS[drag.type] && SA.store.beginTransaction) {
+      SA.store.beginTransaction(TRANSACTION_DRAGS[drag.type]);
+      drag.transaction = true;
+    }
   }
 
   function updateCursor(event) {
@@ -1317,6 +1334,20 @@ SA.timeline = (() => {
         }
       }
     }
+    if (drag.transaction && SA.store.endTransaction) SA.store.endTransaction();
+    drag = null;
+    draw();
+  }
+
+  function onPointerCancel(event) {
+    if (!drag) return;
+    try {
+      const target = event.currentTarget;
+      if (target && target.hasPointerCapture(event.pointerId)) target.releasePointerCapture(event.pointerId);
+    } catch {
+      /* synthetic */
+    }
+    if (drag.transaction && SA.store.cancelTransaction) SA.store.cancelTransaction();
     drag = null;
     draw();
   }
@@ -1885,7 +1916,7 @@ SA.timeline = (() => {
       surface.addEventListener('pointerdown', onPointerDown);
       surface.addEventListener('pointermove', onPointerMove);
       surface.addEventListener('pointerup', onPointerUp);
-      surface.addEventListener('pointercancel', onPointerUp);
+      surface.addEventListener('pointercancel', onPointerCancel);
       surface.addEventListener('dblclick', onDoubleClick);
       surface.addEventListener('contextmenu', showMenu);
       surface.addEventListener('dragover', (event) => {

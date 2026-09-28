@@ -31,7 +31,7 @@ test('the runtime pool carries all 800 looks with classification', () => {
   assert.equal(data.effects.length, 800);
   assert.deepEqual(data.effects.map((entry) => entry.n), Array.from({ length: 800 }, (_, index) => index + 1));
   assert.equal(new Set(data.effects.map((entry) => entry.name)).size, 800);
-  const axes = moods.AXES;
+  const axes = moods.MATCH_AXES;
   const buckets = new Set();
   for (const entry of data.effects) {
     assert.ok(entry.name && entry.group && entry.type, `#${entry.n} identity`);

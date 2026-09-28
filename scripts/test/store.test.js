@@ -118,3 +118,164 @@ test('removeTrack moves its cues to another subtitle track and drops its clips',
   assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c2').trackId, 'sub1');
   assert.equal(store.state.project.tracks.some((track) => track.id === 'sub2'), false);
 });
+
+// --- palettes per scope ------------------------------------------------------
+
+globalThis.SA.color = require('../../renderer/js/color.js');
+const OLD = ['#101018', '#202838', '#ffffff', '#ff0000', '#000000'];
+const NEW = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008'];
+
+function paletteFixture() {
+  const doc = fixture();
+  doc.style.palette = { id: 'old', name: 'old', colors: OLD.slice() };
+  doc.style.edge = [{ type: 'glow', enabled: true, params: { color: '#ff0000', size: 3 } }];
+  return doc;
+}
+
+test('setPalette on the project moves the literal colours with it, one undo reverts it', () => {
+  store.load(paletteFixture());
+  const before = snapshot();
+  store.commands.setPalette('project', { id: 'new', name: 'new', colors: NEW });
+  const doc = store.state.project;
+  assert.deepEqual(doc.style.palette.colors, NEW);
+  assert.equal(doc.style.edge[0].params.color, '#00c060');
+  store.undo();
+  assert.deepEqual(snapshot(), before);
+});
+
+test('a cue palette recolours only that cue and resets back onto the parent', () => {
+  store.load(paletteFixture());
+  store.commands.setPalette({ cueId: 'c1' }, { id: 'new', name: 'new', colors: NEW });
+  const doc = store.state.project;
+  assert.deepEqual(doc.cueStyles.c1.palette.colors, NEW);
+  // the cue takes its own recoloured copy; the project keeps its colours
+  assert.equal(doc.cueStyles.c1.edge[0].params.color, '#00c060');
+  assert.equal(doc.style.edge[0].params.color, '#ff0000');
+  assert.equal(projectModule.resolveStyle(doc, 'cue:c2').edge[0].params.color, '#ff0000');
+  // a project change now leaves the cue (which has its own palette) alone
+  store.commands.setPalette('project', { id: 'other', name: 'other', colors: ['#101018', '#202838', '#ffffff', '#3050ff', '#000000'] });
+  assert.equal(store.state.project.style.edge[0].params.color, '#3050ff');
+  assert.equal(store.state.project.cueStyles.c1.edge[0].params.color, '#00c060');
+  // reset: back to the project's palette, colours moved onto it
+  store.commands.resetPalette({ cueId: 'c1' });
+  const reset = store.state.project;
+  assert.equal(reset.cueStyles.c1.palette, undefined);
+  assert.equal(projectModule.resolveStyle(reset, 'cue:c1').edge[0].params.color, '#3050ff');
+});
+
+test('editing one swatch only moves the colours tied to it', () => {
+  store.load(paletteFixture());
+  store.state.project.style.edge[0].params.shadow = '#101018';
+  const colors = OLD.slice();
+  colors[3] = '#00c060';
+  store.commands.setPalette({ cueId: 'c1', beatId: 'c1:page0' }, { id: 'old', name: 'old', colors });
+  const beat = store.state.project.beatStyles['c1:page0'];
+  assert.equal(beat.edge[0].params.color, '#00c060');
+  assert.equal(beat.edge[0].params.shadow, '#101018');
+});
+
+test('rerollPalette gives the scope a new palette inside the axes', () => {
+  store.load(paletteFixture());
+  const palette = store.commands.rerollPalette({ cueId: 'c2' });
+  assert.ok(palette && palette.colors.length >= 5);
+  assert.deepEqual(store.state.project.cueStyles.c2.palette.colors, palette.colors);
+  assert.deepEqual(store.state.project.style.palette.colors, OLD);
+});
+
+test('a transaction groups many drag commands into one history entry', () => {
+  store.load(fixture());
+  const before = snapshot();
+  assert.equal(store.beginTransaction('move cue'), true);
+  store.commands.moveCue('c1', 0.5);
+  store.commands.moveCue('c1', 1);
+  store.commands.moveCue('c1', 1.5);
+  assert.equal(store.endTransaction(), true);
+  assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c1').start, 1.5);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  assert.equal(store.canUndo(), false);
+});
+
+test('separate transactions stay separate even when they happen quickly', () => {
+  store.load(fixture());
+  store.beginTransaction('move cue');
+  store.commands.moveCue('c1', 1);
+  store.endTransaction();
+  store.beginTransaction('move cue');
+  store.commands.moveCue('c1', 2);
+  store.endTransaction();
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c1').start, 1);
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c1').start, 0);
+});
+
+test('cancelTransaction restores the snapshot and leaves no history', () => {
+  store.load(fixture());
+  const before = snapshot();
+  store.beginTransaction('move cue');
+  store.commands.moveCue('c1', 2);
+  assert.equal(store.cancelTransaction(), true);
+  assert.deepEqual(snapshot(), before);
+  assert.equal(store.canUndo(), false);
+});
+
+test('nested transactions commit once at the outermost end', () => {
+  store.load(fixture());
+  const before = snapshot();
+  store.beginTransaction('outer');
+  store.commands.moveCue('c1', 1);
+  store.beginTransaction('inner');
+  store.commands.moveCue('c1', 2);
+  assert.equal(store.endTransaction(), false);
+  assert.equal(store.endTransaction(), true);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('a no-op dispatch is not pushed to the history', () => {
+  store.load(fixture());
+  store.dispatch({ label: 'noop', areas: ['project'], do() {} });
+  assert.equal(store.canUndo(), false);
+  assert.equal(store.isDirty(), false);
+});
+
+test('undo drops a selection that no longer exists and restores deleted ones', () => {
+  store.load(fixture());
+  store.commands.addCue({ id: 'c3', start: 11, end: 12, text: 'new', trackId: 'sub1' });
+  store.setSelection(['cue:c3'], 'cue');
+  assert.deepEqual(store.state.selection.paths, ['cue:c3']);
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.script.cues.some((cue) => cue.id === 'c3'), false);
+  assert.deepEqual(store.state.selection.paths, []);
+
+  store.setSelection(['cue:c2'], 'cue');
+  store.commands.deleteCue('c2');
+  assert.deepEqual(store.state.selection.paths, ['cue:c2']);
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.script.cues.some((cue) => cue.id === 'c2'), true);
+  assert.deepEqual(store.state.selection.paths, ['cue:c2']);
+});
+
+test('markClean tracks the saved entry across undo and redo', () => {
+  store.load(fixture());
+  store.markClean();
+  assert.equal(store.isDirty(), false);
+  store.commands.moveCue('c1', 1);
+  assert.equal(store.isDirty(), true);
+  assert.equal(store.undo(), true);
+  assert.equal(store.isDirty(), false);
+  assert.equal(store.redo(), true);
+  assert.equal(store.isDirty(), true);
+});
+
+test('undoLabel and redoLabel name the next step', () => {
+  store.load(fixture());
+  assert.equal(store.undoLabel(), null);
+  store.commands.moveCue('c1', 1);
+  assert.equal(store.undoLabel(), 'move cue');
+  assert.equal(store.redoLabel(), null);
+  store.undo();
+  assert.equal(store.undoLabel(), null);
+  assert.equal(store.redoLabel(), 'move cue');
+});

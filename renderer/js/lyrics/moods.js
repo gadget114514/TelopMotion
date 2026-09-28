@@ -7,7 +7,13 @@
 })(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants) {
   'use strict';
 
-  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
+  // `weird` is the sixth axis: how far a song strays from one look. At 0 the
+  // whole song keeps the drawn look; towards 1 more and more cues draw a look
+  // of their own (the FX 800 demo shows one per cue). The looks themselves are
+  // classified on the first five only (MATCH_AXES).
+  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird'];
+  const MATCH_AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
+  const AXIS_DEFAULTS = { weird: 0 };
 
   // human pick: a small vector that constrains the generator
   const PRESETS = [
@@ -195,8 +201,12 @@
   function normalizeAxes(axes) {
     const source = axes || {};
     const out = {};
-    for (const key of AXES) out[key] = clamp01(source[key] == null ? 0.5 : source[key]);
+    for (const key of AXES) out[key] = clamp01(source[key] == null ? axisDefault(key) : source[key]);
     return out;
+  }
+
+  function axisDefault(key) {
+    return AXIS_DEFAULTS[key] == null ? 0.5 : AXIS_DEFAULTS[key];
   }
 
   function lerp(a, b, t) {
@@ -531,6 +541,81 @@
       name: palette.name || 'palette',
       colors: next,
     };
+  }
+
+  // --- colour-only re-roll ---------------------------------------------------
+  // Effects keep literal hex colours in their params (edge colours, fill tints,
+  // clip colours...), so swapping the palette alone would leave them behind.
+  // Each hex is tied to its nearest colour of the old palette and moved onto
+  // the same role of the new one: it takes the new hue and keeps its relative
+  // saturation and lightness (a darker shadow of the accent stays a darker
+  // shadow of the new accent). Alpha is preserved.
+  const HEX = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+  // HSV distance: a saturated colour matches on hue first (a dark red is a
+  // shade of the red accent, not of the near-black background)
+  function hsvDistance(a, b) {
+    const hue = Math.abs(a.h - b.h) % 360;
+    const hueDiff = (Math.min(hue, 360 - hue) / 180) * Math.min(a.s, b.s);
+    return (a.v - b.v) ** 2 + (a.s - b.s) ** 2 + 2 * hueDiff ** 2;
+  }
+
+  function remapColor(hex, from, to) {
+    const rgba = color.parse(hex);
+    const own = color.rgbToHsv(rgba);
+    const count = Math.min(from.length, to.length);
+    let best = -1;
+    let bestDistance = Infinity;
+    for (let i = 0; i < count; i += 1) {
+      const distance = hsvDistance(own, color.rgbToHsv(color.parse(from[i])));
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = i;
+      }
+    }
+    if (best < 0) return hex;
+    // an untouched role leaves its colours alone (editing one swatch must not
+    // move the colours tied to the others)
+    if (String(from[best]).toLowerCase() === String(to[best]).toLowerCase()) return hex;
+    const alpha = rgba.a == null ? 1 : rgba.a;
+    const target = color.parse(to[best]);
+    if (bestDistance < 1e-6) return color.toHex({ ...target, a: alpha });
+    const ref = color.rgbToHsv(color.parse(from[best]));
+    const next = color.rgbToHsv(target);
+    // a colour takes the hue of its new role (so off-palette colours from the
+    // drawn looks join the palette too); a grey carries no hue and keeps its own
+    const hue = own.s > 0.08 && next.s > 0.08 ? next.h : own.h;
+    const rgb = color.hsvToRgb({
+      h: hue,
+      s: clamp01(ref.s > 0.05 ? next.s * (own.s / ref.s) : own.s),
+      v: clamp01(ref.v > 0.05 ? next.v * (own.v / ref.v) : own.v + (next.v - ref.v)),
+    });
+    return color.toHex({ ...rgb, a: alpha });
+  }
+
+  // returns a copy of `value` with every hex colour moved from one palette to
+  // another; anything that is not a hex string is copied unchanged
+  function recolor(value, fromColors, toColors) {
+    const from = (Array.isArray(fromColors) ? fromColors : []).filter((hex) => typeof hex === 'string' && HEX.test(hex));
+    const to = Array.isArray(toColors) ? toColors : [];
+    if (!from.length || !to.length) return value == null ? value : JSON.parse(JSON.stringify(value));
+    const cache = new Map();
+    const walk = (node) => {
+      if (typeof node === 'string') {
+        if (!HEX.test(node)) return node;
+        const key = node.toLowerCase();
+        if (!cache.has(key)) cache.set(key, remapColor(node, from, to));
+        return cache.get(key);
+      }
+      if (Array.isArray(node)) return node.map(walk);
+      if (node && typeof node === 'object') {
+        const out = {};
+        for (const [key, entry] of Object.entries(node)) out[key] = walk(entry);
+        return out;
+      }
+      return node;
+    };
+    return walk(value);
   }
 
   // Softness owns the typeface family, density owns the size (a denser design
@@ -1007,7 +1092,7 @@
     const r = typeof random === 'function' ? random : Math.random;
     const preset = PRESETS[Math.min(PRESETS.length - 1, Math.floor(r() * PRESETS.length))];
     const axes = {};
-    for (const axis of AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.12);
+    for (const axis of MATCH_AXES) axes[axis] = clamp01(preset.axes[axis] + (r() * 2 - 1) * 0.12);
     return { genre: preset.id, axes, direction: preset.direction || 'horizontal' };
   }
 
@@ -1133,6 +1218,7 @@
 
   return {
     AXES,
+    MATCH_AXES,
     PRESETS,
     GROUPS,
     THEME_TEXT_GROUPS,
@@ -1142,6 +1228,7 @@
     generate,
     generatePalette,
     jitterPalette,
+    recolor,
     paletteFor,
     paletteColors,
     rerollClipSpec,

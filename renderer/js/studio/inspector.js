@@ -1414,20 +1414,47 @@ SA.inspector = (() => {
     const body = section(container, 'palette', t('studio.inspector.palette'));
     const style = resolvedStyle();
     const effective = style.palette && Array.isArray(style.palette.colors) && style.palette.colors.length ? style.palette : null;
+    // the palette is edited at the selected level: nothing selected = the whole
+    // project, a cue, or a beat (a line / word / letter edits its beat)
+    const sel = selectionInfo();
+    let scope = scopeOf(sel);
+    if (!scope && sel.beatId) scope = { cueId: sel.cueId, beatId: sel.beatId };
+    const scopeLabel = t(scope === 'project' ? 'studio.inspector.paletteScopeProject' : scope && scope.beatId ? 'studio.inspector.paletteScopeBeat' : 'studio.inspector.paletteScopeCue');
+    const doc = project();
+    const own = scope === 'project' ? doc.style : scope && scope.beatId ? doc.beatStyles[scope.beatId] : scope ? doc.cueStyles[scope.cueId] : null;
+    const ownPalette = !!(own && own.palette);
     const nameNode = document.createElement('div');
     nameNode.className = 'insp-inherit';
-    nameNode.textContent = effective ? `${effective.name || effective.id}` : t('studio.inspector.paletteNone');
+    const paletteName = effective ? `${effective.name || effective.id}` : t('studio.inspector.paletteNone');
+    nameNode.textContent = `${t('studio.inspector.paletteTarget', { scope: scopeLabel })} · ${paletteName}${scope !== 'project' && !ownPalette ? ` ${t('studio.inspector.inherited')}` : ''}`;
     body.appendChild(nameNode);
     const swatches = document.createElement('div');
     swatches.className = 'palette-swatches';
     if (effective) {
-      for (const hex of effective.colors) {
-        const dot = document.createElement('span');
-        dot.className = 'palette-dot';
-        dot.style.background = hex;
-        dot.title = hex;
-        swatches.appendChild(dot);
-      }
+      effective.colors.forEach((hex, index) => {
+        const swatch = document.createElement('button');
+        swatch.type = 'button';
+        swatch.className = 'palette-dot palette-dot-edit';
+        swatch.style.background = hex;
+        swatch.title = `${hex} — ${t('studio.inspector.paletteEdit')}`;
+        swatch.addEventListener('click', () => {
+          const key = `palette|${sel.path}|${index}|${Date.now()}`;
+          SA.colors.openPicker({
+            value: hex,
+            anchor: swatch,
+            onChange(next) {
+              const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+              if (!value || !scope) return;
+              // read the palette again: earlier picks of this drag already moved it
+              const latest = resolvedStyle().palette || effective;
+              const colors = latest.colors.slice();
+              colors[index] = value;
+              SA.store.commands.setPalette(scope, { ...latest, colors }, { label: 'edit palette', coalesceKey: key });
+            },
+          });
+        });
+        swatches.appendChild(swatch);
+      });
     } else {
       const none = document.createElement('span');
       none.className = 'panel-placeholder';
@@ -1442,7 +1469,7 @@ SA.inspector = (() => {
       SA.controls.selectControl({}, '', (value) => {
         if (!value) return;
         const entry = SA.colors.allPalettes().find((item) => item.id === value);
-        if (entry) writeProp('palette', { id: entry.id, name: entry.name, colors: [...entry.colors] });
+        if (entry && scope) SA.store.commands.setPalette(scope, { id: entry.id, name: entry.name, colors: [...entry.colors] }, { label: 'apply palette' });
       }, [
         { value: '', label: t('studio.inspector.paletteFrom') },
         ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name })),
@@ -1452,20 +1479,21 @@ SA.inspector = (() => {
 
     const actions = document.createElement('div');
     actions.className = 'insp-actions';
-    const randomButton = document.createElement('button');
-    randomButton.type = 'button';
-    randomButton.className = 'btn btn-mini';
-    randomButton.textContent = t('studio.inspector.paletteRandom');
-    randomButton.addEventListener('click', () => {
-      writeProp('palette', SA.moods.jitterPalette(Math.random, effective || { colors: [] }));
+    const rerollButton = document.createElement('button');
+    rerollButton.type = 'button';
+    rerollButton.className = 'btn btn-mini';
+    rerollButton.textContent = t('studio.inspector.paletteReroll');
+    rerollButton.disabled = !scope;
+    rerollButton.addEventListener('click', () => {
+      if (scope) SA.store.commands.rerollPalette(scope);
     });
-    actions.appendChild(randomButton);
-    if (isSetAtScope('palette')) {
+    actions.appendChild(rerollButton);
+    if (ownPalette && scope !== 'project') {
       const resetButton = document.createElement('button');
       resetButton.type = 'button';
       resetButton.className = 'btn btn-mini';
       resetButton.textContent = t('studio.inspector.reset');
-      resetButton.addEventListener('click', () => writeProp('palette', undefined));
+      resetButton.addEventListener('click', () => SA.store.commands.resetPalette(scope));
       actions.appendChild(resetButton);
     }
     body.appendChild(actions);

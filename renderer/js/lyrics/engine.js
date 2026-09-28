@@ -4,6 +4,9 @@ SA.lyricsEngine = (() => {
   'use strict';
 
   const CLEAR_COLOR = [0.043, 0.051, 0.070];
+  // minimum contrast ratio between backdrop shapes and the lyrics (WCAG large
+  // text); below it the two read as the same colour
+  const BACKDROP_CONTRAST = 3;
 
   function beatForCue(cue) {
     if (!cue) return null;
@@ -724,10 +727,6 @@ SA.lyricsEngine = (() => {
       }
     }
 
-    function contrastRatio(a, b) {
-      return SA.color.contrastRatio(a, b);
-    }
-
     // Resolves the text color of the current beat so the background shapes can
     // pick a contrasting color.
     function textColorHex(style) {
@@ -776,22 +775,37 @@ SA.lyricsEngine = (() => {
           fill = SA.color.toHex({ ...SA.color.hsvToRgb(contrast), a: 1 });
         }
       }
-      // guarantee a minimum contrast between the shapes and the lyrics
-      const textRgba = SA.color.toRgba(style && style.color ? style.color.fill || style.color.stroke : null, null, {
+      // guarantee a minimum contrast between the shapes and every colour the
+      // lyrics are drawn in (all gradient stops, not only the first: the usual
+      // text gradient ends on the accent, which is the backdrop's own colour)
+      const textColors = textColorList(style);
+      if (textColors.length) fill = SA.color.separateFrom(fill, textColors, BACKDROP_CONTRAST);
+      return fill;
+    }
+
+    function textColorList(style) {
+      const set = (style && style.color) || {};
+      const context = {
         palette: (style && style.palette) || null,
         palettes: (state.project && state.project.palettes) || [],
         categoryColors: (state.project && state.project.categoryColors) || {},
-      });
-      if (textRgba) {
-        const parsed = SA.color.parse(fill);
-        if (contrastRatio([parsed.r, parsed.g, parsed.b], textRgba) < 3) {
-          const hsv = SA.color.rgbToHsv({ r: parsed.r, g: parsed.g, b: parsed.b });
-          hsv.v = SA.color.relativeLuminance(textRgba) > 0.45 ? 0.3 : 0.75;
-          const next = SA.color.hsvToRgb(hsv);
-          fill = SA.color.toHex({ r: next.r, g: next.g, b: next.b, a: 1 });
+      };
+      const out = [];
+      for (const value of [set.fill || set.stroke, set.fill2]) {
+        if (!value) continue;
+        const resolved = SA.color.resolve(value, context);
+        if (resolved && resolved.kind === 'gradient' && Array.isArray(resolved.stops)) {
+          for (const stop of resolved.stops) if (stop && stop.rgba) out.push(stop.rgba);
+        } else if (resolved && resolved.rgba) {
+          out.push(resolved.rgba);
         }
       }
-      return fill;
+      // a fill effect can paint the letters in colours of its own
+      const fillParams = (style && style.fill && style.fill.enabled !== false && style.fill.params) || {};
+      for (const key of ['colorA', 'colorB', 'tint', 'colorBefore', 'colorAfter']) {
+        if (typeof fillParams[key] === 'string' && fillParams[key].startsWith('#')) out.push(SA.color.parse(fillParams[key]));
+      }
+      return out;
     }
 
     function clipEnvelope(t, clip) {
@@ -814,7 +828,10 @@ SA.lyricsEngine = (() => {
       const spec = clip.spec || { type: 'none', params: {} };
       const envelope = clipEnvelope(t, clip);
       if (envelope <= 0) return;
-      const style = SA.project.resolveStyle(state.project, '');
+      // the lyrics on screen decide the palette and the text colours the shapes
+      // must stand apart from (a cue or beat can carry a palette of its own)
+      const onScreen = activeBeats(state.project, t)[0];
+      const style = SA.project.resolveStyle(state.project, onScreen ? `cue:${onScreen.cueId}/beat:${onScreen.id}` : '');
       const fill = clipShapeColor(spec, clip.colors, style);
       const clipDuration = Math.max(0.001, clip.end - clip.start);
       const progress = Math.min(1, Math.max(0, (t - clip.start) / clipDuration));

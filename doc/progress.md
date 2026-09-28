@@ -319,3 +319,22 @@ FX 800 の800デモを**動きの大きさ**で分類し、**テーマと5軸**�
 - i18n: `studio.boot.*`（loading / interface / preview / project / fonts / ready）を5言語に追加。
 - テスト: `scripts/test/boot.test.js`（studio.html のマークアップと boot.js → app.js の読み込み順、5言語のキー、進捗の単調性・クランプ・busy・フェード）。`SA_SMOKE_STUDIO` に boot の hidden / progress / status を追加。
 - 検証: `npm run check`（120 files）、`npm test`（304 tests）、`SA_SMOKE=1 SA_SMOKE_STUDIO=1`（boot hidden true / progress 100 / status 準備完了、langMissing 0、glError 0）。日本語デモ（`fx800-1`、200キュー・日本語フォント8種）で `platform.readAsset` に 1.5 秒/フォントの遅延を入れて計測し、**全8フォントの解析が終わる 14.3 秒までロード画面（busy シマー付き）が残り**、その後にフェードすることを確認（旧実装は 6 秒上限で解析途中にアプリを出していた）。
+
+## 追加: undo/redo の実用化（このコミット）
+
+履歴の土台（プロジェクト全体のスナップショット、最大200件、coalesce）はそのままに、ドラッグ・選択・dirty・UI を実用レベルに引き上げた。
+
+- `renderer/js/studio/store.js`:
+  - **トランザクション API** `beginTransaction(label)` / `endTransaction()` / `cancelTransaction()`。begin で before を1回だけ clone し、中の `dispatch` は do と bump/emit だけ（スナップショットなし）。end で after と比較して変わっていれば1件積む。ネストはカウンタで最外だけ確定。
+  - **no-op の除外**: dispatch / endTransaction で before/after の JSON を比較し、同じなら履歴に積まない。
+  - **選択の保存と復元**: エントリに `selectionBefore` / `selectionAfter`。undo/redo 時に復元し、存在しないパス（cue / beat / clip / layer / track）は `pathExists` で剪定する。
+  - **undo/redo は全 AREA を bump**（プロジェクト全体が差し替わるため）。
+  - **dirty の id 管理**: エントリに連番 id を振り、`markClean()` が保存位置の id を記憶、`isDirty()` は先頭 id と比較。coalesce で先頭を更新したら id を振り直す。
+  - `undoLabel()` / `redoLabel()` を公開。
+- **ドラッグのトランザクション化**: `timeline.js`（cue / clip / beat エッジ、キーフレーム、レイヤー。pointercancel は cancel）、`overlay.js`（移動・回転・スケール、パス編集）、`controls.js`（range スライダーは pointerdown で begin、change / pointerup で end）。時間ベースの coalesce は数値入力用に残す。
+- `app.js`: Ctrl+Z / Ctrl+Y はテキスト入力（text / search / number / textarea / contentEditable）ではネイティブに任せ、range / checkbox / color / SELECT / ボタンではアプリの undo に回す。編集メニュー用の `undoEdit` / `redoEdit` ハンドラ。
+- `menu.js`: File と Generate の間に **Edit メニュー**（「元に戻す: {ラベル}」「やり直す」、Ctrl+Z / Ctrl+Y、履歴がなければ無効）。
+- `i18n.js`: `studio.menu.edit` と `studio.edit.*`（undo / redo / undoWith / redoWith）を5言語。
+- 生成ダイアログの `setOutput` + `generateScript` + fit-to-duration を1トランザクションにまとめ、1回の undo で戻るようにした。
+- テスト: `scripts/test/store.test.js` に8件（トランザクションのまとめ・分離・cancel・ネスト、no-op 除外、選択の剪定と復元、markClean と undo/redo、ラベル）。
+- 検証: `npm test`（320 tests）、`npm run check`（120 files）、`SA_SMOKE=1 SA_SMOKE_STUDIO=1`（editMenu「元に戻す: output」/ dirtyAfterRedo true / cleanAfterUndo true / langMissing 0）、`SA_SMOKE_EDIT=1`（overlay ドラッグ・undo、glError 0）、`SA_SMOKE_TIMELINE=1`（キーフレームのドラッグ/コピー/削除、glError 0）、`SA_SMOKE_BEATS=1`（moveBeatEdge + undo、split/merge の undo）。

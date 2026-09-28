@@ -423,10 +423,20 @@ function createWindow() {
             const dropdownClosed = !document.querySelector('.dropdown');
             window.SA.store.commands.setOutput({ fps: 60 });
             const after = window.SA.store.state.project.output.fps;
+            document.querySelector('[data-menu="edit"]').click();
+            const editMenu = {
+              open: !!document.querySelector('.dropdown'),
+              items: [...document.querySelectorAll('.dropdown .menu-item')].map((node) => ({ text: node.textContent.trim(), disabled: node.disabled })),
+            };
+            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
             window.SA.store.undo();
             const undone = window.SA.store.state.project.output.fps;
             window.SA.store.redo();
             const redone = window.SA.store.state.project.output.fps;
+            const dirtyAfterRedo = window.SA.store.isDirty();
+            window.SA.store.undo();
+            const cleanAfterUndo = !window.SA.store.isDirty();
+            window.SA.store.redo();
             const cueCount = window.SA.store.state.project.script.cues.length;
             await window.SA.io.saveAutosave(window.SA.store.state.project);
             const missing = [];
@@ -465,7 +475,7 @@ function createWindow() {
             window.SA.i18n.set('ja');
             window.SA.menu.build();
             if (window.SA.inspector) window.SA.inspector.render();
-            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, after, undone, redone, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length });
+            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, editMenu, after, undone, redone, dirtyAfterRedo, cleanAfterUndo, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length });
           })()`);
           console.log('SMOKE_STUDIO=' + studio);
           await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));

@@ -75,11 +75,26 @@ SA.controls = (() => {
       slider.max = String(param.max);
       slider.step = String(param.step == null ? 0.01 : param.step);
       slider.value = String(Number.isFinite(Number(value)) ? Number(value) : param.default);
+      const endSlider = () => {
+        if (typeof SA !== 'undefined' && SA.store && SA.store.endTransaction) SA.store.endTransaction();
+      };
       slider.addEventListener('input', () => {
         input.value = slider.value;
       });
-      slider.addEventListener('change', () => onChange(clampNumber(slider.value, param)));
-      slider.addEventListener('pointerdown', (event) => event.stopPropagation());
+      slider.addEventListener('change', () => {
+        onChange(clampNumber(slider.value, param));
+        endSlider();
+      });
+      slider.addEventListener('pointerdown', (event) => {
+        event.stopPropagation();
+        if (typeof SA !== 'undefined' && SA.store && SA.store.beginTransaction) SA.store.beginTransaction('edit value');
+      });
+      // change may land before or after pointerup depending on the platform;
+      // both close the transaction, and an empty one is simply discarded
+      slider.addEventListener('pointerup', endSlider);
+      slider.addEventListener('pointercancel', () => {
+        if (typeof SA !== 'undefined' && SA.store && SA.store.cancelTransaction) SA.store.cancelTransaction();
+      });
       wrap.appendChild(slider);
     }
     return wrap;

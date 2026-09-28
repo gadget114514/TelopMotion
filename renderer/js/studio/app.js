@@ -6,7 +6,11 @@
   const platform = SA.platform;
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
-  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  // what a cue takes from its own drawn look when the weird axis gives it one:
+  // the motion and the text treatment. Layout, location, colours and the font
+  // stay with the song so the lyrics keep their place and palette.
+  const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
 
@@ -520,6 +524,14 @@
     SA.menu.refresh();
   }
 
+  function undoEdit() {
+    if (store.undo()) SA.menu.refresh();
+  }
+
+  function redoEdit() {
+    if (store.redo()) SA.menu.refresh();
+  }
+
   function togglePlay() {
     SA.preview.togglePlay();
   }
@@ -664,30 +676,37 @@
     });
     dialog.querySelector('[data-action="generate"]').addEventListener('click', () => {
       const maxDurationValue = field('maxDuration').value.trim();
-      store.commands.setOutput({
-        maxDuration: maxDurationValue === '' ? null : Number(maxDurationValue) || null,
-        overflow: field('overflow').value,
-      });
-      const nextOptions = {
-        intro: field('intro').checked,
-        reveal: { enabled: field('reveal').checked, which: field('which').value, order: (reveal.order || 'grid') },
-        stats: { enabled: field('stats').checked, items: stats.items || undefined },
-        topSongs: { enabled: field('topSongs').checked, n: Number(field('topCount').value) || 0, by: topSongs.by || ['plays', 'likes'] },
-        completion: field('completion').checked,
-        outro: field('outro').checked,
-        timing: { perCue: Number(field('perCue').value) || 2.8, gap: Number(field('gap').value) || 0, introLen: timing.introLen || 3.5, outroLen: timing.outroLen || 3 },
-      };
-      const cues = SA.scriptGen.build(evaluation(), doc.dataset, nextOptions, i18n.t, SA.format);
-      store.commands.generateScript(cues, nextOptions);
-      const generatedDoc = project();
-      if (generatedDoc && generatedDoc.output && generatedDoc.output.maxDuration && SA.duration) {
-        store.dispatch({
-          label: 'fit to max duration',
-          areas: ['script'],
-          do(projectDoc) {
-            SA.duration.fit(projectDoc);
-          },
+      // output + script + fit-to-duration are one user action: one undo step
+      store.beginTransaction('generate script');
+      let cues = [];
+      try {
+        store.commands.setOutput({
+          maxDuration: maxDurationValue === '' ? null : Number(maxDurationValue) || null,
+          overflow: field('overflow').value,
         });
+        const nextOptions = {
+          intro: field('intro').checked,
+          reveal: { enabled: field('reveal').checked, which: field('which').value, order: (reveal.order || 'grid') },
+          stats: { enabled: field('stats').checked, items: stats.items || undefined },
+          topSongs: { enabled: field('topSongs').checked, n: Number(field('topCount').value) || 0, by: topSongs.by || ['plays', 'likes'] },
+          completion: field('completion').checked,
+          outro: field('outro').checked,
+          timing: { perCue: Number(field('perCue').value) || 2.8, gap: Number(field('gap').value) || 0, introLen: timing.introLen || 3.5, outroLen: timing.outroLen || 3 },
+        };
+        cues = SA.scriptGen.build(evaluation(), doc.dataset, nextOptions, i18n.t, SA.format);
+        store.commands.generateScript(cues, nextOptions);
+        const generatedDoc = project();
+        if (generatedDoc && generatedDoc.output && generatedDoc.output.maxDuration && SA.duration) {
+          store.dispatch({
+            label: 'fit to max duration',
+            areas: ['script'],
+            do(projectDoc) {
+              SA.duration.fit(projectDoc);
+            },
+          });
+        }
+      } finally {
+        store.endTransaction();
       }
       el.dialogRoot.hidden = true;
       toast('studio.toast.scriptGenerated', { n: cues.length });
@@ -872,6 +891,39 @@
     runRandomize(lastRandom.scope, lastRandom);
   }
 
+  // weird axis: each cue independently draws a look of its own with
+  // probability `weird` (0 = the whole song keeps one look, 1 = one per cue,
+  // like the FX 800 demo). The draws are seeded, so a seed reproduces them.
+  function drawCueLooks(pool, cues, options) {
+    const weird = Math.max(0, Math.min(1, Number(options.axes && options.axes.weird) || 0));
+    const out = {};
+    if (!(weird > 0) || !pool) return out;
+    const random = SA.rng.rngFor(options.seed, 'looks', 'weird');
+    const used = new Set([options.songLook]);
+    cues.forEach((cue, index) => {
+      if (random() >= weird) return;
+      const entry = pool.pick({ axes: options.axes, genre: options.genre, seed: options.seed + (index + 1) * 7919, exclude: used });
+      if (!entry) return;
+      used.add(entry.n);
+      const expanded = pool.expand(entry.style);
+      const style = {};
+      for (const group of CUE_LOOK_GROUPS) {
+        if (expanded[group] !== undefined) style[group] = expanded[group];
+      }
+      out[cue.id] = { n: entry.n, style };
+    });
+    return out;
+  }
+
+  // colour-only re-roll of the whole project: a new palette inside the
+  // project's axes and genre, with every literal colour moved onto it (the
+  // store does the work, so the inspector can do the same per cue / beat)
+  function rerollColors() {
+    if (!project()) return;
+    const palette = store.commands.rerollPalette('project');
+    if (palette) toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+  }
+
   async function autoDirect(options) {
     const doc = project();
     const opts = options || {};
@@ -893,6 +945,11 @@
       axes = picked.axes;
       direction = picked.direction;
     }
+    // weird is never derived from a genre or the music: it is the user's choice
+    // (genre dialog / theme editor) and sticks to the project across re-rolls
+    const previousAxes = (doc.styleMode && doc.styleMode.axes) || {};
+    const weirdSource = opts.weird != null ? opts.weird : previousAxes.weird;
+    axes = { ...axes, weird: Math.max(0, Math.min(1, Number(weirdSource) || 0)) };
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
     // おまかせ: draw one of the 800 classified looks by theme + five axes, then
@@ -904,6 +961,7 @@
     let look = null;
     let lookClip = null;
     let themeStyle = null;
+    let cueLooks = {};
     try {
       const pool = SA.looks && SA.looks.load ? await SA.looks.load() : null;
       if (pool) {
@@ -913,12 +971,14 @@
           look = composed.look;
           lookClip = composed.clip;
           themeStyle = composed.style;
+          cueLooks = drawCueLooks(pool, doc.script.cues, { axes, seed, genre: lookGenre, songLook: entry.n });
         }
       }
     } catch (error) {
       look = null;
       lookClip = null;
       themeStyle = null;
+      cueLooks = {};
     }
     if (!themeStyle) themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
@@ -951,11 +1011,12 @@
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, themeStyle);
         // remember which theme was applied so the UI can show it, and so cue /
         // clip re-rolls can stay inside the same axes
-        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName, axes, direction, genre, look: look ? { n: look.n, name: look.name, group: look.group, type: look.type, motion: look.motion } : null };
+        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName, axes, direction, genre, look: look ? { n: look.n, name: look.name, group: look.group, type: look.type, motion: look.motion } : null, cueLooks: Object.fromEntries(Object.entries(cueLooks).map(([cueId, entry]) => [cueId, entry.n])) };
         for (const cue of projectDoc.script.cues) {
           const container = projectDoc.cueStyles[cue.id];
           if (!container) continue;
           for (const group of AUTO_DIRECT_GROUPS) delete container[group];
+          delete container.palette; // a re-roll rebuilds the colours from scratch
           if (!Object.keys(container).length) delete projectDoc.cueStyles[cue.id];
         }
         // 2) per-cue motion inside the same theme: typeface, palette, color,
@@ -972,7 +1033,11 @@
         projectDoc.script.cues.forEach((cue, cueIndex) => {
           // with a drawn look the entrance/exit are part of the look itself:
           // only the beats breathe (size jitter and the rare pulse) so the
-          // whole song keeps the same face
+          // whole song keeps the same face, unless the weird axis gave this
+          // cue a look of its own
+          if (cueLooks[cue.id]) {
+            projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, JSON.parse(JSON.stringify(cueLooks[cue.id].style)));
+          }
           if (!look) {
             const cueContext = SA.moods.contextForCue(projectDoc, cue);
             const generated = SA.moods.generate({
@@ -1106,6 +1171,7 @@
     const dialog = document.createElement('div');
     dialog.className = 'dialog';
     const list = (SA.genres && SA.genres.LIST) || [];
+    const weird = Math.max(0, Math.min(1, Number(doc.styleMode && doc.styleMode.axes && doc.styleMode.axes.weird) || 0));
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>
@@ -1114,19 +1180,28 @@
           ${list.map((genre) => `<option value="${genre.id}">${t(`studio.genres.${genre.id}`)}</option>`).join('')}
         </select>
       </div>
+      <label class="axis-row"><span>${t('studio.themeEditor.axis.weird')}</span>
+        <input type="range" min="0" max="1" step="0.05" data-field="weird" value="${weird}">
+        <span class="axis-value" data-field="weird-value">${weird.toFixed(2)}</span>
+      </label>
+      <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.weird')}</div>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
       </div>`;
     el.dialogRoot.appendChild(dialog);
     el.dialogRoot.hidden = false;
+    const weirdInput = dialog.querySelector('[data-field="weird"]');
+    weirdInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="weird-value"]').textContent = Number(weirdInput.value).toFixed(2);
+    });
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
     dialog.querySelector('[data-action="apply"]').addEventListener('click', () => {
       const genre = dialog.querySelector('[data-field="genre"]').value;
       el.dialogRoot.hidden = true;
-      autoDirect({ genre });
+      autoDirect({ genre, weird: Number(weirdInput.value) });
     });
   }
 
@@ -1349,17 +1424,25 @@
     window.addEventListener('resize', () => applyLayout());
     document.addEventListener('keydown', (event) => {
       const target = event.target;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable)) return;
+      const tag = target && target.tagName;
+      // text fields keep their native undo; sliders / selects / buttons hand
+      // Ctrl+Z to the project history (focus often stays on them after a drag)
+      const textEntry =
+        target &&
+        (target.isContentEditable ||
+          tag === 'TEXTAREA' ||
+          (tag === 'INPUT' && ['text', 'search', 'number', 'email', 'url', 'tel', 'password'].includes(String(target.type || 'text').toLowerCase())));
+      if (textEntry) return;
       const mod = event.ctrlKey || event.metaKey;
       if (mod && event.key.toLowerCase() === 'z') {
         event.preventDefault();
-        if (event.shiftKey) store.redo();
-        else store.undo();
+        if (event.shiftKey) redoEdit();
+        else undoEdit();
         return;
       }
       if (mod && event.key.toLowerCase() === 'y') {
         event.preventDefault();
-        store.redo();
+        redoEdit();
         return;
       }
       if (mod && event.key.toLowerCase() === 's') {
@@ -1428,6 +1511,8 @@
       openRecent,
       saveProject,
       saveProjectAs,
+      undo: undoEdit,
+      redo: redoEdit,
       importLyrics,
       importAudio,
       distributeCues,
@@ -1437,6 +1522,7 @@
       randomStyleElements: () => runRandomize('elements', {}),
       randomSettings: randomDialog,
       reroll,
+      rerollColors,
       autoDirect,
       applyPreset: presetDialog,
       fitAudio,

@@ -99,3 +99,19 @@ test('toRgba resolves palette references against the scoped palette', () => {
   const shifted = color.toRgba({ kind: 'palette', index: 1 }, null, ctx);
   assert.ok(Math.abs(shifted[0] - shifted[1]) < 1e-6 && Math.abs(shifted[1] - shifted[2]) < 1e-6, 'palette slot 1 is grey');
 });
+
+test('separateFrom clears the contrast against every colour it must stand apart from', () => {
+  // a backdrop in the accent colour behind a gradient text that ends on the accent
+  const accent = '#c05a30';
+  const text = ['#f4efe6', accent];
+  const out = color.separateFrom(accent, text, 3);
+  for (const other of text) assert.ok(color.contrastRatio(color.parse(out), color.parse(other)) >= 3, `${out} vs ${other}`);
+  // the hue survives the move
+  const before = color.rgbToHsv(color.parse(accent));
+  const after = color.rgbToHsv(color.parse(out));
+  assert.ok(Math.abs(before.h - after.h) < 3, `hue ${after.h} vs ${before.h}`);
+  // already distinct: unchanged
+  assert.equal(color.separateFrom('#101018', ['#ffffff'], 3), '#101018');
+  // nothing to compare against: unchanged
+  assert.equal(color.separateFrom('#336699', [], 3), '#336699');
+});

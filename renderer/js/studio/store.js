@@ -20,7 +20,9 @@ SA.store = (() => {
   const undoStack = [];
   const redoStack = [];
   let coalesce = { key: null, time: 0 };
-  let dirty = false;
+  let transaction = null;
+  let savedId = null;
+  let nextEntryId = 1;
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -172,52 +174,171 @@ SA.store = (() => {
     undoStack.length = 0;
     redoStack.length = 0;
     coalesce = { key: null, time: 0 };
+    transaction = null;
+    savedId = null;
     bump(['project', 'style', 'script', 'overrides', 'keyframes', 'media', 'fillers', 'credits']);
     emit();
+  }
+
+  function selectionSnapshot() {
+    return { paths: [...(state.selection.paths || [])], kind: state.selection.kind || null };
+  }
+
+  // A restored selection can point at an entity the undo removed (a deleted
+  // cue, a split beat, a dropped clip). Keep only the paths that still resolve.
+  function pathExists(project, path) {
+    const parts = String(path || '').split('/');
+    const [kind, ...rest] = (parts[0] || '').split(':');
+    const id = rest.join(':');
+    if (kind === 'cue') {
+      const cue = ((project.script && project.script.cues) || []).find((entry) => entry.id === id);
+      if (!cue) return false;
+      const beatPart = parts.find((part) => part.startsWith('beat:'));
+      if (!beatPart) return true;
+      const beatId = beatPart.slice(5);
+      if (findBeat(project, id, beatId)) return true;
+      if (typeof SA !== 'undefined' && SA.lyricsEngine && SA.lyricsEngine.beatForCue) {
+        const synthetic = SA.lyricsEngine.beatForCue(cue);
+        return !!synthetic && synthetic.id === beatId;
+      }
+      return false;
+    }
+    if (kind === 'clip') return ((project.clips) || []).some((entry) => entry.id === id);
+    if (kind === 'layer') return ((project.layers) || []).some((entry) => entry.id === id);
+    if (kind === 'track') return ((project.tracks) || []).some((entry) => entry.id === id);
+    return true;
+  }
+
+  function restoreSelection(selection) {
+    const paths = ((selection && selection.paths) || []).filter((path) => pathExists(state.project, path));
+    state.selection = { paths, kind: paths.length ? (selection && selection.kind) || null : null };
+  }
+
+  function topEntry() {
+    return undoStack.length ? undoStack[undoStack.length - 1] : null;
+  }
+
+  function topEntryId() {
+    const entry = topEntry();
+    return entry ? entry.id : null;
+  }
+
+  function pushEntry(entry) {
+    entry.id = nextEntryId;
+    nextEntryId += 1;
+    undoStack.push(entry);
+    if (undoStack.length > MAX_UNDO) undoStack.shift();
+    redoStack.length = 0;
   }
 
   function dispatch(command) {
     if (!state.project || !command) return;
     const areas = command.areas || ['project'];
+    if (transaction) {
+      // inside a drag / scrub the snapshots are taken once at the boundaries;
+      // every command still runs and notifies so the preview stays live
+      command.do(state.project, state);
+      for (const area of areas) if (!transaction.areas.includes(area)) transaction.areas.push(area);
+      bump(areas);
+      emit();
+      return;
+    }
     const before = clone(state.project);
+    const beforeJson = JSON.stringify(before);
     command.do(state.project, state);
     const after = clone(state.project);
+    if (beforeJson === JSON.stringify(after)) return; // no-op edits stay out of the history
     const now = Date.now();
+    const selection = selectionSnapshot();
     const mergeable = !!command.coalesceKey && coalesce.key === command.coalesceKey && now - coalesce.time < COALESCE_MS && undoStack.length;
     if (mergeable) {
-      undoStack[undoStack.length - 1].after = after;
-      undoStack[undoStack.length - 1].label = command.label || undoStack[undoStack.length - 1].label;
+      const entry = topEntry();
+      entry.after = after;
+      entry.label = command.label || entry.label;
+      entry.areas = [...new Set([...(entry.areas || []), ...areas])];
+      entry.selectionAfter = selection;
+      // a merged entry is a new edit: a fresh id keeps markClean honest
+      entry.id = nextEntryId;
+      nextEntryId += 1;
     } else {
-      undoStack.push({ label: command.label || 'edit', before, after, areas });
-      if (undoStack.length > MAX_UNDO) undoStack.shift();
+      pushEntry({ label: command.label || 'edit', before, after, areas, selectionBefore: selection, selectionAfter: selection });
     }
-    redoStack.length = 0;
     coalesce = { key: command.coalesceKey || null, time: now };
     bump(areas);
-    dirty = true;
     emit();
   }
 
-  function applySnapshot(snapshot, areas) {
-    state.project = clone(snapshot);
-    bump(areas || ['project']);
-    dirty = true;
+  // --- transactions (drags) ---------------------------------------------------
+  // begin takes the snapshot once, dispatch runs without snapshots inside, and
+  // end commits a single history entry if anything actually changed.
+
+  function beginTransaction(label) {
+    if (!state.project) return false;
+    if (!transaction) {
+      transaction = {
+        depth: 0,
+        label: label || 'edit',
+        areas: [],
+        before: clone(state.project),
+        beforeJson: JSON.stringify(state.project),
+        selectionBefore: selectionSnapshot(),
+      };
+    }
+    transaction.depth += 1;
+    return true;
+  }
+
+  function endTransaction() {
+    if (!transaction) return false;
+    transaction.depth -= 1;
+    if (transaction.depth > 0) return false;
+    const active = transaction;
+    transaction = null;
+    if (active.beforeJson === JSON.stringify(state.project)) return false;
+    pushEntry({
+      label: active.label,
+      before: active.before,
+      after: clone(state.project),
+      areas: active.areas.length ? active.areas : ['project'],
+      selectionBefore: active.selectionBefore,
+      selectionAfter: selectionSnapshot(),
+    });
+    coalesce = { key: null, time: 0 };
+    bump(active.areas.length ? active.areas : ['project']);
     emit();
+    return true;
+  }
+
+  function cancelTransaction() {
+    if (!transaction) return false;
+    const active = transaction;
+    transaction = null;
+    state.project = active.before;
+    restoreSelection(active.selectionBefore);
+    bump(AREAS);
+    emit();
+    return true;
   }
 
   function undo() {
-    if (!undoStack.length) return false;
+    if (transaction || !undoStack.length) return false;
     const entry = undoStack.pop();
     redoStack.push(entry);
-    applySnapshot(entry.before, entry.areas);
+    state.project = clone(entry.before);
+    restoreSelection(entry.selectionBefore);
+    bump(AREAS);
+    emit();
     return true;
   }
 
   function redo() {
-    if (!redoStack.length) return false;
+    if (transaction || !redoStack.length) return false;
     const entry = redoStack.pop();
     undoStack.push(entry);
-    applySnapshot(entry.after, entry.areas);
+    state.project = clone(entry.after);
+    restoreSelection(entry.selectionAfter);
+    bump(AREAS);
+    emit();
     return true;
   }
 
@@ -227,6 +348,16 @@ SA.store = (() => {
 
   function canRedo() {
     return redoStack.length > 0;
+  }
+
+  function undoLabel() {
+    const entry = topEntry();
+    return entry ? entry.label : null;
+  }
+
+  function redoLabel() {
+    const entry = redoStack.length ? redoStack[redoStack.length - 1] : null;
+    return entry ? entry.label : null;
   }
 
   function setSelection(paths, kind) {
@@ -258,7 +389,7 @@ SA.store = (() => {
   }
 
   function markClean() {
-    dirty = false;
+    savedId = topEntryId();
   }
 
   function touch(areas) {
@@ -267,7 +398,7 @@ SA.store = (() => {
   }
 
   function isDirty() {
-    return dirty;
+    return topEntryId() !== savedId;
   }
 
   function findCue(cueId) {
@@ -317,6 +448,104 @@ SA.store = (() => {
     const mode = (state.project && state.project.styleMode) || {};
     if (typeof SA === 'undefined' || !SA.moods) return { axes: mode.axes || {}, direction: mode.direction || 'horizontal', genre: mode.genre || null };
     return { axes: SA.moods.normalizeAxes(mode.axes || {}), direction: mode.direction || 'horizontal', genre: mode.genre || null };
+  }
+
+  // --- palettes per scope -----------------------------------------------------
+  // A palette lives on the project, a cue or a beat. Effects keep literal hex
+  // colours, so changing a scope's palette also moves those colours: at the
+  // project level every style follows (except cues / beats with a palette of
+  // their own); at a cue or beat level the resolved groups are recoloured and
+  // the ones that change are written into that scope as its own copy.
+  const MANAGED_TRACK_KINDS = ['background', 'backdrop', 'filler'];
+
+  function paletteScope(scope) {
+    if (!scope || scope === 'project') return { kind: 'project', path: '' };
+    if (scope.beatId) return { kind: 'beat', cueId: scope.cueId, beatId: scope.beatId, path: `cue:${scope.cueId}/beat:${scope.beatId}` };
+    if (scope.cueId) return { kind: 'cue', cueId: scope.cueId, path: `cue:${scope.cueId}` };
+    return null;
+  }
+
+  function parentPathOf(target) {
+    if (target.kind === 'beat') return `cue:${target.cueId}`;
+    return '';
+  }
+
+  function paletteColorsAt(projectDoc, path) {
+    const style = SA.project.resolveStyle(projectDoc, path);
+    return style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors.slice() : [];
+  }
+
+  function scopeStyle(projectDoc, target) {
+    if (target.kind === 'project') return projectDoc.style || (projectDoc.style = {});
+    const bag = target.kind === 'cue' ? (projectDoc.cueStyles = projectDoc.cueStyles || {}) : (projectDoc.beatStyles = projectDoc.beatStyles || {});
+    const id = target.kind === 'cue' ? target.cueId : target.beatId;
+    return bag[id] || (bag[id] = {});
+  }
+
+  // backdrop / filler clips follow the palette of the lyrics they sit under
+  function managedClipsWithin(projectDoc, start, end) {
+    const managed = new Set((projectDoc.tracks || []).filter((track) => MANAGED_TRACK_KINDS.includes(track.kind)).map((track) => track.id));
+    return (projectDoc.clips || []).filter((clip) => managed.has(clip.trackId) && clip.start >= start - 1e-4 && clip.end <= end + 1e-4);
+  }
+
+  function recolorClips(clips, from, to) {
+    for (const clip of clips) {
+      if (clip.spec) clip.spec = SA.moods.recolor(clip.spec, from, to);
+      if (Array.isArray(clip.colors)) clip.colors = SA.moods.recolor(clip.colors, from, to);
+    }
+  }
+
+  function repaintScope(projectDoc, target, from, to) {
+    const move = (value) => SA.moods.recolor(value, from, to);
+    if (target.kind === 'project') {
+      const { palette, ...rest } = projectDoc.style || {};
+      projectDoc.style = { ...move(rest), ...(palette ? { palette } : {}) };
+      const cuePalette = new Set();
+      for (const [cueId, container] of Object.entries(projectDoc.cueStyles || {})) {
+        if (container.palette) cuePalette.add(cueId);
+        else projectDoc.cueStyles[cueId] = move(container);
+      }
+      for (const [cueId, beats] of Object.entries(projectDoc.beats || {})) {
+        if (cuePalette.has(cueId)) continue;
+        for (const beat of beats || []) {
+          const container = projectDoc.beatStyles && projectDoc.beatStyles[beat.id];
+          if (container && !container.palette) projectDoc.beatStyles[beat.id] = move(container);
+        }
+      }
+      const cues = (projectDoc.script && projectDoc.script.cues) || [];
+      const owned = cues.filter((cue) => cuePalette.has(cue.id));
+      const clips = managedClipsWithin(projectDoc, -Infinity, Infinity).filter(
+        (clip) => !owned.some((cue) => clip.start >= cue.start - 1e-4 && clip.end <= cue.end + 1e-4)
+      );
+      recolorClips(clips, from, to);
+      return;
+    }
+    const container = scopeStyle(projectDoc, target);
+    const resolved = SA.project.resolveStyle(projectDoc, target.path);
+    for (const key of Object.keys(resolved)) {
+      if (key === 'palette') continue;
+      const next = move(resolved[key]);
+      if (JSON.stringify(next) !== JSON.stringify(resolved[key])) container[key] = next;
+    }
+    if (target.kind === 'cue') {
+      for (const beat of (projectDoc.beats && projectDoc.beats[target.cueId]) || []) {
+        const own = projectDoc.beatStyles && projectDoc.beatStyles[beat.id];
+        if (own && !own.palette) projectDoc.beatStyles[beat.id] = move(own);
+      }
+      const cue = ((projectDoc.script && projectDoc.script.cues) || []).find((entry) => entry.id === target.cueId);
+      if (cue) recolorClips(managedClipsWithin(projectDoc, cue.start, cue.end), from, to);
+    }
+  }
+
+  function applyPalette(projectDoc, target, palette) {
+    const from = paletteColorsAt(projectDoc, target.path);
+    const to = palette.colors.slice();
+    if (from.length) repaintScope(projectDoc, target, from, to);
+    scopeStyle(projectDoc, target).palette = { ...clone(palette), colors: to };
+    if (target.kind === 'project') {
+      if (SA.moods.enforceReadability) SA.moods.enforceReadability(projectDoc.style, to);
+      projectDoc.styleMode = { ...(projectDoc.styleMode || {}), theme: palette.name || palette.id || '' };
+    }
   }
 
   function clipDurationOf(clip) {
@@ -1445,6 +1674,69 @@ SA.store = (() => {
         },
       });
     },
+    // a palette for the project, a cue ({ cueId }) or a beat ({ cueId, beatId });
+    // the literal colours of that scope move with it
+    setPalette(scope, palette, options) {
+      const target = paletteScope(scope);
+      if (!target || !palette || !Array.isArray(palette.colors) || !palette.colors.length || typeof SA === 'undefined' || !SA.moods) return;
+      const opts = options || {};
+      dispatch({
+        label: opts.label || 'set palette',
+        areas: ['style', 'project'],
+        coalesceKey: opts.coalesceKey,
+        do(projectDoc) {
+          applyPalette(projectDoc, target, palette);
+        },
+      });
+    },
+    // a new palette inside the project's axes and genre, the furthest of a few
+    // candidates from the current one so the change is always visible
+    rerollPalette(scope) {
+      const target = paletteScope(scope);
+      if (!target || !state.project || typeof SA === 'undefined' || !SA.moods) return null;
+      const mode = modeAxes();
+      const current = paletteColorsAt(state.project, target.path);
+      const distance = (colors) => {
+        if (!current.length) return 0;
+        return colors.reduce((sum, hex, index) => {
+          const a = SA.color.parse(hex);
+          const b = SA.color.parse(current[index % current.length]);
+          return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
+        }, 0);
+      };
+      const context = SA.moods.contextFor(state.project);
+      let palette = null;
+      let best = -1;
+      for (let i = 0; i < 4; i += 1) {
+        const seed = Math.floor(Math.random() * 900000) + 1000;
+        const candidate = SA.moods.generate({ axes: mode.axes, seed, genre: mode.genre, direction: mode.direction, context }).style.palette;
+        const score = distance(candidate.colors);
+        if (score > best) {
+          best = score;
+          palette = candidate;
+        }
+      }
+      if (!palette) return null;
+      commands.setPalette(scope, palette, { label: 'reroll palette' });
+      return palette;
+    },
+    // back to the parent's palette: the scope's colours move back onto it
+    resetPalette(scope) {
+      const target = paletteScope(scope);
+      if (!target || target.kind === 'project' || !state.project || typeof SA === 'undefined' || !SA.moods) return;
+      dispatch({
+        label: 'reset palette',
+        areas: ['style', 'project'],
+        do(projectDoc) {
+          const container = scopeStyle(projectDoc, target);
+          if (!container.palette) return;
+          const from = paletteColorsAt(projectDoc, target.path);
+          delete container.palette;
+          const to = paletteColorsAt(projectDoc, parentPathOf(target));
+          if (from.length && to.length) repaintScope(projectDoc, target, from, to);
+        },
+      });
+    },
     setCredits(patch, options) {
       dispatch({
         label: 'credits',
@@ -1462,10 +1754,15 @@ SA.store = (() => {
     subscribe,
     load,
     dispatch,
+    beginTransaction,
+    endTransaction,
+    cancelTransaction,
     undo,
     redo,
     canUndo,
     canRedo,
+    undoLabel,
+    redoLabel,
     setSelection,
     setPlayhead,
     setPlaying,

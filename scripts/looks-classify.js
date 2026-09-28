@@ -222,8 +222,8 @@ function axesDistance(a, b) {
   const source = a || {};
   const target = b || {};
   let sum = 0;
-  for (const key of moods.AXES) sum += Math.abs(clamp01(source[key] == null ? 0.5 : source[key]) - clamp01(target[key] == null ? 0.5 : target[key]));
-  return sum / moods.AXES.length;
+  for (const key of moods.MATCH_AXES) sum += Math.abs(clamp01(source[key] == null ? 0.5 : source[key]) - clamp01(target[key] == null ? 0.5 : target[key]));
+  return sum / moods.MATCH_AXES.length;
 }
 
 function themesFor(entry, axes) {

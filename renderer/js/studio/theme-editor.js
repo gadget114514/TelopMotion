@@ -510,7 +510,7 @@ SA.themeEditor = (() => {
 
     const axes = document.createElement('div');
     axes.className = 'axis-grid';
-    for (const axis of SA.moods.AXES) {
+    for (const axis of SA.moods.MATCH_AXES) {
       const row = document.createElement('label');
       row.className = 'axis-row';
       const label = document.createElement('span');
@@ -581,7 +581,7 @@ SA.themeEditor = (() => {
       // jitter the current axes without changing the genre
       const r = Math.random;
       const next = {};
-      for (const axis of SA.moods.AXES) next[axis] = Math.max(0, Math.min(1, Number(draft.axes[axis] || 0.5) + (r() * 2 - 1) * 0.12));
+      for (const axis of SA.moods.MATCH_AXES) next[axis] = Math.max(0, Math.min(1, Number(draft.axes[axis] == null ? 0.5 : draft.axes[axis]) + (r() * 2 - 1) * 0.12));
       draft.axes = next;
       draft.features = null;
       draft.seed = seedNow();
