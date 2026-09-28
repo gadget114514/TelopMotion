@@ -225,6 +225,25 @@ test('every layout type and location type evaluates without NaN', () => {
   }
 });
 
+test('animation loop wraps the hold time over its period', () => {
+  const hold = [{ type: 'floatBob', params: { amp: 0.05, speed: 1 } }];
+  const loopScene = makeScene('A', { animation: { type: 'loop', params: { period: 0.5, yoyo: false } }, hold });
+  const plainScene = makeScene('A', { hold });
+  const wrappedA = evaluate(loopScene, 2.2).letters[0].y;
+  const wrappedB = evaluate(loopScene, 2.7).letters[0].y;
+  assert.ok(Math.abs(wrappedA - wrappedB) < 1e-6, `loop period did not wrap (${wrappedA} vs ${wrappedB})`);
+  const plainA = evaluate(plainScene, 2.2).letters[0].y;
+  const plainB = evaluate(plainScene, 2.7).letters[0].y;
+  assert.ok(Math.abs(plainA - plainB) > 10, `unwrapped hold should keep moving (${plainA} vs ${plainB})`);
+});
+
+test('badgeAnchored honours its offsets without a badge rect', () => {
+  const base = { enter: { type: 'fade', motion: { in: { duration: 0.01 } } }, animation: { type: 'simultaneous' } };
+  const shifted = evaluate(makeScene('ABCDE', { ...base, location: { type: 'badgeAnchored', params: { offsetX: -0.5 } } }), 1);
+  const centered = evaluate(makeScene('ABCDE', { ...base, location: { type: 'center' } }), 1);
+  assert.ok(centered.letters[0].x - shifted.letters[0].x > 500, `offset ignored (${centered.letters[0].x} -> ${shifted.letters[0].x})`);
+});
+
 test('custom motions run only inside their own window', () => {
   const base = { enter: { type: 'fade', motion: { in: { duration: 0.01, delay: 0, ease: 'linear' } }, params: {} }, animation: { type: 'simultaneous' } };
   const plain = makeScene('AB', base);

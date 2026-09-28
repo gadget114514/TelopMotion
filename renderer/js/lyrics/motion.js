@@ -386,6 +386,9 @@
       const params = (animation && animation.params) || {};
       animationDef.loop = { ...animationDef.loop, ...params };
     }
+    // `animation.loop` repeats the hold effects over its period (§7.1): it
+    // wraps the hold-local time, falling back to the hold instance's own loop.
+    const animationLoop = animationType === 'loop' && num(animationDef.loop && animationDef.loop.period, 0) > 0 ? animationDef.loop : null;
     if (animationType === 'cascade') {
       const params = (animation && animation.params) || {};
       const overlap = clamp01(num(params.overlap, 0.5));
@@ -547,10 +550,11 @@
         const holdDef = motionDef(holdInstance, 'hold', duration);
         const env = clamp01((local - holdDef.in.delay - offset) / holdDef.in.duration) * (1 - clamp01((local - (duration - holdDef.out.duration - holdDef.out.delay)) / holdDef.out.duration));
         let h = holdLocal;
-        if (holdDef.loop && holdDef.loop.period > 0) {
-          h = h % holdDef.loop.period;
-          if (holdDef.loop.yoyo) {
-            const period = holdDef.loop.period;
+        const wrap = animationLoop || holdDef.loop;
+        if (wrap && wrap.period > 0) {
+          h = h % wrap.period;
+          if (wrap.yoyo) {
+            const period = wrap.period;
             const half = Math.floor(holdLocal / period) % 2 === 1;
             h = half ? period - h : h;
           }

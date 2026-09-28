@@ -77,7 +77,12 @@
       const safe = params.safeArea == null ? 0.08 : params.safeArea;
       const rect = info && info.badgeRect;
       if (!rect) {
-        return { x: 0.5 * frame.width, y: 0.5 * frame.height, safe };
+        // without a badge the effect still honours its offsets around centre
+        return {
+          x: (0.5 + (params.offsetX || 0)) * frame.width,
+          y: (0.5 + (params.offsetY || 0)) * frame.height,
+          safe,
+        };
       }
       const side = rect.x + rect.w + 0.28 * frame.width < frame.width - safe * frame.width ? 1 : -1;
       const x = side > 0 ? rect.x + rect.w + 0.12 * frame.width : rect.x - 0.12 * frame.width;
