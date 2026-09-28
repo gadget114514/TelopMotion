@@ -136,3 +136,21 @@ test('costOf sums the descriptor costs of a style', () => {
   assert.ok(cost > 0, `cost ${cost}`);
   assert.equal(cost, 2 + 1 + 2 + 2);
 });
+
+test('every post effect code has exactly one branch in the post shader', () => {
+  const vm = require('node:vm');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/lyrics/gl/shaders.js'), 'utf8');
+  const sandbox = { window: {} };
+  sandbox.SA = sandbox.window.SA = {};
+  vm.runInNewContext(source, sandbox);
+  const frag = sandbox.SA.glShaders.POST_FRAG;
+  const branches = [...frag.matchAll(/type == (\d+)\)/g)].map((match) => Number(match[1]));
+  for (const [type, code] of Object.entries(fx.postTypes)) {
+    assert.equal(branches.filter((value) => value === code).length, 1, `${type} (code ${code})`);
+  }
+  // lightSweep must reach the sweep band, not the kaleidoscope swirl.
+  const sweep = frag.slice(frag.indexOf(`type == ${fx.postTypes.lightSweep})`));
+  assert.match(sweep.slice(0, sweep.indexOf('} else if')), /band/);
+});

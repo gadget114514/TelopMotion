@@ -647,6 +647,19 @@ SA.glShaders = (() => {
         color += sampleText(v_uv - dir * float(i)) * (0.5 / float(i));
       }
     } else if (type == 17) {
+      float copies = clamp(u_params.x, 2.0, 8.0);
+      float decay = clamp(u_params.y, 0.0, 1.0);
+      vec2 stepUv = vec2(-0.7, 0.7) * amount * 0.01;
+      float weight = 1.0;
+      color = src;
+      for (int i = 1; i <= 8; i += 1) {
+        if (float(i) > copies) break;
+        weight *= decay;
+        vec4 ghost = sampleText(v_uv + stepUv * float(i));
+        ghost.rgb = mix(ghost.rgb, u_colorA.rgb * ghost.a, u_colorA.a);
+        color += ghost * weight * (1.0 - color.a);
+      }
+    } else if (type == 18) {
       float decay = 1.0;
       vec2 center = vec2(0.5);
       float density = 0.6;
@@ -659,7 +672,7 @@ SA.glShaders = (() => {
         weight *= decay;
       }
       color = src + ray / 24.0 * amount;
-    } else if (type == 18) {
+    } else if (type == 19) {
       float angle = u_params.x;
       float width = max(u_params.y, 0.01);
       float speed = max(u_params.z, 0.05);
@@ -667,7 +680,7 @@ SA.glShaders = (() => {
       float pos = fract(u_time * speed * 0.15);
       float band = 1.0 - smoothstep(0.0, width, abs(dot(v_uv - 0.5, dir) * 2.0 - (pos * 2.0 - 1.0)));
       color = src + vec4(u_colorA.rgb, u_colorA.a) * band * amount * src.a;
-    } else if (type == 19) {
+    } else if (type == 20) {
       float segments = max(u_params.x, 2.0);
       float rotation = u_params.y + u_time * 0.05;
       vec2 uv = rotateUv(v_uv, rotation);
@@ -676,19 +689,9 @@ SA.glShaders = (() => {
       float mirrored = abs(wedge - TAU / segments * 0.5);
       vec2 mirrorUv = rotateUv(vec2(cos(mirrored) * length(uv - 0.5) + 0.5, sin(mirrored) * length(uv - 0.5) + 0.5), -rotation);
       color = sampleText(mirrorUv);
-    } else if (type == 20) {
+    } else if (type == 21) {
       vec2 uv = u_params.x > 0.5 ? vec2(1.0 - v_uv.x, v_uv.y) : vec2(v_uv.x, 1.0 - v_uv.y);
       color = sampleText(uv);
-    } else if (type == 21) {
-      float threshold = clamp(u_params.x, 0.0, 1.0);
-      float length = clamp(u_params.y, 1.0, 64.0);
-      vec2 dir = normalize(vec2(cos(u_params.z), sin(u_params.z)) + vec2(1e-6));
-      color = src;
-      if (src.r + src.g + src.b > threshold) {
-        for (int i = 1; i <= 16; i += 1) {
-          color = max(color, sampleText(v_uv + dir * float(i) * length / u_resolution.x));
-        }
-      }
     } else if (type == 22) {
       float threshold = clamp(u_params.x, 0.0, 1.0);
       float length = clamp(u_params.y, 1.0, 64.0);

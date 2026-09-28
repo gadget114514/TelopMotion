@@ -112,7 +112,10 @@
       const center = params.center || { x: 0.5, y: 0.5 };
       p4 = [num(center.x, 0.5), num(center.y, 0.5), 0, envelope * num(params.strength, 0.4)];
     } else if (type === 'motionBlur') p4 = [((num(params.angle, 0) + 180) * Math.PI) / 180, 0, 0, envelope * num(params.shutter, 0.5)];
-    else if (type === 'echoTrail') p4 = [0, 0, 0, envelope * num(params.spacing, 0.08) * 10];
+    else if (type === 'echoTrail') {
+      p4 = [num(params.copies, 4), num(params.decay, 0.6), 0, envelope * num(params.spacing, 0.08) * 10];
+      colorA = toRgb(params.tint, null, context) || [0, 0, 0, 0];
+    }
     else if (type === 'godRays') p4 = [0, 0, 0, envelope * num(params.weight, 1)];
     else if (type === 'lightSweep') {
       p4 = [((num(params.angle, -30) + 180) * Math.PI) / 180, num(params.width, 0.12), num(params.speed, 0.6), envelope];
