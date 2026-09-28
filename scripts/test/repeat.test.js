@@ -210,6 +210,104 @@ test('sequences change the copies over time', () => {
   assert.notEqual(slide[1].dx, slideLater[1].dx, 'counterSlide moves horizontally');
 });
 
+test('size progress is monotonic and alternate toggles', () => {
+  const progress = planAt('stackV', { copies: 3, var1Attr: 'size', var1Rule: 'progress' }, 1);
+  const scales = progress.map((copy) => copy.scale);
+  for (let i = 1; i < scales.length; i += 1) {
+    assert.ok(scales[i] < scales[i - 1], `scale ${i} ${scales[i]} < ${scales[i - 1]}`);
+  }
+  const alternate = planAt('stackV', { copies: 3, var1Attr: 'size', var1Rule: 'alternate' }, 1);
+  assert.equal(alternate[0].scaleMul, 1);
+  assert.equal(alternate[1].scaleMul, 0.6);
+  assert.equal(alternate[2].scaleMul, 1);
+  assert.equal(alternate[3].scaleMul, 0.6);
+});
+
+test('alternate is a checkerboard on grid, brick and fill', () => {
+  const grid = planAt('grid', { copies: 'many', fit: 'overflow', var1Attr: 'size', var1Rule: 'alternate' }, 1);
+  const keysByCell = new Map();
+  for (const copy of framesOf(grid)) {
+    const key = `${Math.round(copy.dx)}:${Math.round(copy.dy)}`;
+    keysByCell.set(key, copy);
+  }
+  for (const copy of framesOf(grid)) {
+    const right = keysByCell.get(`${Math.round(copy.dx + 680)}:${Math.round(copy.dy)}`);
+    if (right) assert.notEqual(copy.alternateKey, right.alternateKey, 'horizontal neighbours alternate');
+    const below = keysByCell.get(`${Math.round(copy.dx)}:${Math.round(copy.dy + 300)}`);
+    if (below) assert.notEqual(copy.alternateKey, below.alternateKey, 'vertical neighbours alternate');
+  }
+  for (const type of ['brick', 'fill']) {
+    const list = framesOf(planAt(type, { var1Attr: 'size', var1Rule: 'alternate' }, 1));
+    assert.ok(list.some((copy) => copy.alternateKey === 0), `${type} has even cells`);
+    assert.ok(list.some((copy) => copy.alternateKey === 1), `${type} has odd cells`);
+  }
+});
+
+test('oddOne changes exactly one copy', () => {
+  const decor = planAt('stackV', { copies: 3, var1Attr: 'decor', var1Rule: 'oddOne' }, 1);
+  assert.equal(decor.filter((copy) => copy.decor === 'solid').length, 1);
+  assert.equal(decor.filter((copy) => copy.decor === 'hollow').length, decor.length - 1);
+  const size = planAt('stackV', { copies: 3, var1Attr: 'size', var1Rule: 'oddOne' }, 1);
+  assert.equal(size.filter((copy) => copy.scaleMul > 1.5).length, 1, 'one copy stands out');
+  const last = planAt('stackV', { copies: 3, var1Attr: 'size', var1Rule: 'oddOne', var1Target: 'last' }, 1);
+  const oddLast = last.filter((copy) => copy.scaleMul > 1.5);
+  assert.equal(oddLast.length, 1);
+  assert.equal(oddLast[0].index, last.length - 1, 'the last copy is the odd one');
+});
+
+test('random variation never repeats the previous value', () => {
+  const colors = planAt('stackV', { copies: 'many', var1Attr: 'color', var1Rule: 'random' }, 1);
+  const indices = framesOf(colors).map((copy) => copy.colorIndex);
+  for (let i = 1; i < indices.length; i += 1) assert.notEqual(indices[i], indices[i - 1], `colour ${i}`);
+  const decor = planAt('stackV', { copies: 'many', var1Attr: 'decor', var1Rule: 'random' }, 1);
+  const decors = framesOf(decor).map((copy) => copy.decor);
+  for (let i = 1; i < decors.length; i += 1) assert.notEqual(decors[i], decors[i - 1], `decor ${i}`);
+});
+
+test('decor progress produces all four decorations', () => {
+  const list = framesOf(planAt('stackV', { copies: 'many', var1Attr: 'decor', var1Rule: 'progress' }, 1));
+  const kinds = new Set(list.map((copy) => copy.decor));
+  assert.deepEqual([...kinds].sort(), ['glow', 'hollow', 'shadow', 'solid']);
+});
+
+test('variation presets expand into the curated combinations', () => {
+  const fade = planAt('stackV', { copies: 3, variationPreset: 'perspectiveFade' }, 1);
+  assert.equal(fade[0].scaleMul, 1);
+  assert.ok(fade[1].scaleMul < 1 && fade[2].scaleMul < fade[1].scaleMul, 'perspective fade shrinks with distance');
+  assert.ok(fade[3].lightAmount > fade[1].lightAmount, 'light grows with distance');
+
+  const pop = planAt('stackV', { copies: 3, variationPreset: 'popAlternate' }, 1);
+  assert.deepEqual(new Set(framesOf(pop).map((copy) => copy.decor)), new Set(['solid', 'hollow']));
+
+  const hero = planAt('stackV', { copies: 3, variationPreset: 'heroOutline' }, 1);
+  assert.equal(hero.filter((copy) => copy.decor === 'solid').length, 1, 'heroOutline keeps one solid');
+
+  const rainbow = planAt('stackV', { copies: 'many', variationPreset: 'rainbowStep' }, 1);
+  const hues = framesOf(rainbow).map((copy) => copy.hueShift);
+  assert.ok(hues[hues.length - 1] > hues[0], 'rainbowStep hue advances');
+  assert.ok(Math.abs(hues[hues.length - 1] - 360) < 1e-6 || hues[hues.length - 1] > 300, 'many reaches a full turn');
+});
+
+test('presets fall back when there are not enough copies', () => {
+  const pop = planAt('stackV', { copies: 1, variationPreset: 'popAlternate' }, 1);
+  assert.equal(pop.filter((copy) => copy.decor === 'solid').length, 1, 'two copies use oddOne');
+});
+
+test('fill and brick fade the copies around the main text', () => {
+  const list = framesOf(planAt('fill', {}, 1));
+  const near = list.find((copy) => Math.hypot(copy.dx, copy.dy) < 500);
+  const far = list.find((copy) => Math.hypot(copy.dx, copy.dy) > 700);
+  assert.ok(near && far, 'has near and far copies');
+  assert.ok(near.opacity < far.opacity, `near ${near.opacity} < far ${far.opacity}`);
+});
+
+test('variation is deterministic per seed', () => {
+  const params = { copies: 'many', var1Attr: 'decor', var1Rule: 'random', var2Attr: 'color', var2Rule: 'random' };
+  const first = planAt('scatter', params, 1.3);
+  const second = planAt('scatter', params, 1.3);
+  assert.deepEqual(first, second);
+});
+
 test('signature distinguishes arrangements and params', () => {
   assert.equal(repeat.signature(instance('stackV', { copies: 2 })), repeat.signature(instance('stackV', { copies: '2' })));
   assert.notEqual(repeat.signature(instance('stackV', { copies: 2 })), repeat.signature(instance('rowH', { copies: 2 })));

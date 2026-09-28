@@ -85,7 +85,7 @@
     for (const slot of ['var1', 'var2']) {
       const attr = VARIATION_ATTRS.includes(params[`${slot}Attr`]) ? params[`${slot}Attr`] : 'none';
       let rule = VARIATION_RULES.includes(params[`${slot}Rule`]) ? params[`${slot}Rule`] : 'progress';
-      let level = params[`${slot}Level`] === 'strong' ? 'strong' : 'normal';
+      const level = params[`${slot}Level`] === 'strong' ? 'strong' : 'normal';
       let target = params[`${slot}Target`] === 'last' ? 'last' : 'main';
       if (attr !== 'none') {
         if (copies === 1 && (rule === 'progress' || rule === 'alternate' || rule === 'random')) rule = 'oddOne';
@@ -96,6 +96,7 @@
       params[`${slot}Rule`] = rule;
       params[`${slot}Level`] = level;
       params[`${slot}Target`] = target;
+      params[`${slot}ColorMode`] = params[`${slot}ColorMode`] === 'light' ? 'light' : 'hue';
     }
     if (params.var1Attr !== 'none' && params.var2Attr === params.var1Attr) params.var2Attr = 'none';
 
@@ -239,10 +240,16 @@
           }
         }
         cells.sort((a, b) => a.dist - b.dist);
-        cells.forEach((cell, index) => push(index + 1, cell.col * cellX, cell.row * cellY));
+        cells.forEach((cell, index) => {
+          push(index + 1, cell.col * cellX, cell.row * cellY);
+          children[children.length - 1].checker = Math.abs((cell.col + cell.row) % 2);
+        });
       } else {
         const cells = [[1, 0], [0, 1], [1, 1]];
-        for (let k = 0; k < copies; k += 1) push(k + 1, cells[k][0] * cellX, cells[k][1] * cellY);
+        for (let k = 0; k < copies; k += 1) {
+          push(k + 1, cells[k][0] * cellX, cells[k][1] * cellY);
+          children[children.length - 1].checker = Math.abs((cells[k][0] + cells[k][1]) % 2);
+        }
       }
     } else if (type === 'radial') {
       const radius = w / 2 + g * em;
@@ -336,11 +343,18 @@
         const cy = box.cy + dy;
         if (cx + (w / 2) * sMul <= 0 || cx - (w / 2) * sMul >= frameW) continue;
         if (cy + (h / 2) * sMul <= 0 || cy - (h / 2) * sMul >= frameH) continue;
-        cells.push({ dx, dy, dist: Math.hypot(dx, dy) });
+        cells.push({ dx, dy, dist: Math.hypot(dx, dy), checker: Math.abs((col + row) % 2) });
       }
     }
     cells.sort((a, b) => a.dist - b.dist);
-    return cells.slice(0, MAX_COPIES - 1).map((cell, index) => ({ k: index + 1, dx: cell.dx * sMul, dy: cell.dy * sMul, scale: sMul, rotate: 0 }));
+    return cells.slice(0, MAX_COPIES - 1).map((cell, index) => ({
+      k: index + 1,
+      dx: cell.dx * sMul,
+      dy: cell.dy * sMul,
+      scale: sMul,
+      rotate: 0,
+      checker: cell.checker,
+    }));
   }
 
   // Scales a layout down until every copy fits inside the frame (fit: shrink).
@@ -448,7 +462,118 @@
     return state;
   }
 
-  // --- plan -------------------------------------------------------------------------
+  // --- variation -------------------------------------------------------------------
+
+  // Presets are curated attr/rule combinations; `variationPreset !== 'custom'`
+  // overrides the var1/var2 fields until the user edits them again.
+  const PRESET_SLOTS = {
+    perspectiveFade: [
+      { attr: 'size', rule: 'progress', level: 'normal', target: 'main' },
+      { attr: 'color', rule: 'progress', level: 'normal', target: 'main', colorMode: 'light' },
+    ],
+    popAlternate: [
+      { attr: 'color', rule: 'alternate', level: 'normal', target: 'main' },
+      { attr: 'decor', rule: 'alternate', level: 'normal', target: 'main' },
+    ],
+    ransomNote: [
+      { attr: 'size', rule: 'random', level: 'normal', target: 'main' },
+      { attr: 'font', rule: 'random', level: 'normal', target: 'main' },
+    ],
+    heroOutline: [
+      { attr: 'decor', rule: 'oddOne', level: 'normal', target: 'main' },
+      { attr: 'color', rule: 'progress', level: 'normal', target: 'main' },
+    ],
+    rainbowStep: [{ attr: 'color', rule: 'progress', level: 'strong', target: 'main', colorMode: 'hue' }],
+    loudQuiet: [
+      { attr: 'size', rule: 'alternate', level: 'normal', target: 'main' },
+      { attr: 'font', rule: 'alternate', level: 'normal', target: 'main' },
+    ],
+  };
+  const DECOR_PROGRESS = ['solid', 'shadow', 'glow', 'hollow'];
+  const SIZE_RANDOM = [0.5, 0.75, 1, 1.4];
+  const COLOR_RANDOM = [0, 1, 2, 3];
+  const RANDOM_POOLS = { size: SIZE_RANDOM, color: COLOR_RANDOM, decor: DECOR_PROGRESS, font: [0, 1, 2, 3] };
+
+  function effectiveRule(copies, rule) {
+    if (copies === 1 && (rule === 'progress' || rule === 'alternate' || rule === 'random')) return 'oddOne';
+    if (copies === 2 && rule === 'alternate') return 'oddOne';
+    return rule;
+  }
+
+  function resolveSlots(params) {
+    const preset = params.variationPreset !== 'custom' ? PRESET_SLOTS[params.variationPreset] : null;
+    const raw = preset || [
+      { attr: params.var1Attr, rule: params.var1Rule, level: params.var1Level, target: params.var1Target, colorMode: params.var1ColorMode },
+      { attr: params.var2Attr, rule: params.var2Rule, level: params.var2Level, target: params.var2Target, colorMode: params.var2ColorMode },
+    ];
+    return raw
+      .filter((slot) => slot && slot.attr && slot.attr !== 'none')
+      .map((slot) => ({
+        attr: slot.attr,
+        rule: effectiveRule(params.copies, slot.rule),
+        level: slot.level === 'strong' ? 'strong' : 'normal',
+        target: slot.target === 'last' ? 'last' : 'main',
+        colorMode: slot.colorMode === 'light' ? 'light' : 'hue',
+      }));
+  }
+
+  function makePicker(random, candidates) {
+    let last = null;
+    return () => {
+      if (!candidates.length) return null;
+      let value = candidates[Math.min(candidates.length - 1, Math.floor(random() * candidates.length))];
+      if (candidates.length > 1 && value === last) value = candidates[(candidates.indexOf(value) + 1) % candidates.length];
+      last = value;
+      return value;
+    };
+  }
+
+  function applySlot(copy, slot, index, count, pick) {
+    const u = count <= 1 ? 0 : index / (count - 1);
+    const isOdd = index === (slot.target === 'last' ? count - 1 : 0);
+    if (slot.rule === 'progress') {
+      if (slot.attr === 'size') {
+        const r = slot.level === 'strong' ? 0.65 : 0.8;
+        const scale = Math.pow(r, index);
+        // many copies settle at a readable floor instead of vanishing
+        copy.scaleMul *= count >= 6 ? Math.max(0.3, scale) : scale;
+      } else if (slot.attr === 'color') {
+        if (slot.colorMode === 'light') copy.lightAmount = Math.min(1, copy.lightAmount + u * (slot.level === 'strong' ? 0.8 : 0.5));
+        else {
+          const step = count >= 6 ? (slot.level === 'strong' ? 360 : 120) / Math.max(1, count - 1) : slot.level === 'strong' ? 60 : 30;
+          copy.hueShift += step * index;
+        }
+      } else if (slot.attr === 'decor') {
+        copy.decor = DECOR_PROGRESS[Math.min(DECOR_PROGRESS.length - 1, Math.floor(u * DECOR_PROGRESS.length))];
+      } else if (slot.attr === 'font') {
+        copy.fontClass = slot.fontClass || 'progress';
+      }
+    } else if (slot.rule === 'alternate') {
+      if (slot.attr === 'size') copy.scaleMul *= copy.alternateKey ? 0.6 : 1;
+      else if (slot.attr === 'color') {
+        copy.colorIndex = copy.alternateKey;
+        copy.gradientInvert = !!copy.alternateKey;
+      } else if (slot.attr === 'decor') copy.decor = copy.alternateKey ? 'hollow' : 'solid';
+      else if (slot.attr === 'font') copy.fontClass = copy.alternateKey ? 'b' : 'a';
+    } else if (slot.rule === 'random') {
+      const value = pick ? pick() : null;
+      if (slot.attr === 'size') copy.scaleMul *= value == null ? 1 : value;
+      else if (slot.attr === 'color') {
+        copy.colorIndex = value == null ? -1 : value;
+        copy.gradientInvert = value === 1 || value === 3;
+      } else if (slot.attr === 'decor') copy.decor = value || 'solid';
+      else if (slot.attr === 'font') copy.fontClass = value == null ? null : String(value);
+    } else if (slot.rule === 'oddOne') {
+      if (slot.attr === 'size') copy.scaleMul *= isOdd ? 1.6 : 1;
+      else if (slot.attr === 'color') {
+        if (isOdd) copy.accentColor = true;
+        else copy.colorIndex = 0;
+      } else if (slot.attr === 'decor') copy.decor = isOdd ? 'solid' : 'hollow';
+      else if (slot.attr === 'font') copy.fontClass = isOdd ? 'odd' : null;
+    }
+    return copy;
+  }
+
 
   function emptyCopy(index, isMain) {
     return {
@@ -459,11 +584,17 @@
       scale: 1,
       rotate: 0,
       opacity: 1,
+      // variation
+      scaleMul: 1,
       color: null,
+      colorIndex: -1,
+      accentColor: false,
       hueShift: 0,
+      lightAmount: 0,
       gradientInvert: false,
       fontClass: null,
       decor: 'solid',
+      alternateKey: 0,
       envelope: 1,
     };
   }
@@ -480,24 +611,37 @@
     const params = normalizeParams(type, instance.params);
     const box = boxOf(dims);
     const rngFn = typeof random === 'function' ? random : rng.mulberry32(1);
+    // one draw feeds the variation RNG, so variation is stable even though the
+    // layout (scatter) consumes a variable number of draws
+    const variationSeed = Math.floor(rngFn() * 0xffffffff) >>> 0;
     let children = layoutChildren(type, params, box, rngFn);
     const count = children.length + 1;
     const fade = params.copyOpacity === 'fade' || (params.var1Attr === 'none' && params.var2Attr === 'none');
     const base = params.copies === 'many' ? 0.45 : 0.7;
     const deep = params.copies === 'many' ? 0.1 : 0.3;
-    const copies = [emptyCopy(0, true)];
-    for (let i = 0; i < children.length; i += 1) {
-      const child = children[i];
-      const index = i + 1;
-      const sequence = sequenceState(params, type, index, count, t, beat, box, box);
-      const u = count <= 1 ? 0 : index / (count - 1);
-      const copy = emptyCopy(index, false);
-      copy.dx = child.dx + sequence.dx;
-      copy.dy = child.dy + sequence.dy;
-      copy.scale = child.scale * sequence.scale;
-      copy.rotate = child.rotate + sequence.rotate;
-      copy.envelope = sequence.envelope;
-      copy.opacity = fade ? base + (deep - base) * u : base;
+    const varRandom = rng.mulberry32(variationSeed);
+    const slots = resolveSlots(params);
+    const pickers = slots.map((slot) => makePicker(varRandom, RANDOM_POOLS[slot.attr] || []));
+    const copies = [];
+    for (let index = 0; index < count; index += 1) {
+      const child = index === 0 ? null : children[index - 1];
+      const copy = emptyCopy(index, index === 0);
+      if (child) {
+        const sequence = sequenceState(params, type, index, count, t, beat, box, box);
+        copy.dx = child.dx + sequence.dx;
+        copy.dy = child.dy + sequence.dy;
+        copy.scale = child.scale * sequence.scale;
+        copy.rotate = child.rotate + sequence.rotate;
+        copy.envelope = sequence.envelope;
+        copy.opacity = fade ? base + (deep - base) * (index / Math.max(1, count - 1)) : base;
+      }
+      copy.alternateKey = child && child.checker != null ? child.checker : index % 2;
+      slots.forEach((slot, slotIndex) => applySlot(copy, slot, index, count, pickers[slotIndex]));
+      copy.scale *= copy.scaleMul;
+      if (child && (type === 'brick' || type === 'fill') && Math.hypot(copy.dx, copy.dy) < Math.max(box.w, box.h)) {
+        // autoContrast: the copies around the main string fade back
+        copy.opacity *= 0.35;
+      }
       copies.push(copy);
     }
     // nearest last so the closest copies sit just behind the main text
@@ -566,10 +710,12 @@
       { key: 'var1Attr', kind: 'select', options: VARIATION_ATTRS, default: 'none' },
       { key: 'var1Rule', kind: 'select', options: VARIATION_RULES, default: 'progress' },
       { key: 'var1Level', kind: 'select', options: ['normal', 'strong'], default: 'normal' },
+      { key: 'var1ColorMode', kind: 'select', options: ['hue', 'light'], default: 'hue' },
       { key: 'var1Target', kind: 'select', options: ['main', 'last'], default: 'main' },
       { key: 'var2Attr', kind: 'select', options: VARIATION_ATTRS, default: 'none' },
       { key: 'var2Rule', kind: 'select', options: VARIATION_RULES, default: 'progress' },
       { key: 'var2Level', kind: 'select', options: ['normal', 'strong'], default: 'normal' },
+      { key: 'var2ColorMode', kind: 'select', options: ['hue', 'light'], default: 'hue' },
       { key: 'var2Target', kind: 'select', options: ['main', 'last'], default: 'main' },
       { key: 'variationPreset', kind: 'select', options: PRESET_IDS, default: 'custom' },
       { key: 'seedShift', kind: 'int', min: 0, max: 999, step: 1, default: 0 },

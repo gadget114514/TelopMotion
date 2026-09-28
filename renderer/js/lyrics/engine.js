@@ -324,6 +324,72 @@ SA.lyricsEngine = (() => {
       };
     }
 
+    // Per-copy colour: palette slot, hue shift, light amount and gradient
+    // inversion, resolved through the same colour helpers the clones use.
+    function shiftHue(rgba, hue) {
+      if (!rgba) return rgba;
+      const hsv = SA.color.rgbToHsv({ r: rgba[0], g: rgba[1], b: rgba[2] });
+      const rgb = SA.color.hsvToRgb({ h: hsv.h + hue, s: hsv.s, v: hsv.v });
+      return [rgb.r, rgb.g, rgb.b, rgba[3] == null ? 1 : rgba[3]];
+    }
+
+    function darken(rgba, amount) {
+      if (!rgba || !amount) return rgba;
+      const hsv = SA.color.rgbToHsv({ r: rgba[0], g: rgba[1], b: rgba[2] });
+      const rgb = SA.color.hsvToRgb({ h: hsv.h, s: Math.min(1, hsv.s + amount * 0.2), v: hsv.v * (1 - amount * 0.85) });
+      return [rgb.r, rgb.g, rgb.b, rgba[3] == null ? 1 : rgba[3]];
+    }
+
+    function repeatCopyColors(colors, copy, style, project) {
+      const palette =
+        (style.palette && style.palette.colors) ||
+        (project.palettes && project.palettes[0] && project.palettes[0].colors) ||
+        null;
+      let next = colors;
+      if (copy.colorIndex != null && copy.colorIndex >= 0 && Array.isArray(palette) && palette.length) {
+        const a = SA.color.parse(palette[copy.colorIndex % palette.length]);
+        const b = SA.color.parse(palette[(copy.colorIndex + 1) % palette.length]);
+        const arrayA = [a.r, a.g, a.b, a.a == null ? 1 : a.a];
+        const arrayB = [b.r, b.g, b.b, b.a == null ? 1 : b.a];
+        next = { fill: arrayA, fill2: arrayB, stroke: arrayA, glow: arrayA };
+      }
+      const hue = (copy.hueShift || 0) + (copy.accentColor ? 180 : 0);
+      const light = copy.lightAmount || 0;
+      if (hue || light) {
+        const map = (rgba) => darken(shiftHue(rgba, hue), light);
+        next = { fill: map(next.fill), fill2: map(next.fill2), stroke: map(next.stroke), glow: map(next.glow || next.fill) };
+      }
+      if (copy.gradientInvert) next = { ...next, fill: next.fill2, fill2: next.fill };
+      return next;
+    }
+
+    function hollowColors(colors) {
+      const clear = (rgba) => (rgba ? [rgba[0], rgba[1], rgba[2], 0] : rgba);
+      return { ...colors, fill: clear(colors.fill), fill2: clear(colors.fill2) };
+    }
+
+    const DECOR_EDGE = { hollow: 'outline', glow: 'neonGlow', shadow: 'dropShadow' };
+
+    function drawDecor(colors, decor, t, sdfTarget) {
+      const type = DECOR_EDGE[decor];
+      if (!type) return;
+      const style = (state.project && state.project.style) || {};
+      const uniforms = SA.fx.edgeUniforms(
+        { type, params: {} },
+        {
+          colorSet: colors,
+          maxDistance: Math.max(state.width, state.height) * 0.1,
+          width: state.width,
+          height: state.height,
+          time: t,
+          palette: style.palette || null,
+          palettes: state.project ? state.project.palettes || [] : [],
+          sdfTexture: sdfTarget ? sdfTarget.texture : null,
+        }
+      );
+      pipeline.edge(uniforms);
+    }
+
     function drawRepeatCopies(active, t, project, colorSet, fillInstance, sdfTarget, category, progress) {
       if (!SA.repeat || !pipeline) return;
       const { beat, scene, result, style } = active;
@@ -344,10 +410,12 @@ SA.lyricsEngine = (() => {
         const copy = copies[index];
         if (copy.isMain || copy.envelope <= 0.001 || copy.opacity <= 0.001) continue;
         const transform = repeatTransform(copy, box, state.width, state.height);
+        const decor = copy.decor || 'solid';
+        const copyColors = repeatCopyColors(colorSet.arrays, copy, style, project);
         pipeline.beginLayer();
         pipeline.fill(
           SA.fx.fillUniforms(fillInstance, {
-            colors: colorSet.arrays,
+            colors: decor === 'hollow' ? hollowColors(copyColors) : copyColors,
             category,
             time: t,
             palette: style.palette || null,
@@ -357,6 +425,7 @@ SA.lyricsEngine = (() => {
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
           })
         );
+        if (decor !== 'solid') drawDecor(copyColors, decor, t, sdfTarget);
         pipeline.commitLayer(copy.opacity * copy.envelope, transform);
       }
     }
