@@ -3,8 +3,8 @@ window.SA = window.SA || {};
 SA.inspector = (() => {
   'use strict';
 
-  const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'hold'];
-  const STACK_GROUPS = ['hold', 'edge', 'post'];
+  const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
   const GROUP_LABELS = {
     animation: 'studio.inspector.animation',
     layout: 'studio.inspector.layout',
@@ -17,8 +17,12 @@ SA.inspector = (() => {
     post: 'studio.inspector.post',
     background: 'studio.inspector.background',
     color: 'studio.inspector.color',
+    bgShape: 'studio.inspector.bgShape',
+    bgFill: 'studio.inspector.bgFill',
+    bgEdge: 'studio.inspector.bgEdge',
+    bgMotion: 'studio.inspector.bgMotion',
   };
-  const CONTROL_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background'];
+  const CONTROL_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
 
   const el = {};
   let lastSelection = '';
@@ -43,6 +47,8 @@ SA.inspector = (() => {
   function selectionInfo() {
     const raw = (SA.store.state.selection.paths || [])[0] || '';
     if (!raw) return { kind: 'none', path: '', raw };
+    if (raw.startsWith('track:')) return { kind: 'track', trackId: raw.slice('track:'.length), path: raw, raw };
+    if (raw.startsWith('clip:')) return { kind: 'clip', clipId: raw.slice('clip:'.length), path: raw, raw };
     if (raw.startsWith('filler:')) return { kind: 'filler', fillerKey: raw.slice('filler:'.length), path: raw, raw };
     if (raw.startsWith('credit:')) return { kind: 'credit', creditMode: raw.slice('credit:'.length), path: raw, raw };
     const parts = raw.split('/');
@@ -293,6 +299,19 @@ SA.inspector = (() => {
       container.appendChild(head);
       return;
     }
+    if (sel.kind === 'clip') {
+      const clip = ((doc.clips) || []).find((entry) => entry.id === sel.clipId);
+      const kind = clip ? SA.project.trackKindOf(doc, clip.trackId) : null;
+      const line = document.createElement('div');
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'btn btn-mini is-active';
+      chip.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')}${clip ? ` · ${(clip.spec && clip.spec.type) || ''}` : ''}`;
+      line.appendChild(chip);
+      head.appendChild(line);
+      container.appendChild(head);
+      return;
+    }
     if (sel.kind === 'filler') {
       const line = document.createElement('div');
       const chip = document.createElement('button');
@@ -310,6 +329,18 @@ SA.inspector = (() => {
       chip.type = 'button';
       chip.className = 'btn btn-mini is-active';
       chip.textContent = `${t('credits.title')} · ${t(`credits.mode${sel.creditMode.charAt(0).toUpperCase()}${sel.creditMode.slice(1)}`)}`;
+      line.appendChild(chip);
+      head.appendChild(line);
+      container.appendChild(head);
+      return;
+    }
+    if (sel.kind === 'track') {
+      const track = ((doc.tracks) || []).find((entry) => entry.id === sel.trackId);
+      const line = document.createElement('div');
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'btn btn-mini is-active';
+      chip.textContent = track ? track.name || track.id : sel.trackId;
       line.appendChild(chip);
       head.appendChild(line);
       container.appendChild(head);
@@ -394,8 +425,24 @@ SA.inspector = (() => {
       });
     }, ['custom', 'intro', 'badge', 'stat', 'song', 'completion', 'outro'].map((value) => ({ value, label: SA.controls.prettify(value) })));
     row(body, 'meta.kind', t('studio.inspector.kind'), kindSelect);
+    const subtitleTracks = SA.project.subtitleTracks(doc);
+    if (subtitleTracks.length) {
+      const currentTrack = cue.trackId || 'sub1';
+      const trackSelect = SA.controls.selectControl(
+        {},
+        currentTrack,
+        (value) => SA.store.commands.setCueTrack(sel.cueId, value),
+        subtitleTracks.map((track) => ({ value: track.id, label: track.name || track.id }))
+      );
+      row(body, 'cue.trackId', t('studio.inspector.track'), trackSelect, { noKey: true, noReset: true });
+    }
     const actions = document.createElement('div');
     actions.className = 'layer-order';
+    const rerollCue = document.createElement('button');
+    rerollCue.type = 'button';
+    rerollCue.className = 'btn btn-mini';
+    rerollCue.textContent = t('studio.inspector.rerollCue');
+    rerollCue.addEventListener('click', () => SA.store.commands.rerollCue(sel.cueId));
     const addBeat = document.createElement('button');
     addBeat.type = 'button';
     addBeat.className = 'btn btn-mini';
@@ -406,6 +453,7 @@ SA.inspector = (() => {
     removeCue.className = 'btn btn-mini';
     removeCue.textContent = t('studio.beat.deleteCue');
     removeCue.addEventListener('click', () => SA.store.commands.deleteCue(sel.cueId));
+    actions.appendChild(rerollCue);
     actions.appendChild(addBeat);
     actions.appendChild(removeCue);
     body.appendChild(actions);
@@ -1176,61 +1224,110 @@ SA.inspector = (() => {
     return fieldRow(fillerParamLabel(param.key), numberField(value, param, onChange));
   }
 
-  function renderFillerSection(container) {
+  const CLIP_KIND_LABELS = { background: 'studio.track.background', backdrop: 'studio.track.backdrop', filler: 'filler.track' };
+
+  function renderClipSection(container) {
     const doc = project();
-    const body = section(container, 'filler', t('filler.title'));
-    const key = selectionInfo().fillerKey;
-    const cues = (doc.script && doc.script.cues) || [];
-    const clips = SA.fillers ? SA.fillers.clips(cues, SA.preview.duration(), SA.fillers.settingsFor(doc)) : [];
-    const clip = clips.find((entry) => entry.key === key);
-    if (!clip) {
-      const empty = document.createElement('div');
-      empty.className = 'insp-inherit';
-      empty.textContent = t('filler.empty');
-      body.appendChild(empty);
-      return;
-    }
+    const clip = ((doc && doc.clips) || []).find((entry) => entry.id === selectionInfo().clipId);
+    if (!clip) return;
+    const kind = SA.project.trackKindOf(doc, clip.trackId) || 'background';
+    const isBackground = kind === 'background';
+    const body = section(container, 'clip', t('studio.inspector.clip'));
     const summary = document.createElement('div');
     summary.className = 'insp-inherit';
-    summary.textContent = `${t(`filler.kind.${clip.kind}`)} · ${clip.from.toFixed(2)}–${clip.to.toFixed(2)}s${clip.pinned ? ` · ${t('filler.pinned')}` : ''}`;
+    summary.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')} · ${Number(clip.start).toFixed(2)}–${Number(clip.end).toFixed(2)}s`;
     body.appendChild(summary);
 
-    const typeSelect = selectControl(clip.spec && clip.spec.type ? clip.spec.type : 'none', SA.fillerRender ? SA.fillerRender.types() : ['none'], fillerTypeLabel, (type) => {
-      SA.store.commands.setFillerClip(clip.key, { ...(clip.spec || {}), ...SA.fillerRender.defaults(type) });
-    });
-    body.appendChild(fieldRow(t('filler.type'), typeSelect));
-
     const spec = clip.spec || { type: 'none', params: {} };
-    const defaults = SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
+    const usedTypes = isBackground
+      ? SA.fx.list('background').map((descriptor) => descriptor.type)
+      : ['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []);
+    const typeSelect = selectControl(
+      spec.type || 'none',
+      [...new Set(usedTypes)],
+      (type) => (isBackground ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type)),
+      (type) => {
+        const params = isBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(type) : {};
+        SA.store.commands.updateClip(clip.id, { spec: { type, params } });
+      }
+    );
+    body.appendChild(fieldRow(t('studio.inspector.type'), typeSelect));
+
+    const descriptor = isBackground ? SA.fx.get('background', spec.type) : { params: SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : [] };
+    const defaults = isBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
     const params = { ...defaults, ...(spec.params || {}) };
-    for (const param of SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : []) {
-      body.appendChild(
-        fillerParamControl(param, params[param.key], (value) => {
-          SA.store.commands.setFillerClip(clip.key, { ...spec, params: { ...params, [param.key]: value } });
-        })
-      );
+    for (const param of SA.controls.paramEntries(descriptor)) {
+      const value = params[param.key] != null ? params[param.key] : param.default;
+      const control = SA.controls.paramControl(isBackground ? 'background' : kind, param, value, (next) => {
+        SA.store.commands.updateClip(
+          clip.id,
+          { spec: { ...spec, params: { ...params, [param.key]: next } } },
+          { coalesceKey: `clip:${clip.id}:${param.key}` }
+        );
+      });
+      body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
     }
+
+    // two colours, picked from the palette or set by hand; null follows the theme
+    const palette = (doc.style && doc.style.palette) || null;
+    const paletteColors = palette && Array.isArray(palette.colors) ? palette.colors : [];
+    const current = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : [];
+    const colorRow = document.createElement('div');
+    colorRow.className = 'insp-actions';
+    for (let index = 0; index < 2; index += 1) {
+      const fallback = paletteColors[index === 0 ? 0 : 1] || paletteColors[0] || '#000000';
+      const control = SA.controls.colorControl(current[index] || fallback, (next) => {
+        const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+        if (!value) return;
+        const colors = [current[0] || paletteColors[0] || '#000000', current[1] || paletteColors[1] || fallback];
+        colors[index] = value;
+        SA.store.commands.updateClip(clip.id, { colors });
+      }, { palette });
+      colorRow.appendChild(control);
+    }
+    body.appendChild(fieldRow(t('studio.inspector.colors'), colorRow));
+
+    const opacityControl = SA.controls.numberControl({ min: 0, max: 1, step: 0.05, default: 1 }, clip.opacity == null ? 1 : clip.opacity, (value) => {
+      SA.store.commands.updateClip(clip.id, { opacity: value }, { coalesceKey: `clip:${clip.id}:opacity` });
+    });
+    body.appendChild(fieldRow(t('studio.inspector.opacity'), opacityControl));
+    const fadeInControl = SA.controls.numberControl({ min: 0, step: 0.05, default: 0.3 }, clip.fadeIn == null ? 0.3 : clip.fadeIn, (value) => {
+      SA.store.commands.updateClip(clip.id, { fadeIn: value }, { coalesceKey: `clip:${clip.id}:fadeIn` });
+    });
+    body.appendChild(fieldRow(t('studio.inspector.fadeIn'), fadeInControl));
+    const fadeOutControl = SA.controls.numberControl({ min: 0, step: 0.05, default: 0.3 }, clip.fadeOut == null ? 0.3 : clip.fadeOut, (value) => {
+      SA.store.commands.updateClip(clip.id, { fadeOut: value }, { coalesceKey: `clip:${clip.id}:fadeOut` });
+    });
+    body.appendChild(fieldRow(t('studio.inspector.fadeOut'), fadeOutControl));
+    const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: clip.start }, clip.start, (value) => {
+      SA.store.commands.trimClip(clip.id, 'start', value, { coalesceKey: `clip:${clip.id}:start` });
+    });
+    body.appendChild(fieldRow(t('studio.inspector.start'), startControl));
+    const endControl = SA.controls.numberControl({ min: 0, step: 0.05, default: clip.end }, clip.end, (value) => {
+      SA.store.commands.trimClip(clip.id, 'end', value, { coalesceKey: `clip:${clip.id}:end` });
+    });
+    body.appendChild(fieldRow(t('studio.inspector.end'), endControl));
 
     const actions = document.createElement('div');
     actions.className = 'layer-order';
-    const pin = document.createElement('button');
-    pin.type = 'button';
-    pin.className = 'btn btn-mini';
-    pin.textContent = clip.pinned ? t('filler.unpin') : t('filler.pin');
-    pin.addEventListener('click', () => SA.store.commands.setFillerClip(clip.key, clip.pinned ? null : spec));
-    const applyKind = document.createElement('button');
-    applyKind.type = 'button';
-    applyKind.className = 'btn btn-mini';
-    applyKind.textContent = t('filler.applyKind', { kind: t(`filler.kind.${clip.kind}`) });
-    applyKind.addEventListener('click', () => SA.store.commands.setFillers({ byKind: { [clip.kind]: spec } }));
-    const seek = document.createElement('button');
-    seek.type = 'button';
-    seek.className = 'btn btn-mini';
-    seek.textContent = t('filler.goto');
-    seek.addEventListener('click', () => SA.preview.seek(clip.from));
-    actions.appendChild(pin);
-    actions.appendChild(applyKind);
-    actions.appendChild(seek);
+    const split = document.createElement('button');
+    split.type = 'button';
+    split.className = 'btn btn-mini';
+    split.textContent = t('studio.timeline.splitClip');
+    split.addEventListener('click', () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
+    const reroll = document.createElement('button');
+    reroll.type = 'button';
+    reroll.className = 'btn btn-mini';
+    reroll.textContent = t('studio.inspector.reroll');
+    reroll.addEventListener('click', () => SA.store.commands.rerollClip(clip.id));
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'btn btn-mini';
+    remove.textContent = t('studio.inspector.delete');
+    remove.addEventListener('click', () => SA.store.commands.deleteClip(clip.id));
+    actions.appendChild(split);
+    actions.appendChild(reroll);
+    actions.appendChild(remove);
     body.appendChild(actions);
   }
 
@@ -1396,13 +1493,21 @@ SA.inspector = (() => {
     el.body.innerHTML = '';
     renderBreadcrumb(el.body);
     if (sel.kind === 'none') return;
+    if (sel.kind === 'track') {
+      lastSelection = key;
+      return;
+    }
     if (sel.raw.startsWith('layer:')) {
       renderLayerSection(el.body);
       lastSelection = key;
       return;
     }
+    if (sel.kind === 'clip') {
+      renderClipSection(el.body);
+      lastSelection = key;
+      return;
+    }
     if (sel.kind === 'filler') {
-      renderFillerSection(el.body);
       lastSelection = key;
       return;
     }
@@ -1416,15 +1521,64 @@ SA.inspector = (() => {
     renderTransform(el.body);
     renderTextSection(el.body);
     renderLayersSummary(el.body);
-    for (const group of CONTROL_GROUPS) {
-      if (STACK_GROUPS.includes(group)) renderStackGroup(el.body, group);
-      else renderGroup(el.body, group);
-    }
+    renderStyleSections(el.body);
     renderCustomMotions(el.body);
     renderClones(el.body);
     renderColor(el.body);
     renderPalette(el.body);
     lastSelection = key;
+  }
+
+  // The effect groups are grouped into readable sections: motion, foreground
+  // text, the per-letter text background and the overall look.
+  function renderStyleSections(container) {
+    const heading = (key) => {
+      const node = document.createElement('div');
+      node.className = 'insp-section-title';
+      node.textContent = t(key);
+      container.appendChild(node);
+    };
+    const renderGroups = (groups) => {
+      for (const group of groups) {
+        if (STACK_GROUPS.includes(group)) renderStackGroup(container, group);
+        else renderGroup(container, group);
+      }
+    };
+    heading('studio.inspector.sectionMotion');
+    renderGroups(['animation', 'layout', 'enter', 'exit', 'hold', 'location']);
+    heading('studio.inspector.sectionText');
+    renderGroups(['fill', 'edge']);
+    heading('studio.inspector.sectionBg');
+    const style = resolvedStyle();
+    const shape = style.bgShape;
+    const bgActive = !!(shape && shape.type && shape.type !== 'none');
+    if (!bgActive) {
+      const body = section(container, 'bgShape', t(GROUP_LABELS.bgShape));
+      const hint = document.createElement('div');
+      hint.className = 'insp-inherit';
+      hint.textContent = t('studio.inspector.bgEmpty');
+      body.appendChild(hint);
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'btn btn-mini';
+      add.textContent = `+ ${t('studio.inspector.bgAdd')}`;
+      add.addEventListener('click', () => writeProp('bgShape', { type: 'square', params: SA.fx.paramDefaults('bgShape', 'square'), enabled: true }));
+      body.appendChild(add);
+    } else {
+      renderGroups(['bgShape', 'bgFill', 'bgMotion']);
+      renderStackGroup(container, 'bgEdge');
+      const actions = document.createElement('div');
+      actions.className = 'insp-actions';
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = t('studio.inspector.bgRemove');
+      remove.addEventListener('click', () => writeProp('bgShape', { type: 'none', params: {} }));
+      actions.appendChild(remove);
+      container.appendChild(actions);
+    }
+    heading('studio.inspector.sectionOverall');
+    renderGroups(['post']);
   }
 
   function init() {

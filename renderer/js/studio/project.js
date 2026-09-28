@@ -9,7 +9,15 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 1;
+  const VERSION = 2;
+  const DEFAULT_TRACKS = [
+    { id: 'fg', kind: 'foreground', name: '前景' },
+    { id: 'sub1', kind: 'subtitle', name: '字幕1' },
+    { id: 'mid', kind: 'backdrop', name: '後景' },
+    { id: 'filler', kind: 'filler', name: 'フィラー' },
+    { id: 'bg', kind: 'background', name: '背景' },
+  ];
+  const BACKDROP_FILLER_TYPES = new Set(['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'sineWave', 'progress']);
 
   const DEFAULT_CATEGORY_COLORS = {
     catalog: { tint: '#4d8dff', tint2: '#6f5bff' },
@@ -74,6 +82,8 @@
       keyframes: {},
       markers: [],
       layers: [],
+      tracks: DEFAULT_TRACKS.map((track) => ({ ...track })),
+      clips: [],
       fillers: { enabled: true, minGap: 1.5, margin: 0.25, byKind: {}, longGap: { threshold: 8, spec: null }, clips: {} },
       credits: { title: { source: 'song', songId: null, text: '' }, artist: { source: 'profile', text: '', showHandle: true }, extra: { text: '' }, template: '{title}\n{artist}', modes: { element: { enabled: true, at: 'start', time: 0, duration: 4 }, always: { enabled: false }, end: { enabled: true, duration: 5, style: 'endCard', afterLastCue: true } }, styles: {} },
     };
@@ -108,6 +118,180 @@
     return result;
   }
 
+  function trackKindOf(project, trackId) {
+    const track = ((project && project.tracks) || []).find((entry) => entry && entry.id === trackId);
+    if (track) return track.kind;
+    return trackId && /^sub/.test(trackId) ? 'subtitle' : null;
+  }
+
+  function subtitleTracks(project) {
+    return ((project && project.tracks) || []).filter((track) => track && track.kind === 'subtitle');
+  }
+
+  function nextClipId(project, prefix) {
+    const used = new Set(((project && project.clips) || []).map((clip) => clip && clip.id));
+    let index = 0;
+    let id = `${prefix}_${index}`;
+    while (used.has(id)) {
+      index += 1;
+      id = `${prefix}_${index}`;
+    }
+    return id;
+  }
+
+  function clipOf(project, id) {
+    return ((project && project.clips) || []).find((clip) => clip && clip.id === id) || null;
+  }
+
+  function clipsForTrack(project, trackId) {
+    return ((project && project.clips) || []).filter((clip) => clip && clip.trackId === trackId);
+  }
+
+  // Version 1 kept one opaque `style.background` per beat and derived fillers
+  // from cue gaps. Version 2 turns both into explicit timeline clips.
+  function migrateToV2(project) {
+    const cues = (project.script && project.script.cues) || [];
+    const beats = project.beats || {};
+    const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    project.tracks = Array.isArray(project.tracks) && project.tracks.length ? project.tracks : DEFAULT_TRACKS.map((track) => ({ ...track }));
+    project.clips = Array.isArray(project.clips) ? project.clips : [];
+    const style = project.style || {};
+
+    // 1) the old single style.background becomes one clip for the whole song
+    const background = style.background;
+    if (background && background.type && background.type !== 'none' && total > 0) {
+      project.clips.push({
+        id: nextClipId(project, 'clip_bg'),
+        trackId: 'bg',
+        start: 0,
+        end: total,
+        spec: { type: background.type, params: JSON.parse(JSON.stringify(background.params || {})) },
+        opacity: 1,
+        fadeIn: 0.3,
+        fadeOut: 0.3,
+        colors: null,
+      });
+    }
+
+    // 2) beat-level shapes / pattern backgrounds become backdrop clips, merged
+    // while the same treatment keeps running
+    const sortedCues = [...cues].sort((a, b) => a.start - b.start);
+    let run = null;
+    const flushRun = () => {
+      if (!run) return;
+      project.clips.push({
+        id: nextClipId(project, 'clip_mid'),
+        trackId: 'mid',
+        start: run.start,
+        end: run.end,
+        spec: run.spec,
+        opacity: 1,
+        fadeIn: 0.3,
+        fadeOut: 0.3,
+        colors: null,
+      });
+      run = null;
+    };
+    for (const cue of sortedCues) {
+      const list = beats[cue.id] && beats[cue.id].length ? beats[cue.id] : cue.beat ? [cue.beat] : [];
+      for (const beat of list) {
+        const resolved = resolveStyle(project, `cue:${cue.id}/beat:${beat.id}`);
+        const instance = resolved && resolved.background;
+        if (!instance || !instance.type || instance.type === 'none') {
+          flushRun();
+          continue;
+        }
+        const kind = instance.type === 'shapes' ? (instance.params && instance.params.kind) || 'shapes' : instance.type;
+        if (!BACKDROP_FILLER_TYPES.has(kind)) {
+          flushRun();
+          continue;
+        }
+        const params = JSON.parse(JSON.stringify(instance.params || {}));
+        if (run && run.end >= beat.start - 1e-4 && run.spec.type === kind) {
+          run.end = Math.max(run.end, beat.end);
+        } else {
+          flushRun();
+          run = { start: beat.start, end: beat.end, spec: { type: kind, params } };
+        }
+      }
+    }
+    flushRun();
+
+    // 3) the gap-derived fillers are materialised once; pinned specs carry over
+    const fillerSettings = project.fillers || {};
+    if (fillerSettings.enabled !== false && cues.length && total > 0) {
+      const byKind = fillerSettings.byKind || {};
+      const longGap = fillerSettings.longGap || {};
+      const pinned = fillerSettings.clips || {};
+      const margin = fillerSettings.margin == null ? 0.25 : fillerSettings.margin;
+      const minGap = fillerSettings.minGap == null ? 1.5 : fillerSettings.minGap;
+      let cursor = 0;
+      for (let i = 0; i <= sortedCues.length; i += 1) {
+        const next = sortedCues[i] || null;
+        const to = next ? next.start : total;
+        const rawFrom = cursor;
+        if (to - rawFrom > 0) {
+          const from = i === 0 ? rawFrom : rawFrom + margin;
+          const end = next ? to - margin : to;
+          if (end - from >= minGap) {
+            const kind = i === 0 ? 'intro' : next ? 'interlude' : 'outro';
+            const key = `${sortedCues[i - 1] ? sortedCues[i - 1].id : 'start'}>${next ? next.id : 'end'}`;
+            const pin = pinned[key] || null;
+            const long = end - from > (longGap.threshold || 8);
+            const spec = pin || (long && longGap.spec ? longGap.spec : byKind[kind]) || { type: 'none', params: {} };
+            project.clips.push({
+              id: nextClipId(project, 'clip_filler'),
+              trackId: 'filler',
+              start: from,
+              end,
+              spec: JSON.parse(JSON.stringify(spec)),
+              opacity: 1,
+              fadeIn: 0.3,
+              fadeOut: 0.3,
+              colors: null,
+            });
+          }
+        }
+        cursor = next ? next.end : total;
+      }
+    }
+
+    // 4) overlapping cues move on to extra subtitle tracks, greedy by start
+    const tracks = project.tracks.filter((track) => track && track.kind === 'subtitle');
+    const ends = new Map();
+    for (const cue of sortedCues) {
+      let assigned = null;
+      for (const track of tracks) {
+        const last = ends.get(track.id);
+        if (last == null || last <= cue.start + 1e-4) {
+          assigned = track.id;
+          break;
+        }
+      }
+      if (!assigned) {
+        const id = `sub${tracks.length + 1}`;
+        const created = { id, kind: 'subtitle', name: `字幕${tracks.length + 1}` };
+        // keep subtitle tracks adjacent: insert after the last one
+        const lastIndex = project.tracks.reduce((at, track, index) => (track.kind === 'subtitle' ? index : at), -1);
+        project.tracks.splice(lastIndex + 1, 0, created);
+        tracks.push(created);
+        assigned = id;
+      }
+      cue.trackId = assigned;
+      ends.set(assigned, Math.max(ends.get(assigned) == null ? 0 : ends.get(assigned), cue.end));
+    }
+
+    // 5) background is a clip now, not a beat style
+    delete style.background;
+    for (const container of Object.values(project.cueStyles || {})) {
+      if (isPlainObject(container)) delete container.background;
+    }
+    for (const container of Object.values(project.beatStyles || {})) {
+      if (isPlainObject(container)) delete container.background;
+    }
+    return project;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -121,6 +305,7 @@
       return { ok: false, error: 'newer-version', project: null };
     }
     const merged = defaults(project);
+    if (version < 2) migrateToV2(merged);
     merged.version = VERSION;
     merged.format = FORMAT;
     if (!merged.meta.createdAt) merged.meta.createdAt = new Date().toISOString();
@@ -201,6 +386,7 @@
     FORMAT,
     VERSION,
     DEFAULT_CATEGORY_COLORS,
+    DEFAULT_TRACKS,
     defaults,
     create,
     migrate,
@@ -208,5 +394,10 @@
     parsePath,
     mergeDeep,
     setDimensions,
+    trackKindOf,
+    subtitleTracks,
+    clipOf,
+    clipsForTrack,
+    nextClipId,
   };
 });

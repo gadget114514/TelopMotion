@@ -1527,3 +1527,37 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+.insp-section-title {
+  margin: 10px 0 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ctrl-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.ctrl-color-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ctrl-multiselect {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mood-chips .btn.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+}

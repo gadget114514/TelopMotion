@@ -7,9 +7,17 @@
 })(typeof self !== 'undefined' ? self : this, function (rng, fx, moods) {
   'use strict';
 
-  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background'];
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background'];
-  const STACK_GROUPS = ['hold', 'edge', 'post'];
+  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+
+  // the "bg" lock covers the four text-background groups at once
+  function expandLocks(locks) {
+    const set = new Set(locks || []);
+    if (set.has('bg')) for (const group of BG_GROUPS) set.add(group);
+    return set;
+  }
   const EASE_POOL = {
     animation: ['linear', 'cubicOut', 'cubicInOut', 'quartOut', 'backOut'],
     layout: ['cubicOut', 'quartOut', 'cubicInOut', 'backOut'],
@@ -187,7 +195,7 @@
     const project = opts.project;
     if (!project) return { patches: [], seed: 0 };
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 12345;
-    const locks = new Set(opts.locks || []);
+    const locks = expandLocks(opts.locks);
     const intensity = opts.intensity || 1;
     const colors = opts.colors || [];
     const targets = [];
@@ -210,10 +218,11 @@
       let style = {};
       if (target.scope === 'project' && moods && moods.generate) {
         // the whole look comes from the mood generator: restrained, coherent
-        const axisRun = moods.randomAxes ? moods.randomAxes(rng.rngFor(seed, target.key, 'axes')) : null;
+        const mode = (project.styleMode || {});
+        const axisRun = mode.axes ? { axes: mode.axes, direction: mode.direction } : moods.randomAxes ? moods.randomAxes(rng.rngFor(seed, target.key, 'axes')) : null;
         const axes = moods.normalizeAxes(axisRun ? axisRun.axes : {});
         if (intensity >= 2) axes.energy = Math.min(1, axes.energy * 1.12);
-        style = moods.generate({ axes, seed, context: target.context, direction: axisRun && axisRun.direction }).style;
+        style = moods.generate({ axes, seed, context: target.context, direction: axisRun && axisRun.direction, genre: mode.genre || null }).style;
         for (const group of locks) delete style[group];
       } else {
         const groups = target.scope === 'project' ? GROUPS : chooseRerollGroups(rng.rngFor(seed, target.key, 'groups'), locks);

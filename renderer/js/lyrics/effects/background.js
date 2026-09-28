@@ -7,7 +7,7 @@
 })(typeof self !== 'undefined' ? self : this, function (fx, color) {
   'use strict';
 
-  const TYPES = { none: 1, solid: 1, noiseGradient: 2, card: 3, cover: 4, image: 5 };
+  const TYPES = { none: 1, solid: 1, gradient: 2, noiseGradient: 2, card: 3, cover: 4, image: 5 };
 
   fx.register({
     group: 'background',
@@ -22,6 +22,18 @@
     type: 'solid',
     params: [{ key: 'color', kind: 'color', default: null }],
     cost: 0,
+  });
+
+  fx.register({
+    group: 'background',
+    type: 'gradient',
+    tags: ['basic'],
+    params: [
+      { key: 'colors', kind: 'gradient', default: null },
+      { key: 'scale', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 1 },
+      { key: 'speed', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.1 },
+    ],
+    cost: 1,
   });
 
   fx.register({

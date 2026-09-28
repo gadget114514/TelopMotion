@@ -6,9 +6,9 @@
   const platform = SA.platform;
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
-  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform'];
-  const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location'];
+  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
 
   const el = {};
   let layout = { mediaW: 260, inspectorW: 340, timelineH: 240, consoleW: 360, panels: { media: true, inspector: true, timeline: true }, preset: 'standard' };
@@ -880,21 +880,23 @@
       toast('studio.toast.noCues');
       return;
     }
-    // mood first: random axes, or the music's own character when audio is loaded
+    // genre first: an explicit genre, a random one, or the music's own axes
     const analysis = SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
+    const explicitGenre = opts.genre && opts.genre !== '__random' ? opts.genre : null;
+    const picked = SA.moods.randomGenre ? SA.moods.randomGenre() : SA.moods.randomAxes();
+    const genre = explicitGenre || picked.genre || null;
     let axes;
     let direction = 'horizontal';
-    if (analysis) {
+    if (analysis && !explicitGenre) {
       axes = SA.moods.axesFromAudio(SA.audioAnalysis.features(analysis));
     } else {
-      const picked = SA.moods.randomAxes();
       axes = picked.axes;
       direction = picked.direction;
     }
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
     // the theme itself: every group generated from the axes and the seed
-    const themeStyle = SA.moods.generate({ axes, seed, direction, context }).style;
+    const themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
     // keep the font size in a readable range that matches the frame
     const portrait = doc.output && doc.output.aspect === '9:16';
@@ -923,8 +925,9 @@
         // 1) rebuild the theme from scratch so re-rolls never keep stale groups
         for (const group of AUTO_DIRECT_GROUPS) delete projectDoc.style[group];
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, themeStyle);
-        // remember which theme was applied so the UI can show it
-        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName };
+        // remember which theme was applied so the UI can show it, and so cue /
+        // clip re-rolls can stay inside the same axes
+        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), seed, theme: themeName, axes, direction, genre };
         for (const cue of projectDoc.script.cues) {
           const container = projectDoc.cueStyles[cue.id];
           if (!container) continue;
@@ -944,7 +947,14 @@
         const baseSize = Number((themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
         projectDoc.script.cues.forEach((cue, cueIndex) => {
           const cueContext = SA.moods.contextForCue(projectDoc, cue);
-          const generated = SA.moods.generate({ axes, seed: seed + cueIndex * 131 + 1, direction, context: cueContext }).style;
+          const generated = SA.moods.generate({
+            axes,
+            seed: seed + cueIndex * 131 + 1,
+            direction,
+            genre,
+            context: cueContext,
+            emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
+          }).style;
           projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
             enter: generated.enter,
             exit: generated.exit,
@@ -985,10 +995,107 @@
           },
           longGap: { threshold: 5, spec: { type: 'pattern', params: { mode: 'grid', count: 36, size: 1, speed: 0.4, opacity: 0.35 } } },
         });
+
+        // 3) the look now lives on the tracks: one background clip for the whole
+        // song, a backdrop clip per section when the density axis asks for one,
+        // and filler clips materialised from the gaps. Re-rolling replaces the
+        // clips auto-direct owns, leaving subtitle and hand-made clips alone.
+        const cues = projectDoc.script.cues || [];
+        const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+        const trackIdFor = (kind) => {
+          const track = (projectDoc.tracks || []).find((entry) => entry.kind === kind);
+          return track ? track.id : null;
+        };
+        const managed = new Set(
+          (projectDoc.tracks || []).filter((track) => ['background', 'backdrop', 'filler'].includes(track.kind)).map((track) => track.id)
+        );
+        projectDoc.clips = (projectDoc.clips || []).filter((clip) => !managed.has(clip.trackId));
+        const bgTrack = trackIdFor('background');
+        if (bgTrack && total > 0) {
+          const result = SA.moods.rerollClipSpec('background', { axes, seed, genre });
+          const spec = result && result.spec && result.spec.type === 'noiseGradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } };
+          projectDoc.clips.push({
+            id: SA.project.nextClipId(projectDoc, 'clip_bg'),
+            trackId: bgTrack,
+            start: 0,
+            end: total,
+            spec,
+            opacity: 1,
+            fadeIn: 0.6,
+            fadeOut: 0.6,
+            colors: result && result.colors ? result.colors : null,
+          });
+        }
+        const midTrack = trackIdFor('backdrop');
+        if (midTrack && axes.density > 0.45) {
+          cues.forEach((cue, index) => {
+            const result = SA.moods.rerollClipSpec('backdrop', { axes, seed: seed + index * 977 + 3, genre });
+            if (!result) return;
+            projectDoc.clips.push({
+              id: SA.project.nextClipId(projectDoc, 'clip_mid'),
+              trackId: midTrack,
+              start: cue.start,
+              end: cue.end,
+              spec: result.spec,
+              opacity: 0.9,
+              fadeIn: 0.4,
+              fadeOut: 0.4,
+              colors: result.colors,
+            });
+          });
+        }
+        const fillerTrack = trackIdFor('filler');
+        if (fillerTrack && SA.fillers) {
+          const gaps = SA.fillers.gaps(cues, total, SA.fillers.settingsFor(projectDoc));
+          for (const gap of gaps) {
+            projectDoc.clips.push({
+              id: SA.project.nextClipId(projectDoc, 'clip_filler'),
+              trackId: fillerTrack,
+              start: gap.from,
+              end: gap.to,
+              spec: JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} })),
+              opacity: 1,
+              fadeIn: 0.3,
+              fadeOut: 0.3,
+              colors: null,
+            });
+          }
+        }
       },
     });
     lastRandom = { scope: '__auto', seed, intensity: 2, locks: AUTO_DIRECT_LOCKS };
     toast('studio.toast.autoDirected', { seed, theme: themeName });
+  }
+
+  function genreDialog() {
+    const doc = project();
+    if (!doc) return;
+    el.dialogRoot.innerHTML = '';
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog';
+    const list = (SA.genres && SA.genres.LIST) || [];
+    dialog.innerHTML = `
+      <h3>${t('studio.genres.title')}</h3>
+      <div class="field"><span>${t('studio.genres.pick')}</span>
+        <select data-field="genre">
+          <option value="__random">${t('studio.genres.random')}</option>
+          ${list.map((genre) => `<option value="${genre.id}">${t(`studio.genres.${genre.id}`)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="dialog-actions">
+        <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
+        <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
+      </div>`;
+    el.dialogRoot.appendChild(dialog);
+    el.dialogRoot.hidden = false;
+    dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
+      el.dialogRoot.hidden = true;
+    });
+    dialog.querySelector('[data-action="apply"]').addEventListener('click', () => {
+      const genre = dialog.querySelector('[data-field="genre"]').value;
+      el.dialogRoot.hidden = true;
+      autoDirect({ genre });
+    });
   }
 
   function randomDialog() {
@@ -1010,7 +1117,7 @@
       <div class="field"><span>${t('studio.random.intensity')}</span><input type="number" min="1" max="3" data-field="intensity" value="${lastRandom.intensity}" /></div>
       <div class="lock-grid">${['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post']
         .map((group) => `<label><input type="checkbox" data-lock="${group}" />${t(`studio.inspector.${group}`)}</label>`)
-        .join('')}</div>
+        .join('')}<label><input type="checkbox" data-lock="bg" />${t('studio.inspector.sectionBg')}</label></div>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
@@ -1200,7 +1307,13 @@
     setupSplitter(el.splitInspector, 'inspector');
     setupSplitter(el.splitTimeline, 'timeline');
     setupSplitter(el.splitConsole, 'console');
-    if (el.autoDirect) el.autoDirect.addEventListener('click', autoDirect);
+    if (el.autoDirect) {
+      el.autoDirect.addEventListener('click', () => autoDirect());
+      el.autoDirect.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        genreDialog();
+      });
+    }
     window.addEventListener('resize', () => applyLayout());
     document.addEventListener('keydown', (event) => {
       const target = event.target;

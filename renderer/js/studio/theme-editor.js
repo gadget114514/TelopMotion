@@ -3,8 +3,8 @@ window.SA = window.SA || {};
 SA.themeEditor = (() => {
   'use strict';
 
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background'];
-  const STACK_GROUPS = ['hold', 'edge', 'post'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'bgShape', 'bgFill', 'bgMotion'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
   const ALL_GROUPS = [...SINGLE_GROUPS, ...STACK_GROUPS];
   const GROUP_LABELS = {
     animation: 'studio.inspector.animation',
@@ -17,8 +17,12 @@ SA.themeEditor = (() => {
     edge: 'studio.inspector.edge',
     post: 'studio.inspector.post',
     background: 'studio.inspector.background',
+    bgShape: 'studio.inspector.bgShape',
+    bgFill: 'studio.inspector.bgFill',
+    bgEdge: 'studio.inspector.bgEdge',
+    bgMotion: 'studio.inspector.bgMotion',
   };
-  const ORDER = ['layout', 'animation', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background'];
+  const ORDER = ['layout', 'animation', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
 
   let draft = null;
   let root = null;
@@ -331,12 +335,15 @@ SA.themeEditor = (() => {
 
   function generateFromAxes() {
     const doc = project();
-    draft.style = SA.moods.generate({
+    const result = SA.moods.generate({
       axes: draft.axes,
       seed: draft.seed,
       direction: draft.direction,
+      genre: draft.genre || null,
       context: contextFor(doc),
-    }).style;
+      ensureSignature: true,
+    });
+    draft.style = result.style;
     render();
   }
 
@@ -358,8 +365,8 @@ SA.themeEditor = (() => {
   function saveDraft() {
     const doc = project();
     const entry = draft.id
-      ? SA.themes.update(draft.id, { name: draft.name, style: SA.store.clone(draft.style), axes: { ...draft.axes }, seed: draft.seed, direction: draft.direction })
-      : SA.themes.save(draft.name, SA.store.clone(draft.style), { ...draft.axes });
+      ? SA.themes.update(draft.id, { name: draft.name, style: SA.store.clone(draft.style), axes: { ...draft.axes }, seed: draft.seed, direction: draft.direction, genre: draft.genre })
+      : SA.themes.save(draft.name, SA.store.clone(draft.style), { ...draft.axes }, draft.genre);
     if (entry) {
       draft.id = entry.id;
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
@@ -472,22 +479,34 @@ SA.themeEditor = (() => {
     title.textContent = t('studio.themeEditor.title');
     dialog.appendChild(title);
 
-    // human intent: mood chips set the five axes
+    // genre chips: a genre overrides the axes and adds signatures / materials
     const chips = document.createElement('div');
     chips.className = 'mood-chips';
-    for (const preset of SA.moods.PRESETS) {
+    const genres = (SA.genres && SA.genres.LIST) || [];
+    const genreEntries = [{ id: null, label: t('studio.genres.none') }].concat(
+      genres.map((genre) => ({ id: genre.id, label: t(`studio.genres.${genre.id}`) }))
+    );
+    for (const entry of genreEntries) {
       const chip = document.createElement('button');
       chip.type = 'button';
-      chip.className = 'btn btn-mini';
-      chip.textContent = t(`studio.moods.${preset.id}`);
+      chip.className = `btn btn-mini${(draft.genre || null) === entry.id ? ' is-active' : ''}`;
+      chip.textContent = entry.label;
       chip.addEventListener('click', () => {
-        draft.axes = SA.moods.normalizeAxes(preset.axes);
-        if (preset.direction) draft.direction = preset.direction;
+        draft.genre = entry.id;
+        const genre = entry.id && SA.genres ? SA.genres.get(entry.id) : null;
+        if (genre) {
+          draft.axes = SA.moods.normalizeAxes(genre.axes);
+          if (genre.direction) draft.direction = genre.direction;
+        }
         render();
       });
       chips.appendChild(chip);
     }
     dialog.appendChild(chips);
+    const genreHint = document.createElement('div');
+    genreHint.className = 'insp-inherit';
+    genreHint.textContent = draft.genre ? t(`studio.genres.desc.${draft.genre}`) : t('studio.genres.desc.none');
+    dialog.appendChild(genreHint);
 
     const axes = document.createElement('div');
     axes.className = 'axis-grid';
@@ -513,6 +532,10 @@ SA.themeEditor = (() => {
       row.appendChild(input);
       row.appendChild(value);
       axes.appendChild(row);
+      const hint = document.createElement('div');
+      hint.className = 'insp-inherit axis-hint';
+      hint.textContent = t(`studio.themeEditor.axisHint.${axis}`);
+      axes.appendChild(hint);
     }
     dialog.appendChild(axes);
     const axesHint = document.createElement('div');
@@ -555,9 +578,11 @@ SA.themeEditor = (() => {
     randomAxes.className = 'btn btn-mini';
     randomAxes.textContent = t('studio.themeEditor.randomAxes');
     randomAxes.addEventListener('click', () => {
-      const picked = SA.moods.randomAxes();
-      draft.axes = picked.axes;
-      draft.direction = picked.direction;
+      // jitter the current axes without changing the genre
+      const r = Math.random;
+      const next = {};
+      for (const axis of SA.moods.AXES) next[axis] = Math.max(0, Math.min(1, Number(draft.axes[axis] || 0.5) + (r() * 2 - 1) * 0.12));
+      draft.axes = next;
       draft.features = null;
       draft.seed = seedNow();
       generateFromAxes();
@@ -651,6 +676,7 @@ SA.themeEditor = (() => {
       axes,
       seed,
       direction: (existing && existing.direction) || 'horizontal',
+      genre: (existing && existing.genre) || null,
       style,
     };
     render();

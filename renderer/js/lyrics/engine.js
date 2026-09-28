@@ -310,6 +310,8 @@ SA.lyricsEngine = (() => {
         stackOffset,
         badgeRect: badgeRectFor(project, beat, project.output ? project.output.aspect : '16:9'),
         previousPositions: null,
+        analysis: state.analysis,
+        audioFeatures: state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null,
       };
       if (needsPrevious(scene)) {
         const previous = previousBeatOf(project, beat);
@@ -398,17 +400,6 @@ SA.lyricsEngine = (() => {
       let max = 0;
       for (const cue of cues) max = Math.max(max, cue.end);
       return max;
-    }
-
-    function activeFiller(t, duration) {
-      if (!SA.fillers || !state.project) return null;
-      const cues = (state.project.script && state.project.script.cues) || [];
-      if (!cues.length) return null;
-      const clips = SA.fillers.clips(cues, duration, SA.fillers.settingsFor(state.project));
-      for (const clip of clips) {
-        if (t >= clip.from - 1e-6 && t <= clip.to + 1e-6) return clip;
-      }
-      return null;
     }
 
     function activeCredit(t) {
@@ -504,17 +495,8 @@ SA.lyricsEngine = (() => {
       }
     }
 
-    function relativeLuminance(rgba) {
-      const channel = (value) => (value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
-      return 0.2126 * channel(rgba[0] || 0) + 0.7152 * channel(rgba[1] || 0) + 0.0722 * channel(rgba[2] || 0);
-    }
-
     function contrastRatio(a, b) {
-      const first = relativeLuminance(a);
-      const second = relativeLuminance(b);
-      const high = Math.max(first, second);
-      const low = Math.min(first, second);
-      return (high + 0.05) / (low + 0.05);
+      return SA.color.contrastRatio(a, b);
     }
 
     // Resolves the text color of the current beat so the background shapes can
@@ -531,22 +513,26 @@ SA.lyricsEngine = (() => {
       return rgba ? SA.color.toHex({ r: rgba.r, g: rgba.g, b: rgba.b, a: 1 }) : null;
     }
 
-    // Animated shapes for the `background: shapes` treatment: the filler shape
-    // list is drawn into a layer and composited behind the lyrics.
-    function drawBackgroundShapes(background, style, beat, t) {
-      if (!shapesPass || !pipeline || !SA.fillerRender) return;
-      const params = (background && background.params) || {};
-      const kind = background && background.type === 'pattern' ? 'pattern' : params.kind || 'shapes';
-      const palette = style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : [];
-      const fallback = palette[3] || palette[2] || '#eef2ff';
-      let fill = fallback;
+    function projectPalette() {
+      if (!state.project) return null;
+      const style = SA.project.resolveStyle(state.project, '');
+      return style && style.palette ? style.palette : null;
+    }
+
+    // Animated shapes for backdrop / filler clips: the filler shape list is
+    // drawn into a layer and composited behind the lyrics.
+    function clipShapeColor(spec, colors, style) {
+      const params = (spec && spec.params) || {};
+      const list = Array.isArray(colors) && colors.length ? colors : [];
+      const palette = style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : list;
+      let fill = list[0] || palette[3] || palette[2] || '#eef2ff';
       if (params.color) {
         const rgba = SA.color.toRgba(params.color, null, {
           palette: style ? style.palette : null,
           palettes: (state.project && state.project.palettes) || [],
         });
         if (rgba) fill = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
-      } else {
+      } else if (!list.length) {
         // derive the shape color from the text color: complementary hue and much
         // lower brightness, so background shapes never match the lyrics
         const textHex = textColorHex(style);
@@ -571,18 +557,46 @@ SA.lyricsEngine = (() => {
         const parsed = SA.color.parse(fill);
         if (contrastRatio([parsed.r, parsed.g, parsed.b], textRgba) < 3) {
           const hsv = SA.color.rgbToHsv({ r: parsed.r, g: parsed.g, b: parsed.b });
-          hsv.v = relativeLuminance(textRgba) > 0.45 ? 0.3 : 0.75;
+          hsv.v = SA.color.relativeLuminance(textRgba) > 0.45 ? 0.3 : 0.75;
           const next = SA.color.hsvToRgb(hsv);
           fill = SA.color.toHex({ r: next.r, g: next.g, b: next.b, a: 1 });
         }
       }
-      const duration = Math.max(0.001, beat.end - beat.start);
-      const progress = Math.min(1, Math.max(0, (t - beat.start) / duration));
-      const spec = { type: kind, params: { ...params, color: fill } };
-      const list = SA.fillerRender.drawList(spec, {
+      return fill;
+    }
+
+    function clipEnvelope(t, clip) {
+      if (!clip || t < clip.start - 1e-4 || t > clip.end + 1e-4) return 0;
+      const fadeIn = Math.max(0, Number(clip.fadeIn) || 0);
+      const fadeOut = Math.max(0, Number(clip.fadeOut) || 0);
+      return Math.max(0, Math.min(1, fadeIn > 1e-4 ? (t - clip.start) / fadeIn : 1, fadeOut > 1e-4 ? (clip.end - t) / fadeOut : 1));
+    }
+
+    function activeClips(project, kind) {
+      const ids = new Set(
+        ((project.tracks || [])).filter((track) => track && track.kind === kind && !track.hidden).map((track) => track.id)
+      );
+      if (!ids.size) return [];
+      return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId)).sort((a, b) => a.start - b.start);
+    }
+
+    function drawShapeClip(clip, t, duration) {
+      if (!shapesPass || !pipeline || !SA.fillerRender) return;
+      const spec = clip.spec || { type: 'none', params: {} };
+      const envelope = clipEnvelope(t, clip);
+      if (envelope <= 0) return;
+      const style = SA.project.resolveStyle(state.project, '');
+      const fill = clipShapeColor(spec, clip.colors, style);
+      const clipDuration = Math.max(0.001, clip.end - clip.start);
+      const progress = Math.min(1, Math.max(0, (t - clip.start) / clipDuration));
+      // the shape group's own opacity folds into the layer opacity so the two
+      // sliders never multiply the same value twice
+      const { opacity: innerOpacity, ...restParams } = spec.params || {};
+      const params = { ...restParams, color: fill };
+      const list = SA.fillerRender.drawList({ type: spec.type, params }, {
         time: t,
         frame: { width: state.width, height: state.height },
-        clip: { key: `bg:${beat.id}`, from: beat.start, to: beat.end, spec },
+        clip: { key: clip.id, from: clip.start, to: clip.end, spec },
         duration,
         nextStart: null,
         nextText: '',
@@ -596,75 +610,274 @@ SA.lyricsEngine = (() => {
       pipeline.beginLayer();
       drawPrimitives(list.shapes || []);
       drawTexts(list.texts || []);
-      pipeline.commitLayer(params.opacity == null ? 0.45 : params.opacity);
+      const base = clip.opacity == null ? 1 : clip.opacity;
+      const inner = innerOpacity == null ? 1 : innerOpacity;
+      pipeline.commitLayer(Math.max(0, Math.min(1, base * inner * envelope)));
     }
 
-    function fillerContext(t, clip, duration) {
+    function drawBackgroundClip(clip, t, card) {
+      if (!pipeline) return;
+      const spec = clip.spec || {};
+      if (!spec.type || spec.type === 'none') return;
+      const style = SA.project.resolveStyle(state.project, '');
+      const palette = style && style.palette ? style.palette : projectPalette();
+      const colors = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null;
+      if (spec.type === 'shapes' || spec.type === 'pattern') {
+        drawShapeClip(clip, t, naturalDuration());
+        return;
+      }
+      const envelope = clipEnvelope(t, clip);
+      if (envelope <= 0) return;
+      const theme = SA.card && SA.card.theme ? SA.card.theme(state.project) : null;
+      const params = { ...(spec.params || {}) };
+      if (spec.type === 'solid' && colors && !params.color) params.color = colors[0];
+      pipeline.drawBackground(
+        SA.fx.backgroundUniforms({ type: spec.type, params }, {
+          theme,
+          cardTheme: theme,
+          focusX: 0,
+          focusY: 0,
+          palette: colors ? { colors } : palette,
+          time: t,
+        }),
+        card,
+        Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope))
+      );
+    }
+
+    function fillerClipContext(t, clip, duration) {
       const project = state.project;
+      const clipDuration = Math.max(1e-3, clip.end - clip.start);
       const cues = (project.script && project.script.cues) || [];
-      const next = clip.nextCueId ? cues.find((entry) => entry.id === clip.nextCueId) : null;
-      const previous = clip.prevCueId ? cues.find((entry) => entry.id === clip.prevCueId) : null;
+      const next = cues.find((entry) => entry.start >= clip.end - 1e-4);
+      const previous = [...cues].reverse().find((entry) => entry.end <= clip.start + 1e-4);
       return {
         time: t,
         frame: { width: state.width, height: state.height },
-        clip,
+        clip: { key: clip.id, from: clip.start, to: clip.end, spec: clip.spec },
         duration,
         nextStart: next ? next.start : null,
         nextText: next ? next.text : '',
         prevText: previous ? previous.text : '',
         analysis: state.analysis,
-        progress: duration > 0 ? t / duration : 0,
+        progress: Math.min(1, Math.max(0, (t - clip.start) / clipDuration)),
         seed: (project.styleMode && project.styleMode.seed) || 12345,
         color: '#eef2ff',
       };
     }
 
-    function fillerEdgeOpacity(t, clip) {
-      const fade = 0.35;
-      return Math.max(0, Math.min(1, (t - clip.from) / fade, (clip.to - t) / fade));
+    // Filler clips live on their own track and are drawn whenever they are
+    // active, whether or not a lyric beat is on screen.
+    function renderFillerClips(t, duration) {
+      const project = state.project;
+      for (const clip of activeClips(project, 'filler')) {
+        const envelope = clipEnvelope(t, clip);
+        if (envelope <= 0) continue;
+        const spec = clip.spec || { type: 'none', params: {} };
+        if (spec.type === 'credits') {
+          if (!activeCredit(t) && SA.credits) {
+            const settings = SA.credits.settingsFor(project);
+            const lines = SA.credits.expandTemplate(project, settings, {});
+            const style = creditStyleFor('element', 0.06);
+            pipeline.beginLayer();
+            drawTexts(centeredTexts(lines, { size: style.size, color: style.color, opacity: envelope }));
+            pipeline.commitLayer(1);
+          }
+          continue;
+        }
+        if (!SA.fillerRender) continue;
+        const list = SA.fillerRender.drawList(spec, fillerClipContext(t, clip, duration));
+        if (!list || (!(list.shapes || []).length && !(list.texts || []).length)) continue;
+        pipeline.beginLayer();
+        drawPrimitives(list.shapes || []);
+        drawTexts(list.texts || []);
+        pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
+      }
+      const credit = activeCredit(t);
+      if (credit) {
+        const texts = creditElementTexts(credit);
+        pipeline.beginLayer();
+        drawTexts(texts);
+        pipeline.commitLayer(1);
+      }
     }
 
-    function renderFillerAndCredits(t, beats, duration, drawForeground) {
-      if (!beats.length) {
-        let primitives = null;
-        let texts = null;
-        const credit = activeCredit(t);
-        const clip = activeFiller(t, duration);
-        if (clip && clip.spec) {
-          if (clip.spec.type === 'credits') {
-            if (!credit) {
-              const settings = SA.credits ? SA.credits.settingsFor(state.project) : {};
-              const lines = SA.credits ? SA.credits.expandTemplate(state.project, settings, {}) : [];
-              const style = creditStyleFor('element', 0.06);
-              texts = centeredTexts(lines, { size: style.size, color: style.color, opacity: fillerEdgeOpacity(t, clip) });
-            }
-          } else {
-            const list = SA.fillerRender ? SA.fillerRender.drawList(clip.spec, fillerContext(t, clip, duration)) : null;
-            if (list) {
-              primitives = list.shapes;
-              texts = list.texts;
-            }
-          }
-        }
-        if (credit) {
-          const creditTexts = creditElementTexts(credit);
-          texts = (texts || []).concat(creditTexts);
-        }
-        if ((primitives && primitives.length) || (texts && texts.length)) {
-          pipeline.beginLayer();
-          drawPrimitives(primitives || []);
-          drawTexts(texts || []);
-          pipeline.commitLayer(1);
+    function renderAlwaysCredits(t, beats, drawForeground) {
+      if (!SA.credits) return;
+      const always = SA.credits.alwaysOn(state.project, t);
+      if (always && !(always.hideDuringCues && beats.length)) {
+        if (drawForeground) drawForeground();
+        const texts = alwaysOnTexts(always);
+        drawTexts(texts);
+      }
+    }
+
+    // --- text background -------------------------------------------------------
+
+    function bgVariationFor(scene, shape, style, beat) {
+      const project = state.project;
+      const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
+      const key = `${seed}|${beat.id}|${JSON.stringify(shape.params)}`;
+      if (scene.__bgVary && scene.__bgVary.key === key) return scene.__bgVary.value;
+      const palette = (style.palette && style.palette.colors) || [];
+      const letters = scene.letters.map((letter) => ({
+        char: letter.char,
+        lineIdx: letter.lineIdx,
+        wordIdx: letter.wordIdx,
+        path: letter.path,
+      }));
+      const value = SA.vary.letterVariation(shape.params, letters, palette, [seed, beat.id]);
+      scene.__bgVary = { key, value };
+      return value;
+    }
+
+    function bgColorOverrideFor(scene, variation) {
+      let any = false;
+      const data = new Uint8Array(scene.letters.length * 4);
+      for (let i = 0; i < scene.letters.length; i += 1) {
+        const base = scene.letters[i].color || { r: 1, g: 1, b: 1, a: 1 };
+        data[i * 4] = Math.round(Math.max(0, Math.min(1, base.r)) * 255);
+        data[i * 4 + 1] = Math.round(Math.max(0, Math.min(1, base.g)) * 255);
+        data[i * 4 + 2] = Math.round(Math.max(0, Math.min(1, base.b)) * 255);
+        data[i * 4 + 3] = Math.round(Math.max(0, Math.min(1, base.a == null ? 1 : base.a)) * 255);
+        const vary = variation && variation[i];
+        if (vary && vary.fgColor) {
+          any = true;
+          data[i * 4] = Math.round(vary.fgColor[0] * 255);
+          data[i * 4 + 1] = Math.round(vary.fgColor[1] * 255);
+          data[i * 4 + 2] = Math.round(vary.fgColor[2] * 255);
+          data[i * 4 + 3] = Math.round((vary.fgColor[3] == null ? 1 : vary.fgColor[3]) * 255);
         }
       }
-      if (SA.credits) {
-        const always = SA.credits.alwaysOn(state.project, t);
-        if (always && !(always.hideDuringCues && beats.length)) {
-          if (drawForeground) drawForeground();
-          const texts = alwaysOnTexts(always);
-          drawTexts(texts);
-        }
+      return any ? data : null;
+    }
+
+    const BG_AMOUNT_KEY = { splatter: 'spikes', scratch: 'count', paper: 'jag', blob: 'wobble', star: 'points' };
+
+    function drawBackgroundPass(active, t, project) {
+      if (!SA.textBg || !SA.vary || !pipeline) return null;
+      const { beat, scene, result, style } = active;
+      const shape = SA.fx.withDefaults(style.bgShape, 'bgShape');
+      if (!shape || !shape.type || shape.type === 'none') return null;
+      const variation = bgVariationFor(scene, shape, style, beat);
+      const entries = scene.letters.map((letter, index) => ({ letter, state: result.letters[index] }));
+      const local = Math.max(0, t - beat.start);
+      const analysis = state.analysis;
+      const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
+      const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 0;
+      const motion = SA.fx.withDefaults(style.bgMotion, 'bgMotion');
+      const bg = SA.textBg.evaluateBg(shape, motion, entries, variation, null, local, {
+        seed: (project.styleMode && project.styleMode.seed) || 12345,
+        bpm,
+        beatEnv: () => 0.5,
+      });
+      if (!bg || !bg.states.length) return null;
+      const amountKey = BG_AMOUNT_KEY[shape.type];
+      const params = shape.params || {};
+      for (const entry of bg.states) {
+        entry.amount = amountKey ? Number(params[amountKey] == null ? 5 : params[amountKey]) : 5;
+        entry.roughness = Number(params.roughness == null ? 0.5 : params.roughness);
       }
+      pipeline.textBackground(scene, result.letters, bg.states, { unit: bg.unit });
+      const bgSdf = pipeline.sdf();
+      const bgEdges = (style.bgEdge || []).filter((instance) => instance && instance.enabled !== false);
+      const bgFill = SA.fx.withDefaults(style.bgFill, 'bgFill');
+      const bgColorSet = {
+        fill: { kind: 'palette', index: 3 },
+        fill2: { kind: 'palette', index: 5 },
+        stroke: { kind: 'palette', index: 4 },
+        glow: { kind: 'palette', index: 3 },
+      };
+      const colorSet = SA.fx.resolveColorSet
+        ? SA.fx.resolveColorSet(bgColorSet, {
+            palettes: project.palettes || [],
+            palette: style.palette || null,
+            time: t,
+            defaultFill: '#ff8a3d',
+          })
+        : { arrays: { fill: [1, 0.54, 0.24, 1], fill2: [1, 0.54, 0.24, 1], stroke: [1, 1, 1, 1] } };
+      const hasVaryColor = variation.some((entry) => entry && entry.color && (entry.color[0] !== 1 || entry.color[1] !== 1 || entry.color[2] !== 1));
+      const edgeUniformsFor = (instance) =>
+        SA.fx.edgeUniforms(instance, {
+          colorSet: colorSet.arrays,
+          maxDistance: Math.max(state.width, state.height) * 0.1,
+          width: state.width,
+          height: state.height,
+          time: t,
+          palette: style.palette || null,
+          palettes: project.palettes || [],
+          sdfTexture: bgSdf ? bgSdf.texture : null,
+        });
+      for (const instance of bgEdges) {
+        const uniforms = edgeUniformsFor(instance);
+        if (!uniforms.top) pipeline.edge(uniforms);
+      }
+      if (bgFill && bgFill.type && bgFill.type !== 'none') {
+        pipeline.fill(
+          SA.fx.fillUniforms(bgFill, {
+            colors: colorSet.arrays,
+            time: t,
+            palette: style.palette || null,
+            palettes: project.palettes || [],
+            progress: Math.min(1, Math.max(0, local / Math.max(0.001, beat.end - beat.start))),
+            sdfTexture: bgSdf ? bgSdf.texture : null,
+            role: 'bg',
+            maskTint: hasVaryColor,
+          })
+        );
+      }
+      for (const instance of bgEdges) {
+        const uniforms = edgeUniformsFor(instance);
+        if (uniforms.top) pipeline.edge(uniforms);
+      }
+      return variation;
+    }
+
+    // Typewriter caret: drawn at the end of the last fully visible letter's cell.
+    function drawTypewriterCursor(scene, result, params, t) {
+      if (!shapesPass || !SA.textBg || !params || !params.cursor) return;
+      let index = -1;
+      for (let i = 0; i < result.letters.length; i += 1) {
+        const state = result.letters[i];
+        if ((state.visibleFrac == null ? 1 : state.visibleFrac) >= 0.999) index = i;
+      }
+      if (index < 0) return;
+      const letter = scene.letters[index];
+      const letterState = result.letters[index];
+      if (!letter || !letterState || letterState.opacity <= 0.01) return;
+      const entering = result.letters.some((entry) => (entry.visibleFrac == null ? 1 : entry.visibleFrac) < 0.999);
+      const after = params.cursorAfter || 'blink';
+      if (!entering && after === 'hide') return;
+      const blink = Number(params.blink) || 0;
+      if (!entering && after === 'blink' && blink > 0 && Math.floor(t / blink) % 2 === 1) return;
+      const cell = SA.textBg.cellMetrics(letter);
+      const shapeName = params.cursorShape || 'bar';
+      const cursorW = shapeName === 'bar' ? 0.08 * cell.w : 0.6 * cell.w;
+      const cursorH = shapeName === 'underscore' ? 0.08 * cell.h : cell.h;
+      const localX = cell.inkToCell[0] + cell.w / 2 - cursorW / 2;
+      const localY = cell.inkToCell[1] + (shapeName === 'underscore' ? 0.45 * cell.h : 0);
+      const scaleX = letterState.scaleX == null ? 1 : letterState.scaleX;
+      const scaleY = letterState.scaleY == null ? 1 : letterState.scaleY;
+      const px = localX * scaleX;
+      const py = localY * scaleY;
+      const angle = letterState.rot || 0;
+      const rad = (angle * Math.PI) / 180;
+      const cx = (letterState.x || 0) + px * Math.cos(rad) - py * Math.sin(rad);
+      const cy = (letterState.y || 0) + px * Math.sin(rad) + py * Math.cos(rad);
+      const width = Math.max(1, cursorW * scaleX);
+      const height = Math.max(1, cursorH * scaleY);
+      let color = '#eef2ff';
+      const style = scene.style || {};
+      const palette = (style.palette && style.palette.colors) || [];
+      if (params.cursorColor) {
+        const rgba = SA.color.toRgba(params.cursorColor, null, { palette: style.palette || null });
+        if (rgba) color = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
+      } else if (palette[2]) {
+        color = palette[2];
+      }
+      drawPrimitives([
+        { kind: 'rect', x: cx - width / 2, y: cy - height / 2, w: width, h: height, radius: 0, color, opacity: letterState.opacity, angle },
+      ]);
     }
 
     function renderFrameExtended(t, frame, beats) {
@@ -690,8 +903,15 @@ SA.lyricsEngine = (() => {
         foregroundDrawn = true;
       };
       pipeline.beginScene(CLEAR_COLOR);
+      const duration = naturalDuration();
+      // back to front: background clips + background layers -> backdrop clips ->
+      // filler clips -> subtitle tracks (bottom to top) -> foreground layers
+      for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card);
+      drawBackgroundLayers();
+      for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration);
+      renderFillerClips(t, duration);
       // Evaluate every active beat first: overlapping cues must all render, so
-      // every background goes down first and each cue's text follows on top.
+      // every track's text is grouped and drawn track by track.
       const activeBeats = [];
       for (const beat of beats) {
         const scene = buildBeatScene(project, beat, fonts);
@@ -702,40 +922,32 @@ SA.lyricsEngine = (() => {
         const style = state.analysis && SA.audioDriver ? SA.audioDriver.resolveStyle(baseStyle, state.analysis, t) : baseStyle;
         activeBeats.push({ beat, scene, result, style });
       }
-      // stack, back to front: background layers -> cue background (shape
-      // animation) -> lyrics -> foreground layers
+      const subtitleTracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
+      const hiddenTracks = new Set(subtitleTracks.filter((track) => track.hidden).map((track) => track.id));
+      const cueTrackId = (beat) => {
+        const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
+        return (cue && cue.trackId) || 'sub1';
+      };
+      const trackOrder = subtitleTracks.map((track) => track.id);
+      const beatsByTrack = new Map();
       for (const active of activeBeats) {
-        const { beat, style } = active;
-        drawBackgroundLayers();
-        const background = SA.fx.withDefaults(style.background, 'background');
-        if (background && background.type && background.type !== 'none') {
-          if (background.type === 'shapes' || background.type === 'pattern') {
-            drawBackgroundShapes(background, style, beat, t);
-          } else {
-            const badgeRect = badgeRectFor(project, beat, project.output ? project.output.aspect : '16:9');
-            const zoom = Math.max(0.05, (background.params && background.params.zoom) || 1.6);
-            const focusX = badgeRect ? (badgeRect.x + badgeRect.w / 2) / state.width - 0.5 : 0;
-            const focusY = badgeRect ? (badgeRect.y + badgeRect.h / 2) / state.height - 0.5 : 0;
-            const theme = SA.card && SA.card.theme ? SA.card.theme(project) : null;
-            pipeline.drawBackground(
-              SA.fx.backgroundUniforms(background, {
-                theme,
-                cardTheme: theme,
-                focusX: focusX / zoom,
-                focusY: focusY / zoom,
-                palette: style.palette || null,
-                time: t,
-              }),
-              card
-            );
-          }
-        }
+        const trackId = cueTrackId(active.beat);
+        if (hiddenTracks.has(trackId)) continue;
+        if (!beatsByTrack.has(trackId)) beatsByTrack.set(trackId, []);
+        beatsByTrack.get(trackId).push(active);
       }
-      for (const active of activeBeats) {
+      const drawOrder = [];
+      for (const trackId of beatsByTrack.keys()) if (!trackOrder.includes(trackId)) drawOrder.push(trackId);
+      for (const trackId of [...trackOrder].reverse()) drawOrder.push(trackId);
+      for (const active of drawOrder.flatMap((trackId) => beatsByTrack.get(trackId) || [])) {
         const { beat, scene, result, style } = active;
+        const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
+        const bgActive = !!(bgShape && bgShape.type && bgShape.type !== 'none');
+        const bgBehind = bgActive && (bgShape.params.layer || 'behind') !== 'front';
         pipeline.beginLayer();
+        const variation = bgBehind ? drawBackgroundPass(active, t, project) : null;
         const variant = morphVariantFor(project, beat, scene);
-        pipeline.text(scene, result.letters, variant);
+        pipeline.text(scene, result.letters, variant, variation ? bgColorOverrideFor(scene, variation) : null);
         const colorSet = SA.fx.resolveColorSet
           ? SA.fx.resolveColorSet(style.color, {
               palettes: project.palettes || [],
@@ -747,6 +959,7 @@ SA.lyricsEngine = (() => {
             })
           : { arrays: { fill: [0.93, 0.95, 1, 1], fill2: [0.93, 0.95, 1, 1], stroke: [1, 1, 1, 1] } };
         const sdfTarget = pipeline.sdf();
+        if (variation && bgShape.params.knockout) pipeline.knockout();
         const maxDistance = Math.max(state.width, state.height) * 0.1;
         const progress = Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start)));
         const fillInstance = SA.fx.withDefaults(style.fill, 'fill');
@@ -837,6 +1050,9 @@ SA.lyricsEngine = (() => {
             pipeline.post(uniforms);
           }
         }
+        const enterInstance = SA.fx.withDefaults(style.enter, 'enter');
+        if (enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
+        if (bgActive && !bgBehind) drawBackgroundPass(active, t, project);
         for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
         pipeline.commitLayer(1);
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
@@ -856,7 +1072,7 @@ SA.lyricsEngine = (() => {
       }
       drawBackgroundLayers();
       drawForegroundLayers();
-      renderFillerAndCredits(t, beats, naturalDuration(), drawForegroundLayers);
+      renderAlwaysCredits(t, beats, drawForegroundLayers);
       for (const uniforms of framePosts.values()) pipeline.postFrame(uniforms);
       if (bloomNeeded) pipeline.bloom(0.6, 0.8);
       pipeline.finish();

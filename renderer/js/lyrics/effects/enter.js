@@ -29,6 +29,9 @@
     params: [
       { key: 'cursor', kind: 'bool', default: false },
       { key: 'cursorColor', kind: 'color', default: null },
+      { key: 'cursorShape', kind: 'select', options: ['bar', 'block', 'underscore'], default: 'bar' },
+      { key: 'blink', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.5 },
+      { key: 'cursorAfter', kind: 'select', options: ['hide', 'blink', 'stay'], default: 'blink' },
     ],
     cpu(state, p) {
       if (p < 0.999) state.visibleFrac = 0;
@@ -185,6 +188,21 @@
       const value = Math.sin((step + 1) * 12.9898 + info.i * 7.233) * 43758.5453;
       const fraction = value - Math.floor(value);
       state.opacity *= fraction < 0.28 ? 0.1 : 1;
+    },
+  });
+
+  fx.register({
+    group: 'enter',
+    type: 'flickerIn',
+    params: [{ key: 'flickers', kind: 'int', min: 1, max: 10, step: 1, default: 4, random: [4, 8] }],
+    cpu(state, p, params, rng, info) {
+      const flickers = params.flickers == null ? 4 : params.flickers;
+      const progress = clamp01(p);
+      const step = Math.floor(progress * flickers * 3);
+      const value = Math.sin(step * 12.9898 + info.i * 7.233) * 43758.5453;
+      const fraction = value - Math.floor(value);
+      const on = progress >= 0.999 ? 1 : fraction < 0.25 + 0.75 * progress ? 1 : 0.08;
+      state.opacity *= on;
     },
   });
 

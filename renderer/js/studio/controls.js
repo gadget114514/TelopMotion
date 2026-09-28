@@ -20,7 +20,8 @@ SA.controls = (() => {
   }
 
   function typeLabel(group, type) {
-    const key = `fx.${group}.${type}`;
+    const base = typeof SA !== 'undefined' && SA.fx && SA.fx.baseOf ? SA.fx.baseOf(group) : group;
+    const key = `fx.${base}.${type}`;
     const translated = t(key);
     return translated === key ? prettify(type) : translated;
   }
@@ -241,6 +242,77 @@ SA.controls = (() => {
     return wrap;
   }
 
+  // A list of hex colors (used by the background variation palette).
+  function colorsControl(value, onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-colors';
+    let list = Array.isArray(value) ? [...value] : [];
+    const commit = () => onChange([...list]);
+    const render = () => {
+      wrap.innerHTML = '';
+      list.forEach((hex, index) => {
+        const item = document.createElement('span');
+        item.className = 'ctrl-color-chip';
+        const input = document.createElement('input');
+        input.type = 'color';
+        input.value = /^#[0-9a-f]{6}$/i.test(hex) ? hex : '#ffffff';
+        input.addEventListener('input', () => {
+          list[index] = input.value;
+          commit();
+        });
+        input.addEventListener('keydown', (event) => event.stopPropagation());
+        item.appendChild(input);
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-mini';
+        remove.textContent = '✕';
+        remove.addEventListener('click', () => {
+          list = list.filter((entry, i) => i !== index);
+          commit();
+          render();
+        });
+        item.appendChild(remove);
+        wrap.appendChild(item);
+      });
+      const add = document.createElement('button');
+      add.type = 'button';
+      add.className = 'btn btn-mini';
+      add.textContent = '＋';
+      add.addEventListener('click', () => {
+        list.push(list[list.length - 1] || '#ffffff');
+        commit();
+        render();
+      });
+      wrap.appendChild(add);
+    };
+    render();
+    return wrap;
+  }
+
+  function multiselectControl(value, onChange, param) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-multiselect';
+    const selected = new Set(Array.isArray(value) ? value : []);
+    for (const option of (param && param.options) || []) {
+      const label = document.createElement('label');
+      label.className = 'ctrl-bool-row';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = selected.has(option);
+      box.addEventListener('change', () => {
+        if (box.checked) selected.add(option);
+        else selected.delete(option);
+        onChange([...selected]);
+      });
+      const text = document.createElement('span');
+      text.textContent = valueLabel(option);
+      label.appendChild(box);
+      label.appendChild(text);
+      wrap.appendChild(label);
+    }
+    return wrap;
+  }
+
   function textControl(value, onChange, options) {
     const wrapper = document.createElement(options && options.multiline ? 'textarea' : 'input');
     if (!options || !options.multiline) wrapper.type = 'text';
@@ -305,6 +377,8 @@ SA.controls = (() => {
         (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }))
       ),
     gradient: (param, value, onChange) => gradientControl(value, onChange),
+    colors: (param, value, onChange) => colorsControl(value, onChange),
+    multiselect: (param, value, onChange) => multiselectControl(value, onChange, param),
   };
 
   function paramControl(group, param, value, onChange, options) {

@@ -326,6 +326,48 @@
   // Accepts an rgba array, a hex string or a ColorValue (solid / palette /
   // category) and returns an [r, g, b, a] array. Used by the effect uniforms so
   // color parameters can reference the scoped palette.
+  function relativeLuminance(rgba) {
+    const channel = (value) => (value <= 0.03928 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
+    const source = Array.isArray(rgba) ? rgba : rgba || {};
+    const r = Array.isArray(source) ? source[0] || 0 : source.r || 0;
+    const g = Array.isArray(source) ? source[1] || 0 : source.g || 0;
+    const b = Array.isArray(source) ? source[2] || 0 : source.b || 0;
+    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  }
+
+  function contrastRatio(a, b) {
+    const first = relativeLuminance(a);
+    const second = relativeLuminance(b);
+    const high = Math.max(first, second);
+    const low = Math.min(first, second);
+    return (high + 0.05) / (low + 0.05);
+  }
+
+  // Nudges the value of `fg` until it clears `target` against `bg`, trying both
+  // a darker and a lighter version and keeping the better one.
+  function ensureContrast(fg, bg, target) {
+    const minimum = target == null ? 4.5 : target;
+    const front = typeof fg === 'string' ? parse(fg) : { ...fg };
+    const back = typeof bg === 'string' ? parse(bg) : bg;
+    if (contrastRatio(front, back) >= minimum) return toHex(front);
+    const hsv = rgbToHsv(front);
+    let best = toHex(front);
+    let bestRatio = contrastRatio(front, back);
+    for (const direction of [-1, 1]) {
+      for (let step = 1; step <= 20; step += 1) {
+        const value = clamp01(hsv.v + direction * step * 0.05);
+        const candidate = hsvToRgb({ h: hsv.h, s: hsv.s, v: value, a: 1 });
+        const ratio = contrastRatio(candidate, back);
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = toHex(candidate);
+        }
+        if (ratio >= minimum) return toHex(candidate);
+      }
+    }
+    return best;
+  }
+
   function toRgba(value, fallback, ctx) {
     if (Array.isArray(value) && value.length >= 3) return [value[0], value[1], value[2], value[3] == null ? 1 : value[3]];
     if (value == null || value === '') return fallback;
@@ -351,5 +393,8 @@
     lerpColorValue,
     resolve,
     toRgba,
+    relativeLuminance,
+    contrastRatio,
+    ensureContrast,
   };
 });

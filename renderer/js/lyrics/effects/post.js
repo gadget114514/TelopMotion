@@ -42,7 +42,7 @@
     { type: 'heatHaze', code: 32, cost: 1, target: 'frame', params: [['amount', 'number', 0.3, 0, 1], ['speed', 'number', 0.5, 0, 2]] },
     { type: 'lightLeak', code: 33, tags: ['overlap'], cost: 2, target: 'frame', params: [['color', 'color', null], ['x', 'number', 0.85, 0, 1], ['y', 'number', 0.2, 0, 1], ['intensity', 'number', 0.6, 0, 2]] },
     { type: 'vignette', code: 34, cost: 1, target: 'frame', params: [['amount', 'number', 0.5, 0, 1], ['softness', 'number', 0.5, 0, 1]] },
-    { type: 'sparkles', code: 35, cost: 2, target: 'text', params: [['count', 'number', 24, 4, 64], ['size', 'number', 2, 0.5, 8], ['color', 'color', null]] },
+    { type: 'sparkles', code: 35, cost: 2, target: 'text', params: [['count', 'number', 24, 4, 64], ['size', 'number', 2, 0.5, 8], ['shape', 'select', 'dot', null, null, ['dot', 'star', 'heart']], ['color', 'color', null]] },
     { type: 'lensFlare', code: 36, tags: ['overlap'], cost: 2, target: 'frame', params: [['position', 'vec2', { x: 0.4, y: 0.35 }], ['color', 'color', null]] },
   ];
 
@@ -139,7 +139,8 @@
       p4 = [num(params.x, 0.85), num(params.y, 0.2), 0, envelope * num(params.intensity, 0.6)];
     } else if (type === 'vignette') p4 = [num(params.amount, 0.5), 1 - num(params.softness, 0.5), 0, envelope];
     else if (type === 'sparkles') {
-      p4 = [num(params.count, 24), num(params.size, 2), 0, envelope];
+      const shapeCode = params.shape === 'star' ? 1 : params.shape === 'heart' ? 2 : 0;
+      p4 = [num(params.count, 24), num(params.size, 2), shapeCode, envelope];
       colorA = toRgb(params.color, [1, 1, 0.9, 1], context);
     } else if (type === 'lensFlare') {
       const position = params.position || { x: 0.4, y: 0.35 };

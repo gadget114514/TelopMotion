@@ -6,13 +6,14 @@ const path = require('node:path');
 
 const effectsDir = path.join(__dirname, '..', '..', 'renderer', 'js', 'lyrics', 'effects');
 const fx = require(path.join(effectsDir, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg']) {
   require(path.join(effectsDir, `${name}.js`));
 }
 
 const STRINGS = require('../../renderer/js/studio/fx-strings.js');
 const LANGS = ['en', 'ja', 'es', 'fr', 'ru'];
-const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background'];
+const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+const labelGroup = (group) => fx.baseOf(group);
 
 function lookup(table, key) {
   return String(key)
@@ -34,7 +35,7 @@ test('every effect type has a label in every language', () => {
     for (const descriptor of fx.list(group)) {
       count += 1;
       for (const code of LANGS) {
-        const label = lookup(STRINGS[code], `fx.${group}.${descriptor.type}`);
+        const label = lookup(STRINGS[code], `fx.${labelGroup(group)}.${descriptor.type}`);
         assert.strictEqual(typeof label, 'string', `${code}: ${group}.${descriptor.type} is missing`);
         assert.ok(label.trim().length > 0, `${code}: ${group}.${descriptor.type} is empty`);
       }
