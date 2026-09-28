@@ -3,14 +3,22 @@ window.SA = window.SA || {};
 SA.lyricsFont = (() => {
   'use strict';
 
+  // `fontClass` groups typefaces by perceptual style (§5.3 of the repeat
+  // design): variation swaps a copy's class, not a concrete font. `rank` is
+  // the strength order used by progress/oddOne. `variation` marks the extra
+  // typefaces that exist for the repeat group.
   const BUILTINS = [
-    { id: 'NotoSans-Regular', family: 'Noto Sans', weight: 400, path: 'fonts/NotoSans-Regular.ttf', cjk: false },
-    { id: 'NotoSans-Bold', family: 'Noto Sans', weight: 700, path: 'fonts/NotoSans-Bold.ttf', cjk: false },
-    { id: 'NotoSerif-Regular', family: 'Noto Serif', weight: 400, path: 'fonts/NotoSerif-Regular.ttf', cjk: false },
-    { id: 'NotoSansJP-Regular', family: 'Noto Sans JP', weight: 400, path: 'fonts/NotoSansJP-Regular.otf', cjk: true },
-    { id: 'NotoSansJP-Bold', family: 'Noto Sans JP', weight: 700, path: 'fonts/NotoSansJP-Bold.otf', cjk: true },
-    { id: 'DelaGothicOne-Regular', family: 'Dela Gothic One', weight: 400, path: 'fonts/DelaGothicOne-Regular.ttf', cjk: true },
-    { id: 'BebasNeue-Regular', family: 'Bebas Neue', weight: 400, path: 'fonts/BebasNeue-Regular.ttf', cjk: false },
+    { id: 'NotoSans-Regular', family: 'Noto Sans', weight: 400, path: 'fonts/NotoSans-Regular.ttf', cjk: false, fontClass: 'sans', rank: 2 },
+    { id: 'NotoSans-Bold', family: 'Noto Sans', weight: 700, path: 'fonts/NotoSans-Bold.ttf', cjk: false, fontClass: 'sansBold', rank: 4 },
+    { id: 'NotoSerif-Regular', family: 'Noto Serif', weight: 400, path: 'fonts/NotoSerif-Regular.ttf', cjk: false, fontClass: 'serif', rank: 1 },
+    { id: 'NotoSansJP-Regular', family: 'Noto Sans JP', weight: 400, path: 'fonts/NotoSansJP-Regular.otf', cjk: true, fontClass: 'sans', rank: 2 },
+    { id: 'NotoSansJP-Bold', family: 'Noto Sans JP', weight: 700, path: 'fonts/NotoSansJP-Bold.otf', cjk: true, fontClass: 'sansBold', rank: 4 },
+    { id: 'DelaGothicOne-Regular', family: 'Dela Gothic One', weight: 400, path: 'fonts/DelaGothicOne-Regular.ttf', cjk: true, fontClass: 'display', rank: 6 },
+    { id: 'BebasNeue-Regular', family: 'Bebas Neue', weight: 400, path: 'fonts/BebasNeue-Regular.ttf', cjk: false, fontClass: 'display', rank: 6 },
+    { id: 'NotoSerifJP-Regular', family: 'Noto Serif JP', weight: 400, path: 'fonts/NotoSerifJP-Regular.otf', cjk: true, fontClass: 'serif', rank: 1, variation: true },
+    { id: 'ZenMaruGothic-Regular', family: 'Zen Maru Gothic', weight: 400, path: 'fonts/ZenMaruGothic-Regular.ttf', cjk: true, fontClass: 'round', rank: 3, variation: true },
+    { id: 'KleeOne-Regular', family: 'Klee One', weight: 400, path: 'fonts/KleeOne-Regular.ttf', cjk: true, fontClass: 'hand', rank: 3, variation: true },
+    { id: 'RocknRollOne-Regular', family: 'RocknRoll One', weight: 400, path: 'fonts/RocknRollOne-Regular.ttf', cjk: true, fontClass: 'pop', rank: 5, variation: true },
   ];
 
   const CJK_RE = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/;
@@ -76,6 +84,8 @@ SA.lyricsFont = (() => {
       const entry = parseFont(builtin.id, builtin.family, builtin.weight, bytes);
       entry.path = builtin.path;
       entry.cjk = builtin.cjk;
+      entry.fontClass = builtin.fontClass || null;
+      entry.rank = builtin.rank == null ? null : builtin.rank;
       parsed.set(id, entry);
       return entry;
     })();

@@ -492,7 +492,21 @@
   const DECOR_PROGRESS = ['solid', 'shadow', 'glow', 'hollow'];
   const SIZE_RANDOM = [0.5, 0.75, 1, 1.4];
   const COLOR_RANDOM = [0, 1, 2, 3];
-  const RANDOM_POOLS = { size: SIZE_RANDOM, color: COLOR_RANDOM, decor: DECOR_PROGRESS, font: [0, 1, 2, 3] };
+  const RANDOM_POOLS = { size: SIZE_RANDOM, color: COLOR_RANDOM, decor: DECOR_PROGRESS, font: [] };
+  const FONT_CLASS_RANK = { serif: 1, sans: 2, round: 3, hand: 3, sansBold: 4, pop: 5, display: 6 };
+  const MAX_VARIANT_CLASSES = 3;
+
+  // Classes ordered by perceptual distance from the main font: the nearest
+  // strength first. At most three extra typefaces per beat (§5.3).
+  function fontClassOrder(mainClass, classes) {
+    const list = [...new Set((classes || []).filter((entry) => typeof entry === 'string' && entry))];
+    const rank = (value) => (FONT_CLASS_RANK[value] == null ? 9 : FONT_CLASS_RANK[value]);
+    const main = mainClass && list.includes(mainClass) ? mainClass : null;
+    return list
+      .filter((entry) => entry !== main)
+      .sort((a, b) => Math.abs(rank(a) - rank(main)) - Math.abs(rank(b) - rank(main)) || rank(a) - rank(b))
+      .slice(0, MAX_VARIANT_CLASSES);
+  }
 
   function effectiveRule(copies, rule) {
     if (copies === 1 && (rule === 'progress' || rule === 'alternate' || rule === 'random')) return 'oddOne';
@@ -500,7 +514,7 @@
     return rule;
   }
 
-  function resolveSlots(params) {
+  function resolveSlots(params, fontOrder) {
     const preset = params.variationPreset !== 'custom' ? PRESET_SLOTS[params.variationPreset] : null;
     const raw = preset || [
       { attr: params.var1Attr, rule: params.var1Rule, level: params.var1Level, target: params.var1Target, colorMode: params.var1ColorMode },
@@ -514,6 +528,7 @@
         level: slot.level === 'strong' ? 'strong' : 'normal',
         target: slot.target === 'last' ? 'last' : 'main',
         colorMode: slot.colorMode === 'light' ? 'light' : 'hue',
+        fontOrder,
       }));
   }
 
@@ -546,7 +561,8 @@
       } else if (slot.attr === 'decor') {
         copy.decor = DECOR_PROGRESS[Math.min(DECOR_PROGRESS.length - 1, Math.floor(u * DECOR_PROGRESS.length))];
       } else if (slot.attr === 'font') {
-        copy.fontClass = slot.fontClass || 'progress';
+        const order = slot.fontOrder || [];
+        copy.fontClass = index > 0 && order.length ? order[(index - 1) % order.length] : null;
       }
     } else if (slot.rule === 'alternate') {
       if (slot.attr === 'size') copy.scaleMul *= copy.alternateKey ? 0.6 : 1;
@@ -554,7 +570,10 @@
         copy.colorIndex = copy.alternateKey;
         copy.gradientInvert = !!copy.alternateKey;
       } else if (slot.attr === 'decor') copy.decor = copy.alternateKey ? 'hollow' : 'solid';
-      else if (slot.attr === 'font') copy.fontClass = copy.alternateKey ? 'b' : 'a';
+      else if (slot.attr === 'font') {
+        const order = slot.fontOrder || [];
+        copy.fontClass = copy.alternateKey && order.length ? order[0] : null;
+      }
     } else if (slot.rule === 'random') {
       const value = pick ? pick() : null;
       if (slot.attr === 'size') copy.scaleMul *= value == null ? 1 : value;
@@ -562,14 +581,15 @@
         copy.colorIndex = value == null ? -1 : value;
         copy.gradientInvert = value === 1 || value === 3;
       } else if (slot.attr === 'decor') copy.decor = value || 'solid';
-      else if (slot.attr === 'font') copy.fontClass = value == null ? null : String(value);
+      else if (slot.attr === 'font') copy.fontClass = typeof value === 'string' ? value : null;
     } else if (slot.rule === 'oddOne') {
+      const order = slot.fontOrder || [];
       if (slot.attr === 'size') copy.scaleMul *= isOdd ? 1.6 : 1;
       else if (slot.attr === 'color') {
         if (isOdd) copy.accentColor = true;
         else copy.colorIndex = 0;
       } else if (slot.attr === 'decor') copy.decor = isOdd ? 'solid' : 'hollow';
-      else if (slot.attr === 'font') copy.fontClass = isOdd ? 'odd' : null;
+      else if (slot.attr === 'font') copy.fontClass = isOdd && order.length ? order[0] : null;
     }
     return copy;
   }
@@ -620,8 +640,10 @@
     const base = params.copies === 'many' ? 0.45 : 0.7;
     const deep = params.copies === 'many' ? 0.1 : 0.3;
     const varRandom = rng.mulberry32(variationSeed);
-    const slots = resolveSlots(params);
-    const pickers = slots.map((slot) => makePicker(varRandom, RANDOM_POOLS[slot.attr] || []));
+    const mainFontClass = dims && dims.mainFontClass ? String(dims.mainFontClass) : null;
+    const fontOrder = fontClassOrder(mainFontClass, dims && dims.fontClasses);
+    const slots = resolveSlots(params, fontOrder);
+    const pickers = slots.map((slot) => makePicker(varRandom, slot.attr === 'font' ? slot.fontOrder : RANDOM_POOLS[slot.attr] || []));
     const copies = [];
     for (let index = 0; index < count; index += 1) {
       const child = index === 0 ? null : children[index - 1];

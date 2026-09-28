@@ -308,6 +308,41 @@ test('variation is deterministic per seed', () => {
   assert.deepEqual(first, second);
 });
 
+test('font variation picks classes from the loaded typefaces', () => {
+  const dims = { ...DIMS, mainFontClass: 'sans', fontClasses: ['sans', 'serif', 'round', 'hand', 'pop'] };
+  const plan = repeat.plan(instance('stackV', { copies: 3, var1Attr: 'font', var1Rule: 'progress' }), BEAT, 1, dims, rng.mulberry32(7));
+  const classes = plan.map((copy) => copy.fontClass);
+  assert.equal(classes[0], null, 'the main keeps its typeface');
+  assert.equal(new Set(classes.filter(Boolean)).size, 3, 'three different variant classes');
+  assert.ok(classes.slice(1).every((cls) => cls && cls !== 'sans'), 'variants stay away from the main class');
+
+  const alternate = repeat.plan(instance('stackV', { copies: 3, var1Attr: 'font', var1Rule: 'alternate' }), BEAT, 1, dims, rng.mulberry32(7));
+  const alternates = new Set(alternate.map((copy) => copy.fontClass));
+  assert.ok(alternates.size >= 2, 'alternate switches between two classes');
+
+  const odd = repeat.plan(instance('stackV', { copies: 3, var1Attr: 'font', var1Rule: 'oddOne' }), BEAT, 1, dims, rng.mulberry32(7));
+  assert.equal(odd.filter((copy) => copy.fontClass).length, 1, 'oddOne swaps exactly one typeface');
+
+  const without = repeat.plan(instance('stackV', { copies: 3, var1Attr: 'font', var1Rule: 'progress' }), BEAT, 1, DIMS, rng.mulberry32(7));
+  assert.ok(without.every((copy) => copy.fontClass == null), 'no loaded classes leaves the main typeface');
+});
+
+test('font variation is capped at three variant classes', () => {
+  const dims = { ...DIMS, mainFontClass: 'sans', fontClasses: ['sans', 'serif', 'round', 'hand', 'pop', 'display'] };
+  const plan = repeat.plan(instance('stackV', { copies: 'many', var1Attr: 'font', var1Rule: 'progress' }), BEAT, 1, dims, rng.mulberry32(7));
+  const classes = new Set(framesOf(plan).map((copy) => copy.fontClass).filter(Boolean));
+  assert.ok(classes.size <= 3, `classes ${classes.size}`);
+});
+
+test('costOf counts extra typefaces and decorations', () => {
+  const descriptor = fx.get('repeat', 'stackV');
+  const solid = descriptor.costOf({ copies: 3 }, null);
+  const decorated = descriptor.costOf({ copies: 3, var1Attr: 'decor', var1Rule: 'progress' }, null);
+  const fonts = descriptor.costOf({ copies: 3, var1Attr: 'font', var1Rule: 'progress' }, null);
+  assert.equal(decorated, solid + 1);
+  assert.equal(fonts, solid + 2);
+});
+
 test('signature distinguishes arrangements and params', () => {
   assert.equal(repeat.signature(instance('stackV', { copies: 2 })), repeat.signature(instance('stackV', { copies: '2' })));
   assert.notEqual(repeat.signature(instance('stackV', { copies: 2 })), repeat.signature(instance('rowH', { copies: 2 })));

@@ -197,16 +197,52 @@ SA.preview = (() => {
 
   // Every font referenced by the theme, a cue or a beat has to be loaded:
   // per-beat styles switch typefaces.
+  function usesFontVariation(style) {
+    const repeat = style && style.repeat;
+    if (!repeat || !repeat.type || repeat.type === 'none' || repeat.enabled === false) return false;
+    const params = repeat.params || {};
+    if (params.variationPreset === 'ransomNote' || params.variationPreset === 'loudQuiet') return true;
+    return params.var1Attr === 'font' || params.var2Attr === 'font';
+  }
+
+  // Variant classes are loaded only when a repeat asks for font variation.
+  // Japanese text uses the four added Japanese typefaces; latin text stays on
+  // the already bundled latin families.
+  function variationFontIds(ids, text) {
+    if (!SA.lyricsFont || !SA.lyricsFont.builtins) return;
+    const builtins = SA.lyricsFont.builtins();
+    const cjk = /[\u3000-\u9fff\uff00-\uffef]/.test(text || '');
+    const mainClasses = new Set(
+      [...ids]
+        .map((id) => {
+          const entry = builtins.find((candidate) => candidate.id === id);
+          return entry && entry.fontClass;
+        })
+        .filter(Boolean)
+    );
+    const pool = cjk ? builtins.filter((entry) => entry.variation && entry.cjk) : builtins.filter((entry) => !entry.variation && !entry.cjk && entry.fontClass);
+    const byClass = new Map();
+    for (const entry of pool) if (!byClass.has(entry.fontClass)) byClass.set(entry.fontClass, entry);
+    for (const entry of [...byClass.values()].filter((candidate) => !mainClasses.has(candidate.fontClass)).slice(0, 4)) {
+      ids.add(entry.id);
+    }
+  }
+
   function collectFontIds(doc) {
     const ids = new Set();
     const add = (style) => {
       const id = style && style.text && style.text.fontId;
       if (id) ids.add(id);
     };
-    add(doc.style);
-    for (const style of Object.values(doc.cueStyles || {})) add(style);
-    for (const style of Object.values(doc.beatStyles || {})) add(style);
-    for (const style of Object.values(doc.beatKindStyle || {})) add(style);
+    const styles = [doc.style];
+    for (const style of Object.values(doc.cueStyles || {})) styles.push(style);
+    for (const style of Object.values(doc.beatStyles || {})) styles.push(style);
+    for (const style of Object.values(doc.beatKindStyle || {})) styles.push(style);
+    for (const style of styles) add(style);
+    if (styles.some(usesFontVariation)) {
+      const cues = doc.script ? doc.script.cues || [] : [];
+      variationFontIds(ids, cues.map((cue) => cue.text || '').join('\n'));
+    }
     return [...ids];
   }
 

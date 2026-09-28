@@ -370,10 +370,10 @@ SA.lyricsEngine = (() => {
 
     const DECOR_EDGE = { hollow: 'outline', glow: 'neonGlow', shadow: 'dropShadow' };
 
-    function drawDecor(colors, decor, t, sdfTarget) {
+    function drawDecor(colors, decor, t, sdfTarget, style) {
       const type = DECOR_EDGE[decor];
       if (!type) return;
-      const style = (state.project && state.project.style) || {};
+      const activeStyle = style || (state.project && state.project.style) || {};
       const uniforms = SA.fx.edgeUniforms(
         { type, params: {} },
         {
@@ -382,7 +382,7 @@ SA.lyricsEngine = (() => {
           width: state.width,
           height: state.height,
           time: t,
-          palette: style.palette || null,
+          palette: activeStyle.palette || null,
           palettes: state.project ? state.project.palettes || [] : [],
           sdfTexture: sdfTarget ? sdfTarget.texture : null,
         }
@@ -390,25 +390,57 @@ SA.lyricsEngine = (() => {
       pipeline.edge(uniforms);
     }
 
-    function drawRepeatCopies(active, t, project, colorSet, fillInstance, sdfTarget, category, progress) {
+    function fontClassOf(entry) {
+      if (!entry) return null;
+      if (entry.fontClass) return entry.fontClass;
+      if (!SA.lyricsFont || !SA.lyricsFont.builtins) return null;
+      const builtin = SA.lyricsFont.builtins().find((candidate) => candidate.id === entry.id);
+      return builtin ? builtin.fontClass || null : null;
+    }
+
+    function variantFontFor(cls, text, fonts) {
+      const cjk = /[\u3000-\u9fff\uff00-\uffef]/.test(text || '');
+      const candidates = (fonts || []).filter((entry) => entry && entry.font && fontClassOf(entry) === cls);
+      // Japanese text never falls back to latin-only typefaces
+      const pool = cjk ? candidates.filter((entry) => entry.cjk !== false) : candidates;
+      return pool[0] || candidates[0] || null;
+    }
+
+    function drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride) {
       if (!SA.repeat || !pipeline) return;
       const { beat, scene, result, style } = active;
       const instance = SA.fx.withDefaults(style.repeat, 'repeat');
       if (!instance || !instance.type || instance.type === 'none' || instance.enabled === false) return;
+      const fonts = state.assets.fonts || [];
       const box = repeatBox(scene, result);
+      const mainFontId = scene.letters.length ? scene.letters[0].fontId : (style.text && style.text.fontId) || null;
+      const mainFont = mainFontId ? fonts.find((entry) => entry.id === mainFontId) : null;
+      const fontClasses = [...new Set(fonts.map((entry) => fontClassOf(entry)).filter(Boolean))];
       const dims = {
         width: state.width,
         height: state.height,
         aspect: state.width / Math.max(1, state.height),
         box,
         safeArea: { left: state.width * 0.02, top: state.height * 0.02, right: state.width * 0.02, bottom: state.height * 0.02 },
+        mainFontClass: fontClassOf(mainFont),
+        fontClasses,
       };
       const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
       const random = SA.rng.rngFor(seed, beat.id, 'repeat', instance.params.seedShift || 0);
-      const copies = SA.repeat.plan(instance, beat, t, dims, random);
-      for (let index = copies.length - 1; index >= 0; index -= 1) {
-        const copy = copies[index];
-        if (copy.isMain || copy.envelope <= 0.001 || copy.opacity <= 0.001) continue;
+      let copies = SA.repeat.plan(instance, beat, t, dims, random);
+      // preview cost budget: degrade preview only, never the export
+      const budget = 24;
+      const cost = SA.fx.costOf(style);
+      const preview = state.quality === 'preview' && cost > budget;
+      const degrade = !preview ? 0 : cost > budget * 1.7 ? 3 : cost > budget * 1.3 ? 2 : 1;
+      if (degrade >= 1 && instance.params.copies === 'many') {
+        copies = copies.filter((copy, index) => copy.isMain || index % 2 === 0);
+      }
+      if (degrade >= 2) for (const copy of copies) copy.fontClass = null;
+      if (degrade >= 3) for (const copy of copies) copy.decor = 'solid';
+
+      const drawCopy = (copy, sdf) => {
+        if (copy.isMain || copy.envelope <= 0.001 || copy.opacity <= 0.001) return;
         const transform = repeatTransform(copy, box, state.width, state.height);
         const decor = copy.decor || 'solid';
         const copyColors = repeatCopyColors(colorSet.arrays, copy, style, project);
@@ -422,11 +454,47 @@ SA.lyricsEngine = (() => {
             palettes: project.palettes || [],
             categoryColors: project.categoryColors || {},
             progress,
-            sdfTexture: sdfTarget ? sdfTarget.texture : null,
+            sdfTexture: sdf ? sdf.texture : null,
           })
         );
-        if (decor !== 'solid') drawDecor(copyColors, decor, t, sdfTarget);
+        if (decor !== 'solid') drawDecor(copyColors, decor, t, sdf, style);
         pipeline.commitLayer(copy.opacity * copy.envelope, transform);
+      };
+
+      const byFont = new Map();
+      const plain = [];
+      for (const copy of copies) {
+        if (copy.isMain) continue;
+        if (copy.fontClass) {
+          if (!byFont.has(copy.fontClass)) byFont.set(copy.fontClass, []);
+          byFont.get(copy.fontClass).push(copy);
+        } else {
+          plain.push(copy);
+        }
+      }
+      let mainSdf = null;
+      // variant typefaces first: each renders its own mask (and sdf), then the
+      // main mask is restored for the remaining copies
+      for (const [cls, list] of byFont) {
+        const entry = variantFontFor(cls, scene.text, fonts);
+        const variantScene = entry ? buildBeatScene(project, beat, [entry]) : null;
+        const variantResult = variantScene && variantScene.letters.length ? evaluateBeatState(project, beat, variantScene, t, beats) : null;
+        if (!variantResult || !variantResult.letters.length) {
+          plain.push(...list);
+          continue;
+        }
+        pipeline.text(variantScene, variantResult.letters, variant);
+        const variantSdf = pipeline.sdf();
+        for (const copy of list) drawCopy(copy, variantSdf);
+      }
+      if (byFont.size) {
+        pipeline.text(scene, result.letters, variant, colorOverride);
+        mainSdf = pipeline.sdf();
+      }
+      for (let index = plain.length - 1; index >= 0; index -= 1) {
+        const copy = plain[index];
+        if (copy.decor && copy.decor !== 'solid' && !mainSdf) mainSdf = pipeline.sdf();
+        drawCopy(copy, mainSdf);
       }
     }
 
@@ -1102,7 +1170,8 @@ SA.lyricsEngine = (() => {
         pipeline.beginLayer();
         const variation = bgBehind ? drawBackgroundPass(active, t, project) : null;
         const variant = morphVariantFor(project, beat, scene);
-        pipeline.text(scene, result.letters, variant, variation ? bgColorOverrideFor(scene, variation) : null);
+        const colorOverride = variation ? bgColorOverrideFor(scene, variation) : null;
+        pipeline.text(scene, result.letters, variant, colorOverride);
         const colorSet = SA.fx.resolveColorSet
           ? SA.fx.resolveColorSet(style.color, {
               palettes: project.palettes || [],
@@ -1113,8 +1182,6 @@ SA.lyricsEngine = (() => {
               defaultFill: '#eef2ff',
             })
           : { arrays: { fill: [0.93, 0.95, 1, 1], fill2: [0.93, 0.95, 1, 1], stroke: [1, 1, 1, 1] } };
-        const sdfTarget = pipeline.sdf();
-        if (variation && bgShape.params.knockout) pipeline.knockout();
         const maxDistance = Math.max(state.width, state.height) * 0.1;
         const progress = Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start)));
         const fillInstance = SA.fx.withDefaults(style.fill, 'fill');
@@ -1122,8 +1189,11 @@ SA.lyricsEngine = (() => {
           beat.meta && beat.meta.category
             ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
             : null;
-        // repeat: arranged copies of the string behind the main text
-        drawRepeatCopies(active, t, project, colorSet, fillInstance, sdfTarget, category, progress);
+        // repeat: arranged copies of the string behind the main text. Variant
+        // typefaces re-render the mask, so the sdf is created afterwards.
+        drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
+        const sdfTarget = pipeline.sdf();
+        if (variation && bgShape.params.knockout) pipeline.knockout();
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
         const clones = Array.isArray(style.clones) ? style.clones : [];
