@@ -275,6 +275,92 @@ SA.lyricsEngine = (() => {
       };
     }
 
+    // --- repeat group (style.repeat) -------------------------------------------
+    // Bounding box of the current letter states in pixels; the repeat layout is
+    // expressed relative to its centre.
+    function repeatBox(scene, result) {
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (let i = 0; i < scene.letters.length; i += 1) {
+        const letter = scene.letters[i];
+        const letterState = result.letters[i];
+        if (!letter || !letterState || !letter.local) continue;
+        const w = Math.abs(letter.local.w || 0) * Math.abs(letterState.scaleX == null ? 1 : letterState.scaleX);
+        const h = Math.abs(letter.local.h || 0) * Math.abs(letterState.scaleY == null ? 1 : letterState.scaleY);
+        if (w <= 0 || h <= 0) continue;
+        const x = Number(letterState.x) || 0;
+        const y = Number(letterState.y) || 0;
+        x0 = Math.min(x0, x - w / 2);
+        y0 = Math.min(y0, y - h / 2);
+        x1 = Math.max(x1, x + w / 2);
+        y1 = Math.max(y1, y + h / 2);
+      }
+      if (!Number.isFinite(x0)) {
+        return { w: Math.max(1, state.width * 0.5), h: Math.max(1, state.height * 0.15), cx: state.width / 2, cy: state.height / 2 };
+      }
+      return { w: Math.max(1, x1 - x0), h: Math.max(1, y1 - y0), cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 };
+    }
+
+    // Converts a repeat copy (offset/scale/rotate about its own centre) into the
+    // copy-pass transform, which works around the frame centre.
+    function repeatTransform(copy, box, width, height) {
+      const centreX = width / 2;
+      const centreY = height / 2;
+      const scale = copy.scale == null ? 1 : copy.scale;
+      const angle = ((copy.rotate || 0) * Math.PI) / 180;
+      const cos = Math.cos(angle);
+      const sin = Math.sin(angle);
+      const targetX = box.cx + (copy.dx || 0) - centreX;
+      const targetY = box.cy + (copy.dy || 0) - centreY;
+      const rx = (cos * targetX + sin * targetY) / scale;
+      const ry = (-sin * targetX + cos * targetY) / scale;
+      return {
+        dx: (box.cx - centreX - rx) / width,
+        dy: (box.cy - centreY - ry) / height,
+        scale,
+        rotate: copy.rotate || 0,
+      };
+    }
+
+    function drawRepeatCopies(active, t, project, colorSet, fillInstance, sdfTarget, category, progress) {
+      if (!SA.repeat || !pipeline) return;
+      const { beat, scene, result, style } = active;
+      const instance = SA.fx.withDefaults(style.repeat, 'repeat');
+      if (!instance || !instance.type || instance.type === 'none' || instance.enabled === false) return;
+      const box = repeatBox(scene, result);
+      const dims = {
+        width: state.width,
+        height: state.height,
+        aspect: state.width / Math.max(1, state.height),
+        box,
+        safeArea: { left: state.width * 0.02, top: state.height * 0.02, right: state.width * 0.02, bottom: state.height * 0.02 },
+      };
+      const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
+      const random = SA.rng.rngFor(seed, beat.id, 'repeat', instance.params.seedShift || 0);
+      const copies = SA.repeat.plan(instance, beat, t, dims, random);
+      for (let index = copies.length - 1; index >= 0; index -= 1) {
+        const copy = copies[index];
+        if (copy.isMain || copy.envelope <= 0.001 || copy.opacity <= 0.001) continue;
+        const transform = repeatTransform(copy, box, state.width, state.height);
+        pipeline.beginLayer();
+        pipeline.fill(
+          SA.fx.fillUniforms(fillInstance, {
+            colors: colorSet.arrays,
+            category,
+            time: t,
+            palette: style.palette || null,
+            palettes: project.palettes || [],
+            categoryColors: project.categoryColors || {},
+            progress,
+            sdfTexture: sdfTarget ? sdfTarget.texture : null,
+          })
+        );
+        pipeline.commitLayer(copy.opacity * copy.envelope, transform);
+      }
+    }
+
     function needsPrevious(scene) {
       const style = (scene && scene.style) || {};
       const from = style.layout && style.layout.params && style.layout.params.from;
@@ -967,6 +1053,8 @@ SA.lyricsEngine = (() => {
           beat.meta && beat.meta.category
             ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
             : null;
+        // repeat: arranged copies of the string behind the main text
+        drawRepeatCopies(active, t, project, colorSet, fillInstance, sdfTarget, category, progress);
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
         const clones = Array.isArray(style.clones) ? style.clones : [];

@@ -37,6 +37,7 @@
     bgFill: { type: 'solid', params: {} },
     bgEdge: null,
     bgMotion: { type: 'follow', params: {} },
+    repeat: { type: 'none', params: {} },
   };
 
   function alias(group, baseGroup) {
@@ -62,6 +63,11 @@
       gpu: descriptor.gpu || null,
       anchor: descriptor.anchor || null,
       fixedDuration: descriptor.fixedDuration == null ? null : Number(descriptor.fixedDuration),
+      // optional per-type hooks: `normalize(params)` clamps a params object to
+      // the valid combinations of the type, `costOf(params)` overrides the
+      // static cost with a value derived from the params.
+      normalize: typeof descriptor.normalize === 'function' ? descriptor.normalize : null,
+      costOf: typeof descriptor.costOf === 'function' ? descriptor.costOf : null,
     };
     if (!groups.has(entry.group)) groups.set(entry.group, new Map());
     groups.get(entry.group).set(entry.type, entry);
@@ -103,10 +109,12 @@
     const source = instance && instance.type ? instance : fallback;
     if (!source) return null;
     const entry = get(group, source.type);
+    let params = { ...paramDefaults(group, source.type), ...(entry && entry.defaults.params ? entry.defaults.params : {}), ...(source.params || {}) };
+    if (entry && entry.normalize) params = entry.normalize(params, { type: source.type, group });
     return {
       type: source.type,
       enabled: source.enabled !== false,
-      params: { ...paramDefaults(group, source.type), ...(entry && entry.defaults.params ? entry.defaults.params : {}), ...(source.params || {}) },
+      params,
       motion: { ...((entry && entry.defaults.motion) || {}), ...(source.motion || {}) },
     };
   }
@@ -114,10 +122,10 @@
   function costOf(style) {
     let cost = 0;
     if (!style) return cost;
-    for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'color']) {
+    for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'color', 'repeat']) {
       const instance = withDefaults(style[group], group);
       const entry = instance && get(group, instance.type);
-      if (entry) cost += entry.cost;
+      if (entry) cost += entry.costOf ? entry.costOf(instance.params, instance) : entry.cost;
     }
     // the text background costs nothing until a shape is selected
     const bgInstance = withDefaults(style.bgShape, 'bgShape');
