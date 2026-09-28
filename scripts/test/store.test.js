@@ -279,3 +279,38 @@ test('undoLabel and redoLabel name the next step', () => {
   assert.equal(store.undoLabel(), null);
   assert.equal(store.redoLabel(), 'move cue');
 });
+
+// --- fill sizing re-flow -----------------------------------------------------
+
+globalThis.SA.textflow = require('../../renderer/js/lyrics/textflow.js');
+
+test('switching to a fill style re-flows the beats and one undo reverts it', () => {
+  store.load(fixture());
+  const before = snapshot();
+  store.commands.setStyleProp('project', 'text.fit', 'fill');
+  const beat = store.state.project.beats.c1[0];
+  assert.equal(beat.fit, 'fill');
+  assert.ok(beat.fontScale > 1, `fontScale ${beat.fontScale}`);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('a fixed sizing style change leaves the beats alone', () => {
+  store.load(fixture());
+  const before = snapshot();
+  store.commands.setStyleProp('project', 'text.size', 64);
+  assert.deepEqual(snapshot().beats, before.beats);
+});
+
+test('editBeatText keeps the user lines and only resizes a fill beat', () => {
+  store.load(fixture());
+  store.commands.setStyleProp('project', 'text.fit', 'fill');
+  const beatId = store.state.project.beats.c1[0].id;
+  store.commands.editBeatText('c1', beatId, 'hello\nworld');
+  const beat = store.state.project.beats.c1.find((entry) => entry.id === beatId);
+  assert.deepEqual(beat.lines, ['hello', 'world']);
+  assert.equal(beat.pinned, true);
+  assert.equal(beat.fit, 'fill');
+  assert.ok(beat.fontScale > 1, `fontScale ${beat.fontScale}`);
+});
+

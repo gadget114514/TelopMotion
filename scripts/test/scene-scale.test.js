@@ -91,3 +91,26 @@ test('buildScene caches per scale and clamps a bad scale to 1', () => {
   const bad = sceneApi.buildScene(doc, beat, [], { scale: 0 });
   assert.equal(bad.scale, 1, 'a non-positive scale falls back to 1');
 });
+
+test('a fill beat keeps its flow lines and skips re-wrapping', () => {
+  const { doc, beat } = fixture();
+  sceneApi.clearCache();
+  const calls = [];
+  const original = global.SA.lyricsFont.layoutText;
+  global.SA.lyricsFont.layoutText = (text, style, fonts, options) => {
+    calls.push({ text, options });
+    return layoutStub(text, style, fonts, options);
+  };
+  try {
+    sceneApi.buildScene(doc, beat, [], {});
+    const fillBeat = { ...beat, id: 'c1:single1', fit: 'fill' };
+    sceneApi.buildScene(doc, fillBeat, [], {});
+    assert.equal(calls.length, 2);
+    assert.equal(calls[0].options.maxWidth, doc.style.text.maxWidth * doc.output.width);
+    assert.equal(calls[1].options.maxWidth, Infinity, 'fill beat should not be re-wrapped');
+  } finally {
+    global.SA.lyricsFont.layoutText = original;
+  }
+  sceneApi.clearCache();
+});
+

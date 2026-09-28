@@ -45,6 +45,40 @@
     },
   };
 
+  // fill sizing: instead of shrinking until the text fits, the font size is
+  // back-solved from the share of the frame the text block should cover
+  const FILL_DEFAULTS = {
+    coverage: { '16:9': 0.14, '9:16': 0.2 },
+    maxWidth: 0.94,
+    maxHeight: 0.6,
+    bleed: 0.04,
+    minSize: 0.045,
+    maxSize: 0.32,
+  };
+  const FILL_REF_SIZE = 100; // line widths scale with the size, so measure once at 100
+
+  function fillOptions(style, frame, aspect) {
+    const s = style || {};
+    const num = (value, fallback) => (value == null || value === '' || !Number.isFinite(Number(value)) ? fallback : Number(value));
+    const vertical = s.direction === 'vertical';
+    const short = Math.min(frame.width, frame.height);
+    return {
+      coverage: clamp(num(s.fillCoverage, FILL_DEFAULTS.coverage[aspect] || FILL_DEFAULTS.coverage['16:9']), 0.01, 0.8),
+      maxWidth: clamp(num(s.fillMaxWidth, FILL_DEFAULTS.maxWidth), 0.2, 1.2),
+      maxHeight: clamp(num(s.fillMaxHeight, FILL_DEFAULTS.maxHeight), 0.1, 1),
+      bleed: clamp(num(s.fillBleed, FILL_DEFAULTS.bleed), 0, 0.3),
+      minSize: num(s.fillMinSize, FILL_DEFAULTS.minSize) * short,
+      maxSize: num(s.fillMaxSize, FILL_DEFAULTS.maxSize) * short,
+      lineHeight: s.lineHeight || 1.2,
+      // vertical writing turns the line direction along the frame height
+      frameW: vertical ? frame.height : frame.width,
+      frameH: vertical ? frame.width : frame.height,
+      area: frame.width * frame.height,
+      short,
+      consistency: s.fillConsistency === 'cue' ? 'cue' : 'page',
+    };
+  }
+
   const CJK_RE = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/;
   const CJK_ANY_RE = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/g;
   const JA_NO_START = '、。，．・：；！？ー―〜…‥）」』】〕〉》ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ々ゝゞ';
@@ -471,6 +505,86 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Fill sizing (frame coverage -> font size)
+  // ---------------------------------------------------------------------------
+
+  // lineEms holds the width of every line in em (width at FILL_REF_SIZE / REF).
+  // The returned size is in px.
+  function sizeForLines(lineEms, fo) {
+    const widest = Math.max(1e-6, ...lineEms);
+    const total = Math.max(1e-6, lineEms.reduce((sum, value) => sum + value, 0));
+    const count = lineEms.length;
+    // sum(line width * s) * line height * s = coverage * frame area
+    const byArea = Math.sqrt((fo.coverage * fo.area) / (total * fo.lineHeight));
+    const byWidth = (fo.maxWidth * fo.frameW) / widest;
+    const byHeight = (fo.maxHeight * fo.frameH) / (count * fo.lineHeight);
+    const raw = Math.min(byArea, byWidth, byHeight);
+    const size = clamp(raw, fo.minSize, fo.maxSize);
+    // when the minimum size had to be used, allow a little bleed past the frame
+    const fits =
+      size <= raw + 1e-6 ||
+      (widest * size <= (1 + fo.bleed) * fo.frameW + 1e-6 && count * fo.lineHeight * size <= fo.frameH + 1e-6);
+    const bleed = widest * size > fo.frameW + 1e-6;
+    return { size, fits, bleed };
+  }
+
+  // The smallest max width at which greedy wrapping still uses at most `lines`
+  // lines. Greedy is optimal for minimizing the widest line under a line cap.
+  function narrowestWidth(units, measurer, size, lines) {
+    const { widths, spaceWidth } = makeWidths(units, measurer, size);
+    let lo = Math.max(...widths);
+    let hi = widths.reduce((sum, value) => sum + value, 0) + spaceWidth * units.length + 1;
+    if (greedyLines(units, measurer, size, hi, lines).overflow) return null; // hard breaks alone exceed `lines`
+    for (let i = 0; i < 24 && hi - lo > 0.5; i += 1) {
+      const mid = (lo + hi) / 2;
+      if (greedyLines(units, measurer, size, mid, lines).overflow) lo = mid;
+      else hi = mid;
+    }
+    return hi;
+  }
+
+  // Tries every line count up to maxLines and keeps the wrap whose resulting
+  // font size reads best (large text wins; bad breaks, extra lines and bleed
+  // are discounted).
+  function fillFit(units, measurer, baseSize, fo, maxLines, balanceSettings) {
+    const ref = FILL_REF_SIZE;
+    const { widths, spaceWidth } = makeWidths(units, measurer, ref);
+    const limit = Math.max(1, Math.min(maxLines, units.length));
+    let best = null;
+    for (let k = 1; k <= limit; k += 1) {
+      const narrow = narrowestWidth(units, measurer, ref, k);
+      if (narrow == null) continue;
+      let lines = dpLines(units, measurer, ref, narrow * 1.03, { ...balanceSettings, balance: true });
+      if (!lines.length || lines.length > k) lines = greedyLines(units, measurer, ref, narrow, k).lines;
+      const ems = lines.map((line) => lineWidth(line, widths, spaceWidth) / ref);
+      const fit = sizeForLines(ems, fo);
+      let penalty = 0;
+      for (let i = 1; i < lines.length; i += 1) {
+        const head = lines[i][0];
+        if (!head.hardBreak && Number.isFinite(head.penalty)) penalty += head.penalty;
+      }
+      const score = fit.size / fo.short - 0.004 * penalty - 0.012 * (lines.length - 1) - (fit.bleed ? 0.02 : 0);
+      const candidate = { ...fit, lines, scale: fit.size / baseSize, score };
+      if (!best || (candidate.fits && !best.fits) || (candidate.fits === best.fits && candidate.score > best.score)) best = candidate;
+    }
+    return best; // null only when hard breaks exceed maxLines
+  }
+
+  // Sizes already-decided lines (a beat the user edited by hand) without
+  // re-wrapping them. Public so the Studio can resize a pinned beat.
+  function fitLinesScale(lines, options) {
+    const opts = options || {};
+    const style = opts.style || {};
+    const frame = { width: (opts.frame && opts.frame.width) || 1920, height: (opts.frame && opts.frame.height) || 1080 };
+    const fo = fillOptions(style, frame, opts.aspect || '16:9');
+    const measurer = makeMeasurer({ ...opts, style, lang: opts.lang || 'en' });
+    const list = (lines || []).filter((line) => String(line).trim());
+    if (!list.length) return { scale: 1, bleed: false };
+    const fit = sizeForLines(list.map((line) => measurer(line, FILL_REF_SIZE) / FILL_REF_SIZE), fo);
+    return { scale: fit.size / (style.size || 96), bleed: fit.bleed };
+  }
+
+  // ---------------------------------------------------------------------------
   // Flow
   // ---------------------------------------------------------------------------
 
@@ -753,6 +867,10 @@
     const maxWidth = opts.maxWidth != null ? opts.maxWidth : Math.max(1, (style.maxWidth > 0 && style.maxWidth <= 1 ? style.maxWidth : 0.9) * ((opts.frame && opts.frame.width) || 1920));
     const measurer = makeMeasurer({ ...opts, style, lang });
     const warnings = [];
+    const fill = style.fit === 'fill';
+    const fillFrame = { width: (opts.frame && opts.frame.width) || 1920, height: (opts.frame && opts.frame.height) || 1080 };
+    const fo = fill ? fillOptions(style, fillFrame, aspect) : null;
+    const fitUnits = (list, lines) => fillFit(list, measurer, size, fo, lines == null ? settings.maxLines : lines, settings);
 
     const blocks = parseEscapes(source);
     const units = buildUnits(blocks, lang);
@@ -761,7 +879,7 @@
     const pages = [];
     const fullText = blocks.map((lines) => lines.join(' ')).join(' ');
 
-    function pushPage(kind, lines, scale) {
+    function pushPage(kind, lines, scale, extra) {
       const text = lines.map((line) => lineText(line)).join('\n');
       pages.push({
         kind,
@@ -769,6 +887,7 @@
         text,
         fontScale: scale == null ? 1 : scale,
         reading: readingTime(text, lang, settings.readingSpeed),
+        ...(extra || {}),
       });
     }
 
@@ -786,33 +905,75 @@
 
     const forcedPages = textBlocks.length > 1;
     let single = null;
-    if (!forcedPages) {
-      single = fitCheck(units, measurer, size, maxWidth, settings.maxLines, settings.split === 'off' ? 0.05 : settings.minFontScale);
-    }
-
-    if (!forcedPages && single && settings.split !== 'off') {
-      const balanced = dpLines(units, measurer, size * single.scale, maxWidth, settings);
-      if (balanced.length && balanced.length <= settings.maxLines) single.lines = balanced;
-      pushPage('single', single.lines, single.scale);
-    } else if (settings.split === 'off' && !forcedPages) {
-      const scale = Math.max(0.05, settings.minFontScale);
-      const attempt = greedyLines(units, measurer, size * scale, maxWidth, 0);
-      pushPage('single', attempt.lines, scale);
-      warnings.push({ code: 'overflow', message: 'Text overflows the safe area' });
-    } else {
-      let scale = settings.minFontScale;
-      const widest = units.reduce((max, unit) => Math.max(max, measurer(unit.text, size)), 0);
-      if (widest * scale > maxWidth) {
-        scale = Math.max(0.3, maxWidth / widest);
-        warnings.push({ code: 'overflow', message: 'A word is wider than the safe area' });
+    if (fill) {
+      const pushFill = (kind, fit) => {
+        pushPage(kind, fit.lines, fit.scale, { fit: 'fill', bleed: fit.bleed });
+        if (fit.bleed) warnings.push({ code: 'bleed', message: 'Text extends past the frame edge' });
+      };
+      if (settings.split === 'off' && !forcedPages) {
+        const fit = fitUnits(units, Math.min(units.length, 12));
+        if (fit) pushFill('single', fit);
+        else {
+          const scale = Math.max(0.05, settings.minFontScale);
+          const attempt = greedyLines(units, measurer, size * scale, maxWidth, 0);
+          pushPage('single', attempt.lines, scale, { fit: 'fill' });
+          warnings.push({ code: 'overflow', message: 'Text overflows the safe area' });
+        }
+        if (fit && !fit.fits) warnings.push({ code: 'overflow', message: 'Text overflows the safe area' });
+      } else {
+        textBlocks.forEach((block, blockIndex) => {
+          const whole = fitUnits(block);
+          if (whole && whole.fits) {
+            pushFill('page', whole);
+            return;
+          }
+          // the block does not fit whole even at the minimum size: wrap there,
+          // split into pages, then let every page grow again on its own
+          const lines = dpLines(block, measurer, fo.minSize, fo.maxWidth * fo.frameW, settings);
+          for (const group of dpPages(lines, settings.maxLines)) {
+            const pageFit = fitUnits(group.flat());
+            if (pageFit && pageFit.fits) pushFill('page', pageFit);
+            else {
+              pushPage('page', group, fo.minSize / size, { fit: 'fill', bleed: true });
+              warnings.push({ code: 'overflow', message: 'A word is wider than the frame' });
+            }
+          }
+          if (!lines.length) warnings.push({ code: 'empty-block', message: `Block ${blockIndex + 1} has no text` });
+        });
+        if (!forcedPages && pages.length === 1) pages[0].kind = 'single';
       }
-      textBlocks.forEach((block, blockIndex) => {
-        const lines = dpLines(block, measurer, size * scale, maxWidth, settings);
-        const groups = dpPages(lines, settings.maxLines);
-        groups.forEach((group) => pushPage('page', group, scale));
-        if (!lines.length) warnings.push({ code: 'empty-block', message: `Block ${blockIndex + 1} has no text` });
-      });
-      if (!forcedPages && pages.length === 1) pages[0].kind = 'single';
+      if (fo.consistency === 'cue' && pages.length > 1) {
+        const scale = Math.min(...pages.map((page) => page.fontScale));
+        pages.forEach((page) => { page.fontScale = scale; });
+      }
+    } else {
+      if (!forcedPages) {
+        single = fitCheck(units, measurer, size, maxWidth, settings.maxLines, settings.split === 'off' ? 0.05 : settings.minFontScale);
+      }
+      if (!forcedPages && single && settings.split !== 'off') {
+        const balanced = dpLines(units, measurer, size * single.scale, maxWidth, settings);
+        if (balanced.length && balanced.length <= settings.maxLines) single.lines = balanced;
+        pushPage('single', single.lines, single.scale);
+      } else if (settings.split === 'off' && !forcedPages) {
+        const scale = Math.max(0.05, settings.minFontScale);
+        const attempt = greedyLines(units, measurer, size * scale, maxWidth, 0);
+        pushPage('single', attempt.lines, scale);
+        warnings.push({ code: 'overflow', message: 'Text overflows the safe area' });
+      } else {
+        let scale = settings.minFontScale;
+        const widest = units.reduce((max, unit) => Math.max(max, measurer(unit.text, size)), 0);
+        if (widest * scale > maxWidth) {
+          scale = Math.max(0.3, maxWidth / widest);
+          warnings.push({ code: 'overflow', message: 'A word is wider than the safe area' });
+        }
+        textBlocks.forEach((block, blockIndex) => {
+          const lines = dpLines(block, measurer, size * scale, maxWidth, settings);
+          const groups = dpPages(lines, settings.maxLines);
+          groups.forEach((group) => pushPage('page', group, scale));
+          if (!lines.length) warnings.push({ code: 'empty-block', message: `Block ${blockIndex + 1} has no text` });
+        });
+        if (!forcedPages && pages.length === 1) pages[0].kind = 'single';
+      }
     }
 
     // --- long hold -----------------------------------------------------------
@@ -826,8 +987,8 @@
     const holdMode = settings.longHold.mode || 'hold';
 
     if (recapSettings.mode && recapSettings.mode !== 'off' && basePages.length >= (recapSettings.minPages || 2)) {
-      const fullLines = dpLines(units, measurer, size * settings.minFontScale, maxWidth, settings);
-      const recapText = fullLines.map((line) => lineText(line)).join('\n');
+      let fullLines = dpLines(units, measurer, size * settings.minFontScale, maxWidth, settings);
+      let recapText = fullLines.map((line) => lineText(line)).join('\n');
       const reading = readingTime(recapText, lang, settings.readingSpeed);
       recapDuration = recapSettings.duration === 'auto' || recapSettings.duration == null ? Math.max(1.5, reading * 0.5) : Number(recapSettings.duration);
       budget = cueDuration - recapDuration;
@@ -845,11 +1006,22 @@
       }
       if (recapDuration > 0) {
         let recapScale = 1;
+        let recapFit = null;
         if (recapSettings.fontScale === 'auto' || recapSettings.fontScale == null) {
-          const available = ((opts.frame && opts.frame.height) || 1080) * 0.8;
-          const lineHeight = (style.lineHeight || 1.2) * size * settings.minFontScale;
-          const needed = fullLines.length * lineHeight;
-          recapScale = Math.max(0.45, Math.min(1, available / Math.max(needed, 1)));
+          if (fill) {
+            recapFit = fillFit(units, measurer, size, { ...fo, maxHeight: 0.8 }, recapSettings.maxLines || 6, settings);
+            if (recapFit) {
+              recapScale = recapFit.scale;
+              fullLines = recapFit.lines;
+              recapText = fullLines.map((line) => lineText(line)).join('\n');
+            }
+          }
+          if (!recapFit) {
+            const available = ((opts.frame && opts.frame.height) || 1080) * 0.8;
+            const lineHeight = (style.lineHeight || 1.2) * size * settings.minFontScale;
+            const needed = fullLines.length * lineHeight;
+            recapScale = Math.max(0.45, Math.min(1, available / Math.max(needed, 1)));
+          }
         } else {
           recapScale = Number(recapSettings.fontScale) || 1;
         }
@@ -858,6 +1030,8 @@
           lines: fullLines.map((line) => lineText(line)),
           text: recapText,
           fontScale: recapScale,
+          fit: fill ? 'fill' : undefined,
+          bleed: recapFit ? recapFit.bleed : undefined,
           reading,
           from: start + cueDuration - recapDuration,
           to: end,
@@ -919,6 +1093,16 @@
         const sources = targetChunkSources(units, targetDuration, lang, settings.readingSpeed, count);
         for (const source of sources) {
           const chunkUnits = buildUnits([[source.text]], lang);
+          if (fill) {
+            const fit = fitUnits(chunkUnits);
+            if (fit) {
+              source.lines = fit.lines.map((line) => lineText(line));
+              source.fontScale = fit.scale;
+              source.fit = 'fill';
+              source.bleed = fit.bleed;
+              continue;
+            }
+          }
           const fit = fitCheck(chunkUnits, measurer, size, maxWidth, settings.maxLines, settings.minFontScale);
           if (fit) {
             source.lines = fit.lines.map((line) => lineText(line));
@@ -945,6 +1129,8 @@
             text: source.text,
             lines: source.lines || [source.text],
             fontScale: source.fontScale == null ? 1 : source.fontScale,
+            fit: source.fit,
+            bleed: source.bleed,
             reading: readingTime(source.text, lang, settings.readingSpeed),
             from,
             to,
@@ -959,12 +1145,24 @@
           const timed = timeChunks(sources, page.from, page.to, settings, lang);
           if (timed.warning) warnings.push(timed.warning);
           for (const chunk of timed.items) {
+            let lines = chunk.lines;
+            let fontScale = page.fontScale;
+            let extra = null;
+            if (fill) {
+              const fit = fitUnits(buildUnits([[chunk.text]], lang));
+              if (fit) {
+                lines = fit.lines.map((line) => lineText(line));
+                fontScale = fit.scale;
+                extra = { fit: 'fill', bleed: fit.bleed };
+              }
+            }
             expanded.push({
               kind: 'page',
               chunk: chunk.level,
               text: chunk.text,
-              lines: chunk.lines,
-              fontScale: page.fontScale,
+              lines,
+              fontScale,
+              ...(extra || {}),
               reading: chunk.reading,
               from: chunk.from,
               to: chunk.to,
@@ -998,6 +1196,8 @@
             lines: [...page.lines],
             text: page.text,
             fontScale: page.fontScale,
+            fit: page.fit,
+            bleed: page.bleed,
             reading: page.reading,
             from: tick,
             to: Math.min(cycleEnd, tick + duration),
@@ -1077,6 +1277,8 @@
           text: page.text,
           lines: page.lines,
           fontScale: page.fontScale,
+          fit: page.fit || undefined,
+          bleed: page.bleed || undefined,
           transition: page.transition || 'gather',
           highlight: page.highlight || 'none',
           pinned: false,
@@ -1096,6 +1298,8 @@
         text: page.text,
         lines: page.lines,
         fontScale: page.fontScale,
+        fit: page.fit || undefined,
+        bleed: page.bleed || undefined,
         cycle: page.cycle == null ? undefined : page.cycle,
         pinned: false,
       });
@@ -1206,6 +1410,8 @@
 
   return {
     DEFAULTS,
+    FILL_DEFAULTS,
+    FILL_REF_SIZE,
     detectLang,
     parseEscapes,
     readingTime,
@@ -1216,6 +1422,10 @@
     greedyLines,
     dpLines,
     dpPages,
+    fillOptions,
+    sizeForLines,
+    fillFit,
+    fitLinesScale,
     flow,
     restructure,
     mergePinned,

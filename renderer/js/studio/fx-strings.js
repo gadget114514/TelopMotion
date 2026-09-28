@@ -89,6 +89,8 @@
       duotone: 'Duotone', scroll: 'Scroll', radial: 'Radial', scanlines: 'Scanlines', curvature: 'Curvature', vignette: 'Vignette',
       size: 'Size', position: 'Position', dim: 'Dim', focusBadge: 'Focus badge', parallax: 'Parallax', songId: 'Song',
       zoomSpeed: 'Zoom speed', fit: 'Fit',
+      textFit: 'Sizing', fillCoverage: 'Screen coverage', fillBleed: 'Allowed overflow', fillMaxWidth: 'Max line width',
+      fillMaxHeight: 'Max block height', fillMinSize: 'Min size', fillMaxSize: 'Max size', fillConsistency: 'Size across pages',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -102,6 +104,7 @@
       sineWave: 'Sine wave', progress: 'Progress', circles: 'Circles', polygons: 'Polygons', lines: 'Lines', burst: 'Burst', orbit: 'Orbit',
       dots: 'Dots', stripes: 'Stripes', rings: 'Rings', triangles: 'Triangles', diamonds: 'Diamonds', hexes: 'Hexagons', rain: 'Rain',
       checks: 'Checker', polka: 'Polka dots', sineCurve: 'Sine curves', waves: 'Waves', randomFill: 'Random fill',
+      fixed: 'Fixed size', fitScreen: 'Fit to screen', page: 'Per page', cue: 'Whole cue',
     },
   };
 
@@ -187,6 +190,8 @@
       scroll: 'スクロール', radial: 'ラジアル', scanlines: '走査線', curvature: '湾曲', vignette: 'ビネット', size: 'サイズ',
       position: '位置', dim: '暗さ', focusBadge: 'バッジに注目', parallax: '視差', songId: '楽曲', zoomSpeed: 'ズーム速度',
       fit: 'フィット',
+      textFit: 'サイズ決定', fillCoverage: '画面占有率', fillBleed: 'はみ出し許容', fillMaxWidth: '最大行幅',
+      fillMaxHeight: '最大ブロック高さ', fillMinSize: '最小サイズ', fillMaxSize: '最大サイズ', fillConsistency: 'ページ間のサイズ',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -200,6 +205,7 @@
       spectrum: 'スペクトラム', sineWave: 'サイン波', progress: '進捗', circles: '円', polygons: '多角形', lines: '線', burst: 'バースト', orbit: '軌道',
       dots: 'ドット', stripes: 'ストライプ', rings: 'リング', triangles: '三角形', diamonds: 'ひし形', hexes: '六角形', rain: '雨',
       checks: 'チェッカー', polka: '水玉', sineCurve: 'サインカーブ', waves: 'ウェーブ', randomFill: 'ランダムフィル',
+      fixed: '固定サイズ', fitScreen: '画面に合わせる', page: 'ページごと', cue: 'キュー全体で統一',
     },
   };
 
@@ -292,6 +298,8 @@
       posterize: 'Posterizar', duotone: 'Duotono', scroll: 'Desplazamiento', radial: 'Radial', scanlines: 'Líneas de escaneo',
       curvature: 'Curvatura', vignette: 'Viñeta', size: 'Tamaño', position: 'Posición', dim: 'Atenuación',
       focusBadge: 'Enfocar logro', parallax: 'Paralaje', songId: 'Canción', zoomSpeed: 'Velocidad de zoom', fit: 'Ajuste',
+      textFit: 'Tamaño', fillCoverage: 'Cobertura de pantalla', fillBleed: 'Desborde permitido', fillMaxWidth: 'Ancho máx. de línea',
+      fillMaxHeight: 'Alto máx. del bloque', fillMinSize: 'Tamaño mín.', fillMaxSize: 'Tamaño máx.', fillConsistency: 'Tamaño entre páginas',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -306,6 +314,7 @@
       waveform: 'Forma de onda', spectrum: 'Espectro', sineWave: 'Onda senoidal', progress: 'Progreso', circles: 'Círculos',
       polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita', dots: 'Puntos', stripes: 'Rayas', rings: 'Anillos', triangles: 'Triángulos', diamonds: 'Rombos', hexes: 'Hexágonos', rain: 'Lluvia',
       checks: 'Damero', polka: 'Topos', sineCurve: 'Curvas sinusoidales', waves: 'Ondas', randomFill: 'Relleno aleatorio',
+      fixed: 'Tamaño fijo', fitScreen: 'Ajustar a pantalla', page: 'Por página', cue: 'Todo el cue',
     },
   };
 
@@ -398,6 +407,8 @@
       posterize: 'Postériser', duotone: 'Duotone', scroll: 'Défilement', radial: 'Radial', scanlines: 'Lignes de balayage',
       curvature: 'Courbure', vignette: 'Vignettage', size: 'Taille', position: 'Position', dim: 'Atténuation',
       focusBadge: 'Cibler le succès', parallax: 'Parallaxe', songId: 'Titre', zoomSpeed: 'Vitesse de zoom', fit: 'Ajustement',
+      textFit: 'Dimensionnement', fillCoverage: 'Couverture de l\'écran', fillBleed: 'Débordement autorisé', fillMaxWidth: 'Largeur max. de ligne',
+      fillMaxHeight: 'Hauteur max. du bloc', fillMinSize: 'Taille min.', fillMaxSize: 'Taille max.', fillConsistency: 'Taille entre pages',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -412,6 +423,7 @@
       sineWave: 'Onde sinusoïdale', progress: 'Progression', circles: 'Cercles', polygons: 'Polygones', lines: 'Lignes', burst: 'Éclat', orbit: 'Orbite',
       dots: 'Points', stripes: 'Rayures', rings: 'Anneaux', triangles: 'Triangles', diamonds: 'Losanges', hexes: 'Hexagones', rain: 'Pluie',
       checks: 'Damier', polka: 'Pois', sineCurve: 'Courbes sinusoïdales', waves: 'Vagues', randomFill: 'Remplissage aléatoire',
+      fixed: 'Taille fixe', fitScreen: 'Ajuster à l\'écran', page: 'Par page', cue: 'Tout le cue',
     },
   };
 
@@ -503,6 +515,8 @@
       duotone: 'Дуотон', scroll: 'Прокрутка', radial: 'Радиально', scanlines: 'Строки развёртки', curvature: 'Кривизна',
       vignette: 'Виньетка', size: 'Размер', position: 'Позиция', dim: 'Затемнение', focusBadge: 'Фокус на награде',
       parallax: 'Параллакс', songId: 'Трек', zoomSpeed: 'Скорость зума', fit: 'Вписывание',
+      textFit: 'Размер', fillCoverage: 'Заполнение экрана', fillBleed: 'Допустимый выход за край', fillMaxWidth: 'Макс. ширина строки',
+      fillMaxHeight: 'Макс. высота блока', fillMinSize: 'Мин. размер', fillMaxSize: 'Макс. размер', fillConsistency: 'Размер между страницами',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',
@@ -517,6 +531,7 @@
       waveform: 'Волновая форма', spectrum: 'Спектр', sineWave: 'Синусоида', progress: 'Прогресс', circles: 'Круги',
       polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца', triangles: 'Треугольники', diamonds: 'Ромбы', hexes: 'Шестиугольники', rain: 'Дождь',
       checks: 'Шахматный', polka: 'Горошек', sineCurve: 'Синусоиды', waves: 'Волны', randomFill: 'Случайная заливка',
+      fixed: 'Фиксированный', fitScreen: 'По экрану', page: 'По страницам', cue: 'Весь cue',
     },
   };
 

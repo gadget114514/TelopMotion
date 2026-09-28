@@ -34,6 +34,33 @@ SA.store = (() => {
     }
   }
 
+  // Re-flows one cue's beats (used both by restructureCue and by style edits
+  // that change the fill sizing of a cue-wide style).
+  function restructureOneCue(project, cueId, extraSettings, chunk) {
+    const target = project.script.cues.find((entry) => entry.id === cueId);
+    if (!target || !SA.textflow) return;
+    const resolved = SA.textflow.cueOptions(project, target);
+    if (extraSettings) resolved.settings = SA.project.mergeDeep(resolved.settings, extraSettings);
+    if (chunk) resolved.settings = { ...resolved.settings, chunk };
+    const result = SA.textflow.restructure(target, resolved);
+    const merged = SA.textflow.mergePinned(project.beats[cueId], result.beats, target);
+    project.beats[cueId] = merged.beats;
+    if (merged.orphans.length) project.orphanBeats[cueId] = merged.orphans;
+    if (result.warnings.length) project.beatWarnings[cueId] = result.warnings;
+    else delete project.beatWarnings[cueId];
+  }
+
+  // Style edits that change how the text is wrapped must re-flow the beats in
+  // fill mode; the fixed mode keeps its old lazy behavior (no re-flow).
+  function needsReflow(project, scope, propPath) {
+    if (!/^text\./.test(propPath) || (scope && scope.beatId)) return false;
+    if (/^text\.(fit|fill[A-Z])/.test(propPath)) return true;
+    if (!/^text\.(size|maxWidth|letterSpacing|lineHeight|fontId|direction)$/.test(propPath)) return false;
+    const fillAt = (style) => !!(style && style.text && style.text.fit === 'fill');
+    if (scope && scope.cueId) return fillAt(SA.project.resolveStyle(project, `cue:${scope.cueId}`));
+    return fillAt(project.style) || Object.values(project.cueStyles || {}).some(fillAt);
+  }
+
   function beatList(project, cueId) {
     return (project.beats && project.beats[cueId]) || [];
   }
@@ -880,15 +907,7 @@ SA.store = (() => {
             };
           }
           if (opts.style) project.cueStyles[cueId] = SA.project.mergeDeep(project.cueStyles[cueId] || {}, opts.style);
-          const resolved = SA.textflow.cueOptions(project, target);
-          if (opts.settings) resolved.settings = SA.project.mergeDeep(resolved.settings, opts.settings);
-          if (opts.chunk) resolved.settings = { ...resolved.settings, chunk: opts.chunk };
-          const result = SA.textflow.restructure(target, resolved);
-          const merged = SA.textflow.mergePinned(project.beats[cueId], result.beats, target);
-          project.beats[cueId] = merged.beats;
-          if (merged.orphans.length) project.orphanBeats[cueId] = merged.orphans;
-          if (result.warnings.length) project.beatWarnings[cueId] = result.warnings;
-          else delete project.beatWarnings[cueId];
+          restructureOneCue(project, cueId, opts.settings, opts.chunk);
         },
       });
     },
@@ -929,6 +948,16 @@ SA.store = (() => {
           target.text = String(text);
           target.lines = String(text).split(/\r?\n/).filter((line) => line.length);
           target.pinned = true;
+          // with fill sizing the user's line breaks survive: only the size is
+          // re-solved for them
+          const cueDoc = project.script.cues.find((entry) => entry.id === cueId);
+          const resolved = cueDoc && SA.textflow ? SA.textflow.cueOptions(project, cueDoc) : null;
+          if (resolved && resolved.style && resolved.style.fit === 'fill') {
+            const fit = SA.textflow.fitLinesScale(target.lines, resolved);
+            target.fontScale = fit.scale;
+            target.fit = 'fill';
+            target.bleed = fit.bleed || undefined;
+          }
         },
         undo(project) {
           const list = beatList(project, cueId).filter((entry) => entry.id !== beatId);
@@ -1161,9 +1190,10 @@ SA.store = (() => {
     },
     setStyleProp(scope, propPath, value, options) {
       const opts = options || {};
+      const reflow = needsReflow(state.project, scope, propPath);
       dispatch({
         label: `set ${propPath}`,
-        areas: ['style'],
+        areas: reflow ? ['style', 'script'] : ['style'],
         coalesceKey: opts.coalesceKey,
         do(project) {
           let container = null;
@@ -1200,6 +1230,10 @@ SA.store = (() => {
             }
           } else {
             node[last] = clone(value);
+          }
+          if (reflow) {
+            if (scope && scope.cueId) restructureOneCue(project, scope.cueId);
+            else restructureProject(project);
           }
         },
       });

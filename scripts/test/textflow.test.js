@@ -362,3 +362,128 @@ test('detectLang picks Japanese for CJK text and the fallback otherwise', () => 
   assert.equal(textflow.detectLang('Hello world', 'fr'), 'fr');
   assert.equal(textflow.detectLang('Привет мир', 'en'), 'ru');
 });
+
+// ---------------------------------------------------------------------------
+// fill sizing (fit: 'fill')
+// ---------------------------------------------------------------------------
+
+function fillFlow(text, style, options) {
+  const opts = options || {};
+  return textflow.flow(
+    { text, start: 0, end: opts.end == null ? 12 : opts.end, aspect: opts.aspect || '16:9' },
+    {
+      style: { size: 96, lineHeight: 1.2, maxWidth: 0.9, fit: 'fill', ...(style || {}) },
+      frame: { width: opts.frameWidth || 1920, height: opts.frameHeight || 1080 },
+      measure,
+      settings: opts.settings,
+    }
+  );
+}
+
+test('fill sizing grows a short cue to the target screen coverage', () => {
+  const result = fillFlow('愛してる');
+  assert.equal(result.pages.length, 1);
+  assert.equal(result.pages[0].kind, 'single');
+  assert.equal(result.pages[0].lines.length, 1);
+  const size = result.pages[0].fontScale * 96;
+  assert.ok(Math.abs(result.pages[0].fontScale - 2.56) < 0.05, `fontScale ${result.pages[0].fontScale}`);
+  const coverage = (4 * size * (1.2 * size)) / (1920 * 1080);
+  assert.ok(Math.abs(coverage - 0.14) < 0.005, `coverage ${coverage}`);
+});
+
+test('fill sizing prefers two lines when they read bigger than one', () => {
+  const result = fillFlow('the quick brown fox jumps over the lazy dog again');
+  assert.equal(result.pages.length, 1);
+  assert.equal(result.pages[0].lines.length, 2, `lines ${JSON.stringify(result.pages[0].lines)}`);
+  assert.ok(result.pages[0].fontScale * 96 > 90, `size ${result.pages[0].fontScale * 96}`);
+});
+
+test('fill sizing allows a little bleed for an unbreakable word', () => {
+  const result = fillFlow('Supercalifragilisticexpialidociousness', { fillMinSize: 0.1, fillBleed: 0.2 });
+  assert.equal(result.pages.length, 1);
+  assert.equal(result.pages[0].lines.length, 1);
+  assert.ok(Math.abs(result.pages[0].fontScale * 96 - 108) < 0.001, `size ${result.pages[0].fontScale * 96}`);
+  assert.equal(result.pages[0].bleed, true);
+  assert.ok(result.warnings.some((warning) => warning.code === 'bleed'), JSON.stringify(result.warnings));
+});
+
+test('fill sizing reports overflow when the bleed budget is exhausted', () => {
+  const result = fillFlow('Supercalifragilisticexpialidociousness', { fillMinSize: 0.1, fillBleed: 0 });
+  assert.equal(result.pages.length, 1);
+  assert.ok(Math.abs(result.pages[0].fontScale - (0.1 * 1080) / 96) < 1e-6, `fontScale ${result.pages[0].fontScale}`);
+  assert.ok(result.warnings.some((warning) => warning.code === 'overflow'), JSON.stringify(result.warnings));
+});
+
+test('fill sizing keeps the Japanese line-start and line-end rules', () => {
+  const result = fillFlow('今日は晴れです。公園へ行きます。', { aspect: '9:16', frameWidth: 1080, frameHeight: 1920 });
+  assert.ok(result.pages.length >= 1);
+  for (const page of result.pages) {
+    for (const line of page.lines) {
+      assert.ok(!JA_NO_START.includes(line[0]), `line starts with a prohibited character: ${line}`);
+      assert.ok(!JA_NO_END.includes(line[line.length - 1]), `line ends with an opener: ${line}`);
+    }
+  }
+});
+
+test('fill sizing pages a long text and keeps every page above the minimum size', () => {
+  const text = Array.from({ length: 100 }, (_, index) => `word${index % 10}`).join(' ');
+  const result = fillFlow(text, {}, { end: 12 });
+  assert.ok(result.pages.length >= 2, `pages ${result.pages.length}`);
+  assert.ok(result.pages.every((page) => page.lines.length <= 2), 'a page has too many lines');
+  for (const page of result.pages) {
+    assert.ok(page.fontScale * 96 >= 0.045 * 1080 - 1e-6, `page size ${page.fontScale * 96}`);
+  }
+  const sum = result.pages.reduce((total, page) => total + (page.to - page.from), 0);
+  assert.ok(Math.abs(sum - 12) < 1e-6, `page times sum ${sum}`);
+});
+
+test("fill sizing with consistency 'cue' uses one size across the pages", () => {
+  const text = Array.from({ length: 100 }, (_, index) => `word${index % 10}`).join(' ');
+  const result = fillFlow(text, { fillConsistency: 'cue' }, { end: 12 });
+  assert.ok(result.pages.length >= 2, `pages ${result.pages.length}`);
+  const sizes = new Set(result.pages.map((page) => page.fontScale));
+  assert.equal(sizes.size, 1, `sizes ${[...sizes].join(', ')}`);
+});
+
+test('fill sizing measures vertical writing along the frame height', () => {
+  const style = { direction: 'vertical', fillMaxWidth: 0.3 };
+  const vertical = fillFlow('今日は晴れ', style);
+  assert.ok(vertical.pages.length >= 1);
+  const size = vertical.pages[0].fontScale * 96;
+  for (const page of vertical.pages) {
+    for (const line of page.lines) {
+      assert.ok(measure(line, size) <= 0.3 * 1080 + 1e-6, `line wider than the vertical budget: ${line} (${measure(line, size)})`);
+    }
+  }
+  // without the axis swap the line budget would be 0.3 * 1920 and the text
+  // would come out the same size as the horizontal version
+  const horizontal = fillFlow('今日は晴れ', { fillMaxWidth: 0.3 });
+  assert.ok(vertical.pages[0].fontScale < horizontal.pages[0].fontScale, `vertical ${size} vs horizontal ${horizontal.pages[0].fontScale * 96}`);
+});
+
+test('fixed sizing keeps the previous behavior when fit is unset', () => {
+  const result = flow('愛してる', { end: 6 });
+  assert.equal(result.pages[0].kind, 'single');
+  assert.deepEqual(result.pages[0].lines, ['愛してる']);
+  assert.equal(result.pages[0].fontScale, 1);
+  assert.equal(result.pages[0].fit, undefined);
+  assert.equal(result.pages[0].bleed, undefined);
+});
+
+test('fitLinesScale sizes fixed lines without re-wrapping them', () => {
+  const fit = textflow.fitLinesScale(['愛して', 'る'], {
+    style: { size: 96, lineHeight: 1.2, fit: 'fill' },
+    frame: { width: 1920, height: 1080 },
+    measure,
+  });
+  assert.ok(fit.scale > 1, `scale ${fit.scale}`);
+  assert.equal(fit.bleed, false);
+});
+
+test('fill sizing sizes every chunk in chunk mode', () => {
+  const result = fillFlow('one two three four five six seven eight nine ten eleven twelve', {}, { settings: { chunk: 'phrase' } });
+  assert.ok(result.pages.length >= 2, `chunks ${result.pages.length}`);
+  assert.ok(result.pages.every((page) => page.fit === 'fill'), 'fill flag missing on a chunk');
+  assert.ok(result.pages.every((page) => page.fontScale > 0), 'chunk without a size');
+});
+

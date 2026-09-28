@@ -113,12 +113,14 @@ SA.lyricsScene = (() => {
     const fontList = Array.isArray(fonts) ? fonts : fonts ? [fonts] : [];
     const fontIds = fontList.map((entry) => entry.id).join(',');
     const beatLines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
+    const fillBeat = beat.fit === 'fill' && !!beatLines;
     const layoutTextSource = beatLines ? beatLines.join('\n') : beat.text || '';
     const key = hash([
       cueId,
       beatId,
       beat.text || '',
       beatLines ? JSON.stringify(beatLines) : '',
+      beat.fit || '',
       beat.fontScale || 1,
       direction,
       fontIds,
@@ -137,7 +139,9 @@ SA.lyricsScene = (() => {
       size,
       lang: (project.meta && project.meta.lang) || 'en',
       direction,
-      maxWidth: textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width * scale : undefined,
+      // a fill beat carries the exact lines the flow picked, so it must not be
+      // re-wrapped even when the enlarged / bleeding lines exceed maxWidth
+      maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width * scale : undefined,
     });
 
     const scene = {

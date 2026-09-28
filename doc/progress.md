@@ -385,3 +385,15 @@ Phase 3 の残りのうち、ユーザーがタイムラインから置けるシ
 - `renderer/js/lyrics/gl/{passes,shaders}.js`: bgState を7行へ拡張（行5 = trim/線幅、行6 = dash/fill）。`BG_FRAG` は `shapeParam`（閉じた形は中心角、帯は長軸）で弧長位置を出し、トリム・破線で輪郭と塗りを切り、`stroke` の帯を合成する。既定値は恒等なので既存の描画は不変。
 - テスト: `shape-ops` に名前付きシェイプ／followText／drive・dash の展開、`shape-layer` に background 登録とエンジン／Studio の配線、`text-bg` に trim/dash/stroke の状態と draw（輪郭→塗り）・bgState 7行とシェーダの検査を追加。全 377 件パス。
 - 検証: `npm run check`（135ファイル）、`npm test`（377件）、`node scripts/effects-csv.js`（277型・説明の欠け0）。`test/fx400.catalog.json` / `test/fx400.telopmotion.json` は bgShape の新パラメータの既定値（恒等）を反映して再生成（既定値は従来と同じなので見た目は不変）。Electron スモーク（`SA_SMOKE_AESTAGE` など）は未実施。
+
+## 追加: テキストの画面占有率からフォントサイズを決める（fill サイジング）（このコミット）
+
+これまでのサイズ決定は「固定 px（`style.text.size`）→ `maxWidth` に収まらなければ縮小（最小 `minFontScale` 0.8）」だけで、`fontScale > 1` になる経路が無かった。折り返し候補（1〜maxLines 行）をすべて試し、ブロックが画面面積の何％を占めるかからサイズを逆算する `text.fit = 'fill'` を追加した。既定は `'fixed'`（従来どおり）で、既存プロジェクトの見た目は変わらない。
+
+- 設定（`style.text`、project / cue スコープで上書き可）: `fit`（'fixed' / 'fill'）、`fillCoverage`（16:9 0.14 / 9:16 0.2）、`fillMaxWidth` 0.94、`fillMaxHeight` 0.6、`fillBleed` 0.04、`fillMinSize` 0.045（短辺比、1080p で 48.6px）、`fillMaxSize` 0.32（同 345.6px）、`fillConsistency`（'page' / 'cue'）。決定サイズは `fontScale = サイズ / text.size` で表し、描画側の計算式は変えない。
+- `renderer/js/lyrics/textflow.js`: `fillOptions` / `sizeForLines` / `narrowestWidth` / `fillFit` / `fitLinesScale` を追加。`fillFit` は k=1..maxLines 行ごとに「k 行に収まる最小幅」を二分探索（greedy が行数上限で最適）し、`dpLines`（禁則・ハード改行・バランス）で折り返しを決め、`Σ行幅 × 行高 × s² = coverage × 画面面積` からサイズを逆算する。大きく読める候補を優先し、行数増・悪い改行・はみ出しには減点。最大行幅・ブロック高さ・最小/最大サイズでクランプし、最小サイズで収まらないときだけ `fillBleed` 分のはみ出しを許す（`bleed` 警告）。収まらない長文は最小サイズで折って `dpPages` でページ分割し、ページごとに再フィットして大きくする。`fillConsistency: 'cue'` は cue 内の全ページを最小 scale に揃える。recap・chunk（phrase / targetChunkDuration）・repeat 経路にも `fit` / `bleed` を伝搬する。
+- `renderer/js/lyrics/scene.js`: fill beat は行が確定済みなので `maxWidth: Infinity` で再折り返しを止め、拡大・はみ出しした行が切られないようにする。キャッシュキーに `beat.fit` を追加。
+- `renderer/js/studio/store.js`: `restructureOneCue` を切り出し、`setStyleProp` が fill に関係する style 変更（`text.fit`・`text.fill*`、fill 時の size / maxWidth / letterSpacing / lineHeight / fontId / direction）で再フローする（areas に 'script' を足し、1 undo で戻る）。`editBeatText` はユーザーの改行を保ったまま `fitLinesScale` でサイズだけ合わせる。
+- `renderer/js/studio/inspector.js` / `fx-strings.js`: テキストセクションに fit セレクトと fill パラメータを追加。5 言語のラベルを追加（`value.fill` は repeat の「敷き詰め」で使用済みのため、fit のラベルは `value.fitScreen` を使う）。
+- テスト: `textflow.test.js` に 11 件（短文拡大・2 行選択・bleed・overflow・禁則・ページ分割・consistency・縦書き・fixed 不変・fitLinesScale・chunk）、`store.test.js` に再フロー／editBeatText の 3 件、`scene-scale.test.js` に fill beat の再折り返しなし 1 件を追加。全 392 件パス。
+- 検証: `npm test`（392件）、`npm run check`（135ファイル）。Electron スモーク（`SA_SMOKE_LYRICS` など）は未実施。

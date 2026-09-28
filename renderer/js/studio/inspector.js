@@ -559,6 +559,38 @@ SA.inspector = (() => {
       SA.controls.labelFor('direction'),
       SA.controls.selectControl({}, directionValue, (next) => writeProp('text.direction', next), ['horizontal', 'vertical'].map((value) => ({ value, label: SA.controls.valueLabel(value) })))
     );
+    const fitValue = readEffective('text.fit') || 'fixed';
+    row(
+      body,
+      'text.fit',
+      SA.controls.labelFor('textFit'),
+      SA.controls.selectControl({}, fitValue, (next) => writeProp('text.fit', next), [
+        { value: 'fixed', label: SA.controls.valueLabel('fixed') },
+        { value: 'fill', label: SA.controls.valueLabel('fitScreen') },
+      ])
+    );
+    if (fitValue === 'fill') {
+      const portrait = (project().output && project().output.aspect) === '9:16';
+      const fillFields = [
+        ['text.fillCoverage', 'fillCoverage', { min: 0.02, max: 0.5, step: 0.01, default: portrait ? 0.2 : 0.14 }],
+        ['text.fillBleed', 'fillBleed', { min: 0, max: 0.2, step: 0.01, default: 0.04 }],
+        ['text.fillMaxWidth', 'fillMaxWidth', { min: 0.3, max: 1.15, step: 0.01, default: 0.94 }],
+        ['text.fillMaxHeight', 'fillMaxHeight', { min: 0.1, max: 1, step: 0.01, default: 0.6 }],
+        ['text.fillMinSize', 'fillMinSize', { min: 0.01, max: 0.2, step: 0.005, default: 0.045 }],
+        ['text.fillMaxSize', 'fillMaxSize', { min: 0.05, max: 0.8, step: 0.01, default: 0.32 }],
+      ];
+      for (const [propPath, key, param] of fillFields) {
+        const value = readEffective(propPath);
+        row(body, propPath, SA.controls.labelFor(key), SA.controls.numberControl(param, value == null ? param.default : value, (next) => writeProp(propPath, next)));
+      }
+      const consistency = readEffective('text.fillConsistency') || 'page';
+      row(
+        body,
+        'text.fillConsistency',
+        SA.controls.labelFor('fillConsistency'),
+        SA.controls.selectControl({}, consistency, (next) => writeProp('text.fillConsistency', next), ['page', 'cue'].map((value) => ({ value, label: SA.controls.valueLabel(value) })))
+      );
+    }
   }
 
   function renderMotion(container, group, instance) {
