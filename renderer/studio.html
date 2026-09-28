@@ -8,6 +8,16 @@
 </head>
 <body>
 
+<div id="boot" class="boot" role="status" aria-live="polite">
+  <div class="boot-card">
+    <div class="boot-brand">TelopMotion <span class="boot-brand-sub">Studio</span></div>
+    <div id="boot-status" class="boot-status" data-i18n="studio.boot.loading">Loading TelopMotion…</div>
+    <div id="boot-bar" class="boot-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="boot-status">
+      <div id="boot-fill" class="boot-fill"></div>
+    </div>
+  </div>
+</div>
+
 <div id="studio" class="studio">
   <div id="menubar" class="menubar" role="menubar"></div>
 
@@ -206,6 +216,7 @@
 <script src="js/video-export.js"></script>
 <script src="js/studio/export-dialog.js"></script>
 <script src="js/studio/debug-console.js"></script>
+<script src="js/studio/boot.js"></script>
 <script src="js/studio/app.js"></script>
 </body>
 </html>

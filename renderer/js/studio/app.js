@@ -1474,47 +1474,76 @@
   }
 
   async function startup() {
-    cacheElements();
-    if (SA.debugConsole) SA.debugConsole.init();
-    loadLayout();
-    applyLayout();
-    i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
-    applyStaticText();
-    bindEvents();
-    SA.preview.init();
-    SA.timeline.init();
-    SA.inspector.init();
-    SA.overlay.init();
-    SA.menu.init({ handlers: menuHandlers() });
-    platform.recent.list().then(SA.menu.setRecent).catch(() => {});
+    const boot = SA.boot || { set() {}, busy() {}, finish() {} };
+    try {
+      boot.set(6, 'studio.boot.loading');
+      cacheElements();
+      if (SA.debugConsole) SA.debugConsole.init();
+      loadLayout();
+      applyLayout();
+      i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
+      applyStaticText();
+      boot.set(16, 'studio.boot.interface');
+      bindEvents();
+      SA.preview.init();
+      SA.timeline.init();
+      SA.inspector.init();
+      SA.overlay.init();
+      SA.menu.init({ handlers: menuHandlers() });
+      platform.recent.list().then(SA.menu.setRecent).catch(() => {});
+      boot.set(34, 'studio.boot.preview');
 
-    let handoff = null;
-    if (!platform.isElectron) {
-      if (window.location.hash === '#handoff') handoff = await platform.readHandoff();
-    } else {
-      const payload = await Promise.race([
-        platform.waitForHandoff(),
-        new Promise((resolve) => setTimeout(() => resolve(null), 900)),
-      ]);
-      if (payload && payload.cues) handoff = { cues: payload.cues, lang: payload.lang };
-    }
+      let handoff = null;
+      if (!platform.isElectron) {
+        if (window.location.hash === '#handoff') handoff = await platform.readHandoff();
+      } else {
+        const payload = await Promise.race([
+          platform.waitForHandoff(),
+          new Promise((resolve) => setTimeout(() => resolve(null), 900)),
+        ]);
+        if (payload && payload.cues) handoff = { cues: payload.cues, lang: payload.lang };
+      }
 
-    let projectDoc = null;
-    if (handoff && handoff.cues) {
-      projectDoc = SA.project.create({ lang: handoff.lang || i18n.lang(), aspect: '16:9' });
-      projectDoc.script.cues = handoff.cues.map((cue) => ({ ...cue }));
-    } else {
-      projectDoc = await SA.io.loadAutosave();
-    }
+      let projectDoc = null;
+      if (handoff && handoff.cues) {
+        projectDoc = SA.project.create({ lang: handoff.lang || i18n.lang(), aspect: '16:9' });
+        projectDoc.script.cues = handoff.cues.map((cue) => ({ ...cue }));
+      } else {
+        projectDoc = await SA.io.loadAutosave();
+      }
 
-    if (projectDoc) {
-      store.load(projectDoc);
-    } else {
-      SA.io.newProject({ lang: i18n.lang() });
+      boot.set(58, 'studio.boot.project');
+      if (projectDoc) {
+        store.load(projectDoc);
+      } else {
+        SA.io.newProject({ lang: i18n.lang() });
+      }
+      if (SA.textflow && store.state.project) SA.textflow.apply(store.state.project);
+      SA.io.startAutosave(project, autosaveEnabled ? 30 : 999999);
+      boot.set(74, 'studio.boot.fonts');
+      renderAll();
+      // fonts decide what the preview can draw: wait until every request has
+      // settled (a textflow pass can start a second one) before revealing the
+      // app, so parsed metrics are never shown mid-change. The 30 s cap is only
+      // a safety net for a hung asset read; a failed load resolves on its own.
+      if (boot.busy) boot.busy(true);
+      const deadline = Date.now() + 30000;
+      let fonts = SA.preview && SA.preview.whenFontsReady ? SA.preview.whenFontsReady() : null;
+      while (fonts) {
+        const remaining = Math.max(0, deadline - Date.now());
+        await Promise.race([Promise.resolve(fonts).catch(() => {}), new Promise((resolve) => setTimeout(resolve, remaining))]);
+        const next = SA.preview && SA.preview.whenFontsReady ? SA.preview.whenFontsReady() : null;
+        if (!next || next === fonts || Date.now() >= deadline) break;
+        fonts = next;
+      }
+      if (boot.busy) boot.busy(false);
+      boot.set(96);
+      renderAll();
+    } catch (error) {
+      console.error('studio startup failed', error);
+    } finally {
+      boot.finish();
     }
-    if (SA.textflow && store.state.project) SA.textflow.apply(store.state.project);
-    SA.io.startAutosave(project, autosaveEnabled ? 30 : 999999);
-    renderAll();
   }
 
   window.SA.studio = { startup, renderAll, toast, toggleConsole };

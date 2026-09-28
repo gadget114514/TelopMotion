@@ -16,6 +16,7 @@ SA.preview = (() => {
   let fonts = null;
   let fontsKey = null;
   let fontRequest = 0;
+  let fontsPromise = Promise.resolve();
   let rafId = null;
   let playing = false;
   let playAnchor = 0;
@@ -246,7 +247,12 @@ SA.preview = (() => {
     return [...ids];
   }
 
-  async function ensureFonts() {
+  function ensureFonts() {
+    fontsPromise = loadFonts();
+    return fontsPromise;
+  }
+
+  async function loadFonts() {
     const doc = project();
     if (!doc) return;
     const cues = doc.script ? doc.script.cues || [] : [];
@@ -602,6 +608,7 @@ SA.preview = (() => {
     init,
     render,
     ensureFonts,
+    whenFontsReady: () => fontsPromise,
     play,
     pause,
     togglePlay,

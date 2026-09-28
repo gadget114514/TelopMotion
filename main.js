@@ -391,13 +391,30 @@ function createWindow() {
         if (process.env.SA_SMOKE_STUDIO) {
           await primeStudio(win, {}, 'ja');
           const studio = await win.webContents.executeJavaScript(`(async () => {
-            await new Promise((resolve) => setTimeout(resolve, 500));
+            const until = async (test, timeout) => {
+              const started = Date.now();
+              while (Date.now() - started < (timeout || 5000)) {
+                const value = test();
+                if (value) return value;
+                await new Promise((resolve) => setTimeout(resolve, 100));
+              }
+              return null;
+            };
+            const bootRoot = document.getElementById('boot');
+            const bootDone = await until(() => bootRoot && bootRoot.hidden, 5000);
             const before = {
               menus: document.querySelectorAll('#menubar .menu-title').length,
               title: document.querySelector('[data-menu="file"]') && document.querySelector('[data-menu="file"]').textContent,
               name: document.getElementById('media-name').textContent,
               welcomeHidden: document.getElementById('welcome').hidden,
               panels: document.querySelectorAll('.panel').length,
+              boot: {
+                exists: !!bootRoot,
+                hidden: !!(bootRoot && bootRoot.hidden),
+                done: !!bootDone,
+                progress: window.SA.boot ? window.SA.boot.progress() : null,
+                status: document.getElementById('boot-status') ? document.getElementById('boot-status').textContent : null,
+              },
             };
             document.querySelector('[data-menu="view"]').click();
             const dropdownOpen = !!document.querySelector('.dropdown');

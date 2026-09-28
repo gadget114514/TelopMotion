@@ -307,3 +307,15 @@ FX 800 の800デモを**動きの大きさ**で分類し、**テーマと5軸**�
 - `renderer/js/studio/app.js` のおまかせ: 抽選の単位は**曲全体で1ルック**。キューごとの enter/exit 生成はやめて見た目の一貫性を守り、ビートのサイズ揺らぎと稀な拍の脈動だけ残す。再ロールは直前のルックを除外して引き直す。プールが読めないときは従来の生成のみにフォールバック。トーストは `studio.toast.autoDirectedLook`（5言語）でルック番号と名前を表示し、`styleMode.look` に番号・名前・動きバケットを保存する。
 - テスト: `scripts/test/looks.test.js`（800件の分類・全バケット使用・軸/テーマの範囲とソート・カタログとの差分同期と再分類の一致・expand の復元・seed 再現性と多様性・軸とテーマへの追従・除外と全除外・compose の微調整）。
 - 検証: `npm run check`（117 files）、`npm test`（300 tests）、`SA_SMOKE=1 SA_SMOKE_RANDOM=1`（look No.252 `enter.flip3D`、autoLookCount 800、autoLookMatch true、autoEnterKinds 1 / autoExitKinds 1、glError 0）。`node scripts/fx800.js build` は出力先を一時ディレクトリにして、looks と動き列つき md の生成を確認。
+
+## 追加: 起動ロード画面（このコミット）
+
+起動に時間がかかるため、暗いウィンドウのまま待たせず、全画面のロード画面（ブランド＋状態テキスト＋進捗バー）を出し、準備完了でアプリ表示に切り替える。
+
+- `renderer/studio.html` / `renderer/css/studio.css`: `#boot` オーバーレイ（ブランド、`#boot-status`、`#boot-bar`）を body 直下に追加。スクリプト解釈前に描画されるので起動直後から見え、完了時は `is-done` で 260ms フェードして `hidden` になる。
+- `renderer/js/studio/boot.js`（新規）: `SA.boot.set(percent, key)` / `SA.boot.busy(on)` / `SA.boot.finish()` / `SA.boot.progress()`。進捗は単調増加・0〜100 クランプ、最短 400ms 表示。`busy` は幅を保ったままシマーさせる不確定表示（フォント解析のような長い工程用）。
+- `renderer/js/studio/app.js` の `startup()`: 画面 6% → インターフェース 16% → プレビュー 34% → プロジェクト 58% → フォント 74% → 96% → finish（100%）。フォントは `preview.whenFontsReady()` が**安定するまで**（textflow が次の要求を始めたらそれも）待ってから表示し、解析中のメトリクスが画面に出ないようにした。上限は 30 秒（ハング時の保険。失敗はその場で解決する）。待機中は `busy(true)` でバーが動く。
+- `renderer/js/studio/preview.js`: `ensureFonts()` を `loadFonts()`＋Promise 保持に分け、`whenFontsReady()` を公開。
+- i18n: `studio.boot.*`（loading / interface / preview / project / fonts / ready）を5言語に追加。
+- テスト: `scripts/test/boot.test.js`（studio.html のマークアップと boot.js → app.js の読み込み順、5言語のキー、進捗の単調性・クランプ・busy・フェード）。`SA_SMOKE_STUDIO` に boot の hidden / progress / status を追加。
+- 検証: `npm run check`（120 files）、`npm test`（304 tests）、`SA_SMOKE=1 SA_SMOKE_STUDIO=1`（boot hidden true / progress 100 / status 準備完了、langMissing 0、glError 0）。日本語デモ（`fx800-1`、200キュー・日本語フォント8種）で `platform.readAsset` に 1.5 秒/フォントの遅延を入れて計測し、**全8フォントの解析が終わる 14.3 秒までロード画面（busy シマー付き）が残り**、その後にフェードすることを確認（旧実装は 6 秒上限で解析途中にアプリを出していた）。

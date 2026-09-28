@@ -46,6 +46,88 @@ body {
   width: 100vw;
 }
 
+/* startup overlay (SA.boot): painted before the scripts, faded out by app.js */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(1200px 700px at 50% 18%, #161b28 0%, var(--bg) 60%);
+  transition: opacity 260ms ease;
+}
+
+.boot.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot[hidden] {
+  display: none;
+}
+
+.boot-card {
+  width: min(420px, 76vw);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.boot-brand {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.boot-brand-sub {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.boot-status {
+  min-height: 1.4em;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.boot-bar {
+  height: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--card-2);
+  overflow: hidden;
+}
+
+.boot-fill {
+  position: relative;
+  width: 4%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 220ms ease;
+}
+
+/* the shimmer must keep moving while the main thread parses fonts, so it is a
+   transform animation (compositor) rather than a background-position one */
+.boot.is-busy .boot-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  transform: translateX(-100%);
+  animation: boot-shimmer 1.2s linear infinite;
+}
+
+@keyframes boot-shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .studio.console-hidden {
   --split-console: 0px;
   --console-w: 0px;
