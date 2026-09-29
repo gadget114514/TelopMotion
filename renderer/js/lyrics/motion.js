@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -21,6 +21,21 @@
   function num(value, fallback) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback == null ? 0 : fallback;
+  }
+
+  // weird-only emphasis of preset key words (keywords.js): pop, accent, wobble
+  const KEYWORD_LOOK = { scale: 0.3, colorMix: 0.6, wobbleDeg: 4, wobbleLift: 0.04, wobbleRate: 0.8 };
+
+  function keywordMarks(scene, project) {
+    if (!keywords || !project || !project.styleMode) return null;
+    const axes = project.styleMode.axes || {};
+    const s = keywords.strength(axes.weird);
+    if (!(s > 0)) return null;
+    const cfg = keywords.listFor(project.styleMode);
+    if (!cfg.enabled) return null;
+    const sig = cfg.words.join('\u0001');
+    if (!scene.__kw || scene.__kw.sig !== sig) scene.__kw = { sig, ...keywords.mark(scene.letters || [], cfg.words) };
+    return scene.__kw.runs ? { strength: s, runOf: scene.__kw.runOf, runs: scene.__kw.runs } : null;
   }
 
   function isPlainObject(value) {
@@ -462,6 +477,18 @@
     }
 
     const centers = levelCenters(targetFormation, letters);
+    const kw = keywordMarks(scene, project);
+    let kwCenters = null;
+    if (kw) {
+      kwCenters = Array.from({ length: kw.runs }, () => ({ x: 0, y: 0, n: 0 }));
+      for (let i = 0; i < N; i += 1) {
+        const r = kw.runOf[i];
+        if (r < 0) continue;
+        const p = targetFormation[i] || { x: 0, y: 0 };
+        kwCenters[r].x += p.x; kwCenters[r].y += p.y; kwCenters[r].n += 1;
+      }
+      for (const c of kwCenters) { c.x /= c.n; c.y /= c.n; }
+    }
     const states = [];
     const envelopes = { layoutIn: 0, layoutOut: 0, enter: 0, exit: 0, hold: 0 };
 
@@ -686,6 +713,25 @@
       }
 
       applyOverrides(state, letter, project, centers);
+      if (kw && kw.runOf[index] >= 0) {
+        const r = kw.runOf[index];
+        const s = kw.strength;
+        const c = kwCenters[r];
+        const p = targetFormation[index] || c;
+        const k = KEYWORD_LOOK.scale * s * clamp01(pe); // grows in with the entrance
+        state.x += (p.x - c.x) * k;                     // spread the run about its centre
+        state.y += (p.y - c.y) * k;
+        state.scaleX *= 1 + k;
+        state.scaleY *= 1 + k;
+        state.colorMix = Math.max(state.colorMix || 0, KEYWORD_LOOK.colorMix * s);
+        const w = clamp01((s - 0.5) * 2);               // wobble only in the upper half
+        if (w > 0) {
+          const phase = rng.rngFor(seed, `${beat.id || scene.beatId}|kw${r}`, 'hold')();
+          const wave = Math.sin(TAU * (local * KEYWORD_LOOK.wobbleRate + phase));
+          state.rot += wave * KEYWORD_LOOK.wobbleDeg * w;
+          state.y -= Math.abs(wave) * KEYWORD_LOOK.wobbleLift * (letter.size || 96) * w;
+        }
+      }
       applyStyleTransform(state, style.transform);
       applyKeyframeDeltas(state, keyframeDeltas);
 

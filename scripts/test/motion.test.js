@@ -56,6 +56,16 @@ function evaluate(scene, t, extra) {
   return motion.evaluateBeat(scene, t, { frame: FRAME, seed: 42, beat, ...(extra || {}) });
 }
 
+// makeScene gives every char its own wordIdx; re-split on spaces so the
+// English keyword matcher sees word boundaries
+function assignWords(scene) {
+  let word = 0;
+  for (let i = 0; i < scene.text.length; i += 1) {
+    scene.letters[i].wordIdx = word;
+    if (scene.text[i] === ' ') word += 1;
+  }
+}
+
 function assertFinite(result, label) {
   for (const state of result.letters) {
     for (const key of ['x', 'y', 'rot', 'scaleX', 'scaleY', 'opacity', 'visibleFrac', 'tiltX', 'tiltY']) {
@@ -147,6 +157,30 @@ test('keyframes interpolate additively with the starting ease', () => {
   const project = { keyframes: { 'cue:c1/beat:c1:single0': { 'transform.y': [{ t: 0, value: 0, ease: 'linear' }, { t: 10, value: 200, ease: 'linear' }] } } };
   const keyed = evaluate(scene, 5, { project });
   assert.ok(Math.abs(keyed.letters[0].y - base.letters[0].y - 100) < 1e-6, `delta ${keyed.letters[0].y - base.letters[0].y}`);
+});
+
+test('keyword emphasis is off below the weird threshold', () => {
+  const base = evaluate(makeScene('I love you'), 5);
+  const gated = evaluate(makeScene('I love you'), 5, { project: { styleMode: { axes: { weird: 0 } } } });
+  assert.deepEqual(gated, base);
+});
+
+test('high weird grows and accents the key words only', () => {
+  const scene = makeScene('I love you');
+  assignWords(scene);
+  const plain = makeScene('I love you');
+  assignWords(plain);
+  const project = (weird) => ({ styleMode: { axes: { weird } } });
+  const base = evaluate(plain, 5, { project: project(0) });
+  const weird = evaluate(scene, 5, { project: project(1) });
+  for (const i of [2, 3, 4, 5]) {
+    assert.ok(weird.letters[i].scaleX > base.letters[i].scaleX, `love letter ${i} did not grow`);
+    assert.ok(weird.letters[i].scaleY > base.letters[i].scaleY, `love letter ${i} did not grow vertically`);
+    assert.ok(weird.letters[i].colorMix > 0, `love letter ${i} has no accent`);
+  }
+  for (const i of [0, 1, 6, 7, 8, 9]) {
+    assert.deepEqual(weird.letters[i], base.letters[i], `letter ${i} changed`);
+  }
 });
 
 test('circle layout puts the letters around the anchor', () => {

@@ -54,6 +54,14 @@ SA.themeEditor = (() => {
     return { ...SA.moods.normalizeAxes(axes), weird: Number(draft.axes.weird) || 0 };
   }
 
+  // the draft keeps the extra/exclude words as comma-joined text; the project
+  // stores arrays under styleMode.keywords
+  function kwFromDoc(doc) {
+    const cfg = (doc && doc.styleMode && doc.styleMode.keywords) || {};
+    const join = (value) => (Array.isArray(value) ? value.join(', ') : String(value || ''));
+    return { enabled: cfg.enabled !== false, extra: join(cfg.extra), exclude: join(cfg.exclude) };
+  }
+
   function contextFor(doc) {
     return SA.moods.contextFor(doc);
   }
@@ -369,7 +377,17 @@ SA.themeEditor = (() => {
         projectDoc.style = SA.project.mergeDeep(projectDoc.style, style);
         // the axes (weird included) follow the theme, so re-rolls, per-cue
         // looks and おまかせ keep drawing inside what the editor set
-        projectDoc.styleMode = { ...(projectDoc.styleMode || {}), axes: SA.moods.normalizeAxes(draft.axes), direction: draft.direction, genre: draft.genre || null };
+        projectDoc.styleMode = {
+          ...(projectDoc.styleMode || {}),
+          axes: SA.moods.normalizeAxes(draft.axes),
+          direction: draft.direction,
+          genre: draft.genre || null,
+          keywords: {
+            enabled: draft.keywords.enabled !== false,
+            extra: SA.keywords.cleanList(draft.keywords.extra),
+            exclude: SA.keywords.cleanList(draft.keywords.exclude),
+          },
+        };
       },
     });
     SA.studio.toast('studio.toast.themeApplied', { name: draft.name });
@@ -385,6 +403,34 @@ SA.themeEditor = (() => {
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
     }
     void doc;
+  }
+
+  // a small block under the axes: the emphasis-word list (weird >= 0.5)
+  function keywordsBlock() {
+    const node = document.createElement('div');
+    node.className = 'axis-grid';
+    customRow(node, t('studio.themeEditor.keywords.enabled'), SA.controls.boolControl(draft.keywords.enabled, (value) => {
+      draft.keywords.enabled = value;
+    }));
+    for (const key of ['extra', 'exclude']) {
+      const row = document.createElement('div');
+      row.className = 'ctrl-row';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = t(`studio.themeEditor.keywords.${key}`);
+      input.value = draft.keywords[key];
+      input.addEventListener('input', () => {
+        draft.keywords[key] = input.value;
+      });
+      input.addEventListener('keydown', (event) => event.stopPropagation());
+      row.appendChild(input);
+      node.appendChild(row);
+    }
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit axis-hint';
+    hint.textContent = t('studio.themeEditor.keywords.hint');
+    node.appendChild(hint);
+    return node;
   }
 
   function paletteSection() {
@@ -551,6 +597,7 @@ SA.themeEditor = (() => {
       axes.appendChild(hint);
     }
     dialog.appendChild(axes);
+    if (SA.keywords && SA.keywords.globallyEnabled()) dialog.appendChild(keywordsBlock());
     const axesHint = document.createElement('div');
     axesHint.className = 'insp-inherit';
     axesHint.textContent = t('studio.themeEditor.axesHint');
@@ -690,6 +737,7 @@ SA.themeEditor = (() => {
       seed,
       direction: (existing && existing.direction) || 'horizontal',
       genre: (existing && existing.genre) || null,
+      keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
       style,
     };
     render();
