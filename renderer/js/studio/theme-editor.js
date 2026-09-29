@@ -367,7 +367,7 @@ SA.themeEditor = (() => {
 
   function applyDraft() {
     const doc = project();
-    if (!doc) return;
+    if (!doc) return false;
     const style = SA.store.clone(draft.style);
     SA.store.dispatch({
       label: 'apply theme',
@@ -391,6 +391,7 @@ SA.themeEditor = (() => {
       },
     });
     SA.studio.toast('studio.toast.themeApplied', { name: draft.name });
+    return true;
   }
 
   function saveDraft() {
@@ -697,7 +698,9 @@ SA.themeEditor = (() => {
     apply.type = 'button';
     apply.className = 'btn btn-primary';
     apply.textContent = t('studio.themes.apply');
-    apply.addEventListener('click', applyDraft);
+    apply.addEventListener('click', () => {
+      if (applyDraft()) root.hidden = true;
+    });
     const save = document.createElement('button');
     save.type = 'button';
     save.className = 'btn';
