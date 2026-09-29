@@ -488,6 +488,11 @@ SA.inspector = (() => {
     button('studio.beat.splitAtPlayhead', () => SA.store.commands.splitBeat(sel.cueId, beat.id, SA.store.state.playhead));
     button('studio.beat.mergeNext', () => SA.store.commands.mergeBeats(sel.cueId, beat.id));
     button('studio.beat.restructureCue', () => SA.store.commands.restructureCue(sel.cueId));
+    button('studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id));
+    button('studio.inspector.rerollBeatColors', () => {
+      const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
+      if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+    });
     button('studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id));
     body.appendChild(head);
     const beatText = SA.controls.textControl(beat.text || '', (value) => {

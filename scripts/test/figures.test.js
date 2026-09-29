@@ -167,3 +167,94 @@ test('scale, x and y transform the figure about the frame centre', () => {
   assert.ok(Math.abs(c.x0 - (a.x0 + 0.25 * FRAME.width)) < 0.01, 'x shifts by the frame fraction');
   assert.ok(Math.abs(c.y0 - (a.y0 - 0.1 * FRAME.height)) < 0.01, 'y shifts by the frame fraction');
 });
+
+test('a filler clip past 4s draws its derived sub-beats (from / to regression)', () => {
+  const fillerRender = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js'));
+  const spec = { type: 'figures', params: { motif: 'halftone', sync: 'beat', density: 0.6, in: 'auto', hold: 'auto', out: 'auto' } };
+  const context = { frame: FRAME, clip: { key: 'gap_1', from: 30, to: 40 }, seed: 3, colors: ['#ff0000', '#00ff00', '#0000ff'] };
+  for (const t of [31, 35, 39]) {
+    const list = fillerRender.drawList(spec, { ...context, time: t, duration: 40 });
+    assert.ok((list.shapes || []).length > 0, `no shapes at ${t}`);
+  }
+  // the old shape (start / end instead of from / to) still works
+  const alt = fillerRender.drawList(spec, { ...context, clip: { key: 'gap_1', start: 30, end: 40 }, time: 35, duration: 40 });
+  assert.ok((alt.shapes || []).length > 0, 'start / end spans still draw');
+});
+
+test('wipe reveals the shapes over the in window instead of popping them', () => {
+  const make = (move) => ({ type: 'figure', params: { motif: 'burst', density: 0.6, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 2, move: { in: move, hold: 'pulse', out: 'fade' }, variant: 0, accent: true }] } });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_wipe', start: 0, end: 2 }, seed: 1, colors: ['#ff0000', '#00ff00'] });
+  const early = figures.drawList(make('wipe'), ctxAt(0.03)).shapes.length;
+  const mid = figures.drawList(make('wipe'), ctxAt(0.18)).shapes.length;
+  const done = figures.drawList(make('wipe'), ctxAt(0.5)).shapes.length;
+  assert.ok(early < mid, `early ${early} mid ${mid}`);
+  assert.ok(mid <= done, `mid ${mid} done ${done}`);
+  assert.equal(done, figures.drawList(make('pop'), ctxAt(0.5)).shapes.length, 'the finished wipe matches the pop count');
+});
+
+test('draw traces capsules and scales the rest, so it differs from scatterIn', () => {
+  const spec = (move) => ({ type: 'figure', params: { motif: 'ribbon', density: 0.5, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 2, move: { in: move, hold: 'drift', out: 'fade' }, variant: 1, accent: false }] } });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_draw', start: 0, end: 2 }, seed: 2, colors: ['#ff0000', '#00ff00'] });
+  const drawn = figures.drawList(spec('draw'), ctxAt(0.12)).shapes;
+  const scattered = figures.drawList(spec('scatterIn'), ctxAt(0.12)).shapes;
+  assert.notDeepEqual(drawn, scattered);
+  // a half-drawn capsule is shorter than the finished one
+  const finished = figures.drawList(spec('draw'), ctxAt(0.5)).shapes;
+  const length = (shapes) => shapes.filter((shape) => shape.kind === 'capsule').reduce((sum, shape) => sum + Math.abs(shape.x1 - shape.x0), 0);
+  assert.ok(length(drawn) < length(finished), `drawn ${length(drawn)} vs finished ${length(finished)}`);
+});
+
+test('morph changes the motif over the hold', () => {
+  const make = (motif) => ({ type: 'figure', params: { motif, density: 0.6, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'morph', out: 'fade' }, variant: 1, accent: true }] } });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_morph', start: 0, end: 3 }, seed: 4, colors: ['#ff0000', '#00ff00'] });
+  const polyA = figures.drawList(make('polyMorph'), ctxAt(0.4)).shapes;
+  const polyB = figures.drawList(make('polyMorph'), ctxAt(1.4)).shapes;
+  assert.ok(polyA.some((shape, i) => polyB[i] && shape.sides !== polyB[i].sides), 'polyMorph interpolates its sides');
+  const ringA = figures.drawList(make('rings'), ctxAt(0.4)).shapes;
+  const ringB = figures.drawList(make('rings'), ctxAt(1.4)).shapes;
+  assert.ok(ringA.some((shape, i) => ringB[i] && Math.abs(shape.r - ringB[i].r) > 0.5), 'rings interpolate their radius');
+  const barsA = figures.drawList(make('bars'), ctxAt(0.4)).shapes;
+  const barsB = figures.drawList(make('bars'), ctxAt(1.4)).shapes;
+  assert.ok(barsA.some((shape, i) => barsB[i] && Math.abs(shape.h - barsB[i].h) > 1), 'bars interpolate their height');
+  // the generic path crossfades two variants
+  const genericA = figures.drawList(make('orbit'), ctxAt(0.4)).shapes;
+  const genericB = figures.drawList(make('orbit'), ctxAt(1.4)).shapes;
+  assert.notDeepEqual(genericA, genericB);
+});
+
+test('the accent sub-beat draws bigger and fully opaque, the others at 0.85', () => {
+  const make = (accent) => ({ type: 'figure', params: { motif: 'orbit', density: 0.5, colors: ['#ff0000'], beats: [{ start: 0, end: 2, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent }] } });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_accent', start: 0, end: 2 }, seed: 6, colors: ['#ff0000'] });
+  const loud = figures.drawList(make(true), ctxAt(1)).shapes;
+  const quiet = figures.drawList(make(false), ctxAt(1)).shapes;
+  const center = (shapes) => shapes.find((shape) => shape.kind === 'circle');
+  assert.ok(center(loud).r > center(quiet).r, 'the accent circle is bigger');
+  assert.ok(Math.abs(center(loud).opacity - 1) < 1e-9, `accent opacity ${center(loud).opacity}`);
+  assert.ok(Math.abs(center(quiet).opacity - 0.85) < 1e-9, `plain opacity ${center(quiet).opacity}`);
+});
+
+test('the motif tuning params reach the geometry', () => {
+  const params = (extra) => ({ motif: 'burst', density: 0.5, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: true }], ...extra });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_tune', start: 0, end: 3 }, seed: 8, colors: ['#ff0000', '#00ff00'] });
+  const few = figures.drawList({ type: 'figure', params: params({ count: 6 }) }, ctxAt(1)).shapes;
+  const many = figures.drawList({ type: 'figure', params: params({ count: 20 }) }, ctxAt(1)).shapes;
+  assert.ok(many.length > few.length, `count ${few.length} -> ${many.length}`);
+  const small = figures.drawList({ type: 'figure', params: params({ radius: 0.4 }) }, ctxAt(1)).shapes;
+  const big = figures.drawList({ type: 'figure', params: params({ radius: 1.2 }) }, ctxAt(1)).shapes;
+  const span = (shapes) => {
+    const xs = [];
+    for (const shape of shapes) {
+      if (shape.x0 != null) xs.push(shape.x0, shape.x1);
+      if (shape.x != null) xs.push(shape.x);
+    }
+    return Math.max(...xs) - Math.min(...xs);
+  };
+  assert.ok(span(big) > span(small), `radius ${span(small)} -> ${span(big)}`);
+  const strokeThin = figures.drawList({ type: 'figure', params: params({ stroke: 'thin' }) }, ctxAt(1)).shapes;
+  const strokeBold = figures.drawList({ type: 'figure', params: params({ stroke: 'bold' }) }, ctxAt(1)).shapes;
+  const width = (shapes) => shapes.reduce((sum, shape) => sum + (shape.width || 0), 0);
+  assert.ok(width(strokeBold) > width(strokeThin) * 2, `stroke ${width(strokeThin)} -> ${width(strokeBold)}`);
+  // spinRate feeds the spin hold
+  const spin = (rate) => figures.drawList({ type: 'figure', params: { ...params({ spinRate: rate }), beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'spin', out: 'fade' }, variant: 0, accent: true }] } }, ctxAt(1.2)).shapes;
+  assert.notDeepEqual(spin(0.2), spin(2));
+});

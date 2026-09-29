@@ -1795,6 +1795,40 @@ SA.store = (() => {
         },
       });
     },
+    // Re-roll the selected beat's own grammar (animation / enter / exit / hold
+    // / fill / edge / post) inside the project axes. The cue and the other
+    // beats are untouched; one undo reverts the whole draw.
+    rerollBeat(cueId, beatId) {
+      const cue = findCue(cueId);
+      if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
+      const mode = modeAxes();
+      dispatch({
+        label: 'reroll beat',
+        areas: ['style'],
+        do(projectDoc) {
+          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          const beat = beats.find((entry) => entry.id === beatId);
+          if (!beat) return;
+          const path = `cue:${cueId}/beat:${beatId}`;
+          const resolved = SA.project.resolveStyle(projectDoc, path);
+          const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+          const colors = palette.length ? [palette[2], palette[3], palette[5] || palette[3]].filter(Boolean) : [];
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          const result = SA.random.randomize({
+            project: projectDoc,
+            scope: 'elements',
+            paths: [path],
+            seed,
+            colors,
+            overwriteManual: true,
+          });
+          const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          for (const patch of result.patches || []) {
+            for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
+          }
+        },
+      });
+    },
     rerollClip(clipId) {
       const clip = findClip(clipId);
       if (!clip || typeof SA === 'undefined' || !SA.moods || !SA.moods.rerollClipSpec) return;

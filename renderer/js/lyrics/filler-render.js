@@ -713,22 +713,10 @@
   // hand-made gap clip).
   function figuresShapes(params, ctx) {
     if (!figures || typeof figures.drawList !== 'function') return { shapes: [], texts: [] };
-    const source =
-      params && params.beats && params.beats.length
-        ? params
-        : {
-            motif: params.motif,
-            sync: params.sync,
-            density: params.density,
-            in: params.in,
-            hold: params.hold,
-            out: params.out,
-            color: params.color,
-            scale: params.scale,
-            x: params.x,
-            y: params.y,
-            beats: [],
-          };
+    // an empty hand-made clip gets its sub-beats generated in drawList from the
+    // context (the clip's own from / to or start / end); pass every tuning
+    // param through
+    const source = params && params.beats && params.beats.length ? params : { ...(params || {}), beats: [] };
     return figures.drawList({ type: 'figure', params: source }, ctx);
   }
 
@@ -953,9 +941,14 @@
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
     ],
     figures: [
-      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone'], default: 'orbit' },
+      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets'], default: 'orbit' },
       { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
       { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
+      { key: 'count', kind: 'int', min: 3, max: 24, step: 1, default: 8 },
+      { key: 'radius', kind: 'number', min: 0.3, max: 1.2, step: 0.05, default: 1 },
+      { key: 'aspect', kind: 'number', min: 0.5, max: 2, step: 0.05, default: 1 },
+      { key: 'spinRate', kind: 'number', min: 0, max: 2, step: 0.05, default: 1 },
+      { key: 'stroke', kind: 'select', options: ['thin', 'med', 'bold'], default: 'med' },
       { key: 'in', kind: 'select', options: ['auto', 'pop', 'draw', 'wipe', 'scatterIn'], default: 'auto' },
       { key: 'hold', kind: 'select', options: ['auto', 'spin', 'pulse', 'drift', 'morph'], default: 'auto' },
       { key: 'out', kind: 'select', options: ['auto', 'shrink', 'fade', 'burstOut'], default: 'auto' },

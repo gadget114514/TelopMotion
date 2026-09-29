@@ -25,9 +25,9 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 359,
+    "types": 367,
     "groups": 24,
-    "overridden": 531
+    "overridden": 555
   },
   "groups": {
     "animation": {
@@ -371,7 +371,15 @@
       "polyMorph": 1451788422,
       "ribbon": 579373190,
       "ticker": 1518901385,
-      "halftone": 2290661512
+      "halftone": 2290661512,
+      "cracks": 3582494854,
+      "spikes": 3280509065,
+      "eyes": 3095943302,
+      "scratches": 3028846728,
+      "drips": 3314059397,
+      "lattice": 2022217861,
+      "waves": 1753770120,
+      "comets": 2240313483
     },
     "figureIn": {
       "pop": 361269384,

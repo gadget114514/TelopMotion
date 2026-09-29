@@ -13,12 +13,33 @@
   // built from the same primitives as the filler (circle / ring / capsule /
   // rect / polygon / convex), so they render wherever the filler does.
 
-  const MOTIFS = ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone'];
+  const MOTIFS = [
+    'orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop',
+    'polyMorph', 'ribbon', 'ticker', 'halftone',
+    // fear / variety pack
+    'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets',
+  ];
   const INS = ['pop', 'draw', 'wipe', 'scatterIn'];
   const HOLDS = ['spin', 'pulse', 'drift', 'morph'];
   const OUTS = ['shrink', 'fade', 'burstOut'];
   const SYNCS = ['beat', 'free', 'text'];
+  const STROKES = { thin: 0.55, med: 1, bold: 1.9 };
   const TAU = Math.PI * 2;
+
+  // Optional per-clip tuning (the filler params): count 3..24, radius 0.3..1.2,
+  // aspect 0.5..2, spinRate 0..2, stroke thin / med / bold. Unset values keep
+  // the historic draw of the motif.
+  function tuningOf(params) {
+    const p = params || {};
+    const number = (value, fallback) => (value == null || value === '' ? fallback : num(value, fallback));
+    return {
+      count: p.count == null ? null : Math.max(3, Math.min(24, Math.round(number(p.count, 8)))),
+      radius: Math.max(0.3, Math.min(1.2, number(p.radius, 1))),
+      aspect: Math.max(0.5, Math.min(2, number(p.aspect, 1))),
+      spinRate: Math.max(0, Math.min(2, number(p.spinRate, 1))),
+      stroke: STROKES[p.stroke] == null ? 1 : STROKES[p.stroke],
+    };
+  }
 
   function num(value, fallback) {
     if (value == null || value === '') return fallback;
@@ -151,6 +172,11 @@
     if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
     if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
     if (opts.color) params.color = String(opts.color);
+    // optional motif tuning (the filler editor writes these)
+    if (opts.stroke != null) params.stroke = STROKES[opts.stroke] != null ? opts.stroke : 'med';
+    for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
+      if (opts[key] != null && Number.isFinite(Number(opts[key]))) params[key] = Number(opts[key]);
+    }
     return { type: 'figure', params };
   }
 
@@ -224,51 +250,69 @@
     return { box, scale, opacity: clamp01(progress * 1.4) };
   }
 
-  function motifShapes(motif, params, ctx, info) {
+  // ---------------------------------------------------------------------------
+  // motif geometry
+
+  // The shapes of one motif for one sub-beat. `state` carries the shared
+  // scale / opacity / rotation and the optional morph phase. The move
+  // post-processing happens in motifShapes, so a morph can blend two calls.
+  function buildMotif(motif, params, ctx, info, state) {
     const { beat, inProgress, outProgress } = info;
     const enter = easeOut(inProgress);
     const leave = 1 - easeIn(1 - outProgress);
     const progress = Math.min(enter, leave);
-    const { box, opacity } = base(ctx, progress);
+    const { box, opacity } = state;
     const grow = box.scale0 || 1;
     void grow;
     const shapes = [];
     const density = Math.max(0.15, Math.min(1, num(params.density, 0.5)));
-    const count = Math.max(4, Math.round(6 + density * 30));
-    const variant = num(beat.variant, 0);
-    const rotation = beat.move.hold === 'spin' ? info.local * 40 * (variant % 2 ? -1 : 1) : variant * 5;
-    const pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
-    const drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
-    const scale = (0.2 + 0.8 * progress) * pulse;
+    const tuning = state.tuning || tuningOf(params);
+    const variant = state.variant;
+    const rotation = state.rotation;
+    const pulse = state.pulse;
+    const drift = state.drift;
+    const scale = state.scale;
+    const morph = state.morphPhase == null ? null : clamp01(state.morphPhase);
+    const countOf = (fallback) => (tuning.count == null ? fallback : tuning.count);
+    const stroke = box.short * 0.004 * tuning.stroke;
+    const spinRate = state.spinRate == null ? 1 : state.spinRate;
 
     if (motif === 'orbit') {
       const radius = box.short * (0.14 + 0.1 * density) * scale;
-      for (let i = 0; i < 3; i += 1) {
-        const angle = info.local * (0.8 + i * 0.25) + (variant * TAU) / 3;
-        shapes.push({ kind: 'ring', x: box.cx + Math.cos(angle) * radius, y: box.cy + Math.sin(angle) * radius * 0.72, r: box.short * 0.02 * (1 + i * 0.4), thickness: box.short * 0.005, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
+      const rings = tuning.count == null ? 3 : Math.max(3, Math.min(6, tuning.count));
+      for (let i = 0; i < rings; i += 1) {
+        const angle = info.local * (0.8 + i * 0.25) * spinRate + (variant * TAU) / 3;
+        shapes.push({ kind: 'ring', x: box.cx + Math.cos(angle) * radius, y: box.cy + Math.sin(angle) * radius * 0.72, r: box.short * 0.02 * (1 + i * 0.4), thickness: box.short * 0.005 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
       }
       shapes.push({ kind: 'circle', x: box.cx, y: box.cy, r: box.short * 0.03 * scale, color: colorOf(params, ctx, 0), opacity });
     } else if (motif === 'burst') {
+      const count = countOf(Math.max(4, Math.round(6 + density * 30)));
       const reach = box.short * 0.22 * scale;
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.05;
-        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * reach, y1: box.cy + Math.sin(angle) * reach, width: box.short * 0.006, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * reach, y1: box.cy + Math.sin(angle) * reach, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'bars') {
       const bars = Math.max(5, Math.round(8 + density * 16));
+      const total = countOf(bars);
       const width = box.width * 0.5;
-      for (let i = 0; i < bars; i += 1) {
-        const x = box.cx - width / 2 + (width * i) / (bars - 1);
-        const level = (0.2 + 0.8 * Math.abs(Math.sin(info.local * 2 + i * 0.7))) * scale;
+      const morphLevel = morph == null ? 1 : 0.55 + 0.9 * Math.abs(Math.sin(Math.PI * morph));
+      for (let i = 0; i < total; i += 1) {
+        const x = box.cx - width / 2 + (width * i) / Math.max(1, total - 1);
+        const level = (0.2 + 0.8 * Math.abs(Math.sin(info.local * 2 + i * 0.7))) * scale * morphLevel;
         const h = box.short * 0.16 * level * (variant % 2 ? -1 : 1);
-        shapes.push({ kind: 'rect', x, y: box.cy - h, w: Math.max(2, width / bars - 3), h: Math.abs(h) * 2, radius: 2, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
+        shapes.push({ kind: 'rect', x, y: box.cy - h, w: Math.max(2, width / total - 3), h: Math.abs(h) * 2, radius: 2, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
       }
     } else if (motif === 'rings') {
-      for (let i = 0; i < 4; i += 1) {
-        const phase = ((info.local * 0.8 + i / 4) % 1 + 1) % 1;
-        shapes.push({ kind: 'ring', x: box.cx, y: box.cy, r: phase * box.short * 0.28, thickness: box.short * 0.004, color: colorOf(params, ctx, i), opacity: opacity * (1 - phase) * 0.9 });
+      const count = tuning.count == null ? 4 : Math.max(2, Math.min(8, tuning.count));
+      for (let i = 0; i < count; i += 1) {
+        const phase = ((info.local * 0.8 + i / count) % 1 + 1) % 1;
+        // morph: the radius itself breathes between two shapes
+        const baseR = morph == null ? 0.28 : 0.2 + 0.14 * morph;
+        shapes.push({ kind: 'ring', x: box.cx, y: box.cy, r: phase * box.short * baseR * (0.7 + 0.3 * scale), thickness: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (1 - phase) * 0.9 });
       }
     } else if (motif === 'confetti') {
+      const count = countOf(Math.max(4, Math.round(6 + density * 30)));
       const random = rng.rngFor(0x51ed, 'confetti', info.index, variant);
       for (let i = 0; i < count; i += 1) {
         const rx = random();
@@ -279,12 +323,11 @@
       }
     } else if (motif === 'frame') {
       const tb = textBox(ctx, box);
-      const pad = tb.h * 0.35 * (0.4 + 0.6 * progress);
+      const pad = tb.h * (0.2 + 0.25 * density) * (0.4 + 0.6 * progress);
       const x0 = tb.x0 - pad;
       const y0 = tb.y0 - pad;
       const x1 = tb.x1 + pad;
       const y1 = tb.y1 + pad;
-      const stroke = box.short * 0.004;
       const corners = [
         [x0, y0, x0 + (x1 - x0) * 0.25, y0], [x1, y0, x1, y0 + (y1 - y0) * 0.25],
         [x1, y1, x1 - (x1 - x0) * 0.25, y1], [x0, y1, x0, y1 - (y1 - y0) * 0.25],
@@ -299,59 +342,414 @@
       const tb = textBox(ctx, box);
       const x0 = tb.x0 - tb.w * 0.05;
       const x1 = tb.x1 + tb.w * 0.05;
-      const y = tb.y1 + tb.h * 0.22;
+      const y = tb.y1 + tb.h * (0.18 + 0.12 * density);
       const sweep = x0 + (x1 - x0) * progress;
-      shapes.push({ kind: 'capsule', x0, y0: y, x1: sweep, y1: y + drift, width: box.short * 0.012, color: colorOf(params, ctx, 0), opacity });
-      if (variant > 0) shapes.push({ kind: 'capsule', x0, y0: y + box.short * 0.02, x1: x0 + (sweep - x0) * 0.6, y1: y + box.short * 0.02, width: box.short * 0.006, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
+      shapes.push({ kind: 'capsule', x0, y0: y, x1: sweep, y1: y + drift, width: box.short * 0.012 * tuning.stroke, color: colorOf(params, ctx, 0), opacity });
+      if (variant > 0) shapes.push({ kind: 'capsule', x0, y0: y + box.short * 0.02, x1: x0 + (sweep - x0) * 0.6, y1: y + box.short * 0.02, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
     } else if (motif === 'bracketsPop') {
       const tb = textBox(ctx, box);
-      const push = tb.w * 0.12 * (0.5 + 0.5 * progress) * (1 + 0.15 * Math.sin(info.local * 4));
+      const push = tb.w * (0.08 + 0.08 * density) * (0.5 + 0.5 * progress) * (1 + 0.15 * Math.sin(info.local * 4));
       const y0 = tb.y0 - tb.h * 0.2;
       const y1 = tb.y1 + tb.h * 0.2;
-      const stroke = box.short * 0.012;
-      shapes.push({ kind: 'capsule', x0: tb.x0 - push, y0, x1: tb.x0 - push, y1, width: stroke, color: colorOf(params, ctx, 0), opacity });
-      shapes.push({ kind: 'capsule', x0: tb.x1 + push, y0, x1: tb.x1 + push, y1, width: stroke, color: colorOf(params, ctx, 1), opacity });
+      const w = box.short * 0.012 * tuning.stroke;
+      shapes.push({ kind: 'capsule', x0: tb.x0 - push, y0, x1: tb.x0 - push, y1, width: w, color: colorOf(params, ctx, 0), opacity });
+      shapes.push({ kind: 'capsule', x0: tb.x1 + push, y0, x1: tb.x1 + push, y1, width: w, color: colorOf(params, ctx, 1), opacity });
     } else if (motif === 'polyMorph') {
-      const sides = 3 + (Math.round(info.local * 2) + variant) % 5;
+      // morph = the side count walks continuously through 3..7 (and back)
+      const walk = morph == null ? (Math.round(info.local * 2) + variant) % 5 : ((morph * 4 + variant) % 4.999);
+      const sides = 3 + Math.floor(walk);
+      const nextSides = 3 + Math.floor((walk + 1) % 5);
+      const blend = walk - Math.floor(walk);
       const radius = box.short * 0.12 * scale;
       for (let i = 0; i < 3; i += 1) {
         const angle = rotation + (i * TAU) / 3;
-        shapes.push({ kind: 'polygon', x: box.cx + Math.cos(angle) * box.short * 0.14 * scale, y: box.cy + Math.sin(angle) * box.short * 0.1 * scale, r: radius, sides: sides + i, rotation: rotation * 20, stroke: box.short * 0.004, color: null, strokeColor: colorOf(params, ctx, i), opacity });
+        shapes.push({ kind: 'polygon', x: box.cx + Math.cos(angle) * box.short * 0.14 * scale, y: box.cy + Math.sin(angle) * box.short * 0.1 * scale, r: radius, sides: i === 0 && blend > 0.5 ? nextSides : sides + i, rotation: rotation * 20, stroke: stroke, color: null, strokeColor: colorOf(params, ctx, i), opacity });
       }
     } else if (motif === 'ribbon') {
       const points = [];
-      const amp = box.short * 0.08 * (0.3 + 0.7 * progress);
+      const amp = box.short * (0.05 + 0.03 * density) * (0.3 + 0.7 * progress);
+      const waves = tuning.count == null ? 1 + variant : Math.max(1, Math.min(4, tuning.count / 4));
       for (let i = 0; i <= 16; i += 1) {
         const u = i / 16;
-        points.push({ x: box.cx - box.width * 0.3 + box.width * 0.6 * u, y: box.cy + Math.sin(u * TAU * (1 + variant) + info.local * 2) * amp + drift });
+        points.push({ x: box.cx - box.width * 0.3 + box.width * 0.6 * u, y: box.cy + Math.sin(u * TAU * waves + info.local * 2) * amp + drift });
       }
       for (let i = 0; i < points.length - 1; i += 1) {
-        shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.008, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.008 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'ticker') {
-      const countTick = Math.max(4, Math.round(10 + density * 10));
+      const countTick = countOf(Math.max(4, Math.round(10 + density * 10)));
       const width = box.width * 0.7;
       for (let i = 0; i < countTick; i += 1) {
-        const u = (i / countTick + info.local * 0.15) % 1;
+        const u = (i / countTick + info.local * 0.15 * spinRate) % 1;
         const x = box.cx - width / 2 + width * u;
         const h = box.short * (0.01 + 0.02 * ((i * 7) % 5) / 5) * (0.5 + 0.5 * progress);
         shapes.push({ kind: 'rect', x, y: box.cy - h, w: box.short * 0.004, h: h * 2, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
       }
     } else if (motif === 'halftone') {
-      const cols = Math.max(3, Math.round(4 + density * 6));
+      const cols = tuning.count == null ? Math.max(3, Math.round(4 + density * 6)) : Math.max(3, Math.min(12, Math.round(tuning.count / 2)));
       const rows = Math.max(3, Math.round(cols * 0.6));
       for (let row = 0; row < rows; row += 1) {
         for (let col = 0; col < cols; col += 1) {
           const phase = Math.sin((col + row) * 0.9 - info.local * 2) * 0.5 + 0.5;
-          const r = box.short * 0.008 * (0.3 + phase) * scale;
+          const r = box.short * 0.008 * (0.3 + phase) * scale * (tuning.radius == null ? 1 : tuning.radius);
           shapes.push({ kind: 'circle', x: box.cx + (col - (cols - 1) / 2) * box.short * 0.045, y: box.cy + (row - (rows - 1) / 2) * box.short * 0.045, r, color: colorOf(params, ctx, col + row), opacity: opacity * phase });
         }
       }
+    } else if (motif === 'cracks') {
+      const random = rng.rngFor(0x0c4a, 'cracks', info.index, variant);
+      const branches = countOf(4 + Math.round(density * 4));
+      const originX = box.cx + (random() * 2 - 1) * box.width * 0.08;
+      const originY = box.cy + (random() * 2 - 1) * box.height * 0.08;
+      const reach = box.short * (0.12 + 0.14 * (0.4 + 0.6 * progress));
+      for (let i = 0; i < branches; i += 1) {
+        const angle = random() * TAU;
+        const length = reach * (0.5 + random() * 0.9);
+        const kink = 0.35 + random() * 0.4;
+        const mx = originX + Math.cos(angle) * length * kink;
+        const my = originY + Math.sin(angle) * length * kink;
+        const ex = mx + Math.cos(angle + (random() - 0.5) * 0.9) * length * (1 - kink);
+        const ey = my + Math.sin(angle + (random() - 0.5) * 0.9) * length * (1 - kink);
+        const w = box.short * 0.0035 * tuning.stroke;
+        shapes.push({ kind: 'capsule', x0: originX, y0: originY, x1: mx, y1: my, width: w, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
+        shapes.push({ kind: 'capsule', x0: mx, y0: my, x1: ex, y1: ey, width: w * 0.7, color: colorOf(params, ctx, i + 1), opacity: opacity * 0.8 });
+      }
+    } else if (motif === 'spikes') {
+      const count = countOf(Math.max(6, Math.round(9 + density * 12)));
+      const reach = box.short * 0.2 * scale;
+      for (let i = 0; i < count; i += 1) {
+        const angle = (i / count) * TAU + rotation * 0.04;
+        const length = reach * (0.5 + 0.5 * Math.abs(Math.sin(info.local * 1.6 + i)));
+        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * length, y1: box.cy + Math.sin(angle) * length, width: box.short * 0.0025 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+      }
+    } else if (motif === 'eyes') {
+      const random = rng.rngFor(0x0e75, 'eyes', info.index, variant);
+      const pairs = countOf(3 + Math.round(density * 3));
+      for (let i = 0; i < pairs; i += 1) {
+        const ex = box.cx + (random() * 2 - 1) * box.width * 0.22;
+        const ey = box.cy + (random() * 2 - 1) * box.height * 0.16;
+        const blink = 0.5 + 0.5 * Math.abs(Math.sin(info.local * 1.1 + i * 1.7));
+        const r = box.short * (0.02 + 0.014 * random()) * scale;
+        shapes.push({ kind: 'ring', x: ex, y: ey, r: r * 1.6, thickness: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
+        shapes.push({ kind: 'circle', x: ex, y: ey, r: r * 0.7 * blink, color: colorOf(params, ctx, i + 1), opacity });
+      }
+    } else if (motif === 'scratches') {
+      const random = rng.rngFor(0x5c7a, 'scratches', info.index, variant);
+      const count = countOf(5 + Math.round(density * 4));
+      const baseAngle = (-38 + variant * 19) * (Math.PI / 180);
+      for (let i = 0; i < count; i += 1) {
+        const x = box.cx + (random() * 2 - 1) * box.width * 0.3;
+        const y = box.cy + (random() * 2 - 1) * box.height * 0.25;
+        const length = box.short * (0.12 + 0.22 * random()) * (0.5 + 0.5 * progress);
+        const angle = baseAngle + (random() - 0.5) * 0.25;
+        shapes.push({ kind: 'capsule', x0: x - Math.cos(angle) * length * 0.5, y0: y - Math.sin(angle) * length * 0.5, x1: x + Math.cos(angle) * length * 0.5, y1: y + Math.sin(angle) * length * 0.5, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (0.6 + 0.4 * random()) });
+      }
+    } else if (motif === 'drips') {
+      const random = rng.rngFor(0x0d71, 'drips', info.index, variant);
+      const count = countOf(5 + Math.round(density * 5));
+      for (let i = 0; i < count; i += 1) {
+        const x = box.cx + (random() * 2 - 1) * box.width * 0.3;
+        const top = box.cy - box.height * 0.18;
+        const grow = ((info.local * (0.2 + random() * 0.4) + random()) % 1 + 1) % 1;
+        const length = box.short * (0.04 + 0.18 * grow) * (0.4 + 0.6 * progress);
+        const w = box.short * 0.006 * tuning.stroke * (0.7 + 0.3 * random());
+        shapes.push({ kind: 'capsule', x0: x, y0: top, x1: x, y1: top + length, width: w, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'circle', x, y: top + length + w * 0.4, r: w * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
+      }
+    } else if (motif === 'lattice') {
+      const cells = countOf(4);
+      const spanX = box.width * 0.36 * scale;
+      const spanY = box.height * 0.3 * scale;
+      const step = (2 * spanX) / Math.max(1, cells);
+      for (let i = 0; i <= cells; i += 1) {
+        const x = box.cx - spanX + step * i;
+        shapes.push({ kind: 'capsule', x0: x, y0: box.cy - spanY, x1: x, y1: box.cy + spanY, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, 0), opacity: opacity * 0.7 });
+        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - spanY + step * i * 0.75, x1: box.cx + spanX, y1: box.cy - spanY + step * i * 0.75, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
+      }
+      for (let i = 0; i < 2; i += 1) {
+        const sign = i === 0 ? 1 : -1;
+        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - sign * spanY, x1: box.cx + spanX, y1: box.cy + sign * spanY, width: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, 2), opacity: opacity * 0.8 });
+      }
+    } else if (motif === 'waves') {
+      const bands = countOf(3);
+      const amp = box.short * (0.04 + 0.03 * density) * (0.4 + 0.6 * progress);
+      for (let b = 0; b < bands; b += 1) {
+        const phase = (b / Math.max(1, bands)) * TAU + info.local * 1.6 * spinRate;
+        const points = [];
+        for (let i = 0; i <= 16; i += 1) {
+          const u = i / 16;
+          points.push({ x: box.cx - box.width * 0.35 + box.width * 0.7 * u, y: box.cy + Math.sin(u * TAU * (1 + b) * 0.5 + phase) * amp + (b - (bands - 1) / 2) * amp * 1.6 });
+        }
+        for (let i = 0; i < points.length - 1; i += 1) {
+          shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.0045 * tuning.stroke, color: colorOf(params, ctx, b), opacity: opacity * (0.9 - b * 0.15) });
+        }
+      }
+    } else if (motif === 'comets') {
+      const random = rng.rngFor(0x0c0e, 'comets', info.index, variant);
+      const count = countOf(4 + Math.round(density * 4));
+      for (let i = 0; i < count; i += 1) {
+        const lane = box.height * (0.15 + random() * 0.7);
+        const speed = 0.25 + random() * 0.5;
+        const progressAlong = ((info.local * speed + random()) % 1 + 1) % 1;
+        const dir = variant % 2 ? -1 : 1;
+        const x = dir > 0 ? box.width * (0.05 + progressAlong * 0.9) : box.width * (0.95 - progressAlong * 0.9);
+        const r = box.short * (0.008 + 0.008 * random()) * scale;
+        const tail = box.short * 0.09 * (0.4 + 0.6 * progress);
+        shapes.push({ kind: 'capsule', x0: x, y0: lane, x1: x - dir * tail, y1: lane, width: r * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
+        shapes.push({ kind: 'circle', x, y: lane, r, color: colorOf(params, ctx, i + 1), opacity });
+      }
     }
 
-    // the in / out moves: a scatter slides each shape, a wipe clips the x span,
-    // a fade drops the opacity, a pop scales (already in `scale`)
-    if (beat.move.in === 'scatterIn' || beat.move.in === 'draw') {
+    return shapes;
+  }
+
+  // ---------------------------------------------------------------------------
+  // move post-processing
+
+  // wipe: the shapes enter left -> right (variant reverses) as the in window
+  // runs. The revealed interval is [-inf, front] (or [front, +inf]); capsules
+  // shorten parametrically, rects are trimmed and the rest drop once crossed.
+  function applyWipe(shapes, front, direction) {
+    const reverse = direction < 0;
+    const kept = [];
+    for (let shape of shapes) {
+      const xs = shapeExtentX(shape);
+      if (!xs) {
+        kept.push(shape);
+        continue;
+      }
+      if (!reverse && xs.min > front) continue;
+      if (reverse && xs.max < front) continue;
+      const partially = reverse ? xs.min < front : xs.max > front;
+      if (partially) {
+        if (shape.kind === 'capsule') {
+          const dx = shape.x1 - shape.x0;
+          const dy = shape.y1 - shape.y0;
+          if (Math.abs(dx) > 1e-6) {
+            const t = Math.max(0, Math.min(1, (front - shape.x0) / dx));
+            if (reverse) {
+              shape = { ...shape, x0: shape.x0 + dx * t, y0: shape.y0 + dy * t };
+            } else {
+              shape = { ...shape, x1: shape.x0 + dx * t, y1: shape.y0 + dy * t };
+            }
+          }
+        } else if (shape.kind === 'rect') {
+          if (reverse) {
+            const left = Math.max(shape.x, front);
+            shape = { ...shape, x: left, w: Math.max(1, shape.x + shape.w - left) };
+          } else {
+            shape = { ...shape, w: Math.max(1, front - shape.x) };
+          }
+        } else {
+          const center = xs.min + (xs.max - xs.min) / 2;
+          if (reverse ? center < front : center > front) continue;
+        }
+      }
+      kept.push(shape);
+    }
+    return kept;
+  }
+
+  function shapeExtentX(shape) {
+    if (!shape) return null;
+    if (Array.isArray(shape.points) && shape.points.length) {
+      let min = Infinity;
+      let max = -Infinity;
+      for (const point of shape.points) {
+        min = Math.min(min, point.x);
+        max = Math.max(max, point.x);
+      }
+      return { min, max };
+    }
+    if (shape.kind === 'capsule') return { min: Math.min(shape.x0, shape.x1), max: Math.max(shape.x0, shape.x1) };
+    if (shape.kind === 'rect') return { min: shape.x, max: shape.x + shape.w };
+    if (shape.x != null) {
+      const r = shape.radius != null ? shape.radius : shape.r || 0;
+      return { min: shape.x - r, max: shape.x + r };
+    }
+    return null;
+  }
+
+  // draw: capsules trace from their own start, the other shapes scale from
+  // their own centre, so it never reads like the scattershot `scatterIn`.
+  function applyDraw(shapes, progress) {
+    const p = clamp01(progress);
+    const out = [];
+    for (const shape of shapes) {
+      if (shape.kind === 'capsule') {
+        const x1 = shape.x0 + (shape.x1 - shape.x0) * p;
+        const y1 = shape.y0 + (shape.y1 - shape.y0) * p;
+        out.push({ ...shape, x1, y1 });
+        continue;
+      }
+      out.push(scaleShape(shape, p, shapeAnchor(shape)));
+    }
+    return out;
+  }
+
+  function shapeAnchor(shape) {
+    if (!shape) return { x: 0, y: 0 };
+    if (shape.kind === 'capsule') return { x: (shape.x0 + shape.x1) / 2, y: (shape.y0 + shape.y1) / 2 };
+    if (Array.isArray(shape.points)) {
+      let x = 0;
+      let y = 0;
+      for (const point of shape.points) {
+        x += point.x;
+        y += point.y;
+      }
+      return { x: x / Math.max(1, shape.points.length), y: y / Math.max(1, shape.points.length) };
+    }
+    return { x: shape.x || 0, y: shape.y || 0 };
+  }
+
+  function scaleShape(shape, factor, anchor) {
+    if (!shape || factor === 1) return shape;
+    const ax = (anchor && anchor.x) || 0;
+    const ay = (anchor && anchor.y) || 0;
+    const sx = (x) => ax + (x - ax) * factor;
+    const sy = (y) => ay + (y - ay) * factor;
+    const next = { ...shape };
+    if (Array.isArray(next.points)) next.points = next.points.map((point) => ({ x: sx(point.x), y: sy(point.y) }));
+    if (next.kind === 'rect') {
+      const x0 = sx(next.x);
+      const y0 = sy(next.y);
+      const x1 = sx(next.x + next.w);
+      const y1 = sy(next.y + next.h);
+      next.x = Math.min(x0, x1);
+      next.y = Math.min(y0, y1);
+      next.w = Math.abs(x1 - x0);
+      next.h = Math.abs(y1 - y0);
+    } else {
+      if (next.x != null) next.x = sx(next.x);
+      if (next.y != null) next.y = sy(next.y);
+      if (next.x0 != null) {
+        next.x0 = sx(next.x0);
+        next.x1 = sx(next.x1);
+        next.y0 = sy(next.y0);
+        next.y1 = sy(next.y1);
+        if (next.width != null) next.width *= factor;
+      }
+      if (next.r != null) next.r *= factor;
+      if (next.radius != null) next.radius *= factor;
+    }
+    return next;
+  }
+
+  // morph (the generic case): crossfade the geometry of two consecutive
+  // variants; shapes that exist on one side only fade in / out.
+  function mixShapes(a, b, t) {
+    const out = [];
+    const length = Math.max(a.length, b.length);
+    for (let i = 0; i < length; i += 1) {
+      const first = a[i];
+      const second = b[i];
+      if (!first) {
+        out.push(second ? { ...second, opacity: (second.opacity == null ? 1 : second.opacity) * t } : null);
+        continue;
+      }
+      if (!second) {
+        out.push({ ...first, opacity: (first.opacity == null ? 1 : first.opacity) * (1 - t) });
+        continue;
+      }
+      const mixed = { ...first };
+      const firstOpacity = first.opacity == null ? 1 : first.opacity;
+      const secondOpacity = second.opacity == null ? 1 : second.opacity;
+      mixed.opacity = firstOpacity * (1 - t) + secondOpacity * t;
+      if (first.kind === second.kind) {
+        for (const key of ['x', 'y', 'x0', 'y0', 'x1', 'y1', 'r', 'radius', 'w', 'h', 'angle']) {
+          if (typeof first[key] === 'number' && typeof second[key] === 'number') mixed[key] = first[key] * (1 - t) + second[key] * t;
+        }
+        if (Array.isArray(first.points) && Array.isArray(second.points) && first.points.length === second.points.length) {
+          mixed.points = first.points.map((point, index) => ({
+            x: point.x * (1 - t) + second.points[index].x * t,
+            y: point.y * (1 - t) + second.points[index].y * t,
+          }));
+        }
+      }
+      out.push(mixed);
+    }
+    return out.filter(Boolean);
+  }
+
+  // aspect: stretch the whole motif horizontally about the frame centre
+  function stretchX(shapes, aspect, cx) {
+    if (aspect === 1) return shapes;
+    const scalePoint = (point) => ({ x: cx + (point.x - cx) * aspect, y: point.y });
+    return shapes.map((shape) => {
+      if (!shape) return shape;
+      const next = { ...shape };
+      if (Array.isArray(next.points)) next.points = next.points.map(scalePoint);
+      if (next.kind === 'rect') next.w *= aspect;
+      if (next.x != null) next.x = cx + (next.x - cx) * aspect;
+      if (next.x0 != null) {
+        next.x0 = cx + (next.x0 - cx) * aspect;
+        next.x1 = cx + (next.x1 - cx) * aspect;
+      }
+      return next;
+    });
+  }
+
+  // scaleStroke: the optional stroke weight multiplies every line width
+  function scaleStroke(shapes, factor) {
+    if (factor === 1) return shapes;
+    return shapes.map((shape) => {
+      if (!shape) return shape;
+      const next = { ...shape };
+      if (typeof next.width === 'number') next.width *= factor;
+      if (typeof next.thickness === 'number') next.thickness *= factor;
+      if (typeof next.stroke === 'number') next.stroke *= factor;
+      return next;
+    });
+  }
+
+  function motifShapes(motif, params, ctx, info) {
+    const { beat, inProgress } = info;
+    const enter = easeOut(inProgress);
+    const leave = 1 - easeIn(1 - textProgress(info));
+    const progress = Math.min(enter, leave);
+    const { box, opacity } = base(ctx, progress);
+    const tuning = tuningOf(params);
+    const variant = num(beat.variant, 0);
+    const spinHold = beat.move.hold === 'spin';
+    const rotation = spinHold ? info.local * 40 * (variant % 2 ? -1 : 1) * tuning.spinRate : variant * 5 * tuning.spinRate;
+    const pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
+    const drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
+    const scale = (0.2 + 0.8 * progress) * pulse;
+    const state = { box, opacity, scale, rotation, pulse, drift, variant, tuning, spinRate: spinHold ? tuning.spinRate : 1, morphPhase: null };
+    const morphHold = beat.move.hold === 'morph';
+    let shapes;
+    if (morphHold) {
+      const phase = clamp01(info.local / Math.max(0.5, info.duration));
+      const specific = motif === 'polyMorph' || motif === 'rings' || motif === 'bars';
+      if (specific) {
+        shapes = buildMotif(motif, params, ctx, info, { ...state, morphPhase: phase });
+      } else {
+        const a = buildMotif(motif, params, ctx, info, { ...state, variant });
+        const b = buildMotif(motif, params, ctx, info, { ...state, variant: variant + 1 });
+        shapes = mixShapes(a, b, phase);
+      }
+    } else {
+      shapes = buildMotif(motif, params, ctx, info, state);
+    }
+    // radius: the optional motif size, about the frame centre
+    if (tuning.radius !== 1) {
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], tuning.radius, { x: box.cx, y: box.cy });
+    }
+    if (tuning.aspect !== 1) shapes = stretchX(shapes, tuning.aspect, box.cx);
+    if (tuning.stroke !== 1) shapes = scaleStroke(shapes, tuning.stroke);
+    // accent: the emphasised sub-beat reads bigger and fully opaque
+    if (beat.accent) {
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], 1.25, { x: box.cx, y: box.cy });
+    } else {
+      for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * 0.85;
+    }
+    // the in / out moves: a wipe clips the x span, a draw traces the lines,
+    // scatterIn slides each shape, a fade drops the opacity, a pop scales (the
+    // base `scale` already carries it)
+    if (beat.move.in === 'wipe') {
+      const direction = variant % 2 ? -1 : 1;
+      const front = direction > 0 ? box.cx - box.width / 2 + box.width * enter : box.cx + box.width / 2 - box.width * enter;
+      shapes = applyWipe(shapes, front, direction);
+    } else if (beat.move.in === 'scatterIn') {
       const spread = (1 - enter) * box.short * 0.25;
       for (let i = 0; i < shapes.length; i += 1) {
         const angle = (i / Math.max(1, shapes.length)) * TAU;
@@ -365,6 +763,8 @@
           shapes[i].y += Math.sin(angle) * spread;
         }
       }
+    } else if (beat.move.in === 'draw') {
+      shapes = applyDraw(shapes, enter);
     }
     if (beat.move.out === 'burstOut') {
       const spread = (1 - leave) * box.short * 0.35;
@@ -391,6 +791,10 @@
       for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * level;
     }
     return { shapes, texts: [] };
+  }
+
+  function textProgress(info) {
+    return clamp01(info.outProgress);
   }
 
   // Maps every shape of a list through one scale / rotate / translate about
@@ -472,10 +876,13 @@
     }
     if (!beats.length) {
       // a hand-made clip: derive the sub-beats from the clip's own beats / the
-      // rhythm cuts in the context (deterministic from the clip key)
+      // rhythm cuts in the context (deterministic from the clip key). Filler
+      // clips carry `from` / `to` instead of `start` / `end`.
       const span = (ctx && ctx.clip) || {};
+      const start = num(span.start != null ? span.start : span.from, 0);
+      const end = num(span.end != null ? span.end : span.to, start + 4);
       const generated = generate({
-        span: { start: num(span.start, 0), end: num(span.end, num(span.start, 0) + 4) },
+        span: { start, end },
         beats: ctx && ctx.beats,
         cuts: ctx && ctx.cuts,
         sync: params.sync,
@@ -490,6 +897,11 @@
         x: params.x,
         y: params.y,
         color: params.color,
+        stroke: params.stroke,
+        count: params.count,
+        radius: params.radius,
+        aspect: params.aspect,
+        spinRate: params.spinRate,
         axes: { weird: 0.5, energy: 0.5 },
       });
       beats = generated.params.beats;
@@ -506,5 +918,5 @@
     return result;
   }
 
-  return { MOTIFS, INS, HOLDS, OUTS, SYNCS, generate, blank, drawList, subBeats, beatAt, transformShapes };
+  return { MOTIFS, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

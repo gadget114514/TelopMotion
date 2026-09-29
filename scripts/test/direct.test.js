@@ -209,17 +209,24 @@ test('filler specs come from the preset library, deterministically and genre-awa
   // deterministic for the same seed
   const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
   assert.deepEqual(again.fillers, doc.fillers);
-  // genre exclude: seed 29 draws the sine-wave combo without the filter, and a
-  // genre excluding sineWave never gets it
-  const free = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { seed: 29 });
-  const freeSpec = SA.direct.fillerSettings(JSON.parse(JSON.stringify(FIXTURE.input)), free);
-  assert.ok(
-    SA.fillerRender.layersOf(freeSpec.byKind.interlude).some((layer) => layer.type === 'sineWave'),
-    'seed 29 picks the sine combo without the genre filter'
-  );
+  // genre exclude: some seed draws the sine-wave combo without the filter, and
+  // a genre excluding sineWave never gets it (the seed is found dynamically so
+  // the assertion survives preset-library growth)
+  let sineSeed = null;
+  let freeSpec = null;
+  for (let seed = 1; seed <= 200 && sineSeed == null; seed += 1) {
+    const probe = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { seed });
+    const candidate = SA.direct.fillerSettings(JSON.parse(JSON.stringify(FIXTURE.input)), probe);
+    if (SA.fillerRender.layersOf(candidate.byKind.interlude).some((layer) => layer.type === 'sineWave')) {
+      sineSeed = seed;
+      freeSpec = candidate;
+    }
+  }
+  assert.ok(sineSeed != null, 'no seed draws the sine combo');
   const filteredDoc = JSON.parse(JSON.stringify(FIXTURE.input));
-  const filtered = prepare(filteredDoc, FIXTURE, { seed: 29, genre: { clips: { filler: { exclude: ['sineWave'] } } } });
+  const filtered = prepare(filteredDoc, FIXTURE, { seed: sineSeed, genre: { clips: { filler: { exclude: ['sineWave'] } } } });
   const filteredSpec = SA.direct.fillerSettings(filteredDoc, filtered);
+  void freeSpec;
   for (const entry of [filteredSpec.byKind.interlude, filteredSpec.longGap.spec, filteredSpec.byKind.intro.params.list[1], filteredSpec.byKind.outro.params.list[1]]) {
     assert.ok(!SA.fillerRender.layersOf(entry).some((layer) => layer.type === 'sineWave'), 'excluded layers never appear');
   }

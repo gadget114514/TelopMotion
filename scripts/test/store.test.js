@@ -21,6 +21,7 @@ globalThis.SA.project = projectModule;
 globalThis.SA.moods = require('../../renderer/js/lyrics/moods.js');
 globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');
+globalThis.SA.random = require('../../renderer/js/lyrics/random.js');
 require('../../renderer/js/studio/store.js');
 const store = globalThis.SA.store;
 
@@ -511,6 +512,18 @@ test('setSubtitleBackgroundsHidden flags every subtitle track in one undo step',
   assert.deepEqual(snapshot(), before);
   // one more undo does not go back to the previous state again
   store.commands.setSubtitleBackgroundsHidden(false);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('rerollBeat draws the selected beat style in one undo step', () => {
+  const doc = fixture();
+  store.load(doc);
+  const before = snapshot();
+  store.commands.rerollBeat('c1', 'c1:page0');
+  const bag = store.state.project.beatStyles['c1:page0'];
+  assert.ok(bag && Object.keys(bag).length > 0, 'the beat gained its own style');
+  assert.ok(bag.enter || bag.fill || bag.post || bag.hold || bag.edge, JSON.stringify(bag));
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
 });

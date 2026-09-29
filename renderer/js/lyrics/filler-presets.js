@@ -94,6 +94,14 @@
     ribbon: { en: 'Ribbon', ja: 'リボン' },
     ticker: { en: 'Ticker', ja: 'ティッカー' },
     halftone: { en: 'Halftone', ja: 'ハーフトーン' },
+    cracks: { en: 'Cracks', ja: 'ひび割れ' },
+    spikes: { en: 'Spikes', ja: 'スパイク' },
+    eyes: { en: 'Eyes', ja: '目玉' },
+    scratches: { en: 'Scratches', ja: '引っかき傷' },
+    drips: { en: 'Drips', ja: '垂れ' },
+    lattice: { en: 'Lattice', ja: '格子' },
+    waves: { en: 'Waves', ja: '波' },
+    comets: { en: 'Comets', ja: '彗星' },
   };
 
   const MOVE_LABELS = {
@@ -159,7 +167,7 @@
   const PARTICLE_FLOWS = ['rise', 'fall', 'drift', 'vortex'];
   const PARTICLE_VARIANTS = { fine: { size: 1.2, count: 80 }, soft: { size: 5, count: 18 } };
 
-  const FIGURE_MOTIFS = ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone'];
+  const FIGURE_MOTIFS = ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets'];
   const FIGURE_MOVES = [
     { motif: 'orbit', tag: 'spin', move: { hold: 'spin' } },
     { motif: 'burst', tag: 'pop-burstout', move: { in: 'pop', out: 'burstOut' } },
