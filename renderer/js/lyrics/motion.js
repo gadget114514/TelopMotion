@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -457,8 +457,23 @@
     const anchorPoint = locationEntry && typeof locationEntry.anchor === 'function'
       ? locationEntry.anchor(locationParams, frame, { rng: locationRandom, badgeRect: options.badgeRect || null })
       : { x: frame.width / 2, y: frame.height / 2 };
-    const anchorX = anchorPoint.x;
-    const anchorY = anchorPoint.y + num(options.stackOffset, 0);
+    let anchorX = anchorPoint.x;
+    let anchorY = anchorPoint.y + num(options.stackOffset, 0);
+    // Keep the block inside the location's safe area when it fits. A block
+    // larger than the frame is centred on that axis: the extra size is
+    // intentional (a weird beat fills the screen) and frameGuard keeps at
+    // least half of it visible.
+    if (blockHalf) {
+      const safeRatio = num(anchorPoint.safe, 0.04);
+      const safeX = Math.max(0, safeRatio) * frame.width;
+      const safeY = Math.max(0, safeRatio) * frame.height;
+      const minX = safeX + blockHalf.x;
+      const maxX = frame.width - safeX - blockHalf.x;
+      const minY = safeY + blockHalf.y;
+      const maxY = frame.height - safeY - blockHalf.y;
+      anchorX = minX > maxX ? frame.width / 2 : Math.max(minX, Math.min(maxX, anchorX));
+      anchorY = minY > maxY ? frame.height / 2 : Math.max(minY, Math.min(maxY, anchorY));
+    }
     const drift = locationParams.drift || { x: 0, y: 0 };
 
     // Formations (relative to the anchor)
@@ -754,6 +769,23 @@
       envelopes.layoutOut = Math.max(envelopes.layoutOut, layoutOut);
       if (holdEntryList.length) envelopes.hold = Math.max(envelopes.hold, holdEntryList[0].env);
       states.push(state);
+    }
+
+    // The last net: at least half of the block stays on screen even when a
+    // weird beat, a camera move or a hand edit pushed it out. Entrance and
+    // exit keep their deliberate slides (translation is only allowed once the
+    // beat has fully entered and has not started to leave).
+    if (frameGuard && states.length) {
+      const guarded = frameGuard.guard(states, {
+        frame,
+        anchor: { x: anchorX, y: anchorY },
+        blockHalf,
+        camera: options.camera || null,
+        maxOut: 0.5,
+        allowTranslate: envelopes.enter >= 1 && envelopes.exit <= 0,
+      });
+      envelopes.guardVisible = guarded.visible;
+      envelopes.guarded = guarded.corrected;
     }
 
     return {

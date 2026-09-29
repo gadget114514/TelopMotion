@@ -186,6 +186,7 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .
 
 | 演出改善 P0 演出ロジックの抽出 | （このコミット） | `renderer/js/studio/direct.js`（`SA.direct`: `prepare` / `directCue` / `directBeat` / `backgroundClip` / `backdropClipFor` / `backdropClips` / `fillerSettings` / `fillerClips` / `run`）。`autoDirect` は `prepare` → `store.dispatch(SA.direct.run)` だけになった。生成クリップに `auto:true` を付け、store の update/move/trim/split/duplicate で剥がす（＝pinned）。w=0 の出力は抽出前スナップショット（HEAD の dispatch 本文を Node で実行して採取した `scripts/test/fixtures/direct-w0.json`）と一致（`direct.test.js`）。 |
 | 演出改善 P1 SRT 後に全体表示 | （このコミット） | `store` に名前付きイベント `on`/`fire` を追加し、`commands.importSrt` が `script-imported` を発火。`timeline.fitToCues()`（`end*1.02` を timeViewWidth に収める。MIN_ZOOM 未満も許す）を追加し、`minZoom()` を `min(MIN_ZOOM, fitZoom, cueFitZoom)` に変更（スライダーで戻れる）。`init` が `script-imported` を購読して rAF で `fitToCues`。`timeline-fit.test.js`（DOM スタブ） |
+| 演出改善 P2 はみ出し対策 | （このコミット） | ①`scene.js`: layout 後に `limitW=maxWidth/0.94W`・`limitH=(0.8→weirdで1.2)H` を超えたら 1回だけ `size*k` で再レイアウト（`maxWidth:Infinity` で折り返し維持）。②`motion.js`: アンカーを safeArea と blockHalf でクランプ（ブロックが大きい軸は中央）。③`frame-guard.js`（新規・純関数）: 可視率 50% 未満のとき (a) zoomBlock を二分探索で縮小、(b) 完全入場中のみ平行移動、(c) それでも足りなければ一様縮小。`effects/camera.js` に `maxExtent`、engine が post のカメラを最悪値で motion に渡す。`textflow.js`: `fitCheck`/`fitLinesScale` に高さ検査、`fillBleed` 上限 0.5。`frame-guard.test.js`（純関数13件）。**fx400/looks カタログを再生成**（ガードが motion 評価を変えるため。見た目は「可視50%保証」以外は不変の意図） |
 
 
 

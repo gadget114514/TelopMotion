@@ -3,8 +3,8 @@
   "version": 2,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-09-28T16:30:27.607Z",
-    "updatedAt": "2026-09-28T16:30:27.607Z",
+    "createdAt": "2026-09-29T05:02:05.165Z",
+    "updatedAt": "2026-09-29T05:02:05.165Z",
     "lang": "ja"
   },
   "output": {
@@ -6808,7 +6808,7 @@
         "type": "left",
         "enabled": true,
         "params": {
-          "offsetX": 0,
+          "offsetX": -0.5,
           "offsetY": 0,
           "safeArea": 0.08,
           "drift": {
@@ -6824,7 +6824,7 @@
         "type": "right",
         "enabled": true,
         "params": {
-          "offsetX": 0,
+          "offsetX": -0.5,
           "offsetY": 0,
           "safeArea": 0.08,
           "drift": {
@@ -6840,7 +6840,7 @@
         "type": "karaoke",
         "enabled": true,
         "params": {
-          "offsetX": 0,
+          "offsetX": 0.5,
           "offsetY": 0,
           "safeArea": 0.08,
           "drift": {
@@ -6970,7 +6970,7 @@
         "type": "left",
         "enabled": true,
         "params": {
-          "offsetX": -0.5,
+          "offsetX": 0.5,
           "offsetY": 0,
           "safeArea": 0.08,
           "drift": {
@@ -6986,7 +6986,7 @@
         "type": "right",
         "enabled": true,
         "params": {
-          "offsetX": -0.5,
+          "offsetX": 0.5,
           "offsetY": 0,
           "safeArea": 0.08,
           "drift": {
@@ -7002,8 +7002,8 @@
         "type": "karaoke",
         "enabled": true,
         "params": {
-          "offsetX": -0.5,
-          "offsetY": 0,
+          "offsetX": 0,
+          "offsetY": -0.5,
           "safeArea": 0.08,
           "drift": {
             "x": 0,
@@ -7132,8 +7132,8 @@
         "type": "left",
         "enabled": true,
         "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
+          "offsetX": -0.5,
+          "offsetY": -0.5,
           "safeArea": 0.08,
           "drift": {
             "x": 0,
@@ -7148,8 +7148,8 @@
         "type": "right",
         "enabled": true,
         "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
+          "offsetX": -0.5,
+          "offsetY": -0.5,
           "safeArea": 0.08,
           "drift": {
             "x": 0,
@@ -7164,8 +7164,8 @@
         "type": "karaoke",
         "enabled": true,
         "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
+          "offsetX": -0.5,
+          "offsetY": -0.5,
           "safeArea": 0.08,
           "drift": {
             "x": 0,

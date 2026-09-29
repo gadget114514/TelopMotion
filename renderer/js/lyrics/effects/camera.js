@@ -76,8 +76,39 @@
     },
   };
 
+  // Worst-case, progress-independent camera extent for the CPU frame guard.
+  // `zoom` scales the effective frame down, `ox`/`oy` are the frame-fraction
+  // offsets of its centre (see the camera branch of the post shader).
+  function maxExtent(params) {
+    const p = params || {};
+    const move = MOVE_CODES[p.move] == null ? 0 : MOVE_CODES[p.move];
+    const amount = Math.max(0, num(p.amount, 0.25));
+    const shake = Math.max(0, num(p.shake, 0));
+    let zoom = 1;
+    let ox = 0;
+    let oy = 0;
+    if (move === 0 || move === 1) zoom = 1 + amount; // pushIn / pullOut
+    else if (move === 2 || move === 3) ox = amount / 2; // panLeft / panRight
+    else if (move === 4 || move === 5) oy = amount / 2; // panUp / panDown
+    else if (move === 6) zoom = 1 + 0.3 * amount; // tilt (rotation only)
+    else if (move === 7) zoom = 1 + 1.4 * amount; // zoomPunch
+    else if (move === 8) {
+      zoom = 1 + 0.065 * amount; // handheld
+      ox = 0.06 * amount;
+      oy = 0.06 * amount;
+    } else if (move === 9) {
+      zoom = 1 + 0.25 * amount; // orbit
+      ox = 0.18 * amount;
+      oy = 0.18 * amount;
+    }
+    ox += 0.01 * shake;
+    oy += 0.01 * shake;
+    return { zoom, ox, oy };
+  }
+
   return {
     MOVES,
     MOVE_CODES,
+    maxExtent,
   };
 });

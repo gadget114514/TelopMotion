@@ -66,7 +66,7 @@
       coverage: clamp(num(s.fillCoverage, FILL_DEFAULTS.coverage[aspect] || FILL_DEFAULTS.coverage['16:9']), 0.01, 0.8),
       maxWidth: clamp(num(s.fillMaxWidth, FILL_DEFAULTS.maxWidth), 0.2, 1.2),
       maxHeight: clamp(num(s.fillMaxHeight, FILL_DEFAULTS.maxHeight), 0.1, 1),
-      bleed: clamp(num(s.fillBleed, FILL_DEFAULTS.bleed), 0, 0.3),
+      bleed: clamp(num(s.fillBleed, FILL_DEFAULTS.bleed), 0, 0.5),
       minSize: num(s.fillMinSize, FILL_DEFAULTS.minSize) * short,
       maxSize: num(s.fillMaxSize, FILL_DEFAULTS.maxSize) * short,
       lineHeight: s.lineHeight || 1.2,
@@ -497,10 +497,17 @@
     return pages;
   }
 
-  function fitCheck(units, measurer, size, maxWidth, maxLines, minScale) {
+  function fitCheck(units, measurer, size, maxWidth, maxLines, minScale, limits) {
+    // `limits` may carry the frame's height budget: the block must stay inside
+    // `maxHeight` px even when every line fits the width (the old check only
+    // looked at the line count and the width).
+    const maxHeight = limits && limits.maxHeight > 0 ? limits.maxHeight : Infinity;
+    const lineHeight = (limits && limits.lineHeight) || 1.2;
     for (let scale = 1; scale >= minScale - 1e-9; scale -= 0.02) {
       const attempt = greedyLines(units, measurer, size * scale, maxWidth, maxLines);
-      if (!attempt.overflow) return { scale: Math.max(minScale, scale), lines: attempt.lines };
+      if (attempt.overflow) continue;
+      if (attempt.lines.length * lineHeight * size * scale > maxHeight + 1e-6) continue;
+      return { scale: Math.max(minScale, scale), lines: attempt.lines };
     }
     return null;
   }
@@ -582,7 +589,15 @@
     const list = (lines || []).filter((line) => String(line).trim());
     if (!list.length) return { scale: 1, bleed: false };
     const fit = sizeForLines(list.map((line) => measurer(line, FILL_REF_SIZE) / FILL_REF_SIZE), fo);
-    return { scale: fit.size / (style.size || 96), bleed: fit.bleed };
+    const size = style.size || 96;
+    // never let more than the allowed block height through: the wrap stays as
+    // the user (or the beat) wrote it, the size shrinks instead
+    const rawMax = opts.maxHeight != null ? opts.maxHeight : style.maxHeight;
+    const maxHeightRatio = rawMax == null || rawMax === '' || !Number.isFinite(Number(rawMax)) ? 0.8 : Number(rawMax);
+    const maxHeightPx = Math.max(0.05, maxHeightRatio || 0.8) * (style.direction === 'vertical' ? frame.width : frame.height);
+    const lineHeight = style.lineHeight || 1.2;
+    const heightScale = maxHeightPx / Math.max(1e-6, list.length * lineHeight * size);
+    return { scale: Math.min(fit.size / size, Math.max(0.05, heightScale)), bleed: fit.bleed };
   }
 
   // ---------------------------------------------------------------------------
@@ -871,6 +886,14 @@
     const fill = style.fit === 'fill';
     const fillFrame = { width: (opts.frame && opts.frame.width) || 1920, height: (opts.frame && opts.frame.height) || 1080 };
     const fo = fill ? fillOptions(style, fillFrame, aspect) : null;
+    // The block's vertical budget: 80% of the frame by default; a beat may open
+    // it up to the frame height (a weird beat fills the screen on purpose).
+    const rawMaxHeight = style.maxHeight == null || style.maxHeight === '' ? 0.8 : Number(style.maxHeight);
+    const maxHeightRatio = Number.isFinite(rawMaxHeight) && rawMaxHeight > 0 ? rawMaxHeight : 0.8;
+    const fitLimits = {
+      maxHeight: maxHeightRatio * (style.direction === 'vertical' ? fillFrame.width : fillFrame.height),
+      lineHeight: style.lineHeight || 1.2,
+    };
     const fitUnits = (list, lines) => fillFit(list, measurer, size, fo, lines == null ? settings.maxLines : lines, settings);
 
     const blocks = parseEscapes(source);
@@ -949,7 +972,7 @@
       }
     } else {
       if (!forcedPages) {
-        single = fitCheck(units, measurer, size, maxWidth, settings.maxLines, settings.split === 'off' ? 0.05 : settings.minFontScale);
+        single = fitCheck(units, measurer, size, maxWidth, settings.maxLines, settings.split === 'off' ? 0.05 : settings.minFontScale, fitLimits);
       }
       if (!forcedPages && single && settings.split !== 'off') {
         const balanced = dpLines(units, measurer, size * single.scale, maxWidth, settings);
@@ -1104,7 +1127,7 @@
               continue;
             }
           }
-          const fit = fitCheck(chunkUnits, measurer, size, maxWidth, settings.maxLines, settings.minFontScale);
+          const fit = fitCheck(chunkUnits, measurer, size, maxWidth, settings.maxLines, settings.minFontScale, fitLimits);
           if (fit) {
             source.lines = fit.lines.map((line) => lineText(line));
             source.fontScale = fit.scale;

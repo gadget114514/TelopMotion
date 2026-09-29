@@ -7301,7 +7301,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.162,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
@@ -7386,16 +7386,22 @@
       "variant": 1,
       "label": "位置 / 左（代表1）",
       "apply": "style",
-      "changes": [],
+      "changes": [
+        {
+          "key": "offsetX",
+          "from": 0,
+          "to": -0.5
+        }
+      ],
       "verified": "motion",
-      "score": 2.28,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
           "type": "left",
           "enabled": true,
           "params": {
-            "offsetX": 0,
+            "offsetX": -0.5,
             "offsetY": 0,
             "safeArea": 0.08,
             "drift": {
@@ -7415,16 +7421,22 @@
       "variant": 1,
       "label": "位置 / 右（代表1）",
       "apply": "style",
-      "changes": [],
+      "changes": [
+        {
+          "key": "offsetX",
+          "from": 0,
+          "to": -0.5
+        }
+      ],
       "verified": "motion",
-      "score": 2.28,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
           "type": "right",
           "enabled": true,
           "params": {
-            "offsetX": 0,
+            "offsetX": -0.5,
             "offsetY": 0,
             "safeArea": 0.08,
             "drift": {
@@ -7444,16 +7456,22 @@
       "variant": 1,
       "label": "位置 / カラオケ（代表1）",
       "apply": "style",
-      "changes": [],
+      "changes": [
+        {
+          "key": "offsetX",
+          "from": 0,
+          "to": 0.5
+        }
+      ],
       "verified": "motion",
-      "score": 2.068,
+      "score": 2.11,
       "notes": [],
       "style": {
         "location": {
           "type": "karaoke",
           "enabled": true,
           "params": {
-            "offsetX": 0,
+            "offsetX": 0.5,
             "offsetY": 0,
             "safeArea": 0.08,
             "drift": {
@@ -7539,7 +7557,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.162,
+      "score": 1.183,
       "notes": [
         "バッジ未設定時は中央＋オフセット"
       ],
@@ -7576,7 +7594,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.873,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
@@ -7613,7 +7631,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.162,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
@@ -7648,7 +7666,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.238,
+      "score": 1.857,
       "notes": [],
       "style": {
         "location": {
@@ -7683,7 +7701,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.238,
+      "score": 1.857,
       "notes": [],
       "style": {
         "location": {
@@ -7714,18 +7732,18 @@
         {
           "key": "offsetX",
           "from": 0,
-          "to": -0.5
+          "to": 0.5
         }
       ],
       "verified": "motion",
-      "score": 3.899,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
           "type": "left",
           "enabled": true,
           "params": {
-            "offsetX": -0.5,
+            "offsetX": 0.5,
             "offsetY": 0,
             "safeArea": 0.08,
             "drift": {
@@ -7749,18 +7767,18 @@
         {
           "key": "offsetX",
           "from": 0,
-          "to": -0.5
+          "to": 0.5
         }
       ],
       "verified": "motion",
-      "score": 2.191,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
           "type": "right",
           "enabled": true,
           "params": {
-            "offsetX": -0.5,
+            "offsetX": 0.5,
             "offsetY": 0,
             "safeArea": 0.08,
             "drift": {
@@ -7782,21 +7800,21 @@
       "apply": "style",
       "changes": [
         {
-          "key": "offsetX",
+          "key": "offsetY",
           "from": 0,
           "to": -0.5
         }
       ],
       "verified": "motion",
-      "score": 3.298,
+      "score": 1.162,
       "notes": [],
       "style": {
         "location": {
           "type": "karaoke",
           "enabled": true,
           "params": {
-            "offsetX": -0.5,
-            "offsetY": 0,
+            "offsetX": 0,
+            "offsetY": -0.5,
             "safeArea": 0.08,
             "drift": {
               "x": 0,
@@ -7823,7 +7841,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.238,
+      "score": 1.857,
       "notes": [],
       "style": {
         "location": {
@@ -7858,7 +7876,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.364,
+      "score": 1.601,
       "notes": [],
       "style": {
         "location": {
@@ -7893,7 +7911,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.162,
+      "score": 1.183,
       "notes": [
         "バッジ未設定時は中央＋オフセット"
       ],
@@ -7930,7 +7948,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.873,
+      "score": 1.183,
       "notes": [],
       "style": {
         "location": {
@@ -7967,7 +7985,7 @@
         }
       ],
       "verified": "motion",
-      "score": 2.372,
+      "score": 2.055,
       "notes": [],
       "style": {
         "location": {
@@ -8002,7 +8020,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.238,
+      "score": 1.857,
       "notes": [],
       "style": {
         "location": {
@@ -8037,7 +8055,7 @@
         }
       ],
       "verified": "motion",
-      "score": 3.238,
+      "score": 1.857,
       "notes": [],
       "style": {
         "location": {
@@ -8068,19 +8086,24 @@
         {
           "key": "offsetX",
           "from": 0,
-          "to": 0.5
+          "to": -0.5
+        },
+        {
+          "key": "offsetY",
+          "from": 0,
+          "to": -0.5
         }
       ],
       "verified": "motion",
-      "score": 2.191,
+      "score": 2.11,
       "notes": [],
       "style": {
         "location": {
           "type": "left",
           "enabled": true,
           "params": {
-            "offsetX": 0.5,
-            "offsetY": 0,
+            "offsetX": -0.5,
+            "offsetY": -0.5,
             "safeArea": 0.08,
             "drift": {
               "x": 0,
@@ -8103,19 +8126,24 @@
         {
           "key": "offsetX",
           "from": 0,
-          "to": 0.5
+          "to": -0.5
+        },
+        {
+          "key": "offsetY",
+          "from": 0,
+          "to": -0.5
         }
       ],
       "verified": "motion",
-      "score": 3.899,
+      "score": 2.11,
       "notes": [],
       "style": {
         "location": {
           "type": "right",
           "enabled": true,
           "params": {
-            "offsetX": 0.5,
-            "offsetY": 0,
+            "offsetX": -0.5,
+            "offsetY": -0.5,
             "safeArea": 0.08,
             "drift": {
               "x": 0,
@@ -8138,19 +8166,24 @@
         {
           "key": "offsetX",
           "from": 0,
-          "to": 0.5
+          "to": -0.5
+        },
+        {
+          "key": "offsetY",
+          "from": 0,
+          "to": -0.5
         }
       ],
       "verified": "motion",
-      "score": 3.298,
+      "score": 1.395,
       "notes": [],
       "style": {
         "location": {
           "type": "karaoke",
           "enabled": true,
           "params": {
-            "offsetX": 0.5,
-            "offsetY": 0,
+            "offsetX": -0.5,
+            "offsetY": -0.5,
             "safeArea": 0.08,
             "drift": {
               "x": 0,

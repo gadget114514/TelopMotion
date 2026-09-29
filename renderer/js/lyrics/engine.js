@@ -531,6 +531,26 @@ SA.lyricsEngine = (() => {
       }
     }
 
+    // The strongest camera in the resolved post stack, in the frame guard's
+    // vocabulary: { zoom, ox, oy }. Progress-independent worst case.
+    function cameraWorstCase(style) {
+      const list = (style && style.post) || [];
+      if (!SA.camera || typeof SA.camera.maxExtent !== 'function') return null;
+      let worst = null;
+      for (const instance of list) {
+        if (!instance || instance.enabled === false || instance.type !== 'camera') continue;
+        const extent = SA.camera.maxExtent(instance.params || {});
+        if (!extent) continue;
+        if (!worst) worst = { zoom: extent.zoom, ox: Math.abs(extent.ox), oy: Math.abs(extent.oy) };
+        else {
+          worst.zoom = Math.max(worst.zoom, extent.zoom);
+          worst.ox = Math.max(worst.ox, Math.abs(extent.ox));
+          worst.oy = Math.max(worst.oy, Math.abs(extent.oy));
+        }
+      }
+      return worst;
+    }
+
     function evaluateBeatState(project, beat, scene, t, activeList) {
       const seed = (project.styleMode && project.styleMode.seed) || 12345;
       const frameSize = { width: state.width, height: state.height };
@@ -547,6 +567,10 @@ SA.lyricsEngine = (() => {
         analysis: state.analysis,
         audioFeatures: state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null,
       };
+      // A camera post changes what part of the frame is visible: the CPU side
+      // uses its worst case so the frame guard can keep the lyrics on screen.
+      const camera = cameraWorstCase(scene.style);
+      if (camera) ctx.camera = camera;
       if (needsPrevious(scene)) {
         const previous = previousBeatOf(project, beat);
         if (previous) {

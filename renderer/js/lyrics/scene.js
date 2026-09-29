@@ -138,7 +138,7 @@ SA.lyricsScene = (() => {
 
     const size = (textStyle.size || 96) * (beat.fontScale || 1) * scale;
     const fillColor = resolveFillColor(project, style, beat);
-    const layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
+    let layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
       size,
       lang: (project.meta && project.meta.lang) || 'en',
       direction,
@@ -146,6 +146,34 @@ SA.lyricsScene = (() => {
       // re-wrapped even when the enlarged / bleeding lines exceed maxWidth
       maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width * scale : undefined,
     });
+    // Fit the laid-out block into the frame. The width stays inside maxWidth;
+    // the height budget is 80% of the frame by default and opens with the weird
+    // axis up to 120%, so a weird beat may deliberately fill the screen (the
+    // frame guard keeps at least half of it visible). One re-layout only, and
+    // with maxWidth Infinity so the chosen wrap survives.
+    const frameW = output.width * scale;
+    const frameH = output.height * scale;
+    const weird = Math.max(0, Math.min(1, Number(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0) || 0));
+    const maxHeightBase = textStyle.maxHeight > 0 ? Number(textStyle.maxHeight) : 0.8;
+    const limitHRatio = maxHeightBase + (Math.max(maxHeightBase, 1.2) - maxHeightBase) * weird;
+    const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth : 0.94) * frameW;
+    const limitH = limitHRatio * frameH;
+    const bbox = layout.bbox;
+    if (bbox && size > 1) {
+      const boxW = Math.max(0, bbox.x2 - bbox.x1);
+      const boxH = Math.max(0, bbox.y2 - bbox.y1);
+      if (boxW > limitW + 0.5 || boxH > limitH + 0.5) {
+        const k = Math.min(1, limitW / Math.max(1e-6, boxW), limitH / Math.max(1e-6, boxH));
+        if (k < 0.999) {
+          layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
+            size: size * k,
+            lang: (project.meta && project.meta.lang) || 'en',
+            direction,
+            maxWidth: Infinity,
+          });
+        }
+      }
+    }
 
     const scene = {
       key,
