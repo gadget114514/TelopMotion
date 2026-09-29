@@ -606,14 +606,42 @@
       density,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
-    // the figure must not cover the lyrics: recolour / dim beyond the gate
+    // the figure must not cover the lyrics: recolour / dim beyond the gate.
+    // A figure that had to be dimmed is regenerated with a motif that stays
+    // clear of the text box, so the track keeps moving at full opacity.
     if (SA.legibility && SA.moods.legibilityActive(axes)) {
-      spec = SA.legibility.repairFigureSpec(spec, {
+      const figureCtx = {
         frame: { width: ctx.frameW, height: ctx.frameH },
         palette,
         textColors: [palette[2], palette[4]].filter(Boolean),
         duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
-      });
+      };
+      spec = SA.legibility.repairFigureSpec(spec, figureCtx);
+      const dimmed = spec && spec.params && Number(spec.params.opacity) < 1;
+      if (dimmed) {
+        const safeMotifs = ['underlineSweep', 'bracketsPop', 'orbit', 'ribbon', 'rings', 'ticker', 'frame', 'bars'];
+        let best = null;
+        for (let attempt = 0; attempt < safeMotifs.length; attempt += 1) {
+          const candidate = SA.figures.generate({
+            span: { start: cue.start, end: cue.end },
+            beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
+            axes,
+            seed: seed + index * 53 + 1 + attempt,
+            id: cue.id,
+            palette,
+            sync,
+            density,
+            motif: safeMotifs[(index + attempt) % safeMotifs.length],
+            cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+          });
+          const overlap = SA.legibility.figureOverlap(candidate, figureCtx);
+          if (overlap <= SA.legibility.FIGURE_OVERLAP + 1e-9) {
+            best = candidate;
+            break;
+          }
+        }
+        if (best) spec = best;
+      }
     }
     return nextClip(projectDoc, 'clip_fig', {
       trackId: track,

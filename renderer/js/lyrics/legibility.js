@@ -612,15 +612,19 @@
     const raw = spec && spec.params && spec.params.opacity;
     const opacity = raw == null ? 1 : Math.max(0, Math.min(1, Number(raw)));
     if (!(opacity > 0)) return 0;
+    // the spec's own sub-beats may start at an arbitrary clip offset, so the
+    // samples run from the first beat, not from 0
+    const specBeats = (spec && spec.params && spec.params.beats) || [];
+    const base = specBeats.length && Number.isFinite(Number(specBeats[0].start)) ? Number(specBeats[0].start) : 0;
     let worst = 0;
     for (const share of [0.1, 0.35, 0.55, 0.75, 0.9]) {
       let result;
       try {
         result = figures.drawList(spec, {
-          time: span * share,
+          time: base + span * share,
           frame,
-          clip: { start: 0, end: span, key: 'legibility' },
-          beats: [{ start: 0, end: span }],
+          clip: { start: base, end: base + span, key: 'legibility' },
+          beats: [{ start: base, end: base + span }],
           textBox,
           colors: context.colors || null,
         });
