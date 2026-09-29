@@ -169,8 +169,44 @@ SA.timeline = (() => {
     return Math.max(0.5, Math.min(MAX_ZOOM, timeViewWidth() / total));
   }
 
+  // Zoom that makes the cue list fit the time area. Imports use this so the
+  // whole script is visible right away; it may be below MIN_ZOOM and minZoom()
+  // follows it, so the slider can always come back.
+  function cueFitZoom() {
+    const cues = cueList();
+    const end = Math.max(0.1, ...cues.map((cue) => Math.max(0, Number(cue.end) || 0)));
+    return Math.max(0.5, Math.min(MAX_ZOOM, timeViewWidth() / (end * 1.02)));
+  }
+
   function minZoom() {
-    return Math.min(MIN_ZOOM, fitZoom());
+    return Math.min(MIN_ZOOM, fitZoom(), cueFitZoom());
+  }
+
+  function defer(fn) {
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(fn);
+    else setTimeout(fn, 0);
+  }
+
+  function applyZoomView() {
+    try {
+      localStorage.setItem(LS_ZOOM, String(Math.round(pxPerSecond)));
+    } catch {
+      /* ignore */
+    }
+    if (el.zoom) el.zoom.value = String(Math.round(pxPerSecond));
+    if (el.zoomLabel) el.zoomLabel.textContent = `${Math.round(pxPerSecond)} px/s`;
+  }
+
+  // Shows the whole cue list (after a lyrics import, or from the menu).
+  function fitToCues() {
+    if (!cueList().length) {
+      fit();
+      return;
+    }
+    pxPerSecond = Math.max(0.5, Math.min(MAX_ZOOM, cueFitZoom()));
+    scrollX = 0;
+    applyZoomView();
+    draw();
   }
 
   function timeContentWidth() {
@@ -1849,13 +1885,7 @@ SA.timeline = (() => {
       pxPerSecond = next;
     }
     scrollX = clampScrollX(scrollX);
-    try {
-      localStorage.setItem(LS_ZOOM, String(Math.round(pxPerSecond)));
-    } catch {
-      /* ignore */
-    }
-    if (el.zoom) el.zoom.value = String(Math.round(pxPerSecond));
-    if (el.zoomLabel) el.zoomLabel.textContent = `${Math.round(pxPerSecond)} px/s`;
+    applyZoomView();
     draw();
   }
 
@@ -2073,6 +2103,8 @@ SA.timeline = (() => {
     SA.store.subscribe('timeline', () => {
       if (versionChanged()) draw();
     });
+    // a lyrics import shows the whole script at once
+    if (SA.store.on) SA.store.on('script-imported', () => defer(fitToCues));
     window.addEventListener('resize', draw);
     draw();
   }
@@ -2081,6 +2113,7 @@ SA.timeline = (() => {
     init,
     draw,
     fit,
+    fitToCues,
     setZoom,
     getZoom: () => pxPerSecond,
     getScrollX: () => scrollX,

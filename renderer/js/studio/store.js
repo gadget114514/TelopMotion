@@ -193,6 +193,29 @@ SA.store = (() => {
     return () => listeners.delete(entry);
   }
 
+  // Named one-shot events (a lyrics import, a regeneration) for UI modules
+  // that must react once without diffing the whole version map.
+  const events = new Map();
+
+  function on(name, fn) {
+    if (!events.has(name)) events.set(name, new Set());
+    events.get(name).add(fn);
+    return () => {
+      const set = events.get(name);
+      if (set) set.delete(fn);
+    };
+  }
+
+  function fire(name, payload) {
+    for (const fn of [...(events.get(name) || [])]) {
+      try {
+        fn(payload);
+      } catch (error) {
+        if (typeof console !== 'undefined') console.error(error);
+      }
+    }
+  }
+
   function load(project) {
     state.project = project;
     state.playhead = 0;
@@ -882,6 +905,7 @@ SA.store = (() => {
           restructureProject(project);
         },
       });
+      fire('script-imported', { count: (cues || []).length, name: (options && options.name) || null });
     },
     generateScript(cues, options) {
       dispatch({
@@ -1819,6 +1843,8 @@ SA.store = (() => {
   return {
     state,
     subscribe,
+    on,
+    fire,
     load,
     dispatch,
     beginTransaction,

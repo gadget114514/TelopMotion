@@ -185,6 +185,7 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .
   - 図形アニメーションは**新トラック `figure`**（後景と字幕の間）。
 
 | 演出改善 P0 演出ロジックの抽出 | （このコミット） | `renderer/js/studio/direct.js`（`SA.direct`: `prepare` / `directCue` / `directBeat` / `backgroundClip` / `backdropClipFor` / `backdropClips` / `fillerSettings` / `fillerClips` / `run`）。`autoDirect` は `prepare` → `store.dispatch(SA.direct.run)` だけになった。生成クリップに `auto:true` を付け、store の update/move/trim/split/duplicate で剥がす（＝pinned）。w=0 の出力は抽出前スナップショット（HEAD の dispatch 本文を Node で実行して採取した `scripts/test/fixtures/direct-w0.json`）と一致（`direct.test.js`）。 |
+| 演出改善 P1 SRT 後に全体表示 | （このコミット） | `store` に名前付きイベント `on`/`fire` を追加し、`commands.importSrt` が `script-imported` を発火。`timeline.fitToCues()`（`end*1.02` を timeViewWidth に収める。MIN_ZOOM 未満も許す）を追加し、`minZoom()` を `min(MIN_ZOOM, fitZoom, cueFitZoom)` に変更（スライダーで戻れる）。`init` が `script-imported` を購読して rAF で `fitToCues`。`timeline-fit.test.js`（DOM スタブ） |
 
 
 
