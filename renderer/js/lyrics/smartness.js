@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory();
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./fx-axes'));
   else {
     root.SA = root.SA || {};
-    root.SA.smartness = factory();
+    root.SA.smartness = factory(root.SA.fxAxes);
   }
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (fxAxes) {
   'use strict';
 
   // The seventh axis: `smartness`. It rates every effect from 0 (tacky) to 1
@@ -283,6 +283,11 @@
     }
     return out;
   }
+
+  // fx-axes reads the smartness column through this provider, so the rated
+  // table above stays the single source (an edited rating is live immediately
+  // and the generated fx-axes table never goes stale on this axis).
+  if (fxAxes && typeof fxAxes.setRateProvider === 'function') fxAxes.setRateProvider(rate);
 
   return {
     SMART_DEFAULT,

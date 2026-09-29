@@ -298,11 +298,12 @@ test('ballad and rock pick clearly different effects', () => {
 });
 
 test('weird is a sixth axis that defaults to 0 and stays out of look matching', () => {
-  assert.deepEqual(moods.AXES, ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness']);
+  assert.deepEqual(moods.AXES, ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness', 'fear']);
   assert.deepEqual(moods.MATCH_AXES, ['speed', 'energy', 'softness', 'density', 'brightness']);
   const axes = moods.normalizeAxes({ energy: 0.9 });
   assert.equal(axes.weird, 0); // existing projects keep one look per song
   assert.equal(axes.smartness, 0); // and the seventh axis filters nothing
+  assert.equal(axes.fear, 0); // and the eighth prefers nothing
   assert.equal(axes.speed, 0.5);
   assert.equal(moods.normalizeAxes({ weird: 2 }).weird, 1);
 });

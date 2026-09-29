@@ -26,6 +26,7 @@ for (const name of [...CORE_FILES, ...EXTRA_FILES]) {
 }
 const strings = require(path.join(ROOT, 'renderer', 'js', 'studio', 'fx-strings.js'));
 const smartness = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'smartness.js'));
+const fxAxes = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fx-axes.js'));
 
 // alias groups are documented under their base group (bgFill -> fill)
 const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgMotion', 'repeat'];
@@ -353,6 +354,7 @@ function rows() {
   for (const group of GROUPS) {
     // the extended pack lives in the same groups; include it too
     for (const descriptor of fx.list(group, { packs: 'all' })) {
+      const vector = fxAxes.of(fx.baseOf(group), descriptor.type);
       out.push({
         group,
         groupLabel: GROUP_LABELS[group] || group,
@@ -360,6 +362,7 @@ function rows() {
         id: `${group}.${descriptor.type}`,
         description: DESCRIPTIONS[`${group}.${descriptor.type}`] || '',
         smartness: smartness.rate(fx.baseOf(group), descriptor.type),
+        axes: vector,
       });
     }
   }
@@ -367,8 +370,25 @@ function rows() {
 }
 
 function toCsv(list) {
-  const lines = ['グループ,名前,ID,スマート度,説明'];
-  for (const row of list) lines.push([row.groupLabel, row.name, row.id, Number(row.smartness.toFixed(2)), row.description].map(csvCell).join(','));
+  const lines = ['グループ,名前,ID,スマート度,速度,激しさ,やわらかさ,情報量,明るさ,ヘンさ,恐怖,説明'];
+  for (const row of list) {
+    const axes = row.axes || {};
+    const cells = [
+      row.groupLabel,
+      row.name,
+      row.id,
+      Number(row.smartness.toFixed(2)),
+      Number((axes.speed == null ? 0.5 : axes.speed).toFixed(2)),
+      Number((axes.energy == null ? 0.5 : axes.energy).toFixed(2)),
+      Number((axes.softness == null ? 0.5 : axes.softness).toFixed(2)),
+      Number((axes.density == null ? 0.5 : axes.density).toFixed(2)),
+      Number((axes.brightness == null ? 0.5 : axes.brightness).toFixed(2)),
+      Number((axes.weird == null ? 0.5 : axes.weird).toFixed(2)),
+      Number((axes.fear == null ? 0.2 : axes.fear).toFixed(2)),
+      row.description,
+    ];
+    lines.push(cells.map(csvCell).join(','));
+  }
   // the BOM keeps Excel from showing the Japanese text as mojibake
   return `\ufeff${lines.join('\n')}\n`;
 }

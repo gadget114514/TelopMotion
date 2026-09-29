@@ -31,6 +31,18 @@ SA.controls = (() => {
     return '○';
   }
 
+  // The full 8-axis evaluation of an effect, as a multi-line tooltip. Empty
+  // while fx-axes is unavailable.
+  function axisTooltip(group, type) {
+    if (typeof SA === 'undefined' || !SA.fxAxes || type == null) return '';
+    const vector = SA.fxAxes.of(group, type);
+    return SA.fxAxes.AXES.map((axis) => {
+      const label = t(`studio.themeEditor.axis.${axis}`);
+      const shown = label === `studio.themeEditor.axis.${axis}` ? axis : label;
+      return `${shown}: ${Number(vector[axis]).toFixed(2)}`;
+    }).join('\n');
+  }
+
   function typeLabel(group, type) {
     const base = typeof SA !== 'undefined' && SA.fx && SA.fx.baseOf ? SA.fx.baseOf(group) : group;
     const key = `fx.${base}.${type}`;
@@ -430,6 +442,8 @@ SA.controls = (() => {
     labelFor,
     typeLabel,
     valueLabel,
+    smartnessMark,
+    axisTooltip,
     row,
     numberControl,
     selectControl,

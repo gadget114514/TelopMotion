@@ -72,13 +72,13 @@ SA.themes = (() => {
     return style;
   }
 
-  // the project's axes with the UI defaults for weird and smartness: themes
-  // store the axes the editor drew with, so opening one again restores them
+  // the project's axes with the UI defaults for weird, smartness and fear:
+  // themes store the axes the editor drew with, so opening one restores them
   function currentAxes() {
     const doc = project();
     const mode = doc && doc.styleMode;
     if (!mode || !mode.axes || !SA.moods) return null;
-    return { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc), smartness: SA.moods.projectSmartness(doc) };
+    return { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc), smartness: SA.moods.projectSmartness(doc), fear: SA.moods.projectFear(doc) };
   }
 
   function apply(themeId, scope) {

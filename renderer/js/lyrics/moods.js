@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -14,9 +14,12 @@
   // `smartness` is the seventh: how much cheap-looking grammar (per-beat pulse,
   // vignette, ribbon, centre spotlight...) is dropped. 0 is the engine default
   // and disables the filter, so every existing draw stays byte-identical.
-  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness'];
+  // `fear` is the eighth: how strongly the draw prefers the horror side. It is
+  // rated for every effect in `renderer/data/fx-axes.json`; 0 is the engine
+  // default and multiplies every weight by 1.
+  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness', 'fear'];
   const MATCH_AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
-  const AXIS_DEFAULTS = { weird: 0, smartness: 0 };
+  const AXIS_DEFAULTS = { weird: 0, smartness: 0, fear: 0 };
 
   // The UI and the project entry points open at 0.7; the engine keeps 0 as the
   // "not specified" default so old projects and the existing tests draw exactly
@@ -45,6 +48,16 @@
   function projectWeird(project) {
     const axes = project && project.styleMode && project.styleMode.axes;
     return axes && has(axes.weird) ? clamp01(axes.weird) : WEIRD_DEFAULT;
+  }
+
+  // the eighth axis: the engine default is 0 (no horror preference), so every
+  // existing project and draw stays exactly as before
+  function fearOf(axes) {
+    return fxAxes && typeof fxAxes.fearOf === 'function' ? fxAxes.fearOf(axes) : axes && has(axes.fear) ? clamp01(axes.fear) : 0;
+  }
+
+  function projectFear(project) {
+    return fxAxes && typeof fxAxes.projectFear === 'function' ? fxAxes.projectFear(project) : project && project.styleMode && project.styleMode.axes && has(project.styleMode.axes.fear) ? clamp01(project.styleMode.axes.fear) : 0;
   }
 
   // the seventh axis: the engine default is 0 (no filtering); the UI default is
@@ -312,6 +325,24 @@
   // weird look may still draw: the text stays readable.
   const WEIRD_TAG_OK = new Set(['echoTrail', 'glitchSlice', 'godRays', 'lensFlare', 'anamorphicStreak', 'halftone', 'lightLeak', 'staircase', 'path']);
 
+  // The readable end of the tag-gated pool a fear-heavy look may draw: glitch
+  // and dissolve entrances / exits and the frame effects that separate the
+  // text from the background instead of mangling its glyphs.
+  const FEAR_TAG_OK = new Set([
+    'glitchIn', 'flickerIn', 'scramble', 'shatterRebuild', 'noiseDissolveIn', 'particlesAssemble',
+    'dissolve', 'melt', 'burnAway', 'creepOut', 'particlesDisperse', 'gravityFall',
+    'echoTrail', 'glitchSlice', 'vhsTracking', 'scanTear', 'rgbShift', 'chromaticAberration',
+    'noiseDissolve', 'directionalDissolve', 'pixelDissolve', 'burnDissolve', 'halftoneDissolve', 'particleDissolve',
+    'lightLeak', 'lensFlare', 'godRays', 'anamorphicStreak', 'halftone', 'staircase', 'path',
+  ]);
+
+  // the fear multiplier of one effect at a target: 1 while fear is 0, 0 when the
+  // effect is far too harmless for the target, > 1 for the scary side
+  function fearWeightOf(group, type, axes) {
+    if (!fxAxes || typeof fxAxes.fearFactor !== 'function') return 1;
+    return fxAxes.fearFactor(fxAxes.of(group, type), axes);
+  }
+
   // Hue systems only: the brightness axis decides how light the background is
   // and whether the text is bright or dark. Roles: 0 background, 1 background 2,
   // 2 text, 3 accent, 4 stroke, 5 accent 2.
@@ -324,12 +355,13 @@
     neon: { energy: 0.75, bgHue: 265, accentHue: 190 },
     rose: { energy: 0.55, bgHue: 330, accentHue: 345 },
     ocean: { energy: 0.4, bgHue: 205, accentHue: 165 },
-    // genre-only families: fixed hues and forced light levels
-    blood: { energy: 0.5, bgHue: 355, accentHue: 0, genreOnly: true, bgS: 0.55, bgV: [0.03, 0.08], textHue: 40, textS: 0.12, accentS: 0.9, accentV: 0.55 },
-    ash: { energy: 0.35, bgHue: 90, accentHue: 60, genreOnly: true, bgS: 0.12, bgV: [0.1, 0.2], textS: 0.08, accentS: 0.25, accentV: 0.5 },
+    // genre-only families: fixed hues and forced light levels. The fear axis
+    // opens the horror trio to every genre.
+    blood: { energy: 0.5, bgHue: 355, accentHue: 0, genreOnly: true, fear: 1, bgS: 0.55, bgV: [0.03, 0.08], textHue: 40, textS: 0.12, accentS: 0.9, accentV: 0.55 },
+    ash: { energy: 0.35, bgHue: 90, accentHue: 60, genreOnly: true, fear: 0.8, bgS: 0.12, bgV: [0.1, 0.2], textS: 0.08, accentS: 0.25, accentV: 0.5 },
     blush: { energy: 0.35, bgHue: 340, accentHue: 348, genreOnly: true, bgS: 0.18, bgV: [0.92, 0.98], textHue: 345, textS: 0.6, accentS: 0.55, accentV: 0.95 },
     sunset: { energy: 0.5, bgHue: 20, accentHue: 330, genreOnly: true, bgS: 0.55, accentS: 0.65 },
-    rain: { energy: 0.3, bgHue: 212, accentHue: 200, genreOnly: true, bgS: 0.25, accentS: 0.3, accentV: 0.7 },
+    rain: { energy: 0.3, bgHue: 212, accentHue: 200, genreOnly: true, fear: 0.7, bgS: 0.25, accentS: 0.3, accentV: 0.7 },
     festival: { energy: 0.8, bgHue: 45, accentHue: 355, genreOnly: true, bgS: 0.7, accentS: 0.9, accentV: 0.95 },
   };
   const PALETTES = PALETTE_FAMILIES;
@@ -395,6 +427,11 @@
     // is exempt: it takes the weight penalty but keeps the genre's identity.
     const s = smartOf(axes);
     if (!(options && options.hero) && type != null && !smartness.ok(group, type, s)) return false;
+    // the eighth axis: an effect far below the target's fear level is excluded
+    if (type != null && fearOf(axes) > 0) {
+      const fw = fearWeightOf(group, type, axes);
+      if (!(fw > 0)) return false;
+    }
     return true;
   }
 
@@ -419,11 +456,14 @@
   }
 
   // the pool the picker draws from: the classic tables, plus the extended
-  // primitives once the sixth axis opens them up
+  // primitives once the sixth axis opens them up (or the eighth: a fear-heavy
+  // look opens them too, so the horror side has material to draw)
   function poolFor(group, axes) {
     const base = TRAITS[group] || {};
     const ext = EXT_TRAITS[group];
-    if (!ext || textWeirdOf(axes) < EXT_REVEAL) return base;
+    if (!ext) return base;
+    const reveal = Math.max(textWeirdOf(axes), fearOf(axes) >= 0.5 ? 1 : 0);
+    if (reveal < EXT_REVEAL) return base;
     return { ...base, ...ext };
   }
 
@@ -435,6 +475,7 @@
   function pickEntry(random, group, axes, context, direction, exclude, genre, options) {
     const pool = poolFor(group, axes);
     const w = textWeirdOf(axes);
+    const fearOn = fearOf(axes) >= 0.5;
     const allowedTags = genre && Array.isArray(genre.allowTags) ? new Set(genre.allowTags) : null;
     const build = (useGenre) => {
       const scored = [];
@@ -445,17 +486,20 @@
         // skip glyph-destroying or overlapping effects (pixelate, halftone,
         // dissolves, scatter, echo trails...) when generating automatically;
         // they remain selectable by hand unless the genre opts in. A weird
-        // enough look may draw the readable ones (WEIRD_TAG_OK).
+        // enough look may draw the readable ones (WEIRD_TAG_OK) and a
+        // fear-heavy one the readable horror ones (FEAR_TAG_OK).
         const descriptor = fx.get(group, type);
-        const tagOk = w >= 0.75 && WEIRD_TAG_OK.has(type);
+        const tagOk = (w >= 0.75 && WEIRD_TAG_OK.has(type)) || (fearOn && FEAR_TAG_OK.has(type));
         if (descriptor) {
           if (descriptor.tags.includes('degrade') && !tagOk && !(allowedTags && allowedTags.has('degrade'))) continue;
           if (descriptor.tags.includes('overlap') && !tagOk && !(allowedTags && allowedTags.has('overlap'))) continue;
         }
+        const fear = fearWeightOf(group, type, axes);
+        if (!(fear > 0)) continue;
         const fit = scoreEntry(traits, axes, group, type);
         // a sharp exponent keeps the mood's character instead of near-uniform picks
         const affinity = useGenre ? Math.max(0.05, genreAffinity(genre, group, type)) : 1;
-        scored.push({ type, weight: Math.pow(fit, 4) * affinity * (0.7 + random() * 0.6) });
+        scored.push({ type, weight: Math.pow(fit, 4) * affinity * fear * (0.7 + random() * 0.6) });
       }
       return scored;
     };
@@ -781,6 +825,14 @@
     const w = textWeirdOf(axes);
     bgS = bend(bgS, 0.95, w);
     textS = bend(textS, 0.85, w);
+    // the eighth axis darkens the whole palette (the contrast repair below
+    // keeps the text readable); 0 is a no-op
+    const f = fearOf(axes);
+    if (f > 0) {
+      bgV = bend(bgV, Math.max(0.03, bgV * (1 - 0.5 * f)), f);
+      midV = bend(midV, Math.max(0.02, midV * (1 - 0.55 * f)), f);
+      accentV = bend(accentV, accentV * (1 - 0.25 * f), f);
+    }
     const textHue = (family.textHue != null ? family.textHue : family.accentHue) + 150 * w;
     const bg = hsvHex(family.bgHue, bgS, bgV);
     const bg2 = hsvHex(family.bgHue + 14, bgS * 0.88, midV);
@@ -795,15 +847,18 @@
 
   function paletteFamilyFor(axes, random, allowed) {
     const w = textWeirdOf(axes);
+    const f = fearOf(axes);
     const permitted = Array.isArray(allowed) && allowed.length ? new Set(allowed) : null;
     const entries = Object.entries(PALETTE_FAMILIES)
-      // genre-only families open up for a weird look
-      .filter(([id, family]) => (permitted ? permitted.has(id) : !family.genreOnly || w >= 0.6))
+      // genre-only families open up for a weird look and for the fear axis
+      .filter(([id, family]) => (permitted ? permitted.has(id) : !family.genreOnly || w >= 0.6 || f >= 0.5))
       .map(([id, family]) => {
         const fit = 1 - Math.abs(family.energy - axes.energy) / 1.15;
         const jitter = random ? 0.55 + random() * 0.9 : 1;
-        // B3: a weird look flattens the fit weighting, so the family is freer
-        return { id, family, weight: Math.pow(Math.max(0.05, fit), 3 * (1 - 0.8 * w)) * jitter };
+        // B3: a weird look flattens the fit weighting, so the family is freer.
+        // The fear axis promotes the horror families (blood / ash / rain).
+        const fearBoost = f > 0 && family.fear ? 1 + 3 * f * family.fear : 1;
+        return { id, family, weight: Math.pow(Math.max(0.05, fit), 3 * (1 - 0.8 * w)) * jitter * fearBoost };
       });
     if (!entries.length) return paletteFamilyFor(axes, random);
     if (!random) {
@@ -1044,6 +1099,11 @@
       const usable = requested.filter(fontAvailable);
       if (usable.length) pool = usable;
     }
+    // the eighth axis leans the typeface towards the hard / plain side (the
+    // project's exclusive font set still wins below)
+    const fear = fearOf(axes);
+    if (fear >= 0.4 && !(genre && genre.fonts)) pool = cjk ? FONTS.hard : FONTS.latinHard;
+    else if (fear >= 0.2 && !(genre && genre.fonts) && axes.softness > 0.62) pool = FONTS.plain;
     // an exclusive project font set replaces every other pool
     const setPool = fontSetPool(cjk);
     if (setPool.length) pool = setPool;
@@ -1667,7 +1727,9 @@
       if (weight <= 0) continue;
       const smart = group ? smartness.weight(smartness.rate(group, type), s) : 1;
       if (smart <= 0) continue;
-      entries.push({ type, weight: Math.pow(scoreEntry(traits, target), 2) * weight * smart * (0.7 + random() * 0.6) });
+      const fear = group ? fearWeightOf(group, type, target) : 1;
+      if (!(fear > 0)) continue;
+      entries.push({ type, weight: Math.pow(scoreEntry(traits, target), 2) * weight * smart * fear * (0.7 + random() * 0.6) });
     }
     if (!entries.length) return null;
     const total = entries.reduce((sum, entry) => sum + entry.weight, 0);
@@ -2035,6 +2097,10 @@
     textWeirdOf,
     bgWeirdOf,
     projectWeird,
+    fearOf,
+    projectFear,
+    fearWeightOf,
+    FEAR_TAG_OK,
     tameGlow,
     repairContrast,
     weirdPalette,

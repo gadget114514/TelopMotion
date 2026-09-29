@@ -40,10 +40,11 @@ function variance(list) {
 }
 
 test('the sixth axis is declared and defaults to zero', () => {
-  assert.deepEqual(moods.AXES, ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness']);
+  assert.deepEqual(moods.AXES, ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness', 'fear']);
   assert.deepEqual(moods.MATCH_AXES, ['speed', 'energy', 'softness', 'density', 'brightness']);
   assert.equal(moods.normalizeAxes({}).weird, 0);
   assert.equal(moods.normalizeAxes({}).smartness, 0);
+  assert.equal(moods.normalizeAxes({}).fear, 0);
   assert.equal(moods.EXT_REVEAL, 0.35);
 });
 

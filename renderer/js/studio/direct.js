@@ -213,12 +213,17 @@
   }
 
   // The hold a beat may carry: pulse (the legacy default) at smartness 0, a
-  // smartness-weighted draw from the calm hold pool above it.
+  // smartness-weighted draw from the calm hold pool above it. The fear axis
+  // prefers the nervous end (jitter / heartbeat / shiver).
   const BEAT_HOLD_TYPES = ['pulse', 'opacityPulse', 'heartbeat', 'breathing', 'floatBob', 'sway', 'drift', 'kenBurns'];
 
-  function smartHold(random, s, amount, pulseBpm) {
-    if (!(s > 0)) return { type: 'pulse', params: { amount, bpm: pulseBpm }, enabled: true };
-    const type = SA.moods.smartness.pickWeighted(random, 'hold', BEAT_HOLD_TYPES, s) || 'pulse';
+  function smartHold(random, s, amount, pulseBpm, axes) {
+    if (!(s > 0) && !(SA.moods.fearOf(axes) > 0)) return { type: 'pulse', params: { amount, bpm: pulseBpm }, enabled: true };
+    const type =
+      SA.fxAxes.pickWeighted(random, 'hold', BEAT_HOLD_TYPES, axes, {
+        smartness: s,
+        rating: (item) => SA.moods.smartness.rate('hold', item),
+      }) || 'pulse';
     if (type === 'pulse') return { type, params: { amount, bpm: pulseBpm }, enabled: true };
     if (type === 'heartbeat') return { type, params: { bpm: pulseBpm }, enabled: true };
     return { type, params: {}, enabled: true };
@@ -237,7 +242,7 @@
     const beatDuration = Math.max(0.2, beat.end - beat.start);
     if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
       const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
-      beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm)];
+      beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm, axes)];
     }
     if (w > 0) {
       // E4 / I18 / H5: a weird song steps the beat treatment as well:
@@ -271,7 +276,7 @@
         const hold =
           w >= 0.5
             ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
-            : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])));
+            : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])), axes);
         if (hold) beatPatch.hold = [hold];
       }
       if (wr() < 0.3 * w) {
@@ -300,24 +305,29 @@
     return SA.fillerPresets.list().filter((preset) => {
       if (!groups.has(preset.group)) return false;
       if (SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s) <= 0) return false;
+      // the fear axis drops the presets far below the target (a no-op at 0)
+      if (ctx && ctx.axes && SA.moods.fearOf(ctx.axes) > 0 && !(SA.fxAxes.affinity(SA.fxAxes.ofFiller(preset.spec), ctx.axes) > 0)) return false;
       return !SA.fillerRender.layersOf(preset.spec).some((layer) => exclude.has(layer.type));
     });
   }
 
-  function presetWeight(preset, s) {
-    return SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s);
+  function presetWeight(preset, s, axes) {
+    const smart = SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s);
+    if (!(smart > 0)) return 0;
+    if (!axes) return smart;
+    return smart * SA.fxAxes.affinity(SA.fxAxes.ofFiller(preset.spec), axes);
   }
 
   // One deterministic preset spec for a gap kind (same seed -> same preset),
-  // smartness-weighted so the calm library leads.
+  // smartness- and fear-weighted so the calm library leads.
   function fillerPresetSpec(ctx, kind, groupSet) {
     const pool = fillerPresetPool(ctx, groupSet);
     if (!pool.length) return null;
     const random = SA.rng.rngFor(ctx.seed, 'filler-preset', kind);
     const s = ctx && ctx.s != null ? ctx.s : SA.moods.smartOf(ctx && ctx.axes);
     let preset = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
-    if (s > 0) {
-      const weights = pool.map((entry) => presetWeight(entry, s));
+    if (s > 0 || (ctx && ctx.axes && SA.moods.fearOf(ctx.axes) > 0)) {
+      const weights = pool.map((entry) => presetWeight(entry, s, ctx && ctx.axes));
       const total = weights.reduce((sum, weight) => sum + weight, 0);
       if (total > 0) {
         let roll = random() * total;
@@ -471,10 +481,11 @@
         const candidates = pool.filter((preset) => preset.id !== previousPresetId);
         const list = candidates.length ? candidates : pool;
         const random = SA.rng.rngFor(ctx.seed, 'filler-gap', gap.key);
-        const weights = list.map((preset) => presetWeight(preset, s));
+        const fearOn = SA.moods.fearOf(ctx.axes) > 0;
+        const weights = list.map((preset) => presetWeight(preset, s, ctx.axes));
         const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
         let preset = list[Math.min(list.length - 1, Math.floor(random() * list.length))];
-        if (weightTotal > 0) {
+        if ((s > 0 || fearOn) && weightTotal > 0) {
           let roll = random() * weightTotal;
           for (let i = 0; i < list.length; i += 1) {
             roll -= weights[i];

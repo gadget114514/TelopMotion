@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'), require('./fx-axes'));
   else {
     root.SA = root.SA || {};
-    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird);
+    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird, root.SA.fxAxes);
   }
-})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird) {
+})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird, fxAxes) {
   'use strict';
 
   // FX 800 runtime pool: 800 complete looks classified by motion magnitude and
@@ -149,6 +149,15 @@
       sum += Math.abs(clamp01(a[key] == null ? 0.5 : a[key]) - clamp01(targetValue == null ? 0.5 : targetValue)) * weight;
       norm += weight;
     }
+    // the fear axis joins the distance only while it is on (0 keeps every
+    // existing draw byte-identical); the factor itself is applied by weightFor
+    const f = fxAxes.fearOf(target);
+    if (f > 0) {
+      const own = a.fear == null ? fxAxes.FEAR_NEUTRAL : a.fear;
+      const weight = 1 + 2 * f;
+      sum += Math.abs(clamp01(own) - f) * weight;
+      norm += weight;
+    }
     return sum / norm;
   }
 
@@ -184,7 +193,11 @@
     const distance = axisDistance(entry, axes) + 0.8 * Math.abs(motionNorm - target);
     const theme = themeWeight(entry, opts.genre);
     const smart = smartness.weight(entrySmartness(entry).min, smartness.smartOf(axes));
-    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme) * smart;
+    // the eighth axis: 1 while fear is 0 (the legacy draw), 0 for a look far
+    // too harmless for a horror target and > 1 for the frightening side
+    const fear = fxAxes.fearFactor(fxAxes.ofLook(entry), axes);
+    if (!(fear > 0)) return 0;
+    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme) * smart * fear;
   }
 
   function pickFrom(list, options) {

@@ -947,13 +947,19 @@
       axes = picked.axes;
       direction = picked.direction;
     }
-    // weird and smartness are never derived from a genre or the music: they are
-    // the user's choices (genre dialog / theme editor) and stick to the project
-    // across re-rolls. A project that never chose them opens at the UI defaults
-    // (weird 0.7, smartness 0.6).
+    // weird, smartness and fear are never derived from a genre or the music:
+    // they are the user's choices (genre dialog / theme editor) and stick to
+    // the project across re-rolls. A project that never chose them opens at the
+    // UI defaults (weird 0.7, smartness 0.6, fear 0).
     const weirdSource = opts.weird != null ? opts.weird : SA.moods.projectWeird(doc);
     const smartSource = opts.smartness != null ? opts.smartness : SA.moods.projectSmartness(doc);
-    axes = { ...axes, weird: SA.moods.weirdOf({ weird: weirdSource }), smartness: SA.moods.smartOf({ smartness: smartSource }) };
+    const fearSource = opts.fear != null ? opts.fear : SA.moods.projectFear(doc);
+    axes = {
+      ...axes,
+      weird: SA.moods.weirdOf({ weird: weirdSource }),
+      smartness: SA.moods.smartOf({ smartness: smartSource }),
+      fear: SA.moods.fearOf({ fear: fearSource }),
+    };
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
     // おまかせ: draw one of the 800 classified looks by theme + five axes, then
@@ -1008,6 +1014,7 @@
     const list = (SA.genres && SA.genres.LIST) || [];
     const weird = SA.moods.projectWeird(doc);
     const smartness = SA.moods.projectSmartness(doc);
+    const fear = SA.moods.projectFear(doc);
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>
@@ -1026,6 +1033,11 @@
         <span class="axis-value" data-field="smartness-value">${smartness.toFixed(2)}</span>
       </label>
       <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.smartness')}</div>
+      <label class="axis-row"><span>${t('studio.themeEditor.axis.fear')}</span>
+        <input type="range" min="0" max="1" step="0.05" data-field="fear" value="${fear}">
+        <span class="axis-value" data-field="fear-value">${fear.toFixed(2)}</span>
+      </label>
+      <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.fear')}</div>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
@@ -1040,13 +1052,17 @@
     smartInput.addEventListener('input', () => {
       dialog.querySelector('[data-field="smartness-value"]').textContent = Number(smartInput.value).toFixed(2);
     });
+    const fearInput = dialog.querySelector('[data-field="fear"]');
+    fearInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="fear-value"]').textContent = Number(fearInput.value).toFixed(2);
+    });
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
     dialog.querySelector('[data-action="apply"]').addEventListener('click', () => {
       const genre = dialog.querySelector('[data-field="genre"]').value;
       el.dialogRoot.hidden = true;
-      autoDirect({ genre, weird: Number(weirdInput.value), smartness: Number(smartInput.value) });
+      autoDirect({ genre, weird: Number(weirdInput.value), smartness: Number(smartInput.value), fear: Number(fearInput.value) });
     });
   }
 
