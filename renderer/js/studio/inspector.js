@@ -1261,71 +1261,32 @@ SA.inspector = (() => {
     return fieldRow(fillerParamLabel(param.key), numberField(value, param, onChange));
   }
 
-  const CLIP_KIND_LABELS = { background: 'studio.track.background', backdrop: 'studio.track.backdrop', filler: 'filler.track' };
+  const CLIP_KIND_LABELS = { background: 'studio.track.background', backdrop: 'studio.track.backdrop', filler: 'filler.track', figure: 'studio.track.figure', textAnim: 'studio.track.textAnim' };
 
-  function renderClipSection(container) {
-    const doc = project();
-    const clip = ((doc && doc.clips) || []).find((entry) => entry.id === selectionInfo().clipId);
-    if (!clip) return;
-    const kind = SA.project.trackKindOf(doc, clip.trackId) || 'background';
-    const isBackground = kind === 'background';
-    const body = section(container, 'clip', t('studio.inspector.clip'));
-    const summary = document.createElement('div');
-    summary.className = 'insp-inherit';
-    summary.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')} · ${Number(clip.start).toFixed(2)}–${Number(clip.end).toFixed(2)}s`;
-    body.appendChild(summary);
-
-    const spec = clip.spec || { type: 'none', params: {} };
-    // `shapes` / `pattern` (and the pro primitives) live in the fx background
-    // group; `shapeLayer` is the user-placeable shape clip built by shape-ops.
-    const fxBackground = isBackground || spec.type === 'shapeLayer';
-    const usedTypes = isBackground
-      ? SA.fx.list('background', UI_PACKS).map((descriptor) => descriptor.type)
-      : [...new Set(['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []).concat('shapeLayer'))];
-    const typeSelect = selectControl(
-      spec.type || 'none',
-      [...new Set(usedTypes)],
-      (type) => (isBackground || type === 'shapeLayer' ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type)),
-      (type) => {
-        const params = isBackground || type === 'shapeLayer' ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(type) : {};
-        SA.store.commands.updateClip(clip.id, { spec: { type, params } });
+  // The shared tail of every clip section: colours (optional), opacity, fades,
+  // start / end and the split / reroll / delete actions.
+  function appendClipCommon(body, doc, clip, options) {
+    const opts = options || {};
+    if (opts.colors !== false) {
+      // two colours, picked from the palette or set by hand; null follows the theme
+      const palette = (doc.style && doc.style.palette) || null;
+      const paletteColors = palette && Array.isArray(palette.colors) ? palette.colors : [];
+      const current = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : [];
+      const colorRow = document.createElement('div');
+      colorRow.className = 'insp-actions';
+      for (let index = 0; index < 2; index += 1) {
+        const fallback = paletteColors[index === 0 ? 0 : 1] || paletteColors[0] || '#000000';
+        const control = SA.controls.colorControl(current[index] || fallback, (next) => {
+          const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+          if (!value) return;
+          const colors = [current[0] || paletteColors[0] || '#000000', current[1] || paletteColors[1] || fallback];
+          colors[index] = value;
+          SA.store.commands.updateClip(clip.id, { colors });
+        }, { palette });
+        colorRow.appendChild(control);
       }
-    );
-    body.appendChild(fieldRow(t('studio.inspector.type'), typeSelect));
-
-    const descriptor = fxBackground ? SA.fx.get('background', spec.type) : { params: SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : [] };
-    const defaults = fxBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
-    const params = { ...defaults, ...(spec.params || {}) };
-    for (const param of SA.controls.paramEntries(descriptor)) {
-      const value = params[param.key] != null ? params[param.key] : param.default;
-      const control = SA.controls.paramControl(fxBackground ? 'background' : kind, param, value, (next) => {
-        SA.store.commands.updateClip(
-          clip.id,
-          { spec: { ...spec, params: { ...params, [param.key]: next } } },
-          { coalesceKey: `clip:${clip.id}:${param.key}` }
-        );
-      });
-      body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+      body.appendChild(fieldRow(t('studio.inspector.colors'), colorRow));
     }
-
-    // two colours, picked from the palette or set by hand; null follows the theme
-    const palette = (doc.style && doc.style.palette) || null;
-    const paletteColors = palette && Array.isArray(palette.colors) ? palette.colors : [];
-    const current = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : [];
-    const colorRow = document.createElement('div');
-    colorRow.className = 'insp-actions';
-    for (let index = 0; index < 2; index += 1) {
-      const fallback = paletteColors[index === 0 ? 0 : 1] || paletteColors[0] || '#000000';
-      const control = SA.controls.colorControl(current[index] || fallback, (next) => {
-        const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
-        if (!value) return;
-        const colors = [current[0] || paletteColors[0] || '#000000', current[1] || paletteColors[1] || fallback];
-        colors[index] = value;
-        SA.store.commands.updateClip(clip.id, { colors });
-      }, { palette });
-      colorRow.appendChild(control);
-    }
-    body.appendChild(fieldRow(t('studio.inspector.colors'), colorRow));
 
     const opacityControl = SA.controls.numberControl({ min: 0, max: 1, step: 0.05, default: 1 }, clip.opacity == null ? 1 : clip.opacity, (value) => {
       SA.store.commands.updateClip(clip.id, { opacity: value }, { coalesceKey: `clip:${clip.id}:opacity` });
@@ -1369,6 +1330,81 @@ SA.inspector = (() => {
     actions.appendChild(reroll);
     actions.appendChild(remove);
     body.appendChild(actions);
+  }
+
+  function renderClipSection(container) {
+    const doc = project();
+    const clip = ((doc && doc.clips) || []).find((entry) => entry.id === selectionInfo().clipId);
+    if (!clip) return;
+    const kind = SA.project.trackKindOf(doc, clip.trackId) || 'background';
+    const isBackground = kind === 'background';
+    const body = section(container, 'clip', t('studio.inspector.clip'));
+    const summary = document.createElement('div');
+    summary.className = 'insp-inherit';
+    summary.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')} · ${Number(clip.start).toFixed(2)}–${Number(clip.end).toFixed(2)}s`;
+    body.appendChild(summary);
+
+    const spec = clip.spec || { type: 'none', params: {} };
+    // the animation tracks draw their own content: the inspector edits the
+    // motif parameters or the clip's own text instead of the filler type list
+    if (kind === 'figure') {
+      const descriptor = { params: SA.fillerRender ? SA.fillerRender.paramsOf('figures') : [] };
+      const params = { ...(spec.params || {}) };
+      for (const param of SA.controls.paramEntries(descriptor)) {
+        const value = params[param.key] != null ? params[param.key] : param.default;
+        const control = SA.controls.paramControl('filler', param, value, (next) => {
+          SA.store.commands.updateClip(clip.id, { spec: { ...spec, params: { ...params, [param.key]: next } } }, { coalesceKey: `clip:${clip.id}:${param.key}` });
+        });
+        body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+      }
+      appendClipCommon(body, doc, clip);
+      return;
+    }
+    if (kind === 'textAnim') {
+      const params = { ...(spec.params || {}) };
+      // the same multiline text box the beat text uses (no label)
+      const text = SA.controls.textControl(params.text || '', (value) => {
+        SA.store.commands.updateClip(clip.id, { spec: { ...spec, params: { ...params, text: value } } }, { coalesceKey: `clip:${clip.id}:text` });
+      }, { multiline: true });
+      text.classList.add('cue-text');
+      body.appendChild(text);
+      appendClipCommon(body, doc, clip, { colors: false });
+      return;
+    }
+    // `shapes` / `pattern` (and the pro primitives) live in the fx background
+    // group; `shapeLayer` is the user-placeable shape clip built by shape-ops.
+    const fxBackground = isBackground || spec.type === 'shapeLayer';
+    const usedTypes = isBackground
+      ? SA.fx.list('background', UI_PACKS).map((descriptor) => descriptor.type)
+      : [...new Set(['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []).concat('shapeLayer'))];
+    const typeLabelFor = (type) => (isBackground || type === 'shapeLayer' ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type));
+    const typeSelect = selectControl(
+      spec.type || 'none',
+      [...new Set(usedTypes)],
+      typeLabelFor,
+      (type) => {
+        const params = isBackground || type === 'shapeLayer' ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(type) : {};
+        SA.store.commands.updateClip(clip.id, { spec: { type, params } });
+      }
+    );
+    body.appendChild(fieldRow(t('studio.inspector.type'), typeSelect));
+
+    const descriptor = fxBackground ? SA.fx.get('background', spec.type) : { params: SA.fillerRender ? SA.fillerRender.paramsOf(spec.type) : [] };
+    const defaults = fxBackground ? {} : SA.fillerRender ? SA.fillerRender.paramDefaults(spec.type) : {};
+    const params = { ...defaults, ...(spec.params || {}) };
+    for (const param of SA.controls.paramEntries(descriptor)) {
+      const value = params[param.key] != null ? params[param.key] : param.default;
+      const control = SA.controls.paramControl(fxBackground ? 'background' : kind, param, value, (next) => {
+        SA.store.commands.updateClip(
+          clip.id,
+          { spec: { ...spec, params: { ...params, [param.key]: next } } },
+          { coalesceKey: `clip:${clip.id}:${param.key}` }
+        );
+      });
+      body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+    }
+
+    appendClipCommon(body, doc, clip);
   }
 
   function creditsToggle(labelText, checked, onChange) {

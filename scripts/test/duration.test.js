@@ -95,7 +95,7 @@ test('long gaps pick the longGap spec and pinned clips follow their cues', () =>
   const result = fillers.gaps(cues, 30);
   const interlude = result.find((gap) => gap.kind === 'interlude');
   assert.equal(interlude.long, true);
-  assert.equal(interlude.spec.type, 'shapes');
+  assert.equal(interlude.spec.type, 'figures');
   const pinned = fillers.gaps(cues, 30, { clips: { 'a>b': { type: 'countdown', params: {} } } });
   const pinnedGap = pinned.find((gap) => gap.kind === 'interlude');
   assert.equal(pinnedGap.pinned, true);

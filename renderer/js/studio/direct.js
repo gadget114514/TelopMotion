@@ -20,7 +20,7 @@
   const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
   // the tracks a run owns (only clips carrying `auto` are replaced)
-  const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler'];
+  const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
 
   function pick(random, list) {
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
@@ -262,37 +262,29 @@
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);
   }
 
-  // The filler kinds a run writes into the project settings. Weird scales the
-  // counts and speeds; a very weird song re-rolls them entirely.
+  // The filler kinds a run writes into the project settings. Item 8: gaps show
+  // figures (the same motif language as the figure track) instead of the fixed
+  // shapes / spectrum / particles trio. Weird scales the counts and speeds.
   function fillerSettings(projectDoc, ctx) {
-    const { w, axes, seed, genre, analysis } = ctx;
+    const w = ctx.w;
     const kinds = {
-      intro: { type: 'shapes', params: { set: 'burst', count: 22, speed: 1.1, opacity: 0.5 } },
-      interlude: analysis
-        ? { type: 'spectrum', params: { mode: 'bars', bars: 48, falloff: 1.1 } }
-        : { type: 'particles', params: { count: 40, flow: 'drift', size: 3 } },
-      outro: { type: 'pattern', params: { mode: 'rings', count: 18, size: 1.2, speed: 0.5, opacity: 0.4 } },
+      intro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
+      interlude: { type: 'figures', params: {} },
+      outro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
     };
     if (w > 0) {
+      // a weird song bounces harder: the figure density follows the axis
       for (const spec of Object.values(kinds)) {
         const params = spec.params || {};
-        if (typeof params.count === 'number') params.count = Math.round(params.count * (1 + w));
-        if (typeof params.speed === 'number') params.speed = Math.round(params.speed * (1 + w) * 100) / 100;
+        if (typeof params.density === 'number') params.density = Math.round(Math.min(1, params.density * (1 + w)) * 100) / 100;
       }
-    }
-    if (w >= 0.5) {
-      // I19: a very weird song re-rolls the filler clips as well
-      ['intro', 'interlude', 'outro'].forEach((key, k) => {
-        const rolled = SA.moods.rerollClipSpec('filler', { axes, seed: seed + 31 * (k + 1), genre });
-        if (rolled && rolled.spec) kinds[key] = rolled.spec;
-      });
     }
     return {
       enabled: true,
       minGap: 0.8,
       margin: 0.15,
       byKind: kinds,
-      longGap: { threshold: 5, spec: { type: 'pattern', params: { mode: 'grid', count: 36, size: 1, speed: 0.4, opacity: 0.35 } } },
+      longGap: { threshold: 5, spec: { type: 'figures', params: {} } },
     };
   }
 
@@ -381,18 +373,94 @@
     if (!fillerTrack || !SA.fillers) return;
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
     const gaps = SA.fillers.gaps(cues, total, SA.fillers.settingsFor(projectDoc));
-    for (const gap of gaps) {
+    gaps.forEach((gap, gapIndex) => {
+      let spec = JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} }));
+      // figures in the gaps: generated per gap so every gap has its own motif
+      if (SA.figures) {
+        const asFigures = (entry) => entry && entry.type === 'figures';
+        const beatCuts = cues.map((cue) => cue.start).filter((cut) => cut > gap.from && cut < gap.to);
+        if (asFigures(spec)) {
+          const generated = SA.figures.generate({
+            span: { start: gap.from, end: gap.to },
+            axes: ctx.axes,
+            seed: ctx.seed + gapIndex * 53,
+            id: gap.key,
+            palette: (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [],
+            cuts: ctx.rhythm ? Object.values(ctx.rhythm).flat() : beatCuts,
+          });
+          spec = { type: 'figures', params: generated.params };
+        } else if (spec.type === 'combo' && Array.isArray(spec.params && spec.params.list)) {
+          spec.params.list = spec.params.list.map((part) => {
+            if (!asFigures(part)) return part;
+            const generated = SA.figures.generate({
+              span: { start: gap.from, end: gap.to },
+              axes: ctx.axes,
+              seed: ctx.seed + gapIndex * 53 + 1,
+              id: `${gap.key}:combo`,
+              palette: (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [],
+            });
+            return { type: 'figures', params: generated.params };
+          });
+        }
+      }
       projectDoc.clips.push(nextClip(projectDoc, 'clip_filler', {
         trackId: fillerTrack,
         start: gap.from,
         end: gap.to,
-        spec: JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} })),
+        spec,
         opacity: 1,
         fadeIn: 0.3,
         fadeOut: 0.3,
         colors: null,
       }));
-    }
+    });
+  }
+
+  // One figure clip per cue: animated motifs on the figure track (only once the
+  // weird axis is on, so the w=0 output stays exactly as before).
+  function figureClipFor(projectDoc, cue, index, ctx) {
+    const track = trackIdFor(projectDoc, 'figure');
+    if (!track || !SA.figures) return null;
+    const { w, axes, seed } = ctx;
+    const density = Math.max(0.15, Math.min(1, 0.25 + 0.6 * ctx.energy + 0.2 * w));
+    if (density < 0.3 && w < 0.2 && index % 3 !== 0) return null;
+    const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+    const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || {};
+    const palette = (cueStyle.palette && cueStyle.palette.colors) || (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
+    const roll = SA.rng.rngFor(seed + index * 313, cue.id, 'figure')();
+    const textWeight = w >= 0.6 ? 0.3 : 0.4;
+    const sync = roll < textWeight ? 'text' : roll < textWeight + 0.4 ? 'beat' : 'free';
+    const spec = SA.figures.generate({
+      span: { start: cue.start, end: cue.end },
+      beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
+      axes,
+      seed: seed + index * 53,
+      id: cue.id,
+      palette,
+      sync,
+      density,
+      cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+    });
+    return nextClip(projectDoc, 'clip_fig', {
+      trackId: track,
+      start: cue.start,
+      end: cue.end,
+      spec,
+      opacity: 0.9,
+      fadeIn: 0,
+      fadeOut: 0,
+      colors: null,
+    });
+  }
+
+  function figureClips(projectDoc, ctx) {
+    if (!(ctx.w > 0)) return;
+    if (!trackIdFor(projectDoc, 'figure')) return;
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    cues.forEach((cue, index) => {
+      const clip = figureClipFor(projectDoc, cue, index, ctx);
+      if (clip) projectDoc.clips.push(clip);
+    });
   }
 
   // The whole run on one project document. Order matters: the text flow is
@@ -468,6 +536,7 @@
     backgroundClip(projectDoc, ctx, total);
     backdropClips(projectDoc, ctx);
     fillerClips(projectDoc, ctx, total);
+    figureClips(projectDoc, ctx);
   }
 
   return {
@@ -484,6 +553,8 @@
     backdropClips,
     fillerSettings,
     fillerClips,
+    figureClipFor,
+    figureClips,
     run,
   };
 });

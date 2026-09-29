@@ -511,7 +511,7 @@ SA.store = (() => {
   // project level every style follows (except cues / beats with a palette of
   // their own); at a cue or beat level the resolved groups are recoloured and
   // the ones that change are written into that scope as its own copy.
-  const MANAGED_TRACK_KINDS = ['background', 'backdrop', 'filler'];
+  const MANAGED_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
 
   function paletteScope(scope) {
     if (!scope || scope === 'project') return { kind: 'project', path: '' };
@@ -623,7 +623,7 @@ SA.store = (() => {
   }
 
   function nextTrackId(project, kind) {
-    const prefix = kind === 'subtitle' ? 'sub' : kind === 'backdrop' ? 'mid' : kind === 'filler' ? 'filler' : kind === 'background' ? 'bg' : 'trk';
+    const prefix = kind === 'subtitle' ? 'sub' : kind === 'backdrop' ? 'mid' : kind === 'filler' ? 'filler' : kind === 'figure' ? 'fig' : kind === 'textAnim' ? 'text' : kind === 'background' ? 'bg' : 'trk';
     const used = new Set((project.tracks || []).map((track) => track && track.id));
     let index = 1;
     while (used.has(`${prefix}${index}`)) index += 1;
@@ -1483,7 +1483,7 @@ SA.store = (() => {
       const trackKind = kind || 'subtitle';
       const subtitle = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
       const id = nextTrackId(project, trackKind);
-      const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景' };
+      const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景', figure: '図形', textAnim: 'テキスト' };
       const lastSubtitle = (project.tracks || []).reduce((at, track, i) => (track.kind === 'subtitle' ? i : at), -1);
       const index = trackKind === 'subtitle' ? lastSubtitle + 1 : (project.tracks || []).length;
       dispatch({

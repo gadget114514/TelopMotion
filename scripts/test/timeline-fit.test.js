@@ -23,7 +23,8 @@ const SA = {
   rng: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js')),
   fillers: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fillers.js')),
   textflow: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'textflow.js')),
-  preview: { duration: () => 100, getPeaks: () => null, formatClock: (value) => `${value}s` },
+  figures: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'figures.js')),
+  preview: { duration: () => 100, getPeaks: () => null, formatClock: (value) => `${value}s`, seek: () => {} },
   lyricsEngine: {
     beatForCue: (cue) => (cue ? { id: `${cue.id}:page0`, cueId: cue.id, start: cue.start, end: cue.end, kind: 'page', text: cue.text || '' } : null),
   },
@@ -156,6 +157,81 @@ test('the track checkbox toggles visibility as one undo step', () => {
   assert.equal(sub().hidden, true, 'undo restores the checkbox');
   assert.equal(store.redo(), true);
   assert.equal(!!sub().hidden, false);
+});
+
+test('dragging and double-clicking on the filler track create clips', () => {
+  store.load(fixture());
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  const move = canvas.listeners.pointermove[0];
+  const up = canvas.listeners.pointerup[0];
+  const dbl = canvas.listeners.dblclick[0];
+  const filler = store.state.project.tracks.find((track) => track.kind === 'filler');
+  const index = store.state.project.tracks.indexOf(filler);
+  let logicalY = 24;
+  store.state.project.tracks.forEach((track, i) => {
+    if (i < index) logicalY += track.kind === 'subtitle' ? 26 : 22;
+  });
+  logicalY += 11;
+  const clientY = logicalY - 24;
+  const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
+
+  // a plain click only selects the track
+  down(event(120));
+  up(event(120));
+  assert.equal(store.state.project.clips.filter((clip) => clip.trackId === filler.id).length, 0, 'a click adds nothing');
+
+  down(event(120));
+  move(event(300));
+  up(event(300));
+  // double-click adds a default-length clip at that time
+  dbl(event(400));
+  const clips = store.state.project.clips.filter((clip) => clip.trackId === filler.id);
+  assert.equal(clips.length, 2, 'a drag and a double-click each added a clip');
+  assert.ok(clips.every((clip) => clip.auto === undefined), 'hand filler clips are not auto');
+  assert.ok(clips.every((clip) => clip.spec && clip.spec.type), 'the filler content spec was rolled');
+});
+
+test('the Add cue button targets the selected creatable track', () => {
+  store.load(fixture());
+  const id = store.commands.addTrack('figure');
+  store.setSelection([`track:${id}`], 'track');
+  timeline.init();
+  const addCue = document.getElementById('tl-add-cue').listeners.click[0];
+  assert.ok(typeof addCue === 'function');
+  addCue();
+  const clips = store.state.project.clips.filter((clip) => clip.trackId === id);
+  assert.equal(clips.length, 1, 'a clip was added at the playhead');
+  assert.equal(clips[0].spec.type, 'figure');
+});
+
+test('dragging on a figure track creates a clip', () => {
+  store.load(fixture());
+  const id = store.commands.addTrack('figure');
+  assert.ok(id, 'figure track added');
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  const move = canvas.listeners.pointermove[0];
+  const up = canvas.listeners.pointerup[0];
+  const fig = store.state.project.tracks.find((track) => track.id === id);
+  const index = store.state.project.tracks.indexOf(fig);
+  // rows: ruler 24, foreground 22, sub1 26, mid 22, filler 22, bg 22, figure 22
+  let logicalY = 24;
+  store.state.project.tracks.forEach((track, i) => {
+    if (i < index) logicalY += track.kind === 'subtitle' ? 26 : 22;
+  });
+  logicalY += 11;
+  const clientY = logicalY - 24; // the canvas starts under the fixed ruler
+  const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
+  down(event(120));
+  move(event(240));
+  up(event(240));
+  const clips = store.state.project.clips.filter((clip) => clip.trackId === id);
+  assert.equal(clips.length, 1, 'one clip was created');
+  assert.equal(clips[0].spec.type, 'figure');
+  assert.ok(clips[0].end > clips[0].start, 'the drag set the span');
 });
 
 test('store.commands.importSrt fires script-imported', () => {

@@ -13,6 +13,7 @@
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
+    { id: 'fig', kind: 'figure', name: '図形' },
     { id: 'mid', kind: 'backdrop', name: '後景' },
     { id: 'filler', kind: 'filler', name: 'フィラー' },
     { id: 'bg', kind: 'background', name: '背景' },
@@ -306,6 +307,13 @@
     }
     const merged = defaults(project);
     if (version < 2) migrateToV2(merged);
+    // projects saved before the figure track simply gain the empty track (the
+    // id is stable, so nothing else changes)
+    if (!(merged.tracks || []).some((track) => track && track.kind === 'figure')) {
+      const tracks = merged.tracks || (merged.tracks = []);
+      let at = tracks.reduce((index, track, i) => (track && track.kind === 'subtitle' ? i : index), -1);
+      tracks.splice(at + 1, 0, { id: 'fig', kind: 'figure', name: '図形' });
+    }
     merged.version = VERSION;
     merged.format = FORMAT;
     if (!merged.meta.createdAt) merged.meta.createdAt = new Date().toISOString();

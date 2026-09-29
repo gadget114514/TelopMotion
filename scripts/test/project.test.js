@@ -13,7 +13,7 @@ test('defaults produce a valid version 2 project with tracks', () => {
   assert.strictEqual(doc.output.width, 1920);
   assert.ok(Array.isArray(doc.script.cues));
   assert.deepStrictEqual(doc.overrides, {});
-  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'backdrop', 'filler', 'background']);
+  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']);
   assert.deepStrictEqual(doc.clips, []);
 });
 
@@ -170,4 +170,15 @@ test('setDimensions switches the output size', () => {
   assert.strictEqual(doc.output.aspect, '9:16');
   assert.strictEqual(doc.output.width, 1080);
   assert.strictEqual(doc.output.height, 1920);
+});
+
+test('migrate adds the figure track to older projects', () => {
+  const doc = project.defaults();
+  doc.tracks = doc.tracks.filter((track) => track.kind !== 'figure');
+  const result = project.migrate(JSON.parse(JSON.stringify(doc)));
+  assert.ok(result.ok);
+  assert.deepStrictEqual(
+    result.project.tracks.map((track) => track.kind),
+    ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']
+  );
 });

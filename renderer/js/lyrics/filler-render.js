@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (module.exports) module.exports = factory(require('./split'));
+  if (module.exports) module.exports = factory(require('./split'), require('./figures'));
   else {
     root.SA = root.SA || {};
-    root.SA.fillerRender = factory(root.SA.split);
+    root.SA.fillerRender = factory(root.SA.split, root.SA.figures);
   }
-})(typeof self !== 'undefined' ? self : this, function (split) {
+})(typeof self !== 'undefined' ? self : this, function (split, figures) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -631,6 +631,15 @@
     return { shapes, texts };
   }
 
+  // The figures clip type: the same motif library the figure track uses, with
+  // the params carrying the generated figure (or generated here for an empty
+  // hand-made gap clip).
+  function figuresShapes(params, ctx) {
+    if (!figures || typeof figures.drawList !== 'function') return { shapes: [], texts: [] };
+    const source = params && params.beats && params.beats.length ? params : { motif: params.motif, sync: params.sync, density: params.density, beats: [] };
+    return figures.drawList({ type: 'figure', params: source }, ctx);
+  }
+
   // The painted colour planes (item 9). Only the painted regions are drawn: the
   // rest of the frame shows the background through, and at coverage 1 the whole
   // frame is covered.
@@ -752,6 +761,7 @@
     if (type === 'pattern') return patternShapes(params, ctx);
     if (type === 'particles') return particlesShapes(params, ctx);
     if (type === 'split') return splitShapes(params, ctx);
+    if (type === 'figures') return figuresShapes(params, ctx);
     if (type === 'progress') return progressShapes(params, ctx);
     if (type === 'instrumental') {
       return textOnly(source, ctx, { text: params.text || '♪ Instrumental ♪', sizeRatio: num(params.size, 0.05), color: colorOf(params, ctx, '#cbd3ff') });
@@ -768,7 +778,7 @@
     return { shapes: [], texts: [] };
   }
 
-  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
+  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
 
   const PARAMS = {
     none: [],
@@ -826,6 +836,11 @@
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
       { key: 'amp', kind: 'number', min: 0, max: 0.4, step: 0.005, default: 0.05 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
+    ],
+    figures: [
+      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone'], default: 'orbit' },
+      { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
+      { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
     ],
     nextLinePreview: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },

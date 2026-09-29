@@ -13,11 +13,11 @@
     minGap: 1.5,
     margin: 0.25,
     byKind: {
-      intro: { type: 'credits', params: {} },
-      interlude: { type: 'spectrum', params: {} },
-      outro: { type: 'credits', params: {} },
+      intro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
+      interlude: { type: 'figures', params: {} },
+      outro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
     },
-    longGap: { threshold: 8, spec: { type: 'shapes', params: {} } },
+    longGap: { threshold: 8, spec: { type: 'figures', params: {} } },
     clips: {},
   };
 

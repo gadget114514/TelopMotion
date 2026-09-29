@@ -15,6 +15,8 @@ SA.timeline = (() => {
   const MAX_ZOOM = 800;
   const SNAP_PX = 7;
   const TICK_STEPS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
+  // tracks whose clips are placed by hand with drag / double-click / Add cue
+  const CREATABLE_CLIP_KINDS = ['figure', 'textAnim', 'filler'];
 
   const el = {};
   let ctx = null;
@@ -79,6 +81,7 @@ SA.timeline = (() => {
     if (track.kind === 'foreground') return t('layers.slotForeground');
     if (track.kind === 'background') return t('layers.slotBackground');
     if (track.kind === 'backdrop') return t('studio.inspector.background');
+    if (track.kind === 'figure') return t('studio.track.figure');
     if (track.kind === 'filler') return t('filler.track');
     if (track.kind === 'subtitle') {
       const suffix = track.name && /^字幕/.test(track.name) ? track.name.replace(/^字幕/, '') : '';
@@ -344,7 +347,7 @@ SA.timeline = (() => {
         }
         continue;
       }
-      if (track.kind === 'backdrop' || track.kind === 'filler' || track.kind === 'background') {
+      if (track.kind === 'backdrop' || track.kind === 'filler' || track.kind === 'background' || track.kind === 'figure' || track.kind === 'textAnim') {
         const clips = clipsOnTrack(doc, track.id);
         const packed = packRows(clips, (clip) => clip.start, (clip) => clip.end);
         const laneCount = Math.max(1, packed.length);
@@ -743,10 +746,16 @@ SA.timeline = (() => {
     nextLinePreview: ['rgba(52, 74, 96, 0.85)', '#9db2ff'],
     previousLineGhost: ['rgba(52, 74, 96, 0.85)', '#9db2ff'],
     combo: ['rgba(64, 56, 120, 0.85)', '#8a7cff'],
+    split: ['rgba(96, 44, 110, 0.9)', '#c86bff'],
+    figure: ['rgba(96, 44, 110, 0.9)', '#c86bff'],
+    textAnim: ['rgba(110, 94, 36, 0.9)', '#e8c85a'],
   };
 
   function clipTypeLabel(clip) {
     const type = clip && clip.spec && clip.spec.type ? clip.spec.type : 'none';
+    // a text-animation clip shows its own text, a figure clip its motif
+    if (type === 'textAnim') return String((clip.spec.params && clip.spec.params.text) || '').replace(/\s+/g, ' ');
+    if (type === 'figure' && clip.spec.params && clip.spec.params.motif) return SA.controls ? SA.controls.prettify(clip.spec.params.motif) : clip.spec.params.motif;
     const translated = t(`filler.type.${type}`);
     if (translated !== `filler.type.${type}`) return translated;
     return SA.controls ? SA.controls.prettify(type) : String(type);
@@ -755,7 +764,7 @@ SA.timeline = (() => {
   // One generic renderer for backdrop / filler / background clips.
   function drawClipTrack(size, row) {
     if (row.first) {
-      const colors = { background: '#4d8fc8', backdrop: '#ff8a3d', filler: '#4dc8a0' };
+      const colors = { background: '#4d8fc8', backdrop: '#ff8a3d', filler: '#4dc8a0', figure: '#c86bff', textAnim: '#e8c85a' };
       drawTrackHeader(row, trackTitle(row.track), { color: colors[row.kind] || '#8d96ab', hidden: trackHidden(row.track) });
     }
     const y = row.y;
@@ -815,6 +824,24 @@ SA.timeline = (() => {
         ctx.restore();
       }
       hitRegions.push({ type: 'clip', x, y, w: width, h: LAYER_H, clipId: clip.id, trackId: row.trackId, kind: row.kind, edgeLeft: x, edgeRight: x + width });
+    }
+    // a drag on an animation track's empty span creates a clip (the region is
+    // pushed before the clip hits, so dragging a clip still moves it)
+    if (CREATABLE_CLIP_KINDS.includes(row.kind)) {
+      hitRegions.unshift({ type: 'track-empty', trackId: row.trackId, kind: row.kind, x: LABEL_W, y: row.y, w: 100000, h: LAYER_H });
+    }
+    if (drag && drag.type === 'clip-create' && drag.trackId === row.trackId) {
+      const from = Math.min(drag.from, drag.to);
+      const to = Math.max(drag.from, drag.to);
+      const x0 = xOf(from);
+      const width = Math.max(3, (to - from) * pxPerSecond);
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 138, 61, 0.18)';
+      ctx.strokeStyle = '#ff8a3d';
+      ctx.setLineDash([4, 3]);
+      ctx.fillRect(x0, y + 1.5, width, height);
+      ctx.strokeRect(x0, y + 1.5, width, height);
+      ctx.restore();
     }
     ctx.restore();
   }
@@ -1222,6 +1249,10 @@ SA.timeline = (() => {
       }
       drag = null;
       draw();
+    } else if (hit.type === 'track-empty' && CREATABLE_CLIP_KINDS.includes(hit.kind)) {
+      // dragging on an animation track creates a clip for that span
+      const at = Math.max(0, timeAt(point.x));
+      drag = { type: 'clip-create', trackId: hit.trackId, kind: hit.kind, from: at, to: at };
     } else if (hit.type === 'clip') {
       SA.store.setSelection([`clip:${hit.clipId}`], 'clip');
       const doc = project();
@@ -1325,6 +1356,9 @@ SA.timeline = (() => {
       const delta = timeAt(point.x) - drag.start;
       const next = Math.max(0, snapTime(drag.original.start + delta));
       SA.store.commands.moveClip(drag.clipId, next, { coalesceKey: `clip:${drag.clipId}:move` });
+    } else if (drag.type === 'clip-create') {
+      drag.to = Math.max(0, snapTime(timeAt(point.x)));
+      draw();
     } else if (drag.type === 'clip-edge' && drag.original) {
       const time = snapTime(timeAt(point.x));
       SA.store.commands.trimClip(drag.clipId, drag.edge, time, { coalesceKey: `clip:${drag.clipId}:trim:${drag.edge}` });
@@ -1375,6 +1409,14 @@ SA.timeline = (() => {
         }
       }
     }
+    if (drag.type === 'clip-create') {
+      // a drag on an animation track makes a clip for the span; a plain click
+      // only selects the track (a double-click adds a default-length clip)
+      const from = Math.max(0, Math.min(drag.from, drag.to));
+      const to = Math.max(drag.from, drag.to);
+      if (to - from >= 0.15) addAnimationClip(drag.trackId, drag.kind, from, to);
+      else SA.store.setSelection([`track:${drag.trackId}`], 'track');
+    }
     if (drag.transaction && SA.store.endTransaction) SA.store.endTransaction();
     drag = null;
     draw();
@@ -1406,7 +1448,7 @@ SA.timeline = (() => {
       if (cue) editCueText(hit.cueId, hit);
       return;
     }
-    if (hit.type === 'empty') addAtRow(point);
+    if (hit.type === 'empty' || hit.type === 'track-empty') addAtRow(point);
   }
 
   // Double-clicking empty space creates a clip on that track (or a cue on a
@@ -1415,6 +1457,11 @@ SA.timeline = (() => {
     const row = rows.find((entry) => point.y >= entry.y && point.y <= entry.y + entry.h);
     if (!row || point.x < LABEL_W) return;
     const time = Math.max(0, snapFrame(timeAt(point.x)));
+    if (row.type === 'clip-track' && CREATABLE_CLIP_KINDS.includes(row.kind)) {
+      addAnimationClip(row.trackId, row.kind, time);
+      return;
+    }
+    // background / backdrop clips keep their fixed defaults
     if (row.type === 'clip-track') {
       const kind = row.kind;
       const defaults =
@@ -1833,9 +1880,44 @@ SA.timeline = (() => {
     draw();
   }
 
+  // A clip on a creatable track (figure / text / filler). These clips run
+  // alongside the lyric cues (and each other), so any span is allowed,
+  // overlaps included.
+  function addAnimationClip(trackId, kind, start, end) {
+    const from = Math.max(0, snapFrame(start));
+    const to = end == null ? from + 2 : Math.max(from + 0.1, end);
+    const { spec, colors } = animationClipSpec(kind);
+    const id = SA.store.commands.addClip({ start: from, end: to, spec, colors }, trackId);
+    if (id) SA.store.setSelection([`clip:${id}`], 'clip');
+    if (SA.preview) SA.preview.seek(from);
+    return id;
+  }
+
+  // The "Add cue" targets: the selected track, or the track of the selected
+  // clip, when it takes hand-placed clips.
+  function selectedCreatableTrack(doc) {
+    const tracks = doc.tracks || [];
+    for (const path of SA.store.state.selection.paths || []) {
+      let trackId = null;
+      if (path.startsWith('track:')) trackId = path.slice('track:'.length);
+      else if (path.startsWith('clip:')) {
+        const clip = (doc.clips || []).find((entry) => entry && entry.id === path.slice('clip:'.length));
+        trackId = clip ? clip.trackId : null;
+      }
+      const track = tracks.find((entry) => entry && entry.id === trackId);
+      if (track && CREATABLE_CLIP_KINDS.includes(track.kind)) return track;
+    }
+    return null;
+  }
+
   function addCue() {
     const doc = project();
     if (!doc) return;
+    const animationTrack = selectedCreatableTrack(doc);
+    if (animationTrack) {
+      addAnimationClip(animationTrack.id, animationTrack.kind, Math.max(0, Number(SA.store.state.playhead) || 0));
+      return;
+    }
     const cues = cueList();
     const playhead = Math.max(0, Number(SA.store.state.playhead) || 0);
     const lastEnd = cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
@@ -1855,6 +1937,59 @@ SA.timeline = (() => {
     SA.store.commands.addCue(cue);
     SA.store.setSelection([`cue:${cue.id}`], 'cue');
     if (SA.preview) SA.preview.seek(start);
+  }
+
+  // Defaults for a clip created by dragging on a creatable track. A figure
+  // clip starts with a motif (edited in the inspector), a text clip with a
+  // short line and fade in / out, a filler clip with a random filler content
+  // spec from the project's axes.
+  function animationClipSpec(kind) {
+    if (kind === 'filler') {
+      const doc = project();
+      const mode = (doc && doc.styleMode) || {};
+      const rolled =
+        SA.moods && SA.moods.rerollClipSpec
+          ? SA.moods.rerollClipSpec('filler', {
+              axes: mode.axes || {},
+              seed: Math.floor(Math.random() * 900000) + 1000,
+              genre: mode.genre || null,
+            })
+          : null;
+      if (rolled && rolled.spec) return { spec: rolled.spec, colors: rolled.colors || null };
+      return { spec: { type: 'particles', params: { count: 32, flow: 'rise', size: 2.4 } }, colors: null };
+    }
+    if (kind === 'figure') {
+      const spec = SA.figures && SA.figures.blank ? SA.figures.blank({ motif: 'orbit', sync: 'beat', density: 0.5 }) : { type: 'figure', params: { motif: 'orbit', sync: 'beat', density: 0.5, beats: [] } };
+      return { spec, colors: null };
+    }
+    const doc = project();
+    const textStyle = (doc && doc.style && doc.style.text) || {};
+    return {
+      spec: {
+        type: 'textAnim',
+        params: {
+          text: t('studio.timeline.newText'),
+          style: {
+            text: { fontId: textStyle.fontId || 'NotoSans-Regular', size: Math.max(48, Math.round((textStyle.size || 96) * 1.1)), lineHeight: 1.2, maxWidth: 0.9, align: 'center' },
+            location: { type: 'center', params: {} },
+            enter: { type: 'fade', motion: { in: { duration: 0.5, delay: 0, ease: 'easeOutCubic' } } },
+            hold: [],
+            exit: { type: 'fade', motion: { out: { duration: 0.4, delay: 0, ease: 'easeInCubic' } } },
+          },
+        },
+      },
+      colors: null,
+    };
+  }
+
+  // "Add text animation track" / "Add figure animation track": one press adds
+  // an empty track of the kind; clips are dragged onto it.
+  function addAnimationTrack(kind) {
+    const id = SA.store.commands.addTrack(kind);
+    if (!id) return;
+    SA.store.setSelection([`track:${id}`], 'track');
+    SA.studio.toast(kind === 'figure' ? 'studio.toast.figureTrack' : 'studio.toast.textTrack');
+    draw();
   }
 
   function addMarker() {
@@ -2062,6 +2197,12 @@ SA.timeline = (() => {
     }
     if (el.theme) el.theme.addEventListener('click', () => SA.themes.dialog());
     if (el.marker) el.marker.addEventListener('click', addMarker);
+    if (el.addTextTrack) {
+      el.addTextTrack.addEventListener('click', () => addAnimationTrack('textAnim'));
+    }
+    if (el.addFigureTrack) {
+      el.addFigureTrack.addEventListener('click', () => addAnimationTrack('figure'));
+    }
     if (el.addProperty) {
       el.addProperty.addEventListener('click', addPropertyKey);
     }
@@ -2089,6 +2230,8 @@ SA.timeline = (() => {
     el.restructure = document.getElementById('tl-restructure');
     el.theme = document.getElementById('tl-theme');
     el.marker = document.getElementById('tl-marker');
+    el.addTextTrack = document.getElementById('tl-add-text-track');
+    el.addFigureTrack = document.getElementById('tl-add-figure-track');
     el.prop = document.getElementById('tl-prop');
     el.addProperty = document.getElementById('tl-add-property');
     if (!el.canvas) return;

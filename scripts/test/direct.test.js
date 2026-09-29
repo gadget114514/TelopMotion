@@ -25,6 +25,7 @@ const SA = {
   project: require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js')),
   fillers: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fillers.js')),
   rhythm: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rhythm.js')),
+  figures: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'figures.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -32,6 +33,12 @@ globalThis.SA = SA;
 const FIXTURE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'direct-w0.json'), 'utf8'));
 
 function prepare(doc, fixture, extra) {
+  // the fixture predates the figure track: migrate it here
+  if (!(doc.tracks || []).some((track) => track && track.kind === 'figure')) {
+    const tracks = doc.tracks || (doc.tracks = []);
+    const at = tracks.reduce((index, track, i) => (track && track.kind === 'subtitle' ? i : index), -1);
+    tracks.splice(at + 1, 0, { id: 'fig', kind: 'figure', name: '図形' });
+  }
   return SA.direct.prepare(doc, {
     axes: fixture.axes,
     seed: fixture.seed,
@@ -92,6 +99,15 @@ test('a weird run gives the mid track covered split planes and full-span timing'
   const palette = ctx.themeStyle.palette.colors;
   const plain = [palette[3], palette[5] || palette[3]];
   assert.notDeepEqual(mid[0].colors, plain);
+  // a figure clip per cue on the figure track
+  const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
+  const figs = doc.clips.filter((clip) => clip.trackId === figureTrack.id);
+  assert.ok(figs.length >= 2, `figure clips ${figs.length}`);
+  for (const clip of figs) {
+    assert.equal(clip.spec.type, 'figure');
+    assert.ok(clip.auto === true);
+    assert.ok(clip.spec.params.beats.length >= 1);
+  }
 });
 
 test('a weird run leaves the user background alone and keeps the background calm', () => {
@@ -117,7 +133,11 @@ test('w=0 does not use the rhythm plan', () => {
 test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
   runOn(doc, FIXTURE);
-  assert.deepEqual(outputOf(doc), {
+  const output = outputOf(doc);
+  // The filler gaps are the documented w=0 exception (item 8: they now show
+  // figures); everything else must match the pre-extraction snapshot.
+  const { fillers, clips, ...rest } = output;
+  const { fillers: _fixtureFillers, clips: fixtureClips, ...fixtureRest } = {
     cueStyles: FIXTURE.cueStyles,
     beatStyles: FIXTURE.beatStyles,
     style: FIXTURE.style,
@@ -125,7 +145,15 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
     textFlow: FIXTURE.textFlow,
     fillers: FIXTURE.fillers,
     clips: FIXTURE.clips,
-  });
+  };
+  assert.deepEqual(rest, fixtureRest);
+  const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
+  const nonFiller = (list) => list.filter((clip) => !fillerIds.has(clip.trackId));
+  assert.deepEqual(nonFiller(clips), nonFiller(fixtureClips));
+  assert.ok(clips.filter((clip) => fillerIds.has(clip.trackId)).every((clip) => clip.spec.type === 'figures'), 'the gaps show figures');
+  assert.equal(fillers.byKind.interlude.type, 'figures');
+  assert.equal(fillers.longGap.spec.type, 'figures');
+  assert.equal(fillers.byKind.intro.type, 'combo');
 });
 
 test('the run is deterministic for one seed', () => {
@@ -148,12 +176,14 @@ test('clips without auto are kept', () => {
   const manualMid = { id: 'manual_mid', trackId: 'mid', start: 1, end: 2.5, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null };
   const manualFiller = { id: 'manual_filler', trackId: 'filler', start: 4, end: 5, spec: { type: 'none', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null };
   const manualBg = { id: 'manual_bg', trackId: 'bg', start: 0, end: 26, spec: { type: 'solid', params: { color: '#123456' } }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null };
-  doc.clips = [manualMid, manualFiller, manualBg];
+  const manualFigure = { id: 'manual_fig', trackId: 'fig', start: 1, end: 3, spec: { type: 'figure', params: { motif: 'orbit', sync: 'beat', density: 0.5, beats: [] } }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null };
+  doc.clips = [manualMid, manualFiller, manualBg, manualFigure];
   runOn(doc, FIXTURE);
   const ids = doc.clips.map((clip) => clip.id);
   assert.ok(ids.includes('manual_mid'));
   assert.ok(ids.includes('manual_filler'));
   assert.ok(ids.includes('manual_bg'));
+  assert.ok(ids.includes('manual_fig'), 'a hand-placed figure clip survives');
   assert.ok(!doc.clips.some((clip) => clip.trackId === 'bg' && clip.auto), 'a user background is not replaced');
   assert.ok(doc.clips.filter((clip) => clip.trackId === 'mid' && clip.auto).length > 0, 'auto backdrop clips still appear next to the manual one');
 });

@@ -419,3 +419,22 @@ test('a hand edit on an auto clip pins it', () => {
   const copyId = store.commands.duplicateClip('auto_mid4');
   assert.equal(store.state.project.clips.find((clip) => clip.id === copyId).auto, undefined, 'the duplicate is pinned');
 });
+
+test('figure and text tracks take hand-placed clips, overlaps included', () => {
+  store.load(fixture());
+  for (const kind of ['figure', 'textAnim']) {
+    const trackId = store.commands.addTrack(kind);
+    assert.ok(trackId, `${kind} track created`);
+    const track = store.state.project.tracks.find((entry) => entry.id === trackId);
+    assert.equal(track.kind, kind);
+    const first = store.commands.addClip({ start: 1, end: 3, spec: { type: kind === 'figure' ? 'figure' : 'textAnim', params: {} } }, trackId);
+    const second = store.commands.addClip({ start: 2, end: 5, spec: { type: kind === 'figure' ? 'figure' : 'textAnim', params: {} } }, trackId);
+    const clips = store.state.project.clips.filter((clip) => clip.trackId === trackId);
+    assert.equal(clips.length, 2, `${kind}: overlapping clips are kept`);
+    assert.ok(clips.every((clip) => clip.auto === undefined), `${kind}: hand clips are not auto`);
+    assert.equal(store.undo(), true);
+    assert.equal(store.state.project.clips.filter((clip) => clip.trackId === trackId).length, 1, `${kind}: one undo removes one clip`);
+    void first;
+    void second;
+  }
+});
