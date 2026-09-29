@@ -524,7 +524,7 @@ test('rerollBeat draws the selected beat style in one undo step', () => {
   store.commands.rerollBeat('c1', 'c1:page0');
   const bag = store.state.project.beatStyles['c1:page0'];
   assert.ok(bag && Object.keys(bag).length > 0, 'the beat gained its own style');
-  assert.ok(bag.enter || bag.fill || bag.post || bag.hold || bag.edge, JSON.stringify(bag));
+  assert.ok(bag.enter || bag.exit || bag.fill || bag.post || bag.hold || bag.edge || bag.animation, JSON.stringify(bag));
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
 });

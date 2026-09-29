@@ -1004,8 +1004,38 @@
     return { type: type || 'none', params: paramDefaults(type || 'none') };
   }
 
+  // The registered effect types of one group, for the text-animation selects.
+  // In the browser the registry is already loaded; in Node it is required
+  // lazily so tooling stays usable.
+  function registryTypes(group) {
+    const fxApi = typeof SA !== 'undefined' && SA && SA.fx ? SA.fx : null;
+    if (fxApi && typeof fxApi.list === 'function') return fxApi.list(group, { packs: 'all' }).map((descriptor) => descriptor.type);
+    try {
+      const registry = require('./effects/registry');
+      return registry.list(group, { packs: 'all' }).map((descriptor) => descriptor.type);
+    } catch {
+      return [];
+    }
+  }
+
+  const TEXT_ANIM_GROUPS = { enter: 'enter', hold: 'hold', exit: 'exit' };
+
   function paramsOf(type) {
-    return (PARAMS[type] || []).map((param) => ({ ...param }));
+    return (PARAMS[type] || []).map((param) => {
+      // a text-animation clip can define how the string appears: the select
+      // offers every registered enter / hold / exit effect plus `auto`, and
+      // the saved themes for the theme slot
+      if (type === 'textAnim' && TEXT_ANIM_GROUPS[param.key]) {
+        return { ...param, options: ['auto', ...registryTypes(TEXT_ANIM_GROUPS[param.key])] };
+      }
+      if (type === 'textAnim' && param.key === 'theme') {
+        const themes = typeof SA !== 'undefined' && SA && SA.themes && typeof SA.themes.list === 'function'
+          ? SA.themes.list().map((theme) => theme.name || theme.id)
+          : [];
+        return { ...param, options: ['auto', ...themes] };
+      }
+      return { ...param };
+    });
   }
 
   return {
