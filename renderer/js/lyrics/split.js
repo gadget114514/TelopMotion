@@ -1,5 +1,5 @@
 (function (root, factory) {
-  if (module.exports) module.exports = factory(require('./rng'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'));
   else {
     root.SA = root.SA || {};
     root.SA.split = factory(root.SA.rng);

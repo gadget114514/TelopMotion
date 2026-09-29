@@ -97,3 +97,73 @@ test('frame motifs follow the text box when the engine provides one', () => {
   const width = (shapes) => Math.max(...shapes.map((shape) => Math.max(shape.x1 || 0, shape.x || 0))) - Math.min(...shapes.map((shape) => Math.min(shape.x0 || 0, shape.x || 0)));
   assert.notEqual(width(wide), width(narrow));
 });
+
+test('a forced in / hold / out lands on every beat and keeps the random sequence', () => {
+  const options = { span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed: 21, id: 'fig_0' };
+  const random = figures.generate(options);
+  const forced = figures.generate({ ...options, in: 'pop', hold: 'spin', out: 'fade' });
+  assert.equal(forced.params.motif, random.params.motif);
+  assert.equal(forced.params.beats.length, random.params.beats.length);
+  for (let i = 0; i < forced.params.beats.length; i += 1) {
+    assert.equal(forced.params.beats[i].move.in, 'pop');
+    assert.equal(forced.params.beats[i].move.hold, 'spin');
+    assert.equal(forced.params.beats[i].move.out, 'fade');
+    // the variant / accent draws sit on the same random positions
+    assert.equal(forced.params.beats[i].variant, random.params.beats[i].variant);
+    assert.equal(forced.params.beats[i].accent, random.params.beats[i].accent);
+  }
+  // 'auto' and unknown names keep the drawn move
+  const auto = figures.generate({ ...options, in: 'auto', hold: 'nonsense' });
+  assert.deepEqual(auto.params.beats.map((beat) => beat.move), random.params.beats.map((beat) => beat.move));
+});
+
+test('editing a move overrides already generated beats at draw time', () => {
+  const spec = figures.generate({ span: SPAN, motif: 'burst', sync: 'beat', seed: 9, id: 'fig_0' });
+  const before = JSON.parse(JSON.stringify(spec.params.beats));
+  const edited = { type: 'figure', params: { ...spec.params, hold: 'spin' } };
+  const manual = {
+    type: 'figure',
+    params: { ...spec.params, beats: spec.params.beats.map((beat) => ({ ...beat, move: { ...beat.move, hold: 'spin' } })) },
+  };
+  let differs = false;
+  for (const beat of spec.params.beats) {
+    for (const at of [beat.start + 0.1, (beat.start + beat.end) / 2]) {
+      const forced = JSON.stringify(figures.drawList(edited, ctx({ time: at })).shapes);
+      const reference = JSON.stringify(figures.drawList(manual, ctx({ time: at })).shapes);
+      const original = JSON.stringify(figures.drawList(spec, ctx({ time: at })).shapes);
+      assert.equal(forced, reference, `forced draw matches at ${at}`);
+      if (forced !== original) differs = true;
+    }
+  }
+  assert.ok(differs, 'the forced hold changes at least one frame');
+  assert.deepEqual(spec.params.beats, before, 'the source beats are not mutated');
+});
+
+test('scale, x and y transform the figure about the frame centre', () => {
+  const base = { motif: 'orbit', sync: 'beat', density: 0.5, beats: [] };
+  const bounds = (shapes) => {
+    const xs = [];
+    const ys = [];
+    for (const shape of shapes) {
+      if (shape.points) for (const point of shape.points) { xs.push(point.x); ys.push(point.y); }
+      if (shape.kind === 'capsule') { xs.push(shape.x0, shape.x1); ys.push(shape.y0, shape.y1); }
+      if (shape.x != null) { xs.push(shape.x); ys.push(shape.y); }
+    }
+    return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys) };
+  };
+  const plain = figures.drawList({ type: 'figure', params: { ...base } }, ctx({ time: 3 })).shapes;
+  const scaled = figures.drawList({ type: 'figure', params: { ...base, scale: 2 } }, ctx({ time: 3 })).shapes;
+  const moved = figures.drawList({ type: 'figure', params: { ...base, x: 0.25, y: -0.1 } }, ctx({ time: 3 })).shapes;
+  const a = bounds(plain);
+  const b = bounds(scaled);
+  const c = bounds(moved);
+  const cx = FRAME.width / 2;
+  const cy = FRAME.height / 2;
+  // every bound maps about the frame centre, so the frame centre stays put
+  assert.ok(Math.abs(b.x0 - cx - (a.x0 - cx) * 2) < 0.01, 'left edge doubles about the centre');
+  assert.ok(Math.abs(b.x1 - cx - (a.x1 - cx) * 2) < 0.01, 'right edge doubles about the centre');
+  assert.ok(Math.abs(b.y0 - cy - (a.y0 - cy) * 2) < 0.01, 'top edge doubles about the centre');
+  assert.ok(Math.abs(b.y1 - cy - (a.y1 - cy) * 2) < 0.01, 'bottom edge doubles about the centre');
+  assert.ok(Math.abs(c.x0 - (a.x0 + 0.25 * FRAME.width)) < 0.01, 'x shifts by the frame fraction');
+  assert.ok(Math.abs(c.y0 - (a.y0 - 0.1 * FRAME.height)) < 0.01, 'y shifts by the frame fraction');
+});

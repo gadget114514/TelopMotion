@@ -1758,7 +1758,7 @@ SA.store = (() => {
         do(projectDoc) {
           const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
           if (!target) return;
-          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed: Math.floor(Math.random() * 900000) + 1000, genre: mode.genre });
+          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed: Math.floor(Math.random() * 900000) + 1000, genre: mode.genre, usePresets: kind === 'filler' });
           if (!result) return;
           if (result.spec) target.spec = result.spec;
           if (result.colors) target.colors = result.colors;

@@ -1,5 +1,5 @@
 (function (root, factory) {
-  if (module.exports) module.exports = factory(require('./split'), require('./figures'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./split'), require('./figures'));
   else {
     root.SA = root.SA || {};
     root.SA.fillerRender = factory(root.SA.split, root.SA.figures);
@@ -619,16 +619,93 @@
     };
   }
 
+  // Token expansion for text layers: {title} / {artist} come from the project
+  // credits, {next} / {prev} from the neighbouring lyric line.
+  function expandTokens(text, ctx) {
+    const meta = (ctx && ctx.meta) || {};
+    return String(text == null ? '' : text)
+      .replace(/\{title\}/g, meta.title == null ? '' : String(meta.title))
+      .replace(/\{artist\}/g, meta.artist == null ? '' : String(meta.artist))
+      .replace(/\{next\}/g, (ctx && ctx.nextText) || '')
+      .replace(/\{prev\}/g, (ctx && ctx.prevText) || '');
+  }
+
+  // The editable layer stack behind a filler spec: a combo is its list, `none`
+  // has no layers, every other type is a stack of one.
+  function layersOf(spec) {
+    const source = spec || {};
+    if (source.type === 'combo') {
+      const list = source.params && source.params.list;
+      return Array.isArray(list) ? list : [];
+    }
+    if (!source.type || source.type === 'none') return [];
+    return [source];
+  }
+
+  // Rebuilds a spec from a layer list. 0 layers -> none, 1 -> the layer itself,
+  // more -> a combo. presetId / name metadata lands on the outer spec.
+  function fromLayers(list, meta) {
+    const layers = Array.isArray(list) ? list.filter(Boolean) : [];
+    const spec =
+      layers.length === 0
+        ? { type: 'none', params: {} }
+        : layers.length === 1
+          ? JSON.parse(JSON.stringify(layers[0]))
+          : { type: 'combo', params: { list: layers.map((layer) => JSON.parse(JSON.stringify(layer))) } };
+    if (meta && meta.presetId) spec.presetId = meta.presetId;
+    if (meta && meta.name) spec.name = meta.name;
+    return spec;
+  }
+
+  // Validates a stored / imported filler spec: known primitive types only,
+  // combo nesting at most 2 deep and at most 8 layers in total.
+  function validate(spec) {
+    const errors = [];
+    const known = new Set(TYPE_ORDER);
+    const walk = (node, depth) => {
+      if (!node || typeof node !== 'object' || Array.isArray(node)) {
+        errors.push('invalid layer');
+        return 0;
+      }
+      if (!known.has(node.type)) {
+        errors.push(`unknown type: ${String(node.type)}`);
+        return 0;
+      }
+      if (!node.params || typeof node.params !== 'object' || Array.isArray(node.params)) {
+        errors.push(`invalid params: ${node.type}`);
+        return 0;
+      }
+      if (node.type !== 'combo') return 1;
+      if (depth > 2) {
+        errors.push('combo nesting too deep');
+        return 1;
+      }
+      const list = node.params.list;
+      if (!Array.isArray(list)) {
+        errors.push('combo list must be an array');
+        return 1;
+      }
+      let total = 0;
+      for (const child of list) total += walk(child, depth + 1);
+      return total;
+    };
+    const layers = walk(spec, 1);
+    if (layers > 8) errors.push('too many layers');
+    return { ok: errors.length === 0, errors };
+  }
+
   function comboParts(spec, ctx) {
     const list = (spec.params && spec.params.list) || [];
     const shapes = [];
     const texts = [];
+    const textAnims = [];
     for (const part of list) {
       const result = drawList(part, ctx);
       shapes.push(...result.shapes);
       texts.push(...result.texts);
+      if (result.textAnims) textAnims.push(...result.textAnims);
     }
-    return { shapes, texts };
+    return { shapes, texts, textAnims };
   }
 
   // The figures clip type: the same motif library the figure track uses, with
@@ -636,7 +713,22 @@
   // hand-made gap clip).
   function figuresShapes(params, ctx) {
     if (!figures || typeof figures.drawList !== 'function') return { shapes: [], texts: [] };
-    const source = params && params.beats && params.beats.length ? params : { motif: params.motif, sync: params.sync, density: params.density, beats: [] };
+    const source =
+      params && params.beats && params.beats.length
+        ? params
+        : {
+            motif: params.motif,
+            sync: params.sync,
+            density: params.density,
+            in: params.in,
+            hold: params.hold,
+            out: params.out,
+            color: params.color,
+            scale: params.scale,
+            x: params.x,
+            y: params.y,
+            beats: [],
+          };
     return figures.drawList({ type: 'figure', params: source }, ctx);
   }
 
@@ -708,40 +800,13 @@
     const originY = frame.height / 2;
     const scale = Math.max(0.001, pulse * (kind === 'rotate' ? Math.max(0.05, env) : env === 0 ? 0.001 : env));
     const rotate = kind === 'rotate' ? (1 - env) * (Math.PI / 4) : 0;
-    const cos = Math.cos(rotate);
-    const sin = Math.sin(rotate);
-    const mapPoint = (point) => {
-      const px = (point.x - originX) * scale;
-      const py = (point.y - originY) * scale;
-      return { x: originX + px * cos - py * sin + dx, y: originY + px * sin + py * cos + dy };
-    };
+    // the point mapping lives in figures so a figure's own scale / x / y can
+    // reuse it; filler-render always has figures available
+    if ((kind === 'wipe' || kind === 'rotate' || scale !== 1 || dx || dy) && figures && typeof figures.transformShapes === 'function') {
+      figures.transformShapes(shapes, { originX, originY, scale, dx, dy, rotate });
+    }
     for (const shape of shapes) {
       if (!shape) continue;
-      if (kind === 'wipe' || kind === 'rotate' || scale !== 1 || dx || dy) {
-        if (Array.isArray(shape.points)) shape.points = shape.points.map(mapPoint);
-        if (shape.kind === 'rect') {
-          const p0 = mapPoint({ x: shape.x, y: shape.y });
-          const p1 = mapPoint({ x: shape.x + shape.w, y: shape.y + shape.h });
-          shape.x = Math.min(p0.x, p1.x);
-          shape.y = Math.min(p0.y, p1.y);
-          shape.w = Math.abs(p1.x - p0.x);
-          shape.h = Math.abs(p1.y - p0.y);
-        } else if (shape.kind === 'circle' || shape.kind === 'ring' || shape.kind === 'polygon') {
-          const p = mapPoint({ x: shape.x, y: shape.y });
-          shape.x = p.x;
-          shape.y = p.y;
-          if (shape.radius != null) shape.radius *= scale;
-          if (shape.r != null) shape.r *= scale;
-        } else if (shape.kind === 'capsule') {
-          const p0 = mapPoint({ x: shape.x0, y: shape.y0 });
-          const p1 = mapPoint({ x: shape.x1, y: shape.y1 });
-          shape.x0 = p0.x;
-          shape.y0 = p0.y;
-          shape.x1 = p1.x;
-          shape.y1 = p1.y;
-          shape.width = (shape.width || 2) * scale;
-        }
-      }
       const fade = kind === 'scale' || kind === 'iris' ? clamp01(env * 1.5) : 1;
       shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * fade;
     }
@@ -764,7 +829,7 @@
     if (type === 'figures') return figuresShapes(params, ctx);
     if (type === 'progress') return progressShapes(params, ctx);
     if (type === 'instrumental') {
-      return textOnly(source, ctx, { text: params.text || '♪ Instrumental ♪', sizeRatio: num(params.size, 0.05), color: colorOf(params, ctx, '#cbd3ff') });
+      return textOnly(source, ctx, { text: expandTokens(params.text || '♪ Instrumental ♪', ctx), sizeRatio: num(params.size, 0.05), color: colorOf(params, ctx, '#cbd3ff') });
     }
     if (type === 'nextLinePreview') {
       return textOnly(source, ctx, { text: ctx.nextText || '', sizeRatio: 0.055, yRatio: 0.72, opacity: num(params.opacity, 0.35), color: colorOf(params, ctx, '#cbd3ff') });
@@ -774,11 +839,16 @@
     }
     if (type === 'credits') return { shapes: [], texts: [] };
     if (type === 'cardPeek') return { shapes: [], texts: [] };
+    if (type === 'textAnim') {
+      // the animated text is rendered by the engine (the text track pipeline);
+      // this pass only hands the params over
+      return { shapes: [], texts: [], textAnims: [{ params: { ...params } }] };
+    }
     if (type === 'combo') return comboParts(source, ctx);
     return { shapes: [], texts: [] };
   }
 
-  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
+  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'textAnim', 'combo'];
 
   const PARAMS = {
     none: [],
@@ -841,6 +911,13 @@
       { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone'], default: 'orbit' },
       { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
       { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
+      { key: 'in', kind: 'select', options: ['auto', 'pop', 'draw', 'wipe', 'scatterIn'], default: 'auto' },
+      { key: 'hold', kind: 'select', options: ['auto', 'spin', 'pulse', 'drift', 'morph'], default: 'auto' },
+      { key: 'out', kind: 'select', options: ['auto', 'shrink', 'fade', 'burstOut'], default: 'auto' },
+      { key: 'color', kind: 'color', default: '#c86bff' },
+      { key: 'scale', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
+      { key: 'x', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
+      { key: 'y', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
     ],
     nextLinePreview: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },
@@ -861,6 +938,16 @@
       { key: 'text', kind: 'text', default: '' },
       { key: 'size', kind: 'number', min: 0.02, max: 0.15, step: 0.005, default: 0.05 },
       { key: 'color', kind: 'color', default: '#cbd3ff' },
+    ],
+    textAnim: [
+      { key: 'text', kind: 'text', default: '{title}' },
+      { key: 'theme', kind: 'select', options: [], default: '' },
+      { key: 'enter', kind: 'select', options: ['auto'], default: 'auto' },
+      { key: 'hold', kind: 'select', options: ['auto'], default: 'auto' },
+      { key: 'exit', kind: 'select', options: ['auto'], default: 'auto' },
+      { key: 'size', kind: 'number', min: 0.02, max: 0.25, step: 0.005, default: 0.08 },
+      { key: 'y', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
+      { key: 'color', kind: 'color', default: '#eef2ff' },
     ],
     combo: [],
   };
@@ -894,5 +981,9 @@
     paramsOf,
     paramDefaults,
     defaults,
+    layersOf,
+    fromLayers,
+    validate,
+    expandTokens,
   };
 });

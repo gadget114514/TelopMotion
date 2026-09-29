@@ -1769,3 +1769,70 @@ body {
 .fonts-exclusive {
   font-size: 13px;
 }
+
+/* Filler preset editor: the preset row and the editable layer stack. */
+.filler-preset-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+}
+
+.filler-filter {
+  flex: 1 1 40%;
+  min-width: 70px;
+}
+
+.filler-preset-select {
+  flex: 1 1 60%;
+  min-width: 100px;
+}
+
+.filler-layer {
+  border: 1px solid var(--line, #2a3040);
+  border-radius: 6px;
+  padding: 6px;
+  margin: 6px 0;
+}
+
+.filler-layer summary {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.filler-layer summary::-webkit-details-marker {
+  display: none;
+}
+
+.filler-layer summary select {
+  flex: 1;
+  min-width: 0;
+}
+
+.filler-layer-index {
+  flex: none;
+  min-width: 22px;
+  color: var(--muted, #8d96ab);
+  font-size: 11px;
+}
+
+.filler-layer .ctrl-row {
+  margin-top: 4px;
+}
+
+.filler-lib-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.filler-lib-row .ctrl-text {
+  flex: 1 1 120px;
+  min-width: 90px;
+}

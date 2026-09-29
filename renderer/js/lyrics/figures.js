@@ -1,5 +1,5 @@
 (function (root, factory) {
-  if (module.exports) module.exports = factory(require('./rng'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'));
   else {
     root.SA = root.SA || {};
     root.SA.figures = factory(root.SA.rng);
@@ -76,26 +76,43 @@
     return beats;
   }
 
-  function assignMoves(beats, random) {
+  // The forced move for one key ('in' / 'hold' / 'out') when the caller pinned
+  // it to a known name; 'auto' / unknown names keep the random pick.
+  function forcedMove(force, key, list) {
+    if (!force) return null;
+    const value = force[key];
+    return value && list.includes(value) ? value : null;
+  }
+
+  function assignMoves(beats, random, force) {
     let previousIn = null;
     let previousOut = null;
     for (const beat of beats) {
       const ins = INS.filter((name) => name !== previousIn);
       const outs = OUTS.filter((name) => name !== previousOut);
+      // the random draws always run, forced or not, so the variant / accent
+      // sequence stays stable when a move is pinned
+      const inPick = pick(random, ins.length ? ins : INS);
+      const holdPick = pick(random, HOLDS);
+      const outPick = pick(random, outs.length ? outs : OUTS);
+      const variant = Math.floor(random() * 3);
+      const accent = random() < 0.5;
       beat.move = {
-        in: pick(random, ins.length ? ins : INS),
-        hold: pick(random, HOLDS),
-        out: pick(random, outs.length ? outs : OUTS),
+        in: forcedMove(force, 'in', INS) || inPick,
+        hold: forcedMove(force, 'hold', HOLDS) || holdPick,
+        out: forcedMove(force, 'out', OUTS) || outPick,
       };
-      beat.variant = Math.floor(random() * 3);
-      beat.accent = random() < 0.5;
+      beat.variant = variant;
+      beat.accent = accent;
       previousIn = beat.move.in;
       previousOut = beat.move.out;
     }
     return beats;
   }
 
-  // The deterministic figure a clip carries: motif, sub-beats and moves.
+  // The deterministic figure a clip carries: motif, sub-beats and moves. The
+  // in / hold / out moves can be pinned ('auto' draws them at random) and the
+  // optional scale / x / y / color land in the params so they survive a save.
   function generate(options) {
     const opts = options || {};
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
@@ -106,26 +123,29 @@
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
     const motif = requested || pick(random, w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone'));
     const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
-    const beats = assignMoves(subBeats({ ...opts, sync }, random), random);
+    const force = { in: opts.in, hold: opts.hold, out: opts.out };
+    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force);
     const palette = Array.isArray(opts.palette) ? opts.palette : [];
     const colors = palette.length >= 3 ? palette.slice(3, 8) : palette.slice();
     const density = Math.max(0.15, Math.min(1, num(opts.density, 0.4 + 0.5 * clamp01(axes.energy))));
-    return {
-      type: 'figure',
-      params: {
-        motif,
-        sync,
-        density: round(density, 2),
-        colors: colors.length ? colors : null,
-        beats: beats.map((beat) => ({
-          start: round(beat.start, 3),
-          end: round(beat.end, 3),
-          move: beat.move,
-          variant: beat.variant,
-          accent: beat.accent,
-        })),
-      },
+    const params = {
+      motif,
+      sync,
+      density: round(density, 2),
+      colors: colors.length ? colors : null,
+      beats: beats.map((beat) => ({
+        start: round(beat.start, 3),
+        end: round(beat.end, 3),
+        move: beat.move,
+        variant: beat.variant,
+        accent: beat.accent,
+      })),
     };
+    if (opts.scale != null && Number.isFinite(Number(opts.scale))) params.scale = Number(opts.scale);
+    if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
+    if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
+    if (opts.color) params.color = String(opts.color);
+    return { type: 'figure', params };
   }
 
   function blank(params) {
@@ -159,7 +179,11 @@
   }
 
   function colorOf(params, ctx, index) {
-    const list = params.colors && params.colors.length ? params.colors : (ctx && ctx.colors) || [];
+    const own = params.colors && params.colors.length ? params.colors : null;
+    // a single hand-picked colour wins over the clip palette (but not over an
+    // explicit multi-colour list)
+    if (!own && params.color) return params.color;
+    const list = own || (ctx && ctx.colors) || [];
     if (list.length) return list[Math.abs(Math.round(index || 0)) % list.length];
     return (ctx && ctx.color) || '#c86bff';
   }
@@ -356,11 +380,83 @@
     return { shapes, texts: [] };
   }
 
+  // Maps every shape of a list through one scale / rotate / translate about
+  // (originX, originY). filler-render's clip `animate` uses the same helper, and
+  // a figure's own scale / x / y placement runs through it at draw time.
+  function transformShapes(shapes, options) {
+    const opts = options || {};
+    const originX = num(opts.originX, 0);
+    const originY = num(opts.originY, 0);
+    const scale = opts.scale == null ? 1 : num(opts.scale, 1);
+    const dx = num(opts.dx, 0);
+    const dy = num(opts.dy, 0);
+    const rotate = num(opts.rotate, 0);
+    const cos = Math.cos(rotate);
+    const sin = Math.sin(rotate);
+    const mapPoint = (point) => {
+      const px = (point.x - originX) * scale;
+      const py = (point.y - originY) * scale;
+      return { x: originX + px * cos - py * sin + dx, y: originY + px * sin + py * cos + dy };
+    };
+    for (const shape of shapes || []) {
+      if (!shape) continue;
+      if (Array.isArray(shape.points)) shape.points = shape.points.map(mapPoint);
+      if (shape.kind === 'rect') {
+        const p0 = mapPoint({ x: shape.x, y: shape.y });
+        const p1 = mapPoint({ x: shape.x + shape.w, y: shape.y + shape.h });
+        shape.x = Math.min(p0.x, p1.x);
+        shape.y = Math.min(p0.y, p1.y);
+        shape.w = Math.abs(p1.x - p0.x);
+        shape.h = Math.abs(p1.y - p0.y);
+      } else if (shape.kind === 'circle' || shape.kind === 'ring' || shape.kind === 'polygon') {
+        const p = mapPoint({ x: shape.x, y: shape.y });
+        shape.x = p.x;
+        shape.y = p.y;
+        if (shape.radius != null) shape.radius *= scale;
+        if (shape.r != null) shape.r *= scale;
+      } else if (shape.kind === 'capsule') {
+        const p0 = mapPoint({ x: shape.x0, y: shape.y0 });
+        const p1 = mapPoint({ x: shape.x1, y: shape.y1 });
+        shape.x0 = p0.x;
+        shape.y0 = p0.y;
+        shape.x1 = p1.x;
+        shape.y1 = p1.y;
+        shape.width = (shape.width || 2) * scale;
+      }
+    }
+    return shapes;
+  }
+
+  // The placement params (scale / x / y) map to a transform about the frame
+  // centre; null when the figure sits exactly where it was drawn.
+  function placementOf(params, ctx) {
+    const scale = params.scale == null ? 1 : num(params.scale, 1);
+    const x = num(params.x, 0);
+    const y = num(params.y, 0);
+    if (scale === 1 && !x && !y) return null;
+    const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
+    return { originX: frame.width / 2, originY: frame.height / 2, scale, dx: x * frame.width, dy: y * frame.height, rotate: 0 };
+  }
+
   // drawList for the figure clip type: resolve the sub-beat and build shapes.
   function drawList(spec, ctx) {
     const params = (spec && spec.params) || {};
     const time = num(ctx && ctx.time, 0);
     let beats = Array.isArray(params.beats) ? params.beats : [];
+    const force = {};
+    let forced = false;
+    if (params.in && INS.includes(params.in)) {
+      force.in = params.in;
+      forced = true;
+    }
+    if (params.hold && HOLDS.includes(params.hold)) {
+      force.hold = params.hold;
+      forced = true;
+    }
+    if (params.out && OUTS.includes(params.out)) {
+      force.out = params.out;
+      forced = true;
+    }
     if (!beats.length) {
       // a hand-made clip: derive the sub-beats from the clip's own beats / the
       // rhythm cuts in the context (deterministic from the clip key)
@@ -374,14 +470,28 @@
         seed: ctx && ctx.seed,
         id: (ctx && ctx.clip && ctx.clip.key) || 'figure',
         density: params.density,
+        in: params.in,
+        hold: params.hold,
+        out: params.out,
+        scale: params.scale,
+        x: params.x,
+        y: params.y,
+        color: params.color,
         axes: { weird: 0.5, energy: 0.5 },
       });
       beats = generated.params.beats;
+    } else if (forced) {
+      // editing an in / hold / out move on an already generated figure must take
+      // effect without regenerating: override on a shallow copy, never in place
+      beats = beats.map((beat) => ({ ...beat, move: { ...(beat.move || {}), ...force } }));
     }
     const info = beatAt(beats, time);
     if (!info) return { shapes: [], texts: [] };
-    return motifShapes(params.motif || 'orbit', params, ctx || {}, info);
+    const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
+    const place = placementOf(params, ctx || {});
+    if (place) transformShapes(result.shapes, place);
+    return result;
   }
 
-  return { MOTIFS, INS, HOLDS, OUTS, SYNCS, generate, blank, drawList, subBeats, beatAt };
+  return { MOTIFS, INS, HOLDS, OUTS, SYNCS, generate, blank, drawList, subBeats, beatAt, transformShapes };
 });

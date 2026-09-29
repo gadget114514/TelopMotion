@@ -321,7 +321,6 @@ void main() {
       gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       gl.disable(gl.BLEND);
-      count += 1;
       return true;
     }
 

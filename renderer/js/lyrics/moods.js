@@ -1277,11 +1277,26 @@
   }
 
   // Re-rolls a timeline clip inside the project's axes (used by the inspector
-  // and the clip context menu).
+  // and the clip context menu). `usePresets` on a filler clip draws from the
+  // built-in filler preset library instead.
   function rerollClipSpec(kind, options) {
     const opts = options || {};
     const axes = normalizeAxes(opts.axes);
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
+    if (opts.usePresets && kind === 'filler' && typeof SA !== 'undefined' && SA && SA.fillerPresets && SA.fillerRender) {
+      const random = rng.rngFor(seed, 'filler-preset-reroll', kind);
+      const genre = opts.genre && genres ? genres.get(opts.genre) : null;
+      const exclude = new Set(genre && genre.clips && genre.clips.filler && Array.isArray(genre.clips.filler.exclude) ? genre.clips.filler.exclude : []);
+      const groups = new Set(['pattern', 'split', 'figures', 'combo', 'particles']);
+      const pool = SA.fillerPresets
+        .list()
+        .filter((preset) => groups.has(preset.group) && !SA.fillerRender.layersOf(preset.spec).some((layer) => exclude.has(layer.type)));
+      if (pool.length) {
+        const preset = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
+        const spec = SA.fillerPresets.specOf(preset.id);
+        if (spec) return { spec, colors: null };
+      }
+    }
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
     return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg, palette: opts.palette, coverage: opts.coverage, cuts: opts.cuts });

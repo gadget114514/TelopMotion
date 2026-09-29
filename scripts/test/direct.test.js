@@ -26,6 +26,8 @@ const SA = {
   fillers: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fillers.js')),
   rhythm: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rhythm.js')),
   figures: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'figures.js')),
+  fillerRender: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js')),
+  fillerPresets: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-presets.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -150,10 +152,38 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
   const nonFiller = (list) => list.filter((clip) => !fillerIds.has(clip.trackId));
   assert.deepEqual(nonFiller(clips), nonFiller(fixtureClips));
-  assert.ok(clips.filter((clip) => fillerIds.has(clip.trackId)).every((clip) => clip.spec.type === 'figures'), 'the gaps show figures');
-  assert.equal(fillers.byKind.interlude.type, 'figures');
-  assert.equal(fillers.longGap.spec.type, 'figures');
+  assert.ok(clips.filter((clip) => fillerIds.has(clip.trackId)).every((clip) => clip.spec.presetId), 'the gaps show filler presets');
+  assert.ok(fillers.byKind.interlude.presetId);
+  assert.ok(fillers.longGap.spec.presetId);
   assert.equal(fillers.byKind.intro.type, 'combo');
+});
+
+test('filler specs come from the preset library, deterministically and genre-aware', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  runOn(doc, FIXTURE);
+  const specs = [doc.fillers.byKind.interlude, doc.fillers.longGap.spec, doc.fillers.byKind.intro.params.list[1], doc.fillers.byKind.outro.params.list[1]];
+  for (const spec of specs) {
+    assert.ok(spec.presetId, 'a preset id');
+    assert.ok(SA.fillerPresets.get(spec.presetId), `a known preset (${spec.presetId})`);
+    assert.ok(SA.fillerRender.validate(spec).ok, `${spec.presetId} validates`);
+  }
+  // deterministic for the same seed
+  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
+  assert.deepEqual(again.fillers, doc.fillers);
+  // genre exclude: seed 29 draws the sine-wave combo without the filter, and a
+  // genre excluding sineWave never gets it
+  const free = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { seed: 29 });
+  const freeSpec = SA.direct.fillerSettings(JSON.parse(JSON.stringify(FIXTURE.input)), free);
+  assert.ok(
+    SA.fillerRender.layersOf(freeSpec.byKind.interlude).some((layer) => layer.type === 'sineWave'),
+    'seed 29 picks the sine combo without the genre filter'
+  );
+  const filteredDoc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const filtered = prepare(filteredDoc, FIXTURE, { seed: 29, genre: { clips: { filler: { exclude: ['sineWave'] } } } });
+  const filteredSpec = SA.direct.fillerSettings(filteredDoc, filtered);
+  for (const entry of [filteredSpec.byKind.interlude, filteredSpec.longGap.spec, filteredSpec.byKind.intro.params.list[1], filteredSpec.byKind.outro.params.list[1]]) {
+    assert.ok(!SA.fillerRender.layersOf(entry).some((layer) => layer.type === 'sineWave'), 'excluded layers never appear');
+  }
 });
 
 test('the run is deterministic for one seed', () => {

@@ -262,29 +262,63 @@
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);
   }
 
+  // The filler presets a run may place: pattern / split / figures / combo /
+  // particles (never text — a gap is not a caption), minus the genre's excludes.
+  function fillerPresetPool(ctx, groupSet) {
+    if (!SA.fillerPresets || typeof SA.fillerPresets.list !== 'function' || !SA.fillerRender) return [];
+    const groups = groupSet || new Set(['pattern', 'split', 'figures', 'combo', 'particles']);
+    const source = ctx && ctx.genre;
+    const genre = typeof source === 'string' ? (SA.genres && SA.genres.get ? SA.genres.get(source) : null) : source;
+    const exclude = new Set(genre && genre.clips && genre.clips.filler && Array.isArray(genre.clips.filler.exclude) ? genre.clips.filler.exclude : []);
+    return SA.fillerPresets.list().filter((preset) => {
+      if (!groups.has(preset.group)) return false;
+      return !SA.fillerRender.layersOf(preset.spec).some((layer) => exclude.has(layer.type));
+    });
+  }
+
+  // One deterministic preset spec for a gap kind (same seed -> same preset).
+  function fillerPresetSpec(ctx, kind, groupSet) {
+    const pool = fillerPresetPool(ctx, groupSet);
+    if (!pool.length) return null;
+    const random = SA.rng.rngFor(ctx.seed, 'filler-preset', kind);
+    const preset = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
+    return SA.fillerPresets.specOf(preset.id);
+  }
+
   // The filler kinds a run writes into the project settings. Item 8: gaps show
-  // figures (the same motif language as the figure track) instead of the fixed
-  // shapes / spectrum / particles trio. Weird scales the counts and speeds.
+  // the built-in preset library (figures and the other moving primitives)
+  // instead of the fixed shapes / spectrum / particles trio. Weird scales the
+  // counts and speeds.
   function fillerSettings(projectDoc, ctx) {
     const w = ctx.w;
+    const interlude = fillerPresetSpec(ctx, 'interlude');
+    const longGap = fillerPresetSpec(ctx, 'longGap');
+    // intro / outro keep a figures motif next to the credits element
+    const figuresOnly = new Set(['figures']);
+    const introFigures = fillerPresetSpec(ctx, 'intro-figures', figuresOnly);
+    const outroFigures = fillerPresetSpec(ctx, 'outro-figures', figuresOnly);
     const kinds = {
-      intro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
-      interlude: { type: 'figures', params: {} },
-      outro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, { type: 'figures', params: {} }] } },
+      intro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, introFigures || { type: 'figures', params: {} }] } },
+      interlude: interlude || { type: 'figures', params: {} },
+      outro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, outroFigures || { type: 'figures', params: {} }] } },
     };
     if (w > 0) {
       // a weird song bounces harder: the figure density follows the axis
-      for (const spec of Object.values(kinds)) {
-        const params = spec.params || {};
+      const bump = (spec) => {
+        const params = spec && spec.params;
+        if (!params) return;
         if (typeof params.density === 'number') params.density = Math.round(Math.min(1, params.density * (1 + w)) * 100) / 100;
-      }
+        if (Array.isArray(params.list)) params.list.forEach(bump);
+      };
+      Object.values(kinds).forEach(bump);
+      bump(longGap);
     }
     return {
       enabled: true,
       minGap: 0.8,
       margin: 0.15,
       byKind: kinds,
-      longGap: { threshold: 5, spec: { type: 'figures', params: {} } },
+      longGap: { threshold: 5, spec: longGap || { type: 'figures', params: {} } },
     };
   }
 
@@ -375,32 +409,38 @@
     const gaps = SA.fillers.gaps(cues, total, SA.fillers.settingsFor(projectDoc));
     gaps.forEach((gap, gapIndex) => {
       let spec = JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} }));
-      // figures in the gaps: generated per gap so every gap has its own motif
+      // figures in the gaps: generated per gap so every gap has its own motif.
+      // A preset's own motif / sync / moves / placement survive the generation.
       if (SA.figures) {
         const asFigures = (entry) => entry && entry.type === 'figures';
         const beatCuts = cues.map((cue) => cue.start).filter((cut) => cut > gap.from && cut < gap.to);
-        if (asFigures(spec)) {
+        const palette = (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
+        const regenerate = (entry, extraSeed, id) => {
+          const params = (entry && entry.params) || {};
           const generated = SA.figures.generate({
             span: { start: gap.from, end: gap.to },
             axes: ctx.axes,
-            seed: ctx.seed + gapIndex * 53,
-            id: gap.key,
-            palette: (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [],
+            seed: ctx.seed + gapIndex * 53 + extraSeed,
+            id,
+            motif: params.motif,
+            sync: params.sync,
+            density: params.density,
+            in: params.in,
+            hold: params.hold,
+            out: params.out,
+            scale: params.scale,
+            x: params.x,
+            y: params.y,
+            color: params.color,
+            palette,
             cuts: ctx.rhythm ? Object.values(ctx.rhythm).flat() : beatCuts,
           });
-          spec = { type: 'figures', params: generated.params };
+          return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params } };
+        };
+        if (asFigures(spec)) {
+          spec = regenerate(spec, 0, gap.key);
         } else if (spec.type === 'combo' && Array.isArray(spec.params && spec.params.list)) {
-          spec.params.list = spec.params.list.map((part) => {
-            if (!asFigures(part)) return part;
-            const generated = SA.figures.generate({
-              span: { start: gap.from, end: gap.to },
-              axes: ctx.axes,
-              seed: ctx.seed + gapIndex * 53 + 1,
-              id: `${gap.key}:combo`,
-              palette: (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [],
-            });
-            return { type: 'figures', params: generated.params };
-          });
+          spec.params.list = spec.params.list.map((part) => (asFigures(part) ? regenerate(part, 1, `${gap.key}:combo`) : part));
         }
       }
       projectDoc.clips.push(nextClip(projectDoc, 'clip_filler', {

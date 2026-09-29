@@ -1231,7 +1231,10 @@ SA.inspector = (() => {
     return input;
   }
 
-  function fillerParamControl(param, value, onChange) {
+  // `labelFor` overrides the option labels (the textAnim theme / fx selects
+  // carry their own); it falls back to the filler value dictionary.
+  function fillerParamControl(param, value, onChange, labelFor) {
+    const optionLabel = labelFor || fillerValueLabel;
     if (param.kind === 'bool') {
       const row = document.createElement('label');
       row.className = 'ctrl-bool-row';
@@ -1246,7 +1249,7 @@ SA.inspector = (() => {
       return row;
     }
     if (param.kind === 'select') {
-      const select = selectControl(value == null ? param.default : value, param.options || [], fillerValueLabel, onChange);
+      const select = selectControl(value == null ? param.default : value, param.options || [], optionLabel, onChange);
       return fieldRow(fillerParamLabel(param.key), select);
     }
     if (param.kind === 'color' || param.kind === 'text') {
@@ -1332,6 +1335,299 @@ SA.inspector = (() => {
     body.appendChild(actions);
   }
 
+  // --- filler clip editor ------------------------------------------------------
+
+  let fillerLibraryBound = false;
+
+  function fillerLayerTypes() {
+    const excluded = new Set(['combo', 'credits', 'cardPeek', 'none']);
+    return SA.fillerRender.types().filter((type) => !excluded.has(type));
+  }
+
+  function themeLabelFor(id) {
+    if (!id) return '—';
+    const theme = SA.themes && SA.themes.get ? SA.themes.get(id) : null;
+    return theme ? theme.name : String(id);
+  }
+
+  // The params of one layer; the textAnim theme / fx selects are filled from the
+  // live theme and effect registries (the descriptor only carries placeholders).
+  function fillerLayerParams(layer) {
+    const params = SA.fillerRender.paramsOf(layer.type);
+    if (layer.type !== 'textAnim') return params;
+    return params.map((param) => {
+      const entry = { ...param };
+      if (param.key === 'theme') {
+        const themes = SA.themes && SA.themes.list ? SA.themes.list() : [];
+        entry.options = ['', ...themes.map((theme) => theme.id)];
+        entry.labelFor = (value) => themeLabelFor(value);
+      } else if (param.key === 'enter' || param.key === 'hold' || param.key === 'exit') {
+        const descriptors = SA.fx && SA.fx.list ? SA.fx.list(param.key) : [];
+        entry.options = ['auto', ...descriptors.map((descriptor) => descriptor.type)];
+        entry.labelFor = (value) => (value === 'auto' ? fillerValueLabel('auto') : SA.controls.typeLabel(param.key, value));
+      }
+      return entry;
+    });
+  }
+
+  function fillerPresetLabel(preset, lang) {
+    return SA.fillerPresets.labelFor(preset, lang);
+  }
+
+  function renderFillerClipEditor(body, doc, clip) {
+    const spec = clip.spec || { type: 'none', params: {} };
+    const lang = SA.i18n.lang();
+    // one editor row per layer; the first edit is a custom filler, so the stored
+    // preset id never rides along on the layer copies
+    const layers = SA.fillerRender.layersOf(spec).map((layer) => {
+      const copy = JSON.parse(JSON.stringify(layer));
+      delete copy.presetId;
+      return copy;
+    });
+
+    // 1) preset picker: a text filter over a grouped select
+    const presetRow = document.createElement('div');
+    presetRow.className = 'filler-preset-row';
+    const filter = document.createElement('input');
+    filter.type = 'search';
+    filter.className = 'ctrl-text filler-filter';
+    filter.placeholder = t('filler.filter');
+    const presetSelect = document.createElement('select');
+    presetSelect.className = 'filler-preset-select';
+    const rebuildPresets = () => {
+      const query = String(filter.value || '').trim().toLowerCase();
+      presetSelect.innerHTML = '';
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = t('filler.presetPlaceholder');
+      presetSelect.appendChild(placeholder);
+      const appendGroup = (label, entries) => {
+        const matches = entries.filter((entry) => !query || String(entry.name).toLowerCase().includes(query));
+        if (!matches.length) return;
+        const group = document.createElement('optgroup');
+        group.label = label;
+        for (const entry of matches) {
+          const option = document.createElement('option');
+          option.value = entry.id;
+          option.textContent = entry.name;
+          group.appendChild(option);
+        }
+        presetSelect.appendChild(group);
+      };
+      if (SA.fillerPresets) {
+        const presets = SA.fillerPresets.list();
+        for (const groupId of SA.fillerPresets.groups()) {
+          appendGroup(
+            t(`filler.group.${groupId}`),
+            presets.filter((preset) => preset.group === groupId).map((preset) => ({ id: preset.id, name: fillerPresetLabel(preset, lang) }))
+          );
+        }
+      }
+      if (SA.fillerLibrary) {
+        const mine = SA.fillerLibrary.userList();
+        if (mine.length) appendGroup(t('filler.group.mine'), mine.map((entry) => ({ id: entry.id, name: entry.name })));
+      }
+      presetSelect.value = spec.presetId || '';
+    };
+    rebuildPresets();
+    filter.addEventListener('input', rebuildPresets);
+    presetSelect.addEventListener('change', () => {
+      const id = presetSelect.value;
+      if (!id || !SA.fillerLibrary) return;
+      const next = SA.fillerLibrary.specOf(id);
+      if (next) SA.store.commands.updateClip(clip.id, { spec: next });
+    });
+    presetRow.appendChild(filter);
+    presetRow.appendChild(presetSelect);
+    body.appendChild(fieldRow(t('filler.presets'), presetRow));
+
+    // 2) the layer stack: every edit commits the whole list (one undo step)
+    const commit = (list, key, layerIndex) => {
+      const next = SA.fillerRender.fromLayers(list, { name: spec.name });
+      SA.store.commands.updateClip(
+        clip.id,
+        { spec: next },
+        key ? { coalesceKey: `clip:${clip.id}:L${layerIndex}:${key}` } : undefined
+      );
+    };
+    const heading = document.createElement('div');
+    heading.className = 'insp-section-title';
+    heading.textContent = t('filler.layers');
+    body.appendChild(heading);
+
+    layers.forEach((layer, index) => {
+      const details = document.createElement('details');
+      details.className = 'filler-layer';
+      details.open = true;
+      const summary = document.createElement('summary');
+      const position = document.createElement('span');
+      position.className = 'filler-layer-index';
+      position.textContent = `#${index + 1}`;
+      const typeSelect = selectControl(layer.type, fillerLayerTypes(), fillerTypeLabel, (type) => {
+        const list = layers.map((entry) => JSON.parse(JSON.stringify(entry)));
+        list[index] = SA.fillerRender.defaults(type);
+        commit(list, null, index);
+      });
+      const up = document.createElement('button');
+      up.type = 'button';
+      up.className = 'btn btn-mini';
+      up.textContent = '↑';
+      up.title = t('filler.layerUp');
+      up.disabled = index === 0;
+      up.addEventListener('click', () => {
+        const list = layers.map((entry) => JSON.parse(JSON.stringify(entry)));
+        [list[index - 1], list[index]] = [list[index], list[index - 1]];
+        commit(list, null, index);
+      });
+      const down = document.createElement('button');
+      down.type = 'button';
+      down.className = 'btn btn-mini';
+      down.textContent = '↓';
+      down.title = t('filler.layerDown');
+      down.disabled = index === layers.length - 1;
+      down.addEventListener('click', () => {
+        const list = layers.map((entry) => JSON.parse(JSON.stringify(entry)));
+        [list[index + 1], list[index]] = [list[index], list[index + 1]];
+        commit(list, null, index);
+      });
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.title = t('filler.layerRemove');
+      remove.addEventListener('click', () => {
+        commit(layers.filter((entry, at) => at !== index), null, index);
+      });
+      summary.appendChild(position);
+      summary.appendChild(typeSelect);
+      summary.appendChild(up);
+      summary.appendChild(down);
+      summary.appendChild(remove);
+      // interactive controls inside a summary must not toggle the box
+      summary.addEventListener('click', (event) => {
+        if (event.target !== summary) event.preventDefault();
+      });
+      details.appendChild(summary);
+
+      const params = { ...(layer.params || {}) };
+      for (const param of fillerLayerParams(layer)) {
+        const value = params[param.key] != null ? params[param.key] : param.default;
+        const onChange = (next) => {
+          const list = layers.map((entry) => JSON.parse(JSON.stringify(entry)));
+          list[index] = { ...layer, params: { ...(layer.params || {}), [param.key]: next } };
+          commit(list, param.key, index);
+        };
+        if (layer.type === 'textAnim' && param.key === 'text') {
+          const control = SA.controls.textControl(value == null ? '' : String(value), onChange, { multiline: true });
+          control.classList.add('cue-text');
+          details.appendChild(control);
+        } else {
+          details.appendChild(fieldRow(fillerParamLabel(param.key), fillerParamControl(param, value, onChange, param.labelFor)));
+        }
+      }
+      body.appendChild(details);
+    });
+
+    if (!layers.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('filler.layersEmpty');
+      body.appendChild(empty);
+    }
+
+    // 3) add a layer
+    const addRow = document.createElement('div');
+    addRow.className = 'insp-actions';
+    const addButton = document.createElement('button');
+    addButton.type = 'button';
+    addButton.className = 'btn btn-mini';
+    addButton.textContent = `+ ${t('filler.addLayer')}`;
+    addButton.addEventListener('click', () => {
+      const list = layers.map((entry) => JSON.parse(JSON.stringify(entry)));
+      list.push(SA.fillerRender.defaults('pattern'));
+      commit(list, null, layers.length);
+    });
+    addRow.appendChild(addButton);
+    body.appendChild(addRow);
+
+    // 4) the user library row
+    const libRow = document.createElement('div');
+    libRow.className = 'filler-lib-row';
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.className = 'ctrl-text';
+    nameInput.placeholder = t('filler.myName');
+    const saveButton = document.createElement('button');
+    saveButton.type = 'button';
+    saveButton.className = 'btn btn-mini btn-primary';
+    saveButton.textContent = t('filler.saveMine');
+    saveButton.addEventListener('click', () => {
+      if (!SA.fillerLibrary) return;
+      const name = nameInput.value.trim();
+      if (!name) {
+        nameInput.focus();
+        return;
+      }
+      SA.fillerLibrary.save(name, spec);
+      nameInput.value = '';
+    });
+    const exportButton = document.createElement('button');
+    exportButton.type = 'button';
+    exportButton.className = 'btn btn-mini';
+    exportButton.textContent = t('filler.export');
+    exportButton.addEventListener('click', () => {
+      if (SA.fillerLibrary) SA.fillerLibrary.exportFile();
+    });
+    const importButton = document.createElement('button');
+    importButton.type = 'button';
+    importButton.className = 'btn btn-mini';
+    importButton.textContent = t('filler.import');
+    importButton.addEventListener('click', async () => {
+      if (!SA.fillerLibrary) return;
+      const result = await SA.fillerLibrary.importFile();
+      if (result.canceled) return;
+      SA.studio.toast('filler.imported', { added: result.added, rejected: result.rejected.length });
+    });
+    libRow.appendChild(nameInput);
+    libRow.appendChild(saveButton);
+    libRow.appendChild(exportButton);
+    libRow.appendChild(importButton);
+    const current = spec.presetId && SA.fillerLibrary ? SA.fillerLibrary.get(spec.presetId) : null;
+    if (current && !current.builtin) {
+      const renameButton = document.createElement('button');
+      renameButton.type = 'button';
+      renameButton.className = 'btn btn-mini';
+      renameButton.textContent = t('filler.rename');
+      renameButton.addEventListener('click', () => {
+        const name = nameInput.value.trim() || current.name;
+        SA.fillerLibrary.rename(current.id, name);
+      });
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'btn btn-mini';
+      deleteButton.textContent = t('filler.delete');
+      deleteButton.addEventListener('click', () => {
+        SA.fillerLibrary.remove(current.id);
+      });
+      libRow.appendChild(renameButton);
+      libRow.appendChild(deleteButton);
+    }
+    body.appendChild(libRow);
+
+    if (!fillerLibraryBound) {
+      fillerLibraryBound = true;
+      window.addEventListener('sa:filler-library', () => {
+        const sel = selectionInfo();
+        if (sel.kind !== 'clip') return;
+        const currentDoc = project();
+        const target = ((currentDoc && currentDoc.clips) || []).find((entry) => entry.id === sel.clipId);
+        if (target && SA.project.trackKindOf(currentDoc, target.trackId) === 'filler') render();
+      });
+    }
+
+    appendClipCommon(body, doc, clip);
+  }
+
   function renderClipSection(container) {
     const doc = project();
     const clip = ((doc && doc.clips) || []).find((entry) => entry.id === selectionInfo().clipId);
@@ -1369,6 +1665,10 @@ SA.inspector = (() => {
       text.classList.add('cue-text');
       body.appendChild(text);
       appendClipCommon(body, doc, clip, { colors: false });
+      return;
+    }
+    if (kind === 'filler') {
+      renderFillerClipEditor(body, doc, clip);
       return;
     }
     // `shapes` / `pattern` (and the pro primitives) live in the fx background

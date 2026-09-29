@@ -972,29 +972,42 @@ SA.lyricsEngine = (() => {
       pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
     }
 
-    // A text-animation clip: its own text on its own track, evaluated like a
-    // lyric beat (entrance / hold / exit from the clip's style).
-    function drawTextClip(clip, t) {
+    // The style one textAnim layer renders with: the chosen theme (when the
+    // studio is loaded), then the explicit enter / hold / exit, the text size
+    // (a ratio of the frame height) and the fill colour.
+    function textAnimStyle(params) {
+      const p = params || {};
+      const theme = p.theme && SA.themes && typeof SA.themes.get === 'function' ? SA.themes.get(p.theme) : null;
+      const base = theme && theme.style ? theme.style : {};
+      const overrides = { text: { size: Math.max(2, (Number(p.size) || 0.08) * state.height) } };
+      for (const group of ['enter', 'hold', 'exit']) {
+        if (p[group] && p[group] !== 'auto') overrides[group] = { type: p[group] };
+      }
+      const y = p.y == null ? 0.5 : Math.max(0, Math.min(1, Number(p.y)));
+      overrides.location = { type: 'custom', params: { x: 0.5, y: Number.isFinite(y) ? y : 0.5 } };
+      if (p.color) overrides.color = { fill: { kind: 'solid', value: String(p.color), alpha: 1 } };
+      return SA.project.mergeDeep(base, overrides);
+    }
+
+    // Animated text rendered like a lyric beat: the entrance / hold / exit of
+    // the style are evaluated for the given span. Shared by the text-animation
+    // track and the textAnim layers inside fillers.
+    function drawTextAnim(text, style, start, end, t, opacity, id) {
       if (!pipeline || !SA.lyricsScene || !SA.motion) return;
-      const spec = clip.spec || {};
-      if (spec.type !== 'textAnim') return;
-      const envelope = clipEnvelope(t, clip);
-      if (envelope <= 0) return;
-      const params = spec.params || {};
-      const text = String(params.text || '');
-      if (!text.trim()) return;
+      if (!String(text || '').trim()) return;
+      if (!(opacity > 0)) return;
       const beat = {
-        id: `clip_${clip.id}:single0`,
-        cueId: `clip_${clip.id}`,
+        id: `clip_${id}:single0`,
+        cueId: `clip_${id}`,
         kind: 'single',
-        start: clip.start,
-        end: clip.end,
+        start,
+        end,
         text,
-        lines: text.split(/\r?\n/).filter((line) => line.length),
+        lines: String(text).split(/\r?\n/).filter((line) => line.length),
       };
       const clipProject = {
         ...state.project,
-        style: SA.project.mergeDeep(state.project.style || {}, params.style || {}),
+        style: SA.project.mergeDeep(state.project.style || {}, style || {}),
         cueStyles: {},
         beatStyles: {},
         beatKindStyle: {},
@@ -1030,13 +1043,24 @@ SA.lyricsEngine = (() => {
         SA.fx.fillUniforms(fillInstance, {
           colors: colorSet.arrays,
           time: t,
-          progress: Math.min(1, Math.max(0, (t - clip.start) / Math.max(0.001, clip.end - clip.start))),
+          progress: Math.min(1, Math.max(0, (t - start) / Math.max(0.001, end - start))),
           palettes: state.project.palettes || [],
           palette: scene.style.palette || null,
           categoryColors: state.project.categoryColors || {},
         })
       );
-      pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
+      pipeline.commitLayer(opacity);
+    }
+
+    // A text-animation clip: its own text on its own track, evaluated like a
+    // lyric beat (entrance / hold / exit from the clip's style).
+    function drawTextClip(clip, t) {
+      const spec = clip.spec || {};
+      if (spec.type !== 'textAnim') return;
+      const envelope = clipEnvelope(t, clip);
+      if (envelope <= 0) return;
+      const params = spec.params || {};
+      drawTextAnim(String(params.text || ''), params.style || {}, clip.start, clip.end, t, Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)), clip.id);
     }
 
     function drawBackgroundClip(clip, t, card) {
@@ -1075,10 +1099,13 @@ SA.lyricsEngine = (() => {
       const cues = (project.script && project.script.cues) || [];
       const next = cues.find((entry) => entry.start >= clip.end - 1e-4);
       const previous = [...cues].reverse().find((entry) => entry.end <= clip.start + 1e-4);
+      const features = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
+      const boxes = textBoxesForClip(t);
+      const settings = SA.credits && SA.credits.settingsFor ? SA.credits.settingsFor(project) : null;
       return {
         time: t,
         frame: { width: state.width, height: state.height },
-        clip: { key: clip.id, from: clip.start, to: clip.end, spec: clip.spec },
+        clip: { key: clip.id, from: clip.start, to: clip.end, start: clip.start, end: clip.end, spec: clip.spec },
         duration,
         nextStart: next ? next.start : null,
         nextText: next ? next.text : '',
@@ -1087,6 +1114,14 @@ SA.lyricsEngine = (() => {
         progress: Math.min(1, Math.max(0, (t - clip.start) / clipDuration)),
         seed: (project.styleMode && project.styleMode.seed) || 12345,
         color: '#eef2ff',
+        bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+        beats: activeBeats(project, t).map((beat) => ({ start: beat.start, end: beat.end })),
+        textBox: boxes ? boxes.box : null,
+        colors: Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null,
+        meta: {
+          title: settings && SA.credits.titleText ? SA.credits.titleText(project, settings) : '',
+          artist: settings && SA.credits.artistText ? SA.credits.artistText(project, settings) : '',
+        },
       };
     }
 
@@ -1110,12 +1145,32 @@ SA.lyricsEngine = (() => {
           continue;
         }
         if (!SA.fillerRender) continue;
-        const list = SA.fillerRender.drawList(spec, fillerClipContext(t, clip, duration));
-        if (!list || (!(list.shapes || []).length && !(list.texts || []).length)) continue;
-        pipeline.beginLayer();
-        drawPrimitives(list.shapes || []);
-        drawTexts(list.texts || []);
-        pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
+        const context = fillerClipContext(t, clip, duration);
+        const list = SA.fillerRender.drawList(spec, context);
+        const shapes = (list && list.shapes) || [];
+        const texts = (list && list.texts) || [];
+        const anims = (list && list.textAnims) || [];
+        if (!shapes.length && !texts.length && !anims.length) continue;
+        const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
+        if (shapes.length || texts.length) {
+          pipeline.beginLayer();
+          drawPrimitives(shapes);
+          drawTexts(texts);
+          pipeline.commitLayer(clipOpacity);
+        }
+        // animated text layers draw on top of the shapes
+        for (let i = 0; i < anims.length; i += 1) {
+          const params = (anims[i] && anims[i].params) || {};
+          drawTextAnim(
+            SA.fillerRender.expandTokens(params.text, context),
+            textAnimStyle(params),
+            clip.start,
+            clip.end,
+            t,
+            clipOpacity,
+            `${clip.id}:${i}`
+          );
+        }
       }
       const credit = activeCredit(t);
       if (credit) {

@@ -751,11 +751,45 @@ SA.timeline = (() => {
     textAnim: ['rgba(110, 94, 36, 0.9)', '#e8c85a'],
   };
 
+  // The text a textAnim clip shows in the timeline: tokens expanded, newlines
+  // folded into one line.
+  function expandedClipText(clip) {
+    const raw = (clip && clip.spec && clip.spec.params && clip.spec.params.text) || '';
+    if (!SA.fillerRender || typeof SA.fillerRender.expandTokens !== 'function') return String(raw).replace(/\s+/g, ' ');
+    const doc = project();
+    const settings = SA.credits && SA.credits.settingsFor ? SA.credits.settingsFor(doc) : null;
+    const cues = cueList();
+    const next = cues.find((cue) => cue.start >= clip.end - 1e-4);
+    const previous = [...cues].reverse().find((cue) => cue.end <= clip.start + 1e-4);
+    return SA.fillerRender
+      .expandTokens(raw, {
+        meta: {
+          title: settings && doc ? SA.credits.titleText(doc, settings) : '',
+          artist: settings && doc ? SA.credits.artistText(doc, settings) : '',
+        },
+        nextText: next ? next.text : '',
+        prevText: previous ? previous.text : '',
+      })
+      .replace(/\s+/g, ' ');
+  }
+
   function clipTypeLabel(clip) {
-    const type = clip && clip.spec && clip.spec.type ? clip.spec.type : 'none';
+    const spec = (clip && clip.spec) || {};
+    const type = spec.type || 'none';
+    // a preset shows its library name, a hand-made combo its layer types
+    if (spec.presetId) {
+      const user = SA.fillerLibrary && SA.fillerLibrary.get ? SA.fillerLibrary.get(spec.presetId) : null;
+      if (user) return user.name;
+      const preset = SA.fillerPresets && SA.fillerPresets.get ? SA.fillerPresets.get(spec.presetId) : null;
+      if (preset) return SA.fillerPresets.labelFor(preset, SA.i18n.lang());
+    }
     // a text-animation clip shows its own text, a figure clip its motif
-    if (type === 'textAnim') return String((clip.spec.params && clip.spec.params.text) || '').replace(/\s+/g, ' ');
-    if (type === 'figure' && clip.spec.params && clip.spec.params.motif) return SA.controls ? SA.controls.prettify(clip.spec.params.motif) : clip.spec.params.motif;
+    if (type === 'textAnim') return expandedClipText(clip);
+    if (type === 'combo' && SA.fillerRender) {
+      const layers = SA.fillerRender.layersOf(spec);
+      if (layers.length) return layers.map((layer) => fillerTypeLabel(layer.type)).join(' + ');
+    }
+    if (type === 'figure' && spec.params && spec.params.motif) return SA.controls ? SA.controls.prettify(spec.params.motif) : spec.params.motif;
     const translated = t(`filler.type.${type}`);
     if (translated !== `filler.type.${type}`) return translated;
     return SA.controls ? SA.controls.prettify(type) : String(type);
@@ -1710,11 +1744,80 @@ SA.timeline = (() => {
       });
       menu.appendChild(button);
     };
+    // Filler clips: the built-in preset library and the user fillers, grouped;
+    // hovering a group opens its presets in a menu offset to the right.
+    const addFillerPresetMenu = (clip) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = t('filler.presets');
+      button.addEventListener('mouseenter', () => {
+        hideMenu();
+        menu = document.createElement('div');
+        menu.className = 'timeline-menu';
+        const groups = [];
+        if (SA.fillerPresets) {
+          const presets = SA.fillerPresets.list();
+          for (const groupId of SA.fillerPresets.groups()) {
+            groups.push({
+              id: groupId,
+              label: t(`filler.group.${groupId}`),
+              entries: presets.filter((preset) => preset.group === groupId).map((preset) => ({
+                id: preset.id,
+                name: SA.fillerPresets.labelFor(preset, SA.i18n.lang()),
+              })),
+            });
+          }
+        }
+        if (SA.fillerLibrary) {
+          const mine = SA.fillerLibrary.userList();
+          if (mine.length) groups.push({ id: 'mine', label: t('filler.group.mine'), entries: mine.map((entry) => ({ id: entry.id, name: entry.name })) });
+        }
+        for (const group of groups) {
+          const item = document.createElement('button');
+          item.type = 'button';
+          item.className = 'menu-item';
+          item.textContent = group.label;
+          item.addEventListener('mouseenter', () => {
+            hideMenu();
+            menu = document.createElement('div');
+            menu.className = 'timeline-menu';
+            for (const entry of group.entries) {
+              const presetItem = document.createElement('button');
+              presetItem.type = 'button';
+              presetItem.className = 'menu-item';
+              presetItem.textContent = entry.name;
+              presetItem.addEventListener('click', () => {
+                hideMenu();
+                const spec = SA.fillerLibrary.specOf(entry.id);
+                if (spec) SA.store.commands.updateClip(clip.id, { spec });
+              });
+              menu.appendChild(presetItem);
+            }
+            el.body.appendChild(menu);
+            const rect = el.body.getBoundingClientRect();
+            const itemRect = item.getBoundingClientRect();
+            menu.style.left = `${Math.max(0, itemRect.right - rect.left + 2)}px`;
+            menu.style.top = `${Math.max(0, itemRect.top - rect.top)}px`;
+          });
+          menu.appendChild(item);
+        }
+        el.body.appendChild(menu);
+        const rect = el.body.getBoundingClientRect();
+        menu.style.left = `${Math.max(0, event.clientX - rect.left + 120)}px`;
+        menu.style.top = `${Math.max(0, event.clientY - rect.top)}px`;
+      });
+      menu.appendChild(button);
+    };
     if (hit.type === 'clip' || hit.type === 'clip-edge') {
       const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
       if (!clip) return;
       SA.store.setSelection([`clip:${clip.id}`], 'clip');
       if (hit.kind === 'background' || hit.kind === 'backdrop') addClipTypeMenu(clip, hit.kind);
+      if (hit.kind === 'filler') {
+        addFillerPresetMenu(clip);
+        addClipTypeMenu(clip, 'filler');
+      }
       add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
       add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
       add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));

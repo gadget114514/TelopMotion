@@ -2606,6 +2606,8 @@ function createWindow() {
             };
             const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return JSON.stringify({ error: 'project-not-ready' });
+            // start from an empty user filler library so the save / reload check is clean
+            try { localStorage.removeItem('sa.fillerPresets'); } catch { /* ignore */ }
             window.SA.store.commands.generateScript([
               { id: 'x1', start: 2, end: 3.2, text: 'First line', meta: { kind: 'custom' } },
               { id: 'x2', start: 5.3, end: 6.5, text: 'Second line', meta: { kind: 'custom' } },
@@ -2623,6 +2625,7 @@ function createWindow() {
                 outro: { type: 'none', params: {} },
               },
             });
+            window.SA.store.commands.regenerateFillers();
             await window.SA.preview.ensureFonts();
             await new Promise((resolve) => setTimeout(resolve, 500));
             const ink = (capture, region) => {
@@ -2643,11 +2646,13 @@ function createWindow() {
             const withShapes = window.SA.preview.captureRGBA(0.6);
             const shapesInk = ink(withShapes);
             window.SA.store.commands.setFillers({ byKind: { intro: { type: 'none', params: {} } } });
+            window.SA.store.commands.regenerateFillers();
             await new Promise((resolve) => setTimeout(resolve, 300));
             const withNone = window.SA.preview.captureRGBA(0.6);
             const noneInk = ink(withNone);
             // Countdown filler in the interlude.
             window.SA.store.commands.setFillers({ byKind: { intro: { type: 'shapes', params: { set: 'circles', count: 10 } } } });
+            window.SA.store.commands.regenerateFillers();
             await new Promise((resolve) => setTimeout(resolve, 200));
             const countdown = window.SA.preview.captureRGBA(4.0);
             const countdownInk = ink(countdown);
@@ -2658,12 +2663,56 @@ function createWindow() {
             window.SA.store.commands.moveCue('x2', 6.0, { coalesceKey: 'smoke:move' });
             const movedClips = window.SA.fillers.clips(window.SA.store.state.project.script.cues, window.SA.preview.duration(), window.SA.fillers.settingsFor(window.SA.store.state.project));
             const movedClip = movedClips.find((clip) => clip.key === 'x1>x2');
-            // Inspector: the filler clip opens the filler section with its type.
-            window.SA.store.setSelection(['filler:x1>x2'], 'filler');
+            // Inspector: selecting a filler clip opens the preset picker and the
+            // layer editor, with the pinned sineWave spec as the current layer.
+            const fillerTrackClips = () =>
+              (window.SA.store.state.project.clips || [])
+                .filter((clip) => window.SA.project.trackKindOf(window.SA.store.state.project, clip.trackId) === 'filler')
+                .sort((a, b) => a.start - b.start);
+            window.SA.store.setSelection(['clip:' + fillerTrackClips()[1].id], 'clip');
             window.SA.inspector.render();
             const inspectorText = document.getElementById('inspector-body').textContent;
-            const fillerInspectorOk = inspectorText.includes(window.SA.i18n.t('filler.type.sineWave'));
+            const fillerInspectorOk = inspectorText.includes(window.SA.i18n.t('filler.presets')) && inspectorText.includes(window.SA.i18n.t('filler.type.sineWave'));
             window.SA.store.setSelection([], null);
+            // Preset library: a built-in combo preset renders ink on the intro
+            // clip, then a 3-layer custom filler (pattern + figures + animated
+            // text); the custom one saves to the user library and reloads.
+            const introClip = fillerTrackClips()[0];
+            window.SA.store.commands.updateClip(introClip.id, { spec: window.SA.fillerLibrary.specOf('combo-dots-calm-orbit') });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            const presetTime = Math.min(introClip.end - 0.1, introClip.start + 0.8);
+            const presetCapture = window.SA.preview.captureRGBA(presetTime);
+            const presetInk = ink(presetCapture);
+            const customSpec = window.SA.fillerRender.fromLayers([
+              window.SA.fillerRender.defaults('pattern'),
+              {
+                type: 'figures',
+                params: { ...window.SA.fillerRender.paramDefaults('figures'), motif: 'orbit', in: 'pop', hold: 'spin', out: 'burstOut' },
+              },
+              { type: 'textAnim', params: { ...window.SA.fillerRender.paramDefaults('textAnim'), text: '{title}' } },
+            ]);
+            window.SA.store.commands.updateClip(introClip.id, { spec: customSpec });
+            for (const clip of fillerTrackClips()) {
+              if (clip.id !== introClip.id) window.SA.store.commands.updateClip(clip.id, { spec: customSpec });
+            }
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            const customCapture = window.SA.preview.captureRGBA(presetTime);
+            const customInk = ink(customCapture);
+            const customPng = (() => {
+              const canvas = document.createElement('canvas');
+              canvas.width = customCapture.width;
+              canvas.height = customCapture.height;
+              const context2d = canvas.getContext('2d');
+              const image = context2d.createImageData(canvas.width, canvas.height);
+              image.data.set(customCapture.data);
+              context2d.putImageData(image, 0, 0);
+              return canvas.toDataURL('image/png');
+            })();
+            const customPngBytes = Math.round(((customPng.length - customPng.indexOf(',') - 1) * 3) / 4);
+            const customLayers = window.SA.fillerRender.layersOf(customSpec).length;
+            const savedFiller = window.SA.fillerLibrary.save('Smoke custom filler', customSpec);
+            const savedFillerOk = !!(savedFiller && window.SA.fillerLibrary.get(savedFiller.id));
+            const userListOk = window.SA.fillerLibrary.userList().some((entry) => entry.name === 'Smoke custom filler');
             // Credits: the intro element draws text, and always-on draws during a cue.
             window.SA.store.commands.setFillers({ enabled: false });
             window.SA.store.commands.setCredits({ modes: { element: { enabled: true, at: 'start', duration: 4 } } });
@@ -2708,6 +2757,16 @@ function createWindow() {
               movedTo: movedClip ? Math.round(movedClip.to * 100) / 100 : null,
               followsCue: !!movedClip && Math.abs(movedClip.to - (6.0 - 0.25)) < 0.01 && movedClip.spec.type === 'sineWave',
               fillerInspectorOk,
+              presetInk,
+              presetOk: presetInk > 40,
+              customInk,
+              customOk: customInk > 40,
+              customPngBytes,
+              customPngOk: customPngBytes > 5000,
+              customLayers,
+              customLayersOk: customLayers === 3,
+              savedFillerOk,
+              userListOk,
               elementInk,
               elementOk: elementInk > 40,
               alwaysInk,
