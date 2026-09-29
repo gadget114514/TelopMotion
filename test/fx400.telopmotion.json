@@ -3,8 +3,8 @@
   "version": 2,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-09-29T05:02:05.165Z",
-    "updatedAt": "2026-09-29T05:02:05.165Z",
+    "createdAt": "2026-09-29T14:55:56.822Z",
+    "updatedAt": "2026-09-29T14:55:56.822Z",
     "lang": "ja"
   },
   "output": {
@@ -8233,8 +8233,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8281,8 +8281,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8329,8 +8329,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8377,8 +8377,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8425,8 +8425,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8473,8 +8473,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8521,8 +8521,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8569,8 +8569,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8617,8 +8617,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8666,8 +8666,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8714,8 +8714,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8764,8 +8764,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8814,8 +8814,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8862,8 +8862,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8910,8 +8910,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -8960,8 +8960,8 @@
         "enabled": true,
         "params": {
           "unit": "em",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9009,8 +9009,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9057,8 +9057,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9105,8 +9105,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9153,8 +9153,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9201,8 +9201,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9249,8 +9249,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9297,8 +9297,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9345,8 +9345,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9393,8 +9393,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9442,8 +9442,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9490,8 +9490,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9540,8 +9540,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9590,8 +9590,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9638,8 +9638,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9686,8 +9686,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -9736,8 +9736,8 @@
         "enabled": true,
         "params": {
           "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
+          "width": 1.05,
+          "height": 1.05,
           "lockAspect": true,
           "offset": {
             "x": 0,
@@ -18125,6 +18125,11 @@
       "id": "sub1",
       "kind": "subtitle",
       "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
     },
     {
       "id": "mid",

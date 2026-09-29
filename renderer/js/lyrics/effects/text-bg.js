@@ -32,8 +32,8 @@
 
   const COMMON_PARAMS = [
     { key: 'unit', kind: 'select', options: ['cell', 'em'], default: 'cell' },
-    { key: 'width', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.15, random: [0.8, 1.6] },
-    { key: 'height', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.15, random: [0.8, 1.6] },
+    { key: 'width', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.05, random: [0.7, 1.15] },
+    { key: 'height', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.05, random: [0.7, 1.15] },
     { key: 'lockAspect', kind: 'bool', default: true },
     { key: 'offset', kind: 'vec2', default: { x: 0, y: 0 } },
     { key: 'rotation', kind: 'number', min: -180, max: 180, step: 1, default: 0 },
@@ -189,6 +189,39 @@
     return Math.exp(-t * t * 4);
   }
 
+  // The engine-side safety cap every text background passes through: a cell
+  // background may span at most 1.25 cells and an em background at most the
+  // beat's text box width + 0.6 em, so a stored project cannot paint a giant
+  // slab over the frame. `params.maxScale` (an explicit author value) wins.
+  // The states are clamped in place and returned.
+  function capBackground(states, unit, box, limits) {
+    const opts = limits || {};
+    const cellMax = Number.isFinite(Number(opts.cell)) ? Number(opts.cell) : 1.25;
+    const emExtra = Number.isFinite(Number(opts.emExtra)) ? Number(opts.emExtra) : 0.6;
+    const emPx = Number(opts.emPx) > 0 ? Number(opts.emPx) : 0;
+    const width = Number(box && box.w) > 0 ? Number(box.w) : 0;
+    const height = Number(box && box.h) > 0 ? Number(box.h) : 0;
+    const fallback = unit === 'em' ? 1.6 : cellMax;
+    for (const state of states || []) {
+      if (!state) continue;
+      const explicit = Number(state.params && state.params.maxScale);
+      const hasExplicit = Number.isFinite(explicit) && explicit > 0;
+      const scaleX = Math.abs(Number(state.motionScaleX) || 1) || 1;
+      const scaleY = Math.abs(Number(state.motionScaleY) || 1) || 1;
+      if (unit === 'em') {
+        // the em limit is expressed in the beat's own font size
+        const maxX = hasExplicit ? explicit : emPx > 0 && width > 0 ? width / emPx + emExtra : fallback;
+        const maxY = hasExplicit ? explicit : emPx > 0 && height > 0 ? height / emPx + emExtra : fallback;
+        if (state.sizeX * scaleX > maxX) state.sizeX = maxX / scaleX;
+        if (state.sizeY * scaleY > maxY) state.sizeY = maxY / scaleY;
+      } else {
+        const cap = hasExplicit ? explicit : fallback;
+        if (state.sizeX * scaleX > cap) state.sizeX = cap / scaleX;
+        if (state.sizeY * scaleY > cap) state.sizeY = cap / scaleY;
+      }
+    }
+    return states;
+  }
   // The cell is the advance box: horizontal text uses advance x size, vertical
   // text uses the vertical advance. The returned offset is the vector from the
   // ink bbox centre (glyph-local origin) to the cell centre, in px.
@@ -414,6 +447,7 @@
     SHAPES,
     SHAPE_TYPES,
     VARY_MODES,
+    capBackground,
     cellMetrics,
     evaluateBg,
     defaultInstance,

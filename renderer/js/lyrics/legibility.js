@@ -29,7 +29,22 @@
   const MIN_SIZE_RATIO = 0.045;
   const STATIC_SECONDS = 0.8;
   const STATIC_SHARE = 0.55;
-  const SAMPLES = 24;
+  const SAMPLES = 40;
+  // The fully-displayed hold the lyric must keep. The requirement peaks at
+  // weird 0.6 (0.1 s), falls linearly towards 0 as the axis rises (nothing is
+  // forced at the very weird end) and grows below it; weird 0 keeps the
+  // legacy draw byte-identical because the repair never engages at 0. A
+  // fear-only draw keeps the 0.1 s floor.
+  const HOLD_PEAK = 0.1;
+  const HOLD_PEAK_AT = 0.6;
+  const HOLD_SLOPE = HOLD_PEAK / (1 - HOLD_PEAK_AT);
+
+  function holdMinFor(weird, fear) {
+    const w = clamp01(weird);
+    if (!(w > 0)) return fear > 0 ? HOLD_PEAK : 0;
+    return Math.max(0, Math.min(1, (1 - w) * HOLD_SLOPE)) * 1;
+  }
+
   const BAD_TAGS = new Set(['degrade', 'overlap', 'glitch', 'dissolve']);
   const FIGURE_OVERLAP = 0.15;
   const FIGURE_FALLBACK_OPACITY = 0.35;
@@ -275,6 +290,8 @@
     };
     let longest = 0;
     let run = 0;
+    let fullLongest = 0;
+    let fullRun = 0;
     let previous = null;
     for (let i = 0; i < SAMPLES; i += 1) {
       const time = beat.start + (span * (i + 0.5)) / SAMPLES;
@@ -282,16 +299,23 @@
       try {
         result = motion.evaluateBeat({ ...scene, style }, time, { frame, seed: context.seed == null ? 42 : context.seed, beat });
       } catch {
-        return { ok: true, seconds: Infinity, share: 1 };
+        return { ok: true, seconds: Infinity, share: 1, fullSeconds: Infinity };
       }
       const letters = (result && result.letters ? result.letters : []);
       const readable = letters.length > 0 && letters.every((state, index) => settled(state, previous ? previous[index] : null));
       run = readable ? run + 1 : 0;
       if (run > longest) longest = run;
+      // the fully-displayed hold: every letter opaque, unblurred, undeformed
+      const full = letters.length > 0 && letters.every((state) => base(state));
+      fullRun = full ? fullRun + 1 : 0;
+      if (fullRun > fullLongest) fullLongest = fullRun;
       previous = letters;
     }
     const seconds = (longest / SAMPLES) * span;
-    return { ok: seconds >= Math.max(STATIC_SECONDS, STATIC_SHARE * span) - 1e-9, seconds, share: seconds / span };
+    const fullSeconds = (fullLongest / SAMPLES) * span;
+    const holdMin = context.holdMin == null ? HOLD_PEAK : Math.max(0, Number(context.holdMin) || 0);
+    const motionOk = seconds >= Math.max(STATIC_SECONDS, STATIC_SHARE * span) - 1e-9;
+    return { ok: motionOk && fullSeconds >= holdMin - 1e-9, seconds, share: seconds / span, fullSeconds, holdMin };
   }
 
   // ---------------------------------------------------------------------------
@@ -410,12 +434,17 @@
     return false;
   }
 
-  function fadeInstance(group) {
+  // A plain fade whose durations fit the cue: the fully-displayed window must
+  // stay above the hold floor even on very short beats.
+  function fadeInstance(group, span) {
+    const duration = Math.max(0.3, Number(span) || 3);
+    const inDur = Math.max(0.05, Math.min(0.3, duration * 0.25));
+    const outDur = Math.max(0.05, Math.min(0.25, duration * 0.2));
     return {
       type: 'fade',
       params: {},
       enabled: true,
-      motion: group === 'enter' ? { in: { duration: 0.3, delay: 0, ease: 'cubicOut' } } : { out: { duration: 0.25, delay: 0, ease: 'cubicIn' } },
+      motion: group === 'enter' ? { in: { duration: inDur, delay: 0, ease: 'cubicOut' } } : { out: { duration: outDur, delay: 0, ease: 'cubicIn' } },
     };
   }
 
@@ -672,6 +701,7 @@
     capPost(out);
     dropUnreadable(out);
     // 1) shrink the hold amplitudes, 2) drop one hold / post, 3) fade in/out
+    const span = Math.max(0.3, Number(context.duration) || 3);
     if (reasons.has('motion')) {
       shrinkHold(out);
       let guard = 0;
@@ -679,13 +709,13 @@
         guard += 1;
         if (!dropLastHold(out)) break;
         if (guard % 4 === 0) {
-          out.enter = fadeInstance('enter');
-          out.exit = fadeInstance('exit');
+          out.enter = fadeInstance('enter', span);
+          out.exit = fadeInstance('exit', span);
         }
       }
       if (!staticWindow(out, context).ok) {
-        out.enter = fadeInstance('enter');
-        out.exit = fadeInstance('exit');
+        out.enter = fadeInstance('enter', span);
+        out.exit = fadeInstance('exit', span);
         delete out.hold;
         if (out.post) out.post = out.post.filter((instance) => !POST_CAPS[instance.type] && !POST_FORBIDDEN.has(instance.type));
         if (out.post && !out.post.length) delete out.post;
@@ -704,8 +734,8 @@
       if (!staticWindow(out, context).ok) {
         out.layout = { type: 'row', params: {}, enabled: true };
         out.animation = { type: 'simultaneous', params: {}, enabled: true };
-        out.enter = fadeInstance('enter');
-        out.exit = fadeInstance('exit');
+        out.enter = fadeInstance('enter', span);
+        out.exit = fadeInstance('exit', span);
         delete out.hold;
       }
     }
@@ -723,6 +753,9 @@
     STATIC_SECONDS,
     STATIC_SHARE,
     SAMPLES,
+    HOLD_PEAK,
+    HOLD_PEAK_AT,
+    holdMinFor,
     FIGURE_OVERLAP,
     POST_CAPS,
     readableTags,

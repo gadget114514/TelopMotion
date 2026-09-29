@@ -83,13 +83,20 @@ test('the biggest painted region gets the primary colour (60-30-10)', () => {
   if (painted[1]) assert.equal(painted[1].color, COLORS[1]);
 });
 
-test('motion breathes, slides and rotates with the time', () => {
+test('motion breathes, slides, rotates and pushes with the time', () => {
   const still = split.regions({ layout: 'halves', coverage: 0.5, colors: COLORS }, ctx({ time: 0 })).map((region) => region.points);
   const slid = split.regions({ layout: 'halves', coverage: 0.5, colors: COLORS, motion: 'slide', amp: 0.2, speed: 0.5 }, ctx({ time: 0.5 })).map((region) => region.points);
   assert.notDeepEqual(still, slid);
   const b0 = split.regions({ layout: 'halves', coverage: 0.5, colors: COLORS, motion: 'breathe', amp: 0.2 }, ctx({ time: 1, beatPhase: 0 })).map((region) => region.points);
   const b1 = split.regions({ layout: 'halves', coverage: 0.5, colors: COLORS, motion: 'breathe', amp: 0.2 }, ctx({ time: 1, beatPhase: 0.25 })).map((region) => region.points);
   assert.notDeepEqual(b0, b1);
+  // push moves every layout (the inset used to be set and never consumed)
+  const p0 = split.regions({ layout: 'mondrian', parts: 4, coverage: 1, colors: COLORS, motion: 'push', amp: 0.2, speed: 0.5 }, ctx({ time: 0 })).map((region) => region.points);
+  const p1 = split.regions({ layout: 'mondrian', parts: 4, coverage: 1, colors: COLORS, motion: 'push', amp: 0.2, speed: 0.5 }, ctx({ time: 0.5 })).map((region) => region.points);
+  assert.notDeepEqual(p0, p1);
+  const inset = split.regions({ layout: 'grid', parts: 3, coverage: 1, colors: COLORS, motion: 'push', amp: 1, speed: 0.5 }, ctx({ time: 0.5 })).map((region) => region.points);
+  const plain = split.regions({ layout: 'grid', parts: 3, coverage: 1, colors: COLORS }, ctx({ time: 0 })).map((region) => region.points);
+  assert.notDeepEqual(inset, plain);
 });
 
 test('swap rotates the colour assignment on the rhythm cuts', () => {

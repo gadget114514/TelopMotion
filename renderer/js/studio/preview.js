@@ -155,6 +155,11 @@ SA.preview = (() => {
     renderer.resize(renderWidth, renderHeight);
     renderer.setProject(doc);
     renderer.setAssets({ fonts: fonts || [] });
+    // display-only view toggles (never saved, never used by the export)
+    if (typeof renderer.setView === 'function') {
+      const view = SA.store.state.view || {};
+      renderer.setView({ subtitleOnly: !!view.subtitleOnly, subtitleBackgrounds: view.subtitleBackgrounds !== false });
+    }
     if (audioAnalysis && typeof renderer.setAudio === 'function') renderer.setAudio(audioAnalysis);
     if (typeof renderer.preloadLayers === 'function') renderer.preloadLayers().catch(() => {});
     if (typeof renderer.prepareLayers === 'function') renderer.prepareLayers(SA.store.state.playhead, { playback: 'preview' }).catch(() => {});

@@ -492,6 +492,20 @@
     const moved = applyMotion(options, context);
     const built = buildRaw(layout, frame, moved, random);
     let regions = built.regions.map((region) => ({ ...region, painted: null, area: area(region.points) }));
+    // push: inset presses the whole plane set towards (or away from) the frame
+    // centre. The value lives in the moved options, so every layout moves.
+    if (moved.motion === 'push') {
+      const inset = num(moved.inset, 0);
+      if (Math.abs(inset) > 1e-6) {
+        const cx = Number.isFinite(frame.width) ? frame.width / 2 : 0;
+        const cy = Number.isFinite(frame.height) ? frame.height / 2 : 0;
+        const factor = Math.max(0.4, Math.min(1.8, 1 - inset * 3));
+        regions = regions.map((region) => ({
+          ...region,
+          points: region.points.map((point) => ({ x: cx + (point.x - cx) * factor, y: cy + (point.y - cy) * factor })),
+        }));
+      }
+    }
     const coverage = clamp01(options.coverage == null ? 1 : options.coverage);
     // swap: rotate the colour assignment on the rhythm cuts
     let colors = Array.isArray(options.colors) ? options.colors : [];

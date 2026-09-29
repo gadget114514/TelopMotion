@@ -1755,7 +1755,7 @@
     return null;
   }
 
-  function enforceReadability(style, palette, random, w, rawW) {
+  function enforceReadability(style, palette, random, w, rawW, rawFear) {
     const shape = style.bgShape;
     if (!shape || !shape.type || shape.type === 'none') return;
     const params = shape.params || (shape.params = {});
@@ -1767,9 +1767,12 @@
     if (!fgHex) return;
     const ratio = (a, b) => color.contrastRatio(color.parse(a), color.parse(b));
     const worst = Math.min(...bgColors.map((hex) => ratio(fgHex, hex || '#000000')));
-    // the minimum the auto-contrast aims for is the legibility floor (4.5): the
-    // weird axis may raise it elsewhere but never lowers it
-    const floor = 4.5;
+    // the minimum the auto-contrast aims for: the legibility floor (4.5) as
+    // soon as an axis that may break readability (weird / fear) is on; the
+    // untouched legacy draw keeps its old 3:1 floor so old catalogs stay
+    // byte-identical
+    const active = clamp01(rawW) > 0 || clamp01(rawFear) > 0;
+    const floor = active ? 4.5 : 3;
     if (worst >= floor) return;
     const options = [2, 4];
     let best = null;
@@ -1813,20 +1816,23 @@
     const params = { color: null, skipSpaces: true };
     if (adjusted === 'enclose') {
       params.unit = 'cell';
-      params.width = round(lerp(1.1, 1.4, random()) * jitter, 2);
+      // the background hugs the cell (P-E-2): 0.9-1.1 cells, never a slab
+      params.width = round(lerp(0.9, 1.1, random()) * jitter, 2);
       params.height = params.width;
       params.layer = 'behind';
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
     } else if (adjusted === 'accent') {
       params.unit = 'em';
-      const size = lerp(0.25, 0.45, random()) * jitter * (1 + w);
+      // an accent does not grow with the weird axis (it must not swallow text)
+      const size = lerp(0.25, 0.45, random()) * jitter;
       params.width = round(size, 2);
       params.height = round(size, 2);
       params.offset = { x: (random() < 0.5 ? -1 : 1) * 0.45, y: -0.45 };
       params.layer = 'front';
     } else {
       params.unit = 'em';
-      const size = lerp(1.8, 3.0, random()) * jitter;
+      // the underlay is a soft wash behind the line: 1.2-1.6 em
+      const size = lerp(1.2, 1.6, random()) * jitter;
       params.width = round(size, 2);
       params.height = round(size, 2);
       params.layer = 'behind';
@@ -1964,6 +1970,9 @@
       letterCount: (context && context.letterCount) || 12,
       aspect: context && context.aspect,
       duration: (context && context.duration) || 3,
+      // the fully-displayed hold the lyric must keep: 0.1 s at weird 0.6,
+      // shrinking towards 0 as the axis rises (and growing below it)
+      holdMin: legibilityMod.holdMinFor ? legibilityMod.holdMinFor(weirdOf(axes), fearOf(axes)) : undefined,
       ...(extra || {}),
     });
     return repaired && repaired.style ? repaired.style : style;
@@ -2063,7 +2072,7 @@
     applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg');
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
-    enforceReadability(style, palette.colors, random, w, weirdOf(axes));
+    enforceReadability(style, palette.colors, random, w, weirdOf(axes), fearOf(axes));
     const finalStyle = repairLegibility(style, axes, context, palette);
     return {
       style: finalStyle,

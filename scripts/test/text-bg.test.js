@@ -170,3 +170,60 @@ test('the bg state texture and shader carry the trim / dash rows', () => {
     assert.ok(bg.includes(token), `BG_FRAG has no ${token}`);
   }
 });
+
+test('capBackground keeps cell / em sizes inside the engine caps', () => {
+  const cell = [
+    { sizeX: 2, sizeY: 2, motionScaleX: 1, motionScaleY: 1, params: {} },
+    { sizeX: 1, sizeY: 1, motionScaleX: 2, motionScaleY: 1, params: {} },
+  ];
+  textBg.capBackground(cell, 'cell', { w: 800, h: 200 }, { cell: 1.25, emExtra: 0.6, emPx: 96 });
+  assert.ok(cell[0].sizeX <= 1.25 && cell[0].sizeY <= 1.25, 'cell size clamped');
+  assert.ok(cell[1].sizeX * cell[1].motionScaleX <= 1.25 + 1e-9, 'the motion scale is part of the limit');
+  // em: the cap is the text box + 0.6 em
+  const em = [{ sizeX: 8, sizeY: 8, motionScaleX: 1, motionScaleY: 1, params: {} }];
+  textBg.capBackground(em, 'em', { w: 480, h: 96 }, { cell: 1.25, emExtra: 0.6, emPx: 96 });
+  assert.ok(Math.abs(em[0].sizeX - (480 / 96 + 0.6)) < 1e-9, `em x ${em[0].sizeX}`);
+  assert.ok(Math.abs(em[0].sizeY - (96 / 96 + 0.6)) < 1e-9, `em y ${em[0].sizeY}`);
+  // an explicit maxScale wins over the default cap
+  const explicit = [{ sizeX: 4, sizeY: 4, motionScaleX: 1, motionScaleY: 1, params: { maxScale: 2 } }];
+  textBg.capBackground(explicit, 'cell', { w: 800, h: 200 }, {});
+  assert.equal(explicit[0].sizeX, 2);
+  assert.equal(explicit[0].sizeY, 2);
+  // the defaults are the tighter values
+  assert.equal(fx.paramDefaults('bgShape', 'square').width, 1.05);
+  const randomRange = fx.get('bgShape', 'square').params.find((param) => param.key === 'width').random;
+  assert.deepEqual(randomRange, [0.7, 1.15]);
+});
+
+test('generated text backgrounds stay inside the caps', () => {
+  const effects = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'post', 'background', 'color', 'vary'];
+  for (const name of effects) require(`../../renderer/js/lyrics/effects/${name}.js`);
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const context = { letterCount: 12, cjk: false, hasPrevious: true, badgeId: false, hasCard: false, aspect: '16:9' };
+  let checked = 0;
+  for (let seed = 1; seed <= 100; seed += 1) {
+    const style = moods.generate({ axes: { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.6, brightness: 0.4, weird: 0.7 }, seed, context }).style;
+    const shape = style.bgShape;
+    if (!shape || !shape.type || shape.type === 'none') continue;
+    const params = shape.params || {};
+    const unit = params.unit === 'em' ? 'em' : 'cell';
+    const limit = unit === 'em' ? 1.6 : 1.25;
+    assert.ok(Number(params.width) <= limit + 1e-9, `seed ${seed} ${unit} width ${params.width}`);
+    assert.ok(Number(params.height) <= limit + 1e-9, `seed ${seed} ${unit} height ${params.height}`);
+    const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed });
+    if (bg) {
+      textBg.capBackground(bg.states, bg.unit, { w: 700, h: 120 }, { emPx: 96 });
+      for (const state of bg.states) {
+        const effectiveX = state.sizeX * Math.abs(state.motionScaleX);
+        const effectiveY = state.sizeY * Math.abs(state.motionScaleY);
+        if (bg.unit === 'cell') {
+          assert.ok(effectiveX <= 1.25 + 1e-9 && effectiveY <= 1.25 + 1e-9, `seed ${seed} cell effective ${effectiveX}x${effectiveY}`);
+        } else {
+          assert.ok(effectiveX <= 700 / 96 + 0.6 + 1e-9 && effectiveY <= 120 / 96 + 0.6 + 1e-9, `seed ${seed} em effective ${effectiveX}x${effectiveY}`);
+        }
+      }
+    }
+    checked += 1;
+  }
+  assert.ok(checked > 20, `only ${checked} backgrounds drawn`);
+});

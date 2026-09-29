@@ -158,6 +158,8 @@ SA.menu = (() => {
         itemSeparator(),
         { key: 'studio.view.guides', action: 'toggleGuides', checked: () => handlers.areGuidesOn && handlers.areGuidesOn() },
         { key: 'studio.view.snapping', action: 'toggleSnapping', checked: () => handlers.isSnappingOn && handlers.isSnappingOn() },
+        { key: 'studio.view.subtitleBackgrounds', action: 'toggleSubtitleBackgrounds', checked: () => handlers.areSubtitleBackgroundsOn && handlers.areSubtitleBackgroundsOn() },
+        { key: 'studio.view.subtitleOnly', action: 'toggleSubtitleOnly', checked: () => handlers.isSubtitleOnly && handlers.isSubtitleOnly() },
         { key: 'studio.view.autoKey', action: 'toggleAutoKey', checked: () => handlers.isAutoKeyOn && handlers.isAutoKeyOn() },
         itemSeparator(),
         { key: 'studio.view.debugConsole', action: 'toggleConsole', checked: () => handlers.isConsoleOpen && handlers.isConsoleOpen() },

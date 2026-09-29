@@ -35,6 +35,22 @@
     return { id: SA.project.nextClipId(projectDoc, prefix), auto: true, ...fields };
   }
 
+  // How well a per-beat pulse fits the song. A clear tempo with regular onsets
+  // reads right; a slow or beatless track only makes the metronome lame. No
+  // analysis at all stays low, and smartness 0 ignores the fit entirely.
+  const PULSE_TYPES = new Set(['pulse', 'opacityPulse', 'beatPulse', 'beatHighlight', 'trackBeat', 'beat']);
+  function beatFitOf(analysis) {
+    if (!analysis) return 0.25;
+    const features = SA.audioAnalysis && SA.audioAnalysis.features ? SA.audioAnalysis.features(analysis) : analysis;
+    if (!features) return 0.25;
+    const bpm = Number(features.bpm) || 0;
+    const onsets = Number(features.onsets) || 0;
+    const energy = Number(features.energy) || 0;
+    const tempo = bpm >= 70 ? Math.max(0, Math.min(1, (bpm - 70) / 60)) : 0;
+    const onset = Math.max(0, Math.min(1, onsets / 4));
+    return Math.max(0, Math.min(1, 0.2 + 0.5 * tempo + 0.4 * onset + 0.25 * energy));
+  }
+
   // Common preparation: the axes, the size band, the palette and the accent
   // colours. Everything a run needs that does not depend on the document state
   // it rewrites.
@@ -73,6 +89,18 @@
         size: Math.max(minSize, Math.min(maxSize, Number(themeStyle.text.size) || (portrait ? 72 : 96))),
       };
     }
+    const beatFit = beatFitOf(analysis);
+    // a smart run on a beatless / slow song does not draw the metronome: the
+    // per-beat pulse (theme holds and beat holds) is dropped or demoted
+    if (s > 0 && beatFit < 0.4) {
+      const stripPulse = (style) => {
+        if (!style || !Array.isArray(style.hold)) return;
+        style.hold = style.hold.filter((instance) => !instance || !PULSE_TYPES.has(instance.type));
+        if (!style.hold.length) delete style.hold;
+      };
+      stripPulse(themeStyle);
+      for (const entry of Object.values(cueLooks)) if (entry && entry.style) stripPulse(entry.style);
+    }
     const palette = (themeStyle && themeStyle.palette && themeStyle.palette.colors) || [];
     const bgColor = SA.color.parse(palette[0] || '#000000');
     const accentIdx = [3, 5, 6, 2].filter((i) => palette[i] && SA.color.contrastRatio(SA.color.parse(palette[i]), bgColor) >= 3);
@@ -110,6 +138,7 @@
       cueLooks: opts.cueLooks || {},
       analysis,
       bpm,
+      beatFit,
       rhythm,
       portrait,
       frameW,
@@ -217,10 +246,14 @@
   // prefers the nervous end (jitter / heartbeat / shiver).
   const BEAT_HOLD_TYPES = ['pulse', 'opacityPulse', 'heartbeat', 'breathing', 'floatBob', 'sway', 'drift', 'kenBurns'];
 
-  function smartHold(random, s, amount, pulseBpm, axes) {
+  function smartHold(random, s, amount, pulseBpm, axes, beatFit) {
     if (!(s > 0) && !(SA.moods.fearOf(axes) > 0)) return { type: 'pulse', params: { amount, bpm: pulseBpm }, enabled: true };
+    // a beatless / slow song drops the metronome from the pool before the
+    // weighted draw; heartbeat stays because it fits a slow song
+    const fit = beatFit == null ? 1 : beatFit;
+    const pool = s > 0 && fit < 0.4 ? BEAT_HOLD_TYPES.filter((type) => !PULSE_TYPES.has(type)) : BEAT_HOLD_TYPES;
     const type =
-      SA.fxAxes.pickWeighted(random, 'hold', BEAT_HOLD_TYPES, axes, {
+      SA.fxAxes.pickWeighted(random, 'hold', pool, axes, {
         smartness: s,
         rating: (item) => SA.moods.smartness.rate('hold', item),
       }) || 'pulse';
@@ -233,7 +266,7 @@
   // is a ratio of the frame's short side (3%..120%), not a magnification of the
   // theme size: a weird song jumps between a whisper and a screen-filling word.
   function directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx) {
-    const { w, s, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes } = ctx;
+    const { w, s, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes, beatFit } = ctx;
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
     const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
@@ -242,7 +275,7 @@
     const beatDuration = Math.max(0.2, beat.end - beat.start);
     if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
       const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
-      beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm, axes)];
+      beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm, axes, beatFit)];
     }
     if (w > 0) {
       // E4 / I18 / H5: a weird song steps the beat treatment as well:
@@ -276,7 +309,7 @@
         const hold =
           w >= 0.5
             ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
-            : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])), axes);
+            : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])), axes, beatFit);
         if (hold) beatPatch.hold = [hold];
       }
       if (wr() < 0.3 * w) {
@@ -706,6 +739,8 @@
     AUTO_DIRECT_LOCKS,
     AUTO_TRACK_KINDS,
     CUE_LOOK_GROUPS,
+    PULSE_TYPES,
+    beatFitOf,
     prepare,
     directCue,
     directBeat,

@@ -128,6 +128,29 @@ test('the figure gate recolours and then dims a figure over the text', () => {
   assert.equal(spec.params.color, '#eef2ff');
 });
 
+test('the fully-displayed hold follows the weird axis (0.1 s at 0.6)', () => {
+  assert.equal(legibility.holdMinFor(0, 0), 0);
+  assert.ok(Math.abs(legibility.holdMinFor(0.6, 0) - 0.1) < 1e-9);
+  assert.ok(legibility.holdMinFor(0.4, 0) > 0.1, 'lower weird wants a longer hold');
+  assert.ok(legibility.holdMinFor(0.8, 0) < 0.1 && legibility.holdMinFor(0.8, 0) > 0, 'higher weird wants a shorter hold');
+  assert.equal(legibility.holdMinFor(1, 0), 0);
+  assert.equal(legibility.holdMinFor(0, 0.5), 0.1, 'a fear-only draw keeps the floor');
+  // a cue whose enter and exit leave almost no fully shown window fails...
+  const rushed = plainStyle({
+    enter: { type: 'fade', params: {}, enabled: true, motion: { in: { duration: 1.5, delay: 0, ease: 'linear' }, stagger: { each: 0.01, order: 'ltr', unit: 'letter' } } },
+    exit: { type: 'fade', params: {}, enabled: true, motion: { out: { duration: 1.45, delay: 0, ease: 'linear' }, stagger: { each: 0.01, order: 'ltr', unit: 'letter' } } },
+  });
+  const ctx = { frame: FRAME, duration: 3, letterCount: 12, holdMin: legibility.holdMinFor(0.6, 0) };
+  const before = legibility.staticWindow(rushed, ctx);
+  assert.equal(before.ok, false);
+  assert.ok(before.fullSeconds < 0.1, `full ${before.fullSeconds}`);
+  // ... and the repair guarantees it
+  const repaired = legibility.repair(rushed, ctx);
+  const after = legibility.staticWindow(repaired.style, ctx);
+  assert.equal(after.ok, true, JSON.stringify(after));
+  assert.ok(after.fullSeconds >= 0.1 - 1e-9, `full after ${after.fullSeconds}`);
+});
+
 test('the axis grid always generates a passing look (weird 0.6-0.8, all axes)', () => {
   const random = rng.mulberry32(90210);
   const pick = (list) => list[Math.min(list.length - 1, Math.floor(random() * list.length))];

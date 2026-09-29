@@ -1507,6 +1507,24 @@ SA.store = (() => {
         },
       });
     },
+    // One undo step for every subtitle track (the View menu toggle). The
+    // background data (bgShape) is never touched, only the `bgHidden` flag.
+    setSubtitleBackgroundsHidden(hidden) {
+      const project = state.project;
+      if (!project) return;
+      const value = !!hidden;
+      const tracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
+      if (!tracks.length) return;
+      dispatch({
+        label: value ? 'hide subtitle backgrounds' : 'show subtitle backgrounds',
+        areas: ['project'],
+        do(projectDoc) {
+          for (const track of projectDoc.tracks || []) {
+            if (track && track.kind === 'subtitle') track.bgHidden = value;
+          }
+        },
+      });
+    },
     addTrack(kind) {
       const project = state.project;
       if (!project) return null;

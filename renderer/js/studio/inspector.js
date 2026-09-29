@@ -1970,6 +1970,26 @@ SA.inspector = (() => {
     heading('studio.inspector.sectionText');
     renderGroups(['fill', 'edge', 'repeat']);
     heading('studio.inspector.sectionBg');
+    // the subtitle track's background switch (data kept; the BG chip on the
+    // timeline header and this checkbox are the same flag)
+    const selection = selectionInfo();
+    const selectedCue = selection.cueId && SA.store.state.project ? SA.store.state.project.script.cues.find((entry) => entry.id === selection.cueId) : null;
+    const cueTrack = selectedCue && SA.store.state.project ? (SA.store.state.project.tracks || []).find((entry) => entry.id === (selectedCue.trackId || 'sub1')) : null;
+    if (cueTrack && cueTrack.kind === 'subtitle') {
+      const row = document.createElement('label');
+      row.className = 'insp-inherit';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = !cueTrack.bgHidden;
+      box.addEventListener('change', () => {
+        SA.store.commands.updateTrack(cueTrack.id, { bgHidden: !box.checked });
+      });
+      const text = document.createElement('span');
+      text.textContent = ` ${t('studio.inspector.bgTrackVisible')}`;
+      row.appendChild(box);
+      row.appendChild(text);
+      container.appendChild(row);
+    }
     const style = resolvedStyle();
     const shape = style.bgShape;
     const bgActive = !!(shape && shape.type && shape.type !== 'none');

@@ -1238,6 +1238,34 @@
     SA.menu.refresh();
   }
 
+  // Data-level: every subtitle track's `bgHidden` flag, one undo step. The
+  // background shapes themselves are kept.
+  function subtitleTracks(doc) {
+    return ((doc && doc.tracks) || []).filter((track) => track && track.kind === 'subtitle');
+  }
+
+  function toggleSubtitleBackgrounds() {
+    const doc = project();
+    if (!doc) return;
+    const tracks = subtitleTracks(doc);
+    if (!tracks.length) return;
+    const hidden = tracks.every((track) => track.bgHidden);
+    store.commands.setSubtitleBackgroundsHidden(!hidden);
+    SA.menu.refresh();
+  }
+
+  function areSubtitleBackgroundsOn() {
+    const tracks = subtitleTracks(project());
+    return tracks.length ? tracks.some((track) => !track.bgHidden) : true;
+  }
+
+  // Display-only preview view (never saved, never exported).
+  function toggleSubtitleOnly() {
+    store.setView({ subtitleOnly: !store.state.view.subtitleOnly });
+    if (SA.preview) SA.preview.render();
+    SA.menu.refresh();
+  }
+
   function toggleAutosave() {
     autosaveEnabled = !autosaveEnabled;
     if (autosaveEnabled) SA.io.startAutosave(project, 30);
@@ -1408,6 +1436,10 @@
       toggleGuides,
       toggleSnapping,
       toggleAutoKey,
+      toggleSubtitleBackgrounds,
+      areSubtitleBackgroundsOn,
+      toggleSubtitleOnly,
+      isSubtitleOnly: () => !!store.state.view.subtitleOnly,
       toggleConsole,
       isConsoleOpen: () => SA.debugConsole.isOpen(),
       isAutoKeyOn: () => !!store.state.view.autoKey,

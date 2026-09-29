@@ -57,6 +57,14 @@ SA.lyricsEngine = (() => {
     return 1;
   }
 
+  // The text background is drawn unless the track hides it (`bgHidden`, saved
+  // in the project) or the display-only view switched every subtitle
+  // background off. The shapes themselves are never deleted.
+  function subtitleBackgroundOn(track, view) {
+    if (view && view.subtitleBackgrounds === false) return false;
+    return !(track && track.bgHidden);
+  }
+
   function createEngine(options) {
     const opts = options || {};
     const canvas = opts.canvas;
@@ -102,6 +110,10 @@ SA.lyricsEngine = (() => {
       analysis: null,
       morphSources: null,
       textBoxCache: null,
+      // display-only view options: `subtitleOnly` hides every track but the
+      // subtitles and `subtitleBackgrounds` toggles the per-track background
+      // shapes (the saved `track.bgHidden` data flag always applies)
+      view: { subtitleOnly: false, subtitleBackgrounds: true },
     };
     canvas.width = state.width;
     canvas.height = state.height;
@@ -125,6 +137,13 @@ SA.lyricsEngine = (() => {
 
     function setProject(project) {
       state.project = project || null;
+    }
+
+    // display-only options (never saved, never used by the export): a view
+    // patch merges into the current view
+    function setView(patch) {
+      state.view = { ...state.view, ...(patch || {}) };
+      return { ...state.view };
     }
 
     function setAssets(assets) {
@@ -1399,6 +1418,13 @@ SA.lyricsEngine = (() => {
         beatEnv: () => 0.5,
       });
       if (!bg || !bg.states.length) return null;
+      // the engine-side safety cap: a stored project cannot paint a slab that
+      // swallows the text (cell 1.25, em = text box width + 0.6 em)
+      if (SA.textBg.capBackground) {
+        const boxes = textBoxesPx(scene, result.letters);
+        const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
+        SA.textBg.capBackground(bg.states, bg.unit, box, { cell: 1.25, emExtra: 0.6, emPx: scene.size });
+      }
       const amountKey = BG_AMOUNT_KEY[shape.type];
       const params = shape.params || {};
       for (const entry of bg.states) {
@@ -1531,18 +1557,27 @@ SA.lyricsEngine = (() => {
       };
       pipeline.beginScene(CLEAR_COLOR);
       const duration = naturalDuration();
+      const view = state.view || {};
+      const subtitleOnly = view.subtitleOnly === true;
       // back to front: background clips + background layers -> backdrop clips ->
       // filler clips -> subtitle tracks (bottom to top) -> foreground layers
-      for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card);
-      drawBackgroundLayers();
-      for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration);
-      renderFillerClips(t, duration);
-      // the figure and text-animation tracks sit between the mid layer and the
-      // subtitles, so both draw before the lyric beats are evaluated
-      for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration);
-      for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
+      if (!subtitleOnly) {
+        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card);
+        drawBackgroundLayers();
+        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration);
+        renderFillerClips(t, duration);
+        // the figure and text-animation tracks sit between the mid layer and the
+        // subtitles, so both draw before the lyric beats are evaluated
+        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration);
+        for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
+      }
       // Evaluate every active beat first: overlapping cues must all render, so
       // every track's text is grouped and drawn track by track.
+      const subtitleTracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
+      const cueTrackId = (beat) => {
+        const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
+        return (cue && cue.trackId) || 'sub1';
+      };
       const activeBeats = [];
       for (const beat of beats) {
         const scene = buildBeatScene(project, beat, fonts);
@@ -1551,21 +1586,18 @@ SA.lyricsEngine = (() => {
         if (!result.active || !result.letters.length) continue;
         const baseStyle = scene.style || {};
         const style = state.analysis && SA.audioDriver ? SA.audioDriver.resolveStyle(baseStyle, state.analysis, t) : baseStyle;
-        activeBeats.push({ beat, scene, result, style });
+        activeBeats.push({ beat, scene, result, style, trackId: cueTrackId(beat) });
       }
-      const subtitleTracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
       const hiddenTracks = new Set(subtitleTracks.filter((track) => track.hidden).map((track) => track.id));
-      const cueTrackId = (beat) => {
-        const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
-        return (cue && cue.trackId) || 'sub1';
-      };
+      // subtitle tracks whose text background was switched off keep their data
+      // (bgShape is untouched) and simply skip the background pass
+      const bgHiddenTracks = new Set(subtitleTracks.filter((track) => track.bgHidden).map((track) => track.id));
       const trackOrder = subtitleTracks.map((track) => track.id);
       const beatsByTrack = new Map();
       for (const active of activeBeats) {
-        const trackId = cueTrackId(active.beat);
-        if (hiddenTracks.has(trackId)) continue;
-        if (!beatsByTrack.has(trackId)) beatsByTrack.set(trackId, []);
-        beatsByTrack.get(trackId).push(active);
+        if (hiddenTracks.has(active.trackId)) continue;
+        if (!beatsByTrack.has(active.trackId)) beatsByTrack.set(active.trackId, []);
+        beatsByTrack.get(active.trackId).push(active);
       }
       const drawOrder = [];
       for (const trackId of beatsByTrack.keys()) if (!trackOrder.includes(trackId)) drawOrder.push(trackId);
@@ -1573,7 +1605,8 @@ SA.lyricsEngine = (() => {
       for (const active of drawOrder.flatMap((trackId) => beatsByTrack.get(trackId) || [])) {
         const { beat, scene, result, style } = active;
         const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
-        const bgActive = !!(bgShape && bgShape.type && bgShape.type !== 'none');
+        const bgOff = !subtitleBackgroundOn({ bgHidden: bgHiddenTracks.has(active.trackId) }, view);
+        const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
         const bgBehind = bgActive && (bgShape.params.layer || 'behind') !== 'front';
         pipeline.beginLayer();
         const variation = bgBehind ? drawBackgroundPass(active, t, project) : null;
@@ -1712,9 +1745,11 @@ SA.lyricsEngine = (() => {
         }
         frame.cues.push(entry);
       }
-      drawBackgroundLayers();
-      drawForegroundLayers();
-      renderAlwaysCredits(t, beats, drawForegroundLayers);
+      if (!subtitleOnly) {
+        drawBackgroundLayers();
+        drawForegroundLayers();
+        renderAlwaysCredits(t, beats, drawForegroundLayers);
+      }
       for (const uniforms of framePosts.values()) pipeline.postFrame(uniforms);
       if (bloomNeeded) pipeline.bloom(0.6, 0.8);
       pipeline.finish();
@@ -1867,6 +1902,7 @@ SA.lyricsEngine = (() => {
       state,
       resize,
       setProject,
+      setView,
       setAssets,
       setAudio,
       renderFrame,
@@ -1881,5 +1917,5 @@ SA.lyricsEngine = (() => {
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn };
 })();

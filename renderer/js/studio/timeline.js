@@ -502,7 +502,8 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const labelX = opts.twisty ? 20 : 8;
-    ctx.fillText(fitLabel(title, LABEL_W - labelX - (opts.toggle === false ? 6 : 22)), labelX, y + height / 2);
+    const reserve = (opts.toggle === false ? 6 : 22) + (opts.bgToggle ? 26 : 0);
+    ctx.fillText(fitLabel(title, LABEL_W - labelX - reserve), labelX, y + height / 2);
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
     if (opts.twisty) {
@@ -548,6 +549,25 @@ SA.timeline = (() => {
       ctx.restore();
       hitRegions.push({ type: 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
     }
+    if (opts.bgToggle) {
+      // the subtitle track's text background: a small BG chip, struck through
+      // while the track hides its background shapes (data kept)
+      const bgX = LABEL_W - 20 - 23;
+      ctx.save();
+      ctx.font = 'bold 9px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+      ctx.fillStyle = opts.bgHidden ? '#5a6175' : '#ffd166';
+      ctx.fillText('BG', bgX, y + height / 2);
+      if (opts.bgHidden) {
+        ctx.strokeStyle = '#5a6175';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(bgX - 1, y + height / 2 + 3);
+        ctx.lineTo(bgX + 13, y + height / 2 - 3);
+        ctx.stroke();
+      }
+      ctx.restore();
+      hitRegions.push({ type: 'track-bg', trackId: row.trackId, x: bgX - 3, y, w: 22, h: height });
+    }
   }
 
   function drawCueTrack(size, projectDoc, row) {
@@ -558,6 +578,8 @@ SA.timeline = (() => {
       expanded: expanded.has(row.trackId),
       hidden: trackHidden(row.track),
       color: trackHidden(row.track) ? '#5a6175' : '#8d96ab',
+      bgToggle: !!(row.track && row.track.kind === 'subtitle'),
+      bgHidden: !!(row.track && row.track.bgHidden),
     });
     const selectedCue = row.cues.find((cue) =>
       (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`))
@@ -1283,6 +1305,11 @@ SA.timeline = (() => {
       }
       drag = null;
       draw();
+    } else if (hit.type === 'track-bg') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { bgHidden: !track.bgHidden });
+      drag = null;
+      draw();
     } else if (hit.type === 'track-empty' && CREATABLE_CLIP_KINDS.includes(hit.kind)) {
       // dragging on an animation track creates a clip for that span
       const at = Math.max(0, timeAt(point.x));
@@ -1354,7 +1381,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -1831,7 +1858,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-bg') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
@@ -1839,6 +1866,7 @@ SA.timeline = (() => {
           const id = SA.store.commands.addTrack('subtitle');
           if (id) SA.store.setSelection([`track:${id}`], 'track');
         });
+        add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
         add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
         add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
         add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));

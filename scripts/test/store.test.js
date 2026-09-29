@@ -495,3 +495,22 @@ test('paletteCandidates draws candidates without touching the history', () => {
   assert.equal(store.canUndo(), undoBefore, 'no history entry');
   assert.deepEqual(snapshot(), before);
 });
+
+test('setSubtitleBackgroundsHidden flags every subtitle track in one undo step', () => {
+  const doc = fixture();
+  store.load(doc);
+  const before = snapshot();
+  assert.equal(store.state.project.tracks.filter((track) => track.kind === 'subtitle').every((track) => !track.bgHidden), true);
+  store.commands.setSubtitleBackgroundsHidden(true);
+  for (const track of store.state.project.tracks) {
+    if (track.kind === 'subtitle') assert.equal(track.bgHidden, true, track.id);
+  }
+  // the background data is untouched
+  assert.equal(store.state.project.style.bgShape, before.style.bgShape);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  // one more undo does not go back to the previous state again
+  store.commands.setSubtitleBackgroundsHidden(false);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
