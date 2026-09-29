@@ -47,14 +47,14 @@ const float PI_HALF = 1.5707963267948966;
 // the deformations the text warp uses, applied to the shape's plane
 vec2 warpPoint(vec2 p, float code, float amount, float freq, float time, float radius) {
   if (code < 0.5 || abs(amount) < 0.0001) return p;
-  float half = max(radius, 1.0);
-  float u = p.x / half;
-  float v = p.y / half;
+  float hs = max(radius, 1.0);
+  float u = p.x / hs;
+  float v = p.y / hs;
   float r = clamp(length(vec2(u, v)), 0.0, 1.0);
   if (code < 1.5) {                        // wiggle
-    p += vec2(sin(p.y * 0.06 * max(freq, 0.1) + time * 2.4), cos(p.x * 0.06 * max(freq, 0.1) + time * 2.0)) * amount * half * 0.25;
+    p += vec2(sin(p.y * 0.06 * max(freq, 0.1) + time * 2.4), cos(p.x * 0.06 * max(freq, 0.1) + time * 2.0)) * amount * hs * 0.25;
   } else if (code < 2.5) {                 // zigzag
-    p.x += amount * half * 0.25 * (abs(fract(v * max(freq, 0.01)) - 0.5) * 4.0 - 1.0);
+    p.x += amount * hs * 0.25 * (abs(fract(v * max(freq, 0.01)) - 0.5) * 4.0 - 1.0);
   } else if (code < 3.5) {                 // pucker / bloat
     p *= 1.0 + amount * (1.0 - r * r) * 0.8;
   } else {                                 // twist
@@ -402,8 +402,9 @@ void main() {
 
     function textMesh(source, size, style) {
       if (typeof SA === 'undefined' || !SA.lyricsFont || !SA.geometry) return null;
-      const fonts = SA.lyricsFont.getActive ? SA.lyricsFont.getActive() : null;
-      if (!fonts || !fonts.length) return null;
+      const active = SA.lyricsFont.getActive ? SA.lyricsFont.getActive() : null;
+      if (!active || !active.length) return null;
+      const fonts = SA.lyricsFont.orderFonts ? SA.lyricsFont.orderFonts(active, style && style.fontId, style && style.weight) : active;
       const geometry = SA.geometry;
       const layout = SA.lyricsFont.layoutText(source, style || {}, fonts, { size });
       const positions = [];

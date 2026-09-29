@@ -137,6 +137,7 @@ SA.menu = (() => {
         { key: 'studio.settings.editTheme', action: 'editTheme' },
         { key: 'studio.settings.layers', action: 'layers' },
         { key: 'studio.settings.audio', action: 'audio' },
+        { key: 'studio.settings.fonts', action: 'fonts' },
         { key: 'studio.settings.autosave', action: 'toggleAutosave', checked: () => !!(handlers.isAutosaveEnabled && handlers.isAutosaveEnabled()) },
       ],
     },

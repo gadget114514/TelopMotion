@@ -389,12 +389,18 @@ SA.controls = (() => {
         param,
         value,
         onChange,
-        (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }))
+        fontChoices()
       ),
     gradient: (param, value, onChange) => gradientControl(value, onChange),
     colors: (param, value, onChange) => colorsControl(value, onChange),
     multiselect: (param, value, onChange) => multiselectControl(value, onChange, param),
   };
+
+  // The project font set (or, without one, the default set plus loaded fonts).
+  function fontChoices() {
+    if (SA.lyricsFont.choices) return SA.lyricsFont.choices();
+    return (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }));
+  }
 
   function paramControl(group, param, value, onChange, options) {
     const builder = CONTROL_FOR[param.kind] || CONTROL_FOR.text;
@@ -422,5 +428,6 @@ SA.controls = (() => {
     pointsControl,
     paramControl,
     paramEntries,
+    fontChoices,
   };
 })();

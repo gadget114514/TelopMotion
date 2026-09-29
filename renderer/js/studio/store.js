@@ -1344,6 +1344,26 @@ SA.store = (() => {
         },
       });
     },
+    // fontSet: { exclusive, fonts: [{ id, fontClass }] }; mediaFonts: the
+    // user font metadata the set refers to (the bytes live in the library).
+    setFontSet(fontSet, mediaFonts) {
+      const beforeSet = clone(state.project.fontSet || null);
+      const beforeMedia = clone((state.project.media && state.project.media.fonts) || []);
+      dispatch({
+        label: 'fonts',
+        areas: ['fonts', 'style'],
+        do(project) {
+          project.fontSet = clone(fontSet || null);
+          project.media = project.media || {};
+          project.media.fonts = clone(mediaFonts || []);
+        },
+        undo(project) {
+          project.fontSet = clone(beforeSet);
+          project.media = project.media || {};
+          project.media.fonts = clone(beforeMedia);
+        },
+      });
+    },
     setLayers(layers) {
       const before = clone(state.project.layers || []);
       dispatch({

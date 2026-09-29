@@ -247,11 +247,11 @@ SA.themeEditor = (() => {
     const body = document.createElement('div');
     body.className = 'theme-group-body';
     const text = draft.style.text || (draft.style.text = {});
-    const fonts = (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }));
+    const fonts = SA.controls.fontChoices();
     customRow(
       body,
       SA.controls.labelFor('fontId'),
-      SA.controls.selectControl({}, text.fontId, (value) => {
+      SA.controls.selectControl({}, SA.lyricsFont.resolveFontId(text.fontId), (value) => {
         text.fontId = value;
       }, fonts)
     );

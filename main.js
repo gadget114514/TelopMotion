@@ -72,10 +72,14 @@ function registerIpc() {
       const owner = BrowserWindow.fromWebContents(event.sender);
       const result = await dialog.showOpenDialog(owner, {
         title: (payload && payload.title) || 'Open file',
-        properties: ['openFile'],
+        properties: payload && payload.multiple ? ['openFile', 'multiSelections'] : ['openFile'],
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
+      if (payload && payload.multiple) {
+        const files = result.filePaths.map((filePath) => ({ name: path.basename(filePath), type: '', bytes: new Uint8Array(fs.readFileSync(filePath)), path: filePath }));
+        return ok({ canceled: false, files });
+      }
       const filePath = result.filePaths[0];
       const buffer = fs.readFileSync(filePath);
       return ok({ canceled: false, name: path.basename(filePath), type: '', bytes: new Uint8Array(buffer), path: filePath });

@@ -400,12 +400,11 @@ SA.lyricsEngine = (() => {
       pipeline.edge(uniforms);
     }
 
+    // with a font set active only the set's typefaces take part in variation
     function fontClassOf(entry) {
       if (!entry) return null;
-      if (entry.fontClass) return entry.fontClass;
-      if (!SA.lyricsFont || !SA.lyricsFont.builtins) return null;
-      const builtin = SA.lyricsFont.builtins().find((candidate) => candidate.id === entry.id);
-      return builtin ? builtin.fontClass || null : null;
+      if (SA.lyricsFont && typeof SA.lyricsFont.fontClassOf === 'function') return SA.lyricsFont.fontClassOf(entry);
+      return entry.fontClass || null;
     }
 
     function variantFontFor(cls, text, fonts) {

@@ -214,9 +214,10 @@
     let raw = null;
     if (options && typeof options.measure === 'function') raw = options.measure;
     else if (typeof SA !== 'undefined' && SA.lyricsFont && typeof SA.lyricsFont.measureLine === 'function') {
-      const fonts = typeof SA.lyricsFont.getActive === 'function' ? SA.lyricsFont.getActive() : [];
+      const active = typeof SA.lyricsFont.getActive === 'function' ? SA.lyricsFont.getActive() : [];
+      const style = (options && options.style) || {};
+      const fonts = active && active.length && typeof SA.lyricsFont.orderFonts === 'function' ? SA.lyricsFont.orderFonts(active, style.fontId, style.weight) : active;
       if (fonts && fonts.length) {
-        const style = (options && options.style) || {};
         const lang = (options && options.lang) || 'en';
         raw = (text, size) => SA.lyricsFont.measureLine(text, style, fonts, { size, lang });
       }

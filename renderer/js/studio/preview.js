@@ -15,6 +15,7 @@ SA.preview = (() => {
   let frameTimes = [];
   let fonts = null;
   let fontsKey = null;
+  let lastMissingFonts = '';
   let fontRequest = 0;
   let fontsPromise = Promise.resolve();
   let rafId = null;
@@ -211,6 +212,8 @@ SA.preview = (() => {
   // the already bundled latin families.
   function variationFontIds(ids, text) {
     if (!SA.lyricsFont || !SA.lyricsFont.builtins) return;
+    // a project font set supplies its own variation typefaces (already loaded)
+    if (SA.fontSet && SA.fontSet.isActive(SA.lyricsFont.getFontSet())) return;
     const builtins = SA.lyricsFont.builtins();
     const cjk = /[\u3000-\u9fff\uff00-\uffef]/.test(text || '');
     const mainClasses = new Set(
@@ -231,10 +234,12 @@ SA.preview = (() => {
 
   function collectFontIds(doc) {
     const ids = new Set();
+    const resolve = (id) => (SA.lyricsFont.resolveFontId ? SA.lyricsFont.resolveFontId(id) : id);
     const add = (style) => {
       const id = style && style.text && style.text.fontId;
-      if (id) ids.add(id);
+      if (id) ids.add(resolve(id));
     };
+    for (const id of SA.fontSet ? SA.fontSet.fontIds(SA.lyricsFont.getFontSet()) : []) ids.add(id);
     const styles = [doc.style];
     for (const style of Object.values(doc.cueStyles || {})) styles.push(style);
     for (const style of Object.values(doc.beatStyles || {})) styles.push(style);
@@ -252,15 +257,37 @@ SA.preview = (() => {
     return fontsPromise;
   }
 
+  // Puts the project's loaded fonts (bytes from the font library) into the
+  // font registry; returns the families that are not in this library.
+  async function registerProjectFonts(doc) {
+    const missing = [];
+    const metas = (doc.media && doc.media.fonts) || [];
+    for (const meta of metas) {
+      if (!meta || !meta.id || SA.lyricsFont.hasUserFont(meta.id)) continue;
+      const record = SA.platform.fontLibrary ? await SA.platform.fontLibrary.get(meta.id) : null;
+      if (!record || !record.bytes) {
+        missing.push(meta.family || meta.fileName || meta.id);
+        continue;
+      }
+      await SA.lyricsFont.registerUserFont({ ...record.meta, ...meta }, record.bytes).catch(() => missing.push(meta.family || meta.id));
+    }
+    return missing;
+  }
+
   async function loadFonts() {
     const doc = project();
     if (!doc) return;
+    SA.lyricsFont.setFontSet(doc.fontSet);
+    const missing = await registerProjectFonts(doc);
+    const missingKey = missing.join(', ');
+    if (missingKey && missingKey !== lastMissingFonts && SA.studio && SA.studio.toast) SA.studio.toast('fonts.missing', { names: missingKey });
+    lastMissingFonts = missingKey;
     const cues = doc.script ? doc.script.cues || [] : [];
     const text = cues.map((cue) => cue.text || '').join('\n');
     const textStyle = (doc.style && doc.style.text) || {};
     const fontIds = collectFontIds(doc);
     if (!fontIds.length) fontIds.push(textStyle.fontId || 'NotoSans-Regular');
-    const key = `${fontIds.join(',')}|${textStyle.weight || 400}|${SA.rng.hash32(text)}|${cues.length}`;
+    const key = `${fontIds.join(',')}|${JSON.stringify(doc.fontSet || null)}|${textStyle.weight || 400}|${SA.rng.hash32(text)}|${cues.length}`;
     if (key === fontsKey && fonts) return;
     fontsKey = key;
     const request = ++fontRequest;

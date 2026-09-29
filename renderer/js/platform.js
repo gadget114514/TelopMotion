@@ -167,11 +167,12 @@ SA.platform = (() => {
     return [{ name: extensions.join(', ').toUpperCase(), extensions }];
   }
 
-  function pickFile(accept) {
+  function pickFile(accept, multiple) {
     return new Promise((resolve) => {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = accept || '';
+      input.multiple = !!multiple;
       input.hidden = true;
       document.body.appendChild(input);
       let settled = false;
@@ -187,6 +188,13 @@ SA.platform = (() => {
           const file = input.files && input.files[0];
           if (!file) {
             finish(null);
+            return;
+          }
+          if (multiple) {
+            Promise.all([...input.files].map((entry) => entry.arrayBuffer().then((buffer) => ({ name: entry.name, type: entry.type, bytes: new Uint8Array(buffer) })))).then(
+              (files) => finish(files),
+              () => finish(null)
+            );
             return;
           }
           file.arrayBuffer().then(
@@ -208,6 +216,16 @@ SA.platform = (() => {
       return { name: result.name, type: result.type, bytes: new Uint8Array(result.bytes), path: result.path };
     }
     return pickFile(accept);
+  }
+
+  // Several files at once; resolves to [] when the picker is cancelled.
+  async function readFiles(accept) {
+    if (isElectron) {
+      const result = unwrap(await bridge.fileOpen({ filters: filtersFor(accept), multiple: true }));
+      if (!result || result.canceled) return [];
+      return (result.files || []).map((file) => ({ name: file.name, type: file.type, bytes: new Uint8Array(file.bytes), path: file.path }));
+    }
+    return (await pickFile(accept, true)) || [];
   }
 
   async function readAsset(path) {
@@ -294,10 +312,10 @@ SA.platform = (() => {
 
   function openDatabase() {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open('sa-studio', 1);
+      const request = indexedDB.open('sa-studio', 2);
       request.onupgradeneeded = () => {
         const db = request.result;
-        for (const store of ['handoff', 'autosave']) {
+        for (const store of ['handoff', 'autosave', 'fonts']) {
           if (!db.objectStoreNames.contains(store)) db.createObjectStore(store);
         }
       };
@@ -324,6 +342,42 @@ SA.platform = (() => {
       transaction.onerror = () => reject(Object.assign(new Error('indexeddb-failed'), { code: 'indexeddb-failed' }));
     });
   }
+
+  async function idbDelete(store, key) {
+    const db = await openDatabase();
+    return new Promise((resolve) => {
+      const transaction = db.transaction(store, 'readwrite');
+      transaction.objectStore(store).delete(key);
+      transaction.oncomplete = () => resolve(true);
+      transaction.onerror = () => resolve(false);
+    });
+  }
+
+  async function idbAll(store) {
+    const db = await openDatabase();
+    return new Promise((resolve) => {
+      const request = db.transaction(store, 'readonly').objectStore(store).getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => resolve([]);
+    });
+  }
+
+  // User fonts live in this browser profile, keyed by the font id (derived
+  // from the file's SHA-256), so a project only stores the id and metadata
+  // and any project on this machine can reuse a loaded font.
+  const fontLibrary = {
+    async hashOf(bytes) {
+      const digest = await crypto.subtle.digest('SHA-256', bytes);
+      return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+    },
+    get: (id) => idbGet('fonts', id).catch(() => null),
+    put: (record) => idbSet('fonts', record.meta.id, record),
+    remove: (id) => idbDelete('fonts', id).catch(() => false),
+    async list() {
+      const records = await idbAll('fonts').catch(() => []);
+      return records.map((record) => record && record.meta).filter(Boolean);
+    },
+  };
 
   async function readHandoff() {
     if (isElectron) return null;
@@ -433,7 +487,9 @@ SA.platform = (() => {
     loadImage,
     importJson,
     readFile,
+    readFiles,
     readAsset,
+    fontLibrary,
     openStream,
     saveFile,
     exportJson,

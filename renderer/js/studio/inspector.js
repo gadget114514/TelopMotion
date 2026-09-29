@@ -539,7 +539,7 @@ SA.inspector = (() => {
       const value = readEffective(propPath);
       let control;
       if (key === 'font') {
-        control = SA.controls.selectControl({}, value || 'NotoSans-Regular', (next) => writeProp(propPath, next), (SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family })));
+        control = SA.controls.selectControl({}, SA.lyricsFont.resolveFontId(value || 'NotoSans-Regular'), (next) => writeProp(propPath, next), SA.controls.fontChoices());
       } else {
         control = SA.controls.numberControl({ step: 0.01, default: 0 }, value == null ? 0 : value, (next) => writeProp(propPath, next));
       }

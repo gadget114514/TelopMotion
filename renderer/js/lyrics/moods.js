@@ -706,6 +706,9 @@
       const usable = requested.filter(fontAvailable);
       if (usable.length) pool = usable;
     }
+    // an exclusive project font set replaces every other pool
+    const setPool = fontSetPool(cjk);
+    if (setPool.length) pool = setPool;
     const fontId = pick(random, pool);
     const portrait = context.aspect === '9:16';
     const base = portrait ? lerp(104, 58, axes.density) : lerp(134, 78, axes.density);
@@ -850,6 +853,15 @@
       }
     }
     return result;
+  }
+
+  function fontSetPool(cjk) {
+    if (typeof SA === 'undefined' || !SA.lyricsFont || typeof SA.lyricsFont.fontPool !== 'function') return [];
+    try {
+      return SA.lyricsFont.fontPool(cjk) || [];
+    } catch {
+      return [];
+    }
   }
 
   function fontAvailable(id) {

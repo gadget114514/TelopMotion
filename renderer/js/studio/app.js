@@ -196,13 +196,13 @@
     document.title = t('studio.title');
   }
 
-  function toast(key, vars) {
+  function toast(key, vars, duration) {
     el.toast.textContent = t(key, vars);
     el.toast.hidden = false;
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => {
       el.toast.hidden = true;
-    }, 3200);
+    }, duration || 3200);
   }
 
   function renderMedia() {
@@ -1531,6 +1531,7 @@
       editTheme: () => SA.themeEditor.open(null),
       layers: () => SA.layersDialog.open(),
       audio: () => SA.audioDialog.open(),
+      fonts: () => SA.fontsDialog.open(),
       credits: () => SA.creditsDialog.open(),
       exportSrt,
       exportSrtBeats,

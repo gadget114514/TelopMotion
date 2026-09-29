@@ -32,6 +32,7 @@ SA.lyricsFont = (() => {
   const userFonts = new Map();
   const rasterCache = new Map();
   let activeFonts = [];
+  let fontSet = { exclusive: false, fonts: [] };
 
   function opentypeLib() {
     if (typeof window !== 'undefined' && window.opentype) return window.opentype;
@@ -55,6 +56,18 @@ SA.lyricsFont = (() => {
     return BUILTINS.find((entry) => entry.id === fontId) || null;
   }
 
+  function sets() {
+    return typeof SA !== 'undefined' && SA.fontSet ? SA.fontSet : null;
+  }
+
+  // What is known about a typeface without loading it (bundled or user).
+  function info(fontId) {
+    const builtin = findBuiltin(fontId);
+    if (builtin) return builtin;
+    const user = userFonts.get(fontId);
+    return user ? user.meta : null;
+  }
+
   function parseFont(id, family, weight, bytes) {
     const lib = opentypeLib();
     if (!lib || typeof lib.parse !== 'function') throw fail('missing-opentype', 'opentype.js is not loaded');
@@ -71,7 +84,9 @@ SA.lyricsFont = (() => {
     const request = (async () => {
       const user = userFonts.get(id);
       if (user) {
-        const entry = parseFont(id, user.family, user.weight, user.bytes);
+        const entry = parseFont(id, user.meta.family, user.meta.weight, user.bytes);
+        entry.cjk = !!user.meta.cjk;
+        entry.user = true;
         parsed.set(id, entry);
         return entry;
       }
@@ -97,14 +112,61 @@ SA.lyricsFont = (() => {
     });
   }
 
-  function registerUserFont(id, family, bytes, weight) {
-    userFonts.set(id, { id, family: family || id, weight: weight || 400, bytes });
+  // opentype.js 1.x keeps names flat; newer builds group them by platform.
+  function nameOf(font, key) {
+    if (!font || !font.names) return '';
+    if (typeof font.getEnglishName === 'function') {
+      const english = font.getEnglishName(key);
+      if (english) return english;
+    }
+    const tables = [font.names[key], ...['windows', 'macintosh', 'unicode'].map((platform) => font.names[platform] && font.names[platform][key])];
+    for (const table of tables) {
+      if (table && typeof table === 'object') {
+        const value = table.en || Object.values(table)[0];
+        if (value) return value;
+      }
+    }
+    return '';
+  }
+
+  // Reads a font file's family, weight and whether it carries Japanese
+  // glyphs; throws { code: 'font-parse' } for anything opentype.js rejects
+  // (TrueType collections, WOFF2, damaged files).
+  function inspectFont(bytes, fileName) {
+    let entry;
+    try {
+      entry = parseFont('inspect', '', 400, bytes);
+    } catch (error) {
+      if (error && error.code === 'missing-opentype') throw error;
+      throw fail('font-parse', `Cannot read font: ${fileName || ''}`);
+    }
+    const font = entry.font;
+    const family = nameOf(font, 'preferredFamily') || nameOf(font, 'fontFamily') || String(fileName || 'Font').replace(/\.[^.]+$/, '');
+    const subfamily = nameOf(font, 'preferredSubfamily') || nameOf(font, 'fontSubfamily') || 'Regular';
+    const os2 = font.tables && font.tables.os2;
+    const weight = os2 && os2.usWeightClass ? os2.usWeightClass : /bold|black|heavy/i.test(subfamily) ? 700 : 400;
+    const cjk = ['あ', '愛'].every((character) => font.charToGlyphIndex(character) !== 0);
+    return { family, subfamily, weight, cjk, glyphs: font.numGlyphs || 0 };
+  }
+
+  // `meta` is a project `media.fonts` entry: { id, family, weight, cjk, ... }.
+  function registerUserFont(meta, bytes) {
+    const id = meta && meta.id;
+    if (!id) return Promise.reject(fail('font-not-found', 'missing font id'));
+    parsed.delete(id);
+    pending.delete(id);
+    userFonts.set(id, { meta: { ...meta, family: meta.family || id, weight: meta.weight || 400 }, bytes });
     return load(id);
+  }
+
+  function hasUserFont(id) {
+    return userFonts.has(id);
   }
 
   function unregisterUserFont(id) {
     userFonts.delete(id);
     parsed.delete(id);
+    pending.delete(id);
   }
 
   function boldSibling(entry) {
@@ -113,7 +175,70 @@ SA.lyricsFont = (() => {
       const siblingId = entry.id.replace(/-Regular$/, '-Bold');
       if (parsed.has(siblingId)) return parsed.get(siblingId);
     }
+    // user fonts: a loaded face of the same family with a heavier weight
+    for (const candidate of parsed.values()) {
+      if (candidate !== entry && candidate.user && candidate.family === entry.family && (candidate.weight || 400) >= 600) return candidate;
+    }
     return entry;
+  }
+
+  // --- font set ------------------------------------------------------------------
+
+  function setFontSet(set) {
+    const api = sets();
+    fontSet = api ? api.normalize(set) : { exclusive: false, fonts: [] };
+    return fontSet;
+  }
+
+  function getFontSet() {
+    return fontSet;
+  }
+
+  function resolveFontId(fontId) {
+    const api = sets();
+    return api ? api.resolveId(fontSet, fontId, info) : fontId || null;
+  }
+
+  function fontClassOf(entry) {
+    if (!entry) return null;
+    const api = sets();
+    if (api && api.isActive(fontSet)) return api.classOf(fontSet, entry.id, info);
+    if (entry.fontClass) return entry.fontClass;
+    const known = info(entry.id);
+    return known ? known.fontClass || null : null;
+  }
+
+  // Puts the typeface a style asks for (after font-set mapping) first, its
+  // bold face ahead of it when the weight asks for one.
+  function orderFonts(list, fontId, weight) {
+    const api = sets();
+    const ordered = api ? api.order(list, fontId, fontSet, info) : Array.isArray(list) ? [...list] : [];
+    if (weight >= 600 && ordered.length) {
+      const bold = boldSibling(ordered[0]);
+      if (bold && bold !== ordered[0] && ordered.includes(bold)) return [bold, ...ordered.filter((entry) => entry !== bold)];
+    }
+    return ordered;
+  }
+
+  // Random rolls pick from the set in exclusive mode (empty otherwise).
+  function fontPool(cjk) {
+    const api = sets();
+    return api ? api.pool(fontSet, cjk, info) : [];
+  }
+
+  // Options for font pickers: only the set in exclusive mode, otherwise the
+  // set first and then every bundled and loaded typeface.
+  function choices() {
+    const label = (id) => {
+      const known = info(id);
+      if (!known) return id;
+      const bold = (known.weight || 400) >= 600 && !/bold/i.test(known.family) ? ' Bold' : '';
+      return `${known.family}${bold}`;
+    };
+    const api = sets();
+    const setIds = api ? api.fontIds(fontSet) : [];
+    const ids = api && api.isExclusive(fontSet) ? setIds : [...new Set([...setIds, ...BUILTINS.map((entry) => entry.id), ...userFonts.keys()])];
+    return ids.map((id) => ({ value: id, label: label(id) }));
   }
 
   async function ensure(text, fontId, options) {
@@ -122,10 +247,16 @@ SA.lyricsFont = (() => {
     const push = (entry) => {
       if (entry && entry.font && !entries.some((existing) => existing.id === entry.id)) entries.push(entry);
     };
-    if (fontId) push(await load(fontId).catch(() => null));
+    const resolved = resolveFontId(fontId);
+    if (resolved) push(await load(resolved).catch(() => null));
     if (opts.weight >= 600 && entries.length) {
       const bold = boldSibling(entries[0]);
       if (bold && bold !== entries[0]) entries.unshift(bold);
+    }
+    // the set's own typefaces cover missing glyphs before the bundled Noto
+    const api = sets();
+    for (const id of api ? api.fontIds(fontSet) : []) {
+      if (!entries.some((entry) => entry.id === id)) push(await load(id).catch(() => null));
     }
     for (const id of ['NotoSans-Regular', 'NotoSansJP-Regular']) {
       if (entries.some((entry) => entry.id === id)) continue;
@@ -648,10 +779,20 @@ SA.lyricsFont = (() => {
     CJK_RE,
     builtins,
     findBuiltin,
+    info,
     load,
     ensure,
+    inspectFont,
     registerUserFont,
+    hasUserFont,
     unregisterUserFont,
+    setFontSet,
+    getFontSet,
+    resolveFontId,
+    fontClassOf,
+    orderFonts,
+    fontPool,
+    choices,
     hasCjk,
     layoutText,
     measureText,

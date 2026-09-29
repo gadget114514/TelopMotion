@@ -110,7 +110,10 @@ SA.lyricsScene = (() => {
     const style = SA.project.resolveStyle(project, beatPath);
     const textStyle = style.text || {};
     const direction = opts.direction || textStyle.direction || beat.direction || 'horizontal';
-    const fontList = Array.isArray(fonts) ? fonts : fonts ? [fonts] : [];
+    const loaded = Array.isArray(fonts) ? fonts : fonts ? [fonts] : [];
+    // the style's typeface (mapped through the project's font set) leads;
+    // the rest only cover glyphs it lacks
+    const fontList = SA.lyricsFont && typeof SA.lyricsFont.orderFonts === 'function' ? SA.lyricsFont.orderFonts(loaded, textStyle.fontId, textStyle.weight) : loaded;
     const fontIds = fontList.map((entry) => entry.id).join(',');
     const beatLines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
     const fillBeat = beat.fit === 'fill' && !!beatLines;
