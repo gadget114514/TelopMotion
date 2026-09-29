@@ -917,6 +917,11 @@ body {
   max-height: calc(100vh - 80px);
 }
 
+/* Only the body (already scrollable) shrinks; header, tools and action buttons stay visible. */
+.theme-editor > :not(.theme-editor-body) {
+  flex-shrink: 0;
+}
+
 .mood-chips {
   display: flex;
   flex-wrap: wrap;
@@ -935,6 +940,12 @@ body {
   gap: 8px;
   color: var(--muted);
   font-size: 12.5px;
+}
+
+/* the axis rows explain themselves on hover (title), hint at it in the label */
+.axis-row > span:first-child {
+  cursor: help;
+  text-decoration: underline dotted;
 }
 
 .axis-row input[type='range'] {

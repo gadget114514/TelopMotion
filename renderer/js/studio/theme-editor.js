@@ -428,10 +428,7 @@ SA.themeEditor = (() => {
       row.appendChild(input);
       node.appendChild(row);
     }
-    const hint = document.createElement('div');
-    hint.className = 'insp-inherit axis-hint';
-    hint.textContent = t('studio.themeEditor.keywords.hint');
-    node.appendChild(hint);
+    node.title = t('studio.themeEditor.keywords.hint');
     return node;
   }
 
@@ -552,6 +549,7 @@ SA.themeEditor = (() => {
       chip.type = 'button';
       chip.className = `btn btn-mini${(draft.genre || null) === entry.id ? ' is-active' : ''}`;
       chip.textContent = entry.label;
+      chip.title = t(entry.id ? `studio.genres.desc.${entry.id}` : 'studio.genres.desc.none');
       chip.addEventListener('click', () => {
         draft.genre = entry.id;
         const genre = entry.id && SA.genres ? SA.genres.get(entry.id) : null;
@@ -564,10 +562,6 @@ SA.themeEditor = (() => {
       chips.appendChild(chip);
     }
     dialog.appendChild(chips);
-    const genreHint = document.createElement('div');
-    genreHint.className = 'insp-inherit';
-    genreHint.textContent = draft.genre ? t(`studio.genres.desc.${draft.genre}`) : t('studio.genres.desc.none');
-    dialog.appendChild(genreHint);
 
     const axes = document.createElement('div');
     axes.className = 'axis-grid';
@@ -589,21 +583,15 @@ SA.themeEditor = (() => {
         draft.axes[axis] = Number(input.value);
         value.textContent = Number(input.value).toFixed(2);
       });
+      row.title = t(`studio.themeEditor.axisHint.${axis}`);
       row.appendChild(label);
       row.appendChild(input);
       row.appendChild(value);
       axes.appendChild(row);
-      const hint = document.createElement('div');
-      hint.className = 'insp-inherit axis-hint';
-      hint.textContent = t(`studio.themeEditor.axisHint.${axis}`);
-      axes.appendChild(hint);
     }
+    axes.title = t('studio.themeEditor.axesHint');
     dialog.appendChild(axes);
     if (SA.keywords && SA.keywords.globallyEnabled()) dialog.appendChild(keywordsBlock());
-    const axesHint = document.createElement('div');
-    axesHint.className = 'insp-inherit';
-    axesHint.textContent = t('studio.themeEditor.axesHint');
-    dialog.appendChild(axesHint);
 
     const tools = document.createElement('div');
     tools.className = 'theme-editor-tools';
@@ -618,6 +606,7 @@ SA.themeEditor = (() => {
     seedInput.type = 'number';
     seedInput.className = 'theme-seed-input';
     seedInput.value = String(draft.seed);
+    seedInput.title = t('studio.random.seed');
     seedInput.addEventListener('change', () => {
       draft.seed = Number(seedInput.value) || draft.seed;
     });
