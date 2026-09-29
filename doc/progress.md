@@ -178,6 +178,13 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .
   - **注意（作業方法）**: 非 ASCII を含むファイルの一括置換を PowerShell の `Get-Content -Raw` + `WriteAllText` で行うと文字化けする（このセッションで i18n.js と inspector.js を破損→`git checkout` で復旧）。今後は Node スクリプトか edit ツールを使う
   - README は Studio 前提に刷新。動画書き出し（P11）は未実装のため「later phase」と明記し、画像/SRT/プロジェクトの形式のみ記載
   - `npm run dist`（NSIS + Portable, 約115MB）と `dist/win-unpacked` のパッケージ版スモークまで確認
+- **演出改善プラン（11項目）の決定**:
+  - **テキストサイズは倍率で管理し、weird の結果を画面上の比率で読む**: ビート単位の `text.size`（フォント書体のサイズではない）がフレーム短辺の **3%〜120%** に収まるよう、weird が倍率帯を広げる。w=0 は従来の倍率（0.9〜1.15×）のまま完全不変。
+  - **折り返しが結果としてのフォントサイズを決める**: ビートごとの行数・`maxWidth`・`fit:'fill'`（fillCoverage）の選択を weird が大きく変え、その折り返しからサイズが決まる。突き抜けは frame-guard が「可視 50% 以上」を保証する。
+  - "後景" = **mid（backdrop）トラック**。**背景（bg）はユーザー設定**で自動演出は触れない。mid の画面支配度は weird で決まり、w=1 で 100%。
+  - 図形アニメーションは**新トラック `figure`**（後景と字幕の間）。
+
+| 演出改善 P0 演出ロジックの抽出 | （このコミット） | `renderer/js/studio/direct.js`（`SA.direct`: `prepare` / `directCue` / `directBeat` / `backgroundClip` / `backdropClipFor` / `backdropClips` / `fillerSettings` / `fillerClips` / `run`）。`autoDirect` は `prepare` → `store.dispatch(SA.direct.run)` だけになった。生成クリップに `auto:true` を付け、store の update/move/trim/split/duplicate で剥がす（＝pinned）。w=0 の出力は抽出前スナップショット（HEAD の dispatch 本文を Node で実行して採取した `scripts/test/fixtures/direct-w0.json`）と一致（`direct.test.js`）。 |
 
 
 

@@ -1570,7 +1570,10 @@ SA.store = (() => {
         coalesceKey: options && options.coalesceKey,
         do(projectDoc) {
           const target = (projectDoc.clips || []).find((clip) => clip.id === id);
-          if (target) Object.assign(target, clone(patch));
+          if (target) {
+            Object.assign(target, clone(patch));
+            delete target.auto; // a hand edit pins the clip: a run will not replace it
+          }
         },
       });
     },
@@ -1587,6 +1590,7 @@ SA.store = (() => {
           if (!target) return;
           target.start = Math.max(0, start);
           target.end = target.start + span;
+          delete target.auto;
         },
       });
     },
@@ -1602,6 +1606,7 @@ SA.store = (() => {
           if (!target) return;
           if (edge === 'start') target.start = Math.max(0, Math.min(time, target.end - 0.1));
           else target.end = Math.max(target.start + 0.1, time);
+          delete target.auto;
         },
       });
     },
@@ -1620,6 +1625,8 @@ SA.store = (() => {
           second.start = time;
           projectDoc.clips.push(second);
           target.end = time;
+          delete target.auto;
+          delete second.auto;
         },
       });
     },
@@ -1648,6 +1655,7 @@ SA.store = (() => {
           copy.id = newId;
           copy.start = start;
           copy.end = start + span;
+          delete copy.auto; // the copy is a hand-made clip
           projectDoc.clips.push(copy);
         },
       });

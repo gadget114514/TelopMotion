@@ -157,9 +157,9 @@ test('cue-scope randomization only rerolls one or two safe groups', () => {
 test('auto direct keeps the theme fixed and only breathes per beat', () => {
   const fs = require('node:fs');
   const path = require('node:path');
-  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/studio/app.js'), 'utf8');
-  const start = source.indexOf('// 2) per-cue motion inside the same theme');
-  const end = source.indexOf('// gaps between the lyrics');
+  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/studio/direct.js'), 'utf8');
+  const start = source.indexOf('function directCue(');
+  const end = source.indexOf('// The filler kinds a run writes');
   assert.ok(start > 0 && end > start, 'auto direct section found');
   const block = source.slice(start, end);
   // with weird 0 the beat patch never touches these groups

@@ -392,3 +392,30 @@ test('a shapeLayer clip can be added, edited and undone / redone', () => {
   assert.equal(store.redo(), true);
   assert.equal(store.state.project.clips.find((clip) => clip.id === id).spec.params.shape, 'box');
 });
+
+test('a hand edit on an auto clip pins it', () => {
+  store.load(fixture());
+  store.state.project.clips.push({ id: 'auto_mid', auto: true, trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  store.commands.trimClip('auto_mid', 'end', 3);
+  const trimmed = store.state.project.clips.find((clip) => clip.id === 'auto_mid');
+  assert.equal(trimmed.end, 3);
+  assert.equal(trimmed.auto, undefined, 'a trim removes the auto flag');
+
+  store.load(fixture());
+  store.state.project.clips.push({ id: 'auto_mid2', auto: true, trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  const idsBefore = new Set(store.state.project.clips.map((clip) => clip.id));
+  store.commands.splitClip('auto_mid2', 2);
+  const split = store.state.project.clips.filter((clip) => clip.id === 'auto_mid2' || !idsBefore.has(clip.id));
+  assert.equal(split.length, 2);
+  assert.ok(split.every((clip) => clip.auto === undefined), 'both halves are pinned');
+
+  store.load(fixture());
+  store.state.project.clips.push({ id: 'auto_mid3', auto: true, trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  store.commands.updateClip('auto_mid3', { opacity: 0.5 });
+  assert.equal(store.state.project.clips.find((clip) => clip.id === 'auto_mid3').auto, undefined, 'an update removes the auto flag');
+
+  store.load(fixture());
+  store.state.project.clips.push({ id: 'auto_mid4', auto: true, trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  const copyId = store.commands.duplicateClip('auto_mid4');
+  assert.equal(store.state.project.clips.find((clip) => clip.id === copyId).auto, undefined, 'the duplicate is pinned');
+});
