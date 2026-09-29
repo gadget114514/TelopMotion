@@ -681,6 +681,40 @@
       .filter(Boolean);
   }
 
+  // Snap planned rhythm cuts onto the closest character / word boundary read
+  // position, but only within half a beat (a cut that far from every boundary
+  // stays where the plan put it).
+  function snapChunkBoundaries(planned, units, start, budget, lang, settings, targetDuration) {
+    if (!planned || !planned.length) return [];
+    const speeds = settings.readingSpeed;
+    const totalReading = units.reduce((sum, unit) => sum + readingTime(unit.text, lang, speeds), 0) || units.length;
+    const times = [];
+    let acc = 0;
+    for (const unit of units) {
+      acc += readingTime(unit.text, lang, speeds);
+      times.push(start + (budget * acc) / totalReading);
+    }
+    const beat = Math.max(0.05, (Number(targetDuration) || 0) / 4);
+    const half = beat * 0.5;
+    const minGap = Math.max(0.05, settings.minChunkDuration || 0.2);
+    const out = [];
+    for (const cut of planned) {
+      let best = cut;
+      let bestDistance = half + 1e-9;
+      for (const time of times) {
+        if (time <= start + 1e-6 || time >= start + budget - 1e-6) continue;
+        const distance = Math.abs(time - cut);
+        if (distance < bestDistance) {
+          bestDistance = distance;
+          best = time;
+        }
+      }
+      if (best <= start + 1e-6 || best >= start + budget - 1e-6) continue;
+      if (!out.length || best > out[out.length - 1] + minGap) out.push(best);
+    }
+    return out;
+  }
+
   // Splits the cue text into beats that each show for about `target` seconds.
   // The beat count comes from the cue duration, the words are shared between
   // the beats by reading weight (TinySegmenter words for Japanese), and
@@ -1108,10 +1142,22 @@
       const targetDuration = Number(settings.targetChunkDuration) || 0;
       if (targetDuration > 0) {
         // one beat per musical bar: beats are cut on the bar grid when the cue
-        // crosses a bar line, with TinySegmenter words for Japanese
-        const boundaries = [];
-        for (let at = Math.ceil((start + 1e-6) / targetDuration) * targetDuration; at < start + budget - 1e-6; at += targetDuration) {
-          boundaries.push(at);
+        // crosses a bar line, with TinySegmenter words for Japanese. A planned
+        // rhythm (SA.rhythm, weird / energetic songs) replaces the grid; the
+        // cuts are snapped onto word boundaries within half a beat.
+        let boundaries = snapChunkBoundaries(settings.chunkPlan, units, start, budget, lang, settings, targetDuration);
+        if (!boundaries.length) {
+          for (let at = Math.ceil((start + 1e-6) / targetDuration) * targetDuration; at < start + budget - 1e-6; at += targetDuration) {
+            boundaries.push(at);
+          }
+        }
+        if (boundaries.length + 1 > units.length) {
+          // more cuts than words: subsample evenly instead of front-loading
+          const keep = Math.max(1, units.length - 1);
+          const step = boundaries.length / keep;
+          const sampled = [];
+          for (let i = 0; i < keep; i += 1) sampled.push(boundaries[Math.min(boundaries.length - 1, Math.floor(i * step))]);
+          boundaries = sampled;
         }
         const count = Math.max(1, boundaries.length + 1);
         const sources = targetChunkSources(units, targetDuration, lang, settings.readingSpeed, count);

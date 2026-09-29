@@ -68,6 +68,22 @@
     const accentHexes = accentIdx.map((i) => palette[i]);
     const baseSize = Number((themeStyle && themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
     const energy = Math.max(0, Math.min(1, Number(axes.energy) || 0.5));
+    // Phrase rhythm: a weird song lays a pattern library over the bars instead
+    // of cutting every cue on the same grid (w=0 keeps the old output exactly).
+    let rhythm = null;
+    if (w > 0 && SA.rhythm && doc && doc.script) {
+      rhythm = SA.rhythm.plan({
+        bpm,
+        axes,
+        seed: opts.seed,
+        spans: doc.script.cues.map((cue) => ({
+          id: cue.id,
+          start: Number(cue.start) || 0,
+          end: Number(cue.end) || (Number(cue.start) || 0) + 1,
+          charCount: String(cue.text || '').replace(/\s/g, '').length,
+        })),
+      });
+    }
     return {
       axes,
       w,
@@ -80,7 +96,7 @@
       cueLooks: opts.cueLooks || {},
       analysis,
       bpm,
-      rhythm: null,
+      rhythm,
       portrait,
       frameW,
       frameH,
@@ -189,10 +205,11 @@
     const beatPatch = { text: { size } };
     const beatDuration = Math.max(0.2, beat.end - beat.start);
     if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
+      const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
       beatPatch.hold = [
         {
           type: 'pulse',
-          params: { amount: Math.round((0.02 + energy * 0.08) * 1000) / 1000, bpm: Math.round(bpm) },
+          params: { amount: Math.round((0.02 + energy * 0.08) * 1000) / 1000, bpm: pulseBpm },
           enabled: true,
         },
       ];
@@ -229,7 +246,7 @@
         const hold =
           w >= 0.5
             ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
-            : { type: 'pulse', params: { amount: Math.round((0.06 + 0.1 * w) * 1000) / 1000, bpm: Math.round(bpm) }, enabled: true };
+            : { type: 'pulse', params: { amount: Math.round((0.06 + 0.1 * w) * 1000) / 1000, bpm: Math.round(bpm * pick(wr, [0.5, 1, 1, 2])) }, enabled: true };
         if (hold) beatPatch.hold = [hold];
       }
       if (wr() < 0.3 * w) {
@@ -369,9 +386,17 @@
     // G1: a weird song cuts its phrases into shorter chunks
     const chunkDuration = Math.round(barDuration * (1 - 0.5 * w) * 1000) / 1000;
     projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
-    for (const cue of projectDoc.script.cues) {
+    projectDoc.script.cues.forEach((cue, cueIndex) => {
       cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
-    }
+      const cuts = ctx.rhythm && ctx.rhythm[cue.id];
+      if (cuts && cuts.length) cue.textFlow.chunkPlan = cuts.slice();
+      else if (cue.textFlow.chunkPlan) delete cue.textFlow.chunkPlan;
+      if (w > 0) {
+        // a weird song varies how long a repeated page holds
+        const lh = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'longhold');
+        cue.textFlow.longHold = { ...(cue.textFlow.longHold || {}), interval: Math.round(4 * (0.75 + lh() * 0.5) * 100) / 100 };
+      }
+    });
     if (SA.textflow) SA.textflow.apply(projectDoc);
     // 1) rebuild the theme from scratch so re-rolls never keep stale groups
     for (const group of AUTO_DIRECT_GROUPS) delete projectDoc.style[group];

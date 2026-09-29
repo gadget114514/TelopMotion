@@ -175,7 +175,9 @@ test('auto direct keeps the theme fixed and only breathes per beat', () => {
     assert.ok(at > weirdAt, `${field} must only be set inside the weird block`);
   }
   assert.ok(/cueStyles\[cue\.id\][\s\S]*enter: generated\.enter/.test(block), 'enter/exit are per cue');
-  assert.ok(/bpm: Math\.round\(bpm\)/.test(block), 'pulse uses the audio BPM');
+  assert.ok(/bpm: pulseBpm/.test(block), 'pulse uses the audio BPM');
+  // w=0 keeps the exact BPM; only the weird branch may pick a multiple
+  assert.ok(/const pulseBpm = w > 0 \? [^\n]* : Math\.round\(bpm\)/.test(block));
 });
 
 test('every axis drives its own parameters and leaves the others alone', () => {

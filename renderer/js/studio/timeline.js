@@ -480,8 +480,8 @@ SA.timeline = (() => {
     return !!(track && track.hidden);
   }
 
-  // Thin per-track header: name, visibility eye and (for subtitle tracks) the
-  // keyframe twisty.
+  // Thin per-track header: name, visibility checkbox and (for subtitle tracks)
+  // the keyframe twisty.
   function drawTrackHeader(row, title, options) {
     const opts = options || {};
     const y = row.y;
@@ -499,7 +499,7 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const labelX = opts.twisty ? 20 : 8;
-    ctx.fillText(fitLabel(title, LABEL_W - labelX - (opts.eye === false ? 6 : 20)), labelX, y + height / 2);
+    ctx.fillText(fitLabel(title, LABEL_W - labelX - (opts.toggle === false ? 6 : 22)), labelX, y + height / 2);
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
     if (opts.twisty) {
@@ -522,23 +522,28 @@ SA.timeline = (() => {
       ctx.restore();
       hitRegions.push({ type: 'track-twisty', trackId: row.trackId, x: 2, y, w: 16, h: height });
     }
-    if (opts.eye !== false) {
-      const eyeX = LABEL_W - 12;
-      const eyeY = y + height / 2;
+    if (opts.toggle !== false) {
+      // a real checkbox: checked means "this track is drawn"
+      const size = 9;
+      const boxX = LABEL_W - 9 - size;
+      const boxY = y + height / 2 - size / 2;
       ctx.save();
       ctx.strokeStyle = opts.hidden ? '#6b7386' : '#4dc8a0';
-      ctx.fillStyle = opts.hidden ? 'transparent' : '#4dc8a0';
+      ctx.fillStyle = opts.hidden ? 'transparent' : 'rgba(77, 200, 160, 0.16)';
       ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.arc(eyeX, eyeY, 4, 0, Math.PI * 2);
+      ctx.rect(boxX, boxY, size, size);
+      ctx.fill();
       ctx.stroke();
       if (!opts.hidden) {
         ctx.beginPath();
-        ctx.arc(eyeX, eyeY, 1.8, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(boxX + 2, boxY + size / 2);
+        ctx.lineTo(boxX + size * 0.42, boxY + size - 2.2);
+        ctx.lineTo(boxX + size - 1.6, boxY + 1.8);
+        ctx.stroke();
       }
       ctx.restore();
-      hitRegions.push({ type: 'track-eye', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
+      hitRegions.push({ type: 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
     }
   }
 
@@ -816,7 +821,7 @@ SA.timeline = (() => {
 
   function drawCredits(size, row) {
     const clips = creditClips();
-    drawTrackHeader({ ...row, trackId: 'credits' }, t('credits.track'), { eye: false, color: '#b06bff' });
+    drawTrackHeader({ ...row, trackId: 'credits' }, t('credits.track'), { toggle: false, color: '#b06bff' });
     ctx.save();
     ctx.beginPath();
     ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
@@ -1203,10 +1208,10 @@ SA.timeline = (() => {
     } else if (hit.type === 'track-header') {
       SA.store.setSelection([`track:${hit.trackId}`], 'track');
       drag = null;
-    } else if (hit.type === 'track-eye') {
+    } else if (hit.type === 'track-check') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (track && (track.kind === 'foreground' || track.kind === 'background')) {
-        // layer tracks have no `hidden` flag: the eye toggles every layer
+        // layer tracks have no `hidden` flag: the checkbox toggles every layer
         const slot = track.kind;
         const layers = layerList(slot);
         const enabled = layers.some((layer) => layer.enabled === false);
@@ -1284,7 +1289,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-eye' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -1673,7 +1678,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-eye') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {

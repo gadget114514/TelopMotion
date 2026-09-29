@@ -63,9 +63,14 @@ function fakeElement(id) {
     clientWidth: id === 'timeline-scroll' ? 800 : 100,
     clientHeight: 200,
     offsetWidth: 100,
+    scrollTop: 0,
+    listeners: {},
     classList: { add() {}, remove() {}, toggle() {}, contains: () => false },
-    addEventListener() {},
+    addEventListener(name, fn) {
+      (this.listeners[name] = this.listeners[name] || []).push(fn);
+    },
     removeEventListener() {},
+    setPointerCapture() {},
     appendChild() {},
     remove() {},
     querySelectorAll: () => [],
@@ -130,6 +135,27 @@ test('fitToCues fits the whole cue list, even below MIN_ZOOM', () => {
   timeline.setZoom(1);
   assert.ok(100 * timeline.getZoom() <= viewWidth + 1, `zoom-out still fits (${timeline.getZoom()})`);
   assert.ok(timeline.getZoom() >= zoom - 1e-9, 'minZoom never exceeds the cue fit');
+});
+
+test('the track checkbox toggles visibility as one undo step', () => {
+  store.load(fixture());
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  assert.ok(typeof down === 'function', 'the timeline listens for pointerdown');
+  // second row = the first subtitle track (foreground row is above it):
+  // logical y 46..68, canvas y 33 (the ruler is fixed above the canvas)
+  const click = () => down({ button: 0, pointerId: 1, clientX: 80, clientY: 33, currentTarget: canvas, preventDefault() {} });
+  const sub = () => store.state.project.tracks.find((track) => track.id === 'sub1');
+  assert.equal(!!sub().hidden, false);
+  click();
+  assert.equal(sub().hidden, true, 'unchecked hides the track');
+  click();
+  assert.equal(!!sub().hidden, false, 'checked shows it again');
+  assert.equal(store.undo(), true);
+  assert.equal(sub().hidden, true, 'undo restores the checkbox');
+  assert.equal(store.redo(), true);
+  assert.equal(!!sub().hidden, false);
 });
 
 test('store.commands.importSrt fires script-imported', () => {

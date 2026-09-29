@@ -24,6 +24,7 @@ const SA = {
   textflow: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'textflow.js')),
   project: require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js')),
   fillers: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fillers.js')),
+  rhythm: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rhythm.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -64,6 +65,15 @@ function outputOf(doc) {
     }),
   }));
 }
+
+test('w=0 does not use the rhythm plan', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE);
+  assert.equal(ctx.rhythm, null);
+  const weird = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 } });
+  assert.ok(weird.rhythm && Object.keys(weird.rhythm).length >= 1, 'a weird song plans its phrase rhythm');
+  for (const cuts of Object.values(weird.rhythm)) assert.ok(Array.isArray(cuts));
+});
 
 test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
