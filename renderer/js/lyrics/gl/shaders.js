@@ -1633,12 +1633,15 @@ SA.glShaders = (() => {
       color = mix(u_colorA.rgb, u_colorB.rgb, clamp(n * 0.7 + n2 * 0.4, 0.0, 1.0));
       float t = u_time * 0.08;
       vec2 lightPos = vec2(0.5 + 0.24 * sin(t), 0.5 + 0.2 * cos(t * 0.8));
-      float lift = 0.22 * smoothstep(0.9, 0.0, distance(v_uv, lightPos));
+      // u_params.z is the centre-bright lift; -1 (unset) keeps the built-in one
+      float glowAmt = u_params.z < 0.0 ? 0.22 : u_params.z;
+      float lift = glowAmt * smoothstep(0.9, 0.0, distance(v_uv, lightPos));
       color = clamp(color * (1.0 + lift), 0.0, 1.0);
     } else if (u_type == 1) {
       float t = u_time * 0.08;
       vec2 lightPos = vec2(0.5 + 0.22 * sin(t), 0.5 + 0.18 * cos(t * 0.8));
-      float lift = 0.25 * smoothstep(0.85, 0.0, distance(v_uv, lightPos));
+      float glowAmt = u_params.z < 0.0 ? 0.25 : u_params.z;
+      float lift = glowAmt * smoothstep(0.85, 0.0, distance(v_uv, lightPos));
       color = clamp(color * (0.94 + lift), 0.0, 1.0);
     } else if (u_type == 3 || u_type == 4 || u_type == 5) {
       float breathe = 1.0 + 0.035 * sin(u_time * 0.22);

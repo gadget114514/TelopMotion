@@ -789,20 +789,41 @@
     const env = Math.min(enter, leave);
     const bpm = num(opts.bpm, 0) || 120;
     const beat = 60 / bpm;
-    const phase = (((time - start) / beat) % 1 + 1) % 1;
-    const pulse = 1 + num(motion.pulse, 0) * Math.sin(TAU * phase);
-    const driftAmount = num(motion.drift, 0);
+    const beats = (time - start) / beat;
+    const frame = opts.frame || { width: 1920, height: 1080 };
+    const short = Math.min(frame.width, frame.height);
+    // the beat motion: `pulse` (the legacy default) swells on every beat;
+    // `accent` hits on the downbeat of every `every` beats and decays;
+    // `swell` breathes over `every` beats; `sway` rocks instead of scaling;
+    // `drift` floats; `still` keeps only the planes' own motion
+    const mode = motion.mode || 'pulse';
+    const every = Math.max(1, num(motion.every, mode === 'accent' ? 4 : 8));
+    const group = (((beats / every) % 1) + 1) % 1;
+    const amount = num(motion.pulse, 0);
+    let pulse = 1;
+    let sway = 0;
+    let driftAmount = num(motion.drift, 0);
+    if (mode === 'pulse') pulse = 1 + amount * Math.sin(TAU * beats);
+    else if (mode === 'accent') pulse = 1 + amount * 1.6 * Math.exp(-group * every * 3.5);
+    else if (mode === 'swell') pulse = 1 + amount * 1.2 * (0.5 - 0.5 * Math.cos(TAU * group));
+    else if (mode === 'sway') sway = num(motion.sway, 0.03) * Math.sin(TAU * group);
+    // drift is a share of the short side here (the legacy pulse drift stays
+    // in its raw units so saved clips keep their look)
+    if (mode === 'drift' || mode === 'still') driftAmount *= short * (mode === 'still' ? 0.4 : 1);
     const dx = driftAmount * Math.sin(TAU * 0.17 * (time - start));
     const dy = driftAmount * 0.6 * Math.sin(TAU * 0.23 * (time - start) + 1.3);
+    // full-frame planes must not show their corners while they rock or drift
+    const cover = 1 + 1.8 * Math.abs(num(motion.sway, 0.03) * (mode === 'sway' ? 1 : 0)) + (mode === 'drift' || mode === 'still' ? (2.2 * Math.abs(driftAmount)) / short : 0);
     const kind = motion.transition || 'scale';
-    const frame = opts.frame || { width: 1920, height: 1080 };
+    // a `cut` has no enter / exit transition: the clip is simply on
+    const env2 = kind === 'cut' ? 1 : env;
     const originX = kind === 'wipe' ? 0 : frame.width / 2;
     const originY = frame.height / 2;
-    const scale = Math.max(0.001, pulse * (kind === 'rotate' ? Math.max(0.05, env) : env === 0 ? 0.001 : env));
-    const rotate = kind === 'rotate' ? (1 - env) * (Math.PI / 4) : 0;
+    const scale = Math.max(0.001, pulse * cover * (kind === 'rotate' ? Math.max(0.05, env2) : env2 === 0 ? 0.001 : env2));
+    const rotate = (kind === 'rotate' ? (1 - env2) * (Math.PI / 4) : 0) + sway;
     // the point mapping lives in figures so a figure's own scale / x / y can
     // reuse it; filler-render always has figures available
-    if ((kind === 'wipe' || kind === 'rotate' || scale !== 1 || dx || dy) && figures && typeof figures.transformShapes === 'function') {
+    if ((kind === 'wipe' || rotate || scale !== 1 || dx || dy) && figures && typeof figures.transformShapes === 'function') {
       figures.transformShapes(shapes, { originX, originY, scale, dx, dy, rotate });
     }
     for (const shape of shapes) {

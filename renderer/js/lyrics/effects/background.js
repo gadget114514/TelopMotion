@@ -32,6 +32,9 @@
       { key: 'colors', kind: 'gradient', default: null },
       { key: 'scale', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 1 },
       { key: 'speed', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.1 },
+      // the centre-bright lift; null keeps the built-in default (see shaders).
+      // `catalog:false` keeps the pre-existing effect catalogues byte-identical
+      { key: 'glow', kind: 'number', min: 0, max: 0.5, step: 0.01, default: null, catalog: false },
     ],
     cost: 1,
   });
@@ -43,6 +46,8 @@
       { key: 'colors', kind: 'gradient', default: null },
       { key: 'scale', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 3 },
       { key: 'speed', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.2 },
+      // see `gradient` above: `catalog:false` keeps the catalogues stable
+      { key: 'glow', kind: 'number', min: 0, max: 0.5, step: 0.01, default: null, catalog: false },
     ],
     cost: 2,
   });
@@ -275,8 +280,12 @@
     let p43 = [0, 0, 0, 0];
     let mode = 0;
     let mode2 = 0;
+    // the centre-bright lift amount rides in u_params.z; null / unset packs -1
+    // and the shader then uses its built-in default (0.22 / 0.25)
+    const glow = params.glow == null ? -1 : num(params.glow, -1);
     if (type === 1) {
       colorA = toRgb(params.color, colorA, context);
+      p4[2] = glow;
     } else if (type === 2) {
       const stops = Array.isArray(params.colors)
         ? params.colors
@@ -287,7 +296,7 @@
         colorA = toRgb(stops[0].color || stops[0], null, context);
         colorB = toRgb(stops[1].color || stops[1], null, context);
       }
-      p4 = [num(params.scale, 3), num(params.speed, 0.3), 0, 0];
+      p4 = [num(params.scale, 3), num(params.speed, 0.3), glow, 0];
     } else if (type === 3 || type === 4 || type === 5) {
       const zoom = num(params.zoom, 1.6);
       p4 = [zoom, num(context.focusX, 0), num(context.focusY, 0), num(params.dim, 0.35)];

@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'), require('./effects/repeat'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'), require('./effects/repeat'), require('./smartness'));
   else {
     root.SA = root.SA || {};
-    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods, root.SA.repeat);
+    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods, root.SA.repeat, root.SA.smartness);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat, smartness) {
   'use strict';
 
   const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
@@ -106,8 +106,15 @@
   function pickType(group, baseType, random, allowTags, context) {
     const candidates = candidatesFor(group, allowTags, context);
     if (!candidates.length) return null;
+    // the seventh axis demotes the tacky end of the pool (0 = the old uniform
+    // pick, byte for byte)
+    const s = context && Number.isFinite(context.smartness) ? context.smartness : 0;
     for (let attempt = 0; attempt < 3; attempt += 1) {
-      const descriptor = candidates[Math.min(candidates.length - 1, Math.floor(random() * candidates.length))];
+      const descriptor =
+        s > 0
+          ? smartness.pickWeighted(random, group, candidates, s)
+          : candidates[Math.min(candidates.length - 1, Math.floor(random() * candidates.length))];
+      if (!descriptor) return null;
       if (!baseType || descriptor.type !== baseType || candidates.length === 1) return descriptor;
     }
     return candidates[0];
@@ -355,7 +362,7 @@
   function contextForProject(project) {
     const cues = project.script.cues;
     const text = cues.map((cue) => cue.text || '').join('');
-    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9', weird: weirdOfProject(project) };
+    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9', weird: weirdOfProject(project), smartness: smartnessOfProject(project) };
   }
 
   function contextForCue(project, cue) {
@@ -367,6 +374,7 @@
       badgeId: !!(cue.meta && cue.meta.badgeId),
       aspect: project.output ? project.output.aspect : '16:9',
       weird: weirdOfProject(project),
+      smartness: smartnessOfProject(project),
     };
   }
 
@@ -380,6 +388,7 @@
       badgeId: !!(cue && cue.meta && cue.meta.badgeId),
       aspect: project.output ? project.output.aspect : '16:9',
       weird: weirdOfProject(project),
+      smartness: smartnessOfProject(project),
     };
   }
 
@@ -387,6 +396,12 @@
   // A project without a saved value opens at the UI default (0.7).
   function weirdOfProject(project) {
     return moods.projectWeird(project);
+  }
+
+  // the seventh axis: only a project that saved a value filters (the engine
+  // default stays 0, so old projects randomize exactly as before)
+  function smartnessOfProject(project) {
+    return moods.smartOf(project && project.styleMode && project.styleMode.axes);
   }
 
   function countLetters(text) {

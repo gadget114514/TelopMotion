@@ -550,7 +550,8 @@ SA.store = (() => {
     }
   }
 
-  function repaintScope(projectDoc, target, from, to) {
+  function repaintScope(projectDoc, target, from, to, options) {
+    const withClips = !(options && options.clips === false);
     const move = (value) => SA.moods.recolor(value, from, to);
     if (target.kind === 'project') {
       const { palette, ...rest } = projectDoc.style || {};
@@ -572,7 +573,7 @@ SA.store = (() => {
       const clips = managedClipsWithin(projectDoc, -Infinity, Infinity).filter(
         (clip) => !owned.some((cue) => clip.start >= cue.start - 1e-4 && clip.end <= cue.end + 1e-4)
       );
-      recolorClips(clips, from, to);
+      if (withClips) recolorClips(clips, from, to);
       return;
     }
     const container = scopeStyle(projectDoc, target);
@@ -588,19 +589,48 @@ SA.store = (() => {
         if (own && !own.palette) projectDoc.beatStyles[beat.id] = move(own);
       }
       const cue = ((projectDoc.script && projectDoc.script.cues) || []).find((entry) => entry.id === target.cueId);
-      if (cue) recolorClips(managedClipsWithin(projectDoc, cue.start, cue.end), from, to);
+      if (cue && withClips) recolorClips(managedClipsWithin(projectDoc, cue.start, cue.end), from, to);
     }
   }
 
-  function applyPalette(projectDoc, target, palette) {
+  function applyPalette(projectDoc, target, palette, options) {
     const from = paletteColorsAt(projectDoc, target.path);
     const to = palette.colors.slice();
-    if (from.length) repaintScope(projectDoc, target, from, to);
+    if (from.length) repaintScope(projectDoc, target, from, to, options);
     scopeStyle(projectDoc, target).palette = { ...clone(palette), colors: to };
     if (target.kind === 'project') {
       if (SA.moods.enforceReadability) SA.moods.enforceReadability(projectDoc.style, to);
       projectDoc.styleMode = { ...(projectDoc.styleMode || {}), theme: palette.name || palette.id || '' };
     }
+  }
+
+  // a new palette inside the project's axes and genre, the furthest of a few
+  // candidates from `current` so the change is always visible
+  function drawPalette(current, tries) {
+    if (!state.project || typeof SA === 'undefined' || !SA.moods) return null;
+    const mode = modeAxes();
+    const avoid = Array.isArray(current) ? current : [];
+    const distance = (colors) => {
+      if (!avoid.length) return 0;
+      return colors.reduce((sum, hex, index) => {
+        const a = SA.color.parse(hex);
+        const b = SA.color.parse(avoid[index % avoid.length]);
+        return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
+      }, 0);
+    };
+    const context = SA.moods.contextFor(state.project);
+    let palette = null;
+    let best = -1;
+    for (let i = 0; i < (tries || 4); i += 1) {
+      const seed = Math.floor(Math.random() * 900000) + 1000;
+      const candidate = SA.moods.generate({ axes: mode.axes, seed, genre: mode.genre, direction: mode.direction, context }).style.palette;
+      const score = distance(candidate.colors);
+      if (score > best) {
+        best = score;
+        palette = candidate;
+      }
+    }
+    return palette;
   }
 
   function clipDurationOf(clip) {
@@ -1780,33 +1810,67 @@ SA.store = (() => {
         },
       });
     },
+    // a batch of candidate palettes for the palette dialog (no dispatch, so it
+    // never lands in the undo history)
+    paletteCandidates(count) {
+      if (!state.project || typeof SA === 'undefined' || !SA.moods) return [];
+      const current = paletteColorsAt(state.project, '');
+      const total = Math.max(1, Math.min(24, Math.round(Number(count) || 1)));
+      const list = [];
+      const seen = new Set();
+      for (let i = 0; i < total; i += 1) {
+        const palette = drawPalette(current, 1);
+        if (!palette || seen.has(palette.id)) continue;
+        seen.add(palette.id);
+        list.push(palette);
+      }
+      return list;
+    },
+    // colour-only re-roll: a new palette (or the given one) plus every literal
+    // colour of the selected style / clips moved onto it, in one history entry
+    rerollColors(options) {
+      const opts = options || {};
+      if (!state.project || typeof SA === 'undefined' || !SA.moods) return null;
+      const kinds = new Set(Array.isArray(opts.kinds) ? opts.kinds : []);
+      const clipIds = Array.isArray(opts.clipIds) && opts.clipIds.length ? new Set(opts.clipIds) : null;
+      const mode = modeAxes();
+      const from = paletteColorsAt(state.project, '');
+      const palette = opts.palette && Array.isArray(opts.palette.colors) && opts.palette.colors.length ? opts.palette : drawPalette(from);
+      if (!palette) return null;
+      const perClip = opts.perClip !== false && !opts.palette;
+      const targets = ((state.project.clips) || []).filter((clip) => {
+        if (clipIds && !clipIds.has(clip.id)) return false;
+        return kinds.has(SA.project.trackKindOf(state.project, clip.trackId));
+      });
+      const clipPalettes = new Map(targets.map((clip) => [clip.id, perClip ? drawPalette(from, 1) : palette]));
+      dispatch({
+        label: 'reroll colors',
+        areas: ['style', 'project'],
+        do(projectDoc) {
+          if (opts.style) applyPalette(projectDoc, { kind: 'project', path: '' }, palette, { clips: false });
+          for (const clip of projectDoc.clips || []) {
+            if (!clipPalettes.has(clip.id)) continue;
+            const kind = SA.project.trackKindOf(projectDoc, clip.trackId);
+            const result = SA.moods.rerollClipColors(kind, clip, {
+              palette: clipPalettes.get(clip.id),
+              from,
+              axes: mode.axes,
+              seed: Math.floor(Math.random() * 900000) + 1000,
+            });
+            if (!result) continue;
+            clip.spec = result.spec;
+            if (result.colors) clip.colors = result.colors;
+          }
+        },
+      });
+      return palette;
+    },
     // a new palette inside the project's axes and genre, the furthest of a few
     // candidates from the current one so the change is always visible
     rerollPalette(scope) {
       const target = paletteScope(scope);
       if (!target || !state.project || typeof SA === 'undefined' || !SA.moods) return null;
-      const mode = modeAxes();
-      const current = paletteColorsAt(state.project, target.path);
-      const distance = (colors) => {
-        if (!current.length) return 0;
-        return colors.reduce((sum, hex, index) => {
-          const a = SA.color.parse(hex);
-          const b = SA.color.parse(current[index % current.length]);
-          return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
-        }, 0);
-      };
-      const context = SA.moods.contextFor(state.project);
-      let palette = null;
-      let best = -1;
-      for (let i = 0; i < 4; i += 1) {
-        const seed = Math.floor(Math.random() * 900000) + 1000;
-        const candidate = SA.moods.generate({ axes: mode.axes, seed, genre: mode.genre, direction: mode.direction, context }).style.palette;
-        const score = distance(candidate.colors);
-        if (score > best) {
-          best = score;
-          palette = candidate;
-        }
-      }
+      const palette = drawPalette(paletteColorsAt(state.project, target.path));
       if (!palette) return null;
       commands.setPalette(scope, palette, { label: 'reroll palette' });
       return palette;

@@ -442,7 +442,7 @@
     const out = { ...base };
     if (motion === 'slide') out.offset = num(base.offset, 0) + amp * Math.sin(TAU * speed * time);
     else if (motion === 'rotate') out.angle = num(base.angle, 0) + speed * time * 20;
-    else if (motion === 'breathe') out.offset = num(base.offset, 0) + amp * Math.sin(TAU * num(ctx.beatPhase, 0));
+    else if (motion === 'breathe') out.offset = num(base.offset, 0) + amp * Math.sin((TAU * num(ctx.beatPhase, 0)) / Math.max(1, num(base.every, 1)));
     else if (motion === 'drift') {
       out.centerX = num(base.centerX, 0.5) + amp * 0.5 * Math.sin(TAU * speed * 0.37 * time);
       out.centerY = num(base.centerY, 0.5) + amp * 0.5 * Math.sin(TAU * speed * 0.53 * time + 1.7);

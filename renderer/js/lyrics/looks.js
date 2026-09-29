@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'));
   else {
     root.SA = root.SA || {};
-    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods);
+    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness);
   }
-})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods) {
+})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness) {
   'use strict';
 
   // FX 800 runtime pool: 800 complete looks classified by motion magnitude and
@@ -156,6 +156,21 @@
     return hit ? clamp01(hit.w) : 0;
   }
 
+  // the smartness of a stored look: rateStyle walks the expanded stack groups
+  // once per entry and is cached, so the pool pick stays cheap
+  const smartCache = new Map();
+
+  function entrySmartness(entry) {
+    const n = entry && entry.n;
+    if (n != null && smartCache.has(n)) return smartCache.get(n);
+    const rated = smartness.rateStyle(expand(entry && entry.style));
+    if (n != null) {
+      if (smartCache.size > 4000) smartCache.clear();
+      smartCache.set(n, rated);
+    }
+    return rated;
+  }
+
   function weightFor(entry, options) {
     const opts = options || {};
     const axes = opts.axes || {};
@@ -163,9 +178,11 @@
     const motionNorm = entry.motion && entry.motion.norm != null ? clamp01(entry.motion.norm) : 0.5;
     // energy travels through the measured motion; the other four axes through
     // their traits. Theme affinity multiplies, so a themed draw stays on theme.
+    // The seventh axis demotes the looks whose stack carries tacky effects.
     const distance = axisDistance(entry, axes) + 0.8 * Math.abs(motionNorm - target);
     const theme = themeWeight(entry, opts.genre);
-    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme);
+    const smart = smartness.weight(entrySmartness(entry).min, smartness.smartOf(axes));
+    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme) * smart;
   }
 
   function pickFrom(list, options) {
@@ -208,7 +225,10 @@
   function compose(entry, options) {
     if (!entry) return null;
     const opts = options || {};
-    const style = expand(entry.style);
+    // the seventh axis drops the tacky effects from the look's stacks and
+    // steers the generator (palette, background, text)
+    const s = smartness.smartOf(opts.axes);
+    const style = smartness.prune(expand(entry.style), s);
     const generated = moods.generate({
       axes: opts.axes,
       seed: opts.seed,

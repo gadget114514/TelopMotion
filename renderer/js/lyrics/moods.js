@@ -1,24 +1,28 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
   // whole song keeps the drawn look; towards 1 more and more cues draw a look
   // of their own (the FX 800 demo shows one per cue). The looks themselves are
   // classified on the first five only (MATCH_AXES).
-  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird'];
+  // `smartness` is the seventh: how much cheap-looking grammar (per-beat pulse,
+  // vignette, ribbon, centre spotlight...) is dropped. 0 is the engine default
+  // and disables the filter, so every existing draw stays byte-identical.
+  const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness'];
   const MATCH_AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
-  const AXIS_DEFAULTS = { weird: 0 };
+  const AXIS_DEFAULTS = { weird: 0, smartness: 0 };
 
   // The UI and the project entry points open at 0.7; the engine keeps 0 as the
   // "not specified" default so old projects and the existing tests draw exactly
   // as before.
   const WEIRD_DEFAULT = 0.7;
+  const SMART_DEFAULT = smartness.SMART_DEFAULT;
 
   function has(v) {
     return v != null && v !== '' && Number.isFinite(Number(v));
@@ -31,6 +35,16 @@
   function projectWeird(project) {
     const axes = project && project.styleMode && project.styleMode.axes;
     return axes && has(axes.weird) ? clamp01(axes.weird) : WEIRD_DEFAULT;
+  }
+
+  // the seventh axis: the engine default is 0 (no filtering); the UI default is
+  // SMART_DEFAULT so new generation opens smart
+  function smartOf(axes) {
+    return smartness.smartOf(axes);
+  }
+
+  function projectSmartness(project) {
+    return smartness.projectSmartness(project);
   }
 
   // Bend the premise `base` towards `alt` by w; `breaks` drops the premise with
@@ -348,7 +362,7 @@
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
   }
 
-  function allowed(group, traits, context, direction, axes) {
+  function allowed(group, traits, context, direction, axes, type, options) {
     const flags = traits[2] || {};
     const w = weirdOf(axes);
     // a weird look may cross the vertical / horizontal layout boundary (a
@@ -367,6 +381,10 @@
     if (flags.minWeird != null && (!axes || weirdOf(axes) < flags.minWeird)) return false;
     if (flags.maxWeird != null && axes && weirdOf(axes) > flags.maxWeird) return false;
     if (flags.maxEnergy != null && axes && clamp01(axes.energy) > flags.maxEnergy) return false;
+    // the seventh axis drops the tacky end of the pool. The genre's hero group
+    // is exempt: it takes the weight penalty but keeps the genre's identity.
+    const s = smartOf(axes);
+    if (!(options && options.hero) && type != null && !smartness.ok(group, type, s)) return false;
     return true;
   }
 
@@ -385,7 +403,9 @@
     const texture = 1 - Math.abs(softness - axes.softness) / 1.15;
     const force = 1 - Math.abs(energy - axes.energy) * 0.3;
     const novelty = 1 - Math.abs(tw - w) * (0.7 + 0.6 * w);
-    return Math.max(0.02, texture * force * novelty);
+    // the seventh axis demotes the tacky end (a no-op while smartness is 0)
+    const smart = group && type != null ? smartness.weight(smartness.rate(group, type), smartOf(axes)) : 1;
+    return Math.max(0.02, texture * force * novelty) * smart;
   }
 
   // the pool the picker draws from: the classic tables, plus the extended
@@ -402,7 +422,7 @@
     return genres.affinity(genre, group, type);
   }
 
-  function pickEntry(random, group, axes, context, direction, exclude, genre) {
+  function pickEntry(random, group, axes, context, direction, exclude, genre, options) {
     const pool = poolFor(group, axes);
     const w = weirdOf(axes);
     const allowedTags = genre && Array.isArray(genre.allowTags) ? new Set(genre.allowTags) : null;
@@ -411,7 +431,7 @@
       for (const [type, traits] of Object.entries(pool)) {
         if (exclude && exclude.has(type)) continue;
         if (useGenre && genreAffinity(genre, group, type) <= 0) continue;
-        if (!allowed(group, traits, context, direction, axes)) continue;
+        if (!allowed(group, traits, context, direction, axes, type, options)) continue;
         // skip glyph-destroying or overlapping effects (pixelate, halftone,
         // dissolves, scatter, echo trails...) when generating automatically;
         // they remain selectable by hand unless the genre opts in. A weird
@@ -581,8 +601,8 @@
     return m;
   }
 
-  function instanceFor(random, group, axes, context, direction, colors, exclude, genre) {
-    const type = pickEntry(random, group, axes, context, direction, exclude, genre);
+  function instanceFor(random, group, axes, context, direction, colors, exclude, genre, options) {
+    const type = pickEntry(random, group, axes, context, direction, exclude, genre, options);
     if (!type) return null;
     const instance = { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, weirdOf(axes))), enabled: true, motion: motionFor(random, group, axes) };
     return weirdDecoration(instance, group, random, weirdOf(axes));
@@ -800,15 +820,18 @@
   // a random palette that keeps the mood's character: derived from a matching family
   function generatePalette(random, axes, name, allowed) {
     const w = weirdOf(axes);
+    const s = smartOf(axes);
     const base = paletteFor(axes, random, allowed);
     // subtle variation only: the family harmony must survive. B4: the sixth
-    // axis widens the jitter and may clash the accents on purpose.
-    const hueShift = (random() * 2 - 1) * (0.055 + 0.4 * w);
+    // axis widens the jitter and may clash the accents on purpose; the seventh
+    // narrows both back down (a smart palette stays on family)
+    const narrow = s > 0 ? 1 - 0.6 * s : 1;
+    const hueShift = (random() * 2 - 1) * (0.055 + 0.4 * w) * narrow;
     const satScale = 0.9 + random() * (0.2 + 0.5 * w);
     const lightScale = 0.94 + random() * 0.12;
     const colors = base.colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale));
     colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
-    if (w > 0 && random() < w) {
+    if (w > 0 && random() < w * narrow) {
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
       for (const i of [3, 5, 6]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
@@ -816,13 +839,16 @@
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
   }
 
-  // a variant of an existing palette (used by the per-scope "random palette")
-  function jitterPalette(random, palette, axes) {
+  // a variant of an existing palette (used by the per-scope "random palette"
+  // and by the mid layer's per-section shift). `spread` widens the jitter: the
+  // default keeps the old values exactly.
+  function jitterPalette(random, palette, axes, spread) {
     const colors = (palette && palette.colors) || [];
     if (!colors.length) return generatePalette(random, normalizeAxes({}));
-    const hueShift = (random() * 2 - 1) * 0.06;
-    const satScale = 0.9 + random() * 0.3;
-    const lightScale = 0.94 + random() * 0.16;
+    const k = spread == null || !(Number(spread) > 0) ? 1 : Number(spread);
+    const hueShift = (random() * 2 - 1) * 0.06 * k;
+    const satScale = 1 + (0.9 + random() * 0.3 - 1) * k;
+    const lightScale = 1 + (0.94 + random() * 0.16 - 1) * k;
     const next = colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale));
     repairContrast(next, bend(4.5, 3.0, weirdOf(axes)));
     return {
@@ -1127,15 +1153,17 @@
     neutralAccent: [0, 0, 180, 0],
   };
 
-  function splitColors(palette, n, w, random) {
+  function splitColors(palette, n, w, random, axes) {
     const source = Array.isArray(palette) && palette.length ? palette : ['#222222', '#111111', '#eeeeee', '#ff9900', '#333333', '#ffcc00'];
     const width = clamp01(w);
-    const scheme =
+    const s = smartOf(axes);
+    const candidates =
       width <= 0.35
-        ? pick(random, ['tonal', 'analogous'])
+        ? ['tonal', 'analogous']
         : width >= 0.7
-          ? pick(random, ['complementary', 'triad', 'splitComplementary', 'neutralAccent'])
-          : pick(random, ['tonal', 'analogous', 'complementary', 'triad']);
+          ? ['complementary', 'triad', 'splitComplementary', 'neutralAccent']
+          : ['tonal', 'analogous', 'complementary', 'triad'];
+    const scheme = s > 0 ? smartness.pickWeighted(random, 'splitScheme', candidates, s) : pick(random, candidates);
     const count = Math.max(2, Math.min(6, Math.round(n) || 3));
     const order = [3, 5, 6, 2, 0, 4];
     const hues = SPLIT_SCHEME_HUES[scheme];
@@ -1174,10 +1202,18 @@
           : ['halves', 'diagonal', 'thirds', 'bands', 'grid', 'mondrian', 'chevron', 'radial'];
     const layout = pick(random, layouts);
     const parts = Math.max(2, Math.min(8, 2 + Math.round(random() * (1 + 4 * w))));
-    const { scheme, colors } = splitColors(palette, Math.min(6, parts), w, random);
-    const motions = w >= 0.6 ? ['slide', 'rotate', 'breathe', 'swap', 'drift'] : ['breathe', 'slide'];
-    const motion = pick(random, motions);
-    return {
+    const { scheme, colors } = splitColors(palette, Math.min(6, parts), w, random, axes);
+    const s = smartOf(axes);
+    const motions =
+      s > 0
+        ? w >= 0.6
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push']
+          : ['breathe', 'slide', 'drift', 'push']
+        : w >= 0.6
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift']
+          : ['breathe', 'slide', 'drift'];
+    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', motions, s) : pick(random, motions);
+    const split = {
       type: 'split',
       params: {
         layout,
@@ -1192,6 +1228,32 @@
         cuts: Array.isArray(cuts) ? cuts.slice(0, 16) : null,
       },
     };
+    // `breathe` on a bar / phrase period reads calmer than a metronome; the
+    // period is only drawn once smartness is on, so old clips keep the beat
+    if (s > 0 && motion === 'breathe') split.params.every = pick(random, [1, 2, 4]);
+    return split;
+  }
+
+  // The mid clip's own motion on top of its planes. Not every clip pulses on
+  // the beat: some hit only on the bar's downbeat, breathe over a phrase, rock,
+  // float or hold still, so a song's mid layer changes character clip by clip.
+  // The seventh axis drops the per-beat pulse in favour of the calmer set and
+  // widens the transition choices to the hard `cut`.
+  const BACKDROP_MOTIONS = ['accent', 'swell', 'sway', 'drift', 'still', 'pulse'];
+
+  function backdropMotion(random, w, axes) {
+    const s = smartOf(axes);
+    const transition =
+      s > 0 ? smartness.pickWeighted(random, 'transition', ['wipe', 'scale', 'rotate', 'iris', 'cut'], s) : pick(random, ['wipe', 'scale', 'rotate', 'iris']);
+    const mode = s > 0 ? smartness.pickWeighted(random, 'backdropMotion', BACKDROP_MOTIONS, s) : pick(random, BACKDROP_MOTIONS);
+    const duration = s > 0 ? pick(random, [0.2, 0.35, 0.6]) : 0.35;
+    const motion = { mode, pulse: round(0.03 * (1 + w), 3), drift: round(0.012 * (1 + w), 3), transition, duration };
+    if (mode === 'accent') motion.every = pick(random, [2, 4]);
+    if (mode === 'swell' || mode === 'sway') motion.every = pick(random, [4, 8, 16]);
+    if (mode === 'sway') motion.sway = round(0.015 + 0.03 * w * random(), 3);
+    if (mode === 'drift') motion.drift = round(0.01 + 0.02 * w, 3);
+    if (mode === 'still') motion.drift = 0.006;
+    return motion;
   }
 
   function clipSpec(kind, axes, random, genre, options) {
@@ -1204,8 +1266,10 @@
       // of the flat noise gradient (the genre's explicit type list wins)
       if (options && options.weirdBg && w > 0 && !(overrides && overrides.types)) {
         const table = EXT_TRAITS.background;
-        const sub = Object.fromEntries(Object.entries(table).filter(([, tr]) => allowed('background', tr, { letterCount: 0 }, null, axes)));
-        const type = Object.keys(sub).length ? weightedFromTraits(sub, null, random, axes) : null;
+        const sub = Object.fromEntries(
+          Object.entries(table).filter(([type, tr]) => allowed('background', tr, { letterCount: 0 }, null, axes, type))
+        );
+        const type = Object.keys(sub).length ? weightedFromTraits(sub, null, random, axes, 'background') : null;
         if (type) {
           const params = sampleParams(random, 'background', type, axes, [colors[3], colors[5] || colors[3]]);
           if (typeof params.speed === 'number') params.speed = clampParam('background', type, 'speed', params.speed * (1 + w));
@@ -1216,12 +1280,24 @@
       const moving = random() < Math.min(1, lerp(0.35, 0.85, axes.density) + w);
       let type = moving ? 'noiseGradient' : random() < 0.5 ? 'gradient' : 'solid';
       if (!allowedTypes.includes(type)) type = allowedTypes[0];
+      const s = smartOf(axes);
+      if (s > 0) {
+        // the noise gradient carries the centre-bright mask; smartness prefers
+        // the flat gradient / solid instead of the moving one
+        const candidates = ['noiseGradient', 'gradient', 'solid'].filter((entry) => allowedTypes.includes(entry));
+        const table = Object.fromEntries(candidates.map((entry) => [entry, TRAITS.background[entry] || [0.4, 0.7]]));
+        const picked = candidates.length ? weightedFromTraits(table, null, random, axes, 'background') : null;
+        if (picked) type = picked;
+      }
       const params =
         type === 'noiseGradient'
           ? { scale: round(lerp(1.2, 4.6, axes.speed) * (1 + 0.5 * w), 2), speed: round(lerp(0.08, 0.7, axes.energy) * (1 + 2 * w), 2) }
           : type === 'gradient'
             ? { scale: round(lerp(0.6, 1.6, axes.softness), 2), speed: 0 }
             : {};
+      // the built-in centre lift fades out with the axis: at 0.5 or more the
+      // background is perfectly even
+      if (s > 0 && (type === 'gradient' || type === 'noiseGradient')) params.glow = round(0.22 * Math.max(0, 1 - s / 0.5), 3);
       return { spec: { type, params }, colors: [colors[0], colors[1]] };
     }
     let pool = kind === 'backdrop' ? BACKDROP_TYPES : kind === 'filler' ? FILLER_TYPES : [];
@@ -1262,12 +1338,7 @@
           type: 'combo',
           params: {
             list: [plane, { type, params }],
-            animate: {
-              pulse: round(0.03 * (1 + w), 3),
-              drift: round(0.012 * (1 + w), 3),
-              transition: pick(random, ['wipe', 'scale', 'rotate', 'iris']),
-              duration: 0.35,
-            },
+            animate: backdropMotion(random, w, axes),
           },
         },
         colors: weirdClipColors(random, paletteColors, w),
@@ -1300,6 +1371,40 @@
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
     return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg, palette: opts.palette, coverage: opts.coverage, cuts: opts.cuts });
+  }
+
+  // Colour-only re-roll of a timeline clip: the spec keeps its layout, motion
+  // and timing; split planes draw a fresh scheme from `palette`, the clip's
+  // own colours are drawn again from it, and any other literal colour moves
+  // from `from` (the palette the clip was made with) onto the new one.
+  function rerollClipColors(kind, clip, options) {
+    const opts = options || {};
+    const colorsOf = (value) => (Array.isArray(value) ? value : value && Array.isArray(value.colors) ? value.colors : []).filter((hex) => typeof hex === 'string' && HEX.test(hex));
+    const to = colorsOf(opts.palette);
+    if (!clip || !to.length) return null;
+    const from = colorsOf(opts.from);
+    const axes = normalizeAxes(opts.axes);
+    const w = weirdOf(axes);
+    const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
+    const random = rng.rngFor(seed, 'clip-colors', kind || 'backdrop');
+    const walk = (node) => {
+      if (typeof node === 'string') return from.length && HEX.test(node) ? recolor(node, from, to) : node;
+      if (Array.isArray(node)) return node.map(walk);
+      if (!node || typeof node !== 'object') return node;
+      const out = {};
+      for (const [key, entry] of Object.entries(node)) out[key] = walk(entry);
+      if (node.type === 'split' && node.params && Array.isArray(node.params.colors) && node.params.colors.length) {
+        const { scheme, colors } = splitColors(to, Math.min(6, node.params.colors.length), w, random, axes);
+        out.params = { ...out.params, scheme, colors };
+      }
+      return out;
+    };
+    const spec = clip.spec ? walk(clip.spec) : clip.spec;
+    let colors;
+    if (kind === 'background') colors = [to[0], to[1] || to[0]];
+    else if (w > 0) colors = weirdClipColors(random, to, w);
+    else colors = [to[3] || to[to.length - 1], to[5] || to[3] || to[to.length - 1]];
+    return { spec, colors };
   }
 
   // --- genre helpers -----------------------------------------------------------
@@ -1461,13 +1566,16 @@
     bleed: [0.8, 0.25],
   };
 
-  function weightedFromTraits(table, weights, random, axes) {
+  function weightedFromTraits(table, weights, random, axes, group) {
     const target = axes || { softness: 0.5, energy: 0.5 };
+    const s = smartOf(target);
     const entries = [];
     for (const [type, traits] of Object.entries(table)) {
       const weight = weights && weights[type] != null ? Number(weights[type]) : 1;
       if (weight <= 0) continue;
-      entries.push({ type, weight: Math.pow(scoreEntry(traits, target), 2) * weight * (0.7 + random() * 0.6) });
+      const smart = group ? smartness.weight(smartness.rate(group, type), s) : 1;
+      if (smart <= 0) continue;
+      entries.push({ type, weight: Math.pow(scoreEntry(traits, target), 2) * weight * smart * (0.7 + random() * 0.6) });
     }
     if (!entries.length) return null;
     const total = entries.reduce((sum, entry) => sum + entry.weight, 0);
@@ -1750,7 +1858,7 @@
       const stack = [];
       const used = new Set();
       for (let i = 0; i < count; i += 1) {
-        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre);
+        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero });
         if (!instance) break;
         if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w));
         used.add(instance.type);
@@ -1800,6 +1908,10 @@
     CLASSIC_WEIRD,
     WEIRD_TAG_OK,
     WEIRD_DEFAULT,
+    SMART_DEFAULT,
+    smartOf,
+    projectSmartness,
+    smartness,
     poolFor,
     allowed,
     PALETTES,
@@ -1811,6 +1923,7 @@
     paletteFor,
     paletteColors,
     rerollClipSpec,
+    rerollClipColors,
     normalizeAxes,
     randomAxes,
     randomGenre,

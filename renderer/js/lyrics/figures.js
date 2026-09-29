@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -84,17 +84,18 @@
     return value && list.includes(value) ? value : null;
   }
 
-  function assignMoves(beats, random, force) {
+  function assignMoves(beats, random, force, s) {
     let previousIn = null;
     let previousOut = null;
     for (const beat of beats) {
       const ins = INS.filter((name) => name !== previousIn);
       const outs = OUTS.filter((name) => name !== previousOut);
       // the random draws always run, forced or not, so the variant / accent
-      // sequence stays stable when a move is pinned
-      const inPick = pick(random, ins.length ? ins : INS);
-      const holdPick = pick(random, HOLDS);
-      const outPick = pick(random, outs.length ? outs : OUTS);
+      // sequence stays stable when a move is pinned. The seventh axis demotes
+      // the cheap moves (a no-op at 0, where the plain pick returns).
+      const inPick = smartness.pickWeighted(random, 'figureIn', ins.length ? ins : INS, s);
+      const holdPick = smartness.pickWeighted(random, 'figureHold', HOLDS, s);
+      const outPick = smartness.pickWeighted(random, 'figureOut', outs.length ? outs : OUTS, s);
       const variant = Math.floor(random() * 3);
       const accent = random() < 0.5;
       beat.move = {
@@ -120,11 +121,13 @@
     const random = rng.rngFor(seed, 'figure', id);
     const axes = opts.axes || {};
     const w = clamp01(axes.weird);
+    const s = smartness.smartOf(axes);
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
-    const motif = requested || pick(random, w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone'));
+    const motifPool = w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone');
+    const motif = requested || (s > 0 ? smartness.pickWeighted(random, 'figureMotif', motifPool, s) : pick(random, motifPool));
     const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
     const force = { in: opts.in, hold: opts.hold, out: opts.out };
-    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force);
+    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s);
     const palette = Array.isArray(opts.palette) ? opts.palette : [];
     const colors = palette.length >= 3 ? palette.slice(3, 8) : palette.slice();
     const density = Math.max(0.15, Math.min(1, num(opts.density, 0.4 + 0.5 * clamp01(axes.energy))));

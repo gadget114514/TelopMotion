@@ -186,8 +186,18 @@ function candidateValues(param) {
   return [];
 }
 
+// `catalog:false` marks engine-internal parameters (the generator writes them,
+// the UI may show them) that must not become catalogue candidates: the earlier
+// fx400 / fx800 files stay byte-identical.
+function catalogParam(param) {
+  return !!param && param.catalog !== false;
+}
+
 function baseInstance(group, descriptor) {
   const instance = fx.withDefaults({ type: descriptor.type, params: {} }, group);
+  for (const param of descriptor.params || []) {
+    if (!catalogParam(param) && instance.params) delete instance.params[param.key];
+  }
   instance.motion = clone((descriptor.defaults && descriptor.defaults.motion) || {});
   return instance;
 }
@@ -197,6 +207,7 @@ function baseInstance(group, descriptor) {
 function candidateInstance(group, descriptor, k) {
   const instance = baseInstance(group, descriptor);
   const ranked = (descriptor.params || [])
+    .filter(catalogParam)
     .map((param) => ({ param, values: candidateValues(param), score: paramScore(param) }))
     .filter((item) => item.values.length > 1 && item.values.some((value) => JSON.stringify(value) !== JSON.stringify(item.param.default)))
     .sort((a, b) => b.score - a.score)

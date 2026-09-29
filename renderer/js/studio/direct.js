@@ -43,6 +43,7 @@
     const axes = { ...(opts.axes || {}) };
     const w = SA.moods.weirdOf(axes);
     axes.weird = w;
+    const s = SA.moods.smartOf(axes);
     const analysis = opts.analysis || null;
     const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
     const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 120;
@@ -87,6 +88,7 @@
     return {
       axes,
       w,
+      s,
       seed: opts.seed,
       genre: opts.genre || null,
       direction: opts.direction || 'horizontal',
@@ -193,11 +195,23 @@
     }
   }
 
+  // The hold a beat may carry: pulse (the legacy default) at smartness 0, a
+  // smartness-weighted draw from the calm hold pool above it.
+  const BEAT_HOLD_TYPES = ['pulse', 'opacityPulse', 'heartbeat', 'breathing', 'floatBob', 'sway', 'drift', 'kenBurns'];
+
+  function smartHold(random, s, amount, pulseBpm) {
+    if (!(s > 0)) return { type: 'pulse', params: { amount, bpm: pulseBpm }, enabled: true };
+    const type = SA.moods.smartness.pickWeighted(random, 'hold', BEAT_HOLD_TYPES, s) || 'pulse';
+    if (type === 'pulse') return { type, params: { amount, bpm: pulseBpm }, enabled: true };
+    if (type === 'heartbeat') return { type, params: { bpm: pulseBpm }, enabled: true };
+    return { type, params: {}, enabled: true };
+  }
+
   // One beat's treatment inside the cue's theme. The size the sixth axis picks
   // is a ratio of the frame's short side (3%..120%), not a magnification of the
   // theme size: a weird song jumps between a whisper and a screen-filling word.
   function directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx) {
-    const { w, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes } = ctx;
+    const { w, s, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes } = ctx;
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
     const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
@@ -206,13 +220,7 @@
     const beatDuration = Math.max(0.2, beat.end - beat.start);
     if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
       const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
-      beatPatch.hold = [
-        {
-          type: 'pulse',
-          params: { amount: Math.round((0.02 + energy * 0.08) * 1000) / 1000, bpm: pulseBpm },
-          enabled: true,
-        },
-      ];
+      beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm)];
     }
     if (w > 0) {
       // E4 / I18 / H5: a weird song steps the beat treatment as well:
@@ -246,7 +254,7 @@
         const hold =
           w >= 0.5
             ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
-            : { type: 'pulse', params: { amount: Math.round((0.06 + 0.1 * w) * 1000) / 1000, bpm: Math.round(bpm * pick(wr, [0.5, 1, 1, 2])) }, enabled: true };
+            : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])));
         if (hold) beatPatch.hold = [hold];
       }
       if (wr() < 0.3 * w) {
@@ -263,25 +271,48 @@
   }
 
   // The filler presets a run may place: pattern / split / figures / combo /
-  // particles (never text — a gap is not a caption), minus the genre's excludes.
+  // particles (never text — a gap is not a caption), minus the genre's excludes
+  // and minus the specs the seventh axis rates below its floor.
   function fillerPresetPool(ctx, groupSet) {
     if (!SA.fillerPresets || typeof SA.fillerPresets.list !== 'function' || !SA.fillerRender) return [];
     const groups = groupSet || new Set(['pattern', 'split', 'figures', 'combo', 'particles']);
     const source = ctx && ctx.genre;
     const genre = typeof source === 'string' ? (SA.genres && SA.genres.get ? SA.genres.get(source) : null) : source;
     const exclude = new Set(genre && genre.clips && genre.clips.filler && Array.isArray(genre.clips.filler.exclude) ? genre.clips.filler.exclude : []);
+    const s = ctx && ctx.s != null ? ctx.s : SA.moods.smartOf(ctx && ctx.axes);
     return SA.fillerPresets.list().filter((preset) => {
       if (!groups.has(preset.group)) return false;
+      if (SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s) <= 0) return false;
       return !SA.fillerRender.layersOf(preset.spec).some((layer) => exclude.has(layer.type));
     });
   }
 
-  // One deterministic preset spec for a gap kind (same seed -> same preset).
+  function presetWeight(preset, s) {
+    return SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s);
+  }
+
+  // One deterministic preset spec for a gap kind (same seed -> same preset),
+  // smartness-weighted so the calm library leads.
   function fillerPresetSpec(ctx, kind, groupSet) {
     const pool = fillerPresetPool(ctx, groupSet);
     if (!pool.length) return null;
     const random = SA.rng.rngFor(ctx.seed, 'filler-preset', kind);
-    const preset = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
+    const s = ctx && ctx.s != null ? ctx.s : SA.moods.smartOf(ctx && ctx.axes);
+    let preset = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
+    if (s > 0) {
+      const weights = pool.map((entry) => presetWeight(entry, s));
+      const total = weights.reduce((sum, weight) => sum + weight, 0);
+      if (total > 0) {
+        let roll = random() * total;
+        for (let i = 0; i < pool.length; i += 1) {
+          roll -= weights[i];
+          if (roll <= 0) {
+            preset = pool[i];
+            break;
+          }
+        }
+      }
+    }
     return SA.fillerPresets.specOf(preset.id);
   }
 
@@ -356,7 +387,13 @@
   function backdropClipFor(projectDoc, cue, index, ctx) {
     const { axes, seed, genre, w, themeStyle } = ctx;
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
-    const palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
+    let palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
+    // the mid layer changes colour every four cues, so a long song never sits
+    // on one palette (w=0 keeps the classic look alone)
+    if (w > 0 && palette && Array.isArray(palette.colors) && palette.colors.length) {
+      const random = SA.rng.rngFor(seed, 'mid-section', Math.floor(index / 4));
+      palette = SA.moods.jitterPalette(random, palette, axes, 1 + 3 * w);
+    }
     const result = SA.moods.rerollClipSpec('backdrop', {
       axes,
       seed: seed + index * 977 + 3,
@@ -407,8 +444,35 @@
     if (!fillerTrack || !SA.fillers) return;
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
     const gaps = SA.fillers.gaps(cues, total, SA.fillers.settingsFor(projectDoc));
+    const s = ctx.s != null ? ctx.s : SA.moods.smartOf(ctx.axes);
+    const pool = fillerPresetPool(ctx);
+    // the previous gap's preset must not show up again in the next one
+    let previousPresetId = null;
     gaps.forEach((gap, gapIndex) => {
       let spec = JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} }));
+      if (!gap.pinned && (gap.kind === 'interlude' || gap.long) && pool.length) {
+        const candidates = pool.filter((preset) => preset.id !== previousPresetId);
+        const list = candidates.length ? candidates : pool;
+        const random = SA.rng.rngFor(ctx.seed, 'filler-gap', gap.key);
+        const weights = list.map((preset) => presetWeight(preset, s));
+        const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
+        let preset = list[Math.min(list.length - 1, Math.floor(random() * list.length))];
+        if (weightTotal > 0) {
+          let roll = random() * weightTotal;
+          for (let i = 0; i < list.length; i += 1) {
+            roll -= weights[i];
+            if (roll <= 0) {
+              preset = list[i];
+              break;
+            }
+          }
+        }
+        const presetSpec = SA.fillerPresets.specOf(preset.id);
+        if (presetSpec) spec = presetSpec;
+        previousPresetId = preset.id;
+      } else if (gap.spec && gap.spec.presetId) {
+        previousPresetId = gap.spec.presetId;
+      }
       // figures in the gaps: generated per gap so every gap has its own motif.
       // A preset's own motif / sync / moves / placement survive the generation.
       if (SA.figures) {
