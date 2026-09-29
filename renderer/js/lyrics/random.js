@@ -355,8 +355,22 @@
         }
       }
       if (Object.keys(style).length) {
-        const merged = mergeDeep(target.base || {}, style);
+        let merged = mergeDeep(target.base || {}, style);
         if (repeatConflicts(merged)) style = { ...style, repeat: { type: 'none', params: {} } };
+        // the legibility contract: a re-roll may adjust the groups it touched
+        // (and only those) when the effective style would not read
+        const axes = project.styleMode && project.styleMode.axes;
+        if (moods.legibilityActive(axes)) {
+          const before = mergeDeep(target.base || {}, style);
+          const repaired = moods.repairLegibility(before, axes, target.context, before.palette);
+          if (repaired && repaired !== before) {
+            const next = { ...style };
+            for (const key of Object.keys(repaired)) {
+              if (JSON.stringify(repaired[key]) !== JSON.stringify(before[key])) next[key] = repaired[key];
+            }
+            style = next;
+          }
+        }
         patches.push({ scope: target.scope, path: target.path || null, style });
       }
     }

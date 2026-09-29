@@ -34,7 +34,7 @@ test('the committed data and the runtime table are the same', () => {
   assert.ok(DATA.counts.overridden >= 450, `overrides ${DATA.counts.overridden}`);
 });
 
-test('every effect group and pseudo group has an 8-axis vector in 0..1', () => {
+test('every effect group and pseudo group has a packed 32-bit axis vector', () => {
   const groups = {};
   for (const group of build.EFFECT_GROUPS) {
     groups[group] = fx.list(group, { packs: 'all' }).map((descriptor) => descriptor.type);
@@ -43,18 +43,44 @@ test('every effect group and pseudo group has an 8-axis vector in 0..1', () => {
   for (const [group, types] of Object.entries(groups)) {
     assert.ok(DATA.groups[group], `${group} missing from the table`);
     for (const type of types) {
-      const vector = DATA.groups[group][type];
-      assert.ok(Array.isArray(vector) && vector.length === 8, `${group}.${type} missing`);
-      for (const value of vector) assert.ok(Number.isFinite(value) && value >= 0 && value <= 1, `${group}.${type} value ${value}`);
-    }
-    // the runtime lookup agrees with the data
-    for (const type of types) {
+      const packed = DATA.groups[group][type];
+      assert.equal(typeof packed, 'number', `${group}.${type} is not packed`);
+      assert.ok(Number.isInteger(packed) && packed >= 0 && packed <= 0xffffffff, `${group}.${type} out of the 32-bit range`);
+      const vector = fxAxes.unpack(packed);
+      for (const axis of fxAxes.AXES) {
+        assert.ok(Number.isFinite(vector[axis]) && vector[axis] >= 0 && vector[axis] <= 1, `${group}.${type}.${axis}`);
+      }
+      // the runtime lookup agrees with the data (smartness comes from the live
+      // ratings provider and may be finer than the 4-bit step)
       const of = fxAxes.of(group, type);
-      for (const axis of fxAxes.AXES) assert.ok(Number.isFinite(of[axis]) && of[axis] >= 0 && of[axis] <= 1, `${group}.${type}.${axis}`);
+      for (const axis of fxAxes.AXES) {
+        if (axis === 'smartness') continue;
+        assert.equal(of[axis], vector[axis], `${group}.${type}.${axis}`);
+      }
+      assert.equal(fxAxes.packed(group, type), packed, `${group}.${type} packed lookup`);
     }
   }
   const unknown = fxAxes.of('post', 'notARealType');
   assert.deepEqual(unknown, { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0.5, smartness: 0.5, fear: 0.2 });
+});
+
+test('pack / unpack round-trips the 8 axes in 4 bits each', () => {
+  assert.equal(fxAxes.AXIS_BITS, 4);
+  assert.equal(fxAxes.AXIS_MAX, 15);
+  const vector = { speed: 0, energy: 1, softness: 0.5, density: 1 / 3, brightness: 0.2, weird: 0.87, smartness: 0.6, fear: 0.13 };
+  const packed = fxAxes.pack(vector);
+  assert.ok(Number.isInteger(packed) && packed >= 0 && packed <= 0xffffffff);
+  const back = fxAxes.unpack(packed);
+  for (const axis of fxAxes.AXES) {
+    assert.ok(Math.abs(back[axis] - vector[axis]) <= 1 / 15, `${axis}: ${back[axis]} vs ${vector[axis]}`);
+  }
+  assert.equal(fxAxes.pack(back), packed, 'the packed value is stable');
+  // fields do not bleed into each other
+  assert.ok(Math.abs(fxAxes.unpack(fxAxes.pack({ speed: 1 })).energy - 0.5) <= 1 / 15);
+  assert.equal(fxAxes.unpack(fxAxes.pack({ speed: 1 })).speed, 1);
+  // an old 8-number array packs like the equivalent vector
+  const legacy = [1, 0, 0, 0, 0, 0, 0, 0];
+  assert.equal(fxAxes.pack(legacy), fxAxes.pack({ speed: 1, energy: 0, softness: 0, density: 0, brightness: 0, weird: 0, smartness: 0, fear: 0 }));
 });
 
 test('smartness reads the live ratings through the provider (single source)', () => {

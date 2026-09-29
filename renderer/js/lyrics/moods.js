@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -837,8 +837,9 @@
     const bg = hsvHex(family.bgHue, bgS, bgV);
     const bg2 = hsvHex(family.bgHue + 14, bgS * 0.88, midV);
     let text = hsvHex(textHue, textS, textV);
-    // I2: the minimum contrast loosens with the axis, but never below 3:1
-    text = color.ensureContrast(text, bg, bend(4.5, 3.0, w));
+    // the minimum contrast is the legibility contract's floor and never moves
+    // (the weird axis only raises it through repairContrast / paletteContrast)
+    text = color.ensureContrast(text, bg, 4.5);
     const accent = hsvHex(family.accentHue, accentS, accentV);
     const stroke = hsvHex(family.bgHue + 5, 0.45, strokeV);
     const accent2 = hsvHex(family.accentHue + 40, accentS * 0.9, Math.min(1, accentV * 1.08));
@@ -1008,7 +1009,7 @@
     const sat = 1 + random() * 0.4 * w;
     const next = colors.map((hex, i) => shiftColor(hex, hue * (i === 2 ? 0.3 : 1), sat, 0.95 + random() * 0.1));
     if (next.length >= 6 && random() < 0.5 * w) [next[3], next[5]] = [next[5], next[3]];
-    repairContrast(next, bend(4.5, 3.0, w));
+    repairContrast(next, 4.5 + 2.5 * w);
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: palette.name || 'palette', colors: next };
   }
 
@@ -1163,10 +1164,10 @@
     const w = textWeirdOf(axes);
     if (!(w > 0) || random() >= w) return base;
     // B6 / H5: the fill may leave the text role and the 2 -> 3 gradient, as
-    // long as every colour it uses still reads against the background
+    // long as every colour it uses still clears the legibility floor (4.5)
     const colors = (palette && palette.colors) || [];
     const bg = color.parse(colors[0] || '#000000');
-    const readable = [2, 3, 5, 6].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 3);
+    const readable = [2, 3, 5, 6].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 4.5);
     if (!readable.length) return base;
     let fill;
     if (readable.length >= 2 && random() < 0.55) {
@@ -1766,9 +1767,9 @@
     if (!fgHex) return;
     const ratio = (a, b) => color.contrastRatio(color.parse(a), color.parse(b));
     const worst = Math.min(...bgColors.map((hex) => ratio(fgHex, hex || '#000000')));
-    // the minimum the auto-contrast aims for follows the weird axis (raw 1
-    // demands 4.5), because later in the run the palette contrast also climbs
-    const floor = 3 + 1.5 * (Number.isFinite(Number(rawW)) ? clamp01(rawW) : 0);
+    // the minimum the auto-contrast aims for is the legibility floor (4.5): the
+    // weird axis may raise it elsewhere but never lowers it
+    const floor = 4.5;
     if (worst >= floor) return;
     const options = [2, 4];
     let best = null;
@@ -1941,6 +1942,33 @@
     };
   }
 
+  function frameForContext(context) {
+    const aspect = (context && context.aspect) || '16:9';
+    if (aspect === '9:16') return { width: 1080, height: 1920 };
+    if (aspect === '1:1') return { width: 1080, height: 1080 };
+    return { width: 1920, height: 1080 };
+  }
+
+  // The legibility repair engages only while the axes that may break
+  // readability are on: weird (raw) or fear. At 0 every existing draw stays
+  // byte-identical and consumes no extra random.
+  function legibilityActive(axes) {
+    return weirdOf(axes) > 0 || fearOf(axes) > 0;
+  }
+
+  function repairLegibility(style, axes, context, palette, extra) {
+    if (!legibilityMod || typeof legibilityMod.repair !== 'function' || !legibilityActive(axes)) return style;
+    const repaired = legibilityMod.repair(style, {
+      frame: frameForContext(context),
+      palette: (palette && palette.colors) || palette || [],
+      letterCount: (context && context.letterCount) || 12,
+      aspect: context && context.aspect,
+      duration: (context && context.duration) || 3,
+      ...(extra || {}),
+    });
+    return repaired && repaired.style ? repaired.style : style;
+  }
+
   function generate(options) {
     const opts = options || {};
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
@@ -2036,8 +2064,9 @@
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
     enforceReadability(style, palette.colors, random, w, weirdOf(axes));
+    const finalStyle = repairLegibility(style, axes, context, palette);
     return {
-      style,
+      style: finalStyle,
       axes,
       seed,
       direction: direction || 'horizontal',
@@ -2101,6 +2130,10 @@
     projectFear,
     fearWeightOf,
     FEAR_TAG_OK,
+    legibilityActive,
+    repairLegibility,
+    frameForContext,
+    legibility: legibilityMod,
     tameGlow,
     repairContrast,
     weirdPalette,

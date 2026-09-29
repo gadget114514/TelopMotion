@@ -383,6 +383,13 @@
     if (beat.move.out === 'fade') {
       for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * Math.max(0, leave);
     }
+    // an explicit layer opacity (the legibility gate dims a figure that would
+    // cover the lyrics) multiplies the finished shapes; absent = 1
+    const ownOpacity = num(params.opacity, 1);
+    if (ownOpacity < 1) {
+      const level = clamp01(ownOpacity);
+      for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * level;
+    }
     return { shapes, texts: [] };
   }
 

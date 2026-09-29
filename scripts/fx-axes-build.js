@@ -245,15 +245,18 @@ function buildTable(overrides) {
   const groups = {};
   for (const entry of found) {
     if (!groups[entry.group]) groups[entry.group] = {};
-    groups[entry.group][entry.type] = buildVector(entry, overrides);
+    // every direction carries its 8-axis vector as one 32-bit integer
+    // (4 bits per axis, 0..15); `fxAxes.of` unpacks it
+    groups[entry.group][entry.type] = fxAxes.pack(buildVector(entry, overrides));
   }
   return {
     format: 'telopmotion-fx-axes',
     version: 1,
     axes: [...AXES],
+    packing: '8 axes x 4 bits = one unsigned 32-bit integer per direction (axis i in bits 4i..4i+3, value/15)',
     neutral: { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0.5, smartness: 0.5, fear: 0.2 },
     source: 'moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json',
-    method: 'energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。',
+    method: 'energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。',
     counts: {
       types: found.length,
       groups: Object.keys(groups).length,

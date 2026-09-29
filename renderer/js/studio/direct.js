@@ -562,7 +562,7 @@
     const roll = SA.rng.rngFor(seed + index * 313, cue.id, 'figure')();
     const textWeight = w >= 0.6 ? 0.3 : 0.4;
     const sync = roll < textWeight ? 'text' : roll < textWeight + 0.4 ? 'beat' : 'free';
-    const spec = SA.figures.generate({
+    let spec = SA.figures.generate({
       span: { start: cue.start, end: cue.end },
       beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
       axes,
@@ -573,6 +573,15 @@
       density,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
+    // the figure must not cover the lyrics: recolour / dim beyond the gate
+    if (SA.legibility && SA.moods.legibilityActive(axes)) {
+      spec = SA.legibility.repairFigureSpec(spec, {
+        frame: { width: ctx.frameW, height: ctx.frameH },
+        palette,
+        textColors: [palette[2], palette[4]].filter(Boolean),
+        duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
+      });
+    }
     return nextClip(projectDoc, 'clip_fig', {
       trackId: track,
       start: cue.start,
@@ -656,6 +665,26 @@
         directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
       });
     });
+    // 2.5) legibility: the drawn + generated arrangement must read while the
+    // weird / fear axes are on. Only the groups the repair touches are written
+    // into the cue, so the theme stays shared.
+    if (SA.moods.legibilityActive && SA.moods.legibilityActive(ctx.axes)) {
+      const writeRepair = (cueId, effective, context) => {
+        const repaired = SA.moods.repairLegibility(effective, ctx.axes, context, effective.palette);
+        if (!repaired || repaired === effective) return;
+        const container = cueId ? projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {}) : projectDoc.style;
+        for (const key of Object.keys(repaired)) {
+          if (JSON.stringify(repaired[key]) !== JSON.stringify(effective[key])) container[key] = JSON.parse(JSON.stringify(repaired[key]));
+        }
+      };
+      for (const cue of projectDoc.script.cues) {
+        writeRepair(cue.id, SA.project.resolveStyle(projectDoc, `cue:${cue.id}`), {
+          ...SA.moods.contextForCue(projectDoc, cue),
+          duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
+        });
+      }
+      writeRepair(null, SA.project.resolveStyle(projectDoc, 'project'), { ...SA.moods.contextFor(projectDoc), duration: 3 });
+    }
     // 3) the filler settings, then the clips: a re-run replaces the clips it
     // owns (auto) and leaves subtitle and hand-made clips alone.
     projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, fillerSettings(projectDoc, ctx));

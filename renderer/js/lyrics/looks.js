@@ -260,6 +260,10 @@
       if (style.text && style.text.fontId) text.fontId = style.text.fontId;
       style.text = { ...(style.text || {}), ...text };
     }
+    // the legibility contract applies to the composed style (the drawn part
+    // plus the generated palette / text); weird 0 / fear 0 is a no-op
+    const repaired = moods.repairLegibility(style, opts.axes, { ...(opts.context || {}), duration: opts.duration }, style.palette);
+    if (repaired && repaired !== style) style = repaired;
     return {
       style,
       clip: recolorClip(entry.clip, style.palette),

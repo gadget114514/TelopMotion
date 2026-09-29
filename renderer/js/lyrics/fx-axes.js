@@ -32,6 +32,10 @@
   const BASE_AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
   const NEUTRAL = 0.5;
   const FEAR_NEUTRAL = 0.2;
+  // every axis is quantised to 4 bits: the 8-axis vector of a direction is one
+  // 32-bit integer (4 bytes), axis i in bits 4i..4i+3, 0..15
+  const AXIS_BITS = 4;
+  const AXIS_MAX = 15;
   // fear above this opens the horror side: the extended primitives, the
   // readable degrade / overlap tags and the genre-only blood / ash / rain
   // palettes
@@ -47,6 +51,54 @@
 
   function has(value) {
     return value != null && value !== '' && Number.isFinite(Number(value));
+  }
+
+  // --- 4-bit packing ---------------------------------------------------------
+  // `pack(vector)` -> unsigned 32-bit integer, `unpack(n)` -> vector. Both
+  // accept the other form and pass it through, so old data (arrays) and the
+  // packed directions can coexist.
+
+  function stepOf(value, axis) {
+    const fallback = axis === 'fear' ? FEAR_NEUTRAL : NEUTRAL;
+    return Math.max(0, Math.min(AXIS_MAX, Math.round(clamp01(value == null ? fallback : value) * AXIS_MAX)));
+  }
+
+  function pack(vector) {
+    if (typeof vector === 'number' && Number.isFinite(vector)) return vector >>> 0;
+    if (Array.isArray(vector)) return pack(vectorFromArray(vector));
+    const source = vector || {};
+    let packed = 0;
+    for (let i = 0; i < AXES.length; i += 1) {
+      packed += stepOf(source[AXES[i]], AXES[i]) << (AXIS_BITS * i);
+    }
+    return packed >>> 0;
+  }
+
+  function unpack(packed) {
+    if (Array.isArray(packed)) return vectorFromArray(packed);
+    if (packed == null || !Number.isFinite(Number(packed))) return of(null, null);
+    const number = Number(packed) >>> 0;
+    const out = {};
+    for (let i = 0; i < AXES.length; i += 1) {
+      out[AXES[i]] = ((number >>> (AXIS_BITS * i)) & AXIS_MAX) / AXIS_MAX;
+    }
+    return out;
+  }
+
+  // the packed integer of a vector: `packed(vector)` / `packed(group, type)`
+  function packed(value, type) {
+    if (typeof value === 'string' && type != null) {
+      const entry = tableEntry(value, type);
+      if (entry != null) return pack(entry);
+      return pack(of(value, type));
+    }
+    return pack(value);
+  }
+
+  function vectorFromArray(items) {
+    const out = {};
+    for (let i = 0; i < AXES.length; i += 1) out[AXES[i]] = clamp01(items[i] == null ? (AXES[i] === 'fear' ? FEAR_NEUTRAL : NEUTRAL) : items[i]);
+    return out;
   }
 
   // The rating provider: smartness.js registers its own `rate` so the
@@ -69,11 +121,19 @@
     return out;
   }
 
+  function neutralVector() {
+    return { speed: NEUTRAL, energy: NEUTRAL, softness: NEUTRAL, density: NEUTRAL, brightness: NEUTRAL, weird: NEUTRAL, smartness: NEUTRAL, fear: FEAR_NEUTRAL };
+  }
+
   // One effect's vector. Unknown types read neutral; fear 0.2 is the neutral
-  // value the plan pins for unregistered effects.
+  // value the plan pins for unregistered effects. Table entries are packed
+  // 32-bit integers (or the older 8-number arrays).
   function of(group, type) {
     const entry = tableEntry(group, type);
-    const out = entry ? vectorFromArray(entry) : { speed: NEUTRAL, energy: NEUTRAL, softness: NEUTRAL, density: NEUTRAL, brightness: NEUTRAL, weird: NEUTRAL, smartness: NEUTRAL, fear: FEAR_NEUTRAL };
+    let out;
+    if (typeof entry === 'number') out = unpack(entry);
+    else if (Array.isArray(entry)) out = vectorFromArray(entry);
+    else out = neutralVector();
     if (rateProvider && group && type != null) {
       const rating = Number(rateProvider(group, type));
       if (Number.isFinite(rating)) out.smartness = clamp01(rating);
@@ -206,15 +266,15 @@
     return of('background', node.type);
   }
 
-  // A stored look: the runtime pools already carry an axes object (P-D's
-  // looks500 stores all eight); the old fx800 entries have six and fall back
-  // to their style.
+  // A stored look: the runtime pools carry the packed 32-bit axis integer
+  // (P-D's looks500 and P-C's figures500 store it as `axes`); the old fx800
+  // entries have no axes and fall back to their style.
   function ofLook(entry) {
     const axes = (entry && entry.axes) || null;
-    if (axes && (axes.fear != null || axes.speed != null)) {
+    if (typeof axes === 'number') return unpack(axes);
+    if (axes && typeof axes === 'object') {
       const out = {};
-      for (const axis of AXES) out[axis] = clamp01(axes[axis] == null ? (axis === 'fear' ? FEAR_NEUTRAL : axis === 'weird' ? axes.weird : NEUTRAL) : axes[axis]);
-      if (axes.weird != null) out.weird = clamp01(axes.weird);
+      for (const axis of AXES) out[axis] = clamp01(axes[axis] == null ? (axis === 'fear' ? FEAR_NEUTRAL : NEUTRAL) : axes[axis]);
       return out;
     }
     return ofStyle(entry && entry.style);
@@ -317,8 +377,13 @@
     FEAR_NEUTRAL,
     FEAR_REVEAL,
     FEAR_GAP,
+    AXIS_BITS,
+    AXIS_MAX,
     TABLE: table,
     setRateProvider,
+    pack,
+    unpack,
+    packed,
     of,
     ofStyle,
     ofFigure,
