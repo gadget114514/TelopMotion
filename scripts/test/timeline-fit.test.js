@@ -238,6 +238,34 @@ test('the last subtitle track keeps its remove button hidden', () => {
   assert.deepEqual(store.state.selection.paths, ['track:sub1'], 'the click selects the track');
 });
 
+test('the background track checkbox hides its clips and shows them as a lane', () => {
+  const doc = fixture();
+  doc.clips.push({ id: 'bgclip', trackId: 'bg', start: 0, end: 100, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  store.load(doc);
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  const up = canvas.listeners.pointerup[0];
+  const bg = () => store.state.project.tracks.find((track) => track.kind === 'background');
+  // rows: ruler 24, fg 22, sub1 26, fig 22, mid 22, filler 22, bg layer 22,
+  // then the background clip lane
+  const bgLayerCenter = 24 + 22 + 26 + 22 + 22 + 22 + 11;
+  const clipLaneCenter = bgLayerCenter + 22;
+  const click = (x, y) => {
+    const event = { button: 0, pointerId: 1, clientX: x, clientY: y - 24, currentTarget: canvas, preventDefault() {} };
+    down(event);
+    up(event);
+  };
+  // the background clip is visible on its own lane and can be selected
+  click(210, clipLaneCenter);
+  assert.deepEqual(store.state.selection.paths, ['clip:bgclip'], 'the background clip is selectable');
+  // the checkbox hides the whole track: its clips and its layers
+  click(80, bgLayerCenter);
+  assert.equal(bg().hidden, true, 'the checkbox sets the hidden flag');
+  click(80, bgLayerCenter);
+  assert.equal(!!bg().hidden, false, 'clicking again shows the track');
+});
+
 test('dragging on a figure track creates a clip', () => {
   store.load(fixture());
   const id = store.commands.addTrack('figure');

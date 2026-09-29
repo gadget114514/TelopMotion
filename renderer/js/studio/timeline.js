@@ -327,6 +327,17 @@ SA.timeline = (() => {
           rows.push({ type: 'layer-track', y, h: LAYER_H, trackId: track.id, track, slot, layers: packed[lane] || [], first: lane === 0, last: lane === laneCount - 1 });
           y += LAYER_H;
         }
+        // the background track also owns the background clips (the auto
+        // direction places the song's background here): show them as clip
+        // lanes under the layer lanes so they can be selected and edited
+        if (track.kind === 'background') {
+          const clips = clipsOnTrack(doc, track.id);
+          const clipPacked = packRows(clips, (clip) => clip.start, (clip) => clip.end);
+          for (let lane = 0; lane < clipPacked.length; lane += 1) {
+            rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1 });
+            y += LAYER_H;
+          }
+        }
         continue;
       }
       if (track.kind === 'subtitle') {
@@ -732,7 +743,7 @@ SA.timeline = (() => {
     if (row.first) {
       drawTrackHeader(row, trackTitle(row.track), {
         color: foreground ? '#4dc8a0' : '#4d8fc8',
-        hidden: !anyEnabled,
+        hidden: trackHidden(row.track) || !anyEnabled,
       });
     }
     const y = row.y;
@@ -1321,12 +1332,16 @@ SA.timeline = (() => {
     } else if (hit.type === 'track-check') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (track && (track.kind === 'foreground' || track.kind === 'background')) {
-        // layer tracks have no `hidden` flag: the checkbox toggles every layer
+        // layer tracks toggle every layer of their slot; a hidden track (or a
+        // disabled layer) means the next click shows it
         const slot = track.kind;
         const layers = layerList(slot);
-        const enabled = layers.some((layer) => layer.enabled === false);
-        const next = ((project().layers) || []).map((layer) => ((layer.slot || 'background') === slot ? { ...layer, enabled } : layer));
+        const show = !!track.hidden || layers.some((layer) => layer.enabled === false);
+        const next = ((project().layers) || []).map((layer) => ((layer.slot || 'background') === slot ? { ...layer, enabled: show } : layer));
         SA.store.commands.setLayers(next);
+        // the background track also owns its clips: the same checkbox hides
+        // them (the auto direction places the song's background here)
+        if (track.kind === 'background') SA.store.commands.updateTrack(hit.trackId, { hidden: !show });
       } else if (track) {
         SA.store.commands.updateTrack(hit.trackId, { hidden: !track.hidden });
       }
