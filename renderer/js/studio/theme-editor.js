@@ -45,13 +45,13 @@ SA.themeEditor = (() => {
   }
 
   function defaultAxes() {
-    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6, weird: SA.moods.WEIRD_DEFAULT };
+    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6, weird: SA.moods.WEIRD_DEFAULT, smartness: SA.moods.SMART_DEFAULT };
   }
 
-  // weird is the user's choice: a genre, the music or a jitter never sets it,
-  // so those keep the value the slider holds
+  // weird and smartness are the user's choices: a genre, the music or a jitter
+  // never sets them, so those keep the values the sliders hold
   function keepWeird(axes) {
-    return { ...SA.moods.normalizeAxes(axes), weird: SA.moods.weirdOf(draft.axes) };
+    return { ...SA.moods.normalizeAxes(axes), weird: SA.moods.weirdOf(draft.axes), smartness: SA.moods.smartOf(draft.axes) };
   }
 
   // the draft keeps the extra/exclude words as comma-joined text; the project
@@ -728,11 +728,11 @@ SA.themeEditor = (() => {
     const existing = themeId ? SA.themes.get(themeId) : null;
     const doc = project();
     const mode = (doc && doc.styleMode) || {};
-    // the project's axes (weird included) are the floor: opening the editor on
-    // a project or a saved theme must not reset the weirdness to 0
-    const projectAxes = mode.axes ? { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc) } : null;
+    // the project's axes (weird and smartness included) are the floor: opening
+    // the editor on a project or a saved theme must not reset them to 0
+    const projectAxes = mode.axes ? { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc), smartness: SA.moods.projectSmartness(doc) } : null;
     const axes = existing && existing.axes
-      ? SA.moods.normalizeAxes({ weird: SA.moods.projectWeird(doc), ...existing.axes })
+      ? SA.moods.normalizeAxes({ weird: SA.moods.projectWeird(doc), smartness: SA.moods.projectSmartness(doc), ...existing.axes })
       : projectAxes || defaultAxes();
     const seed = existing && existing.seed ? existing.seed : seedNow();
     const style = existing

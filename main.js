@@ -479,7 +479,38 @@ function createWindow() {
             window.SA.i18n.set('ja');
             window.SA.menu.build();
             if (window.SA.inspector) window.SA.inspector.render();
-            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, editMenu, after, undone, redone, dirtyAfterRedo, cleanAfterUndo, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length });
+            // Palette dialog: edit a role live, add / remove a colour, then
+            // cancel and confirm the scope is restored.
+            const paletteRoot = document.getElementById('dialog-root');
+            const paletteAt = () => JSON.stringify(window.SA.project.resolveStyle(window.SA.store.state.project, '').palette || null);
+            const paletteBefore = paletteAt();
+            window.SA.paletteDialog.open('project');
+            const paletteState = {
+              open: !!paletteRoot.querySelector('.palette-editor'),
+              candidates: paletteRoot.querySelectorAll('.palette-card').length,
+              roles: paletteRoot.querySelectorAll('.palette-edit-row').length,
+              contrast: !!paletteRoot.querySelector('.palette-contrast'),
+            };
+            const addColor = paletteRoot.querySelector('.palette-edit-add button');
+            if (addColor) addColor.click();
+            paletteState.rolesAfterAdd = paletteRoot.querySelectorAll('.palette-edit-row').length;
+            const removeColor = [...paletteRoot.querySelectorAll('.palette-edit-row button')].filter((node) => node.textContent === '✕').pop();
+            if (removeColor) removeColor.click();
+            paletteState.rolesAfterRemove = paletteRoot.querySelectorAll('.palette-edit-row').length;
+            const hex = paletteRoot.querySelectorAll('.palette-edit-row .ctrl-hex')[2];
+            if (hex) {
+              hex.value = '#123456';
+              hex.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            paletteState.changed = paletteAt() !== paletteBefore;
+            const afterHex = paletteAt();
+            const rerollColors = paletteRoot.querySelector('.dialog-actions button');
+            if (rerollColors) rerollColors.click();
+            paletteState.rerolled = paletteAt() !== afterHex;
+            window.SA.paletteDialog.close(false);
+            paletteState.restored = paletteAt() === paletteBefore;
+            paletteState.closed = paletteRoot.hidden;
+            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, editMenu, after, undone, redone, dirtyAfterRedo, cleanAfterUndo, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length, paletteDialog: paletteState });
           })()`);
           console.log('SMOKE_STUDIO=' + studio);
           await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));

@@ -945,11 +945,13 @@
       axes = picked.axes;
       direction = picked.direction;
     }
-    // weird is never derived from a genre or the music: it is the user's choice
-    // (genre dialog / theme editor) and sticks to the project across re-rolls.
-    // A project that never chose one opens at the UI default (0.7).
+    // weird and smartness are never derived from a genre or the music: they are
+    // the user's choices (genre dialog / theme editor) and stick to the project
+    // across re-rolls. A project that never chose them opens at the UI defaults
+    // (weird 0.7, smartness 0.6).
     const weirdSource = opts.weird != null ? opts.weird : SA.moods.projectWeird(doc);
-    axes = { ...axes, weird: SA.moods.weirdOf({ weird: weirdSource }) };
+    const smartSource = opts.smartness != null ? opts.smartness : SA.moods.projectSmartness(doc);
+    axes = { ...axes, weird: SA.moods.weirdOf({ weird: weirdSource }), smartness: SA.moods.smartOf({ smartness: smartSource }) };
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
     // おまかせ: draw one of the 800 classified looks by theme + five axes, then
@@ -1003,6 +1005,7 @@
     dialog.className = 'dialog';
     const list = (SA.genres && SA.genres.LIST) || [];
     const weird = SA.moods.projectWeird(doc);
+    const smartness = SA.moods.projectSmartness(doc);
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>
@@ -1016,6 +1019,11 @@
         <span class="axis-value" data-field="weird-value">${weird.toFixed(2)}</span>
       </label>
       <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.weird')}</div>
+      <label class="axis-row"><span>${t('studio.themeEditor.axis.smartness')}</span>
+        <input type="range" min="0" max="1" step="0.05" data-field="smartness" value="${smartness}">
+        <span class="axis-value" data-field="smartness-value">${smartness.toFixed(2)}</span>
+      </label>
+      <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.smartness')}</div>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
@@ -1026,13 +1034,17 @@
     weirdInput.addEventListener('input', () => {
       dialog.querySelector('[data-field="weird-value"]').textContent = Number(weirdInput.value).toFixed(2);
     });
+    const smartInput = dialog.querySelector('[data-field="smartness"]');
+    smartInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="smartness-value"]').textContent = Number(smartInput.value).toFixed(2);
+    });
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
     dialog.querySelector('[data-action="apply"]').addEventListener('click', () => {
       const genre = dialog.querySelector('[data-field="genre"]').value;
       el.dialogRoot.hidden = true;
-      autoDirect({ genre, weird: Number(weirdInput.value) });
+      autoDirect({ genre, weird: Number(weirdInput.value), smartness: Number(smartInput.value) });
     });
   }
 
@@ -1357,7 +1369,7 @@
       autoDirect,
       applyPreset: presetDialog,
       fitAudio,
-      palettes: () => SA.colors.paletteDialog(),
+      palettes: () => (SA.paletteDialog ? SA.paletteDialog.open() : SA.colors.paletteDialog()),
       themes: () => SA.themes.dialog(),
       editTheme: () => SA.themeEditor.open(null),
       layers: () => SA.layersDialog.open(),

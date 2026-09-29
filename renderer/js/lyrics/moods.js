@@ -1858,7 +1858,9 @@
       const stack = [];
       const used = new Set();
       for (let i = 0; i < count; i += 1) {
-        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero });
+        // the genre's hero group is exempt from the hard exclusion (it keeps the
+        // genre's identity; only the weight penalty applies)
+        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero && !!genre });
         if (!instance) break;
         if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w));
         used.add(instance.type);
@@ -1914,6 +1916,7 @@
     smartness,
     poolFor,
     allowed,
+    pickEntry,
     PALETTES,
     PALETTE_FAMILIES,
     generate,
@@ -1942,6 +1945,9 @@
     weirdClipColors,
     splitColors,
     splitSpec,
+    backdropMotion,
+    BACKDROP_MOTIONS,
+    SPLIT_SCHEMES,
     clipSpec,
     bend,
     score: scoreEntry,

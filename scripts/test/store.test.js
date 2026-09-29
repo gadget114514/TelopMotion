@@ -438,3 +438,60 @@ test('figure and text tracks take hand-placed clips, overlaps included', () => {
     void second;
   }
 });
+
+test('rerollColors changes only the chosen kinds and one undo restores it', () => {
+  const doc = fixture();
+  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#ffffff', '#ff0000', '#000000', '#ffcc00'] };
+  doc.clips.push(
+    { id: 'mid1', trackId: 'mid', start: 0, end: 4, spec: { type: 'split', params: { layout: 'halves', parts: 2, motion: 'slide', colors: ['#ff0000', '#00ff00'] } }, colors: ['#ff0000', '#00ff00'] },
+    { id: 'mid2', trackId: 'mid', start: 4, end: 8, spec: { type: 'solid', params: {} }, colors: ['#00ff00', '#0000ff'] },
+    { id: 'fill1', trackId: 'filler', start: 4, end: 6, spec: { type: 'pattern', params: { mode: 'grid', color: '#ff0000' } }, colors: ['#ff0000'] }
+  );
+  store.load(doc);
+  const before = snapshot();
+  const fillerBefore = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'fill1'));
+  const palette = store.commands.rerollColors({ kinds: ['backdrop'] });
+  assert.ok(palette && palette.colors.length >= 3);
+  const mid1 = store.state.project.clips.find((clip) => clip.id === 'mid1');
+  assert.notEqual(mid1.colors[0], '#ff0000');
+  assert.equal(store.state.project.clips.find((clip) => clip.id === 'fill1').colors[0], '#ff0000', 'the filler is kept');
+  assert.equal(JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'fill1')), fillerBefore);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('rerollColors with style changes the style palette and leaves every clip alone', () => {
+  const doc = fixture();
+  doc.clips.push({ id: 'mid1', trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, colors: ['#ff0000', '#00ff00'] });
+  store.load(doc);
+  const clipsBefore = JSON.stringify(store.state.project.clips);
+  const result = store.commands.rerollColors({ style: true, kinds: [] });
+  assert.ok(result);
+  assert.ok(store.state.project.style.palette && store.state.project.style.palette.colors.length >= 3);
+  assert.equal(JSON.stringify(store.state.project.clips), clipsBefore);
+});
+
+test('rerollColors with clipIds touches only the given clip', () => {
+  const doc = fixture();
+  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#ffffff', '#ff0000', '#000000', '#ffcc00'] };
+  doc.clips.push(
+    { id: 'mid1', trackId: 'mid', start: 0, end: 4, spec: { type: 'solid', params: {} }, colors: ['#ff0000', '#00ff00'] },
+    { id: 'mid2', trackId: 'mid', start: 4, end: 8, spec: { type: 'solid', params: {} }, colors: ['#00ff00', '#0000ff'] }
+  );
+  store.load(doc);
+  const untouched = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'mid2'));
+  store.commands.rerollColors({ kinds: ['backdrop'], clipIds: ['mid1'] });
+  assert.notEqual(store.state.project.clips.find((clip) => clip.id === 'mid1').colors[0], '#ff0000');
+  assert.equal(JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'mid2')), untouched);
+});
+
+test('paletteCandidates draws candidates without touching the history', () => {
+  store.load(fixture());
+  const before = snapshot();
+  const undoBefore = store.canUndo();
+  const list = store.commands.paletteCandidates(3);
+  assert.equal(list.length, 3);
+  assert.ok(list.every((palette) => palette && Array.isArray(palette.colors) && palette.colors.length >= 3));
+  assert.equal(store.canUndo(), undoBefore, 'no history entry');
+  assert.deepEqual(snapshot(), before);
+});

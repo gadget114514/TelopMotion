@@ -1836,3 +1836,116 @@ body {
   flex: 1 1 120px;
   min-width: 90px;
 }
+
+/* palette editing dialog */
+.palette-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 4px 0 10px;
+}
+
+.palette-editor {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 280px;
+}
+
+.palette-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.palette-edit-row .palette-role {
+  flex: 0 0 96px;
+  color: var(--muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-edit-row .ctrl-hex {
+  flex: 1 1 90px;
+  min-width: 76px;
+}
+
+.palette-edit-add {
+  justify-content: flex-start;
+}
+
+.palette-side {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 240px;
+}
+
+.palette-cands {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.palette-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  text-align: left;
+  background: var(--card2, #182030);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.palette-card:hover {
+  border-color: var(--accent);
+}
+
+.palette-card.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.palette-card-strip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.palette-card-strip i {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.palette-card-name {
+  flex: 1 1 auto;
+  color: var(--text);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-contrast {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.palette-contrast.warn {
+  color: var(--warn, #ffc247);
+}
+
+.ctrl-bool-row.is-disabled {
+  opacity: 0.5;
+}

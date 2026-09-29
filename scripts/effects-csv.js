@@ -25,6 +25,7 @@ for (const name of [...CORE_FILES, ...EXTRA_FILES]) {
   if (fs.existsSync(file)) require(file);
 }
 const strings = require(path.join(ROOT, 'renderer', 'js', 'studio', 'fx-strings.js'));
+const smartness = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'smartness.js'));
 
 // alias groups are documented under their base group (bgFill -> fill)
 const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgMotion', 'repeat'];
@@ -358,6 +359,7 @@ function rows() {
         name: nameOf(group, descriptor.type),
         id: `${group}.${descriptor.type}`,
         description: DESCRIPTIONS[`${group}.${descriptor.type}`] || '',
+        smartness: smartness.rate(fx.baseOf(group), descriptor.type),
       });
     }
   }
@@ -365,8 +367,8 @@ function rows() {
 }
 
 function toCsv(list) {
-  const lines = ['グループ,名前,ID,説明'];
-  for (const row of list) lines.push([row.groupLabel, row.name, row.id, row.description].map(csvCell).join(','));
+  const lines = ['グループ,名前,ID,スマート度,説明'];
+  for (const row of list) lines.push([row.groupLabel, row.name, row.id, Number(row.smartness.toFixed(2)), row.description].map(csvCell).join(','));
   // the BOM keeps Excel from showing the Japanese text as mojibake
   return `\ufeff${lines.join('\n')}\n`;
 }

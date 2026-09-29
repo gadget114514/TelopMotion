@@ -102,6 +102,7 @@ SA.menu = (() => {
         { key: 'studio.generate.randomSettings', action: 'randomSettings' },
         { key: 'studio.generate.reroll', action: 'reroll' },
         { key: 'studio.generate.rerollColors', action: 'rerollColors', enabled: () => !!SA.store.state.project },
+        { key: 'studio.generate.palette', action: 'palettes', enabled: () => !!SA.store.state.project },
         itemSeparator(),
         { key: 'studio.generate.applyPreset', action: 'applyPreset', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
         { key: 'studio.generate.fitAudio', action: 'fitAudio', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length && SA.preview.getAudioDuration()) },

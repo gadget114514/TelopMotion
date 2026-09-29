@@ -142,3 +142,73 @@ test('animate pulses, drifts and transitions the shapes', () => {
     assert.ok(shape.opacity >= 0 && shape.opacity <= 1);
   }
 });
+
+// --- clip animation modes (filler-render.animate) ----------------------------
+
+function animated(motion, time, extra) {
+  const list = { shapes: [{ kind: 'rect', x: 100, y: 100, w: 200, h: 100 }], texts: [] };
+  fillerRender.animate(list, {
+    motion,
+    t: time,
+    clip: { start: 0, end: 8 },
+    bpm: 120,
+    frame: FRAME,
+    ...(extra || {}),
+  });
+  return list.shapes[0];
+}
+
+test('an exit / enter cut keeps the clip fully on, scale collapses instead', () => {
+  const stepped = animated({ transition: 'scale', pulse: 0 }, 0);
+  assert.ok(stepped.w < 1, `scale transition at the clip start shrinks (${stepped.w})`);
+  const cut = animated({ transition: 'cut', pulse: 0 }, 0);
+  assert.equal(cut.w, 200, 'a cut has no enter transition');
+  const cutEnd = animated({ transition: 'cut', pulse: 0 }, 8);
+  assert.equal(cutEnd.w, 200, 'a cut has no exit transition');
+});
+
+test('mode none is the legacy per-beat pulse', () => {
+  const legacy = animated({ pulse: 0.1 }, 1.125);
+  const pulse = animated({ mode: 'pulse', pulse: 0.1 }, 1.125);
+  assert.deepEqual(legacy, pulse);
+  const opposite = animated({ pulse: 0.1 }, 1.375);
+  assert.ok(legacy.w > opposite.w, 'the sine breathes with the beat');
+});
+
+test('accent hits on the downbeat and decays', () => {
+  const motion = { mode: 'accent', pulse: 0.1, every: 2, transition: 'cut' };
+  const hit = animated(motion, 0.01);
+  const tail = animated(motion, 0.9);
+  assert.ok(hit.w > 200, `the downbeat swells (${hit.w})`);
+  assert.ok(tail.w < hit.w - 1, `the accent decays (${tail.w} vs ${hit.w})`);
+  assert.ok(Math.abs(tail.w - 200) < 2, 'after the decay the clip sits at its base size');
+});
+
+test('swell breathes over several beats instead of every beat', () => {
+  const motion = { mode: 'swell', pulse: 0.1, every: 4, transition: 'cut' };
+  const base = animated(motion, 0);
+  const middle = animated(motion, 1);
+  const full = animated(motion, 2);
+  assert.ok(middle.w > base.w, `half way through the period (${middle.w} vs ${base.w})`);
+  assert.ok(Math.abs(full.w - base.w) < 0.5, 'the period closes');
+});
+
+test('sway rocks the clip, drift and still cover the frame', () => {
+  const sway = { mode: 'sway', sway: 0.05, pulse: 0, every: 4, transition: 'cut' };
+  const level = animated(sway, 0);
+  const rocked = animated(sway, 0.5);
+  assert.notDeepEqual(rocked, level, 'sway rotates the clip');
+  for (const mode of ['drift', 'still']) {
+    const shape = animated({ mode, drift: 0.02, pulse: 0, transition: 'cut' }, 0.4);
+    assert.ok(shape.w > 200, `${mode} scales past the frame (${shape.w})`);
+  }
+});
+
+test('breathe honours the every period', () => {
+  const params = { layout: 'halves', coverage: 0.5, colors: COLORS, motion: 'breathe', amp: 0.2 };
+  const flat = split.regions({ ...params, motion: 'none' }, ctx({ time: 1, beatPhase: 0.5 })).map((region) => region.points);
+  const same = split.regions(params, ctx({ time: 1, beatPhase: 0.5 })).map((region) => region.points);
+  assert.deepEqual(same, flat, 'every 1 breathes to zero at half a beat');
+  const slower = split.regions({ ...params, every: 2 }, ctx({ time: 1, beatPhase: 0.5 })).map((region) => region.points);
+  assert.notDeepEqual(slower, flat, 'every 2 is half way through its period');
+});

@@ -1821,6 +1821,9 @@ SA.timeline = (() => {
       add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
       add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
       add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));
+      add(t('studio.generate.rerollColors'), () =>
+        SA.store.commands.rerollColors({ kinds: [hit.kind], clipIds: [clip.id], perClip: true })
+      );
       if (hit.kind === 'filler') add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
       add(t('studio.inspector.delete'), () => SA.store.commands.deleteClip(clip.id));
       draw();

@@ -1329,8 +1329,17 @@ SA.inspector = (() => {
     remove.className = 'btn btn-mini';
     remove.textContent = t('studio.inspector.delete');
     remove.addEventListener('click', () => SA.store.commands.deleteClip(clip.id));
+    const rerollColors = document.createElement('button');
+    rerollColors.type = 'button';
+    rerollColors.className = 'btn btn-mini';
+    rerollColors.textContent = t('studio.generate.rerollColors');
+    rerollColors.addEventListener('click', () => {
+      const kind = SA.project.trackKindOf(SA.store.state.project, clip.trackId);
+      SA.store.commands.rerollColors({ kinds: [kind], clipIds: [clip.id], perClip: true });
+    });
     actions.appendChild(split);
     actions.appendChild(reroll);
+    actions.appendChild(rerollColors);
     actions.appendChild(remove);
     body.appendChild(actions);
   }
@@ -1863,6 +1872,14 @@ SA.inspector = (() => {
       if (scope) SA.store.commands.rerollPalette(scope);
     });
     actions.appendChild(rerollButton);
+    const paletteDialogButton = document.createElement('button');
+    paletteDialogButton.type = 'button';
+    paletteDialogButton.className = 'btn btn-mini';
+    paletteDialogButton.textContent = t('studio.generate.palette');
+    paletteDialogButton.addEventListener('click', () => {
+      if (SA.paletteDialog) SA.paletteDialog.open(scope || 'project');
+    });
+    actions.appendChild(paletteDialogButton);
     if (ownPalette && scope !== 'project') {
       const resetButton = document.createElement('button');
       resetButton.type = 'button';

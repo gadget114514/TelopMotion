@@ -19,11 +19,25 @@ SA.controls = (() => {
     return translated === `fx.param.${key}` ? prettify(key) : translated;
   }
 
+  // The four-step smartness mark appended to an effect's label: ● refined,
+  // ◕ good, ◔ plain, ○ tacky. Groups without ratings read as the neutral ◕.
+  function smartnessMark(group, type) {
+    if (typeof SA === 'undefined' || !SA.smartness || !SA.moods || type == null) return '';
+    const base = typeof SA.fx !== 'undefined' && SA.fx && SA.fx.baseOf ? SA.fx.baseOf(group) : group;
+    const rating = SA.smartness.rate(base, type);
+    if (rating >= 0.75) return '●';
+    if (rating >= 0.5) return '◕';
+    if (rating >= 0.25) return '◔';
+    return '○';
+  }
+
   function typeLabel(group, type) {
     const base = typeof SA !== 'undefined' && SA.fx && SA.fx.baseOf ? SA.fx.baseOf(group) : group;
     const key = `fx.${base}.${type}`;
     const translated = t(key);
-    return translated === key ? prettify(type) : translated;
+    const label = translated === key ? prettify(type) : translated;
+    const mark = smartnessMark(group, type);
+    return mark ? `${label} · ${mark}` : label;
   }
 
   function valueLabel(value) {

@@ -233,3 +233,43 @@ test('prepare clamps the theme size into the weird size band', () => {
   });
   assert.ok(small.themeStyle.text.size >= 36, `portrait weird=1 floor is 36, got ${small.themeStyle.text.size}`);
 });
+
+test('smartness 0.9 drops the tacky grammar from the automatic direction', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1, smartness: 0.9 }, seed: 42 });
+  SA.direct.run(doc, ctx);
+  const smartness = SA.moods.smartness;
+  const bannedHold = new Set(['pulse', 'heartbeat', 'jitter', 'shiver', 'opacityPulse', 'jelly', 'squashStretch', 'swirl', 'beatPulse', 'beatHighlight']);
+  const bannedEnter = new Set(['glitchIn', 'dropBounce', 'elasticPop', 'flip3D', 'scramble', 'neonFlicker', 'flickerIn', 'shatterRebuild', 'noiseDissolveIn', 'popIn', 'spinIn', 'scatterIn']);
+  for (const container of Object.values(doc.cueStyles)) {
+    for (const instance of container.hold || []) assert.ok(!bannedHold.has(instance.type), `cue hold ${instance.type}`);
+    for (const group of ['enter', 'exit']) {
+      const instance = container[group];
+      if (instance) assert.ok(!bannedEnter.has(instance.type), `${group} ${instance.type}`);
+    }
+  }
+  for (const container of Object.values(doc.beatStyles)) {
+    for (const instance of container.hold || []) assert.ok(!bannedHold.has(instance.type), `beat hold ${instance.type}`);
+  }
+  const mid = doc.clips.filter((clip) => clip.trackId === 'mid');
+  assert.ok(mid.length >= 1, 'mid clips exist');
+  for (const clip of mid) {
+    const parts = (clip.spec.params && clip.spec.params.list) || [];
+    const planes = parts.find((part) => part.type === 'split');
+    if (planes) assert.ok(['slide', 'swap', 'drift', 'push'].includes(planes.params.motion), `split motion ${planes.params.motion}`);
+    const animate = (clip.spec.params && clip.spec.params.animate) || {};
+    assert.ok(['accent', 'swell', 'sway', 'drift', 'still'].includes(animate.mode), `backdrop mode ${animate.mode}`);
+  }
+  for (const clip of doc.clips.filter((entry) => entry.trackId === 'bg')) {
+    const spec = clip.spec || {};
+    if (spec.type === 'gradient' || spec.type === 'noiseGradient') assert.equal(spec.params.glow, 0, 'no centre bright mask');
+  }
+  for (const clip of doc.clips.filter((entry) => entry.spec && entry.spec.type === 'figure')) {
+    assert.ok(!['ribbon', 'confetti'].includes(clip.spec.params.motif), `motif ${clip.spec.params.motif}`);
+    for (const beat of clip.spec.params.beats || []) assert.notEqual(beat.move.hold, 'pulse', 'figure hold');
+  }
+  const specs = [doc.fillers.byKind.interlude, doc.fillers.longGap.spec, doc.fillers.byKind.intro.params.list[1], doc.fillers.byKind.outro.params.list[1]];
+  for (const spec of specs) {
+    assert.ok(smartness.weight(smartness.rateSpec(spec), 0.9) > 0, `filler ${spec && spec.presetId} is below the floor`);
+  }
+});
