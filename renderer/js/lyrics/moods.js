@@ -1084,6 +1084,116 @@
     return params;
   }
 
+  // --- backdrop colours and split planes (item 1 / 9) --------------------------
+  // The mid layer's colours move with the sixth axis: the hue rotates towards
+  // the complement, saturation bends and the value spread widens. w=0 keeps the
+  // caller's exact two colours, so the classic output is untouched.
+  function weirdClipColors(random, palette, w) {
+    const source = Array.isArray(palette) && palette.length ? palette : ['#8f8f8f'];
+    const width = clamp01(w);
+    const pickSource = (index) => source[(3 + index) % source.length] || source[source.length - 1];
+    const count = 2 + Math.floor(random() * (width > 0.5 ? 3 : 2)); // 2..4
+    const hueShift = (random() * 2 - 1) * 180 * width;
+    const satScale = bend(1, 0.9, width);
+    const valueSpan = 0.25 + 0.5 * width;
+    const colors = [];
+    for (let i = 0; i < count; i += 1) {
+      const hsv = color.rgbToHsv(color.parse(pickSource(i)));
+      const v = Math.max(0.06, Math.min(0.95, hsv.v + (i === 0 ? valueSpan * 0.5 : (random() * 2 - 1) * valueSpan * 0.5)));
+      colors.push(
+        color.toHex({
+          ...color.hsvToRgb({
+            h: hsv.h + hueShift + (i === 0 ? 0 : (random() * 2 - 1) * (20 + 60 * width)),
+            s: clamp01(hsv.s * satScale),
+            v,
+            a: 1,
+          }),
+          a: 1,
+        })
+      );
+    }
+    return colors;
+  }
+
+  // Palette for the split planes: tonal / analogous reads calm, complementary /
+  // triad reads loud. The returned order is primary first (60-30-10).
+  const SPLIT_SCHEMES = ['tonal', 'analogous', 'complementary', 'triad', 'splitComplementary', 'neutralAccent'];
+  const SPLIT_SCHEME_HUES = {
+    tonal: [0, 0, 0, 0],
+    analogous: [0, -30, 30, -15],
+    complementary: [0, 180, 0, 180],
+    triad: [0, 120, 240, 60],
+    splitComplementary: [0, 150, 210, 180],
+    neutralAccent: [0, 0, 180, 0],
+  };
+
+  function splitColors(palette, n, w, random) {
+    const source = Array.isArray(palette) && palette.length ? palette : ['#222222', '#111111', '#eeeeee', '#ff9900', '#333333', '#ffcc00'];
+    const width = clamp01(w);
+    const scheme =
+      width <= 0.35
+        ? pick(random, ['tonal', 'analogous'])
+        : width >= 0.7
+          ? pick(random, ['complementary', 'triad', 'splitComplementary', 'neutralAccent'])
+          : pick(random, ['tonal', 'analogous', 'complementary', 'triad']);
+    const count = Math.max(2, Math.min(6, Math.round(n) || 3));
+    const order = [3, 5, 6, 2, 0, 4];
+    const hues = SPLIT_SCHEME_HUES[scheme];
+    const values = [1, 0.72, 0.5, 0.62, 0.86, 0.4];
+    const colors = [];
+    for (let i = 0; i < count; i += 1) {
+      const slot = order[i % order.length];
+      const hsv = color.rgbToHsv(color.parse(source[slot] || source[source.length - 1]));
+      const hue = hsv.h + (hues[i % hues.length] || 0) + (i >= hues.length ? (random() * 2 - 1) * 40 * width : 0);
+      const neutral = scheme === 'neutralAccent' && i < 2;
+      colors.push(
+        color.toHex({
+          ...color.hsvToRgb({
+            h: (hue + 360) % 360,
+            s: clamp01(neutral ? hsv.s * 0.12 : Math.max(0.35, Math.min(0.8, hsv.s)) * (scheme === 'tonal' ? 0.9 : 1)),
+            v: clamp01(Math.max(0.18, Math.min(0.85, hsv.v)) * values[i % values.length] + (i >= values.length ? (random() * 2 - 1) * 0.1 : 0)),
+            a: 1,
+          }),
+          a: 1,
+        })
+      );
+    }
+    return { scheme, colors };
+  }
+
+  // The split plane spec a weird mid clip carries: layout, part count, motion
+  // and the palette, all drawn from the axes. `coverage` is the share of the
+  // frame the planes paint (the weird axis).
+  function splitSpec(axes, random, palette, coverage, cuts) {
+    const w = weirdOf(axes);
+    const layouts =
+      w <= 0.3
+        ? ['halves', 'diagonal', 'bands', 'thirds', 'grid']
+        : w >= 0.7
+          ? ['mondrian', 'chevron', 'radial', 'quads', 'frame', 'shards']
+          : ['halves', 'diagonal', 'thirds', 'bands', 'grid', 'mondrian', 'chevron', 'radial'];
+    const layout = pick(random, layouts);
+    const parts = Math.max(2, Math.min(8, 2 + Math.round(random() * (1 + 4 * w))));
+    const { scheme, colors } = splitColors(palette, Math.min(6, parts), w, random);
+    const motions = w >= 0.6 ? ['slide', 'rotate', 'breathe', 'swap', 'drift'] : ['breathe', 'slide'];
+    const motion = pick(random, motions);
+    return {
+      type: 'split',
+      params: {
+        layout,
+        parts,
+        angle: round(layout === 'diagonal' ? 30 + (random() * 2 - 1) * 25 * w : (random() * 2 - 1) * 30 * w, 2),
+        coverage: round(clamp01(coverage), 3),
+        scheme,
+        motion,
+        speed: round(0.2 + random() * 0.8 * (0.5 + 0.5 * w), 2),
+        amp: round((0.02 + 0.06 * w) * (0.5 + random()), 3),
+        colors,
+        cuts: Array.isArray(cuts) ? cuts.slice(0, 16) : null,
+      },
+    };
+  }
+
   function clipSpec(kind, axes, random, genre, options) {
     const palette = paletteFor(axes, random, genre && genre.palettes);
     const colors = palette.colors;
@@ -1132,7 +1242,38 @@
         if (Array.isArray(values) && values.length) params[key] = pick(random, values);
       }
     }
-    return { spec: { type, params }, colors: [colors[3], colors[5] || colors[3]] };
+    const w = weirdOf(axes);
+    const rawPalette = options && options.palette;
+    const paletteColors = Array.isArray(rawPalette)
+      ? rawPalette
+      : rawPalette && Array.isArray(rawPalette.colors) && rawPalette.colors.length
+        ? rawPalette.colors
+        : colors;
+    const coverage = options && options.coverage != null ? clamp01(options.coverage) : w;
+    if (kind === 'backdrop' && w > 0 && coverage >= 0.02) {
+      // two layers: the painted planes (the dominant layer) and the accent
+      params.opacity = Math.max(
+        Number(params.opacity) || 0.6,
+        Math.round((0.35 + 0.4 * clamp01(axes.energy) + 0.2 * w) * 100) / 100
+      );
+      const plane = splitSpec(axes, random, paletteColors, coverage, options && options.cuts);
+      return {
+        spec: {
+          type: 'combo',
+          params: {
+            list: [plane, { type, params }],
+            animate: {
+              pulse: round(0.03 * (1 + w), 3),
+              drift: round(0.012 * (1 + w), 3),
+              transition: pick(random, ['wipe', 'scale', 'rotate', 'iris']),
+              duration: 0.35,
+            },
+          },
+        },
+        colors: weirdClipColors(random, paletteColors, w),
+      };
+    }
+    return { spec: { type, params }, colors: w > 0 ? weirdClipColors(random, paletteColors, w) : [colors[3], colors[5] || colors[3]] };
   }
 
   // Re-rolls a timeline clip inside the project's axes (used by the inspector
@@ -1143,7 +1284,7 @@
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
-    return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg });
+    return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg, palette: opts.palette, coverage: opts.coverage, cuts: opts.cuts });
   }
 
   // --- genre helpers -----------------------------------------------------------
@@ -1670,6 +1811,10 @@
     weirdBeatHold,
     weirdFont,
     weirdDecoration,
+    weirdClipColors,
+    splitColors,
+    splitSpec,
+    clipSpec,
     bend,
     score: scoreEntry,
   };

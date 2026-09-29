@@ -1,11 +1,10 @@
 (function (root, factory) {
-  const api = factory();
-  if (typeof module === 'object' && module.exports) module.exports = api;
+  if (module.exports) module.exports = factory(require('./split'));
   else {
     root.SA = root.SA || {};
-    root.SA.fillerRender = api;
+    root.SA.fillerRender = factory(root.SA.split);
   }
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (split) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -41,6 +40,17 @@
 
   function colorOf(params, ctx, fallback) {
     return (params && (params.color || params.stroke)) || (ctx && ctx.color) || fallback || '#eef2ff';
+  }
+
+  // Multi-colour clips cycle through `params.colors`; anything else keeps the
+  // single colour contract of `colorOf`.
+  function colorAt(params, ctx, index, fallback) {
+    const list = params && params.colors;
+    if (Array.isArray(list) && list.length) {
+      const at = Math.abs(Math.round(num(index, 0))) % list.length;
+      return list[at];
+    }
+    return colorOf(params, ctx, fallback);
   }
 
   function frameAt(analysis, time) {
@@ -262,14 +272,15 @@
   function shapesShapes(params, ctx) {
     const width = ctx.frame.width;
     const height = ctx.frame.height;
-    const color = colorOf(params, ctx, '#ff8a3d');
     const set = params.set || 'circles';
     const count = Math.max(1, Math.min(48, Math.round(num(params.count, 8))));
     const speed = num(params.speed, 1);
     const rng = seededRandom(hashString(`${ctx.clip.key}|${set}|${count}`) ^ num(ctx.seed, 0));
     const shapes = [];
     const short = Math.min(width, height);
+    const baseColor = colorOf(params, ctx, '#ff8a3d');
     for (let i = 0; i < count; i += 1) {
+      const color = colorAt(params, ctx, i, baseColor);
       const rx = rng();
       const ry = rng();
       const rr = rng();
@@ -620,6 +631,114 @@
     return { shapes, texts };
   }
 
+  // The painted colour planes (item 9). Only the painted regions are drawn: the
+  // rest of the frame shows the background through, and at coverage 1 the whole
+  // frame is covered.
+  function splitShapes(params, ctx) {
+    if (!split || typeof split.regions !== 'function') return { shapes: [], texts: [] };
+    const frame = ctx.frame || { width: 1920, height: 1080 };
+    const bpm = num(ctx.bpm, 0);
+    const beatPhase = ctx.beatPhase != null ? num(ctx.beatPhase, 0) : bpm > 0 ? (((num(ctx.time, 0) * bpm) / 60) % 1 + 1) % 1 : 0;
+    const regions = split.regions(
+      {
+        layout: params.layout,
+        parts: params.parts,
+        angle: params.angle,
+        offset: params.offset,
+        coverage: params.coverage,
+        motion: params.motion,
+        speed: params.speed,
+        amp: params.amp,
+        colors: Array.isArray(params.colors) ? params.colors : ctx.colors || null,
+        cuts: Array.isArray(params.cuts) ? params.cuts : null,
+      },
+      {
+        frame,
+        time: ctx.time,
+        progress: ctx.progress,
+        beatPhase,
+        seed: ctx.seed,
+        clipKey: ctx.clip && ctx.clip.key,
+      }
+    );
+    const opacity = params.opacity == null ? 1 : num(params.opacity, 1);
+    const shapes = [];
+    for (const region of regions) {
+      if (!region.painted) continue;
+      shapes.push({ kind: 'convex', points: region.points, color: region.color, opacity });
+    }
+    return { shapes, texts: [] };
+  }
+
+  // Clip-level animation: a beat pulse, a drift and an enter / exit transition
+  // (wipe / scale / rotate / iris) over the first and last 0.35 s.
+  function animate(list, options) {
+    const opts = options || {};
+    const shapes = list && Array.isArray(list.shapes) ? list.shapes : [];
+    const motion = opts.motion;
+    if (!motion || !shapes.length) return list;
+    const clip = opts.clip || {};
+    const start = num(clip.start, 0);
+    const end = num(clip.end, start + 1);
+    const time = num(opts.t, start);
+    const duration = Math.max(1e-3, end - start);
+    const span = Math.min(Math.max(0.05, num(motion.duration, 0.35)), duration * 0.25);
+    const enter = clamp01((time - start) / span);
+    const leave = clamp01((end - time) / span);
+    const env = Math.min(enter, leave);
+    const bpm = num(opts.bpm, 0) || 120;
+    const beat = 60 / bpm;
+    const phase = (((time - start) / beat) % 1 + 1) % 1;
+    const pulse = 1 + num(motion.pulse, 0) * Math.sin(TAU * phase);
+    const driftAmount = num(motion.drift, 0);
+    const dx = driftAmount * Math.sin(TAU * 0.17 * (time - start));
+    const dy = driftAmount * 0.6 * Math.sin(TAU * 0.23 * (time - start) + 1.3);
+    const kind = motion.transition || 'scale';
+    const frame = opts.frame || { width: 1920, height: 1080 };
+    const originX = kind === 'wipe' ? 0 : frame.width / 2;
+    const originY = frame.height / 2;
+    const scale = Math.max(0.001, pulse * (kind === 'rotate' ? Math.max(0.05, env) : env === 0 ? 0.001 : env));
+    const rotate = kind === 'rotate' ? (1 - env) * (Math.PI / 4) : 0;
+    const cos = Math.cos(rotate);
+    const sin = Math.sin(rotate);
+    const mapPoint = (point) => {
+      const px = (point.x - originX) * scale;
+      const py = (point.y - originY) * scale;
+      return { x: originX + px * cos - py * sin + dx, y: originY + px * sin + py * cos + dy };
+    };
+    for (const shape of shapes) {
+      if (!shape) continue;
+      if (kind === 'wipe' || kind === 'rotate' || scale !== 1 || dx || dy) {
+        if (Array.isArray(shape.points)) shape.points = shape.points.map(mapPoint);
+        if (shape.kind === 'rect') {
+          const p0 = mapPoint({ x: shape.x, y: shape.y });
+          const p1 = mapPoint({ x: shape.x + shape.w, y: shape.y + shape.h });
+          shape.x = Math.min(p0.x, p1.x);
+          shape.y = Math.min(p0.y, p1.y);
+          shape.w = Math.abs(p1.x - p0.x);
+          shape.h = Math.abs(p1.y - p0.y);
+        } else if (shape.kind === 'circle' || shape.kind === 'ring' || shape.kind === 'polygon') {
+          const p = mapPoint({ x: shape.x, y: shape.y });
+          shape.x = p.x;
+          shape.y = p.y;
+          if (shape.radius != null) shape.radius *= scale;
+          if (shape.r != null) shape.r *= scale;
+        } else if (shape.kind === 'capsule') {
+          const p0 = mapPoint({ x: shape.x0, y: shape.y0 });
+          const p1 = mapPoint({ x: shape.x1, y: shape.y1 });
+          shape.x0 = p0.x;
+          shape.y0 = p0.y;
+          shape.x1 = p1.x;
+          shape.y1 = p1.y;
+          shape.width = (shape.width || 2) * scale;
+        }
+      }
+      const fade = kind === 'scale' || kind === 'iris' ? clamp01(env * 1.5) : 1;
+      shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * fade;
+    }
+    return list;
+  }
+
   function drawList(spec, ctx) {
     const source = spec || { type: 'none', params: {} };
     const type = source.type || 'none';
@@ -632,6 +751,7 @@
     if (type === 'shapes') return shapesShapes(params, ctx);
     if (type === 'pattern') return patternShapes(params, ctx);
     if (type === 'particles') return particlesShapes(params, ctx);
+    if (type === 'split') return splitShapes(params, ctx);
     if (type === 'progress') return progressShapes(params, ctx);
     if (type === 'instrumental') {
       return textOnly(source, ctx, { text: params.text || '♪ Instrumental ♪', sizeRatio: num(params.size, 0.05), color: colorOf(params, ctx, '#cbd3ff') });
@@ -648,7 +768,7 @@
     return { shapes: [], texts: [] };
   }
 
-  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
+  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'combo'];
 
   const PARAMS = {
     none: [],
@@ -695,6 +815,18 @@
       { key: 'size', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 2.4 },
       { key: 'color', kind: 'color', default: '#d6dbe9' },
     ],
+    split: [
+      { key: 'layout', kind: 'select', options: ['halves', 'diagonal', 'thirds', 'bands', 'quads', 'grid', 'chevron', 'radial', 'mondrian', 'frame', 'shards'], default: 'halves' },
+      { key: 'parts', kind: 'int', min: 2, max: 8, step: 1, default: 3 },
+      { key: 'angle', kind: 'number', min: -90, max: 90, step: 1, default: 0 },
+      { key: 'offset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
+      { key: 'coverage', kind: 'number', min: 0.02, max: 1, step: 0.01, default: 0.6 },
+      { key: 'scheme', kind: 'select', options: ['tonal', 'analogous', 'complementary', 'triad', 'splitComplementary', 'neutralAccent'], default: 'tonal' },
+      { key: 'motion', kind: 'select', options: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift'], default: 'none' },
+      { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
+      { key: 'amp', kind: 'number', min: 0, max: 0.4, step: 0.005, default: 0.05 },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
+    ],
     nextLinePreview: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },
       { key: 'color', kind: 'color', default: '#cbd3ff' },
@@ -738,6 +870,9 @@
 
   return {
     drawList,
+    animate,
+    colorOf,
+    colorAt,
     hashString,
     seededRandom,
     types,

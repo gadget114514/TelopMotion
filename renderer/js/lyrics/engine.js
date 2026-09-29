@@ -744,6 +744,7 @@ SA.lyricsEngine = (() => {
         } else if (shape.kind === 'ring') shapesPass.ring(shape);
         else if (shape.kind === 'capsule') shapesPass.capsule(shape);
         else if (shape.kind === 'polygon') shapesPass.polygon(shape);
+        else if (shape.kind === 'convex' && shapesPass.convex) shapesPass.convex(shape);
       }
     }
 
@@ -776,22 +777,23 @@ SA.lyricsEngine = (() => {
       return style && style.palette ? style.palette : null;
     }
 
-    // Animated shapes for backdrop / filler clips: the filler shape list is
-    // drawn into a layer and composited behind the lyrics.
+    // Animated shapes for backdrop / filler clips. Returns the whole colour
+    // list the clip may cycle through (the first entry is the primary one).
     function clipShapeColor(spec, colors, style) {
       const params = (spec && spec.params) || {};
       const list = Array.isArray(colors) && colors.length ? colors : [];
       const palette = style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : list;
-      let fill = list[0] || palette[3] || palette[2] || '#eef2ff';
+      let fills = list.length ? list.slice() : [];
       if (params.color) {
         const rgba = SA.color.toRgba(params.color, null, {
           palette: style ? style.palette : null,
           palettes: (state.project && state.project.palettes) || [],
         });
-        if (rgba) fill = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
-      } else if (!list.length) {
-        // derive the shape color from the text color: complementary hue and much
-        // lower brightness, so background shapes never match the lyrics
+        if (rgba) fills = [SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 })];
+      } else if (!fills.length) {
+        // derive the shape colour from the text colour: complementary hue and
+        // much lower brightness, so background shapes never match the lyrics
+        let fill = palette[3] || palette[2] || '#eef2ff';
         const textHex = textColorHex(style);
         if (textHex) {
           const hsv = SA.color.rgbToHsv(SA.color.parse(textHex));
@@ -803,13 +805,14 @@ SA.lyricsEngine = (() => {
           };
           fill = SA.color.toHex({ ...SA.color.hsvToRgb(contrast), a: 1 });
         }
+        fills = [fill];
       }
       // guarantee a minimum contrast between the shapes and every colour the
       // lyrics are drawn in (all gradient stops, not only the first: the usual
       // text gradient ends on the accent, which is the backdrop's own colour)
       const textColors = textColorList(style);
-      if (textColors.length) fill = SA.color.separateFrom(fill, textColors, BACKDROP_CONTRAST);
-      return fill;
+      if (textColors.length) fills = fills.map((fill) => SA.color.separateFrom(fill, textColors, BACKDROP_CONTRAST));
+      return fills.length ? fills : ['#eef2ff'];
     }
 
     function textColorList(style) {
@@ -861,7 +864,8 @@ SA.lyricsEngine = (() => {
       // must stand apart from (a cue or beat can carry a palette of its own)
       const onScreen = activeBeats(state.project, t)[0];
       const style = SA.project.resolveStyle(state.project, onScreen ? `cue:${onScreen.cueId}/beat:${onScreen.id}` : '');
-      const fill = clipShapeColor(spec, clip.colors, style);
+      const fills = clipShapeColor(spec, clip.colors, style);
+      const fill = fills[0];
       const clipDuration = Math.max(0.001, clip.end - clip.start);
       const progress = Math.min(1, Math.max(0, (t - clip.start) / clipDuration));
       // the shape group's own opacity folds into the layer opacity so the two
@@ -896,7 +900,13 @@ SA.lyricsEngine = (() => {
         return;
       }
       if (!shapesPass || !SA.fillerRender) return;
-      const params = { ...restParams, color: fill };
+      const features = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
+      // multi-colour clips carry their palette; nested parts of a combo without
+      // a colour of their own inherit the primary one
+      const params = { ...restParams, color: fill, colors: fills };
+      if (spec.type === 'combo' && Array.isArray(params.list)) {
+        params.list = params.list.map((part) => (part && part.params && part.params.color ? part : { ...part, params: { ...(part && part.params), color: fill } }));
+      }
       const list = SA.fillerRender.drawList({ type: spec.type, params }, {
         time: t,
         frame: { width: state.width, height: state.height },
@@ -907,10 +917,23 @@ SA.lyricsEngine = (() => {
         prevText: '',
         analysis: state.analysis,
         progress,
+        bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         color: fill,
+        colors: fills,
       });
       if (!list || (!(list.shapes && list.shapes.length) && !(list.texts && list.texts.length))) return;
+      // beat pulse, drift and the enter / exit transition (wipe / scale /
+      // rotate / iris) ride on top of the clip's own animation
+      if (params.animate) {
+        SA.fillerRender.animate(list, {
+          motion: params.animate,
+          t,
+          clip: { start: clip.start, end: clip.end },
+          bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+          frame: { width: state.width, height: state.height },
+        });
+      }
       pipeline.beginLayer();
       drawPrimitives(list.shapes || []);
       drawTexts(list.texts || []);

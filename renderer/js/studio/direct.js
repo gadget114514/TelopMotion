@@ -304,16 +304,12 @@
     if (!bgTrack) return;
     const userClip = (projectDoc.clips || []).some((clip) => clip.trackId === bgTrack && !clip.auto);
     if (userClip) return;
-    const { w, axes, seed, genre, lookClip } = ctx;
-    // the drawn look brings its own background clip; otherwise the axes roll
-    // one (noise gradients preferred, flat gradients as the floor). A weird
-    // song may roll an extended background primitive instead.
-    const bgRng = SA.rng.rngFor(seed, 'bg', 'weird');
-    const weirdBg = w >= 0.35 && bgRng() < w ? SA.moods.rerollClipSpec('background', { axes, seed: seed + 17, genre, weirdBg: true }) : null;
-    const result = weirdBg || SA.moods.rerollClipSpec('background', { axes, seed, genre });
-    const spec = weirdBg
-      ? weirdBg.spec
-      : lookClip || (result && result.spec && result.spec.type !== 'solid' && result.spec.type !== 'gradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
+    const { axes, seed, genre, lookClip } = ctx;
+    // the drawn look brings its own background clip; otherwise the axes roll a
+    // calm noise gradient (flat gradients as the floor). The weird axis no
+    // longer rewrites the background: it expands the mid (backdrop) layer.
+    const result = SA.moods.rerollClipSpec('background', { axes, seed, genre });
+    const spec = lookClip || (result && result.spec && result.spec.type !== 'solid' && result.spec.type !== 'gradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
     projectDoc.clips.push(nextClip(projectDoc, 'clip_bg', {
       trackId: bgTrack,
       start: 0,
@@ -326,20 +322,34 @@
     }));
   }
 
-  // One backdrop (mid) clip per cue, when the density axis asks for one. Hand-
-  // made clips on the track survive.
+  // One backdrop (mid) clip per cue. Its `coverage` (how much of the frame the
+  // painted planes take) is the weird axis; hand-made clips on the track
+  // survive. With coverage >= 0.5 the clip spans to the next cue (the first
+  // from 0, the last to the end of the song) so the backdrop never blinks out
+  // in a filler gap.
   function backdropClipFor(projectDoc, cue, index, ctx) {
-    const { axes, seed, genre } = ctx;
-    const result = SA.moods.rerollClipSpec('backdrop', { axes, seed: seed + index * 977 + 3, genre, index: seed + index });
+    const { axes, seed, genre, w, themeStyle } = ctx;
+    const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
+    const palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
+    const result = SA.moods.rerollClipSpec('backdrop', {
+      axes,
+      seed: seed + index * 977 + 3,
+      genre,
+      index: seed + index,
+      palette,
+      coverage: w,
+      cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+    });
     if (!result) return null;
+    const full = w >= 0.5;
     return nextClip(projectDoc, 'clip_mid', {
       trackId: trackIdFor(projectDoc, 'backdrop'),
       start: cue.start,
       end: cue.end,
       spec: result.spec,
-      opacity: 0.9,
-      fadeIn: 0.4,
-      fadeOut: 0.4,
+      opacity: full ? 1 : 0.9,
+      fadeIn: full ? 0 : 0.4,
+      fadeOut: full ? 0 : 0.4,
       colors: result.colors,
     });
   }
@@ -348,10 +358,20 @@
     const midTrack = trackIdFor(projectDoc, 'backdrop');
     if (!midTrack) return;
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
-    if (!(ctx.axes.density > 0.45 * (1 - ctx.w))) return;
+    // a weird song always gets its mid layer; the density axis still gates the
+    // classic draw (w=0 unchanged)
+    if (!(ctx.w > 0 || ctx.axes.density > 0.45)) return;
+    const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
     cues.forEach((cue, index) => {
       const clip = backdropClipFor(projectDoc, cue, index, ctx);
-      if (clip) projectDoc.clips.push(clip);
+      if (!clip) return;
+      if (ctx.w >= 0.5) {
+        clip.start = index === 0 ? 0 : Number(cue.start) || 0;
+        const next = cues[index + 1];
+        clip.end = next ? Number(next.start) || clip.end : total;
+        if (clip.end <= clip.start + 0.05) clip.end = Math.max(Number(cue.end) || 0, clip.start + 0.05);
+      }
+      projectDoc.clips.push(clip);
     });
   }
 

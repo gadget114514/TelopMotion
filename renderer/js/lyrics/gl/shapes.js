@@ -40,6 +40,8 @@ uniform vec3 u_trim;      // trim start, end, offset along the path
 uniform vec3 u_dash;      // dash on, off, offset (fractions of the path)
 uniform float u_cap;      // 0 butt, 1 round
 uniform vec4 u_warp;      // path warp: code, amount, freq, time
+uniform vec2 u_points[8]; // convex polygon (code 5), relative to the centre
+uniform float u_count;    // number of live points
 out vec4 outColor;
 
 const float PI_HALF = 1.5707963267948966;
@@ -90,6 +92,23 @@ float sdPolygon(vec2 p, float r, float n, float rot) {
   return length(p) * cos(a) - r;
 }
 
+// convex polygon: the max of the per-edge half-plane distances
+float sdConvex(vec2 p) {
+  int n = int(u_count + 0.5);
+  float d = -1.0e6;
+  for (int i = 0; i < 8; i++) {
+    if (i >= n) break;
+    int j = i + 1;
+    if (j == n) j = 0;
+    vec2 a = u_points[i];
+    vec2 b = u_points[j];
+    vec2 e = b - a;
+    vec2 nrm = normalize(vec2(e.y, -e.x));
+    d = max(d, dot(p - a, nrm));
+  }
+  return d;
+}
+
 void main() {
   vec2 p = (v_uv - 0.5) * 2.0 * u_half;
   p = warpPoint(p, u_warp.x, u_warp.y, u_warp.z, u_warp.w, max(u_half.x, u_half.y));
@@ -101,8 +120,10 @@ void main() {
     d = length(p) - u_radius;
   } else if (u_shape == 2) {
     d = sdSegment(p, u_p0, u_p1) - u_lineWidth * 0.5;
-  } else {
+  } else if (u_shape == 3) {
     d = sdPolygon(p, u_radius, u_sides, u_angle);
+  } else {
+    d = sdConvex(p);
   }
   vec4 color = u_color;
   if (u_stroke > 0.0) {
@@ -222,6 +243,9 @@ void main() {
       ];
       const result = {};
       for (const name of names) result[name.replace(/^u_/, '')] = context.getUniformLocation(program, name);
+      // uniform arrays: u_points[0] is the canonical location
+      result.points = context.getUniformLocation(program, 'u_points[0]') || context.getUniformLocation(program, 'u_points');
+      result.count = context.getUniformLocation(program, 'u_count');
       return result;
     }
 
@@ -280,6 +304,19 @@ void main() {
       gl.uniform1f(shapeUniforms.cap, opts.cap === 'butt' ? 0 : 1);
       const warp = Array.isArray(opts.pathOp) ? opts.pathOp : [0, 0, 0, 0];
       gl.uniform4f(shapeUniforms.warp, warp[0], warp[1] == null ? 0 : warp[1], warp[2] == null ? 0 : warp[2], warp[3] == null ? 0 : warp[3]);
+      // convex points always reset, so a stale polygon never leaks into the
+      // next shape drawn with this program
+      const points = Array.isArray(opts.points) ? opts.points : [];
+      const count = Math.min(8, points.length);
+      if (shapeUniforms.points) {
+        const flat = new Float32Array(16);
+        for (let i = 0; i < count; i += 1) {
+          flat[i * 2] = Number(points[i].x) || 0;
+          flat[i * 2 + 1] = Number(points[i].y) || 0;
+        }
+        gl.uniform2fv(shapeUniforms.points, flat);
+      }
+      if (shapeUniforms.count) gl.uniform1f(shapeUniforms.count, count);
       gl.enable(gl.BLEND);
       gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -388,6 +425,47 @@ void main() {
         radius: r,
         sides: Math.max(3, Math.min(12, Math.round(opts.sides || 6))),
         angleLocal: ((opts.rotation || opts.rot || 0) * Math.PI) / 180,
+        color: opts.color,
+        opacity: opts.opacity,
+        stroke: opts.stroke,
+        strokeColor: opts.strokeColor,
+        strokeOpacity: opts.strokeOpacity,
+        trim: opts.trim,
+        dash: opts.dash,
+        cap: opts.cap,
+        pathOp: opts.pathOp,
+      });
+    }
+
+    function convex(options) {
+      const opts = options || {};
+      const source = (Array.isArray(opts.points) ? opts.points : []).filter((point) => point && Number.isFinite(Number(point.x)) && Number.isFinite(Number(point.y)));
+      if (source.length < 3) return false;
+      let list = source.slice(0, 8);
+      // outward normals assume counter-clockwise; flip a clockwise polygon
+      let signed = 0;
+      for (let i = 0; i < list.length; i += 1) {
+        const a = list[i];
+        const b = list[(i + 1) % list.length];
+        signed += a.x * b.y - b.x * a.y;
+      }
+      if (signed < 0) list = list.reverse();
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (const point of list) {
+        x0 = Math.min(x0, point.x);
+        y0 = Math.min(y0, point.y);
+        x1 = Math.max(x1, point.x);
+        y1 = Math.max(y1, point.y);
+      }
+      const center = { x: (x0 + x1) / 2, y: (y0 + y1) / 2 };
+      return drawShape({
+        shape: 5,
+        center,
+        half: { x: Math.max(1, (x1 - x0) / 2 + 2), y: Math.max(1, (y1 - y0) / 2 + 2) },
+        points: list.map((point) => ({ x: point.x - center.x, y: point.y - center.y })),
         color: opts.color,
         opacity: opts.opacity,
         stroke: opts.stroke,
@@ -514,7 +592,7 @@ void main() {
       if (textProgram) gl.deleteProgram(textProgram);
     }
 
-    return { begin, rect, circle, ring, capsule, polygon, text, counts, dispose, parseColor };
+    return { begin, rect, circle, ring, capsule, polygon, convex, text, counts, dispose, parseColor };
   }
 
   return {

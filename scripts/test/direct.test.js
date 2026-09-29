@@ -66,6 +66,45 @@ function outputOf(doc) {
   }));
 }
 
+test('a weird run gives the mid track covered split planes and full-span timing', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1, density: 0.9 } });
+  SA.direct.run(doc, ctx);
+  const mid = doc.clips.filter((clip) => clip.trackId === 'mid');
+  assert.ok(mid.length >= 2, `mid clips ${mid.length}`);
+  for (const clip of mid) {
+    assert.equal(clip.spec.type, 'combo');
+    const plane = clip.spec.params.list[0];
+    assert.equal(plane.type, 'split');
+    assert.equal(plane.params.coverage, 1);
+    assert.ok(Array.isArray(plane.params.colors) && plane.params.colors.length >= 2);
+    assert.equal(clip.opacity, 1);
+    assert.equal(clip.fadeIn, 0);
+    assert.equal(clip.fadeOut, 0);
+  }
+  // tiles from 0 (first) to the last cue end (last)
+  const first = mid.find((clip) => clip.start === 0);
+  assert.ok(first, 'the first clip starts at 0');
+  const total = Math.max(...doc.script.cues.map((cue) => cue.end));
+  const last = mid.reduce((max, clip) => Math.max(max, clip.end), 0);
+  assert.equal(last, total);
+  // the mid colours move with weird (they are not the plain [3, 5] pair)
+  const palette = ctx.themeStyle.palette.colors;
+  const plain = [palette[3], palette[5] || palette[3]];
+  assert.notDeepEqual(mid[0].colors, plain);
+});
+
+test('a weird run leaves the user background alone and keeps the background calm', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 } });
+  SA.direct.run(doc, ctx);
+  const bg = doc.clips.filter((clip) => clip.trackId === 'bg');
+  assert.equal(bg.length, 1);
+  assert.ok(['gradient', 'noiseGradient', 'solid'].includes(bg[0].spec.type), `bg type ${bg[0].spec.type}`);
+  // no weird background primitive replaced it
+  assert.ok(!['tunnel', 'rays', 'fractalNoise', 'perspectiveGrid'].includes(bg[0].spec.type));
+});
+
 test('w=0 does not use the rhythm plan', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
   const ctx = prepare(doc, FIXTURE);
