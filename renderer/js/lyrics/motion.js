@@ -28,6 +28,9 @@
 
   function keywordMarks(scene, project) {
     if (!keywords || !project || !project.styleMode) return null;
+    // a composition already decides which word is the hero; the keyword pop
+    // would put a second hierarchy on top of it
+    if (scene.style && scene.style.text && scene.style.text.compose) return null;
     const axes = project.styleMode.axes || {};
     const s = keywords.strength(weird.text(axes.weird));
     if (!(s > 0)) return null;
@@ -459,6 +462,14 @@
       : { x: frame.width / 2, y: frame.height / 2 };
     let anchorX = anchorPoint.x;
     let anchorY = anchorPoint.y + num(options.stackOffset, 0);
+    // A grid location can name an edge of the block instead of its centre:
+    // edge -1 puts the block's left / top edge on the point, +1 the right /
+    // bottom edge. Locations without `edge` are untouched.
+    const anchorEdge = anchorPoint.edge;
+    if (blockHalf && anchorEdge) {
+      anchorX -= num(anchorEdge.x) * blockHalf.x;
+      anchorY -= num(anchorEdge.y) * blockHalf.y;
+    }
     // Keep the block inside the location's safe area when it fits. A block
     // larger than the frame is centred on that axis: the extra size is
     // intentional (a weird beat fills the screen) and frameGuard keeps at
@@ -749,6 +760,10 @@
       }
       applyStyleTransform(state, style.transform);
       applyKeyframeDeltas(state, keyframeDeltas);
+      // a composition hero keeps its own colour: the fill shader mixes the
+      // letter toward colorB when its colorMix is set (the GL path for the
+      // hero span's palette colour; the 2D fallback reads letter.color).
+      if (letter.span && letter.span.paletteIndex != null) state.colorMix = Math.max(state.colorMix || 0, 1);
 
       // Block-space deformations (warps, the dynamic font size) are evaluated
       // around the block centre in the letter's local frame. The deform runs

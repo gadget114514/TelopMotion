@@ -1507,5 +1507,6 @@
     lineText,
     chunkThemes,
     beatCues,
+    segmentWords,
   };
 });

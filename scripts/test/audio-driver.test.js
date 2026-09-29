@@ -88,6 +88,16 @@ test('resolveStyle walks single and stacked groups without mutating the input', 
   assert.equal(driver.resolveStyle(style, null, 1), style, 'no analysis means no resolution');
 });
 
+test('rangeEnergy normalises a beat against the song p90', () => {
+  const analysis = fakeAnalysis();
+  assert.equal(driver.rangeEnergy(analysis, 0, 1), 1, 'a fully loud second saturates');
+  assert.equal(driver.rangeEnergy(analysis, 1, 2), 0, 'a silent second is zero');
+  const mixed = driver.rangeEnergy(analysis, 0.75, 1.25);
+  assert.ok(Math.abs(mixed - 0.5) < 1e-6, `mixed ${mixed}`);
+  assert.equal(driver.rangeEnergy(null, 0, 1), null);
+  assert.equal(driver.rangeEnergy({ fps: 30, frames: [] }, 0, 1), null);
+});
+
 test('reactiveParams lists the audio-bound parameters for the inspector', () => {
   const style = {
     post: [{ type: 'digitalNoise', params: { amount: { audio: { band: 'high' } }, speed: 1 } }],

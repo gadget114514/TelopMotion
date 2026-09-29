@@ -308,6 +308,25 @@ test('weird is a sixth axis that defaults to 0 and stays out of look matching', 
   assert.equal(moods.normalizeAxes({ weird: 2 }).weird, 1);
 });
 
+test('every generated font id names a bundled typeface', () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const fontSource = fs.readFileSync(path.join(__dirname, '..', '..', 'renderer', 'js', 'lyrics', 'font.js'), 'utf8');
+  const builtins = new Set([...fontSource.matchAll(/id: '([^']+)'/g)].map((match) => match[1]));
+  assert.ok(builtins.size >= 11, `bundled fonts ${builtins.size}`);
+  for (const [family, ids] of Object.entries(moods.FONTS)) {
+    for (const id of ids) assert.ok(builtins.has(id), `FONTS.${family} names ${id}`);
+  }
+  const genres = require('../../renderer/js/lyrics/genres.js');
+  for (const genre of genres.LIST) {
+    for (const key of ['cjk', 'latin']) {
+      for (const id of (genre.fonts && genre.fonts[key]) || []) {
+        assert.ok(builtins.has(id), `${genre.id}.fonts.${key} names ${id}`);
+      }
+    }
+  }
+});
+
 test('recolor moves every hex colour onto the new palette and keeps the rest', () => {
   const from = ['#101018', '#202838', '#ffffff', '#ff0000', '#000000'];
   const to = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008'];

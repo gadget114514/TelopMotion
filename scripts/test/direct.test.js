@@ -30,6 +30,7 @@ const SA = {
   figures: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'figures.js')),
   fillerRender: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js')),
   fillerPresets: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-presets.js')),
+  compositions: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'compositions.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -318,4 +319,50 @@ test('smartness 0.9 drops the tacky grammar from the automatic direction', () =>
   for (const spec of specs) {
     assert.ok(smartness.weight(smartness.rateSpec(spec), 0.9) > 0, `filler ${spec && spec.presetId} is below the floor`);
   }
+});
+
+test('compose mode draws a composition per beat and drops the weird jitter', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.8 }, compose: true });
+  assert.equal(ctx.compose, true);
+  SA.direct.run(doc, ctx);
+  assert.equal(doc.styleMode.compose, true, 'the mode is saved for re-rolls');
+  const beats = [];
+  for (const cue of doc.script.cues) {
+    for (const beat of (doc.beats && doc.beats[cue.id]) || []) beats.push({ cue, beat });
+  }
+  assert.ok(beats.length >= 4, `beats ${beats.length}`);
+  const compIds = [];
+  for (const { cue, beat } of beats) {
+    const style = doc.beatStyles[beat.id];
+    assert.ok(style && style.text && style.text.compose, `${beat.id} has a composition`);
+    assert.equal(style.text.compose.text, beat.text || '');
+    assert.ok(SA.compositions.get(style.text.compose.id), `${beat.id} known composition ${style.text.compose.id}`);
+    compIds.push(style.text.compose.id);
+    assert.equal(style.transform.rotate, 0, `${beat.id} rotate`);
+    assert.equal(style.transform.tiltX, 0, `${beat.id} tiltX`);
+    assert.equal(style.transform.tiltY, 0, `${beat.id} tiltY`);
+    assert.deepEqual(style.hold, [], `${beat.id} holds still`);
+    assert.equal(style.location.type, 'grid', `${beat.id} grid location`);
+    const cueStyle = doc.cueStyles[cue.id];
+    assert.ok(!cueStyle || !cueStyle.clones, `${cue.id} has no clones`);
+  }
+  for (let i = 1; i < compIds.length; i += 1) {
+    assert.notEqual(compIds[i], compIds[i - 1], `beat ${i} repeats ${compIds[i]}`);
+  }
+  // the whole run is deterministic for one seed in compose mode too
+  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.8 }, compose: true });
+  for (const { beat } of beats) {
+    assert.deepEqual(again.beatStyles[beat.id].text.compose, doc.beatStyles[beat.id].text.compose);
+    assert.deepEqual(again.beatStyles[beat.id].location, doc.beatStyles[beat.id].location);
+  }
+});
+
+test('a compose run keeps the w=0 fixture untouched when compose is off', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  runOn(doc, FIXTURE);
+  for (const [beatId, style] of Object.entries(doc.beatStyles)) {
+    assert.ok(!(style.text && style.text.compose), `${beatId} stays plain`);
+  }
+  assert.equal(doc.styleMode.compose, undefined);
 });

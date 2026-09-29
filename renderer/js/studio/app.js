@@ -981,7 +981,10 @@
           look = composed.look;
           lookClip = composed.clip;
           themeStyle = composed.style;
-          cueLooks = drawCueLooks(pool, doc.script.cues, { axes, seed, genre: lookGenre, songLook: entry.n });
+          // Composition mode (below) draws one picture per beat from
+          // SA.compositions; the per-cue looks would fight it, so they are not
+          // drawn. The weird axis still widens the allowed compositions.
+          cueLooks = {};
         }
       }
     } catch (error) {
@@ -993,8 +996,9 @@
     if (!themeStyle) themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
     // hand the run to SA.direct: it owns the size band, the palette patches,
-    // the filler settings and the clips the automatic direction replaces.
-    const ctx = SA.direct.prepare(doc, { axes, seed, genre, direction, look, lookClip, themeStyle, cueLooks, analysis });
+    // the filler settings and the clips the automatic direction replaces. In
+    // composition mode the per-beat picture comes from SA.compositions.
+    const ctx = SA.direct.prepare(doc, { axes, seed, genre, direction, look, lookClip, themeStyle, cueLooks, analysis, compose: true });
     store.dispatch({
       label: 'auto direct',
       areas: ['script', 'style'],

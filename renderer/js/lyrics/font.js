@@ -277,6 +277,21 @@ SA.lyricsFont = (() => {
     return { list: [], get: () => null };
   }
 
+  // A span may carry its own raw font list (a weight-specific order); only the
+  // normalized wrapper is useful to buildLetter, so cache it per list object.
+  const normalizedCache = new WeakMap();
+
+  function normalizedFontSet(fonts) {
+    if (fonts && typeof fonts === 'object' && !Array.isArray(fonts) && typeof fonts.get === 'function') return fonts;
+    if (!fonts || typeof fonts !== 'object') return normalizeFonts(fonts);
+    let cached = normalizedCache.get(fonts);
+    if (!cached) {
+      cached = normalizeFonts(fonts);
+      normalizedCache.set(fonts, cached);
+    }
+    return cached;
+  }
+
   function pickFont(list, char) {
     for (const entry of list) {
       if (!entry || !entry.font) continue;
@@ -547,23 +562,50 @@ SA.lyricsFont = (() => {
     return false;
   }
 
-  function buildItems(paragraph, style, fontSet, size, lang, opts) {
+  function buildItems(paragraph, style, fontSet, size, lang, opts, state) {
+    const compose = opts && opts.compose;
+    const spans = compose && Array.isArray(compose.spans) && compose.spans.length ? compose.spans : null;
+    const breaks = compose && compose.breaks ? compose.breaks : null;
+    const hasBreak = breaks
+      ? typeof breaks.has === 'function'
+        ? (index) => breaks.has(index)
+        : (index) => breaks.indexOf(index) >= 0
+      : null;
     const items = [];
     let previous = null;
+    // `opts.compose` counts characters by code point (the same unit the
+    // composition's breaks and spans use), so a surrogate pair advances the
+    // cursor by two.
+    let cursor = compose && state ? state.cursor : 0;
     for (const token of words(paragraph, lang)) {
       const chars = graphemes(token.text, lang);
       for (let i = 0; i < chars.length; i += 1) {
         const character = chars[i];
-        const { letter } = buildLetter(character, style, fontSet, size, lang, opts);
+        let span = null;
+        if (spans) {
+          for (const candidate of spans) {
+            if (cursor >= candidate.from && cursor < candidate.to) {
+              span = candidate;
+              break;
+            }
+          }
+        }
+        const scale = span && Number.isFinite(Number(span.scale)) ? Number(span.scale) : 1;
+        const letterFonts = span && span.fontSet ? normalizedFontSet(span.fontSet) : fontSet;
+        const { letter } = buildLetter(character, style, letterFonts, size * scale, lang, opts);
+        if (span) letter.span = span;
         let breakBefore = false;
         if (previous != null && !/^\s+$/.test(character)) {
           if (/\s+$/.test(previous)) breakBefore = true;
           else if (i > 0) breakBefore = shouldBreakBetween(previous, character);
         }
-        items.push({ letter, breakBefore });
+        const forceBreak = hasBreak != null && hasBreak(cursor) && !breakBefore;
+        items.push({ letter, breakBefore, forceBreak });
         previous = character;
+        cursor += Array.from(character).length;
       }
     }
+    if (compose && state) state.cursor = cursor;
     return items;
   }
 
@@ -577,6 +619,14 @@ SA.lyricsFont = (() => {
     while (index < items.length) {
       const item = items[index];
       if (item.breakBefore) lastBreak = index;
+      // a composition's forced break always cuts here, before the character
+      if (item.forceBreak && index > start) {
+        lines.push(items.slice(start, index));
+        start = index;
+        width = 0;
+        lastBreak = -1;
+        continue;
+      }
       const advance = item.letter.advance + letterSpacing;
       if (index > start && maxWidth !== Infinity && width + advance > maxWidth) {
         const breakAt = lastBreak > start ? lastBreak : index;
@@ -614,10 +664,26 @@ SA.lyricsFont = (() => {
       else maxWidth = Infinity;
     }
 
-    const paragraphs = source.split(/\r\n|\r|\n/);
+    const compose = opts.compose || null;
+    let paragraphs = source.split(/\r\n|\r|\n/);
+    if (compose) {
+      // keep one paragraph list whose code-point offsets stay aligned with
+      // Array.from(source): a composition indexes breaks / spans that way
+      paragraphs = [];
+      let start = 0;
+      for (let i = 0; i < source.length; i += 1) {
+        const character = source[i];
+        if (character !== '\n' && character !== '\r') continue;
+        paragraphs.push(source.slice(start, i));
+        if (character === '\r' && source[i + 1] === '\n') i += 1;
+        start = i + 1;
+      }
+      paragraphs.push(source.slice(start));
+    }
+    const cursorState = compose ? { cursor: 0 } : null;
     const lines = [];
     for (const paragraph of paragraphs) {
-      const items = buildItems(paragraph, style, fontSet, size, lang, opts);
+      const items = buildItems(paragraph, style, fontSet, size, lang, opts, cursorState);
       for (const rawLine of breakItems(items, maxWidth, letterSpacing)) lines.push(rawLine);
     }
 
@@ -628,16 +694,40 @@ SA.lyricsFont = (() => {
     const primary = fontSet.list[0] || null;
     const ascent = primary ? (primary.font.ascender || primary.unitsPerEm) * glyphScale(primary, size) : size;
     const descent = primary ? Math.abs(primary.font.descender || 0) * glyphScale(primary, size) : size * 0.3;
+    // A composition may set a different size per word. The lines then measure
+    // their tallest letter, share one baseline inside the line and step down by
+    // the average of the two neighbours (the plain case collapses to the old
+    // `ascent + lineIdx * lineHeight` math exactly).
+    const variable = compose != null && lines.some((line) => line.some((item) => item.letter.size !== size));
+    const lineMaxOf = (items) => {
+      let max = size;
+      for (const item of items) max = Math.max(max, item.letter.size);
+      return max;
+    };
+    let baseline = ascent;
+    let previousLineMax = size;
+    let columnOffset = 0;
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx += 1) {
       const items = lines[lineIdx];
+      const lineMax = variable ? lineMaxOf(items) : size;
       if (vertical) {
-        const result = layoutVerticalLine(items, block, lineIdx, size, lineHeight, letterSpacing);
+        const result = layoutVerticalLine(items, block, lineIdx, size, lineHeight, letterSpacing, { lineMax, columnOffset });
         block.width = Math.max(block.width, result.width);
         block.height = Math.max(block.height, result.height);
+        columnOffset += variable ? lineHeight * (lineMax / size) : lineHeight;
         continue;
       }
-      const baseline = ascent + lineIdx * lineHeight;
+      let lineAscent = ascent;
+      let lineBoxHeight = lineHeight;
+      if (variable) {
+        if (lineIdx > 0) baseline += lineHeight * ((previousLineMax + lineMax) / (2 * size));
+        else baseline = ascent * (lineMax / size);
+        lineAscent = ascent * (lineMax / size);
+        lineBoxHeight = lineHeight * (lineMax / size);
+      } else {
+        baseline = ascent + lineIdx * lineHeight;
+      }
       const width = plainWidth(items, letterSpacing);
       let pen = 0;
       if (align === 'center') pen = (maxLineWidth - width) / 2;
@@ -659,9 +749,10 @@ SA.lyricsFont = (() => {
         word.width += letter.advanceWithSpacing;
       }
       if (word) outWords.push(word);
-      block.lines.push({ words: outWords, width, height: lineHeight, baseline, y: baseline - ascent });
+      block.lines.push({ words: outWords, width, height: lineBoxHeight, baseline, y: baseline - lineAscent });
       block.width = Math.max(block.width, width);
-      block.height = (lineIdx + 1) * lineHeight;
+      block.height = Math.max(block.height, baseline - lineAscent + lineBoxHeight);
+      previousLineMax = lineMax;
     }
 
     let bbox = null;
@@ -708,8 +799,11 @@ SA.lyricsFont = (() => {
     return sum;
   }
 
-  function layoutVerticalLine(items, block, lineIdx, size, lineHeight, letterSpacing) {
-    const columnX = -lineIdx * lineHeight;
+  function layoutVerticalLine(items, block, lineIdx, size, lineHeight, letterSpacing, options) {
+    const opts = options || {};
+    const lineMax = opts.lineMax == null ? size : opts.lineMax;
+    const offset = opts.columnOffset == null ? lineIdx * lineHeight : opts.columnOffset;
+    const columnX = offset === 0 ? 0 : -offset;
     const outWords = [];
     let word = null;
     let pen = 0;
@@ -724,8 +818,8 @@ SA.lyricsFont = (() => {
       let advance = letter.advance + letterSpacing;
       let x = columnX;
       if (!letter.vertRotate && previous && /^[0-9]$/.test(previous.char) && /^[0-9]$/.test(letter.char)) {
-        previous.x = columnX - size * 0.25;
-        x = columnX + size * 0.25;
+        previous.x = columnX - letter.size * 0.25;
+        x = columnX + letter.size * 0.25;
         advance = 0;
       }
       letter.x = x;
@@ -736,8 +830,8 @@ SA.lyricsFont = (() => {
       word.width += advance;
     }
     if (word) outWords.push(word);
-    block.lines.push({ words: outWords, width: size, height: pen, baseline: pen, y: 0, vertical: true });
-    return { width: size, height: pen };
+    block.lines.push({ words: outWords, width: lineMax, height: pen, baseline: pen, y: 0, vertical: true });
+    return { width: lineMax, height: pen };
   }
 
   function measureText(text, style, fonts, options) {

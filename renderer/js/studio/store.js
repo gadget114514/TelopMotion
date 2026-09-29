@@ -505,6 +505,51 @@ SA.store = (() => {
     return { axes: SA.moods.normalizeAxes(mode.axes || {}), direction: mode.direction || 'horizontal', genre: mode.genre || null };
   }
 
+  // --- composition re-rolls -----------------------------------------------------
+  // A project directed in composition mode rebuilds one beat's picture through
+  // SA.direct.composeBeat. The neighbouring beats' compositions are read back
+  // out of their beatStyles so the novelty weights know what not to repeat.
+
+  function composeHistoryBefore(projectDoc, beatId) {
+    const history = [];
+    if (typeof SA === 'undefined' || !SA.compositions) return history;
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    for (const cue of cues) {
+      const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+      for (const beat of beats) {
+        if (beat.id === beatId) return history;
+        const container = projectDoc.beatStyles && projectDoc.beatStyles[beat.id];
+        const compose = container && container.text && container.text.compose;
+        const comp = compose && compose.id ? SA.compositions.get(compose.id) : null;
+        if (comp) history.push(comp);
+      }
+    }
+    return history;
+  }
+
+  function composeRunContext(projectDoc, mode, seed, history) {
+    const output = projectDoc.output || {};
+    const frameW = Number(output.width) || 1920;
+    const frameH = Number(output.height) || 1080;
+    const axes = (mode && mode.axes) || {};
+    const rawW = Number(axes.weird) || 0;
+    return {
+      compose: true,
+      seed,
+      rawW,
+      w: typeof SA !== 'undefined' && SA.moods && typeof SA.moods.textWeirdOf === 'function' ? SA.moods.textWeirdOf(axes) : rawW,
+      portrait: (output.aspect || '16:9') === '9:16',
+      frameW,
+      frameH,
+      screen: Math.min(frameW, frameH),
+      energy: Number.isFinite(Number(axes.energy)) ? Number(axes.energy) : 0.5,
+      analysis: null,
+      themeStyle: projectDoc.style || null,
+      composeHistory: history || [],
+      composeZones: {},
+    };
+  }
+
   // --- palettes per scope -----------------------------------------------------
   // A palette lives on the project, a cue or a beat. Effects keep literal hex
   // colours, so changing a scope's palette also moves those colours: at the
@@ -1787,6 +1832,15 @@ SA.store = (() => {
               96
           );
           const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          if (projectDoc.styleMode && projectDoc.styleMode.compose && SA.direct && typeof SA.direct.composeBeat === 'function' && SA.compositions) {
+            const cueIndex = (projectDoc.script.cues || []).indexOf(target);
+            const history = composeHistoryBefore(projectDoc, beats.length ? beats[0].id : null);
+            beats.forEach((beat, index) => {
+              const ctx = composeRunContext(projectDoc, mode, seed + index + 1, history);
+              SA.direct.composeBeat(projectDoc, target, beat, index, cueIndex, ctx);
+            });
+            return;
+          }
           beats.forEach((beat, index) => {
             const random = SA.rng ? SA.rng.rngFor(seed + index + 1, beat.id, 'beat') : Math.random;
             const size = Math.round(baseSize * (0.9 + random() * 0.25));
@@ -1825,6 +1879,16 @@ SA.store = (() => {
           const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
           for (const patch of result.patches || []) {
             for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
+          }
+          // composition mode: the beat also redraws its picture, with the
+          // neighbouring beats' compositions as the novelty context
+          if (projectDoc.styleMode && projectDoc.styleMode.compose && SA.direct && typeof SA.direct.composeBeat === 'function' && SA.compositions) {
+            const redrawSeed = Math.floor(Math.random() * 900000) + 1000;
+            const history = composeHistoryBefore(projectDoc, beatId);
+            const ctx = composeRunContext(projectDoc, mode, redrawSeed, history);
+            const beatIndex = beats.indexOf(beat);
+            const cueIndex = (projectDoc.script.cues || []).indexOf(cue);
+            SA.direct.composeBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
           }
         },
       });

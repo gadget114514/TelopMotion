@@ -23,6 +23,9 @@ globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');
 globalThis.SA.random = require('../../renderer/js/lyrics/random.js');
 globalThis.SA.figures = require('../../renderer/js/lyrics/figures.js');
+globalThis.SA.keywords = require('../../renderer/js/lyrics/keywords.js');
+globalThis.SA.compositions = require('../../renderer/js/lyrics/compositions.js');
+globalThis.SA.direct = require('../../renderer/js/studio/direct.js');
 require('../../renderer/js/studio/store.js');
 const store = globalThis.SA.store;
 
@@ -553,5 +556,22 @@ test('rerollClip redraws a figure clip with a fresh motif and moves', () => {
     changed = after !== before;
   }
   assert.equal(changed, true, 'the figure re-roll changed the spec');
+  assert.equal(store.undo(), true);
+});
+
+test('a composition-mode cue re-roll redraws its beats through composeBeat', () => {
+  const doc = fixture();
+  doc.styleMode.compose = true;
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  doc.beatStyles = {
+    'c1:page0': { text: { compose: { id: 'heroCenter', text: 'hello', breaks: [], spans: [] } } },
+  };
+  store.load(doc);
+  store.commands.rerollCue('c1');
+  const style = store.state.project.beatStyles['c1:page0'];
+  assert.ok(style.text && style.text.compose, 'the beat carries a composition');
+  assert.ok(globalThis.SA.compositions.get(style.text.compose.id), `known composition ${style.text.compose.id}`);
+  assert.equal(style.location.type, 'grid');
+  assert.deepEqual(style.hold, []);
   assert.equal(store.undo(), true);
 });

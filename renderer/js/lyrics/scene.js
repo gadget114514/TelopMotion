@@ -29,7 +29,9 @@ SA.lyricsScene = (() => {
     if (!value || !value.kind) {
       value = { kind: 'solid', value: typeof value === 'string' ? value : '#eef2ff', alpha: 1 };
     }
-    const resolved = SA.color.resolve(value, { palettes: project.palettes || [], categoryColors, category, t: 0 });
+    // the palette references resolve against the scoped style palette first
+    // (the same rule the GL fill pass uses), then the project palette list
+    const resolved = SA.color.resolve(value, { palettes: project.palettes || [], localPalette: style.palette || null, categoryColors, category, t: 0 });
     if (resolved.kind === 'gradient') {
       const stop = resolved.stops && resolved.stops.length ? resolved.stops[0].rgba : { r: 1, g: 1, b: 1, a: 1 };
       return { r: stop.r, g: stop.g, b: stop.b, a: stop.a == null ? 1 : stop.a };
@@ -109,15 +111,37 @@ SA.lyricsScene = (() => {
     const beatPath = `cue:${cueId}/beat:${beatId}`;
     const style = SA.project.resolveStyle(project, beatPath);
     const textStyle = style.text || {};
+    // A composition owns its own line breaking and per-word sizes: its
+    // `compose` block only applies while it still describes the beat text,
+    // so editing the text drops back to the plain layout.
+    const compose = textStyle.compose && textStyle.compose.text === (beat.text || '') ? textStyle.compose : null;
     const direction = opts.direction || textStyle.direction || beat.direction || 'horizontal';
     const loaded = Array.isArray(fonts) ? fonts : fonts ? [fonts] : [];
     // the style's typeface (mapped through the project's font set) leads;
     // the rest only cover glyphs it lacks
     const fontList = SA.lyricsFont && typeof SA.lyricsFont.orderFonts === 'function' ? SA.lyricsFont.orderFonts(loaded, textStyle.fontId, textStyle.weight) : loaded;
     const fontIds = fontList.map((entry) => entry.id).join(',');
-    const beatLines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
-    const fillBeat = beat.fit === 'fill' && !!beatLines;
-    const layoutTextSource = beatLines ? beatLines.join('\n') : beat.text || '';
+    const beatLines = compose ? null : Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
+    const fillBeat = !compose && beat.fit === 'fill' && !!beatLines;
+    const layoutTextSource = compose ? beat.text || '' : beatLines ? beatLines.join('\n') : beat.text || '';
+    let composeLayout = null;
+    if (compose) {
+      const spans = Array.isArray(compose.spans) ? compose.spans : [];
+      const setsByWeight = new Map();
+      composeLayout = {
+        breaks: new Set(Array.isArray(compose.breaks) ? compose.breaks : []),
+        spans: spans.map((span) => {
+          if (!span) return span;
+          const weight = span.weight == null ? textStyle.weight : span.weight;
+          let set = setsByWeight.get(weight);
+          if (!set) {
+            set = SA.lyricsFont && typeof SA.lyricsFont.orderFonts === 'function' ? SA.lyricsFont.orderFonts(loaded, textStyle.fontId, weight) : loaded;
+            setsByWeight.set(weight, set);
+          }
+          return { ...span, fontSet: span.fontSet || set };
+        }),
+      };
+    }
     const key = hash([
       cueId,
       beatId,
@@ -142,9 +166,11 @@ SA.lyricsScene = (() => {
       size,
       lang: (project.meta && project.meta.lang) || 'en',
       direction,
+      compose: composeLayout || undefined,
       // a fill beat carries the exact lines the flow picked, so it must not be
-      // re-wrapped even when the enlarged / bleeding lines exceed maxWidth
-      maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth * output.width * scale : undefined,
+      // re-wrapped even when the enlarged / bleeding lines exceed maxWidth. A
+      // composition may ask for a wider than frame ratio on purpose (bleed).
+      maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 ? textStyle.maxWidth * output.width * scale : undefined,
     });
     // Fit the laid-out block into the frame. The width stays inside maxWidth;
     // the height budget is 80% of the frame by default and opens with the weird
@@ -156,7 +182,7 @@ SA.lyricsScene = (() => {
     const weird = SA.weird.text(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0);
     const maxHeightBase = textStyle.maxHeight > 0 ? Number(textStyle.maxHeight) : 0.8;
     const limitHRatio = maxHeightBase + (Math.max(maxHeightBase, 1.2) - maxHeightBase) * weird;
-    const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth : 0.94) * frameW;
+    const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 ? textStyle.maxWidth : 0.94) * frameW;
     const limitH = limitHRatio * frameH;
     const bbox = layout.bbox;
     if (bbox && size > 1) {
@@ -169,6 +195,7 @@ SA.lyricsScene = (() => {
             size: size * k,
             lang: (project.meta && project.meta.lang) || 'en',
             direction,
+            compose: composeLayout || undefined,
             maxWidth: Infinity,
           });
         }
@@ -213,6 +240,9 @@ SA.lyricsScene = (() => {
           box.cx = box.x + box.w / 2;
           box.cy = box.y + box.h / 2;
           const path = letterPath(cueId, beatId, lineIdx, wordIdx, letterIdx);
+          const letterColor = source.span && source.span.paletteIndex != null
+            ? resolveFillColor(project, { color: { fill: { kind: 'palette', index: source.span.paletteIndex } }, palette: style.palette || null }, beat)
+            : fillColor;
           const letter = {
             path,
             cueId,
@@ -227,7 +257,7 @@ SA.lyricsScene = (() => {
             fontId: source.fontId,
             src: source.src,
             raster: source.raster,
-            size,
+            size: source.size == null ? size : source.size,
             advance: source.advance,
             advanceWithSpacing: source.advanceWithSpacing,
             vertRotate: !!source.vertRotate,
@@ -245,7 +275,8 @@ SA.lyricsScene = (() => {
               penY: source.y,
             },
             bbox: { x1: source.bbox.x1, y1: source.bbox.y1, x2: source.bbox.x2, y2: source.bbox.y2 },
-            color: fillColor,
+            color: letterColor,
+            span: source.span || null,
             style,
             mesh: null,
             samples: null,

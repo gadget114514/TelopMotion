@@ -64,6 +64,29 @@
     return !!value && typeof value === 'object' && !Array.isArray(value) && !!value.audio;
   }
 
+  // The average RMS over a time range, normalised to the song's own p90 so the
+  // value means "how loud is this beat for this song" (0..1) instead of an
+  // absolute level. No analysis frame -> null, so callers keep their fallback.
+  function rangeEnergy(analysis, start, end) {
+    if (!analysis || !Array.isArray(analysis.frames) || !analysis.frames.length) return null;
+    const fps = analysis.fps || 30;
+    const last = analysis.frames.length - 1;
+    const from = Math.max(0, Math.min(last, Math.floor(Math.max(0, Number(start) || 0) * fps)));
+    const to = Math.max(from, Math.min(last, Math.ceil(Math.max(0, Number(end) || 0) * fps) - 1));
+    let sum = 0;
+    let count = 0;
+    for (let i = from; i <= to; i += 1) {
+      sum += Number(analysis.frames[i].rms) || 0;
+      count += 1;
+    }
+    if (!count) return null;
+    const average = sum / count;
+    const sorted = analysis.frames.map((frame) => Number(frame.rms) || 0).sort((a, b) => a - b);
+    const p90 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.9))] || 0;
+    if (!(p90 > 0)) return 0;
+    return Math.max(0, Math.min(1, average / p90));
+  }
+
   function resolveValue(value, analysis, t) {
     return isAudioValue(value) ? sample(analysis, t, value) : value;
   }
@@ -144,6 +167,7 @@
     frameAt,
     level,
     sample,
+    rangeEnergy,
     isAudioValue,
     resolveValue,
     resolveParams,

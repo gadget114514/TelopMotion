@@ -115,5 +115,35 @@
     },
   });
 
+  // The composition grid: place the block on a 0..1 grid and let `edgeX` /
+  // `edgeY` pick which edge of the block is the reference (-1 = left / top,
+  // 0 = centre, 1 = right / bottom). motion.js shifts the anchor by the block
+  // half-size before the safe-area clamp, so x / y name the edge, not the centre.
+  fx.register({
+    group: 'location',
+    type: 'grid',
+    tags: ['basic'],
+    pack: 'pro',
+    params: [
+      { key: 'x', kind: 'number', min: -0.5, max: 1.5, step: 0.01, default: 0.5 },
+      { key: 'y', kind: 'number', min: -0.5, max: 1.5, step: 0.01, default: 0.5 },
+      { key: 'edgeX', kind: 'number', min: -1, max: 1, step: 0.05, default: 0 },
+      { key: 'edgeY', kind: 'number', min: -1, max: 1, step: 0.05, default: 0 },
+      { key: 'offsetX', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
+      { key: 'offsetY', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
+      { key: 'safeArea', kind: 'number', min: 0.02, max: 0.15, step: 0.005, default: 0.05 },
+      { key: 'drift', kind: 'vec2', default: { x: 0, y: 0 } },
+    ],
+    anchor(params, frame) {
+      const safe = params.safeArea == null ? 0.05 : params.safeArea;
+      return {
+        x: ((params.x == null ? 0.5 : params.x) + (params.offsetX || 0)) * frame.width,
+        y: ((params.y == null ? 0.5 : params.y) + (params.offsetY || 0)) * frame.height,
+        safe,
+        edge: { x: params.edgeX || 0, y: params.edgeY || 0 },
+      };
+    },
+  });
+
   return fx;
 });

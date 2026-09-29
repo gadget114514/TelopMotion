@@ -369,8 +369,13 @@
   const FONTS = {
     soft: ['NotoSerif-Regular', 'NotoSans-Regular', 'NotoSansJP-Regular'],
     plain: ['NotoSans-Regular', 'NotoSansJP-Regular', 'NotoSans-Bold'],
-    hard: ['DelaGothicOne', 'NotoSans-Bold', 'NotoSansJP-Bold'],
-    latinHard: ['BebasNeue', 'DelaGothicOne', 'NotoSans-Bold'],
+    hard: ['DelaGothicOne-Regular', 'NotoSans-Bold', 'NotoSansJP-Bold'],
+    latinHard: ['BebasNeue-Regular', 'DelaGothicOne-Regular', 'NotoSans-Bold'],
+    // the CJK soft / pop families: the bundled display faces the moods
+    // generator can actually load (the latin serif / script names it used to
+    // ask for are not bundled, so they always fell back to Noto Sans)
+    softCjk: ['NotoSerifJP-Regular', 'ZenMaruGothic-Regular', 'KleeOne-Regular'],
+    popCjk: ['RocknRollOne-Regular', 'ZenMaruGothic-Regular'],
   };
 
   function clamp01(value) {
@@ -1244,7 +1249,7 @@
   function textStyleFor(random, axes, context, genre) {
     const cjk = !!context.cjk;
     let pool = FONTS.plain;
-    if (axes.softness > 0.62) pool = FONTS.soft;
+    if (axes.softness > 0.62) pool = cjk ? FONTS.softCjk : FONTS.soft;
     else if (axes.softness < 0.38) pool = cjk ? FONTS.hard : FONTS.latinHard;
     if (genre && genre.fonts) {
       const requested = (context.cjk ? genre.fonts.cjk : genre.fonts.latin) || genre.fonts.latin || genre.fonts.cjk || [];
@@ -1259,6 +1264,13 @@
     // an exclusive project font set replaces every other pool
     const setPool = fontSetPool(cjk);
     if (setPool.length) pool = setPool;
+    // only bundled faces can load: a pool that emptied out falls back to the
+    // plain family. An exclusive project set is trusted as-is.
+    if (!setPool.length) {
+      const usable = pool.filter(fontAvailable);
+      pool = usable.length ? usable : FONTS.plain.filter(fontAvailable);
+      if (!pool.length) pool = FONTS.plain;
+    }
     const fontId = pick(random, pool);
     const portrait = context.aspect === '9:16';
     const base = portrait ? lerp(104, 58, axes.density) : lerp(134, 78, axes.density);
@@ -1291,7 +1303,9 @@
   function weirdFont(random, context, current) {
     const cjk = !!(context && context.cjk);
     const setPool = fontSetPool(cjk);
-    const base = setPool.length ? setPool : [...new Set([...FONTS.soft, ...FONTS.plain, ...(cjk ? FONTS.hard : FONTS.latinHard)])].filter(fontAvailable);
+    const base = setPool.length
+      ? setPool
+      : [...new Set([...FONTS.soft, ...FONTS.plain, ...(cjk ? [...FONTS.hard, ...FONTS.softCjk, ...FONTS.popCjk] : FONTS.latinHard)])].filter(fontAvailable);
     const pool = base.filter((id) => id !== current);
     return pool.length ? pick(random, pool) : null;
   }
@@ -2265,6 +2279,7 @@
     pickEntry,
     PALETTES,
     PALETTE_FAMILIES,
+    FONTS,
     generate,
     generatePalette,
     generatePaletteSet,

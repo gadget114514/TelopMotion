@@ -137,6 +137,9 @@
       themeStyle,
       cueLooks: opts.cueLooks || {},
       analysis,
+      compose: !!opts.compose,
+      composeHistory: [],
+      composeZones: {},
       bpm,
       beatFit,
       rhythm,
@@ -157,11 +160,11 @@
   // look. Beat-level work is directBeat.
   function directCue(projectDoc, cue, cueIndex, ctx) {
     const { w, axes, seed, genre, direction, themeStyle, cueLooks, look } = ctx;
-    if (cueLooks[cue.id]) {
+    if (!ctx.compose && cueLooks[cue.id]) {
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, JSON.parse(JSON.stringify(cueLooks[cue.id].style)));
     }
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
-    if (w > 0) {
+    if (w > 0 && !ctx.compose) {
       // E3: a weird song lets every cue draw its own colours, position,
       // font, repeat and clones. The draws are seeded per cue, so a seed
       // reproduces them and weird 0 consumes none of them.
@@ -262,10 +265,105 @@
     return { type, params: {}, enabled: true };
   }
 
+  const COMPOSE_CJK_RE = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/;
+
+  // Rough px box of the first beat's composed text (no font metrics are loaded
+  // here): line widths from the span scales and a 1em / 0.58em per character
+  // estimate. The figure layer uses it to keep clear of the lyrics.
+  function estimateComposeZone(comp, analysis, patch, ctx) {
+    const frameW = Number(ctx.frameW) || 1920;
+    const frameH = Number(ctx.frameH) || 1080;
+    const size = Number(patch.text.size) || 96;
+    const lineHeight = patch.text.lineHeight == null ? 1.2 : Number(patch.text.lineHeight);
+    const letterSpacing = Number(patch.text.letterSpacing) || 0;
+    const compose = patch.text.compose || {};
+    const breaks = new Set(Array.isArray(compose.breaks) ? compose.breaks : []);
+    const spans = Array.isArray(compose.spans) ? compose.spans : [];
+    const chars = Array.from(analysis.text || '');
+    let lineWidth = 0;
+    let lineMax = 0;
+    let blockW = 0;
+    let blockH = 0;
+    const flush = () => {
+      blockW = Math.max(blockW, lineWidth);
+      blockH += (lineMax || size) * lineHeight;
+      lineWidth = 0;
+      lineMax = 0;
+    };
+    for (let i = 0; i < chars.length; i += 1) {
+      if (breaks.has(i) && i > 0) flush();
+      const character = chars[i];
+      if (/^\s+$/.test(character)) continue;
+      let scale = 1;
+      for (const span of spans) {
+        if (i >= span.from && i < span.to) scale = Math.max(scale, Number(span.scale) || 1);
+      }
+      lineWidth += size * scale * (COMPOSE_CJK_RE.test(character) ? 1 : 0.58) + size * letterSpacing;
+      lineMax = Math.max(lineMax, size * scale);
+    }
+    flush();
+    const maxWidth = (patch.text.maxWidth == null ? 0.9 : Number(patch.text.maxWidth)) * frameW;
+    blockW = Math.min(blockW, maxWidth);
+    const params = (patch.location && patch.location.params) || {};
+    const x = ((params.x == null ? 0.5 : params.x) + (params.offsetX || 0)) * frameW;
+    const y = ((params.y == null ? 0.5 : params.y) + (params.offsetY || 0)) * frameH;
+    const edgeX = params.edgeX || 0;
+    const edgeY = params.edgeY || 0;
+    const cx = x - edgeX * (blockW / 2);
+    const cy = y - edgeY * (blockH / 2);
+    return { x0: cx - blockW / 2, y0: cy - blockH / 2, x1: cx + blockW / 2, y1: cy + blockH / 2 };
+  }
+
+  // One beat as a composition: analyse the text, pick a template and write the
+  // patch. The weird axis no longer jitters size / colour / tilt - it only
+  // widens which compositions are allowed and how large the hero grows.
+  function composeBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx) {
+    if (!SA.compositions || typeof SA.compositions.build !== 'function') return;
+    const styleMode = projectDoc.styleMode || {};
+    const keywordWords = SA.keywords && typeof SA.keywords.listFor === 'function' ? SA.keywords.listFor(styleMode).words : [];
+    const lang = (projectDoc.meta && projectDoc.meta.lang) || null;
+    const analysis = SA.compositions.analyzeBeat(beat.text, lang, keywordWords);
+    let energy = ctx.energy;
+    if (ctx.analysis && SA.audioDriver && typeof SA.audioDriver.rangeEnergy === 'function') {
+      const sampled = SA.audioDriver.rangeEnergy(ctx.analysis, beat.start, beat.end);
+      if (sampled != null) energy = sampled;
+    }
+    const history = ctx.composeHistory || (ctx.composeHistory = []);
+    const prev = [];
+    for (let i = history.length - 1; i >= 0 && prev.length < 2; i -= 1) prev.push(history[i].id);
+    const last = history.length ? history[history.length - 1] : null;
+    const features = {
+      chars: analysis.chars,
+      words: analysis.words,
+      duration: Math.max(0.05, (Number(beat.end) || 0) - (Number(beat.start) || 0)),
+      cjk: analysis.cjk,
+      portrait: !!ctx.portrait,
+      energy,
+      prev,
+      prevScale: last ? last.scaleClass : null,
+    };
+    const comp = SA.compositions.pick(features, { seed: ctx.seed, beatId: beat.id, w: ctx.rawW, history });
+    const patch = SA.compositions.build(comp, analysis, {
+      seed: ctx.seed,
+      beatId: beat.id,
+      w: ctx.rawW,
+      screen: ctx.screen,
+      themeStyle: ctx.themeStyle,
+      palette: (ctx.themeStyle && ctx.themeStyle.palette) || (projectDoc.style && projectDoc.style.palette) || null,
+    });
+    projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, patch);
+    history.push(comp);
+    if (ctx.composeZones && !ctx.composeZones[cue.id]) ctx.composeZones[cue.id] = estimateComposeZone(comp, analysis, patch, ctx);
+  }
+
   // One beat's treatment inside the cue's theme. The size the sixth axis picks
   // is a ratio of the frame's short side (3%..120%), not a magnification of the
   // theme size: a weird song jumps between a whisper and a screen-filling word.
   function directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx) {
+    if (ctx.compose) {
+      composeBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
+      return;
+    }
     const { w, s, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes, beatFit } = ctx;
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
@@ -615,6 +713,9 @@
         palette,
         textColors: [palette[2], palette[4]].filter(Boolean),
         duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
+        // a composed cue hands the figure layer the first beat's text box so
+        // the generated figure keeps clear of the lyrics
+        textBox: ctx.composeZones ? ctx.composeZones[cue.id] : undefined,
       };
       spec = SA.legibility.repairFigureSpec(spec, figureCtx);
       const dimmed = spec && spec.params && Number(spec.params.opacity) < 1;
@@ -704,6 +805,9 @@
       look: look ? { n: look.n, name: look.name, group: look.group, type: look.type, motion: look.motion } : null,
       cueLooks: Object.fromEntries(Object.entries(cueLooks).map(([cueId, entry]) => [cueId, entry.n])),
     };
+    // the composition mode is part of the saved run: beat / cue re-rolls read it
+    if (ctx.compose) projectDoc.styleMode.compose = true;
+    else delete projectDoc.styleMode.compose;
     for (const cue of projectDoc.script.cues) {
       const container = projectDoc.cueStyles[cue.id];
       if (!container) continue;
@@ -772,6 +876,7 @@
     prepare,
     directCue,
     directBeat,
+    composeBeat,
     backgroundClip,
     backdropClipFor,
     backdropClips,
