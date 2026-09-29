@@ -616,12 +616,6 @@
     });
   }
 
-  function restructureBeats() {
-    if (!project()) return;
-    store.commands.restructureAll();
-    toast('studio.toast.beatsRestructured');
-  }
-
   function generateScriptDialog() {
     const doc = project();
     if (!doc || !doc.dataset) {
@@ -1409,7 +1403,6 @@
       importLyrics,
       importAudio,
       distributeCues,
-      restructureBeats,
       randomStyle: () => runRandomize('project', {}),
       randomStyleCues: () => runRandomize('cues', {}),
       randomStyleElements: () => runRandomize('elements', {}),

@@ -90,7 +90,6 @@ SA.menu = (() => {
       labelKey: 'studio.menu.generate',
       items: () => [
         { key: 'studio.generate.distribute', action: 'distributeCues', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
-        { key: 'studio.generate.restructure', action: 'restructureBeats', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },
         { key: 'studio.generate.credits', action: 'credits', enabled: () => !!SA.store.state.project },
         itemSeparator(),
         { key: 'studio.generate.autoDirect', action: 'autoDirect', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length) },

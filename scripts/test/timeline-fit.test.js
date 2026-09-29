@@ -193,17 +193,49 @@ test('dragging and double-clicking on the filler track create clips', () => {
   assert.ok(clips.every((clip) => clip.spec && clip.spec.type), 'the filler content spec was rolled');
 });
 
-test('the Add cue button targets the selected creatable track', () => {
+test('the remove button on a track header deletes that track and its clips', () => {
   store.load(fixture());
   const id = store.commands.addTrack('figure');
-  store.setSelection([`track:${id}`], 'track');
+  assert.ok(id, 'figure track added');
   timeline.init();
-  const addCue = document.getElementById('tl-add-cue').listeners.click[0];
-  assert.ok(typeof addCue === 'function');
-  addCue();
-  const clips = store.state.project.clips.filter((clip) => clip.trackId === id);
-  assert.equal(clips.length, 1, 'a clip was added at the playhead');
-  assert.equal(clips[0].spec.type, 'figure');
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  const move = canvas.listeners.pointermove[0];
+  const up = canvas.listeners.pointerup[0];
+  const fig = store.state.project.tracks.find((track) => track.id === id);
+  const index = store.state.project.tracks.indexOf(fig);
+  let logicalY = 24;
+  store.state.project.tracks.forEach((track, i) => {
+    if (i < index) logicalY += track.kind === 'subtitle' ? 26 : 22;
+  });
+  logicalY += 11;
+  const clientY = logicalY - 24;
+  const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
+  // put a clip on the track so the removal drops it too
+  down(event(120));
+  move(event(240));
+  up(event(240));
+  assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 1, 'the clip exists');
+  // the remove button sits left of the visibility checkbox
+  down(event(90 - 29));
+  up(event(90 - 29));
+  assert.equal(store.state.project.tracks.some((track) => track.id === id), false, 'the track is gone');
+  assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 0, 'its clips are gone');
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.tracks.some((track) => track.id === id), true, 'undo restores the track');
+});
+
+test('the last subtitle track keeps its remove button hidden', () => {
+  store.load(fixture());
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  const down = canvas.listeners.pointerdown[0];
+  // second row = the only subtitle track: its remove button is not drawn, so
+  // the click (at the x where the button would sit, left of the BG chip)
+  // selects the track instead of deleting it
+  down({ button: 0, pointerId: 1, clientX: 38, clientY: 33, currentTarget: canvas, preventDefault() {} });
+  assert.equal(store.state.project.tracks.some((track) => track.kind === 'subtitle'), true, 'the track stays');
+  assert.deepEqual(store.state.selection.paths, ['track:sub1'], 'the click selects the track');
 });
 
 test('dragging on a figure track creates a clip', () => {

@@ -1600,7 +1600,7 @@ SA.store = (() => {
       if (!track) return;
       const subtitles = (project.tracks || []).filter((entry) => entry && entry.kind === 'subtitle');
       if (track.kind === 'subtitle' && subtitles.length <= 1) return;
-      if (!['subtitle', 'backdrop', 'filler', 'background'].includes(track.kind)) return;
+      if (!['subtitle', 'backdrop', 'filler', 'background', 'figure', 'textAnim'].includes(track.kind)) return;
       const fallback = track.kind === 'subtitle' ? subtitles.find((entry) => entry.id !== id) : null;
       dispatch({
         label: 'remove track',

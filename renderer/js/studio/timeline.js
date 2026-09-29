@@ -35,7 +35,6 @@ SA.timeline = (() => {
   let expanded = new Set();
   let selectedKeys = new Set();
   let clipboard = [];
-  let markerId = 0;
   let lastVersion = {};
   let lastPlayhead = -1;
 
@@ -483,12 +482,23 @@ SA.timeline = (() => {
     return !!(track && track.hidden);
   }
 
-  // Thin per-track header: name, visibility checkbox and (for subtitle tracks)
-  // the keyframe twisty.
+  // A track the timeline offers a remove button for. The two layer tracks
+  // (foreground / background) are structural: their content is managed in the
+  // Layers dialog, so they stay. The last subtitle track stays too.
+  function removableTrack(track) {
+    if (!track) return false;
+    if (track.kind === 'subtitle') return trackList().filter((entry) => entry && entry.kind === 'subtitle').length > 1;
+    return ['backdrop', 'filler', 'figure', 'textAnim'].includes(track.kind);
+  }
+
+  // Thin per-track header: name, visibility checkbox, a remove button and (for
+  // subtitle tracks) the keyframe twisty and the BG chip.
   function drawTrackHeader(row, title, options) {
     const opts = options || {};
     const y = row.y;
     const height = row.h;
+    const track = trackList().find((entry) => entry.id === row.trackId) || null;
+    const removable = opts.toggle !== false && removableTrack(track);
     const selected = (SA.store.state.selection.paths || []).some((path) => path === `track:${row.trackId}`);
     ctx.save();
     ctx.fillStyle = selected ? 'rgba(255, 138, 61, 0.1)' : opts.active ? 'rgba(255, 138, 61, 0.05)' : '#0d1017';
@@ -502,10 +512,27 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const labelX = opts.twisty ? 20 : 8;
-    const reserve = (opts.toggle === false ? 6 : 22) + (opts.bgToggle ? 26 : 0);
+    const removeSize = 14;
+    const removeX = LABEL_W - 20 - (opts.bgToggle ? 23 : 0) - removeSize - 2;
+    const reserve = (opts.toggle === false ? 6 : 22) + (opts.bgToggle ? 26 : 0) + (removable ? removeSize + 4 : 0);
     ctx.fillText(fitLabel(title, LABEL_W - labelX - reserve), labelX, y + height / 2);
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
+    if (removable) {
+      const cx = removeX + removeSize / 2;
+      const cy = y + height / 2;
+      ctx.save();
+      ctx.strokeStyle = '#8d96ab';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(cx - 3.5, cy - 3.5);
+      ctx.lineTo(cx + 3.5, cy + 3.5);
+      ctx.moveTo(cx + 3.5, cy - 3.5);
+      ctx.lineTo(cx - 3.5, cy + 3.5);
+      ctx.stroke();
+      ctx.restore();
+      hitRegions.push({ type: 'track-remove', trackId: row.trackId, x: removeX, y, w: removeSize, h: height });
+    }
     if (opts.twisty) {
       const twistyX = 7;
       const twistyY = y + height / 2 - 2;
@@ -1310,6 +1337,11 @@ SA.timeline = (() => {
       if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { bgHidden: !track.bgHidden });
       drag = null;
       draw();
+    } else if (hit.type === 'track-remove') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && removableTrack(track)) SA.store.commands.removeTrack(hit.trackId);
+      drag = null;
+      draw();
     } else if (hit.type === 'track-empty' && CREATABLE_CLIP_KINDS.includes(hit.kind)) {
       // dragging on an animation track creates a clip for that span
       const at = Math.max(0, timeAt(point.x));
@@ -1381,7 +1413,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -1858,7 +1890,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-bg') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-remove') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
@@ -1867,12 +1899,12 @@ SA.timeline = (() => {
           if (id) SA.store.setSelection([`track:${id}`], 'track');
         });
         add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
-        add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
         add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
         add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
       } else if (track.kind === 'filler') {
         add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
       }
+      if (removableTrack(track)) add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
       add(track.hidden ? t('layers.show') : t('layers.hide'), () => SA.store.commands.updateTrack(track.id, { hidden: !track.hidden }));
       draw();
       el.body.appendChild(menu);
@@ -2027,52 +2059,6 @@ SA.timeline = (() => {
     return id;
   }
 
-  // The "Add cue" targets: the selected track, or the track of the selected
-  // clip, when it takes hand-placed clips.
-  function selectedCreatableTrack(doc) {
-    const tracks = doc.tracks || [];
-    for (const path of SA.store.state.selection.paths || []) {
-      let trackId = null;
-      if (path.startsWith('track:')) trackId = path.slice('track:'.length);
-      else if (path.startsWith('clip:')) {
-        const clip = (doc.clips || []).find((entry) => entry && entry.id === path.slice('clip:'.length));
-        trackId = clip ? clip.trackId : null;
-      }
-      const track = tracks.find((entry) => entry && entry.id === trackId);
-      if (track && CREATABLE_CLIP_KINDS.includes(track.kind)) return track;
-    }
-    return null;
-  }
-
-  function addCue() {
-    const doc = project();
-    if (!doc) return;
-    const animationTrack = selectedCreatableTrack(doc);
-    if (animationTrack) {
-      addAnimationClip(animationTrack.id, animationTrack.kind, Math.max(0, Number(SA.store.state.playhead) || 0));
-      return;
-    }
-    const cues = cueList();
-    const playhead = Math.max(0, Number(SA.store.state.playhead) || 0);
-    const lastEnd = cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
-    let start = 0;
-    if (cues.length) start = playhead >= lastEnd ? playhead : lastEnd + 0.3;
-    const timing = (doc.script && doc.script.options && doc.script.options.timing) || {};
-    const length = timing.perCue == null ? 2.8 : timing.perCue;
-    const cue = {
-      id: `cue_${Math.random().toString(16).slice(2, 10)}`,
-      start,
-      end: start + Math.max(0.5, length),
-      text: t('studio.timeline.newCueText'),
-      spans: [],
-      fx: {},
-      meta: { kind: 'custom' },
-    };
-    SA.store.commands.addCue(cue);
-    SA.store.setSelection([`cue:${cue.id}`], 'cue');
-    if (SA.preview) SA.preview.seek(start);
-  }
-
   // Defaults for a clip created by dragging on a creatable track. A figure
   // clip starts with a motif (edited in the inspector), a text clip with a
   // short line and fade in / out, a filler clip with a random filler content
@@ -2136,27 +2122,6 @@ SA.timeline = (() => {
     draw();
   }
 
-  function addMarker() {
-    const doc = project();
-    if (!doc) return;
-    const time = snapFrame(SA.store.state.playhead);
-    storeDispatch('marker', (projectDoc) => {
-      projectDoc.markers = projectDoc.markers || [];
-      projectDoc.markers.push({ t: time, label: `M${(projectDoc.markers.length || 0) + 1}` });
-      projectDoc.markers.sort((a, b) => a.t - b.t);
-    });
-  }
-
-  function storeDispatch(label, run) {
-    SA.store.dispatch({
-      label,
-      areas: ['project'],
-      do(projectDoc) {
-        run(projectDoc);
-      },
-    });
-  }
-
   // --- zoom / fit --------------------------------------------------------------
 
   function setZoom(value, anchorX) {
@@ -2176,55 +2141,6 @@ SA.timeline = (() => {
   function fit() {
     setZoom(fitZoom());
     scrollX = 0;
-    draw();
-  }
-
-  // --- property add ------------------------------------------------------------
-
-  function propertyOptions() {
-    const sel = SA.inspector ? SA.inspector.selectionInfo() : { kind: 'none' };
-    const options = ['transform.x', 'transform.y', 'transform.rotate', 'transform.scale', 'transform.opacity'];
-    if (sel.kind === 'none') return options;
-    const style = SA.project.resolveStyle(project(), sel.path);
-    for (const group of ['enter', 'exit', 'hold', 'fill', 'layout']) {
-      const instance = style[group];
-      if (!instance || !instance.type) continue;
-      const descriptor = SA.fx.get(group, instance.type);
-      for (const param of (descriptor && descriptor.params) || []) {
-        if (['number', 'int', 'vec2', 'color'].includes(param.kind)) options.push(`${group}.params.${param.key}`);
-      }
-    }
-    return options;
-  }
-
-  function refreshPropertySelect() {
-    if (!el.prop) return;
-    const options = propertyOptions();
-    el.prop.innerHTML = '';
-    for (const option of options) {
-      const node = document.createElement('option');
-      node.value = option;
-      node.textContent = SA.controls ? SA.controls.labelFor(option.split('.').pop()) : option;
-      el.prop.appendChild(node);
-    }
-  }
-
-  function addPropertyKey() {
-    const sel = SA.inspector ? SA.inspector.selectionInfo() : { kind: 'none' };
-    if (sel.kind === 'none' || !el.prop || !el.prop.value) {
-      SA.studio.toast('studio.timeline.selectFirst');
-      return;
-    }
-    const propPath = el.prop.value;
-    const value = SA.inspector.valueFor(propPath);
-    if (value === undefined || value === null || typeof value === 'object') {
-      SA.studio.toast('studio.timeline.notKeyframable');
-      return;
-    }
-    const local = SA.inspector.localTimeFor(sel.cueId, sel.beatId);
-    SA.store.commands.setKeyframe(sel.path, propPath, snapFrame(local), value, 'linear');
-    const cue = cueList().find((entry) => entry.id === sel.cueId);
-    if (cue) expanded.add(cue.trackId || 'sub1');
     draw();
   }
 
@@ -2332,30 +2248,17 @@ SA.timeline = (() => {
     }
     if (el.zoom) el.zoom.addEventListener('input', () => setZoom(Number(el.zoom.value)));
     if (el.fit) el.fit.addEventListener('click', fit);
-    if (el.addCue) el.addCue.addEventListener('click', addCue);
     if (el.theme) el.theme.addEventListener('click', () => SA.themes.dialog());
-    if (el.marker) el.marker.addEventListener('click', addMarker);
     if (el.addTextTrack) {
-      // cue-capable subtitle track by default; Shift adds the clip-based
-      // animated-text track
+      // the button adds a subtitle track cues can be typed on
       el.addTextTrack.title = t('studio.timeline.addTextTrackHint');
-      el.addTextTrack.addEventListener('click', (event) => {
-        if (event && event.shiftKey) addAnimationTrack('textAnim');
-        else addSubtitleTrack();
-      });
+      el.addTextTrack.addEventListener('click', () => addSubtitleTrack());
     }
     if (el.addFigureTrack) {
       el.addFigureTrack.addEventListener('click', () => addAnimationTrack('figure'));
     }
     if (el.addFillerTrack) {
       el.addFillerTrack.addEventListener('click', () => addAnimationTrack('filler'));
-    }
-    if (el.addProperty) {
-      el.addProperty.addEventListener('click', addPropertyKey);
-    }
-    if (el.prop) {
-      el.prop.addEventListener('focus', refreshPropertySelect);
-      el.prop.addEventListener('pointerdown', refreshPropertySelect);
     }
     document.addEventListener('click', (event) => {
       if (menu && !menu.contains(event.target)) hideMenu();
@@ -2373,15 +2276,10 @@ SA.timeline = (() => {
     el.zoom = document.getElementById('tl-zoom');
     el.zoomLabel = document.getElementById('tl-zoom-label');
     el.fit = document.getElementById('tl-fit');
-    el.addCue = document.getElementById('tl-add-cue');
-    el.restructure = document.getElementById('tl-restructure');
     el.theme = document.getElementById('tl-theme');
-    el.marker = document.getElementById('tl-marker');
     el.addTextTrack = document.getElementById('tl-add-text-track');
     el.addFigureTrack = document.getElementById('tl-add-figure-track');
     el.addFillerTrack = document.getElementById('tl-add-filler-track');
-    el.prop = document.getElementById('tl-prop');
-    el.addProperty = document.getElementById('tl-add-property');
     if (!el.canvas) return;
     ctx = el.canvas.getContext('2d');
     if (el.rulerCanvas) rulerCtx = el.rulerCanvas.getContext('2d');
@@ -2433,8 +2331,6 @@ SA.timeline = (() => {
     snapTime,
     snapFrame,
     originFor,
-    reload: refreshPropertySelect,
-    addMarker,
-    _markerId: () => markerId,
+    reload: () => draw(),
   };
 })();
