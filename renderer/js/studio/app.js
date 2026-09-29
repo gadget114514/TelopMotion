@@ -6,12 +6,13 @@
   const platform = SA.platform;
   const LS_KEY = 'sa.studio.layout';
   const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
-  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'repeat', 'clones', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   // what a cue takes from its own drawn look when the weird axis gives it one:
   // the motion and the text treatment. Layout, location, colours and the font
-  // stay with the song so the lyrics keep their place and palette.
+  // stay with the song so the lyrics keep their place and palette (a very weird
+  // song lets the cue look move layout and location too).
   const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'text', 'transform', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
 
   const el = {};
@@ -24,6 +25,11 @@
 
   function t(key, vars) {
     return i18n.t(key, vars);
+  }
+
+  // local rng pick (a list is never empty where this is used)
+  function pick(random, list) {
+    return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
   }
 
   function cacheElements() {
@@ -900,6 +906,8 @@
     if (!(weird > 0) || !pool) return out;
     const random = SA.rng.rngFor(options.seed, 'looks', 'weird');
     const used = new Set([options.songLook]);
+    // I17: a very weird song lets a cue's look also move the text
+    const groups = weird >= 0.8 ? [...CUE_LOOK_GROUPS, 'layout', 'location'] : CUE_LOOK_GROUPS;
     cues.forEach((cue, index) => {
       if (random() >= weird) return;
       const entry = pool.pick({ axes: options.axes, genre: options.genre, seed: options.seed + (index + 1) * 7919, exclude: used });
@@ -907,7 +915,7 @@
       used.add(entry.n);
       const expanded = pool.expand(entry.style);
       const style = {};
-      for (const group of CUE_LOOK_GROUPS) {
+      for (const group of groups) {
         if (expanded[group] !== undefined) style[group] = expanded[group];
       }
       out[cue.id] = { n: entry.n, style };
@@ -946,10 +954,10 @@
       direction = picked.direction;
     }
     // weird is never derived from a genre or the music: it is the user's choice
-    // (genre dialog / theme editor) and sticks to the project across re-rolls
-    const previousAxes = (doc.styleMode && doc.styleMode.axes) || {};
-    const weirdSource = opts.weird != null ? opts.weird : previousAxes.weird;
-    axes = { ...axes, weird: Math.max(0, Math.min(1, Number(weirdSource) || 0)) };
+    // (genre dialog / theme editor) and sticks to the project across re-rolls.
+    // A project that never chose one opens at the UI default (0.7).
+    const weirdSource = opts.weird != null ? opts.weird : SA.moods.projectWeird(doc);
+    axes = { ...axes, weird: SA.moods.weirdOf({ weird: weirdSource }) };
     const seed = opts.seed == null ? Math.floor(Math.random() * 900000) + 1000 : Number(opts.seed);
     const context = SA.moods.contextFor(doc);
     // おまかせ: draw one of the 800 classified looks by theme + five axes, then
@@ -982,16 +990,22 @@
     }
     if (!themeStyle) themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
-    // keep the font size in a readable range that matches the frame
+    // common preparation for the weird-aware patches below: the size band, the
+    // palette and the accent colours that stay readable on the background
+    const w = axes.weird;
     const portrait = doc.output && doc.output.aspect === '9:16';
+    const minSize = (portrait ? 52 : 72) - 16 * w;
+    const maxSize = (portrait ? 96 : 124) + (portrait ? 50 : 80) * w;
     if (themeStyle.text) {
-      const minSize = portrait ? 52 : 72;
-      const maxSize = portrait ? 96 : 124;
       themeStyle.text = {
         ...themeStyle.text,
         size: Math.max(minSize, Math.min(maxSize, Number(themeStyle.text.size) || (portrait ? 72 : 96))),
       };
     }
+    const pal = (themeStyle.palette && themeStyle.palette.colors) || [];
+    const bgColor = SA.color.parse(pal[0] || '#000000');
+    const accentIdx = [3, 5, 6, 2].filter((i) => pal[i] && SA.color.contrastRatio(SA.color.parse(pal[i]), bgColor) >= 3);
+    const accentHexes = accentIdx.map((i) => pal[i]);
     store.dispatch({
       label: 'auto direct',
       areas: ['script', 'style'],
@@ -1001,9 +1015,11 @@
         const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
         const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 120;
         const barDuration = Math.round((60 / bpm) * 4 * 1000) / 1000;
-        projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', targetChunkDuration: barDuration };
+        // G1: a weird song cuts its phrases into shorter chunks
+        const chunkDuration = Math.round(barDuration * (1 - 0.5 * w) * 1000) / 1000;
+        projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
         for (const cue of projectDoc.script.cues) {
-          cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', targetChunkDuration: barDuration };
+          cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
         }
         if (SA.textflow) SA.textflow.apply(projectDoc);
         // 1) rebuild the theme from scratch so re-rolls never keep stale groups
@@ -1038,8 +1054,67 @@
           if (cueLooks[cue.id]) {
             projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, JSON.parse(JSON.stringify(cueLooks[cue.id].style)));
           }
+          const cueContext = SA.moods.contextForCue(projectDoc, cue);
+          if (w > 0) {
+            // E3: a weird song lets every cue draw its own colours, position,
+            // font, repeat and clones. The draws are seeded per cue, so a seed
+            // reproduces them and weird 0 consumes none of them.
+            const cr = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'weird-cue');
+            const own = () => projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+            // palette
+            if (themeStyle.palette && cr() < 0.6 * w) {
+              const palette = SA.moods.weirdPalette(cr, themeStyle.palette, w);
+              if (palette) projectDoc.cueStyles[cue.id] = { ...SA.moods.recolor(own(), themeStyle.palette.colors, palette.colors), palette };
+            }
+            // location (G8): nudge the anchor and sometimes let it float
+            if (cr() < 0.5 * w) {
+              const base = own().location || themeStyle.location || { type: 'center', params: {} };
+              const type = w >= 0.6 && cr() < 0.3 * w ? 'randomSafe' : base.type;
+              own().location = {
+                ...base,
+                type,
+                params: {
+                  ...(base.params || {}),
+                  offsetX: Math.round((cr() * 2 - 1) * 0.25 * w * 100) / 100,
+                  offsetY: Math.round((cr() * 2 - 1) * 0.25 * w * 100) / 100,
+                },
+                enabled: true,
+              };
+            }
+            // font (I17)
+            if (cr() < 0.3 * w) {
+              const fontId = SA.moods.weirdFont(cr, cueContext, themeStyle.text && themeStyle.text.fontId);
+              if (fontId) own().text = { ...(own().text || {}), fontId };
+            }
+            // repeat (G2)
+            if (SA.random && SA.random.repeatPatch && cr() < 0.35 * w) {
+              const merged = { ...themeStyle, ...own() };
+              const repeat = SA.random.repeatPatch(cr, { ...cueContext, weird: w });
+              if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) own().repeat = repeat;
+            }
+            // clones (G3)
+            if (cr() < 0.5 * w) {
+              const count = 1 + Math.floor(cr() * 3);
+              const s = (a) => Math.round((cr() * 2 - 1) * a * 1000) / 1000;
+              own().clones = Array.from({ length: count }, (_, i) => ({
+                id: `wclone_${i}`,
+                enabled: true,
+                dx: s(0.06 * w),
+                dy: s(0.06 * w),
+                scale: Math.round((1 + s(0.3 * w)) * 100) / 100,
+                rotate: Math.round(s(15 * w)),
+                opacity: Math.round((0.35 + cr() * 0.25) * 100) / 100,
+                hue: Math.round(s(180 * w)),
+                delay: Math.round((0.03 + cr() * 0.09) * 100) / 100,
+                motion: {
+                  type: pick(cr, ['drift', 'float', 'pulse', 'orbit', 'spin']),
+                  amount: Math.round((0.02 + 0.04 * w) * 1000) / 1000,
+                  speed: Math.round((0.5 + cr() * 1.5) * 100) / 100,
+                },
+              }));
+            }
+          }
           if (!look) {
-            const cueContext = SA.moods.contextForCue(projectDoc, cue);
             const generated = SA.moods.generate({
               axes,
               seed: seed + cueIndex * 131 + 1,
@@ -1069,6 +1144,51 @@
                 },
               ];
             }
+            if (w > 0) {
+              // E4 / I18 / H5: a weird song steps the beat treatment as well:
+              // size, colour, tilt, font and hold all jump half a bar
+              const wr = SA.rng.rngFor(beatSeed, beat.id, 'weird');
+              const lo = SA.moods.bend(0.9, 0.45, w);
+              const hi = SA.moods.bend(1.15, 2.2, w);
+              beatPatch.text.size = Math.round(Math.max(24, Math.min(portrait ? 220 : 320, baseSize * (lo + wr() * (hi - lo)))));
+              if (accentIdx.length && wr() < 0.5 * w) {
+                if (accentIdx.length >= 2 && wr() < 0.3 * w) {
+                  const [a, b] = [accentIdx[Math.floor(wr() * accentIdx.length)], accentIdx[Math.floor(wr() * accentIdx.length)]];
+                  beatPatch.color = {
+                    fill: {
+                      kind: 'gradient',
+                      type: 'linear',
+                      angle: Math.round(wr() * 360),
+                      stops: [
+                        { pos: 0, paletteIndex: a },
+                        { pos: 1, paletteIndex: b },
+                      ],
+                      animate: { angleSpeed: Math.round((wr() * 2 - 1) * 90 * w), shiftSpeed: 0 },
+                    },
+                  };
+                } else beatPatch.color = { fill: { kind: 'palette', index: accentIdx[Math.floor(wr() * accentIdx.length)] } };
+              }
+              if (wr() < 0.4 * w) {
+                const r = (a) => Math.round((wr() * 2 - 1) * a * w * 10) / 10;
+                beatPatch.transform = { rotate: r(25), tiltX: r(20), tiltY: r(20) }; // degrees (the shader converts)
+              }
+              if (!beatPatch.hold && beatDuration >= 0.6 && wr() < 0.45 * w) {
+                const hold =
+                  w >= 0.5
+                    ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
+                    : { type: 'pulse', params: { amount: Math.round((0.06 + 0.1 * w) * 1000) / 1000, bpm: Math.round(bpm) }, enabled: true };
+                if (hold) beatPatch.hold = [hold];
+              }
+              if (wr() < 0.3 * w) {
+                const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext }).style;
+                if (g.enter) beatPatch.enter = g.enter;
+                if (g.exit) beatPatch.exit = g.exit;
+              }
+              if (w >= 0.6 && wr() < 0.25 * w) {
+                const fontId = SA.moods.weirdFont(wr, cueContext, themeStyle.text && themeStyle.text.fontId);
+                if (fontId) beatPatch.text.fontId = fontId;
+              }
+            }
             projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);
           });
         });
@@ -1076,17 +1196,32 @@
         // gaps between the lyrics get their own animated shapes/patterns, so
         // the background keeps moving where there is no text (and the timeline
         // shows the filler clips)
+        const kinds = {
+          intro: { type: 'shapes', params: { set: 'burst', count: 22, speed: 1.1, opacity: 0.5 } },
+          interlude: analysis
+            ? { type: 'spectrum', params: { mode: 'bars', bars: 48, falloff: 1.1 } }
+            : { type: 'particles', params: { count: 40, flow: 'drift', size: 3 } },
+          outro: { type: 'pattern', params: { mode: 'rings', count: 18, size: 1.2, speed: 0.5, opacity: 0.4 } },
+        };
+        if (w > 0) {
+          for (const spec of Object.values(kinds)) {
+            const params = spec.params || {};
+            if (typeof params.count === 'number') params.count = Math.round(params.count * (1 + w));
+            if (typeof params.speed === 'number') params.speed = Math.round(params.speed * (1 + w) * 100) / 100;
+          }
+        }
+        if (w >= 0.5) {
+          // I19: a very weird song re-rolls the filler clips as well
+          ['intro', 'interlude', 'outro'].forEach((key, k) => {
+            const rolled = SA.moods.rerollClipSpec('filler', { axes, seed: seed + 31 * (k + 1), genre });
+            if (rolled && rolled.spec) kinds[key] = rolled.spec;
+          });
+        }
         projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, {
           enabled: true,
           minGap: 0.8,
           margin: 0.15,
-          byKind: {
-            intro: { type: 'shapes', params: { set: 'burst', count: 22, speed: 1.1, opacity: 0.5 } },
-            interlude: analysis
-              ? { type: 'spectrum', params: { mode: 'bars', bars: 48, falloff: 1.1 } }
-              : { type: 'particles', params: { count: 40, flow: 'drift', size: 3 } },
-            outro: { type: 'pattern', params: { mode: 'rings', count: 18, size: 1.2, speed: 0.5, opacity: 0.4 } },
-          },
+          byKind: kinds,
           longGap: { threshold: 5, spec: { type: 'pattern', params: { mode: 'grid', count: 36, size: 1, speed: 0.4, opacity: 0.35 } } },
         });
 
@@ -1107,9 +1242,14 @@
         const bgTrack = trackIdFor('background');
         if (bgTrack && total > 0) {
           // the drawn look brings its own background clip; otherwise the axes
-          // roll one (noise gradients preferred, flat gradients as the floor)
-          const result = lookClip ? null : SA.moods.rerollClipSpec('background', { axes, seed, genre });
-          const spec = lookClip || (result && result.spec && result.spec.type === 'noiseGradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
+          // roll one (noise gradients preferred, flat gradients as the floor).
+          // A weird song may roll an extended background primitive instead.
+          const bgRng = SA.rng.rngFor(seed, 'bg', 'weird');
+          const weirdBg = w >= 0.35 && bgRng() < w ? SA.moods.rerollClipSpec('background', { axes, seed: seed + 17, genre, weirdBg: true }) : null;
+          const result = weirdBg || (lookClip ? null : SA.moods.rerollClipSpec('background', { axes, seed, genre }));
+          const spec = weirdBg
+            ? weirdBg.spec
+            : lookClip || (result && result.spec && result.spec.type !== 'solid' && result.spec.type !== 'gradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
           projectDoc.clips.push({
             id: SA.project.nextClipId(projectDoc, 'clip_bg'),
             trackId: bgTrack,
@@ -1123,7 +1263,7 @@
           });
         }
         const midTrack = trackIdFor('backdrop');
-        if (midTrack && axes.density > 0.45) {
+        if (midTrack && axes.density > 0.45 * (1 - w)) {
           cues.forEach((cue, index) => {
             const result = SA.moods.rerollClipSpec('backdrop', { axes, seed: seed + index * 977 + 3, genre, index: seed + index });
             if (!result) return;
@@ -1171,7 +1311,7 @@
     const dialog = document.createElement('div');
     dialog.className = 'dialog';
     const list = (SA.genres && SA.genres.LIST) || [];
-    const weird = Math.max(0, Math.min(1, Number(doc.styleMode && doc.styleMode.axes && doc.styleMode.axes.weird) || 0));
+    const weird = SA.moods.projectWeird(doc);
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>

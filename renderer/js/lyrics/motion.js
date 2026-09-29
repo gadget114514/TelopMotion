@@ -24,7 +24,7 @@
   }
 
   // weird-only emphasis of preset key words (keywords.js): pop, accent, wobble
-  const KEYWORD_LOOK = { scale: 0.3, colorMix: 0.6, wobbleDeg: 4, wobbleLift: 0.04, wobbleRate: 0.8 };
+  const KEYWORD_LOOK = { scale: 0.55, colorMix: 0.85, wobbleDeg: 8, wobbleLift: 0.07, wobbleRate: 1.1 };
 
   function keywordMarks(scene, project) {
     if (!keywords || !project || !project.styleMode) return null;

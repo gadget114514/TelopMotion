@@ -22,8 +22,8 @@ function words(text) {
 }
 
 test('strength ramps from the weird threshold', () => {
-  assert.equal(keywords.strength(0.5), 0);
-  assert.equal(keywords.strength(0.75), 0.5);
+  assert.equal(keywords.strength(0.3), 0);
+  assert.ok(Math.abs(keywords.strength(0.65) - 0.5) < 1e-9);
   assert.equal(keywords.strength(1), 1);
   assert.equal(keywords.strength(0.2), 0);
   assert.equal(keywords.strength(2), 1);

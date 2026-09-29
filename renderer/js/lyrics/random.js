@@ -83,11 +83,18 @@
     // up (`weird`), so a plain look draws from the classic list alone
     const weird = context && Number.isFinite(context.weird) ? context.weird : 0;
     const list = fx.list(group, weird >= 0.5 ? { packs: 'all' } : undefined);
+    // an un-packed primitive that the mood generator counts as extended (marble)
+    // stays out until the reveal
+    const extended = moods && moods.EXT_TRAITS ? moods.EXT_TRAITS[group] : null;
+    const reveal = moods && moods.EXT_REVEAL != null ? moods.EXT_REVEAL : 0.5;
     const filtered = list.filter((descriptor) => {
+      if (extended && extended[descriptor.type] && weird < reveal) return false;
       // never pick glyph-destroying or text-overlapping effects automatically
       // (pixelate, halftone, dissolves, scatter, echo trails...). They stay
-      // available for manual use in the inspector.
-      if (descriptor.tags.includes('degrade') || descriptor.tags.includes('overlap')) return false;
+      // available for manual use in the inspector, and a weird enough look may
+      // draw the readable ones (WEIRD_TAG_OK).
+      const tagOk = weird >= 0.75 && moods.WEIRD_TAG_OK && moods.WEIRD_TAG_OK.has(descriptor.type);
+      if (!tagOk && (descriptor.tags.includes('degrade') || descriptor.tags.includes('overlap'))) return false;
       // fills that need an image or hard-coded colors break automatic looks
       if (group === 'fill' && (descriptor.type === 'textureFill' || descriptor.type === 'karaokeWipe')) return false;
       if (allowTags && allowTags.length && !descriptor.tags.some((tag) => allowTags.includes(tag))) return false;
@@ -208,13 +215,23 @@
     return false;
   }
 
+  // One repeat instance for the automatic rolls and for おまかせ's per-cue
+  // patches: the same distribution groupPatch used, exposed on its own.
+  function repeatPatch(random, context) {
+    const ctx = context || {};
+    const all = candidatesFor('repeat', ctx.allowTags, ctx);
+    if (!all.length) return null;
+    const rare = all.filter((entry) => entry.type !== 'brick' && entry.type !== 'fill');
+    const pool = rare.length ? rare : all;
+    const descriptor =
+      random() < 0.1 && all.length > rare.length ? pick(random, all.filter((entry) => entry.type === 'brick' || entry.type === 'fill')) : pick(random, pool);
+    return descriptor ? repeatInstance(descriptor, random, ctx) : null;
+  }
+
   function groupPatch(group, base, random, options, context) {
     if (group === 'repeat') {
-      const all = candidatesFor('repeat', options.allowTags, context);
-      const rare = all.filter((entry) => entry.type !== 'brick' && entry.type !== 'fill');
-      const pool = rare.length ? rare : all;
-      const descriptor = random() < 0.1 && all.length > rare.length ? pick(random, all.filter((entry) => entry.type === 'brick' || entry.type === 'fill')) : pick(random, pool);
-      return { repeat: repeatInstance(descriptor, random, context) };
+      const instance = repeatPatch(random, { ...(context || {}), allowTags: options.allowTags });
+      return instance ? { repeat: instance } : null;
     }
     const descriptor = pickType(group, base && base.type, random, options.allowTags, context);
     if (!descriptor) return null;
@@ -274,9 +291,12 @@
     // the axes drive how loud the picks are: a high-energy, fast mood reaches
     // for the strong end of every parameter range, a calm one stays low
     const styleAxes = project.styleMode ? project.styleMode.axes : null;
-    const axisIntensity = styleAxes
+    let axisIntensity = styleAxes
       ? 1 + Math.max(0, Math.min(1, Number(styleAxes.energy) || 0)) * 1.2 + Math.max(0, Math.min(1, Number(styleAxes.speed) || 0)) * 0.6
       : 1;
+    // G13: a weird project rolls at a louder intensity (an explicit user value
+    // still wins)
+    if (weirdOfProject(project) >= 0.5) axisIntensity = Math.min(3, axisIntensity + 1);
     const intensity = opts.intensity == null ? axisIntensity : opts.intensity;
     const colors = opts.colors || [];
     const targets = [];
@@ -363,11 +383,10 @@
     };
   }
 
-  // the sixth axis of the project's look: how far the automatic picks may stray
+  // the sixth axis of the project's look: how far the automatic picks may stray.
+  // A project without a saved value opens at the UI default (0.7).
   function weirdOfProject(project) {
-    const axes = project && project.styleMode ? project.styleMode.axes : null;
-    const value = axes && Number.isFinite(Number(axes.weird)) ? Number(axes.weird) : 0;
-    return Math.max(0, Math.min(1, value));
+    return moods.projectWeird(project);
   }
 
   function countLetters(text) {
@@ -410,5 +429,7 @@
     countLetters,
     sampleParam,
     pickType,
+    repeatPatch,
+    repeatConflicts,
   };
 });

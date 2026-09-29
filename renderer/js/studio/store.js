@@ -351,6 +351,9 @@ SA.store = (() => {
     if (transaction || !undoStack.length) return false;
     const entry = undoStack.pop();
     redoStack.push(entry);
+    // a new edit right after a history jump must not coalesce into the entry
+    // that happens to sit on top (its key is stale) nor keep a stale redo
+    coalesce = { key: null, time: 0 };
     state.project = clone(entry.before);
     restoreSelection(entry.selectionBefore);
     bump(AREAS);
@@ -362,6 +365,8 @@ SA.store = (() => {
     if (transaction || !redoStack.length) return false;
     const entry = redoStack.pop();
     undoStack.push(entry);
+    // same as undo: an edit after redo is a fresh history step
+    coalesce = { key: null, time: 0 };
     state.project = clone(entry.after);
     restoreSelection(entry.selectionAfter);
     bump(AREAS);

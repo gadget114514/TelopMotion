@@ -37,7 +37,7 @@
     ],
   };
 
-  const THRESHOLD = 0.5;
+  const THRESHOLD = 0.3;
 
   function clamp01(v) { const n = Number(v); return !Number.isFinite(n) ? 0 : n < 0 ? 0 : n > 1 ? 1 : n; }
 

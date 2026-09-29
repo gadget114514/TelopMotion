@@ -15,6 +15,58 @@
   const MATCH_AXES = ['speed', 'energy', 'softness', 'density', 'brightness'];
   const AXIS_DEFAULTS = { weird: 0 };
 
+  // The UI and the project entry points open at 0.7; the engine keeps 0 as the
+  // "not specified" default so old projects and the existing tests draw exactly
+  // as before.
+  const WEIRD_DEFAULT = 0.7;
+
+  function has(v) {
+    return v != null && v !== '' && Number.isFinite(Number(v));
+  }
+
+  function weirdOf(axes) {
+    return axes && has(axes.weird) ? clamp01(axes.weird) : 0;
+  }
+
+  function projectWeird(project) {
+    const axes = project && project.styleMode && project.styleMode.axes;
+    return axes && has(axes.weird) ? clamp01(axes.weird) : WEIRD_DEFAULT;
+  }
+
+  // Bend the premise `base` towards `alt` by w; `breaks` drops the premise with
+  // probability w·k. Both consume no random while w is 0, so weird 0 stays
+  // byte-identical to the classic draw.
+  function bend(base, alt, w) {
+    return w > 0 ? base + (alt - base) * w : base;
+  }
+
+  function breaks(random, w, k) {
+    return w > 0 && random() < Math.min(1, w * (k == null ? 1 : k));
+  }
+
+  function signed(random) {
+    return random() < 0.5 ? -1 : 1;
+  }
+
+  function shuffle(random, list) {
+    const a = [...list];
+    for (let i = a.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function clampParam(group, type, key, value) {
+    const d = fx.get(group, type);
+    const p = d && (d.params || []).find((x) => x.key === key);
+    if (!p) return value;
+    const lo = p.min == null ? -Infinity : p.min;
+    const hi = p.max == null ? Infinity : p.max;
+    const v = Math.max(lo, Math.min(hi, value));
+    return p.kind === 'int' ? Math.round(v) : round(v, Math.abs(v) < 0.1 ? 4 : 2);
+  }
+
   // human pick: a small vector that constrains the generator
   const PRESETS = [
     { id: 'ballad', axes: { speed: 0.15, energy: 0.15, softness: 0.85, density: 0.35, brightness: 0.45 } },
@@ -171,7 +223,7 @@
   // does. Each entry carries its own profile: [energy, softness, flags, weird].
   //   flags.minWeird / maxWeird   gate the type by the sixth axis
   //   flags.minEnergy / maxEnergy gate it by how loud the mood is
-  const EXT_REVEAL = 0.5;
+  const EXT_REVEAL = 0.35;
   const EXT_TRAITS = {
     enter: {
       animator: [0.5, 0.6, {}, 0.45],
@@ -195,6 +247,9 @@
       squashStretch: [0.8, 0.4, { minWeird: 0.5 }, 0.75],
       swirl: [0.7, 0.35, { minWeird: 0.55 }, 0.8],
     },
+    fill: {
+      marble: [0.55, 0.5, { minWeird: 0.4 }, 0.75],
+    },
     post: {
       camera: [0.55, 0.5, {}, 0.7],
       waveWarp: [0.6, 0.5, { minWeird: 0.6 }, 0.85],
@@ -205,6 +260,10 @@
       anamorphicStreak: [0.7, 0.4, { minWeird: 0.5 }, 0.75],
       radialWipe: [0.6, 0.5, { minWeird: 0.55 }, 0.8],
       venetianBlinds: [0.65, 0.45, { minWeird: 0.55 }, 0.85],
+      echoTrail: [0.7, 0.4, { minWeird: 0.75 }, 0.9],
+      glitchSlice: [0.9, 0.1, { minWeird: 0.75 }, 0.95],
+      godRays: [0.6, 0.6, { minWeird: 0.75 }, 0.7],
+      lensFlare: [0.6, 0.6, { minWeird: 0.75 }, 0.65],
     },
     background: {
       fractalNoise: [0.35, 0.8, { minWeird: 0.5 }, 0.6],
@@ -216,6 +275,18 @@
       tunnel: [0.7, 0.3, { minWeird: 0.6 }, 0.9],
     },
   };
+
+  // How weird each classic primitive reads. Only consulted while w > 0 (a w of
+  // 0 must keep the classic scoring), so the table never touches the default
+  // draw. An effect without its own entry falls back to energy - softness.
+  const CLASSIC_WEIRD = {
+    fill: { solid: 0, categoryColor: 0.15, glass: 0.35, caustics: 0.55, ink: 0.4, gradientSweep: 0.45, chrome: 0.6, goldFoil: 0.55, holographic: 0.8, rainbowFlow: 0.85, fire: 0.9 },
+    edge: { dropShadow: 0, innerGlow: 0.3, outline: 0.35, neonGlow: 0.7, longShadow: 0.6, bevel: 0.5, extrude: 0.75, drip: 0.85 },
+  };
+
+  // Effects the automatic picker normally refuses (overlap / degrade) that a
+  // weird look may still draw: the text stays readable.
+  const WEIRD_TAG_OK = new Set(['echoTrail', 'glitchSlice', 'godRays', 'lensFlare', 'anamorphicStreak', 'halftone', 'lightLeak', 'staircase', 'path']);
 
   // Hue systems only: the brightness axis decides how light the background is
   // and whether the text is bright or dark. Roles: 0 background, 1 background 2,
@@ -279,17 +350,22 @@
 
   function allowed(group, traits, context, direction, axes) {
     const flags = traits[2] || {};
-    if (direction === 'vertical' && group === 'layout' && !flags.vertical) return false;
-    if (direction === 'horizontal' && group === 'layout' && flags.vertical) return false;
+    const w = weirdOf(axes);
+    // a weird look may cross the vertical / horizontal layout boundary (a
+    // vertical layout in a horizontal song and the other way round)
+    const cross = w >= 0.7 && (!flags.vertical || context.letterCount <= 14);
+    if (direction === 'vertical' && group === 'layout' && !flags.vertical && !cross) return false;
+    if (direction === 'horizontal' && group === 'layout' && flags.vertical && !cross) return false;
     if (flags.needsCard && !context.hasCard) return false;
     if (flags.needsBadge && !context.badgeId) return false;
-    if (flags.maxLetters != null && context.letterCount > flags.maxLetters) return false;
-    // effects that only look good loud are gated behind high energy
-    if (flags.minEnergy != null && (!axes || axes.energy < flags.minEnergy)) return false;
+    if (flags.maxLetters != null && context.letterCount > flags.maxLetters * (1 + w)) return false;
+    // effects that only look good loud are gated behind high energy; a weird
+    // look loosens the gate
+    if (flags.minEnergy != null && (!axes || axes.energy < flags.minEnergy - 0.4 * w)) return false;
     // the sixth axis gates the extended primitives: a calm look never draws a
     // turbulent or glitch-heavy effect, a weird-heavy one can
-    if (flags.minWeird != null && (!axes || clamp01(axes.weird) < flags.minWeird)) return false;
-    if (flags.maxWeird != null && axes && clamp01(axes.weird) > flags.maxWeird) return false;
+    if (flags.minWeird != null && (!axes || weirdOf(axes) < flags.minWeird)) return false;
+    if (flags.maxWeird != null && axes && weirdOf(axes) > flags.maxWeird) return false;
     if (flags.maxEnergy != null && axes && clamp01(axes.energy) > flags.maxEnergy) return false;
     return true;
   }
@@ -297,14 +373,18 @@
   // softness owns the texture: how the effect looks, not how loud it is.
   // energy only nudges the pick inside that family (and gates the loud effects
   // through `allowed`), so the two axes stay readable. `weird` matches how far
-  // the effect strays from a plain line of text.
-  function scoreEntry(traits, axes) {
+  // the effect strays from a plain line of text: a classic primitive reads its
+  // own weird value (CLASSIC_WEIRD) once the axis is on.
+  function scoreEntry(traits, axes, group, type) {
+    const w = weirdOf(axes);
     const energy = traits[0];
     const softness = traits[1];
-    const weird = traits[3] == null ? 0 : traits[3];
+    const own = traits[3];
+    const table = group && CLASSIC_WEIRD[group];
+    const tw = own != null ? own : w > 0 ? (table && table[type] != null ? table[type] : Math.max(0, traits[0] - traits[1]) * 0.8) : 0;
     const texture = 1 - Math.abs(softness - axes.softness) / 1.15;
     const force = 1 - Math.abs(energy - axes.energy) * 0.3;
-    const novelty = 1 - Math.abs(weird - clamp01(axes.weird)) * 0.7;
+    const novelty = 1 - Math.abs(tw - w) * (0.7 + 0.6 * w);
     return Math.max(0.02, texture * force * novelty);
   }
 
@@ -313,7 +393,7 @@
   function poolFor(group, axes) {
     const base = TRAITS[group] || {};
     const ext = EXT_TRAITS[group];
-    if (!ext || clamp01(axes ? axes.weird : 0) < EXT_REVEAL) return base;
+    if (!ext || weirdOf(axes) < EXT_REVEAL) return base;
     return { ...base, ...ext };
   }
 
@@ -324,6 +404,7 @@
 
   function pickEntry(random, group, axes, context, direction, exclude, genre) {
     const pool = poolFor(group, axes);
+    const w = weirdOf(axes);
     const allowedTags = genre && Array.isArray(genre.allowTags) ? new Set(genre.allowTags) : null;
     const build = (useGenre) => {
       const scored = [];
@@ -333,13 +414,15 @@
         if (!allowed(group, traits, context, direction, axes)) continue;
         // skip glyph-destroying or overlapping effects (pixelate, halftone,
         // dissolves, scatter, echo trails...) when generating automatically;
-        // they remain selectable by hand unless the genre opts in
+        // they remain selectable by hand unless the genre opts in. A weird
+        // enough look may draw the readable ones (WEIRD_TAG_OK).
         const descriptor = fx.get(group, type);
+        const tagOk = w >= 0.75 && WEIRD_TAG_OK.has(type);
         if (descriptor) {
-          if (descriptor.tags.includes('degrade') && !(allowedTags && allowedTags.has('degrade'))) continue;
-          if (descriptor.tags.includes('overlap') && !(allowedTags && allowedTags.has('overlap'))) continue;
+          if (descriptor.tags.includes('degrade') && !tagOk && !(allowedTags && allowedTags.has('degrade'))) continue;
+          if (descriptor.tags.includes('overlap') && !tagOk && !(allowedTags && allowedTags.has('overlap'))) continue;
         }
-        const fit = scoreEntry(traits, axes);
+        const fit = scoreEntry(traits, axes, group, type);
         // a sharp exponent keeps the mood's character instead of near-uniform picks
         const affinity = useGenre ? Math.max(0.05, genreAffinity(genre, group, type)) : 1;
         scored.push({ type, weight: Math.pow(fit, 4) * affinity * (0.7 + random() * 0.6) });
@@ -384,11 +467,14 @@
   }
 
   // Numeric parameters stay inside the author's recommended range
-  // (`param.random`); without one the author's default is kept.
+  // (`param.random`); without one the author's default is kept. The sixth axis
+  // may leave both premises: it widens the range and moves parameters that have
+  // no range off their default, but never past the author's absolute min/max.
   function sampleParams(random, group, type, axes, colors) {
     const descriptor = fx.get(group, type);
     const params = {};
     if (!descriptor) return params;
+    const w = weirdOf(axes);
     for (const param of descriptor.params || []) {
       if (param.kind === 'number' || param.kind === 'int') {
         const min = param.min == null ? 0 : param.min;
@@ -396,22 +482,35 @@
         const fallback = param.default == null ? min : param.default;
         const range = Array.isArray(param.random) && param.random.length >= 2 ? param.random : null;
         if (!range) {
-          params[param.key] = param.kind === 'int' ? Math.round(fallback) : fallback;
+          // I15: "no recommended range means the default" stops holding
+          if (w > 0 && param.min != null && param.max != null && random() < w) {
+            let v = fallback + (random() * 2 - 1) * 0.35 * w * (max - min);
+            if (param.key === 'opacity') v = Math.max(0.6, v); // never erase text or decoration
+            params[param.key] = clampParam(group, type, param.key, v);
+          } else params[param.key] = param.kind === 'int' ? Math.round(fallback) : fallback;
           continue;
+        }
+        let lo = range[0];
+        let hi = range[1];
+        // I16: the recommended range is widened outwards by up to half its span
+        if (w > 0 && random() < 0.5 * w) {
+          const span = (hi - lo) * 0.5 * w;
+          lo -= span;
+          hi += span;
         }
         const bias = clamp01(axes.energy);
         const t = clamp01(bias * 0.6 + random() * 0.4);
         // the sixth axis pushes a parameter towards either end of the author's
         // range, so a weird look reads as "more of everything" without touching
         // the classic draws (no random() is consumed while weird is 0)
-        const weird = axes ? clamp01(axes.weird) : 0;
-        const widened = weird > 0 && random() < weird ? (random() < 0.5 ? 0 : 1) : t;
-        const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * widened));
+        const widened = w > 0 && random() < w ? (random() < 0.5 ? 0 : 1) : t;
+        const value = Math.max(min, Math.min(max, lo + (hi - lo) * widened));
         params[param.key] = param.kind === 'int' ? Math.round(value) : round(value, Math.abs(value) < 0.1 ? 4 : 2);
       } else if (param.kind === 'select') {
         params[param.key] = pick(random, param.options || [param.default]);
       } else if (param.kind === 'bool') {
-        params[param.key] = param.key === 'enabled' ? true : random() < 0.3;
+        // G12: booleans flip on more often as the axis rises
+        params[param.key] = param.key === 'enabled' ? true : random() < 0.3 + 0.4 * w;
       } else if (param.kind === 'color') {
         params[param.key] = pick(random, colors && colors.length ? colors : ['#ffd7a8']);
       } else if (param.kind === 'vec2') {
@@ -423,10 +522,16 @@
 
   const SHADOW_TYPES = new Set(['dropShadow', 'longShadow', 'extrude']);
 
-  function colorPoolFor(type, colors) {
+  // I1: shadows are dark by default; a weird look may draw them from the bright
+  // accents too (a coloured shadow, a white extrusion). H4: the accents join
+  // every colour pool.
+  function colorPoolFor(type, colors, random, w) {
     if (Array.isArray(colors)) return colors;
     if (!colors || !colors.bright) return [];
-    return SHADOW_TYPES.has(type) && colors.dark ? [colors.dark, ...colors.bright] : colors.bright;
+    const pool = w > 0 && colors.accents ? [...colors.bright, ...colors.accents] : colors.bright;
+    if (!SHADOW_TYPES.has(type) || !colors.dark) return pool;
+    if (random && breaks(random, w)) return pool;
+    return [colors.dark, ...colors.bright];
   }
 
   // line-level motion: speed owns every duration and interval, energy owns how
@@ -442,7 +547,7 @@
     // loops are off by default; energetic moods get a slow idle loop whose
     // period follows the speed axis
     const loopPeriod = group === 'hold' && axes.energy > 0.55 ? round(lerp(3.4, 1.6, axes.speed) * jitter(), 1) : 0;
-    return {
+    const m = {
       in: { duration: round(inBase * jitter(), 2), delay: 0, ease: easeIn },
       out: { duration: round(outBase * jitter(), 2), delay: 0, ease: easeOut },
       stagger: {
@@ -454,12 +559,80 @@
       },
       loop: { period: loopPeriod, yoyo: true, ease: 'easeInOutSine' },
     };
+    const w = weirdOf(axes);
+    if (w > 0) {
+      if (breaks(random, w, 0.5)) m.stagger.unit = m.stagger.unit === 'letter' ? 'word' : 'letter'; // I9
+      if (breaks(random, w)) {
+        // I10 + B9: the reading order and the easing leave their families
+        m.stagger.order = pick(random, ['random', 'center-out', 'edges-in', 'oddEven']);
+        m.in.ease = pick(random, bouncy ? ['sineInOut', 'cubicOut', 'elasticOut'] : ['backOut', 'elasticOut', 'expoOut']);
+        m.out.ease = pick(random, ['backIn', 'quartIn', 'sineInOut']);
+      }
+      if (breaks(random, w)) {
+        // I11: the durations stretch / compress
+        m.in.duration = round(Math.max(0.08, m.in.duration * (1 + (random() * 2 - 1) * 0.6 * w)), 2);
+        m.out.duration = round(Math.max(0.08, m.in.duration * bend(0.7, 0.3 + random() * 1.1, w)), 2);
+      }
+      // G11: even a hold without a period may start to breathe
+      if (group === 'hold' && !m.loop.period && axes.energy > 0.55 - 0.4 * w) {
+        m.loop.period = round(lerp(3.4, 1.6, axes.speed) * (1 - 0.4 * w), 1);
+      }
+    }
+    return m;
   }
 
   function instanceFor(random, group, axes, context, direction, colors, exclude, genre) {
     const type = pickEntry(random, group, axes, context, direction, exclude, genre);
     if (!type) return null;
-    return { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors)), enabled: true, motion: motionFor(random, group, axes) };
+    const instance = { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, weirdOf(axes))), enabled: true, motion: motionFor(random, group, axes) };
+    return weirdDecoration(instance, group, random, weirdOf(axes));
+  }
+
+  // H3: a weird look exaggerates the decoration it draws. Only the edge keys
+  // the effect actually declares are touched, and every value stays inside the
+  // author's min / max.
+  function weirdDecoration(instance, group, random, w) {
+    if (!(w > 0) || !instance || group !== 'edge') return instance;
+    const p = instance.params || (instance.params = {});
+    const set = (key, v) => {
+      p[key] = clampParam(group, instance.type, key, v);
+    };
+    const num = (key, d) => (typeof p[key] === 'number' ? p[key] : d);
+    switch (instance.type) {
+      case 'outline':
+        if (breaks(random, w)) {
+          p.pattern = pick(random, ['dashed', 'dotted', 'double', 'sketch']);
+          if (p.pattern !== 'double') set('flow', signed(random) * (0.5 + random() * 1.5) * w);
+        }
+        set('width', num('width', 3) * (1 + w));
+        break;
+      case 'neonGlow':
+      case 'innerGlow':
+        set('radius', num('radius', 18) * (1 + 0.8 * w));
+        set('intensity', num('intensity', 1) * (1 + 0.8 * w));
+        break;
+      case 'extrude':
+        set('depth', num('depth', 16) * (1 + 1.2 * w));
+        if (breaks(random, w)) set('angle', (random() * 2 - 1) * 180);
+        break;
+      case 'longShadow':
+        set('length', num('length', 40) * (1 + 1.2 * w));
+        if (breaks(random, w)) set('angle', (random() * 2 - 1) * 180);
+        break;
+      case 'drip':
+        set('length', num('length', 40) * (1 + w));
+        set('grow', num('grow', 0.5) * (1 + w));
+        break;
+      case 'dropShadow': {
+        const o = p.offset && typeof p.offset === 'object' ? p.offset : { x: 6, y: 8 };
+        p.offset = { x: round(o.x * (1 + 1.5 * w), 1), y: round(o.y * (1 + 1.5 * w), 1) };
+        set('blur', num('blur', 10) * (1 - 0.5 * w));
+        break;
+      }
+      default:
+        break;
+    }
+    return instance;
   }
 
   function pickGenreHero(genre, random) {
@@ -531,11 +704,17 @@
     if (family.textS != null) textS = family.textS;
     if (family.accentS != null) accentS = family.accentS;
     if (family.accentV != null) accentV = family.accentV;
-    const textHue = family.textHue != null ? family.textHue : family.accentHue;
+    // I4 / I3: "backgrounds are calm, text is low-saturation" are premises; the
+    // sixth axis drops them. I3 also moves the text hue away from the accent.
+    const w = weirdOf(axes);
+    bgS = bend(bgS, 0.95, w);
+    textS = bend(textS, 0.85, w);
+    const textHue = (family.textHue != null ? family.textHue : family.accentHue) + 150 * w;
     const bg = hsvHex(family.bgHue, bgS, bgV);
     const bg2 = hsvHex(family.bgHue + 14, bgS * 0.88, midV);
     let text = hsvHex(textHue, textS, textV);
-    text = color.ensureContrast(text, bg, 4.5);
+    // I2: the minimum contrast loosens with the axis, but never below 3:1
+    text = color.ensureContrast(text, bg, bend(4.5, 3.0, w));
     const accent = hsvHex(family.accentHue, accentS, accentV);
     const stroke = hsvHex(family.bgHue + 5, 0.45, strokeV);
     const accent2 = hsvHex(family.accentHue + 40, accentS * 0.9, Math.min(1, accentV * 1.08));
@@ -543,13 +722,16 @@
   }
 
   function paletteFamilyFor(axes, random, allowed) {
+    const w = weirdOf(axes);
     const permitted = Array.isArray(allowed) && allowed.length ? new Set(allowed) : null;
     const entries = Object.entries(PALETTE_FAMILIES)
-      .filter(([id, family]) => (permitted ? permitted.has(id) : !family.genreOnly))
+      // genre-only families open up for a weird look
+      .filter(([id, family]) => (permitted ? permitted.has(id) : !family.genreOnly || w >= 0.6))
       .map(([id, family]) => {
         const fit = 1 - Math.abs(family.energy - axes.energy) / 1.15;
         const jitter = random ? 0.55 + random() * 0.9 : 1;
-        return { id, family, weight: Math.pow(Math.max(0.05, fit), 3) * jitter };
+        // B3: a weird look flattens the fit weighting, so the family is freer
+        return { id, family, weight: Math.pow(Math.max(0.05, fit), 3 * (1 - 0.8 * w)) * jitter };
       });
     if (!entries.length) return paletteFamilyFor(axes, random);
     if (!random) {
@@ -584,39 +766,83 @@
     return color.toHex({ ...color.hsvToRgb(next), a: 1 });
   }
 
-  function repairContrast(colors) {
+  function repairContrast(colors, min) {
     if (!Array.isArray(colors) || colors.length < 3) return colors;
-    colors[2] = color.ensureContrast(colors[2], colors[0] || '#000000', 4.5);
+    const target = min == null ? 4.5 : min;
+    const bg = color.parse(colors[0] || '#000000');
+    colors[2] = color.ensureContrast(colors[2], colors[0] || '#000000', target);
+    let ratio = color.contrastRatio(color.parse(colors[2]), bg);
+    if (ratio < target) {
+      // ensureContrast only moves the value; a fully saturated colour (a weird
+      // palette can produce one) may already sit at v = 1 and miss the target,
+      // so it is desaturated towards white or black as a last resort. The
+      // floor (3:1) is never dropped.
+      const hsv = color.rgbToHsv(color.parse(colors[2]));
+      const white = { h: hsv.h, s: 0, v: 1, a: 1 };
+      const black = { h: hsv.h, s: hsv.s, v: 0, a: 1 };
+      const end = color.contrastRatio(color.hsvToRgb(white), bg) >= color.contrastRatio(color.hsvToRgb(black), bg) ? white : black;
+      let best = colors[2];
+      for (let step = 1; step <= 20; step += 1) {
+        const t = step / 20;
+        const candidate = color.hsvToRgb({ h: hsv.h, s: hsv.s + (end.s - hsv.s) * t, v: hsv.v + (end.v - hsv.v) * t, a: 1 });
+        const next = color.contrastRatio(candidate, bg);
+        if (next > ratio) {
+          ratio = next;
+          best = color.toHex(candidate);
+        }
+        if (next >= target) break;
+      }
+      colors[2] = best;
+    }
     return colors;
   }
 
   // a random palette that keeps the mood's character: derived from a matching family
   function generatePalette(random, axes, name, allowed) {
+    const w = weirdOf(axes);
     const base = paletteFor(axes, random, allowed);
-    // subtle variation only: the family harmony must survive
-    const hueShift = (random() * 2 - 1) * 0.055;
-    const satScale = 0.9 + random() * 0.2;
+    // subtle variation only: the family harmony must survive. B4: the sixth
+    // axis widens the jitter and may clash the accents on purpose.
+    const hueShift = (random() * 2 - 1) * (0.055 + 0.4 * w);
+    const satScale = 0.9 + random() * (0.2 + 0.5 * w);
     const lightScale = 0.94 + random() * 0.12;
     const colors = base.colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale));
     colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
-    repairContrast(colors);
+    if (w > 0 && random() < w) {
+      const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
+      for (const i of [3, 5, 6]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
+    }
+    repairContrast(colors, bend(4.5, 3.0, w));
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
   }
 
   // a variant of an existing palette (used by the per-scope "random palette")
-  function jitterPalette(random, palette) {
+  function jitterPalette(random, palette, axes) {
     const colors = (palette && palette.colors) || [];
     if (!colors.length) return generatePalette(random, normalizeAxes({}));
     const hueShift = (random() * 2 - 1) * 0.06;
     const satScale = 0.9 + random() * 0.3;
     const lightScale = 0.94 + random() * 0.16;
     const next = colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale));
-    repairContrast(next);
+    repairContrast(next, bend(4.5, 3.0, weirdOf(axes)));
     return {
       id: `theme_${Math.floor(random() * 1e9).toString(16)}`,
       name: palette.name || 'palette',
       colors: next,
     };
+  }
+
+  // A per-cue palette for the weird axis: the same roles with the hue moved and
+  // the accents swapped, still readable on the background.
+  function weirdPalette(random, palette, w) {
+    const colors = (palette && palette.colors) || [];
+    if (!colors.length || !(w > 0)) return null;
+    const hue = (random() * 2 - 1) * 0.5 * w;
+    const sat = 1 + random() * 0.4 * w;
+    const next = colors.map((hex, i) => shiftColor(hex, hue * (i === 2 ? 0.3 : 1), sat, 0.95 + random() * 0.1));
+    if (next.length >= 6 && random() < 0.5 * w) [next[3], next[5]] = [next[5], next[3]];
+    repairContrast(next, bend(4.5, 3.0, w));
+    return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: palette.name || 'palette', colors: next };
   }
 
   // --- colour-only re-roll ---------------------------------------------------
@@ -713,15 +939,42 @@
     const portrait = context.aspect === '9:16';
     const base = portrait ? lerp(104, 58, axes.density) : lerp(134, 78, axes.density);
     // jitter the size per generation so re-rolls do not all land on the same value
-    const size = Math.round((base * (0.85 + random() * 0.3)) / 2) * 2;
-    const weight = genre && genre.fonts && genre.fonts.weight ? genre.fonts.weight : axes.softness < 0.4 ? 700 : 400;
-    const letterSpacing = round(lerp(0, 0.06, axes.softness * (1 - axes.density)) * 100) / 100;
-    return { fontId, size, weight, letterSpacing, lineHeight: 1.2, align: 'center', maxWidth: 0.86 };
+    const w = weirdOf(axes);
+    const jitter = w > 0 ? 0.85 - 0.25 * w + random() * (0.3 + 0.7 * w) : 0.85 + random() * 0.3;
+    const size = Math.round((base * jitter) / 2) * 2;
+    let weight = genre && genre.fonts && genre.fonts.weight ? genre.fonts.weight : axes.softness < 0.4 ? 700 : 400;
+    let letterSpacing = round(lerp(0, 0.06, axes.softness * (1 - axes.density)) * 100) / 100;
+    let lineHeight = 1.2;
+    let align = 'center';
+    let maxWidth = 0.86;
+    let font = fontId;
+    if (w > 0) {
+      if (breaks(random, w, 0.8)) font = weirdFont(random, context, font) || font; // I5: the family leaves softness
+      if (breaks(random, w, 0.3)) weight = weight === 700 ? 400 : 700; // I6
+      if (breaks(random, w)) {
+        // I7: the tracking and the line height leave their narrow bands
+        letterSpacing = round(-0.04 * w + random() * (0.1 + 0.25 * w), 2);
+        lineHeight = round(1.2 + (random() * 2 - 1) * 0.35 * w, 2);
+      }
+      if (breaks(random, w, 0.3)) align = pick(random, ['left', 'right']);
+      if (breaks(random, w, 0.5)) maxWidth = round(bend(0.86, 0.5 + random() * 0.48, w), 2);
+    }
+    return { fontId: font, size, weight, letterSpacing, lineHeight, align, maxWidth };
   }
 
-  function colorSetFor(random, palette) {
+  // I5: a font outside the softness family. The project's exclusive font set
+  // still wins (it is never dropped).
+  function weirdFont(random, context, current) {
+    const cjk = !!(context && context.cjk);
+    const setPool = fontSetPool(cjk);
+    const base = setPool.length ? setPool : [...new Set([...FONTS.soft, ...FONTS.plain, ...(cjk ? FONTS.hard : FONTS.latinHard)])].filter(fontAvailable);
+    const pool = base.filter((id) => id !== current);
+    return pool.length ? pick(random, pool) : null;
+  }
+
+  function colorSetFor(random, palette, axes) {
     const gradient = random() < 0.5;
-    return {
+    const base = {
       fill: gradient
         ? {
             kind: 'gradient',
@@ -734,6 +987,34 @@
           }
         : { kind: 'palette', index: 2 },
       stroke: { kind: 'palette', index: 4 },
+    };
+    const w = weirdOf(axes);
+    if (!(w > 0) || random() >= w) return base;
+    // B6 / H5: the fill may leave the text role and the 2 -> 3 gradient, as
+    // long as every colour it uses still reads against the background
+    const colors = (palette && palette.colors) || [];
+    const bg = color.parse(colors[0] || '#000000');
+    const readable = [2, 3, 5, 6].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 3);
+    if (!readable.length) return base;
+    let fill;
+    if (readable.length >= 2 && random() < 0.55) {
+      const order = shuffle(random, readable).slice(0, Math.min(3, readable.length));
+      fill = {
+        kind: 'gradient',
+        type: 'linear',
+        angle: Math.round(random() * 360),
+        stops: order.map((index, k) => ({ pos: order.length === 1 ? 0 : k / (order.length - 1), paletteIndex: index })),
+      };
+      if (random() < w) {
+        fill.animate = {
+          angleSpeed: round(signed(random) * (20 + random() * 70) * w, 1),
+          shiftSpeed: round(signed(random) * (0.1 + random() * 0.4) * w, 2),
+        };
+      }
+    } else fill = { kind: 'palette', index: pick(random, readable) };
+    return {
+      fill,
+      stroke: { kind: 'palette', index: pick(random, [0, 4, 3, 5].filter((i) => colors[i])) },
     };
   }
 
@@ -758,6 +1039,7 @@
     const density = axes.density;
     const speed = axes.speed;
     const params = { color: null };
+    const w = weirdOf(axes);
     if (type === 'pattern') {
       // backdrop patterns cycle through the 400+ kind library (pattern-variants)
       // so a per-cue run of clips never shows the same look twice; without an
@@ -768,6 +1050,11 @@
       params.size = variant.size;
       params.speed = variant.speed;
       params.opacity = variant.opacity;
+      // I19: a weird backdrop moves more of everything, still inside the ranges
+      if (w > 0) {
+        params.count = Math.round(params.count * (1 + w));
+        params.speed = round(params.speed * (1 + w), 2);
+      }
       return params;
     }
     if (CLIP_MODES[type]) {
@@ -788,6 +1075,12 @@
       params.waves = Math.max(1, Math.min(5, Math.round(lerp(1, 4, density))));
       params.speed = round(lerp(0.3, 2, speed), 2);
     }
+    // I19: a weird backdrop moves more of everything, still inside the ranges
+    if (w > 0) {
+      if (params.count != null) params.count = Math.round(params.count * (1 + w));
+      if (typeof params.speed === 'number') params.speed = round(params.speed * (1 + w), 2);
+      if (type === 'spectrum' && params.falloff != null) params.falloff = round(params.falloff * (1 + 0.5 * w), 2);
+    }
     return params;
   }
 
@@ -796,13 +1089,26 @@
     const colors = palette.colors;
     const overrides = genre && genre.clips ? genre.clips[kind] : null;
     if (kind === 'background') {
+      const w = weirdOf(axes);
+      // B10: a weird background may be one of the extended primitives instead
+      // of the flat noise gradient (the genre's explicit type list wins)
+      if (options && options.weirdBg && w > 0 && !(overrides && overrides.types)) {
+        const table = EXT_TRAITS.background;
+        const sub = Object.fromEntries(Object.entries(table).filter(([, tr]) => allowed('background', tr, { letterCount: 0 }, null, axes)));
+        const type = Object.keys(sub).length ? weightedFromTraits(sub, null, random, axes) : null;
+        if (type) {
+          const params = sampleParams(random, 'background', type, axes, [colors[3], colors[5] || colors[3]]);
+          if (typeof params.speed === 'number') params.speed = clampParam('background', type, 'speed', params.speed * (1 + w));
+          return { spec: { type, params }, colors: colors.slice() };
+        }
+      }
       const allowedTypes = overrides && Array.isArray(overrides.types) && overrides.types.length ? overrides.types : ['noiseGradient', 'gradient', 'solid'];
-      const moving = random() < lerp(0.35, 0.85, axes.density);
+      const moving = random() < Math.min(1, lerp(0.35, 0.85, axes.density) + w);
       let type = moving ? 'noiseGradient' : random() < 0.5 ? 'gradient' : 'solid';
       if (!allowedTypes.includes(type)) type = allowedTypes[0];
       const params =
         type === 'noiseGradient'
-          ? { scale: round(lerp(1.2, 4.6, axes.speed), 2), speed: round(lerp(0.08, 0.7, axes.energy), 2) }
+          ? { scale: round(lerp(1.2, 4.6, axes.speed) * (1 + 0.5 * w), 2), speed: round(lerp(0.08, 0.7, axes.energy) * (1 + 2 * w), 2) }
           : type === 'gradient'
             ? { scale: round(lerp(0.6, 1.6, axes.softness), 2), speed: 0 }
             : {};
@@ -837,7 +1143,7 @@
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
-    return clipSpec(kind, axes, random, genre, { index: opts.index });
+    return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg });
   }
 
   // --- genre helpers -----------------------------------------------------------
@@ -909,7 +1215,7 @@
     return entries[entries.length - 1][0];
   }
 
-  function applySignature(style, genre, random, emphasis, ensure) {
+  function applySignature(style, genre, random, emphasis, ensure, w) {
     if (!genre || !Array.isArray(genre.signature) || !genre.signature.length) return null;
     let pool = genre.signature;
     if (emphasis && genre.emphasis && Array.isArray(genre.emphasis.signature) && genre.emphasis.signature.length) {
@@ -917,8 +1223,9 @@
       const filtered = genre.signature.filter((entry) => ids.has(entry.id));
       if (filtered.length) pool = filtered;
     } else if (!emphasis && !ensure) {
+      // G10: a weird look draws its genre signature more often
       const rate = genre.signatureRate == null ? 1 : Number(genre.signatureRate);
-      if (random() > rate) return null;
+      if (random() > Math.min(1, rate + 0.5 * (w || 0))) return null;
     }
     const total = pool.reduce((sum, entry) => sum + Math.max(0, Number(entry.weight) || 0), 0);
     let chosen = pool[pool.length - 1];
@@ -1029,7 +1336,7 @@
     return null;
   }
 
-  function enforceReadability(style, palette) {
+  function enforceReadability(style, palette, random, w) {
     const shape = style.bgShape;
     if (!shape || !shape.type || shape.type === 'none') return;
     const params = shape.params || (shape.params = {});
@@ -1055,26 +1362,31 @@
     }
     if (best != null) style.color = { ...(style.color || {}), fill: { kind: 'palette', index: best } };
     if (bestRatio < 3) params.fgAutoContrast = true;
-    // an enclose background must not fight text-shaping edges
-    if (Array.isArray(style.edge)) {
+    // an enclose background must not fight text-shaping edges; a weird look may
+    // keep them (I14)
+    if (Array.isArray(style.edge) && !(random && breaks(random, w, 0.7))) {
       style.edge = style.edge.filter((edge) => !['extrude', 'longShadow'].includes(edge && edge.type));
       if (!style.edge.length) delete style.edge;
     }
   }
 
   function applyGenreBackground(style, genre, axes, random, palette, forced) {
+    const w = weirdOf(axes);
     const config = genre && genre.bg ? genre.bg : null;
-    const chance = config && config.chance != null ? Number(config.chance) : 0.08 + axes.density * 0.22;
+    // G9: a weird look grows a text background more often
+    const chance = (config && config.chance != null ? Number(config.chance) : 0.08 + axes.density * 0.22) + 0.5 * w;
     if (!forced && random() >= Math.min(1, chance)) return false;
     const placementTable = (config && config.placement) || { enclose: 0.55, accent: 0.25, underlay: 0.2 };
     const placement = pickWeightedEntry(placementTable, random) || 'enclose';
     const shapeWeights = config && config.shapes ? config.shapes : null;
     const shape = weightedFromTraits(BG_SHAPE_TRAITS, shapeWeights, random, axes) || 'square';
-    // placement constraints
+    // placement constraints (I13: a weird look may break them)
     let adjusted = placement;
-    if (shape === 'bar' && placement !== 'enclose') adjusted = 'enclose';
-    if ((shape === 'star' || shape === 'heart') && placement === 'enclose') adjusted = 'accent';
-    if (shape === 'scratch' && placement !== 'underlay') adjusted = 'underlay';
+    if (!breaks(random, w, 0.6)) {
+      if (shape === 'bar' && placement !== 'enclose') adjusted = 'enclose';
+      if ((shape === 'star' || shape === 'heart') && placement === 'enclose') adjusted = 'accent';
+      if (shape === 'scratch' && placement !== 'underlay') adjusted = 'underlay';
+    }
     const jitter = 0.9 + random() * 0.2;
     const params = { color: null, skipSpaces: true };
     if (adjusted === 'enclose') {
@@ -1085,7 +1397,7 @@
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
     } else if (adjusted === 'accent') {
       params.unit = 'em';
-      const size = lerp(0.25, 0.45, random()) * jitter;
+      const size = lerp(0.25, 0.45, random()) * jitter * (1 + w);
       params.width = round(size, 2);
       params.height = round(size, 2);
       params.offset = { x: (random() < 0.5 ? -1 : 1) * 0.45, y: -0.45 };
@@ -1097,12 +1409,12 @@
       params.height = round(size, 2);
       params.layer = 'behind';
       params.opacity = round(lerp(0.25, 0.5, random()), 2);
-      params.varyRotation = round(random() * 25, 1);
+      params.varyRotation = round(random() * 25 * (1 + 2 * w), 1);
     }
     if (shape === 'bar' && adjusted !== 'underlay') params.offset = { x: 0, y: 0.3 };
     // variation
     const varyTable = (config && config.vary) || null;
-    const vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
+    const vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
     params.vary = vary;
     const colorMode = (config && config.colors) || 'accent';
     const varyColors =
@@ -1212,6 +1524,7 @@
     const opts = options || {};
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
     const axes = normalizeAxes(opts.axes || (genre && genre.axes));
+    const w = weirdOf(axes);
     const emphasis = !!opts.emphasis;
     if (emphasis) axes.energy = clamp01(axes.energy + 0.2);
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
@@ -1241,10 +1554,13 @@
     let bright = brightPool.filter(visible);
     if (!bright.length) bright = brightPool;
     const dark = palette.colors[4] || palette.colors[0];
-    const colors = { bright, dark };
-    style.color = colorSetFor(random, palette);
+    // H4: the accents join every colour pool once the axis is on
+    const colors = { bright, dark, accents: [palette.colors[3], palette.colors[5], palette.colors[6]].filter(Boolean) };
+    style.color = colorSetFor(random, palette, axes);
     // one hero effect per theme; genre profiles may override the weighting
     const hero = genre && genre.hero ? pickGenreHero(genre, random) : pickHero(random, axes);
+    // B8: a weird look may carry a second hero family (an edge and a post at once)
+    const hero2 = w > 0 && breaks(random, w, 0.6) ? pickHero(random, axes) : null;
     for (const group of SINGLE_GROUPS) {
       if (group === 'layout' && direction === 'vertical') {
         style.layout = {
@@ -1259,24 +1575,28 @@
       if (instance) style[group] = instance;
     }
     // holds: energy decides how often an idle motion shows up, softness its type
-    const holdChance = genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6;
+    const holdChance =
+      (genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6) + 0.5 * w;
     if (random() < holdChance) {
       const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre);
       if (instance) style.hold = [instance];
     }
     // edge / post: density decides how often and how many, softness the family
     for (const group of ['edge', 'post']) {
-      const isHero = hero === group;
+      const isHero = hero === group || hero2 === group;
       const presence =
-        genre && genre.density && genre.density[group] != null ? Number(genre.density[group]) : Math.max(0.08, 0.15 + axes.density * 0.7);
+        (genre && genre.density && genre.density[group] != null ? Number(genre.density[group]) : Math.max(0.08, 0.15 + axes.density * 0.7)) +
+        0.35 * w;
       if (!isHero && random() >= presence) continue;
-      const count = isHero ? (axes.density > 0.6 && random() < 0.6 ? 2 : 1) : axes.density > 0.7 && random() < 0.5 ? 2 : 1;
+      let count = isHero ? (axes.density > 0.6 - 0.3 * w && random() < 0.6 ? 2 : 1) : axes.density > 0.7 - 0.3 * w && random() < 0.5 ? 2 : 1;
+      // H2: a very weird look may stack three
+      if (group === 'edge' && w > 0.5 && breaks(random, w, 0.5)) count = 3;
       const stack = [];
       const used = new Set();
       for (let i = 0; i < count; i += 1) {
         const instance = instanceFor(random, group, axes, context, direction, colors, used, genre);
         if (!instance) break;
-        if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors));
+        if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w));
         used.add(instance.type);
         stack.push(instance);
       }
@@ -1289,10 +1609,10 @@
     }
     // generic background rules also apply without a genre (low chance)
     const forced = hero === 'bg';
-    applyGenreBackground(style, genre, axes, random, palette.colors, forced);
-    if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature);
+    applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg');
+    if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
-    enforceReadability(style, palette.colors);
+    enforceReadability(style, palette.colors, random, w);
     return {
       style,
       axes,
@@ -1304,6 +1624,14 @@
     };
   }
 
+  // 2-14: the beat-level hold a very weird auto-direct draw may insert (a
+  // louder instance than the generator's own hold pool would pick).
+  function weirdBeatHold(random, axes, context, colors) {
+    const a = normalizeAxes(axes);
+    a.energy = Math.max(a.energy, 0.75);
+    return instanceFor(random, 'hold', a, { letterCount: 0, ...(context || {}) }, null, colors || [], null, null);
+  }
+
   return {
     AXES,
     MATCH_AXES,
@@ -1313,6 +1641,9 @@
     TRAITS,
     EXT_TRAITS,
     EXT_REVEAL,
+    CLASSIC_WEIRD,
+    WEIRD_TAG_OK,
+    WEIRD_DEFAULT,
     poolFor,
     allowed,
     PALETTES,
@@ -1333,6 +1664,13 @@
     axesFromAudio,
     contextFor,
     contextForCue,
+    weirdOf,
+    projectWeird,
+    weirdPalette,
+    weirdBeatHold,
+    weirdFont,
+    weirdDecoration,
+    bend,
     score: scoreEntry,
   };
 });

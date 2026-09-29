@@ -123,18 +123,27 @@
   }
 
   // target motion magnitude of the five axes: energy owns most of it, speed
-  // leans the same way (fast moods usually travel further per beat)
+  // leans the same way (fast moods usually travel further per beat). A weird
+  // song expects the louder looks too.
   function motionTarget(axes) {
     const source = axes || {};
-    return clamp01(0.05 + 0.75 * clamp01(source.energy == null ? 0.5 : source.energy) + 0.2 * clamp01(source.speed == null ? 0.5 : source.speed));
+    return clamp01(
+      0.05 +
+        0.75 * clamp01(source.energy == null ? 0.5 : source.energy) +
+        0.2 * clamp01(source.speed == null ? 0.5 : source.speed) +
+        0.35 * clamp01(source.weird)
+    );
   }
 
   function axisDistance(entry, axes) {
     const a = (entry && entry.axes) || {};
     const target = axes || {};
+    // the weird distance weighs more when the target itself is weird, so a
+    // weird draw is judged mostly on how weird the look is
+    const ww = 0.9 + 0.9 * clamp01(target.weird);
     let sum = 0;
     let norm = 0;
-    for (const [key, weight] of [['speed', 1], ['softness', 1.4], ['density', 0.8], ['brightness', 0.6], ['weird', 0.9]]) {
+    for (const [key, weight] of [['speed', 1], ['softness', 1.4], ['density', 0.8], ['brightness', 0.6], ['weird', ww]]) {
       sum += Math.abs(clamp01(a[key] == null ? 0.5 : a[key]) - clamp01(target[key] == null ? 0.5 : target[key])) * weight;
       norm += weight;
     }

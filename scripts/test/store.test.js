@@ -314,3 +314,81 @@ test('editBeatText keeps the user lines and only resizes a fill beat', () => {
   assert.ok(beat.fontScale > 1, `fontScale ${beat.fontScale}`);
 });
 
+test('redo re-applies the fill re-flow of a style change', () => {
+  store.load(fixture());
+  store.commands.setStyleProp('project', 'text.fit', 'fill');
+  const filled = snapshot();
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.beats.c1[0].fit, undefined);
+  assert.equal(store.redo(), true);
+  assert.deepEqual(snapshot(), filled);
+});
+
+// --- history after undo / redo ----------------------------------------------
+
+test('an edit right after undo is a fresh entry and drops the stale redo', () => {
+  store.load(fixture());
+  store.commands.moveCue('c1', 1, { coalesceKey: 'cue:c1:move' });
+  const afterMove = snapshot();
+  store.commands.setStyleProp('project', 'text.size', 80, { coalesceKey: 'style:text.size' });
+  assert.equal(store.undo(), true);
+  // the retry happens inside the coalesce window of the undone edit: it must
+  // not fold into the move entry below (nor keep the undone step redoable)
+  store.commands.setStyleProp('project', 'text.size', 64, { coalesceKey: 'style:text.size' });
+  assert.equal(store.state.project.style.text.size, 64);
+  assert.equal(store.canRedo(), false);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), afterMove);
+  assert.equal(store.redo(), true);
+  assert.equal(store.state.project.style.text.size, 64);
+});
+
+test('an edit right after redo is a fresh entry too', () => {
+  store.load(fixture());
+  store.commands.moveCue('c1', 1, { coalesceKey: 'cue:c1:move' });
+  store.commands.setStyleProp('project', 'text.size', 80, { coalesceKey: 'style:text.size' });
+  store.undo();
+  store.undo();
+  assert.equal(store.redo(), true);
+  store.commands.setStyleProp('project', 'text.size', 64, { coalesceKey: 'style:text.size' });
+  assert.equal(store.undo(), true);
+  const doc = store.state.project;
+  assert.equal(doc.script.cues.find((cue) => cue.id === 'c1').start, 1);
+  assert.equal(doc.style.text.size, 96);
+  assert.equal(store.redo(), true);
+  assert.equal(store.state.project.style.text.size, 64);
+});
+
+// --- recent features ---------------------------------------------------------
+
+test('setFontSet is undoable and redoable with its media font metadata', () => {
+  store.load(fixture());
+  const before = snapshot();
+  const set = { exclusive: true, fonts: [{ id: 'user:abc123', fontClass: 'sans' }, { id: 'NotoSans-Regular', fontClass: null }] };
+  const media = [{ id: 'user:abc123', family: 'My Font', cjk: true }];
+  store.commands.setFontSet(set, media);
+  assert.deepEqual(store.state.project.fontSet, set);
+  assert.deepEqual(store.state.project.media.fonts, media);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  assert.equal(store.redo(), true);
+  assert.deepEqual(store.state.project.fontSet, set);
+  assert.deepEqual(store.state.project.media.fonts, media);
+});
+
+test('a shapeLayer clip can be added, edited and undone / redone', () => {
+  store.load(fixture());
+  const before = snapshot();
+  const id = store.commands.addClip({ start: 8, end: 11, spec: { type: 'shapeLayer', params: { shape: 'underline', follow: 'followText' } } }, 'bg');
+  assert.ok(id, 'clip created');
+  assert.equal(store.state.project.clips.some((clip) => clip.id === id), true);
+  store.commands.updateClip(id, { spec: { type: 'shapeLayer', params: { shape: 'box', follow: 'line' } } }, { coalesceKey: `clip:${id}:spec` });
+  assert.equal(store.state.project.clips.find((clip) => clip.id === id).spec.params.shape, 'box');
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.clips.find((clip) => clip.id === id).spec.params.shape, 'underline');
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  assert.equal(store.redo(), true);
+  assert.equal(store.redo(), true);
+  assert.equal(store.state.project.clips.find((clip) => clip.id === id).spec.params.shape, 'box');
+});

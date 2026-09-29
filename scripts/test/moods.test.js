@@ -162,10 +162,18 @@ test('auto direct keeps the theme fixed and only breathes per beat', () => {
   const end = source.indexOf('// gaps between the lyrics');
   assert.ok(start > 0 && end > start, 'auto direct section found');
   const block = source.slice(start, end);
-  for (const group of ['layout', 'location', 'edge', 'post', 'color', 'palette', 'background', 'transform']) {
+  // with weird 0 the beat patch never touches these groups
+  for (const group of ['layout', 'location', 'edge', 'post', 'palette', 'background']) {
     assert.ok(!new RegExp(`beatPatch\\.${group}\\s*=`).test(block), `beat patch must not set ${group}`);
   }
   assert.ok(/beatPatch = \{ text: \{ size \} \}/.test(block), 'beats only change the text size');
+  // colour, transform and enter/exit jumps live inside the weird block only
+  const weirdAt = block.indexOf('if (w > 0) {');
+  assert.ok(weirdAt > 0, 'the weird block is guarded');
+  for (const field of ['beatPatch.color', 'beatPatch.transform', 'beatPatch.enter']) {
+    const at = block.indexOf(field);
+    assert.ok(at > weirdAt, `${field} must only be set inside the weird block`);
+  }
   assert.ok(/cueStyles\[cue\.id\][\s\S]*enter: generated\.enter/.test(block), 'enter/exit are per cue');
   assert.ok(/bpm: Math\.round\(bpm\)/.test(block), 'pulse uses the audio BPM');
 });

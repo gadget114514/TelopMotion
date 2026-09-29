@@ -72,6 +72,15 @@ SA.themes = (() => {
     return style;
   }
 
+  // the project's axes with the UI default for weird: themes store the axis the
+  // editor drew with, so opening one again restores the weirdness
+  function currentAxes() {
+    const doc = project();
+    const mode = doc && doc.styleMode;
+    if (!mode || !mode.axes || !SA.moods) return null;
+    return { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc) };
+  }
+
   function apply(themeId, scope) {
     const theme = get(themeId);
     const doc = project();
@@ -126,7 +135,7 @@ SA.themes = (() => {
   function duplicate(themeId) {
     const theme = get(themeId);
     if (!theme) return null;
-    return save(t('studio.themes.copyName', { name: theme.name }), SA.store.clone(theme.style), theme.axes || null);
+    return save(t('studio.themes.copyName', { name: theme.name }), SA.store.clone(theme.style), theme.axes || null, theme.genre || null);
   }
 
   async function exportFile() {
@@ -154,6 +163,7 @@ SA.themes = (() => {
         name: String(entry.name || t('studio.themes.untitled')),
         builtin: false,
         axes: entry.axes || null,
+        genre: entry.genre || null,
         style: entry.style,
       });
       count += 1;
@@ -225,7 +235,7 @@ SA.themes = (() => {
           });
         } else {
           makeButton(row, 'studio.themes.update', () => {
-            update(theme.id, { style: capture() });
+            update(theme.id, { style: capture(), axes: currentAxes() || theme.axes || null });
             renderList();
           });
           makeButton(row, 'studio.themes.duplicate', () => {
@@ -265,7 +275,7 @@ SA.themes = (() => {
     saveButton.addEventListener('click', () => {
       const name = window.prompt(t('studio.themes.name'), t('studio.themes.untitled'));
       if (!name) return;
-      const entry = save(name, capture());
+      const entry = save(name, capture(), currentAxes(), ((project() || {}).styleMode || {}).genre || null);
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
       renderList();
     });
@@ -302,5 +312,5 @@ SA.themes = (() => {
     root.hidden = false;
   }
 
-  return { list, get, userThemes, capture, apply, save, update, remove, duplicate, exportFile, importFile, dialog, THEME_GROUPS };
+  return { list, get, userThemes, capture, currentAxes, apply, save, update, remove, duplicate, exportFile, importFile, dialog, THEME_GROUPS };
 })();

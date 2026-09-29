@@ -45,13 +45,13 @@ SA.themeEditor = (() => {
   }
 
   function defaultAxes() {
-    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6, weird: 0 };
+    return { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness: 0.6, weird: SA.moods.WEIRD_DEFAULT };
   }
 
   // weird is the user's choice: a genre, the music or a jitter never sets it,
   // so those keep the value the slider holds
   function keepWeird(axes) {
-    return { ...SA.moods.normalizeAxes(axes), weird: Number(draft.axes.weird) || 0 };
+    return { ...SA.moods.normalizeAxes(axes), weird: SA.moods.weirdOf(draft.axes) };
   }
 
   // the draft keeps the extra/exclude words as comma-joined text; the project
@@ -724,7 +724,13 @@ SA.themeEditor = (() => {
     if (!root) return;
     const existing = themeId ? SA.themes.get(themeId) : null;
     const doc = project();
-    const axes = existing && existing.axes ? SA.moods.normalizeAxes(existing.axes) : defaultAxes();
+    const mode = (doc && doc.styleMode) || {};
+    // the project's axes (weird included) are the floor: opening the editor on
+    // a project or a saved theme must not reset the weirdness to 0
+    const projectAxes = mode.axes ? { ...SA.moods.normalizeAxes(mode.axes), weird: SA.moods.projectWeird(doc) } : null;
+    const axes = existing && existing.axes
+      ? SA.moods.normalizeAxes({ weird: SA.moods.projectWeird(doc), ...existing.axes })
+      : projectAxes || defaultAxes();
     const seed = existing && existing.seed ? existing.seed : seedNow();
     const style = existing
       ? SA.store.clone(existing.style)
@@ -735,8 +741,8 @@ SA.themeEditor = (() => {
       name: existing ? existing.name : t('studio.themes.untitled'),
       axes,
       seed,
-      direction: (existing && existing.direction) || 'horizontal',
-      genre: (existing && existing.genre) || null,
+      direction: (existing && existing.direction) || mode.direction || 'horizontal',
+      genre: existing ? existing.genre || null : mode.genre || null,
       keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
       style,
     };
