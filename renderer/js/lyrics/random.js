@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'), require('./effects/repeat'), require('./smartness'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('./moods'), require('./effects/repeat'), require('./smartness'), require('./weird'));
   else {
     root.SA = root.SA || {};
-    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods, root.SA.repeat, root.SA.smartness);
+    root.SA.random = factory(root.SA.rng, root.SA.fx, root.SA.moods, root.SA.repeat, root.SA.smartness, root.SA.weird);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat, smartness) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat, smartness, weird) {
   'use strict';
 
   const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
@@ -393,9 +393,10 @@
   }
 
   // the sixth axis of the project's look: how far the automatic picks may stray.
-  // A project without a saved value opens at the UI default (0.7).
+  // A project without a saved value opens at the UI default (0.7). The value is
+  // read through the tamed text channel, so the picks match the text side.
   function weirdOfProject(project) {
-    return moods.projectWeird(project);
+    return weird.text(moods.projectWeird(project));
   }
 
   // the seventh axis: only a project that saved a value filters (the engine

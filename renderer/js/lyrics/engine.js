@@ -4,9 +4,14 @@ SA.lyricsEngine = (() => {
   'use strict';
 
   const CLEAR_COLOR = [0.043, 0.051, 0.070];
-  // minimum contrast ratio between backdrop shapes and the lyrics (WCAG large
-  // text); below it the two read as the same colour
-  const BACKDROP_CONTRAST = 3;
+  // Backdrop shapes stand apart from the lyrics by at least this contrast ratio
+  // (WCAG large text); below it the two read as the same colour. The ratio
+  // climbs with the raw weird axis (3 -> 5.5), so a weirder backdrop separates
+  // itself more, and it is 3 at weird 0, exactly as before.
+  function backdropContrast(project) {
+    const axes = project && project.styleMode ? project.styleMode.axes : null;
+    return SA.weird ? SA.weird.backdropContrast(axes && axes.weird) : 3;
+  }
 
   function beatForCue(cue) {
     if (!cue) return null;
@@ -184,6 +189,42 @@ SA.lyricsEngine = (() => {
       }
       beats.sort((a, b) => a.start - b.start);
       return beats;
+    }
+
+    // Kick times for a shape clip: every beat whose window overlaps it plus the
+    // rhythm cuts its split part carries. Memoised per clip (and per project
+    // object) so it is not rebuilt every frame.
+    let kickCache = { project: null, map: new Map() };
+
+    function kickTimesForClip(clip, spec) {
+      if (kickCache.project !== state.project) kickCache = { project: state.project, map: new Map() };
+      const key = `${clip.id}:${clip.start}:${clip.end}`;
+      const cached = kickCache.map.get(key);
+      if (cached) return cached;
+      const start = Number(clip.start) || 0;
+      const end = Number(clip.end) || start;
+      const kicks = [];
+      for (const beat of allBeats(state.project)) {
+        if (beat.end > start && beat.start < end) kicks.push(Number(beat.start) || 0);
+      }
+      const walk = (node) => {
+        if (!node || typeof node !== 'object') return;
+        if (node.type === 'split' && node.params && Array.isArray(node.params.cuts)) {
+          for (const cut of node.params.cuts) {
+            const at = Number(cut);
+            if (Number.isFinite(at) && at > start && at < end) kicks.push(at);
+          }
+        }
+        if (Array.isArray(node.params && node.params.list)) node.params.list.forEach(walk);
+      };
+      walk(spec);
+      kicks.sort((a, b) => a - b);
+      const unique = [];
+      for (const at of kicks) {
+        if (!unique.length || at - unique[unique.length - 1] > 1e-6) unique.push(at);
+      }
+      kickCache.map.set(key, unique);
+      return unique;
     }
 
     function previousBeatOf(project, beat) {
@@ -811,7 +852,7 @@ SA.lyricsEngine = (() => {
       // lyrics are drawn in (all gradient stops, not only the first: the usual
       // text gradient ends on the accent, which is the backdrop's own colour)
       const textColors = textColorList(style);
-      if (textColors.length) fills = fills.map((fill) => SA.color.separateFrom(fill, textColors, BACKDROP_CONTRAST));
+      if (textColors.length) fills = fills.map((fill) => SA.color.separateFrom(fill, textColors, backdropContrast(state.project)));
       return fills.length ? fills : ['#eef2ff'];
     }
 
@@ -932,6 +973,7 @@ SA.lyricsEngine = (() => {
           clip: { start: clip.start, end: clip.end },
           bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
           frame: { width: state.width, height: state.height },
+          kicks: kickTimesForClip(clip, spec),
         });
       }
       pipeline.beginLayer();

@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'));
   else {
     root.SA = root.SA || {};
-    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness);
+    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird);
   }
-})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness) {
+})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird) {
   'use strict';
 
   // FX 800 runtime pool: 800 complete looks classified by motion magnitude and
@@ -124,14 +124,14 @@
 
   // target motion magnitude of the five axes: energy owns most of it, speed
   // leans the same way (fast moods usually travel further per beat). A weird
-  // song expects the louder looks too.
+  // song expects the louder looks too, judged on the tamed text channel.
   function motionTarget(axes) {
     const source = axes || {};
     return clamp01(
       0.05 +
         0.75 * clamp01(source.energy == null ? 0.5 : source.energy) +
         0.2 * clamp01(source.speed == null ? 0.5 : source.speed) +
-        0.35 * clamp01(source.weird)
+        0.35 * weird.text(source.weird)
     );
   }
 
@@ -139,12 +139,14 @@
     const a = (entry && entry.axes) || {};
     const target = axes || {};
     // the weird distance weighs more when the target itself is weird, so a
-    // weird draw is judged mostly on how weird the look is
-    const ww = 0.9 + 0.9 * clamp01(target.weird);
+    // weird draw is judged mostly on how weird the look is. The target is read
+    // through the tamed text channel; the stored entry axis stays raw.
+    const ww = 0.9 + 0.9 * weird.text(target.weird);
     let sum = 0;
     let norm = 0;
     for (const [key, weight] of [['speed', 1], ['softness', 1.4], ['density', 0.8], ['brightness', 0.6], ['weird', ww]]) {
-      sum += Math.abs(clamp01(a[key] == null ? 0.5 : a[key]) - clamp01(target[key] == null ? 0.5 : target[key])) * weight;
+      const targetValue = key === 'weird' ? weird.text(target[key]) : target[key];
+      sum += Math.abs(clamp01(a[key] == null ? 0.5 : a[key]) - clamp01(targetValue == null ? 0.5 : targetValue)) * weight;
       norm += weight;
     }
     return sum / norm;
@@ -229,6 +231,8 @@
     // steers the generator (palette, background, text)
     const s = smartness.smartOf(opts.axes);
     const style = smartness.prune(expand(entry.style), s);
+    // the stored look keeps frozen glow params; the raw axis tames them
+    moods.tameGlow(style, weird.raw(opts.axes && opts.axes.weird));
     const generated = moods.generate({
       axes: opts.axes,
       seed: opts.seed,

@@ -41,8 +41,11 @@
   function prepare(doc, options) {
     const opts = options || {};
     const axes = { ...(opts.axes || {}) };
-    const w = SA.moods.weirdOf(axes);
-    axes.weird = w;
+    // the saved axis stays raw; each consumer derives its own channel value
+    const rawW = SA.moods.weirdOf(axes);
+    axes.weird = rawW;
+    const w = SA.moods.textWeirdOf(axes);
+    const wb = SA.moods.bgWeirdOf(axes);
     const s = SA.moods.smartOf(axes);
     const analysis = opts.analysis || null;
     const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
@@ -57,6 +60,13 @@
     const minSize = (portrait ? 52 : 72) - 16 * w;
     const maxSize = (portrait ? 96 : 124) + (portrait ? 50 : 80) * w;
     const themeStyle = opts.themeStyle ? SA.project.mergeDeep({}, opts.themeStyle) : null;
+    // the stored looks carry frozen glow params; tame them once for the text
+    // channel (the generator tames the edges it draws itself)
+    if (themeStyle) SA.moods.tameGlow(themeStyle, rawW);
+    const cueLooks = opts.cueLooks || {};
+    for (const entry of Object.values(cueLooks)) {
+      if (entry && entry.style) SA.moods.tameGlow(entry.style, rawW);
+    }
     if (themeStyle && themeStyle.text) {
       themeStyle.text = {
         ...themeStyle.text,
@@ -75,7 +85,7 @@
     if (w > 0 && SA.rhythm && doc && doc.script) {
       rhythm = SA.rhythm.plan({
         bpm,
-        axes,
+        axes: { ...axes, weird: w },
         seed: opts.seed,
         spans: doc.script.cues.map((cue) => ({
           id: cue.id,
@@ -88,6 +98,8 @@
     return {
       axes,
       w,
+      wb,
+      rawW,
       s,
       seed: opts.seed,
       genre: opts.genre || null,
@@ -129,7 +141,12 @@
       // palette
       if (themeStyle.palette && cr() < 0.6 * w) {
         const palette = SA.moods.weirdPalette(cr, themeStyle.palette, w);
-        if (palette) projectDoc.cueStyles[cue.id] = { ...SA.moods.recolor(own(), themeStyle.palette.colors, palette.colors), palette };
+        if (palette) {
+          // the per-cue palette keeps the legibility of the raw axis, not of
+          // the tamed text channel
+          SA.moods.repairContrast(palette.colors, SA.weird.paletteContrast(ctx.rawW));
+          projectDoc.cueStyles[cue.id] = { ...SA.moods.recolor(own(), themeStyle.palette.colors, palette.colors), palette };
+        }
       }
       // location (G8): nudge the anchor and sometimes let it float
       if (cr() < 0.5 * w) {
@@ -318,10 +335,10 @@
 
   // The filler kinds a run writes into the project settings. Item 8: gaps show
   // the built-in preset library (figures and the other moving primitives)
-  // instead of the fixed shapes / spectrum / particles trio. Weird scales the
-  // counts and speeds.
+  // instead of the fixed shapes / spectrum / particles trio. The backdrop
+  // channel scales the counts and speeds.
   function fillerSettings(projectDoc, ctx) {
-    const w = ctx.w;
+    const w = ctx.wb;
     const interlude = fillerPresetSpec(ctx, 'interlude');
     const longGap = fillerPresetSpec(ctx, 'longGap');
     // intro / outro keep a figures motif next to the credits element
@@ -380,12 +397,12 @@
   }
 
   // One backdrop (mid) clip per cue. Its `coverage` (how much of the frame the
-  // painted planes take) is the weird axis; hand-made clips on the track
-  // survive. With coverage >= 0.5 the clip spans to the next cue (the first
-  // from 0, the last to the end of the song) so the backdrop never blinks out
-  // in a filler gap.
+  // painted planes take) is the backdrop channel of the weird axis; hand-made
+  // clips on the track survive. With coverage >= 0.5 the clip spans to the next
+  // cue (the first from 0, the last to the end of the song) so the backdrop
+  // never blinks out in a filler gap.
   function backdropClipFor(projectDoc, cue, index, ctx) {
-    const { axes, seed, genre, w, themeStyle } = ctx;
+    const { axes, seed, genre, wb: w, themeStyle } = ctx;
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
     let palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
     // the mid layer changes colour every four cues, so a long song never sits
@@ -423,12 +440,12 @@
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
     // a weird song always gets its mid layer; the density axis still gates the
     // classic draw (w=0 unchanged)
-    if (!(ctx.w > 0 || ctx.axes.density > 0.45)) return;
+    if (!(ctx.wb > 0 || ctx.axes.density > 0.45)) return;
     const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
     cues.forEach((cue, index) => {
       const clip = backdropClipFor(projectDoc, cue, index, ctx);
       if (!clip) return;
-      if (ctx.w >= 0.5) {
+      if (ctx.wb >= 0.5) {
         clip.start = index === 0 ? 0 : Number(cue.start) || 0;
         const next = cues[index + 1];
         clip.end = next ? Number(next.start) || clip.end : total;
@@ -521,11 +538,11 @@
   }
 
   // One figure clip per cue: animated motifs on the figure track (only once the
-  // weird axis is on, so the w=0 output stays exactly as before).
+  // backdrop channel is on, so the w=0 output stays exactly as before).
   function figureClipFor(projectDoc, cue, index, ctx) {
     const track = trackIdFor(projectDoc, 'figure');
     if (!track || !SA.figures) return null;
-    const { w, axes, seed } = ctx;
+    const { wb: w, axes, seed } = ctx;
     const density = Math.max(0.15, Math.min(1, 0.25 + 0.6 * ctx.energy + 0.2 * w));
     if (density < 0.3 && w < 0.2 && index % 3 !== 0) return null;
     const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
@@ -558,7 +575,7 @@
   }
 
   function figureClips(projectDoc, ctx) {
-    if (!(ctx.w > 0)) return;
+    if (!(ctx.wb > 0)) return;
     if (!trackIdFor(projectDoc, 'figure')) return;
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
     cues.forEach((cue, index) => {

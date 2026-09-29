@@ -183,6 +183,23 @@ test('high weird grows and accents the key words only', () => {
   }
 });
 
+test('keyword emphasis opens at the raw threshold of the tamed text axis', () => {
+  const plainScene = makeScene('I love you');
+  assignWords(plainScene);
+  const plain = evaluate(plainScene, 5);
+  const belowScene = makeScene('I love you');
+  assignWords(belowScene);
+  // raw 0.42 -> text 0.294, still below the 0.3 keyword threshold
+  const gated = evaluate(belowScene, 5, { project: { styleMode: { axes: { weird: 0.42 } } } });
+  assert.deepEqual(gated, plain);
+  const aboveScene = makeScene('I love you');
+  assignWords(aboveScene);
+  // raw 0.44 -> text 0.308, the first value that marks
+  const marked = evaluate(aboveScene, 5, { project: { styleMode: { axes: { weird: 0.44 } } } });
+  assert.ok(marked.letters[2].scaleX > plain.letters[2].scaleX, 'the key word grows');
+  assert.deepEqual(marked.letters[0], plain.letters[0], 'other letters stay put');
+});
+
 test('circle layout puts the letters around the anchor', () => {
   const scene = makeScene('ABCDE', { layout: { type: 'circle', params: { radius: 0.3 } }, animation: { type: 'simultaneous' } });
   const result = evaluate(scene, 5);

@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -30,6 +30,16 @@
 
   function weirdOf(axes) {
     return axes && has(axes.weird) ? clamp01(axes.weird) : 0;
+  }
+
+  // The two channels the raw axis feeds: the text side is tamed (raw 1 draws
+  // what raw 0.7 used to), the backdrop side saturates at raw 0.4.
+  function textWeirdOf(axes) {
+    return weirdMod.text(weirdOf(axes));
+  }
+
+  function bgWeirdOf(axes) {
+    return weirdMod.bg(weirdOf(axes));
   }
 
   function projectWeird(project) {
@@ -364,7 +374,7 @@
 
   function allowed(group, traits, context, direction, axes, type, options) {
     const flags = traits[2] || {};
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     // a weird look may cross the vertical / horizontal layout boundary (a
     // vertical layout in a horizontal song and the other way round)
     const cross = w >= 0.7 && (!flags.vertical || context.letterCount <= 14);
@@ -378,8 +388,8 @@
     if (flags.minEnergy != null && (!axes || axes.energy < flags.minEnergy - 0.4 * w)) return false;
     // the sixth axis gates the extended primitives: a calm look never draws a
     // turbulent or glitch-heavy effect, a weird-heavy one can
-    if (flags.minWeird != null && (!axes || weirdOf(axes) < flags.minWeird)) return false;
-    if (flags.maxWeird != null && axes && weirdOf(axes) > flags.maxWeird) return false;
+    if (flags.minWeird != null && (!axes || textWeirdOf(axes) < flags.minWeird)) return false;
+    if (flags.maxWeird != null && axes && textWeirdOf(axes) > flags.maxWeird) return false;
     if (flags.maxEnergy != null && axes && clamp01(axes.energy) > flags.maxEnergy) return false;
     // the seventh axis drops the tacky end of the pool. The genre's hero group
     // is exempt: it takes the weight penalty but keeps the genre's identity.
@@ -394,7 +404,7 @@
   // the effect strays from a plain line of text: a classic primitive reads its
   // own weird value (CLASSIC_WEIRD) once the axis is on.
   function scoreEntry(traits, axes, group, type) {
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const energy = traits[0];
     const softness = traits[1];
     const own = traits[3];
@@ -413,7 +423,7 @@
   function poolFor(group, axes) {
     const base = TRAITS[group] || {};
     const ext = EXT_TRAITS[group];
-    if (!ext || weirdOf(axes) < EXT_REVEAL) return base;
+    if (!ext || textWeirdOf(axes) < EXT_REVEAL) return base;
     return { ...base, ...ext };
   }
 
@@ -424,7 +434,7 @@
 
   function pickEntry(random, group, axes, context, direction, exclude, genre, options) {
     const pool = poolFor(group, axes);
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const allowedTags = genre && Array.isArray(genre.allowTags) ? new Set(genre.allowTags) : null;
     const build = (useGenre) => {
       const scored = [];
@@ -494,7 +504,7 @@
     const descriptor = fx.get(group, type);
     const params = {};
     if (!descriptor) return params;
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     for (const param of descriptor.params || []) {
       if (param.kind === 'number' || param.kind === 'int') {
         const min = param.min == null ? 0 : param.min;
@@ -579,7 +589,7 @@
       },
       loop: { period: loopPeriod, yoyo: true, ease: 'easeInOutSine' },
     };
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     if (w > 0) {
       if (breaks(random, w, 0.5)) m.stagger.unit = m.stagger.unit === 'letter' ? 'word' : 'letter'; // I9
       if (breaks(random, w)) {
@@ -604,14 +614,16 @@
   function instanceFor(random, group, axes, context, direction, colors, exclude, genre, options) {
     const type = pickEntry(random, group, axes, context, direction, exclude, genre, options);
     if (!type) return null;
-    const instance = { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, weirdOf(axes))), enabled: true, motion: motionFor(random, group, axes) };
-    return weirdDecoration(instance, group, random, weirdOf(axes));
+    const w = textWeirdOf(axes);
+    const instance = { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, w)), enabled: true, motion: motionFor(random, group, axes) };
+    return weirdDecoration(instance, group, random, w, weirdOf(axes));
   }
 
   // H3: a weird look exaggerates the decoration it draws. Only the edge keys
   // the effect actually declares are touched, and every value stays inside the
-  // author's min / max.
-  function weirdDecoration(instance, group, random, w) {
+  // author's min / max. The glows take the raw axis: as weird rises they shrink
+  // back towards their default instead of bleeding over the letters.
+  function weirdDecoration(instance, group, random, w, rawW) {
     if (!(w > 0) || !instance || group !== 'edge') return instance;
     const p = instance.params || (instance.params = {});
     const set = (key, v) => {
@@ -627,10 +639,12 @@
         set('width', num('width', 3) * (1 + w));
         break;
       case 'neonGlow':
-      case 'innerGlow':
-        set('radius', num('radius', 18) * (1 + 0.8 * w));
-        set('intensity', num('intensity', 1) * (1 + 0.8 * w));
+      case 'innerGlow': {
+        const glow = weirdMod.glowScale(rawW == null ? w : rawW);
+        set('radius', num('radius', 18) * glow);
+        set('intensity', num('intensity', 1) * glow);
         break;
+      }
       case 'extrude':
         set('depth', num('depth', 16) * (1 + 1.2 * w));
         if (breaks(random, w)) set('angle', (random() * 2 - 1) * 180);
@@ -653,6 +667,44 @@
         break;
     }
     return instance;
+  }
+
+  // Glow taming for styles that did not come from the generator (the stored
+  // looks and the drawn per-cue looks): as the raw axis rises the neon / inner
+  // glow shrink with `glowScale`, and from raw 0.3 the stack gains a palette
+  // outline when it carries no outline / shadow to keep the letters separated.
+  // Idempotent per instance object, so applying it at several boundaries (look
+  // composition, cue looks, automatic direction) scales each stack only once.
+  const tamedGlow = new WeakSet();
+
+  function tameGlow(style, rawW) {
+    if (!style || !(Number(rawW) > 0)) return style;
+    const scale = weirdMod.glowScale(rawW);
+    const single = !Array.isArray(style.edge) && style.edge && typeof style.edge === 'object';
+    const edges = Array.isArray(style.edge) ? style.edge : single ? [style.edge] : [];
+    let hasGlow = false;
+    let hasOutline = false;
+    for (const instance of edges) {
+      if (!instance || !instance.type) continue;
+      if (instance.type === 'neonGlow' || instance.type === 'innerGlow') {
+        hasGlow = true;
+        if (tamedGlow.has(instance)) continue;
+        const p = instance.params || (instance.params = {});
+        if (typeof p.radius === 'number') p.radius = clampParam('edge', instance.type, 'radius', p.radius * scale);
+        if (typeof p.intensity === 'number') p.intensity = clampParam('edge', instance.type, 'intensity', p.intensity * scale);
+      } else if (instance.type === 'outline' || instance.type === 'dropShadow') {
+        hasOutline = true;
+      }
+    }
+    if (hasGlow && !hasOutline && Number(rawW) > 0.3) {
+      const outline = { type: 'outline', params: { width: 2, color: null }, enabled: true };
+      if (single) style.edge = [style.edge, outline];
+      else if (Array.isArray(style.edge)) style.edge.push(outline);
+      else style.edge = [outline];
+    }
+    for (const instance of edges) if (instance) tamedGlow.add(instance);
+    if (Array.isArray(style.edge)) for (const instance of style.edge) if (instance) tamedGlow.add(instance);
+    return style;
   }
 
   function pickGenreHero(genre, random) {
@@ -726,7 +778,7 @@
     if (family.accentV != null) accentV = family.accentV;
     // I4 / I3: "backgrounds are calm, text is low-saturation" are premises; the
     // sixth axis drops them. I3 also moves the text hue away from the accent.
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     bgS = bend(bgS, 0.95, w);
     textS = bend(textS, 0.85, w);
     const textHue = (family.textHue != null ? family.textHue : family.accentHue) + 150 * w;
@@ -742,7 +794,7 @@
   }
 
   function paletteFamilyFor(axes, random, allowed) {
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const permitted = Array.isArray(allowed) && allowed.length ? new Set(allowed) : null;
     const entries = Object.entries(PALETTE_FAMILIES)
       // genre-only families open up for a weird look
@@ -795,8 +847,8 @@
     if (ratio < target) {
       // ensureContrast only moves the value; a fully saturated colour (a weird
       // palette can produce one) may already sit at v = 1 and miss the target,
-      // so it is desaturated towards white or black as a last resort. The
-      // floor (3:1) is never dropped.
+      // so it is desaturated towards white or black as a last resort. The target
+      // itself climbs with the weird axis (4.5 -> 7), so the floor climbs too.
       const hsv = color.rgbToHsv(color.parse(colors[2]));
       const white = { h: hsv.h, s: 0, v: 1, a: 1 };
       const black = { h: hsv.h, s: hsv.s, v: 0, a: 1 };
@@ -814,12 +866,46 @@
       }
       colors[2] = best;
     }
+    if (ratio < target) {
+      // Even a pure white / black text cannot clear the target on a background
+      // in the mid value range. Move the background away from the text (its
+      // hue survives; a very light or very dark background also loses
+      // saturation) until the target clears. weird 0 never enters this branch:
+      // the classic 4.5 target is always reachable.
+      const textHsv = color.rgbToHsv(color.parse(colors[2]));
+      const bgHsv = color.rgbToHsv(bg);
+      const direction = textHsv.v >= 0.5 ? -1 : 1; // light text darkens the bg, dark text lightens it
+      let best = colors[0];
+      let bestRatio = ratio;
+      let v = bgHsv.v;
+      let s = bgHsv.s;
+      for (let step = 1; step <= 50 && bestRatio < target; step += 1) {
+        v = clamp01(v + direction * 0.025);
+        // at the value limit the colour also loses saturation, so pure white or
+        // black (and with it any target) is reachable
+        const atEdge = direction > 0 ? v >= 1 - 1e-9 : v <= 1e-9;
+        if (atEdge) s *= 0.85;
+        const candidate = color.hsvToRgb({ h: bgHsv.h, s, v, a: 1 });
+        const next = color.contrastRatio(candidate, color.parse(colors[2]));
+        if (next > bestRatio) {
+          bestRatio = next;
+          best = color.toHex(candidate);
+        }
+      }
+      const resolved = color.rgbToHsv(color.parse(best));
+      colors[0] = best;
+      if (colors[1]) {
+        // the secondary background keeps its offset from the first
+        const second = color.rgbToHsv(color.parse(colors[1]));
+        colors[1] = color.toHex({ ...color.hsvToRgb({ h: second.h, s: second.s, v: clamp01(second.v + (resolved.v - bgHsv.v)), a: 1 }), a: 1 });
+      }
+    }
     return colors;
   }
 
   // a random palette that keeps the mood's character: derived from a matching family
   function generatePalette(random, axes, name, allowed) {
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const s = smartOf(axes);
     const base = paletteFor(axes, random, allowed);
     // subtle variation only: the family harmony must survive. B4: the sixth
@@ -835,7 +921,7 @@
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
       for (const i of [3, 5, 6]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
-    repairContrast(colors, bend(4.5, 3.0, w));
+    repairContrast(colors, weirdMod.paletteContrast(weirdOf(axes)));
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
   }
 
@@ -850,7 +936,7 @@
     const satScale = 1 + (0.9 + random() * 0.3 - 1) * k;
     const lightScale = 1 + (0.94 + random() * 0.16 - 1) * k;
     const next = colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale));
-    repairContrast(next, bend(4.5, 3.0, weirdOf(axes)));
+    repairContrast(next, weirdMod.paletteContrast(weirdOf(axes)));
     return {
       id: `theme_${Math.floor(random() * 1e9).toString(16)}`,
       name: palette.name || 'palette',
@@ -965,7 +1051,7 @@
     const portrait = context.aspect === '9:16';
     const base = portrait ? lerp(104, 58, axes.density) : lerp(134, 78, axes.density);
     // jitter the size per generation so re-rolls do not all land on the same value
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const jitter = w > 0 ? 0.85 - 0.25 * w + random() * (0.3 + 0.7 * w) : 0.85 + random() * 0.3;
     const size = Math.round((base * jitter) / 2) * 2;
     let weight = genre && genre.fonts && genre.fonts.weight ? genre.fonts.weight : axes.softness < 0.4 ? 700 : 400;
@@ -1014,7 +1100,7 @@
         : { kind: 'palette', index: 2 },
       stroke: { kind: 'palette', index: 4 },
     };
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     if (!(w > 0) || random() >= w) return base;
     // B6 / H5: the fill may leave the text role and the 2 -> 3 gradient, as
     // long as every colour it uses still reads against the background
@@ -1065,7 +1151,7 @@
     const density = axes.density;
     const speed = axes.speed;
     const params = { color: null };
-    const w = weirdOf(axes);
+    const w = bgWeirdOf(axes);
     if (type === 'pattern') {
       // backdrop patterns cycle through the 400+ kind library (pattern-variants)
       // so a per-cue run of clips never shows the same look twice; without an
@@ -1193,7 +1279,7 @@
   // and the palette, all drawn from the axes. `coverage` is the share of the
   // frame the planes paint (the weird axis).
   function splitSpec(axes, random, palette, coverage, cuts) {
-    const w = weirdOf(axes);
+    const w = bgWeirdOf(axes);
     const layouts =
       w <= 0.3
         ? ['halves', 'diagonal', 'bands', 'thirds', 'grid']
@@ -1245,9 +1331,15 @@
     const s = smartOf(axes);
     const transition =
       s > 0 ? smartness.pickWeighted(random, 'transition', ['wipe', 'scale', 'rotate', 'iris', 'cut'], s) : pick(random, ['wipe', 'scale', 'rotate', 'iris']);
-    const mode = s > 0 ? smartness.pickWeighted(random, 'backdropMotion', BACKDROP_MOTIONS, s) : pick(random, BACKDROP_MOTIONS);
+    // a backdrop that is fully on (w > 0.5) stops holding still and starts
+    // answering the text: `sync` is the amplitude of the per-kick bounce the
+    // renderer adds on top of the mode (absent while w is 0, so saved clips
+    // keep their look)
+    const modes = w > 0.5 ? BACKDROP_MOTIONS.filter((mode) => mode !== 'still') : BACKDROP_MOTIONS;
+    const mode = s > 0 ? smartness.pickWeighted(random, 'backdropMotion', modes, s) : pick(random, modes);
     const duration = s > 0 ? pick(random, [0.2, 0.35, 0.6]) : 0.35;
     const motion = { mode, pulse: round(0.03 * (1 + w), 3), drift: round(0.012 * (1 + w), 3), transition, duration };
+    if (w > 0) motion.sync = round(0.05 + 0.10 * w, 3);
     if (mode === 'accent') motion.every = pick(random, [2, 4]);
     if (mode === 'swell' || mode === 'sway') motion.every = pick(random, [4, 8, 16]);
     if (mode === 'sway') motion.sway = round(0.015 + 0.03 * w * random(), 3);
@@ -1261,7 +1353,7 @@
     const colors = palette.colors;
     const overrides = genre && genre.clips ? genre.clips[kind] : null;
     if (kind === 'background') {
-      const w = weirdOf(axes);
+      const w = bgWeirdOf(axes);
       // B10: a weird background may be one of the extended primitives instead
       // of the flat noise gradient (the genre's explicit type list wins)
       if (options && options.weirdBg && w > 0 && !(overrides && overrides.types)) {
@@ -1318,7 +1410,7 @@
         if (Array.isArray(values) && values.length) params[key] = pick(random, values);
       }
     }
-    const w = weirdOf(axes);
+    const w = bgWeirdOf(axes);
     const rawPalette = options && options.palette;
     const paletteColors = Array.isArray(rawPalette)
       ? rawPalette
@@ -1384,7 +1476,7 @@
     if (!clip || !to.length) return null;
     const from = colorsOf(opts.from);
     const axes = normalizeAxes(opts.axes);
-    const w = weirdOf(axes);
+    const w = bgWeirdOf(axes);
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
     const random = rng.rngFor(seed, 'clip-colors', kind || 'backdrop');
     const walk = (node) => {
@@ -1600,7 +1692,7 @@
     return null;
   }
 
-  function enforceReadability(style, palette, random, w) {
+  function enforceReadability(style, palette, random, w, rawW) {
     const shape = style.bgShape;
     if (!shape || !shape.type || shape.type === 'none') return;
     const params = shape.params || (shape.params = {});
@@ -1612,7 +1704,10 @@
     if (!fgHex) return;
     const ratio = (a, b) => color.contrastRatio(color.parse(a), color.parse(b));
     const worst = Math.min(...bgColors.map((hex) => ratio(fgHex, hex || '#000000')));
-    if (worst >= 3) return;
+    // the minimum the auto-contrast aims for follows the weird axis (raw 1
+    // demands 4.5), because later in the run the palette contrast also climbs
+    const floor = 3 + 1.5 * (Number.isFinite(Number(rawW)) ? clamp01(rawW) : 0);
+    if (worst >= floor) return;
     const options = [2, 4];
     let best = null;
     let bestRatio = worst;
@@ -1625,7 +1720,7 @@
       }
     }
     if (best != null) style.color = { ...(style.color || {}), fill: { kind: 'palette', index: best } };
-    if (bestRatio < 3) params.fgAutoContrast = true;
+    if (bestRatio < floor) params.fgAutoContrast = true;
     // an enclose background must not fight text-shaping edges; a weird look may
     // keep them (I14)
     if (Array.isArray(style.edge) && !(random && breaks(random, w, 0.7))) {
@@ -1635,7 +1730,7 @@
   }
 
   function applyGenreBackground(style, genre, axes, random, palette, forced) {
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const config = genre && genre.bg ? genre.bg : null;
     // G9: a weird look grows a text background more often
     const chance = (config && config.chance != null ? Number(config.chance) : 0.08 + axes.density * 0.22) + 0.5 * w;
@@ -1788,7 +1883,7 @@
     const opts = options || {};
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
     const axes = normalizeAxes(opts.axes || (genre && genre.axes));
-    const w = weirdOf(axes);
+    const w = textWeirdOf(axes);
     const emphasis = !!opts.emphasis;
     if (emphasis) axes.energy = clamp01(axes.energy + 0.2);
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
@@ -1878,7 +1973,7 @@
     applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg');
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
-    enforceReadability(style, palette.colors, random, w);
+    enforceReadability(style, palette.colors, random, w, weirdOf(axes));
     return {
       style,
       axes,
@@ -1937,7 +2032,11 @@
     contextFor,
     contextForCue,
     weirdOf,
+    textWeirdOf,
+    bgWeirdOf,
     projectWeird,
+    tameGlow,
+    repairContrast,
     weirdPalette,
     weirdBeatHold,
     weirdFont,

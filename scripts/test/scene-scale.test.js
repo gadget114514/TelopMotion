@@ -13,6 +13,7 @@ const ROOT = path.join(__dirname, '..', '..');
 const rng = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js'));
 const projectApi = require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js'));
 const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
+const weird = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js'));
 
 // a linear stand-in for the font layout: every metric is proportional to the
 // requested size, exactly like the real metrics, so scaling is observable
@@ -48,7 +49,7 @@ function layoutStub(text, style, fonts, options) {
 }
 
 global.window = global;
-global.SA = { rng, project: projectApi, color, lyricsFont: { layoutText: layoutStub } };
+global.SA = { rng, project: projectApi, color, weird, lyricsFont: { layoutText: layoutStub } };
 require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'scene.js'));
 const sceneApi = global.SA.lyricsScene;
 

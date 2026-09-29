@@ -153,7 +153,7 @@ SA.lyricsScene = (() => {
     // with maxWidth Infinity so the chosen wrap survives.
     const frameW = output.width * scale;
     const frameH = output.height * scale;
-    const weird = Math.max(0, Math.min(1, Number(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0) || 0));
+    const weird = SA.weird.text(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0);
     const maxHeightBase = textStyle.maxHeight > 0 ? Number(textStyle.maxHeight) : 0.8;
     const limitHRatio = maxHeightBase + (Math.max(maxHeightBase, 1.2) - maxHeightBase) * weird;
     const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 && textStyle.maxWidth <= 1 ? textStyle.maxWidth : 0.94) * frameW;

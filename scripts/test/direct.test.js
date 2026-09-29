@@ -21,6 +21,7 @@ const SA = {
   rng: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js')),
   color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
+  weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
   textflow: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'textflow.js')),
   project: require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js')),
   fillers: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fillers.js')),
@@ -121,6 +122,43 @@ test('a weird run leaves the user background alone and keeps the background calm
   assert.ok(['gradient', 'noiseGradient', 'solid'].includes(bg[0].spec.type), `bg type ${bg[0].spec.type}`);
   // no weird background primitive replaced it
   assert.ok(!['tunnel', 'rays', 'fractalNoise', 'perspectiveGrid'].includes(bg[0].spec.type));
+});
+
+test('the backdrop channel saturates at raw 0.2 (bg = 0.5): mid clips span cue to cue', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.2 } });
+  assert.equal(ctx.wb, 0.5, 'bg(0.2) = 0.5');
+  assert.ok(Math.abs(ctx.w - 0.14) < 1e-9, `text weird ${ctx.w} is tamed`);
+  SA.direct.run(doc, ctx);
+  const mid = doc.clips.filter((clip) => clip.trackId === 'mid');
+  assert.ok(mid.length >= 2, `mid clips ${mid.length}`);
+  for (const clip of mid) {
+    const plane = clip.spec.params.list[0];
+    assert.equal(plane.type, 'split');
+    assert.equal(plane.params.coverage, 0.5, 'coverage follows the backdrop channel');
+    assert.equal(clip.opacity, 1);
+    assert.equal(clip.fadeIn, 0);
+    assert.equal(clip.fadeOut, 0);
+    assert.ok(clip.spec.params.animate.sync > 0, 'a fully covered mid layer answers the text');
+  }
+  // spanning: the first starts at 0 and the last reaches the end of the song
+  assert.ok(mid.find((clip) => clip.start === 0), 'the first clip starts at 0');
+  const total = Math.max(...doc.script.cues.map((cue) => cue.end));
+  const last = mid.reduce((max, clip) => Math.max(max, clip.end), 0);
+  assert.equal(last, total);
+  // and a figure clip already exists on the figure track
+  const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
+  assert.ok(doc.clips.some((clip) => clip.trackId === figureTrack.id), 'figure clips open with the backdrop channel');
+});
+
+test('the text size band follows the tamed text channel, not the raw axis', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const tamed = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 } });
+  const half = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.5 } });
+  // weird 1 draws the band of the old 0.7
+  assert.ok(Math.abs(tamed.w - 0.7) < 1e-9);
+  assert.ok(tamed.themeStyle.text.size <= 124 + 80 * 0.7);
+  assert.ok(half.w < tamed.w);
 });
 
 test('w=0 does not use the rhythm plan', () => {

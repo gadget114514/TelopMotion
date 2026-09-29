@@ -171,7 +171,7 @@ test('weird 0 is byte-identical to the classic draw for every generator', () => 
   }
 });
 
-test('the weird palette raises text saturation and keeps a 3:1 floor', () => {
+test('the weird palette raises text saturation and lifts the contrast target', () => {
   const sample = (weird) => {
     let saturation = 0;
     let worst = Infinity;
@@ -186,7 +186,8 @@ test('the weird palette raises text saturation and keeps a 3:1 floor', () => {
   const plain = sample(0);
   const odd = sample(1);
   assert.ok(odd.saturation > plain.saturation * 2, `text saturation ${odd.saturation} vs ${plain.saturation}`);
-  assert.ok(odd.worst >= 3, `weird contrast ${odd.worst}`);
+  // the palette contrast climbs to 7:1 at raw 1 instead of falling to 3:1
+  assert.ok(odd.worst >= 7, `weird contrast ${odd.worst}`);
   assert.ok(plain.worst >= 4.5, `classic contrast ${plain.worst}`);
 });
 
@@ -196,7 +197,7 @@ test('a weird look lets shadows leave the dark tone', () => {
     let darkStroke = 0;
     let light = 0;
     let total = 0;
-    for (let seed = 1; seed <= 60; seed += 1) {
+    for (let seed = 1; seed <= 500; seed += 1) {
       const style = moods.generate({ axes: { ...axes, weird }, seed, context: PLAIN_CONTEXT }).style;
       const dark = String(style.palette.colors[4] || '').toLowerCase();
       for (const edge of style.edge || []) {
@@ -207,13 +208,15 @@ test('a weird look lets shadows leave the dark tone', () => {
         if (color.rgbToHsv(color.parse(edge.params.color)).v >= 0.5) light += 1;
       }
     }
-    return { darkStroke, light, total };
+    return { darkStroke, light, total, rate: darkStroke / Math.max(1, total) };
   };
   const plain = sample(0);
   const odd = sample(1);
   assert.ok(plain.total > 0 && odd.total > 0, 'shadow edges were drawn');
   assert.ok(plain.darkStroke > 0, 'the classic pool may fall back to the dark stroke');
-  assert.equal(odd.darkStroke, 0, 'a weird pool never falls back to the dark stroke');
+  // the tamed text channel keeps a 30% dark fallback at raw 1, so the weird
+  // pool leaves the dark tone far more often than the classic one
+  assert.ok(odd.rate < plain.rate, `weird dark rate ${odd.rate} vs classic ${plain.rate}`);
   assert.ok(odd.light > 0, 'a weird look draws bright / coloured shadows');
 });
 
@@ -318,11 +321,23 @@ test('the loosened gates of a weird look', () => {
   assert.equal(moods.allowed('layout', row, { letterCount: 10 }, 'vertical', { ...axes, weird: 1 }), true);
 });
 
-test('a weird look may draw the readable overlap effects but never a dissolve', () => {
+test('the gates of a weird look open at raw >= threshold/0.7', () => {
+  const axes = { ...PLAIN_AXES, energy: 0.5 };
+  // fontSize: minWeird 0.6 -> opens when text(raw) >= 0.6
+  const fontSize = moods.EXT_TRAITS.hold.fontSize;
+  assert.equal(moods.allowed('hold', fontSize, { letterCount: 5 }, 'horizontal', { ...axes, weird: 0.8 }), false);
+  assert.equal(moods.allowed('hold', fontSize, { letterCount: 5 }, 'horizontal', { ...axes, weird: 1 }), true);
+  // echoTrail: its 0.75 gate sits above the new text maximum (0.7) and can
+  // never open automatically again
+  const echoTrail = moods.EXT_TRAITS.post.echoTrail;
+  assert.equal(moods.allowed('post', echoTrail, { letterCount: 5 }, 'horizontal', { ...axes, weird: 1 }), false);
+});
+
+test('at max weird the automatic picker stays clear of degrade / overlap effects', () => {
   const dissolves = new Set(['noiseDissolve', 'directionalDissolve', 'pixelDissolve', 'burnDissolve', 'halftoneDissolve', 'particleDissolve']);
   let tagged = 0;
   for (let seed = 1; seed <= 40; seed += 1) {
-    const style = moods.generate({ axes: { ...PLAIN_AXES, weird: 0.8 }, seed, context: PLAIN_CONTEXT }).style;
+    const style = moods.generate({ axes: { ...PLAIN_AXES, weird: 1 }, seed, context: PLAIN_CONTEXT }).style;
     for (const [group, instance] of instancesOf(style)) {
       assert.ok(!dissolves.has(instance.type), `${group}.${instance.type} leaked into a weird draw`);
       const descriptor = fx.get(group, instance.type);
@@ -333,7 +348,9 @@ test('a weird look may draw the readable overlap effects but never a dissolve', 
       assert.ok(moods.WEIRD_TAG_OK.has(instance.type), `${group}.${instance.type} is not a readable overlap effect`);
     }
   }
-  assert.ok(tagged > 0, 'no WEIRD_TAG_OK effect was drawn in 40 seeds');
+  // the relaxation threshold (0.75) is above text(1) = 0.7, so no degrade or
+  // overlap effect reaches an automatic draw any more
+  assert.equal(tagged, 0, 'degrade / overlap effects are past the new axis maximum');
 });
 
 test('a weird background clip rolls an extended primitive', () => {
@@ -345,6 +362,22 @@ test('a weird background clip rolls an extended primitive', () => {
   // weird 0 still rolls the classic noise gradient / gradient / solid set
   const plain = moods.rerollClipSpec('background', { axes: { ...PLAIN_AXES, weird: 0 }, seed: 1 });
   assert.ok(['noiseGradient', 'gradient', 'solid'].includes(plain.spec.type));
+});
+
+test('the backdrop channel saturates at raw 0.4', () => {
+  const plane = (weird) => {
+    const result = moods.rerollClipSpec('backdrop', { axes: { ...PLAIN_AXES, weird }, seed: 3 });
+    assert.ok(result && result.spec.type === 'combo', 'a covered mid clip');
+    return result.spec.params.list[0];
+  };
+  // raw 0.2 -> bg 0.5, raw 0.4 -> a fully covered frame with text sync
+  assert.equal(plane(0.2).params.coverage, 0.5);
+  assert.equal(plane(0.4).params.coverage, 1);
+  const full = moods.rerollClipSpec('backdrop', { axes: { ...PLAIN_AXES, weird: 0.4 }, seed: 3 });
+  assert.ok(full.spec.params.animate.sync > 0, `sync ${full.spec.params.animate.sync}`);
+  // weird 0 keeps the classic two colours and no animate block
+  const zero = moods.rerollClipSpec('backdrop', { axes: { ...PLAIN_AXES, weird: 0 }, seed: 3 });
+  assert.notEqual(zero.spec.type, 'combo');
 });
 
 test('weirdPalette shifts the hues and keeps the text readable', () => {
@@ -364,14 +397,18 @@ test('weirdPalette shifts the hues and keeps the text readable', () => {
   assert.equal(moods.weirdPalette(rng.mulberry32(1), { colors: ['#000000', '#111111', '#ffffff'] }, 0), null);
 });
 
-test('weirdDecoration exaggerates an edge but stays inside its range', () => {
+test('weirdDecoration exaggerates an edge but tames the glow', () => {
   const outline = moods.weirdDecoration({ type: 'outline', params: { width: 3 } }, 'edge', rng.mulberry32(1), 1);
   assert.ok(outline.params.width > 3 && outline.params.width <= 20, `width ${outline.params.width}`);
   const wide = moods.weirdDecoration({ type: 'outline', params: { width: 18 } }, 'edge', rng.mulberry32(2), 1);
   assert.ok(wide.params.width <= 20, `clamped width ${wide.params.width}`);
-  const glow = moods.weirdDecoration({ type: 'neonGlow', params: { radius: 18, intensity: 1 } }, 'edge', rng.mulberry32(3), 1);
-  assert.ok(glow.params.radius > 18 && glow.params.radius <= 80, `radius ${glow.params.radius}`);
-  assert.ok(glow.params.intensity > 1 && glow.params.intensity <= 3, `intensity ${glow.params.intensity}`);
+  // the glows shrink with the raw axis (they no longer bleed over the letters)
+  const glow0 = moods.weirdDecoration({ type: 'neonGlow', params: { radius: 18, intensity: 1 } }, 'edge', rng.mulberry32(3), 0.7, 0);
+  assert.equal(glow0.params.radius, 18, 'raw 0 leaves the glow alone');
+  assert.equal(glow0.params.intensity, 1);
+  const glow1 = moods.weirdDecoration({ type: 'neonGlow', params: { radius: 18, intensity: 1 } }, 'edge', rng.mulberry32(3), 0.7, 1);
+  assert.ok(Math.abs(glow1.params.radius - 18 * 0.55) < 1e-9, `radius ${glow1.params.radius}`);
+  assert.ok(Math.abs(glow1.params.intensity - 0.55) < 1e-9, `intensity ${glow1.params.intensity}`);
   // weird 0 is untouched and consumes no random
   const untouched = moods.weirdDecoration({ type: 'outline', params: { width: 3 } }, 'edge', rng.mulberry32(4), 0);
   assert.deepEqual(untouched.params, { width: 3 });
@@ -380,15 +417,47 @@ test('weirdDecoration exaggerates an edge but stays inside its range', () => {
   assert.deepEqual(other.params, { width: 3 });
 });
 
-test('looks.weightFor prefers the weirder look when the target is weird', () => {
+test('tameGlow is a no-op at 0 and separates a bare glow with an outline', () => {
+  const zero = { edge: [{ type: 'neonGlow', params: { radius: 40, intensity: 2 }, enabled: true }] };
+  assert.equal(moods.tameGlow(zero, 0), zero);
+  assert.deepEqual(zero.edge[0].params, { radius: 40, intensity: 2 }, 'raw 0 scales nothing');
+  const style = { edge: [{ type: 'neonGlow', params: { radius: 40, intensity: 2 }, enabled: true }] };
+  moods.tameGlow(style, 1);
+  assert.ok(Math.abs(style.edge[0].params.radius - 40 * 0.55) < 1e-9, `radius ${style.edge[0].params.radius}`);
+  assert.ok(Math.abs(style.edge[0].params.intensity - 2 * 0.55) < 1e-9, `intensity ${style.edge[0].params.intensity}`);
+  assert.equal(style.edge.length, 2, 'the outline joins the stack');
+  assert.equal(style.edge[1].type, 'outline');
+  assert.equal(style.edge[1].params.width, 2);
+  assert.equal(style.edge[1].params.color, null);
+  assert.equal(style.edge[1].enabled, true);
+  // a shadow already separates the letters: no outline is added
+  const shadowed = { edge: [{ type: 'innerGlow', params: { radius: 30, intensity: 1 } }, { type: 'dropShadow', params: {} }] };
+  moods.tameGlow(shadowed, 1);
+  assert.ok(shadowed.edge[0].params.radius < 30);
+  assert.equal(shadowed.edge.length, 2);
+  // below raw 0.3 the glow is tamed but no outline appears
+  const soft = { edge: [{ type: 'innerGlow', params: { radius: 30, intensity: 1 } }] };
+  moods.tameGlow(soft, 0.2);
+  assert.ok(soft.edge[0].params.radius < 30);
+  assert.equal(soft.edge.length, 1);
+  // taming the same instance twice does not compound the scale
+  const once = soft.edge[0].params.radius;
+  moods.tameGlow(soft, 1);
+  assert.equal(soft.edge[0].params.radius, once, 'idempotent per instance');
+});
+
+test('looks.weightFor prefers the look nearest the tamed weird target', () => {
   const axes = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 1 };
   const base = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5 };
   const entry = (n, weird) => ({ n, axes: { ...base, weird }, motion: { norm: looks.motionTarget(axes) }, themes: [] });
-  const weird = entry(1, 1);
+  // the target is read through text(), so raw 1 wants a look classified ~0.7
+  const mapped = entry(1, 0.7);
   const mid = entry(2, 0.5);
-  const calm = entry(3, 0);
-  assert.ok(looks.weightFor(weird, { axes }) > looks.weightFor(mid, { axes }));
-  assert.ok(looks.weightFor(mid, { axes }) > looks.weightFor(calm, { axes }));
+  const over = entry(3, 1);
+  const calm = entry(4, 0);
+  assert.ok(looks.weightFor(mapped, { axes }) > looks.weightFor(mid, { axes }));
+  assert.ok(looks.weightFor(mid, { axes }) > looks.weightFor(over, { axes }));
+  assert.ok(looks.weightFor(over, { axes }) > looks.weightFor(calm, { axes }));
   // the motion target also rises with the axis
   assert.ok(looks.motionTarget(axes) > looks.motionTarget({ ...axes, weird: 0 }));
 });

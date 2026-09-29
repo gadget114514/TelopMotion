@@ -807,6 +807,21 @@
     else if (mode === 'accent') pulse = 1 + amount * 1.6 * Math.exp(-group * every * 3.5);
     else if (mode === 'swell') pulse = 1 + amount * 1.2 * (0.5 - 0.5 * Math.cos(TAU * group));
     else if (mode === 'sway') sway = num(motion.sway, 0.03) * Math.sin(TAU * group);
+    // text kicks: every `kicks` time (a cue start or a rhythm cut) adds a short
+    // decaying bounce on top of the mode, so the mid layer answers the lyrics.
+    // `sync` is absent on saved clips, which keeps their draw unchanged.
+    let kick = 0;
+    const sync = num(motion.sync, 0);
+    if (sync > 0 && Array.isArray(opts.kicks)) {
+      for (const at of opts.kicks) {
+        const dt = time - num(at, 0);
+        if (dt < 0) continue;
+        const decay = Math.exp(-dt * 6);
+        if (decay > kick) kick = decay;
+      }
+    }
+    const kickPulse = sync * kick;
+    pulse += kickPulse;
     // drift is a share of the short side here (the legacy pulse drift stays
     // in its raw units so saved clips keep their look)
     if (mode === 'drift' || mode === 'still') driftAmount *= short * (mode === 'still' ? 0.4 : 1);
@@ -825,6 +840,15 @@
     // reuse it; filler-render always has figures available
     if ((kind === 'wipe' || rotate || scale !== 1 || dx || dy) && figures && typeof figures.transformShapes === 'function') {
       figures.transformShapes(shapes, { originX, originY, scale, dx, dy, rotate });
+    }
+    // the kick also shakes the planes apart: neighbouring planes rotate a hair
+    // in opposite directions so the backdrop flashes with the text
+    if (kickPulse > 0 && figures && typeof figures.transformShapes === 'function') {
+      const spin = 0.6 * kickPulse;
+      for (let i = 0; i < shapes.length; i += 1) {
+        if (!shapes[i]) continue;
+        figures.transformShapes([shapes[i]], { originX, originY, scale: 1, dx: 0, dy: 0, rotate: (i % 2 === 0 ? 1 : -1) * spin });
+      }
     }
     for (const shape of shapes) {
       if (!shape) continue;

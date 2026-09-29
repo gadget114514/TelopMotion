@@ -212,3 +212,46 @@ test('breathe honours the every period', () => {
   const slower = split.regions({ ...params, every: 2 }, ctx({ time: 1, beatPhase: 0.5 })).map((region) => region.points);
   assert.notDeepEqual(slower, flat, 'every 2 is half way through its period');
 });
+
+// --- text kicks (filler-render.animate sync + kicks) -------------------------
+
+test('a text kick swells the clip at the kick and decays after it', () => {
+  const motion = { mode: 'still', drift: 0.02, transition: 'cut', duration: 0.35, sync: 0.15 };
+  const hit = animated(motion, 2, { kicks: [2] });
+  const tail = animated(motion, 2.4, { kicks: [2] });
+  assert.ok(hit.w > 200, `the kick swells (${hit.w})`);
+  assert.ok(tail.w < hit.w, `the kick decays (${tail.w} vs ${hit.w})`);
+  assert.deepEqual(animated(motion, 2, { kicks: [2] }), hit, 'deterministic for one kick');
+  // a kick in the future does not fire early
+  const before = animated(motion, 1.5, { kicks: [2] });
+  const quiet = animated({ ...motion, sync: 0 }, 1.5, { kicks: [2] });
+  assert.deepEqual(before, quiet);
+});
+
+test('a clip without motion.sync ignores its kicks (saved clips unchanged)', () => {
+  const motion = { mode: 'still', drift: 0.02, transition: 'cut', duration: 0.35 };
+  const withKicks = animated(motion, 2, { kicks: [2] });
+  const without = animated(motion, 2);
+  assert.deepEqual(withKicks, without);
+  assert.equal(motion.sync, undefined);
+});
+
+test('a kick rotates the planes apart in opposite directions', () => {
+  const plane = (x) => ({
+    kind: 'convex',
+    points: [{ x, y: 0 }, { x: x + 100, y: 0 }, { x: x + 100, y: 100 }, { x, y: 100 }],
+    color: '#ffffff',
+  });
+  const list = { shapes: [plane(100), plane(300)], texts: [] };
+  fillerRender.animate(list, {
+    motion: { mode: 'still', pulse: 0, drift: 0, transition: 'cut', duration: 0.35, sync: 0.15 },
+    t: 2,
+    clip: { start: 0, end: 8 },
+    bpm: 120,
+    frame: FRAME,
+    kicks: [2],
+  });
+  const edgeAngle = (shape) => Math.atan2(shape.points[1].y - shape.points[0].y, shape.points[1].x - shape.points[0].x);
+  assert.ok(edgeAngle(list.shapes[0]) > 0.05, `the first plane leans one way (${edgeAngle(list.shapes[0])})`);
+  assert.ok(edgeAngle(list.shapes[1]) < -0.05, `the next plane leans the other way (${edgeAngle(list.shapes[1])})`);
+});

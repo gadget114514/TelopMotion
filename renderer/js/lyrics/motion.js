@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -29,7 +29,7 @@
   function keywordMarks(scene, project) {
     if (!keywords || !project || !project.styleMode) return null;
     const axes = project.styleMode.axes || {};
-    const s = keywords.strength(axes.weird);
+    const s = keywords.strength(weird.text(axes.weird));
     if (!(s > 0)) return null;
     const cfg = keywords.listFor(project.styleMode);
     if (!cfg.enabled) return null;

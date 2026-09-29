@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -120,7 +120,8 @@
     const id = opts.id == null ? 'figure' : String(opts.id);
     const random = rng.rngFor(seed, 'figure', id);
     const axes = opts.axes || {};
-    const w = clamp01(axes.weird);
+    // figures are the backdrop side: the channel saturates at raw 0.4
+    const w = weird.bg(axes.weird);
     const s = smartness.smartOf(axes);
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
     const motifPool = w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone');

@@ -9,7 +9,7 @@
     "fill": 17,
     "edge": 41,
     "post": 80,
-    "background": 1450,
+    "background": 1448,
     "repeat": 585
   },
   "repeat": {
@@ -78,10 +78,10 @@
       "fill": 17,
       "edge": 41,
       "post": 80,
-      "background": 1450
+      "background": 1448
     },
-    "total": 1827
+    "total": 1825
   },
-  "total": 2412,
+  "total": 2410,
   "aliases": 2
 }

@@ -893,7 +893,8 @@
   // probability `weird` (0 = the whole song keeps one look, 1 = one per cue,
   // like the FX 800 demo). The draws are seeded, so a seed reproduces them.
   function drawCueLooks(pool, cues, options) {
-    const weird = Math.max(0, Math.min(1, Number(options.axes && options.axes.weird) || 0));
+    const rawWeird = SA.weird.raw(options.axes && options.axes.weird);
+    const weird = SA.weird.text(rawWeird);
     const out = {};
     if (!(weird > 0) || !pool) return out;
     const random = SA.rng.rngFor(options.seed, 'looks', 'weird');
@@ -906,6 +907,7 @@
       if (!entry) return;
       used.add(entry.n);
       const expanded = pool.expand(entry.style);
+      SA.moods.tameGlow(expanded, rawWeird);
       const style = {};
       for (const group of groups) {
         if (expanded[group] !== undefined) style[group] = expanded[group];
