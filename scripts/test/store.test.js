@@ -22,6 +22,7 @@ globalThis.SA.moods = require('../../renderer/js/lyrics/moods.js');
 globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');
 globalThis.SA.random = require('../../renderer/js/lyrics/random.js');
+globalThis.SA.figures = require('../../renderer/js/lyrics/figures.js');
 require('../../renderer/js/studio/store.js');
 const store = globalThis.SA.store;
 
@@ -526,4 +527,31 @@ test('rerollBeat draws the selected beat style in one undo step', () => {
   assert.ok(bag.enter || bag.fill || bag.post || bag.hold || bag.edge, JSON.stringify(bag));
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
+});
+
+test('rerollClip redraws a figure clip with a fresh motif and moves', () => {
+  const doc = fixture();
+  doc.tracks.push({ id: 'fig', kind: 'figure', name: '図形' });
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  doc.clips.push({
+    id: 'fig1',
+    trackId: 'fig',
+    start: 0,
+    end: 4,
+    spec: SA.figures.generate({ span: { start: 0, end: 4 }, axes: { weird: 0.5 }, seed: 1, id: 'fig1' }),
+    opacity: 0.9,
+    fadeIn: 0,
+    fadeOut: 0,
+    colors: null,
+  });
+  store.load(doc);
+  const before = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'fig1').spec);
+  let changed = false;
+  for (let attempt = 0; attempt < 5 && !changed; attempt += 1) {
+    store.commands.rerollClip('fig1');
+    const after = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'fig1').spec);
+    changed = after !== before;
+  }
+  assert.equal(changed, true, 'the figure re-roll changed the spec');
+  assert.equal(store.undo(), true);
 });

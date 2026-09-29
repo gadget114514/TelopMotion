@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'), require('./palette-roles'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility, root.SA.paletteRoles);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod, paletteRoles) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -879,6 +879,157 @@
   function paletteFor(axes, random, allowed) {
     const family = paletteFamilyFor(axes, random, allowed);
     return { id: family.id, name: family.id, colors: paletteColors(family, axes) };
+  }
+
+  // --- fixed palette slots (10 colours) ---------------------------------------
+  // The slot layout is defined in palette-roles: mid A/B/C/D, text fill /
+  // gradient end / edge / text background, figure A/B. C/D sit at the scheme's
+  // complement angles from the background hue, TEXT_BG is the luminance
+  // opposite of TEXT_FILL and FIG_B the hue complement of FIG_A, so contrast
+  // is wired by construction; repairPalette only nudges the leftovers.
+  function schemeFor(random, axes) {
+    const w = textWeirdOf(axes);
+    const candidates =
+      w <= 0.35
+        ? ['tonal', 'analogous']
+        : w >= 0.7
+          ? ['complementary', 'triad', 'splitComplementary', 'neutralAccent']
+          : ['tonal', 'analogous', 'complementary', 'triad', 'splitComplementary'];
+    return random ? pick(random, candidates) : candidates[0];
+  }
+
+  function repairSlotPalette(colors, axes) {
+    const raw = weirdOf(axes);
+    const textTarget = weirdMod.paletteContrast(raw);
+    const backdropTarget = weirdMod.backdropContrast(raw);
+    // the text decides the side: a light text pushes every mid plane dark and
+    // the other way round, so every text pair holds by construction whatever
+    // the hues are; the small plane steps are then trivial
+    const textHsv = color.rgbToHsv(color.parse(colors[4]));
+    const lightText = textHsv.v >= 0.5;
+    const textS = textHsv.s * 0.35;
+    colors[4] = hsvHex(textHsv.h, textS, lightText ? 1 : 0.03);
+    const forceSide = (hex, limit) => {
+      const hsv = color.rgbToHsv(color.parse(hex));
+      return hsvHex(hsv.h, hsv.s, lightText ? Math.min(hsv.v, limit) : Math.max(hsv.v, 1 - limit));
+    };
+    for (const index of [0, 1, 2, 3]) colors[index] = forceSide(colors[index], 0.14);
+    // the figures stay on the same side but further from the extrema, so they
+    // keep a step against both the text and the mid planes
+    for (const index of [8, 9]) {
+      const hsv = color.rgbToHsv(color.parse(colors[index]));
+      colors[index] = hsvHex(hsv.h, hsv.s, lightText ? Math.min(hsv.v, 0.4) : Math.max(hsv.v, 0.6));
+    }
+    colors[1] = color.ensureContrast(colors[1], colors[0], 1.15);
+    colors[3] = color.ensureContrast(colors[3], colors[2], 1.15);
+    for (const index of [8, 9]) {
+      colors[index] = color.ensureContrast(colors[index], colors[4], backdropTarget);
+      if (color.contrastRatio(color.parse(colors[index]), color.parse(colors[4])) < backdropTarget - 1e-6) {
+        colors[index] = color.separateFrom(colors[index], [colors[4]], backdropTarget) || colors[index];
+      }
+      // and a readable step against the plane it sits on
+      colors[index] = color.ensureContrast(colors[index], colors[0], 1.5);
+      if (color.contrastRatio(color.parse(colors[index]), color.parse(colors[0])) < 1.5 - 1e-6) {
+        colors[index] = color.separateFrom(colors[index], [colors[0]], 1.5) || colors[index];
+      }
+      if (color.contrastRatio(color.parse(colors[index]), color.parse(colors[4])) < backdropTarget - 1e-6) {
+        colors[index] = color.ensureContrast(colors[index], colors[4], backdropTarget);
+      }
+    }
+    colors[7] = paletteRoles.luminanceOpposite(colors[4]);
+    colors[7] = color.ensureContrast(colors[7], colors[4], textTarget);
+    if (color.contrastRatio(color.parse(colors[7]), color.parse(colors[4])) < textTarget - 1e-6) {
+      colors[7] = color.separateFrom(colors[7], [colors[4]], textTarget) || colors[7];
+    }
+    // the edge only needs a readable step against the fill and the background
+    colors[6] = color.ensureContrast(colors[6], colors[4], 1.5);
+    colors[6] = color.ensureContrast(colors[6], colors[7], 1.5);
+    if (color.contrastRatio(color.parse(colors[6]), color.parse(colors[7])) < 1.5 - 1e-6) {
+      colors[6] = color.separateFrom(colors[6], [colors[7]], 1.5) || colors[6];
+    }
+    // the gradient end keeps a readable step from the fill
+    colors[5] = color.ensureContrast(colors[5], colors[4], 1.5);
+    if (color.contrastRatio(color.parse(colors[5]), color.parse(colors[4])) < 1.5 - 1e-6) {
+      colors[5] = color.separateFrom(colors[5], [colors[4]], 1.5) || colors[5];
+    }
+    // the text was chosen first, so a later nudge could only have moved the
+    // mids away; one final pass guarantees the floor
+    for (const index of [0, 1]) {
+      if (color.contrastRatio(color.parse(colors[4]), color.parse(colors[index])) < textTarget - 1e-6) {
+        colors[index] = color.ensureContrast(colors[index], colors[4], textTarget);
+        if (color.contrastRatio(color.parse(colors[4]), color.parse(colors[index])) < textTarget - 1e-6) {
+          colors[index] = color.separateFrom(colors[index], [colors[4]], textTarget) || colors[index];
+        }
+      }
+    }
+    return colors;
+  }
+
+  function paletteColors10(family, axes, random) {
+    const base = paletteColors(family, axes);
+    const scheme = schemeFor(random, axes);
+    const angles = paletteRoles.SCHEMES[scheme] || paletteRoles.SCHEMES.tonal;
+    const bgHsv = color.rgbToHsv(color.parse(base[0]));
+    const midS = Math.max(0.35, Math.min(0.8, bgHsv.s));
+    const midC = hsvHex(bgHsv.h + angles[0], midS, clamp01(bgHsv.v + 0.1));
+    const midD = hsvHex(bgHsv.h + angles[1], clamp01(midS * 0.95), clamp01(bgHsv.v - 0.05));
+    const figA = base[5] || base[3];
+    const figHsv = color.rgbToHsv(color.parse(figA));
+    const figB = hsvHex(figHsv.h + 180, figHsv.s, figHsv.v);
+    const colors = [base[0], base[1], midC, midD, base[2], base[3], base[4], paletteRoles.luminanceOpposite(base[2]), figA, figB];
+    repairSlotPalette(colors, axes);
+    return { colors, scheme };
+  }
+
+  function paletteFor10(axes, random, allowed) {
+    const family = paletteFamilyFor(axes, random, allowed);
+    const built = paletteColors10(family, axes, random);
+    return { id: family.id, name: family.id, colors: built.colors, scheme: built.scheme, roles: 2 };
+  }
+
+  // A member of the palette set: the same slots with a relationship-preserving
+  // change (rotate the mid pair, step every hue together, flip the accents) so
+  // any member's text still contrasts any member's mid planes.
+  function variantPalette(base, kind, random, axes) {
+    const colors = (base && Array.isArray(base.colors) ? base.colors : []).slice(0, paletteRoles.SIZE);
+    while (colors.length < paletteRoles.SIZE) colors.push(colors[colors.length - 1] || '#888888');
+    const swap = (a, b) => {
+      const t = colors[a];
+      colors[a] = colors[b];
+      colors[b] = t;
+    };
+    if (kind === 'swapMid') {
+      swap(0, 2);
+      swap(1, 3);
+    } else if (kind === 'hueStep') {
+      const delta = (random() * 2 - 1) * 30 + (random() < 0.5 ? -45 : 45);
+      for (const index of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) colors[index] = paletteRoles.shift(colors[index], delta, 1, 0);
+    } else if (kind === 'accentFlip') {
+      colors[5] = paletteRoles.shift(colors[5], 180, 0.9, 0);
+      colors[7] = paletteRoles.shift(colors[7], 180, 0.9, 0);
+      swap(8, 9);
+    } else {
+      const step = kind === 'lift' ? 0.1 : -0.1;
+      for (const index of [0, 1, 2, 3]) colors[index] = paletteRoles.shift(colors[index], 0, 1, step);
+    }
+    repairSlotPalette(colors, axes || {});
+    return {
+      ...(base || {}),
+      id: `${(base && base.id) || 'palette'}_${kind}`,
+      name: `${(base && (base.name || base.id)) || 'palette'} ${kind}`,
+      colors,
+      scheme: (base && base.scheme) || null,
+      roles: 2,
+    };
+  }
+
+  function generatePaletteSet(random, axes, n, allowed) {
+    const count = Math.max(1, Math.min(4, Number(n) || 3));
+    const base = paletteFor10(axes, random, allowed);
+    const set = [base];
+    const kinds = ['swapMid', 'hueStep', 'accentFlip'];
+    for (let i = 1; i < count; i += 1) set.push(variantPalette(base, kinds[(i - 1) % kinds.length], random, axes));
+    return set;
   }
 
   function shiftColor(hex, hueShift, satScale, lightScale) {
@@ -2116,6 +2267,11 @@
     PALETTE_FAMILIES,
     generate,
     generatePalette,
+    generatePaletteSet,
+    paletteColors10,
+    paletteFor10,
+    variantPalette,
+    schemeFor,
     jitterPalette,
     recolor,
     paletteFor,

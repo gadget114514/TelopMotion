@@ -2116,13 +2116,23 @@ SA.timeline = (() => {
     };
   }
 
-  // "Add text animation track" / "Add figure animation track": one press adds
-  // an empty track of the kind; clips are dragged onto it.
+  // "Add text track": a plain click adds a subtitle track, so cues can be
+  // added / typed on it (the expected behaviour). Shift+click keeps the
+  // clip-based animated-text track.
+  function addSubtitleTrack() {
+    const id = SA.store.commands.addTrack('subtitle');
+    if (!id) return;
+    SA.store.setSelection([`track:${id}`], 'track');
+    SA.studio.toast('studio.toast.subtitleTrack');
+    draw();
+  }
+
   function addAnimationTrack(kind) {
     const id = SA.store.commands.addTrack(kind);
     if (!id) return;
     SA.store.setSelection([`track:${id}`], 'track');
-    SA.studio.toast(kind === 'figure' ? 'studio.toast.figureTrack' : 'studio.toast.textTrack');
+    const toasts = { figure: 'studio.toast.figureTrack', textAnim: 'studio.toast.textTrack', filler: 'studio.toast.fillerTrack' };
+    SA.studio.toast(toasts[kind] || 'studio.toast.textTrack');
     draw();
   }
 
@@ -2323,19 +2333,22 @@ SA.timeline = (() => {
     if (el.zoom) el.zoom.addEventListener('input', () => setZoom(Number(el.zoom.value)));
     if (el.fit) el.fit.addEventListener('click', fit);
     if (el.addCue) el.addCue.addEventListener('click', addCue);
-    if (el.restructure) {
-      el.restructure.addEventListener('click', () => {
-        SA.store.commands.restructureAll();
-        SA.studio.toast('studio.toast.beatsRestructured');
-      });
-    }
     if (el.theme) el.theme.addEventListener('click', () => SA.themes.dialog());
     if (el.marker) el.marker.addEventListener('click', addMarker);
     if (el.addTextTrack) {
-      el.addTextTrack.addEventListener('click', () => addAnimationTrack('textAnim'));
+      // cue-capable subtitle track by default; Shift adds the clip-based
+      // animated-text track
+      el.addTextTrack.title = t('studio.timeline.addTextTrackHint');
+      el.addTextTrack.addEventListener('click', (event) => {
+        if (event && event.shiftKey) addAnimationTrack('textAnim');
+        else addSubtitleTrack();
+      });
     }
     if (el.addFigureTrack) {
       el.addFigureTrack.addEventListener('click', () => addAnimationTrack('figure'));
+    }
+    if (el.addFillerTrack) {
+      el.addFillerTrack.addEventListener('click', () => addAnimationTrack('filler'));
     }
     if (el.addProperty) {
       el.addProperty.addEventListener('click', addPropertyKey);
@@ -2366,6 +2379,7 @@ SA.timeline = (() => {
     el.marker = document.getElementById('tl-marker');
     el.addTextTrack = document.getElementById('tl-add-text-track');
     el.addFigureTrack = document.getElementById('tl-add-figure-track');
+    el.addFillerTrack = document.getElementById('tl-add-filler-track');
     el.prop = document.getElementById('tl-prop');
     el.addProperty = document.getElementById('tl-add-property');
     if (!el.canvas) return;

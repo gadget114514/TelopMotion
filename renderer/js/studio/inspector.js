@@ -411,6 +411,21 @@ SA.inspector = (() => {
     hint.className = 'insp-inherit';
     hint.textContent = t('studio.inspector.cueHint');
     body.appendChild(hint);
+    // the cue's beats as jump buttons: a click selects that beat
+    const cueBeats = (doc.beats[sel.cueId] || []).length ? doc.beats[sel.cueId] : cue && SA.lyricsEngine ? [SA.lyricsEngine.beatForCue(cue)].filter(Boolean) : [];
+    if (cueBeats.length) {
+      const list = document.createElement('div');
+      list.className = 'layer-order';
+      cueBeats.forEach((beat, index) => {
+        const jump = document.createElement('button');
+        jump.type = 'button';
+        jump.className = 'btn btn-mini';
+        jump.textContent = `${index + 1} · ${t(`studio.beat.${beat.kind}`)}`;
+        jump.addEventListener('click', () => selectAt(`cue:${sel.cueId}/beat:${beat.id}`));
+        list.appendChild(jump);
+      });
+      body.appendChild(list);
+    }
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: cue.start }, cue.start, (value) => {
       SA.store.commands.moveCue(sel.cueId, value, { coalesceKey: `cue:${sel.cueId}:start` });
     });
@@ -488,6 +503,11 @@ SA.inspector = (() => {
     button('studio.beat.splitAtPlayhead', () => SA.store.commands.splitBeat(sel.cueId, beat.id, SA.store.state.playhead));
     button('studio.beat.mergeNext', () => SA.store.commands.mergeBeats(sel.cueId, beat.id));
     button('studio.beat.restructureCue', () => SA.store.commands.restructureCue(sel.cueId));
+    // jump to the neighbouring beat inside the same cue
+    const beatList = (doc.beats[sel.cueId] || []).length ? doc.beats[sel.cueId] : cue && SA.lyricsEngine ? [SA.lyricsEngine.beatForCue(cue)].filter(Boolean) : [];
+    const beatIndex = beatList.findIndex((entry) => entry && entry.id === beat.id);
+    if (beatIndex > 0) button('studio.beat.prevBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex - 1].id}`));
+    if (beatIndex >= 0 && beatIndex < beatList.length - 1) button('studio.beat.nextBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex + 1].id}`));
     button('studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id));
     button('studio.inspector.rerollBeatColors', () => {
       const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });

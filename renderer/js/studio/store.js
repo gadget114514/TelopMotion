@@ -1831,7 +1831,7 @@ SA.store = (() => {
     },
     rerollClip(clipId) {
       const clip = findClip(clipId);
-      if (!clip || typeof SA === 'undefined' || !SA.moods || !SA.moods.rerollClipSpec) return;
+      if (!clip || typeof SA === 'undefined' || !SA.moods) return;
       const mode = modeAxes();
       const kind = SA.project.trackKindOf(state.project, clip.trackId);
       dispatch({
@@ -1840,7 +1840,35 @@ SA.store = (() => {
         do(projectDoc) {
           const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
           if (!target) return;
-          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed: Math.floor(Math.random() * 900000) + 1000, genre: mode.genre, usePresets: kind === 'filler' });
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          // a figure clip re-rolls through the figure generator: same span,
+          // fresh motif / sub-beats / moves from the project axes
+          if (kind === 'figure' && SA.figures && typeof SA.figures.generate === 'function') {
+            const beats = [];
+            for (const cue of projectDoc.script.cues || []) {
+              for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+                if (beat.end > target.start && beat.start < target.end) beats.push({ start: beat.start, end: beat.end });
+              }
+            }
+            const params = (target.spec && target.spec.params) || {};
+            const palette = Array.isArray(target.colors) && target.colors.length ? target.colors : (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+            target.spec = SA.figures.generate({
+              span: { start: target.start, end: target.end },
+              beats,
+              axes: mode.axes,
+              seed,
+              id: target.id,
+              palette,
+              density: params.density,
+              scale: params.scale,
+              x: params.x,
+              y: params.y,
+              color: params.color,
+              cuts: params.cuts,
+            });
+            return;
+          }
+          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed, genre: mode.genre, usePresets: kind === 'filler' });
           if (!result) return;
           if (result.spec) target.spec = result.spec;
           if (result.colors) target.colors = result.colors;

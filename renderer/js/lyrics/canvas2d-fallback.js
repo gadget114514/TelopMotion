@@ -48,7 +48,8 @@ SA.canvas2dFallback = (() => {
     function renderFrame(t) {
       resize(state.width, state.height);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = '#0b0d12';
+      // no background configured = chroma key green (same as the WebGL engine)
+      ctx.fillStyle = '#00b140';
       ctx.fillRect(0, 0, state.width, state.height);
       const frame = { cues: [], time: t };
       const project = state.project;

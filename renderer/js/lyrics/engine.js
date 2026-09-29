@@ -3,7 +3,9 @@ window.SA = window.SA || {};
 SA.lyricsEngine = (() => {
   'use strict';
 
-  const CLEAR_COLOR = [0.043, 0.051, 0.070];
+  // No background configured = chroma key green, so the lyrics can be keyed
+  // out in an editor; a background clip / layer paints over it.
+  const CLEAR_COLOR = [0, 0.6902, 0.251];
   // Backdrop shapes stand apart from the lyrics by at least this contrast ratio
   // (WCAG large text); below it the two read as the same colour. The ratio
   // climbs with the raw weird axis (3 -> 5.5), so a weirder backdrop separates

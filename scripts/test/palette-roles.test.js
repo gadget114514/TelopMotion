@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 // The 10 fixed palette slots and their contrast contract. `palette-roles` is
 // the single place that says which layer uses which colour; the generators
@@ -25,7 +25,7 @@ test('the slot table is complete and frozen', () => {
   for (const [a, b, kind] of roles.CONTRAST) {
     assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS).includes(a), `slot ${a}`);
     assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS).includes(b), `slot ${b}`);
-    assert.ok(['text', 'backdrop', 'soft'].includes(kind), kind);
+    assert.ok(['text', 'backdrop', 'soft', 'neighbour'].includes(kind), kind);
   }
 });
 
@@ -35,6 +35,7 @@ test('ratioFor climbs with the weird axis', () => {
   assert.equal(roles.ratioFor('backdrop', 0), 3);
   assert.equal(roles.ratioFor('backdrop', 1), 5.5);
   assert.equal(roles.ratioFor('soft', 1), 1.5);
+  assert.equal(roles.ratioFor('neighbour', 1), 1.15);
 });
 
 test('upgrade maps a legacy 6-colour palette onto the slots and is idempotent', () => {
@@ -100,3 +101,5 @@ test('the luminance opposite keeps the text readable', () => {
   const dark = roles.luminanceOpposite('#101018');
   assert.ok(color.contrastRatio(color.parse('#101018'), color.parse(dark)) >= 4.5, `dark vs ${dark}`);
 });
+
+

@@ -51,16 +51,16 @@
     [SLOT.MID_B, SLOT.TEXT_FILL, 'text'],
     [SLOT.MID_C, SLOT.TEXT_FILL, 'backdrop'],
     [SLOT.MID_D, SLOT.TEXT_FILL, 'backdrop'],
-    [SLOT.MID_A, SLOT.MID_B, 'soft'],
-    [SLOT.MID_C, SLOT.MID_D, 'soft'],
+    [SLOT.MID_A, SLOT.MID_B, 'neighbour'],
+    [SLOT.MID_C, SLOT.MID_D, 'neighbour'],
     [SLOT.TEXT_FILL, SLOT.TEXT_FILL2, 'soft'],
     [SLOT.TEXT_FILL, SLOT.TEXT_EDGE, 'soft'],
     [SLOT.TEXT_FILL, SLOT.TEXT_BG, 'text'],
     [SLOT.TEXT_EDGE, SLOT.TEXT_BG, 'soft'],
     [SLOT.FIG_A, SLOT.TEXT_FILL, 'backdrop'],
     [SLOT.FIG_B, SLOT.TEXT_FILL, 'backdrop'],
-    [SLOT.FIG_A, SLOT.MID_A, 'soft'],
-    [SLOT.FIG_B, SLOT.MID_A, 'soft'],
+    [SLOT.FIG_A, SLOT.MID_A, 'neighbour'],
+    [SLOT.FIG_B, SLOT.MID_A, 'neighbour'],
   ];
 
   function clamp01(value) {
@@ -73,6 +73,10 @@
     const w = clamp01(weirdRaw);
     if (kind === 'text') return 4.5 + 2.5 * w;
     if (kind === 'backdrop') return 3 + 2.5 * w;
+    // two planes of the same layer only need a readable step: a stronger
+    // demand fights the text contrast when both planes must stay dark (or
+    // light) under a saturated text colour
+    if (kind === 'neighbour') return 1.15;
     return 1.5;
   }
 
@@ -219,27 +223,39 @@
       list.length = 0;
       list.push(...upgraded);
     }
-    if (typeof repairContrast === 'function') {
-      repairContrast(list, ratioFor('text', weirdRaw));
-    }
-    for (const [left, right, kind] of CONTRAST) {
-      const target = ratioFor(kind, weirdRaw);
-      const a = list[left];
-      const b = list[right];
-      if (contrast(a, b) >= target - 1e-6) continue;
-      // never move TEXT_FILL: the text side stays, the background / figure
-      // side moves. A figure always moves before a mid plane so the mid pairs
-      // keep the order they were repaired in.
-      let moving = left;
-      if (right !== SLOT.TEXT_FILL) {
-        moving = right;
-        if (MID_SLOTS.includes(right) && FIG_SLOTS.includes(left)) moving = left;
-      }
-      if (moving === SLOT.TEXT_FILL) continue;
-      const fixed = list[moving === left ? right : left];
-      let next = color.ensureContrast(list[moving], fixed, target);
+    if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw));
+    const move = (index, fixed, target) => {
+      let next = color.ensureContrast(list[index], fixed, target);
       if (contrast(next, fixed) < target - 1e-6) next = color.separateFrom(next, [fixed], target) || next;
-      list[moving] = next;
+      list[index] = next;
+    };
+    // four passes: the background / figure side moves first, then the mid
+    // pair, and the text fill itself as the last resort (a mid-grey text
+    // cannot clear ratio 7 against any background)
+    for (let pass = 0; pass < 4; pass += 1) {
+      let moved = false;
+      for (const [left, right, kind] of CONTRAST) {
+        const target = ratioFor(kind, weirdRaw);
+        if (contrast(list[left], list[right]) >= target - 1e-6) continue;
+        if (pass < 2) {
+          let moving = left;
+          if (right !== SLOT.TEXT_FILL) {
+            moving = right;
+            if (MID_SLOTS.includes(right) && FIG_SLOTS.includes(left)) moving = left;
+          }
+          if (moving === SLOT.TEXT_FILL) continue;
+          move(moving, list[moving === left ? right : left], target);
+        } else if (pass === 2) {
+          const moving = right === SLOT.TEXT_FILL ? left : right;
+          if (moving === SLOT.TEXT_FILL) continue;
+          move(moving, list[moving === left ? right : left], target);
+        } else {
+          const moving = left === SLOT.TEXT_FILL ? left : right === SLOT.TEXT_FILL ? right : right;
+          move(moving, list[moving === left ? right : left], target);
+        }
+        moved = true;
+      }
+      if (!moved) break;
     }
     return list;
   }
