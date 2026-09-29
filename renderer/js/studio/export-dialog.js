@@ -148,7 +148,8 @@ SA.exportDialog = (() => {
         },
       });
       if (result.ok) {
-        SA.store.markClean();
+        // exporting a video is not saving the project: the dirty flag (and with
+        // it autosave) must keep tracking unsaved edits
         SA.platform.recent.add({ name: doc.meta.title || 'Project', path: result.filePath, updatedAt: new Date().toISOString() }).catch(() => {});
       }
       return result;
