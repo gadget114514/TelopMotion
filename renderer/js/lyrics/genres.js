@@ -652,6 +652,38 @@
     return (id && BY_ID.get(id)) || null;
   }
 
+  // Each genre carries its seven axes as one 4-byte integer: 4 bits per axis
+  // (0..15 = round(value * 15)), in the order below, most significant nibble
+  // first, so the hex form reads speed-energy-softness-density-brightness-weird-
+  // smartness (e.g. 0x5A3B2C1). The top nibble is left 0 (reserved). Genres only
+  // list the five placed axes; weird / smartness fall back to the UI defaults
+  // (moods.js WEIRD_DEFAULT, smartness.js SMART_DEFAULT).
+  const CODE_AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness'];
+  const CODE_DEFAULTS = { weird: 0.7, smartness: 0.6 };
+
+  function encodeAxes(axes) {
+    let code = 0;
+    for (const axis of CODE_AXES) {
+      let value = axes && Number.isFinite(Number(axes[axis])) && axes[axis] !== '' && axes[axis] != null ? Number(axes[axis]) : CODE_DEFAULTS[axis] == null ? 0.5 : CODE_DEFAULTS[axis];
+      value = Math.max(0, Math.min(1, value));
+      code = code * 16 + Math.round(value * 15);
+    }
+    return code >>> 0;
+  }
+
+  // -> { speed..smartness } quantized back to 0..1 (steps of 1/15)
+  function decodeAxes(code) {
+    let rest = Number(code) >>> 0;
+    const out = {};
+    for (let i = CODE_AXES.length - 1; i >= 0; i -= 1) {
+      out[CODE_AXES[i]] = (rest & 15) / 15;
+      rest >>>= 4;
+    }
+    return out;
+  }
+
+  for (const genre of LIST) genre.code = encodeAxes(genre.axes);
+
   function list() {
     return LIST.map((genre) => ({ ...genre }));
   }
@@ -703,6 +735,9 @@
 
   return {
     LIST,
+    CODE_AXES,
+    encodeAxes,
+    decodeAxes,
     get,
     list,
     randomGenre,
