@@ -184,7 +184,7 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .
   - README は Studio 前提に刷新。動画書き出し（P11）は未実装のため「later phase」と明記し、画像/SRT/プロジェクトの形式のみ記載
   - `npm run dist`（NSIS + Portable, 約115MB）と `dist/win-unpacked` のパッケージ版スモークまで確認
 - **演出改善プラン（11項目）の決定**:
-  - **テキストサイズは倍率で管理し、weird の結果を画面上の比率で読む**: ビート単位の `text.size`（フォント書体のサイズではない）がフレーム短辺の **3%〜120%** に収まるよう、weird が倍率帯を広げる。w=0 は従来の倍率（0.9〜1.15×）のまま完全不変。
+  - **テキストサイズは10段のラダーで管理し、weird の結果を画面上の比率で読む**: ビート単位の `text.size`（フォント書体のサイズではない）が、そのビートの可読下限（`legibility.MIN_SIZE_RATIO` 0.045 × フレーム高、最低24px）から、そのビートの行がブロック上限（`text.maxWidth` × 枠幅、`text.maxHeight` × 枠高）いっぱいに収まる「全画面」サイズまでの10段を取る。変化値 `v = 1 − (1 − weird)(1 − energy)` が次のビートで段を移る確率。0 は曲全体で1つのサイズのまま（従来の倍率変動はラダーに置き換わった）。
   - **折り返しが結果としてのフォントサイズを決める**: ビートごとの行数・`maxWidth`・`fit:'fill'`（fillCoverage）の選択を weird が大きく変え、その折り返しからサイズが決まる。突き抜けは frame-guard が「可視 50% 以上」を保証する。
   - "後景" = **mid（backdrop）トラック**。**背景（bg）はユーザー設定**で自動演出は触れない。mid の画面支配度は weird で決まり、w=1 で 100%。
   - 図形アニメーションは**新トラック `figure`**（後景と字幕の間）。
@@ -440,3 +440,17 @@ Phase 3 の残りのうち、ユーザーがタイムラインから置けるシ
 - テスト: `weird.test.js`（各写像の境界値）、`axes.test.js`（文字 7:1・グローの縮小・tameGlow・ゲート・w=0 不変・split coverage）、`direct.test.js`（wb の全張りとテキスト帯）、`split.test.js`（kick の減衰・無視・面の逆回転）、`motion.test.js`（キーワードの生しきい値）、`scene-scale.test.js`。全 537 件パス。fx400/800 のカタログ再生成は不要だった（weird 0 不変）。
 - 注意: `text(1) = 0.7` のため、旧軸の 0.75 以上にあったゲート（`EXT_TRAITS` の echoTrail / glitchSlice / godRays / lensFlare と degrade/overlap の緩和）は自動抽選では開かない。最大 weird でも自動演出が重なり・溶解系を出さない意図の結果。
 - 検証: `npm run check`（160ファイル）、`npm test`（537件）。`test/distinct-count.*` は `npm run distinct` の再生成（背景 1448 / 合計 2410。weird とは独立）。Electron スモーク（`SA_SMOKE_STUDIO` など）と目視は未実施。
+
+## 追加: フォントサイズの10段ラダーと density → 字間（このコミット）
+
+「画面いっぱいから読める最小までのサイズを10段で行き来し、同じサイズが連続しない。0 では1つのサイズのまま」を自動演出（Auto direct）のサイズ決定にした。字間（density）も同時に軸へ組み込んだ。
+
+- **サイズ範囲**（`direct.sizeRangeFor`）: 下限 = `max(24px, ceil(0.045 × フレーム高))`（`legibility.MIN_SIZE_RATIO`。しきい値ちょうど〜上なので size 警告は出ない）。上限 = そのビートの行がレンダラーのブロック上限（`text.maxWidth` 0.94 × 枠幅、`text.maxHeight` 0.8 × 枠高）に収まる最大サイズ（`textflow.maxSizeForLines`。シーンが描画時に縮め返さない）。10段はこの区間の等分（`sizeLevels`）。行が長すぎて下限に届かないビートはラダー全体が上限へ縮退する。compose のヒーロー（span scale 2× など）は最大 span 倍率で割って収める。
+- **変化値**（`weird.sizeChange`）: `v = 1 − (1 − weird)(1 − energy)`。`v = 1` は次のビートが必ず別の段、`v = 0` は曲全体で `baseSize` 1つ（乱数も引かない）、中間は確率 `1 − v` で段を保つ。
+- **バランス**（`direct.createSizeLadder`）: 各段の累積表示時間（ビート長）を追い、移る先は「これまでで最も使われていない段」から抽選（同点はランダム）。直前の段は禁止なので、`v = 1` で隣接ビートが同じ段にならない。曲頭はテーマサイズに最も近い段で開く。
+- **density → 字間**（`direct.densitySpacing`）: `0.5` はテーマの `letterSpacing` のまま、`0` で +0.18em（ゆるい）、`1` で −0.03em（詰めた）。テーマ `text` への一曲単位の設定なので、全キュー・ビートが継承する。字間は `maxSizeForLines` の幅に含まれる（推定計測は字間を無視するため、`makeMeasurer` に `includesSpacing` を付けて二重加算を防ぐ）。
+- **compose モードの例外**: `v = 0` の compose はテンプレート自身のサイズのまま（構図が絵そのもの）。`v > 0` では compose のビートにも同じラダーが乗る。
+- **再ロール**（`direct.resizeBeats`）: 他のビートの実サイズ（beatStyles の解決値 × fontScale）で段の時間をシードし、対象だけ引き直す。対象は前後のビートの段（ときには片側だけ）を禁止される。プレーン経路のキュー再ロールはラダーを丸ごと引き直し、ビート再ロールは1ビートだけ。compose の再ロールは `v > 0` のときだけラダーを更新する。
+- 注意（既知の例外）: `direct.test.js` の w=0 スナップショットは、energy が 0 でない限り「サイズ1つ」にならないため、比較から `beatStyles[*].text.size` を除外した（記録済みの例外。他はバイト単位で一致）。`weird.sizeChange` の引き金は生の `weird` と `energy` で、テキスト側の tamed な `w` では動かない。`v = 1` の不変条件は「別の段」であり px 一致ではない（狭い範囲では2段が同じ px へ丸まることがある）。
+- テスト: `scripts/test/size-ladder.test.js`（14件: sizeChange の境界と単調性・density 非依存、densitySpacing と密度1の字間、maxSizeForLines の枠上限と字間込みの縮小、`change 1` の段の非連続と時間バランス±15%、`change 0` の乱数非消費、`change 0.5` の保持率 0.4〜0.6 と ±25%、weird 1 の run・weird 0/energy 0 の単一サイズ・下限が legibility しきい値を下回らないこと・resizeBeats の前後回避と他ビート不変）。`direct.test.js` はスナップショットの size 除外と、compose テストの隣接段の非連続を追加。全 613 件パス。
+- 検証: `npm test`（613件）、`npm run check`（175ファイル）。Electron スモークと目視（weird 1 の画面いっぱい〜小サイズ、density 0/1 の字間、キュー/ビート再ロール）は未実施。

@@ -1819,6 +1819,7 @@ SA.store = (() => {
           const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
           const seed = Math.floor(Math.random() * 900000) + 1000;
+          const change = SA.weird && typeof SA.weird.sizeChange === 'function' ? SA.weird.sizeChange(mode.axes) : 0;
           const context = SA.moods.contextForCue(projectDoc, target);
           const emphasis = SA.moods.isEmphasis ? SA.moods.isEmphasis(target) : false;
           const generated = SA.moods.generate({ axes: mode.axes, seed, direction: mode.direction, genre: mode.genre, context, emphasis }).style;
@@ -1826,11 +1827,6 @@ SA.store = (() => {
             enter: generated.enter,
             exit: generated.exit,
           });
-          const baseSize = Number(
-            (projectDoc.style && projectDoc.style.text && projectDoc.style.text.size) ||
-              (generated.text && generated.text.size) ||
-              96
-          );
           const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
           if (projectDoc.styleMode && projectDoc.styleMode.compose && SA.direct && typeof SA.direct.composeBeat === 'function' && SA.compositions) {
             const cueIndex = (projectDoc.script.cues || []).indexOf(target);
@@ -1839,13 +1835,16 @@ SA.store = (() => {
               const ctx = composeRunContext(projectDoc, mode, seed + index + 1, history);
               SA.direct.composeBeat(projectDoc, target, beat, index, cueIndex, ctx);
             });
+            // the ladder re-picks the sizes; at change 0 the compositions
+            // themselves are the picture (matching run / composeBeat)
+            if (change > 0 && SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
+              SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed);
+            }
             return;
           }
-          beats.forEach((beat, index) => {
-            const random = SA.rng ? SA.rng.rngFor(seed + index + 1, beat.id, 'beat') : Math.random;
-            const size = Math.round(baseSize * (0.9 + random() * 0.25));
-            projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, { text: { size } });
-          });
+          if (SA.direct && typeof SA.direct.resizeBeats === 'function') {
+            SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed);
+          }
         },
       });
     },
@@ -1889,6 +1888,15 @@ SA.store = (() => {
             const beatIndex = beats.indexOf(beat);
             const cueIndex = (projectDoc.script.cues || []).indexOf(cue);
             SA.direct.composeBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
+          }
+          // the size ladder re-picks the beat's size inside the song: the
+          // neighbours' levels are respected and the other beats stay put.
+          // In compose mode the compositions are the picture at change 0.
+          const composeMode = !!(projectDoc.styleMode && projectDoc.styleMode.compose);
+          const change = SA.weird && typeof SA.weird.sizeChange === 'function' ? SA.weird.sizeChange(mode.axes) : 0;
+          const ladderActive = !composeMode || change > 0;
+          if (ladderActive && SA.direct && typeof SA.direct.resizeBeats === 'function') {
+            SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000);
           }
         },
       });

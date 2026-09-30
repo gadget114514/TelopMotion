@@ -31,6 +31,18 @@
     return track ? track.id : null;
   }
 
+  // The fourth axis sets the letter spacing (em) around the theme's own value:
+  // density 0.5 keeps the theme, 0 opens to +0.18em (airy), 1 closes to -0.03em
+  // (packed). The theme value stays the midpoint so a neutral song is untouched.
+  const SPACING_SPARSE = 0.18;
+  const SPACING_DENSE = -0.03;
+  function densitySpacing(themeSpacing, density) {
+    const base = Number(themeSpacing) || 0;
+    const d = Math.max(0, Math.min(1, density == null || !Number.isFinite(Number(density)) ? 0.5 : Number(density)));
+    const value = d < 0.5 ? base + (SPACING_SPARSE - base) * ((0.5 - d) / 0.5) : base + (SPACING_DENSE - base) * ((d - 0.5) / 0.5);
+    return Math.round(value * 1000) / 1000;
+  }
+
   function nextClip(projectDoc, prefix, fields) {
     return { id: SA.project.nextClipId(projectDoc, prefix), auto: true, ...fields };
   }
@@ -88,6 +100,8 @@
         ...themeStyle.text,
         size: Math.max(minSize, Math.min(maxSize, Number(themeStyle.text.size) || (portrait ? 72 : 96))),
       };
+      const spacing = densitySpacing(themeStyle.text.letterSpacing, axes.density);
+      if (spacing !== (Number(themeStyle.text.letterSpacing) || 0)) themeStyle.text = { ...themeStyle.text, letterSpacing: spacing };
     }
     const beatFit = beatFitOf(analysis);
     // a smart run on a beatless / slow song does not draw the metronome: the
@@ -314,6 +328,95 @@
     return { x0: cx - blockW / 2, y0: cy - blockH / 2, x1: cx + blockW / 2, y1: cy + blockH / 2 };
   }
 
+  // ---------------------------------------------------------------------------
+  // The size ladder (auto direct)
+  // ---------------------------------------------------------------------------
+
+  const SIZE_LEVELS = 10; // 10% steps from the legible floor to the full screen
+  const SIZE_FLOOR_PX = 24; // the hard floor directBeat always had
+
+  // The size range of one beat: the legibility floor (legibility.js
+  // MIN_SIZE_RATIO × frame height) up to the size that fills the frame with the
+  // beat's own lines. `spanScale` is the largest compose span scale, so a hero
+  // word at 2× still fits.
+  function sizeRangeFor(beat, textStyle, ctx, spanScale) {
+    const ratio = (SA.legibility && SA.legibility.MIN_SIZE_RATIO) || 0.045;
+    const floor = Math.max(SIZE_FLOOR_PX, Math.ceil(ratio * ctx.frameH));
+    const lines = beat.lines && beat.lines.length ? beat.lines : [beat.text || ''];
+    const full = SA.textflow && typeof SA.textflow.maxSizeForLines === 'function'
+      ? SA.textflow.maxSizeForLines(lines, { style: textStyle || {}, frame: { width: ctx.frameW, height: ctx.frameH }, aspect: ctx.portrait ? '9:16' : '16:9', lang: ctx.lang })
+      : ctx.screen * 0.3;
+    const max = Math.floor(full / Math.max(1, spanScale || 1));
+    // a very long line cannot reach the floor: the whole ladder collapses onto max
+    return { min: Math.min(floor, max), max: Math.max(1, max) };
+  }
+
+  function sizeLevels(range) {
+    const out = [];
+    for (let k = 0; k < SIZE_LEVELS; k += 1) out.push(Math.round(range.min + ((range.max - range.min) * k) / (SIZE_LEVELS - 1)));
+    return out;
+  }
+
+  function nearestLevel(levels, px) {
+    let best = 0;
+    for (let k = 1; k < levels.length; k += 1) if (Math.abs(levels[k] - px) < Math.abs(levels[best] - px)) best = k;
+    return best;
+  }
+
+  // The auto-direct size ladder. `change` (weird.sizeChange) is the chance the
+  // next beat moves to another level; moving picks the level that has had the
+  // least screen time so far (ties at random), never the previous one, so over
+  // a song every level gets about the same time. change 0 returns baseSize for
+  // every beat and draws no random.
+  function createSizeLadder(options) {
+    const change = Math.max(0, Math.min(1, Number(options.change) || 0));
+    const baseSize = Number(options.baseSize) || 96;
+    const random = options.random;
+    const time = new Array(SIZE_LEVELS).fill(0);
+    let spent = 0;
+    let count = 0;
+    function record(level, duration) {
+      if (level == null) return;
+      const d = Math.max(0.05, Number(duration) || 0);
+      time[level] += d;
+      spent += d;
+      count += 1;
+    }
+    function choose({ duration, range, prev, avoid }) {
+      if (change <= 0) return { px: baseSize, level: null };
+      const levels = sizeLevels(range);
+      let level;
+      let px;
+      if (!prev) {
+        level = nearestLevel(levels, baseSize); // the song opens on the theme size
+        px = levels[level];
+      } else if (random() >= change) {
+        px = Math.max(levels[0], Math.min(levels[SIZE_LEVELS - 1], prev.px)); // keep the size
+        level = prev.level == null ? nearestLevel(levels, px) : prev.level;
+      } else {
+        const banned = new Set([prev.level, avoid].filter((k) => k != null));
+        let candidates = levels.map((_, k) => k).filter((k) => !banned.has(k));
+        if (!candidates.length) candidates = levels.map((_, k) => k);
+        const least = Math.min(...candidates.map((k) => time[k]));
+        const slack = 0.5 * (count ? spent / count : Math.max(0.05, duration));
+        const tied = candidates.filter((k) => time[k] <= least + slack);
+        level = tied[Math.min(tied.length - 1, Math.floor(random() * tied.length))];
+        px = levels[level];
+      }
+      record(level, duration);
+      return { px, level };
+    }
+    return { change, record, choose, levelOf: (px, range) => nearestLevel(sizeLevels(range), px) };
+  }
+
+  // The ladder pick for one beat in song order: the caller's `ctx.sizePrev` is
+  // the previous beat's pick.
+  function ladderPx(ctx, beat, range) {
+    const pick = ctx.sizeLadder.choose({ duration: beat.end - beat.start, range, prev: ctx.sizePrev });
+    ctx.sizePrev = pick;
+    return pick.px;
+  }
+
   // One beat as a composition: analyse the text, pick a template and write the
   // patch. The weird axis no longer jitters size / colour / tilt - it only
   // widens which compositions are allowed and how large the hero grows.
@@ -352,6 +455,15 @@
       palette: (ctx.themeStyle && ctx.themeStyle.palette) || (projectDoc.style && projectDoc.style.palette) || null,
     });
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, patch);
+    // the ladder owns the size above the template only while it is changing;
+    // at change 0 the composition itself is the picture
+    if (ctx.sizeLadder && ctx.sizeLadder.change > 0) {
+      const text = projectDoc.beatStyles[beat.id].text;
+      const spans = (text.compose && text.compose.spans) || [];
+      const spanScale = Math.max(1, ...spans.map((span) => Number(span.scale) || 1));
+      const px = ladderPx(ctx, beat, sizeRangeFor(beat, text, ctx, spanScale));
+      text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
+    }
     history.push(comp);
     if (ctx.composeZones && !ctx.composeZones[cue.id]) ctx.composeZones[cue.id] = estimateComposeZone(comp, analysis, patch, ctx);
   }
@@ -368,7 +480,11 @@
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
     const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
-    const size = Math.round(baseSize * (0.9 + beatRng() * 0.25));
+    const jitter = beatRng(); // the old base-size draw: kept so the hold roll below stays on its stream
+    const px = ctx.sizeLadder
+      ? ladderPx(ctx, beat, sizeRangeFor(beat, SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text, ctx, 1))
+      : baseSize * (0.9 + jitter * 0.25);
+    const size = Math.round(px / (beat.fontScale || 1)); // scene.js multiplies fontScale back in
     const beatPatch = { text: { size } };
     const beatDuration = Math.max(0.2, beat.end - beat.start);
     if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
@@ -377,11 +493,11 @@
     }
     if (w > 0) {
       // E4 / I18 / H5: a weird song steps the beat treatment as well:
-      // size, colour, tilt, font and hold all jump half a bar
+      // colour, tilt, font and hold all jump half a bar. The size is the
+      // ladder's now, but the old weird-size draw is kept so colour, tilt,
+      // hold and font stay on their streams.
       const wr = SA.rng.rngFor(beatSeed, beat.id, 'weird');
-      const lo = SA.moods.bend(0.9, 0.45, w);
-      const hi = SA.moods.bend(1.15, 2.2, w);
-      beatPatch.text.size = Math.round(Math.max(24, Math.min(ctx.portrait ? 220 : 320, baseSize * (lo + wr() * (hi - lo)))));
+      wr();
       if (accentIdx.length && wr() < 0.5 * w) {
         if (accentIdx.length >= 2 && wr() < 0.3 * w) {
           const [a, b] = [accentIdx[Math.floor(wr() * accentIdx.length)], accentIdx[Math.floor(wr() * accentIdx.length)]];
@@ -421,6 +537,42 @@
       }
     }
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);
+  }
+
+  // Re-picks the ladder size of `targetIds` inside the song: the other beats'
+  // sizes seed the level times, and each target avoids both neighbours' levels.
+  function resizeBeats(projectDoc, axes, targetIds, seed) {
+    const output = projectDoc.output || {};
+    const portrait = (output.aspect || '16:9') === '9:16';
+    const frameW = Number(output.width) || (portrait ? 1080 : 1920);
+    const frameH = Number(output.height) || (portrait ? 1920 : 1080);
+    const ctx = { frameW, frameH, portrait, screen: Math.min(frameW, frameH), lang: (projectDoc.meta && projectDoc.meta.lang) || null };
+    const baseSize = Number((projectDoc.style && projectDoc.style.text && projectDoc.style.text.size) || (portrait ? 72 : 96));
+    const change = SA.weird.sizeChange(axes);
+    const targets = new Set(targetIds);
+    const rows = []; // song order: { cue, beat, range, px, target }
+    for (const cue of projectDoc.script.cues || []) {
+      for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+        const text = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text || {};
+        const spans = (text.compose && text.compose.spans) || [];
+        const range = sizeRangeFor(beat, text, ctx, Math.max(1, ...spans.map((s) => Number(s.scale) || 1)));
+        rows.push({ cue, beat, range, px: (Number(text.size) || baseSize) * (beat.fontScale || 1), target: targets.has(beat.id) });
+      }
+    }
+    const ladder = createSizeLadder({ change, baseSize, random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder-reroll') : null });
+    for (const row of rows) if (!row.target) ladder.record(ladder.levelOf(row.px, row.range), row.beat.end - row.beat.start);
+    let prev = null;
+    rows.forEach((row, i) => {
+      if (!row.target) {
+        prev = { px: row.px, level: ladder.levelOf(row.px, row.range) };
+        return;
+      }
+      const next = rows[i + 1] && !rows[i + 1].target ? rows[i + 1] : null;
+      const pick = ladder.choose({ duration: row.beat.end - row.beat.start, range: row.range, prev, avoid: next ? ladder.levelOf(next.px, next.range) : null });
+      const bag = projectDoc.beatStyles[row.beat.id] || (projectDoc.beatStyles[row.beat.id] = {});
+      bag.text = { ...(bag.text || {}), size: Math.round(pick.px / (row.beat.fontScale || 1)) };
+      prev = pick;
+    });
   }
 
   // The filler presets a run may place: pattern / split / figures / combo /
@@ -824,6 +976,11 @@
     projectDoc.script.cues.forEach((cue, cueIndex) => {
       directCue(projectDoc, cue, cueIndex, ctx);
     });
+    // the size ladder walks every beat of the song in time order
+    const change = SA.weird.sizeChange(ctx.axes);
+    ctx.lang = (projectDoc.meta && projectDoc.meta.lang) || null;
+    ctx.sizeLadder = createSizeLadder({ change, baseSize: ctx.baseSize, random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder') : null });
+    ctx.sizePrev = null;
     projectDoc.script.cues.forEach((cue, cueIndex) => {
       const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
       beats.forEach((beat, beatIndex) => {
@@ -873,6 +1030,7 @@
     CUE_LOOK_GROUPS,
     PULSE_TYPES,
     beatFitOf,
+    densitySpacing,
     prepare,
     directCue,
     directBeat,
@@ -884,6 +1042,9 @@
     fillerClips,
     figureClipFor,
     figureClips,
+    createSizeLadder,
+    sizeRangeFor,
+    resizeBeats,
     run,
   };
 });

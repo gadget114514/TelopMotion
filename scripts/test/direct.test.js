@@ -177,7 +177,17 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   runOn(doc, FIXTURE);
   const output = outputOf(doc);
   // The filler gaps are the documented w=0 exception (item 8: they now show
-  // figures); everything else must match the pre-extraction snapshot.
+  // figures); everything else must match the pre-extraction snapshot. The
+  // second documented exception is the size ladder: energy is not 0 at weird 0,
+  // so `beatStyles[*].text.size` belongs to the ladder now and is stripped from
+  // both sides before the comparison.
+  const stripSizes = (styles) => {
+    if (!styles) return styles;
+    for (const style of Object.values(styles)) {
+      if (style && style.text) delete style.text.size;
+    }
+    return styles;
+  };
   const { fillers, clips, ...rest } = output;
   const { fillers: _fixtureFillers, clips: fixtureClips, ...fixtureRest } = {
     cueStyles: FIXTURE.cueStyles,
@@ -188,7 +198,8 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
     fillers: FIXTURE.fillers,
     clips: FIXTURE.clips,
   };
-  assert.deepEqual(rest, fixtureRest);
+  assert.deepEqual(stripSizes(rest.beatStyles), stripSizes(JSON.parse(JSON.stringify(fixtureRest.beatStyles))));
+  assert.deepEqual({ ...rest, beatStyles: null }, { ...fixtureRest, beatStyles: null });
   const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
   const nonFiller = (list) => list.filter((clip) => !fillerIds.has(clip.trackId));
   assert.deepEqual(nonFiller(clips), nonFiller(fixtureClips));
@@ -323,7 +334,7 @@ test('smartness 0.9 drops the tacky grammar from the automatic direction', () =>
 
 test('compose mode draws a composition per beat and drops the weird jitter', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
-  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.8 }, compose: true });
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true });
   assert.equal(ctx.compose, true);
   SA.direct.run(doc, ctx);
   assert.equal(doc.styleMode.compose, true, 'the mode is saved for re-rolls');
@@ -333,6 +344,7 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
   }
   assert.ok(beats.length >= 4, `beats ${beats.length}`);
   const compIds = [];
+  const levels = [];
   for (const { cue, beat } of beats) {
     const style = doc.beatStyles[beat.id];
     assert.ok(style && style.text && style.text.compose, `${beat.id} has a composition`);
@@ -346,14 +358,33 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
     assert.equal(style.location.type, 'grid', `${beat.id} grid location`);
     const cueStyle = doc.cueStyles[cue.id];
     assert.ok(!cueStyle || !cueStyle.clones, `${cue.id} has no clones`);
+    // the ladder size belongs to this beat's own range: map it back to a level
+    const text = style.text;
+    const spans = (text.compose && text.compose.spans) || [];
+    const range = SA.direct.sizeRangeFor(beat, text, { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' }, Math.max(1, ...spans.map((span) => Number(span.scale) || 1)));
+    const size = style.text.size * (beat.fontScale || 1);
+    let level = 0;
+    for (let k = 0; k < 10; k += 1) {
+      const px = Math.round(range.min + ((range.max - range.min) * k) / 9);
+      const best = Math.round(range.min + ((range.max - range.min) * level) / 9);
+      if (Math.abs(px - size) < Math.abs(best - size)) level = k;
+    }
+    levels.push(level);
   }
   for (let i = 1; i < compIds.length; i += 1) {
     assert.notEqual(compIds[i], compIds[i - 1], `beat ${i} repeats ${compIds[i]}`);
   }
+  // weird 1 gives v = 1, so neighbouring beats never stay on the same ladder
+  // level. (Different levels may still round to the same px when the ranges
+  // differ, so the guarantee is level-based.)
+  for (let i = 1; i < levels.length; i += 1) {
+    assert.notEqual(levels[i], levels[i - 1], `beat ${i} repeats level ${levels[i]}`);
+  }
   // the whole run is deterministic for one seed in compose mode too
-  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.8 }, compose: true });
+  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true });
   for (const { beat } of beats) {
     assert.deepEqual(again.beatStyles[beat.id].text.compose, doc.beatStyles[beat.id].text.compose);
+    assert.equal(again.beatStyles[beat.id].text.size, doc.beatStyles[beat.id].text.size);
     assert.deepEqual(again.beatStyles[beat.id].location, doc.beatStyles[beat.id].location);
   }
 });

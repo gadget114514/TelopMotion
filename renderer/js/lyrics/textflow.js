@@ -224,13 +224,17 @@
     }
     if (!raw) raw = estimateWidth;
     const memo = new Map();
-    return (text, size) => {
+    const fn = (text, size) => {
       const key = `${Math.round(size * 100)}|${text}`;
       if (memo.has(key)) return memo.get(key);
       const value = raw(text, size);
       if (memo.size < 20000) memo.set(key, value);
       return value;
     };
+    // the estimate / a caller's own measure ignores letterSpacing: the size
+    // helpers add it back themselves (font.js measureLine already includes it)
+    fn.includesSpacing = !!(raw && raw !== estimateWidth && !(options && options.measure));
+    return fn;
   }
 
   // ---------------------------------------------------------------------------
@@ -598,6 +602,29 @@
     const lineHeight = style.lineHeight || 1.2;
     const heightScale = maxHeightPx / Math.max(1e-6, list.length * lineHeight * size);
     return { scale: Math.min(fit.size / size, Math.max(0.05, heightScale)), bleed: fit.bleed };
+  }
+
+  // The largest size at which fixed lines still fit the renderer's own block
+  // limits (text.maxWidth × frame width, text.maxHeight × frame height) — the
+  // "fills the screen" end of the auto-direct size ladder. No coverage term.
+  function maxSizeForLines(lines, options) {
+    const opts = options || {};
+    const style = opts.style || {};
+    const frame = { width: (opts.frame && opts.frame.width) || 1920, height: (opts.frame && opts.frame.height) || 1080 };
+    const list = (lines || []).map(String).filter((line) => line.trim());
+    if (!list.length) return 0;
+    const measurer = makeMeasurer({ ...opts, style, lang: opts.lang || 'en' });
+    const vertical = style.direction === 'vertical';
+    const along = vertical ? frame.height : frame.width;
+    const across = vertical ? frame.width : frame.height;
+    const num = (value, fallback) => (value == null || value === '' || !Number.isFinite(Number(value)) ? fallback : Number(value));
+    // the estimate fallback ignores letter spacing: add it here so a density-wide
+    // line is not sized past the frame (measureLine already includes it)
+    const spacing = measurer.includesSpacing ? 0 : Number(style.letterSpacing) || 0;
+    const widest = Math.max(1e-6, ...list.map((line) => measurer(line, FILL_REF_SIZE) / FILL_REF_SIZE + spacing * Array.from(line).length));
+    const byWidth = (num(style.maxWidth, 0.94) * along) / widest;
+    const byHeight = (num(style.maxHeight, 0.8) * across) / (list.length * (style.lineHeight || 1.2));
+    return Math.min(byWidth, byHeight);
   }
 
   // ---------------------------------------------------------------------------
@@ -1496,6 +1523,7 @@
     sizeForLines,
     fillFit,
     fitLinesScale,
+    maxSizeForLines,
     flow,
     restructure,
     mergePinned,
