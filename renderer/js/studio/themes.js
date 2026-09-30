@@ -283,6 +283,15 @@ SA.themes = (() => {
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
       renderList();
     });
+    const resetButton = document.createElement('button');
+    resetButton.type = 'button';
+    resetButton.className = 'btn btn-mini';
+    resetButton.textContent = t('studio.themes.reset');
+    resetButton.addEventListener('click', () => {
+      SA.store.commands.resetTheme();
+      SA.studio.toast('studio.toast.themeReset');
+      root.hidden = true;
+    });
     const importButton = document.createElement('button');
     importButton.type = 'button';
     importButton.className = 'btn btn-mini';
@@ -307,6 +316,7 @@ SA.themes = (() => {
     });
     actions.appendChild(createButton);
     actions.appendChild(saveButton);
+    actions.appendChild(resetButton);
     actions.appendChild(importButton);
     actions.appendChild(exportButton);
     actions.appendChild(closeButton);

@@ -2105,8 +2105,17 @@ SA.inspector = (() => {
     themeList.className = 'btn btn-mini';
     themeList.textContent = t('studio.settings.themes');
     themeList.addEventListener('click', () => SA.themes.dialog());
+    const resetTheme = document.createElement('button');
+    resetTheme.type = 'button';
+    resetTheme.className = 'btn btn-mini';
+    resetTheme.textContent = t('studio.themes.reset');
+    resetTheme.addEventListener('click', () => {
+      SA.store.commands.resetTheme();
+      SA.studio.toast('studio.toast.themeReset');
+    });
     themeActions.appendChild(editTheme);
     themeActions.appendChild(themeList);
+    themeActions.appendChild(resetTheme);
     body.appendChild(themeActions);
   }
 

@@ -552,6 +552,38 @@
     return merged;
   }
 
+  // The plain subtitle: the project style goes back to the bare text (only the
+  // chosen font stays), every per-cue / per-beat / per-element look and the
+  // cue keyframes are dropped, and whatever was pinned by hand (beats, filler
+  // clips) turns automatic again with its size change undone.
+  function resetLook(project) {
+    if (!project) return project;
+    const plain = defaultStyleSet();
+    const fontId = project.style && project.style.text && project.style.text.fontId;
+    if (fontId) plain.text.fontId = fontId;
+    project.style = plain;
+    project.cueStyles = {};
+    project.beatStyles = {};
+    project.overrides = {};
+    const kinds = Object.keys(project.beatKindStyle || {});
+    project.beatKindStyle = {};
+    for (const kind of kinds) project.beatKindStyle[kind] = {};
+    for (const key of Object.keys(project.keyframes || {})) {
+      if (key.startsWith('cue:')) delete project.keyframes[key];
+    }
+    for (const list of Object.values(project.beats || {})) {
+      for (const beat of list || []) {
+        if (!beat) continue;
+        beat.pinned = false;
+        beat.fontScale = 1;
+        delete beat.fit;
+        delete beat.bleed;
+      }
+    }
+    if (project.fillers && project.fillers.clips) project.fillers.clips = {};
+    return project;
+  }
+
   function setDimensions(project, aspect) {
     const next = aspect === '9:16' ? { width: 1080, height: 1920 } : { width: 1920, height: 1080 };
     project.output = { ...project.output, aspect, ...next };
@@ -566,6 +598,7 @@
     create,
     migrate,
     resolveStyle,
+    resetLook,
     parsePath,
     mergeDeep,
     setDimensions,

@@ -1270,6 +1270,15 @@ SA.store = (() => {
         },
       });
     },
+    resetTheme() {
+      dispatch({
+        label: 'reset theme',
+        areas: ['style', 'script', 'overrides', 'keyframes', 'fillers'],
+        do(project) {
+          SA.project.resetLook(project);
+        },
+      });
+    },
     setBeatPinned(cueId, beatId, pinned) {
       const cue = findCue(cueId);
       const beat = findBeat(state.project, cueId, beatId) || (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);

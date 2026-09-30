@@ -625,3 +625,36 @@ test('rerollBeatScheme picks another role order of the same palette', () => {
   assert.equal(store.undo(), true);
   assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, pick.id);
 });
+
+test('resetTheme leaves a plain subtitle and unpins the hand edits', () => {
+  const doc = fixture();
+  doc.style.text.fontId = 'NotoSansJP-Bold';
+  doc.style.text.size = 140;
+  doc.style.animation = { type: 'stagger', enabled: true, params: {} };
+  doc.style.post = [{ type: 'glow', params: {}, enabled: true }];
+  doc.cueStyles.c1 = { edge: [{ type: 'outline', params: {}, enabled: true }] };
+  doc.beatStyles['c1:page0'] = { colorScheme: 'TMBD' };
+  doc.overrides['cue:c1'] = { text: { size: 200 } };
+  doc.keyframes['cue:c1'] = { 'transform.scale': [{ t: 0, v: 1 }] };
+  doc.beats.c1[0] = { ...doc.beats.c1[0], pinned: true, fontScale: 1.6, fit: 'fill', bleed: true };
+  doc.fillers.clips = { g0: { type: 'shapes', params: {}, pinned: true } };
+  store.load(doc);
+  const before = snapshot();
+  store.commands.resetTheme();
+  const after = store.state.project;
+  assert.deepEqual(after.style, { ...projectModule.defaults().style, text: { ...projectModule.defaults().style.text, fontId: 'NotoSansJP-Bold' } });
+  assert.deepEqual(after.cueStyles, {});
+  assert.deepEqual(after.beatStyles, {});
+  assert.deepEqual(after.overrides, {});
+  assert.deepEqual(after.keyframes, {});
+  assert.deepEqual(Object.values(after.beatKindStyle), [{}, {}, {}, {}, {}]);
+  const beat = after.beats.c1[0];
+  assert.equal(beat.pinned, false);
+  assert.equal(beat.fontScale, 1);
+  assert.equal(beat.fit, undefined);
+  assert.equal(beat.bleed, undefined);
+  assert.equal(beat.text, 'hello');
+  assert.deepEqual(after.fillers.clips, {});
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
