@@ -1342,6 +1342,31 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Automatic recap (smartness)
+  // ---------------------------------------------------------------------------
+
+  // A cue that splits into this many beats or more may draw a recap on its own.
+  const RECAP_AUTO_MIN_BEATS = 3;
+
+  // FNV-1a, the same algorithm as `rng.hash32`, kept local so textflow stays
+  // dependency-free.
+  function fnv1a(...parts) {
+    const text = parts.map((part) => String(part)).join('\u0001');
+    let hash = 0x811c9dc5;
+    for (let i = 0; i < text.length; i += 1) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 0x01000193);
+    }
+    return hash >>> 0;
+  }
+
+  // A stable draw in [0, 1) from the cue's identity: `apply` runs on every edit
+  // and every preview, so a Math.random draw would make the recap flicker.
+  function autoRecapDraw(cue) {
+    return fnv1a(cue && cue.id, cue && cue.text) / 4294967296;
+  }
+
+  // ---------------------------------------------------------------------------
   // Restructure (flow -> beats, with pinned beats kept)
   // ---------------------------------------------------------------------------
 
@@ -1350,16 +1375,27 @@
   }
 
   function restructure(cue, options) {
-    const result = flow(
-      {
-        text: cue.text || '',
-        start: Number(cue.start) || 0,
-        end: Number(cue.end) || 0,
-        lang: options && options.lang,
-        aspect: options && options.aspect,
-      },
-      options
-    );
+    const opts = options || {};
+    const input = {
+      text: cue.text || '',
+      start: Number(cue.start) || 0,
+      end: Number(cue.end) || 0,
+      lang: opts.lang,
+      aspect: opts.aspect,
+    };
+    let result = flow(input, opts);
+    if (opts.recapAuto) {
+      const baseBeats = result.pages.filter((page) => page.kind === 'single' || page.kind === 'page').length;
+      const smartness = clamp(Number(opts.recapAuto.smartness) || 0, 0, 1);
+      // The draw is made on the structure without a recap, so the recap taking
+      // its time from the budget may leave the second run with fewer beats.
+      if (baseBeats >= RECAP_AUTO_MIN_BEATS && autoRecapDraw(cue) < smartness) {
+        result = flow(input, {
+          ...opts,
+          settings: mergeDeep(opts.settings || {}, { recap: { mode: 'end', minPages: 1 } }),
+        });
+      }
+    }
     const counters = { single: 0, page: 0, repeat: 0, emphasis: 0, recap: 0 };
     const beats = [];
     for (const page of result.pages) {
@@ -1442,7 +1478,7 @@
       textStyle = resolved && resolved.text;
     }
     const settings = mergeDeep(DEFAULTS, project.textFlow || {}, cue.textFlow || {});
-    return {
+    const resolvedOptions = {
       style: textStyle || { size: 96, lineHeight: 1.2, maxWidth: 0.9 },
       frame: { width: (project.output && project.output.width) || 1920, height: (project.output && project.output.height) || 1080 },
       aspect: (project.output && project.output.aspect) || '16:9',
@@ -1450,6 +1486,19 @@
       settings,
       measure: opts.measure,
     };
+    // The automatic recap is only considered while neither the project nor the
+    // cue made an explicit choice; a hand choice (on or off) always wins. The
+    // raw axis is read with the engine default 0 (not the UI default 0.6), so
+    // old projects and the demos keep their exact beats.
+    const projectMode = project && project.textFlow && project.textFlow.recap ? project.textFlow.recap.mode : null;
+    const cueMode = cue && cue.textFlow && cue.textFlow.recap ? cue.textFlow.recap.mode : null;
+    if (projectMode == null && cueMode == null) {
+      const axes = project && project.styleMode && project.styleMode.axes;
+      const raw = axes ? axes.smartness : null;
+      const smartness = raw != null && raw !== '' && Number.isFinite(Number(raw)) ? clamp(Number(raw), 0, 1) : 0;
+      resolvedOptions.recapAuto = { smartness };
+    }
+    return resolvedOptions;
   }
 
   function apply(project, options) {
@@ -1526,6 +1575,7 @@
     maxSizeForLines,
     flow,
     restructure,
+    autoRecapDraw,
     mergePinned,
     cueOptions,
     apply,

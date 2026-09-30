@@ -487,3 +487,104 @@ test('fill sizing sizes every chunk in chunk mode', () => {
   assert.ok(result.pages.every((page) => page.fontScale > 0), 'chunk without a size');
 });
 
+// ---------------------------------------------------------------------------
+// automatic recap (smartness)
+// ---------------------------------------------------------------------------
+
+const AUTO_TEXT = 'alpha\\Pbeta\\Pgamma';
+
+function autoProject(axes) {
+  const project = {
+    output: { width: 1920, height: 1080, aspect: '16:9' },
+    meta: { lang: 'en' },
+    textFlow: {},
+    script: { cues: [] },
+    beats: {},
+    orphanBeats: {},
+  };
+  if (axes) project.styleMode = { axes };
+  return project;
+}
+
+function autoOptions(settings) {
+  return {
+    style: { size: 96, lineHeight: 1.2, maxWidth: 0.9 },
+    frame: { width: 1920, height: 1080 },
+    measure,
+    recapAuto: { smartness: 1 },
+    settings: settings || {},
+  };
+}
+
+test('automatic recap at smartness 1 covers every cue with 3+ beats', () => {
+  const forced = textflow.restructure({ id: 'auto1', start: 0, end: 12, text: AUTO_TEXT }, autoOptions());
+  assert.equal(forced.beats.filter((beat) => beat.kind === 'recap').length, 1);
+  // with chunking the base count is the count after chunking
+  const chunked = textflow.restructure(
+    { id: 'auto2', start: 0, end: 8, text: 'one two three four five six seven eight nine ten' },
+    autoOptions({ chunk: 'phrase', maxChunkDuration: 1 })
+  );
+  assert.ok(chunked.beats.filter((beat) => beat.kind === 'page').length >= 3);
+  assert.equal(chunked.beats.filter((beat) => beat.kind === 'recap').length, 1);
+});
+
+test('automatic recap at smartness 0 or a missing axis draws nothing', () => {
+  for (const project of [autoProject({ smartness: 0 }), autoProject(undefined)]) {
+    project.script.cues = [{ id: 'zero1', start: 0, end: 12, text: AUTO_TEXT }];
+    textflow.apply(project, { measure });
+    assert.ok(!project.beats.zero1.some((beat) => beat.kind === 'recap'));
+    assert.equal(textflow.cueOptions(project, project.script.cues[0], { measure }).recapAuto.smartness, 0);
+  }
+});
+
+test('automatic recap needs at least 3 beats', () => {
+  const two = textflow.restructure({ id: 'two', start: 0, end: 12, text: 'alpha\\Pbeta' }, autoOptions());
+  assert.ok(!two.beats.some((beat) => beat.kind === 'recap'));
+  const one = textflow.restructure({ id: 'one', start: 0, end: 12, text: 'alpha beta' }, autoOptions());
+  assert.ok(!one.beats.some((beat) => beat.kind === 'recap'));
+});
+
+test('an explicit recap mode always beats the automatic draw', () => {
+  const cue = { id: 'explicit', start: 0, end: 12, text: AUTO_TEXT };
+  // 'off' wins over smartness 1
+  const projectOff = autoProject({ smartness: 1 });
+  projectOff.textFlow = { recap: { mode: 'off' } };
+  const off = textflow.cueOptions(projectOff, cue, { measure });
+  assert.equal(off.recapAuto, undefined);
+  assert.ok(!textflow.restructure(cue, off).beats.some((beat) => beat.kind === 'recap'));
+  // 'end' wins over smartness 0
+  const projectEnd = autoProject({ smartness: 0 });
+  projectEnd.textFlow = { recap: { mode: 'end' } };
+  const end = textflow.cueOptions(projectEnd, cue, { measure });
+  assert.equal(end.recapAuto, undefined);
+  assert.equal(textflow.restructure(cue, end).beats.filter((beat) => beat.kind === 'recap').length, 1);
+  // the cue's own mode wins too
+  const cueOff = { ...cue, textFlow: { recap: { mode: 'off' } } };
+  const cueOptions = textflow.cueOptions(autoProject({ smartness: 1 }), cueOff, { measure });
+  assert.equal(cueOptions.recapAuto, undefined);
+  assert.ok(!textflow.restructure(cueOff, cueOptions).beats.some((beat) => beat.kind === 'recap'));
+});
+
+test('the automatic draw scales with smartness and is stable across applies', () => {
+  const project = autoProject({ smartness: 0.5 });
+  for (let i = 0; i < 40; i += 1) {
+    project.script.cues.push({ id: `half-${i}`, start: 0, end: 12, text: `${AUTO_TEXT} ${i}` });
+  }
+  const recapped = () => project.script.cues.filter((cue) => (project.beats[cue.id] || []).some((beat) => beat.kind === 'recap')).length;
+  const beatIds = () => project.script.cues.map((cue) => (project.beats[cue.id] || []).map((beat) => beat.id).join(','));
+  textflow.apply(project, { measure });
+  const first = recapped();
+  assert.ok(first > 10 && first < 30, `recap share ${first}/40`);
+  const ids = beatIds();
+  textflow.apply(project, { measure });
+  assert.equal(recapped(), first);
+  assert.deepEqual(beatIds(), ids);
+});
+
+test('autoRecapDraw is a stable 0..1 hash of the cue', () => {
+  const value = textflow.autoRecapDraw({ id: 'draw1', text: 'alpha' });
+  assert.ok(value >= 0 && value < 1, `draw ${value}`);
+  assert.equal(textflow.autoRecapDraw({ id: 'draw1', text: 'alpha' }), value);
+  assert.notEqual(textflow.autoRecapDraw({ id: 'draw2', text: 'alpha' }), value);
+});
+

@@ -1308,7 +1308,9 @@ textFlow.recap: {
   page1 → page2 → page3 → RECAP(full) → (long hold) → page1… → RECAP …
   ```
 
-- **Tests:** the recap appears only when the text is split into ≥ `minPages`. The whole text fits in `recap.maxLines`. The time is set aside correctly. `gather` maps every letter of the full text to exactly one source letter or to the "comes in" set.
+- **Automatic recap (smartness).** When neither the project nor the cue set `recap.mode`, a cue whose text splits into **3 or more** base beats (`single`/`page`, counted after chunking) gets a recap with probability equal to the raw `styleMode.axes.smartness` (missing reads as the engine default 0). The draw is a fixed hash of the cue (`u = fnv1a(cue.id, cue.text) / 2^32`), so the repeated `apply` runs never flicker; when `u < s`, `flow` runs a second time with `recap: { mode: 'end', minPages: 1 }`. The decision is made on the structure without a recap, so the recap taking its time from the budget may leave the second run with fewer beats. s=1 recaps every such cue, s=0 none; an explicit mode (the timeline toggle writes `off`/`end`) always wins.
+
+- **Tests:** the recap appears only when the text is split into ≥ `minPages`. The whole text fits in `recap.maxLines`. The time is set aside correctly. `gather` maps every letter of the full text to exactly one source letter or to the "comes in" set. The automatic recap covers every 3+-beat cue at smartness 1 and none at 0, is stable across applies, and yields to an explicit mode.
 
 **Outputs:** `flow(element, style, fonts, frame) → { fontScale, pages: [{ from, to, lines: [...] }], repeats: [{ t, kind }] }`. It is cached per `(text, style, aspect, fonts)`. `scene.js` builds the letters per page from this result. SRT export writes the original text; there is an option to "export pages as separate cues".
 
@@ -1378,9 +1380,9 @@ The theme generator draws every look from a small vector of axes. The first five
 | `density` | stack count, shape count, text size | 0.5 | — |
 | `brightness` | palette light level and text contrast | 0.5 | — |
 | `weird` | how far the song strays from one look (0 = one look for the song, 1 = a look per cue). It also opens the extended primitive pool at ≥ 0.5 | 0 | 0.7 |
-| `smartness` | how much cheap-looking grammar is dropped (per-beat pulse, vignette, ribbon, centre spotlight...) | 0 | 0.6 |
+| `smartness` | how much cheap-looking grammar is dropped (per-beat pulse, vignette, ribbon, centre spotlight...) and how often a cue that splits into 3+ beats gets an automatic recap (§7.16), with probability = the axis | 0 | 0.6 |
 
-`smartness` is one-sided: it only removes and demotes, never adds. Every effect carries a rating in `lyrics/smartness.js` (`RATINGS`, 0 = tacky, 1 = refined; unlisted types read 0.5). Below `s - 0.45` an effect is a hard exclusion, above it the picker weights it down (`max(0.05, 1 - 1.4(s - rating))`), so a low `s` never forces a tacky effect back in. `weight(rating, 0) === 1` and `pickWeighted(..., 0)` consumes the random stream exactly like the plain uniform pick, so the engine default 0 leaves every existing draw, the `direct-w0.json` fixture and the fx400/800 catalogues byte-identical.
+`smartness` is one-sided in the effect grammar: it only removes and demotes, never adds. Every effect carries a rating in `lyrics/smartness.js` (`RATINGS`, 0 = tacky, 1 = refined; unlisted types read 0.5). Below `s - 0.45` an effect is a hard exclusion, above it the picker weights it down (`max(0.05, 1 - 1.4(s - rating))`), so a low `s` never forces a tacky effect back in. `weight(rating, 0) === 1` and `pickWeighted(..., 0)` consumes the random stream exactly like the plain uniform pick, so the engine default 0 leaves every existing draw, the `direct-w0.json` fixture and the fx400/800 catalogues byte-identical. The axis also drives the automatic recap (§7.16): the share of 3+-beat cues that get one is exactly the axis value, drawn from a fixed per-cue hash rather than the random stream.
 
 The axis reaches `moods.generate` / `rerollClipSpec` (effect pools, split motions/schemes, backdrop motion + transitions, the background centre lift and the palette jitter), the automatic direction (`studio/direct.js`: beat holds, filler presets, the per-four-cue mid palette shift), the FX 800 look pool (`lyrics/looks.js`: `weightFor` + `prune`) and the per-cue randomizer (`lyrics/random.js`, when the project saved an axis). The palette dialog (`studio/palette-dialog.js`) and the colour-only re-roll (`store.commands.rerollColors`) work on top of the same palette model.
 

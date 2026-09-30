@@ -2059,7 +2059,13 @@ SA.timeline = (() => {
   function recapEnabled(cueId) {
     const cue = cueList().find((entry) => entry.id === cueId);
     const mode = cue && cue.textFlow && cue.textFlow.recap ? cue.textFlow.recap.mode : null;
-    return !!mode && mode !== 'off';
+    if (mode && mode !== 'off') return true;
+    // An automatic recap (smartness) has no saved mode: the recap beat itself
+    // is the state, so the menu still offers "Remove recap" and writes the
+    // explicit `off` that stops the automatic one.
+    const doc = project();
+    const beats = (doc && doc.beats && doc.beats[cueId]) || [];
+    return beats.some((beat) => beat && beat.kind === 'recap');
   }
 
   // Adds / removes the full-text recap ("show the whole line again") for a cue.
