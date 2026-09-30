@@ -1,10 +1,11 @@
 'use strict';
 
 // The subtitle track's frame-wide graphics sit on their own row: the track's
-// graphicsHidden flag (data) and the subtitle-only view drop them, while the
-// text-linked frame posts (the shape layer) stay with the lyrics. The engine
-// cannot run without WebGL here, so the pure decision helpers plus the wiring
-// are pinned.
+// graphicsHidden flag (data) and the subtitle-only view drop every frame post
+// (light leaks, vignette, camera moves, the shape layer), while the posts that
+// move with the letters (text posts, bgShape, edges, clones) stay with the
+// lyrics. The engine cannot run without WebGL here, so the pure decision
+// helpers plus the wiring are pinned.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -29,12 +30,13 @@ test('postTarget resolves the instance, the defaults and the registry', () => {
   assert.equal(fx.postTarget({ type: 'sparkles', defaults: { target: 'frame' } }), 'frame');
 });
 
-test('isGraphicsPost keeps the text-linked posts with the lyrics', () => {
+test('isGraphicsPost puts every frame post on the graphics row', () => {
   assert.equal(fx.isGraphicsPost({ type: 'vignette' }), true);
   assert.equal(fx.isGraphicsPost({ type: 'lightLeak' }), true);
   assert.equal(fx.isGraphicsPost({ type: 'camera' }), true);
   assert.equal(fx.isGraphicsPost({ type: 'crt' }), true);
-  assert.equal(fx.isGraphicsPost({ type: 'shapeLayer' }), false);
+  assert.equal(fx.isGraphicsPost({ type: 'shapeLayer' }), true);
+  assert.equal(fx.isGraphicsPost({ type: 'shapeLayer', enabled: false }), false);
   assert.equal(fx.isGraphicsPost({ type: 'sparkles' }), false);
   assert.equal(fx.isGraphicsPost({ type: 'godRays' }), false);
   assert.equal(fx.isGraphicsPost({ type: 'vignette', enabled: false }), false);

@@ -103,12 +103,14 @@
     return (instance && instance.target) || (instance && instance.defaults && instance.defaults.target) || entryTarget || 'text';
   }
 
-  // frame posts that follow the text box belong with the lyrics; every other
-  // frame post is a graphic of its own (the subtitle track's graphics row)
-  const TEXT_LINKED_FRAME_POSTS = ['shapeLayer'];
+  // every frame post is a graphic of its own (the subtitle track's graphics
+  // row): light leaks, vignette, camera moves and the shape layer too — the
+  // shape layer only follows the whole text block and its repeats / glow
+  // spread far from the letters. What moves with the letters (text posts,
+  // bgShape, edges, clones) stays with the lyrics.
   function isGraphicsPost(instance) {
     if (!instance || instance.enabled === false) return false;
-    return postTarget(instance) === 'frame' && !TEXT_LINKED_FRAME_POSTS.includes(instance.type);
+    return postTarget(instance) === 'frame';
   }
 
   function postUniforms(instance, ctx) {

@@ -11,7 +11,9 @@
   // bursts. The path is stroked with an arc-length parameter, so `trim` draws
   // it on (an underline sweeping in, a frame being drawn, a ring bursting).
   // The shape follows the text block: the engine hands the current text bounds
-  // in through `context.textBox`.
+  // in through `context.textBox`. As a post it belongs to the subtitle track's
+  // graphics row, so `graphicsHidden` and the subtitle-only view drop it with
+  // the other frame-wide graphics.
   //
   // The same vocabulary is registered as `background.shapeLayer`, a backdrop
   // clip the user places on the timeline: shape-ops expands it against the

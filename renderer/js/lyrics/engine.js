@@ -73,8 +73,8 @@ SA.lyricsEngine = (() => {
   }
 
   // the frame-wide graphics a subtitle style carries (light leaks, vignette,
-  // camera moves ...) sit on the track's own graphics row: hidden with it, and
-  // dropped by the subtitle-only view
+  // camera moves, shape layers ...) sit on the track's own graphics row:
+  // hidden with it, and dropped by the subtitle-only view
   function subtitleGraphicsOn(track, view) {
     if (view && view.subtitleOnly === true) return false;
     return !(track && track.graphicsHidden);
