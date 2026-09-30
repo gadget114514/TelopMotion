@@ -2478,6 +2478,20 @@ function createWindow() {
             const cleared = window.SA.preview.captureRGBA(time);
             const clearedCorner = sample(cleared, cleared.width * 0.02, cleared.height * 0.02);
             const clearedOk = !(clearedCorner[1] > 200 && clearedCorner[0] < 60);
+            // The background track's base colour: a set colour fills the frame,
+            // hiding the track clears it back to transparent (the chroma key is
+            // a preset of that colour, not an engine default).
+            const bgTrack = (window.SA.store.state.project.tracks || []).find((track) => track.kind === 'background');
+            window.SA.store.commands.setTrackColor(bgTrack.id, { kind: 'solid', value: '#00b140', alpha: 1 });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            const basePixel = sample(window.SA.preview.captureRGBA(time), 0.02 * plain.width, 0.02 * plain.height);
+            const baseGreenOk = basePixel[1] > 140 && basePixel[0] < 40 && basePixel[3] > 200;
+            window.SA.store.commands.updateTrack(bgTrack.id, { hidden: true });
+            await new Promise((resolve) => setTimeout(resolve, 300));
+            const hiddenPixel = sample(window.SA.preview.captureRGBA(time), 0.02 * plain.width, 0.02 * plain.height);
+            const hiddenBaseOk = hiddenPixel[3] < 10;
+            window.SA.store.commands.setTrackColor(bgTrack.id, null);
+            window.SA.store.commands.updateTrack(bgTrack.id, { hidden: false });
             const preview = document.createElement('canvas');
             preview.width = withForeground.width;
             preview.height = withForeground.height;
@@ -2508,6 +2522,10 @@ function createWindow() {
               mediaItems,
               layerAddedFromMedia,
               clearedOk,
+              basePixel,
+              baseGreenOk,
+              hiddenPixel,
+              hiddenBaseOk,
               glError: window.SA.preview.debugError(),
               png: preview.toDataURL('image/png'),
             });

@@ -63,6 +63,19 @@ test('splitClip then undo restores the project exactly', () => {
   assert.deepEqual(snapshot(), before);
 });
 
+test('setTrackColor stores the background base colour and undo restores it', () => {
+  store.load(fixture());
+  const before = snapshot();
+  const bgId = store.state.project.tracks.find((track) => track.kind === 'background').id;
+  store.commands.setTrackColor(bgId, { kind: 'solid', value: '#00b140', alpha: 1 });
+  assert.deepEqual(store.state.project.tracks.find((track) => track.id === bgId).color, { kind: 'solid', value: '#00b140', alpha: 1 });
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  store.commands.setTrackColor(bgId, { kind: 'solid', value: '#ffffff', alpha: 1 });
+  store.commands.setTrackColor(bgId, null);
+  assert.equal('color' in store.state.project.tracks.find((track) => track.id === bgId), false);
+});
+
 test('trimClip then undo restores the project exactly', () => {
   store.load(fixture());
   const before = snapshot();

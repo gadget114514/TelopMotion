@@ -1162,7 +1162,7 @@ SA.glPasses = (() => {
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, target.texture);
       gl.uniform1i(compositeProgram.uniforms.u_texture, 0);
-      gl.uniform3f(compositeProgram.uniforms.u_clearColor, clearColor[0], clearColor[1], clearColor[2]);
+      gl.uniform4f(compositeProgram.uniforms.u_clearColor, clearColor[0], clearColor[1], clearColor[2], clearColor[3] == null ? 1 : clearColor[3]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
 

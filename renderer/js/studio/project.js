@@ -293,6 +293,20 @@
     return project;
   }
 
+  const TRACK_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+  function normalizeTrackColor(value) {
+    if (!value) return null;
+    if (typeof value === 'string') {
+      return TRACK_COLOR_RE.test(value) ? { kind: 'solid', value, alpha: 1 } : null;
+    }
+    if (isPlainObject(value) && typeof value.value === 'string' && TRACK_COLOR_RE.test(value.value)) {
+      const alpha = Number(value.alpha);
+      return { kind: 'solid', value: value.value, alpha: Number.isFinite(alpha) ? Math.max(0, Math.min(1, alpha)) : 1 };
+    }
+    return null;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -320,6 +334,13 @@
     for (const track of merged.tracks || []) {
       if (track && track.kind === 'subtitle' && track.bgHidden != null) track.bgHidden = !!track.bgHidden;
       if (track && track.kind === 'subtitle' && track.graphicsHidden != null) track.graphicsHidden = !!track.graphicsHidden;
+      // the background track owns the frame base colour; absent / junk = unset
+      // (the canvas stays transparent)
+      if (track && track.kind === 'background') {
+        const color = normalizeTrackColor(track.color);
+        if (color) track.color = color;
+        else delete track.color;
+      }
     }
     if (!merged.meta.createdAt) merged.meta.createdAt = new Date().toISOString();
     merged.meta.updatedAt = project.meta && project.meta.updatedAt ? project.meta.updatedAt : merged.meta.createdAt;

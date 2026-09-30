@@ -1552,6 +1552,20 @@ SA.store = (() => {
         },
       });
     },
+    // The background track's frame base colour: null removes it (transparent).
+    setTrackColor(id, color) {
+      if (!trackById(id)) return;
+      dispatch({
+        label: 'background colour',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.tracks || []).find((track) => track && track.id === id);
+          if (!target) return;
+          if (color == null) delete target.color;
+          else target.color = clone(color);
+        },
+      });
+    },
     // One undo step for every subtitle track (the View menu toggle). The
     // background data (bgShape) is never touched, only the `bgHidden` flag.
     setSubtitleBackgroundsHidden(hidden) {

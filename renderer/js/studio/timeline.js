@@ -541,14 +541,26 @@ SA.timeline = (() => {
     ctx.moveTo(0, y + height - 0.5);
     ctx.lineTo(LABEL_W - 1, y + height - 0.5);
     ctx.stroke();
-    ctx.fillStyle = opts.hidden ? '#5a6175' : opts.color || '#8d96ab';
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const labelX = opts.twisty ? 20 : 8;
+    let textX = labelX;
+    if (opts.swatch) {
+      const swatchY = y + height / 2 - 4.5;
+      ctx.save();
+      ctx.fillStyle = opts.swatch;
+      ctx.fillRect(labelX + 1, swatchY, 9, 9);
+      ctx.strokeStyle = '#0b0d12';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(labelX + 1.5, swatchY + 0.5, 8, 8);
+      ctx.restore();
+      textX = labelX + 14;
+    }
+    ctx.fillStyle = opts.hidden ? '#5a6175' : opts.color || '#8d96ab';
     const removeSize = 14;
     const removeX = LABEL_W - 20 - (opts.bgToggle ? 23 : 0) - removeSize - 2;
     const reserve = (opts.toggle === false ? 6 : 22) + (opts.bgToggle ? 26 : 0) + (removable ? removeSize + 4 : 0);
-    ctx.fillText(fitLabel(title, LABEL_W - labelX - reserve), labelX, y + height / 2);
+    ctx.fillText(fitLabel(title, LABEL_W - textX - reserve), textX, y + height / 2);
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
     if (removable) {
@@ -795,10 +807,14 @@ SA.timeline = (() => {
   function drawLayerTrack(size, row) {
     const foreground = row.slot === 'foreground';
     const anyEnabled = row.layers.some((layer) => layer.enabled !== false);
+    // the background track also owns the frame base colour: a set colour keeps
+    // the track "visible" even without layers (the header shows a swatch)
+    const baseColor = !foreground && row.track && row.track.color ? (typeof row.track.color === 'string' ? row.track.color : row.track.color.value) : null;
     if (row.first) {
       drawTrackHeader(row, trackTitle(row.track), {
         color: foreground ? '#4dc8a0' : '#4d8fc8',
-        hidden: trackHidden(row.track) || !anyEnabled,
+        hidden: trackHidden(row.track) || !(anyEnabled || !!baseColor),
+        swatch: baseColor,
       });
     }
     const y = row.y;

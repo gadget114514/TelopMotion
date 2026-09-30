@@ -3,14 +3,12 @@ window.SA = window.SA || {};
 SA.lyricsEngine = (() => {
   'use strict';
 
-  // No background configured = chroma key green, so the lyrics can be keyed
-  // out in an editor; a background clip / layer paints over it.
-  const CLEAR_COLOR = [0, 0.6902, 0.251];
-  // While a background is configured, transparent moments (a clip fading at a
-  // cue edge, a shape / pattern background that only paints its shapes) stay on
-  // the neutral dark the engine used before the key colour, so switching a beat
-  // or a cue never flashes green.
-  const BASE_COLOR = [0.043, 0.051, 0.070];
+  // The canvas base is the background track's own colour, the stage behind
+  // the clips and the layers. It is unset (transparent) by default: the chroma
+  // key green is a preset of that colour, never an implicit default. Transparent
+  // moments (a clip fading at a cue edge, a shape background that only paints
+  // its shapes) simply show the stage through.
+  const TRANSPARENT = [0, 0, 0, 0];
   // Backdrop shapes stand apart from the lyrics by at least this contrast ratio
   // (WCAG large text); below it the two read as the same colour. The ratio
   // climbs with the raw weird axis (3 -> 5.5), so a weirder backdrop separates
@@ -78,6 +76,51 @@ SA.lyricsEngine = (() => {
   function subtitleGraphicsOn(track, view) {
     if (view && view.subtitleOnly === true) return false;
     return !(track && track.graphicsHidden);
+  }
+
+  // Clips of one track kind, hidden tracks excluded, in start order.
+  function activeClips(project, kind) {
+    const ids = new Set(
+      ((project && project.tracks) || []).filter((track) => track && track.kind === kind && !track.hidden).map((track) => track.id)
+    );
+    if (!ids.size) return [];
+    return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId)).sort((a, b) => a.start - b.start);
+  }
+
+  // The layer tracks (foreground / background) own the layers of their slot:
+  // hiding the track hides its layers (the timeline header shows the same).
+  function layerSlotHidden(project, slot) {
+    return ((project && project.tracks) || []).some((track) => track && track.hidden && track.kind === slot);
+  }
+
+  // The frame base: the background track's own colour (a track-governed
+  // object, toggled with the track's checkbox). Unset or hidden = transparent.
+  function backgroundTrackOf(project) {
+    return ((project && project.tracks) || []).find((track) => track && track.kind === 'background') || null;
+  }
+
+  // Accepts a hex string or a ColorValue and returns the premultiplied
+  // [r, g, b, a] the scene target is cleared with, or null for no colour.
+  function resolveBaseColor(value) {
+    if (!value || !SA.color) return null;
+    let rgba = null;
+    if (typeof value === 'string') {
+      if (SA.color.parse) rgba = SA.color.parse(value);
+    } else if (SA.color.resolve) {
+      const resolved = SA.color.resolve(value, {});
+      if (resolved && resolved.rgba) rgba = resolved.rgba;
+      else if (resolved && resolved.stops && resolved.stops[0]) rgba = resolved.stops[0].rgba;
+    }
+    if (!rgba || typeof rgba.r !== 'number') return null;
+    const alpha = Math.max(0, Math.min(1, rgba.a == null ? 1 : rgba.a));
+    if (alpha <= 0) return null;
+    return [rgba.r * alpha, rgba.g * alpha, rgba.b * alpha, alpha];
+  }
+
+  function backgroundBaseColor(project) {
+    const track = backgroundTrackOf(project);
+    if (!track || track.hidden) return TRANSPARENT;
+    return resolveBaseColor(track.color) || TRANSPARENT;
   }
 
   function createEngine(options) {
@@ -979,32 +1022,6 @@ SA.lyricsEngine = (() => {
       return Math.max(0, Math.min(1, fadeIn > 1e-4 ? (t - clip.start) / fadeIn : 1, fadeOut > 1e-4 ? (clip.end - t) / fadeOut : 1));
     }
 
-    function activeClips(project, kind) {
-      const ids = new Set(
-        ((project.tracks || [])).filter((track) => track && track.kind === kind && !track.hidden).map((track) => track.id)
-      );
-      if (!ids.size) return [];
-      return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId)).sort((a, b) => a.start - b.start);
-    }
-
-    // The base colour of the frame. A project with no background configured
-    // clears to the chroma key green; one that has a background at this moment
-    // (a visible background clip, even while it fades or paints only shapes,
-    // or a background layer) keeps the neutral dark base instead.
-    function backgroundColorFor(project, t) {
-      if (!project) return CLEAR_COLOR;
-      const hasLayer = (project.layers || []).some(
-        (layer) => layer && layer.enabled !== false && (layer.slot || 'background') === 'background'
-      );
-      if (hasLayer) return BASE_COLOR;
-      for (const clip of activeClips(project, 'background')) {
-        const spec = clip.spec || {};
-        if (!spec.type || spec.type === 'none') continue;
-        if (t >= clip.start - 1e-4 && t <= clip.end + 1e-4) return BASE_COLOR;
-      }
-      return CLEAR_COLOR;
-    }
-
     function drawShapeClip(clip, t, duration) {
       if (!pipeline) return;
       const spec = clip.spec || { type: 'none', params: {} };
@@ -1630,9 +1647,10 @@ SA.lyricsEngine = (() => {
       const fonts = state.assets.fonts || [];
       const framePosts = new Map();
       let bloomNeeded = false;
+      const view = state.view || {};
       const layers = (project.layers || []).filter((layer) => layer && layer.enabled !== false);
-      const backgroundLayers = layers.filter((layer) => (layer.slot || 'background') === 'background');
-      const foregroundLayers = layers.filter((layer) => layer.slot === 'foreground');
+      const backgroundLayers = layerSlotHidden(project, 'background') ? [] : layers.filter((layer) => (layer.slot || 'background') === 'background');
+      const foregroundLayers = layerSlotHidden(project, 'foreground') ? [] : layers.filter((layer) => layer.slot === 'foreground');
       let layersDrawn = false;
       let foregroundDrawn = false;
       const drawBackgroundLayers = () => {
@@ -1645,9 +1663,8 @@ SA.lyricsEngine = (() => {
         layerPass.draw(foregroundLayers, { width: state.width, height: state.height }, t);
         foregroundDrawn = true;
       };
-      pipeline.beginScene(backgroundColorFor(project, t));
+      pipeline.beginScene(backgroundBaseColor(project));
       const duration = naturalDuration();
-      const view = state.view || {};
       const subtitleOnly = view.subtitleOnly === true;
       // back to front: background clips + background layers -> backdrop clips ->
       // filler clips -> subtitle tracks (bottom to top) -> foreground layers
@@ -1865,7 +1882,7 @@ SA.lyricsEngine = (() => {
       if (!project) {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         gl.viewport(0, 0, state.width, state.height);
-        gl.clearColor(CLEAR_COLOR[0], CLEAR_COLOR[1], CLEAR_COLOR[2], 1);
+        gl.clearColor(TRANSPARENT[0], TRANSPARENT[1], TRANSPARENT[2], TRANSPARENT[3]);
         gl.clear(gl.COLOR_BUFFER_BIT);
         state.lastFrame = frame;
         return frame;
@@ -1924,7 +1941,7 @@ SA.lyricsEngine = (() => {
         frame.cues.push(entry);
       }
 
-      if (state.textTarget) textPass.drawComposite(gl, state.textTarget, backgroundColorFor(project, t));
+      if (state.textTarget) textPass.drawComposite(gl, state.textTarget, backgroundBaseColor(project));
       state.lastFrame = frame;
       return frame;
     }
@@ -2011,12 +2028,12 @@ SA.lyricsEngine = (() => {
       prepareLayers,
       debugError,
       dispose,
-      clearColor: CLEAR_COLOR,
-      backgroundColorFor,
+      clearColor: TRANSPARENT,
+      backgroundBaseColor,
       isLost: () => state.lost,
       isWebGL2: true,
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, backgroundBaseColor };
 })();

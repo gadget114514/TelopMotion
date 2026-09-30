@@ -45,34 +45,35 @@ SA.canvas2dFallback = (() => {
       state.assets = assets || { fonts: [] };
     }
 
-    // Same rule as the WebGL engine: the chroma key green only shows while no
-    // background is configured; a configured background keeps the neutral dark
-    // base so a beat / cue switch does not flash green (the fallback has no
-    // background pass, so the base is all there is).
-    function backgroundColorFor(project, t) {
-      if (!project) return '#00b140';
-      const hasLayer = (project.layers || []).some(
-        (layer) => layer && layer.enabled !== false && (layer.slot || 'background') === 'background'
-      );
-      if (hasLayer) return '#0b0d12';
-      const ids = new Set(
-        ((project.tracks || [])).filter((track) => track && track.kind === 'background' && !track.hidden).map((track) => track.id)
-      );
-      const active = ((project.clips || [])).some((clip) => {
-        if (!clip || !ids.has(clip.trackId)) return false;
-        const spec = clip.spec || {};
-        if (!spec.type || spec.type === 'none') return false;
-        return t >= clip.start - 1e-4 && t <= clip.end + 1e-4;
-      });
-      return active ? '#0b0d12' : '#00b140';
+    // Same rule as the WebGL engine: the canvas base is the background track's
+    // own colour; unset or hidden clears to transparent. The chroma key green
+    // is a preset of that colour, never an implicit default.
+    function backgroundBaseColor(project) {
+      const track = ((project && project.tracks) || []).find((entry) => entry && entry.kind === 'background');
+      if (!track || track.hidden || !track.color || !SA.color) return null;
+      const value = track.color;
+      let rgba = null;
+      if (typeof value === 'string') rgba = SA.color.parse ? SA.color.parse(value) : null;
+      else {
+        const resolved = SA.color.resolve ? SA.color.resolve(value, {}) : null;
+        rgba = (resolved && resolved.rgba) || null;
+      }
+      if (!rgba || typeof rgba.r !== 'number') return null;
+      const alpha = Math.max(0, Math.min(1, rgba.a == null ? 1 : rgba.a));
+      if (alpha <= 0) return null;
+      return `rgba(${Math.round(rgba.r * 255)}, ${Math.round(rgba.g * 255)}, ${Math.round(rgba.b * 255)}, ${alpha})`;
     }
 
     function renderFrame(t) {
       resize(state.width, state.height);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       const project = state.project;
-      ctx.fillStyle = backgroundColorFor(project, t);
-      ctx.fillRect(0, 0, state.width, state.height);
+      ctx.clearRect(0, 0, state.width, state.height);
+      const base = backgroundBaseColor(project);
+      if (base) {
+        ctx.fillStyle = base;
+        ctx.fillRect(0, 0, state.width, state.height);
+      }
       const frame = { cues: [], time: t };
       if (!project) return frame;
       const fonts = state.assets.fonts || [];

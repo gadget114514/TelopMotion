@@ -1234,6 +1234,48 @@ SA.inspector = (() => {
     body.appendChild(actions);
   }
 
+  // The background track owns the frame base colour: the stage behind the
+  // clips and the layers. Unset = transparent; the chroma key green is a
+  // preset. The track's own checkbox hides the colour with its clips/layers.
+  function renderTrackSection(container) {
+    const doc = project();
+    const sel = selectionInfo();
+    const track = ((doc && doc.tracks) || []).find((entry) => entry.id === sel.trackId);
+    if (!track || track.kind !== 'background') return;
+    const body = section(container, 'trackColor', t('studio.inspector.bgColor'));
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit';
+    hint.textContent = t('studio.inspector.bgColorHint');
+    body.appendChild(hint);
+    const control = SA.controls.colorControl(track.color || null, (next) => {
+      const color = next == null ? null : typeof next === 'string' ? { kind: 'solid', value: next, alpha: 1 } : next;
+      SA.store.commands.setTrackColor(track.id, color);
+    });
+    if (!track.color) {
+      const swatch = control.querySelector('.ctrl-swatch');
+      if (swatch) {
+        swatch.style.background = 'repeating-conic-gradient(#3a4050 0% 25%, #22262f 0% 50%) 50% / 8px 8px';
+        swatch.title = t('studio.inspector.bgColorTransparent');
+      }
+    }
+    row(body, 'track.color', t('studio.inspector.bgColor'), control, { noKey: true, noReset: true });
+    const actions = document.createElement('div');
+    actions.className = 'layer-order';
+    const chroma = document.createElement('button');
+    chroma.type = 'button';
+    chroma.className = 'btn btn-mini';
+    chroma.textContent = t('studio.inspector.bgColorChroma');
+    chroma.addEventListener('click', () => SA.store.commands.setTrackColor(track.id, { kind: 'solid', value: '#00b140', alpha: 1 }));
+    const clear = document.createElement('button');
+    clear.type = 'button';
+    clear.className = 'btn btn-mini';
+    clear.textContent = t('studio.inspector.bgColorTransparent');
+    clear.addEventListener('click', () => SA.store.commands.setTrackColor(track.id, null));
+    actions.appendChild(chroma);
+    actions.appendChild(clear);
+    body.appendChild(actions);
+  }
+
   function renderLayerSection(container) {
     const doc = project();
     const id = String(selectionInfo().raw).replace(/^layer:/, '');
@@ -2031,6 +2073,7 @@ SA.inspector = (() => {
     renderBreadcrumb(el.body);
     if (sel.kind === 'none') return;
     if (sel.kind === 'track') {
+      renderTrackSection(el.body);
       lastSelection = key;
       return;
     }

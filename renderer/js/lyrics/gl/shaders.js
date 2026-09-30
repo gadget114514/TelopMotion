@@ -506,12 +506,13 @@ SA.glShaders = (() => {
   precision highp float;
   in vec2 v_uv;
   uniform sampler2D u_texture;
-  uniform vec3 u_clearColor;
+  uniform vec4 u_clearColor;
   out vec4 fragColor;
   void main() {
     vec4 text = texture(u_texture, v_uv);
-    vec3 color = text.rgb + u_clearColor * (1.0 - text.a);
-    fragColor = vec4(color, 1.0);
+    float alpha = text.a + u_clearColor.a * (1.0 - text.a);
+    vec3 color = text.rgb + u_clearColor.rgb * (1.0 - text.a);
+    fragColor = vec4(color, alpha);
   }`;
 
   const COPY_FRAG = `#version 300 es
