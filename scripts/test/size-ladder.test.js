@@ -305,3 +305,49 @@ test('resizeBeats gives a target a level neither neighbour uses and leaves the r
     assert.equal(row.px, before.get(row.beat.id), `${row.beat.id} moved`);
   }
 });
+
+// The app path: with fonts loaded, `measureLine` already includes
+// letterSpacing, so `includesSpacing` must stop `maxSizeForLines` from adding
+// it a second time. Skipped when the font assets / opentype.js are absent.
+const realFontPath = path.join(ROOT, 'renderer', 'fonts', 'NotoSans-Regular.ttf');
+let opentype = null;
+try {
+  opentype = require(path.join(ROOT, 'node_modules', 'opentype.js'));
+} catch {
+  opentype = null;
+}
+const hasRealFont = !!opentype && fs.existsSync(realFontPath);
+
+test('a loaded font measurer includes letterSpacing only once', { skip: hasRealFont ? false : 'font assets not available' }, async () => {
+  const previousWindow = Object.prototype.hasOwnProperty.call(globalThis, 'window') ? globalThis.window : undefined;
+  const previousOpentype = globalThis.opentype;
+  const previousPlatform = SA.platform;
+  globalThis.window = globalThis;
+  globalThis.opentype = opentype;
+  SA.platform = { readAsset: async (rel) => fs.readFileSync(path.join(ROOT, 'renderer', rel)) };
+  require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'font.js'));
+  try {
+    const entry = await SA.lyricsFont.load('NotoSans-Regular');
+    SA.lyricsFont.setActive([entry]);
+    const style = { fontId: 'NotoSans-Regular', letterSpacing: 0.1 };
+    const measurer = SA.textflow.makeMeasurer({ style, lang: 'en' });
+    assert.equal(measurer.includesSpacing, true);
+    const frame = { width: 1920, height: 1080 };
+    const size = SA.textflow.maxSizeForLines(['Hello world'], { frame, style });
+    // the measurer's own width is the single source of the spacing: the size
+    // would be smaller if the helper added letterSpacing again
+    const expected = (0.94 * 1920) / (measurer('Hello world', 100) / 100);
+    assert.ok(Math.abs(size - expected) < 1e-6, `font size ${size} vs ${expected}`);
+    const plain = SA.textflow.maxSizeForLines(['Hello world'], { frame, style: { fontId: 'NotoSans-Regular', letterSpacing: 0 } });
+    assert.ok(size < plain, `spaced ${size} vs plain ${plain}`);
+  } finally {
+    if (SA.lyricsFont && typeof SA.lyricsFont.setActive === 'function') SA.lyricsFont.setActive([]);
+    delete SA.lyricsFont;
+    if (previousPlatform === undefined) delete SA.platform;
+    else SA.platform = previousPlatform;
+    if (previousOpentype === undefined) delete globalThis.opentype;
+    else globalThis.opentype = previousOpentype;
+    if (previousWindow === undefined) delete globalThis.window;
+    else globalThis.window = previousWindow;
+  }
+});
