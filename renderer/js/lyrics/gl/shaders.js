@@ -679,6 +679,14 @@ SA.glShaders = (() => {
   }
 
   void main() {
+    // The empty distance field reports -1000 (see glSdf's RESOLVE_FRAG): a
+    // beat between two states has no mask edges to seed from, and without
+    // this guard every outline / glow type reads the field as "just outside"
+    // everywhere and covers the whole frame.
+    if (sdfAt(v_uv) < -900.0) {
+      fragColor = vec4(0.0);
+      return;
+    }
     float inside = texture(u_text, v_uv).a;
     float distance = sdfAt(v_uv - u_offset);
     float alpha = 0.0;

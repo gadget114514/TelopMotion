@@ -80,6 +80,13 @@ SA.glSdf = (() => {
     if (seed.x >= 0.0) {
       float distance = length(seed - point);
       signed = inside > 0.5 ? -distance : distance;
+    } else {
+      // no mask edge anywhere in the field (a beat whose letters are all
+      // invisible): there is no shape to outline, so report a sentinel the
+      // consumers can tell apart from a real outside distance. Without it the
+      // edge pass reads the empty field as "just outside" everywhere and
+      // paints a frame-sized outline / glow over the beat.
+      signed = -1000.0 * u_maxDistance;
     }
     fragColor = vec4(signed / u_maxDistance, texture(u_mask, v_uv).a, 0.0, 1.0);
   }`;
