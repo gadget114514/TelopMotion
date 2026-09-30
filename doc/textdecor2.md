@@ -626,6 +626,8 @@
 
 リリースは P0〜P4 を 1 セット、その後 P5、P6 と続ける（コミットは分ける）。
 
+> 実装状況: P0〜P6 は実装済み。コミットは「Add the text decoration axes and the soft body physics」（P0〜P4）、「Fix the per-letter id decode in the fill pass」、「Add scoped partial decorations」（P5）、「Add the multi-line edge」（P6）の 4 本。
+
 ---
 
 ## 6. 設計

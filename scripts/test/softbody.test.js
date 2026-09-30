@@ -142,3 +142,25 @@ test('gravityFall with floor ground drops further than the eased formula', () =>
   assert.ok(result.letters[0].softLattice instanceof Float32Array);
   assert.ok(result.letters[0].y > 540, `the letter should have fallen (${result.letters[0].y})`);
 });
+
+test('the lattice is packed into the state texture rows', () => {
+  const warp = require(path.join(FX_DIR, 'warp.js'));
+  global.SA = { warp };
+  global.window = { SA: global.SA };
+  require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'));
+  const passes = global.window.SA.glPasses || global.SA.glPasses;
+  const rows = passes._test.STATE_ROWS;
+  assert.equal(rows, 23);
+  const data = new Float32Array(rows * 4);
+  const lattice = new Float32Array(50);
+  for (let i = 0; i < lattice.length; i += 1) lattice[i] = 0.25;
+  passes._test.packStateRows([{ x: 1, y: 2, softLattice: lattice }], data, 1);
+  assert.equal(data[9 * 4], 0.25);
+  assert.equal(data[9 * 4 + 3], 0.25);
+  assert.equal(data[21 * 4], 0.25, 'the 25th point lives in row 21');
+  assert.equal(data[22 * 4], 1, 'the lattice-on flag');
+  const empty = new Float32Array(rows * 4);
+  passes._test.packStateRows([{ x: 0, y: 0 }], empty, 1);
+  assert.equal(empty[9 * 4], 0, 'a letter without a lattice clears the rows');
+  assert.equal(empty[22 * 4], 0);
+});
