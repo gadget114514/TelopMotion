@@ -87,12 +87,47 @@
     params: [
       { key: 'gravity', kind: 'number', min: 0.5, max: 6, step: 0.1, default: 2.4 },
       { key: 'spin', kind: 'number', min: 0, max: 720, step: 10, default: 160 },
+      { key: 'floor', kind: 'select', options: ['none', 'ground'], default: 'none', optional: true, catalog: false },
+      { key: 'restitution', kind: 'number', min: 0, max: 0.9, step: 0.05, default: 0.2, optional: true, catalog: false },
+      { key: 'friction', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.4, optional: true, catalog: false },
     ],
+    normalize(params) {
+      const out = { ...params, gravity: Math.max(0.5, Math.min(6, Number(params.gravity) || 2.4)) };
+      if (params.restitution != null) out.restitution = Math.max(0, Math.min(0.9, Number(params.restitution) || 0));
+      if (params.friction != null) out.friction = Math.max(0, Math.min(1, Number(params.friction) || 0));
+      return out;
+    },
     cpu(state, p, params, rng, info) {
       const k = clamp01(p);
+      if (params.floor === 'ground') {
+        // the fall is integrated in real time by the physics core (motion.js):
+        // only the fade stays on the eased progress
+        state.opacity *= 1 - Math.max(0, k - 0.55) / 0.45;
+        return;
+      }
       state.y += (params.gravity == null ? 2.4 : params.gravity) * k * k * info.shortSide * 0.5;
       state.rot += (rng() * 2 - 1) * (params.spin == null ? 160 : params.spin) * k;
       state.opacity *= 1 - Math.max(0, k - 0.55) / 0.45;
+    },
+    // `floor: 'ground'` releases the letter at the exit start and drops it onto
+    // the bottom of the block; `none` keeps the legacy eased fall untouched
+    physics(params, phase) {
+      if (phase !== 'exit' || params.floor !== 'ground') return null;
+      return {
+        grid: 5,
+        drive: 'none',
+        gravity: (params.gravity == null ? 2.4 : Number(params.gravity)) * 4,
+        restitution: params.restitution == null ? 0.2 : Number(params.restitution),
+        friction: params.friction == null ? 0.4 : Number(params.friction),
+        spin: params.spin == null ? 160 : Number(params.spin),
+        // the ground sits one line height below the block bottom, so a
+        // single-line block still has somewhere to fall to
+        floor: 1,
+        stiffness: 0.7,
+        damping: 0.08,
+        inertia: 0.25,
+        areaStiffness: 0.9,
+      };
     },
   });
 

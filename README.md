@@ -39,6 +39,8 @@ Text is laid out with `Intl.Segmenter`, converted to glyph outlines with opentyp
 
 Animation · Layout · Enter · Exit · Hold · Location · Fill · Edge · Post · Background · Color
 
+The decomposition of every effect into axes (glyph source, contour ops, deformation, representation, texture, visibility, driver, placement, timing, duplication, layering, scope), the full type-by-type mapping and the roadmap (physics soft body, scoped decorations, multi-line edges) live in [doc/textdecor2.md](doc/textdecor2.md).
+
 Each group has its own easing (in/out), and Fill/Edge/Post have many types (gradients, chrome, fire, marble, holographic, outline, neon glow, bevel, extrude, drop shadow, glitch and dissolve families, bloom, film grain, vignette, and more).
 
 **Dynamic font size and font deformation**: the text block can scale around its own centre, so the letters and the gaps between them grow together — `hold.fontSize` pulses between two sizes, `hold.fillScreen` grows the block until it fills the frame (with a cap), and `enter.megaZoomIn` / `exit.megaZoomOut` fly the camera through screen-filling type. Deformations run in the vertex shader through three slots (`jelly`, `wobbleWarp`, `twist`, `breathing`, `squashStretch`, `swirl`, and the block / letter `hold.warp` / `hold.letterWarp` primitives in the registry); a block-space deformation reserves one slot so a font-size move can never be hidden by a letter deformation.

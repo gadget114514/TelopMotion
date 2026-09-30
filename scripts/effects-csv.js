@@ -19,7 +19,7 @@ const fx = require(path.join(FX_DIR, 'registry.js'));
 const CORE_FILES = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat'];
 // extended primitives / presets; a file that does not exist yet is skipped so
 // the catalogue always reflects what the build actually has
-const EXTRA_FILES = ['warp', 'animator', 'selector', 'camera', 'shape-layer', 'staged-presets'];
+const EXTRA_FILES = ['warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody', 'staged-presets'];
 for (const name of [...CORE_FILES, ...EXTRA_FILES]) {
   const file = path.join(FX_DIR, `${name}.js`);
   if (fs.existsSync(file)) require(file);

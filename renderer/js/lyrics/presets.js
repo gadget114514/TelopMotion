@@ -999,8 +999,37 @@
         background: { type: 'perspectiveGrid', params: { sun: 'none', horizon: 0.68, spacing: 0.18, speed: 0.4, lineWidth: 1, glow: 0.7, fog: 0.65, sunSize: 0 } },
       },
     },
+    {
+      id: 'fallInOrder',
+      name: '順番に落下',
+      pack: 'pro',
+      tags: ['physical', 'fall', 'medium'],
+      axes: { speed: 0.55, energy: 0.6, softness: 0.4, density: 0.5, brightness: 0.55, weird: 0.4 },
+      style: {
+        text: { size: 120, lineHeight: 1.12, letterSpacing: 0.02, align: 'center', maxWidth: 0.9 },
+        palette: { name: 'proFall', colors: ['#0a0b10', '#151824', '#f5f7ff', '#9fb4ff', '#ffd166', '#ff8a8a'] },
+        color: { fill: { kind: 'gradient', type: 'linear', angle: 90, stops: [{ color: '#f5f7ff' }, { color: '#9fb4ff' }] } },
+        layout: { type: 'row', params: {} },
+        location: { type: 'center', params: {} },
+        // the letters leave one after another; the exit itself is integrated in
+        // real time by exit.gravityFall (floor: ground)
+        animation: { type: 'stagger', params: { order: 'ltr', each: 0.1, unit: 'letter' } },
+        enter: { type: 'fade', params: {}, motion: { in: { duration: 0.4, ease: 'linear' } } },
+        exit: {
+          type: 'gravityFall',
+          params: { gravity: 3.6, spin: 120, floor: 'ground', restitution: 0.15, friction: 0.5 },
+          motion: { out: { duration: 0.9, ease: 'linear' } },
+        },
+        fill: { type: 'solid', params: {} },
+        edge: [{ type: 'outline', params: { width: 2, softness: 0.3 } }],
+        post: [
+          { type: 'camera', params: { move: 'pushIn', amount: 0.08, speed: 0.2 } },
+          { type: 'vignette', params: { amount: 0.35, softness: 0.6 } },
+        ],
+        background: { type: 'gradient4', params: { speed: 0.2, swirl: 0.25, blend: 1.2, jitter: 0.3 } },
+      },
+    },
   ];
-
 
 
   let genreCache = null;

@@ -16,10 +16,16 @@ SA.glPasses = (() => {
     return Math.max(0, Math.min(1, value));
   }
 
-  // Per-letter state texture: 9 RGBA rows. Rows 0-4 are the original layout,
+  // Per-letter state texture: 23 RGBA rows. Rows 0-4 are the original layout,
   // rows 5-6 hold the second and third deformation slots, row 7 the block-warp
-  // origin and half-size, row 8 the wipe / flash / mask fields.
-  const STATE_ROWS = 9;
+  // origin and half-size, row 8 the wipe / flash / mask fields. Rows 9-21 carry
+  // the soft body lattice (25 vec2: xy is an even node, zw the next odd node)
+  // and row 22 the lattice / decor flags.
+  const STATE_ROWS = 23;
+  const LATTICE_ROW0 = 9;
+  const LATTICE_ROW1 = 21;
+  const LATTICE_FLAGS_ROW = 22;
+  const LATTICE_POINTS = 25;
 
   // Text background state texture: 7 RGBA rows. Rows 0-4 are the original
   // layout, row 5 the trim / outline stroke and row 6 the dash / fill amount.
@@ -92,6 +98,25 @@ SA.glPasses = (() => {
       data[at(8) + 1] = state.wipeSoft == null ? 0 : state.wipeSoft;
       data[at(8) + 2] = state.flash || 0;
       data[at(8) + 3] = state.maskFrac == null ? 1 : state.maskFrac;
+      // the soft body lattice: rows 9-21, row 22 carries the on / decor flags.
+      // Every letter must write the rows (the buffer is reused across frames).
+      for (let row = LATTICE_ROW0; row <= LATTICE_FLAGS_ROW; row += 1) {
+        const base = at(row);
+        data[base] = 0;
+        data[base + 1] = 0;
+        data[base + 2] = 0;
+        data[base + 3] = 0;
+      }
+      const lattice = state.softLattice;
+      if (lattice && lattice.length >= LATTICE_POINTS * 2) {
+        for (let point = 0; point < LATTICE_POINTS; point += 1) {
+          const row = LATTICE_ROW0 + (point >> 1);
+          const offset = (point & 1) * 2;
+          data[at(row) + offset] = lattice[point * 2] || 0;
+          data[at(row) + offset + 1] = lattice[point * 2 + 1] || 0;
+        }
+        data[at(LATTICE_FLAGS_ROW)] = 1;
+      }
       data[at(4)] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
       data[at(4) + 1] = state.reprProgress == null ? 1 : state.reprProgress;
       data[at(4) + 2] = state.colorMix || 0;

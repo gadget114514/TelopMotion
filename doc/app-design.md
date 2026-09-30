@@ -800,6 +800,8 @@ Every effect function is a pure `(state, p, params, rng, info) → void`, where 
 
 ## 7. Effect catalog (`lyrics/effects/*.js`)
 
+> **分解軸と物理の設計**: 演出を A〜L の軸に分解した棚卸し・全 type の対応表・空白の分析・ロードマップ（内在力ソフトボディ、部分演出、多重化）は [textdecor2.md](./textdecor2.md) にある。
+
 Each effect is registered with a **descriptor**:
 ```js
 SA.fx.register({

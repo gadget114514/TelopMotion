@@ -1,15 +1,16 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics) {
   'use strict';
 
   const TAU = Math.PI * 2;
   const MAX_DEPTH = 4;
+  const PHYSICS_DT = physics && physics.DT ? physics.DT : 1 / 120;
 
   const GROUPS = ['animation', 'layout', 'enter', 'exit', 'location'];
 
@@ -517,8 +518,14 @@
     }
     const states = [];
     const envelopes = { layoutIn: 0, layoutOut: 0, enter: 0, exit: 0, hold: 0 };
+    const enterEntry = fx.get('enter', enterType);
+    const exitEntry = fx.get('exit', exitType);
 
-    for (let index = 0; index < N; index += 1) {
+    // Steps 2-5 of the letter evaluation (formation -> enter -> hold -> exit)
+    // as a function of the beat-local time. Every letter calls it once; the
+    // physics letters call it again at earlier times to measure the rigid
+    // acceleration that drives the soft body.
+    function rigidAt(index, beatLocal) {
       const letter = letters[index];
       const offset = offsets[index];
       const letterRandom = {
@@ -528,7 +535,8 @@
         layout: rng.rngFor(seed, letter.path, 'layout'),
       };
 
-      let local = Math.max(0, t - beat.start);
+
+      let local = Math.max(0, beatLocal);
       if (animation.timeWarpEase && duration > 0) {
         const warped = easing.get(animation.timeWarpEase)(clamp01(local / duration)) * duration;
         local = warped;
@@ -605,7 +613,6 @@
         state.y += num(drift.y) * shortSide * holdLocal * 0.1;
       }
 
-      const enterEntry = fx.get('enter', enterType);
       if (enterEntry && enterEntry.cpu) {
         enterEntry.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, {
           i: index,
@@ -643,10 +650,10 @@
             h = half ? period - h : h;
           }
         }
-        holdEntryList.push({ instance: holdInstance, entry: holdEntry, env, h, rng: letterRandom.hold });
+        holdEntryList.push({ instance: holdInstance, entry: holdEntry, env, h, rng: letterRandom.hold, params: { ...(holdInstance.params || {}), ...(paramOverrides.hold || {}) } });
       }
       for (const hold of holdEntryList) {
-        hold.entry.cpu(state, hold.h, hold.env, { ...(hold.instance.params || {}), ...(paramOverrides.hold || {}) }, hold.rng, {
+        hold.entry.cpu(state, hold.h, hold.env, hold.params, hold.rng, {
           i: index,
           N,
           analysis,
@@ -666,7 +673,6 @@
         });
       }
 
-      const exitEntry = fx.get('exit', exitType);
       if (exitEntry && exitEntry.cpu && px > 0) {
         exitEntry.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, {
           i: index,
@@ -685,6 +691,164 @@
           letterY: state.y,
           beatDuration: duration,
         });
+      }
+
+      return {
+        state,
+        letter,
+        offset,
+        local,
+        holdLocal,
+        pe,
+        px,
+        layoutIn,
+        layoutOut,
+        holdEnv: holdEntryList.length ? holdEntryList[0].env : 0,
+        holdList: holdEntryList,
+        base,
+        keyframeDeltas,
+        enterParams: enterParamsResolved,
+        exitParams: exitParamsResolved,
+        enterStart,
+        exitStart,
+      };
+    }
+
+    // --- soft body physics ----------------------------------------------------
+    // A descriptor with a physics(params, phase) hook provides the config for
+    // the lattice simulation; the hold list is searched first, then the enter
+    // and the exit, so a letter never runs two independent simulations. The
+    // hook contract requires the descriptor's cpu to be a no-op.
+    const physicsCache = scene.__phys || (scene.__phys = new Map());
+    if (physicsCache.size > 512) physicsCache.clear();
+
+    function physicsEntryAt(rigid) {
+      for (const hold of rigid.holdList) {
+        if (typeof hold.entry.physics !== 'function') continue;
+        const cfg = hold.entry.physics(hold.params, 'hold');
+        if (cfg) return { cfg, phase: 'hold', baseTime: 0 };
+      }
+      if (enterEntry && typeof enterEntry.physics === 'function') {
+        const cfg = enterEntry.physics(rigid.enterParams, 'enter');
+        if (cfg) return { cfg, phase: 'enter', baseTime: rigid.enterStart };
+      }
+      if (exitEntry && typeof exitEntry.physics === 'function' && rigid.px > 0) {
+        const cfg = exitEntry.physics(rigid.exitParams, 'exit');
+        if (cfg) return { cfg, phase: 'exit', baseTime: rigid.exitStart };
+      }
+      return null;
+    }
+
+    function evaluatePhysics(index, letter, rigid) {
+      if (!physics || typeof physics.simulateTo !== 'function') return null;
+      // the legibility sampler skips the lattice: a style that carries a
+      // physics entry is judged as "never settled" and repaired without paying
+      // for a thousand simulations
+      if (options.skipPhysics) return null;
+      const choice = physicsEntryAt(rigid);
+      if (!choice) return null;
+      const cfg = choice.cfg;
+      const phase = choice.phase;
+      const baseTime = choice.baseTime;
+      const halfW = Math.max(1, num(letter.local && letter.local.w, 0) / 2);
+      const halfH = Math.max(1, num(letter.local && letter.local.h, 0) / 2);
+      const em = Math.max(8, num(letter.size, 24));
+      const blockBottom = anchorY + (blockHalf ? blockHalf.y : 0);
+      const heightPx = num(cfg.height, 0) * em;
+      // a gravity drop holds the letter above its place until the enter starts
+      if (phase === 'enter' && rigid.local < baseTime) {
+        return { dx: 0, dy: -heightPx, rot: 0, lattice: null };
+      }
+      if (phase === 'exit' && rigid.local < baseTime) return null;
+
+      const floorWorld =
+        cfg.floor === 'rest'
+          ? rigid.state.y + halfH
+          : cfg.floor == null
+            ? null
+            : blockBottom + num(cfg.floor, 0) * em;
+      const maxT = Math.max(0.01, duration + exitDef.out.duration + 0.5);
+      const needAccel = num(cfg.inertia, 0) > 0;
+      // the rigid base only has to be re-sampled per step when its acceleration
+      // feeds the lattice; otherwise the current frame's base is enough
+      const staticBase = needAccel ? null : { x: rigid.state.x, y: rigid.state.y, rot: rigid.state.rot };
+      const samples = [];
+      let lastStep = -1;
+      const sampleAt = (simT, sim) => {
+        if (sim.steps < lastStep) samples.length = 0;
+        lastStep = sim.steps;
+        for (const sample of samples) if (Math.abs(sample.t - simT) < 1e-9) return sample;
+        const sample = { t: simT };
+        const evaluated = rigidAt(index, baseTime + simT);
+        sample.x = evaluated.state.x;
+        sample.y = evaluated.state.y;
+        sample.rot = evaluated.state.rot;
+        samples.push(sample);
+        if (samples.length > 6) samples.shift();
+        return sample;
+      };
+      const bpm = audioFeatures && num(audioFeatures.bpm, 0) > 0 ? num(audioFeatures.bpm, 120) : 120;
+      const onsets = cfg.sync === 'beat' ? physics.onsetTimes(analysis) || physics.beatGrid(bpm, maxT) : null;
+      const driveAt = (simT, sim) => {
+        const current = staticBase || sampleAt(simT, sim);
+        let ax = 0;
+        let ay = 0;
+        let arot = 0;
+        if (needAccel) {
+          const s0 = samples.find((sample) => Math.abs(sample.t - (simT - PHYSICS_DT)) < 1e-6);
+          const s1 = samples.find((sample) => Math.abs(sample.t - (simT - PHYSICS_DT * 2)) < 1e-6);
+          if (s0 && s1) {
+            const dt2 = PHYSICS_DT * PHYSICS_DT;
+            ax = (current.x - 2 * s0.x + s1.x) / dt2;
+            ay = (current.y - 2 * s0.y + s1.y) / dt2;
+            arot = (current.rot - 2 * s0.rot + s1.rot) / dt2;
+          }
+        }
+        const drive = {
+          accel: { x: ax, y: ay, rot: arot },
+          unit: { x: halfW, y: halfH },
+          gravity: num(cfg.gravity, 0),
+          kick: onsets && cfg.beatKick ? physics.kickAt(onsets, simT, PHYSICS_DT) * num(cfg.beatKick, 0) : 0,
+        };
+        if (floorWorld != null) {
+          drive.floor = {
+            nodeY: (floorWorld - current.y - sim.com.y) / halfH,
+            comY: floorWorld - current.y - halfH,
+          };
+        }
+        return drive;
+      };
+
+      const spinSign = rng.hash32(letter.path, 'physspin') % 2 ? 1 : -1;
+      const key = [beat.id || scene.beatId, 'phys', index, phase, rng.hash32(JSON.stringify(cfg)), Math.round(frame.width), Math.round(frame.height), seed].join('|');
+      const result = physics.simulateTo(physicsCache, key, rigid.local - baseTime, cfg, {
+        dt: PHYSICS_DT,
+        maxT,
+        driveAt,
+        initial: { y: phase === 'enter' ? -heightPx : 0, vrot: num(cfg.spin, 0) * spinSign },
+      });
+      return { dx: result.dx, dy: result.dy, rot: result.rot, lattice: result.lattice, active: result.active, halfW, halfH };
+    }
+
+    for (let index = 0; index < N; index += 1) {
+      const letter = letters[index];
+      const rigid = rigidAt(index, t - beat.start);
+      const state = rigid.state;
+      const local = rigid.local;
+      const pe = rigid.pe;
+      const px = rigid.px;
+      const base = rigid.base;
+      const keyframeDeltas = rigid.keyframeDeltas;
+      const soft = evaluatePhysics(index, letter, rigid);
+      if (soft) {
+        state.x += soft.dx;
+        state.y += soft.dy;
+        state.rot += soft.rot;
+        if (soft.lattice) {
+          state.softLattice = soft.lattice;
+          state.physActive = soft.active;
+          state.physHalf = { x: soft.halfW, y: soft.halfH };
+        }
       }
 
       // Custom animations added by hand from the Motion gallery. Each entry
@@ -780,9 +944,9 @@
       state.visibleFrac = clamp01(state.visibleFrac);
       envelopes.enter = Math.max(envelopes.enter, pe);
       envelopes.exit = Math.max(envelopes.exit, px);
-      envelopes.layoutIn = Math.max(envelopes.layoutIn, layoutIn);
-      envelopes.layoutOut = Math.max(envelopes.layoutOut, layoutOut);
-      if (holdEntryList.length) envelopes.hold = Math.max(envelopes.hold, holdEntryList[0].env);
+      envelopes.layoutIn = Math.max(envelopes.layoutIn, rigid.layoutIn);
+      envelopes.layoutOut = Math.max(envelopes.layoutOut, rigid.layoutOut);
+      if (rigid.holdList.length) envelopes.hold = Math.max(envelopes.hold, rigid.holdEnv);
       states.push(state);
     }
 

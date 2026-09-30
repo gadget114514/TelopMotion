@@ -34,6 +34,23 @@
     return factor;
   }
 
+  // The soft body lattice deforms a letter beyond its static bbox: the half
+  // extents grow by the largest normalized displacement the physics wrote.
+  function softHalfOf(state) {
+    const half = state && state.physHalf;
+    const lattice = state && state.softLattice;
+    if (!half || !lattice || !lattice.length) return null;
+    let maxX = 0;
+    let maxY = 0;
+    for (let i = 0; i < lattice.length; i += 2) {
+      const x = Math.abs(num(lattice[i], 0));
+      const y = Math.abs(num(lattice[i + 1], 0));
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+    return { x: num(half.x, 0) * (1 + maxX), y: num(half.y, 0) * (1 + maxY) };
+  }
+
   function setZoomBlockFactor(state, factor) {
     for (const entry of (state && state.deform) || []) {
       if (entry && entry.type === 'zoomBlock') entry.amount = factor - 1;
@@ -47,8 +64,13 @@
     let y1 = -Infinity;
     for (const state of states) {
       const factor = zoomBlockFactorOf(state);
-      const halfW = (Math.abs(num(state.local && state.local.w, 0)) * Math.abs(num(state.scaleX, 1))) / 2;
-      const halfH = (Math.abs(num(state.local && state.local.h, 0)) * Math.abs(num(state.scaleY, 1))) / 2;
+      let halfW = (Math.abs(num(state.local && state.local.w, 0)) * Math.abs(num(state.scaleX, 1))) / 2;
+      let halfH = (Math.abs(num(state.local && state.local.h, 0)) * Math.abs(num(state.scaleY, 1))) / 2;
+      const soft = softHalfOf(state);
+      if (soft) {
+        halfW = Math.max(halfW, soft.x * Math.abs(num(state.scaleX, 1)));
+        halfH = Math.max(halfH, soft.y * Math.abs(num(state.scaleY, 1)));
+      }
       const left = anchor.x + (state.x - halfW - anchor.x) * factor;
       const right = anchor.x + (state.x + halfW - anchor.x) * factor;
       const top = anchor.y + (state.y - halfH - anchor.y) * factor;

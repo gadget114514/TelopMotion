@@ -1115,6 +1115,87 @@
     },
   };
 
+  const ADD_SOFT_EN = {
+    types: {
+      enter: { gravityDrop: 'Gravity drop' },
+      hold: {
+        softBody: 'Soft body', gravityHang: 'Gravity hang', breathe: 'Breathe', crawl: 'Crawl',
+        heartThrob: 'Heart throb', quiver: 'Quiver', jellyFollow: 'Jelly follow', beatBounce: 'Beat bounce',
+      },
+      exit: { fallLinear: 'Fall (linear)' },
+      edge: { multiLine: 'Multi-line edge' },
+    },
+    params: {
+      target: 'Target shape', floor: 'Floor', beatKick: 'Beat kick', restitution: 'Bounce', friction: 'Friction', inertia: 'Inertia',
+      widthDecay: 'Width decay', colorRule: 'Colour rule', layerOffset: 'Layer offset', layerDelay: 'Layer delay',
+    },
+    values: { pressure: 'Pressure', muscle: 'Muscle wave', tremor: 'Tremor', shapeTarget: 'Shape target', ground: 'Ground', gradient: 'Gradient' },
+  };
+  const ADD_SOFT_JA = {
+    types: {
+      enter: { gravityDrop: '重力ドロップ' },
+      hold: {
+        softBody: 'ソフトボディ', gravityHang: '重力ハング', breathe: '呼吸', crawl: '蠕動',
+        heartThrob: '心拍', quiver: '震え', jellyFollow: 'ゼリー追従', beatBounce: 'ビートバウンス',
+      },
+      exit: { fallLinear: '落下（リニア）' },
+      edge: { multiLine: '多重縁取り' },
+    },
+    params: {
+      target: '目標形状', floor: '床', beatKick: 'ビートキック', restitution: '反発', friction: '摩擦', inertia: '慣性',
+      widthDecay: '幅の減衰', colorRule: '色の規則', layerOffset: 'レイヤーのずれ', layerDelay: 'レイヤーの遅延',
+    },
+    values: { pressure: '内圧', muscle: '筋収縮波', tremor: '震え', shapeTarget: '形状追従', ground: '地面', gradient: 'グラデーション' },
+  };
+  const ADD_SOFT_ES = {
+    types: {
+      enter: { gravityDrop: 'Caída por gravedad' },
+      hold: {
+        softBody: 'Cuerpo blando', gravityHang: 'Colgado por gravedad', breathe: 'Respirar', crawl: 'Reptar',
+        heartThrob: 'Latido', quiver: 'Temblor', jellyFollow: 'Seguir gelatina', beatBounce: 'Rebote al ritmo',
+      },
+      exit: { fallLinear: 'Caída (lineal)' },
+      edge: { multiLine: 'Borde múltiple' },
+    },
+    params: {
+      target: 'Forma objetivo', floor: 'Suelo', beatKick: 'Impulso al ritmo', restitution: 'Rebote', friction: 'Fricción', inertia: 'Inercia',
+      widthDecay: 'Caída de grosor', colorRule: 'Regla de color', layerOffset: 'Desfase de capa', layerDelay: 'Retardo de capa',
+    },
+    values: { pressure: 'Presión', muscle: 'Onda muscular', tremor: 'Temblor', shapeTarget: 'Forma objetivo', ground: 'Suelo', gradient: 'Degradado' },
+  };
+  const ADD_SOFT_FR = {
+    types: {
+      enter: { gravityDrop: 'Chute gravitaire' },
+      hold: {
+        softBody: 'Corps souple', gravityHang: 'Suspension gravitaire', breathe: 'Respiration', crawl: 'Rampement',
+        heartThrob: 'Battement', quiver: 'Frisson', jellyFollow: 'Suivi gelée', beatBounce: 'Rebond rythmique',
+      },
+      exit: { fallLinear: 'Chute (linéaire)' },
+      edge: { multiLine: 'Bord multiple' },
+    },
+    params: {
+      target: 'Forme cible', floor: 'Sol', beatKick: 'Impulsion rythmique', restitution: 'Rebond', friction: 'Friction', inertia: 'Inertie',
+      widthDecay: 'Décroissance de largeur', colorRule: 'Règle de couleur', layerOffset: 'Décalage de calque', layerDelay: 'Délai de calque',
+    },
+    values: { pressure: 'Pression', muscle: 'Onde musculaire', tremor: 'Tremblement', shapeTarget: 'Forme cible', ground: 'Sol', gradient: 'Dégradé' },
+  };
+  const ADD_SOFT_RU = {
+    types: {
+      enter: { gravityDrop: 'Падение с гравитацией' },
+      hold: {
+        softBody: 'Мягкое тело', gravityHang: 'Подвес под гравитацией', breathe: 'Дыхание', crawl: 'Ползание',
+        heartThrob: 'Пульс', quiver: 'Дрожь', jellyFollow: 'Следование желе', beatBounce: 'Отскок в бит',
+      },
+      exit: { fallLinear: 'Падение (линейно)' },
+      edge: { multiLine: 'Многослойный контур' },
+    },
+    params: {
+      target: 'Целевая форма', floor: 'Пол', beatKick: 'Импульс бита', restitution: 'Отскок', friction: 'Трение', inertia: 'Инерция',
+      widthDecay: 'Затухание ширины', colorRule: 'Правило цвета', layerOffset: 'Смещение слоя', layerDelay: 'Задержка слоя',
+    },
+    values: { pressure: 'Давление', muscle: 'Мышечная волна', tremor: 'Дрожь', shapeTarget: 'Целевая форма', ground: 'Земля', gradient: 'Градиент' },
+  };
+
   function applyFxAdditions(target, additions) {    for (const [group, table] of Object.entries(additions.types || {})) {
       target[group] = { ...(target[group] || {}), ...table };
     }
@@ -1147,6 +1228,11 @@
   applyFxAdditions(es, ADD_SHAPE_ES);
   applyFxAdditions(fr, ADD_SHAPE_FR);
   applyFxAdditions(ru, ADD_SHAPE_RU);
+  applyFxAdditions(en, ADD_SOFT_EN);
+  applyFxAdditions(ja, ADD_SOFT_JA);
+  applyFxAdditions(es, ADD_SOFT_ES);
+  applyFxAdditions(fr, ADD_SOFT_FR);
+  applyFxAdditions(ru, ADD_SOFT_RU);
 
   return { en: { fx: en }, ja: { fx: ja }, es: { fx: es }, fr: { fx: fr }, ru: { fx: ru } };
 });

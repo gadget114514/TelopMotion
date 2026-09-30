@@ -11,7 +11,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..', '..');
 const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
 const fx = require(path.join(FX_DIR, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'staged-presets']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody', 'staged-presets']) {
   require(path.join(FX_DIR, `${name}.js`));
 }
 const warp = require(path.join(FX_DIR, 'warp.js'));
@@ -122,5 +122,5 @@ test('the deformation slots keep a block warp and drop the smallest amount', () 
   const twist = { deform: [letter('twist', 12), letter('bulge', 0.3)] };
   assert.deepEqual(slots(twist).map((entry) => entry.item.type), ['bulge', 'twist']);
   assert.equal(slots({ deform: [] }), null);
-  assert.equal(passes._test.STATE_ROWS, 9);
+  assert.equal(passes._test.STATE_ROWS, 23);
 });

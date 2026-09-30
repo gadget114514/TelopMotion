@@ -25,9 +25,9 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 368,
+    "types": 380,
     "groups": 24,
-    "overridden": 555
+    "overridden": 575
   },
   "groups": {
     "animation": {
@@ -80,6 +80,7 @@
       "animator": 1534626184,
       "rangeReveal": 1033407352,
       "tracking": 1317572184,
+      "gravityDrop": 1485342905,
       "riseIn": 696813704,
       "fallIn": 1485342856,
       "popIn": 361269384,
@@ -112,6 +113,7 @@
       "animator": 1534626184,
       "rangeReveal": 1033407352,
       "tracking": 1317572184,
+      "fallLinear": 1485342856,
       "riseOut": 965249160,
       "fallOut": 1737001096,
       "zoomOutSoft": 965249160,
@@ -147,6 +149,14 @@
       "animator": 1533578088,
       "rangeSelector": 1555597944,
       "tracking": 1300793480,
+      "softBody": 1491635846,
+      "gravityHang": 1487440981,
+      "breathe": 948471940,
+      "crawl": 2022213765,
+      "heartThrob": 1485342856,
+      "quiver": 1753778313,
+      "jellyFollow": 1485342855,
+      "beatBounce": 1216907401,
       "warpArc": 2290649219,
       "warpArch": 2290649219,
       "warpBulge": 2290649219,
@@ -212,7 +222,8 @@
       "extrude": 2226684632,
       "longShadow": 2257945784,
       "dropShadow": 990219608,
-      "drip": 3553985992
+      "drip": 3553985992,
+      "multiLine": 1485322376
     },
     "post": {
       "glitchBlocks": 3534258925,
@@ -331,7 +342,8 @@
       "extrude": 613974744,
       "longShadow": 643138744,
       "dropShadow": 721784152,
-      "drip": 1399162312
+      "drip": 1399162312,
+      "multiLine": 680016008
     },
     "bgMotion": {
       "follow": 680036485,

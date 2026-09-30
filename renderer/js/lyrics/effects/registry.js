@@ -68,6 +68,10 @@
       // static cost with a value derived from the params.
       normalize: typeof descriptor.normalize === 'function' ? descriptor.normalize : null,
       costOf: typeof descriptor.costOf === 'function' ? descriptor.costOf : null,
+      // `physics(params, phase)` provides the soft body simulation config; the
+      // descriptor's cpu is a no-op when the hook is present (motion.js runs
+      // the lattice instead of the cpu).
+      physics: typeof descriptor.physics === 'function' ? descriptor.physics : null,
       // `pack` groups the extended primitives and presets so
       // the earlier catalogs keep the exact type list they were built on.
       pack: descriptor.pack || null,
@@ -106,6 +110,7 @@
       fixedDuration: source.fixedDuration,
       normalize: source.normalize,
       costOf: source.costOf,
+      physics: source.physics,
       pack: descriptor.pack || 'pro',
       preset: { primitive: descriptor.primitive, params },
     });
@@ -171,7 +176,13 @@
   function paramDefaults(group, type) {
     const entry = get(group, type);
     const params = {};
-    for (const param of (entry && entry.params) || []) params[param.key] = param.default;
+    for (const param of (entry && entry.params) || []) {
+      // `optional: true` params are omitted from the resolved defaults: the
+      // older catalogs / fixtures never saw them, and the inspector falls back
+      // to each param's own `default` when the key is missing
+      if (param.optional === true) continue;
+      params[param.key] = param.default;
+    }
     return params;
   }
 

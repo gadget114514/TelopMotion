@@ -259,6 +259,45 @@ SA.glShaders = (() => {
     p = deformOne(p, s6, halfSize, s7);
     return p;
   }
+
+  // --- soft body lattice (free-form deformation) ------------------------------
+  // The physics writes a 5x5 grid of normalized displacements into state rows
+  // 9-21 (two points per texel). latticeDisp interpolates it with a Catmull-Rom
+  // tensor product (4x4, C1, interpolating at the nodes) and returns the
+  // displacement at q in -1..1. Row 22.x is the lattice-on flag.
+  vec4 latticeWeights(float t) {
+    float t2 = t * t;
+    float t3 = t2 * t;
+    return vec4(
+      -0.5 * t3 + t2 - 0.5 * t,
+       1.5 * t3 - 2.5 * t2 + 1.0,
+      -1.5 * t3 + 2.0 * t2 + 0.5 * t,
+       0.5 * t3 - 0.5 * t2
+    );
+  }
+  vec2 latticeNode(sampler2D s, int letter, int index) {
+    vec4 texel = texelFetch(s, ivec2(letter, 9 + (index >> 1)), 0);
+    return ((index & 1) == 0) ? texel.xy : texel.zw;
+  }
+  vec2 latticeDisp(sampler2D s, int letter, vec2 q) {
+    if (texelFetch(s, ivec2(letter, 22), 0).x < 0.5) return vec2(0.0);
+    vec2 g = clamp((q + 1.0) * 2.0, vec2(0.0), vec2(4.0));
+    vec2 base = floor(g);
+    int i0 = int(clamp(base.x - 1.0, 0.0, 1.0));
+    int j0 = int(clamp(base.y - 1.0, 0.0, 1.0));
+    vec2 f = g - base;
+    vec4 wx = latticeWeights(f.x);
+    vec4 wy = latticeWeights(f.y);
+    vec2 value = vec2(0.0);
+    for (int i = 0; i < 4; i += 1) {
+      vec2 column = latticeNode(s, letter, j0 * 5 + i0 + i) * wy.x
+        + latticeNode(s, letter, (j0 + 1) * 5 + i0 + i) * wy.y
+        + latticeNode(s, letter, (j0 + 2) * 5 + i0 + i) * wy.z
+        + latticeNode(s, letter, (j0 + 3) * 5 + i0 + i) * wy.w;
+      value += column * wx[i];
+    }
+    return value;
+  }
   `;
 
   // --- text pass ---------------------------------------------------------------
@@ -317,7 +356,8 @@ SA.glShaders = (() => {
     v_mask = s8.w;
     v_local = a_pos;
     v_bbox = a_bbox;
-    vec2 p = a_pos * vec2(s0.w, s1.x);
+    vec2 soft = latticeDisp(u_state, int(a_letter + 0.5), a_pos / max(a_bbox, vec2(1.0))) * a_bbox;
+    vec2 p = (a_pos + soft) * vec2(s0.w, s1.x);
     p = applyDeformStack(p, s3, s5, s6, s7, a_bbox);
     p = letterTransform(p, s0, s1, s2, true, false, u_perspective);
     vec2 clip = (p / u_resolution) * 2.0 - 1.0;
@@ -406,7 +446,8 @@ SA.glShaders = (() => {
     float blur = max(s1.w, 0.0);
     float stretch = max(abs(s0.w), abs(s1.x));
     vec2 ext = max(a_em, vec2(1.0)) * 0.5 * stretch + vec2(blur * 1.5);
-    vec2 p = s0.xy + a_corner * ext;
+    float latticeOn = texelFetch(u_state, ivec2(int(a_letter + 0.5), 22), 0).x;
+    vec2 p = s0.xy + a_corner * ext * (latticeOn > 0.5 ? 1.8 : 1.0);
     v_blur = blur / 64.0;
     vec2 clip = (p / u_resolution) * 2.0 - 1.0;
     gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
@@ -1903,6 +1944,7 @@ SA.glShaders = (() => {
   }
   float deformType(vec4 s3) { return s3.x; }
   vec2 applyTransform(vec2 p, vec4 s0, vec4 s1, vec4 s2, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize) {
+    p += latticeDisp(u_state, int(a_letter + 0.5), p / max(halfSize, vec2(1.0))) * halfSize;
     p = applyDeformStack(p, s3, s5, s6, s7, halfSize);
     p.x += p.y * s1.y;
     float angle = radians(s0.z);
@@ -1949,6 +1991,7 @@ SA.glShaders = (() => {
     return texelFetch(u_color, ivec2(int(a_letter + 0.5), row), 0);
   }
   vec2 applyTransform(vec2 p, vec4 s0, vec4 s1, vec4 s2, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize) {
+    p += latticeDisp(u_state, int(a_letter + 0.5), p / max(halfSize, vec2(1.0))) * halfSize;
     p = applyDeformStack(p, s3, s5, s6, s7, halfSize);
     p.x += p.y * s1.y;
     float angle = radians(s0.z);

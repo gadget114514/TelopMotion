@@ -202,6 +202,18 @@
     return out;
   }
 
+  // A style carrying a soft body (physics) entry never reaches the settled
+  // window: its lattice keeps moving for the whole cue. The sampler skips the
+  // simulation (skipPhysics) and refuses the look, so the repair drops the
+  // entry (or falls back to a fade) without running the physics.
+  function styleHasPhysics(style) {
+    for (const { group, type } of styleInstances(style)) {
+      const descriptor = fx && fx.get ? fx.get(group, type) : null;
+      if (descriptor && typeof descriptor.physics === 'function') return true;
+    }
+    return false;
+  }
+
   function deformScalar(state) {
     let max = 0;
     for (const item of (state && state.deform) || []) {
@@ -209,6 +221,15 @@
       const amount = Math.abs(Number(item.amount) || 0);
       const value = item.type === 'twist' ? amount / 90 : amount;
       if (value > max) max = value;
+    }
+    // the soft body lattice displacement counts as deformation: a quivering
+    // letter is not "at rest" even when it carries no deform entry
+    const lattice = state && state.softLattice;
+    if (lattice && lattice.length) {
+      for (let i = 0; i < lattice.length; i += 2) {
+        const value = Math.hypot(Number(lattice[i]) || 0, Number(lattice[i + 1]) || 0);
+        if (value > max) max = value;
+      }
     }
     return max;
   }
@@ -265,12 +286,14 @@
     const span = Math.max(0.4, Number(context.duration) || (scene.end - scene.start) || 3);
     const beat = context.beat || { id: 'legibility:single0', cueId: 'legibility', kind: 'single', start: 0, end: span, text: scene.text };
     const frame = context.frame || { width: 1920, height: 1080 };
+    const physicsOn = styleHasPhysics(style);
     // A sample is "at rest" when the letters are opaque, unblurred and
     // undeformed, and neither rotating nor rescaling from the previous sample.
     // The absolute |rot| / |scale-1| bound applies to the first sample of a
     // run, so a static formation (spiral scale, arc rotation) reads as settled
     // while an ongoing warp does not.
     const base = (state) => {
+      if (physicsOn) return false;
       const opacity = state.opacity == null ? 1 : state.opacity;
       const blur = state.blur == null ? 0 : Math.abs(state.blur);
       return opacity >= 0.95 && blur <= 0.5 && deformScalar(state) <= 0.02;
@@ -297,7 +320,7 @@
       const time = beat.start + (span * (i + 0.5)) / SAMPLES;
       let result;
       try {
-        result = motion.evaluateBeat({ ...scene, style }, time, { frame, seed: context.seed == null ? 42 : context.seed, beat });
+        result = motion.evaluateBeat({ ...scene, style }, time, { frame, seed: context.seed == null ? 42 : context.seed, beat, skipPhysics: true });
       } catch {
         return { ok: true, seconds: Infinity, share: 1, fullSeconds: Infinity };
       }

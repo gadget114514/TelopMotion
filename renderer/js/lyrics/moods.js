@@ -267,6 +267,7 @@
       rangeReveal: [0.45, 0.75, {}, 0.6],
       tracking: [0.3, 0.9, {}, 0.55],
       megaZoomIn: [0.8, 0.3, { minWeird: 0.55 }, 0.8],
+      gravityDrop: [0.7, 0.5, {}, 0.55],
     },
     exit: {
       animator: [0.5, 0.6, {}, 0.45],
@@ -283,6 +284,8 @@
       fillScreen: [0.85, 0.25, { minWeird: 0.6 }, 0.9],
       squashStretch: [0.8, 0.4, { minWeird: 0.5 }, 0.75],
       swirl: [0.7, 0.35, { minWeird: 0.55 }, 0.8],
+      softBody: [0.5, 0.9, { minWeird: 0.55 }, 0.9],
+      gravityHang: [0.35, 0.8, { minWeird: 0.5 }, 0.65],
     },
     fill: {
       marble: [0.55, 0.5, { minWeird: 0.4 }, 0.75],
@@ -494,6 +497,11 @@
         // enough look may draw the readable ones (WEIRD_TAG_OK) and a
         // fear-heavy one the readable horror ones (FEAR_TAG_OK).
         const descriptor = fx.get(group, type);
+        // a pack primitive whose whole behaviour is a simulation (softBody,
+        // gravityHang, gravityDrop) never passes the legibility contract: the
+        // generator leaves it to hand editing, so the mood pool draws stay
+        // byte-identical for every existing type
+        if (descriptor && descriptor.pack && typeof descriptor.physics === 'function') continue;
         const tagOk = (w >= 0.75 && WEIRD_TAG_OK.has(type)) || (fearOn && FEAR_TAG_OK.has(type));
         if (descriptor) {
           if (descriptor.tags.includes('degrade') && !tagOk && !(allowedTags && allowedTags.has('degrade'))) continue;
@@ -555,6 +563,10 @@
     if (!descriptor) return params;
     const w = textWeirdOf(axes);
     for (const param of descriptor.params || []) {
+      // optional params (the newer additions like gravityFall's floor) are
+      // never auto-drawn: they are hand-edited only, so the existing type
+      // draws keep their exact random stream
+      if (param.optional === true) continue;
       if (param.kind === 'number' || param.kind === 'int') {
         const min = param.min == null ? 0 : param.min;
         const max = param.max == null ? min + 1 : param.max;

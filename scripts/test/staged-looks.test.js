@@ -12,7 +12,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..', '..');
 const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
 const fx = require(path.join(FX_DIR, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody']) {
   require(path.join(FX_DIR, `${name}.js`));
 }
 const presets = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'presets.js'));

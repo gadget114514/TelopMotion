@@ -13,7 +13,7 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..', '..');
 const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
 const fx = require(path.join(FX_DIR, 'registry.js'));
-for (const name of ['hold', 'enter', 'exit', 'post', 'selector', 'camera', 'shape-layer']) {
+for (const name of ['hold', 'enter', 'exit', 'post', 'selector', 'camera', 'shape-layer', 'softbody']) {
   require(path.join(FX_DIR, `${name}.js`));
 }
 const shapeLayer = require(path.join(FX_DIR, 'shape-layer.js'));

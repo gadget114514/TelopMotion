@@ -13,7 +13,7 @@ const ROOT = path.join(__dirname, '..', '..');
 const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
 const requirePart = (relative) => require(path.join(ROOT, relative));
 const fx = require(path.join(FX_DIR, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'staged-presets']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'vary', 'repeat', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody', 'staged-presets']) {
   require(path.join(FX_DIR, `${name}.js`));
 }
 const legibility = requirePart('renderer/js/lyrics/legibility.js');
