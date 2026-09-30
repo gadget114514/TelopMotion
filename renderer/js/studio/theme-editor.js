@@ -620,9 +620,9 @@ SA.themeEditor = (() => {
     reroll.className = 'btn btn-mini';
     reroll.textContent = t('studio.themeEditor.reroll');
     reroll.addEventListener('click', () => {
+      // only rolls the seed; the Generate button applies it with the current axes
       draft.seed = seedNow();
       seedInput.value = String(draft.seed);
-      generateFromAxes();
     });
     const randomAxes = document.createElement('button');
     randomAxes.type = 'button';
@@ -635,7 +635,6 @@ SA.themeEditor = (() => {
       for (const axis of SA.moods.MATCH_AXES) next[axis] = Math.max(0, Math.min(1, Number(draft.axes[axis] == null ? 0.5 : draft.axes[axis]) + (r() * 2 - 1) * 0.12));
       draft.axes = keepWeird(next);
       draft.features = null;
-      draft.seed = seedNow();
       generateFromAxes();
     });
     const fromAudio = document.createElement('button');
@@ -652,7 +651,6 @@ SA.themeEditor = (() => {
       draft.axes = keepWeird(SA.moods.axesFromAudio(features));
       draft.direction = 'horizontal';
       draft.features = features;
-      draft.seed = seedNow();
       generateFromAxes();
     });
     tools.appendChild(nameInput);
