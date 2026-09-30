@@ -165,6 +165,7 @@
       enabled: resolved.enabled !== false,
       params: resolved.params,
       motion: resolved.motion,
+      ...(resolved.scope == null ? {} : { scope: resolved.scope }),
     };
   }
 
@@ -208,6 +209,7 @@
       enabled: source.enabled !== false,
       params,
       motion: { ...((entry && entry.defaults.motion) || {}), ...(source.motion || {}) },
+      ...(source.scope == null ? {} : { scope: source.scope }),
     };
   }
 

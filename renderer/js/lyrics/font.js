@@ -575,8 +575,9 @@ SA.lyricsFont = (() => {
     let previous = null;
     // `opts.compose` counts characters by code point (the same unit the
     // composition's breaks and spans use), so a surrogate pair advances the
-    // cursor by two.
-    let cursor = compose && state ? state.cursor : 0;
+    // cursor by two. Every letter records its code-point offset within the
+    // beat text (`textOffset`), which the scoped partial decorations use.
+    let cursor = state ? state.cursor : 0;
     for (const token of words(paragraph, lang)) {
       const chars = graphemes(token.text, lang);
       for (let i = 0; i < chars.length; i += 1) {
@@ -593,6 +594,7 @@ SA.lyricsFont = (() => {
         const scale = span && Number.isFinite(Number(span.scale)) ? Number(span.scale) : 1;
         const letterFonts = span && span.fontSet ? normalizedFontSet(span.fontSet) : fontSet;
         const { letter } = buildLetter(character, style, letterFonts, size * scale, lang, opts);
+        letter.textOffset = cursor;
         if (span) letter.span = span;
         let breakBefore = false;
         if (previous != null && !/^\s+$/.test(character)) {
@@ -605,7 +607,7 @@ SA.lyricsFont = (() => {
         cursor += Array.from(character).length;
       }
     }
-    if (compose && state) state.cursor = cursor;
+    if (state) state.cursor = cursor;
     return items;
   }
 
@@ -680,7 +682,7 @@ SA.lyricsFont = (() => {
       }
       paragraphs.push(source.slice(start));
     }
-    const cursorState = compose ? { cursor: 0 } : null;
+    const cursorState = { cursor: 0 };
     const lines = [];
     for (const paragraph of paragraphs) {
       const items = buildItems(paragraph, style, fontSet, size, lang, opts, cursorState);

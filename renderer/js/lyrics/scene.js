@@ -240,9 +240,11 @@ SA.lyricsScene = (() => {
           box.cx = box.x + box.w / 2;
           box.cy = box.y + box.h / 2;
           const path = letterPath(cueId, beatId, lineIdx, wordIdx, letterIdx);
-          const letterColor = source.span && source.span.paletteIndex != null
-            ? resolveFillColor(project, { color: { fill: { kind: 'palette', index: source.span.paletteIndex } }, palette: style.palette || null }, beat)
-            : fillColor;
+          const letterColor = source.span && source.span.color
+            ? resolveFillColor(project, { color: { fill: source.span.color }, palette: style.palette || null }, beat)
+            : source.span && source.span.paletteIndex != null
+              ? resolveFillColor(project, { color: { fill: { kind: 'palette', index: source.span.paletteIndex } }, palette: style.palette || null }, beat)
+              : fillColor;
           const letter = {
             path,
             cueId,

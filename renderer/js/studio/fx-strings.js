@@ -1234,5 +1234,41 @@
   applyFxAdditions(fr, ADD_SOFT_FR);
   applyFxAdditions(ru, ADD_SOFT_RU);
 
-  return { en: { fx: en }, ja: { fx: ja }, es: { fx: es }, fr: { fx: fr }, ru: { fx: ru } };
+  // Partial decoration editor strings (inspector section). They ride along the
+  // fx table so the five languages stay in one place.
+  const SCOPED_UI = {
+    en: {
+      scoped: 'Partial decorations', scopeKind: 'Scope', scopeAll: 'All letters', scopeRange: 'Range (code points)',
+      scopeWord: 'Words', scopeKeyword: 'Keyword', scopeSpan: 'Composition span', scopeFrom: 'From', scopeTo: 'To',
+      scopeWords: 'Word indices', scopeMatch: 'Match text', scopeSpanIndex: 'Span #', addScoped: 'Add a partial decoration',
+    },
+    ja: {
+      scoped: '部分演出', scopeKind: '適用範囲', scopeAll: '全文字', scopeRange: '範囲（コードポイント）',
+      scopeWord: '単語', scopeKeyword: 'キーワード', scopeSpan: 'コンポジション span', scopeFrom: '開始', scopeTo: '終了',
+      scopeWords: '単語番号', scopeMatch: '一致文字列', scopeSpanIndex: 'span 番号', addScoped: '部分演出を追加',
+    },
+    es: {
+      scoped: 'Decoraciones parciales', scopeKind: 'Alcance', scopeAll: 'Todas las letras', scopeRange: 'Rango (puntos de código)',
+      scopeWord: 'Palabras', scopeKeyword: 'Palabra clave', scopeSpan: 'Span de composición', scopeFrom: 'Desde', scopeTo: 'Hasta',
+      scopeWords: 'Índices de palabras', scopeMatch: 'Texto a coincidir', scopeSpanIndex: 'Span n.º', addScoped: 'Añadir decoración parcial',
+    },
+    fr: {
+      scoped: 'Décorations partielles', scopeKind: 'Portée', scopeAll: 'Toutes les lettres', scopeRange: 'Plage (points de code)',
+      scopeWord: 'Mots', scopeKeyword: 'Mot-clé', scopeSpan: 'Span de composition', scopeFrom: 'De', scopeTo: 'À',
+      scopeWords: 'Indices des mots', scopeMatch: 'Texte à trouver', scopeSpanIndex: 'N° de span', addScoped: 'Ajouter une décoration partielle',
+    },
+    ru: {
+      scoped: 'Частичные украшения', scopeKind: 'Область', scopeAll: 'Все буквы', scopeRange: 'Диапазон (кодовые точки)',
+      scopeWord: 'Слова', scopeKeyword: 'Ключевое слово', scopeSpan: 'Span композиции', scopeFrom: 'От', scopeTo: 'До',
+      scopeWords: 'Индексы слов', scopeMatch: 'Текст совпадения', scopeSpanIndex: 'Span №', addScoped: 'Добавить частичное украшение',
+    },
+  };
+
+  return {
+    en: { fx: en, studio: { inspector: SCOPED_UI.en } },
+    ja: { fx: ja, studio: { inspector: SCOPED_UI.ja } },
+    es: { fx: es, studio: { inspector: SCOPED_UI.es } },
+    fr: { fx: fr, studio: { inspector: SCOPED_UI.fr } },
+    ru: { fx: ru, studio: { inspector: SCOPED_UI.ru } },
+  };
 });

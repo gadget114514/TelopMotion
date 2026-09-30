@@ -475,6 +475,61 @@ SA.lyricsEngine = (() => {
       pipeline.edge(uniforms);
     }
 
+    // Partial decorations: `style.scoped` entries with a fill / edge draw their
+    // own mask (letters outside the scope get opacity 0), then the scoped fill
+    // is painted over and the scoped edges added. The full mask is restored
+    // afterwards so the post passes and the next beat see every letter.
+    function drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride) {
+      const { scene, result, style } = active;
+      const scoped = Array.isArray(style.scoped) ? style.scoped : [];
+      const entries = scoped.filter((entry) => entry && entry.enabled !== false && (entry.group === 'fill' || entry.group === 'edge') && entry.type);
+      if (!entries.length || !SA.scope || typeof SA.scope.scopeMask !== 'function') return;
+      const groups = new Map();
+      for (const entry of entries) {
+        const key = SA.scope.scopeKey(entry.scope || null);
+        if (!groups.has(key)) groups.set(key, { scope: entry.scope || null, list: [] });
+        groups.get(key).list.push(entry);
+      }
+      let drew = false;
+      const maxDistance = Math.max(state.width, state.height) * 0.1;
+      for (const group of groups.values()) {
+        const mask = SA.scope.scopeMask(scene, group.scope);
+        if (!mask || !mask.length) continue;
+        const masked = result.letters.map((letterState, index) => (mask[index] ? letterState : { ...letterState, opacity: 0 }));
+        pipeline.text(scene, masked, variant, colorOverride);
+        pipeline.letterBlur(scene, masked);
+        const sdf = pipeline.sdf();
+        if (!sdf) continue;
+        for (const entry of group.list) {
+          const instance = SA.fx.withDefaults({ type: entry.type, params: entry.params, motion: entry.motion, enabled: true }, entry.group);
+          if (!instance) continue;
+          const shared = {
+            colorSet: colorSet.arrays,
+            category,
+            time: t,
+            palette: style.palette || (state.project && state.project.style && state.project.style.palette) || null,
+            palettes: state.project ? state.project.palettes || [] : [],
+            categoryColors: state.project ? state.project.categoryColors || {} : {},
+            progress,
+            sdfTexture: sdf.texture,
+          };
+          if (entry.group === 'fill') {
+            pipeline.fill(SA.fx.fillUniforms(instance, shared));
+          } else {
+            const uniforms = SA.fx.edgeUniforms(instance, { ...shared, maxDistance, width: state.width, height: state.height });
+            if (uniforms) pipeline.edge(uniforms);
+          }
+          drew = true;
+        }
+      }
+      if (drew) {
+        // restore the full mask for the post passes and the layer commit
+        pipeline.text(scene, result.letters, variant, colorOverride);
+        pipeline.letterBlur(scene, result.letters);
+        pipeline.sdf();
+      }
+    }
+
     // with a font set active only the set's typefaces take part in variation
     function fontClassOf(entry) {
       if (!entry) return null;
@@ -1735,6 +1790,7 @@ SA.lyricsEngine = (() => {
         if (sdfTarget) {
           for (const edge of edges) if (edge.top) pipeline.edge(edge);
         }
+        drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
         for (const instance of style.edge || []) {
           if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
         }

@@ -1044,6 +1044,97 @@ SA.inspector = (() => {
     body.appendChild(add);
   }
 
+  // --- partial decorations (style.scoped) -------------------------------------
+  // One entry applies one effect to a subset of the letters: enter / exit
+  // replace the base instance for the covered letters, hold adds to the stack,
+  // fill / edge draw a scoped overlay mask in the engine.
+
+  const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge'];
+  const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span'];
+  const SCOPE_KIND_LABELS = {
+    all: 'studio.inspector.scopeAll',
+    range: 'studio.inspector.scopeRange',
+    word: 'studio.inspector.scopeWord',
+    keyword: 'studio.inspector.scopeKeyword',
+    span: 'studio.inspector.scopeSpan',
+  };
+
+  function numberParam(key, min, max, step, fallback) {
+    return { key, kind: 'number', min, max, step, default: fallback };
+  }
+
+  function renderScopedSection(container) {
+    const sel = selectionInfo();
+    if (sel.kind === 'letter' || sel.kind === 'word' || sel.kind === 'line') return;
+    const style = resolvedStyle();
+    const list = Array.isArray(style.scoped) ? style.scoped : [];
+    const body = section(container, 'scoped', t('studio.inspector.scoped'));
+    const update = (next) => writeProp('scoped', next, { coalesceKey: `scoped:${sel.path}` });
+    list.forEach((entry, index) => {
+      const box = document.createElement('div');
+      box.className = 'insp-stack-item';
+      const head = document.createElement('div');
+      head.className = 'insp-stack-head';
+      head.appendChild(
+        SA.controls.selectControl({}, entry.group || 'hold', (next) => {
+          const descriptors = SA.fx.list(next, UI_PACKS);
+          update(list.map((item, i) => (i === index ? { ...item, group: next, type: descriptors.length ? descriptors[0].type : item.type, params: {} } : item)));
+        }, SCOPED_GROUPS.map((group) => ({ value: group, label: t(GROUP_LABELS[group]) })))
+      );
+      head.appendChild(
+        SA.controls.selectControl({}, entry.type, (next) => {
+          update(list.map((item, i) => (i === index ? { ...item, type: next, params: {} } : item)));
+        }, SA.fx.list(entry.group || 'hold', UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(entry.group || 'hold', descriptor.type) })))
+      );
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.addEventListener('click', () => update(list.filter((item, i) => i !== index)));
+      head.appendChild(remove);
+      box.appendChild(head);
+
+      // the scope editor
+      const scope = entry.scope && entry.scope.kind ? entry.scope : { kind: 'all' };
+      const setScope = (patch) => update(list.map((item, i) => (i === index ? { ...item, scope: { ...scope, ...patch } } : item)));
+      row(box, `scoped.${index}.kind`, t('studio.inspector.scopeKind'), SA.controls.selectControl({}, scope.kind || 'all', (next) => setScope({ kind: next }), SCOPE_KINDS.map((kind) => ({ value: kind, label: t(SCOPE_KIND_LABELS[kind]) }))));
+      if (scope.kind === 'range') {
+        row(box, `scoped.${index}.from`, t('studio.inspector.scopeFrom'), SA.controls.numberControl(numberParam('from', 0, 999, 1, 0), scope.from == null ? 0 : scope.from, (next) => setScope({ from: next }), { noSlider: true }));
+        row(box, `scoped.${index}.to`, t('studio.inspector.scopeTo'), SA.controls.numberControl(numberParam('to', 0, 999, 1, 0), scope.to == null ? '' : scope.to, (next) => setScope({ to: next }), { noSlider: true }));
+      } else if (scope.kind === 'word') {
+        row(box, `scoped.${index}.words`, t('studio.inspector.scopeWords'), SA.controls.textControl((scope.words || []).join(','), (next) => {
+          const words = String(next).split(',').map((value) => Number(value.trim())).filter((value) => Number.isFinite(value));
+          setScope({ words });
+        }));
+      } else if (scope.kind === 'keyword') {
+        row(box, `scoped.${index}.match`, t('studio.inspector.scopeMatch'), SA.controls.textControl(scope.match || '', (next) => setScope({ match: String(next) })));
+      } else if (scope.kind === 'span') {
+        row(box, `scoped.${index}.spanIndex`, t('studio.inspector.scopeSpanIndex'), SA.controls.numberControl(numberParam('spanIndex', 0, 31, 1, 0), scope.spanIndex == null ? 0 : scope.spanIndex, (next) => setScope({ spanIndex: next }), { noSlider: true }));
+      }
+
+      // the effect parameters (the same rows as a stack group)
+      const descriptor = SA.fx.get(entry.group || 'hold', entry.type);
+      const params = entry.params || {};
+      for (const param of SA.controls.paramEntries(descriptor)) {
+        const value = params[param.key] != null ? params[param.key] : param.default;
+        const control = SA.controls.paramControl(entry.group || 'hold', param, value, (next) => {
+          update(list.map((item, i) => (i === index ? { ...item, params: { ...(item.params || {}), [param.key]: next } } : item)));
+        }, { palette: style.palette || null, slotLabel: t('studio.inspector.palette') });
+        row(box, `scoped.${index}.params.${param.key}`, SA.controls.labelFor(param.key), control, { noKey: true });
+      }
+      body.appendChild(box);
+    });
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-mini';
+    add.textContent = `+ ${t('studio.inspector.addScoped')}`;
+    add.addEventListener('click', () => {
+      const descriptors = SA.fx.list('hold', UI_PACKS);
+      update([...list, { group: 'hold', type: descriptors.length ? descriptors[0].type : 'none', params: {}, enabled: true, scope: { kind: 'all' } }]);
+    });
+    body.appendChild(add);
+  }
+
   function renderColor(container) {
     const body = section(container, 'color', t('studio.inspector.color'));
     const style = resolvedStyle();
@@ -1968,6 +2059,7 @@ SA.inspector = (() => {
     renderTextSection(el.body);
     renderLayersSummary(el.body);
     renderStyleSections(el.body);
+    renderScopedSection(el.body);
     renderCustomMotions(el.body);
     renderClones(el.body);
     renderColor(el.body);

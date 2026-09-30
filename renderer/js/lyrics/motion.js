@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -375,6 +375,21 @@
     const location = groupInstance(style, 'location');
     const holds = groupInstance(style, 'hold');
     const customMotions = Array.isArray(style.motions) ? style.motions : [];
+    // Partial decorations (`style.scoped`): each entry carries its own scope
+    // mask. Enter / exit replace the base instance for the covered letters,
+    // hold entries are appended to the hold stack.
+    const scopedDefs = [];
+    if (Array.isArray(style.scoped)) {
+      for (const raw of style.scoped) {
+        if (!raw || raw.enabled === false || !raw.group || !raw.type) continue;
+        const instance = fx.withDefaults({ type: raw.type, params: raw.params, motion: raw.motion, enabled: true }, raw.group);
+        if (!instance) continue;
+        const mask = scope && scope.scopeMask ? scope.scopeMask(scene, raw.scope) : null;
+        if (!mask) continue;
+        scopedDefs.push({ group: raw.group, instance, mask, scope: raw.scope || null });
+      }
+    }
+    const scopedAt = (index, group) => scopedDefs.find((entry) => entry.group === group && entry.mask[index]) || null;
 
     const animationType = (animation && animation.type) || 'stagger';
     const layoutParams = (layoutInstance && layoutInstance.params) || {};
@@ -535,6 +550,21 @@
         layout: rng.rngFor(seed, letter.path, 'layout'),
       };
 
+      // a scoped enter / exit replaces the base instance for this letter
+      const enterOverride = scopedAt(index, 'enter');
+      const exitOverride = scopedAt(index, 'exit');
+      const enterInstance = enterOverride ? enterOverride.instance : enter;
+      const exitInstance = exitOverride ? exitOverride.instance : exit;
+      const enterDefLocal = enterInstance === enter ? enterDef : motionDef(enterInstance, 'enter', duration);
+      const exitDefLocal = exitInstance === exit ? exitDef : motionDef(exitInstance, 'exit', duration);
+      const enterParamsLocal = (enterInstance && enterInstance.params) || {};
+      const exitParamsLocal = (exitInstance && exitInstance.params) || {};
+      const enterEntryLocal = enterInstance === enter ? enterEntry : fx.get('enter', (enterInstance && enterInstance.type) || 'fade');
+      const exitEntryLocal = exitInstance === exit ? exitEntry : fx.get('exit', (exitInstance && exitInstance.type) || 'fade');
+      if (exitOverride && exitEntryLocal && Number.isFinite(exitEntryLocal.fixedDuration)) {
+        exitDefLocal.out.duration = Math.max(0.001, exitEntryLocal.fixedDuration);
+        exitDefLocal.out.delay = 0;
+      }
 
       let local = Math.max(0, beatLocal);
       if (animation.timeWarpEase && duration > 0) {
@@ -542,14 +572,14 @@
         local = warped;
       }
       if (animation.stopFps) local = Math.floor(local * animation.stopFps) / animation.stopFps;
-      const holdLocal = Math.max(0, local - (enterDef.in.delay + enterDef.in.duration + offset));
+      const holdLocal = Math.max(0, local - (enterDefLocal.in.delay + enterDefLocal.in.duration + offset));
 
-      const enterStart = enterDef.in.delay + offset;
-      const pe = clamp01((local - enterStart) / enterDef.in.duration);
-      const exitStart = duration - exitDef.out.duration - exitDef.out.delay - (exitOrderReverse ? offset : offMax - offset);
-      const px = clamp01((local - exitStart) / exitDef.out.duration);
-      const enterEase = easing.get(enterDef.in.ease || 'easeOutCubic');
-      const exitEase = easing.get(exitDef.out.ease || 'easeInCubic');
+      const enterStart = enterDefLocal.in.delay + offset;
+      const pe = clamp01((local - enterStart) / enterDefLocal.in.duration);
+      const exitStart = duration - exitDefLocal.out.duration - exitDefLocal.out.delay - (exitOrderReverse ? offset : offMax - offset);
+      const px = clamp01((local - exitStart) / exitDefLocal.out.duration);
+      const enterEase = easing.get(enterDefLocal.in.ease || 'easeOutCubic');
+      const exitEase = easing.get(exitDefLocal.out.ease || 'easeInCubic');
 
       const layoutIn = clamp01((local - layoutDef.in.delay - offset) / layoutDef.in.duration);
       const layoutOut = clamp01((local - (duration - layoutDef.out.duration - layoutDef.out.delay - (offMax - offset))) / layoutDef.out.duration);
@@ -577,17 +607,17 @@
         local,
         pe,
         px,
-        timing: { enterStart, enterDur: enterDef.in.duration, exitStart, exitDur: exitDef.out.duration },
+        timing: { enterStart, enterDur: enterDefLocal.in.duration, exitStart, exitDur: exitDefLocal.out.duration },
       };
 
       const target = targetFormation[index] || { x: 0, y: 0, rot: 0, scale: 1 };
       const paramOverrides = {};
       const keyframeDeltas = collectKeyframes(letter, project, local, paramOverrides);
-      const enterParamsResolved = { ...enterParams, ...(paramOverrides.enter || {}) };
-      const exitParamsResolved = { ...exitParams, ...(paramOverrides.exit || {}) };
+      const enterParamsResolved = { ...enterParamsLocal, ...(paramOverrides.enter || {}) };
+      const exitParamsResolved = { ...exitParamsLocal, ...(paramOverrides.exit || {}) };
 
       let base = target;
-      const sequenceActive = activeSequenceFormation(layoutParams, sequenceCache, holdLocal, Math.max(0.001, duration - enterDef.in.duration - offMax));
+      const sequenceActive = activeSequenceFormation(layoutParams, sequenceCache, holdLocal, Math.max(0.001, duration - enterDefLocal.in.duration - offMax));
       if (sequenceActive) {
         const previousFormation = sequenceActive.index > 0 ? sequenceCache[sequenceActive.index - 1][index] || target : target;
         const blended = layout.blendPoint(previousFormation, sequenceActive.formation[index] || target, easing.get(sequenceActive.ease)(sequenceActive.progress), curve, curveSigns[index]);
@@ -613,8 +643,8 @@
         state.y += num(drift.y) * shortSide * holdLocal * 0.1;
       }
 
-      if (enterEntry && enterEntry.cpu) {
-        enterEntry.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, {
+      if (enterEntryLocal && enterEntryLocal.cpu) {
+        enterEntryLocal.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, {
           i: index,
           N,
           analysis,
@@ -633,9 +663,11 @@
         });
       }
 
+      const holdInstances = holds.slice();
+      for (const def of scopedDefs) if (def.group === 'hold' && def.mask[index]) holdInstances.push(def.instance);
       const holdEntryList = [];
-      for (let holdIndex = 0; holdIndex < holds.length; holdIndex += 1) {
-        const holdInstance = holds[holdIndex];
+      for (let holdIndex = 0; holdIndex < holdInstances.length; holdIndex += 1) {
+        const holdInstance = holdInstances[holdIndex];
         const holdEntry = fx.get('hold', holdInstance.type);
         if (!holdEntry || !holdEntry.cpu || holdInstance.enabled === false) continue;
         const holdDef = motionDef(holdInstance, 'hold', duration);
@@ -673,8 +705,8 @@
         });
       }
 
-      if (exitEntry && exitEntry.cpu && px > 0) {
-        exitEntry.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, {
+      if (exitEntryLocal && exitEntryLocal.cpu && px > 0) {
+        exitEntryLocal.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, {
           i: index,
           N,
           analysis,
@@ -709,6 +741,8 @@
         keyframeDeltas,
         enterParams: enterParamsResolved,
         exitParams: exitParamsResolved,
+        enterEntry: enterEntryLocal,
+        exitEntry: exitEntryLocal,
         enterStart,
         exitStart,
       };
@@ -728,12 +762,12 @@
         const cfg = hold.entry.physics(hold.params, 'hold');
         if (cfg) return { cfg, phase: 'hold', baseTime: 0 };
       }
-      if (enterEntry && typeof enterEntry.physics === 'function') {
-        const cfg = enterEntry.physics(rigid.enterParams, 'enter');
+      if (rigid.enterEntry && typeof rigid.enterEntry.physics === 'function') {
+        const cfg = rigid.enterEntry.physics(rigid.enterParams, 'enter');
         if (cfg) return { cfg, phase: 'enter', baseTime: rigid.enterStart };
       }
-      if (exitEntry && typeof exitEntry.physics === 'function' && rigid.px > 0) {
-        const cfg = exitEntry.physics(rigid.exitParams, 'exit');
+      if (rigid.exitEntry && typeof rigid.exitEntry.physics === 'function' && rigid.px > 0) {
+        const cfg = rigid.exitEntry.physics(rigid.exitParams, 'exit');
         if (cfg) return { cfg, phase: 'exit', baseTime: rigid.exitStart };
       }
       return null;
