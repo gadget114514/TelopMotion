@@ -77,6 +77,23 @@ test('every edge type resolves to uniforms with a behind/top placement', () => {
   }
 });
 
+test('the multi-line edge expands into a ring per layer', () => {
+  const instance = fx.withDefaults({ type: 'multiLine', params: { count: 3, width: 2, gap: 3, widthDecay: 0.8, colorRule: 'alternate', layerDelay: 0.06 } }, 'edge');
+  const context = { colorSet: { stroke: [1, 1, 1, 1] }, maxDistance: 108, width: 1920, height: 1080, time: 1, localTime: 1 };
+  const uniforms = fx.edgeUniformsAll(instance, context);
+  assert.equal(uniforms.length, 3);
+  for (const entry of uniforms) assertUniforms(entry, 'edge.multiLine');
+  // the outer rings sit farther out and their inner cut grows with them
+  assert.ok(uniforms[1].u_params[2] > uniforms[0].u_params[2], 'ring radius must grow');
+  assert.ok(uniforms[2].u_params2[3] > uniforms[1].u_params2[3], 'inner radius must grow');
+  // the layer delay hides the outer rings at the start, the first ring shows
+  const early = fx.edgeUniformsAll(instance, { ...context, time: 0, localTime: 0 });
+  assert.equal(early.length, 1);
+  // a single-line instance stays a single uniform
+  const single = fx.withDefaults({ type: 'outline', params: {} }, 'edge');
+  assert.equal(fx.edgeUniformsAll(single, { ...context, localTime: 0 }).length, 1);
+});
+
 test('every post type resolves to uniforms with a target', () => {
   for (const descriptor of fx.list('post')) {
     const instance = fx.withDefaults({ type: descriptor.type, params: {} }, 'post');

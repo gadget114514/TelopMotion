@@ -680,7 +680,7 @@ SA.glShaders = (() => {
 
   void main() {
     float inside = texture(u_text, v_uv).a;
-    float distance = sdfAt(v_uv);
+    float distance = sdfAt(v_uv - u_offset);
     float alpha = 0.0;
     vec4 color = u_color;
     int type = u_type;
@@ -723,6 +723,9 @@ SA.glShaders = (() => {
         float sketch = (fbm(v_uv * u_resolution / 24.0 + floor(u_time * 8.0), 3) - 0.5) * width * 0.8;
         alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e + sketch));
       }
+      // the multi-line bands are rings: everything inside the inner radius is cut out
+      float inner = max(u_params2.w, 0.0);
+      if (inner > 0.0001) alpha *= smoothstep(inner - aa, inner + aa, distance);
     } else if (type == 2) {
       alpha = exp(-max(distance, 0.0) / max(u_params.y, 0.001)) * clamp(u_params.z, 0.0, 3.0);
     } else if (type == 3) {

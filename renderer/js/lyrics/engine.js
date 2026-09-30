@@ -516,8 +516,10 @@ SA.lyricsEngine = (() => {
           if (entry.group === 'fill') {
             pipeline.fill(SA.fx.fillUniforms(instance, shared));
           } else {
-            const uniforms = SA.fx.edgeUniforms(instance, { ...shared, maxDistance, width: state.width, height: state.height });
-            if (uniforms) pipeline.edge(uniforms);
+            const uniforms = SA.fx.edgeUniformsAll
+              ? SA.fx.edgeUniformsAll(instance, { ...shared, maxDistance, width: state.width, height: state.height, localTime: t - (active.beat ? active.beat.start : 0) })
+              : [SA.fx.edgeUniforms(instance, { ...shared, maxDistance, width: state.width, height: state.height })].filter(Boolean);
+            for (const edge of uniforms) pipeline.edge(edge);
           }
           drew = true;
         }
@@ -1756,21 +1758,25 @@ SA.lyricsEngine = (() => {
         pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
         pipeline.representation(scene, result.letters, 'pieces', variant);
         pipeline.representation(scene, result.letters, 'particles', variant);
+        const edgeContext = {
+          colorSet: colorSet.arrays,
+          maxDistance,
+          width: state.width,
+          height: state.height,
+          time: t,
+          localTime: t - beat.start,
+          palette: style.palette || null,
+          palettes: project.palettes || [],
+          categoryColors: project.categoryColors || {},
+          category: beat.meta && beat.meta.category,
+          sdfTexture: sdfTarget ? sdfTarget.texture : null,
+        };
         const edges = (style.edge || [])
           .filter((instance) => instance && instance.enabled !== false)
-          .map((instance) =>
-            SA.fx.edgeUniforms(instance, {
-              colorSet: colorSet.arrays,
-              maxDistance,
-              width: state.width,
-              height: state.height,
-              time: t,
-              palette: style.palette || null,
-              palettes: project.palettes || [],
-              categoryColors: project.categoryColors || {},
-              category: beat.meta && beat.meta.category,
-              sdfTexture: sdfTarget ? sdfTarget.texture : null,
-            })
+          .flatMap((instance) =>
+            SA.fx.edgeUniformsAll
+              ? SA.fx.edgeUniformsAll(instance, edgeContext)
+              : [SA.fx.edgeUniforms(instance, edgeContext)].filter(Boolean)
           );
         if (sdfTarget) {
           for (const edge of edges) if (!edge.top) pipeline.edge(edge);

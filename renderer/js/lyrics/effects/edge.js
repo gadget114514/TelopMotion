@@ -126,9 +126,92 @@
     return color.toRgba(value, fallback, ctx);
   }
 
+  // --- multi-line edge (P6) ---------------------------------------------------
+  // Expands into `count` outline passes; the outer layers sit at increasing
+  // SDF radii with a transparent inner gap, so a band look (double / triple
+  // stroke) and RGB-shifted layer stacks come out of the same outline shader.
+  function mixRgba(a, b, t) {
+    const k = Math.max(0, Math.min(1, Number(t) || 0));
+    const out = [];
+    for (let i = 0; i < 4; i += 1) out.push((Number(a[i]) || 0) * (1 - k) + (Number(b[i]) || 0) * k);
+    return out;
+  }
+
+  fx.register({
+    group: 'edge',
+    type: 'multiLine',
+    tags: ['stroke', 'pro'],
+    pack: 'pro',
+    stackable: true,
+    cost: 3,
+    params: [
+      { key: 'count', kind: 'int', min: 2, max: 4, step: 1, default: 2, random: [2, 3] },
+      { key: 'width', kind: 'number', min: 0.5, max: 12, step: 0.5, default: 2, random: [1, 4] },
+      { key: 'gap', kind: 'number', min: 0, max: 20, step: 0.5, default: 3 },
+      { key: 'widthDecay', kind: 'number', min: 0.3, max: 1, step: 0.01, default: 0.75 },
+      { key: 'colorRule', kind: 'select', options: ['same', 'alternate', 'gradient'], default: 'same' },
+      { key: 'colorA', kind: 'color', default: null },
+      { key: 'colorB', kind: 'color', default: null },
+      { key: 'layerOffset', kind: 'vec2', default: { x: 0, y: 0 } },
+      { key: 'layerDelay', kind: 'number', min: 0, max: 0.4, step: 0.01, default: 0.06 },
+    ],
+  });
+
   function num(value, fallback) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback;
+  }
+
+  function clamp01(value) {
+    return Math.max(0, Math.min(1, value));
+  }
+
+  // One edge instance -> one or more uniform sets (multiLine expands).
+  function edgeUniformsAll(instance, ctx) {
+    if (!instance || instance.type !== 'multiLine') {
+      const single = edgeUniforms(instance, ctx);
+      return single ? [single] : [];
+    }
+    const params = instance.params || {};
+    const context = ctx || {};
+    const maxDistance = Math.max(1, context.maxDistance || 108);
+    const toNorm = (px) => px / maxDistance;
+    const base = toRgba(context.colorSet && context.colorSet.stroke, [0, 0, 0, 1], context);
+    const count = Math.max(2, Math.min(4, Math.round(num(params.count, 2))));
+    const width = Math.max(0.5, num(params.width, 2));
+    const gap = Math.max(0, num(params.gap, 3));
+    const decay = Math.max(0.05, Math.min(1, num(params.widthDecay, 0.75)));
+    const rule = params.colorRule || 'same';
+    const colorA = toRgba(params.colorA, base, context);
+    const colorB = toRgba(params.colorB, base, context);
+    const offsetX = num(params.layerOffset && params.layerOffset.x, 0);
+    const offsetY = num(params.layerOffset && params.layerOffset.y, 0);
+    const delay = Math.max(0, num(params.layerDelay, 0.06));
+    const localTime = context.localTime == null ? null : num(context.localTime, 0);
+    const out = [];
+    for (let layer = 0; layer < count; layer += 1) {
+      const grow = delay > 0 && localTime != null && layer > 0 ? clamp01((localTime - layer * delay) / 0.25) : 1;
+      if (grow <= 0.001) continue;
+      const layerWidth = width * Math.pow(decay, layer) * grow;
+      const radius = width * 0.5 + layer * (width + gap);
+      const color = rule === 'alternate'
+        ? (layer % 2 ? colorB : colorA)
+        : rule === 'gradient'
+          ? mixRgba(colorA, colorB, count > 1 ? layer / (count - 1) : 0)
+          : colorA;
+      out.push({
+        u_type: 1,
+        u_color: color,
+        u_params: [toNorm(layerWidth), 14, toNorm(radius), 0.2],
+        u_params2: [0, 0, 0, toNorm(Math.max(0, radius - layerWidth))],
+        u_direction: [1, 1],
+        u_offset: [offsetX / Math.max(1, num(context.width, 1920)) * layer, -offsetY / Math.max(1, num(context.height, 1080)) * layer],
+        u_time: context.time || 0,
+        sdfTexture: context.sdfTexture || null,
+        top: layer > 0,
+      });
+    }
+    return out;
   }
 
   function edgeUniforms(instance, ctx) {
@@ -183,6 +266,7 @@
   }
 
   fx.edgeUniforms = edgeUniforms;
+  fx.edgeUniformsAll = edgeUniformsAll;
   fx.edgeTypes = TYPES;
   return fx;
 });
