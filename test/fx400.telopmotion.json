@@ -1,10 +1,10 @@
 {
   "format": "telopmotion",
-  "version": 2,
+  "version": 3,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-09-29T14:55:56.822Z",
-    "updatedAt": "2026-09-29T14:55:56.822Z",
+    "createdAt": "2026-09-30T16:37:21.172Z",
+    "updatedAt": "2026-09-30T16:37:21.172Z",
     "lang": "ja"
   },
   "output": {
@@ -7176,6 +7176,72 @@
       }
     },
     "fx_229": {
+      "location": {
+        "type": "stacked",
+        "enabled": true,
+        "params": {
+          "offsetX": 0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_230": {
+      "location": {
+        "type": "randomSafe",
+        "enabled": true,
+        "params": {
+          "offsetX": 0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_231": {
+      "location": {
+        "type": "badgeAnchored",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": -0.5,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_232": {
+      "location": {
+        "type": "custom",
+        "enabled": true,
+        "params": {
+          "x": 0.5,
+          "y": -0.25,
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_233": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7186,7 +7252,7 @@
         "motion": {}
       }
     },
-    "fx_230": {
+    "fx_234": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7199,7 +7265,7 @@
         "motion": {}
       }
     },
-    "fx_231": {
+    "fx_235": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7211,7 +7277,7 @@
         "motion": {}
       }
     },
-    "fx_232": {
+    "fx_236": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7222,7 +7288,7 @@
         "motion": {}
       }
     },
-    "fx_233": {
+    "fx_237": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7233,7 +7299,7 @@
         "motion": {}
       }
     },
-    "fx_234": {
+    "fx_238": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7245,7 +7311,7 @@
         "motion": {}
       }
     },
-    "fx_235": {
+    "fx_239": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7258,7 +7324,7 @@
         "motion": {}
       }
     },
-    "fx_236": {
+    "fx_240": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7270,7 +7336,7 @@
         "motion": {}
       }
     },
-    "fx_237": {
+    "fx_241": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7282,7 +7348,7 @@
         "motion": {}
       }
     },
-    "fx_238": {
+    "fx_242": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7297,7 +7363,7 @@
         "motion": {}
       }
     },
-    "fx_239": {
+    "fx_243": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7309,7 +7375,7 @@
         "motion": {}
       }
     },
-    "fx_240": {
+    "fx_244": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7321,7 +7387,7 @@
         "motion": {}
       }
     },
-    "fx_241": {
+    "fx_245": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7332,7 +7398,7 @@
         "motion": {}
       }
     },
-    "fx_242": {
+    "fx_246": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7345,7 +7411,7 @@
         "motion": {}
       }
     },
-    "fx_243": {
+    "fx_247": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7357,7 +7423,7 @@
         "motion": {}
       }
     },
-    "fx_244": {
+    "fx_248": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7377,7 +7443,7 @@
         "motion": {}
       }
     },
-    "fx_245": {
+    "fx_249": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7388,7 +7454,7 @@
         "motion": {}
       }
     },
-    "fx_246": {
+    "fx_250": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7400,7 +7466,7 @@
         "motion": {}
       }
     },
-    "fx_247": {
+    "fx_251": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7413,7 +7479,7 @@
         "motion": {}
       }
     },
-    "fx_248": {
+    "fx_252": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7434,7 +7500,7 @@
         "motion": {}
       }
     },
-    "fx_249": {
+    "fx_253": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7446,7 +7512,7 @@
         "motion": {}
       }
     },
-    "fx_250": {
+    "fx_254": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7461,7 +7527,7 @@
         "motion": {}
       }
     },
-    "fx_251": {
+    "fx_255": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7473,7 +7539,7 @@
         "motion": {}
       }
     },
-    "fx_252": {
+    "fx_256": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7485,7 +7551,147 @@
         "motion": {}
       }
     },
-    "fx_253": {
+    "fx_257": {
+      "fill": {
+        "type": "gradientSweep",
+        "enabled": true,
+        "params": {
+          "angle": -90,
+          "speed": 1.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_258": {
+      "fill": {
+        "type": "rainbowFlow",
+        "enabled": true,
+        "params": {
+          "saturation": 0.25,
+          "lightness": 0.33,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_259": {
+      "fill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.25,
+          "fresnel": 0.4,
+          "speed": 0.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_260": {
+      "fill": {
+        "type": "chrome",
+        "enabled": true,
+        "params": {
+          "envColors": null,
+          "sharpness": 0.75
+        },
+        "motion": {}
+      }
+    },
+    "fx_261": {
+      "fill": {
+        "type": "goldFoil",
+        "enabled": true,
+        "params": {
+          "grain": 0.25,
+          "sparkle": 0.75
+        },
+        "motion": {}
+      }
+    },
+    "fx_262": {
+      "fill": {
+        "type": "fire",
+        "enabled": true,
+        "params": {
+          "scale": 0.5,
+          "speed": 1.05,
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
+        },
+        "motion": {}
+      }
+    },
+    "fx_263": {
+      "fill": {
+        "type": "caustics",
+        "enabled": true,
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": "#4dc8ff",
+          "colorB": "#ff8a3d"
+        },
+        "motion": {}
+      }
+    },
+    "fx_264": {
+      "fill": {
+        "type": "marble",
+        "enabled": true,
+        "params": {
+          "scale": 6.1,
+          "veins": 5,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_265": {
+      "fill": {
+        "type": "glass",
+        "enabled": true,
+        "params": {
+          "refraction": 0.75,
+          "blur": 0.2,
+          "tint": "#4dc8ff"
+        },
+        "motion": {}
+      }
+    },
+    "fx_266": {
+      "fill": {
+        "type": "karaokeWipe",
+        "enabled": true,
+        "params": {
+          "colorBefore": "#4dc8ff",
+          "colorAfter": "#ff8a3d",
+          "softness": 0.05
+        },
+        "motion": {}
+      }
+    },
+    "fx_267": {
+      "fill": {
+        "type": "ink",
+        "enabled": true,
+        "params": {
+          "scale": 3.3,
+          "threshold": 0.35,
+          "softness": 0.11
+        },
+        "motion": {}
+      }
+    },
+    "fx_268": {
       "edge": [
         {
           "type": "outline",
@@ -7504,7 +7710,7 @@
         }
       ]
     },
-    "fx_254": {
+    "fx_269": {
       "edge": [
         {
           "type": "neonGlow",
@@ -7519,7 +7725,7 @@
         }
       ]
     },
-    "fx_255": {
+    "fx_270": {
       "edge": [
         {
           "type": "innerGlow",
@@ -7533,7 +7739,7 @@
         }
       ]
     },
-    "fx_256": {
+    "fx_271": {
       "edge": [
         {
           "type": "bevel",
@@ -7548,7 +7754,7 @@
         }
       ]
     },
-    "fx_257": {
+    "fx_272": {
       "edge": [
         {
           "type": "extrude",
@@ -7563,7 +7769,7 @@
         }
       ]
     },
-    "fx_258": {
+    "fx_273": {
       "edge": [
         {
           "type": "longShadow",
@@ -7578,7 +7784,7 @@
         }
       ]
     },
-    "fx_259": {
+    "fx_274": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7596,7 +7802,7 @@
         }
       ]
     },
-    "fx_260": {
+    "fx_275": {
       "edge": [
         {
           "type": "drip",
@@ -7611,7 +7817,7 @@
         }
       ]
     },
-    "fx_261": {
+    "fx_276": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -7629,7 +7835,7 @@
         }
       ]
     },
-    "fx_262": {
+    "fx_277": {
       "post": [
         {
           "type": "rgbShift",
@@ -7646,7 +7852,7 @@
         }
       ]
     },
-    "fx_263": {
+    "fx_278": {
       "post": [
         {
           "type": "scanTear",
@@ -7663,7 +7869,7 @@
         }
       ]
     },
-    "fx_264": {
+    "fx_279": {
       "post": [
         {
           "type": "vhsTracking",
@@ -7680,7 +7886,7 @@
         }
       ]
     },
-    "fx_265": {
+    "fx_280": {
       "post": [
         {
           "type": "dataSmear",
@@ -7697,7 +7903,7 @@
         }
       ]
     },
-    "fx_266": {
+    "fx_281": {
       "post": [
         {
           "type": "digitalNoise",
@@ -7713,7 +7919,7 @@
         }
       ]
     },
-    "fx_267": {
+    "fx_282": {
       "post": [
         {
           "type": "glitchSlice",
@@ -7730,7 +7936,7 @@
         }
       ]
     },
-    "fx_268": {
+    "fx_283": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -7747,7 +7953,7 @@
         }
       ]
     },
-    "fx_269": {
+    "fx_284": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -7764,7 +7970,7 @@
         }
       ]
     },
-    "fx_270": {
+    "fx_285": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -7779,7 +7985,7 @@
         }
       ]
     },
-    "fx_271": {
+    "fx_286": {
       "post": [
         {
           "type": "burnDissolve",
@@ -7796,7 +8002,7 @@
         }
       ]
     },
-    "fx_272": {
+    "fx_287": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -7812,7 +8018,7 @@
         }
       ]
     },
-    "fx_273": {
+    "fx_288": {
       "post": [
         {
           "type": "particleDissolve",
@@ -7828,7 +8034,7 @@
         }
       ]
     },
-    "fx_274": {
+    "fx_289": {
       "post": [
         {
           "type": "shockwave",
@@ -7849,7 +8055,7 @@
         }
       ]
     },
-    "fx_275": {
+    "fx_290": {
       "post": [
         {
           "type": "zoomBlur",
@@ -7868,7 +8074,7 @@
         }
       ]
     },
-    "fx_276": {
+    "fx_291": {
       "post": [
         {
           "type": "motionBlur",
@@ -7885,7 +8091,7 @@
         }
       ]
     },
-    "fx_277": {
+    "fx_292": {
       "post": [
         {
           "type": "echoTrail",
@@ -7903,7 +8109,7 @@
         }
       ]
     },
-    "fx_278": {
+    "fx_293": {
       "post": [
         {
           "type": "godRays",
@@ -7924,7 +8130,7 @@
         }
       ]
     },
-    "fx_279": {
+    "fx_294": {
       "post": [
         {
           "type": "lightSweep",
@@ -7942,7 +8148,7 @@
         }
       ]
     },
-    "fx_280": {
+    "fx_295": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -7958,7 +8164,7 @@
         }
       ]
     },
-    "fx_281": {
+    "fx_296": {
       "post": [
         {
           "type": "mirror",
@@ -7974,7 +8180,7 @@
         }
       ]
     },
-    "fx_282": {
+    "fx_297": {
       "post": [
         {
           "type": "pixelSort",
@@ -7991,7 +8197,7 @@
         }
       ]
     },
-    "fx_283": {
+    "fx_298": {
       "post": [
         {
           "type": "lensDistortion",
@@ -8008,7 +8214,7 @@
         }
       ]
     },
-    "fx_284": {
+    "fx_299": {
       "post": [
         {
           "type": "colorGrade",
@@ -8026,7 +8232,7 @@
         }
       ]
     },
-    "fx_285": {
+    "fx_300": {
       "post": [
         {
           "type": "displacementMap",
@@ -8042,7 +8248,7 @@
         }
       ]
     },
-    "fx_286": {
+    "fx_301": {
       "post": [
         {
           "type": "bloom",
@@ -8059,7 +8265,7 @@
         }
       ]
     },
-    "fx_287": {
+    "fx_302": {
       "post": [
         {
           "type": "chromaticAberration",
@@ -8076,7 +8282,7 @@
         }
       ]
     },
-    "fx_288": {
+    "fx_303": {
       "post": [
         {
           "type": "crt",
@@ -8093,7 +8299,7 @@
         }
       ]
     },
-    "fx_289": {
+    "fx_304": {
       "post": [
         {
           "type": "filmGrain",
@@ -8109,7 +8315,7 @@
         }
       ]
     },
-    "fx_290": {
+    "fx_305": {
       "post": [
         {
           "type": "halftone",
@@ -8125,7 +8331,7 @@
         }
       ]
     },
-    "fx_291": {
+    "fx_306": {
       "post": [
         {
           "type": "pixelate",
@@ -8140,7 +8346,7 @@
         }
       ]
     },
-    "fx_292": {
+    "fx_307": {
       "post": [
         {
           "type": "heatHaze",
@@ -8156,7 +8362,7 @@
         }
       ]
     },
-    "fx_293": {
+    "fx_308": {
       "post": [
         {
           "type": "lightLeak",
@@ -8174,7 +8380,7 @@
         }
       ]
     },
-    "fx_294": {
+    "fx_309": {
       "post": [
         {
           "type": "vignette",
@@ -8190,7 +8396,7 @@
         }
       ]
     },
-    "fx_295": {
+    "fx_310": {
       "post": [
         {
           "type": "sparkles",
@@ -8208,7 +8414,7 @@
         }
       ]
     },
-    "fx_296": {
+    "fx_311": {
       "post": [
         {
           "type": "lensFlare",
@@ -8227,1106 +8433,19 @@
         }
       ]
     },
-    "fx_313": {
-      "bgShape": {
-        "type": "none",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_314": {
-      "bgShape": {
-        "type": "square",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_315": {
-      "bgShape": {
-        "type": "rounded",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_316": {
-      "bgShape": {
-        "type": "circle",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_317": {
-      "bgShape": {
-        "type": "diamond",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_318": {
-      "bgShape": {
-        "type": "ring",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_319": {
-      "bgShape": {
-        "type": "bar",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_320": {
-      "bgShape": {
-        "type": "star",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_321": {
-      "bgShape": {
-        "type": "blob",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_322": {
-      "bgShape": {
-        "type": "heart",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_323": {
-      "bgShape": {
-        "type": "splatter",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "spikes": 0.5,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_324": {
-      "bgShape": {
-        "type": "scratch",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "count": 3,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_325": {
-      "bgShape": {
-        "type": "drop",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_326": {
-      "bgShape": {
-        "type": "bracket",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_327": {
-      "bgShape": {
-        "type": "paper",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "jag": 0.4,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_328": {
-      "bgShape": {
-        "type": "cloud",
-        "enabled": true,
-        "params": {
-          "unit": "em",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "behind",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_329": {
-      "bgShape": {
-        "type": "none",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_330": {
-      "bgShape": {
-        "type": "square",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_331": {
-      "bgShape": {
-        "type": "rounded",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_332": {
-      "bgShape": {
-        "type": "circle",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_333": {
-      "bgShape": {
-        "type": "diamond",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_334": {
-      "bgShape": {
-        "type": "ring",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
     "fx_335": {
       "bgShape": {
-        "type": "bar",
+        "type": "none",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "alternate",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9341,40 +8460,17 @@
     },
     "fx_336": {
       "bgShape": {
-        "type": "star",
+        "type": "square",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "alternate",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9389,40 +8485,17 @@
     },
     "fx_337": {
       "bgShape": {
-        "type": "blob",
+        "type": "none",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "cycle",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9430,48 +8503,24 @@
           "trimOffset": 0,
           "dashOn": 0,
           "dashOff": 0,
-          "dashOffset": 0,
-          "seedShift": 0
+          "dashOffset": 0
         },
         "motion": {}
       }
     },
     "fx_338": {
       "bgShape": {
-        "type": "heart",
+        "type": "square",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "cycle",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9486,40 +8535,17 @@
     },
     "fx_339": {
       "bgShape": {
-        "type": "splatter",
+        "type": "none",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "random",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9527,49 +8553,24 @@
           "trimOffset": 0,
           "dashOn": 0,
           "dashOff": 0,
-          "dashOffset": 0,
-          "spikes": 0.5,
-          "seedShift": 0
+          "dashOffset": 0
         },
         "motion": {}
       }
     },
     "fx_340": {
       "bgShape": {
-        "type": "scratch",
+        "type": "square",
         "enabled": true,
         "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
           "rotateWithLetter": true,
           "scaleWithLetter": true,
           "opacity": 1,
-          "knockout": false,
-          "layer": "front",
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "none",
+          "vary": "random",
           "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
           "stroke": 0,
           "fill": 1,
           "trimStart": 0,
@@ -9577,209 +8578,12 @@
           "trimOffset": 0,
           "dashOn": 0,
           "dashOff": 0,
-          "dashOffset": 0,
-          "count": 3,
-          "seedShift": 0
+          "dashOffset": 0
         },
         "motion": {}
       }
     },
     "fx_341": {
-      "bgShape": {
-        "type": "drop",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_342": {
-      "bgShape": {
-        "type": "bracket",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_343": {
-      "bgShape": {
-        "type": "paper",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "jag": 0.4,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_344": {
-      "bgShape": {
-        "type": "cloud",
-        "enabled": true,
-        "params": {
-          "unit": "cell",
-          "width": 1.05,
-          "height": 1.05,
-          "lockAspect": true,
-          "offset": {
-            "x": 0,
-            "y": 0
-          },
-          "rotation": 0,
-          "radius": 0.25,
-          "thickness": 0.12,
-          "points": 5,
-          "wobble": 0.3,
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "knockout": false,
-          "layer": "front",
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "none",
-          "varyColors": [],
-          "varyShape": false,
-          "varyShapes": [
-            "square",
-            "circle"
-          ],
-          "varySize": 0,
-          "varyOffset": 0,
-          "varyRotation": 0,
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0,
-          "seedShift": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_345": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9801,7 +8605,7 @@
         "motion": {}
       }
     },
-    "fx_346": {
+    "fx_342": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9825,7 +8629,7 @@
         "motion": {}
       }
     },
-    "fx_347": {
+    "fx_343": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9848,7 +8652,7 @@
         "motion": {}
       }
     },
-    "fx_348": {
+    "fx_344": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9870,7 +8674,7 @@
         "motion": {}
       }
     },
-    "fx_349": {
+    "fx_345": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9892,7 +8696,7 @@
         "motion": {}
       }
     },
-    "fx_350": {
+    "fx_346": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9915,7 +8719,7 @@
         "motion": {}
       }
     },
-    "fx_351": {
+    "fx_347": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9939,7 +8743,7 @@
         "motion": {}
       }
     },
-    "fx_352": {
+    "fx_348": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9962,7 +8766,7 @@
         "motion": {}
       }
     },
-    "fx_353": {
+    "fx_349": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9985,7 +8789,7 @@
         "motion": {}
       }
     },
-    "fx_354": {
+    "fx_350": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10011,7 +8815,7 @@
         "motion": {}
       }
     },
-    "fx_355": {
+    "fx_351": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10034,7 +8838,7 @@
         "motion": {}
       }
     },
-    "fx_356": {
+    "fx_352": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10057,7 +8861,7 @@
         "motion": {}
       }
     },
-    "fx_357": {
+    "fx_353": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10079,7 +8883,7 @@
         "motion": {}
       }
     },
-    "fx_358": {
+    "fx_354": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10103,7 +8907,7 @@
         "motion": {}
       }
     },
-    "fx_359": {
+    "fx_355": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10126,7 +8930,7 @@
         "motion": {}
       }
     },
-    "fx_360": {
+    "fx_356": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10157,7 +8961,7 @@
         "motion": {}
       }
     },
-    "fx_361": {
+    "fx_357": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10179,7 +8983,7 @@
         "motion": {}
       }
     },
-    "fx_362": {
+    "fx_358": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10202,7 +9006,7 @@
         "motion": {}
       }
     },
-    "fx_363": {
+    "fx_359": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10226,7 +9030,7 @@
         "motion": {}
       }
     },
-    "fx_364": {
+    "fx_360": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10258,7 +9062,7 @@
         "motion": {}
       }
     },
-    "fx_365": {
+    "fx_361": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10281,7 +9085,7 @@
         "motion": {}
       }
     },
-    "fx_366": {
+    "fx_362": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10307,7 +9111,7 @@
         "motion": {}
       }
     },
-    "fx_367": {
+    "fx_363": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10330,7 +9134,7 @@
         "motion": {}
       }
     },
-    "fx_368": {
+    "fx_364": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10349,6 +9153,97 @@
           "scale": 7.8,
           "threshold": 0.75,
           "softness": 0.08
+        },
+        "motion": {}
+      }
+    },
+    "fx_365": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "gradientSweep",
+        "enabled": true,
+        "params": {
+          "angle": -90,
+          "speed": 1.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_366": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "rainbowFlow",
+        "enabled": true,
+        "params": {
+          "saturation": 0.25,
+          "lightness": 0.33,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_367": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.25,
+          "fresnel": 0.4,
+          "speed": 0.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_368": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "chrome",
+        "enabled": true,
+        "params": {
+          "envColors": null,
+          "sharpness": 0.75
         },
         "motion": {}
       }
@@ -18151,8 +17046,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 591.88,
-      "end": 594.12,
+      "start": 621.88,
+      "end": 624.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -18167,8 +17062,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 593.88,
-      "end": 596.12,
+      "start": 623.88,
+      "end": 626.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -18194,8 +17089,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 595.88,
-      "end": 598.12,
+      "start": 625.88,
+      "end": 628.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -18212,8 +17107,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 597.88,
-      "end": 600.12,
+      "start": 627.88,
+      "end": 630.12,
       "spec": {
         "type": "card",
         "params": {
@@ -18232,8 +17127,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 599.88,
-      "end": 602.12,
+      "start": 629.88,
+      "end": 632.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -18251,8 +17146,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 601.88,
-      "end": 604.12,
+      "start": 631.88,
+      "end": 634.12,
       "spec": {
         "type": "image",
         "params": {
@@ -18270,8 +17165,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 603.88,
-      "end": 606.12,
+      "start": 633.88,
+      "end": 636.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -18291,8 +17186,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 605.88,
-      "end": 608.12,
+      "start": 635.88,
+      "end": 638.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -18312,8 +17207,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 607.88,
-      "end": 610.12,
+      "start": 637.88,
+      "end": 640.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -18328,8 +17223,8 @@
     {
       "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 609.88,
-      "end": 612.12,
+      "start": 639.88,
+      "end": 642.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -18346,8 +17241,8 @@
     {
       "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 611.88,
-      "end": 614.12,
+      "start": 641.88,
+      "end": 644.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -18373,8 +17268,8 @@
     {
       "id": "clip_bg_11",
       "trackId": "bg",
-      "start": 613.88,
-      "end": 616.12,
+      "start": 643.88,
+      "end": 646.12,
       "spec": {
         "type": "card",
         "params": {
@@ -18393,8 +17288,8 @@
     {
       "id": "clip_bg_12",
       "trackId": "bg",
-      "start": 615.88,
-      "end": 618.12,
+      "start": 645.88,
+      "end": 648.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -18412,8 +17307,8 @@
     {
       "id": "clip_bg_13",
       "trackId": "bg",
-      "start": 617.88,
-      "end": 620.12,
+      "start": 647.88,
+      "end": 650.12,
       "spec": {
         "type": "image",
         "params": {
@@ -18431,8 +17326,8 @@
     {
       "id": "clip_bg_14",
       "trackId": "bg",
-      "start": 619.88,
-      "end": 622.12,
+      "start": 649.88,
+      "end": 652.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -18452,12 +17347,157 @@
     {
       "id": "clip_bg_15",
       "trackId": "bg",
-      "start": 621.88,
-      "end": 624.12,
+      "start": 651.88,
+      "end": 654.12,
       "spec": {
         "type": "shapes",
         "params": {
           "kind": "waveform",
+          "set": "circles",
+          "count": 10,
+          "speed": 0.8,
+          "opacity": 0.45,
+          "color": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_16",
+      "trackId": "bg",
+      "start": 653.88,
+      "end": 656.12,
+      "spec": {
+        "type": "gradient",
+        "params": {
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ],
+          "scale": 3.4,
+          "speed": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_17",
+      "trackId": "bg",
+      "start": 655.88,
+      "end": 658.12,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "colors": null,
+          "scale": 9.1,
+          "speed": 0.5
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_18",
+      "trackId": "bg",
+      "start": 657.88,
+      "end": 660.12,
+      "spec": {
+        "type": "card",
+        "params": {
+          "dim": 0.25,
+          "blur": 30,
+          "focusBadge": true,
+          "zoom": 1.6,
+          "parallax": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_19",
+      "trackId": "bg",
+      "start": 659.88,
+      "end": 662.12,
+      "spec": {
+        "type": "cover",
+        "params": {
+          "songId": "",
+          "blur": 30,
+          "dim": 0.75,
+          "zoomSpeed": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_20",
+      "trackId": "bg",
+      "start": 661.88,
+      "end": 664.12,
+      "spec": {
+        "type": "image",
+        "params": {
+          "imageId": "",
+          "fit": "cover",
+          "blur": 10,
+          "dim": 0.25
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_21",
+      "trackId": "bg",
+      "start": 663.88,
+      "end": 666.12,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "rings",
+          "count": 24,
+          "size": 1,
+          "speed": 0.4,
+          "opacity": 0.55,
+          "color": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_22",
+      "trackId": "bg",
+      "start": 665.88,
+      "end": 668.12,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "kind": "spectrum",
           "set": "circles",
           "count": 10,
           "speed": 0.8,

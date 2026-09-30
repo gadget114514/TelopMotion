@@ -156,6 +156,28 @@ SA.timeline = (() => {
     return spans;
   }
 
+  // Beats whose resolved look carries a text background (a `bgShape` other
+  // than none), the same test the engine draws by. Resolved once per project
+  // version.
+  let backgroundSpanCache = { version: -1, spans: new Map() };
+  function backgroundSpans(doc, cue) {
+    const version = SA.store.state.version && SA.store.state.version.project;
+    if (backgroundSpanCache.version !== version) backgroundSpanCache = { version, spans: new Map() };
+    if (backgroundSpanCache.spans.has(cue.id)) return backgroundSpanCache.spans.get(cue.id);
+    const spans = [];
+    for (const beat of beatsFor(doc, cue)) {
+      const style = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+      const shape = style && style.bgShape;
+      if (!shape || !shape.type || shape.type === 'none') continue;
+      // only the definition background (the per-letter cell square) is painted
+      // on this row
+      if (SA.textBg && typeof SA.textBg.isBackground === 'function' && !SA.textBg.isBackground(shape)) continue;
+      spans.push({ start: beat.start, end: beat.end });
+    }
+    backgroundSpanCache.spans.set(cue.id, spans);
+    return spans;
+  }
+
   function originFor(path, cueId) {
     const doc = project();
     if (!doc) return 0;
@@ -363,8 +385,12 @@ SA.timeline = (() => {
         rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: false });
         y += ROW_H;
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
-        // the track's graphics row sits directly under its cues: the frame-wide
-        // posts its look carries (see SA.fx.isGraphicsPost)
+        // the track's two switch rows sit directly under its cues: the text
+        // background (the shapes behind the glyphs) ...
+        rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues });
+        y += LAYER_H;
+        // ... and the graphics: the frame-wide posts its look carries (see
+        // SA.fx.isGraphicsPost)
         rows.push({ type: 'graphics-track', y, h: LAYER_H, trackId: track.id, track, cues });
         y += LAYER_H;
         if (!expanded.has(track.id)) continue;
@@ -525,7 +551,7 @@ SA.timeline = (() => {
   }
 
   // Thin per-track header: name, visibility checkbox, a remove button and (for
-  // subtitle tracks) the keyframe twisty and the BG chip.
+  // subtitle tracks) the keyframe twisty.
   function drawTrackHeader(row, title, options) {
     const opts = options || {};
     const y = row.y;
@@ -558,8 +584,8 @@ SA.timeline = (() => {
     }
     ctx.fillStyle = opts.hidden ? '#5a6175' : opts.color || '#8d96ab';
     const removeSize = 14;
-    const removeX = LABEL_W - 20 - (opts.bgToggle ? 23 : 0) - removeSize - 2;
-    const reserve = (opts.toggle === false ? 6 : 22) + (opts.bgToggle ? 26 : 0) + (removable ? removeSize + 4 : 0);
+    const removeX = LABEL_W - 20 - removeSize - 2;
+    const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0);
     ctx.fillText(fitLabel(title, LABEL_W - textX - reserve), textX, y + height / 2);
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
@@ -621,25 +647,6 @@ SA.timeline = (() => {
       ctx.restore();
       hitRegions.push({ type: opts.checkType || 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
     }
-    if (opts.bgToggle) {
-      // the subtitle track's text background: a small BG chip, struck through
-      // while the track hides its background shapes (data kept)
-      const bgX = LABEL_W - 20 - 23;
-      ctx.save();
-      ctx.font = 'bold 9px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
-      ctx.fillStyle = opts.bgHidden ? '#5a6175' : '#ffd166';
-      ctx.fillText('BG', bgX, y + height / 2);
-      if (opts.bgHidden) {
-        ctx.strokeStyle = '#5a6175';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(bgX - 1, y + height / 2 + 3);
-        ctx.lineTo(bgX + 13, y + height / 2 - 3);
-        ctx.stroke();
-      }
-      ctx.restore();
-      hitRegions.push({ type: 'track-bg', trackId: row.trackId, x: bgX - 3, y, w: 22, h: height });
-    }
   }
 
   function drawCueTrack(size, projectDoc, row) {
@@ -650,8 +657,6 @@ SA.timeline = (() => {
       expanded: expanded.has(row.trackId),
       hidden: trackHidden(row.track),
       color: trackHidden(row.track) ? '#5a6175' : '#8d96ab',
-      bgToggle: !!(row.track && row.track.kind === 'subtitle'),
-      bgHidden: !!(row.track && row.track.bgHidden),
     });
     const selectedCue = row.cues.find((cue) =>
       (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`))
@@ -769,6 +774,39 @@ SA.timeline = (() => {
     if (layer.type === 'solid') return t('layers.typeSolid');
     if (layer.type === 'video') return t('layers.typeVideo');
     return t('layers.typeImage');
+  }
+
+  // The subtitle track's text-background row: the beats whose look draws a
+  // shape behind the glyphs. Its checkbox is the track's `bgHidden` flag, the
+  // off switch of the text background; the style data is never touched.
+  function drawBackgroundTrack(size, doc, row) {
+    const hidden = trackHidden(row.track) || !!(row.track && row.track.bgHidden);
+    drawTrackHeader(row, `${trackTitle(row.track)} ${t('studio.track.textBackground')}`, {
+      color: '#ffd166',
+      hidden,
+      removable: false,
+      checkType: 'track-bg',
+    });
+    const y = row.y;
+    const height = LAYER_H - 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
+    ctx.clip();
+    for (const cue of row.cues) {
+      for (const span of backgroundSpans(doc, cue)) {
+        const x = xOf(span.start);
+        const width = Math.max(2, (span.end - span.start) * pxPerSecond);
+        if (x + width < LABEL_W || x > size.width) continue;
+        ctx.fillStyle = hidden ? 'rgba(30, 34, 44, 0.6)' : 'rgba(255, 209, 102, 0.24)';
+        rounded(x, y + 1.5, width, height, 4);
+        ctx.fill();
+        ctx.strokeStyle = hidden ? '#3a4050' : '#ffd166';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
   // The subtitle track's graphics row: the frame-wide posts its look carries
@@ -1284,6 +1322,7 @@ SA.timeline = (() => {
     ctx.stroke();
     for (const row of rows) {
       if (row.type === 'cue-track') drawCueTrack(size, doc, row);
+      else if (row.type === 'bg-track') drawBackgroundTrack(size, doc, row);
       else if (row.type === 'graphics-track') drawGraphicsTrack(size, doc, row);
       else if (row.type === 'layer-track') drawLayerTrack(size, row);
       else if (row.type === 'clip-track') drawClipTrack(size, row);
@@ -1996,6 +2035,13 @@ SA.timeline = (() => {
         add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
       } else if (track.kind === 'filler') {
         add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
+      }
+      // the clip tracks that draw behind the lyrics can opt out of the text
+      // mask (the subtitle background is always knocked out)
+      if (track.kind === 'backdrop' || track.kind === 'figure' || track.kind === 'filler') {
+        add(track.textMask === false ? t('studio.track.maskText') : t('studio.track.unmaskText'), () =>
+          SA.store.commands.updateTrack(track.id, { textMask: track.textMask === false })
+        );
       }
       if (removableTrack(track)) add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
       add(track.hidden ? t('layers.show') : t('layers.hide'), () => SA.store.commands.updateTrack(track.id, { hidden: !track.hidden }));

@@ -106,6 +106,7 @@
       checks: 'Checker', polka: 'Polka dots', sineCurve: 'Sine curves', waves: 'Waves', randomFill: 'Random fill',
       slabWipe: 'Slab wipe', cornerBlocks: 'Corner blocks', ringDraw: 'Ring draw', stripeRun: 'Stripe run', dotGrid: 'Dot grid', sideBars: 'Side bars',
       fixed: 'Fixed size', fitScreen: 'Fit to screen', page: 'Per page', cue: 'Whole cue',
+      push: 'Push', sweep: 'Sweep', turn: 'Turn', zoom: 'Zoom', step: 'Step', travel: 'Travel', tilt: 'Tilt', slide: 'Slide', stagger: 'Stagger',
     },
   };
 
@@ -208,6 +209,7 @@
       checks: 'チェッカー', polka: '水玉', sineCurve: 'サインカーブ', waves: 'ウェーブ', randomFill: 'ランダムフィル',
       slabWipe: 'スラブワイプ', cornerBlocks: 'コーナーブロック', ringDraw: 'リングドロー', stripeRun: 'ストライプラン', dotGrid: 'ドットグリッド', sideBars: 'サイドバー',
       fixed: '固定サイズ', fitScreen: '画面に合わせる', page: 'ページごと', cue: 'キュー全体で統一',
+      push: '押し込み', sweep: 'スイープ', turn: '旋回', zoom: 'ズーム', step: 'ステップ', travel: 'トラベル', tilt: 'チルト', slide: 'スライド', stagger: 'スタッガー',
     },
   };
 
@@ -318,6 +320,7 @@
       checks: 'Damero', polka: 'Topos', sineCurve: 'Curvas sinusoidales', waves: 'Ondas', randomFill: 'Relleno aleatorio',
       slabWipe: 'Barrido de losa', cornerBlocks: 'Bloques de esquina', ringDraw: 'Anillo trazado', stripeRun: 'Carrera de franjas', dotGrid: 'Rejilla de puntos', sideBars: 'Barras laterales',
       fixed: 'Tamaño fijo', fitScreen: 'Ajustar a pantalla', page: 'Por página', cue: 'Todo el cue',
+      push: 'Empuje', sweep: 'Barrido', turn: 'Giro', zoom: 'Zoom', step: 'Paso', travel: 'Desplazamiento', tilt: 'Inclinación', slide: 'Deslizar', stagger: 'Escalonado',
     },
   };
 
@@ -428,6 +431,7 @@
       checks: 'Damier', polka: 'Pois', sineCurve: 'Courbes sinusoïdales', waves: 'Vagues', randomFill: 'Remplissage aléatoire',
       slabWipe: 'Balayage de dalle', cornerBlocks: 'Blocs d’angle', ringDraw: 'Anneau tracé', stripeRun: 'Course de rayures', dotGrid: 'Grille de points', sideBars: 'Barres latérales',
       fixed: 'Taille fixe', fitScreen: 'Ajuster à l\'écran', page: 'Par page', cue: 'Tout le cue',
+      push: 'Poussée', sweep: 'Balayage', turn: 'Rotation', zoom: 'Zoom', step: 'Pas', travel: 'Traversée', tilt: 'Inclinaison', slide: 'Glissement', stagger: 'Décalage',
     },
   };
 
@@ -537,6 +541,7 @@
       checks: 'Шахматный', polka: 'Горошек', sineCurve: 'Синусоиды', waves: 'Волны', randomFill: 'Случайная заливка',
       slabWipe: 'Полоса-взмах', cornerBlocks: 'Угловые блоки', ringDraw: 'Рисуемое кольцо', stripeRun: 'Бег полос', dotGrid: 'Сетка точек', sideBars: 'Боковые полосы',
       fixed: 'Фиксированный', fitScreen: 'По экрану', page: 'По страницам', cue: 'Весь cue',
+      push: 'Наезд', sweep: 'Развёртка', turn: 'Поворот', zoom: 'Масштаб', step: 'Шаг', travel: 'Проезд', tilt: 'Наклон', slide: 'Скольжение', stagger: 'Каскад',
     },
   };
 
@@ -549,7 +554,16 @@
         star: 'Star', blob: 'Blob', heart: 'Heart', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket',
         paper: 'Paper', cloud: 'Cloud',
       },
+      ornShape: {
+        none: 'None', square: 'Square', rounded: 'Rounded', circle: 'Circle', diamond: 'Diamond', ring: 'Ring', bar: 'Bar',
+        star: 'Star', blob: 'Blob', heart: 'Heart', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket',
+        paper: 'Paper', cloud: 'Cloud',
+      },
       bgMotion: {
+        follow: 'Follow', fade: 'Fade', pop: 'Pop', stamp: 'Stamp', wipe: 'Wipe', spin: 'Spin', grow: 'Grow', none: 'None',
+        flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall', draw: 'Draw',
+      },
+      ornMotion: {
         follow: 'Follow', fade: 'Fade', pop: 'Pop', stamp: 'Stamp', wipe: 'Wipe', spin: 'Spin', grow: 'Grow', none: 'None',
         flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall', draw: 'Draw',
       },
@@ -600,7 +614,16 @@
         star: '星', blob: '不定形', heart: 'ハート', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく',
         bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
       },
+      ornShape: {
+        none: 'なし', square: '四角', rounded: '角丸', circle: '円', diamond: 'ひし形', ring: 'リング', bar: '帯',
+        star: '星', blob: '不定形', heart: 'ハート', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく',
+        bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
+      },
       bgMotion: {
+        follow: '文字に追従', fade: 'フェード', pop: 'ポップ', stamp: 'スタンプ', wipe: 'ワイプ', spin: '回転', grow: '伸びる',
+        none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下', draw: '描画',
+      },
+      ornMotion: {
         follow: '文字に追従', fade: 'フェード', pop: 'ポップ', stamp: 'スタンプ', wipe: 'ワイプ', spin: '回転', grow: '伸びる',
         none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下', draw: '描画',
       },

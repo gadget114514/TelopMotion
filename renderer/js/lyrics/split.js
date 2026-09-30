@@ -439,6 +439,12 @@
     const time = num(ctx.time, 0);
     const amp = Math.max(0, num(base.amp, 0.05));
     const speed = Math.max(0.01, num(base.speed, 0.4));
+    // the one-way motions advance with the clip's own progress (not the time
+    // sine): the eased 0..1 share drives sweep / turn / zoom / step
+    const progress = clamp01(num(ctx.progress, 0));
+    const eased = progress * progress * (3 - 2 * progress);
+    const travel = Math.max(0, num(base.travel, 0.12));
+    const dir = num(base.dir, 1) >= 0 ? 1 : -1;
     const out = { ...base };
     if (motion === 'slide') out.offset = num(base.offset, 0) + amp * Math.sin(TAU * speed * time);
     else if (motion === 'rotate') out.angle = num(base.angle, 0) + speed * time * 20;
@@ -448,6 +454,34 @@
       out.centerY = num(base.centerY, 0.5) + amp * 0.5 * Math.sin(TAU * speed * 0.53 * time + 1.7);
     } else if (motion === 'push') {
       out.inset = num(base.inset, 0) + amp * Math.sin(TAU * speed * time);
+    } else if (motion === 'sweep') {
+      // one-way crossing: the eased progress walks the plane set from one side
+      // to the other (slide / drift are the old oscillation)
+      out.sweep = dir * (2 * eased - 1) * travel;
+    } else if (motion === 'turn') {
+      // a slow one-shot rotation across the clip (± travel x 60 deg), unlike
+      // the continuous `rotate`
+      out.angle = num(base.angle, 0) + dir * (2 * eased - 1) * travel * 60;
+    } else if (motion === 'zoom') {
+      // a monotone push in / pull out (reuses the `push` inset geometry)
+      out.inset = num(base.inset, 0) + dir * travel * eased;
+    } else if (motion === 'step') {
+      // one step per rhythm cut, with a 0.18 s ease after each cut (the
+      // geometric sibling of swap's colour change)
+      const cuts = Array.isArray(base.cuts) ? base.cuts : [];
+      let step = 0;
+      let since = Infinity;
+      for (const cut of cuts) {
+        const at = num(cut, 0);
+        if (at <= time) {
+          step += 1;
+          since = time - at;
+        }
+      }
+      const ease = clamp01(since / 0.18);
+      const smooth = ease * ease * (3 - 2 * ease);
+      const advanced = step === 0 ? 0 : step - 1 + smooth;
+      out.sweep = dir * advanced * travel;
     }
     return out;
   }
@@ -492,9 +526,10 @@
     const moved = applyMotion(options, context);
     const built = buildRaw(layout, frame, moved, random);
     let regions = built.regions.map((region) => ({ ...region, painted: null, area: area(region.points) }));
-    // push: inset presses the whole plane set towards (or away from) the frame
-    // centre. The value lives in the moved options, so every layout moves.
-    if (moved.motion === 'push') {
+    // push / zoom: the inset presses the whole plane set towards (or away from)
+    // the frame centre. The value lives in the moved options, so every layout
+    // moves.
+    if (moved.motion === 'push' || moved.motion === 'zoom') {
       const inset = num(moved.inset, 0);
       if (Math.abs(inset) > 1e-6) {
         const cx = Number.isFinite(frame.width) ? frame.width / 2 : 0;
@@ -505,6 +540,21 @@
           points: region.points.map((point) => ({ x: cx + (point.x - cx) * factor, y: cy + (point.y - cy) * factor })),
         }));
       }
+    }
+    // sweep / step: a one-way translation of the whole plane set along the
+    // layout angle's normal, so the boundary crosses every layout (bands also
+    // shift their own cuts through `offset`)
+    const sweep = num(moved.sweep, 0);
+    if (Math.abs(sweep) > 1e-6) {
+      const angle = num(moved.angle, 0);
+      const nx = Math.cos((angle * Math.PI) / 180);
+      const ny = Math.sin((angle * Math.PI) / 180);
+      const shift = sweep * (normalExtent(frame, angle) / 2);
+      regions = regions.map((region) => ({
+        ...region,
+        points: region.points.map((point) => ({ x: point.x + nx * shift, y: point.y + ny * shift })),
+      }));
+      for (const line of built.lines || []) line.c -= nx * shift * line.a + ny * shift * line.b;
     }
     const coverage = clamp01(options.coverage == null ? 1 : options.coverage);
     // swap: rotate the colour assignment on the rhythm cuts

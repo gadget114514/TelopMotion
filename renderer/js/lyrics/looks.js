@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./gen-params'), require('./legibility'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./gen-params'), require('./legibility'), require('./effects/text-bg'));
   else {
     root.SA = root.SA || {};
-    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.genParams, root.SA.legibility);
+    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.genParams, root.SA.legibility, root.SA.textBg);
   }
-})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird, fxAxes, genParams, legibility) {
+})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird, fxAxes, genParams, legibility, textBg) {
   'use strict';
 
   // FX 800 runtime pool: 800 complete looks classified by motion magnitude and
@@ -12,8 +12,8 @@
   // renderer/data/fx800.looks.json with each style stored as a delta against the
   // effect registry defaults; `expand` restores the full style here.
   const SOURCE = 'data/fx800.looks.json';
-  const INSTANCE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const INSTANCE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion', 'repeat'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -64,9 +64,18 @@
   // The delta base is the default of the type alone: using the instance itself
   // (withDefaults(instance)) would merge the drawn parameters into the base and
   // every value would compare equal, dropping the demo's parameters entirely.
+  // A stored look may still carry its ornament under the old `bgShape` name:
+  // those entries take the ornament registration as their base (the full
+  // parameter set), exactly as before the split.
+  function baseGroupOf(group, instance) {
+    if (group === 'bgShape' && instance && instance.type && fx.get('ornShape', instance.type)) return 'ornShape';
+    return group;
+  }
+
   function defaultInstance(instance, group) {
-    if (instance && instance.type) return fx.withDefaults({ type: instance.type }, group);
-    return fx.withDefaults(instance, group);
+    const base = baseGroupOf(group, instance);
+    if (instance && instance.type) return fx.withDefaults({ type: instance.type }, base);
+    return fx.withDefaults(instance, base);
   }
 
   function stripDefaults(style) {
@@ -99,9 +108,9 @@
 
   function expandGroup(key, value) {
     if (STACK_GROUPS.includes(key)) {
-      return (Array.isArray(value) ? value : value ? [value] : []).map((instance) => fx.withDefaults(instance, key)).filter(Boolean);
+      return (Array.isArray(value) ? value : value ? [value] : []).map((instance) => fx.withDefaults(instance, baseGroupOf(key, instance))).filter(Boolean);
     }
-    return fx.withDefaults(value, key);
+    return fx.withDefaults(value, baseGroupOf(key, value));
   }
 
   function expand(style) {
@@ -110,6 +119,11 @@
     for (const key of Object.keys(style)) {
       if (INSTANCE_GROUPS.includes(key)) out[key] = expandGroup(key, style[key]);
       else out[key] = clone(style[key]);
+    }
+    // a stored look may predate the background / ornament split: its `bg*`
+    // groups move to the group the shape belongs to before anyone reads them
+    if (textBg && typeof textBg.splitStyle === 'function') {
+      return textBg.splitStyle(out, { shadow: false }).style;
     }
     return out;
   }
@@ -242,8 +256,8 @@
 
   // A composed style must not keep an instance the profile zeroed: stacks lose
   // the entry, single groups fall back to a plain type (or disappear).
-  const TYPE_WEIGHT_STACKS = ['hold', 'edge', 'post', 'bgEdge'];
-  const TYPE_WEIGHT_SINGLES = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
+  const TYPE_WEIGHT_STACKS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
+  const TYPE_WEIGHT_SINGLES = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion', 'repeat'];
 
   function dropWeightedTypes(style, typeWeights) {
     if (!style || !typeWeights || !genParams || typeof genParams.typeWeight !== 'function') return style;

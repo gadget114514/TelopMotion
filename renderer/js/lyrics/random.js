@@ -7,15 +7,18 @@
 })(typeof self !== 'undefined' ? self : this, function (rng, fx, moods, repeat, smartness, weird, fxAxes) {
   'use strict';
 
-  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion', 'repeat'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion', 'repeat'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const ORN_GROUPS = ['ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
 
-  // the "bg" lock covers the four text-background groups at once
+  // the "bg" lock covers the text background, the "orn" lock the text
+  // ornaments: each switch stays on its own side of the split
   function expandLocks(locks) {
     const set = new Set(locks || []);
     if (set.has('bg')) for (const group of BG_GROUPS) set.add(group);
+    if (set.has('orn')) for (const group of ORN_GROUPS) set.add(group);
     return set;
   }
   const EASE_POOL = {

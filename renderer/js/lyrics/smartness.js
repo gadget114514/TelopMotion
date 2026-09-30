@@ -111,11 +111,11 @@
     figureHold: { pulse: 0.15, spin: 0.35, morph: 0.5, drift: 0.75 },
     figureOut: { burstOut: 0.25, shrink: 0.45, fade: 0.75 },
     // the mid (backdrop) clip's own beat motion
-    backdropMotion: { pulse: 0.1, sway: 0.45, accent: 0.55, swell: 0.6, drift: 0.8, still: 0.9 },
+    backdropMotion: { pulse: 0.1, sway: 0.45, accent: 0.55, swell: 0.6, tilt: 0.6, zoom: 0.65, travel: 0.7, drift: 0.8, still: 0.9 },
     // the backdrop clip's enter / exit transition
-    transition: { rotate: 0.25, iris: 0.3, scale: 0.45, wipe: 0.75, cut: 0.85 },
+    transition: { rotate: 0.25, iris: 0.3, scale: 0.45, stagger: 0.65, slide: 0.7, wipe: 0.75, cut: 0.85 },
     // the split planes' motion and colour scheme
-    splitMotion: { breathe: 0.2, rotate: 0.35, swap: 0.5, push: 0.65, slide: 0.7, drift: 0.8, none: 0.9 },
+    splitMotion: { breathe: 0.2, rotate: 0.35, swap: 0.5, step: 0.6, push: 0.65, slide: 0.7, turn: 0.7, zoom: 0.7, sweep: 0.75, drift: 0.8, none: 0.9 },
     splitScheme: { triad: 0.3, complementary: 0.4, splitComplementary: 0.5, analogous: 0.75, tonal: 0.85, neutralAccent: 0.9 },
     // the pattern library's modes (clip patterns / backdrop patterns)
     pattern: {
@@ -146,7 +146,8 @@
   }
 
   function rate(group, type) {
-    const table = RATINGS[group];
+    // the ornament groups read the ratings of the text-background groups
+    const table = RATINGS[RATING_GROUP[group] || group];
     if (!table || type == null) return NEUTRAL;
     const value = table[type];
     return typeof value === 'number' ? clamp01(value) : NEUTRAL;
@@ -250,8 +251,10 @@
 
   // Every effect group of an expanded style with its rating. `min` is what the
   // look weighting uses; `offenders` lists the tacky entries.
-  const STYLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const STYLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion', 'repeat'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
+  // the ornament groups share the ratings of the text-background groups
+  const RATING_GROUP = { ornShape: 'bgShape', ornFill: 'bgFill', ornEdge: 'bgEdge', ornMotion: 'bgMotion' };
 
   function rateStyle(style) {
     const entries = [];

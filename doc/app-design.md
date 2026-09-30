@@ -1499,6 +1499,17 @@ If WebGL2 isn't available:
 - Supported: fill (solid or gradient), outline (stroke), shadow and glow (`shadowBlur`), opacity, blur (`ctx.filter`). Shader-only effects fall back to `solid` and `outline`.
 - The Studio shows the banner `studio.warn.noWebGL`.
 
+### 8.8 Text mask (glyph knockout of the clip layers)
+- `glPasses.buildTextMask(entries, { radius, feather, strength })` stacks every visible beat's mesh into `textRT` (one scene at a time, no clear in between), runs the SDF pass once, then bakes `maskRT` (RGBA8, full resolution) with `MASK_FRAG`: `a = strength * max(textAlpha, 1 - smoothstep(radius - feather, radius, max(dist, 0)))`. `radius` / `feather` arrive in px and are normalised by the SDF's `maxDistance` (the same conversion as EDGE_FRAG's outline). The empty-field sentinel (`< -900`) falls back to the glyph alpha, and without float targets the glyph alpha alone is the mask.
+- `glPasses.maskLayer()` punches `maskRT` out of the current layer with the same `(ZERO, ONE_MINUS_SRC_ALPHA)` blend as the text background's `knockout()`.
+- `engine.renderFrameExtended` evaluates the visible beats before the clip tracks, bakes the mask once when a figure / backdrop / filler clip opted in (`track.textMask !== false`), and knocks the figure layer, the filler shapes/texts and the backdrop accent layer out. `partitionPlanes` keeps the split planes whole (their colours already hold the text contrast) and only masks the accents above them; the subtitle background keeps its own glyph knockout.
+- `maskRadius(size, height)` is the padding band: `clamp(0.16 * size, 0.008 H, 0.03 H)`, feather = radius / 2; the strength is the strongest visible letter opacity, so the mask fades with the subtitle's own entrance / exit.
+
+### 8.9 Clip animation vocabulary
+- `split.applyMotion` gains the one-way motions driven by the clip progress (`ctx.progress`) instead of a time sine: `sweep` (the eased set crosses the frame along the layout angle), `turn` (± travel × 60° once across the clip), `zoom` (the `push` inset presses in / pulls out monotonically) and `step` (one offset per rhythm cut, 0.18 s ease). `travel` (0.06..0.18) and `dir` (±1) are drawn with the new motions only; saved clips keep their exact draw.
+- `filler-render.animate` gains the clip-level `travel` (slow pan, cover scale), `zoom` (Ken Burns 1 → 1 + amount) and `tilt` (−a → +a) modes, and the `slide` / `stagger` enter / exit transitions (slide from `motion.dir`, per-shape cascade). The mode and transition names are rated in `smartness.RATINGS` (0.6..0.75) and labelled in all five languages.
+- The auto direction (`moods.planeBackdropSpec` / `splitSpec` / `backdropMotion`) draws the new names and hands the next backdrop an `avoid` context from the previous clip: `direct.avoidFromClip` / `avoidForClip` read the layout / plane motion / clip mode / transition, and the candidate filter only drops a name while at least two candidates remain (the random call count never changes). `rerollClipSpec` re-rolls a single clip with its neighbours' context.
+
 ---
 
 ## 9. Video export (`js/video-export.js` + `studio/export-dialog.js`)

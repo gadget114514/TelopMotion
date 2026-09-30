@@ -37,6 +37,10 @@
     bgFill: { type: 'solid', params: {} },
     bgEdge: null,
     bgMotion: { type: 'follow', params: {} },
+    ornShape: { type: 'none', params: {} },
+    ornFill: { type: 'solid', params: {} },
+    ornEdge: null,
+    ornMotion: { type: 'follow', params: {} },
     repeat: { type: 'none', params: {} },
   };
 
@@ -221,7 +225,8 @@
       const entry = instance && get(group, instance.type);
       if (entry) cost += entry.costOf ? entry.costOf(instance.params, instance) : entry.cost;
     }
-    // the text background costs nothing until a shape is selected
+    // the text background costs nothing until a shape is selected; the
+    // ornaments are the same deal behind their own groups
     const bgInstance = withDefaults(style.bgShape, 'bgShape');
     const bgActive = !!(bgInstance && bgInstance.type && bgInstance.type !== 'none');
     if (bgActive) {
@@ -230,8 +235,17 @@
         if (entry) cost += entry.cost;
       }
     }
-    for (const group of ['hold', 'edge', 'post', 'bgEdge']) {
+    const ornInstance = withDefaults(style.ornShape, 'ornShape');
+    const ornActive = !!(ornInstance && ornInstance.type && ornInstance.type !== 'none');
+    if (ornActive) {
+      for (const group of ['ornShape', 'ornFill', 'ornMotion']) {
+        const entry = get(group, (withDefaults(style[group], group) || {}).type);
+        if (entry) cost += entry.cost;
+      }
+    }
+    for (const group of ['hold', 'edge', 'post', 'bgEdge', 'ornEdge']) {
       if (group === 'bgEdge' && !bgActive) continue;
+      if (group === 'ornEdge' && !ornActive) continue;
       for (const instance of style[group] || []) {
         const entry = get(group, instance.type);
         if (entry) cost += entry.cost;

@@ -319,9 +319,9 @@ test('smartness 0.9 drops the tacky grammar from the automatic direction', () =>
   for (const clip of mid) {
     const parts = (clip.spec.params && clip.spec.params.list) || [];
     const planes = parts.find((part) => part.type === 'split');
-    if (planes) assert.ok(['slide', 'swap', 'drift', 'push'].includes(planes.params.motion), `split motion ${planes.params.motion}`);
+    if (planes) assert.ok(['slide', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step'].includes(planes.params.motion), `split motion ${planes.params.motion}`);
     const animate = (clip.spec.params && clip.spec.params.animate) || {};
-    assert.ok(['accent', 'swell', 'sway', 'drift', 'still'].includes(animate.mode), `backdrop mode ${animate.mode}`);
+    assert.ok(['accent', 'swell', 'sway', 'drift', 'travel', 'zoom', 'tilt'].includes(animate.mode), `backdrop mode ${animate.mode}`);
   }
   for (const clip of doc.clips.filter((entry) => entry.trackId === 'bg')) {
     const spec = clip.spec || {};
@@ -491,14 +491,26 @@ test('the profile run stays legible on every beat and carries an edge on most cu
   }
 });
 
-test('the profile figures move with at least three motifs and avoid the smear posts', () => {
+test('the profile figures move with at least three motifs, avoid the smear posts and stay clear of the lyrics', () => {
   for (const seed of PROFILE_SEEDS) {
-    const { doc } = profileRun(seed, {});
+    const { doc, ctx } = profileRun(seed, {});
     const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
-    const motifs = new Set(
-      doc.clips.filter((clip) => clip.trackId === figureTrack.id).map((clip) => clip.spec && clip.spec.params && clip.spec.params.motif)
-    );
+    const figs = doc.clips.filter((clip) => clip.trackId === figureTrack.id);
+    const motifs = new Set(figs.map((clip) => clip.spec && clip.spec.params && clip.spec.params.motif));
     assert.ok(motifs.size >= 3, `seed ${seed} motifs ${[...motifs].join(',')}`);
+    // the auto direction never lays a figure over the cue's text box (the
+    // geometric measure ignores the opacity, so a dimmed overlay would fail too)
+    for (const cue of doc.script.cues) {
+      const clip = figs.find((entry) => Math.abs(entry.start - cue.start) < 1e-6);
+      if (!clip) continue;
+      const overlap = SA.legibility.figureOverlap(clip.spec, {
+        frame: { width: ctx.frameW, height: ctx.frameH },
+        duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
+        textBox: ctx.composeZones[cue.id],
+        geometry: true,
+      });
+      assert.ok(overlap <= 0.05 + 1e-9, `seed ${seed} ${cue.id} figure overlap ${overlap}`);
+    }
   }
   // a theme carrying a smear post: the gate removes it while postBlurChance is low
   const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
@@ -520,6 +532,68 @@ test('the profile figures move with at least three motifs and avoid the smear po
   const keepDoc = JSON.parse(JSON.stringify(FIXTURE.input));
   const keepCtx = prepare(keepDoc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed: 4242, themeStyle: keepTheme, compose: true });
   assert.ok(keepCtx.themeStyle.post.some((instance) => instance.type === 'godRays'), 'postBlurChance 1 keeps the smear');
+});
+
+test('a figure that cannot stay clear of the lyrics is dropped, not dimmed over it', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, seed: 4242, compose: true });
+  const cue = doc.script.cues[0];
+  ctx.composeZones = { [cue.id]: { x0: ctx.frameW * 0.4, y0: ctx.frameH * 0.4, x1: ctx.frameW * 0.6, y1: ctx.frameH * 0.6 } };
+  // every candidate is a dense centred motif, so nothing can stay clear
+  const original = SA.figures.generate;
+  SA.figures.generate = (options) => ({
+    type: 'figure',
+    params: {
+      // ignore the requested motif: every candidate is the same dense centred
+      // pattern, so the clearance test can never succeed
+      motif: 'halftone',
+      sync: options.sync || 'beat',
+      density: 1,
+      colors: null,
+      beats: [{ start: cue.start, end: cue.end, move: { in: 'pop', hold: 'pulse', out: 'fade' }, variant: 0, accent: false }],
+    },
+  });
+  try {
+    const clip = SA.direct.figureClipFor(doc, cue, 0, ctx);
+    assert.equal(clip, null, 'no figure over the lyrics');
+  } finally {
+    SA.figures.generate = original;
+  }
+});
+
+test('neighbouring profile backdrops never repeat their motion, mode or transition', () => {
+  const seeds = [...PROFILE_SEEDS, 1, 99, 2024, 555, 8080];
+  for (const seed of seeds) {
+    const { doc } = profileRun(seed, {});
+    const mid = doc.clips.filter((clip) => clip.trackId === 'mid');
+    assert.ok(mid.length >= 2, `seed ${seed} mid clips ${mid.length}`);
+    const fields = (clip) => {
+      const spec = clip.spec || {};
+      const plane = ((spec.params && spec.params.list) || []).find((entry) => entry && entry.type === 'split');
+      const animate = (spec.params && spec.params.animate) || {};
+      return {
+        layout: plane && plane.params ? plane.params.layout : null,
+        parts: plane && plane.params ? plane.params.parts : null,
+        motion: plane && plane.params ? plane.params.motion : null,
+        mode: animate.mode,
+        transition: animate.transition,
+      };
+    };
+    for (let i = 1; i < mid.length; i += 1) {
+      const a = fields(mid[i - 1]);
+      const b = fields(mid[i]);
+      // motion / mode / transition always keep at least two candidates after
+      // the ban, so a repeat is a bug
+      assert.notEqual(b.motion, a.motion, `seed ${seed} clip ${i} motion ${b.motion}`);
+      assert.notEqual(b.mode, a.mode, `seed ${seed} clip ${i} mode ${b.mode}`);
+      assert.notEqual(b.transition, a.transition, `seed ${seed} clip ${i} transition ${b.transition}`);
+      // the plane-count draw only guarantees a second layout at 2-3 planes
+      // (1 -> halves only, 4 -> two names); those pairs may repeat by design
+      if (a.parts >= 2 && a.parts <= 3 && b.parts >= 2 && b.parts <= 3) {
+        assert.notEqual(b.layout, a.layout, `seed ${seed} clip ${i} layout ${b.layout}`);
+      }
+    }
+  }
 });
 
 test('the profile use-palettes are the only source of the cue palettes', () => {
@@ -604,7 +678,7 @@ test('the compose chances off leave the template picture untouched', () => {
     const own = doc.cueStyles[cue.id] || {};
     assert.ok(!own.clones, `${cue.id} clones`);
     assert.ok(!own.repeat, `${cue.id} repeat`);
-    assert.ok(!own.bgShape, `${cue.id} text background`);
+    assert.ok(!own.bgShape && !own.ornShape, `${cue.id} text background / ornament`);
     assert.ok(!own.text || !own.text.fontId, `${cue.id} font`);
   }
   for (const { beat, style } of beats) {
@@ -637,7 +711,13 @@ test('the compose chances on draw every optional element', () => {
   assert.ok(beats.some(({ style }) => style.location && (style.location.type === 'randomSafe' || style.location.params.offsetX || style.location.params.offsetY)), 'location nudge');
   assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).repeat), 'a cue repeat');
   assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).clones), 'a cue clone');
-  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).bgShape), 'a text background');
+  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).bgShape || (doc.cueStyles[cue.id] || {}).ornShape), 'a text background or ornament');
+  for (const cue of cues) {
+    const own = doc.cueStyles[cue.id] || {};
+    if (own.bgShape && own.bgShape.type && own.bgShape.type !== 'none') {
+      assert.equal(own.bgShape.type, 'square', `${cue.id} background is not a square`);
+    }
+  }
   assert.ok(beats.some(({ style }) => Array.isArray(style.edge) && style.edge.length), 'beat decoration');
   const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
   assert.ok(
@@ -696,8 +776,8 @@ test('a pinned text background chance overrides the genre setting', () => {
   const genre = SA.genres.LIST[0].id;
   // pinned chance 1 applies even when the genre's own table says less
   const on = composedDoc({ ...NO_VARIATION, textBgChance: 1 }, { genre });
-  assert.ok(on.script.cues.some((cue) => (on.cueStyles[cue.id] || {}).bgShape), 'pinned 1 did not apply');
+  assert.ok(on.script.cues.some((cue) => (on.cueStyles[cue.id] || {}).bgShape || (on.cueStyles[cue.id] || {}).ornShape), 'pinned 1 did not apply');
   // pinned chance 0 blocks it everywhere
   const off = composedDoc({ ...NO_VARIATION, textBgChance: 0 }, { genre });
-  assert.ok(off.script.cues.every((cue) => !(off.cueStyles[cue.id] || {}).bgShape), 'pinned 0 did not block');
+  assert.ok(off.script.cues.every((cue) => !(off.cueStyles[cue.id] || {}).bgShape && !(off.cueStyles[cue.id] || {}).ornShape), 'pinned 0 did not block');
 });

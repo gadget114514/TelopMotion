@@ -42,7 +42,13 @@ const fx400 = requirePart('scripts/fx400.js');
 const AXES = fxAxes.AXES;
 const EFFECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
 // alias groups read the same behaviour as their base group
-const BASE_GROUP = { bgFill: 'fill', bgEdge: 'edge' };
+const BASE_GROUP = { bgFill: 'fill', bgEdge: 'edge', ornFill: 'fill', ornEdge: 'edge' };
+// The ornament shapes are the old text-background shapes under a second name:
+// their rows stay in the `bgShape` part of the table, so the committed data
+// does not move when the groups split. ornFill / ornEdge / ornMotion share the
+// bgFill / bgEdge / bgMotion rows, which are collected from those groups.
+const ORN_SHAPES_GROUP = 'ornShape';
+const ORN_TABLE_GROUP = 'bgShape';
 // pseudo groups: the vocabulary the timeline clips draw from, which has no
 // registry entry of its own
 const PSEUDO_GROUPS = {
@@ -50,9 +56,9 @@ const PSEUDO_GROUPS = {
   figureIn: figures.INS,
   figureHold: figures.HOLDS,
   figureOut: figures.OUTS,
-  splitMotion: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift', 'push'],
+  splitMotion: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step'],
   splitScheme: moods.SPLIT_SCHEMES,
-  transition: ['wipe', 'scale', 'rotate', 'iris', 'cut'],
+  transition: ['wipe', 'scale', 'rotate', 'iris', 'cut', 'slide', 'stagger'],
   backdropMotion: moods.BACKDROP_MOTIONS,
   pattern: ['grid', 'dots', 'stripes', 'rings', 'triangles', 'diamonds', 'hexes', 'rain', 'checks', 'polka', 'sineCurve', 'waves', 'randomFill'],
 };
@@ -197,6 +203,10 @@ function collectTypes() {
     for (const descriptor of list) {
       found.push({ group, type: descriptor.type, descriptor, pseudo: false });
     }
+  }
+  // the ornament shapes stay in the background rows
+  for (const descriptor of fx.list(ORN_SHAPES_GROUP, { packs: 'all' })) {
+    found.push({ group: ORN_TABLE_GROUP, type: descriptor.type, descriptor, pseudo: false });
   }
   for (const [group, types] of Object.entries(PSEUDO_GROUPS)) {
     for (const type of types) found.push({ group, type, descriptor: null, pseudo: true });

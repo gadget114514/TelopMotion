@@ -5,10 +5,10 @@ const assert = require('node:assert');
 
 const project = require('../../renderer/js/studio/project');
 
-test('defaults produce a valid version 2 project with tracks', () => {
+test('defaults produce a valid version 3 project with tracks', () => {
   const doc = project.defaults();
   assert.strictEqual(doc.format, 'telopmotion');
-  assert.strictEqual(doc.version, 2);
+  assert.strictEqual(doc.version, 3);
   assert.strictEqual(doc.output.aspect, '16:9');
   assert.strictEqual(doc.output.width, 1920);
   assert.ok(Array.isArray(doc.script.cues));
@@ -36,7 +36,7 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
   const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
   assert.strictEqual(result.ok, true);
-  assert.strictEqual(result.project.version, 2);
+  assert.strictEqual(result.project.version, 3);
   assert.deepStrictEqual(result.project.custom, { hello: 'world' });
   assert.strictEqual(result.project.meta.title, 'Song');
   assert.strictEqual(result.project.output.aspect, '16:9');

@@ -231,7 +231,7 @@ test('presets are JSON-safe partial style sets', () => {
   const presets = require('../../renderer/js/lyrics/presets.js');
   const list = presets.list();
   assert.ok(list.length >= 14, `presets ${list.length}`);
-  const known = new Set(['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion']);
+  const known = new Set(['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']);
   for (const preset of list) {
     assert.ok(preset.id && preset.style, preset.id);
     for (const key of Object.keys(preset.style)) assert.ok(known.has(key), `${preset.id}: ${key}`);

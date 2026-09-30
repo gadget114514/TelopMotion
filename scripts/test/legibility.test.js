@@ -54,9 +54,9 @@ test('check reports the contrast, size, tag and background issues it fixes', () 
   // a tiny size
   const small = plainStyle({ text: { size: 20 } });
   assert.ok(legibility.check(small, { frame: FRAME, duration: 3, motion: false }).reasons.includes('size'));
-  // an oversized text background
-  const bigBg = plainStyle({ bgShape: { type: 'square', params: { unit: 'cell', width: 2, height: 2, opacity: 1 } } });
-  assert.ok(legibility.check(bigBg, { frame: FRAME, duration: 3, motion: false }).reasons.some((reason) => reason.startsWith('bg-size')));
+  // an oversized ornament
+  const bigOrn = plainStyle({ ornShape: { type: 'bracket', params: { unit: 'em', width: 4, height: 4, opacity: 1 } } });
+  assert.ok(legibility.check(bigOrn, { frame: FRAME, duration: 3, motion: false }).reasons.some((reason) => reason.startsWith('bg-size')));
   // an unreadable tag without an allow entry
   const tagged = plainStyle({ post: [{ type: 'pixelate', params: { size: 8 }, enabled: true }] });
   assert.ok(legibility.check(tagged, { frame: FRAME, duration: 3, motion: false }).reasons.includes('tag:post.pixelate'));
@@ -99,7 +99,7 @@ test('repair fixes contrast, tags and motion without touching a passing style', 
 
 test('the background shape hands the contrast to fgAutoContrast instead of flattening the fill', () => {
   const style = plainStyle({
-    bgShape: { type: 'bracket', params: { unit: 'em', width: 0.4, height: 0.4, opacity: 1, varyColors: ['#00bbf9', '#081dff'] } },
+    bgShape: { type: 'square', params: { opacity: 1, varyColors: ['#00bbf9', '#081dff'] } },
   });
   const before = legibility.check(style, { frame: FRAME, duration: 3, letterCount: 12 });
   assert.equal(before.ok, false);
@@ -108,6 +108,25 @@ test('the background shape hands the contrast to fgAutoContrast instead of flatt
   assert.equal(repaired.style.color.fill.kind, 'palette', 'the fill role survives');
   assert.equal(repaired.style.color.fill.index, 2);
   assert.equal(legibility.check(repaired.style, { frame: FRAME, duration: 3, letterCount: 12 }).ok, true);
+});
+
+test('a text ornament does not change the text contrast contract', () => {
+  // a bracket in em units is an ornament now: the engine paints it behind the
+  // glyphs, but it is not the background the contrast contract is measured on
+  const style = plainStyle({
+    ornShape: { type: 'bracket', params: { unit: 'em', width: 0.4, height: 0.4, opacity: 1, varyColors: ['#00bbf9', '#081dff'] } },
+  });
+  const result = legibility.check(style, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.ok(!result.reasons.some((reason) => reason.startsWith('contrast')), result.reasons.join(' / '));
+  // the repair clamp moves to the ornament group
+  const big = plainStyle({ ornShape: { type: 'circle', params: { unit: 'cell', width: 3, height: 3 } } });
+  legibility.repairBackgroundClamp(big);
+  assert.equal(big.ornShape.params.width, 1.25);
+  assert.equal(big.ornShape.params.height, 1.25);
+  // a background is never clamped: it is a fixed cell square
+  const bg = plainStyle({ bgShape: { type: 'square', params: { width: 3, height: 3 } } });
+  legibility.repairBackgroundClamp(bg);
+  assert.equal(bg.bgShape.params.width, 3);
 });
 
 test('the figure gate recolours and then dims a figure over the text', () => {
@@ -126,6 +145,22 @@ test('the figure gate recolours and then dims a figure over the text', () => {
   assert.equal(repaired.params.opacity, 0.35);
   // the source spec is untouched
   assert.equal(spec.params.color, '#eef2ff');
+});
+
+test('the geometric figure overlap ignores the dimming', () => {
+  const palette = PALETTE.colors;
+  const spec = {
+    type: 'figure',
+    params: { motif: 'halftone', sync: 'beat', density: 1, color: '#eef2ff', beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'pulse', out: 'fade' }, variant: 0, accent: false }] },
+  };
+  const ctx = { frame: FRAME, duration: 3, palette, textColors: [palette[2]], textBox: { x0: FRAME.width * 0.2, y0: FRAME.height * 0.38, x1: FRAME.width * 0.8, y1: FRAME.height * 0.62 } };
+  const dimmed = { ...spec, params: { ...spec.params, opacity: 0.35 } };
+  assert.ok(legibility.figureOverlap(dimmed, ctx) < legibility.figureOverlap(spec, ctx), 'the opacity scales the contract measure');
+  assert.equal(
+    legibility.figureOverlap(dimmed, { ...ctx, geometry: true }),
+    legibility.figureOverlap(spec, { ...ctx, geometry: true }),
+    'the geometric measure ignores the opacity'
+  );
 });
 
 test('the fully-displayed hold is 0.2 s + 0.05 s per word at weird 0.6', () => {

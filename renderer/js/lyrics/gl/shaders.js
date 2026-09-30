@@ -537,6 +537,37 @@ SA.glShaders = (() => {
     fragColor = texture(u_texture, uv) * u_opacity;
   }`;
 
+  // --- text mask pass ----------------------------------------------------------
+  // Bakes the visible glyphs (plus a padding ring grown from the signed
+  // distance field) into an alpha mask the clip layers are knocked out with.
+  // The distance field is normalised by maxDistance exactly like EDGE_FRAG's
+  // outline: u_radius / u_feather arrive pre-divided, `distance` is signed with
+  // the inside negative. The empty-field sentinel (glSdf's RESOLVE_FRAG) has no
+  // glyph to spread from, so only the text alpha survives there.
+
+  const MASK_FRAG = `#version 300 es
+  precision highp float;
+  in vec2 v_uv;
+  uniform sampler2D u_text;
+  uniform sampler2D u_sdf;
+  uniform float u_strength;
+  uniform float u_radius;
+  uniform float u_feather;
+  uniform float u_sdfAmount;
+  out vec4 fragColor;
+  void main() {
+    float textAlpha = texture(u_text, v_uv).a;
+    float spread = 0.0;
+    if (u_sdfAmount > 0.5) {
+      float distance = texture(u_sdf, v_uv).r;
+      if (distance >= -900.0) {
+        spread = 1.0 - smoothstep(u_radius - u_feather, u_radius, max(distance, 0.0));
+      }
+    }
+    float alpha = clamp(u_strength, 0.0, 1.0) * max(textAlpha, spread);
+    fragColor = vec4(alpha, alpha, alpha, alpha);
+  }`;
+
   // --- fill pass ---------------------------------------------------------------
 
   const FILL_FRAG = `#version 300 es
@@ -2100,6 +2131,7 @@ SA.glShaders = (() => {
     QUAD_VERT,
     COMPOSITE_FRAG,
     COPY_FRAG,
+    MASK_FRAG,
     FILL_FRAG,
     EDGE_FRAG,
     POST_FRAG,

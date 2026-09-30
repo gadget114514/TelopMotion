@@ -550,3 +550,28 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 
 - `chance` は常に 0..1。`roll` は chance 0 で乱数を引かない。`weight` はグループ内で `normalizeChances` 相当に正規化され、合計 0 なら `null`（乱数なし）。
 - weird 0 で 0 にならない chance は `sizeChange`（energy）/ `boldChance` / `graphicChance` / `pulseChance` / `textBgChance` / `bgVaryChance` / `bgEdgeChance` のみ。
+
+## 追加: 字幕を図形・後景から浮かせるテキストマスク + 後景アニメーションの多様化
+
+weird > 0 の自動演出で、太い図形や後景のアクセント層が字幕の真裏を通ると字幕が塗りつぶされて見えた。文字形＋余白でクリップ層をくり抜く「テキストマスク」を追加し、あわせて後景の動き（面・クリップ）を一方向の進行型へ広げた。**weird 0 の出力（`direct-w0.json`、fx400 / fx800 / looks カタログ）は不変**。
+
+- パイプライン(A1): `glPasses.createTargets` にフル解像度 RGBA8 の `mask` ターゲットを追加。`glShaders.MASK_FRAG` は文字 alpha と SDF を読み、`a = strength * max(textAlpha, 1 - smoothstep(radius - feather, radius, max(dist, 0)))` を出力。距離は EDGE_FRAG の outline と同じく `maxDistance` 正規化で、`radius` / `feather` は px のまま渡して内部で割る。空フィールドの番兵 (`< -900`) は文字 alpha のみ、float ターゲットなしも文字 alpha のみ。`buildTextMask(entries, opts)` は `textFramebuffer` を 1 回クリアし、各ビートのメッシュをクリアせず重ねて描き（`text()` の描画部を `drawTextMesh` に共通化）、SDF を 1 回走らせて `mask` へ焼く。`maskLayer()` は既存 `knockout()` と同じ `(ZERO, ONE_MINUS_SRC_ALPHA)` で現在のレイヤーから `mask` を抜く（`knockoutTexture` を共有）。
+- エンジン(A2): 「全ビートを評価」ブロックをクリップ描画より前へ移動し、非表示トラックを除いた可視ビートがあり、マスク対象クリップ（figure / backdrop / filler で `track.textMask !== false`）が有効なときだけ 1 フレーム 1 回 `buildTextMask`。`radius = clamp(0.16 × 最大ビートサイズ, 0.008H, 0.03H)`、`feather = radius × 0.5`、`strength = 可視レターの最大 opacity`（入退場でマスクもフェード）。`maskRadius(size, height)` は純関数としてエクスポート。マスクは図形レイヤー全体、フィラーの shapes/texts、後景のアクセント層だけに掛け、分割面は `partitionPlanes`（エクスポート）が「面が全部アクセントより前」のときだけ 2 レイヤーに分けて面をそのまま残す（面だけ・混在順は従来の 1 レイヤー、背景トラック / shapeLayer / textAnim / 前景は対象外）。`filler-render.splitShapes` の面 shape に `plane: true` を付与。
+- オン/オフ(A3): トラック単位の `track.textMask`（未設定 = オン）。`timeline.js` のトラック右クリックに後景 / 図形 / フィラー用の「文字でくり抜く / くり抜かない」を追加し、`project.js` の migrate で boolean 正規化、`i18n.js` に `studio.track.maskText` / `unmaskText` を 5 言語追加。
+- 面の動き(B1): `split.applyMotion` にクリップ進行 `ctx.progress` で一方向に進む `sweep`（境界が −travel → +travel へイーズして横切る）/ `turn`（± travel × 60° を 1 回転）/ `zoom`（`push` の inset 幾何を単調に）/ `step`（リズムの cuts ごとに offset が 1 段進む、0.18 秒イーズ）を追加。`travel`（0.06〜0.18）と `dir`（±1）は新モーションのときだけ抽選。既存モーションと保存済みクリップは不変。
+- クリップの動き(B2): `filler-render.animate` に `travel`（クリップ全体でゆっくりパン、cover 加算）/ `zoom`（1 → 1+amount のケンバーンズ）/ `tilt`（−a → +a）と、入退場 `slide`（`motion.dir` の左右上下から滑り込む）/ `stagger`（shape ごとに遅延して 1 枚ずつ）を追加。`PARAMS.split.motion` の選択肢に `push` 抜けも含めて新名称を反映。
+- 抽選(B3): `planeBackdropSpec` / `splitSpec` の motions、`BACKDROP_MOTIONS`、`backdropMotion` の transition 候補に新名称を追加し、`travel` / `dir` を抽選。`options.avoid = { layout, motion, mode, transition }` を受け取り、候補が 2 つ以上残るときだけ候補から除外（乱数の消費回数は不変）。w > 0 の経路だけに適用。`smartness.RATINGS` の `splitMotion` / `backdropMotion` / `transition` に進行型の評価（0.6〜0.75）を追加。
+- 配線(B4): `direct.run` の 2.1 と `backdropClips` が直前キューのクリップから `avoid` を作って `backdropClipFor` へ渡し、単体再抽選は `avoidForClip` が前後のクリップから合成。`fx-axes-build.js` の `splitMotion` / `transition` 表と `fx-axes.json` / `fx-axes-table.js` を再生成し、`fx-strings.js` と `i18n.js` に新名称のラベルを 5 言語追加。
+- テスト: `split.test.js` に sweep / turn / zoom / step と animate の travel / zoom / tilt / slide / stagger、`splitShapes` の `plane` フラグ。`direct.test.js` に隣接キューの後景が layout / 動き / mode / transition を繰り返さないこと（8 seed）と許可モード一覧の更新。`smartness.test.js` の名前表更新。新規 `text-mask.test.js`（`maskRadius` の上下限、`partitionPlanes` の 4 配置、`trackTextMaskOn`、`MASK_FRAG` と配線）。w=0 スナップショットは不変のまま全件パス。
+
+
+## 追加: 文字背景の再定義（1文字セルの四角）と文字飾りの分離
+
+「文字背景」を **1文字ごとに、その文字のセル（送り幅 × 文字サイズ）を囲む四角** と定義し直した。定義に合わない形（丸・星・ハート・バー・em 単位の下敷き・自由な大きさ/位置/回転）は `ornShape` / `ornFill` / `ornEdge` / `ornMotion`（文字飾り）へ分離した。**weird 0 の出力（direct-w0.json）、fx400 / fx800 / looks カタログは不変。**
+
+- グループ(`text-bg.js`): `bgShape` は `none` / `square` のみで、ジオメトリを持たない。`evaluateBg(..., { group })` は `bgShape` のときセルぴったり（size 1x1、オフセット・回転 0、形は square、vary の幾何も無効）を強制する。`isBackground(style)` / `splitStyle(style)` を公開し、分類を一箇所に集約。
+- エンジン(`engine.js`): `drawBackgroundPass(active, t, project, family)` を 'orn' / 'bg' の2パスで共用。描画順は飾り → 背景 → 文字で、どちらも knockout される。`track.bgHidden` と `view.subtitleBackgrounds` は背景（四角）のパスだけを止め、飾りは残る。背景の色は役割 `TEXT_BG` / `TEXT_EDGE`（旧6色パレットは従来番号 3 / 4 へフォールバック）、飾りは従来の 3 / 5 / 4。
+- 移行(`project.js` v3): `style` / `cueStyles` / `beatStyles` / `beatKindStyle` / `overrides` の各バッグを、その階層で解決された形で判定して振り分ける。飾りへ移ったバッグには `bgShape: { type:'none' }` を置き、継承された背景を打ち消す。`keyframes` の `bgShape.*` / `bgFill.*` … も同じ判定で `orn*` へ。`looks.js` / `presets.js` / `themes.js` も入口で `splitStyle`。
+- 生成(`moods.js`): `applyGenreBackground` は乱数の引き方を変えず、`square × enclose` のときだけ `bgShape`（ジオメトリなし）+ `bgFill` / `bgEdge` / `bgMotion`、それ以外は `orn*` に書く。`varyColors` は背景なら `TEXT_BG` / `TEXT_EDGE` 系。`enforceReadability` は背景のみ対象。ジャンル定義のシグネチャも飾りは `orn*` へ更新。
+- UI: 字幕トラック直下に「文字N 文字背景」行（チェック = `track.bgHidden`）。インスペクタは「文字背景」節と「文字飾り」節に分割（`fx-strings.js` / `i18n.js` は5言語）。
+- テスト: `text-bg.test.js`（幾何強制・splitStyle・同一シードの振り分け）、`subtitle-bg.test.js`（スイッチは飾りを消さない）、`io.test.js`（rounded → ornShape）、`direct.test.js`（背景は四角のみ）、`legibility.test.js`（bracket は飾り）、`fx-axes.js`（orn* → bg* の読み替え）を更新。

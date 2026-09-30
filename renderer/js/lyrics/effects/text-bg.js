@@ -90,13 +90,44 @@
     return [...COMMON_PARAMS, ...(TYPE_PARAMS[type] || [])];
   }
 
-  for (const type of SHAPE_TYPES) {
+  // The text background is the one shape the definition allows: a per-letter
+  // square covering the letter's own cell. Everything else the old `bgShape`
+  // carried (circles, stars, bars, em-sized washes, free offsets / rotations)
+  // is a text ornament and lives in the separate `ornShape` group, so the
+  // subtitle background switch never hides a decoration.
+  const BG_SHAPE_TYPES = ['none', 'square'];
+  const ORN_SHAPE_TYPES = SHAPE_TYPES.filter((type) => type !== 'none');
+  // The background keeps only the modifiers that do not move or resize it:
+  // colour variation, fill / stroke / trim / dash and letter following. Geometry
+  // (unit / width / height / offset / rotation / wobble / vary* geometry) is
+  // ignored by evaluateBg for the background group.
+  const BG_PARAM_KEYS = new Set([
+    'rotateWithLetter', 'scaleWithLetter', 'opacity', 'skipSpaces', 'skipRate',
+    'fgAutoContrast', 'vary', 'varyColors', 'stroke', 'fill',
+    'trimStart', 'trimEnd', 'trimOffset', 'dashOn', 'dashOff', 'dashOffset',
+  ]);
+
+  function bgParamsFor(type) {
+    const base = COMMON_PARAMS.filter((param) => BG_PARAM_KEYS.has(param.key));
+    return [...base, ...(TYPE_PARAMS[type] || [])];
+  }
+
+  for (const type of BG_SHAPE_TYPES) {
     fx.register({
       group: 'bgShape',
       type,
       tags: type === 'none' ? ['basic'] : [],
-      params: paramsFor(type),
+      params: bgParamsFor(type),
       cost: type === 'none' ? 0 : 2,
+    });
+  }
+
+  for (const type of ORN_SHAPE_TYPES) {
+    fx.register({
+      group: 'ornShape',
+      type,
+      params: paramsFor(type),
+      cost: 2,
     });
   }
 
@@ -137,10 +168,14 @@
     });
   }
 
-  // the background fill / edge reuse the foreground effect libraries
+  // the background fill / edge reuse the foreground effect libraries; the
+  // ornament groups are the same libraries behind their own names
   if (typeof fx.alias === 'function') {
     fx.alias('bgFill', 'fill');
     fx.alias('bgEdge', 'edge');
+    fx.alias('ornFill', 'fill');
+    fx.alias('ornEdge', 'edge');
+    fx.alias('ornMotion', 'bgMotion');
   }
 
   function clamp01(value) {
@@ -254,23 +289,83 @@
     return fallback;
   }
 
+  // True when a stored shape is a text background by the definition: a
+  // per-letter square in cell units. A square in em units is the small accent
+  // square (an ornament), never a background.
+  function isBackground(shape) {
+    if (!shape || shape.type !== 'square') return false;
+    const params = shape.params || {};
+    return params.unit !== 'em';
+  }
+
+  // Splits the legacy `bg*` groups of one style bag into the two current
+  // groups. A square / cell shape stays a background (its geometry parameters
+  // are dropped: the engine always draws cell-size squares); everything else
+  // becomes an ornament. `options.shape` is the shape resolved for the bag's
+  // layer (a bag that only patches `bgFill` inherits the shape from its
+  // parent), `options.shadow: false` skips the `bgShape: none` marker the
+  // migration writes so a moved ornament still cancels an inherited
+  // background. Returns `{ style, changed, kind }`; `style` is a new bag when
+  // something moved, the same reference otherwise.
+  function splitStyle(style, options) {
+    if (!style || typeof style !== 'object') return { style, changed: false, kind: null };
+    const opts = options || {};
+    const hasOwn = (key) => Object.prototype.hasOwnProperty.call(style, key);
+    if (!['bgShape', 'bgFill', 'bgEdge', 'bgMotion'].some(hasOwn)) return { style, changed: false, kind: null };
+    const shape = opts.shape || style.bgShape || null;
+    const kind = shape && shape.type && shape.type !== 'none' && !isBackground(shape) ? 'orn' : 'bg';
+    const next = { ...style };
+    if (kind === 'orn') {
+      if (style.bgShape && style.bgShape.type && style.bgShape.type !== 'none') {
+        next.ornShape = {
+          type: style.bgShape.type,
+          params: { ...(style.bgShape.params || {}) },
+          enabled: style.bgShape.enabled !== false,
+        };
+      }
+      if (style.bgFill) next.ornFill = style.bgFill;
+      if (style.bgEdge) next.ornEdge = style.bgEdge;
+      if (style.bgMotion) next.ornMotion = style.bgMotion;
+      delete next.bgShape;
+      delete next.bgFill;
+      delete next.bgEdge;
+      delete next.bgMotion;
+      if (opts.shadow !== false) next.bgShape = { type: 'none', params: {}, enabled: true };
+      return { style: next, changed: true, kind };
+    }
+    if (style.bgShape) {
+      const params = { ...(style.bgShape.params || {}) };
+      for (const key of Object.keys(params)) if (!BG_PARAM_KEYS.has(key)) delete params[key];
+      next.bgShape = { ...style.bgShape, params };
+      return { style: next, changed: true, kind };
+    }
+    return { style, changed: false, kind };
+  }
+
   // CPU state for every letter's background quad. The GPU only applies the
-  // transform, the SDF shape and the fill / edge passes.
+  // transform, the SDF shape and the fill / edge passes. `options.group`
+  // selects the group the shape came from: a `bgShape` is forced to a cell
+  // square (unit cell, size 1x1, no offset / rotation / geometry variation),
+  // while an `ornShape` keeps the stored geometry. Without an explicit group
+  // the shape itself decides (isBackground).
   function evaluateBg(shape, motion, letters, variation, timings, local, options) {
     const opts = options || {};
     const shapeInstance = shape && shape.type ? shape : defaultInstance('bgShape', 'none');
     if (!shapeInstance.type || shapeInstance.type === 'none' || !letters.length) return null;
-    const shapeParams = { ...fx.paramDefaults('bgShape', shapeInstance.type), ...(shapeInstance.params || {}) };
-    const motionInstance = motion && motion.type ? motion : defaultInstance('bgMotion', 'follow');
-    const motionParams = { ...fx.paramDefaults('bgMotion', motionInstance.type), ...(motionInstance.params || {}) };
-    const unit = shapeParams.unit === 'em' ? 'em' : 'cell';
-    const typeIndex = SHAPES[shapeInstance.type] == null ? 0 : SHAPES[shapeInstance.type];
+    const group = opts.group === 'bgShape' || opts.group === 'ornShape' ? opts.group : isBackground(shapeInstance) ? 'bgShape' : 'ornShape';
+    const isBg = group === 'bgShape';
+    const shapeParams = { ...fx.paramDefaults(group, shapeInstance.type), ...(shapeInstance.params || {}) };
+    const motionGroup = isBg ? 'bgMotion' : 'ornMotion';
+    const motionInstance = motion && motion.type ? motion : defaultInstance(motionGroup, 'follow');
+    const motionParams = { ...fx.paramDefaults(motionGroup, motionInstance.type), ...(motionInstance.params || {}) };
+    const unit = isBg ? 'cell' : shapeParams.unit === 'em' ? 'em' : 'cell';
+    const typeIndex = isBg ? SHAPES.square : SHAPES[shapeInstance.type] == null ? 0 : SHAPES[shapeInstance.type];
     const baseOpacity = clamp01(shapeParams.opacity == null ? 1 : shapeParams.opacity);
     const lockAspect = shapeParams.lockAspect !== false;
-    const width = Math.max(0.05, num(shapeParams.width, 1.15));
-    const height = lockAspect ? width : Math.max(0.05, num(shapeParams.height, 1.15));
-    const rotation = num(shapeParams.rotation, 0);
-    const offset = shapeParams.offset || { x: 0, y: 0 };
+    const width = isBg ? 1 : Math.max(0.05, num(shapeParams.width, 1.15));
+    const height = isBg ? 1 : lockAspect ? width : Math.max(0.05, num(shapeParams.height, 1.15));
+    const rotation = isBg ? 0 : num(shapeParams.rotation, 0);
+    const offset = isBg ? { x: 0, y: 0 } : shapeParams.offset || { x: 0, y: 0 };
     const mode = motionInstance.type || 'follow';
     const lead = num(motionParams.lead, 0.08);
     const duration = Math.max(0.05, num(motionParams.duration, 0.35));
@@ -403,10 +498,10 @@
           offsetY += holdAmount * 0.05 * h;
         }
       }
-      const shapeIndex = vary && vary.shapeIndex != null ? vary.shapeIndex : typeIndex;
-      const sizeMul = vary && vary.sizeMul ? vary.sizeMul : [1, 1];
-      const offsetAdd = vary && vary.offsetAdd ? vary.offsetAdd : [0, 0];
-      const rotAdd = vary && vary.rotAdd ? vary.rotAdd : 0;
+      const shapeIndex = isBg ? typeIndex : vary && vary.shapeIndex != null ? vary.shapeIndex : typeIndex;
+      const sizeMul = isBg ? [1, 1] : vary && vary.sizeMul ? vary.sizeMul : [1, 1];
+      const offsetAdd = isBg ? [0, 0] : vary && vary.offsetAdd ? vary.offsetAdd : [0, 0];
+      const rotAdd = isBg ? 0 : vary && vary.rotAdd ? vary.rotAdd : 0;
       const varyColor = vary && vary.color ? vary.color : null;
       const wobbleSeed = (num(shapeParams.seedShift, 0) * 131 + index * 17.13) % 1000;
       // the draw motion walks the trim end around the outline and only fills
@@ -440,17 +535,21 @@
         fill,
       });
     }
-    return { unit, type: shapeInstance.type, shapeIndex: typeIndex, motion: mode, states, params: shapeParams, motionParams };
+    return { unit, type: shapeInstance.type, shapeIndex: typeIndex, motion: mode, states, params: shapeParams, motionParams, group };
   }
 
   return {
     SHAPES,
     SHAPE_TYPES,
+    BG_SHAPE_TYPES,
+    ORN_SHAPE_TYPES,
     VARY_MODES,
     capBackground,
     cellMetrics,
     evaluateBg,
     defaultInstance,
     bgColorOf,
+    isBackground,
+    splitStyle,
   };
 });

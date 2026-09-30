@@ -106,6 +106,55 @@ test('swap rotates the colour assignment on the rhythm cuts', () => {
   assert.notDeepEqual(before, after);
 });
 
+// --- the one-way motions (clip progress) --------------------------------------
+
+function minX(regions) {
+  return regions.reduce((min, region) => Math.min(min, ...region.points.map((point) => point.x)), Infinity);
+}
+
+test('sweep crosses the frame monotonically with the clip progress', () => {
+  const params = { layout: 'halves', coverage: 0.5, colors: COLORS, motion: 'sweep', travel: 0.15, dir: 1 };
+  const a = minX(split.regions(params, ctx({ time: 1, progress: 0 })));
+  const b = minX(split.regions(params, ctx({ time: 1, progress: 0.5 })));
+  const c = minX(split.regions(params, ctx({ time: 1, progress: 1 })));
+  assert.ok(b > a && c > b, `sweep must advance (${a} -> ${b} -> ${c})`);
+  const back = minX(split.regions({ ...params, dir: -1 }, ctx({ time: 1, progress: 1 })));
+  assert.ok(back < c, `dir -1 runs the other way (${back} vs ${c})`);
+});
+
+test('turn rotates the boundary once across the clip', () => {
+  const params = { layout: 'bands', parts: 4, coverage: 0.5, colors: COLORS, motion: 'turn', travel: 0.1, dir: 1 };
+  const angleAt = (progress) => {
+    const line = split.lines(params, ctx({ time: 1, progress }))[0];
+    return (Math.atan2(line.b, line.a) * 180) / Math.PI;
+  };
+  assert.ok(Math.abs(angleAt(0.5)) < 1e-6, 'the half-way point is the neutral angle');
+  assert.ok(angleAt(0) < -1, `the clip opens turned one way (${angleAt(0)})`);
+  assert.ok(angleAt(1) > 1, `the clip closes turned the other way (${angleAt(1)})`);
+});
+
+test('zoom presses the planes in / out monotonically', () => {
+  const params = { layout: 'grid', parts: 3, coverage: 1, colors: COLORS, motion: 'zoom', travel: 0.15, dir: 1 };
+  const areaAt = (progress, dir) =>
+    split.regions({ ...params, dir }, ctx({ time: 1, progress })).reduce((sum, region) => sum + region.area, 0);
+  const open = areaAt(0, 1);
+  const pressed = areaAt(1, 1);
+  assert.ok(pressed < open, `zoom presses in (${pressed} vs ${open})`);
+  const pulled = areaAt(1, -1);
+  assert.ok(pulled > open, `dir -1 pulls out (${pulled} vs ${open})`);
+});
+
+test('step advances one offset per rhythm cut with a 0.18 s ease', () => {
+  const params = { layout: 'bands', parts: 4, coverage: 0.5, colors: COLORS, motion: 'step', travel: 0.12, dir: 1, cuts: [0.5, 1.0] };
+  const before = minX(split.regions(params, ctx({ time: 0.4, progress: 0.1 })));
+  const atCut = minX(split.regions(params, ctx({ time: 0.5, progress: 0.2 })));
+  const settled = minX(split.regions(params, ctx({ time: 0.68, progress: 0.3 })));
+  const second = minX(split.regions(params, ctx({ time: 1.18, progress: 0.6 })));
+  assert.ok(Math.abs(atCut - before) < 1e-6, 'the cut itself is still on the previous step');
+  assert.ok(settled > atCut + 1, `the ease walks to the next step (${settled} vs ${atCut})`);
+  assert.ok(second > settled + 1, `the second cut advances again (${second} vs ${settled})`);
+});
+
 test('lines() carries the first cut for the text sync', () => {
   const lines = split.lines({ layout: 'halves', coverage: 0.5, angle: 0 }, ctx());
   assert.equal(lines.length, 1);
@@ -261,4 +310,78 @@ test('a kick rotates the planes apart in opposite directions', () => {
   const edgeAngle = (shape) => Math.atan2(shape.points[1].y - shape.points[0].y, shape.points[1].x - shape.points[0].x);
   assert.ok(edgeAngle(list.shapes[0]) > 0.05, `the first plane leans one way (${edgeAngle(list.shapes[0])})`);
   assert.ok(edgeAngle(list.shapes[1]) < -0.05, `the next plane leans the other way (${edgeAngle(list.shapes[1])})`);
+});
+
+// --- the one-way clip modes and the new transitions ---------------------------
+
+test('travel pans one way and scales past the frame', () => {
+  const motion = { mode: 'travel', travel: 0.08, dir: 'right', transition: 'cut' };
+  const start = animated(motion, 0);
+  const end = animated(motion, 8);
+  assert.ok(end.x > start.x, `the clip pans right (${end.x} vs ${start.x})`);
+  assert.ok(end.w > 200, `the cover scale hides the moving corner (${end.w})`);
+  const up = animated({ ...motion, dir: 'up' }, 8);
+  assert.ok(up.y < start.y, 'dir up pans upwards');
+});
+
+test('zoom is a Ken Burns push from the base size', () => {
+  const motion = { mode: 'zoom', zoom: 0.15, transition: 'cut' };
+  const start = animated(motion, 0);
+  const end = animated(motion, 8);
+  assert.ok(Math.abs(start.w - 200) < 1, `the push starts at the base size (${start.w})`);
+  assert.ok(end.w > 200, `the push grows (${end.w})`);
+});
+
+test('tilt turns the clip from one side to the other', () => {
+  const motion = { mode: 'tilt', tilt: 0.03, transition: 'cut' };
+  const start = animated(motion, 0);
+  const end = animated(motion, 8);
+  assert.notDeepEqual(start, end, 'the clip turns across its life');
+  assert.ok(start.w > 200 && end.w > 200, 'the cover scale keeps the corners covered');
+});
+
+test('slide enters from the chosen side and settles in place', () => {
+  const motion = { mode: 'still', pulse: 0, drift: 0, transition: 'slide', dir: 'left', duration: 0.35 };
+  const offscreen = animated(motion, 0);
+  const settled = animated(motion, 0.35);
+  assert.ok(offscreen.x < -200, `the clip waits offscreen left (${offscreen.x})`);
+  assert.ok(Math.abs(settled.x - 100) < 1, `the clip settles at its place (${settled.x})`);
+  const above = animated({ ...motion, dir: 'up' }, 0);
+  assert.ok(above.y < -50, `up enters from above (${above.y})`);
+});
+
+test('stagger enters the shapes one after another', () => {
+  const list = {
+    shapes: [
+      { kind: 'rect', x: 0, y: 0, w: 100, h: 100 },
+      { kind: 'rect', x: 200, y: 0, w: 100, h: 100 },
+      { kind: 'rect', x: 400, y: 0, w: 100, h: 100 },
+    ],
+    texts: [],
+  };
+  fillerRender.animate(list, {
+    motion: { mode: 'still', pulse: 0, drift: 0, transition: 'stagger', duration: 0.3 },
+    t: 0.12,
+    clip: { start: 0, end: 4 },
+    bpm: 120,
+    frame: FRAME,
+  });
+  const [a, b, c] = list.shapes;
+  assert.ok(a.opacity > b.opacity && b.opacity > c.opacity, `the opacity cascades (${a.opacity}, ${b.opacity}, ${c.opacity})`);
+  assert.ok(a.w > b.w && b.w > c.w, `the scale cascades (${a.w}, ${b.w}, ${c.w})`);
+});
+
+test('the split planes carry the plane flag for the text mask', () => {
+  const list = fillerRender.drawList(
+    { type: 'split', params: { layout: 'bands', parts: 3, coverage: 0.5, colors: COLORS } },
+    { time: 1, frame: FRAME, seed: 7, clip: { key: 'clip_mid_0', start: 0, end: 10 } }
+  );
+  assert.ok(list.shapes.length > 0);
+  assert.ok(list.shapes.every((shape) => shape.plane === true), 'every split plane is flagged');
+  const pattern = fillerRender.drawList(
+    { type: 'pattern', params: { mode: 'grid', count: 6 } },
+    { time: 0, frame: FRAME, seed: 1, clip: { key: 'c', start: 0, end: 4 } }
+  );
+  assert.ok(pattern.shapes.length > 0);
+  assert.ok(pattern.shapes.every((shape) => shape.plane !== true), 'accent shapes stay unflagged');
 });

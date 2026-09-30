@@ -183,8 +183,8 @@ test('every rated name exists in the registry and every rating is in 0..1', () =
     figureOut: figures.OUTS,
     backdropMotion: moods.BACKDROP_MOTIONS,
     splitScheme: moods.SPLIT_SCHEMES,
-    splitMotion: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift', 'push'],
-    transition: ['wipe', 'scale', 'rotate', 'iris', 'cut'],
+    splitMotion: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step'],
+    transition: ['wipe', 'scale', 'rotate', 'iris', 'cut', 'slide', 'stagger'],
   };
   for (const [group, list] of Object.entries(pseudo)) {
     const known = new Set(list);

@@ -25,7 +25,7 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 386,
+    "types": 396,
     "groups": 24,
     "overridden": 581
   },
@@ -424,7 +424,11 @@
       "breathe": 596150402,
       "swap": 2022213769,
       "drift": 2357758084,
-      "push": 1787332744
+      "push": 1787332744,
+      "sweep": 730368136,
+      "turn": 730368136,
+      "zoom": 730368136,
+      "step": 696813704
     },
     "splitScheme": {
       "tonal": 1032358024,
@@ -439,7 +443,9 @@
       "scale": 1200130184,
       "rotate": 1686669448,
       "iris": 2240317576,
-      "cut": 1569228936
+      "cut": 1569228936,
+      "slide": 730368136,
+      "stagger": 713590920
     },
     "backdropMotion": {
       "accent": 1485342856,
@@ -447,7 +453,10 @@
       "sway": 1200130181,
       "drift": 2357758083,
       "still": 512264321,
-      "pulse": 579373192
+      "pulse": 579373192,
+      "travel": 730368136,
+      "zoom": 713590920,
+      "tilt": 696813704
     },
     "pattern": {
       "grid": 730372232,

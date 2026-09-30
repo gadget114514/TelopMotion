@@ -78,6 +78,49 @@ SA.lyricsEngine = (() => {
     return !(track && track.graphicsHidden);
   }
 
+  // The track's text-mask switch: absent = on (the engine default). A figure /
+  // backdrop / filler layer is knocked out under the glyphs unless the track
+  // opted out; the subtitle background is always knocked out (it is the same
+  // glyph shape), so only the clip tracks read this.
+  function trackTextMaskOn(track) {
+    return !(track && track.textMask === false);
+  }
+
+  function trackById(project, trackId) {
+    return ((project && project.tracks) || []).find((track) => track && track.id === trackId) || null;
+  }
+
+  // The padding radius of the text mask: a share of the biggest beat size,
+  // clamped to the frame height. Pure so the tests can pin the band.
+  function maskRadius(size, height) {
+    const h = Math.max(1, Number(height) || 1);
+    const grown = 0.16 * Math.max(0, Number(size) || 0);
+    return Math.max(0.008 * h, Math.min(0.03 * h, grown));
+  }
+
+  // Splits a shape list into the split planes (`plane: true`) and the accent
+  // shapes above them. `ordered` is true when every plane comes before every
+  // accent: only then may the backdrop draw two layers (planes whole, accents
+  // knocked out). A planes-only list and a hand-made combo with a mixed order
+  // stay on the single-layer path.
+  function partitionPlanes(shapes) {
+    const list = Array.isArray(shapes) ? shapes : [];
+    const planes = [];
+    const accents = [];
+    let lastPlane = -1;
+    let firstAccent = Infinity;
+    for (let i = 0; i < list.length; i += 1) {
+      if (list[i] && list[i].plane) {
+        planes.push(list[i]);
+        lastPlane = i;
+      } else {
+        accents.push(list[i]);
+        if (i < firstAccent) firstAccent = i;
+      }
+    }
+    return { planes, accents, ordered: planes.length > 0 && accents.length > 0 && lastPlane < firstAccent };
+  }
+
   // Clips of one track kind, hidden tracks excluded, in start order.
   function activeClips(project, kind) {
     const ids = new Set(
@@ -1031,7 +1074,46 @@ SA.lyricsEngine = (() => {
       return Math.max(0, Math.min(1, fadeIn > 1e-4 ? (t - clip.start) / fadeIn : 1, fadeOut > 1e-4 ? (clip.end - t) / fadeOut : 1));
     }
 
-    function drawShapeClip(clip, t, duration, stage, stageWeird) {
+    // Is any active clip on a mask-capable track (backdrop / figure / filler)
+    // and still opted in? Hidden tracks are already dropped by activeClips.
+    function maskTargetsActive(project, t) {
+      for (const kind of ['backdrop', 'figure', 'filler']) {
+        for (const clip of activeClips(project, kind)) {
+          if (t < clip.start - 1e-4 || t > clip.end + 1e-4) continue;
+          if (clipEnvelope(t, clip) <= 0) continue;
+          if (!trackTextMaskOn(trackById(project, clip.trackId))) continue;
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Bakes the frame's text mask from every visible beat: the radius follows
+    // the biggest beat size and the strength the strongest visible letter, so
+    // the mask fades with the subtitle's own entrance / exit. Returns whether
+    // the mask target now holds glyphs.
+    function buildFrameTextMask(visibleBeats, project) {
+      let maxSize = 0;
+      let strength = 0;
+      for (const active of visibleBeats) {
+        const size = Number(active.scene && active.scene.size) || 0;
+        if (size > maxSize) maxSize = size;
+        for (const letter of active.result.letters) {
+          const opacity = letter && letter.opacity != null ? Number(letter.opacity) : 1;
+          if (Number.isFinite(opacity) && opacity > strength) strength = opacity;
+        }
+      }
+      if (!(strength > 0.001)) return false;
+      const radius = maskRadius(maxSize, state.height);
+      const entries = visibleBeats.map((active) => ({
+        scene: active.scene,
+        letters: active.result.letters,
+        variant: morphVariantFor(project, active.beat, active.scene),
+      }));
+      return pipeline.buildTextMask(entries, { radius, feather: radius * 0.5, strength: Math.min(1, strength) }) === true;
+    }
+
+    function drawShapeClip(clip, t, duration, stage, stageWeird, mask) {
       if (!pipeline) return;
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
       const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
@@ -1112,15 +1194,44 @@ SA.lyricsEngine = (() => {
           kicks: kickTimesForClip(clip, spec),
         });
       }
+      const shapes = list.shapes || [];
+      const texts = list.texts || [];
+      // the text mask knocks the layer out under the glyphs. A combo of split
+      // planes (drawn first) and an accent texture draws as two layers: the
+      // planes stay whole (their colours hold the text contrast), the accents
+      // are masked. Planes only, and hand-made combos with a mixed order, keep
+      // the classic single-layer path.
+      if (mask) {
+        const parts = partitionPlanes(shapes);
+        if (parts.ordered) {
+          pipeline.beginLayer();
+          drawPrimitives(parts.planes);
+          pipeline.commitLayer(layerOpacity);
+          pipeline.beginLayer();
+          drawPrimitives(parts.accents);
+          drawTexts(texts);
+          pipeline.maskLayer();
+          pipeline.commitLayer(layerOpacity);
+          return;
+        }
+        if (parts.planes.length) {
+          pipeline.beginLayer();
+          drawPrimitives(shapes);
+          drawTexts(texts);
+          pipeline.commitLayer(layerOpacity);
+          return;
+        }
+      }
       pipeline.beginLayer();
-      drawPrimitives(list.shapes || []);
-      drawTexts(list.texts || []);
+      drawPrimitives(shapes);
+      drawTexts(texts);
+      if (mask) pipeline.maskLayer();
       pipeline.commitLayer(layerOpacity);
     }
 
     // A figure clip: animated motifs built from the shape primitives, drawn on
     // the figure track between the mid layer and the subtitles.
-    function drawFigureClip(clip, t, duration, stage, stageWeird) {
+    function drawFigureClip(clip, t, duration, stage, stageWeird, mask) {
       if (!shapesPass || !SA.figures) return;
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
       const spec = (recolored ? recolored.spec : clip.spec) || {};
@@ -1148,6 +1259,7 @@ SA.lyricsEngine = (() => {
       pipeline.beginLayer();
       drawPrimitives(list.shapes);
       if ((list.texts || []).length) drawTexts(list.texts);
+      if (mask) pipeline.maskLayer();
       pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
     }
 
@@ -1314,7 +1426,7 @@ SA.lyricsEngine = (() => {
 
     // Filler clips live on their own track and are drawn whenever they are
     // active, whether or not a lyric beat is on screen.
-    function renderFillerClips(t, duration, stage, stageWeird) {
+    function renderFillerClips(t, duration, stage, stageWeird, maskFor) {
       const project = state.project;
       for (const clip of activeClips(project, 'filler')) {
         const envelope = clipEnvelope(t, clip);
@@ -1340,10 +1452,12 @@ SA.lyricsEngine = (() => {
         const anims = (list && list.textAnims) || [];
         if (!shapes.length && !texts.length && !anims.length) continue;
         const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
+        const mask = typeof maskFor === 'function' ? maskFor(clip) : !!maskFor;
         if (shapes.length || texts.length) {
           pipeline.beginLayer();
           drawPrimitives(shapes);
           drawTexts(texts);
+          if (mask) pipeline.maskLayer();
           pipeline.commitLayer(clipOpacity);
         }
         // animated text layers draw on top of the shapes
@@ -1487,10 +1601,10 @@ SA.lyricsEngine = (() => {
       return rgba && rgba.length >= 4 ? [rgba[0], rgba[1], rgba[2], rgba[3] == null ? 1 : rgba[3]] : [1, 0.82, 0.42, 1];
     }
 
-    function bgVariationFor(scene, shape, style, beat) {
+    function bgVariationFor(scene, shape, style, beat, group) {
       const project = state.project;
       const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
-      const key = `${seed}|${beat.id}|${JSON.stringify(shape.params)}`;
+      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}`;
       if (scene.__bgVary && scene.__bgVary.key === key) return scene.__bgVary.value;
       const palette = (style.palette && style.palette.colors) || [];
       const letters = scene.letters.map((letter) => ({
@@ -1526,28 +1640,53 @@ SA.lyricsEngine = (() => {
     }
 
     const BG_AMOUNT_KEY = { splatter: 'spikes', scratch: 'count', paper: 'jag', blob: 'wobble', star: 'points' };
+    // The background reads its colours through the fixed roles (TEXT_BG /
+    // TEXT_EDGE) so the beat colour schemes keep text-on-background contrast;
+    // the ornaments keep the legacy raw indices.
+    const ORN_COLOR_SET = {
+      fill: { kind: 'palette', index: 3 },
+      fill2: { kind: 'palette', index: 5 },
+      stroke: { kind: 'palette', index: 4 },
+      glow: { kind: 'palette', index: 3 },
+    };
 
-    function drawBackgroundPass(active, t, project) {
+    function roleRef(slot, legacy, colors) {
+      const index = SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(colors, slot) : legacy;
+      return { kind: 'palette', index };
+    }
+
+    // Draws one of the two text-shape passes. `family` 'bg' is the definition
+    // background (per-letter cell squares); 'orn' is the text ornament group.
+    // Both draw behind the glyphs into the same layer; the caller knocks the
+    // glyphs out of whatever was painted.
+    function drawBackgroundPass(active, t, project, family) {
       if (!SA.textBg || !SA.vary || !pipeline) return null;
+      const isBg = family === 'bg';
+      const shapeKey = isBg ? 'bgShape' : 'ornShape';
+      const motionKey = isBg ? 'bgMotion' : 'ornMotion';
+      const fillKey = isBg ? 'bgFill' : 'ornFill';
+      const edgeKey = isBg ? 'bgEdge' : 'ornEdge';
       const { beat, scene, result, style } = active;
-      const shape = SA.fx.withDefaults(style.bgShape, 'bgShape');
+      const shape = SA.fx.withDefaults(style[shapeKey], shapeKey);
       if (!shape || !shape.type || shape.type === 'none') return null;
-      const variation = bgVariationFor(scene, shape, style, beat);
+      const variation = bgVariationFor(scene, shape, style, beat, shapeKey);
       const entries = scene.letters.map((letter, index) => ({ letter, state: result.letters[index] }));
       const local = Math.max(0, t - beat.start);
       const analysis = state.analysis;
       const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
       const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 0;
-      const motion = SA.fx.withDefaults(style.bgMotion, 'bgMotion');
+      const motion = SA.fx.withDefaults(style[motionKey], motionKey);
       const bg = SA.textBg.evaluateBg(shape, motion, entries, variation, null, local, {
         seed: (project.styleMode && project.styleMode.seed) || 12345,
         bpm,
         beatEnv: () => 0.5,
+        group: shapeKey,
       });
       if (!bg || !bg.states.length) return null;
       // the engine-side safety cap: a stored project cannot paint a slab that
-      // swallows the text (cell 1.25, em = text box width + 0.6 em)
-      if (SA.textBg.capBackground) {
+      // swallows the text (cell 1.25, em = text box width + 0.6 em). The
+      // background is a fixed cell square, so only the ornaments need it.
+      if (!isBg && SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
         SA.textBg.capBackground(bg.states, bg.unit, box, { cell: 1.25, emExtra: 0.6, emPx: scene.size });
@@ -1560,20 +1699,23 @@ SA.lyricsEngine = (() => {
       }
       pipeline.textBackground(scene, result.letters, bg.states, { unit: bg.unit });
       const bgSdf = pipeline.sdf();
-      const bgEdges = (style.bgEdge || []).filter((instance) => instance && instance.enabled !== false);
-      const bgFill = SA.fx.withDefaults(style.bgFill, 'bgFill');
-      const bgColorSet = {
-        fill: { kind: 'palette', index: 3 },
-        fill2: { kind: 'palette', index: 5 },
-        stroke: { kind: 'palette', index: 4 },
-        glow: { kind: 'palette', index: 3 },
-      };
+      const bgEdges = (style[edgeKey] || []).filter((instance) => instance && instance.enabled !== false);
+      const bgFill = SA.fx.withDefaults(style[fillKey], fillKey);
+      const paletteColors = (style.palette && style.palette.colors) || [];
+      const bgColorSet = isBg
+        ? {
+            fill: roleRef(7, 3, paletteColors), // TEXT_BG
+            fill2: roleRef(7, 3, paletteColors),
+            stroke: roleRef(6, 4, paletteColors), // TEXT_EDGE
+            glow: roleRef(7, 3, paletteColors),
+          }
+        : ORN_COLOR_SET;
       const colorSet = SA.fx.resolveColorSet
         ? SA.fx.resolveColorSet(bgColorSet, {
             palettes: project.palettes || [],
             palette: style.palette || null,
             time: t,
-            defaultFill: '#ff8a3d',
+            defaultFill: isBg ? '#101018' : '#ff8a3d',
           })
         : { arrays: { fill: [1, 0.54, 0.24, 1], fill2: [1, 0.54, 0.24, 1], stroke: [1, 1, 1, 1] } };
       const hasVaryColor = variation.some((entry) => entry && entry.color && (entry.color[0] !== 1 || entry.color[1] !== 1 || entry.color[2] !== 1));
@@ -1690,20 +1832,10 @@ SA.lyricsEngine = (() => {
       // live beat's palette. Null keeps the classic path exactly.
       const stage = !subtitleOnly && SA.stagePalette ? SA.stagePalette.stageAt(project, t, SA.project.resolveStyle) : null;
       const stageWeird = rawWeirdOf(project);
-      // back to front: background clips + background layers -> backdrop clips ->
-      // filler clips -> subtitle tracks (bottom to top) -> foreground layers
-      if (!subtitleOnly) {
-        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card, stage, stageWeird);
-        drawBackgroundLayers();
-        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration, stage, stageWeird);
-        renderFillerClips(t, duration, stage, stageWeird);
-        // the figure and text-animation tracks sit between the mid layer and the
-        // subtitles, so both draw before the lyric beats are evaluated
-        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration, stage, stageWeird);
-        for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
-      }
-      // Evaluate every active beat first: overlapping cues must all render, so
-      // every track's text is grouped and drawn track by track.
+      // Evaluate every active beat first (CPU only): overlapping cues must all
+      // render, so every track's text is grouped and drawn track by track. The
+      // text mask is baked from the same states before any clip draws, so the
+      // clip layers can be knocked out under the glyphs.
       const subtitleTracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
       const cueTrackId = (beat) => {
         const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
@@ -1720,6 +1852,26 @@ SA.lyricsEngine = (() => {
         activeBeats.push({ beat, scene, result, style, trackId: cueTrackId(beat) });
       }
       const hiddenTracks = new Set(subtitleTracks.filter((track) => track.hidden).map((track) => track.id));
+      const visibleBeats = activeBeats.filter((active) => !hiddenTracks.has(active.trackId));
+      // the text mask: baked once per frame, and only when a visible lyric
+      // meets a clip that still opted in (the figure / backdrop / filler tracks)
+      let maskOn = false;
+      if (!subtitleOnly && visibleBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskTargetsActive(project, t)) {
+        maskOn = buildFrameTextMask(visibleBeats, project);
+      }
+      // back to front: background clips + background layers -> backdrop clips ->
+      // filler clips -> subtitle tracks (bottom to top) -> foreground layers
+      if (!subtitleOnly) {
+        const maskFor = (clip) => maskOn && trackTextMaskOn(trackById(project, clip.trackId));
+        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card, stage, stageWeird);
+        drawBackgroundLayers();
+        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+        renderFillerClips(t, duration, stage, stageWeird, maskFor);
+        // the figure and text-animation tracks sit between the mid layer and the
+        // subtitles, so both draw before the lyric layers
+        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+        for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
+      }
       // subtitle tracks whose text background was switched off keep their data
       // (bgShape is untouched) and simply skip the background pass
       const bgHiddenTracks = new Set(subtitleTracks.filter((track) => track.bgHidden).map((track) => track.id));
@@ -1728,8 +1880,7 @@ SA.lyricsEngine = (() => {
       const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
       const trackOrder = subtitleTracks.map((track) => track.id);
       const beatsByTrack = new Map();
-      for (const active of activeBeats) {
-        if (hiddenTracks.has(active.trackId)) continue;
+      for (const active of visibleBeats) {
         if (!beatsByTrack.has(active.trackId)) beatsByTrack.set(active.trackId, []);
         beatsByTrack.get(active.trackId).push(active);
       }
@@ -1740,11 +1891,38 @@ SA.lyricsEngine = (() => {
         const { beat, scene, result, style } = active;
         const graphicsOn = subtitleGraphicsOn({ graphicsHidden: graphicsHiddenTracks.has(active.trackId) }, view);
         const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
+        const ornShape = SA.fx.withDefaults(style.ornShape, 'ornShape');
+        // the subtitle background switch only silences the definition
+        // background (the per-letter cell squares); the ornaments stay
         const bgOff = !subtitleBackgroundOn({ bgHidden: bgHiddenTracks.has(active.trackId) }, view);
         const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
-        const bgBehind = bgActive && (bgShape.params.layer || 'behind') !== 'front';
+        const ornActive = !!(ornShape && ornShape.type && ornShape.type !== 'none');
         pipeline.beginLayer();
-        const variation = bgBehind ? drawBackgroundPass(active, t, project) : null;
+        // both shape passes always draw behind the glyphs; their fills are then
+        // masked by the foreground mask (the knockout below), so they can never
+        // cover the subtitle. Ornaments sit under the background.
+        const variations = [];
+        if (ornActive) {
+          const ornVariation = drawBackgroundPass(active, t, project, 'orn');
+          if (ornVariation) variations.push(ornVariation);
+        }
+        if (bgActive) {
+          const bgVariation = drawBackgroundPass(active, t, project, 'bg');
+          if (bgVariation) variations.push(bgVariation);
+        }
+        // the per-letter foreground override (fgAutoContrast) is per letter:
+        // the shape drawn closest to the text (the background) wins
+        let variation = null;
+        if (variations.length) {
+          variation = variations[variations.length - 1];
+          if (variations.length > 1) {
+            variation = scene.letters.map((letter, index) => {
+              let merged = null;
+              for (const list of variations) if (list && list[index]) merged = { ...(merged || {}), ...list[index] };
+              return merged;
+            });
+          }
+        }
         const variant = morphVariantFor(project, beat, scene);
         const colorOverride = variation ? bgColorOverrideFor(scene, variation) : null;
         pipeline.text(scene, result.letters, variant, colorOverride);
@@ -1772,7 +1950,10 @@ SA.lyricsEngine = (() => {
         // typefaces re-render the mask, so the sdf is created afterwards.
         drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
         const sdfTarget = pipeline.sdf();
-        if (variation && bgShape.params.knockout) pipeline.knockout();
+        // the background fill is masked by the text foreground: the layer's
+        // background is punched out wherever the glyphs sit, so a translucent
+        // or front background never paints over the subtitle
+        if (variation) pipeline.knockout();
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
         const clones = Array.isArray(style.clones) ? style.clones : [];
@@ -1868,7 +2049,6 @@ SA.lyricsEngine = (() => {
         }
         const enterInstance = SA.fx.withDefaults(style.enter, 'enter');
         if (enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
-        if (bgActive && !bgBehind) drawBackgroundPass(active, t, project);
         for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
         pipeline.commitLayer(1);
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
@@ -2059,5 +2239,5 @@ SA.lyricsEngine = (() => {
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, backgroundBaseColor };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, backgroundBaseColor };
 })();

@@ -185,14 +185,17 @@
     },
   ];
 
-  // Generic text-background presets (the table in the plan).
+  // Generic text-background / ornament presets (the table in the plan). A
+  // square drawn as the cell background uses the `bg*` groups; every other
+  // shape is a text ornament (`orn*`) and survives the subtitle background
+  // switch.
   const BG_PRESETS = [
     {
       id: 'varietyBox',
       label: 'fx.preset.varietyBox',
       style: {
         fill: { type: 'solid', params: {} },
-        bgShape: { type: 'square', params: { unit: 'cell', width: 1.15, height: 1.15, vary: 'alternate', skipSpaces: true } },
+        bgShape: { type: 'square', params: { vary: 'alternate', skipSpaces: true } },
         bgFill: { type: 'solid', params: {} },
         bgMotion: { type: 'pop', params: { lead: 0.05, duration: 0.35, overshoot: 0.15 } },
       },
@@ -202,9 +205,9 @@
       label: 'fx.preset.marker',
       style: {
         fill: { type: 'solid', params: {} },
-        bgShape: { type: 'bar', params: { unit: 'cell', width: 1.2, height: 0.38, offset: { x: 0, y: 0.28 }, skipSpaces: true } },
-        bgFill: { type: 'gradientSweep', params: { angle: 0, speed: 0.2 } },
-        bgMotion: { type: 'grow', params: { axis: 'x', lead: 0.05, duration: 0.4 } },
+        ornShape: { type: 'bar', params: { unit: 'cell', width: 1.2, height: 0.38, offset: { x: 0, y: 0.28 }, skipSpaces: true } },
+        ornFill: { type: 'gradientSweep', params: { angle: 0, speed: 0.2 } },
+        ornMotion: { type: 'grow', params: { axis: 'x', lead: 0.05, duration: 0.4 } },
       },
     },
     {
@@ -212,12 +215,12 @@
       label: 'fx.preset.badgeDots',
       style: {
         fill: { type: 'solid', params: {} },
-        bgShape: {
+        ornShape: {
           type: 'circle',
           params: { unit: 'em', width: 0.3, height: 0.3, offset: { x: 0.45, y: -0.45 }, layer: 'front', vary: 'cycle', skipSpaces: true },
         },
-        bgFill: { type: 'solid', params: {} },
-        bgMotion: { type: 'pop', params: { lead: 0, duration: 0.3 } },
+        ornFill: { type: 'solid', params: {} },
+        ornMotion: { type: 'pop', params: { lead: 0, duration: 0.3 } },
       },
     },
     {
@@ -225,9 +228,9 @@
       label: 'fx.preset.bubbleLetters',
       style: {
         fill: { type: 'solid', params: {} },
-        bgShape: { type: 'circle', params: { unit: 'cell', width: 1.3, height: 1.3, vary: 'charClass', skipSpaces: true } },
-        bgFill: { type: 'solid', params: {} },
-        bgMotion: { type: 'stamp', params: { lead: 0.03, duration: 0.25, from: 1.7 } },
+        ornShape: { type: 'circle', params: { unit: 'cell', width: 1.3, height: 1.3, vary: 'charClass', skipSpaces: true } },
+        ornFill: { type: 'solid', params: {} },
+        ornMotion: { type: 'stamp', params: { lead: 0.03, duration: 0.25, from: 1.7 } },
       },
     },
     {
@@ -236,12 +239,12 @@
       style: {
         fill: { type: 'solid', params: {} },
         edge: [{ type: 'outline', params: { width: 2.5 }, enabled: true }],
-        bgShape: {
+        ornShape: {
           type: 'paper',
           params: { unit: 'em', width: 2.4, height: 2.4, opacity: 0.35, vary: 'random', varyRotation: 40, varyOffset: 0.3, skipSpaces: true },
         },
-        bgFill: { type: 'solid', params: {} },
-        bgMotion: { type: 'spin', params: { turns: 0.25, lead: -0.1, duration: 0.5 } },
+        ornFill: { type: 'solid', params: {} },
+        ornMotion: { type: 'spin', params: { turns: 0.25, lead: -0.1, duration: 0.5 } },
       },
     },
     {
@@ -249,10 +252,10 @@
       label: 'fx.preset.dashedFrame',
       style: {
         fill: { type: 'solid', params: {} },
-        bgShape: { type: 'rounded', params: { unit: 'cell', width: 1.2, height: 1.2, opacity: 0, skipSpaces: true } },
-        bgFill: { type: 'solid', params: {} },
-        bgEdge: [{ type: 'outline', params: { width: 2, pattern: 'dashed', dashLength: 12, flow: 1, offset: 2 }, enabled: true }],
-        bgMotion: { type: 'fade', params: { lead: 0.05, duration: 0.4 } },
+        ornShape: { type: 'rounded', params: { unit: 'cell', width: 1.2, height: 1.2, opacity: 0, skipSpaces: true } },
+        ornFill: { type: 'solid', params: {} },
+        ornEdge: [{ type: 'outline', params: { width: 2, pattern: 'dashed', dashLength: 12, flow: 1, offset: 2 }, enabled: true }],
+        ornMotion: { type: 'fade', params: { lead: 0.05, duration: 0.4 } },
       },
     },
     {
@@ -261,7 +264,8 @@
       style: {
         enter: { type: 'typewriter', params: { cursor: true, cursorShape: 'block', blink: 0.5 }, motion: { in: { duration: 0.8 } } },
         fill: { type: 'solid', params: {} },
-        bgShape: { type: 'rounded', params: { unit: 'cell', width: 1.1, height: 1.1, opacity: 0.85, skipSpaces: true } },
+        // the black cushion: a cell square background, fixed to the letter
+        bgShape: { type: 'square', params: { opacity: 0.85, skipSpaces: true } },
         bgFill: { type: 'solid', params: { color: '#1a1a1a' } },
         bgMotion: { type: 'follow', params: {} },
       },

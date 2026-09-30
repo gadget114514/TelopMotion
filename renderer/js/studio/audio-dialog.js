@@ -3,8 +3,8 @@ window.SA = window.SA || {};
 SA.audioDialog = (() => {
   'use strict';
 
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
   const BANDS = ['low', 'mid', 'high', 'rms'];
 
   function t(key, vars) {

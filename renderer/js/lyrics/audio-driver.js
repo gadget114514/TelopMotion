@@ -113,8 +113,8 @@
     return { ...instance, params };
   }
 
-  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
 
   function resolveStyle(style, analysis, t) {
     if (!style || !analysis) return style;

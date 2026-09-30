@@ -52,6 +52,8 @@ const io = globalThis.SA.io;
 
 function fixture() {
   const doc = project.create({ lang: 'ja', aspect: '16:9' });
+  // the fixture pins the pre-split version so the v3 migration runs
+  doc.version = 2;
   doc.meta.title = 'RoundTrip';
   doc.script.cues = [
     { id: 'c1', start: 0, end: 8, text: '愛を叫べ hello world', trackId: 'sub1' },
@@ -77,6 +79,8 @@ function fixture() {
   doc.style.text = { fontId: 'user:0123456789abcdef', size: 96, weight: 400, letterSpacing: 0, lineHeight: 1.2, align: 'center', maxWidth: 0.9, fit: 'fill', fillCoverage: 0.82, fillMinSize: 40, fillMaxLines: 2, fillConsistency: 'cue', fillBleed: 0.04 };
   doc.style.palette = { id: 'p1', name: 'RoundTrip', colors: ['#101018', '#202838', '#ffffff', '#ff5c8a', '#000000', '#ffc247', '#4dc8ff'] };
   doc.style.bgShape = { type: 'rounded', params: { unit: 'cell', width: 1.2, height: 1.2, opacity: 0.85, vary: 'alternate', varyColors: ['#ff5c8a', '#ffc247'], skipSpaces: true, layer: 'behind', fgAutoContrast: true }, enabled: true };
+  doc.style.bgFill = { type: 'solid', params: {} };
+  doc.style.bgMotion = { type: 'pop', params: { lead: 0.05 } };
   doc.style.repeat = { type: 'grid', params: { rows: 4, cols: 6, gap: 0.1, variationPreset: 'ransomNote' }, enabled: true };
   doc.style.clones = [{ id: 'cl1', enabled: true, dx: 0.06, dy: 0.05, scale: 0.9, rotate: -4, opacity: 0.5, hue: 30, delay: 0.1, motion: { type: 'drift', amount: 0.01, speed: 1 } }];
   doc.cueStyles = {
@@ -165,7 +169,15 @@ test('new feature data survives the round trip unchanged', async () => {
   assert.deepEqual(loaded.style.palette, doc.style.palette);
   assert.deepEqual(loaded.cueStyles.c1.palette, doc.cueStyles.c1.palette);
   assert.deepEqual(loaded.beatStyles['c1:page0'].palette, doc.beatStyles['c1:page0'].palette);
-  assert.deepEqual(loaded.style.bgShape, doc.style.bgShape);
+  // the v3 migration split the old single group: the rounded shape is an
+  // ornament now, geometry kept, and the root carries no background at all
+  assert.equal(loaded.style.ornShape.type, 'rounded');
+  assert.equal(loaded.style.ornShape.params.width, 1.2);
+  assert.equal(loaded.style.ornShape.params.opacity, 0.85);
+  assert.equal(loaded.style.bgShape, undefined);
+  assert.equal(loaded.style.ornFill.type, 'solid');
+  assert.equal(loaded.style.ornMotion.type, 'pop');
+  assert.equal(loaded.version, 3);
   assert.deepEqual(loaded.style.repeat, doc.style.repeat);
   assert.deepEqual(loaded.style.clones, doc.style.clones);
   assert.deepEqual(loaded.layers, doc.layers);

@@ -17,8 +17,8 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 }
 const presets = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'presets.js'));
 
-const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
-const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+const SINGLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion', 'repeat'];
+const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
 
 function instancesOf(style) {
   const out = [];

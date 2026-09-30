@@ -15,10 +15,10 @@ const CONTEXT = { letterCount: 8, cjk: true, hasPrevious: true, aspect: '16:9' }
 
 function instances(style) {
   const list = [];
-  for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'bgShape', 'bgFill', 'bgMotion']) {
+  for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion']) {
     if (style[group] && style[group].type) list.push([group, style[group]]);
   }
-  for (const group of ['hold', 'edge', 'post', 'bgEdge']) {
+  for (const group of ['hold', 'edge', 'post', 'bgEdge', 'ornEdge']) {
     for (const instance of style[group] || []) list.push([group, instance]);
   }
   return list;
@@ -87,7 +87,13 @@ test('genre backgrounds appear at roughly the configured rate', () => {
     const count = 200;
     for (let seed = 1; seed <= count; seed += 1) {
       const style = moods.generate({ genre: id, seed, context: CONTEXT }).style;
-      if (style.bgShape && style.bgShape.type && style.bgShape.type !== 'none') hits += 1;
+      // after the split the table's draws land on the background (the cell
+      // square) or the ornament groups; both count as the genre background
+      const shape = style.bgShape;
+      const orn = style.ornShape;
+      const shapeOn = shape && shape.type && shape.type !== 'none';
+      const ornOn = orn && orn.type && orn.type !== 'none';
+      if (shapeOn || ornOn) hits += 1;
     }
     // signatures may add a background on top of the base chance
     const rate = hits / count;

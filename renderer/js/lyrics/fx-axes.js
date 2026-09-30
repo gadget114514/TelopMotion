@@ -111,7 +111,9 @@
   function tableEntry(group, type) {
     if (!table || type == null) return null;
     const groups = table.groups || {};
-    const list = groups[group];
+    // the ornament groups mirror the text-background groups: the legacy `bg*`
+    // names carry the vectors
+    const list = groups[TABLE_GROUP[group] || group];
     return (list && list[type]) || null;
   }
 
@@ -124,6 +126,10 @@
   function neutralVector() {
     return { speed: NEUTRAL, energy: NEUTRAL, softness: NEUTRAL, density: NEUTRAL, brightness: NEUTRAL, weird: NEUTRAL, smartness: NEUTRAL, fear: FEAR_NEUTRAL };
   }
+
+  // The ornament groups are the old text-background shapes under a second
+  // name; their axis vectors stay in the `bg*` rows of the table.
+  const TABLE_GROUP = { ornShape: 'bgShape', ornFill: 'bgFill', ornEdge: 'bgEdge', ornMotion: 'bgMotion' };
 
   // One effect's vector. Unknown types read neutral; fear 0.2 is the neutral
   // value the plan pins for unregistered effects. Table entries are packed
@@ -181,9 +187,10 @@
   const STYLE_WEIGHTS = {
     animation: 0.6, layout: 0.6, enter: 1.5, exit: 1.5, hold: 1.5, location: 0.5,
     fill: 1.2, edge: 1.2, post: 1.4, background: 0.4, color: 0.3, clones: 0.3,
-    bgShape: 1, bgFill: 1, bgEdge: 1, bgMotion: 1, repeat: 1.2,
+    bgShape: 1, bgFill: 1, bgEdge: 1, bgMotion: 1,
+    ornShape: 1, ornFill: 1, ornEdge: 1, ornMotion: 1, repeat: 1.2,
   };
-  const STACK_GROUPS = new Set(['hold', 'edge', 'post', 'bgEdge']);
+  const STACK_GROUPS = new Set(['hold', 'edge', 'post', 'bgEdge', 'ornEdge']);
 
   function instancesOf(style) {
     const out = [];

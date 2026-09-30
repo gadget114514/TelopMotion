@@ -428,6 +428,16 @@
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
   }
 
+  // The auto direction's `avoid` context: drops the neighbouring clip's name
+  // from a candidate list, but only while at least two candidates remain. A
+  // two-name list whose other entry is banned keeps its original draw, and the
+  // random call count never changes (the filter runs before the pick).
+  function avoidFilter(list, banned) {
+    if (banned == null || !Array.isArray(list) || list.length <= 1) return list;
+    const filtered = list.filter((item) => item !== banned);
+    return filtered.length >= 2 ? filtered : list;
+  }
+
   function allowed(group, traits, context, direction, axes, type, options) {
     const flags = traits[2] || {};
     const w = textWeirdOf(axes);
@@ -1613,13 +1623,15 @@
 
   function planeBackdropSpec(axes, random, paletteColors, options, w) {
     const opts = options || {};
+    // the auto direction's neighbouring-clip context; weird 0 never uses it
+    const avoid = w > 0 ? opts.avoid || null : null;
     const rawW = opts.rawW != null ? opts.rawW : w;
     const coverage = opts.coverage != null ? clamp01(opts.coverage) : w;
     const count = planeCount(random, opts.planes);
     let layouts = (PLANE_LAYOUTS[count] || PLANE_LAYOUTS[1]).slice();
     // shards / radial only join the four-plane draw
     if (count === 4 && planeWeightOf(opts.planes, 4) > 0) layouts = layouts.concat(PLANE_EXTRAS);
-    const layout = pick(random, layouts);
+    const layout = pick(random, avoidFilter(layouts, avoid && avoid.layout));
     const scheme = planeScheme(random, rawW);
     const textColors = Array.isArray(opts.textColors) ? opts.textColors : [];
     const colors = planeColors(paletteColors, count, scheme, textColors, rawW);
@@ -1627,12 +1639,12 @@
     const motions =
       s > 0
         ? w >= 0.6
-          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push']
-          : ['breathe', 'slide', 'drift', 'push']
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step']
+          : ['breathe', 'slide', 'drift', 'push', 'sweep', 'zoom']
         : w >= 0.6
-          ? ['slide', 'rotate', 'breathe', 'swap', 'drift']
-          : ['breathe', 'slide', 'drift'];
-    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', motions, s) : pick(random, motions);
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step']
+          : ['breathe', 'slide', 'drift', 'sweep', 'zoom'];
+    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', avoidFilter(motions, avoid && avoid.motion), s) : pick(random, avoidFilter(motions, avoid && avoid.motion));
     const plane = {
       type: 'split',
       params: {
@@ -1651,6 +1663,12 @@
       },
     };
     if (s > 0 && motion === 'breathe') plane.params.every = pick(random, [1, 2, 4]);
+    // the one-way motions carry their travel distance (widens with weird) and
+    // direction; saved clips never pick these names, so their draw is unchanged
+    if (motion === 'sweep' || motion === 'turn' || motion === 'zoom' || motion === 'step') {
+      plane.params.travel = round(0.06 + 0.12 * w * (0.5 + random() * 0.5), 3);
+      plane.params.dir = pick(random, [-1, 1]);
+    }
     // the accent texture above the planes, drawn from the plane family and
     // capped quiet so the lyrics stay in front
     const type = pick(random, BACKDROP_TYPES);
@@ -1659,7 +1677,7 @@
     params.opacity = Math.round(Math.min(Number(params.opacity) || 0.6, cap) * 100) / 100;
     const accent = { type, params };
     return {
-      spec: { type: 'combo', params: { list: [plane, accent], animate: backdropMotion(random, w, axes) } },
+      spec: { type: 'combo', params: { list: [plane, accent], animate: backdropMotion(random, w, axes, avoid) } },
       colors: accentColors(colors),
     };
   }
@@ -1668,27 +1686,30 @@
   // The split plane spec a weird mid clip carries: layout, part count, motion
   // and the palette, all drawn from the axes. `coverage` is the share of the
   // frame the planes paint (the weird axis).
-  function splitSpec(axes, random, palette, coverage, cuts) {
+  function splitSpec(axes, random, palette, coverage, cuts, options) {
+    const opts = options || {};
     const w = bgWeirdOf(axes);
+    // the auto direction's neighbouring-clip context; weird 0 never uses it
+    const avoid = w > 0 ? opts.avoid || null : null;
     const layouts =
       w <= 0.3
         ? ['halves', 'diagonal', 'bands', 'thirds', 'grid']
         : w >= 0.7
           ? ['mondrian', 'chevron', 'radial', 'quads', 'frame', 'shards']
           : ['halves', 'diagonal', 'thirds', 'bands', 'grid', 'mondrian', 'chevron', 'radial'];
-    const layout = pick(random, layouts);
+    const layout = pick(random, avoidFilter(layouts, avoid && avoid.layout));
     const parts = Math.max(2, Math.min(8, 2 + Math.round(random() * (1 + 4 * w))));
     const { scheme, colors } = splitColors(palette, Math.min(6, parts), w, random, axes);
     const s = smartOf(axes);
     const motions =
       s > 0
         ? w >= 0.6
-          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push']
-          : ['breathe', 'slide', 'drift', 'push']
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step']
+          : ['breathe', 'slide', 'drift', 'push', 'sweep', 'zoom']
         : w >= 0.6
-          ? ['slide', 'rotate', 'breathe', 'swap', 'drift']
-          : ['breathe', 'slide', 'drift'];
-    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', motions, s) : pick(random, motions);
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step']
+          : ['breathe', 'slide', 'drift', 'sweep', 'zoom'];
+    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', avoidFilter(motions, avoid && avoid.motion), s) : pick(random, avoidFilter(motions, avoid && avoid.motion));
     const split = {
       type: 'split',
       params: {
@@ -1707,26 +1728,40 @@
     // `breathe` on a bar / phrase period reads calmer than a metronome; the
     // period is only drawn once smartness is on, so old clips keep the beat
     if (s > 0 && motion === 'breathe') split.params.every = pick(random, [1, 2, 4]);
+    // the one-way motions carry their travel distance (widens with weird) and
+    // direction; saved clips never pick these names, so their draw is unchanged
+    if (motion === 'sweep' || motion === 'turn' || motion === 'zoom' || motion === 'step') {
+      split.params.travel = round(0.06 + 0.12 * w * (0.5 + random() * 0.5), 3);
+      split.params.dir = pick(random, [-1, 1]);
+    }
     return split;
   }
 
   // The mid clip's own motion on top of its planes. Not every clip pulses on
   // the beat: some hit only on the bar's downbeat, breathe over a phrase, rock,
-  // float or hold still, so a song's mid layer changes character clip by clip.
-  // The seventh axis drops the per-beat pulse in favour of the calmer set and
-  // widens the transition choices to the hard `cut`.
-  const BACKDROP_MOTIONS = ['accent', 'swell', 'sway', 'drift', 'still', 'pulse'];
+  // float, pan, push in, turn or hold still, so a song's mid layer changes
+  // character clip by clip. The seventh axis drops the per-beat pulse in favour
+  // of the calmer set and widens the transition choices to the hard `cut` and
+  // the shape-by-shape `stagger` / `slide`.
+  const BACKDROP_MOTIONS = ['accent', 'swell', 'sway', 'drift', 'still', 'pulse', 'travel', 'zoom', 'tilt'];
 
-  function backdropMotion(random, w, axes) {
+  function backdropMotion(random, w, axes, avoid) {
     const s = smartOf(axes);
+    // the auto direction's neighbouring-clip context; weird 0 never uses it
+    const banned = w > 0 ? avoid || null : null;
+    const transitions = ['wipe', 'scale', 'rotate', 'iris', 'cut', 'slide', 'stagger'];
     const transition =
-      s > 0 ? smartness.pickWeighted(random, 'transition', ['wipe', 'scale', 'rotate', 'iris', 'cut'], s) : pick(random, ['wipe', 'scale', 'rotate', 'iris']);
+      s > 0
+        ? smartness.pickWeighted(random, 'transition', avoidFilter(transitions, banned && banned.transition), s)
+        : pick(random, avoidFilter(transitions, banned && banned.transition));
     // a backdrop that is fully on (w > 0.5) stops holding still and starts
     // answering the text: `sync` is the amplitude of the per-kick bounce the
     // renderer adds on top of the mode (absent while w is 0, so saved clips
     // keep their look)
     const modes = w > 0.5 ? BACKDROP_MOTIONS.filter((mode) => mode !== 'still') : BACKDROP_MOTIONS;
-    const mode = s > 0 ? smartness.pickWeighted(random, 'backdropMotion', modes, s) : pick(random, modes);
+    const mode = s > 0
+      ? smartness.pickWeighted(random, 'backdropMotion', avoidFilter(modes, banned && banned.mode), s)
+      : pick(random, avoidFilter(modes, banned && banned.mode));
     const duration = s > 0 ? pick(random, [0.2, 0.35, 0.6]) : 0.35;
     const motion = { mode, pulse: round(0.03 * (1 + w), 3), drift: round(0.012 * (1 + w), 3), transition, duration };
     if (w > 0) motion.sync = round(0.05 + 0.10 * w, 3);
@@ -1735,6 +1770,14 @@
     if (mode === 'sway') motion.sway = round(0.015 + 0.03 * w * random(), 3);
     if (mode === 'drift') motion.drift = round(0.01 + 0.02 * w, 3);
     if (mode === 'still') motion.drift = 0.006;
+    // the one-way modes: a slow pan, a Ken Burns push and a slow turn. Only
+    // the new names reach this, so saved clips keep their exact draw.
+    if (mode === 'travel') {
+      motion.travel = round(0.04 + 0.06 * w, 3);
+      motion.dir = pick(random, ['left', 'right', 'up', 'down']);
+    }
+    if (mode === 'zoom') motion.zoom = round(0.06 + 0.08 * w, 3);
+    if (mode === 'tilt') motion.tilt = round(0.01 + 0.02 * w, 3);
     return motion;
   }
 
@@ -1820,7 +1863,7 @@
         Number(params.opacity) || 0.6,
         Math.round((0.35 + 0.4 * clamp01(axes.energy) + 0.2 * w) * 100) / 100
       );
-      const plane = splitSpec(axes, random, paletteColors, coverage, options && options.cuts);
+      const plane = splitSpec(axes, random, paletteColors, coverage, options && options.cuts, { avoid: options && options.avoid });
       return {
         spec: {
           type: 'combo',
@@ -1867,6 +1910,7 @@
       planes: opts.planes,
       textColors: opts.textColors,
       rawW: opts.rawW,
+      avoid: opts.avoid,
     });
   }
 
@@ -2118,7 +2162,7 @@
     const params = shape.params || (shape.params = {});
     if (params.unit !== 'cell') return;
     if (params.opacity != null && params.opacity < 0.5) return;
-    const bgColors = Array.isArray(params.varyColors) && params.varyColors.length ? params.varyColors : [palette[3] || '#888888'];
+    const bgColors = Array.isArray(params.varyColors) && params.varyColors.length ? params.varyColors : [palette[7] || palette[3] || '#888888'];
     const fill = style.color && style.color.fill;
     const fgHex = colorRefHex(fill, palette);
     if (!fgHex) return;
@@ -2243,8 +2287,36 @@
         : colorMode === 'mixed'
           ? [palette[3], palette[5], palette[2]].filter(Boolean)
           : [palette[3], palette[5] || palette[3]].filter(Boolean);
-    params.varyColors = varyColors.length ? varyColors : [];
-    style.bgShape = { type: shape, params, enabled: true };
+    // A square drawn in the enclose placement is the text background by the
+    // definition (a per-letter cell square); everything else the old table
+    // could draw (accent squares, underlays, circles / stars / bars ...) is a
+    // text ornament. The random consumption above is identical either way, so
+    // the same seed keeps its picture.
+    const isBackground = shape === 'square' && adjusted === 'enclose';
+    const shapeKey = isBackground ? 'bgShape' : 'ornShape';
+    // The engine paints the background through the TEXT_BG / TEXT_EDGE roles;
+    // a legacy short palette falls back to the old background numbers (3 / 4),
+    // exactly like the renderer.
+    const roleOr = (slot, legacy) => {
+      const colors = Array.isArray(palette) ? palette : [];
+      if (paletteRoles && colors.length >= paletteRoles.SIZE && typeof paletteRoles.get === 'function') {
+        return paletteRoles.get(colors, slot) || colors[legacy];
+      }
+      return colors[legacy];
+    };
+    if (isBackground) {
+      // the background data carries no geometry: the engine always draws a
+      // cell-size square. Its per-letter colours stay in the TEXT_BG family.
+      const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
+      style.bgShape = {
+        type: 'square',
+        params: { color: null, skipSpaces: true, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
+        enabled: true,
+      };
+    } else {
+      params.varyColors = varyColors.length ? varyColors : [];
+      style.ornShape = { type: shape, params, enabled: true };
+    }
     // fill
     const fillTable = (config && config.fill) || null;
     let fillType = pickWeightedEntry(fillTable, random);
@@ -2253,7 +2325,7 @@
       const roll = random();
       fillType = roll < 0.7 ? 'solid' : roll < 0.9 ? 'gradientSweep' : holographic ? 'holographic' : 'solid';
     }
-    style.bgFill = { type: fillType, params: fx.paramDefaults('bgFill', fillType), enabled: true };
+    style[isBackground ? 'bgFill' : 'ornFill'] = { type: fillType, params: fx.paramDefaults('bgFill', fillType), enabled: true };
     // edge
     const edgeTable = (config && config.edge) || null;
     let edgeType;
@@ -2269,7 +2341,7 @@
         const patternRoll = random();
         edgeParams.pattern = patternRoll < 0.6 ? 'solid' : patternRoll < 0.85 ? 'dashed' : 'dotted';
       }
-      style.bgEdge = [{ type: edgeType, params: edgeParams, enabled: true }];
+      style[isBackground ? 'bgEdge' : 'ornEdge'] = [{ type: edgeType, params: edgeParams, enabled: true }];
     }
     // motion
     const motionTable = (config && config.motions) || null;
@@ -2277,7 +2349,7 @@
     const motionParams = fx.paramDefaults('bgMotion', motionType);
     motionParams.lead = round(lerp(0.12, 0.02, axes.speed), 2);
     motionParams.duration = round(lerp(0.5, 0.2, axes.speed), 2);
-    style.bgMotion = { type: motionType, params: motionParams, enabled: true };
+    style[isBackground ? 'bgMotion' : 'ornMotion'] = { type: motionType, params: motionParams, enabled: true };
     return true;
   }
 

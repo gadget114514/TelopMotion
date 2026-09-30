@@ -187,10 +187,11 @@
 
   // The palettes in the wild are the legacy 7-colour family (bg, bg2, text,
   // accent, stroke, accent2, spare) or the 10-slot role palette. A slot index
-  // (TEXT_FILL 4 / TEXT_FILL2 5) therefore has to be written as the legacy
-  // position on a short palette: TEXT_FILL is the old index 2, TEXT_FILL2 the
-  // old index 3 (palette-roles.LEGACY_INDEX).
-  const SLOT_TO_LEGACY = { 4: 2, 5: 3, 6: 4 };
+  // (TEXT_FILL 4 / TEXT_FILL2 5 / TEXT_BG 7) therefore has to be written as the
+  // legacy position on a short palette: TEXT_FILL is the old index 2,
+  // TEXT_FILL2 the old index 3, TEXT_EDGE the old stroke 4 and TEXT_BG falls
+  // back to the old background number (palette-roles.LEGACY_INDEX).
+  const SLOT_TO_LEGACY = { 4: 2, 5: 3, 6: 4, 7: 3 };
   const ROLE_SIZE = 10;
 
   function paletteRefIndex(colors, slot) {

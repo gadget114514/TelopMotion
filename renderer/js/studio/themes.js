@@ -5,7 +5,7 @@ SA.themes = (() => {
 
   const LS_THEMES = 'sa.themes';
   // a theme owns exactly these groups; applying one replaces them instead of merging
-  const THEME_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const THEME_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
   const CAPTURE_GROUPS = THEME_GROUPS.filter((group) => group !== 'background').concat('text');
 
   function t(key, vars) {
@@ -93,7 +93,9 @@ SA.themes = (() => {
         let container = projectDoc.style;
         if (cueId) container = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
         for (const group of THEME_GROUPS) delete container[group];
-        const merged = SA.project.mergeDeep(container, theme.style);
+        // a stored theme may predate the background / ornament split
+        const themeStyle = SA.textBg && typeof SA.textBg.splitStyle === 'function' ? SA.textBg.splitStyle(theme.style, { shadow: false }).style : theme.style;
+        const merged = SA.project.mergeDeep(container, themeStyle);
         // backgrounds live on the background track now, not in the style
         delete merged.background;
         if (cueId) projectDoc.cueStyles[cueId] = merged;

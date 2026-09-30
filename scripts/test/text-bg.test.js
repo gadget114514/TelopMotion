@@ -189,10 +189,100 @@ test('capBackground keeps cell / em sizes inside the engine caps', () => {
   textBg.capBackground(explicit, 'cell', { w: 800, h: 200 }, {});
   assert.equal(explicit[0].sizeX, 2);
   assert.equal(explicit[0].sizeY, 2);
-  // the defaults are the tighter values
-  assert.equal(fx.paramDefaults('bgShape', 'square').width, 1.05);
-  const randomRange = fx.get('bgShape', 'square').params.find((param) => param.key === 'width').random;
+  // the definition background carries no geometry at all ...
+  assert.equal(fx.paramDefaults('bgShape', 'square').width, undefined);
+  assert.equal(fx.paramDefaults('bgShape', 'square').unit, undefined);
+  // ... the ornament square keeps the free geometry
+  assert.equal(fx.paramDefaults('ornShape', 'square').width, 1.05);
+  const randomRange = fx.get('ornShape', 'square').params.find((param) => param.key === 'width').random;
   assert.deepEqual(randomRange, [0.7, 1.15]);
+});
+
+test('ornShape and its companions default to none / follow', () => {
+  assert.equal(fx.defaultsFor('ornShape').type, 'none');
+  assert.equal(fx.defaultsFor('ornMotion').type, 'follow');
+  assert.equal(fx.defaultsFor('ornFill').type, 'solid');
+  assert.equal(fx.defaultsFor('ornEdge'), null);
+  const shapes = fx.list('ornShape').map((descriptor) => descriptor.type).sort();
+  assert.deepEqual(shapes, ['bar', 'blob', 'bracket', 'circle', 'cloud', 'diamond', 'drop', 'heart', 'paper', 'ring', 'rounded', 'scratch', 'splatter', 'square', 'star']);
+});
+
+test('a background square is forced to the letter cell; an ornament keeps its geometry', () => {
+  const shape = { type: 'square', params: { unit: 'em', width: 2, height: 2, lockAspect: false, offset: { x: 0.3, y: -0.4 }, rotation: 30 } };
+  const bg = textBg.evaluateBg(shape, { type: 'follow', params: {} }, [entry()], null, null, 0, { seed: 1, group: 'bgShape' });
+  assert.equal(bg.unit, 'cell');
+  assert.equal(bg.group, 'bgShape');
+  for (const state of bg.states) {
+    assert.equal(state.sizeX, 1);
+    assert.equal(state.sizeY, 1);
+    assert.equal(state.offsetX, 0);
+    assert.equal(state.offsetY, 0);
+    assert.equal(state.rotation, 0);
+    assert.equal(state.shapeIndex, textBg.SHAPES.square);
+  }
+  // a variation carrying geometry cannot move the background either, but its
+  // colour and visibility still apply
+  const variation = [{ shapeIndex: textBg.SHAPES.star, sizeMul: [2, 2], offsetAdd: [0.5, 0.5], rotAdd: 45, color: [1, 0, 0, 1] }];
+  const varied = textBg.evaluateBg(shape, { type: 'follow', params: {} }, [entry()], variation, null, 0, { seed: 1, group: 'bgShape' });
+  assert.equal(varied.states[0].sizeX, 1);
+  assert.equal(varied.states[0].offsetX, 0);
+  assert.equal(varied.states[0].rotation, 0);
+  assert.equal(varied.states[0].shapeIndex, textBg.SHAPES.square);
+  assert.deepEqual(varied.states[0].color, [1, 0, 0, 1], 'the vary colour survives');
+  // without an explicit group the shape decides: a cell square is a background
+  const inferred = textBg.evaluateBg({ type: 'square', params: { unit: 'cell', width: 2 } }, { type: 'follow', params: {} }, [entry()], null, null, 0, { seed: 1 });
+  assert.equal(inferred.states[0].sizeX, 1);
+  // the same data as an ornament keeps every geometry parameter
+  const orn = textBg.evaluateBg({ ...shape, params: { ...shape.params, unit: 'cell' } }, { type: 'follow', params: {} }, [entry()], null, null, 0, { seed: 1, group: 'ornShape' });
+  assert.equal(orn.states[0].sizeX, 2);
+  assert.equal(orn.states[0].rotation, 30);
+  assert.equal(orn.states[0].offsetX, 0.3);
+});
+
+test('splitStyle sorts the legacy bg groups into background and ornament', () => {
+  const bg = textBg.splitStyle(
+    {
+      bgShape: { type: 'square', params: { unit: 'cell', width: 1.2, height: 1.2, opacity: 0.8, offset: { x: 0.1, y: 0 }, layer: 'front' } },
+      bgFill: { type: 'solid', params: {} },
+      bgMotion: { type: 'pop', params: {} },
+    },
+    { shape: { type: 'square', params: { unit: 'cell' } } }
+  );
+  assert.equal(bg.kind, 'bg');
+  assert.deepEqual(bg.style.bgShape.params, { opacity: 0.8 }, 'the geometry parameters are dropped');
+  assert.ok(bg.style.bgFill && bg.style.bgMotion);
+  assert.equal(bg.style.ornShape, undefined);
+  // every other shape (and the em square) is an ornament; the moved bag keeps
+  // a `bgShape: none` so an inherited background is cancelled
+  for (const shape of [
+    { type: 'rounded', params: { unit: 'cell', width: 1.2 } },
+    { type: 'star', params: { unit: 'cell' } },
+    { type: 'bar', params: { unit: 'cell', height: 0.4 } },
+    { type: 'square', params: { unit: 'em', width: 0.3 } },
+  ]) {
+    const split = textBg.splitStyle({
+      bgShape: shape,
+      bgFill: { type: 'solid', params: {} },
+      bgEdge: [{ type: 'outline' }],
+      bgMotion: { type: 'follow', params: {} },
+    });
+    assert.equal(split.kind, 'orn', shape.type);
+    assert.deepEqual(split.style.bgShape, { type: 'none', params: {}, enabled: true });
+    assert.equal(split.style.ornShape.type, shape.type);
+    assert.ok(split.style.ornFill && split.style.ornEdge && split.style.ornMotion);
+    assert.equal(split.style.bgFill, undefined);
+  }
+  // the root bag carries nothing to cancel
+  const root = textBg.splitStyle({ bgShape: { type: 'circle', params: {} } }, { shadow: false });
+  assert.equal(root.style.bgShape, undefined);
+  assert.equal(root.style.ornShape.type, 'circle');
+  // a bag patching only the fill follows the resolved inherited shape
+  const bgFillOnly = textBg.splitStyle({ bgFill: { type: 'solid', params: {} } }, { shape: { type: 'square', params: { unit: 'cell' } } });
+  assert.equal(bgFillOnly.changed, false);
+  const ornFillOnly = textBg.splitStyle({ bgFill: { type: 'solid', params: {} } }, { shape: { type: 'star', params: {} } });
+  assert.equal(ornFillOnly.kind, 'orn');
+  assert.ok(ornFillOnly.style.ornFill);
+  assert.equal(ornFillOnly.style.bgShape.type, 'none');
 });
 
 test('generated text backgrounds stay inside the caps', () => {
@@ -200,32 +290,50 @@ test('generated text backgrounds stay inside the caps', () => {
   for (const name of effects) require(`../../renderer/js/lyrics/effects/${name}.js`);
   const moods = require('../../renderer/js/lyrics/moods.js');
   const context = { letterCount: 12, cjk: false, hasPrevious: true, badgeId: false, hasCard: false, aspect: '16:9' };
-  let checked = 0;
+  let backgrounds = 0;
+  let ornaments = 0;
   for (let seed = 1; seed <= 100; seed += 1) {
     const style = moods.generate({ axes: { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.6, brightness: 0.4, weird: 0.7 }, seed, context }).style;
+    // the background is always a cell square with no geometry in the data
     const shape = style.bgShape;
-    if (!shape || !shape.type || shape.type === 'none') continue;
-    const params = shape.params || {};
-    const unit = params.unit === 'em' ? 'em' : 'cell';
-    const limit = unit === 'em' ? 1.6 : 1.25;
-    assert.ok(Number(params.width) <= limit + 1e-9, `seed ${seed} ${unit} width ${params.width}`);
-    assert.ok(Number(params.height) <= limit + 1e-9, `seed ${seed} ${unit} height ${params.height}`);
-    const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed });
-    if (bg) {
-      textBg.capBackground(bg.states, bg.unit, { w: 700, h: 120 }, { emPx: 96 });
+    if (shape && shape.type && shape.type !== 'none') {
+      assert.equal(shape.type, 'square', `seed ${seed} background type ${shape.type}`);
+      const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'bgShape' });
+      assert.ok(bg, `seed ${seed} background does not evaluate`);
       for (const state of bg.states) {
-        const effectiveX = state.sizeX * Math.abs(state.motionScaleX);
-        const effectiveY = state.sizeY * Math.abs(state.motionScaleY);
-        if (bg.unit === 'cell') {
-          assert.ok(effectiveX <= 1.25 + 1e-9 && effectiveY <= 1.25 + 1e-9, `seed ${seed} cell effective ${effectiveX}x${effectiveY}`);
-        } else {
-          assert.ok(effectiveX <= 700 / 96 + 0.6 + 1e-9 && effectiveY <= 120 / 96 + 0.6 + 1e-9, `seed ${seed} em effective ${effectiveX}x${effectiveY}`);
+        assert.equal(state.sizeX, 1, `seed ${seed} background width`);
+        assert.equal(state.sizeY, 1, `seed ${seed} background height`);
+        assert.equal(state.offsetX, 0);
+        assert.equal(state.rotation, 0);
+      }
+      backgrounds += 1;
+    }
+    // the ornaments keep their data geometry and stay inside the caps
+    const orn = style.ornShape;
+    if (orn && orn.type && orn.type !== 'none') {
+      const params = orn.params || {};
+      const unit = params.unit === 'em' ? 'em' : 'cell';
+      const limit = unit === 'em' ? 1.6 : 1.25;
+      assert.ok(Number(params.width) <= limit + 1e-9, `seed ${seed} ${unit} width ${params.width}`);
+      assert.ok(Number(params.height) <= limit + 1e-9, `seed ${seed} ${unit} height ${params.height}`);
+      const ornBg = textBg.evaluateBg(orn, style.ornMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'ornShape' });
+      if (ornBg) {
+        textBg.capBackground(ornBg.states, ornBg.unit, { w: 700, h: 120 }, { emPx: 96 });
+        for (const state of ornBg.states) {
+          const effectiveX = state.sizeX * Math.abs(state.motionScaleX);
+          const effectiveY = state.sizeY * Math.abs(state.motionScaleY);
+          if (ornBg.unit === 'cell') {
+            assert.ok(effectiveX <= 1.25 + 1e-9 && effectiveY <= 1.25 + 1e-9, `seed ${seed} cell effective ${effectiveX}x${effectiveY}`);
+          } else {
+            assert.ok(effectiveX <= 700 / 96 + 0.6 + 1e-9 && effectiveY <= 120 / 96 + 0.6 + 1e-9, `seed ${seed} em effective ${effectiveX}x${effectiveY}`);
+          }
         }
       }
+      ornaments += 1;
     }
-    checked += 1;
   }
-  assert.ok(checked > 20, `only ${checked} backgrounds drawn`);
+  assert.ok(backgrounds >= 1, `only ${backgrounds} backgrounds drawn`);
+  assert.ok(ornaments > 20, `only ${ornaments} ornaments drawn`);
 });
 
 test('the pinned profile options override the genre tables', () => {
@@ -242,10 +350,12 @@ test('the pinned profile options override the genre tables', () => {
     edgeChance: 1,
   });
   assert.equal(applied, true);
-  assert.equal(style.bgShape.params.unit, 'em');
-  assert.equal(style.bgShape.params.layer, 'front');
-  assert.notEqual(style.bgShape.params.vary, 'none');
-  assert.ok(Array.isArray(style.bgEdge) && style.bgEdge.length > 0);
+  // a pinned accent is not a background: it lands on the ornament groups
+  assert.equal(style.ornShape.params.unit, 'em');
+  assert.equal(style.ornShape.params.layer, 'front');
+  assert.notEqual(style.ornShape.params.vary, 'none');
+  assert.ok(Array.isArray(style.ornEdge) && style.ornEdge.length > 0);
+  assert.equal(style.bgShape, undefined);
   // a pinned zero blocks the draw even when the genre wants one
   assert.equal(moods.applyGenreBackground({}, { bg: { chance: 1 } }, axes, rng.rngFor(7, 'bg2'), palette, false, { chance: 0 }), false);
   // without options the genre's own zero still keeps the classic behaviour
@@ -253,6 +363,57 @@ test('the pinned profile options override the genre tables', () => {
   // a lone pinned placement weight always lands on that placement
   const placed = {};
   assert.equal(moods.applyGenreBackground(placed, null, axes, rng.rngFor(7, 'bg4'), palette, false, { chance: 1, placement: { bgUnderlay: 1 } }), true);
-  assert.equal(placed.bgShape.params.layer, 'behind');
-  assert.equal(placed.bgShape.params.unit, 'em');
+  assert.equal(placed.ornShape.params.layer, 'behind');
+  assert.equal(placed.ornShape.params.unit, 'em');
+  // a pinned enclose square is the definition background: a cell square with
+  // no geometry in the data (the shape draw is random, so scan for a square)
+  let enclosed = null;
+  for (let seed = 1; seed <= 60 && !enclosed; seed += 1) {
+    const candidate = {};
+    moods.applyGenreBackground(candidate, null, axes, rng.rngFor(seed, 'bg-square'), palette, false, { chance: 1, placement: { bgEnclose: 1 } });
+    if (candidate.bgShape) enclosed = candidate;
+  }
+  assert.ok(enclosed, 'no enclose square seed found');
+  assert.equal(enclosed.bgShape.type, 'square');
+  assert.equal(enclosed.bgShape.params.unit, undefined);
+  assert.equal(enclosed.bgShape.params.width, undefined);
+  assert.ok(enclosed.bgFill && enclosed.bgMotion);
+  assert.equal(enclosed.ornShape, undefined);
+});
+
+test('the same seed keeps its draw and only the destination splits', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const axes = { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0.3 };
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const genre = { bg: { chance: 0.35, placement: { enclose: 0.5, accent: 0.3, underlay: 0.2 }, shapes: { square: 3, circle: 2, bar: 1, star: 1, '*': 0 } } };
+  let backgrounds = 0;
+  let ornaments = 0;
+  for (let seed = 1; seed <= 120; seed += 1) {
+    const first = {};
+    const second = {};
+    const applied = moods.applyGenreBackground(first, genre, axes, rng.rngFor(seed, 'bg-split'), palette, false);
+    moods.applyGenreBackground(second, genre, axes, rng.rngFor(seed, 'bg-split'), palette, false);
+    // the same seed draws exactly the same picture ...
+    assert.deepEqual(second, first, `seed ${seed} is not deterministic`);
+    if (!applied) {
+      assert.deepEqual(first, {}, `seed ${seed} skipped but wrote data`);
+      continue;
+    }
+    // ... and the shape lands on the side the definition asks for
+    const bgOn = first.bgShape && first.bgShape.type && first.bgShape.type !== 'none';
+    const ornOn = first.ornShape && first.ornShape.type && first.ornShape.type !== 'none';
+    assert.ok(bgOn || ornOn, `seed ${seed} drew nothing`);
+    if (bgOn) {
+      assert.equal(first.bgShape.type, 'square', `seed ${seed} background type`);
+      assert.equal(first.bgShape.params.unit, undefined, `seed ${seed} background unit`);
+      backgrounds += 1;
+    }
+    if (ornOn) {
+      if (first.ornShape.type === 'square') assert.equal(first.ornShape.params.unit, 'em', `seed ${seed} ornament square must be an em accent`);
+      ornaments += 1;
+    }
+  }
+  assert.ok(backgrounds > 5, `only ${backgrounds} backgrounds`);
+  assert.ok(ornaments > 5, `only ${ornaments} ornaments`);
 });

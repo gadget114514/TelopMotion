@@ -9,7 +9,7 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 2;
+  const VERSION = 3;
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
@@ -126,6 +126,18 @@
     if (typeof SA !== 'undefined' && SA && SA.paletteRoles) return SA.paletteRoles;
     try {
       if (typeof require === 'function') return require('../lyrics/palette-roles');
+    } catch {
+      // not available
+    }
+    return null;
+  }
+
+  // text-bg is the split's single source of truth (background vs ornament); it
+  // is loaded lazily the same way.
+  function textBgModule() {
+    if (typeof SA !== 'undefined' && SA && SA.textBg) return SA.textBg;
+    try {
+      if (typeof require === 'function') return require('../lyrics/effects/text-bg');
     } catch {
       // not available
     }
@@ -349,6 +361,75 @@
 
   const TRACK_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 
+  // Version 3 splits the old single `bg*` group into the definition background
+  // (a per-letter cell square) and the text ornaments. Every bag is classified
+  // by the shape resolved at its own level (so a bag that only patches
+  // `bgFill` follows the shape it inherited); a bag that moves to the ornament
+  // groups receives a `bgShape: none` marker so the background inherited from
+  // an outer level does not show through. Keyframe property paths follow the
+  // same decision.
+  function migrateToV3(project) {
+    const textBg = textBgModule();
+    if (!textBg || typeof textBg.splitStyle !== 'function') return project;
+    const snapshot = {
+      style: JSON.parse(JSON.stringify(project.style || {})),
+      cueStyles: JSON.parse(JSON.stringify(project.cueStyles || {})),
+      beatKindStyle: JSON.parse(JSON.stringify(project.beatKindStyle || {})),
+      beatStyles: JSON.parse(JSON.stringify(project.beatStyles || {})),
+      overrides: JSON.parse(JSON.stringify(project.overrides || {})),
+      beats: project.beats || {},
+    };
+    const shapeAt = (path) => {
+      try {
+        return resolveStyle(snapshot, path).bgShape || null;
+      } catch {
+        return snapshot.style.bgShape || null;
+      }
+    };
+    const splitBag = (bag, shape, shadow) => {
+      if (!isPlainObject(bag)) return bag;
+      const result = textBg.splitStyle(bag, { shape, shadow });
+      return result.changed ? result.style : bag;
+    };
+    // the root bag carries nothing to cancel
+    project.style = splitBag(project.style || {}, snapshot.style.bgShape, false);
+    for (const [cueId, bag] of Object.entries(project.cueStyles || {})) {
+      project.cueStyles[cueId] = splitBag(bag, shapeAt(`cue:${cueId}`), true);
+    }
+    // a beat-kind bag resolves through a beat of that kind when one exists
+    const anchorFor = new Map();
+    for (const [cueId, beats] of Object.entries(project.beats || {})) {
+      for (const beat of beats || []) {
+        if (beat && beat.kind && !anchorFor.has(beat.kind)) anchorFor.set(beat.kind, { cueId, beatId: beat.id });
+      }
+    }
+    for (const [kind, bag] of Object.entries(project.beatKindStyle || {})) {
+      const anchor = anchorFor.get(kind);
+      project.beatKindStyle[kind] = splitBag(bag, anchor ? shapeAt(`cue:${anchor.cueId}/beat:${anchor.beatId}`) : snapshot.style.bgShape, true);
+    }
+    for (const [beatId, bag] of Object.entries(project.beatStyles || {})) {
+      const cueId = String(beatId).split(':')[0];
+      project.beatStyles[beatId] = splitBag(bag, shapeAt(`cue:${cueId}/beat:${beatId}`), true);
+    }
+    for (const [key, bag] of Object.entries(project.overrides || {})) {
+      project.overrides[key] = splitBag(bag, shapeAt(key), true);
+    }
+    const RENAMES = { bgShape: 'ornShape', bgFill: 'ornFill', bgEdge: 'ornEdge', bgMotion: 'ornMotion' };
+    for (const [path, props] of Object.entries(project.keyframes || {})) {
+      if (!isPlainObject(props)) continue;
+      if (textBg.isBackground && textBg.isBackground(shapeAt(path))) continue;
+      const next = {};
+      for (const [propPath, keys] of Object.entries(props)) {
+        const dot = propPath.indexOf('.');
+        const head = dot < 0 ? propPath : propPath.slice(0, dot);
+        const tail = dot < 0 ? '' : propPath.slice(dot);
+        next[RENAMES[head] ? `${RENAMES[head]}${tail}` : propPath] = keys;
+      }
+      project.keyframes[path] = next;
+    }
+    return project;
+  }
+
   function normalizeTrackColor(value) {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -375,6 +456,7 @@
     }
     const merged = defaults(project);
     if (version < 2) migrateToV2(merged);
+    if (version < 3) migrateToV3(merged);
     // projects saved before the figure track simply gain the empty track (the
     // id is stable, so nothing else changes)
     if (!(merged.tracks || []).some((track) => track && track.kind === 'figure')) {
@@ -388,6 +470,9 @@
     for (const track of merged.tracks || []) {
       if (track && track.kind === 'subtitle' && track.bgHidden != null) track.bgHidden = !!track.bgHidden;
       if (track && track.kind === 'subtitle' && track.graphicsHidden != null) track.graphicsHidden = !!track.graphicsHidden;
+      // the text mask is a per-track boolean (absent = on), on every track kind
+      // that may draw behind the lyrics
+      if (track && track.textMask != null) track.textMask = !!track.textMask;
       // the background track owns the frame base colour; absent / junk = unset
       // (the canvas stays transparent)
       if (track && track.kind === 'background') {

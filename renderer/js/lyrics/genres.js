@@ -61,7 +61,7 @@
           id: 'ransom',
           weight: 3,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'paper',
               params: {
                 unit: 'cell', width: 1.12, height: 1.18, lockAspect: false, jag: 0.5, vary: 'random',
@@ -69,9 +69,9 @@
                 varyOffset: 0.06, fgAutoContrast: true, skipSpaces: true,
               },
             },
-            bgFill: { type: 'solid', params: {} },
-            bgEdge: [{ type: 'dropShadow', params: { offset: { x: 3, y: 4 }, blur: 3, opacity: 0.6 }, enabled: true }],
-            bgMotion: { type: 'stamp', params: { from: 1.6, lead: 0.04, duration: 0.18 } },
+            ornFill: { type: 'solid', params: {} },
+            ornEdge: [{ type: 'dropShadow', params: { offset: { x: 3, y: 4 }, blur: 3, opacity: 0.6 }, enabled: true }],
+            ornMotion: { type: 'stamp', params: { from: 1.6, lead: 0.04, duration: 0.18 } },
             fill: { type: 'solid', params: {} },
             animation: { type: 'stagger', params: { each: 0.09, order: 'random' } },
           },
@@ -80,12 +80,12 @@
           id: 'claw',
           weight: 2,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'scratch',
               params: { unit: 'em', width: 2.4, height: 2.4, rotation: -25, count: 3, opacity: 0.55, varyRotation: 10, skipSpaces: true },
             },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'bleed', params: { lead: -0.1, duration: 0.25, roughness: 0.7 } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'bleed', params: { lead: -0.1, duration: 0.25, roughness: 0.7 } },
           },
         },
         {
@@ -157,24 +157,24 @@
           id: 'heartAccent',
           weight: 3,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'heart',
               params: {
                 unit: 'em', width: 0.32, offset: { x: 0.48, y: -0.46 }, rotation: 12, layer: 'front',
                 vary: 'alternate', varyColors: ['#ff5c8a', '#ff9eb5'], varyRotation: 10, skipSpaces: true,
               },
             },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'float', params: { lead: -0.05, duration: 0.6, rise: 0.3, hold: 'heartbeat', holdAmount: 0.3 } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'float', params: { lead: -0.05, duration: 0.6, rise: 0.3, hold: 'heartbeat', holdAmount: 0.3 } },
           },
         },
         {
           id: 'heartUnderlay',
           weight: 2,
           patch: {
-            bgShape: { type: 'heart', params: { unit: 'em', width: 2.1, opacity: 0.22, skipSpaces: true } },
-            bgFill: { type: 'gradientSweep', params: { angle: 90, speed: 0.15 } },
-            bgMotion: { type: 'pop', params: { overshoot: 0.1, lead: 0.1, duration: 0.5, hold: 'heartbeat', holdAmount: 0.4 } },
+            ornShape: { type: 'heart', params: { unit: 'em', width: 2.1, opacity: 0.22, skipSpaces: true } },
+            ornFill: { type: 'gradientSweep', params: { angle: 90, speed: 0.15 } },
+            ornMotion: { type: 'pop', params: { overshoot: 0.1, lead: 0.1, duration: 0.5, hold: 'heartbeat', holdAmount: 0.4 } },
           },
         },
         {
@@ -233,15 +233,15 @@
           id: 'tears',
           weight: 3,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'drop',
               params: {
                 unit: 'em', width: 0.18, height: 0.26, lockAspect: false, offset: { x: 0.1, y: 0.62 },
                 skipRate: 0.7, opacity: 0.85,
               },
             },
-            bgFill: { type: 'glass', params: {} },
-            bgMotion: { type: 'fall', params: { from: 0.4, lead: -0.3, duration: 0.9 } },
+            ornFill: { type: 'glass', params: {} },
+            ornMotion: { type: 'fall', params: { from: 0.4, lead: -0.3, duration: 0.9 } },
           },
         },
         {
@@ -299,7 +299,7 @@
           id: 'varietyBox',
           weight: 3,
           patch: {
-            bgShape: { type: 'square', params: { unit: 'cell', width: 1.15, height: 1.15, vary: 'alternate', varyColors: [], skipSpaces: true } },
+            bgShape: { type: 'square', params: { vary: 'alternate', varyColors: [], skipSpaces: true } },
             bgFill: { type: 'solid', params: {} },
             bgMotion: { type: 'pop', params: { overshoot: 0.2, lead: 0.05, duration: 0.3 } },
             edge: [{ type: 'outline', params: { width: 3 }, enabled: true }],
@@ -309,21 +309,21 @@
           id: 'confetti',
           weight: 3,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'paper',
               params: { unit: 'em', width: 2.4, height: 2.4, opacity: 0.4, vary: 'random', varyRotation: 40, varyOffset: 0.3, skipSpaces: true },
             },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'fall', params: { from: 0.8, lead: -0.15, duration: 0.8 } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'fall', params: { from: 0.8, lead: -0.15, duration: 0.8 } },
           },
         },
         {
           id: 'stampBeat',
           weight: 2,
           patch: {
-            bgShape: { type: 'circle', params: { unit: 'cell', width: 1.25, height: 1.25 } },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'stamp', params: { from: 1.8, lead: 0.02, duration: 0.25, hold: 'beat', holdAmount: 0.4 } },
+            ornShape: { type: 'circle', params: { unit: 'cell', width: 1.25, height: 1.25 } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'stamp', params: { from: 1.8, lead: 0.02, duration: 0.25, hold: 'beat', holdAmount: 0.4 } },
           },
         },
       ],
@@ -457,21 +457,21 @@
           id: 'cloudBubble',
           weight: 2,
           patch: {
-            bgShape: { type: 'cloud', params: { unit: 'cell', width: 1.3, height: 1.3, vary: 'cycle', skipSpaces: true } },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'pop', params: { overshoot: 0.2, lead: 0.05, duration: 0.35 } },
+            ornShape: { type: 'cloud', params: { unit: 'cell', width: 1.3, height: 1.3, vary: 'cycle', skipSpaces: true } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'pop', params: { overshoot: 0.2, lead: 0.05, duration: 0.35 } },
           },
         },
         {
           id: 'starAccent',
           weight: 2,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'star',
               params: { unit: 'em', width: 0.3, height: 0.3, offset: { x: 0.5, y: -0.5 }, layer: 'front', varyRotation: 20, skipSpaces: true },
             },
-            bgFill: { type: 'gradientSweep', params: { speed: 0.2 } },
-            bgMotion: { type: 'spin', params: { turns: 0.25, lead: 0, duration: 0.4 } },
+            ornFill: { type: 'gradientSweep', params: { speed: 0.2 } },
+            ornMotion: { type: 'spin', params: { turns: 0.25, lead: 0, duration: 0.4 } },
           },
         },
       ],
@@ -516,10 +516,10 @@
           id: 'bracket',
           weight: 2,
           patch: {
-            bgShape: { type: 'bracket', params: { unit: 'cell', width: 1.3, height: 1.3, opacity: 1, skipSpaces: true } },
-            bgFill: { type: 'solid', params: { color: null } },
-            bgEdge: [{ type: 'outline', params: { width: 2, pattern: 'dashed', dashLength: 10, flow: 1.2 }, enabled: true }],
-            bgMotion: { type: 'wipe', params: { dir: 'left', lead: 0.05, duration: 0.3 } },
+            ornShape: { type: 'bracket', params: { unit: 'cell', width: 1.3, height: 1.3, opacity: 1, skipSpaces: true } },
+            ornFill: { type: 'solid', params: { color: null } },
+            ornEdge: [{ type: 'outline', params: { width: 2, pattern: 'dashed', dashLength: 10, flow: 1.2 }, enabled: true }],
+            ornMotion: { type: 'wipe', params: { dir: 'left', lead: 0.05, duration: 0.3 } },
           },
         },
         {
@@ -570,18 +570,18 @@
           id: 'slash',
           weight: 2,
           patch: {
-            bgShape: { type: 'scratch', params: { unit: 'em', width: 2.2, height: 2.2, rotation: -20, count: 3, opacity: 0.6, skipSpaces: true } },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'bleed', params: { lead: 0.02, duration: 0.2, roughness: 0.6 } },
+            ornShape: { type: 'scratch', params: { unit: 'em', width: 2.2, height: 2.2, rotation: -20, count: 3, opacity: 0.6, skipSpaces: true } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'bleed', params: { lead: 0.02, duration: 0.2, roughness: 0.6 } },
           },
         },
         {
           id: 'tiltBar',
           weight: 2,
           patch: {
-            bgShape: { type: 'bar', params: { unit: 'cell', width: 1.3, height: 1.1, rotation: -6, vary: 'alternate', varyRotation: 8, skipSpaces: true } },
-            bgFill: { type: 'gradientSweep', params: { angle: 20, speed: 0.3 } },
-            bgMotion: { type: 'stamp', params: { from: 1.8, lead: 0.03, duration: 0.2 } },
+            ornShape: { type: 'bar', params: { unit: 'cell', width: 1.3, height: 1.1, rotation: -6, vary: 'alternate', varyRotation: 8, skipSpaces: true } },
+            ornFill: { type: 'gradientSweep', params: { angle: 20, speed: 0.3 } },
+            ornMotion: { type: 'stamp', params: { from: 1.8, lead: 0.03, duration: 0.2 } },
           },
         },
       ],
@@ -632,12 +632,12 @@
           id: 'rakkan',
           weight: 3,
           patch: {
-            bgShape: {
+            ornShape: {
               type: 'square',
               params: { unit: 'em', width: 0.42, height: 0.42, offset: { x: 0.62, y: 0.62 }, vary: 'last', varyColors: ['#c0392b'], skipSpaces: true },
             },
-            bgFill: { type: 'solid', params: {} },
-            bgMotion: { type: 'stamp', params: { from: 1.7, lead: 0.02, duration: 0.2 } },
+            ornFill: { type: 'solid', params: {} },
+            ornMotion: { type: 'stamp', params: { from: 1.7, lead: 0.02, duration: 0.2 } },
           },
         },
       ],

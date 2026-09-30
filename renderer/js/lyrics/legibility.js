@@ -59,8 +59,8 @@
   const FIGURE_FALLBACK_OPACITY = 0.35;
   const BG_CELL_MAX = 1.25;
   const BG_EM_MAX = 1.6;
-  const STYLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
-  const STACK_GROUPS = new Set(['hold', 'edge', 'post', 'bgEdge']);
+  const STYLE_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion', 'repeat'];
+  const STACK_GROUPS = new Set(['hold', 'edge', 'post', 'bgEdge', 'ornEdge']);
 
   // post effects that can hide the text: caps on the parameters the shader
   // reads. A style over the cap is repaired by lowering the parameter.
@@ -189,9 +189,13 @@
     return out;
   }
 
+  // The definition background is the per-letter cell square; a decorative
+  // `bgShape` left over from before the split (or an em square) is an ornament
+  // and takes part in the text contrast contract only as a decoration.
   function bgShapeActive(style) {
     const shape = style && style.bgShape;
-    return !!(shape && shape.type && shape.type !== 'none');
+    if (!shape || !shape.type || shape.type === 'none') return false;
+    return shape.type === 'square' && (shape.params || {}).unit !== 'em';
   }
 
   function bgColors(style, ctx) {
@@ -199,7 +203,11 @@
     const params = (style && style.bgShape && style.bgShape.params) || {};
     const vary = Array.isArray(params.varyColors) && params.varyColors.length ? params.varyColors : null;
     if (vary) return vary.slice();
-    return [palette[0] || '#000000'];
+    // without a background the text sits on the implicit backdrop (palette 0)
+    if (!bgShapeActive(style)) return [palette[0] || '#000000'];
+    // the engine paints the background through the TEXT_BG role (7); a legacy
+    // short palette falls back to the old background number (3)
+    return [palette[7] || palette[3] || palette[0] || '#000000'];
   }
 
   function instanceList(style, group) {
@@ -416,11 +424,14 @@
     // size
     const size = Number(style.text && style.text.size);
     if (Number.isFinite(size) && size > 0 && size / frame.height < MIN_SIZE_RATIO) reasons.push('size');
-    // text background clamp (the engine applies the same in P-E-2)
-    if (shapeActive) {
-      const unit = params.unit === 'em' ? 'em' : 'cell';
-      const width = Number(params.width);
-      const height = Number(params.height);
+    // text ornament clamp (the engine applies the same in P-E-2; the
+    // background is a fixed cell square and needs no clamp)
+    const ornShape = style.ornShape;
+    if (ornShape && ornShape.type && ornShape.type !== 'none') {
+      const ornParams = ornShape.params || {};
+      const unit = ornParams.unit === 'em' ? 'em' : 'cell';
+      const width = Number(ornParams.width);
+      const height = Number(ornParams.height);
       const limit = unit === 'em' ? BG_EM_MAX : BG_CELL_MAX;
       if (Number.isFinite(width) && width > limit) reasons.push(`bg-size:${width}`);
       if (Number.isFinite(height) && height > limit) reasons.push(`bg-size:${height}`);
@@ -584,7 +595,9 @@
   }
 
   function repairBackgroundClamp(style) {
-    const shape = style.bgShape;
+    // only the ornaments carry free sizes now; the background is a fixed cell
+    // square
+    const shape = style && style.ornShape;
     if (!shape || !shape.params) return;
     const p = shape.params;
     const unit = p.unit === 'em' ? 'em' : 'cell';
@@ -640,6 +653,8 @@
 
   // The worst overlap of a figure spec's sampled shapes with the text box,
   // weighted by the spec's own opacity (a dimmed figure stops hiding text).
+  // `context.geometry` ignores the opacity instead: the auto direction uses it
+  // to keep every drawn shape clear of the lyrics, dimmed or not.
   function figureOverlap(spec, ctx) {
     const figures = lazy('figures');
     if (!figures || typeof figures.drawList !== 'function') return 0;
@@ -648,7 +663,7 @@
     const span = Math.max(0.4, Number(context.duration) || 3);
     const textBox = figureTextBox(context);
     const raw = spec && spec.params && spec.params.opacity;
-    const opacity = raw == null ? 1 : Math.max(0, Math.min(1, Number(raw)));
+    const opacity = context.geometry ? 1 : raw == null ? 1 : Math.max(0, Math.min(1, Number(raw)));
     if (!(opacity > 0)) return 0;
     // the spec's own sub-beats may start at an arbitrary clip offset, so the
     // samples run from the first beat, not from 0
@@ -715,6 +730,9 @@
     bgShape: 'none',
     bgFill: 'solid',
     bgMotion: 'follow',
+    ornShape: 'none',
+    ornFill: 'solid',
+    ornMotion: 'follow',
     repeat: 'none',
   };
 

@@ -754,13 +754,17 @@
     const shapes = [];
     for (const region of regions) {
       if (!region.painted) continue;
-      shapes.push({ kind: 'convex', points: region.points, color: region.color, opacity });
+      // `plane: true` marks the split planes: the engine keeps them whole when
+      // it knocks the accent layer out under the subtitle glyphs
+      shapes.push({ kind: 'convex', points: region.points, color: region.color, opacity, plane: true });
     }
     return { shapes, texts: [] };
   }
 
   // Clip-level animation: a beat pulse, a drift and an enter / exit transition
-  // (wipe / scale / rotate / iris) over the first and last 0.35 s.
+  // (wipe / scale / rotate / iris / slide / stagger) over the first and last
+  // 0.35 s. The one-way `travel` / `zoom` / `tilt` modes read the clip's own
+  // progress instead of the beat sine.
   function animate(list, options) {
     const opts = options || {};
     const shapes = list && Array.isArray(list.shapes) ? list.shapes : [];
@@ -783,18 +787,37 @@
     // the beat motion: `pulse` (the legacy default) swells on every beat;
     // `accent` hits on the downbeat of every `every` beats and decays;
     // `swell` breathes over `every` beats; `sway` rocks instead of scaling;
-    // `drift` floats; `still` keeps only the planes' own motion
+    // `drift` floats; `travel` pans across the clip; `zoom` is a Ken Burns
+    // push; `tilt` turns slowly; `still` keeps only the planes' own motion
     const mode = motion.mode || 'pulse';
     const every = Math.max(1, num(motion.every, mode === 'accent' ? 4 : 8));
     const group = (((beats / every) % 1) + 1) % 1;
     const amount = num(motion.pulse, 0);
+    const progress = clamp01((time - start) / duration);
     let pulse = 1;
     let sway = 0;
+    let tilt = 0;
+    let travelX = 0;
+    let travelY = 0;
     let driftAmount = num(motion.drift, 0);
     if (mode === 'pulse') pulse = 1 + amount * Math.sin(TAU * beats);
     else if (mode === 'accent') pulse = 1 + amount * 1.6 * Math.exp(-group * every * 3.5);
     else if (mode === 'swell') pulse = 1 + amount * 1.2 * (0.5 - 0.5 * Math.cos(TAU * group));
     else if (mode === 'sway') sway = num(motion.sway, 0.03) * Math.sin(TAU * group);
+    else if (mode === 'travel') {
+      // a slow one-way pan; the clip is scaled past the frame so the moving
+      // corner never shows the empty stage
+      const dir = motion.dir || 'right';
+      const distance = num(motion.travel, 0.06) * short * (progress - 0.5);
+      if (dir === 'left') travelX = -distance;
+      else if (dir === 'right') travelX = distance;
+      else if (dir === 'up') travelY = -distance;
+      else travelY = distance;
+    } else if (mode === 'zoom') {
+      pulse = 1 + num(motion.zoom, 0.12) * progress;
+    } else if (mode === 'tilt') {
+      tilt = num(motion.tilt, 0.02) * (2 * progress - 1);
+    }
     // text kicks: every `kicks` time (a cue start or a rhythm cut) adds a short
     // decaying bounce on top of the mode, so the mid layer answers the lyrics.
     // `sync` is absent on saved clips, which keeps their draw unchanged.
@@ -813,21 +836,46 @@
     // drift is a share of the short side here (the legacy pulse drift stays
     // in its raw units so saved clips keep their look)
     if (mode === 'drift' || mode === 'still') driftAmount *= short * (mode === 'still' ? 0.4 : 1);
-    const dx = driftAmount * Math.sin(TAU * 0.17 * (time - start));
-    const dy = driftAmount * 0.6 * Math.sin(TAU * 0.23 * (time - start) + 1.3);
-    // full-frame planes must not show their corners while they rock or drift
-    const cover = 1 + 1.8 * Math.abs(num(motion.sway, 0.03) * (mode === 'sway' ? 1 : 0)) + (mode === 'drift' || mode === 'still' ? (2.2 * Math.abs(driftAmount)) / short : 0);
+    const dx = driftAmount * Math.sin(TAU * 0.17 * (time - start)) + travelX;
+    const dy = driftAmount * 0.6 * Math.sin(TAU * 0.23 * (time - start) + 1.3) + travelY;
+    // full-frame planes must not show their corners while they rock, drift,
+    // pan or turn
+    const cover =
+      1 +
+      1.8 * Math.abs(num(motion.sway, 0.03) * (mode === 'sway' ? 1 : 0)) +
+      (mode === 'drift' || mode === 'still' ? (2.2 * Math.abs(driftAmount)) / short : 0) +
+      (mode === 'travel' ? 2.2 * Math.abs(num(motion.travel, 0.06)) : 0) +
+      (mode === 'tilt' ? 1.8 * Math.abs(num(motion.tilt, 0.02)) : 0);
     const kind = motion.transition || 'scale';
-    // a `cut` has no enter / exit transition: the clip is simply on
+    // a `cut` has no enter / exit transition: the clip is simply on. `slide`
+    // carries the transition as an offset, so it keeps its full size.
     const env2 = kind === 'cut' ? 1 : env;
     const originX = kind === 'wipe' ? 0 : frame.width / 2;
     const originY = frame.height / 2;
-    const scale = Math.max(0.001, pulse * cover * (kind === 'rotate' ? Math.max(0.05, env2) : env2 === 0 ? 0.001 : env2));
-    const rotate = (kind === 'rotate' ? (1 - env2) * (Math.PI / 4) : 0) + sway;
+    const dirName = motion.dir || 'right';
+    const slideX = kind === 'slide' ? (dirName === 'left' ? -1 : dirName === 'right' ? 1 : 0) * (1 - env2) * frame.width : 0;
+    const slideY = kind === 'slide' ? (dirName === 'up' ? -1 : dirName === 'down' ? 1 : 0) * (1 - env2) * frame.height : 0;
     // the point mapping lives in figures so a figure's own scale / x / y can
     // reuse it; filler-render always has figures available
-    if ((kind === 'wipe' || rotate || scale !== 1 || dx || dy) && figures && typeof figures.transformShapes === 'function') {
-      figures.transformShapes(shapes, { originX, originY, scale, dx, dy, rotate });
+    if (kind === 'stagger' && figures && typeof figures.transformShapes === 'function') {
+      // one shape after another: every shape eases in on its own slice of the
+      // transition window (the kick-rotation shape loop's sibling)
+      const step = span / Math.max(1, shapes.length);
+      for (let i = 0; i < shapes.length; i += 1) {
+        const shape = shapes[i];
+        if (!shape) continue;
+        const shapeEnv = Math.min(clamp01((time - start - i * step) / span), leave);
+        const shapeScale = Math.max(0.001, pulse * cover * (shapeEnv === 0 ? 0.001 : shapeEnv));
+        figures.transformShapes([shape], { originX, originY, scale: shapeScale, dx, dy, rotate: sway + tilt });
+        shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * clamp01(shapeEnv * 1.5);
+      }
+    } else {
+      const transitionScale = kind === 'rotate' ? Math.max(0.05, env2) : kind === 'cut' || kind === 'slide' ? 1 : env2 === 0 ? 0.001 : env2;
+      const scale = Math.max(0.001, pulse * cover * transitionScale);
+      const rotate = (kind === 'rotate' ? (1 - env2) * (Math.PI / 4) : 0) + sway + tilt;
+      if ((kind === 'wipe' || rotate || scale !== 1 || dx || dy || slideX || slideY) && figures && typeof figures.transformShapes === 'function') {
+        figures.transformShapes(shapes, { originX, originY, scale, dx: dx + slideX, dy: dy + slideY, rotate });
+      }
     }
     // the kick also shakes the planes apart: neighbouring planes rotate a hair
     // in opposite directions so the backdrop flashes with the text
@@ -840,6 +888,7 @@
     }
     for (const shape of shapes) {
       if (!shape) continue;
+      if (kind === 'stagger') continue; // the per-shape pass already faded it
       const fade = kind === 'scale' || kind === 'iris' ? clamp01(env * 1.5) : 1;
       shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * fade;
     }
@@ -935,7 +984,7 @@
       { key: 'offset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0 },
       { key: 'coverage', kind: 'number', min: 0.02, max: 1, step: 0.01, default: 0.6 },
       { key: 'scheme', kind: 'select', options: ['tonal', 'analogous', 'complementary', 'triad', 'splitComplementary', 'neutralAccent'], default: 'tonal' },
-      { key: 'motion', kind: 'select', options: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift'], default: 'none' },
+      { key: 'motion', kind: 'select', options: ['none', 'slide', 'rotate', 'breathe', 'swap', 'drift', 'push', 'sweep', 'turn', 'zoom', 'step'], default: 'none' },
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
       { key: 'amp', kind: 'number', min: 0, max: 0.4, step: 0.005, default: 0.05 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },

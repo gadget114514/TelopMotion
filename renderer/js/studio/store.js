@@ -2022,7 +2022,15 @@ SA.store = (() => {
             });
             return;
           }
-          const result = SA.moods.rerollClipSpec(kind, { axes: mode.axes, seed, genre: mode.genre, usePresets: kind === 'filler' });
+          const result = SA.moods.rerollClipSpec(kind, {
+            axes: mode.axes,
+            seed,
+            genre: mode.genre,
+            usePresets: kind === 'filler',
+            // the neighbouring backdrop clips never repeat their layout / plane
+            // motion / clip mode / transition (a clip re-roll has no run ctx)
+            avoid: kind === 'backdrop' && SA.direct && typeof SA.direct.avoidForClip === 'function' ? SA.direct.avoidForClip(projectDoc, target) : null,
+          });
           if (!result) return;
           if (result.spec) target.spec = result.spec;
           if (result.colors) target.colors = result.colors;

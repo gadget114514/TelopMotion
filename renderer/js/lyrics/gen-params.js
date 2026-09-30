@@ -98,7 +98,11 @@
     { key: 'fillEffectChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'beatDecoChance', kind: 'chance', tab: 'font', group: 'deco', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'maskChance', kind: 'chance', tab: 'font', group: 'mask', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
-    // text background: presence, placement weights and the small variants
+    // text background and ornaments: presence, placement weights and the
+    // small variants. `bgEnclose` picks the enclose placement; a square drawn
+    // there is the definition background (a per-letter cell square), while
+    // accent / underlay and every other shape are text ornaments. The keys
+    // stay as they are for saved profile compatibility.
     { key: 'textBgChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.08 + 0.22 * a.d + 0.5 * a.t) },
     { key: 'bgEnclose', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.55 },
     { key: 'bgAccent', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.25 },
@@ -236,7 +240,7 @@
 
   // The smallest type weight a style's instances carry: a look built around a
   // weighted-out type has to drop it.
-  const LOOK_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
+  const LOOK_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion', 'repeat'];
 
   function lookTypeWeight(styleMode, style) {
     if (!styleMode || !styleMode.typeWeights || !style || typeof style !== 'object') return 1;

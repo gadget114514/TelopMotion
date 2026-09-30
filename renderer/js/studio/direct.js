@@ -11,16 +11,21 @@
   // The look a "Generate" run owns: the theme groups and the beat groups the
   // automatic direction rewrites. A re-run replaces exactly these, so hand-made
   // edits outside the list survive.
-  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'repeat', 'clones', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'color', 'repeat', 'clones', 'text', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
   // what a cue takes from its own drawn look when the weird axis gives it one:
   // the motion and the text treatment. Layout, location, colours and the font
   // stay with the song so the lyrics keep their place and palette (a very weird
   // song lets the cue look move layout and location too).
-  const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
-  const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
+  const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg', 'orn'];
   // the tracks a run owns (only clips carrying `auto` are replaced)
   const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
+  // The auto direction keeps the figure track clear of the lyrics: a candidate
+  // may graze at most this share of the text box area. The measure ignores the
+  // spec's opacity (a dimmed shape still sits over the text), so a figure that
+  // cannot stay clear is dropped instead of dimmed over the subtitle.
+  const AUTO_FIGURE_CLEAR = 0.05;
 
   function pick(random, list) {
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
@@ -406,7 +411,7 @@
         if (pinned.bgEdgeChance != null) bgOptions.edgeChance = params.bgEdgeChance;
         const genreDef = genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(genre) : null;
         if (SA.moods.applyGenreBackground(bgStyle, genreDef, axes, bgRandom, colors, false, bgOptions)) {
-          for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion']) {
+          for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {
             if (bgStyle[group]) own()[group] = bgStyle[group];
           }
         }
@@ -1027,7 +1032,20 @@
       fitComposeSpans(text, range, px);
     }
     history.push(comp);
-    if (ctx.composeZones && !ctx.composeZones[cue.id]) ctx.composeZones[cue.id] = estimateComposeZone(comp, analysis, patch, ctx);
+    if (ctx.composeZones) {
+      // the union of every beat's text box: the figure layer stays clear of the
+      // whole cue, not just its first line
+      const zone = estimateComposeZone(comp, analysis, { ...patch, text: projectDoc.beatStyles[beat.id].text }, ctx);
+      const existing = ctx.composeZones[cue.id];
+      ctx.composeZones[cue.id] = existing
+        ? {
+            x0: Math.min(existing.x0, zone.x0),
+            y0: Math.min(existing.y0, zone.y0),
+            x1: Math.max(existing.x1, zone.x1),
+            y1: Math.max(existing.y1, zone.y1),
+          }
+        : zone;
+    }
   }
 
   // The per-beat variation of one composed picture. Every element has its own
@@ -1418,12 +1436,54 @@
     }));
   }
 
+  // The neighbouring-clip context the auto direction hands the next backdrop
+  // spec: the previous clip's plane layout / motion and its clip-level mode /
+  // transition. A stored or hand-made clip without a split / animate yields
+  // nulls, so nothing is banned.
+  function avoidFromClip(clip) {
+    const spec = clip && clip.spec;
+    if (!spec || typeof spec !== 'object') return null;
+    const list = spec.params && Array.isArray(spec.params.list) ? spec.params.list : [];
+    const plane = list.find((part) => part && part.type === 'split');
+    const animate = (spec.params && spec.params.animate) || null;
+    const avoid = {
+      layout: plane && plane.params ? plane.params.layout : null,
+      motion: plane && plane.params ? plane.params.motion : null,
+      mode: animate ? animate.mode : null,
+      transition: animate ? animate.transition : null,
+    };
+    if (!avoid.layout && !avoid.motion && !avoid.mode && !avoid.transition) return null;
+    return avoid;
+  }
+
+  // The same context for a single-clip re-roll: the previous clip on the track
+  // first, then the next one for the fields the previous lacks.
+  function avoidForClip(projectDoc, clip) {
+    if (!clip) return null;
+    const siblings = ((projectDoc && projectDoc.clips) || [])
+      .filter((entry) => entry && entry.trackId === clip.trackId && entry.id !== clip.id)
+      .sort((a, b) => (Number(a.start) || 0) - (Number(b.start) || 0));
+    const start = Number(clip.start) || 0;
+    const before = [...siblings].reverse().find((entry) => (Number(entry.start) || 0) <= start);
+    const after = siblings.find((entry) => (Number(entry.start) || 0) >= start);
+    const a = avoidFromClip(before);
+    const b = avoidFromClip(after);
+    if (!a) return b;
+    if (!b) return a;
+    return {
+      layout: a.layout || b.layout,
+      motion: a.motion || b.motion,
+      mode: a.mode || b.mode,
+      transition: a.transition || b.transition,
+    };
+  }
+
   // One backdrop (mid) clip per cue. Its `coverage` (how much of the frame the
   // painted planes take) is the backdrop channel of the weird axis; hand-made
   // clips on the track survive. With coverage >= 0.5 the clip spans to the next
   // cue (the first from 0, the last to the end of the song) so the backdrop
   // never blinks out in a filler gap.
-  function backdropClipFor(projectDoc, cue, index, ctx) {
+  function backdropClipFor(projectDoc, cue, index, ctx, avoid) {
     const { axes, seed, genre, wb: w, themeStyle } = ctx;
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
     let palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
@@ -1452,6 +1512,8 @@
       options.rawW = ctx.rawW;
       options.textColors = textColorsOf(sourceColors);
     }
+    // the neighbouring clip's layout / motion / mode / transition never repeat
+    if (w > 0 && avoid) options.avoid = avoid;
     const result = SA.moods.rerollClipSpec('backdrop', options);
     if (!result) return null;
     const full = w >= 0.5;
@@ -1475,14 +1537,17 @@
     // classic draw (w=0 unchanged)
     if (!(ctx.wb > 0 || ctx.axes.density > 0.45)) return;
     const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    let avoid = null;
     cues.forEach((cue, index) => {
       // run draws the specs before the readability pass (so the plane colours
       // are known); a direct call re-draws them here. The clip id is assigned
       // at push time: the pre-drawn clips all share the project state before
       // any of them lands in the timeline.
       const stored = ctx.backdropSpecs && ctx.backdropSpecs.get(cue.id);
-      const clip = stored || backdropClipFor(projectDoc, cue, index, ctx);
+      const clip = stored || backdropClipFor(projectDoc, cue, index, ctx, avoid);
       if (!clip) return;
+      const nextAvoid = avoidFromClip(clip);
+      if (nextAvoid) avoid = nextAvoid;
       clip.id = SA.project.nextClipId(projectDoc, 'clip_mid');
       if (ctx.wb >= 0.5) {
         clip.start = index === 0 ? 0 : Number(cue.start) || 0;
@@ -1626,34 +1691,33 @@
       stroke: boldStroke ? 'bold' : undefined,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
-    // the figure must not cover the lyrics: recolour / dim beyond the gate.
-    // A figure that had to be dimmed is regenerated with a motif that stays
-    // clear of the text box, so the track keeps moving at full opacity.
+    // the figure must stay clear of the lyrics: the auto direction measures the
+    // geometric overlap (a dimmed shape still sits over the text), swaps the
+    // motif for one that lives around the text box when needed, and draws no
+    // figure at all when nothing stays clear
     if (SA.legibility && SA.moods.legibilityActive(axes)) {
       const figureCtx = {
         frame: { width: ctx.frameW, height: ctx.frameH },
         palette,
         textColors: textColorsOf(palette),
         duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
-        // a composed cue hands the figure layer the first beat's text box so
-        // the generated figure keeps clear of the lyrics
+        // a composed cue hands the figure layer the union of its beats' text
+        // boxes, so the figure stays clear of every lyric line in the cue
         textBox: ctx.composeZones ? ctx.composeZones[cue.id] : undefined,
       };
-      spec = SA.legibility.repairFigureSpec(spec, figureCtx);
-      const dimmed = spec && spec.params && Number(spec.params.opacity) < 1;
-      if (dimmed) {
-        // the safe fallback shuffles the bold cuts together with the classic
-        // safe motifs and keeps the least-covering candidate, so a dimmed
-        // figure also moves away from the thin-line default
-        const safeMotifs = ['underlineSweep', 'bracketsPop', 'orbit', 'ribbon', 'rings', 'ticker', 'frame', 'bars'];
-        const pool = [...SA.figures.BOLD_MOTIFS, ...safeMotifs];
+      const overlapOf = (candidate) => SA.legibility.figureOverlap(candidate, { ...figureCtx, geometry: true });
+      if (overlapOf(spec) > AUTO_FIGURE_CLEAR) {
+        // motifs that frame the text box first, then the bold cuts, then the
+        // calmer centred ones
+        const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars'];
         const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
         const shuffled = pool
+          .filter((name, position) => pool.indexOf(name) === position && name !== spec.params.motif)
           .map((name) => ({ name, k: sr() }))
           .sort((a, b) => a.k - b.k)
           .map((entry) => entry.name);
         let best = null;
-        let bestOverlap = Infinity;
+        let bestOverlap = overlapOf(spec);
         for (let attempt = 0; attempt < shuffled.length; attempt += 1) {
           const candidate = SA.figures.generate({
             span: { start: cue.start, end: cue.end },
@@ -1668,14 +1732,15 @@
             stroke: boldStroke ? 'bold' : undefined,
             cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
           });
-          const overlap = SA.legibility.figureOverlap(candidate, figureCtx);
+          const overlap = overlapOf(candidate);
           if (overlap < bestOverlap) {
             bestOverlap = overlap;
             best = candidate;
           }
-          if (overlap <= SA.legibility.FIGURE_OVERLAP + 1e-9) break;
+          if (overlap <= AUTO_FIGURE_CLEAR) break;
         }
-        if (best) spec = best;
+        if (best && bestOverlap <= AUTO_FIGURE_CLEAR) spec = best;
+        else return null; // never lay a figure over the lyrics
       }
     }
     ctx.figurePrevMotif = spec && spec.params ? spec.params.motif : null;
@@ -1774,9 +1839,12 @@
     ctx.backdropSpecs = new Map();
     ctx.backdropPlanes = {};
     if (trackIdFor(projectDoc, 'backdrop') && (ctx.wb > 0 || ctx.axes.density > 0.45)) {
+      let avoid = null;
       projectDoc.script.cues.forEach((cue, index) => {
-        const clip = backdropClipFor(projectDoc, cue, index, ctx);
+        const clip = backdropClipFor(projectDoc, cue, index, ctx, avoid);
         if (!clip) return;
+        const nextAvoid = avoidFromClip(clip);
+        if (nextAvoid) avoid = nextAvoid;
         ctx.backdropSpecs.set(cue.id, clip);
         const list = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.list) ? clip.spec.params.list : null;
         const plane = list && list.find((part) => part && part.type === 'split');
@@ -2019,6 +2087,8 @@
     backgroundClip,
     backdropClipFor,
     backdropClips,
+    avoidFromClip,
+    avoidForClip,
     fillerSettings,
     fillerClips,
     figureClipFor,

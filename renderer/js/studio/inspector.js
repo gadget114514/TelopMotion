@@ -8,7 +8,7 @@ SA.inspector = (() => {
   const UI_PACKS = { packs: ['font', 'pro'] };
 
   const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold'];
-  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge'];
+  const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
   const GROUP_LABELS = {
     animation: 'studio.inspector.animation',
     layout: 'studio.inspector.layout',
@@ -25,6 +25,10 @@ SA.inspector = (() => {
     bgFill: 'studio.inspector.bgFill',
     bgEdge: 'studio.inspector.bgEdge',
     bgMotion: 'studio.inspector.bgMotion',
+    ornShape: 'studio.inspector.ornShape',
+    ornFill: 'studio.inspector.ornFill',
+    ornEdge: 'studio.inspector.ornEdge',
+    ornMotion: 'studio.inspector.ornMotion',
     repeat: 'studio.inspector.repeat',
   };
   const CONTROL_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
@@ -2152,7 +2156,8 @@ SA.inspector = (() => {
   }
 
   // The effect groups are grouped into readable sections: motion, foreground
-  // text, the per-letter text background and the overall look.
+  // text, the per-letter text background, the text ornaments and the overall
+  // look.
   function renderStyleSections(container) {
     const heading = (key) => {
       const node = document.createElement('div');
@@ -2166,13 +2171,46 @@ SA.inspector = (() => {
         else renderGroup(container, group);
       }
     };
+    // The shape section of one group: the empty state offers Add, the active
+    // state the full editor plus Remove.
+    const shapeSection = (group, options) => {
+      const opts = options || {};
+      const style = resolvedStyle();
+      const shape = style[group];
+      const active = !!(shape && shape.type && shape.type !== 'none');
+      if (!active) {
+        const body = section(container, group, t(GROUP_LABELS[group]));
+        const hint = document.createElement('div');
+        hint.className = 'insp-inherit';
+        hint.textContent = t(opts.emptyKey);
+        body.appendChild(hint);
+        const add = document.createElement('button');
+        add.type = 'button';
+        add.className = 'btn btn-mini';
+        add.textContent = `+ ${t(opts.addKey)}`;
+        add.addEventListener('click', () => writeProp(group, { type: opts.addType, params: SA.fx.paramDefaults(group, opts.addType), enabled: true }));
+        body.appendChild(add);
+      } else {
+        renderGroups([group, ...(opts.companions || [])]);
+        renderStackGroup(container, opts.edge);
+        const actions = document.createElement('div');
+        actions.className = 'insp-actions';
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'btn btn-mini';
+        remove.textContent = t(opts.removeKey);
+        remove.addEventListener('click', () => writeProp(group, { type: 'none', params: {} }));
+        actions.appendChild(remove);
+        container.appendChild(actions);
+      }
+    };
     heading('studio.inspector.sectionMotion');
     renderGroups(['animation', 'layout', 'enter', 'exit', 'hold', 'location']);
     heading('studio.inspector.sectionText');
     renderGroups(['fill', 'edge', 'repeat']);
     heading('studio.inspector.sectionBg');
-    // the subtitle track's background switch (data kept; the BG chip on the
-    // timeline header and this checkbox are the same flag)
+    // the subtitle track's background switch (data kept; the row's checkbox on
+    // the timeline and this checkbox are the same flag)
     const selection = selectionInfo();
     const selectedCue = selection.cueId && SA.store.state.project ? SA.store.state.project.script.cues.find((entry) => entry.id === selection.cueId) : null;
     const cueTrack = selectedCue && SA.store.state.project ? (SA.store.state.project.tracks || []).find((entry) => entry.id === (selectedCue.trackId || 'sub1')) : null;
@@ -2191,34 +2229,23 @@ SA.inspector = (() => {
       row.appendChild(text);
       container.appendChild(row);
     }
-    const style = resolvedStyle();
-    const shape = style.bgShape;
-    const bgActive = !!(shape && shape.type && shape.type !== 'none');
-    if (!bgActive) {
-      const body = section(container, 'bgShape', t(GROUP_LABELS.bgShape));
-      const hint = document.createElement('div');
-      hint.className = 'insp-inherit';
-      hint.textContent = t('studio.inspector.bgEmpty');
-      body.appendChild(hint);
-      const add = document.createElement('button');
-      add.type = 'button';
-      add.className = 'btn btn-mini';
-      add.textContent = `+ ${t('studio.inspector.bgAdd')}`;
-      add.addEventListener('click', () => writeProp('bgShape', { type: 'square', params: SA.fx.paramDefaults('bgShape', 'square'), enabled: true }));
-      body.appendChild(add);
-    } else {
-      renderGroups(['bgShape', 'bgFill', 'bgMotion']);
-      renderStackGroup(container, 'bgEdge');
-      const actions = document.createElement('div');
-      actions.className = 'insp-actions';
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = t('studio.inspector.bgRemove');
-      remove.addEventListener('click', () => writeProp('bgShape', { type: 'none', params: {} }));
-      actions.appendChild(remove);
-      container.appendChild(actions);
-    }
+    shapeSection('bgShape', {
+      addType: 'square',
+      companions: ['bgFill', 'bgMotion'],
+      edge: 'bgEdge',
+      emptyKey: 'studio.inspector.bgEmpty',
+      addKey: 'studio.inspector.bgAdd',
+      removeKey: 'studio.inspector.bgRemove',
+    });
+    heading('studio.inspector.sectionOrn');
+    shapeSection('ornShape', {
+      addType: 'bar',
+      companions: ['ornFill', 'ornMotion'],
+      edge: 'ornEdge',
+      emptyKey: 'studio.inspector.ornEmpty',
+      addKey: 'studio.inspector.ornAdd',
+      removeKey: 'studio.inspector.ornRemove',
+    });
     heading('studio.inspector.sectionOverall');
     renderGroups(['post']);
   }

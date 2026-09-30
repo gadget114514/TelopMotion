@@ -452,6 +452,7 @@ SA.glPasses = (() => {
       bloomUp: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.BLOOM_UP_FRAG),
       background: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.BACKGROUND_FRAG),
       copy: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COPY_FRAG),
+      mask: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.MASK_FRAG),
       composite: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COMPOSITE_FRAG),
       blurField: createProgramSafe(gl, SA.glShaders.BLUR_FIELD_VERT, SA.glShaders.BLUR_FIELD_FRAG, ['a_corner', 'a_letter', 'a_inkToCell', 'a_cell', 'a_em']),
       blur: createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.TEXT_VBLUR_FRAG),
@@ -503,6 +504,9 @@ SA.glPasses = (() => {
         info,
         textFramebuffer: framebuffer,
         layer: make(width, height),
+        // the baked text mask (glyph alpha + a padding ring) the clip layers
+        // are knocked out with; full resolution RGBA8
+        mask: make(width, height),
         scene: make(width, height),
         postA: make(width, height),
         postB: make(width, height),
@@ -520,7 +524,7 @@ SA.glPasses = (() => {
 
     function disposeTargets() {
       if (!targets) return;
-      for (const key of ['text', 'info', 'layer', 'scene', 'postA', 'postB', 'blurField', 'blurA', 'blurB']) {
+      for (const key of ['text', 'info', 'layer', 'mask', 'scene', 'postA', 'postB', 'blurField', 'blurA', 'blurB']) {
         if (targets[key]) SA.gl.deleteTarget(gl, targets[key]);
       }
       for (const target of targets.bloom || []) SA.gl.deleteTarget(gl, target);
@@ -643,6 +647,22 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, colorTexture);
     }
 
+    // Uploads the per-letter state and draws the mesh into the currently bound
+    // target. The caller owns the framebuffer, viewport, clear and blend state,
+    // so several scenes can stack into one target without clearing in between.
+    function drawTextMesh(batchSet, batch, states, colorOverride) {
+      uploadState(states, batchSet.mesh || batch, colorOverride);
+      gl.useProgram(programs.text.program);
+      gl.uniform1i(programs.text.uniforms.u_state, 0);
+      gl.uniform1i(programs.text.uniforms.u_color, 1);
+      gl.uniform2f(programs.text.uniforms.u_resolution, width, height);
+      gl.uniform1f(programs.text.uniforms.u_perspective, 1200);
+      gl.bindVertexArray(batch.vao);
+      gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
+      gl.bindVertexArray(null);
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
     function text(scene, states, variant, colorOverride) {
       if (!states.length) return;
       const batchSet = sceneBatches(gl, scene, variant);
@@ -654,16 +674,50 @@ SA.glPasses = (() => {
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-      uploadState(states, batch, colorOverride);
-      gl.useProgram(programs.text.program);
-      gl.uniform1i(programs.text.uniforms.u_state, 0);
-      gl.uniform1i(programs.text.uniforms.u_color, 1);
-      gl.uniform2f(programs.text.uniforms.u_resolution, width, height);
-      gl.uniform1f(programs.text.uniforms.u_perspective, 1200);
-      gl.bindVertexArray(batch.vao);
-      gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
-      gl.bindVertexArray(null);
+      drawTextMesh(batchSet, batch, states, colorOverride);
+    }
+
+    // Bakes every visible beat's glyphs into targets.mask: one clear, then the
+    // meshes stacked without clearing, then the sdf pass and MASK_FRAG. The
+    // glyph alpha alone is the mask when the environment has no float targets.
+    // `entries` is [{ scene, letters, variant, colorOverride }].
+    function buildTextMask(entries, options) {
+      if (!targets || !targets.mask || !entries || !entries.length) return false;
+      const opts = options || {};
+      gl.bindFramebuffer(gl.FRAMEBUFFER, targets.textFramebuffer);
+      gl.viewport(0, 0, width, height);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      let drawn = false;
+      for (const entry of entries) {
+        if (!entry || !entry.scene || !entry.letters || !entry.letters.length) continue;
+        const batchSet = sceneBatches(gl, entry.scene, entry.variant);
+        const batch = batchSet.mesh;
+        if (!batch || !batch.count) continue;
+        drawTextMesh(batchSet, batch, entry.letters, entry.colorOverride);
+        drawn = true;
+      }
+      if (!drawn) return false;
+      const maxDistance = Math.max(1, Math.max(width, height) * 0.1);
+      const sdfTarget = sdfPass.run(targets.text.texture, width, height, maxDistance);
+      gl.disable(gl.BLEND);
+      bind(targets.mask, null);
       gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, targets.text.texture);
+      gl.activeTexture(gl.TEXTURE1);
+      gl.bindTexture(gl.TEXTURE_2D, sdfTarget ? sdfTarget.texture : targets.text.texture);
+      gl.useProgram(programs.mask.program);
+      gl.uniform1i(programs.mask.uniforms.u_text, 0);
+      gl.uniform1i(programs.mask.uniforms.u_sdf, 1);
+      gl.uniform1f(programs.mask.uniforms.u_strength, clamp01(opts.strength == null ? 1 : opts.strength));
+      gl.uniform1f(programs.mask.uniforms.u_radius, Math.max(0, Number(opts.radius) || 0) / maxDistance);
+      gl.uniform1f(programs.mask.uniforms.u_feather, Math.max(0, Number(opts.feather) || 0) / maxDistance);
+      gl.uniform1f(programs.mask.uniforms.u_sdfAmount, sdfTarget ? 1 : 0);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      gl.activeTexture(gl.TEXTURE0);
+      return true;
     }
 
     function representation(scene, states, modeName, variant, strokeColor) {
@@ -866,13 +920,13 @@ SA.glPasses = (() => {
     }
 
     // Punches the current text mask out of the layer (knockout backgrounds).
-    function knockout() {
-      if (!targets.text) return;
+    function knockoutTexture(texture) {
+      if (!texture) return;
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ZERO, gl.ONE_MINUS_SRC_ALPHA);
       bind(targets.layer, null);
       gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, targets.text.texture);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
       gl.useProgram(programs.copy.program);
       gl.uniform1i(programs.copy.uniforms.u_texture, 0);
       gl.uniform1f(programs.copy.uniforms.u_opacity, 1);
@@ -881,6 +935,18 @@ SA.glPasses = (() => {
       if (programs.copy.uniforms.u_angle) gl.uniform1f(programs.copy.uniforms.u_angle, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
+    }
+
+    function knockout() {
+      if (!targets.text) return;
+      knockoutTexture(targets.text.texture);
+    }
+
+    // Punches the baked text mask (glyphs + padding ring) out of the current
+    // layer: the figure / accent layers float behind the subtitle glyphs.
+    function maskLayer() {
+      if (!targets.mask) return;
+      knockoutTexture(targets.mask.texture);
     }
 
     function fill(uniforms) {
@@ -1075,8 +1141,10 @@ SA.glPasses = (() => {
       beginLayer,
       text,
       textBackground,
+      buildTextMask,
       letterBlur,
       knockout,
+      maskLayer,
       representation,
       sdf,
       fill,

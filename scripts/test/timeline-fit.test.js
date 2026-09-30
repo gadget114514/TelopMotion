@@ -171,7 +171,7 @@ test('dragging and double-clicking on the filler track create clips', () => {
   const index = store.state.project.tracks.indexOf(filler);
   let logicalY = 24;
   store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 48 : 22; // subtitle cues + graphics row
+    if (i < index) logicalY += track.kind === 'subtitle' ? 70 : 22; // subtitle cues + background + graphics rows
   });
   logicalY += 11;
   const clientY = logicalY - 24;
@@ -206,7 +206,7 @@ test('the remove button on a track header deletes that track and its clips', () 
   const index = store.state.project.tracks.indexOf(fig);
   let logicalY = 24;
   store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 48 : 22; // subtitle cues + graphics row
+    if (i < index) logicalY += track.kind === 'subtitle' ? 70 : 22; // subtitle cues + background + graphics rows
   });
   logicalY += 11;
   const clientY = logicalY - 24;
@@ -231,7 +231,7 @@ test('the last subtitle track keeps its remove button hidden', () => {
   const canvas = document.getElementById('timeline-canvas');
   const down = canvas.listeners.pointerdown[0];
   // second row = the only subtitle track: its remove button is not drawn, so
-  // the click (at the x where the button would sit, left of the BG chip)
+  // the click (at the x where the button would sit, left of the checkbox)
   // selects the track instead of deleting it
   down({ button: 0, pointerId: 1, clientX: 38, clientY: 33, currentTarget: canvas, preventDefault() {} });
   assert.equal(store.state.project.tracks.some((track) => track.kind === 'subtitle'), true, 'the track stays');
@@ -247,9 +247,9 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   const down = canvas.listeners.pointerdown[0];
   const up = canvas.listeners.pointerup[0];
   const bg = () => store.state.project.tracks.find((track) => track.kind === 'background');
-  // rows: ruler 24, fg 22, sub1 26, sub1 graphics 22, fig 22, mid 22, filler 22,
-  // bg layer 22, then the background clip lane
-  const bgLayerCenter = 24 + 22 + 26 + 22 + 22 + 22 + 22 + 11;
+  // rows: ruler 24, fg 22, sub1 26, sub1 background 22, sub1 graphics 22, fig 22,
+  // mid 22, filler 22, bg layer 22, then the background clip lane
+  const bgLayerCenter = 24 + 22 + 26 + 22 + 22 + 22 + 22 + 22 + 11;
   const clipLaneCenter = bgLayerCenter + 22;
   const click = (x, y) => {
     const event = { button: 0, pointerId: 1, clientX: x, clientY: y - 24, currentTarget: canvas, preventDefault() {} };
@@ -277,10 +277,10 @@ test('dragging on a figure track creates a clip', () => {
   const up = canvas.listeners.pointerup[0];
   const fig = store.state.project.tracks.find((track) => track.id === id);
   const index = store.state.project.tracks.indexOf(fig);
-  // rows: ruler 24, foreground 22, sub1 26, mid 22, filler 22, bg 22, figure 22
+  // rows: ruler 24, foreground 22, sub1 26, sub1 background 22, sub1 graphics 22, mid 22, filler 22, bg 22, figure 22
   let logicalY = 24;
   store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 48 : 22; // subtitle cues + graphics row
+    if (i < index) logicalY += track.kind === 'subtitle' ? 70 : 22; // subtitle cues + background + graphics rows
   });
   logicalY += 11;
   const clientY = logicalY - 24; // the canvas starts under the fixed ruler
