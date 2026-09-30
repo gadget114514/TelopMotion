@@ -30,6 +30,7 @@ const SA = {
   color: requirePart('renderer/js/color.js'),
   moods: requirePart('renderer/js/lyrics/moods.js'),
   weird: requirePart('renderer/js/lyrics/weird.js'),
+  genParams: requirePart('renderer/js/lyrics/gen-params.js'),
   fxAxes: requirePart('renderer/js/lyrics/fx-axes.js'),
   textflow: requirePart('renderer/js/lyrics/textflow.js'),
   project: requirePart('renderer/js/studio/project.js'),

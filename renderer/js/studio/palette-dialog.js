@@ -367,97 +367,118 @@ SA.paletteDialog = (() => {
     return node;
   }
 
-  function buildEditor() {
+  // A reusable palette editor for a plain `{ colors }` draft: role rows with
+  // swatches, hex inputs, re-roll, add / remove and the contrast readout. Every
+  // mutation calls `onChange(palette)` and the component rebuilds itself, so
+  // the palette dialog and the theme editor can both host it.
+  function editorNode(palette, onChange) {
     const wrap = document.createElement('div');
     wrap.className = 'palette-editor';
-    active.draft.colors.forEach((hex, index) => {
-      const row = document.createElement('div');
-      row.className = 'palette-edit-row';
-      const label = document.createElement('span');
-      label.className = 'palette-role';
-      label.textContent = roleLabel(index);
-      row.appendChild(label);
-      const swatch = button('', () => {
-        SA.colors.openPicker({
-          value: hex,
-          anchor: swatch,
-          onChange(value) {
-            setColor(index, typeof value === 'string' ? value : value && value.value);
-          },
+    const notify = () => {
+      if (typeof onChange === 'function') onChange(palette);
+    };
+    const setColor = (index, value) => {
+      if (typeof value !== 'string' || !HEX.test(value)) return;
+      palette.colors[index] = value;
+      notify();
+      rebuild();
+    };
+    const rebuild = () => {
+      wrap.innerHTML = '';
+      palette.colors.forEach((hex, index) => {
+        const row = document.createElement('div');
+        row.className = 'palette-edit-row';
+        const label = document.createElement('span');
+        label.className = 'palette-role';
+        label.textContent = roleLabel(index);
+        row.appendChild(label);
+        const swatch = button('', () => {
+          SA.colors.openPicker({
+            value: hex,
+            anchor: swatch,
+            onChange(value) {
+              setColor(index, typeof value === 'string' ? value : value && value.value);
+            },
+          });
+        }, 'color-swatch');
+        swatch.style.background = hex;
+        swatch.title = hex;
+        row.appendChild(swatch);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ctrl-hex';
+        input.value = hex;
+        input.addEventListener('change', () => {
+          if (!HEX.test(input.value)) {
+            input.value = palette.colors[index];
+            return;
+          }
+          setColor(index, input.value);
         });
-      }, 'color-swatch');
-      swatch.style.background = hex;
-      swatch.title = hex;
-      row.appendChild(swatch);
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.className = 'ctrl-hex';
-      input.value = hex;
-      input.addEventListener('change', () => {
-        if (!HEX.test(input.value)) {
-          input.value = active.draft.colors[index];
-          return;
+        row.appendChild(input);
+        const reroll = button('↻', () => setColor(index, jitterOne(hex, index)));
+        reroll.classList.add('btn', 'btn-mini');
+        reroll.title = t('palette.rerollColor');
+        row.appendChild(reroll);
+        if (index >= 5) {
+          const remove = button('✕', () => {
+            palette.colors.splice(index, 1);
+            notify();
+            rebuild();
+          });
+          remove.classList.add('btn', 'btn-mini');
+          remove.title = t('palette.removeColor');
+          row.appendChild(remove);
         }
-        setColor(index, input.value);
+        wrap.appendChild(row);
       });
-      row.appendChild(input);
-      const reroll = button('↻', () => setColor(index, jitterOne(hex, index)));
-      reroll.classList.add('btn', 'btn-mini');
-      reroll.title = t('palette.rerollColor');
-      row.appendChild(reroll);
-      if (index >= 5) {
-        const remove = button('✕', () => {
-          active.draft.colors.splice(index, 1);
-          preview();
-          render();
-        });
-        remove.classList.add('btn', 'btn-mini');
-        remove.title = t('palette.removeColor');
-        row.appendChild(remove);
+      const addRow = document.createElement('div');
+      addRow.className = 'palette-edit-row palette-edit-add';
+      addRow.appendChild(
+        button(t('palette.addColor'), () => {
+          if (palette.colors.length >= MAX_COLORS) return;
+          const last = palette.colors[palette.colors.length - 1] || '#ffffff';
+          palette.colors.push(jitterOne(last, palette.colors.length));
+          notify();
+          rebuild();
+        })
+      );
+      wrap.appendChild(addRow);
+      const nameRow = document.createElement('div');
+      nameRow.className = 'field';
+      const nameLabel = document.createElement('span');
+      nameLabel.textContent = t('palette.name');
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.value = palette.name || '';
+      nameInput.addEventListener('change', () => {
+        palette.name = nameInput.value;
+        notify();
+      });
+      nameRow.appendChild(nameLabel);
+      nameRow.appendChild(nameInput);
+      wrap.appendChild(nameRow);
+      // text against background readability, the same 4.5 floor as the generator
+      const colors = palette.colors;
+      let ratio = null;
+      if (colors[0] && colors[2] && HEX.test(colors[0]) && HEX.test(colors[2])) {
+        ratio = SA.color.contrastRatio(SA.color.parse(colors[2]), SA.color.parse(colors[0]));
       }
-      wrap.appendChild(row);
-    });
-    const addRow = document.createElement('div');
-    addRow.className = 'palette-edit-row palette-edit-add';
-    addRow.appendChild(
-      button(t('palette.addColor'), () => {
-        if (active.draft.colors.length >= MAX_COLORS) return;
-        const last = active.draft.colors[active.draft.colors.length - 1] || '#ffffff';
-        active.draft.colors.push(jitterOne(last, active.draft.colors.length));
-        preview();
-        render();
-      })
-    );
-    wrap.appendChild(addRow);
-    const nameRow = document.createElement('div');
-    nameRow.className = 'field';
-    const nameLabel = document.createElement('span');
-    nameLabel.textContent = t('palette.name');
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.value = active.draft.name || '';
-    nameInput.addEventListener('change', () => {
-      active.draft.name = nameInput.value;
-      preview();
-    });
-    nameRow.appendChild(nameLabel);
-    nameRow.appendChild(nameInput);
-    wrap.appendChild(nameRow);
-    // text against background readability, the same 4.5 floor as the generator
-    const colors = active.draft.colors;
-    let ratio = null;
-    if (colors[0] && colors[2] && HEX.test(colors[0]) && HEX.test(colors[2])) {
-      ratio = SA.color.contrastRatio(SA.color.parse(colors[2]), SA.color.parse(colors[0]));
-    }
-    const contrast = document.createElement('div');
-    contrast.className = 'palette-contrast';
-    if (ratio == null) contrast.textContent = t('palette.none');
-    else {
-      contrast.textContent = `${t('palette.contrast', { ratio: ratio.toFixed(2) })}${ratio < 4.5 ? ` ⚠ ${t('palette.contrastWarn')}` : ''}`;
-      contrast.classList.toggle('warn', ratio < 4.5);
-    }
-    wrap.appendChild(contrast);
+      const contrast = document.createElement('div');
+      contrast.className = 'palette-contrast';
+      if (ratio == null) contrast.textContent = t('palette.none');
+      else {
+        contrast.textContent = `${t('palette.contrast', { ratio: ratio.toFixed(2) })}${ratio < 4.5 ? ` ⚠ ${t('palette.contrastWarn')}` : ''}`;
+        contrast.classList.toggle('warn', ratio < 4.5);
+      }
+      wrap.appendChild(contrast);
+    };
+    rebuild();
     return wrap;
+  }
+
+  function buildEditor() {
+    return editorNode(active.draft, () => preview());
   }
 
   function buildSide(doc) {
@@ -674,5 +695,5 @@ SA.paletteDialog = (() => {
     active.unsubscribe = SA.store.subscribe(null, () => refresh());
   }
 
-  return { open, close };
+  return { open, close, editorNode };
 })();

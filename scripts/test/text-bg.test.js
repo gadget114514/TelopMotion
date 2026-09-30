@@ -227,3 +227,32 @@ test('generated text backgrounds stay inside the caps', () => {
   }
   assert.ok(checked > 20, `only ${checked} backgrounds drawn`);
 });
+
+test('the pinned profile options override the genre tables', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const axes = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0.6 };
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const genre = { bg: { chance: 0, placement: { enclose: 1 } } };
+  const style = {};
+  const applied = moods.applyGenreBackground(style, genre, axes, rng.rngFor(7, 'bg'), palette, false, {
+    chance: 1,
+    placement: { bgAccent: 1 },
+    varyChance: 1,
+    edgeChance: 1,
+  });
+  assert.equal(applied, true);
+  assert.equal(style.bgShape.params.unit, 'em');
+  assert.equal(style.bgShape.params.layer, 'front');
+  assert.notEqual(style.bgShape.params.vary, 'none');
+  assert.ok(Array.isArray(style.bgEdge) && style.bgEdge.length > 0);
+  // a pinned zero blocks the draw even when the genre wants one
+  assert.equal(moods.applyGenreBackground({}, { bg: { chance: 1 } }, axes, rng.rngFor(7, 'bg2'), palette, false, { chance: 0 }), false);
+  // without options the genre's own zero still keeps the classic behaviour
+  assert.equal(moods.applyGenreBackground({}, genre, axes, rng.rngFor(7, 'bg3'), palette, false), false);
+  // a lone pinned placement weight always lands on that placement
+  const placed = {};
+  assert.equal(moods.applyGenreBackground(placed, null, axes, rng.rngFor(7, 'bg4'), palette, false, { chance: 1, placement: { bgUnderlay: 1 } }), true);
+  assert.equal(placed.bgShape.params.layer, 'behind');
+  assert.equal(placed.bgShape.params.unit, 'em');
+});

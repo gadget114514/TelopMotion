@@ -76,6 +76,23 @@
     return raw(a.weird);
   }
 
+  // The size ladder's level weights: a Gaussian curve over the ten levels, the
+  // centre 0..1 (0 = the legible floor, 1 = the screen-filling end) and the
+  // spread in level units. Every level keeps at least a 0.02 share and the
+  // result sums to 1, so the ladder's weighted pick always has a candidate.
+  function sizeWeights(n, center, spread) {
+    const count = Math.max(2, Math.min(64, Math.round(Number(n) || 10)));
+    const c = clamp01(center == null ? 0.5 : center);
+    const sp = Math.max(0.01, Number(spread) || 0.28);
+    const out = [];
+    for (let k = 0; k < count; k += 1) {
+      const u = k / (count - 1);
+      out.push(Math.max(0.02, Math.exp(-((u - c) ** 2) / (2 * sp * sp))));
+    }
+    const total = out.reduce((sum, value) => sum + value, 0);
+    return out.map((value) => value / total);
+  }
+
   return {
     TEXT_SCALE,
     BG_REVEAL,
@@ -89,5 +106,6 @@
     sizeChange,
     basePaletteChance,
     colorChange,
+    sizeWeights,
   };
 });

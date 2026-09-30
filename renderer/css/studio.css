@@ -2008,3 +2008,153 @@ body {
 .ctrl-bool-row.is-disabled {
   opacity: 0.5;
 }
+
+/* --- theme profile editor (axes -> parameters -> generator) --------------- */
+
+.theme-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+
+.theme-tab.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.param-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1.1fr) minmax(70px, 1.8fr) 44px 42px 48px 24px;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+}
+
+.param-row .param-label {
+  font-size: 12px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.param-row input[type='range'] {
+  width: 100%;
+}
+
+.param-value {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.param-percent {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.param-chip {
+  font-size: 10px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 0 4px;
+  text-align: center;
+}
+
+.param-chip.is-pinned {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.param-reset {
+  padding: 0 4px;
+  min-width: 0;
+}
+
+.size-curve {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 46px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.size-curve i {
+  flex: 1 1 0;
+  display: block;
+  min-height: 2px;
+  background: var(--accent);
+  border-radius: 2px 2px 0 0;
+  transition: height 0.12s ease;
+}
+
+.use-palette-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.use-palette-card {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 6px;
+}
+
+.use-palette-strip {
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.use-palette-strip i {
+  display: block;
+  width: 12px;
+  height: 12px;
+}
+
+.use-palette-name {
+  font-size: 11px;
+  color: var(--text);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chance-bar {
+  grid-column: 2;
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.chance-bar i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.fx-type-row {
+  grid-template-columns: minmax(110px, 1.4fr) minmax(70px, 1fr) 40px 40px 48px 24px;
+}
+
+.scheme-row {
+  align-items: center;
+  gap: 6px;
+}

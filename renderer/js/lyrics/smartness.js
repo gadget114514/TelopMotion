@@ -104,6 +104,8 @@
       // fear / variety pack
       spikes: 0.2, scratches: 0.25, cracks: 0.3, comets: 0.3, drips: 0.35, waves: 0.5,
       eyes: 0.5, lattice: 0.55,
+      // the bold rhythm set
+      slabWipe: 0.65, cornerBlocks: 0.6, ringDraw: 0.7, stripeRun: 0.62, dotGrid: 0.68, sideBars: 0.6,
     },
     figureIn: { pop: 0.35, scatterIn: 0.4, wipe: 0.8, draw: 0.85 },
     figureHold: { pulse: 0.15, spin: 0.35, morph: 0.5, drift: 0.75 },

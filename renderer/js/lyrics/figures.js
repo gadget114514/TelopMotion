@@ -19,6 +19,11 @@
     // fear / variety pack
     'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets',
   ];
+  // the bold rhythm set: thick shapes placed away from the text box, drawn with
+  // the snappy easing and a longer in window. `generate` draws from it when the
+  // profile's figureBoldChance roll succeeds.
+  const BOLD_MOTIFS = ['slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars'];
+  MOTIFS.push(...BOLD_MOTIFS);
   const INS = ['pop', 'draw', 'wipe', 'scatterIn'];
   const HOLDS = ['spin', 'pulse', 'drift', 'morph'];
   const OUTS = ['shrink', 'fade', 'burstOut'];
@@ -64,6 +69,13 @@
 
   function easeIn(t) {
     return Math.pow(clamp01(t), 3);
+  }
+
+  // The bold motifs' own easing: an expo out plus an 8% overshoot, so a slab
+  // or bar arrives with a snap instead of drifting in.
+  function snap(t) {
+    const p = clamp01(t);
+    return 1 - Math.pow(2, -10 * p) + 0.08 * Math.sin(Math.PI * p);
   }
 
   function pick(random, list) {
@@ -193,15 +205,17 @@
     };
   }
 
-  // Sub-beat at `time` with its local progress and the move windows.
-  function beatAt(beats, time) {
+  // Sub-beat at `time` with its local progress and the move windows. The bold
+  // motifs open with a longer in window (0.45 s cap) so the snap reads.
+  function beatAt(beats, time, motif) {
     if (!Array.isArray(beats) || !beats.length) return null;
+    const bold = BOLD_MOTIFS.includes(motif);
     for (let i = 0; i < beats.length; i += 1) {
       const beat = beats[i];
       if (time >= beat.start && time < beat.end) {
         const duration = Math.max(0.001, beat.end - beat.start);
         const local = time - beat.start;
-        const window = Math.min(0.3, duration * 0.25);
+        const window = Math.min(bold ? 0.45 : 0.3, duration * (bold ? 0.35 : 0.25));
         const inProgress = window > 0 ? clamp01(local / window) : 1;
         const outProgress = window > 0 ? clamp01((beat.end - time) / window) : 1;
         return { beat, index: i, local, duration, inProgress, outProgress };
@@ -258,7 +272,8 @@
   // post-processing happens in motifShapes, so a morph can blend two calls.
   function buildMotif(motif, params, ctx, info, state) {
     const { beat, inProgress, outProgress } = info;
-    const enter = easeOut(inProgress);
+    const bold = BOLD_MOTIFS.includes(motif);
+    const enter = bold ? snap(inProgress) : easeOut(inProgress);
     const leave = 1 - easeIn(1 - outProgress);
     const progress = Math.min(enter, leave);
     const { box, opacity } = state;
@@ -496,6 +511,134 @@
         const tail = box.short * 0.09 * (0.4 + 0.6 * progress);
         shapes.push({ kind: 'capsule', x0: x, y0: lane, x1: x - dir * tail, y1: lane, width: r * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
         shapes.push({ kind: 'circle', x, y: lane, r, color: colorOf(params, ctx, i + 1), opacity });
+      }
+    } else if (motif === 'slabWipe') {
+      // one thick band crossing above or below the text box and stopping there
+      const tb = textBox(ctx, box);
+      const h = box.short * (0.10 + 0.06 * density);
+      const top = variant % 2 === 0;
+      const y = top
+        ? Math.max(box.short * 0.03, tb.y0 - tb.h * (0.25 + 0.3 * density) - h)
+        : Math.min(box.height - box.short * 0.03 - h, tb.y1 + tb.h * (0.25 + 0.3 * density));
+      const width = box.width * (0.35 + 0.25 * density);
+      const from = variant % 2 ? box.width + width * 0.2 : -width * 1.1;
+      const stop = box.width * (variant % 2 ? 0.45 : 0.15);
+      const x = from + (stop - from) * enter;
+      shapes.push({ kind: 'rect', x, y, w: width, h, radius: 3, color: colorOf(params, ctx, 0), opacity });
+      if (variant > 0) {
+        shapes.push({
+          kind: 'rect',
+          x: x + width * 0.18,
+          y: top ? y + h + box.short * 0.012 : y - box.short * 0.012 - h * 0.4,
+          w: width * 0.5,
+          h: h * 0.4,
+          radius: 2,
+          color: colorOf(params, ctx, 1),
+          opacity: opacity * 0.75,
+        });
+      }
+    } else if (motif === 'cornerBlocks') {
+      // two big triangles on one diagonal, sliding in from their corners
+      const size = box.short * (0.28 + 0.14 * density) * (0.4 + 0.6 * progress);
+      const first = variant % 2 === 0;
+      const corners = first
+        ? [{ x: 0, y: 0, sx: 1, sy: 1 }, { x: box.width, y: box.height, sx: -1, sy: -1 }]
+        : [{ x: box.width, y: 0, sx: -1, sy: 1 }, { x: 0, y: box.height, sx: 1, sy: -1 }];
+      const push = (1 - enter) * box.short * 0.5;
+      corners.forEach((corner, i) => {
+        const { x, y, sx, sy } = corner;
+        const points = [
+          { x: x + sx * push, y: y + sy * push },
+          { x: x + sx * (size + push), y: y + sy * push },
+          { x: x + sx * push, y: y + sy * (size + push) },
+        ];
+        shapes.push({ kind: 'convex', points, color: colorOf(params, ctx, i), opacity: opacity * (i ? 0.85 : 1) });
+      });
+    } else if (motif === 'ringDraw') {
+      // a large ring near a corner; the radius draws out with the in
+      const spots = [
+        [box.width * 0.16, box.short * 0.22],
+        [box.width * 0.84, box.height - box.short * 0.22],
+        [box.width * 0.84, box.short * 0.22],
+        [box.width * 0.16, box.height - box.short * 0.22],
+      ];
+      const spot = spots[variant % spots.length];
+      const max = box.short * (0.16 + 0.12 * density) * scale;
+      const r = Math.max(2, max * enter);
+      shapes.push({ kind: 'ring', x: spot[0], y: spot[1], r, thickness: box.short * 0.02 * tuning.stroke, color: colorOf(params, ctx, 0), opacity });
+      if (variant % 2) shapes.push({ kind: 'circle', x: spot[0], y: spot[1], r: Math.max(1, r * 0.22), color: colorOf(params, ctx, 1), opacity: opacity * 0.9 });
+    } else if (motif === 'stripeRun') {
+      // parallel diagonal capsules running in from one side in the band above
+      // or below the text box
+      const tb = textBox(ctx, box);
+      const countStripes = countOf(Math.max(4, Math.round(5 + density * 3)));
+      const below = variant % 2 === 0;
+      const slope = Math.tan((12 * Math.PI) / 180);
+      const room = Math.max(box.short * 0.1, (below ? box.height - tb.y1 : tb.y0) - box.short * 0.04);
+      const length = Math.max(box.width * 0.3, Math.min(box.width * 0.75, (room * 0.7) / Math.max(0.1, slope)));
+      const step = Math.max(box.short * 0.012, (room - slope * length) / Math.max(1, countStripes - 1));
+      const extent = slope * length;
+      const top = below
+        ? Math.min(box.height - box.short * 0.02 - (extent + step * (countStripes - 1)), tb.y1 + box.short * 0.02)
+        : Math.max(box.short * 0.02, tb.y0 - box.short * 0.02 - (extent + step * (countStripes - 1)));
+      const run = (1 - enter) * box.width * 0.9;
+      for (let i = 0; i < countStripes; i += 1) {
+        const lane = top + i * step;
+        const x0 = -box.width * 0.5 + run;
+        const x1 = x0 + length;
+        shapes.push({
+          kind: 'capsule',
+          x0,
+          y0: lane,
+          x1,
+          y1: lane + extent,
+          width: box.short * 0.014 * tuning.stroke,
+          color: colorOf(params, ctx, i),
+          opacity: opacity * 0.9,
+        });
+      }
+    } else if (motif === 'dotGrid') {
+      // a 4x4 dot grid in one corner, scaling in along the diagonal
+      const step = box.short * 0.055;
+      const right = variant % 2 === 1;
+      const bottom = variant % 4 >= 2;
+      const ox = box.width * (right ? 0.82 - step * 3 : 0.06);
+      const oy = box.short * (bottom ? 0.86 - step * 3 : 0.08);
+      for (let row = 0; row < 4; row += 1) {
+        for (let col = 0; col < 4; col += 1) {
+          const order = (row + col) / 6;
+          const local = clamp01((enter - order) / Math.max(0.15, 1 - order));
+          const r = box.short * 0.016 * (0.4 + 0.6 * local) * scale;
+          shapes.push({
+            kind: 'circle',
+            x: ox + col * step,
+            y: oy + row * step,
+            r: Math.max(0.5, r),
+            color: colorOf(params, ctx, row + col),
+            opacity: opacity * local,
+          });
+        }
+      }
+    } else if (motif === 'sideBars') {
+      // three vertical bars per edge, stretching with the beat
+      const countBars = countOf(3);
+      const pulse = 0.6 + 0.4 * Math.abs(Math.sin(info.local * Math.PI * 2));
+      for (let side = 0; side < 2; side += 1) {
+        const x = box.width * (side === 0 ? 0.04 : 0.96);
+        for (let i = 0; i < countBars; i += 1) {
+          const fall = countBars <= 1 ? 0.5 : i / (countBars - 1);
+          const h = box.height * 0.16 * pulse * (0.7 + 0.3 * fall) * scale;
+          shapes.push({
+            kind: 'rect',
+            x: x - box.short * 0.006,
+            y: box.cy - h / 2 + (i - (countBars - 1) / 2) * box.short * 0.12,
+            w: box.short * 0.012 * tuning.stroke,
+            h,
+            radius: 3,
+            color: colorOf(params, ctx, i),
+            opacity: opacity * 0.85,
+          });
+        }
       }
     }
 
@@ -910,7 +1053,7 @@
       // effect without regenerating: override on a shallow copy, never in place
       beats = beats.map((beat) => ({ ...beat, move: { ...(beat.move || {}), ...force } }));
     }
-    const info = beatAt(beats, time);
+    const info = beatAt(beats, time, params.motif);
     if (!info) return { shapes: [], texts: [] };
     const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
     const place = placementOf(params, ctx || {});
@@ -918,5 +1061,5 @@
     return result;
   }
 
-  return { MOTIFS, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

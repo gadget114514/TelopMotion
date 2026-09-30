@@ -20,6 +20,7 @@ globalThis.SA = globalThis.SA || {};
 globalThis.SA.project = projectModule;
 globalThis.SA.moods = require('../../renderer/js/lyrics/moods.js');
 globalThis.SA.weird = require('../../renderer/js/lyrics/weird.js');
+globalThis.SA.genParams = require('../../renderer/js/lyrics/gen-params.js');
 globalThis.SA.paletteRoles = require('../../renderer/js/lyrics/palette-roles.js');
 globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');

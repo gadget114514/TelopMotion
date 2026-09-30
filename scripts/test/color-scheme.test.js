@@ -22,6 +22,7 @@ const SA = {
   rng: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
   weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
+  genParams: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gen-params.js')),
   legibility: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js')),
   paletteRoles: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js')),
   stagePalette: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'stage-palette.js')),
@@ -186,7 +187,7 @@ test('resolveStyle without a scheme or auto palette is the plain merge', () => {
 // --- cue palette lottery ----------------------------------------------------
 
 function themeCtx(axes, seed) {
-  return { axes, seed, genre: null, themeStyle: { palette: { id: 't', name: 't', colors: SWAP_BG } } };
+  return { axes, seed, genre: null, params: SA.genParams.resolve({ axes }), themeStyle: { palette: { id: 't', name: 't', colors: SWAP_BG } } };
 }
 
 test('cuePalette draws no random at weird 0 and a visible palette above it', () => {
@@ -260,6 +261,21 @@ test('createColorLadder moves away from the previous scheme and never flickers',
   const flicker = SA.direct.createColorLadder({ change: 1, random: () => 0 });
   const kept = flicker.choose({ start: 0.2, duration: 0.2, candidates: drawn, prev: { id: 'TMBD', start: 0 } });
   assert.equal(kept, 'TMBD');
+});
+
+test('createColorLadder toggles the invert on its own stream', () => {
+  const invertId = roles.SCHEME_INVERT;
+  const candidates = roles.schemes(SWAP_BG, 0.7);
+  assert.ok(candidates.some((entry) => entry.id === invertId), 'the fixture palette lacks TMBD');
+  const ladder = SA.direct.createColorLadder({ change: 1, random: () => 0, invert: 1, invertRandom: () => 0 });
+  assert.equal(ladder.choose({ start: 0, duration: 1, candidates, prev: null }), null);
+  assert.equal(ladder.choose({ start: 1, duration: 1, candidates, prev: { id: null, start: 0 } }), invertId);
+  assert.equal(ladder.choose({ start: 2, duration: 1, candidates, prev: { id: invertId, start: 1 } }), null);
+  // without TMBD in the pool the toggle is skipped and the normal draw decides
+  const pool = candidates.filter((entry) => entry.id !== invertId);
+  const noInvert = SA.direct.createColorLadder({ change: 1, random: () => 0.9, invert: 1, invertRandom: () => 0 });
+  const pick = noInvert.choose({ start: 1, duration: 1, candidates: pool, prev: { id: null, start: 0 } });
+  assert.notEqual(pick, invertId);
 });
 
 // --- run() ------------------------------------------------------------------
@@ -446,4 +462,16 @@ test('a background clip lands on the first two roles of the live palette', () =>
   assert.ok(result);
   assert.equal(result.colors[0], stage.to[0]);
   assert.equal(result.colors[1], stage.to[1]);
+});
+
+test('a calm scheme range keeps only the readable role swaps', () => {
+  for (const palette of [SWAP_BG, SWAP_MID]) {
+    const calm = roles.schemes(palette, 0.7, 0.2);
+    assert.ok(calm.length <= 3, `calm candidates ${calm.length}`);
+    for (const entry of calm) assert.ok(['TMBD', 'MBTD', 'TBMD'].includes(entry.id), `unexpected ${entry.id}`);
+  }
+  // the whole 23-permutation set is unchanged when the range is omitted or 1
+  const full = roles.schemes(SWAP_BG, 0.7);
+  assert.deepEqual(roles.schemes(SWAP_BG, 0.7, 1).map((entry) => entry.id), full.map((entry) => entry.id));
+  assert.deepEqual(roles.schemes(SWAP_BG, 0.7, undefined).map((entry) => entry.id), full.map((entry) => entry.id));
 });

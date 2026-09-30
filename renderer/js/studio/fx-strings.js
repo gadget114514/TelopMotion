@@ -104,6 +104,7 @@
       sineWave: 'Sine wave', progress: 'Progress', circles: 'Circles', polygons: 'Polygons', lines: 'Lines', burst: 'Burst', orbit: 'Orbit',
       dots: 'Dots', stripes: 'Stripes', rings: 'Rings', triangles: 'Triangles', diamonds: 'Diamonds', hexes: 'Hexagons', rain: 'Rain',
       checks: 'Checker', polka: 'Polka dots', sineCurve: 'Sine curves', waves: 'Waves', randomFill: 'Random fill',
+      slabWipe: 'Slab wipe', cornerBlocks: 'Corner blocks', ringDraw: 'Ring draw', stripeRun: 'Stripe run', dotGrid: 'Dot grid', sideBars: 'Side bars',
       fixed: 'Fixed size', fitScreen: 'Fit to screen', page: 'Per page', cue: 'Whole cue',
     },
   };
@@ -205,6 +206,7 @@
       spectrum: 'スペクトラム', sineWave: 'サイン波', progress: '進捗', circles: '円', polygons: '多角形', lines: '線', burst: 'バースト', orbit: '軌道',
       dots: 'ドット', stripes: 'ストライプ', rings: 'リング', triangles: '三角形', diamonds: 'ひし形', hexes: '六角形', rain: '雨',
       checks: 'チェッカー', polka: '水玉', sineCurve: 'サインカーブ', waves: 'ウェーブ', randomFill: 'ランダムフィル',
+      slabWipe: 'スラブワイプ', cornerBlocks: 'コーナーブロック', ringDraw: 'リングドロー', stripeRun: 'ストライプラン', dotGrid: 'ドットグリッド', sideBars: 'サイドバー',
       fixed: '固定サイズ', fitScreen: '画面に合わせる', page: 'ページごと', cue: 'キュー全体で統一',
     },
   };
@@ -314,6 +316,7 @@
       waveform: 'Forma de onda', spectrum: 'Espectro', sineWave: 'Onda senoidal', progress: 'Progreso', circles: 'Círculos',
       polygons: 'Polígonos', lines: 'Líneas', burst: 'Estallido', orbit: 'Órbita', dots: 'Puntos', stripes: 'Rayas', rings: 'Anillos', triangles: 'Triángulos', diamonds: 'Rombos', hexes: 'Hexágonos', rain: 'Lluvia',
       checks: 'Damero', polka: 'Topos', sineCurve: 'Curvas sinusoidales', waves: 'Ondas', randomFill: 'Relleno aleatorio',
+      slabWipe: 'Barrido de losa', cornerBlocks: 'Bloques de esquina', ringDraw: 'Anillo trazado', stripeRun: 'Carrera de franjas', dotGrid: 'Rejilla de puntos', sideBars: 'Barras laterales',
       fixed: 'Tamaño fijo', fitScreen: 'Ajustar a pantalla', page: 'Por página', cue: 'Todo el cue',
     },
   };
@@ -423,6 +426,7 @@
       sineWave: 'Onde sinusoïdale', progress: 'Progression', circles: 'Cercles', polygons: 'Polygones', lines: 'Lignes', burst: 'Éclat', orbit: 'Orbite',
       dots: 'Points', stripes: 'Rayures', rings: 'Anneaux', triangles: 'Triangles', diamonds: 'Losanges', hexes: 'Hexagones', rain: 'Pluie',
       checks: 'Damier', polka: 'Pois', sineCurve: 'Courbes sinusoïdales', waves: 'Vagues', randomFill: 'Remplissage aléatoire',
+      slabWipe: 'Balayage de dalle', cornerBlocks: 'Blocs d’angle', ringDraw: 'Anneau tracé', stripeRun: 'Course de rayures', dotGrid: 'Grille de points', sideBars: 'Barres latérales',
       fixed: 'Taille fixe', fitScreen: 'Ajuster à l\'écran', page: 'Par page', cue: 'Tout le cue',
     },
   };
@@ -531,6 +535,7 @@
       waveform: 'Волновая форма', spectrum: 'Спектр', sineWave: 'Синусоида', progress: 'Прогресс', circles: 'Круги',
       polygons: 'Многоугольники', lines: 'Линии', burst: 'Вспышка', orbit: 'Орбита', dots: 'Точки', stripes: 'Полосы', rings: 'Кольца', triangles: 'Треугольники', diamonds: 'Ромбы', hexes: 'Шестиугольники', rain: 'Дождь',
       checks: 'Шахматный', polka: 'Горошек', sineCurve: 'Синусоиды', waves: 'Волны', randomFill: 'Случайная заливка',
+      slabWipe: 'Полоса-взмах', cornerBlocks: 'Угловые блоки', ringDraw: 'Рисуемое кольцо', stripeRun: 'Бег полос', dotGrid: 'Сетка точек', sideBars: 'Боковые полосы',
       fixed: 'Фиксированный', fitScreen: 'По экрану', page: 'По страницам', cue: 'Весь cue',
     },
   };

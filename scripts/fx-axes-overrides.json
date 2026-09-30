@@ -323,6 +323,13 @@
     "figureMotif.waves": 0.4,
     "figureMotif.comets": 0.5,
 
+    "figureMotif.slabWipe": 0.2,
+    "figureMotif.cornerBlocks": 0.2,
+    "figureMotif.ringDraw": 0.2,
+    "figureMotif.stripeRun": 0.2,
+    "figureMotif.dotGrid": 0.2,
+    "figureMotif.sideBars": 0.2,
+
     "figureIn.pop": 0.05,
     "figureIn.draw": 0.15,
     "figureIn.wipe": 0.2,

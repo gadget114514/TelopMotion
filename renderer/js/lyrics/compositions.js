@@ -374,6 +374,13 @@
       else if (prevScale === 'small' && comp.scaleClass === 'large') weight *= 1.6;
       if (comp.scaleClass === 'large') weight *= 0.6 + energy;
       else if (comp.scaleClass === 'small') weight *= 1.4 - energy;
+      // the size centre bias (theme profile): a large centre prefers the big
+      // templates, a small one the quiet corners
+      if (options.sizeCenter != null && Number.isFinite(Number(options.sizeCenter))) {
+        const center = clamp01(options.sizeCenter);
+        if (comp.scaleClass === 'small') weight *= Math.max(0.25, Math.min(1, 1.5 - 1.6 * center));
+        else if (comp.scaleClass === 'large') weight *= 0.6 + 0.8 * center;
+      }
       return weight;
     });
 
@@ -438,9 +445,12 @@
     const random = rng.rngFor(options.seed, options.beatId, 'compose-build');
     const w = clamp01(options.w == null ? 0 : options.w);
     const screen = Number(options.screen) > 0 ? Number(options.screen) : 1080;
-    const size = Math.max(8, Math.round(comp.size * (1 + 0.3 * w) * screen));
+    // the profile's hero multiplier replaces the old (1 + 0.3w); the derived
+    // value is the same factor, so a profile-less run keeps its output
+    const sizeScale = options.heroScale == null || !Number.isFinite(Number(options.heroScale)) ? 1 + 0.3 * w : Number(options.heroScale);
+    const size = Math.max(8, Math.round(comp.size * sizeScale * screen));
     const hierarchy = comp.hierarchy || {};
-    const heroScale = (hierarchy.hero == null ? 2 : hierarchy.hero) * (1 + 0.3 * w);
+    const heroScale = (hierarchy.hero == null ? 2 : hierarchy.hero) * sizeScale;
     const particleScale = hierarchy.particle == null ? 0.55 : hierarchy.particle;
     const heroWeight = hierarchy.heroWeight == null ? 700 : hierarchy.heroWeight;
     const accentHero = hierarchy.accentHero !== false;

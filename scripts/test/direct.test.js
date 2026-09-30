@@ -22,6 +22,7 @@ const SA = {
   color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
   weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
+  genParams: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gen-params.js')),
   legibility: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js')),
   paletteRoles: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js')),
   fxAxes: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fx-axes.js')),
@@ -33,6 +34,8 @@ const SA = {
   fillerRender: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js')),
   fillerPresets: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-presets.js')),
   compositions: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'compositions.js')),
+  genres: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'genres.js')),
+  random: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'random.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -334,9 +337,37 @@ test('smartness 0.9 drops the tacky grammar from the automatic direction', () =>
   }
 });
 
+// Every compose-only chance pinned off: the baseline compose run keeps its
+// template picture, so the older assertions still hold.
+const NO_VARIATION = {
+  fontChance: 0,
+  beatFontChance: 0,
+  beatBoldChance: 0,
+  spacingChance: 0,
+  alignChance: 0,
+  widthChance: 0,
+  accentColorChance: 0,
+  gradientColorChance: 0,
+  fillEffectChance: 0,
+  beatDecoChance: 0,
+  maskChance: 0,
+  textBgChance: 0,
+  bgVaryChance: 0,
+  bgEdgeChance: 0,
+  tiltChance: 0,
+  locationChance: 0,
+  floatChance: 0,
+  repeatChance: 0,
+  clonesChance: 0,
+  holdChance: 0,
+  pulseChance: 0,
+  motionChance: 0,
+  paletteInvertChance: 0,
+};
+
 test('compose mode draws a composition per beat and drops the weird jitter', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
-  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true });
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true, params: NO_VARIATION });
   assert.equal(ctx.compose, true);
   SA.direct.run(doc, ctx);
   assert.equal(doc.styleMode.compose, true, 'the mode is saved for re-rolls');
@@ -363,7 +394,14 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
     // the ladder size belongs to this beat's own range: map it back to a level
     const text = style.text;
     const spans = (text.compose && text.compose.spans) || [];
-    const range = SA.direct.sizeRangeFor(beat, text, { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' }, Math.max(1, ...spans.map((span) => Number(span.scale) || 1)));
+    const scales = spans.map((span) => Number(span.scale) || 1);
+    const range = SA.direct.sizeRangeFor(
+      beat,
+      text,
+      { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' },
+      scales.length ? Math.max(1, ...scales) : 1,
+      scales.length ? Math.min(...scales) : 1
+    );
     const size = style.text.size * (beat.fontScale || 1);
     let level = 0;
     for (let k = 0; k < 10; k += 1) {
@@ -383,7 +421,7 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
     assert.notEqual(levels[i], levels[i - 1], `beat ${i} repeats level ${levels[i]}`);
   }
   // the whole run is deterministic for one seed in compose mode too
-  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true });
+  const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true, params: NO_VARIATION });
   for (const { beat } of beats) {
     assert.deepEqual(again.beatStyles[beat.id].text.compose, doc.beatStyles[beat.id].text.compose);
     assert.equal(again.beatStyles[beat.id].text.size, doc.beatStyles[beat.id].text.size);
@@ -398,4 +436,268 @@ test('a compose run keeps the w=0 fixture untouched when compose is off', () => 
     assert.ok(!(style.text && style.text.compose), `${beatId} stays plain`);
   }
   assert.equal(doc.styleMode.compose, undefined);
+});
+
+// ---------------------------------------------------------------------------
+// the profile run (weird 0.6)
+
+const PROFILE_SEEDS = [4242, 777, 31337];
+
+function profileRun(seed, axes, extra) {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6, ...(axes || {}) }, seed, compose: true, ...(extra || {}) });
+  SA.direct.run(doc, ctx);
+  return { doc, ctx };
+}
+
+test('the profile backdrop paints few planes that hold their distance from the text', () => {
+  for (const seed of PROFILE_SEEDS) {
+    const { doc, ctx } = profileRun(seed, {});
+    const mid = doc.clips.filter((clip) => clip.trackId === 'mid');
+    assert.ok(mid.length >= 2, `mid clips ${mid.length}`);
+    const floor = SA.weird.backdropContrast(0.6);
+    for (const cue of doc.script.cues) {
+      const planes = ctx.backdropPlanes[cue.id] || [];
+      assert.ok(planes.length >= 1 && planes.length <= 3, `planes ${planes.length} at ${cue.id}`);
+      const cueStyle = SA.project.resolveStyle(doc, `cue:${cue.id}`);
+      const colors = (cueStyle.palette && cueStyle.palette.colors) || [];
+      const text = SA.paletteRoles.get(colors, SA.paletteRoles.SLOT.TEXT_FILL);
+      if (!text) continue;
+      for (const plane of planes) {
+        const ratio = SA.color.contrastRatio(SA.color.parse(text), SA.color.parse(plane));
+        assert.ok(ratio >= floor - 1e-6, `seed ${seed} ${cue.id} plane ${plane} ratio ${ratio}`);
+      }
+      // the plane colours never come from the text / accent roles themselves
+      for (const plane of planes) assert.ok(plane !== colors[2] && plane !== colors[3], 'a text role leaked into the planes');
+    }
+  }
+});
+
+test('the profile run stays legible on every beat and carries an edge on most cues', () => {
+  for (const seed of PROFILE_SEEDS) {
+    const { doc } = profileRun(seed, {});
+    let edged = 0;
+    for (const cue of doc.script.cues) {
+      const cueStyle = SA.project.resolveStyle(doc, `cue:${cue.id}`);
+      if (Array.isArray(cueStyle.edge) && cueStyle.edge.length) edged += 1;
+      const colors = (cueStyle.palette && cueStyle.palette.colors) || [];
+      for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+        const resolved = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+        const report = SA.legibility.check(resolved, { palette: colors, motion: false });
+        assert.ok(report.ok, `seed ${seed} ${beat.id}: ${JSON.stringify(report.reasons)}`);
+      }
+    }
+    assert.ok(edged >= Math.ceil(doc.script.cues.length * 0.6), `seed ${seed} edged ${edged}/${doc.script.cues.length}`);
+  }
+});
+
+test('the profile figures move with at least three motifs and avoid the smear posts', () => {
+  for (const seed of PROFILE_SEEDS) {
+    const { doc } = profileRun(seed, {});
+    const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
+    const motifs = new Set(
+      doc.clips.filter((clip) => clip.trackId === figureTrack.id).map((clip) => clip.spec && clip.spec.params && clip.spec.params.motif)
+    );
+    assert.ok(motifs.size >= 3, `seed ${seed} motifs ${[...motifs].join(',')}`);
+  }
+  // a theme carrying a smear post: the gate removes it while postBlurChance is low
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.post = (theme.post || []).concat([{ type: 'godRays', params: {}, enabled: true }]);
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, seed: 4242, themeStyle: theme, compose: true });
+  SA.direct.run(doc, ctx);
+  for (const cue of doc.script.cues) {
+    for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+      const resolved = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+      for (const instance of resolved.post || []) {
+        assert.ok(!SA.legibility.SMEAR_POSTS.has(instance.type), `${instance.type} survived the gate`);
+      }
+    }
+  }
+  // at weird 1 postBlurChance allows it: the theme keeps its smear
+  const keepTheme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  keepTheme.post = [{ type: 'godRays', params: {}, enabled: true }];
+  const keepDoc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const keepCtx = prepare(keepDoc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed: 4242, themeStyle: keepTheme, compose: true });
+  assert.ok(keepCtx.themeStyle.post.some((instance) => instance.type === 'godRays'), 'postBlurChance 1 keeps the smear');
+});
+
+test('the profile use-palettes are the only source of the cue palettes', () => {
+  const paletteA = { id: 'pa', name: 'A', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  const paletteB = { id: 'pb', name: 'B', colors: ['#1d0b0b', '#331111', '#ffe0d0', '#ff5a5a', '#180404', '#ffb37a'] };
+  const { doc } = profileRun(4242, {}, { usePalettes: [paletteA, paletteB] });
+  const texts = new Set();
+  for (const cue of doc.script.cues) {
+    const own = doc.cueStyles[cue.id];
+    if (own && own.palette && own.palette.colors) texts.add(own.palette.colors[2]);
+  }
+  assert.ok(texts.size >= 1 && texts.size <= 2, `distinct cue text colours ${texts.size}`);
+  for (const text of texts) assert.ok([paletteA.colors[2], paletteB.colors[2]].includes(text), `unexpected text ${text}`);
+});
+
+test('a pinned decoOutline gives every cue an outline and a zeroed type never appears', () => {
+  const params = { decoNone: 0, decoOutline: 1, decoShadow: 0, decoExtrude: 0, decoLongShadow: 0, decoDouble: 0, decoGlow: 0 };
+  const { doc } = profileRun(4242, {}, { params });
+  for (const cue of doc.script.cues) {
+    const cueStyle = SA.project.resolveStyle(doc, `cue:${cue.id}`);
+    assert.ok(Array.isArray(cueStyle.edge) && cueStyle.edge.some((entry) => entry && entry.type === 'outline'), `${cue.id} has no outline`);
+  }
+  const { doc: glitch } = profileRun(4242, {}, { typeWeights: { enter: { glitchIn: 0 } } });
+  for (const cue of glitch.script.cues) {
+    const cueStyle = SA.project.resolveStyle(glitch, `cue:${cue.id}`);
+    assert.notEqual(cueStyle.enter && cueStyle.enter.type, 'glitchIn', `${cue.id} drew glitchIn`);
+    for (const beat of (glitch.beats && glitch.beats[cue.id]) || []) {
+      const resolved = SA.project.resolveStyle(glitch, `cue:${cue.id}/beat:${beat.id}`);
+      assert.notEqual(resolved.enter && resolved.enter.type, 'glitchIn', `${beat.id} drew glitchIn`);
+    }
+  }
+});
+
+// ---------------------------------------------------------------------------
+// the compose profile expansion
+
+// Every compose-only chance on at once: each element must appear.
+const ALL_CHANCES = {
+  fontChance: 1,
+  beatFontChance: 1,
+  beatBoldChance: 1,
+  spacingChance: 1,
+  alignChance: 1,
+  widthChance: 1,
+  accentColorChance: 1,
+  gradientColorChance: 1,
+  fillEffectChance: 1,
+  beatDecoChance: 1,
+  maskChance: 1,
+  textBgChance: 1,
+  bgVaryChance: 1,
+  bgEdgeChance: 1,
+  tiltChance: 1,
+  locationChance: 1,
+  floatChance: 1,
+  repeatChance: 1,
+  clonesChance: 1,
+  holdChance: 1,
+  pulseChance: 1,
+  motionChance: 1,
+  paletteInvertChance: 1,
+  figureBoldChance: 1,
+};
+
+function composedDoc(params, extra) {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, compose: true, params, ...(extra || {}) });
+  SA.direct.run(doc, ctx);
+  return doc;
+}
+
+function stylesOf(doc) {
+  const out = [];
+  for (const cue of doc.script.cues) for (const beat of (doc.beats && doc.beats[cue.id]) || []) out.push({ cue, beat, style: doc.beatStyles[beat.id] || {} });
+  return out;
+}
+
+test('the compose chances off leave the template picture untouched', () => {
+  const doc = composedDoc({ ...NO_VARIATION });
+  const beats = stylesOf(doc);
+  for (const cue of doc.script.cues) {
+    const own = doc.cueStyles[cue.id] || {};
+    assert.ok(!own.clones, `${cue.id} clones`);
+    assert.ok(!own.repeat, `${cue.id} repeat`);
+    assert.ok(!own.bgShape, `${cue.id} text background`);
+    assert.ok(!own.text || !own.text.fontId, `${cue.id} font`);
+  }
+  for (const { beat, style } of beats) {
+    assert.ok(!style.edge, `${beat.id} edge`);
+    assert.ok(!Array.isArray(style.hold) || !style.hold.length, `${beat.id} hold`);
+    assert.ok(!style.transform || (!style.transform.rotate && !style.transform.tiltX), `${beat.id} transform`);
+    assert.ok(!style.location || style.location.type === 'grid', `${beat.id} location`);
+    assert.ok(!style.enter || !style.enter.params || !style.enter.params.wipe || style.enter.params.wipe === 'none', `${beat.id} mask`);
+    assert.ok(!style.repeat, `${beat.id} repeat`);
+  }
+});
+
+test('the compose chances on draw every optional element', () => {
+  const doc = composedDoc({ ...NO_VARIATION, ...ALL_CHANCES });
+  const base = composedDoc({ ...NO_VARIATION });
+  const beats = stylesOf(doc);
+  const baseBeats = new Map(stylesOf(base).map((entry) => [entry.beat.id, entry.style]));
+  const cues = doc.script.cues;
+  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).text && (doc.cueStyles[cue.id] || {}).text.fontId), 'a cue face');
+  assert.ok(beats.some(({ style }) => style.text && style.text.weight === 700), 'a bold beat');
+  assert.ok(beats.some(({ beat, style }) => style.text && baseBeats.get(beat.id) && style.text.letterSpacing !== baseBeats.get(beat.id).text.letterSpacing), 'tracking');
+  assert.ok(beats.some(({ beat, style }) => style.text && baseBeats.get(beat.id) && style.text.lineHeight !== baseBeats.get(beat.id).text.lineHeight), 'leading');
+  assert.ok(beats.some(({ style }) => style.text && style.text.align !== 'center'), 'alignment');
+  assert.ok(beats.some(({ beat, style }) => style.text && baseBeats.get(beat.id) && style.text.maxWidth !== baseBeats.get(beat.id).text.maxWidth), 'line width');
+  assert.ok(beats.some(({ style }) => style.color && style.color.fill), 'beat colour');
+  assert.ok(beats.some(({ style }) => style.enter && style.enter.params && style.enter.params.wipe && style.enter.params.wipe !== 'none'), 'entrance mask');
+  assert.ok(beats.some(({ style }) => style.transform && (style.transform.rotate || style.transform.tiltX)), 'tilt');
+  assert.ok(beats.some(({ style }) => Array.isArray(style.hold) && style.hold.length), 'hold');
+  assert.ok(beats.some(({ beat, style }) => style.exit && baseBeats.get(beat.id) && JSON.stringify(style.exit) !== JSON.stringify(baseBeats.get(beat.id).exit)), 'entrance/exit motion');
+  assert.ok(beats.some(({ style }) => style.location && (style.location.type === 'randomSafe' || style.location.params.offsetX || style.location.params.offsetY)), 'location nudge');
+  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).repeat), 'a cue repeat');
+  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).clones), 'a cue clone');
+  assert.ok(cues.some((cue) => (doc.cueStyles[cue.id] || {}).bgShape), 'a text background');
+  assert.ok(beats.some(({ style }) => Array.isArray(style.edge) && style.edge.length), 'beat decoration');
+  const figureTrack = doc.tracks.find((track) => track.kind === 'figure');
+  assert.ok(
+    doc.clips.filter((clip) => clip.trackId === figureTrack.id).some((clip) => clip.spec.params.stroke === 'bold'),
+    'a bold-stroke figure'
+  );
+  // the invert toggles TMBD somewhere (the readability sweep may drop it from a
+  // beat, so the check is that the scheme set moved)
+  const schemes = (document) => {
+    const out = [];
+    for (const cue of document.script.cues) for (const beat of (document.beats && document.beats[cue.id]) || []) out.push((document.beatStyles[beat.id] || {}).colorScheme || null);
+    return out.join(',');
+  };
+  assert.notEqual(schemes(doc), schemes(base), 'the colour schemes moved');
+});
+
+test('the fill effect draw only applies to a theme without its own fill', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  delete theme.fill;
+  const doc = composedDoc({ ...NO_VARIATION, fillEffectChance: 1 }, { themeStyle: theme });
+  const beats = stylesOf(doc);
+  assert.ok(beats.some(({ style }) => style.fill && style.fill.type), `no beat drew a fill effect (${beats.map(({ beat, style }) => `${beat.id}:${!!style.fill}`).join(' ')})`);
+});
+
+// The chances only the compose path reads: pinning them must not move the
+// classic output.
+const COMPOSE_ONLY_CHANCES = {
+  beatBoldChance: 1,
+  spacingChance: 1,
+  alignChance: 1,
+  widthChance: 1,
+  fillEffectChance: 1,
+  maskChance: 1,
+  beatDecoChance: 1,
+  textBgChance: 1,
+  bgVaryChance: 1,
+  bgEdgeChance: 1,
+  paletteInvertChance: 1,
+  boldChance: 1,
+};
+
+test('the classic path ignores the compose-only chances', () => {
+  const plain = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 } });
+  const pinned = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, params: { ...COMPOSE_ONLY_CHANCES } });
+  // the pinned map itself is stored (styleMode.params); everything else must be
+  // byte-identical because the classic path never reads the new chances
+  const withoutProfile = (doc) => {
+    const out = outputOf(doc);
+    delete out.styleMode;
+    return out;
+  };
+  assert.deepEqual(withoutProfile(pinned), withoutProfile(plain));
+});
+
+test('a pinned text background chance overrides the genre setting', () => {
+  const genre = SA.genres.LIST[0].id;
+  // pinned chance 1 applies even when the genre's own table says less
+  const on = composedDoc({ ...NO_VARIATION, textBgChance: 1 }, { genre });
+  assert.ok(on.script.cues.some((cue) => (on.cueStyles[cue.id] || {}).bgShape), 'pinned 1 did not apply');
+  // pinned chance 0 blocks it everywhere
+  const off = composedDoc({ ...NO_VARIATION, textBgChance: 0 }, { genre });
+  assert.ok(off.script.cues.every((cue) => !(off.cueStyles[cue.id] || {}).bgShape), 'pinned 0 did not block');
 });

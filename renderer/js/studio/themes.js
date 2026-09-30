@@ -103,7 +103,7 @@ SA.themes = (() => {
     return theme;
   }
 
-  function save(name, style, axes, genre) {
+  function save(name, style, axes, genre, profile) {
     const entry = {
       id: newId(),
       name: String(name || t('studio.themes.untitled')),
@@ -111,6 +111,7 @@ SA.themes = (() => {
       axes: axes || null,
       genre: genre || null,
       style: style || capture(),
+      profile: profile || null,
       updatedAt: new Date().toISOString(),
     };
     const userList = userThemes();
@@ -135,7 +136,7 @@ SA.themes = (() => {
   function duplicate(themeId) {
     const theme = get(themeId);
     if (!theme) return null;
-    return save(t('studio.themes.copyName', { name: theme.name }), SA.store.clone(theme.style), theme.axes || null, theme.genre || null);
+    return save(t('studio.themes.copyName', { name: theme.name }), SA.store.clone(theme.style), theme.axes || null, theme.genre || null, SA.store.clone(theme.profile || null));
   }
 
   async function exportFile() {
@@ -165,6 +166,7 @@ SA.themes = (() => {
         axes: entry.axes || null,
         genre: entry.genre || null,
         style: entry.style,
+        profile: entry.profile || null,
       });
       count += 1;
     }

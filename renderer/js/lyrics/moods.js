@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'), require('./palette-roles'), require('./textflow'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'), require('./palette-roles'), require('./textflow'), require('./gen-params'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility, root.SA.paletteRoles, root.SA.textflow);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility, root.SA.paletteRoles, root.SA.textflow, root.SA.genParams);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod, paletteRoles, textflowMod) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod, paletteRoles, textflowMod, genParamsMod) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -496,6 +496,14 @@
     return genres.affinity(genre, group, type);
   }
 
+  // The profile's type weights: missing = 1, 0 removes the type from the draw.
+  function typeWeightOf(options, group, type) {
+    const table = options && options.typeWeights && options.typeWeights[group];
+    const value = table && type != null ? table[type] : null;
+    if (value == null || !Number.isFinite(Number(value))) return 1;
+    return Math.max(0, Number(value));
+  }
+
   function pickEntry(random, group, axes, context, direction, exclude, genre, options) {
     const pool = poolFor(group, axes);
     const w = textWeirdOf(axes);
@@ -525,10 +533,13 @@
         }
         const fear = fearWeightOf(group, type, axes);
         if (!(fear > 0)) continue;
+        // the profile's type weights multiply the draw; a 0 never appears
+        const tw = typeWeightOf(options, group, type);
+        if (!(tw > 0)) continue;
         const fit = scoreEntry(traits, axes, group, type);
         // a sharp exponent keeps the mood's character instead of near-uniform picks
         const affinity = useGenre ? Math.max(0.05, genreAffinity(genre, group, type)) : 1;
-        scored.push({ type, weight: Math.pow(fit, 4) * affinity * fear * (0.7 + random() * 0.6) });
+        scored.push({ type, weight: Math.pow(fit, 4) * affinity * fear * tw * (0.7 + random() * 0.6) });
       }
       return scored;
     };
@@ -1078,42 +1089,52 @@
     return color.toHex({ ...color.hsvToRgb(next), a: 1 });
   }
 
-  function repairContrast(colors, min) {
+  function repairContrast(colors, min, options) {
     if (!Array.isArray(colors) || colors.length < 3) return colors;
     const target = min == null ? 4.5 : min;
-    const bg = color.parse(colors[0] || '#000000');
-    colors[2] = color.ensureContrast(colors[2], colors[0] || '#000000', target);
-    let ratio = color.contrastRatio(color.parse(colors[2]), bg);
-    if (ratio < target) {
-      // ensureContrast only moves the value; a fully saturated colour (a weird
-      // palette can produce one) may already sit at v = 1 and miss the target,
-      // so it is desaturated towards white or black as a last resort. The target
-      // itself climbs with the weird axis (4.5 -> 7), so the floor climbs too.
-      const hsv = color.rgbToHsv(color.parse(colors[2]));
-      const white = { h: hsv.h, s: 0, v: 1, a: 1 };
-      const black = { h: hsv.h, s: hsv.s, v: 0, a: 1 };
-      const end = color.contrastRatio(color.hsvToRgb(white), bg) >= color.contrastRatio(color.hsvToRgb(black), bg) ? white : black;
-      let best = colors[2];
-      for (let step = 1; step <= 20; step += 1) {
-        const t = step / 20;
-        const candidate = color.hsvToRgb({ h: hsv.h, s: hsv.s + (end.s - hsv.s) * t, v: hsv.v + (end.v - hsv.v) * t, a: 1 });
-        const next = color.contrastRatio(candidate, bg);
-        if (next > ratio) {
-          ratio = next;
-          best = color.toHex(candidate);
+    // `keepText` (a weird profile) tries the background first: the drawn text
+    // colour survives and only a background that cannot clear the floor moves
+    // the text itself. The default order is the classic one.
+    const keepText = !!(options && options.keepText);
+    let ratio = 0;
+
+    const shrinkText = () => {
+      colors[2] = color.ensureContrast(colors[2], colors[0] || '#000000', target);
+      const bg = color.parse(colors[0] || '#000000');
+      ratio = color.contrastRatio(color.parse(colors[2]), bg);
+      if (ratio < target) {
+        // ensureContrast only moves the value; a fully saturated colour (a weird
+        // palette can produce one) may already sit at v = 1 and miss the target,
+        // so it is desaturated towards white or black as a last resort. The target
+        // itself climbs with the weird axis (4.5 -> 7), so the floor climbs too.
+        const hsv = color.rgbToHsv(color.parse(colors[2]));
+        const white = { h: hsv.h, s: 0, v: 1, a: 1 };
+        const black = { h: hsv.h, s: hsv.s, v: 0, a: 1 };
+        const end = color.contrastRatio(color.hsvToRgb(white), bg) >= color.contrastRatio(color.hsvToRgb(black), bg) ? white : black;
+        let best = colors[2];
+        for (let step = 1; step <= 20; step += 1) {
+          const t = step / 20;
+          const candidate = color.hsvToRgb({ h: hsv.h, s: hsv.s + (end.s - hsv.s) * t, v: hsv.v + (end.v - hsv.v) * t, a: 1 });
+          const next = color.contrastRatio(candidate, bg);
+          if (next > ratio) {
+            ratio = next;
+            best = color.toHex(candidate);
+          }
+          if (next >= target) break;
         }
-        if (next >= target) break;
+        colors[2] = best;
       }
-      colors[2] = best;
-    }
-    if (ratio < target) {
+    };
+
+    const moveBackground = () => {
+      if (!(ratio < target)) return;
       // Even a pure white / black text cannot clear the target on a background
       // in the mid value range. Move the background away from the text (its
       // hue survives; a very light or very dark background also loses
-      // saturation) until the target clears. weird 0 never enters this branch:
-      // the classic 4.5 target is always reachable.
+      // saturation) until the target clears. weird 0 never enters this branch
+      // in the classic order: the 4.5 target is always reachable.
       const textHsv = color.rgbToHsv(color.parse(colors[2]));
-      const bgHsv = color.rgbToHsv(bg);
+      const bgHsv = color.rgbToHsv(color.parse(colors[0] || '#000000'));
       const direction = textHsv.v >= 0.5 ? -1 : 1; // light text darkens the bg, dark text lightens it
       let best = colors[0];
       let bestRatio = ratio;
@@ -1134,11 +1155,24 @@
       }
       const resolved = color.rgbToHsv(color.parse(best));
       colors[0] = best;
+      ratio = bestRatio;
       if (colors[1]) {
         // the secondary background keeps its offset from the first
         const second = color.rgbToHsv(color.parse(colors[1]));
         colors[1] = color.toHex({ ...color.hsvToRgb({ h: second.h, s: second.s, v: clamp01(second.v + (resolved.v - bgHsv.v)), a: 1 }), a: 1 });
       }
+    };
+
+    if (keepText) {
+      ratio = color.contrastRatio(color.parse(colors[2]), color.parse(colors[0] || '#000000'));
+      moveBackground();
+      if (ratio < target) {
+        shrinkText();
+        if (ratio < target) moveBackground();
+      }
+    } else {
+      shrinkText();
+      moveBackground();
     }
     return colors;
   }
@@ -1161,7 +1195,7 @@
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
       for (const i of [3, 5, 6]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
-    repairContrast(colors, weirdMod.paletteContrast(weirdOf(axes)));
+    repairContrast(colors, weirdMod.paletteContrast(weirdOf(axes)), { keepText: w > 0 });
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
   }
 
@@ -1460,6 +1494,177 @@
     return { scheme, colors };
   }
 
+  // --- the profile's backdrop planes -------------------------------------------
+  // The automatic direction builds the mid layer from the background slot
+  // alone (never the text / accent slots): the second plane steps the
+  // lightness of the first, the third takes the scheme hue, the fourth its
+  // companion. Every plane passes the backdrop contrast floor against the
+  // cue's text colours, so the lyrics keep their separation.
+  const PLANE_LAYOUTS = {
+    1: ['halves'],
+    2: ['halves', 'diagonal', 'frame'],
+    3: ['thirds', 'bands', 'chevron'],
+    4: ['quads', 'mondrian'],
+  };
+  const PLANE_EXTRAS = ['shards', 'radial'];
+
+  function planeWeightOf(planes, count) {
+    if (!planes) return 0;
+    const value = planes[`planes${count}`] != null ? planes[`planes${count}`] : planes[String(count)];
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? number : 0;
+  }
+
+  // The number of coloured planes, weighted by the profile (1..4).
+  function planeCount(random, planes) {
+    const weights = {};
+    for (const key of genParamsMod.PLANE_KEYS) weights[key] = planeWeightOf(planes, Number(String(key).replace('planes', '')));
+    const picked = genParamsMod.pickWeighted(random, weights, genParamsMod.PLANE_KEYS);
+    if (picked == null) return 1;
+    const count = Number(String(picked).replace('planes', ''));
+    return count >= 1 && count <= 4 ? count : 1;
+  }
+
+  function planeScheme(random, rawW) {
+    const w = clamp01(rawW);
+    if (w < 0.5) return pick(random, ['tonal', 'analogous']);
+    return pick(random, ['analogous', 'complementary']);
+  }
+
+  // Moves one plane colour away from the text when the contrast floor fails.
+  // The full text set (body + hero) is tried first; when no colour can satisfy
+  // both, the body colour (the legibility contract's own anchor) decides.
+  function separatePlane(hex, texts, target) {
+    if (!texts.length || !(target > 0)) return hex;
+    const worst = (candidate, list) => (list || texts).reduce((min, text) => Math.min(min, color.contrastRatio(color.parse(candidate), color.parse(text))), Infinity);
+    const attempt = (candidate, list) => {
+      if (worst(candidate, list) >= target - 1e-6) return candidate;
+      const separated = color.separateFrom(candidate, list, target);
+      let best = separated && worst(separated, list) > worst(candidate, list) ? separated : candidate;
+      if (worst(best, list) >= target - 1e-6) return best;
+      // the separation could not reach the floor: move the lightness towards
+      // the background side of the text until it does (or the value ends)
+      let hsv = color.rgbToHsv(color.parse(best));
+      const textV = list.reduce((sum, text) => sum + color.rgbToHsv(color.parse(text)).v, 0) / list.length;
+      const direction = textV >= 0.5 ? -1 : 1;
+      for (let i = 0; i < 50 && worst(best, list) < target - 1e-6; i += 1) {
+        hsv = { ...hsv, v: clamp01(hsv.v + direction * 0.02) };
+        const next = color.toHex({ ...color.hsvToRgb(hsv), a: 1 });
+        if (worst(next, list) > worst(best, list)) best = next;
+      }
+      return best;
+    };
+    let best = attempt(hex, texts);
+    if (worst(best) < target - 1e-6 && texts.length > 1) {
+      // the body colour decides: a plane that cannot clear both still clears
+      // the legibility contract's own anchor
+      const primary = attempt(hex, [texts[0]]);
+      if (worst(primary, [texts[0]]) > worst(best, [texts[0]])) best = primary;
+    }
+    return best;
+  }
+
+  function planeColors(palette, n, scheme, textColors, rawW) {
+    const source = Array.isArray(palette) ? palette : palette && Array.isArray(palette.colors) ? palette.colors : [];
+    const baseHex = paletteRoles.get(source, paletteRoles.SLOT.MID_A) || source[0] || '#101018';
+    const base = color.rgbToHsv(color.parse(baseHex));
+    const count = Math.max(1, Math.min(4, Math.round(n) || 1));
+    const wide = clamp01(rawW);
+    const step = Math.min(0.16, 0.10 + 0.06 * wide);
+    const hue = scheme === 'complementary' ? 180 : scheme === 'analogous' ? 30 : 0;
+    const out = [];
+    for (let i = 0; i < count; i += 1) {
+      let h = base.h;
+      let s = base.s;
+      let v = base.v;
+      if (i === 1) {
+        // the second plane steps away from the background's own lightness
+        v = clamp01(base.v + (base.v < 0.5 ? step : -step));
+        s = clamp01(base.s * 0.9);
+      } else if (i === 2) {
+        h = base.h + hue;
+        s = Math.max(0.35, Math.min(0.7, base.s));
+        v = base.v;
+      } else if (i === 3) {
+        h = base.h + hue - 30;
+        s = Math.max(0.35, Math.min(0.7, base.s));
+        v = clamp01(base.v - 0.06);
+      } else {
+        s = clamp01(base.s * 0.9);
+      }
+      out.push(color.toHex({ ...color.hsvToRgb({ h: (h + 360) % 360, s, v, a: 1 }), a: 1 }));
+    }
+    const target = weirdMod.backdropContrast(rawW);
+    const texts = (Array.isArray(textColors) ? textColors : []).filter((hex) => typeof hex === 'string' && hex);
+    return out.map((hex) => separatePlane(hex, texts, target));
+  }
+
+  // The accent layer above the planes: two steps of the plane colours, so the
+  // texture stays in the same family as the planes.
+  function accentColors(planes) {
+    const list = (Array.isArray(planes) ? planes : []).filter((hex) => typeof hex === 'string' && hex);
+    if (!list.length) return [];
+    const shiftV = (hex, delta) => {
+      const hsv = color.rgbToHsv(color.parse(hex));
+      return color.toHex({ ...color.hsvToRgb({ ...hsv, v: clamp01(hsv.v + delta), a: 1 }), a: 1 });
+    };
+    return [shiftV(list[0], 0.12), shiftV(list[1 % list.length], -0.12)];
+  }
+
+  function planeBackdropSpec(axes, random, paletteColors, options, w) {
+    const opts = options || {};
+    const rawW = opts.rawW != null ? opts.rawW : w;
+    const coverage = opts.coverage != null ? clamp01(opts.coverage) : w;
+    const count = planeCount(random, opts.planes);
+    let layouts = (PLANE_LAYOUTS[count] || PLANE_LAYOUTS[1]).slice();
+    // shards / radial only join the four-plane draw
+    if (count === 4 && planeWeightOf(opts.planes, 4) > 0) layouts = layouts.concat(PLANE_EXTRAS);
+    const layout = pick(random, layouts);
+    const scheme = planeScheme(random, rawW);
+    const textColors = Array.isArray(opts.textColors) ? opts.textColors : [];
+    const colors = planeColors(paletteColors, count, scheme, textColors, rawW);
+    const s = smartOf(axes);
+    const motions =
+      s > 0
+        ? w >= 0.6
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift', 'push']
+          : ['breathe', 'slide', 'drift', 'push']
+        : w >= 0.6
+          ? ['slide', 'rotate', 'breathe', 'swap', 'drift']
+          : ['breathe', 'slide', 'drift'];
+    const motion = s > 0 ? smartness.pickWeighted(random, 'splitMotion', motions, s) : pick(random, motions);
+    const plane = {
+      type: 'split',
+      params: {
+        layout,
+        parts: count,
+        // the angle is one of the discrete readable values (diagonal widens)
+        angle: layout === 'diagonal' ? pick(random, [-12, 0, 12, 30]) : pick(random, [0, -12, 12]),
+        coverage: round(clamp01(coverage), 3),
+        scheme,
+        motion,
+        speed: round(0.2 + random() * 0.8 * (0.5 + 0.5 * w), 2),
+        // the old amp read as jitter; the profile keeps half of it
+        amp: round((0.02 + 0.06 * w) * 0.5 * (0.5 + random()), 3),
+        colors,
+        cuts: Array.isArray(opts.cuts) ? opts.cuts.slice(0, 16) : null,
+      },
+    };
+    if (s > 0 && motion === 'breathe') plane.params.every = pick(random, [1, 2, 4]);
+    // the accent texture above the planes, drawn from the plane family and
+    // capped quiet so the lyrics stay in front
+    const type = pick(random, BACKDROP_TYPES);
+    const params = sampleClipParams(type, axes, random, opts.index);
+    const cap = count === 1 ? 0.25 : 0.45;
+    params.opacity = Math.round(Math.min(Number(params.opacity) || 0.6, cap) * 100) / 100;
+    const accent = { type, params };
+    return {
+      spec: { type: 'combo', params: { list: [plane, accent], animate: backdropMotion(random, w, axes) } },
+      colors: accentColors(colors),
+    };
+  }
+
+
   // The split plane spec a weird mid clip carries: layout, part count, motion
   // and the palette, all drawn from the axes. `coverage` is the share of the
   // frame the planes paint (the weird axis).
@@ -1603,6 +1808,12 @@
         ? rawPalette.colors
         : colors;
     const coverage = options && options.coverage != null ? clamp01(options.coverage) : w;
+    // the profile's plane system: direct passes the plane weights and the
+    // cue's text colours and gets the quiet backdrop. A caller without
+    // `planes` (manual re-rolls, the old tests) keeps the classic draw.
+    if (kind === 'backdrop' && options && options.planes) {
+      return planeBackdropSpec(axes, random, paletteColors, options, w);
+    }
     if (kind === 'backdrop' && w > 0 && coverage >= 0.02) {
       // two layers: the painted planes (the dominant layer) and the accent
       params.opacity = Math.max(
@@ -1647,7 +1858,16 @@
     }
     const random = rng.rngFor(seed, 'clip', kind || 'background');
     const genre = opts.genre && genres ? genres.get(opts.genre) : null;
-    return clipSpec(kind, axes, random, genre, { index: opts.index, weirdBg: opts.weirdBg, palette: opts.palette, coverage: opts.coverage, cuts: opts.cuts });
+    return clipSpec(kind, axes, random, genre, {
+      index: opts.index,
+      weirdBg: opts.weirdBg,
+      palette: opts.palette,
+      coverage: opts.coverage,
+      cuts: opts.cuts,
+      planes: opts.planes,
+      textColors: opts.textColors,
+      rawW: opts.rawW,
+    });
   }
 
   // Colour-only re-roll of a timeline clip: the spec keeps its layout, motion
@@ -1664,6 +1884,9 @@
     const w = bgWeirdOf(axes);
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : Math.floor(Math.random() * 1e6);
     const random = rng.rngFor(seed, 'clip-colors', kind || 'backdrop');
+    const rawW = opts.rawW != null && Number.isFinite(Number(opts.rawW)) ? Number(opts.rawW) : w;
+    const textColors = (Array.isArray(opts.textColors) ? opts.textColors : []).filter((hex) => typeof hex === 'string');
+    let planeList = null;
     const walk = (node) => {
       if (typeof node === 'string') return from.length && HEX.test(node) ? recolor(node, from, to) : node;
       if (Array.isArray(node)) return node.map(walk);
@@ -1671,14 +1894,24 @@
       const out = {};
       for (const [key, entry] of Object.entries(node)) out[key] = walk(entry);
       if (node.type === 'split' && node.params && Array.isArray(node.params.colors) && node.params.colors.length) {
-        const { scheme, colors } = splitColors(to, Math.min(6, node.params.colors.length), w, random, axes);
-        out.params = { ...out.params, scheme, colors };
+        if (opts.planes) {
+          // the profile path rebuilds the planes from the background slot
+          const count = Math.max(1, Math.min(4, Math.round(Number(node.params.parts) || node.params.colors.length)));
+          const scheme = planeScheme(random, rawW);
+          const colors = planeColors(to, count, scheme, textColors, rawW);
+          planeList = colors;
+          out.params = { ...out.params, scheme, colors };
+        } else {
+          const { scheme, colors } = splitColors(to, Math.min(6, node.params.colors.length), w, random, axes);
+          out.params = { ...out.params, scheme, colors };
+        }
       }
       return out;
     };
     const spec = clip.spec ? walk(clip.spec) : clip.spec;
     let colors;
     if (kind === 'background') colors = [to[0], to[1] || to[0]];
+    else if (opts.planes && planeList) colors = accentColors(planeList);
     else if (w > 0) colors = weirdClipColors(random, to, w);
     else colors = [to[3] || to[to.length - 1], to[5] || to[3] || to[to.length - 1]];
     return { spec, colors };
@@ -1919,14 +2152,44 @@
     }
   }
 
-  function applyGenreBackground(style, genre, axes, random, palette, forced) {
+  // Picks one of the three placements from a weight map keyed by the profile's
+  // keys (bgEnclose / bgAccent / bgUnderlay).
+  function pickPlacement(weights, random) {
+    return pickWeightedEntry({
+      enclose: weights && weights.bgEnclose,
+      accent: weights && weights.bgAccent,
+      underlay: weights && weights.bgUnderlay,
+    }, random);
+  }
+
+  // The text background of one look. The optional `options` (the compose
+  // profile) may pin the presence chance / placement weights / vary and edge
+  // chances; a pinned value overrides the genre's own table, an absent one
+  // keeps the classic order (genre config first, then the derived defaults), so
+  // a call without options reproduces the old draw exactly.
+  function applyGenreBackground(style, genre, axes, random, palette, forced, options) {
+    const opts = options || {};
     const w = textWeirdOf(axes);
     const config = genre && genre.bg ? genre.bg : null;
-    // G9: a weird look grows a text background more often
-    const chance = (config && config.chance != null ? Number(config.chance) : 0.08 + axes.density * 0.22) + 0.5 * w;
+    // presence: pinned profile chance, then the genre's own, then the derived
+    // default (which equals the classic 0.08 + 0.22*density + 0.5*w). G9: a
+    // weird look grows a text background more often.
+    let chance;
+    if (opts.chance != null) chance = clamp01(opts.chance);
+    else if (config && config.chance != null) chance = Number(config.chance) + 0.5 * w;
+    else chance = genParamsMod.derive(axes).textBgChance;
     if (!forced && random() >= Math.min(1, chance)) return false;
-    const placementTable = (config && config.placement) || { enclose: 0.55, accent: 0.25, underlay: 0.2 };
-    const placement = pickWeightedEntry(placementTable, random) || 'enclose';
+    // placement: pinned weights, then the genre's table, then the derived
+    // defaults (the classic 0.55 / 0.25 / 0.2)
+    let placement;
+    if (opts.placement) {
+      placement = pickPlacement(opts.placement, random) || 'enclose';
+    } else if (config && config.placement) {
+      placement = pickWeightedEntry(config.placement, random) || 'enclose';
+    } else {
+      const auto = genParamsMod.derive(axes);
+      placement = pickWeightedEntry({ enclose: auto.bgEnclose, accent: auto.bgAccent, underlay: auto.bgUnderlay }, random) || 'enclose';
+    }
     const shapeWeights = config && config.shapes ? config.shapes : null;
     const shape = weightedFromTraits(BG_SHAPE_TRAITS, shapeWeights, random, axes) || 'square';
     // placement constraints (I13: a weird look may break them)
@@ -1966,7 +2229,12 @@
     if (shape === 'bar' && adjusted !== 'underlay') params.offset = { x: 0, y: 0.3 };
     // variation
     const varyTable = (config && config.vary) || null;
-    const vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
+    let vary;
+    if (opts.varyChance != null) {
+      vary = random() < clamp01(opts.varyChance) ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none';
+    } else {
+      vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
+    }
     params.vary = vary;
     const colorMode = (config && config.colors) || 'accent';
     const varyColors =
@@ -1988,8 +2256,13 @@
     style.bgFill = { type: fillType, params: fx.paramDefaults('bgFill', fillType), enabled: true };
     // edge
     const edgeTable = (config && config.edge) || null;
-    let edgeType = pickWeightedEntry(edgeTable, random);
-    if (!edgeType && random() < 0.4) edgeType = random() < 0.6 ? 'outline' : 'dropShadow';
+    let edgeType;
+    if (opts.edgeChance != null) {
+      edgeType = random() < clamp01(opts.edgeChance) ? (random() < 0.6 ? 'outline' : 'dropShadow') : null;
+    } else {
+      edgeType = pickWeightedEntry(edgeTable, random);
+      if (!edgeType && random() < 0.4) edgeType = random() < 0.6 ? 'outline' : 'dropShadow';
+    }
     if (edgeType && edgeType !== 'none') {
       const edgeParams = fx.paramDefaults('bgEdge', edgeType);
       if (edgeType === 'outline') {
@@ -2167,14 +2440,14 @@
         };
         continue;
       }
-      const instance = instanceFor(random, group, axes, context, direction, colors, null, genre);
+      const instance = instanceFor(random, group, axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights });
       if (instance) style[group] = instance;
     }
     // holds: energy decides how often an idle motion shows up, softness its type
     const holdChance =
       (genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6) + 0.5 * w;
     if (random() < holdChance) {
-      const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre);
+      const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights });
       if (instance) style.hold = [instance];
     }
     // edge / post: density decides how often and how many, softness the family
@@ -2192,7 +2465,7 @@
       for (let i = 0; i < count; i += 1) {
         // the genre's hero group is exempt from the hard exclusion (it keeps the
         // genre's identity; only the weight penalty applies)
-        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero && !!genre });
+        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero && !!genre, typeWeights: opts.typeWeights });
         if (!instance) break;
         if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w));
         used.add(instance.type);
@@ -2297,6 +2570,13 @@
     weirdClipColors,
     splitColors,
     splitSpec,
+    PLANE_LAYOUTS,
+    planeCount,
+    planeScheme,
+    planeColors,
+    accentColors,
+    separatePlane,
+    planeBackdropSpec,
     backdropMotion,
     BACKDROP_MOTIONS,
     SPLIT_SCHEMES,

@@ -22,6 +22,7 @@ const SA = {
   color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
   weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
+  genParams: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gen-params.js')),
   legibility: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js')),
   paletteRoles: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js')),
   fxAxes: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fx-axes.js')),
@@ -351,4 +352,83 @@ test('a loaded font measurer includes letterSpacing only once', { skip: hasRealF
     if (previousWindow === undefined) delete globalThis.window;
     else globalThis.window = previousWindow;
   }
+});
+
+// ---------------------------------------------------------------------------
+// the weighted curve (theme profile)
+
+test('a weighted ladder gives every level about its own share of the time', () => {
+  const weights = SA.weird.sizeWeights(10, 0.3, 0.2);
+  const ladder = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(11, 'weighted'), weights });
+  const durations = SA.rng.rngFor(12, 'weighted-duration');
+  const range = { min: 60, max: 900 };
+  let prev = null;
+  const time = new Array(10).fill(0);
+  for (let i = 0; i < 3000; i += 1) {
+    const duration = 0.3 + durations() * 2.7;
+    const pick = ladder.choose({ duration, range, prev });
+    time[pick.level] += duration;
+    prev = pick;
+  }
+  const total = time.reduce((sum, value) => sum + value, 0);
+  for (let k = 0; k < 10; k += 1) {
+    const share = time[k] / total;
+    assert.ok(Math.abs(share - weights[k]) <= weights[k] * 0.2 + 0.02, `level ${k} share ${share} vs ${weights[k]}`);
+  }
+});
+
+test('a low size centre keeps the average size under a high one', () => {
+  const average = (center) => {
+    const ladder = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(21, `centre-${center}`), center, spread: 0.2 });
+    const durations = SA.rng.rngFor(22, `centre-duration-${center}`);
+    const range = { min: 60, max: 900 };
+    let prev = null;
+    let sum = 0;
+    for (let i = 0; i < 500; i += 1) {
+      const pick = ladder.choose({ duration: 0.3 + durations() * 2.7, range, prev });
+      sum += pick.px;
+      prev = pick;
+    }
+    return sum / 500;
+  };
+  const low = average(0.3);
+  const high = average(0.8);
+  assert.ok(low < high, `low ${low} high ${high}`);
+});
+
+test('centerShift moves the opening pick towards the louder end', () => {
+  const range = { min: 60, max: 900 };
+  const low = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(31, 'shift'), center: 0.5, spread: 0.15 });
+  const high = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(31, 'shift'), center: 0.5, spread: 0.15 });
+  const a = low.choose({ duration: 1, range, prev: null, centerShift: 0 });
+  const b = high.choose({ duration: 1, range, prev: null, centerShift: 0.35 });
+  assert.ok(b.level > a.level, `shift ${a.level} -> ${b.level}`);
+});
+
+test('a particle span raises the body floor so every glyph keeps the minimum', () => {
+  const ctx = { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' };
+  const beat = { id: 'b', text: 'Hello world' };
+  const plain = SA.direct.sizeRangeFor(beat, {}, ctx, 1);
+  const withParticle = SA.direct.sizeRangeFor(beat, {}, ctx, 2, 0.55);
+  assert.ok(withParticle.floor > plain.floor, `floor ${withParticle.floor} vs ${plain.floor}`);
+  assert.ok(withParticle.min >= Math.ceil(SA.legibility.MIN_SIZE_RATIO * 1080 / 0.7) - 1, `min ${withParticle.min}`);
+});
+
+test('fitComposeSpans shrinks a hero and raises the particles to the floor', () => {
+  const text = {
+    size: 150,
+    compose: {
+      spans: [
+        { from: 0, to: 5, scale: 3 },
+        { from: 6, to: 8, scale: 0.55 },
+      ],
+    },
+  };
+  SA.direct.fitComposeSpans(text, { floor: 100, full: 120 }, 150);
+  assert.ok(text.compose.spans[0].scale <= 1.2 + 1e-9, `hero ${text.compose.spans[0].scale}`);
+  assert.ok(Math.abs(text.compose.spans[1].scale - 100 / 150) < 0.01, `particle ${text.compose.spans[1].scale}`);
+  // without a hero overrun the hero stays
+  const plain = { size: 150, compose: { spans: [{ from: 0, to: 5, scale: 1.5 }] } };
+  SA.direct.fitComposeSpans(plain, { floor: 60, full: 300 }, 150);
+  assert.equal(plain.compose.spans[0].scale, 1.5);
 });

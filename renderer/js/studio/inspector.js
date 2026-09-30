@@ -513,29 +513,6 @@ SA.inspector = (() => {
       const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
       if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
     });
-    // the colour schemes: the same cue palette in another role order. The
-    // buttons disable when the palette cannot hold the swapped contract.
-    const roles = typeof SA !== 'undefined' && SA.paletteRoles ? SA.paletteRoles : null;
-    const schemeWeird = (() => {
-      const axes = doc.styleMode && doc.styleMode.axes;
-      const value = Number(axes && axes.weird);
-      return Number.isFinite(value) && value > 0 ? Math.min(1, value) : 0;
-    })();
-    const cueStyle = SA.project.resolveStyle(doc, `cue:${sel.cueId}`);
-    const parentColors = cueStyle && cueStyle.palette && Array.isArray(cueStyle.palette.colors) ? cueStyle.palette.colors : [];
-    const invertible = !!(roles && parentColors.length && roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird));
-    const schemeCandidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird) : [];
-    const schemeButton = (key, disabled, run) => {
-      const node = document.createElement('button');
-      node.type = 'button';
-      node.className = 'btn btn-mini';
-      node.textContent = t(key);
-      node.disabled = disabled;
-      node.addEventListener('click', run);
-      head.appendChild(node);
-    };
-    schemeButton('studio.inspector.invertBeatScheme', !invertible, () => SA.store.commands.invertBeatScheme(sel.cueId, beat.id));
-    schemeButton('studio.inspector.rerollBeatScheme', !schemeCandidates.length, () => SA.store.commands.rerollBeatScheme(sel.cueId, beat.id));
     button('studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id));
     body.appendChild(head);
     const beatText = SA.controls.textControl(beat.text || '', (value) => {
@@ -1992,11 +1969,48 @@ SA.inspector = (() => {
     nameNode.className = 'insp-inherit';
     const paletteName = effective ? `${effective.name || effective.id}` : t('studio.inspector.paletteNone');
     const schemeId = scope && scope.beatId && own ? own.colorScheme : null;
-    const schemeText = schemeId
-      ? ` · ${schemeId === 'TMBD' ? t('studio.inspector.schemeInverted') : t('studio.inspector.schemeCustom', { id: schemeId })}`
-      : '';
-    nameNode.textContent = `${t('studio.inspector.paletteTarget', { scope: scopeLabel })} · ${paletteName}${scope !== 'project' && !ownPalette ? ` ${t('studio.inspector.inherited')}` : ''}${schemeText}`;
+    nameNode.textContent = `${t('studio.inspector.paletteTarget', { scope: scopeLabel })} · ${paletteName}${scope !== 'project' && !ownPalette ? ` ${t('studio.inspector.inherited')}` : ''}`;
     body.appendChild(nameNode);
+    // the beat colour scheme: an independent row carrying the standard /
+    // inverted state and the invert / re-draw buttons
+    if (scope && scope.beatId) {
+      const roles = typeof SA !== 'undefined' && SA.paletteRoles ? SA.paletteRoles : null;
+      const mode = (doc && doc.styleMode) || {};
+      const axes = mode.axes || {};
+      const rawWeird = Number(axes.weird);
+      const schemeWeird = Number.isFinite(rawWeird) && rawWeird > 0 ? Math.min(1, rawWeird) : 0;
+      const cueStyle = SA.project.resolveStyle(doc, `cue:${scope.cueId}`);
+      const parentColors = cueStyle && cueStyle.palette && Array.isArray(cueStyle.palette.colors) ? cueStyle.palette.colors : [];
+      const modeParams = SA.genParams && typeof SA.genParams.resolve === 'function' ? SA.genParams.resolve({ axes, params: mode.params || {} }) : null;
+      const label = schemeId
+        ? schemeId === (roles && roles.SCHEME_INVERT)
+          ? t('studio.inspector.schemeInverted')
+          : t('studio.inspector.schemeCustom', { id: schemeId })
+        : t('studio.inspector.schemeStandard');
+      const schemeRow = document.createElement('div');
+      schemeRow.className = 'insp-actions scheme-row';
+      const schemeText = document.createElement('span');
+      schemeText.className = 'insp-inherit';
+      schemeText.textContent = `${t('studio.inspector.scheme')}: ${label}`;
+      schemeRow.appendChild(schemeText);
+      const invertible = !!(roles && parentColors.length && roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird));
+      const invertButton = document.createElement('button');
+      invertButton.type = 'button';
+      invertButton.className = 'btn btn-mini';
+      invertButton.textContent = t('studio.inspector.invertBeatScheme');
+      invertButton.disabled = !invertible;
+      invertButton.addEventListener('click', () => SA.store.commands.invertBeatScheme(scope.cueId, scope.beatId));
+      const candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined) : [];
+      const rerollButton = document.createElement('button');
+      rerollButton.type = 'button';
+      rerollButton.className = 'btn btn-mini';
+      rerollButton.textContent = t('studio.inspector.rerollBeatScheme');
+      rerollButton.disabled = !candidates.length;
+      rerollButton.addEventListener('click', () => SA.store.commands.rerollBeatScheme(scope.cueId, scope.beatId));
+      schemeRow.appendChild(invertButton);
+      schemeRow.appendChild(rerollButton);
+      body.appendChild(schemeRow);
+    }
     const swatches = document.createElement('div');
     swatches.className = 'palette-swatches';
     if (effective) {

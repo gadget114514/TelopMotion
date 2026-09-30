@@ -455,3 +455,98 @@ Phase 3 の残りのうち、ユーザーがタイムラインから置けるシ
 - 注意（既知の例外）: `direct.test.js` の w=0 スナップショットは、energy が 0 でない限り「サイズ1つ」にならないため、比較から `beatStyles[*].text.size` を除外した（記録済みの例外。他はバイト単位で一致）。`weird.sizeChange` の引き金は生の `weird` と `energy` で、テキスト側の tamed な `w` では動かない。`v = 1` の不変条件は「別の段」であり px 一致ではない（狭い範囲では2段が同じ px へ丸まることがある）。
 - テスト: `scripts/test/size-ladder.test.js`（15件: sizeChange の境界と単調性・density 非依存、densitySpacing と密度1の字間、maxSizeForLines の枠上限と字間込みの縮小、`change 1` の段の非連続と時間バランス±15%、`change 0` の乱数非消費、`change 0.5` の保持率 0.4〜0.6 と ±25%、weird 1 の run・weird 0/energy 0 の単一サイズ・下限が legibility しきい値を下回らないこと・resizeBeats の前後回避と他ビート不変、実フォント（NotoSans-Regular）で字間を二重加算しないこと）。`direct.test.js` はスナップショットの size 除外と、compose テストの隣接段の非連続を追加。全 614 件パス。
 - 検証: `npm test`（614件）、`npm run check`（175ファイル）、`SA_SMOKE=1 SA_SMOKE_RANDOM=1`（2回: autoSizeRange [49, 346] / [49, 280] = 下限〜全画面、autoStyled 全ビート（34/34・36/36）、autoLook 734・動き「特大」、autoFontStable true、deterministic true、glError 0）。Web 版 Studio（静的配信・実フォント8書体・ブラウザ実行）でも確認: weird 0/energy 0 は全12ビート同サイズ（94・change 0）、weird 1 は px 49〜565 で隣接段の一致0・全ビートが自範囲内・下限比 0.04537 ≥ 0.045、density 0 は字間 0.18 で全画面ビートの blockW 1362/limit 1805 に収まり（density 1 は −0.03・565px）、ビート再ロールは前後段 3/7/6 で回避・他ビート不変、キュー再ロールは段の非連続・外側の前後回避・他キュー不変、glError 0。
+
+## 追加: 自動演出の見た目改善とテーマダイアログの「確率プロファイル」化(このコミット)
+
+weird 0.6 の自動演出を Studio で確認したところ、文字が小さい・前景が淡色だけ・装飾が出ない・図形が細線・後景の面が多く文字と同化する、という問題があった。テーマ編集を「具体スタイルを書く場所」から「おまかせが引く確率・分布を決める場所」に作り直し、生成器の各段を確率プロファイルで制御できるようにした。**手動値なし・weird 0 の出力はバイト単位で不変**(`direct-w0.json` スナップショット、fx400 / fx800 カタログ)。
+
+- `renderer/js/lyrics/gen-params.js`(新規・UMD、依存は `weird.js` のみ・`SA.genParams`): パラメータ表 `PARAMS`(key / tab / group / min / max / step / `derive(axes)`)、`derive` / `resolve`(自動値 + 固定値をクランプ合成) / `isPinned` / `typeWeight` / `lookTypeWeight` / `normalizeChances`。`sizeChange` / `colorChange` / `basePalette` は `weird.js` の既存式へ委譲し、weird 0 で従来値と一致。固定キーは `styleMode.params`、型の重みは `styleMode.typeWeights`(無い = 1、0 で自動抽選から除外)、揺れ元パレットは `styleMode.usePalettes` に保存。新しい乱数はすべて専用ストリーム(`rng.rngFor(seed, id, '…')`)から引き、既存ストリームの消費順を変えない。
+- 配線: `direct.prepare` が `ctx.params / ctx.pinned / ctx.typeWeights / ctx.usePalettes / ctx.curve` を持ち、`direct.run` が固定キーだけを書き戻す。`store.modeAxes()` が解決済みプロファイルを返し、ビート/キューの再抽選・`drawPalette` が同じカーブを使う。`looks.pick` / `looks.compose` / `moods.generate` / `moods.pickEntry` に `typeWeights` が届き、重み 0 の型はスタックから落ち、単体グループは `legibility.SAFE_FALLBACKS` に置換。`app.js` のおまかせが `opts.params` 等を渡し、`SA.studio.autoDirect` を公開。
+- サイズ(C1): `weird.sizeWeights(n, center, spread)` と重み付き `createSizeLadder`(時間 / 重みで段を選ぶ。重み・中心なしは従来と同一)。`sizeCenter` `sizeSpread` `sizeChange` `sizeFollow` `heroScale` が効き、拍の音量(`audioDriver.rangeEnergy`)で中心が動き、`sizeRangeFor` は粒子の最小倍率(0.55)から本文下限を引き上げ、`fitComposeSpans` がヒーロー倍率の縮小と助詞の可読下限を保証。`compositions.build` の倍率と `compositions.pick` の大小バイアスもプロファイルへ。
+- 後景(C2): `moods.planeBackdropSpec`。面数 1〜4 を重み抽選(`planes1..4`、weird 0.6 で約 13% / 52% / 35% / 0%)、面の色は背景スロットだけから導き(2面目 = 明度 ±0.10〜0.16・彩度 ×0.9、3面目 = スキーム色相、4面目 = 補助)、`color.separateFrom` + 明度移動で文字色とのコントラスト ≥ `backdropContrast` を保証。アクセント層は面の色の明度 ±0.12 の 2 色で不透明度 ≤ 0.45。`options.planes` が無い旧呼び出しは従来経路のまま。
+- 前景・装飾(C3 / C4): `direct.foregroundFor` が `fgSolid`(従来) / `fgVivid`(本文 = TEXT_FILL2、ヒーロー = TEXT_FILL、4.5 未満は solid へ) / `fgGradient` / `fgEffect` を重み抽選。`boldChance` はキュー単位で本文 700。`decorationFor` が `decoNone` … `decoGlow` から `cueStyles[id].edge` を組み(輪郭 / くっきり影 / 押し出し / ロングシャドウ / 二重線 / グロー)、2 面以上の後景では `none` を分離輪郭へ差し替え(ユーザー固定時を除く)。`repairContrast(colors, min, { keepText })` は背景を先に動かして文字色を残す。
+- 図形(C5): `figures.js` に太い 6 モチーフ(`slabWipe` / `cornerBlocks` / `ringDraw` / `stripeRun` / `dotGrid` / `sideBars`)を追加。テキストボックスを避けて上・下・隅・端へ置き、`snap`(expoOut + 8% オーバーシュート)と長めの in ウィンドウ(最大 0.45s)を使う。`figureBold` で抽選し、減光フォールバックは `[...BOLD_MOTIFS, ...safeMotifs]` をシャッフルして重なり最小を採用。`figureClipFor` の色は後景面から導出(面と ≥1.5、文字と ≥ `backdropContrast`)。`smartness.RATINGS.figureMotif` と `scripts/fx-axes-overrides.json`(恐怖 0.2)+ `fx-axes` 表を再生成、`fx-strings.js` と `filler-render.js` に 5 言語ラベルと選択肢を追加。
+- 可読性(C6): `legibility.SMEAR_POSTS`(godRays / zoomBlur / spinBlur / motionBlur / echoTrail / chromaticAberration / rgbShift / turbulentDisplace / waveWarp / twirl / lensDistortion / heatHaze)を追加し、compose かつ weird > 0 のとき `postBlur` のロールでテーマから外す。`paletteRoles.schemes(colors, weird, range)` は range < 0.5 で `TMBD` / `MBTD` / `TBMD` の 3 つに限定。`direct.run` の最後に全ビートの最終検査(解決スタイルの `legibility.check(motion:false)` + 面の色とのコントラスト)を置き、失敗時は「可読性修復 → 配色オフ(原因のときだけ) → 本文色 solid へ → 分離輪郭」の順で必ず通す。
+- 使用パレット・確率(C7 / C8): `pickUsePalette` が avoid(ベース・直前キュー)から最も遠い使用パレットを選び `keepText` で修復。`cuePalette` と `drawPalette` が使用パレットを使う(1 件なら毎回同じ = キューごとに色が変わらない)。`pickEntry` は `typeWeights` を重みに掛けて 0 を候補から除外、`looks.weightFor` は `lookTypeWeight` を掛ける。
+- UI(D): `theme-editor.js` を作り直し、draft = `{id, name, genre, direction, axes, seed, params, typeWeights, palette, usePalettes, keywords, tab}`。ヘッダー(ジャンルチップ / 名前 / seed / 新しいシード)と 4 タブ「軸」「パレット編集」「文字サイズ・フォント修飾」「エフェクト確率」、共通 `paramRow`(スライダー / 値 / 自動・固定チップ / ↺、軸を動かすと未固定行だけ追従)、サイズ分布の棒グラフ、使用パレットのカード、型ごとの「出やすさ」バー。フッターは「生成」(プロファイルを渡しておまかせ実行) / 「適用」(`styleMode` とプロジェクトパレットだけ保存、style は不変) / 「保存」(ライブラリ、`profile` 付き) / 「閉じる」。`paletteDialog.editorNode` を共通化。タイムラインに「色を再抽選」、インスペクターのパレット節に配色行(標準 / 反転 / 入替 (ID)、反転・配色を引き直すボタン)を移設。ジャンルダイアログに「文字サイズの中心」を追加。i18n は 5 言語に `studio.themeEditor.tab/param/paramHint/pinned/auto/sizeCurve/other/usePalettes.*`、`studio.timeline.rerollColors`、`studio.inspector.scheme*` を追加し、`axesHint` を「このダイアログはおまかせの確率を決めます」に書き換え。`studio.css` に `.theme-tabs` / `.param-row` / `.param-chip` / `.size-curve` / `.use-palette-card` / `.chance-bar` を追加。
+- テスト: `gen-params.test.js`(8 件)、`size-ladder.test.js` に重み配分 ±20% / 中心 0.3 < 0.8 / centerShift / 粒子 floor / fitComposeSpans、`direct.test.js` に profile 3 seed(面数 ≤ 3 と文字コントラスト / 全ビート legibility / 図形 3 種以上 / スミア post のゲート / 使用パレット 2 件 / decoOutline 固定 / glitchIn 0)、`figures.test.js` に太さと重なり ≤ 0.15、`color-scheme.test.js` に calm range、`looks.test.js` に compose の例外回帰と typeWeights 0。全 699 件パス、`npm run check` 189 ファイル OK。
+- 検証: Chromium 版 Studio(web)で同じ歌詞・seed を weird 0.6 で生成し、16 コマのコンタクトシートでサイズ分布・面の色数・図形の太さ・装飾・可読性を確認(詳細は下記検証ログ節を参照)。weird 0.9 と weird 0 も 1 回ずつ。テーマダイアログのタブ / 固定と ↺ / 適用が style を触らないこと / decoOutline 固定 / glitchIn 0 / 使用パレット 2 件 / サイズ中心 0.3 と 0.85 を操作確認。ツールバーの「色を再抽選」とインスペクターの配色行も操作し、コンソールエラー 0。
+
+## 追加: 確率変数の整理と拡充（gen-params の kind 化と compose 経路の抽選）
+
+自動演出の確率・重み・量を `renderer/js/lyrics/gen-params.js` の 1 表に集約し、種類（`kind`）を明示した。`chance`（0..1 の確率）/ `weight`（グループ内で正規化される重み）/ `amount`（抽選ではなく量）の 3 種で、テーマダイアログはこの表から行を作る。あわせて、これまで compose 経路では抽選されなかった書体・字間・揃え・行幅・位置・傾き・保持・リピート・クローン・文字背景などを「weird から導出され、スライダーで固定できる確率変数」として戻した。
+
+- `gen-params.js`: `axisView` に文字側 `t = weird.text(raw)`（`ctx.w` と同値）と後景側 `b = weird.bg(raw)`（旧 `wWidth`）を追加。`derive` の丸めをやめ（表示は `display(v)` が 3 桁に丸める）、`keysOf(group)` / `roll(random, chance)`（0 のとき乱数を引かない）/ `pickWeighted(random, weights, keys)`（1 回の乱数、合計 0 は `null`）を公開。`normalizeChances` は UI 用に残す。
+- 改名: `basePalette` → `paletteSwitchChance`（切り替える確率）、`fontVary` → `fontChance`、`figureBold` → `figureBoldChance`、`postBlur` → `postBlurChance`。`pickChance` は削除し、`foregroundFor` / `decorationFor` は `pickWeighted` を使う。
+- 旧経路（非 compose）の直書き抽選を表へ: `0.5w` 位置 / `0.3w` 書体 / `0.35w` リピート / `0.5w` クローン / `0.1` パルス / `0.5w` アクセント色 / `0.3w` グラデーション / `0.4w` 傾き / `0.45w` ホールド / `0.3w` 入退場 / `0.25w` ビート書体。乱数の本数と順番は変えていない。
+- compose 経路の cue 単位（`directCue`, `ctx.curve` のとき）: 書体 / 位置（`cueShift`）/ リピート / クローン / 文字背景。ビート単位（`varyBeat`）: 書体 / 太さ / 字間・行間 / 揃え / 行幅 / アクセント色とグラデーション / 塗りエフェクト / ワイプマスク / 傾き / ホールド / パルス / 入退場 / 位置の加算 / リピート競合。run 2.55 でビート単位の装飾、2.4 で配色の反転（専用ストリーム `color-invert`、TMBD は通常候補から外れる）、図形は当たりで `stroke: 'bold'` を併用する。
+- 共有経路の compose 限定: ビート装飾・配色反転・太い図形は `ctx.compose && ctx.curve` のときだけ。旧経路の出力は全工程で不変（`compose_w0` スナップショットと weird 0/0.6/1 の比較で確認）。
+- 文字背景はハイブリッド: 固定値（`styleMode.params`）> ジャンルの `bg.*` > 導出値。`moods.applyGenreBackground` に 7 番目の `options`（`chance` / `placement` / `varyChance` / `edgeChance`）を足し、direct は固定されたキーだけを渡す。引数なしの `generate` は従来と同じ乱数順。
+- `applyGenreBackground` の配置は `bgEnclose` / `bgAccent` / `bgUnderlay`（0.55 / 0.25 / 0.2 の導出値）で、固定時はその重みだけで引く。
+- store の再抽選: `modeAxes()` は `SA.genParams` 必須で解決済み `params` を常に返す。`composeRunContext` は `axes` / `s` / `bpm` / `beatFit` / `genre` / `direction` / `accentIdx` / `accentHexes`（`direct.accentsOf`）と、`cueStyles` から読み戻した `cueFont` / `cueRepeat` を渡す（`cueShift` は run 中の一時値なので再抽選では空）。
+- UI / 文書: `theme-editor.js` に行を追加（文字装飾 / 塗り / 縁 / 文字背景 / モーション）、`i18n.js` に 5 言語のラベル、`scripts/compose-sheet.js` に `genParams`。`scripts/test/gen-params.test.js`（kind / keysOf / roll / pickWeighted / weird 0 の例外）、`direct.test.js`（compose 全キー off でテンプレート不変・on で全要素が出る・旧経路は無視・文字背景の固定優先）、`color-scheme.test.js`（反転の入り切り）、`text-bg.test.js`（options の優先）を追加。
+
+### パラメータ表（`kind` / 範囲 / 導出）
+
+| key | kind | range | derive |
+|---|---|---|---|
+| `sizeChange` | chance | 0..1 | `weird.sizeChange(axes)` |
+| `sizeCenter` | amount | 0..1 | `0.5 + 0.1 * Math.min(1, a.w / 0.6) + 0.1 * (a.e - 0.5)` |
+| `sizeSpread` | amount | 0.05..0.6 | `0.18 + 0.22 * a.w` |
+| `sizeFollow` | amount | 0..1 | `0.2 * a.b` |
+| `heroScale` | amount | 1..2.5 | `1 + 0.3 * a.w` |
+| `fgSolid` | weight | 0..3 | `1` |
+| `fgVivid` | weight | 0..3 | `1.2 * a.w` |
+| `fgGradient` | weight | 0..3 | `1.0 * a.w` |
+| `fgEffect` | weight | 0..3 | `0.6 * a.w * (0.5 + a.e)` |
+| `boldChance` | chance | 0..1 | `0.25 + 0.5 * a.e` |
+| `decoNone` | weight | 0..3 | `1` |
+| `decoOutline` | weight | 0..3 | `2.2 * a.w` |
+| `decoShadow` | weight | 0..3 | `1.6 * a.w` |
+| `decoExtrude` | weight | 0..3 | `0.9 * a.w * (1 - a.soft)` |
+| `decoLongShadow` | weight | 0..3 | `0.7 * a.w * (1 - a.soft)` |
+| `decoDouble` | weight | 0..3 | `0.6 * a.w * (0.4 + 0.6 * a.soft)` |
+| `decoGlow` | weight | 0..3 | `0.9 * a.w * (1 - a.bright)` |
+| `graphicChance` | chance | 0..1 | `0.3 + 0.4 * a.w` |
+| `fontChance` | chance | 0..1 | `0.3 * a.t` |
+| `beatFontChance` | chance | 0..1 | `0.25 * a.t` |
+| `beatBoldChance` | chance | 0..1 | `0.3 * a.t` |
+| `spacingChance` | chance | 0..1 | `a.t` |
+| `spacingRange` | amount | 0..1 | `a.t` |
+| `alignChance` | chance | 0..1 | `0.3 * a.t` |
+| `widthChance` | chance | 0..1 | `0.5 * a.t` |
+| `accentColorChance` | chance | 0..1 | `0.5 * a.t` |
+| `gradientColorChance` | chance | 0..1 | `0.3 * a.t` |
+| `fillEffectChance` | chance | 0..1 | `0.3 * a.t` |
+| `beatDecoChance` | chance | 0..1 | `0.3 * a.t` |
+| `maskChance` | chance | 0..1 | `0.3 * a.t` |
+| `textBgChance` | chance | 0..1 | `Math.min(1, 0.08 + 0.22 * a.d + 0.5 * a.t)` |
+| `bgEnclose` | weight | 0..3 | `0.55` |
+| `bgAccent` | weight | 0..3 | `0.25` |
+| `bgUnderlay` | weight | 0..3 | `0.2` |
+| `bgVaryChance` | chance | 0..1 | `0.3 + 0.7 * a.t` |
+| `bgEdgeChance` | chance | 0..1 | `0.4` |
+| `colorChange` | chance | 0..1 | `weird.colorChange(axes)` |
+| `paletteSwitchChance` | chance | 0..1 | `a.w` |
+| `paletteInvertChance` | chance | 0..1 | `a.w / 3` |
+| `schemeRange` | amount | 0..1 | `(a.w < 0.8 ? 0.2 : 1)` |
+| `planes1` | weight | 0..2 | `1 - 0.7 * a.b` |
+| `planes2` | weight | 0..2 | `1.2 * a.b` |
+| `planes3` | weight | 0..2 | `0.8 * Math.min(1, a.w / 0.5)` |
+| `planes4` | weight | 0..2 | `Math.max(0, (a.w - 0.75) / 0.25)` |
+| `tiltChance` | chance | 0..1 | `0.4 * a.t` |
+| `tiltRange` | amount | 0..1 | `a.t` |
+| `locationChance` | chance | 0..1 | `0.5 * a.t` |
+| `locationRange` | amount | 0..0.5 | `0.25 * a.t` |
+| `floatChance` | chance | 0..1 | `(a.t >= 0.6 ? 0.3 * a.t : 0)` |
+| `repeatChance` | chance | 0..1 | `0.35 * a.t` |
+| `clonesChance` | chance | 0..1 | `0.5 * a.t` |
+| `holdChance` | chance | 0..1 | `0.45 * a.t` |
+| `pulseChance` | chance | 0..1 | `0.1` |
+| `motionChance` | chance | 0..1 | `0.3 * a.t` |
+| `figureDensity` | amount | 0..1 | `Math.max(0, Math.min(1, 0.25 + 0.6 * a.e + 0.2 * a.b))` |
+| `figureBoldChance` | chance | 0..1 | `Math.min(1, a.b) * (1 - 0.5 * a.s)` |
+| `postBlurChance` | chance | 0..1 | `Math.max(0, (a.w - 0.75) / 0.25)` |
+
+- `chance` は常に 0..1。`roll` は chance 0 で乱数を引かない。`weight` はグループ内で `normalizeChances` 相当に正規化され、合計 0 なら `null`（乱数なし）。
+- weird 0 で 0 にならない chance は `sizeChange`（energy）/ `boldChance` / `graphicChance` / `pulseChance` / `textBgChance` / `bgVaryChance` / `bgEdgeChance` のみ。

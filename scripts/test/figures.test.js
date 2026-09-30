@@ -258,3 +258,37 @@ test('the motif tuning params reach the geometry', () => {
   const spin = (rate) => figures.drawList({ type: 'figure', params: { ...params({ spinRate: rate }), beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'spin', out: 'fade' }, variant: 0, accent: true }] } }, ctxAt(1.2)).shapes;
   assert.notDeepEqual(spin(0.2), spin(2));
 });
+
+// ---------------------------------------------------------------------------
+// the bold rhythm set (profile figureBoldChance)
+
+test('the bold motifs draw thick shapes and stay clear of the text box', () => {
+  const legibility = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js'));
+  const textBox = { x0: 480, y0: 400, x1: 1440, y1: 680 };
+  for (const motif of figures.BOLD_MOTIFS) {
+    const spec = figures.generate({ span: SPAN, motif, sync: 'beat', seed: 13, id: `fig_${motif}`, axes: { weird: 0.6, energy: 0.6 } });
+    let thickest = 0;
+    let shapes = 0;
+    for (let t = SPAN.start + 0.05; t <= SPAN.end; t += 0.25) {
+      const list = figures.drawList(spec, ctx({ time: t, textBox }));
+      shapes += list.shapes.length;
+      for (const shape of list.shapes) {
+        let size = 0;
+        if (shape.kind === 'convex' && Array.isArray(shape.points)) {
+          const xs = shape.points.map((point) => point.x);
+          const ys = shape.points.map((point) => point.y);
+          size = Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+        } else {
+          size = shape.w != null ? shape.w : shape.width != null ? shape.width : shape.r != null ? shape.r * 2 : shape.thickness != null ? shape.thickness * 2 : 0;
+        }
+        if (size > thickest) thickest = size;
+      }
+    }
+    assert.ok(shapes > 0, `${motif} draws nothing`);
+    assert.ok(thickest >= FRAME.height * 0.008, `${motif} is a thin line (${thickest})`);
+    const overlap = legibility.figureOverlap(spec, { frame: FRAME, duration: SPAN.end - SPAN.start, textBox });
+    assert.ok(overlap <= legibility.FIGURE_OVERLAP + 1e-9, `${motif} overlaps the text (${overlap})`);
+  }
+  // the bold set is part of the drawn library
+  for (const motif of figures.BOLD_MOTIFS) assert.ok(figures.MOTIFS.includes(motif), `${motif} missing from MOTIFS`);
+});

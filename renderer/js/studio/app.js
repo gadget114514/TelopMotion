@@ -73,6 +73,7 @@
     el.splitTimeline = document.getElementById('split-timeline');
     el.splitConsole = document.getElementById('split-console');
     el.autoDirect = document.getElementById('tl-auto-direct');
+    el.rerollColors = document.getElementById('tl-reroll-colors');
   }
 
   function project() {
@@ -1064,10 +1065,10 @@
       await step('studio.busy.looks', 0.15);
       const pool = SA.looks && SA.looks.load ? await SA.looks.load() : null;
       if (pool) {
-        const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude });
+        const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude, typeWeights: opts.typeWeights });
         if (entry) {
           await step('studio.busy.compose', 0.4);
-          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context });
+          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context, typeWeights: opts.typeWeights });
           look = composed.look;
           lookClip = composed.clip;
           themeStyle = composed.style;
@@ -1092,7 +1093,21 @@
     // hand the run to SA.direct: it owns the size band, the palette patches,
     // the filler settings and the clips the automatic direction replaces. In
     // composition mode the per-beat picture comes from SA.compositions.
-    const ctx = SA.direct.prepare(doc, { axes, seed, genre, direction, look, lookClip, themeStyle, cueLooks, analysis, compose: true });
+    const ctx = SA.direct.prepare(doc, {
+      axes,
+      seed,
+      genre,
+      direction,
+      look,
+      lookClip,
+      themeStyle,
+      cueLooks,
+      analysis,
+      compose: true,
+      params: opts.params,
+      typeWeights: opts.typeWeights,
+      usePalettes: opts.usePalettes,
+    });
     store.dispatch({
       label: 'auto direct',
       areas: ['script', 'style'],
@@ -1113,6 +1128,9 @@
     const weird = SA.moods.projectWeird(doc);
     const smartness = SA.moods.projectSmartness(doc);
     const fear = SA.moods.projectFear(doc);
+    const resolvedProfile = SA.genParams ? SA.genParams.resolve({ axes: (doc.styleMode && doc.styleMode.axes) || {} }) : null;
+    const sizeCenter = resolvedProfile && resolvedProfile.sizeCenter != null ? resolvedProfile.sizeCenter : 0.6;
+    let sizeTouched = false;
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>
@@ -1136,6 +1154,10 @@
         <span class="axis-value" data-field="fear-value">${fear.toFixed(2)}</span>
       </label>
       <div class="insp-inherit axis-hint">${t('studio.themeEditor.axisHint.fear')}</div>
+      <label class="axis-row"><span>${t('studio.themeEditor.param.sizeCenter')}</span>
+        <input type="range" min="0" max="1" step="0.05" data-field="size-center" value="${sizeCenter}">
+        <span class="axis-value" data-field="size-center-value">${Number(sizeCenter).toFixed(2)}</span>
+      </label>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
@@ -1154,13 +1176,24 @@
     fearInput.addEventListener('input', () => {
       dialog.querySelector('[data-field="fear-value"]').textContent = Number(fearInput.value).toFixed(2);
     });
+    const sizeInput = dialog.querySelector('[data-field="size-center"]');
+    sizeInput.addEventListener('input', () => {
+      sizeTouched = true;
+      dialog.querySelector('[data-field="size-center-value"]').textContent = Number(sizeInput.value).toFixed(2);
+    });
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
     dialog.querySelector('[data-action="apply"]').addEventListener('click', () => {
       const genre = dialog.querySelector('[data-field="genre"]').value;
       el.dialogRoot.hidden = true;
-      autoDirect({ genre, weird: Number(weirdInput.value), smartness: Number(smartInput.value), fear: Number(fearInput.value) });
+      autoDirect({
+        genre,
+        weird: Number(weirdInput.value),
+        smartness: Number(smartInput.value),
+        fear: Number(fearInput.value),
+        params: sizeTouched ? { sizeCenter: Number(sizeInput.value) } : undefined,
+      });
     });
   }
 
@@ -1408,6 +1441,7 @@
         genreDialog();
       });
     }
+    if (el.rerollColors) el.rerollColors.addEventListener('click', () => rerollColors());
     window.addEventListener('resize', () => applyLayout());
     document.addEventListener('keydown', (event) => {
       const target = event.target;
@@ -1623,6 +1657,6 @@
     }
   }
 
-  window.SA.studio = { startup, renderAll, toast, toggleConsole };
+  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors };
   startup();
 })();

@@ -328,13 +328,20 @@
 
   // Every viable scheme of a palette: the 23 non-identity permutations that
   // pass the contrast contract, minus the visually identical results. The order
-  // is the deterministic permutation order.
-  function schemes(colors, weirdRaw) {
+  // is the deterministic permutation order. A `range` below 0.5 restricts the
+  // candidates to the three readable role swaps (text <-> background,
+  // background <-> backdrop, both), so a calm profile never draws a wild
+  // permutation; the parameter is optional and omitting it keeps the 23.
+  const SCHEME_CALM = ['TMBD', 'MBTD', 'TBMD'];
+
+  function schemes(colors, weirdRaw, range) {
     if (!Array.isArray(colors) || colors.length < 6) return [];
     const slots = roleSlots(colors);
     const out = [];
     const seen = new Set();
-    for (const id of BEAT_SCHEME_IDS) {
+    const calm = range != null && Number.isFinite(Number(range)) && Number(range) < 0.5;
+    const ids = calm ? SCHEME_CALM : BEAT_SCHEME_IDS;
+    for (const id of ids) {
       if (id === SCHEME_BASE) continue;
       const next = applyScheme(colors, id, weirdRaw);
       if (!next) continue;

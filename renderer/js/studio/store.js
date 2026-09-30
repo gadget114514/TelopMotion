@@ -502,7 +502,25 @@ SA.store = (() => {
   function modeAxes() {
     const mode = (state.project && state.project.styleMode) || {};
     if (typeof SA === 'undefined' || !SA.moods) return { axes: mode.axes || {}, direction: mode.direction || 'horizontal', genre: mode.genre || null };
-    return { axes: SA.moods.normalizeAxes(mode.axes || {}), direction: mode.direction || 'horizontal', genre: mode.genre || null };
+    const axes = SA.moods.normalizeAxes(mode.axes || {});
+    // the resolved profile (derived + pinned) plus the manual map, so the
+    // re-rolls draw inside the same curve the run used
+    if (!SA.genParams || typeof SA.genParams.resolve !== 'function') throw new Error('SA.genParams is required by SA.store');
+    const params = SA.genParams.resolve({ axes, params: mode.params || {} });
+    const pinned = {};
+    for (const def of SA.genParams.PARAMS) if (SA.genParams.isPinned(mode, def.key)) pinned[def.key] = params[def.key];
+    const rawW = Number(axes.weird) || 0;
+    return {
+      axes,
+      direction: mode.direction || 'horizontal',
+      genre: mode.genre || null,
+      rawW,
+      params,
+      pinned,
+      curve: rawW > 0 || Object.keys(pinned).length > 0,
+      typeWeights: mode.typeWeights || null,
+      usePalettes: Array.isArray(mode.usePalettes) ? mode.usePalettes : [],
+    };
   }
 
   // The raw weird axis the beat colour schemes are resolved with (the same
@@ -542,20 +560,48 @@ SA.store = (() => {
     const frameH = Number(output.height) || 1080;
     const axes = (mode && mode.axes) || {};
     const rawW = Number(axes.weird) || 0;
+    // the cue-level patches varyBeat reads: the faces / repeats the run stored
+    // and the theme's accent colours (cueShift is a run-only draw: a re-rolled
+    // beat does not inherit the cue's location nudge)
+    const palette = (projectDoc.style && projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+    const accents = SA.direct && typeof SA.direct.accentsOf === 'function' ? SA.direct.accentsOf(palette) : { accentIdx: [], accentHexes: [] };
+    const cueFont = {};
+    const cueRepeat = {};
+    for (const [cueId, container] of Object.entries(projectDoc.cueStyles || {})) {
+      if (container && container.text && container.text.fontId) cueFont[cueId] = container.text.fontId;
+      if (container && container.repeat) cueRepeat[cueId] = container.repeat;
+    }
     return {
       compose: true,
       seed,
       rawW,
       w: typeof SA !== 'undefined' && SA.moods && typeof SA.moods.textWeirdOf === 'function' ? SA.moods.textWeirdOf(axes) : rawW,
+      s: typeof SA !== 'undefined' && SA.moods && typeof SA.moods.smartOf === 'function' ? SA.moods.smartOf(axes) : 0,
       portrait: (output.aspect || '16:9') === '9:16',
       frameW,
       frameH,
       screen: Math.min(frameW, frameH),
       energy: Number.isFinite(Number(axes.energy)) ? Number(axes.energy) : 0.5,
+      bpm: 120,
+      beatFit: SA.direct && typeof SA.direct.beatFitOf === 'function' ? SA.direct.beatFitOf(null) : 0.25,
       analysis: null,
+      genre: (mode && mode.genre) || null,
+      direction: (mode && mode.direction) || 'horizontal',
+      accentIdx: accents.accentIdx,
+      accentHexes: accents.accentHexes,
+      cueFont,
+      cueShift: {},
+      cueRepeat,
       themeStyle: projectDoc.style || null,
       composeHistory: history || [],
       composeZones: {},
+      params: (mode && mode.params) || null,
+      pinned: (mode && mode.pinned) || {},
+      curve: !!(mode && mode.curve),
+      typeWeights: (mode && mode.typeWeights) || null,
+      usePalettes: (mode && mode.usePalettes) || [],
+      cueForeground: {},
+      cueBold: {},
     };
   }
 
@@ -669,6 +715,14 @@ SA.store = (() => {
     if (!state.project || typeof SA === 'undefined' || !SA.moods) return null;
     const mode = modeAxes();
     const avoid = Array.isArray(current) ? current : [];
+    // the profile's use-palettes replace the on-the-fly generation
+    const usePalettes = mode.usePalettes || [];
+    if (usePalettes.length && SA.direct && typeof SA.direct.pickUsePalette === 'function') {
+      const seed = Math.floor(Math.random() * 900000) + 1000;
+      const random = SA.rng && typeof SA.rng.rngFor === 'function' ? SA.rng.rngFor(seed, 'use-palette') : Math.random;
+      const picked = SA.direct.pickUsePalette(random, usePalettes, [avoid], mode.rawW);
+      if (picked) return picked;
+    }
     const distance = (colors) => {
       if (!avoid.length) return 0;
       return colors.reduce((sum, hex, index) => {
@@ -1847,7 +1901,7 @@ SA.store = (() => {
           const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
           const seed = Math.floor(Math.random() * 900000) + 1000;
-          const change = SA.weird && typeof SA.weird.sizeChange === 'function' ? SA.weird.sizeChange(mode.axes) : 0;
+          const change = mode.params.sizeChange;
           const context = SA.moods.contextForCue(projectDoc, target);
           const emphasis = SA.moods.isEmphasis ? SA.moods.isEmphasis(target) : false;
           const generated = SA.moods.generate({ axes: mode.axes, seed, direction: mode.direction, genre: mode.genre, context, emphasis }).style;
@@ -1866,12 +1920,12 @@ SA.store = (() => {
             // the ladder re-picks the sizes; at change 0 the compositions
             // themselves are the picture (matching run / composeBeat)
             if (change > 0 && SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
-              SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed);
+              SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
             }
             return;
           }
           if (SA.direct && typeof SA.direct.resizeBeats === 'function') {
-            SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed);
+            SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
           }
         },
       });
@@ -1921,10 +1975,10 @@ SA.store = (() => {
           // neighbours' levels are respected and the other beats stay put.
           // In compose mode the compositions are the picture at change 0.
           const composeMode = !!(projectDoc.styleMode && projectDoc.styleMode.compose);
-          const change = SA.weird && typeof SA.weird.sizeChange === 'function' ? SA.weird.sizeChange(mode.axes) : 0;
+          const change = mode.params.sizeChange;
           const ladderActive = !composeMode || change > 0;
           if (ladderActive && SA.direct && typeof SA.direct.resizeBeats === 'function') {
-            SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000);
+            SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000, { params: mode.params, curve: mode.curve });
           }
         },
       });
@@ -2015,6 +2069,15 @@ SA.store = (() => {
       const clipIds = Array.isArray(opts.clipIds) && opts.clipIds.length ? new Set(opts.clipIds) : null;
       const mode = modeAxes();
       const from = paletteColorsAt(state.project, '');
+      const profileClip = (palette) => {
+        if (!mode.curve || !mode.params) return { palette };
+        const colors = (palette && palette.colors) || [];
+        const roles = SA.paletteRoles;
+        const textColors = roles && typeof roles.get === 'function'
+          ? [roles.get(colors, roles.SLOT.TEXT_FILL), roles.get(colors, roles.SLOT.TEXT_FILL2)].filter(Boolean)
+          : [colors[2], colors[3]].filter(Boolean);
+        return { palette, planes: mode.params, rawW: mode.rawW, textColors };
+      };
       const palette = opts.palette && Array.isArray(opts.palette.colors) && opts.palette.colors.length ? opts.palette : drawPalette(from);
       if (!palette) return null;
       const perClip = opts.perClip !== false && !opts.palette;
@@ -2031,8 +2094,9 @@ SA.store = (() => {
           for (const clip of projectDoc.clips || []) {
             if (!clipPalettes.has(clip.id)) continue;
             const kind = SA.project.trackKindOf(projectDoc, clip.trackId);
+            const clipPalette = clipPalettes.get(clip.id);
             const result = SA.moods.rerollClipColors(kind, clip, {
-              palette: clipPalettes.get(clip.id),
+              ...profileClip(clipPalette),
               from,
               axes: mode.axes,
               seed: Math.floor(Math.random() * 900000) + 1000,
@@ -2098,11 +2162,15 @@ SA.store = (() => {
     },
     rerollBeatScheme(cueId, beatId) {
       if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
+      const mode = modeAxes();
       const weird = beatSchemeWeird();
       const roles = SA.paletteRoles;
       const parent = paletteColorsAt(state.project, `cue:${cueId}`);
       if (!parent.length) return null;
-      const candidates = roles.schemes(parent, weird);
+      // the profile's calm range mutes the automatic draw; a manual re-roll
+      // still needs at least two choices, so it falls back to the full set
+      let candidates = roles.schemes(parent, weird, mode.params ? mode.params.schemeRange : undefined);
+      if (candidates.length < 2) candidates = roles.schemes(parent, weird);
       if (!candidates.length) return null;
       const own = state.project.beatStyles && state.project.beatStyles[beatId];
       const current = own && own.colorScheme;

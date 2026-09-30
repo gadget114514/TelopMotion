@@ -941,7 +941,7 @@
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
     ],
     figures: [
-      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets'], default: 'orbit' },
+      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets', 'slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars'], default: 'orbit' },
       { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
       { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
       { key: 'count', kind: 'int', min: 3, max: 24, step: 1, default: 8 },

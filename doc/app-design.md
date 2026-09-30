@@ -1390,6 +1390,25 @@ The theme generator draws every look from a small vector of axes. The first five
 
 The axis reaches `moods.generate` / `rerollClipSpec` (effect pools, split motions/schemes, backdrop motion + transitions, the background centre lift and the palette jitter), the automatic direction (`studio/direct.js`: beat holds, filler presets, the per-four-cue mid palette shift), the FX 800 look pool (`lyrics/looks.js`: `weightFor` + `prune`) and the per-cue randomizer (`lyrics/random.js`, when the project saved an axis). The palette dialog (`studio/palette-dialog.js`) and the colour-only re-roll (`store.commands.rerollColors`) work on top of the same palette model.
 
+#### 7.19.1 The two-stage profile (`lyrics/gen-params.js`, `studio/direct.js`)
+
+The theme dialog (`studio/theme-editor.js`) is a probability editor, not a concrete-style editor. It defines what the automatic direction draws in two stages:
+
+1. **The axes** (the table above) derive every parameter automatically.
+2. **Individual parameters** the user moves are pinned in `styleMode.params` (a missing key = automatic), `styleMode.typeWeights` (per effect type, missing = 1, 0 removes the type from the automatic draws) and `styleMode.usePalettes` (the palette lottery's sources; empty = generated from the axes). The ↺ button returns a value to the axes.
+
+`SA.genParams` owns the parameter table (`PARAMS`: key, tab, group, range, `derive(axes)`), `derive` (all automatic values), `resolve` (derived + pinned, clamped), `isPinned`, `typeWeight` / `lookTypeWeight` and `normalizeChances`. The classic formulas (`sizeChange`, `colorChange`, `basePaletteChance`, the figure density, `heroScale`) delegate to the existing functions, so a project without pinned values and raw weird 0 keeps the byte-identical output of the pre-profile generator. New random draws live on their own `rng.rngFor(seed, id, '<name>')` streams and never reorder the existing ones.
+
+The profile reaches the generator through `direct.prepare` (`ctx.params`, `ctx.pinned`, `ctx.typeWeights`, `ctx.usePalettes`, `ctx.curve`) and is saved back by `direct.run` (only the pinned keys). `store.modeAxes()` resolves the same profile for beat / cue re-rolls. The drawing changes:
+
+- **Sizes** (`weird.sizeWeights` + `createSizeLadder`): the ten levels carry a Gaussian weight curve (centre `sizeCenter`, spread `sizeSpread`); the ladder balances `time / weight` and the loudness of each beat (`audioDriver.rangeEnergy`) shifts the centre per beat (`sizeFollow`). `sizeRangeFor` raises the body floor so even a 0.55× particle span keeps the legibility minimum, and `fitComposeSpans` shrinks an over-long hero span and raises the particles after the pick.
+- **Backdrop** (`moods.planeBackdropSpec`): 1–4 planes drawn from the background slot only (second plane = a lightness step, third = the scheme hue, fourth = its companion), each passed through `separatePlane` against the cue's text colours at the backdrop floor. The accent texture uses `accentColors` (±0.12 lightness) with a quiet opacity cap. The old split path stays for callers without `options.planes`.
+- **Foreground / decoration** (`direct.foregroundFor` / `decorationFor`): `vivid` swaps body and hero roles, `gradient` paints the body, `effect` keeps the drawn fill or draws one; `decoOutline` … `decoGlow` build the edge stack (literal hexes follow the existing `recolor`), with a separation outline guaranteed when two or more planes sit behind a cue.
+- **Figures** (`figures.js`): the six bold motifs (`slabWipe`, `cornerBlocks`, `ringDraw`, `stripeRun`, `dotGrid`, `sideBars`) draw thick shapes in the bands and corners around the text box, with the `snap` easing and a longer in window; `figureBold` picks them and the dim fallback keeps the least-covering motif.
+- **Readability** (`legibility.SMEAR_POSTS`, `paletteRoles.schemes(colors, w, range)`, the `direct.run` final sweep): the smear posts are gated behind `postBlur`, a calm `schemeRange` restricts the beat colour schemes to the readable swaps, and every beat is resolved and checked at the end of a run; a failure is repaired in order (legibility repair → colour scheme off when it is the cause → plain text role → separation outline).
+
+`fear` (`fx-axes.js`) keeps its own row as before: the extended pools open at ≥ 0.5 and the fear factor multiplies the draw weights.
+
 ## 8. WebGL2 rendering (`lyrics/gl/*`, `lyrics/engine.js`)
 
 ### 8.1 Context

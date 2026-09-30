@@ -17,7 +17,7 @@
   // stay with the song so the lyrics keep their place and palette (a very weird
   // song lets the cue look move layout and location too).
   const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'colorScheme', 'text', 'transform', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg'];
   // the tracks a run owns (only clips carrying `auto` are replaced)
   const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
@@ -29,6 +29,47 @@
   function trackIdFor(projectDoc, kind) {
     const track = (projectDoc.tracks || []).find((entry) => entry.kind === kind);
     return track ? track.id : null;
+  }
+
+  // The accent colours of a palette: the readable roles the beat colour draws
+  // use. The background track must be visible for the accents to land on.
+  function accentsOf(colors) {
+    const palette = Array.isArray(colors) ? colors : [];
+    const bgColor = SA.color.parse(palette[0] || '#000000');
+    const accentIdx = [3, 5, 6, 2].filter((i) => palette[i] && SA.color.contrastRatio(SA.color.parse(palette[i]), bgColor) >= 3);
+    return { accentIdx, accentHexes: accentIdx.map((i) => palette[i]) };
+  }
+
+  // The text / hero colours of a palette through the role table (legacy aware):
+  // the backdrop planes must separate from both.
+  function textColorsOf(colors) {
+    const roles = SA.paletteRoles;
+    if (roles && typeof roles.get === 'function') {
+      return [roles.get(colors, roles.SLOT.TEXT_FILL), roles.get(colors, roles.SLOT.TEXT_FILL2)].filter(Boolean);
+    }
+    return [(colors || [])[2], (colors || [])[3]].filter(Boolean);
+  }
+
+  // The profile's figure colours: two steps of the backdrop planes, kept 1.5+
+  // apart from the planes and at the backdrop floor from the text.
+  function figureColors(planes, textColors, rawW) {
+    const list = (Array.isArray(planes) ? planes : []).filter((hex) => typeof hex === 'string' && hex);
+    if (!list.length) return null;
+    const shiftV = (hex, delta) => {
+      try {
+        const hsv = SA.color.rgbToHsv(SA.color.parse(hex));
+        return SA.color.toHex({ ...SA.color.hsvToRgb({ ...hsv, v: Math.max(0, Math.min(1, hsv.v + delta)), a: 1 }), a: 1 });
+      } catch {
+        return hex;
+      }
+    };
+    const target = SA.weird && typeof SA.weird.backdropContrast === 'function' ? SA.weird.backdropContrast(rawW) : 3.5;
+    const separate = (hex, others, floor) => (SA.moods && typeof SA.moods.separatePlane === 'function' ? SA.moods.separatePlane(hex, others, floor) : hex);
+    const texts = (Array.isArray(textColors) ? textColors : []).filter(Boolean);
+    return [
+      separate(separate(shiftV(list[0], 0.12), list, 1.5), texts, target),
+      separate(separate(shiftV(list[1 % list.length], -0.12), list, 1.5), texts, target),
+    ];
   }
 
   // The fourth axis sets the letter spacing (em) around the theme's own value:
@@ -116,11 +157,40 @@
       for (const entry of Object.values(cueLooks)) if (entry && entry.style) stripPulse(entry.style);
     }
     const palette = (themeStyle && themeStyle.palette && themeStyle.palette.colors) || [];
-    const bgColor = SA.color.parse(palette[0] || '#000000');
-    const accentIdx = [3, 5, 6, 2].filter((i) => palette[i] && SA.color.contrastRatio(SA.color.parse(palette[i]), bgColor) >= 3);
-    const accentHexes = accentIdx.map((i) => palette[i]);
+    const { accentIdx, accentHexes } = accentsOf(palette);
     const baseSize = Number((themeStyle && themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
     const energy = Math.max(0, Math.min(1, Number(axes.energy) || 0.5));
+    // The tunable profile (theme dialog / saved themes): the axes derive every
+    // parameter, `params` overrides the ones the user fixed. The manual keys
+    // are kept apart (`pinned`), so a run writes only those back and a project
+    // without them reproduces the classic generator exactly.
+    const styleMode = (doc && doc.styleMode) || {};
+    const paramsSource = opts.params !== undefined ? opts.params : styleMode.params || {};
+    const genParams = SA.genParams;
+    if (!genParams || typeof genParams.resolve !== 'function') throw new Error('SA.genParams is required by SA.direct');
+    const params = genParams.resolve({ axes, params: paramsSource || {} });
+    const pinned = {};
+    for (const def of genParams.PARAMS) {
+      if (genParams.isPinned({ params: paramsSource || {} }, def.key)) pinned[def.key] = params[def.key];
+    }
+    const typeWeights = opts.typeWeights !== undefined ? opts.typeWeights : styleMode.typeWeights || null;
+    const usePalettes = opts.usePalettes !== undefined ? opts.usePalettes : Array.isArray(styleMode.usePalettes) ? styleMode.usePalettes : [];
+    // The size curve / foreground / decoration draws only change the picture
+    // once the curve is on: raw weird above 0 or at least one pinned parameter.
+    // weird 0 without pinned values keeps every path on its classic branch.
+    const curve = rawW > 0 || Object.keys(pinned).length > 0;
+    // The smear posts (blur / displacement) are gated by postBlurChance while
+    // the compose mode is on: the lyrics only sit under one on a successful
+    // roll. weird 0 keeps the drawn look, and no extra random is drawn
+    // otherwise.
+    if (opts.compose && rawW > 0 && themeStyle && SA.legibility && SA.legibility.SMEAR_POSTS && Array.isArray(themeStyle.post)) {
+      const gate = params.postBlurChance;
+      const roll = SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'smear')();
+      if (roll >= gate) {
+        themeStyle.post = themeStyle.post.filter((entry) => !entry || !SA.legibility.SMEAR_POSTS.has(entry.type));
+        if (!themeStyle.post.length) delete themeStyle.post;
+      }
+    }
     // Phrase rhythm: a weird song lays a pattern library over the bars instead
     // of cutting every cue on the same grid (w=0 keeps the old output exactly).
     let rhythm = null;
@@ -167,7 +237,43 @@
       accentIdx,
       accentHexes,
       energy,
+      params,
+      pinned,
+      typeWeights,
+      usePalettes,
+      curve,
+      cueForeground: {},
+      cueBold: {},
+      cueFont: {},
+      cueShift: {},
+      cueRepeat: {},
+      backdropSpecs: null,
+      backdropPlanes: {},
     };
+  }
+
+  // The clone stack of a weird cue: a small drift / hue family around the
+  // lyrics. The composition path and the classic cue draw share it, so both
+  // consume the same randoms for the same seed.
+  function clonesFor(random, w) {
+    const count = 1 + Math.floor(random() * 3);
+    const s = (a) => Math.round((random() * 2 - 1) * a * 1000) / 1000;
+    return Array.from({ length: count }, (_, i) => ({
+      id: `wclone_${i}`,
+      enabled: true,
+      dx: s(0.06 * w),
+      dy: s(0.06 * w),
+      scale: Math.round((1 + s(0.3 * w)) * 100) / 100,
+      rotate: Math.round(s(15 * w)),
+      opacity: Math.round((0.35 + random() * 0.25) * 100) / 100,
+      hue: Math.round(s(180 * w)),
+      delay: Math.round((0.03 + random() * 0.09) * 100) / 100,
+      motion: {
+        type: pick(random, ['drift', 'float', 'pulse', 'orbit', 'spin']),
+        amount: Math.round((0.02 + 0.04 * w) * 1000) / 1000,
+        speed: Math.round((0.5 + random() * 1.5) * 100) / 100,
+      },
+    }));
   }
 
   // A cue's own drawn look and the weird-axis patches (palette, location, font,
@@ -195,55 +301,115 @@
     if (w > 0 && !ctx.compose) {
       // E3: a weird song lets every cue draw its own colours, position,
       // font, repeat and clones. The draws are seeded per cue, so a seed
-      // reproduces them and weird 0 consumes none of them.
+      // reproduces them and weird 0 consumes none of them. The thresholds are
+      // the profile's chances (their derived values are the old literals).
+      const p = ctx.params;
       const cr = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'weird-cue');
       const own = () => projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
       // location (G8): nudge the anchor and sometimes let it float
-      if (cr() < 0.5 * w) {
+      if (cr() < p.locationChance) {
         const base = own().location || themeStyle.location || { type: 'center', params: {} };
-        const type = w >= 0.6 && cr() < 0.3 * w ? 'randomSafe' : base.type;
+        const type = w >= 0.6 && cr() < p.floatChance ? 'randomSafe' : base.type;
         own().location = {
           ...base,
           type,
           params: {
             ...(base.params || {}),
-            offsetX: Math.round((cr() * 2 - 1) * 0.25 * w * 100) / 100,
-            offsetY: Math.round((cr() * 2 - 1) * 0.25 * w * 100) / 100,
+            offsetX: Math.round((cr() * 2 - 1) * p.locationRange * 100) / 100,
+            offsetY: Math.round((cr() * 2 - 1) * p.locationRange * 100) / 100,
           },
           enabled: true,
         };
       }
       // font (I17)
-      if (cr() < 0.3 * w) {
+      if (cr() < p.fontChance) {
         const fontId = SA.moods.weirdFont(cr, cueContext, themeStyle.text && themeStyle.text.fontId);
         if (fontId) own().text = { ...(own().text || {}), fontId };
       }
       // repeat (G2)
-      if (SA.random && SA.random.repeatPatch && cr() < 0.35 * w) {
+      if (SA.random && SA.random.repeatPatch && cr() < p.repeatChance) {
         const merged = { ...themeStyle, ...own() };
         const repeat = SA.random.repeatPatch(cr, { ...cueContext, weird: w });
         if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) own().repeat = repeat;
       }
       // clones (G3)
-      if (cr() < 0.5 * w) {
-        const count = 1 + Math.floor(cr() * 3);
-        const s = (a) => Math.round((cr() * 2 - 1) * a * 1000) / 1000;
-        own().clones = Array.from({ length: count }, (_, i) => ({
-          id: `wclone_${i}`,
-          enabled: true,
-          dx: s(0.06 * w),
-          dy: s(0.06 * w),
-          scale: Math.round((1 + s(0.3 * w)) * 100) / 100,
-          rotate: Math.round(s(15 * w)),
-          opacity: Math.round((0.35 + cr() * 0.25) * 100) / 100,
-          hue: Math.round(s(180 * w)),
-          delay: Math.round((0.03 + cr() * 0.09) * 100) / 100,
-          motion: {
-            type: pick(cr, ['drift', 'float', 'pulse', 'orbit', 'spin']),
-            amount: Math.round((0.02 + 0.04 * w) * 1000) / 1000,
-            speed: Math.round((0.5 + cr() * 1.5) * 100) / 100,
-          },
-        }));
+      if (cr() < p.clonesChance) own().clones = clonesFor(cr, w);
+    }
+    if (ctx.compose) {
+      // The compose profile draws once per cue: the foreground treatment, the
+      // bold body and the cue-level text treatment / motion patches. All new
+      // streams, so the classic draws keep their exact consumption. The extra
+      // chances only roll once the curve is on (raw weird above 0 or a pinned
+      // value), so weird 0 stays untouched.
+      ctx.cueContext = cueContext;
+      const colors = ctx.cuePaletteColors || baseColors;
+      const fr = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'foreground');
+      const foreground = foregroundFor(fr, ctx, colors);
+      if (foreground) {
+        if (foreground.fill) {
+          const own = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+          own.fill = foreground.fill;
+        }
+        if (foreground.color) ctx.cueForeground[cue.id] = foreground;
+      }
+      const params = ctx.params || {};
+      if (params.boldChance > 0) {
+        const br = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'bold');
+        if (br() < params.boldChance) ctx.cueBold[cue.id] = true;
+      }
+      if (ctx.curve) {
+        const gp = SA.genParams;
+        const pinned = ctx.pinned || {};
+        const own = () => projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+        // font (I17): the cue's own face, inherited by its beats
+        const fontRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'font');
+        if (gp.roll(fontRandom, params.fontChance)) {
+          const fontId = SA.moods.weirdFont(fontRandom, cueContext, themeStyle.text && themeStyle.text.fontId);
+          if (fontId) {
+            own().text = { ...(own().text || {}), fontId };
+            ctx.cueFont[cue.id] = fontId;
+          }
+        }
+        // location (G8): the cue nudges its anchor, sometimes floats
+        const locationRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'location');
+        if (gp.roll(locationRandom, params.locationChance)) {
+          ctx.cueShift[cue.id] = {
+            dx: Math.round((locationRandom() * 2 - 1) * params.locationRange * 100) / 100,
+            dy: Math.round((locationRandom() * 2 - 1) * params.locationRange * 100) / 100,
+            float: gp.roll(locationRandom, params.floatChance),
+          };
+        }
+        // repeat (G2)
+        const repeatRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'repeat');
+        if (SA.random && SA.random.repeatPatch && gp.roll(repeatRandom, params.repeatChance)) {
+          const merged = { ...themeStyle, ...own() };
+          const repeat = SA.random.repeatPatch(repeatRandom, { ...cueContext, weird: ctx.w });
+          if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) {
+            own().repeat = repeat;
+            ctx.cueRepeat[cue.id] = repeat;
+          }
+        }
+        // clones (G3)
+        const clonesRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'clones');
+        if (gp.roll(clonesRandom, params.clonesChance)) own().clones = clonesFor(clonesRandom, ctx.w);
+        // text background: pinned profile values win, otherwise the genre's
+        // own tables, otherwise the derived defaults. The draw happens inside
+        // applyGenreBackground on this cue's own stream.
+        const bgRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'text-bg');
+        const bgStyle = {};
+        const bgOptions = {};
+        if (pinned.textBgChance != null) bgOptions.chance = params.textBgChance;
+        if (pinned.bgEnclose != null || pinned.bgAccent != null || pinned.bgUnderlay != null) {
+          bgOptions.placement = { bgEnclose: params.bgEnclose, bgAccent: params.bgAccent, bgUnderlay: params.bgUnderlay };
+        }
+        if (pinned.bgVaryChance != null) bgOptions.varyChance = params.bgVaryChance;
+        if (pinned.bgEdgeChance != null) bgOptions.edgeChance = params.bgEdgeChance;
+        const genreDef = genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(genre) : null;
+        if (SA.moods.applyGenreBackground(bgStyle, genreDef, axes, bgRandom, colors, false, bgOptions)) {
+          for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion']) {
+            if (bgStyle[group]) own()[group] = bgStyle[group];
+          }
+        }
       }
     }
     if (!look) {
@@ -254,6 +420,7 @@
         genre,
         context: cueContext,
         emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
+        typeWeights: ctx.typeWeights,
       }).style;
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
         enter: generated.enter,
@@ -284,6 +451,14 @@
   }
 
   const COMPOSE_CJK_RE = /[\u3000-\u303f\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff\uff00-\uffef]/;
+
+  // The shape layers the Chinese-graphic chance borrows from the three
+  // templates that carry one (leftHeadline / lowerBand / bracketCenter).
+  const COMPOSE_GRAPHICS = [
+    { shape: 'underline', drive: 'enter', stroke: 5, padding: 0.1, feather: 0.04, glow: 0.3 },
+    { shape: 'box', drive: 'enter', stroke: 3.5, padding: 0.14, feather: 0.02, glow: 0.25 },
+    { shape: 'brackets', drive: 'enter', stroke: 4, padding: 0.12, feather: 0.05, glow: 0.3 },
+  ];
 
   // Rough px box of the first beat's composed text (no font metrics are loaded
   // here): line widths from the span scales and a 1em / 0.58em per character
@@ -339,20 +514,23 @@
   const SIZE_LEVELS = 10; // 10% steps from the legible floor to the full screen
   const SIZE_FLOOR_PX = 24; // the hard floor directBeat always had
 
-  // The size range of one beat: the legibility floor (legibility.js
-  // MIN_SIZE_RATIO × frame height) up to the size that fills the frame with the
-  // beat's own lines. `spanScale` is the largest compose span scale, so a hero
-  // word at 2× still fits.
-  function sizeRangeFor(beat, textStyle, ctx, spanScale) {
+  // The size range of one beat: the readable floor up to the size that fills
+  // the frame with the beat's own lines. `spanScale` is the largest compose
+  // span scale, so a hero word at 2x still fits. `minScale` is the smallest
+  // span scale in play (a particle at 0.55): the body floor rises so even the
+  // smallest on-screen glyph keeps the legibility minimum.
+  function sizeRangeFor(beat, textStyle, ctx, spanScale, minScale) {
     const ratio = (SA.legibility && SA.legibility.MIN_SIZE_RATIO) || 0.045;
-    const floor = Math.max(SIZE_FLOOR_PX, Math.ceil(ratio * ctx.frameH));
+    const hardFloor = Math.max(SIZE_FLOOR_PX, Math.ceil(ratio * ctx.frameH));
+    const smallest = Math.max(0.7, Math.min(1, Number(minScale) == null || !Number.isFinite(Number(minScale)) ? 1 : Number(minScale)));
+    const floor = Math.max(SIZE_FLOOR_PX, Math.ceil(hardFloor / smallest));
     const lines = beat.lines && beat.lines.length ? beat.lines : [beat.text || ''];
     const full = SA.textflow && typeof SA.textflow.maxSizeForLines === 'function'
       ? SA.textflow.maxSizeForLines(lines, { style: textStyle || {}, frame: { width: ctx.frameW, height: ctx.frameH }, aspect: ctx.portrait ? '9:16' : '16:9', lang: ctx.lang })
       : ctx.screen * 0.3;
     const max = Math.floor(full / Math.max(1, spanScale || 1));
     // a very long line cannot reach the floor: the whole ladder collapses onto max
-    return { min: Math.min(floor, max), max: Math.max(1, max) };
+    return { min: Math.min(floor, max), max: Math.max(1, max), floor, full };
   }
 
   function sizeLevels(range) {
@@ -367,11 +545,20 @@
     return best;
   }
 
-  // The auto-direct size ladder. `change` (weird.sizeChange) is the chance the
-  // next beat moves to another level; moving picks the level that has had the
-  // least screen time so far (ties at random), never the previous one, so over
-  // a song every level gets about the same time. change 0 returns baseSize for
-  // every beat and draws no random.
+  // Level weights for the ladder: the mean is 1, so the uniform case (no
+  // weights, no curve) keeps the classic formula and its draws.
+  function normalizeLevelWeights(list) {
+    const total = list.reduce((sum, value) => sum + Math.max(0, Number(value) || 0), 0);
+    if (!(total > 0)) return null;
+    const mean = total / list.length;
+    return list.map((value) => Math.max(0, Number(value) || 0) / mean);
+  }
+
+  // The auto-direct size ladder. `change` (sizeChange) is the chance the next
+  // beat moves to another level; moving picks the level with the least
+  // time/weight so far (ties at random), never the previous one. Without
+  // weights / center the weights are all 1 and the pick is exactly the old
+  // least-screen-time draw. change 0 returns baseSize and draws no random.
   function createSizeLadder(options) {
     const change = Math.max(0, Math.min(1, Number(options.change) || 0));
     const baseSize = Number(options.baseSize) || 96;
@@ -379,6 +566,18 @@
     const time = new Array(SIZE_LEVELS).fill(0);
     let spent = 0;
     let count = 0;
+    const fixedWeights =
+      Array.isArray(options.weights) && options.weights.length === SIZE_LEVELS ? normalizeLevelWeights(options.weights) : null;
+    const center = Number.isFinite(Number(options.center)) ? Math.max(0, Math.min(1, Number(options.center))) : null;
+    const spread = Number.isFinite(Number(options.spread)) ? Math.max(0.01, Number(options.spread)) : 0.28;
+    const curved = !!(fixedWeights || center != null);
+    function weightsFor(centerShift) {
+      if (!curved) return null;
+      if (fixedWeights) return fixedWeights;
+      const shift = Number(centerShift);
+      const c = Math.max(0, Math.min(1, center + (Number.isFinite(shift) ? shift : 0)));
+      return SA.weird.sizeWeights(SIZE_LEVELS, c, spread);
+    }
     function record(level, duration) {
       if (level == null) return;
       const d = Math.max(0.05, Number(duration) || 0);
@@ -386,13 +585,16 @@
       spent += d;
       count += 1;
     }
-    function choose({ duration, range, prev, avoid }) {
+    function choose({ duration, range, prev, avoid, centerShift }) {
       if (change <= 0) return { px: baseSize, level: null };
       const levels = sizeLevels(range);
+      const weights = weightsFor(centerShift);
       let level;
       let px;
       if (!prev) {
-        level = nearestLevel(levels, baseSize); // the song opens on the theme size
+        // the song opens on the theme size; with a curve it opens on the
+        // most likely level instead
+        level = weights ? weights.indexOf(Math.max(...weights)) : nearestLevel(levels, baseSize);
         px = levels[level];
       } else if (random() >= change) {
         px = Math.max(levels[0], Math.min(levels[SIZE_LEVELS - 1], prev.px)); // keep the size
@@ -400,10 +602,14 @@
       } else {
         const banned = new Set([prev.level, avoid].filter((k) => k != null));
         let candidates = levels.map((_, k) => k).filter((k) => !banned.has(k));
+        if (weights) candidates = candidates.filter((k) => weights[k] > 0);
+        if (!candidates.length) candidates = levels.map((_, k) => k).filter((k) => !weights || weights[k] > 0);
         if (!candidates.length) candidates = levels.map((_, k) => k);
-        const least = Math.min(...candidates.map((k) => time[k]));
+        const need = (k) => (weights ? time[k] / weights[k] : time[k]);
+        const least = Math.min(...candidates.map(need));
         const slack = 0.5 * (count ? spent / count : Math.max(0.05, duration));
-        const tied = candidates.filter((k) => time[k] <= least + slack);
+        const average = weights ? weights.reduce((sum, value) => sum + value, 0) / SIZE_LEVELS : 1;
+        const tied = candidates.filter((k) => need(k) <= least + slack / Math.max(1e-6, average));
         level = tied[Math.min(tied.length - 1, Math.floor(random() * tied.length))];
         px = levels[level];
       }
@@ -414,11 +620,35 @@
   }
 
   // The ladder pick for one beat in song order: the caller's `ctx.sizePrev` is
-  // the previous beat's pick.
-  function ladderPx(ctx, beat, range) {
-    const pick = ctx.sizeLadder.choose({ duration: beat.end - beat.start, range, prev: ctx.sizePrev });
+  // the previous beat's pick. `centerShift` moves this beat's curve with the
+  // music (the beat's energy against the song average).
+  function ladderPx(ctx, beat, range, centerShift) {
+    const pick = ctx.sizeLadder.choose({ duration: beat.end - beat.start, range, prev: ctx.sizePrev, centerShift });
     ctx.sizePrev = pick;
     return pick.px;
+  }
+
+  // The composed beat's last readability gate: the hero span shrinks until the
+  // whole line fits above the floor, and every particle span rises until its
+  // own glyph keeps the floor. `px` is the body size the ladder picked.
+  function fitComposeSpans(text, range, px) {
+    const compose = text && text.compose;
+    if (!compose || !Array.isArray(compose.spans) || !compose.spans.length) return;
+    const floor = Number(range && range.floor) || 0;
+    const full = Number(range && range.full) || 0;
+    if (floor > 0 && full > 0) {
+      const cap = Math.max(1, Math.round((full / floor) * 100) / 100);
+      for (const span of compose.spans) {
+        if ((Number(span.scale) || 1) > cap) span.scale = cap;
+      }
+    }
+    const body = Number(px) || 0;
+    if (body > 0 && floor > 0) {
+      for (const span of compose.spans) {
+        const scale = Number(span.scale) || 1;
+        if (scale < 1) span.scale = Math.min(1, Math.max(scale, floor / body));
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -436,20 +666,56 @@
     }, 0);
   }
 
+  // The palette a run draws from when the profile lists use-palettes: the
+  // listed palette furthest from the avoid lists (the base and the previous
+  // cue), repaired so the text keeps its contrast. The colours are copied, so
+  // a run never mutates the stored library entry.
+  function pickUsePalette(random, usePalettes, avoidLists, rawW) {
+    const list = (Array.isArray(usePalettes) ? usePalettes : []).filter(
+      (entry) => entry && Array.isArray(entry.colors) && entry.colors.filter((hex) => typeof hex === 'string').length
+    );
+    if (!list.length) return null;
+    const avoid = (avoidLists || []).filter((colors) => Array.isArray(colors) && colors.length);
+    let best = null;
+    let bestScore = -1;
+    list.forEach((entry) => {
+      const base = avoid.length ? Math.min(...avoid.map((colors) => paletteDistance(entry.colors, colors))) : 0;
+      const score = base + (random ? random() : 0) * 1e-6;
+      if (score > bestScore) {
+        bestScore = score;
+        best = entry;
+      }
+    });
+    const colors = best.colors.slice();
+    if (SA.moods && typeof SA.moods.repairContrast === 'function') {
+      const contrast = SA.weird && typeof SA.weird.paletteContrast === 'function' ? SA.weird.paletteContrast(rawW) : 4.5;
+      SA.moods.repairContrast(colors, contrast, { keepText: true });
+    }
+    return { id: best.id || 'use-palette', name: best.name || 'palette', colors };
+  }
+
   // The cue palette lottery: weird 0 keeps every cue on the base palette, weird
-  // 1 re-rolls every cue (the base chance is 1 - weird). The drawn palette
+  // 1 re-rolls every cue (`paletteSwitchChance` = weird). The drawn palette
   // avoids the base and the previous cue's palette so the change is always
   // visible. Returns the drawn palette (without the `auto` marker) or null.
+  // The keep roll stays `random() < 1 - switchChance`, the exact form the old
+  // keep-the-base draw used, so a seed switches the same cues as before.
   function cuePalette(projectDoc, cue, cueIndex, ctx, prevColors) {
-    const chance = SA.weird && typeof SA.weird.basePaletteChance === 'function' ? SA.weird.basePaletteChance(ctx.axes) : 1;
-    if (!(chance < 1) || !cue || !SA.moods || !SA.rng) return null;
+    const switchChance = ctx.params ? ctx.params.paletteSwitchChance : 0;
+    if (!(switchChance > 0) || !cue || !SA.moods || !SA.rng) return null;
     const baseColors = (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
     if (!baseColors.length || typeof SA.moods.generatePalette !== 'function') return null;
     const random = SA.rng.rngFor(ctx.seed + cueIndex * 131, cue.id, 'cue-palette');
-    if (random() < chance) return null;
-    const genre = ctx.genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(ctx.genre) : null;
+    if (random() < 1 - switchChance) return null;
     const avoid = [baseColors];
     if (Array.isArray(prevColors) && prevColors.length) avoid.push(prevColors);
+    // the profile's use-palettes replace the on-the-fly generation entirely
+    const usePalettes = Array.isArray(ctx.usePalettes) ? ctx.usePalettes : [];
+    if (usePalettes.length && typeof pickUsePalette === 'function') {
+      const picked = pickUsePalette(random, usePalettes, avoid, ctx.rawW);
+      if (picked) return picked;
+    }
+    const genre = ctx.genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(ctx.genre) : null;
     let best = null;
     let bestScore = -1;
     for (let i = 0; i < 3; i += 1) {
@@ -470,10 +736,16 @@
   // never the previous one. change 0 returns null for every beat and draws no
   // random. `prev` is `{ id, start }`: id null = the base colours, start = when
   // the current choice began (beats closer than 0.5 s keep it to stop flicker).
+  // `invert` (compose profile) is the chance of toggling the inverted scheme:
+  // when it is passed, the invert id leaves the normal candidate pool and the
+  // dedicated `invertRandom` stream owns entering / leaving it.
   const COLOR_LADDER_GAP = 0.5;
   function createColorLadder(options) {
     const change = Math.max(0, Math.min(1, Number(options && options.change) || 0));
     const random = options && options.random;
+    const invert = options && options.invert != null ? Math.max(0, Math.min(1, Number(options.invert) || 0)) : null;
+    const invertRandom = options && options.invertRandom;
+    const invertId = SA.paletteRoles && SA.paletteRoles.SCHEME_INVERT ? SA.paletteRoles.SCHEME_INVERT : 'TMBD';
     const time = new Map();
     let spent = 0;
     let count = 0;
@@ -496,6 +768,14 @@
         return prev.id;
       };
       if (start - prev.start < COLOR_LADDER_GAP) return hold();
+      if (invert != null && invertRandom) {
+        const canInvert = (candidates || []).some((entry) => keyOf(entry && entry.id != null ? entry.id : entry) === invertId);
+        if (canInvert && SA.genParams.roll(invertRandom, invert)) {
+          const pick = keyOf(prev.id) === invertId ? null : invertId;
+          record(pick, duration);
+          return pick;
+        }
+      }
       if (random() >= change) return hold();
       const ids = [null].concat((candidates || []).map((entry) => (entry && entry.id != null ? entry.id : entry)));
       const pool = ids.filter((id) => keyOf(id) !== keyOf(prev.id));
@@ -508,6 +788,145 @@
       return pick;
     }
     return { change, record, choose };
+  }
+
+  const DECO_TYPES = {
+    decoNone: 'none',
+    decoOutline: 'outline',
+    decoShadow: 'dropShadow',
+    decoExtrude: 'extrude',
+    decoLongShadow: 'longShadow',
+    decoDouble: 'multiLine',
+    decoGlow: 'neonGlow',
+  };
+
+  function roleHex(colors, name, legacy) {
+    const roles = SA.paletteRoles;
+    if (roles && typeof roles.get === 'function' && roles.SLOT && roles.SLOT[name] != null) return roles.get(colors, roles.SLOT[name]);
+    return (colors || [])[legacy];
+  }
+
+  // The surrounding decoration of one cue, drawn from the profile's weights.
+  // Returns an edge stack for `cueStyles[id].edge` or null (keep the theme's
+  // own edge). A cue whose backdrop paints two or more planes always gets a
+  // separation outline when the draw picked `none` — unless the user pinned
+  // the decoration keys themselves.
+  function decorationFor(random, ctx, colors, planeCount) {
+    const genParams = SA.genParams;
+    const params = ctx.params;
+    if (!genParams || !params) return null;
+    const profile = { typeWeights: ctx.typeWeights };
+    const weights = {};
+    for (const key of genParams.DECO_KEYS) {
+      const type = DECO_TYPES[key];
+      if (genParams.typeWeight(profile, 'edge', type) <= 0) continue;
+      weights[key] = params[key];
+    }
+    // a bright background cannot hold a glow: only dark stages draw one
+    const dark = (() => {
+      const hex = (colors || [])[0];
+      if (!hex) return true;
+      try {
+        return SA.color.rgbToHsv(SA.color.parse(hex)).v < 0.5;
+      } catch {
+        return true;
+      }
+    })();
+    if (!dark) weights.decoGlow = 0;
+    const keys = genParams.DECO_KEYS.filter((key) => weights[key] != null);
+    const type = genParams.pickWeighted(random, weights, keys);
+    if (!type || type === 'decoNone') {
+      // the separation guarantee: two or more planes behind the text need an
+      // outline, unless the profile pinned decoNone on purpose
+      if (planeCount >= 2 && ctx.pinned.decoNone == null) {
+        const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
+        return [{ type: 'outline', params: { width: 2.5, color: textBg }, enabled: true }];
+      }
+      return null;
+    }
+    const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
+    const textEdge = roleHex(colors, 'TEXT_EDGE', 6) || textBg;
+    const textFill2 = roleHex(colors, 'TEXT_FILL2', 5) || '#ffffff';
+    const instanceOf = (edgeType, params2) => ({ type: edgeType, params: { ...SA.fx.paramDefaults('edge', edgeType), ...params2 }, enabled: true });
+    switch (type) {
+      case 'decoOutline':
+        return [instanceOf('outline', { width: Math.round((3 + random() * 3) * 10) / 10, color: textBg })];
+      case 'decoShadow':
+        return [
+          instanceOf('outline', { width: 2, color: textBg }),
+          instanceOf('dropShadow', { offset: { x: 5, y: 6 }, blur: 0, opacity: 0.9 }),
+        ];
+      case 'decoExtrude':
+        return [instanceOf('extrude', { depth: Math.round(10 + random() * 12), angle: 135, colorNear: textEdge, colorFar: textBg })];
+      case 'decoLongShadow':
+        return [instanceOf('longShadow', { length: Math.round(30 + random() * 30), angle: 135, fade: 0.6 })];
+      case 'decoDouble':
+        return [instanceOf('multiLine', { count: 2, width: 2.5, gap: 3, colorRule: 'alternate', colorA: textBg, colorB: textFill2 })];
+      case 'decoGlow': {
+        const stack = [instanceOf('outline', { width: 2, color: textBg }), instanceOf('neonGlow', {})];
+        SA.moods.tameGlow({ edge: stack }, ctx.rawW);
+        return stack;
+      }
+      default:
+        return null;
+    }
+  }
+
+  // The foreground (fill) treatment of one cue: drawn from the profile's
+  // foreground weights. `solid` keeps the classic single-colour fill; `vivid`
+  // swaps the body onto the accent role and the hero onto the text role;
+  // `gradient` paints the body between the two; `effect` keeps the drawn fill
+  // when the theme has one, otherwise it draws a fill effect of its own.
+  function foregroundFor(random, ctx, colors) {
+    const genParams = SA.genParams;
+    const params = ctx.params;
+    if (!genParams || !params) return null;
+    const type = genParams.pickWeighted(random, params, genParams.FG_KEYS);
+    if (!type || type === 'fgSolid') return null;
+    const list = Array.isArray(colors) ? colors : (colors && Array.isArray(colors.colors) ? colors.colors : []);
+    if (!list.length) return null;
+    const fill = SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(list, 4) : 2;
+    const fill2 = SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(list, 5) : 3;
+    const bg = SA.color.parse(list[0] || '#000000');
+    const readable = (hex) => !!hex && SA.color.contrastRatio(SA.color.parse(hex), bg) >= 4.5;
+    if (type === 'fgVivid') {
+      if (!readable(list[fill2])) return null; // a low-contrast accent falls back to solid
+      return { color: { fill: { kind: 'palette', index: fill2 }, fill2: { kind: 'palette', index: fill } } };
+    }
+    if (type === 'fgGradient') {
+      if (!readable(list[fill]) || !readable(list[fill2])) return null;
+      return {
+        color: {
+          fill: {
+            kind: 'gradient',
+            type: 'linear',
+            angle: 90,
+            stops: [
+              { pos: 0, paletteIndex: fill },
+              { pos: 1, paletteIndex: fill2 },
+            ],
+          },
+        },
+      };
+    }
+    if (type === 'fgEffect') {
+      const fill = fillEffectFor(random, ctx);
+      return fill ? { fill } : null;
+    }
+    return null;
+  }
+
+  // A fill effect of the profile's grammar: the drawn look's own fill wins, and
+  // a missing registry / pool yields nothing. Shared by the cue-level
+  // foreground (which wraps it in `{ fill }`) and the per-beat fill roll.
+  function fillEffectFor(random, ctx) {
+    const themeFill = ctx.themeStyle && ctx.themeStyle.fill;
+    if (themeFill && themeFill.type) return null; // the drawn look already carries one
+    if (!SA.moods || typeof SA.moods.pickEntry !== 'function') return null;
+    const entry = SA.moods.pickEntry(random, 'fill', ctx.axes, ctx.cueContext || {}, ctx.direction, null, null, { typeWeights: ctx.typeWeights });
+    if (!entry) return null;
+    const fallback = SA.fx && typeof SA.fx.paramDefaults === 'function' ? SA.fx.paramDefaults('fill', entry) : {};
+    return { type: entry, params: fallback, enabled: true };
   }
 
   // One beat as a composition: analyse the text, pick a template and write the
@@ -524,6 +943,13 @@
       const sampled = SA.audioDriver.rangeEnergy(ctx.analysis, beat.start, beat.end);
       if (sampled != null) energy = sampled;
     }
+    const params = ctx.params || {};
+    // the beat's own loudness moves its size curve: a loud beat grows, a quiet
+    // one shrinks, always around the song's own average (0 without audio)
+    let centerShift = 0;
+    if (ctx.sizeLadder && ctx.sizeLadder.change > 0 && params.sizeFollow) {
+      centerShift = Math.max(-1, Math.min(1, params.sizeFollow * ((Number(energy) || 0) - (Number(ctx.energy) || 0)) * 2));
+    }
     const history = ctx.composeHistory || (ctx.composeHistory = []);
     const prev = [];
     for (let i = history.length - 1; i >= 0 && prev.length < 2; i -= 1) prev.push(history[i].id);
@@ -538,7 +964,15 @@
       prev,
       prevScale: last ? last.scaleClass : null,
     };
-    const comp = SA.compositions.pick(features, { seed: ctx.seed, beatId: beat.id, w: ctx.rawW, history });
+    const comp = SA.compositions.pick(features, {
+      seed: ctx.seed,
+      beatId: beat.id,
+      w: ctx.rawW,
+      history,
+      // the size centre bias only applies once the curve is on (raw weird > 0
+      // or a pinned parameter), so weird 0 keeps the classic composition draw
+      sizeCenter: ctx.curve ? params.sizeCenter : undefined,
+    });
     const patch = SA.compositions.build(comp, analysis, {
       seed: ctx.seed,
       beatId: beat.id,
@@ -546,19 +980,206 @@
       screen: ctx.screen,
       themeStyle: ctx.themeStyle,
       palette: (ctx.themeStyle && ctx.themeStyle.palette) || (projectDoc.style && projectDoc.style.palette) || null,
+      // the hero multiplier: the derived value equals the old (1 + 0.3w)
+      heroScale: params.heroScale,
     });
+    // the foreground profile: vivid swaps the body against the hero, gradient
+    // paints the body. Only written when the template carries a colour.
+    const foreground = ctx.cueForeground && ctx.cueForeground[cue.id];
+    if (foreground && foreground.color && patch.color) {
+      patch.color = { ...patch.color, ...foreground.color };
+    }
+    // boldChance: some cues set the body in 700 (400-weight templates only)
+    if (ctx.cueBold && ctx.cueBold[cue.id] && patch.text && patch.text.weight === 400) patch.text.weight = 700;
+    // graphicChance: templates without a graphic may still gain an underline /
+    // box / brackets shape layer behind the text
+    const graphicChance = ctx.curve && params.graphicChance != null ? Number(params.graphicChance) : 0;
+    if (!comp.graphic && graphicChance > 0) {
+      const gr = SA.rng.rngFor(ctx.seed + cueIndex * 131, beat.id, 'graphic');
+      if (gr() < graphicChance) {
+        const graphic = pick(gr, COMPOSE_GRAPHICS);
+        const layer = { type: 'shapeLayer', params: { ...graphic }, enabled: true };
+        patch.post = Array.isArray(patch.post) ? patch.post.concat([layer]) : [layer];
+      }
+    }
+    varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy);
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, patch);
     // the ladder owns the size above the template only while it is changing;
     // at change 0 the composition itself is the picture
     if (ctx.sizeLadder && ctx.sizeLadder.change > 0) {
       const text = projectDoc.beatStyles[beat.id].text;
       const spans = (text.compose && text.compose.spans) || [];
-      const spanScale = Math.max(1, ...spans.map((span) => Number(span.scale) || 1));
-      const px = ladderPx(ctx, beat, sizeRangeFor(beat, text, ctx, spanScale));
+      const scales = spans.map((span) => Number(span.scale) || 1);
+      const spanScale = scales.length ? Math.max(1, ...scales) : 1;
+      const minScale = scales.length ? Math.min(...scales) : 1;
+      let range = sizeRangeFor(beat, text, ctx, spanScale, minScale);
+      // a hero that cannot clear the floor even at its own scale shrinks until
+      // the whole line fits, then the range is measured again
+      if (range.full > 0 && range.max < range.floor) {
+        const cap = Math.max(1, range.full / range.floor);
+        for (const span of spans) if ((Number(span.scale) || 1) > cap) span.scale = Math.round(cap * 100) / 100;
+        const next = spans.map((span) => Number(span.scale) || 1);
+        range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1);
+      }
+      const px = ladderPx(ctx, beat, range, centerShift);
       text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
+      // every particle span rises until its own glyph keeps the floor
+      fitComposeSpans(text, range, px);
     }
     history.push(comp);
     if (ctx.composeZones && !ctx.composeZones[cue.id]) ctx.composeZones[cue.id] = estimateComposeZone(comp, analysis, patch, ctx);
+  }
+
+  // The per-beat variation of one composed picture. Every element has its own
+  // stream, so pinning one chance never shifts the others. Only the profile
+  // path (curve on) draws: weird 0 without pinned values leaves the template
+  // untouched.
+  function varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy) {
+    if (!ctx.compose || !ctx.curve || !ctx.params || !patch || !patch.text || !SA.genParams) return;
+    const p = ctx.params;
+    const gp = SA.genParams;
+    const cueContext = SA.moods.contextForCue(projectDoc, cue);
+    ctx.cueContext = cueContext;
+    const stream = (name) => SA.rng.rngFor(ctx.seed + cueIndex * 131, beat.id, name);
+    const duration = Math.max(0.05, (Number(beat.end) || 0) - (Number(beat.start) || 0));
+    // font (I17): a beat may leave the cue's face
+    const fontRandom = stream('beat-font');
+    if (gp.roll(fontRandom, p.beatFontChance)) {
+      const current = (ctx.cueFont && ctx.cueFont[cue.id]) || (ctx.themeStyle && ctx.themeStyle.text && ctx.themeStyle.text.fontId);
+      const fontId = SA.moods.weirdFont(fontRandom, cueContext, current);
+      if (fontId) patch.text.fontId = fontId;
+    }
+    // weight: only templates the cue did not already embolden
+    const boldRandom = stream('beat-bold');
+    if (!(ctx.cueBold && ctx.cueBold[cue.id]) && patch.text.weight === 400 && gp.roll(boldRandom, p.beatBoldChance)) {
+      patch.text.weight = 700;
+    }
+    // tracking / leading: the classic band formula around the profile's range
+    const spacingRandom = stream('spacing');
+    if (gp.roll(spacingRandom, p.spacingChance)) {
+      const r = p.spacingRange;
+      patch.text.letterSpacing = Math.round((-0.04 * r + spacingRandom() * (0.1 + 0.25 * r)) * 100) / 100;
+      patch.text.lineHeight = Math.round((1.2 + (spacingRandom() * 2 - 1) * 0.35 * r) * 100) / 100;
+    }
+    // alignment: a centred template may step off the middle
+    const alignRandom = stream('align');
+    if (patch.text.align === 'center' && gp.roll(alignRandom, p.alignChance)) {
+      patch.text.align = pick(alignRandom, ['left', 'right']);
+    }
+    // line width: only tightens
+    const widthRandom = stream('width');
+    if (gp.roll(widthRandom, p.widthChance)) {
+      const current = patch.text.maxWidth == null ? 0.9 : Number(patch.text.maxWidth);
+      patch.text.maxWidth = Math.round(Math.min(current, 0.5 + widthRandom() * 0.4) * 100) / 100;
+    }
+    // text colour: a gradient of two accents first, then a single accent
+    const colorRandom = stream('beat-color');
+    if (Array.isArray(ctx.accentIdx) && ctx.accentIdx.length) {
+      if (ctx.accentIdx.length >= 2 && gp.roll(colorRandom, p.gradientColorChance)) {
+        const [a, b] = [ctx.accentIdx[Math.floor(colorRandom() * ctx.accentIdx.length)], ctx.accentIdx[Math.floor(colorRandom() * ctx.accentIdx.length)]];
+        patch.color = {
+          fill: {
+            kind: 'gradient',
+            type: 'linear',
+            angle: Math.round(colorRandom() * 360),
+            stops: [
+              { pos: 0, paletteIndex: a },
+              { pos: 1, paletteIndex: b },
+            ],
+            animate: { angleSpeed: Math.round((colorRandom() * 2 - 1) * 90 * ctx.w), shiftSpeed: 0 },
+          },
+        };
+      } else if (gp.roll(colorRandom, p.accentColorChance)) {
+        patch.color = { fill: { kind: 'palette', index: ctx.accentIdx[Math.floor(colorRandom() * ctx.accentIdx.length)] } };
+      }
+    }
+    // fill effect
+    const fillRandom = stream('beat-fill');
+    if (gp.roll(fillRandom, p.fillEffectChance)) {
+      const fill = fillEffectFor(fillRandom, ctx);
+      if (fill) patch.fill = fill;
+    }
+    // entrance mask: the wipe replaces the template's entrance, the motion
+    // (when a later draw replaces the entrance) stays
+    const maskRandom = stream('mask');
+    let masked = false;
+    if (gp.roll(maskRandom, p.maskChance)) {
+      const base = patch.enter || {};
+      patch.enter = {
+        type: 'rangeReveal',
+        params: { ...(SA.fx && typeof SA.fx.paramDefaults === 'function' ? SA.fx.paramDefaults('enter', 'rangeReveal') : {}), wipe: pick(maskRandom, ['left', 'right', 'up', 'down', 'iris', 'diagonal']) },
+        enabled: true,
+      };
+      if (base.motion) patch.enter.motion = base.motion;
+      masked = true;
+    }
+    // tilt
+    const tiltRandom = stream('tilt');
+    if (gp.roll(tiltRandom, p.tiltChance)) {
+      const s = (a) => Math.round((tiltRandom() * 2 - 1) * a * p.tiltRange * 10) / 10;
+      patch.transform = { rotate: s(25), tiltX: s(20), tiltY: s(20) };
+    }
+    // hold: a longer beat may carry one of the profile's holds
+    const holdEmpty = !Array.isArray(patch.hold) || !patch.hold.length;
+    if (holdEmpty && duration >= 0.6) {
+      const holdRandom = stream('beat-hold');
+      if (gp.roll(holdRandom, p.holdChance)) {
+        const hold =
+          ctx.w >= 0.5
+            ? SA.moods.weirdBeatHold(holdRandom, ctx.axes, cueContext, ctx.accentHexes)
+            : smartHold(holdRandom, ctx.s, Math.round((0.06 + 0.1 * ctx.w) * 1000) / 1000, Math.round(ctx.bpm * pick(holdRandom, [0.5, 1, 1, 2])), ctx.axes, ctx.beatFit);
+        if (hold) patch.hold = [hold];
+      }
+    }
+    // pulse: the fallback beat grammar on a longer, loud beat
+    if ((!Array.isArray(patch.hold) || !patch.hold.length) && duration >= 1.2 && (Number(energy) || 0) > 0.45) {
+      const pulseRandom = stream('pulse');
+      if (gp.roll(pulseRandom, p.pulseChance)) {
+        const pulseBpm = ctx.w > 0 ? Math.round(ctx.bpm * pick(pulseRandom, [0.5, 1, 1, 2])) : Math.round(ctx.bpm);
+        patch.hold = [smartHold(pulseRandom, ctx.s, Math.round((0.02 + (Number(energy) || 0) * 0.08) * 1000) / 1000, pulseBpm, ctx.axes, ctx.beatFit)];
+      }
+    }
+    // entrance / exit: a fresh grammar draw, the mask keeps its entrance
+    const motionRandom = stream('beat-motion');
+    if (gp.roll(motionRandom, p.motionChance)) {
+      const generated = SA.moods.generate({
+        axes: ctx.axes,
+        seed: ctx.seed + cueIndex * 131 + beatIndex + 1,
+        direction: ctx.direction,
+        genre: ctx.genre,
+        context: cueContext,
+        typeWeights: ctx.typeWeights,
+      }).style;
+      if (generated.exit) patch.exit = generated.exit;
+      if (generated.enter) {
+        if (masked && patch.enter) {
+          if (generated.enter.motion) patch.enter.motion = generated.enter.motion;
+        } else patch.enter = generated.enter;
+      }
+    }
+    // the cue's location nudge: applied here so the ladder sees the final box
+    const shift = ctx.cueShift && ctx.cueShift[cue.id];
+    if (shift) {
+      patch.location = patch.location || { type: 'grid', params: {} };
+      const location = patch.location.params || (patch.location.params = {});
+      location.offsetX = Math.round(((Number(location.offsetX) || 0) + shift.dx) * 100) / 100;
+      location.offsetY = Math.round(((Number(location.offsetY) || 0) + shift.dy) * 100) / 100;
+      if (shift.float) patch.location.type = 'randomSafe';
+      // the estimated box must stay on screen: shrink this beat's nudge by the
+      // part that would leave the frame
+      const zone = estimateComposeZone(comp, analysis, patch, ctx);
+      const frameW = ctx.frameW || 1920;
+      const frameH = ctx.frameH || 1080;
+      if (zone.x0 < 0) location.offsetX = Math.round((location.offsetX - zone.x0 / frameW) * 100) / 100;
+      else if (zone.x1 > frameW) location.offsetX = Math.round((location.offsetX - (zone.x1 - frameW) / frameW) * 100) / 100;
+      if (zone.y0 < 0) location.offsetY = Math.round((location.offsetY - zone.y0 / frameH) * 100) / 100;
+      else if (zone.y1 > frameH) location.offsetY = Math.round((location.offsetY - (zone.y1 - frameH) / frameH) * 100) / 100;
+    }
+    // the cue's repeat must not fight this beat's own composition
+    const repeat = ctx.cueRepeat && ctx.cueRepeat[cue.id];
+    if (repeat && SA.random && typeof SA.random.repeatConflicts === 'function' && SA.random.repeatConflicts({ ...patch, repeat })) {
+      patch.repeat = { type: 'none', params: {}, enabled: false };
+    }
   }
 
   // One beat's treatment inside the cue's theme. The size the sixth axis picks
@@ -580,7 +1201,8 @@
     const size = Math.round(px / (beat.fontScale || 1)); // scene.js multiplies fontScale back in
     const beatPatch = { text: { size } };
     const beatDuration = Math.max(0.2, beat.end - beat.start);
-    if (beatDuration >= 1.2 && energy > 0.45 && beatRng() < 0.1) {
+    const p = ctx.params;
+    if (beatDuration >= 1.2 && energy > 0.45 && SA.genParams.roll(beatRng, p.pulseChance)) {
       const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
       beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm, axes, beatFit)];
     }
@@ -588,11 +1210,12 @@
       // E4 / I18 / H5: a weird song steps the beat treatment as well:
       // colour, tilt, font and hold all jump half a bar. The size is the
       // ladder's now, but the old weird-size draw is kept so colour, tilt,
-      // hold and font stay on their streams.
+      // hold and font stay on their streams. The thresholds are the profile's
+      // chances (their derived values are the old literals).
       const wr = SA.rng.rngFor(beatSeed, beat.id, 'weird');
       wr();
-      if (accentIdx.length && wr() < 0.5 * w) {
-        if (accentIdx.length >= 2 && wr() < 0.3 * w) {
+      if (accentIdx.length && SA.genParams.roll(wr, p.accentColorChance)) {
+        if (accentIdx.length >= 2 && SA.genParams.roll(wr, p.gradientColorChance)) {
           const [a, b] = [accentIdx[Math.floor(wr() * accentIdx.length)], accentIdx[Math.floor(wr() * accentIdx.length)]];
           beatPatch.color = {
             fill: {
@@ -608,23 +1231,23 @@
           };
         } else beatPatch.color = { fill: { kind: 'palette', index: accentIdx[Math.floor(wr() * accentIdx.length)] } };
       }
-      if (wr() < 0.4 * w) {
-        const r = (a) => Math.round((wr() * 2 - 1) * a * w * 10) / 10;
+      if (SA.genParams.roll(wr, p.tiltChance)) {
+        const r = (a) => Math.round((wr() * 2 - 1) * a * p.tiltRange * 10) / 10;
         beatPatch.transform = { rotate: r(25), tiltX: r(20), tiltY: r(20) }; // degrees (the shader converts)
       }
-      if (!beatPatch.hold && beatDuration >= 0.6 && wr() < 0.45 * w) {
+      if (!beatPatch.hold && beatDuration >= 0.6 && SA.genParams.roll(wr, p.holdChance)) {
         const hold =
           w >= 0.5
             ? SA.moods.weirdBeatHold(wr, axes, cueContext, accentHexes)
             : smartHold(wr, s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(bpm * pick(wr, [0.5, 1, 1, 2])), axes, beatFit);
         if (hold) beatPatch.hold = [hold];
       }
-      if (wr() < 0.3 * w) {
-        const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext }).style;
+      if (SA.genParams.roll(wr, p.motionChance)) {
+        const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext, typeWeights: ctx.typeWeights }).style;
         if (g.enter) beatPatch.enter = g.enter;
         if (g.exit) beatPatch.exit = g.exit;
       }
-      if (w >= 0.6 && wr() < 0.25 * w) {
+      if (w >= 0.6 && SA.genParams.roll(wr, p.beatFontChance)) {
         const fontId = SA.moods.weirdFont(wr, cueContext, themeStyle.text && themeStyle.text.fontId);
         if (fontId) beatPatch.text.fontId = fontId;
       }
@@ -634,25 +1257,38 @@
 
   // Re-picks the ladder size of `targetIds` inside the song: the other beats'
   // sizes seed the level times, and each target avoids both neighbours' levels.
-  function resizeBeats(projectDoc, axes, targetIds, seed) {
+  // `options.params` carries the resolved profile of the project (store re-rolls
+  // pass it); without it the parameters are derived from the axes alone.
+  function resizeBeats(projectDoc, axes, targetIds, seed, options) {
+    const opts = options || {};
     const output = projectDoc.output || {};
     const portrait = (output.aspect || '16:9') === '9:16';
     const frameW = Number(output.width) || (portrait ? 1080 : 1920);
-    const frameH = Number(output.height) || (portrait ? 1920 : 1080);
+    const frameH = Number(output.height) || (portrait ? 1080 : 1080);
     const ctx = { frameW, frameH, portrait, screen: Math.min(frameW, frameH), lang: (projectDoc.meta && projectDoc.meta.lang) || null };
     const baseSize = Number((projectDoc.style && projectDoc.style.text && projectDoc.style.text.size) || (portrait ? 72 : 96));
-    const change = SA.weird.sizeChange(axes);
+    const resolved = opts.params && opts.params.sizeChange != null ? opts.params : SA.genParams.resolve({ axes });
+    const change = resolved.sizeChange;
+    const rawW = SA.weird && typeof SA.weird.raw === 'function' ? SA.weird.raw(axes && axes.weird) : Number((axes || {}).weird) || 0;
+    const curve = opts.curve != null ? !!opts.curve : rawW > 0;
     const targets = new Set(targetIds);
     const rows = []; // song order: { cue, beat, range, px, target }
     for (const cue of projectDoc.script.cues || []) {
       for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
         const text = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text || {};
         const spans = (text.compose && text.compose.spans) || [];
-        const range = sizeRangeFor(beat, text, ctx, Math.max(1, ...spans.map((s) => Number(s.scale) || 1)));
+        const scales = spans.map((s) => Number(s.scale) || 1);
+        const range = sizeRangeFor(beat, text, ctx, scales.length ? Math.max(1, ...scales) : 1, scales.length ? Math.min(...scales) : 1);
         rows.push({ cue, beat, range, px: (Number(text.size) || baseSize) * (beat.fontScale || 1), target: targets.has(beat.id) });
       }
     }
-    const ladder = createSizeLadder({ change, baseSize, random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder-reroll') : null });
+    const ladder = createSizeLadder({
+      change,
+      baseSize,
+      random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder-reroll') : null,
+      center: curve && resolved ? resolved.sizeCenter : undefined,
+      spread: curve && resolved ? resolved.sizeSpread : undefined,
+    });
     for (const row of rows) if (!row.target) ladder.record(ladder.levelOf(row.px, row.range), row.beat.end - row.beat.start);
     let prev = null;
     rows.forEach((row, i) => {
@@ -791,13 +1427,16 @@
     const { axes, seed, genre, wb: w, themeStyle } = ctx;
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
     let palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
+    // the plane separation anchors on the cue's own (unjittered) text colours
+    const sourceColors = (palette && palette.colors) || [];
     // the mid layer changes colour every four cues, so a long song never sits
-    // on one palette (w=0 keeps the classic look alone)
+    // on one palette (w=0 keeps the classic look alone). The profile path
+    // keeps the jitter tight so the planes stay on the drawn palette.
     if (w > 0 && palette && Array.isArray(palette.colors) && palette.colors.length) {
       const random = SA.rng.rngFor(seed, 'mid-section', Math.floor(index / 4));
-      palette = SA.moods.jitterPalette(random, palette, axes, 1 + 3 * w);
+      palette = SA.moods.jitterPalette(random, palette, axes, ctx.curve ? 1 + w : 1 + 3 * w);
     }
-    const result = SA.moods.rerollClipSpec('backdrop', {
+    const options = {
       axes,
       seed: seed + index * 977 + 3,
       genre,
@@ -805,7 +1444,15 @@
       palette,
       coverage: w,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
-    });
+    };
+    // the profile hands the plane weights and the cue's own text colours down,
+    // so the planes hold their distance from the lyrics
+    if (ctx.curve && ctx.params) {
+      options.planes = ctx.params;
+      options.rawW = ctx.rawW;
+      options.textColors = textColorsOf(sourceColors);
+    }
+    const result = SA.moods.rerollClipSpec('backdrop', options);
     if (!result) return null;
     const full = w >= 0.5;
     return nextClip(projectDoc, 'clip_mid', {
@@ -829,8 +1476,14 @@
     if (!(ctx.wb > 0 || ctx.axes.density > 0.45)) return;
     const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
     cues.forEach((cue, index) => {
-      const clip = backdropClipFor(projectDoc, cue, index, ctx);
+      // run draws the specs before the readability pass (so the plane colours
+      // are known); a direct call re-draws them here. The clip id is assigned
+      // at push time: the pre-drawn clips all share the project state before
+      // any of them lands in the timeline.
+      const stored = ctx.backdropSpecs && ctx.backdropSpecs.get(cue.id);
+      const clip = stored || backdropClipFor(projectDoc, cue, index, ctx);
       if (!clip) return;
+      clip.id = SA.project.nextClipId(projectDoc, 'clip_mid');
       if (ctx.wb >= 0.5) {
         clip.start = index === 0 ? 0 : Number(cue.start) || 0;
         const next = cues[index + 1];
@@ -930,14 +1583,36 @@
     const track = trackIdFor(projectDoc, 'figure');
     if (!track || !SA.figures) return null;
     const { wb: w, axes, seed } = ctx;
-    const density = Math.max(0.15, Math.min(1, 0.25 + 0.6 * ctx.energy + 0.2 * w));
+    const params = ctx.curve && ctx.params ? ctx.params : null;
+    const density = params ? Math.max(0.15, params.figureDensity) : Math.max(0.15, Math.min(1, 0.25 + 0.6 * ctx.energy + 0.2 * w));
     if (density < 0.3 && w < 0.2 && index % 3 !== 0) return null;
     const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || {};
-    const palette = (cueStyle.palette && cueStyle.palette.colors) || (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
+    let palette = (cueStyle.palette && cueStyle.palette.colors) || (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
+    // the profile derives the figure colours from the backdrop planes: 1.5+
+    // from the planes and the backdrop floor from the text
+    if (params) {
+      const planes = ctx.backdropPlanes && ctx.backdropPlanes[cue.id];
+      const derived = figureColors(planes, textColorsOf(palette), ctx.rawW);
+      if (derived) palette = [...palette.slice(0, 3), derived[0], derived[1]].filter(Boolean);
+    }
     const roll = SA.rng.rngFor(seed + index * 313, cue.id, 'figure')();
     const textWeight = w >= 0.6 ? 0.3 : 0.4;
     const sync = roll < textWeight ? 'text' : roll < textWeight + 0.4 ? 'beat' : 'free';
+    // figureBoldChance: the profile may open with one of the bold motifs,
+    // never the same one as the previous cue. The compose path also draws the
+    // motif with the bold stroke (the classic output stays as drawn).
+    let boldMotif = null;
+    let boldHit = false;
+    if (params) {
+      const br = SA.rng.rngFor(seed + index * 313, cue.id, 'figure-bold');
+      boldHit = SA.genParams.roll(br, params.figureBoldChance);
+      if (boldHit) {
+        const pool = SA.figures.BOLD_MOTIFS.filter((name) => name !== ctx.figurePrevMotif);
+        if (pool.length) boldMotif = pool[Math.min(pool.length - 1, Math.floor(br() * pool.length))];
+      }
+    }
+    const boldStroke = ctx.compose && boldHit;
     let spec = SA.figures.generate({
       span: { start: cue.start, end: cue.end },
       beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
@@ -947,6 +1622,8 @@
       palette,
       sync,
       density,
+      motif: boldMotif || undefined,
+      stroke: boldStroke ? 'bold' : undefined,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
     // the figure must not cover the lyrics: recolour / dim beyond the gate.
@@ -956,7 +1633,7 @@
       const figureCtx = {
         frame: { width: ctx.frameW, height: ctx.frameH },
         palette,
-        textColors: [palette[2], palette[4]].filter(Boolean),
+        textColors: textColorsOf(palette),
         duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
         // a composed cue hands the figure layer the first beat's text box so
         // the generated figure keeps clear of the lyrics
@@ -965,9 +1642,19 @@
       spec = SA.legibility.repairFigureSpec(spec, figureCtx);
       const dimmed = spec && spec.params && Number(spec.params.opacity) < 1;
       if (dimmed) {
+        // the safe fallback shuffles the bold cuts together with the classic
+        // safe motifs and keeps the least-covering candidate, so a dimmed
+        // figure also moves away from the thin-line default
         const safeMotifs = ['underlineSweep', 'bracketsPop', 'orbit', 'ribbon', 'rings', 'ticker', 'frame', 'bars'];
+        const pool = [...SA.figures.BOLD_MOTIFS, ...safeMotifs];
+        const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
+        const shuffled = pool
+          .map((name) => ({ name, k: sr() }))
+          .sort((a, b) => a.k - b.k)
+          .map((entry) => entry.name);
         let best = null;
-        for (let attempt = 0; attempt < safeMotifs.length; attempt += 1) {
+        let bestOverlap = Infinity;
+        for (let attempt = 0; attempt < shuffled.length; attempt += 1) {
           const candidate = SA.figures.generate({
             span: { start: cue.start, end: cue.end },
             beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
@@ -977,18 +1664,21 @@
             palette,
             sync,
             density,
-            motif: safeMotifs[(index + attempt) % safeMotifs.length],
+            motif: shuffled[attempt],
+            stroke: boldStroke ? 'bold' : undefined,
             cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
           });
           const overlap = SA.legibility.figureOverlap(candidate, figureCtx);
-          if (overlap <= SA.legibility.FIGURE_OVERLAP + 1e-9) {
+          if (overlap < bestOverlap) {
+            bestOverlap = overlap;
             best = candidate;
-            break;
           }
+          if (overlap <= SA.legibility.FIGURE_OVERLAP + 1e-9) break;
         }
         if (best) spec = best;
       }
     }
+    ctx.figurePrevMotif = spec && spec.params ? spec.params.motif : null;
     return nextClip(projectDoc, 'clip_fig', {
       trackId: track,
       start: cue.start,
@@ -1050,6 +1740,14 @@
       look: look ? { n: look.n, name: look.name, group: look.group, type: look.type, motion: look.motion } : null,
       cueLooks: Object.fromEntries(Object.entries(cueLooks).map(([cueId, entry]) => [cueId, entry.n])),
     };
+    // the profile survives the run: only the fixed keys are stored (missing =
+    // automatic), so reopening the theme dialog shows the pins the user made
+    if (ctx.pinned && Object.keys(ctx.pinned).length) projectDoc.styleMode.params = { ...ctx.pinned };
+    else delete projectDoc.styleMode.params;
+    if (ctx.typeWeights && Object.keys(ctx.typeWeights).length) projectDoc.styleMode.typeWeights = ctx.typeWeights;
+    else delete projectDoc.styleMode.typeWeights;
+    if (Array.isArray(ctx.usePalettes) && ctx.usePalettes.length) projectDoc.styleMode.usePalettes = ctx.usePalettes;
+    else delete projectDoc.styleMode.usePalettes;
     // the composition mode is part of the saved run: beat / cue re-rolls read it
     if (ctx.compose) projectDoc.styleMode.compose = true;
     else delete projectDoc.styleMode.compose;
@@ -1070,10 +1768,33 @@
     projectDoc.script.cues.forEach((cue, cueIndex) => {
       directCue(projectDoc, cue, cueIndex, ctx);
     });
+    // 2.1) the backdrop specs are drawn here while the clips are still
+    // appended at step 3 in the classic order: the final readability pass
+    // needs the plane colours and the decoration pass the plane count
+    ctx.backdropSpecs = new Map();
+    ctx.backdropPlanes = {};
+    if (trackIdFor(projectDoc, 'backdrop') && (ctx.wb > 0 || ctx.axes.density > 0.45)) {
+      projectDoc.script.cues.forEach((cue, index) => {
+        const clip = backdropClipFor(projectDoc, cue, index, ctx);
+        if (!clip) return;
+        ctx.backdropSpecs.set(cue.id, clip);
+        const list = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.list) ? clip.spec.params.list : null;
+        const plane = list && list.find((part) => part && part.type === 'split');
+        if (plane && Array.isArray(plane.params.colors)) ctx.backdropPlanes[cue.id] = plane.params.colors.slice();
+      });
+    }
     // the size ladder walks every beat of the song in time order
-    const change = SA.weird.sizeChange(ctx.axes);
+    const change = ctx.params.sizeChange;
     ctx.lang = (projectDoc.meta && projectDoc.meta.lang) || null;
-    ctx.sizeLadder = createSizeLadder({ change, baseSize: ctx.baseSize, random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder') : null });
+    ctx.sizeLadder = createSizeLadder({
+      change,
+      baseSize: ctx.baseSize,
+      random: change > 0 ? SA.rng.rngFor(seed, 'size-ladder') : null,
+      // the weighted curve only engages once the profile is on (raw weird > 0
+      // or a pinned parameter); weird 0 keeps the classic uniform ladder
+      center: ctx.curve && ctx.params ? ctx.params.sizeCenter : undefined,
+      spread: ctx.curve && ctx.params ? ctx.params.sizeSpread : undefined,
+    });
     ctx.sizePrev = null;
     projectDoc.script.cues.forEach((cue, cueIndex) => {
       const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
@@ -1085,10 +1806,18 @@
     // the four colour roles. weird drives the change rate; the song opens on
     // the base roles. The background track must be visible for the swap to
     // have a stage to repaint.
-    const colorChange = SA.weird && typeof SA.weird.colorChange === 'function' ? SA.weird.colorChange(ctx.axes) : 0;
+    const colorChange = ctx.params.colorChange;
     const backgroundTrack = (projectDoc.tracks || []).find((track) => track && track.kind === 'background');
     if (colorChange > 0 && backgroundTrack && !backgroundTrack.hidden && SA.paletteRoles && typeof SA.paletteRoles.schemes === 'function') {
-      const ladder = createColorLadder({ change: colorChange, random: SA.rng.rngFor(seed, 'color-ladder') });
+      // the invert owns its own stream; it only joins the compose profile (the
+      // classic path keeps drawing TMBD from the normal pool)
+      const invert = ctx.compose && ctx.curve ? ctx.params.paletteInvertChance : null;
+      const ladderOptions = { change: colorChange, random: SA.rng.rngFor(seed, 'color-ladder') };
+      if (invert != null) {
+        ladderOptions.invert = invert;
+        ladderOptions.invertRandom = SA.rng.rngFor(seed, 'color-invert');
+      }
+      const ladder = createColorLadder(ladderOptions);
       const candidatesByColors = new Map();
       let prev = null;
       for (const cue of projectDoc.script.cues) {
@@ -1097,7 +1826,12 @@
         const cacheKey = cueColors.join('|');
         let candidates = candidatesByColors.get(cacheKey);
         if (!candidates) {
-          candidates = cueColors.length ? SA.paletteRoles.schemes(cueColors, ctx.rawW) : [];
+          candidates = cueColors.length ? SA.paletteRoles.schemes(cueColors, ctx.rawW, ctx.params ? ctx.params.schemeRange : undefined) : [];
+          // the invert toggle owns TMBD when it is on
+          if (invert != null) {
+            const invertId = SA.paletteRoles.SCHEME_INVERT || 'TMBD';
+            candidates = candidates.filter((entry) => entry.id !== invertId);
+          }
           candidatesByColors.set(cacheKey, candidates);
         }
         for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
@@ -1138,6 +1872,122 @@
       }
       writeRepair(null, SA.project.resolveStyle(projectDoc, 'project'), { ...SA.moods.contextFor(projectDoc), duration: 3 });
     }
+    // 2.55) surrounding decorations: one draw per cue from the profile's deco
+    // weights, written into the cue's edge stack (the theme's own edge stays
+    // when the draw is `none`). The final sweep below still sees the result.
+    if (ctx.curve && SA.genParams) {
+      projectDoc.script.cues.forEach((cue, index) => {
+        const cueStyle = SA.project.resolveStyle(projectDoc, `cue:${cue.id}`);
+        const colors = (cueStyle.palette && cueStyle.palette.colors) || [];
+        const planes = ctx.backdropPlanes && ctx.backdropPlanes[cue.id];
+        const random = SA.rng.rngFor(seed + index * 131, cue.id, 'decoration');
+        const stack = decorationFor(random, ctx, colors, planes ? planes.length : 0);
+        if (stack) {
+          const container = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+          container.edge = stack;
+        }
+        // the compose profile also lets individual beats draw their own
+        // decoration, so one cue can change gear mid-phrase
+        if (ctx.compose) {
+          const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+          beats.forEach((beat) => {
+            const beatRandom = SA.rng.rngFor(seed + index * 131, beat.id, 'beat-deco');
+            if (!SA.genParams.roll(beatRandom, ctx.params.beatDecoChance)) return;
+            const beatStack = decorationFor(beatRandom, ctx, colors, planes ? planes.length : 0);
+            if (!beatStack) return;
+            const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
+            bag.edge = beatStack;
+          });
+        }
+      });
+    }
+    // 2.6) the final readability sweep: the colour scheme, the foreground
+    // patch and the plane colours must read together. Each failing beat is
+    // repaired in three deterministic steps (scheme off -> the plain text
+    // role -> a separation outline). The profile path only, so weird 0 keeps
+    // its untouched output.
+    if (ctx.curve && SA.legibility && typeof SA.legibility.check === 'function') {
+      const backdropFloor = SA.weird && typeof SA.weird.backdropContrast === 'function' ? SA.weird.backdropContrast(ctx.rawW) : 3;
+      const planeBad = (texts, planes) => {
+        if (!Array.isArray(planes) || !planes.length || !texts.length) return false;
+        return planes.some((plane) =>
+          texts.some((text) => {
+            try {
+              return SA.color.contrastRatio(SA.color.parse(text), SA.color.parse(plane)) < backdropFloor - 1e-6;
+            } catch {
+              return false;
+            }
+          })
+        );
+      };
+      for (const cue of projectDoc.script.cues || []) {
+        const planes = ctx.backdropPlanes ? ctx.backdropPlanes[cue.id] : null;
+        const cueStyle = SA.project.resolveStyle(projectDoc, `cue:${cue.id}`);
+        const cueColors = (cueStyle.palette && cueStyle.palette.colors) || [];
+        const roles = SA.paletteRoles;
+        // the planes were separated from the cue's own body colour; a beat
+        // colour scheme moves the text roles, so the scheme-free anchor is the
+        // cue text while a scheme is in play
+        const cueTexts = roles && typeof roles.get === 'function' ? [roles.get(cueColors, roles.SLOT.TEXT_FILL)].filter(Boolean) : [cueColors[2]].filter(Boolean);
+        for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          const path = `cue:${cue.id}/beat:${beat.id}`;
+          const bad = () => {
+            const resolved = SA.project.resolveStyle(projectDoc, path);
+            const report = SA.legibility.check(resolved, { palette: cueColors, motion: false });
+            if (!report.ok) return true;
+            const scheme = resolved.palette && resolved.palette.scheme;
+            const texts = scheme ? cueTexts : typeof SA.legibility.textColors === 'function' ? SA.legibility.textColors(resolved, {}) : [];
+            return planeBad(texts, planes);
+          };
+          if (!bad()) continue;
+          const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
+          // (0) the general legibility repair (unreadable tags, motion, caps)
+          // writes into the beat's own bag; the colour steps follow when it is
+          // still failing
+          const original = SA.project.resolveStyle(projectDoc, path);
+          const repaired = SA.moods.repairLegibility(original, ctx.axes, {
+            ...SA.moods.contextForCue(projectDoc, cue),
+            duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
+          }, original.palette);
+          if (repaired && repaired !== original) {
+            for (const key of Object.keys(repaired)) {
+              if (JSON.stringify(repaired[key]) !== JSON.stringify(original[key])) bag[key] = JSON.parse(JSON.stringify(repaired[key]));
+            }
+            if (!bad()) continue;
+          }
+          // (0b) the size floor: extremely long lines cannot fit the frame at
+          // the readable minimum; the beat still declares it and the renderer
+          // wraps / shrinks the block to the frame
+          const originalSize = Number(original.text && original.text.size) || 0;
+          const minSize = Math.ceil(((SA.legibility && SA.legibility.MIN_SIZE_RATIO) || 0.045) * (ctx.frameH || 1080));
+          if (originalSize > 0 && originalSize < minSize) {
+            bag.text = { ...(bag.text || {}), size: minSize };
+            if (!bad()) continue;
+          }
+          // (1) the beat colour scheme only goes when it is the cause: the
+          // same beat without the scheme may still pass
+          if (bag.colorScheme != null) {
+            const scheme = bag.colorScheme;
+            delete bag.colorScheme;
+            if (!bad()) continue;
+            if (bad()) bag.colorScheme = scheme;
+          }
+          // (2) the cue's foreground returns to the plain text role
+          const cueBag = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+          const ref = (slot, legacy) => (SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(cueColors, slot) : legacy);
+          bag.color = { fill: { kind: 'palette', index: ref(4, 2) }, fill2: { kind: 'palette', index: ref(5, 3) } };
+          delete cueBag.fill;
+          if (!bad()) continue;
+          // (3) a separation outline as the last resort
+          const stack = Array.isArray(cueBag.edge) ? cueBag.edge.slice() : [];
+          if (!stack.some((entry) => entry && entry.type === 'outline')) {
+            const color = roles && typeof roles.get === 'function' ? roles.get(cueColors, roles.SLOT.TEXT_BG) || '#000000' : '#000000';
+            stack.unshift({ type: 'outline', params: { width: 3.5, color }, enabled: true });
+          }
+          cueBag.edge = stack;
+        }
+      }
+    }
     // 3) the filler settings, then the clips: a re-run replaces the clips it
     // owns (auto) and leaves subtitle and hand-made clips alone.
     projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, fillerSettings(projectDoc, ctx));
@@ -1177,6 +2027,11 @@
     createColorLadder,
     paletteDistance,
     cuePalette,
+    pickUsePalette,
+    accentsOf,
+    foregroundFor,
+    decorationFor,
+    fitComposeSpans,
     sizeRangeFor,
     resizeBeats,
     run,

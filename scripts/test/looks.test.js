@@ -149,3 +149,37 @@ test('compose keeps the drawn structure and adjusts palette and text from the ax
   const drawn = looks.expand(entry.style);
   if (drawn.text && drawn.text.fontId) assert.equal(first.style.text.fontId, drawn.text.fontId);
 });
+
+// ---------------------------------------------------------------------------
+// the profile: type weights and the compose repair
+
+test('compose survives the legibility-repair axes without throwing', () => {
+  const axes = { speed: 0.6, energy: 0.55, softness: 0.4, density: 0.5, brightness: 0.45, weird: 0.6, smartness: 0.6, fear: 0 };
+  const context = { letterCount: 12, wordCount: 3, cjk: false, aspect: '16:9' };
+  for (const entry of data.effects.slice(0, 40)) {
+    const composed = pool.compose(entry, { axes, seed: 7, genre: null, direction: 'horizontal', context });
+    assert.ok(composed && composed.style, `#${entry.n} compose returned nothing`);
+    assert.ok(composed.palette && Array.isArray(composed.palette.colors), `#${entry.n} palette`);
+  }
+});
+
+test('typeWeights zero removes a type from weightFor and from a composed look', () => {
+  const axes = { energy: 0.5, weird: 0 };
+  const groups = ['enter', 'exit', 'hold', 'fill', 'edge', 'post', 'layout', 'animation'];
+  let checked = 0;
+  for (const entry of data.effects) {
+    const style = looks.expand(entry.style);
+    const group = groups.find((name) => style[name] && (Array.isArray(style[name]) ? style[name].length : style[name].type));
+    if (!group) continue;
+    const instance = Array.isArray(style[group]) ? style[group][0] : style[group];
+    const typeWeights = { [group]: { [instance.type]: 0 } };
+    assert.equal(looks.weightFor(entry, { axes, typeWeights }), 0, `#${entry.n} weightFor`);
+    const composed = pool.compose(entry, { axes, seed: 3, genre: null, direction: 'horizontal', context: {}, typeWeights });
+    const value = composed.style[group];
+    const list = Array.isArray(value) ? value : value ? [value] : [];
+    assert.ok(!list.some((item) => item && item.type === instance.type), `#${entry.n} kept ${group}.${instance.type}`);
+    checked += 1;
+    if (checked >= 25) break;
+  }
+  assert.ok(checked >= 25, `checked ${checked} looks`);
+});

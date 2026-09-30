@@ -85,6 +85,12 @@
   };
   // post effects that never belong on a readable look
   const POST_FORBIDDEN = new Set(['kaleidoscope']);
+  // post effects that smear the glyphs instead of framing them: the automatic
+  // direction only keeps them when the profile's postBlurChance roll succeeds
+  const SMEAR_POSTS = new Set([
+    'godRays', 'zoomBlur', 'spinBlur', 'motionBlur', 'echoTrail', 'chromaticAberration',
+    'rgbShift', 'turbulentDisplace', 'waveWarp', 'twirl', 'lensDistortion', 'heatHaze',
+  ]);
 
   function clamp01(value) {
     const number = Number(value);
@@ -663,7 +669,14 @@
       } catch {
         continue;
       }
-      worst = Math.max(worst, overlapRatio(shapeBox(result && result.shapes), textBox));
+      // only the shapes that actually reach the text box count: a motif that
+      // works in the corners (two triangle blocks, edge bars) would otherwise
+      // read as a full-frame bbox
+      const hit = (result && result.shapes ? result.shapes : []).filter((shape) => {
+        const box = shapeBox([shape]);
+        return box && box.x1 > textBox.x0 && box.x0 < textBox.x1 && box.y1 > textBox.y0 && box.y0 < textBox.y1;
+      });
+      worst = Math.max(worst, overlapRatio(hit.length ? shapeBox(hit) : null, textBox));
     }
     return worst * opacity;
   }
@@ -796,6 +809,7 @@
     holdMinFor,
     FIGURE_OVERLAP,
     POST_CAPS,
+    SMEAR_POSTS,
     readableTags,
     staticWindow,
     sceneFor,
@@ -808,5 +822,6 @@
     repairFigureSpec,
     overlapRatio,
     shapeBox,
+    textColors,
   };
 });

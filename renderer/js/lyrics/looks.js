@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'), require('./fx-axes'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(null, require('./rng'), require('./effects/registry'), require('./moods'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./gen-params'), require('./legibility'));
   else {
     root.SA = root.SA || {};
-    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird, root.SA.fxAxes);
+    root.SA.looks = factory(root, root.SA.rng, root.SA.fx, root.SA.moods, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.genParams, root.SA.legibility);
   }
-})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird, fxAxes) {
+})(typeof self !== 'undefined' ? self : this, function (runtime, rng, fx, moods, smartness, weird, fxAxes, genParams, legibility) {
   'use strict';
 
   // FX 800 runtime pool: 800 complete looks classified by motion magnitude and
@@ -185,6 +185,11 @@
   function weightFor(entry, options) {
     const opts = options || {};
     const axes = opts.axes || {};
+    // the profile's type weights: a look built around a weighted-out type is
+    // removed from the automatic draw (missing weights stay 1)
+    if (opts.typeWeights && genParams && typeof genParams.lookTypeWeight === 'function') {
+      if (!(genParams.lookTypeWeight({ typeWeights: opts.typeWeights }, entry && entry.style) > 0)) return 0;
+    }
     const target = opts.motion == null ? motionTarget(axes) : clamp01(opts.motion);
     const motionNorm = entry.motion && entry.motion.norm != null ? clamp01(entry.motion.norm) : 0.5;
     // energy travels through the measured motion; the other four axes through
@@ -235,6 +240,36 @@
     return spec;
   }
 
+  // A composed style must not keep an instance the profile zeroed: stacks lose
+  // the entry, single groups fall back to a plain type (or disappear).
+  const TYPE_WEIGHT_STACKS = ['hold', 'edge', 'post', 'bgEdge'];
+  const TYPE_WEIGHT_SINGLES = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'repeat'];
+
+  function dropWeightedTypes(style, typeWeights) {
+    if (!style || !typeWeights || !genParams || typeof genParams.typeWeight !== 'function') return style;
+    const profile = { typeWeights };
+    const out = { ...style };
+    for (const group of TYPE_WEIGHT_STACKS) {
+      const value = out[group];
+      if (Array.isArray(value)) {
+        const kept = value.filter((instance) => !instance || !instance.type || genParams.typeWeight(profile, group, instance.type) > 0);
+        if (kept.length) out[group] = kept;
+        else delete out[group];
+      } else if (value && value.type && genParams.typeWeight(profile, group, value.type) <= 0) {
+        delete out[group];
+      }
+    }
+    for (const group of TYPE_WEIGHT_SINGLES) {
+      const value = out[group];
+      if (!value || !value.type) continue;
+      if (genParams.typeWeight(profile, group, value.type) > 0) continue;
+      const fallback = legibility && legibility.SAFE_FALLBACKS ? legibility.SAFE_FALLBACKS[group] : null;
+      if (fallback) out[group] = { ...value, type: fallback, params: {} };
+      else delete out[group];
+    }
+    return out;
+  }
+
   // the drawn 800 demo supplies the motion structure; the axes regenerate the
   // palette, the text metrics and (when the demo has none) the colour roles
   function compose(entry, options) {
@@ -243,7 +278,7 @@
     // the seventh axis drops the tacky effects from the look's stacks and
     // steers the generator (palette, background, text)
     const s = smartness.smartOf(opts.axes);
-    const style = smartness.prune(expand(entry.style), s);
+    let style = smartness.prune(expand(entry.style), s);
     // the stored look keeps frozen glow params; the raw axis tames them
     moods.tameGlow(style, weird.raw(opts.axes && opts.axes.weird));
     const generated = moods.generate({
@@ -252,6 +287,7 @@
       genre: opts.genre,
       direction: opts.direction,
       context: opts.context,
+      typeWeights: opts.typeWeights,
     }).style;
     if (generated.palette) style.palette = clone(generated.palette);
     if (!style.color && generated.color) style.color = clone(generated.color);
@@ -260,6 +296,8 @@
       if (style.text && style.text.fontId) text.fontId = style.text.fontId;
       style.text = { ...(style.text || {}), ...text };
     }
+    // the profile's zeroed types leave the stacks / single groups
+    style = dropWeightedTypes(style, opts.typeWeights);
     // the legibility contract applies to the composed style (the drawn part
     // plus the generated palette / text); weird 0 / fear 0 is a no-op
     const repaired = moods.repairLegibility(style, opts.axes, { ...(opts.context || {}), duration: opts.duration }, style.palette);
