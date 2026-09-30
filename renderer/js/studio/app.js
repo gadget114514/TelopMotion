@@ -203,6 +203,65 @@
     }, duration || 3200);
   }
 
+  // Generation (random look, script, randomize) runs on the main thread and
+  // can hold it for seconds. `withBusy` puts up a modal progress dialog first,
+  // lets it paint, then runs the work; `step(key, fraction)` updates the label
+  // and yields a frame so each stage shows. The bar's shimmer is a compositor
+  // animation, so it keeps moving through the blocking parts. A second request
+  // while one is running is ignored (double clicks on ✨ / Re-roll).
+  let busyRoot = null;
+  let busyRunning = false;
+
+  function nextPaint() {
+    return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+  }
+
+  function busyDialog() {
+    if (busyRoot) return busyRoot;
+    busyRoot = document.createElement('div');
+    busyRoot.className = 'dialog-backdrop busy-backdrop';
+    busyRoot.hidden = true;
+    busyRoot.setAttribute('role', 'alertdialog');
+    busyRoot.setAttribute('aria-busy', 'true');
+    busyRoot.innerHTML = `
+      <div class="dialog busy-dialog">
+        <h3 data-field="title"></h3>
+        <div class="busy-bar"><div class="busy-fill" data-field="fill"></div></div>
+        <div class="busy-status" data-field="status" aria-live="polite"></div>
+      </div>`;
+    document.body.appendChild(busyRoot);
+    return busyRoot;
+  }
+
+  async function withBusy(titleKey, work) {
+    if (busyRunning) return undefined;
+    busyRunning = true;
+    const root = busyDialog();
+    const fill = root.querySelector('[data-field="fill"]');
+    const status = root.querySelector('[data-field="status"]');
+    root.querySelector('[data-field="title"]').textContent = t(titleKey);
+    status.textContent = '';
+    fill.style.transform = 'scaleX(0.04)';
+    root.hidden = false;
+    const step = async (key, fraction) => {
+      status.textContent = key ? t(key) : '';
+      if (fraction != null) fill.style.transform = `scaleX(${Math.max(0.04, Math.min(1, fraction))})`;
+      await nextPaint();
+    };
+    try {
+      await nextPaint();
+      const result = await work(step);
+      // the first preview frame after a big change (fonts, physics warm-up) is
+      // often the slowest part: keep the dialog up through it
+      await step('studio.busy.render', 1);
+      await nextPaint();
+      return result;
+    } finally {
+      root.hidden = true;
+      busyRunning = false;
+    }
+  }
+
   function renderMedia() {
     const doc = project();
     const dataset = doc && doc.dataset;
@@ -666,42 +725,49 @@
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
-    dialog.querySelector('[data-action="generate"]').addEventListener('click', () => {
+    dialog.querySelector('[data-action="generate"]').addEventListener('click', async () => {
       const maxDurationValue = field('maxDuration').value.trim();
-      // output + script + fit-to-duration are one user action: one undo step
-      store.beginTransaction('generate script');
-      let cues = [];
-      try {
-        store.commands.setOutput({
-          maxDuration: maxDurationValue === '' ? null : Number(maxDurationValue) || null,
-          overflow: field('overflow').value,
-        });
-        const nextOptions = {
-          intro: field('intro').checked,
-          reveal: { enabled: field('reveal').checked, which: field('which').value, order: (reveal.order || 'grid') },
-          stats: { enabled: field('stats').checked, items: stats.items || undefined },
-          topSongs: { enabled: field('topSongs').checked, n: Number(field('topCount').value) || 0, by: topSongs.by || ['plays', 'likes'] },
-          completion: field('completion').checked,
-          outro: field('outro').checked,
-          timing: { perCue: Number(field('perCue').value) || 2.8, gap: Number(field('gap').value) || 0, introLen: timing.introLen || 3.5, outroLen: timing.outroLen || 3 },
-        };
-        cues = SA.scriptGen.build(evaluation(), doc.dataset, nextOptions, i18n.t, SA.format);
-        store.commands.generateScript(cues, nextOptions);
-        const generatedDoc = project();
-        if (generatedDoc && generatedDoc.output && generatedDoc.output.maxDuration && SA.duration) {
-          store.dispatch({
-            label: 'fit to max duration',
-            areas: ['script'],
-            do(projectDoc) {
-              SA.duration.fit(projectDoc);
-            },
-          });
-        }
-      } finally {
-        store.endTransaction();
-      }
       el.dialogRoot.hidden = true;
-      toast('studio.toast.scriptGenerated', { n: cues.length });
+      let cues = [];
+      const done = await withBusy('studio.busy.script', async (step) => {
+        await step('studio.busy.apply', 0.3);
+        // output + script + fit-to-duration are one user action: one undo step
+        store.beginTransaction('generate script');
+        try {
+          store.commands.setOutput({
+            maxDuration: maxDurationValue === '' ? null : Number(maxDurationValue) || null,
+            overflow: field('overflow').value,
+          });
+          const nextOptions = {
+            intro: field('intro').checked,
+            reveal: { enabled: field('reveal').checked, which: field('which').value, order: (reveal.order || 'grid') },
+            stats: { enabled: field('stats').checked, items: stats.items || undefined },
+            topSongs: { enabled: field('topSongs').checked, n: Number(field('topCount').value) || 0, by: topSongs.by || ['plays', 'likes'] },
+            completion: field('completion').checked,
+            outro: field('outro').checked,
+            timing: { perCue: Number(field('perCue').value) || 2.8, gap: Number(field('gap').value) || 0, introLen: timing.introLen || 3.5, outroLen: timing.outroLen || 3 },
+          };
+          cues = SA.scriptGen.build(evaluation(), doc.dataset, nextOptions, i18n.t, SA.format);
+          store.commands.generateScript(cues, nextOptions);
+          const generatedDoc = project();
+          if (generatedDoc && generatedDoc.output && generatedDoc.output.maxDuration && SA.duration) {
+            store.dispatch({
+              label: 'fit to max duration',
+              areas: ['script'],
+              do(projectDoc) {
+                SA.duration.fit(projectDoc);
+              },
+            });
+          }
+        } finally {
+          store.endTransaction();
+        }
+        return true;
+      }).catch(() => {
+        toast('studio.toast.error');
+        return false;
+      });
+      if (done) toast('studio.toast.scriptGenerated', { n: cues.length });
     });
   }
 
@@ -839,9 +905,9 @@
     return locks;
   }
 
-  function runRandomize(scope, options) {
+  async function runRandomize(scope, options) {
     const doc = project();
-    if (!doc) return;
+    if (!doc || busyRunning) return;
     const opts = options || {};
     const selection = store.state.selection.paths || [];
     const paths = scope === 'elements' ? selection : [];
@@ -861,20 +927,29 @@
     const colors = paletteColors.length
       ? [paletteColors[2], paletteColors[3], paletteColors[5] || paletteColors[3]].filter(Boolean)
       : [];
-    SA.random.apply(doc, {
-      scope,
-      paths,
-      seed: lastRandom.seed,
-      intensity: lastRandom.intensity,
-      locks: lastRandom.locks,
-      colors,
-      avoidRepeats: true,
-      overwriteManual: !!opts.overwriteManual,
-    });
+    try {
+      await withBusy('studio.busy.random', async (step) => {
+        await step('studio.busy.apply', 0.5);
+        SA.random.apply(doc, {
+          scope,
+          paths,
+          seed: lastRandom.seed,
+          intensity: lastRandom.intensity,
+          locks: lastRandom.locks,
+          colors,
+          avoidRepeats: true,
+          overwriteManual: !!opts.overwriteManual,
+        });
+      });
+    } catch {
+      toast('studio.toast.error');
+      return;
+    }
     toast('studio.toast.randomized', { seed: lastRandom.seed });
   }
 
   function reroll() {
+    if (busyRunning) return;
     if (lastRandom.scope === '__auto') {
       autoDirect({ seed: lastRandom.seed + 1, exclude: lastRandom.lookN ? [lastRandom.lookN] : null });
       return;
@@ -914,20 +989,39 @@
   // colour-only re-roll of the whole project: a new palette inside the
   // project's axes and genre, with every literal colour moved onto it (the
   // store does the work, so the inspector can do the same per cue / beat)
-  function rerollColors() {
+  async function rerollColors() {
     if (!project()) return;
-    const palette = store.commands.rerollPalette('project');
+    let palette = null;
+    try {
+      await withBusy('studio.busy.colors', async (step) => {
+        await step('studio.busy.apply', 0.5);
+        palette = store.commands.rerollPalette('project');
+      });
+    } catch {
+      toast('studio.toast.error');
+      return;
+    }
     if (palette) toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
   }
 
   async function autoDirect(options) {
     const doc = project();
-    const opts = options || {};
     if (!doc) return;
     if (!doc.script.cues.length) {
       toast('studio.toast.noCues');
       return;
     }
+    try {
+      await withBusy('studio.busy.autoDirect', (step) => autoDirectWork(options, step));
+    } catch {
+      toast('studio.toast.error');
+    }
+  }
+
+  async function autoDirectWork(options, step) {
+    const doc = project();
+    const opts = options || {};
+    if (!doc) return;
     // genre first: an explicit genre, a random one, or the music's own axes
     const analysis = SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
     const explicitGenre = opts.genre && opts.genre !== '__random' ? opts.genre : null;
@@ -967,10 +1061,12 @@
     let themeStyle = null;
     let cueLooks = {};
     try {
+      await step('studio.busy.looks', 0.15);
       const pool = SA.looks && SA.looks.load ? await SA.looks.load() : null;
       if (pool) {
         const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude });
         if (entry) {
+          await step('studio.busy.compose', 0.4);
           const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context });
           look = composed.look;
           lookClip = composed.clip;
@@ -987,7 +1083,11 @@
       themeStyle = null;
       cueLooks = {};
     }
-    if (!themeStyle) themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
+    if (!themeStyle) {
+      await step('studio.busy.compose', 0.4);
+      themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
+    }
+    await step('studio.busy.apply', 0.7);
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
     // hand the run to SA.direct: it owns the size band, the palette patches,
     // the filler settings and the clips the automatic direction replaces. In
