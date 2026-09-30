@@ -30,19 +30,28 @@
   const STATIC_SECONDS = 0.8;
   const STATIC_SHARE = 0.55;
   const SAMPLES = 40;
-  // The fully-displayed hold the lyric must keep. The requirement peaks at
-  // weird 0.6 (0.1 s), falls linearly towards 0 as the axis rises (nothing is
-  // forced at the very weird end) and grows below it; weird 0 keeps the
-  // legacy draw byte-identical because the repair never engages at 0. A
-  // fear-only draw keeps the 0.1 s floor.
-  const HOLD_PEAK = 0.1;
+  // The fully-displayed hold (the stop) the lyric must keep. The requirement
+  // is anchored at weird 0.6, where it is 0.2 s plus 0.05 s per word (a
+  // 10-word line wants a 0.7 s stop), and grows as the axis falls below the
+  // anchor; it falls linearly towards 0 as the axis rises, so nothing is
+  // forced at the very weird end. weird 0 keeps the legacy draw byte-identical
+  // because the repair never engages at 0; a fear-only draw keeps the anchored
+  // value.
+  const HOLD_BASE = 0.2;
+  const HOLD_PER_WORD = 0.05;
   const HOLD_PEAK_AT = 0.6;
-  const HOLD_SLOPE = HOLD_PEAK / (1 - HOLD_PEAK_AT);
+  const HOLD_SLOPE = 1 / (1 - HOLD_PEAK_AT);
 
-  function holdMinFor(weird, fear) {
+  function holdPeakFor(wordCount) {
+    const words = Math.max(0, Number(wordCount) || 0);
+    return HOLD_BASE + HOLD_PER_WORD * words;
+  }
+
+  function holdMinFor(weird, fear, wordCount) {
+    const peak = holdPeakFor(wordCount);
     const w = clamp01(weird);
-    if (!(w > 0)) return fear > 0 ? HOLD_PEAK : 0;
-    return Math.max(0, Math.min(1, (1 - w) * HOLD_SLOPE)) * 1;
+    if (!(w > 0)) return fear > 0 ? peak : 0;
+    return Math.max(0, (1 - w) * HOLD_SLOPE) * peak;
   }
 
   const BAD_TAGS = new Set(['degrade', 'overlap', 'glitch', 'dissolve']);
@@ -336,7 +345,7 @@
     }
     const seconds = (longest / SAMPLES) * span;
     const fullSeconds = (fullLongest / SAMPLES) * span;
-    const holdMin = context.holdMin == null ? HOLD_PEAK : Math.max(0, Number(context.holdMin) || 0);
+    const holdMin = context.holdMin == null ? holdPeakFor(context.wordCount) : Math.max(0, Number(context.holdMin) || 0);
     const motionOk = seconds >= Math.max(STATIC_SECONDS, STATIC_SHARE * span) - 1e-9;
     return { ok: motionOk && fullSeconds >= holdMin - 1e-9, seconds, share: seconds / span, fullSeconds, holdMin };
   }
@@ -780,8 +789,10 @@
     STATIC_SECONDS,
     STATIC_SHARE,
     SAMPLES,
-    HOLD_PEAK,
+    HOLD_BASE,
+    HOLD_PER_WORD,
     HOLD_PEAK_AT,
+    holdPeakFor,
     holdMinFor,
     FIGURE_OVERLAP,
     POST_CAPS,

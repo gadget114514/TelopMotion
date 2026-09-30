@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'), require('./palette-roles'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./effects/registry'), require('../color'), require('./genres'), require('./pattern-variants'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./legibility'), require('./palette-roles'), require('./textflow'));
   else {
     root.SA = root.SA || {};
-    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility, root.SA.paletteRoles);
+    root.SA.moods = factory(root.SA.rng, root.SA.fx, root.SA.color, root.SA.genres, root.SA.patternVariants, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.legibility, root.SA.paletteRoles, root.SA.textflow);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod, paletteRoles) {
+})(typeof self !== 'undefined' ? self : this, function (rng, fx, color, genres, patternVariants, smartness, weirdMod, fxAxes, legibilityMod, paletteRoles, textflowMod) {
   'use strict';
 
   // `weird` is the sixth axis: how far a song strays from one look. At 0 the
@@ -29,6 +29,22 @@
 
   function has(v) {
     return v != null && v !== '' && Number.isFinite(Number(v));
+  }
+
+  const CJK_RE = /[\u3000-\u9fff\uff00-\uffef]/;
+
+  // Word count for the legibility hold: the same tokenizer the beat analysis
+  // uses (TinySegmenter / Intl.Segmenter), counting word-like segments only.
+  function countWords(text) {
+    const source = String(text == null ? '' : text);
+    if (!source.trim()) return 0;
+    const segments = textflowMod && typeof textflowMod.segmentWords === 'function' ? textflowMod.segmentWords(source, CJK_RE.test(source) ? 'ja' : 'en') : source.split(/\s+/);
+    let count = 0;
+    for (const segment of segments) {
+      if (!segment || /^\s+$/.test(segment)) continue;
+      if (CJK_RE.test(segment) || /[A-Za-z0-9]/.test(segment)) count += 1;
+    }
+    return count;
   }
 
   function weirdOf(axes) {
@@ -2068,13 +2084,13 @@
     return !!(cue && cue.meta && cue.meta.section === 'chorus');
   }
 
-  function contextFor(project) {
+  // The fields shared by every scope: they only read the cue list, so a cue
+  // context does not have to run the per-cue letter / word aggregates.
+  function projectBase(project) {
     const cues = (project && project.script && project.script.cues) || [];
     const text = cues.map((cue) => cue.text || '').join('');
-    const longest = cues.reduce((max, cue) => Math.max(max, String(cue.text || '').replace(/\s/g, '').length), 0);
     return {
-      letterCount: longest,
-      cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text),
+      cjk: CJK_RE.test(text),
       hasPrevious: cues.length > 1,
       badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId),
       hasCard: !!(project && project.dataset),
@@ -2082,12 +2098,24 @@
     };
   }
 
+  function contextFor(project) {
+    const cues = (project && project.script && project.script.cues) || [];
+    const longest = cues.reduce((max, cue) => Math.max(max, String(cue.text || '').replace(/\s/g, '').length), 0);
+    const words = cues.reduce((max, cue) => Math.max(max, countWords(cue && cue.text)), 0);
+    return {
+      ...projectBase(project),
+      letterCount: longest,
+      wordCount: words,
+    };
+  }
+
   function contextForCue(project, cue) {
     const text = (cue && cue.text) || '';
     return {
-      ...contextFor(project),
+      ...projectBase(project),
       letterCount: String(text).replace(/\s/g, '').length,
-      cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text),
+      wordCount: countWords(text),
+      cjk: CJK_RE.test(text),
     };
   }
 
@@ -2147,9 +2175,10 @@
       letterCount: (context && context.letterCount) || 12,
       aspect: context && context.aspect,
       duration: (context && context.duration) || 3,
-      // the fully-displayed hold the lyric must keep: 0.1 s at weird 0.6,
-      // shrinking towards 0 as the axis rises (and growing below it)
-      holdMin: legibilityMod.holdMinFor ? legibilityMod.holdMinFor(weirdOf(axes), fearOf(axes)) : undefined,
+      // the fully-displayed hold (the stop) the lyric must keep: 0.2 s plus
+      // 0.05 s per word at weird 0.6, growing below the anchor and shrinking
+      // towards 0 as the axis rises
+      holdMin: legibilityMod.holdMinFor ? legibilityMod.holdMinFor(weirdOf(axes), fearOf(axes), context && context.wordCount) : undefined,
       ...(extra || {}),
     });
     return repaired && repaired.style ? repaired.style : style;
@@ -2165,6 +2194,7 @@
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
     const context = {
       letterCount: opts.context && opts.context.letterCount != null ? opts.context.letterCount : 0,
+      wordCount: opts.context && opts.context.wordCount != null ? Math.max(0, Number(opts.context.wordCount) || 0) : 0,
       cjk: !!(opts.context && opts.context.cjk),
       hasPrevious: !!(opts.context && opts.context.hasPrevious),
       badgeId: !!(opts.context && opts.context.badgeId),
@@ -2314,6 +2344,7 @@
     axesFromAudio,
     contextFor,
     contextForCue,
+    countWords,
     weirdOf,
     textWeirdOf,
     bgWeirdOf,

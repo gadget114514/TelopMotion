@@ -377,16 +377,24 @@
     return { patches, seed };
   }
 
+  // The legibility hold counts words: the longest cue is the one the repair
+  // has to keep on screen, so the project scopes take its word count.
+  function wordsOfProject(project) {
+    const cues = (project && project.script && project.script.cues) || [];
+    return cues.reduce((max, cue) => Math.max(max, moods.countWords(cue && cue.text)), 0);
+  }
+
   function contextForProject(project) {
     const cues = project.script.cues;
     const text = cues.map((cue) => cue.text || '').join('');
-    return { letterCount: countLetters(text), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9', weird: weirdOfProject(project), smartness: smartnessOfProject(project), fear: fearOfProject(project) };
+    return { letterCount: countLetters(text), wordCount: wordsOfProject(project), cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(text), hasPrevious: cues.length > 1, badgeId: cues.some((cue) => cue.meta && cue.meta.badgeId), aspect: project.output ? project.output.aspect : '16:9', weird: weirdOfProject(project), smartness: smartnessOfProject(project), fear: fearOfProject(project) };
   }
 
   function contextForCue(project, cue) {
     const beats = project.beats && project.beats[cue.id];
     return {
       letterCount: countLetters(cue.text),
+      wordCount: moods.countWords(cue.text),
       cjk: /[\u3000-\u9fff\uff00-\uffef]/.test(cue.text || ''),
       hasPrevious: !!(beats && beats.length > 1),
       badgeId: !!(cue.meta && cue.meta.badgeId),
@@ -402,6 +410,7 @@
     const cue = project.script.cues.find((entry) => entry.id === cueId);
     return {
       letterCount: countLetters((cue && cue.text) || ''),
+      wordCount: moods.countWords(cue && cue.text),
       cjk: /[\u3000-\u9fff\uff00-\uffef]/.test((cue && cue.text) || ''),
       hasPrevious: true,
       badgeId: !!(cue && cue.meta && cue.meta.badgeId),

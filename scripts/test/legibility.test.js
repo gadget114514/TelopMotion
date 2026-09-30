@@ -128,27 +128,35 @@ test('the figure gate recolours and then dims a figure over the text', () => {
   assert.equal(spec.params.color, '#eef2ff');
 });
 
-test('the fully-displayed hold follows the weird axis (0.1 s at 0.6)', () => {
+test('the fully-displayed hold is 0.2 s + 0.05 s per word at weird 0.6', () => {
   assert.equal(legibility.holdMinFor(0, 0), 0);
-  assert.ok(Math.abs(legibility.holdMinFor(0.6, 0) - 0.1) < 1e-9);
-  assert.ok(legibility.holdMinFor(0.4, 0) > 0.1, 'lower weird wants a longer hold');
-  assert.ok(legibility.holdMinFor(0.8, 0) < 0.1 && legibility.holdMinFor(0.8, 0) > 0, 'higher weird wants a shorter hold');
+  assert.ok(Math.abs(legibility.holdMinFor(0.6, 0) - 0.2) < 1e-9);
+  assert.ok(legibility.holdMinFor(0.4, 0) > 0.2, 'lower weird wants a longer hold');
+  assert.ok(legibility.holdMinFor(0.8, 0) < 0.2 && legibility.holdMinFor(0.8, 0) > 0, 'higher weird wants a shorter hold');
   assert.equal(legibility.holdMinFor(1, 0), 0);
-  assert.equal(legibility.holdMinFor(0, 0.5), 0.1, 'a fear-only draw keeps the floor');
+  assert.equal(legibility.holdMinFor(0, 0.5), 0.2, 'a fear-only draw keeps the floor');
+  // every word adds 0.05 s: a 10-word line wants 0.7 s at the anchor
+  assert.equal(legibility.holdPeakFor(10), 0.7);
+  assert.ok(Math.abs(legibility.holdMinFor(0.6, 0, 10) - 0.7) < 1e-9);
+  assert.ok(Math.abs(legibility.holdMinFor(0.9, 0, 10) - 0.175) < 1e-9);
+  assert.ok(legibility.holdMinFor(0.4, 0, 10) > 0.7, 'lower weird wants a longer hold');
+  // the cue context carries the word count the hold is built from
+  const context = moods.contextForCue({ script: { cues: [] }, output: { aspect: '16:9' } }, { text: 'one two three four five six seven eight nine ten' });
+  assert.equal(context.wordCount, 10);
   // a cue whose enter and exit leave almost no fully shown window fails...
   const rushed = plainStyle({
     enter: { type: 'fade', params: {}, enabled: true, motion: { in: { duration: 1.5, delay: 0, ease: 'linear' }, stagger: { each: 0.01, order: 'ltr', unit: 'letter' } } },
     exit: { type: 'fade', params: {}, enabled: true, motion: { out: { duration: 1.45, delay: 0, ease: 'linear' }, stagger: { each: 0.01, order: 'ltr', unit: 'letter' } } },
   });
-  const ctx = { frame: FRAME, duration: 3, letterCount: 12, holdMin: legibility.holdMinFor(0.6, 0) };
+  const ctx = { frame: FRAME, duration: 3, letterCount: 12, holdMin: legibility.holdMinFor(0.6, 0, context.wordCount) };
   const before = legibility.staticWindow(rushed, ctx);
   assert.equal(before.ok, false);
-  assert.ok(before.fullSeconds < 0.1, `full ${before.fullSeconds}`);
+  assert.ok(before.fullSeconds < 0.7, `full ${before.fullSeconds}`);
   // ... and the repair guarantees it
   const repaired = legibility.repair(rushed, ctx);
   const after = legibility.staticWindow(repaired.style, ctx);
   assert.equal(after.ok, true, JSON.stringify(after));
-  assert.ok(after.fullSeconds >= 0.1 - 1e-9, `full after ${after.fullSeconds}`);
+  assert.ok(after.fullSeconds >= 0.7 - 1e-9, `full after ${after.fullSeconds}`);
 });
 
 test('the axis grid always generates a passing look (weird 0.6-0.8, all axes)', () => {
