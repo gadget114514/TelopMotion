@@ -448,7 +448,7 @@ function createWindow() {
             if (firstCue) window.SA.store.setSelection(['cue:' + firstCue.id], 'cue');
             const watched = () =>
               document.querySelectorAll(
-                '#menubar .menu-title, [data-i18n], [data-i18n-title], .timeline-head span, .timeline-head button, #tl-prop option, #inspector-body summary, #inspector-body .ctrl-label, #inspector-body .btn-mini, #inspector-body .btn-key, #inspector-body .insp-breadcrumb'
+                '#menubar .menu-title, [data-i18n], [data-i18n-title], .timeline-head span, .timeline-head button, #inspector-body summary, #inspector-body .ctrl-label, #inspector-body .btn-mini, #inspector-body .btn-key, #inspector-body .insp-breadcrumb'
               );
             for (const language of window.SA.i18n.languages) {
               window.SA.i18n.set(language.code);
@@ -1770,10 +1770,9 @@ function createWindow() {
             const first = window.SA.store.state.project.script.cues.find((entry) => entry.id === cue.id);
             window.SA.store.commands.mergeCues(cue.id);
             const afterMerge = window.SA.store.state.project.script.cues.length;
-            // Markers.
-            window.SA.timeline.addMarker();
-            const markers = (window.SA.store.state.project.markers || []).length;
-            // Keyframes: select a letter, add two keys through the timeline API, drag one, copy and paste.
+            // Keyframes: select a letter and seed two keys with the same store
+            // command the inspector key button uses (the timeline's toolbar
+            // add-property control is gone), then drag one, copy and paste.
             const time = trimmed.start + 0.4;
             const capture = window.SA.preview.captureRGBA(time);
             const letters = capture && capture.frame.cues[0] ? capture.frame.cues[0].letters : [];
@@ -1782,14 +1781,22 @@ function createWindow() {
             window.SA.inspector.selectAt(letter.path);
             await new Promise((resolve) => setTimeout(resolve, 120));
             window.SA.timeline.reload();
-            const prop = document.getElementById('tl-prop');
-            prop.value = 'transform.x';
-            document.getElementById('tl-add-property').click();
-            window.SA.preview.seek(trimmed.start + 2.2);
-            document.getElementById('tl-add-property').click();
+            const sel = window.SA.inspector.selectionInfo();
+            const keyValue = window.SA.inspector.valueFor('transform.x');
+            const keyAt = (at) => {
+              window.SA.preview.seek(at);
+              window.SA.store.commands.setKeyframe(
+                letter.path,
+                'transform.x',
+                window.SA.timeline.snapFrame(window.SA.inspector.localTimeFor(sel.cueId, sel.beatId)),
+                keyValue,
+                'linear'
+              );
+            };
+            keyAt(time);
+            keyAt(trimmed.start + 2.2);
             const track = (window.SA.store.state.project.keyframes[letter.path] || {})['transform.x'] || [];
             // Drag the second key earlier.
-            const origin = window.SA.timeline.originFor(letter.path, letter.path.split('/')[0].replace('cue:', ''));
             window.SA.store.commands.moveKeyframe(letter.path, 'transform.x', 1, 1.5);
             const dragged = ((window.SA.store.state.project.keyframes[letter.path] || {})['transform.x'] || []).map((key) => key.t);
             // Copy/paste at the playhead.
@@ -1916,7 +1923,6 @@ function createWindow() {
               srtHasTrimmed,
               afterSplit,
               afterMerge,
-              markers,
               keys: track.length,
               dragged,
               pasted,
