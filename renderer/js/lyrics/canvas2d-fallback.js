@@ -45,14 +45,35 @@ SA.canvas2dFallback = (() => {
       state.assets = assets || { fonts: [] };
     }
 
+    // Same rule as the WebGL engine: the chroma key green only shows while no
+    // background is configured; a configured background keeps the neutral dark
+    // base so a beat / cue switch does not flash green (the fallback has no
+    // background pass, so the base is all there is).
+    function backgroundColorFor(project, t) {
+      if (!project) return '#00b140';
+      const hasLayer = (project.layers || []).some(
+        (layer) => layer && layer.enabled !== false && (layer.slot || 'background') === 'background'
+      );
+      if (hasLayer) return '#0b0d12';
+      const ids = new Set(
+        ((project.tracks || [])).filter((track) => track && track.kind === 'background' && !track.hidden).map((track) => track.id)
+      );
+      const active = ((project.clips || [])).some((clip) => {
+        if (!clip || !ids.has(clip.trackId)) return false;
+        const spec = clip.spec || {};
+        if (!spec.type || spec.type === 'none') return false;
+        return t >= clip.start - 1e-4 && t <= clip.end + 1e-4;
+      });
+      return active ? '#0b0d12' : '#00b140';
+    }
+
     function renderFrame(t) {
       resize(state.width, state.height);
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-      // no background configured = chroma key green (same as the WebGL engine)
-      ctx.fillStyle = '#00b140';
+      const project = state.project;
+      ctx.fillStyle = backgroundColorFor(project, t);
       ctx.fillRect(0, 0, state.width, state.height);
       const frame = { cues: [], time: t };
-      const project = state.project;
       if (!project) return frame;
       const fonts = state.assets.fonts || [];
       // Same rule as the WebGL engine: build the scene at the frame being

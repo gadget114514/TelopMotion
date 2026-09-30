@@ -6,6 +6,11 @@ SA.lyricsEngine = (() => {
   // No background configured = chroma key green, so the lyrics can be keyed
   // out in an editor; a background clip / layer paints over it.
   const CLEAR_COLOR = [0, 0.6902, 0.251];
+  // While a background is configured, transparent moments (a clip fading at a
+  // cue edge, a shape / pattern background that only paints its shapes) stay on
+  // the neutral dark the engine used before the key colour, so switching a beat
+  // or a cue never flashes green.
+  const BASE_COLOR = [0.043, 0.051, 0.070];
   // Backdrop shapes stand apart from the lyrics by at least this contrast ratio
   // (WCAG large text); below it the two read as the same colour. The ratio
   // climbs with the raw weird axis (3 -> 5.5), so a weirder backdrop separates
@@ -917,6 +922,24 @@ SA.lyricsEngine = (() => {
       return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId)).sort((a, b) => a.start - b.start);
     }
 
+    // The base colour of the frame. A project with no background configured
+    // clears to the chroma key green; one that has a background at this moment
+    // (a visible background clip, even while it fades or paints only shapes,
+    // or a background layer) keeps the neutral dark base instead.
+    function backgroundColorFor(project, t) {
+      if (!project) return CLEAR_COLOR;
+      const hasLayer = (project.layers || []).some(
+        (layer) => layer && layer.enabled !== false && (layer.slot || 'background') === 'background'
+      );
+      if (hasLayer) return BASE_COLOR;
+      for (const clip of activeClips(project, 'background')) {
+        const spec = clip.spec || {};
+        if (!spec.type || spec.type === 'none') continue;
+        if (t >= clip.start - 1e-4 && t <= clip.end + 1e-4) return BASE_COLOR;
+      }
+      return CLEAR_COLOR;
+    }
+
     function drawShapeClip(clip, t, duration) {
       if (!pipeline) return;
       const spec = clip.spec || { type: 'none', params: {} };
@@ -1557,7 +1580,7 @@ SA.lyricsEngine = (() => {
         layerPass.draw(foregroundLayers, { width: state.width, height: state.height }, t);
         foregroundDrawn = true;
       };
-      pipeline.beginScene(CLEAR_COLOR);
+      pipeline.beginScene(backgroundColorFor(project, t));
       const duration = naturalDuration();
       const view = state.view || {};
       const subtitleOnly = view.subtitleOnly === true;
@@ -1826,7 +1849,7 @@ SA.lyricsEngine = (() => {
         frame.cues.push(entry);
       }
 
-      if (state.textTarget) textPass.drawComposite(gl, state.textTarget, CLEAR_COLOR);
+      if (state.textTarget) textPass.drawComposite(gl, state.textTarget, backgroundColorFor(project, t));
       state.lastFrame = frame;
       return frame;
     }
@@ -1914,6 +1937,7 @@ SA.lyricsEngine = (() => {
       debugError,
       dispose,
       clearColor: CLEAR_COLOR,
+      backgroundColorFor,
       isLost: () => state.lost,
       isWebGL2: true,
     };

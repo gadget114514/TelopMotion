@@ -131,9 +131,13 @@ test('the generated project applies effect n to cue n and migrates', () => {
       const source = Array.isArray(entry.style[entry.group]) ? entry.style[entry.group][0] : entry.style[entry.group];
       assert.equal(JSON.stringify(instance.params), JSON.stringify(source.params));
     } else {
-      const clip = doc.clips.find((item) => item.trackId === 'bg' && item.start === cue.start && item.end === cue.end);
+      // the cue's own clip bleeds one fade past each edge (crossfade with the
+      // neighbour), so it is found by its start, not by an exact cue range
+      const clipStart = Math.max(0, cue.start - 0.12);
+      const clip = doc.clips.find((item) => item.trackId === 'bg' && Math.abs(item.start - clipStart) < 1e-4);
       assert.ok(clip, `cue ${cue.id} has no background clip`);
       assert.equal(clip.spec.type, entry.type);
+      assert.ok(Math.abs(clip.end - (cue.end + 0.12)) < 1e-4, `cue ${cue.id} background does not bleed past its end`);
     }
   }
 });

@@ -114,6 +114,26 @@ test('the catalog is deterministic', () => {
   assert.equal(JSON.stringify(again.effects), JSON.stringify(catalog.effects));
 });
 
+test('cue backgrounds crossfade so a switch never dips to the clear colour', () => {
+  const doc = mix.buildProject(catalog, mix.catalogSrt(catalog)).project;
+  const clips = doc.clips.filter((clip) => clip.trackId === 'bg').sort((a, b) => a.start - b.start);
+  const fade = (clip, t) => {
+    if (t < clip.start - 1e-4 || t > clip.end + 1e-4) return 0;
+    const fi = Math.max(1e-4, clip.fadeIn == null ? 0.15 : clip.fadeIn);
+    const fo = Math.max(1e-4, clip.fadeOut == null ? 0.15 : clip.fadeOut);
+    return Math.max(0, Math.min(1, (t - clip.start) / fi, (clip.end - t) / fo));
+  };
+  for (let i = 0; i < clips.length - 1; i += 1) {
+    const a = clips[i];
+    const b = clips[i + 1];
+    if (b.start >= a.end) continue; // a gap shows the dark base, not a dip
+    for (let t = b.start; t <= a.end; t += 0.01) {
+      const coverage = Math.max(fade(a, t), fade(b, t));
+      assert.ok(coverage > 0.999, `background dips to ${coverage.toFixed(3)} at ${t.toFixed(2)}`);
+    }
+  }
+});
+
 test('the project puts demo n on cue n and migrates', () => {
   const srtText = mix.catalogSrt(catalog);
   const doc = mix.buildProject(catalog, srtText).project;
@@ -130,7 +150,10 @@ test('the project puts demo n on cue n and migrates', () => {
     const style = project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
     assert.equal(style.enter.type, entry.style.enter.type, `cue ${cue.id} enter`);
     assert.equal(style.fill.type, entry.style.fill.type, `cue ${cue.id} fill`);
-    const clip = doc.clips.find((item) => item.trackId === 'bg' && item.start === cue.start);
+    // the cue's own clip bleeds one fade past each edge (crossfade with the
+    // neighbour), so it is found by its start, not by an exact cue range
+    const clipStart = Math.max(0, cue.start - 0.15);
+    const clip = doc.clips.find((item) => item.trackId === 'bg' && Math.abs(item.start - clipStart) < 1e-4);
     if (entry.clip) assert.equal(clip && clip.spec.type, entry.clip.type, `cue ${cue.id} background`);
     else assert.equal(clip, undefined, `cue ${cue.id} should have no background`);
     if (entry.part === 'type' || entry.part === 'variant') {

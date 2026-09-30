@@ -324,11 +324,14 @@ function sceneLook(scene, seed) {
 
 function pushClip(doc, trackId, cue, result, opacity, fade) {
   if (!result || !result.spec || !result.spec.type || result.spec.type === 'none') return;
+  // a cue background bleeds one fade past each edge so its fade-out overlaps
+  // the next clip's fade-in: a cue switch never dips to the clear colour
+  const bleed = trackId === 'bg' ? fade : 0;
   doc.clips.push({
     id: project.nextClipId(doc, `clip_${trackId}`),
     trackId,
-    start: cue.start,
-    end: cue.end,
+    start: Math.max(0, cue.start - bleed),
+    end: cue.end + bleed,
     spec: clone(result.spec),
     opacity,
     fadeIn: fade,

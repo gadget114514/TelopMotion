@@ -74476,7 +74476,7 @@
       "id": "clip_bg_0",
       "trackId": "bg",
       "start": 0,
-      "end": 3,
+      "end": 3.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74494,8 +74494,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 3,
-      "end": 6,
+      "start": 2.85,
+      "end": 6.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74513,8 +74513,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 6,
-      "end": 9,
+      "start": 5.85,
+      "end": 9.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74532,8 +74532,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 9,
-      "end": 12,
+      "start": 8.85,
+      "end": 12.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74551,8 +74551,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 12,
-      "end": 15,
+      "start": 11.85,
+      "end": 15.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74570,8 +74570,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 15,
-      "end": 18,
+      "start": 14.85,
+      "end": 18.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74589,8 +74589,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 18,
-      "end": 21,
+      "start": 17.85,
+      "end": 21.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -74606,8 +74606,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 21,
-      "end": 24,
+      "start": 20.85,
+      "end": 24.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -74627,8 +74627,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 24,
-      "end": 27,
+      "start": 23.85,
+      "end": 27.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74646,8 +74646,8 @@
     {
       "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 27,
-      "end": 30,
+      "start": 26.85,
+      "end": 30.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74665,8 +74665,8 @@
     {
       "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 30,
-      "end": 33,
+      "start": 29.85,
+      "end": 33.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -74686,8 +74686,8 @@
     {
       "id": "clip_bg_11",
       "trackId": "bg",
-      "start": 33,
-      "end": 36,
+      "start": 32.85,
+      "end": 36.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -74702,8 +74702,8 @@
     {
       "id": "clip_bg_12",
       "trackId": "bg",
-      "start": 36,
-      "end": 39,
+      "start": 35.85,
+      "end": 39.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -74723,8 +74723,8 @@
     {
       "id": "clip_bg_13",
       "trackId": "bg",
-      "start": 39,
-      "end": 42,
+      "start": 38.85,
+      "end": 42.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -74740,8 +74740,8 @@
     {
       "id": "clip_bg_14",
       "trackId": "bg",
-      "start": 42,
-      "end": 45,
+      "start": 41.85,
+      "end": 45.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74759,8 +74759,8 @@
     {
       "id": "clip_bg_15",
       "trackId": "bg",
-      "start": 45,
-      "end": 48,
+      "start": 44.85,
+      "end": 48.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74778,8 +74778,8 @@
     {
       "id": "clip_bg_16",
       "trackId": "bg",
-      "start": 48,
-      "end": 51,
+      "start": 47.85,
+      "end": 51.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74797,8 +74797,8 @@
     {
       "id": "clip_bg_17",
       "trackId": "bg",
-      "start": 51,
-      "end": 54,
+      "start": 50.85,
+      "end": 54.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74816,8 +74816,8 @@
     {
       "id": "clip_bg_18",
       "trackId": "bg",
-      "start": 54,
-      "end": 57,
+      "start": 53.85,
+      "end": 57.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -74833,8 +74833,8 @@
     {
       "id": "clip_bg_19",
       "trackId": "bg",
-      "start": 57,
-      "end": 60,
+      "start": 56.85,
+      "end": 60.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -74854,8 +74854,8 @@
     {
       "id": "clip_bg_20",
       "trackId": "bg",
-      "start": 60,
-      "end": 63,
+      "start": 59.85,
+      "end": 63.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -74870,8 +74870,8 @@
     {
       "id": "clip_bg_21",
       "trackId": "bg",
-      "start": 63,
-      "end": 66,
+      "start": 62.85,
+      "end": 66.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -74887,8 +74887,8 @@
     {
       "id": "clip_bg_22",
       "trackId": "bg",
-      "start": 66,
-      "end": 69,
+      "start": 65.85,
+      "end": 69.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74906,8 +74906,8 @@
     {
       "id": "clip_bg_23",
       "trackId": "bg",
-      "start": 69,
-      "end": 72,
+      "start": 68.85,
+      "end": 72.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74925,8 +74925,8 @@
     {
       "id": "clip_bg_24",
       "trackId": "bg",
-      "start": 72,
-      "end": 75,
+      "start": 71.85,
+      "end": 75.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74944,8 +74944,8 @@
     {
       "id": "clip_bg_25",
       "trackId": "bg",
-      "start": 75,
-      "end": 78,
+      "start": 74.85,
+      "end": 78.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -74963,8 +74963,8 @@
     {
       "id": "clip_bg_26",
       "trackId": "bg",
-      "start": 78,
-      "end": 81,
+      "start": 77.85,
+      "end": 81.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -74979,8 +74979,8 @@
     {
       "id": "clip_bg_27",
       "trackId": "bg",
-      "start": 81,
-      "end": 84,
+      "start": 80.85,
+      "end": 84.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -74998,8 +74998,8 @@
     {
       "id": "clip_bg_28",
       "trackId": "bg",
-      "start": 84,
-      "end": 87,
+      "start": 83.85,
+      "end": 87.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -75019,8 +75019,8 @@
     {
       "id": "clip_bg_29",
       "trackId": "bg",
-      "start": 87,
-      "end": 90,
+      "start": 86.85,
+      "end": 90.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75035,8 +75035,8 @@
     {
       "id": "clip_bg_30",
       "trackId": "bg",
-      "start": 90,
-      "end": 93,
+      "start": 89.85,
+      "end": 93.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75054,8 +75054,8 @@
     {
       "id": "clip_bg_31",
       "trackId": "bg",
-      "start": 93,
-      "end": 96,
+      "start": 92.85,
+      "end": 96.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75073,8 +75073,8 @@
     {
       "id": "clip_bg_32",
       "trackId": "bg",
-      "start": 96,
-      "end": 99,
+      "start": 95.85,
+      "end": 99.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75090,8 +75090,8 @@
     {
       "id": "clip_bg_33",
       "trackId": "bg",
-      "start": 99,
-      "end": 102,
+      "start": 98.85,
+      "end": 102.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75109,8 +75109,8 @@
     {
       "id": "clip_bg_34",
       "trackId": "bg",
-      "start": 102,
-      "end": 105,
+      "start": 101.85,
+      "end": 105.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75128,8 +75128,8 @@
     {
       "id": "clip_bg_35",
       "trackId": "bg",
-      "start": 105,
-      "end": 108,
+      "start": 104.85,
+      "end": 108.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75147,8 +75147,8 @@
     {
       "id": "clip_bg_36",
       "trackId": "bg",
-      "start": 108,
-      "end": 111,
+      "start": 107.85,
+      "end": 111.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75163,8 +75163,8 @@
     {
       "id": "clip_bg_37",
       "trackId": "bg",
-      "start": 111,
-      "end": 114,
+      "start": 110.85,
+      "end": 114.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75182,8 +75182,8 @@
     {
       "id": "clip_bg_38",
       "trackId": "bg",
-      "start": 114,
-      "end": 117,
+      "start": 113.85,
+      "end": 117.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75199,8 +75199,8 @@
     {
       "id": "clip_bg_39",
       "trackId": "bg",
-      "start": 117,
-      "end": 120,
+      "start": 116.85,
+      "end": 120.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -75220,8 +75220,8 @@
     {
       "id": "clip_bg_40",
       "trackId": "bg",
-      "start": 120,
-      "end": 123,
+      "start": 119.85,
+      "end": 123.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75236,8 +75236,8 @@
     {
       "id": "clip_bg_41",
       "trackId": "bg",
-      "start": 123,
-      "end": 126,
+      "start": 122.85,
+      "end": 126.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75255,8 +75255,8 @@
     {
       "id": "clip_bg_42",
       "trackId": "bg",
-      "start": 126,
-      "end": 129,
+      "start": 125.85,
+      "end": 129.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -75276,8 +75276,8 @@
     {
       "id": "clip_bg_43",
       "trackId": "bg",
-      "start": 129,
-      "end": 132,
+      "start": 128.85,
+      "end": 132.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75293,8 +75293,8 @@
     {
       "id": "clip_bg_44",
       "trackId": "bg",
-      "start": 132,
-      "end": 135,
+      "start": 131.85,
+      "end": 135.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75312,8 +75312,8 @@
     {
       "id": "clip_bg_45",
       "trackId": "bg",
-      "start": 135,
-      "end": 138,
+      "start": 134.85,
+      "end": 138.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75328,8 +75328,8 @@
     {
       "id": "clip_bg_46",
       "trackId": "bg",
-      "start": 138,
-      "end": 141,
+      "start": 137.85,
+      "end": 141.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75347,8 +75347,8 @@
     {
       "id": "clip_bg_47",
       "trackId": "bg",
-      "start": 141,
-      "end": 144,
+      "start": 140.85,
+      "end": 144.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75366,8 +75366,8 @@
     {
       "id": "clip_bg_48",
       "trackId": "bg",
-      "start": 144,
-      "end": 147,
+      "start": 143.85,
+      "end": 147.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75383,8 +75383,8 @@
     {
       "id": "clip_bg_49",
       "trackId": "bg",
-      "start": 147,
-      "end": 150,
+      "start": 146.85,
+      "end": 150.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75402,8 +75402,8 @@
     {
       "id": "clip_bg_50",
       "trackId": "bg",
-      "start": 150,
-      "end": 153,
+      "start": 149.85,
+      "end": 153.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75419,8 +75419,8 @@
     {
       "id": "clip_bg_51",
       "trackId": "bg",
-      "start": 153,
-      "end": 156,
+      "start": 152.85,
+      "end": 156.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75438,8 +75438,8 @@
     {
       "id": "clip_bg_52",
       "trackId": "bg",
-      "start": 156,
-      "end": 159,
+      "start": 155.85,
+      "end": 159.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -75459,8 +75459,8 @@
     {
       "id": "clip_bg_53",
       "trackId": "bg",
-      "start": 159,
-      "end": 162,
+      "start": 158.85,
+      "end": 162.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75475,8 +75475,8 @@
     {
       "id": "clip_bg_54",
       "trackId": "bg",
-      "start": 162,
-      "end": 165,
+      "start": 161.85,
+      "end": 165.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75494,8 +75494,8 @@
     {
       "id": "clip_bg_55",
       "trackId": "bg",
-      "start": 165,
-      "end": 168,
+      "start": 164.85,
+      "end": 168.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75513,8 +75513,8 @@
     {
       "id": "clip_bg_56",
       "trackId": "bg",
-      "start": 168,
-      "end": 171,
+      "start": 167.85,
+      "end": 171.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75529,8 +75529,8 @@
     {
       "id": "clip_bg_57",
       "trackId": "bg",
-      "start": 171,
-      "end": 174,
+      "start": 170.85,
+      "end": 174.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75546,8 +75546,8 @@
     {
       "id": "clip_bg_58",
       "trackId": "bg",
-      "start": 174,
-      "end": 177,
+      "start": 173.85,
+      "end": 177.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75562,8 +75562,8 @@
     {
       "id": "clip_bg_59",
       "trackId": "bg",
-      "start": 177,
-      "end": 180,
+      "start": 176.85,
+      "end": 180.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75581,8 +75581,8 @@
     {
       "id": "clip_bg_60",
       "trackId": "bg",
-      "start": 180,
-      "end": 183,
+      "start": 179.85,
+      "end": 183.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75600,8 +75600,8 @@
     {
       "id": "clip_bg_61",
       "trackId": "bg",
-      "start": 183,
-      "end": 186,
+      "start": 182.85,
+      "end": 186.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75616,8 +75616,8 @@
     {
       "id": "clip_bg_62",
       "trackId": "bg",
-      "start": 186,
-      "end": 189,
+      "start": 185.85,
+      "end": 189.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75635,8 +75635,8 @@
     {
       "id": "clip_bg_63",
       "trackId": "bg",
-      "start": 189,
-      "end": 192,
+      "start": 188.85,
+      "end": 192.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75652,8 +75652,8 @@
     {
       "id": "clip_bg_64",
       "trackId": "bg",
-      "start": 192,
-      "end": 195,
+      "start": 191.85,
+      "end": 195.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75671,8 +75671,8 @@
     {
       "id": "clip_bg_65",
       "trackId": "bg",
-      "start": 195,
-      "end": 198,
+      "start": 194.85,
+      "end": 198.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75690,8 +75690,8 @@
     {
       "id": "clip_bg_66",
       "trackId": "bg",
-      "start": 198,
-      "end": 201,
+      "start": 197.85,
+      "end": 201.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75709,8 +75709,8 @@
     {
       "id": "clip_bg_67",
       "trackId": "bg",
-      "start": 201,
-      "end": 204,
+      "start": 200.85,
+      "end": 204.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75728,8 +75728,8 @@
     {
       "id": "clip_bg_68",
       "trackId": "bg",
-      "start": 204,
-      "end": 207,
+      "start": 203.85,
+      "end": 207.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75745,8 +75745,8 @@
     {
       "id": "clip_bg_69",
       "trackId": "bg",
-      "start": 207,
-      "end": 210,
+      "start": 206.85,
+      "end": 210.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75764,8 +75764,8 @@
     {
       "id": "clip_bg_70",
       "trackId": "bg",
-      "start": 210,
-      "end": 213,
+      "start": 209.85,
+      "end": 213.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75781,8 +75781,8 @@
     {
       "id": "clip_bg_71",
       "trackId": "bg",
-      "start": 213,
-      "end": 216,
+      "start": 212.85,
+      "end": 216.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75800,8 +75800,8 @@
     {
       "id": "clip_bg_72",
       "trackId": "bg",
-      "start": 216,
-      "end": 219,
+      "start": 215.85,
+      "end": 219.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75819,8 +75819,8 @@
     {
       "id": "clip_bg_73",
       "trackId": "bg",
-      "start": 219,
-      "end": 222,
+      "start": 218.85,
+      "end": 222.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -75840,8 +75840,8 @@
     {
       "id": "clip_bg_74",
       "trackId": "bg",
-      "start": 222,
-      "end": 225,
+      "start": 221.85,
+      "end": 225.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75859,8 +75859,8 @@
     {
       "id": "clip_bg_75",
       "trackId": "bg",
-      "start": 225,
-      "end": 228,
+      "start": 224.85,
+      "end": 228.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75878,8 +75878,8 @@
     {
       "id": "clip_bg_76",
       "trackId": "bg",
-      "start": 228,
-      "end": 231,
+      "start": 227.85,
+      "end": 231.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75897,8 +75897,8 @@
     {
       "id": "clip_bg_77",
       "trackId": "bg",
-      "start": 231,
-      "end": 234,
+      "start": 230.85,
+      "end": 234.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75914,8 +75914,8 @@
     {
       "id": "clip_bg_78",
       "trackId": "bg",
-      "start": 234,
-      "end": 237,
+      "start": 233.85,
+      "end": 237.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -75931,8 +75931,8 @@
     {
       "id": "clip_bg_79",
       "trackId": "bg",
-      "start": 237,
-      "end": 240,
+      "start": 236.85,
+      "end": 240.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -75947,8 +75947,8 @@
     {
       "id": "clip_bg_80",
       "trackId": "bg",
-      "start": 240,
-      "end": 243,
+      "start": 239.85,
+      "end": 243.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -75966,8 +75966,8 @@
     {
       "id": "clip_bg_81",
       "trackId": "bg",
-      "start": 243,
-      "end": 246,
+      "start": 242.85,
+      "end": 246.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -75985,8 +75985,8 @@
     {
       "id": "clip_bg_82",
       "trackId": "bg",
-      "start": 246,
-      "end": 249,
+      "start": 245.85,
+      "end": 249.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76004,8 +76004,8 @@
     {
       "id": "clip_bg_83",
       "trackId": "bg",
-      "start": 249,
-      "end": 252,
+      "start": 248.85,
+      "end": 252.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76023,8 +76023,8 @@
     {
       "id": "clip_bg_84",
       "trackId": "bg",
-      "start": 252,
-      "end": 255,
+      "start": 251.85,
+      "end": 255.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76042,8 +76042,8 @@
     {
       "id": "clip_bg_85",
       "trackId": "bg",
-      "start": 255,
-      "end": 258,
+      "start": 254.85,
+      "end": 258.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76061,8 +76061,8 @@
     {
       "id": "clip_bg_86",
       "trackId": "bg",
-      "start": 258,
-      "end": 261,
+      "start": 257.85,
+      "end": 261.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76080,8 +76080,8 @@
     {
       "id": "clip_bg_87",
       "trackId": "bg",
-      "start": 261,
-      "end": 264,
+      "start": 260.85,
+      "end": 264.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76099,8 +76099,8 @@
     {
       "id": "clip_bg_88",
       "trackId": "bg",
-      "start": 264,
-      "end": 267,
+      "start": 263.85,
+      "end": 267.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -76120,8 +76120,8 @@
     {
       "id": "clip_bg_89",
       "trackId": "bg",
-      "start": 267,
-      "end": 270,
+      "start": 266.85,
+      "end": 270.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76137,8 +76137,8 @@
     {
       "id": "clip_bg_90",
       "trackId": "bg",
-      "start": 270,
-      "end": 273,
+      "start": 269.85,
+      "end": 273.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76154,8 +76154,8 @@
     {
       "id": "clip_bg_91",
       "trackId": "bg",
-      "start": 273,
-      "end": 276,
+      "start": 272.85,
+      "end": 276.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76173,8 +76173,8 @@
     {
       "id": "clip_bg_92",
       "trackId": "bg",
-      "start": 276,
-      "end": 279,
+      "start": 275.85,
+      "end": 279.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76190,8 +76190,8 @@
     {
       "id": "clip_bg_93",
       "trackId": "bg",
-      "start": 279,
-      "end": 282,
+      "start": 278.85,
+      "end": 282.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76207,8 +76207,8 @@
     {
       "id": "clip_bg_94",
       "trackId": "bg",
-      "start": 282,
-      "end": 285,
+      "start": 281.85,
+      "end": 285.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76226,8 +76226,8 @@
     {
       "id": "clip_bg_95",
       "trackId": "bg",
-      "start": 285,
-      "end": 288,
+      "start": 284.85,
+      "end": 288.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76245,8 +76245,8 @@
     {
       "id": "clip_bg_96",
       "trackId": "bg",
-      "start": 288,
-      "end": 291,
+      "start": 287.85,
+      "end": 291.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76261,8 +76261,8 @@
     {
       "id": "clip_bg_97",
       "trackId": "bg",
-      "start": 291,
-      "end": 294,
+      "start": 290.85,
+      "end": 294.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76278,8 +76278,8 @@
     {
       "id": "clip_bg_98",
       "trackId": "bg",
-      "start": 294,
-      "end": 297,
+      "start": 293.85,
+      "end": 297.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76294,8 +76294,8 @@
     {
       "id": "clip_bg_99",
       "trackId": "bg",
-      "start": 297,
-      "end": 300,
+      "start": 296.85,
+      "end": 300.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76313,8 +76313,8 @@
     {
       "id": "clip_bg_100",
       "trackId": "bg",
-      "start": 300,
-      "end": 303,
+      "start": 299.85,
+      "end": 303.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76329,8 +76329,8 @@
     {
       "id": "clip_bg_101",
       "trackId": "bg",
-      "start": 303,
-      "end": 306,
+      "start": 302.85,
+      "end": 306.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76348,8 +76348,8 @@
     {
       "id": "clip_bg_102",
       "trackId": "bg",
-      "start": 306,
-      "end": 309,
+      "start": 305.85,
+      "end": 309.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76367,8 +76367,8 @@
     {
       "id": "clip_bg_103",
       "trackId": "bg",
-      "start": 309,
-      "end": 312,
+      "start": 308.85,
+      "end": 312.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76383,8 +76383,8 @@
     {
       "id": "clip_bg_104",
       "trackId": "bg",
-      "start": 312,
-      "end": 315,
+      "start": 311.85,
+      "end": 315.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76402,8 +76402,8 @@
     {
       "id": "clip_bg_105",
       "trackId": "bg",
-      "start": 315,
-      "end": 318,
+      "start": 314.85,
+      "end": 318.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76421,8 +76421,8 @@
     {
       "id": "clip_bg_106",
       "trackId": "bg",
-      "start": 318,
-      "end": 321,
+      "start": 317.85,
+      "end": 321.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76440,8 +76440,8 @@
     {
       "id": "clip_bg_107",
       "trackId": "bg",
-      "start": 321,
-      "end": 324,
+      "start": 320.85,
+      "end": 324.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76457,8 +76457,8 @@
     {
       "id": "clip_bg_108",
       "trackId": "bg",
-      "start": 324,
-      "end": 327,
+      "start": 323.85,
+      "end": 327.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76474,8 +76474,8 @@
     {
       "id": "clip_bg_109",
       "trackId": "bg",
-      "start": 327,
-      "end": 330,
+      "start": 326.85,
+      "end": 330.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76493,8 +76493,8 @@
     {
       "id": "clip_bg_110",
       "trackId": "bg",
-      "start": 330,
-      "end": 333,
+      "start": 329.85,
+      "end": 333.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76510,8 +76510,8 @@
     {
       "id": "clip_bg_111",
       "trackId": "bg",
-      "start": 333,
-      "end": 336,
+      "start": 332.85,
+      "end": 336.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76529,8 +76529,8 @@
     {
       "id": "clip_bg_112",
       "trackId": "bg",
-      "start": 336,
-      "end": 339,
+      "start": 335.85,
+      "end": 339.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76548,8 +76548,8 @@
     {
       "id": "clip_bg_113",
       "trackId": "bg",
-      "start": 339,
-      "end": 342,
+      "start": 338.85,
+      "end": 342.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76567,8 +76567,8 @@
     {
       "id": "clip_bg_114",
       "trackId": "bg",
-      "start": 342,
-      "end": 345,
+      "start": 341.85,
+      "end": 345.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76586,8 +76586,8 @@
     {
       "id": "clip_bg_115",
       "trackId": "bg",
-      "start": 345,
-      "end": 348,
+      "start": 344.85,
+      "end": 348.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76605,8 +76605,8 @@
     {
       "id": "clip_bg_116",
       "trackId": "bg",
-      "start": 348,
-      "end": 351,
+      "start": 347.85,
+      "end": 351.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -76626,8 +76626,8 @@
     {
       "id": "clip_bg_117",
       "trackId": "bg",
-      "start": 351,
-      "end": 354,
+      "start": 350.85,
+      "end": 354.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76643,8 +76643,8 @@
     {
       "id": "clip_bg_118",
       "trackId": "bg",
-      "start": 354,
-      "end": 357,
+      "start": 353.85,
+      "end": 357.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76659,8 +76659,8 @@
     {
       "id": "clip_bg_119",
       "trackId": "bg",
-      "start": 357,
-      "end": 360,
+      "start": 356.85,
+      "end": 360.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76678,8 +76678,8 @@
     {
       "id": "clip_bg_120",
       "trackId": "bg",
-      "start": 360,
-      "end": 363,
+      "start": 359.85,
+      "end": 363.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76694,8 +76694,8 @@
     {
       "id": "clip_bg_121",
       "trackId": "bg",
-      "start": 363,
-      "end": 366,
+      "start": 362.85,
+      "end": 366.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76713,8 +76713,8 @@
     {
       "id": "clip_bg_122",
       "trackId": "bg",
-      "start": 366,
-      "end": 369,
+      "start": 365.85,
+      "end": 369.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76732,8 +76732,8 @@
     {
       "id": "clip_bg_123",
       "trackId": "bg",
-      "start": 369,
-      "end": 372,
+      "start": 368.85,
+      "end": 372.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -76753,8 +76753,8 @@
     {
       "id": "clip_bg_124",
       "trackId": "bg",
-      "start": 372,
-      "end": 375,
+      "start": 371.85,
+      "end": 375.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76772,8 +76772,8 @@
     {
       "id": "clip_bg_125",
       "trackId": "bg",
-      "start": 375,
-      "end": 378,
+      "start": 374.85,
+      "end": 378.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76791,8 +76791,8 @@
     {
       "id": "clip_bg_126",
       "trackId": "bg",
-      "start": 378,
-      "end": 381,
+      "start": 377.85,
+      "end": 381.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76810,8 +76810,8 @@
     {
       "id": "clip_bg_127",
       "trackId": "bg",
-      "start": 381,
-      "end": 384,
+      "start": 380.85,
+      "end": 384.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76826,8 +76826,8 @@
     {
       "id": "clip_bg_128",
       "trackId": "bg",
-      "start": 384,
-      "end": 387,
+      "start": 383.85,
+      "end": 387.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76843,8 +76843,8 @@
     {
       "id": "clip_bg_129",
       "trackId": "bg",
-      "start": 387,
-      "end": 390,
+      "start": 386.85,
+      "end": 390.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76860,8 +76860,8 @@
     {
       "id": "clip_bg_130",
       "trackId": "bg",
-      "start": 390,
-      "end": 393,
+      "start": 389.85,
+      "end": 393.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76879,8 +76879,8 @@
     {
       "id": "clip_bg_131",
       "trackId": "bg",
-      "start": 393,
-      "end": 396,
+      "start": 392.85,
+      "end": 396.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -76900,8 +76900,8 @@
     {
       "id": "clip_bg_132",
       "trackId": "bg",
-      "start": 396,
-      "end": 399,
+      "start": 395.85,
+      "end": 399.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -76919,8 +76919,8 @@
     {
       "id": "clip_bg_133",
       "trackId": "bg",
-      "start": 399,
-      "end": 402,
+      "start": 398.85,
+      "end": 402.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -76936,8 +76936,8 @@
     {
       "id": "clip_bg_134",
       "trackId": "bg",
-      "start": 402,
-      "end": 405,
+      "start": 401.85,
+      "end": 405.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76955,8 +76955,8 @@
     {
       "id": "clip_bg_135",
       "trackId": "bg",
-      "start": 405,
-      "end": 408,
+      "start": 404.85,
+      "end": 408.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -76974,8 +76974,8 @@
     {
       "id": "clip_bg_136",
       "trackId": "bg",
-      "start": 408,
-      "end": 411,
+      "start": 407.85,
+      "end": 411.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -76990,8 +76990,8 @@
     {
       "id": "clip_bg_137",
       "trackId": "bg",
-      "start": 411,
-      "end": 414,
+      "start": 410.85,
+      "end": 414.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77007,8 +77007,8 @@
     {
       "id": "clip_bg_138",
       "trackId": "bg",
-      "start": 414,
-      "end": 417,
+      "start": 413.85,
+      "end": 417.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77026,8 +77026,8 @@
     {
       "id": "clip_bg_139",
       "trackId": "bg",
-      "start": 417,
-      "end": 420,
+      "start": 416.85,
+      "end": 420.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77042,8 +77042,8 @@
     {
       "id": "clip_bg_140",
       "trackId": "bg",
-      "start": 420,
-      "end": 423,
+      "start": 419.85,
+      "end": 423.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77059,8 +77059,8 @@
     {
       "id": "clip_bg_141",
       "trackId": "bg",
-      "start": 423,
-      "end": 426,
+      "start": 422.85,
+      "end": 426.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77076,8 +77076,8 @@
     {
       "id": "clip_bg_142",
       "trackId": "bg",
-      "start": 426,
-      "end": 429,
+      "start": 425.85,
+      "end": 429.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77095,8 +77095,8 @@
     {
       "id": "clip_bg_143",
       "trackId": "bg",
-      "start": 429,
-      "end": 432,
+      "start": 428.85,
+      "end": 432.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77114,8 +77114,8 @@
     {
       "id": "clip_bg_144",
       "trackId": "bg",
-      "start": 432,
-      "end": 435,
+      "start": 431.85,
+      "end": 435.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77133,8 +77133,8 @@
     {
       "id": "clip_bg_145",
       "trackId": "bg",
-      "start": 435,
-      "end": 438,
+      "start": 434.85,
+      "end": 438.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77149,8 +77149,8 @@
     {
       "id": "clip_bg_146",
       "trackId": "bg",
-      "start": 438,
-      "end": 441,
+      "start": 437.85,
+      "end": 441.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77168,8 +77168,8 @@
     {
       "id": "clip_bg_147",
       "trackId": "bg",
-      "start": 441,
-      "end": 444,
+      "start": 440.85,
+      "end": 444.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77185,8 +77185,8 @@
     {
       "id": "clip_bg_148",
       "trackId": "bg",
-      "start": 444,
-      "end": 447,
+      "start": 443.85,
+      "end": 447.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77202,8 +77202,8 @@
     {
       "id": "clip_bg_149",
       "trackId": "bg",
-      "start": 447,
-      "end": 450,
+      "start": 446.85,
+      "end": 450.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77221,8 +77221,8 @@
     {
       "id": "clip_bg_150",
       "trackId": "bg",
-      "start": 450,
-      "end": 453,
+      "start": 449.85,
+      "end": 453.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77240,8 +77240,8 @@
     {
       "id": "clip_bg_151",
       "trackId": "bg",
-      "start": 453,
-      "end": 456,
+      "start": 452.85,
+      "end": 456.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77256,8 +77256,8 @@
     {
       "id": "clip_bg_152",
       "trackId": "bg",
-      "start": 456,
-      "end": 459,
+      "start": 455.85,
+      "end": 459.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77273,8 +77273,8 @@
     {
       "id": "clip_bg_153",
       "trackId": "bg",
-      "start": 459,
-      "end": 462,
+      "start": 458.85,
+      "end": 462.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77289,8 +77289,8 @@
     {
       "id": "clip_bg_154",
       "trackId": "bg",
-      "start": 462,
-      "end": 465,
+      "start": 461.85,
+      "end": 465.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77308,8 +77308,8 @@
     {
       "id": "clip_bg_155",
       "trackId": "bg",
-      "start": 465,
-      "end": 468,
+      "start": 464.85,
+      "end": 468.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77324,8 +77324,8 @@
     {
       "id": "clip_bg_156",
       "trackId": "bg",
-      "start": 468,
-      "end": 471,
+      "start": 467.85,
+      "end": 471.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77343,8 +77343,8 @@
     {
       "id": "clip_bg_157",
       "trackId": "bg",
-      "start": 471,
-      "end": 474,
+      "start": 470.85,
+      "end": 474.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77364,8 +77364,8 @@
     {
       "id": "clip_bg_158",
       "trackId": "bg",
-      "start": 474,
-      "end": 477,
+      "start": 473.85,
+      "end": 477.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77381,8 +77381,8 @@
     {
       "id": "clip_bg_159",
       "trackId": "bg",
-      "start": 477,
-      "end": 480,
+      "start": 476.85,
+      "end": 480.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77397,8 +77397,8 @@
     {
       "id": "clip_bg_160",
       "trackId": "bg",
-      "start": 480,
-      "end": 483,
+      "start": 479.85,
+      "end": 483.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77416,8 +77416,8 @@
     {
       "id": "clip_bg_161",
       "trackId": "bg",
-      "start": 483,
-      "end": 486,
+      "start": 482.85,
+      "end": 486.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77435,8 +77435,8 @@
     {
       "id": "clip_bg_162",
       "trackId": "bg",
-      "start": 486,
-      "end": 489,
+      "start": 485.85,
+      "end": 489.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77454,8 +77454,8 @@
     {
       "id": "clip_bg_163",
       "trackId": "bg",
-      "start": 489,
-      "end": 492,
+      "start": 488.85,
+      "end": 492.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77475,8 +77475,8 @@
     {
       "id": "clip_bg_164",
       "trackId": "bg",
-      "start": 492,
-      "end": 495,
+      "start": 491.85,
+      "end": 495.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77491,8 +77491,8 @@
     {
       "id": "clip_bg_165",
       "trackId": "bg",
-      "start": 495,
-      "end": 498,
+      "start": 494.85,
+      "end": 498.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77510,8 +77510,8 @@
     {
       "id": "clip_bg_166",
       "trackId": "bg",
-      "start": 498,
-      "end": 501,
+      "start": 497.85,
+      "end": 501.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77529,8 +77529,8 @@
     {
       "id": "clip_bg_167",
       "trackId": "bg",
-      "start": 501,
-      "end": 504,
+      "start": 500.85,
+      "end": 504.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77550,8 +77550,8 @@
     {
       "id": "clip_bg_168",
       "trackId": "bg",
-      "start": 504,
-      "end": 507,
+      "start": 503.85,
+      "end": 507.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77571,8 +77571,8 @@
     {
       "id": "clip_bg_169",
       "trackId": "bg",
-      "start": 507,
-      "end": 510,
+      "start": 506.85,
+      "end": 510.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -77587,8 +77587,8 @@
     {
       "id": "clip_bg_170",
       "trackId": "bg",
-      "start": 510,
-      "end": 513,
+      "start": 509.85,
+      "end": 513.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77606,8 +77606,8 @@
     {
       "id": "clip_bg_171",
       "trackId": "bg",
-      "start": 513,
-      "end": 516,
+      "start": 512.85,
+      "end": 516.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77625,8 +77625,8 @@
     {
       "id": "clip_bg_172",
       "trackId": "bg",
-      "start": 516,
-      "end": 519,
+      "start": 515.85,
+      "end": 519.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77642,8 +77642,8 @@
     {
       "id": "clip_bg_173",
       "trackId": "bg",
-      "start": 519,
-      "end": 522,
+      "start": 518.85,
+      "end": 522.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77663,8 +77663,8 @@
     {
       "id": "clip_bg_174",
       "trackId": "bg",
-      "start": 522,
-      "end": 525,
+      "start": 521.85,
+      "end": 525.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77682,8 +77682,8 @@
     {
       "id": "clip_bg_175",
       "trackId": "bg",
-      "start": 525,
-      "end": 528,
+      "start": 524.85,
+      "end": 528.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77701,8 +77701,8 @@
     {
       "id": "clip_bg_176",
       "trackId": "bg",
-      "start": 528,
-      "end": 531,
+      "start": 527.85,
+      "end": 531.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77720,8 +77720,8 @@
     {
       "id": "clip_bg_177",
       "trackId": "bg",
-      "start": 531,
-      "end": 534,
+      "start": 530.85,
+      "end": 534.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77741,8 +77741,8 @@
     {
       "id": "clip_bg_178",
       "trackId": "bg",
-      "start": 534,
-      "end": 537,
+      "start": 533.85,
+      "end": 537.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77760,8 +77760,8 @@
     {
       "id": "clip_bg_179",
       "trackId": "bg",
-      "start": 537,
-      "end": 540,
+      "start": 536.85,
+      "end": 540.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77779,8 +77779,8 @@
     {
       "id": "clip_bg_180",
       "trackId": "bg",
-      "start": 540,
-      "end": 543,
+      "start": 539.85,
+      "end": 543.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77798,8 +77798,8 @@
     {
       "id": "clip_bg_181",
       "trackId": "bg",
-      "start": 543,
-      "end": 546,
+      "start": 542.85,
+      "end": 546.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77815,8 +77815,8 @@
     {
       "id": "clip_bg_182",
       "trackId": "bg",
-      "start": 546,
-      "end": 549,
+      "start": 545.85,
+      "end": 549.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -77832,8 +77832,8 @@
     {
       "id": "clip_bg_183",
       "trackId": "bg",
-      "start": 549,
-      "end": 552,
+      "start": 548.85,
+      "end": 552.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77853,8 +77853,8 @@
     {
       "id": "clip_bg_184",
       "trackId": "bg",
-      "start": 552,
-      "end": 555,
+      "start": 551.85,
+      "end": 555.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77872,8 +77872,8 @@
     {
       "id": "clip_bg_185",
       "trackId": "bg",
-      "start": 555,
-      "end": 558,
+      "start": 554.85,
+      "end": 558.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77891,8 +77891,8 @@
     {
       "id": "clip_bg_186",
       "trackId": "bg",
-      "start": 558,
-      "end": 561,
+      "start": 557.85,
+      "end": 561.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -77910,8 +77910,8 @@
     {
       "id": "clip_bg_187",
       "trackId": "bg",
-      "start": 561,
-      "end": 564,
+      "start": 560.85,
+      "end": 564.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -77929,8 +77929,8 @@
     {
       "id": "clip_bg_188",
       "trackId": "bg",
-      "start": 564,
-      "end": 567,
+      "start": 563.85,
+      "end": 567.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77950,8 +77950,8 @@
     {
       "id": "clip_bg_189",
       "trackId": "bg",
-      "start": 567,
-      "end": 570,
+      "start": 566.85,
+      "end": 570.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77971,8 +77971,8 @@
     {
       "id": "clip_bg_190",
       "trackId": "bg",
-      "start": 570,
-      "end": 573,
+      "start": 569.85,
+      "end": 573.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -77992,8 +77992,8 @@
     {
       "id": "clip_bg_191",
       "trackId": "bg",
-      "start": 573,
-      "end": 576,
+      "start": 572.85,
+      "end": 576.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -78011,8 +78011,8 @@
     {
       "id": "clip_bg_192",
       "trackId": "bg",
-      "start": 576,
-      "end": 579,
+      "start": 575.85,
+      "end": 579.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -78032,8 +78032,8 @@
     {
       "id": "clip_bg_193",
       "trackId": "bg",
-      "start": 579,
-      "end": 582,
+      "start": 578.85,
+      "end": 582.15,
       "spec": {
         "type": "shapes",
         "params": {
@@ -78049,8 +78049,8 @@
     {
       "id": "clip_bg_194",
       "trackId": "bg",
-      "start": 582,
-      "end": 585,
+      "start": 581.85,
+      "end": 585.15,
       "spec": {
         "type": "solid",
         "params": {
@@ -78065,8 +78065,8 @@
     {
       "id": "clip_bg_195",
       "trackId": "bg",
-      "start": 585,
-      "end": 588,
+      "start": 584.85,
+      "end": 588.15,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -78084,8 +78084,8 @@
     {
       "id": "clip_bg_196",
       "trackId": "bg",
-      "start": 588,
-      "end": 591,
+      "start": 587.85,
+      "end": 591.15,
       "spec": {
         "type": "pattern",
         "params": {
@@ -78105,8 +78105,8 @@
     {
       "id": "clip_bg_197",
       "trackId": "bg",
-      "start": 591,
-      "end": 594,
+      "start": 590.85,
+      "end": 594.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -78124,8 +78124,8 @@
     {
       "id": "clip_bg_198",
       "trackId": "bg",
-      "start": 594,
-      "end": 597,
+      "start": 593.85,
+      "end": 597.15,
       "spec": {
         "type": "gradient",
         "params": {
@@ -78143,8 +78143,8 @@
     {
       "id": "clip_bg_199",
       "trackId": "bg",
-      "start": 597,
-      "end": 600,
+      "start": 596.85,
+      "end": 600.15,
       "spec": {
         "type": "noiseGradient",
         "params": {

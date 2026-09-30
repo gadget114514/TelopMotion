@@ -3010,7 +3010,7 @@
       "id": "clip_bg_0",
       "trackId": "bg",
       "start": 0,
-      "end": 3,
+      "end": 3.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3052,8 +3052,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 3,
-      "end": 5.5,
+      "start": 2.95,
+      "end": 5.55,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3096,8 +3096,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 5.5,
-      "end": 8,
+      "start": 5.45,
+      "end": 8.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3140,8 +3140,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 8,
-      "end": 10.5,
+      "start": 7.95,
+      "end": 10.55,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3182,8 +3182,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 10.5,
-      "end": 13,
+      "start": 10.45,
+      "end": 13.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3225,8 +3225,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 13,
-      "end": 15.5,
+      "start": 12.95,
+      "end": 15.55,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3269,8 +3269,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 15.5,
-      "end": 18,
+      "start": 15.45,
+      "end": 18.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3313,8 +3313,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 18,
-      "end": 20.5,
+      "start": 17.95,
+      "end": 20.55,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3356,8 +3356,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 20.5,
-      "end": 23,
+      "start": 20.45,
+      "end": 23.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3396,8 +3396,8 @@
     {
       "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 23,
-      "end": 25.5,
+      "start": 22.95,
+      "end": 25.55,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3438,8 +3438,8 @@
     {
       "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 25.5,
-      "end": 28,
+      "start": 25.45,
+      "end": 28.05,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -3481,8 +3481,8 @@
     {
       "id": "clip_bg_11",
       "trackId": "bg",
-      "start": 28,
-      "end": 30,
+      "start": 27.95,
+      "end": 30.05,
       "spec": {
         "type": "noiseGradient",
         "params": {

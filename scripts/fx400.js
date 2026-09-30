@@ -571,17 +571,22 @@ function catalogSignature(catalog) {
 
 function applyEntry(doc, entry, cue) {
   if (entry.apply === 'clip') {
-    doc.clips = (doc.clips || []).filter((clip) => !(clip.trackId === 'bg' && clip.start < cue.end - 1e-4 && clip.end > cue.start + 1e-4));
+    // replace the clip this cue owns (its start lies inside the cue); the
+    // previous cue's clip bleeds into this one by the fade and must survive
+    doc.clips = (doc.clips || []).filter((clip) => !(clip.trackId === 'bg' && clip.start >= cue.start - 1e-4 && clip.start <= cue.end - 1e-4));
     if (entry.clip && entry.clip.type && entry.clip.type !== 'none') {
+      // the clip bleeds one fade past each edge so its fade-out overlaps the
+      // next clip's fade-in: a cue switch never dips to the clear colour
+      const fade = 0.12;
       doc.clips.push({
         id: project.nextClipId(doc, 'clip_bg'),
         trackId: 'bg',
-        start: cue.start,
-        end: cue.end,
+        start: Math.max(0, cue.start - fade),
+        end: cue.end + fade,
         spec: clone(entry.clip),
         opacity: 1,
-        fadeIn: 0.12,
-        fadeOut: 0.12,
+        fadeIn: fade,
+        fadeOut: fade,
         colors: null,
       });
     }

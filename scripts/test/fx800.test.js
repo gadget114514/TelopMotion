@@ -138,7 +138,10 @@ test('each demo project puts demo n on cue n and migrates', () => {
       const style = project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
       assert.equal(style.enter.type, entry.style.enter.type, `cue ${cue.id} enter`);
       assert.equal(style.fill.type, entry.style.fill.type, `cue ${cue.id} fill`);
-      const clip = doc.clips.find((item) => item.trackId === 'bg' && item.start === cue.start);
+      // the cue's own clip bleeds one fade past each edge (crossfade with the
+      // neighbour), so it is found by its start, not by an exact cue range
+      const clipStart = Math.max(0, cue.start - 0.15);
+      const clip = doc.clips.find((item) => item.trackId === 'bg' && Math.abs(item.start - clipStart) < 1e-4);
       if (entry.clip) assert.equal(clip && clip.spec.type, entry.clip.type, `cue ${cue.id} background`);
       else assert.equal(clip, undefined, `cue ${cue.id} should have no background`);
       if (entry.part === 'type' || entry.part === 'variant') {
