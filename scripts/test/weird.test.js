@@ -63,3 +63,21 @@ test('raw and clamp01 stay inside 0..1 and default to 0', () => {
   assert.equal(weird.clamp01('0.25'), 0.25);
   assert.equal(weird.clamp01('nope'), 0);
 });
+
+test('the colour development rides the raw axis', () => {
+  // a cue keeps the base palette at weird 0 and re-rolls at weird 1
+  assert.equal(weird.basePaletteChance({ weird: 0 }), 1);
+  assert.equal(weird.basePaletteChance({ weird: 1 }), 0);
+  assert.equal(weird.basePaletteChance(undefined), 1);
+  assert.ok(weird.basePaletteChance({ weird: 0.5 }) > weird.basePaletteChance({ weird: 0.75 }));
+  // a beat moves to another scheme at weird 1 and never at weird 0
+  assert.equal(weird.colorChange({ weird: 0 }), 0);
+  assert.equal(weird.colorChange({ weird: 1 }), 1);
+  assert.equal(weird.colorChange(undefined), 0);
+  let previous = -1;
+  for (let v = 0; v <= 1.0001; v += 0.1) {
+    const value = weird.colorChange({ weird: Math.min(1, v) });
+    assert.ok(value >= previous, `colorChange fell at ${v}`);
+    previous = value;
+  }
+});

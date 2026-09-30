@@ -41,6 +41,8 @@ const SA = {
   keywords: requirePart('renderer/js/lyrics/keywords.js'),
   audioDriver: requirePart('renderer/js/lyrics/audio-driver.js'),
   compositions: requirePart('renderer/js/lyrics/compositions.js'),
+  paletteRoles: requirePart('renderer/js/lyrics/palette-roles.js'),
+  legibility: requirePart('renderer/js/lyrics/legibility.js'),
   direct: requirePart('renderer/js/studio/direct.js'),
 };
 globalThis.SA = SA;

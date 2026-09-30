@@ -167,6 +167,186 @@
     return upgraded[slot] == null ? null : upgraded[slot];
   }
 
+  // --- beat colour schemes -----------------------------------------------------
+  // A beat carries a 4-letter scheme id instead of a palette of its own. Each
+  // letter says which source role the target role takes; targets run in the
+  // B, M, T, D order (background, backdrop, text, decoration):
+  //
+  //   'BMTD' = the identity (never stored)
+  //   'TMBD' = text <-> background
+  //   'BTMD' = text <-> backdrop
+  //
+  // The colours themselves are derived from the inherited palette, so a theme
+  // edit or a palette re-roll still reaches every beat. The hero text colour H
+  // follows the swap it shares a slot with (legacy) or keeps its own slot (10
+  // roles) and is only moved when the contrast contract demands it.
+  const SCHEME_BASE = 'BMTD';
+  const SCHEME_INVERT = 'TMBD';
+  const SCHEME_ROLES = ['B', 'M', 'T', 'D'];
+  const SCHEME_TARGETS = ['B', 'M', 'T', 'D'];
+
+  // The four schemes swap these roles; every other role keeps the slot table.
+  // [source B, source M, source T, source D]
+  function roleSlots(colors) {
+    const legacy = !Array.isArray(colors) || colors.length < SIZE;
+    if (legacy) {
+      // bg, bg2, text, accent, stroke, accent2[, spare]: the backdrop sits on
+      // the accent family and the hero shares the accent slot
+      return { B: 0, B2: 1, M: 3, M2: 5, T: 2, D: 4, H: 3 };
+    }
+    return {
+      B: SLOT.MID_A,
+      B2: SLOT.MID_B,
+      M: SLOT.MID_C,
+      M2: SLOT.MID_D,
+      T: SLOT.TEXT_FILL,
+      D: SLOT.TEXT_EDGE,
+      H: SLOT.TEXT_FILL2,
+    };
+  }
+
+  function permutations(chars) {
+    if (chars.length <= 1) return [chars];
+    const out = [];
+    for (let i = 0; i < chars.length; i += 1) {
+      const rest = chars.slice(0, i).concat(chars.slice(i + 1));
+      for (const tail of permutations(rest)) out.push(chars[i] + tail);
+    }
+    return out;
+  }
+
+  // 24 ids in the deterministic generation order, the identity 'BMTD' first.
+  const BEAT_SCHEME_IDS = Object.freeze(permutations(SCHEME_ROLES));
+
+  // A secondary colour (bg2 / mid2) keeps its HSV distance from its main role:
+  // the hue step, the saturation ratio and the lightness gap are measured on
+  // the source pair and applied to the new main colour.
+  function carry(mainFrom, secondaryFrom, mainTo) {
+    if (mainFrom == null || mainTo == null) return secondaryFrom;
+    if (secondaryFrom == null) return mainTo;
+    try {
+      const a = color.rgbToHsv(color.parse(mainFrom));
+      const b = color.rgbToHsv(color.parse(secondaryFrom));
+      let hue = b.h - a.h;
+      if (hue > 180) hue -= 360;
+      else if (hue < -180) hue += 360;
+      const satScale = a.s > 0.02 ? b.s / a.s : 1;
+      return shift(mainTo, hue, satScale, b.v - a.v);
+    } catch {
+      return secondaryFrom;
+    }
+  }
+
+  // The repaired palette must hold the pairs the renderer relies on. `move` is
+  // the role the repair is allowed to nudge; the text (T) is never moved. A
+  // legacy palette has no hero slot of its own (H reads the M slot, exactly
+  // what the compositions' fill2 does), so a separate 3:1 hero-on-background
+  // demand would over-constrain every swap: the M-B neighbour pair below
+  // already keeps the hero apart from the background there.
+  function schemePairs(weirdRaw, colors) {
+    const pairs = [
+      { a: 'T', b: 'B', ratio: ratioFor('text', weirdRaw), move: 'B' },
+      { a: 'T', b: 'M', ratio: ratioFor('backdrop', weirdRaw), move: 'M' },
+    ];
+    if (Array.isArray(colors) && colors.length >= SIZE) pairs.push({ a: 'H', b: 'B', ratio: 3, move: 'H' });
+    pairs.push({ a: 'D', b: 'T', ratio: ratioFor('soft', weirdRaw), move: 'D' });
+    pairs.push({ a: 'M', b: 'B', ratio: ratioFor('neighbour', weirdRaw), move: 'M' });
+    return pairs;
+  }
+
+  function applyScheme(colors, id, weirdRaw) {
+    if (!Array.isArray(colors) || colors.length < 6) return null;
+    if (typeof id !== 'string' || id.length !== 4) return null;
+    const slots = roleSlots(colors);
+    for (const role of id.split('')) if (!SCHEME_ROLES.includes(role)) return null;
+    // the role slots index the stored array directly (a legacy palette must
+    // keep its own colours; get() would upgrade it to derived slots)
+    const at = (index) => (index == null || index < 0 || index >= colors.length ? null : colors[index]);
+    const next = colors.slice();
+    for (let i = 0; i < SCHEME_TARGETS.length; i += 1) {
+      const target = SCHEME_TARGETS[i];
+      const value = at(slots[id[i]]);
+      if (value == null) return null;
+      next[slots[target]] = value;
+    }
+    next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B]);
+    next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M]);
+    if (colors.length >= SIZE) next[SLOT.TEXT_BG] = luminanceOpposite(next[SLOT.TEXT_FILL]);
+    // contrast contract: at most two repair rounds, then the pairs must hold.
+    // A repair that moves a colour's lightness by more than 0.35 loses the
+    // character of the original permutation, so the draw is rejected instead.
+    const pairs = schemePairs(weirdRaw, colors);
+    const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
+    const before = new Map();
+    const moved = new Set();
+    const moveSlot = (role, fixedRole, target) => {
+      const index = slots[role];
+      if (!moved.has(index)) {
+        try {
+          before.set(index, color.rgbToHsv(color.parse(next[index])).v);
+        } catch {
+          before.set(index, null);
+        }
+        moved.add(index);
+      }
+      const fixed = next[slots[fixedRole]];
+      let value = color.ensureContrast(next[index], fixed, target);
+      if (contrast(value, fixed) < target - 1e-6) value = color.separateFrom(value, [fixed], target) || value;
+      next[index] = value;
+    };
+    for (let round = 0; round < 2; round += 1) {
+      for (const pair of pairs) {
+        if (contrast(next[slots[pair.a]], next[slots[pair.b]]) >= pair.ratio - 1e-6) continue;
+        moveSlot(pair.move, pair.move === pair.a ? pair.b : pair.a, pair.ratio);
+      }
+      if (holds()) break;
+    }
+    if (!holds()) return null;
+    for (const index of moved) {
+      const start = before.get(index);
+      if (start == null) return null;
+      try {
+        if (Math.abs(color.rgbToHsv(color.parse(next[index])).v - start) > 0.35) return null;
+      } catch {
+        return null;
+      }
+    }
+    return next;
+  }
+
+  // The B / M / T channels of two palettes; a scheme that only reorders nearly
+  // identical colours is no scheme at all.
+  function schemeDistance(base, next, slots) {
+    let total = 0;
+    for (const role of ['B', 'M', 'T']) {
+      const a = color.parse(base[slots[role]]);
+      const b = color.parse(next[slots[role]]);
+      total += Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
+    }
+    return total;
+  }
+
+  // Every viable scheme of a palette: the 23 non-identity permutations that
+  // pass the contrast contract, minus the visually identical results. The order
+  // is the deterministic permutation order.
+  function schemes(colors, weirdRaw) {
+    if (!Array.isArray(colors) || colors.length < 6) return [];
+    const slots = roleSlots(colors);
+    const out = [];
+    const seen = new Set();
+    for (const id of BEAT_SCHEME_IDS) {
+      if (id === SCHEME_BASE) continue;
+      const next = applyScheme(colors, id, weirdRaw);
+      if (!next) continue;
+      if (schemeDistance(colors, next, slots) < 0.15) continue;
+      const key = next.join('|').toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ id, colors: next });
+    }
+    return out;
+  }
+
   function slotOf(colors, slot) {
     return get(colors, slot);
   }
@@ -260,6 +440,81 @@
     return list;
   }
 
+  // --- colour-only re-roll ---------------------------------------------------
+  // Effects keep literal hex colours in their params (edge colours, fill tints,
+  // clip colours...), so swapping the palette alone would leave them behind.
+  // Each hex is tied to its nearest colour of the old palette and moved onto
+  // the same role of the new one: it takes the new hue and keeps its relative
+  // saturation and lightness (a darker shadow of the accent stays a darker
+  // shadow of the new accent). Alpha is preserved.
+  const HEX = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+  // HSV distance: a saturated colour matches on hue first (a dark red is a
+  // shade of the red accent, not of the near-black background)
+  function hsvDistance(a, b) {
+    const hue = Math.abs(a.h - b.h) % 360;
+    const hueDiff = (Math.min(hue, 360 - hue) / 180) * Math.min(a.s, b.s);
+    return (a.v - b.v) ** 2 + (a.s - b.s) ** 2 + 2 * hueDiff ** 2;
+  }
+
+  function remapColor(hex, from, to) {
+    const rgba = color.parse(hex);
+    const own = color.rgbToHsv(rgba);
+    const count = Math.min(from.length, to.length);
+    let best = -1;
+    let bestDistance = Infinity;
+    for (let i = 0; i < count; i += 1) {
+      const distance = hsvDistance(own, color.rgbToHsv(color.parse(from[i])));
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = i;
+      }
+    }
+    if (best < 0) return hex;
+    // an untouched role leaves its colours alone (editing one swatch must not
+    // move the colours tied to the others)
+    if (String(from[best]).toLowerCase() === String(to[best]).toLowerCase()) return hex;
+    const alpha = rgba.a == null ? 1 : rgba.a;
+    const target = color.parse(to[best]);
+    if (bestDistance < 1e-6) return color.toHex({ ...target, a: alpha });
+    const ref = color.rgbToHsv(color.parse(from[best]));
+    const next = color.rgbToHsv(target);
+    // a colour takes the hue of its new role (so off-palette colours from the
+    // drawn looks join the palette too); a grey carries no hue and keeps its own
+    const hue = own.s > 0.08 && next.s > 0.08 ? next.h : own.h;
+    const rgb = color.hsvToRgb({
+      h: hue,
+      s: clamp01(ref.s > 0.05 ? next.s * (own.s / ref.s) : own.s),
+      v: clamp01(ref.v > 0.05 ? next.v * (own.v / ref.v) : own.v + (next.v - ref.v)),
+    });
+    return color.toHex({ ...rgb, a: alpha });
+  }
+
+  // returns a copy of `value` with every hex colour moved from one palette to
+  // another; anything that is not a hex string is copied unchanged
+  function recolor(value, fromColors, toColors) {
+    const from = (Array.isArray(fromColors) ? fromColors : []).filter((hex) => typeof hex === 'string' && HEX.test(hex));
+    const to = Array.isArray(toColors) ? toColors : [];
+    if (!from.length || !to.length) return value == null ? value : JSON.parse(JSON.stringify(value));
+    const cache = new Map();
+    const walk = (node) => {
+      if (typeof node === 'string') {
+        if (!HEX.test(node)) return node;
+        const key = node.toLowerCase();
+        if (!cache.has(key)) cache.set(key, remapColor(node, from, to));
+        return cache.get(key);
+      }
+      if (Array.isArray(node)) return node.map(walk);
+      if (node && typeof node === 'object') {
+        const out = {};
+        for (const [key, entry] of Object.entries(node)) out[key] = walk(entry);
+        return out;
+      }
+      return node;
+    };
+    return walk(value);
+  }
+
   return {
     SLOT,
     MID_SLOTS,
@@ -281,5 +536,17 @@
     repairPalette,
     luminanceOpposite,
     shift,
+    SCHEME_BASE,
+    SCHEME_INVERT,
+    SCHEME_ROLES,
+    BEAT_SCHEME_IDS,
+    roleSlots,
+    carry,
+    applyScheme,
+    schemes,
+    HEX,
+    hsvDistance,
+    remapColor,
+    recolor,
   };
 });

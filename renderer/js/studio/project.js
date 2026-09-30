@@ -119,6 +119,60 @@
     return result;
   }
 
+  // palette-roles is an optional runtime dependency (the project module never
+  // requires anything at load time): the browser reads SA.paletteRoles, Node
+  // resolves it next to this file. Without it the scheme features are ignored.
+  function paletteRolesModule() {
+    if (typeof SA !== 'undefined' && SA && SA.paletteRoles) return SA.paletteRoles;
+    try {
+      if (typeof require === 'function') return require('../lyrics/palette-roles');
+    } catch {
+      // not available
+    }
+    return null;
+  }
+
+  // The raw weird axis of the project, clamped: it drives the scheme contrast
+  // floor. Unset reads as 0 so old projects keep the old resolution exactly.
+  function projectWeirdOf(doc) {
+    const axes = doc && doc.styleMode && doc.styleMode.axes;
+    const value = Number(axes && axes.weird);
+    if (!Number.isFinite(value) || value <= 0) return 0;
+    return value > 1 ? 1 : value;
+  }
+
+  // A cue may carry its own auto-drawn palette. Its inherited literal colours
+  // move onto that palette before the cue's own style is merged, so the cue
+  // and every beat under it paint in the drawn colours.
+  function applyCuePalette(merged, doc, parsed) {
+    const cue = parsed.cueId && doc.cueStyles && doc.cueStyles[parsed.cueId];
+    const palette = cue && cue.palette;
+    if (!palette || palette.auto !== true) return merged;
+    if (!merged.palette || !Array.isArray(merged.palette.colors) || !Array.isArray(palette.colors)) return merged;
+    const roles = paletteRolesModule();
+    if (!roles || typeof roles.recolor !== 'function') return merged;
+    const { palette: inherited, ...rest } = merged;
+    return { ...roles.recolor(rest, inherited.colors, palette.colors), palette: inherited };
+  }
+
+  // A beat may carry a 4-letter colour scheme. The colours themselves are not
+  // stored: the scheme permutes the inherited palette and the inherited
+  // literal colours follow their roles. The resolved palette carries the
+  // scheme id and the pre-scheme colours so the stage can follow it too.
+  function applyBeatScheme(merged, doc, parsed) {
+    const own = parsed.beatId && doc.beatStyles && doc.beatStyles[parsed.beatId];
+    const id = own && own.colorScheme;
+    if (!id || !merged.palette || !Array.isArray(merged.palette.colors)) return merged;
+    const roles = paletteRolesModule();
+    const to = roles && typeof roles.applyScheme === 'function' ? roles.applyScheme(merged.palette.colors, id, projectWeirdOf(doc)) : null;
+    if (!to) return merged;
+    const { palette, ...rest } = merged;
+    return {
+      ...roles.recolor(rest, palette.colors, to),
+      palette: { ...palette, colors: to, scheme: { id, from: palette.colors.slice() } },
+    };
+  }
+
   function trackKindOf(project, trackId) {
     const track = ((project && project.tracks) || []).find((entry) => entry && entry.id === trackId);
     if (track) return track.kind;
@@ -387,12 +441,14 @@
     const doc = project || {};
     const parsed = parsePath(elementPath);
     let merged = mergeDeep({}, doc.style || {});
+    merged = applyCuePalette(merged, doc, parsed);
     if (parsed.cueId && doc.cueStyles && doc.cueStyles[parsed.cueId]) {
       merged = mergeDeep(merged, doc.cueStyles[parsed.cueId]);
     }
     if (parsed.kind && doc.beatKindStyle && doc.beatKindStyle[parsed.kind]) {
       merged = mergeDeep(merged, doc.beatKindStyle[parsed.kind]);
     }
+    merged = applyBeatScheme(merged, doc, parsed);
     if (parsed.beatId && doc.beatStyles && doc.beatStyles[parsed.beatId]) {
       merged = mergeDeep(merged, doc.beatStyles[parsed.beatId]);
     }

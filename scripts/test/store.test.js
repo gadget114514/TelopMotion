@@ -20,6 +20,7 @@ globalThis.SA = globalThis.SA || {};
 globalThis.SA.project = projectModule;
 globalThis.SA.moods = require('../../renderer/js/lyrics/moods.js');
 globalThis.SA.weird = require('../../renderer/js/lyrics/weird.js');
+globalThis.SA.paletteRoles = require('../../renderer/js/lyrics/palette-roles.js');
 globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');
 globalThis.SA.random = require('../../renderer/js/lyrics/random.js');
@@ -588,4 +589,38 @@ test('a composition-mode cue re-roll redraws its beats through composeBeat', () 
   assert.equal(style.location.type, 'grid');
   assert.deepEqual(style.hold, []);
   assert.equal(store.undo(), true);
+});
+
+test('invertBeatScheme toggles the role order and undoes in one step', () => {
+  const doc = fixture();
+  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
+  store.load(doc);
+  const before = snapshot();
+  assert.equal(store.commands.invertBeatScheme('c1', 'c1:page0'), 'TMBD');
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, 'TMBD');
+  // a second press goes back to the base colours
+  assert.equal(store.commands.invertBeatScheme('c1', 'c1:page0'), null);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, undefined);
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, 'TMBD');
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('rerollBeatScheme picks another role order of the same palette', () => {
+  const doc = fixture();
+  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
+  store.load(doc);
+  const candidates = globalThis.SA.paletteRoles.schemes(store.state.project.style.palette.colors, 0.7);
+  assert.ok(candidates.length >= 2, `candidates ${candidates.length}`);
+  const pick = store.commands.rerollBeatScheme('c1', 'c1:page0');
+  assert.ok(pick && pick.id);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, pick.id);
+  const again = store.commands.rerollBeatScheme('c1', 'c1:page0');
+  assert.ok(again && again.id);
+  assert.notEqual(again.id, pick.id, 'never re-picks the current order');
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, pick.id);
 });

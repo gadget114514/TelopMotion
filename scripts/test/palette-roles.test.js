@@ -102,4 +102,15 @@ test('the luminance opposite keeps the text readable', () => {
   assert.ok(color.contrastRatio(color.parse('#101018'), color.parse(dark)) >= 4.5, `dark vs ${dark}`);
 });
 
+test('the moved recolor matches moods.recolor', () => {
+  const moods = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js'));
+  const style = {
+    color: { fill: { kind: 'palette', index: 2 }, stroke: { kind: 'solid', value: LEGACY[4] } },
+    edge: [{ type: 'outline', params: { color: LEGACY[2] } }],
+  };
+  const to = ['#201020', '#302838', '#fff2ef', '#ffaa33', '#10100a', '#ffd247'];
+  assert.deepEqual(roles.recolor(style, LEGACY, to), moods.recolor(style, LEGACY, to));
+  assert.deepEqual(roles.recolor(style, [], to), style);
+});
+
 

@@ -123,6 +123,15 @@ SA.lyricsEngine = (() => {
     return resolveBaseColor(track.color) || TRANSPARENT;
   }
 
+  // The raw weird axis the stage separation ratios climb with. Unset = 0, the
+  // classic behaviour.
+  function rawWeirdOf(project) {
+    const axes = project && project.styleMode && project.styleMode.axes;
+    const value = Number(axes && axes.weird);
+    if (!Number.isFinite(value) || value <= 0) return 0;
+    return value > 1 ? 1 : value;
+  }
+
   function createEngine(options) {
     const opts = options || {};
     const canvas = opts.canvas;
@@ -1022,16 +1031,17 @@ SA.lyricsEngine = (() => {
       return Math.max(0, Math.min(1, fadeIn > 1e-4 ? (t - clip.start) / fadeIn : 1, fadeOut > 1e-4 ? (clip.end - t) / fadeOut : 1));
     }
 
-    function drawShapeClip(clip, t, duration) {
+    function drawShapeClip(clip, t, duration, stage, stageWeird) {
       if (!pipeline) return;
-      const spec = clip.spec || { type: 'none', params: {} };
+      const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
+      const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
       const envelope = clipEnvelope(t, clip);
       if (envelope <= 0) return;
       // the lyrics on screen decide the palette and the text colours the shapes
       // must stand apart from (a cue or beat can carry a palette of its own)
       const onScreen = activeBeats(state.project, t)[0];
       const style = SA.project.resolveStyle(state.project, onScreen ? `cue:${onScreen.cueId}/beat:${onScreen.id}` : '');
-      const fills = clipShapeColor(spec, clip.colors, style);
+      const fills = clipShapeColor(spec, recolored ? recolored.colors : clip.colors, style);
       const fill = fills[0];
       const clipDuration = Math.max(0.001, clip.end - clip.start);
       const progress = Math.min(1, Math.max(0, (t - clip.start) / clipDuration));
@@ -1110,9 +1120,10 @@ SA.lyricsEngine = (() => {
 
     // A figure clip: animated motifs built from the shape primitives, drawn on
     // the figure track between the mid layer and the subtitles.
-    function drawFigureClip(clip, t, duration) {
+    function drawFigureClip(clip, t, duration, stage, stageWeird) {
       if (!shapesPass || !SA.figures) return;
-      const spec = clip.spec || {};
+      const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
+      const spec = (recolored ? recolored.spec : clip.spec) || {};
       if (spec.type !== 'figure') return;
       const envelope = clipEnvelope(t, clip);
       if (envelope <= 0) return;
@@ -1129,7 +1140,7 @@ SA.lyricsEngine = (() => {
         cuts: Array.isArray(params.cuts) ? params.cuts : null,
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         textBox: boxes ? boxes.box : null,
-        colors: clipShapeColor(spec, clip.colors, style),
+        colors: clipShapeColor(spec, recolored ? recolored.colors : clip.colors, style),
         color: '#c86bff',
         bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
       });
@@ -1231,15 +1242,22 @@ SA.lyricsEngine = (() => {
       drawTextAnim(String(params.text || ''), params.style || {}, clip.start, clip.end, t, Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)), clip.id);
     }
 
-    function drawBackgroundClip(clip, t, card) {
+    function drawBackgroundClip(clip, t, card, stage, stageWeird) {
       if (!pipeline) return;
-      const spec = clip.spec || {};
+      // the background track was painted with the project palette: with a live
+      // stage it follows the cue palette and the beat scheme
+      const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.base, stage, stageWeird) : null;
+      const spec = (recolored ? recolored.spec : clip.spec) || {};
       if (!spec.type || spec.type === 'none') return;
       const style = SA.project.resolveStyle(state.project, '');
       const palette = style && style.palette ? style.palette : projectPalette();
-      const colors = Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null;
+      const colors = recolored
+        ? Array.isArray(recolored.colors) && recolored.colors.length ? recolored.colors : null
+        : Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null;
       if (spec.type === 'shapes' || spec.type === 'pattern' || spec.type === 'shapeLayer') {
-        drawShapeClip(clip, t, naturalDuration());
+        // the shape half owns its own colour pass; hand it the final clip so it
+        // does not map the base palette a second time
+        drawShapeClip(recolored ? { ...clip, spec, colors } : clip, t, naturalDuration(), null, stageWeird);
         return;
       }
       const envelope = clipEnvelope(t, clip);
@@ -1247,13 +1265,14 @@ SA.lyricsEngine = (() => {
       const theme = SA.card && SA.card.theme ? SA.card.theme(state.project) : null;
       const params = { ...(spec.params || {}) };
       if (spec.type === 'solid' && colors && !params.color) params.color = colors[0];
+      const stagePalette = stage && Array.isArray(stage.to) && stage.to.length ? { colors: stage.to } : palette;
       pipeline.drawBackground(
         SA.fx.backgroundUniforms({ type: spec.type, params }, {
           theme,
           cardTheme: theme,
           focusX: 0,
           focusY: 0,
-          palette: colors ? { colors } : palette,
+          palette: colors ? { colors } : stagePalette,
           time: t,
         }),
         card,
@@ -1295,12 +1314,13 @@ SA.lyricsEngine = (() => {
 
     // Filler clips live on their own track and are drawn whenever they are
     // active, whether or not a lyric beat is on screen.
-    function renderFillerClips(t, duration) {
+    function renderFillerClips(t, duration, stage, stageWeird) {
       const project = state.project;
       for (const clip of activeClips(project, 'filler')) {
         const envelope = clipEnvelope(t, clip);
         if (envelope <= 0) continue;
-        const spec = clip.spec || { type: 'none', params: {} };
+        const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
+        const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
         if (spec.type === 'credits') {
           if (!activeCredit(t) && SA.credits) {
             const settings = SA.credits.settingsFor(project);
@@ -1313,7 +1333,7 @@ SA.lyricsEngine = (() => {
           continue;
         }
         if (!SA.fillerRender) continue;
-        const context = fillerClipContext(t, clip, duration);
+        const context = fillerClipContext(t, recolored ? { ...clip, spec, colors: recolored.colors } : clip, duration);
         const list = SA.fillerRender.drawList(spec, context);
         const shapes = (list && list.shapes) || [];
         const texts = (list && list.texts) || [];
@@ -1666,16 +1686,20 @@ SA.lyricsEngine = (() => {
       pipeline.beginScene(backgroundBaseColor(project));
       const duration = naturalDuration();
       const subtitleOnly = view.subtitleOnly === true;
+      // the beat colour schemes: the background and the clip tracks follow the
+      // live beat's palette. Null keeps the classic path exactly.
+      const stage = !subtitleOnly && SA.stagePalette ? SA.stagePalette.stageAt(project, t, SA.project.resolveStyle) : null;
+      const stageWeird = rawWeirdOf(project);
       // back to front: background clips + background layers -> backdrop clips ->
       // filler clips -> subtitle tracks (bottom to top) -> foreground layers
       if (!subtitleOnly) {
-        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card);
+        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card, stage, stageWeird);
         drawBackgroundLayers();
-        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration);
-        renderFillerClips(t, duration);
+        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration, stage, stageWeird);
+        renderFillerClips(t, duration, stage, stageWeird);
         // the figure and text-animation tracks sit between the mid layer and the
         // subtitles, so both draw before the lyric beats are evaluated
-        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration);
+        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration, stage, stageWeird);
         for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
       }
       // Evaluate every active beat first: overlapping cues must all render, so

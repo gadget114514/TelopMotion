@@ -22,6 +22,8 @@ const SA = {
   color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
   weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
+  legibility: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js')),
+  paletteRoles: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js')),
   fxAxes: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'fx-axes.js')),
   textflow: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'textflow.js')),
   project: require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js')),

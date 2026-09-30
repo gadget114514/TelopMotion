@@ -505,6 +505,15 @@ SA.store = (() => {
     return { axes: SA.moods.normalizeAxes(mode.axes || {}), direction: mode.direction || 'horizontal', genre: mode.genre || null };
   }
 
+  // The raw weird axis the beat colour schemes are resolved with (the same
+  // clamp project.resolveStyle applies).
+  function beatSchemeWeird() {
+    const mode = (state.project && state.project.styleMode) || {};
+    const value = Number((mode.axes || {}).weird);
+    if (!Number.isFinite(value) || value <= 0) return 0;
+    return value > 1 ? 1 : value;
+  }
+
   // --- composition re-rolls -----------------------------------------------------
   // A project directed in composition mode rebuilds one beat's picture through
   // SA.direct.composeBeat. The neighbouring beats' compositions are read back
@@ -642,7 +651,12 @@ SA.store = (() => {
     const from = paletteColorsAt(projectDoc, target.path);
     const to = palette.colors.slice();
     if (from.length) repaintScope(projectDoc, target, from, to, options);
-    scopeStyle(projectDoc, target).palette = { ...clone(palette), colors: to };
+    // the stored palette is a plain manual one: the auto marker and the
+    // resolved scheme metadata belong to the generator, not to the project file
+    const rest = clone(palette);
+    delete rest.auto;
+    delete rest.scheme;
+    scopeStyle(projectDoc, target).palette = { ...rest, colors: to };
     if (target.kind === 'project') {
       if (SA.moods.enforceReadability) SA.moods.enforceReadability(projectDoc.style, to);
       projectDoc.styleMode = { ...(projectDoc.styleMode || {}), theme: palette.name || palette.id || '' };
@@ -2057,6 +2071,54 @@ SA.store = (() => {
           if (from.length && to.length) repaintScope(projectDoc, target, from, to);
         },
       });
+    },
+    // The beat colour schemes: the same palette in another role order. The
+    // command only writes the id; the colours derive at resolve time.
+    invertBeatScheme(cueId, beatId) {
+      if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
+      const weird = beatSchemeWeird();
+      const roles = SA.paletteRoles;
+      const own = state.project.beatStyles && state.project.beatStyles[beatId];
+      const current = own && own.colorScheme;
+      const next = current === roles.SCHEME_INVERT ? null : roles.SCHEME_INVERT;
+      if (next) {
+        const parent = paletteColorsAt(state.project, `cue:${cueId}`);
+        if (!parent.length || !roles.applyScheme(parent, next, weird)) return null;
+      }
+      dispatch({
+        label: 'invert beat colours',
+        areas: ['style'],
+        do(projectDoc) {
+          const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          if (next) bag.colorScheme = next;
+          else delete bag.colorScheme;
+        },
+      });
+      return next;
+    },
+    rerollBeatScheme(cueId, beatId) {
+      if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
+      const weird = beatSchemeWeird();
+      const roles = SA.paletteRoles;
+      const parent = paletteColorsAt(state.project, `cue:${cueId}`);
+      if (!parent.length) return null;
+      const candidates = roles.schemes(parent, weird);
+      if (!candidates.length) return null;
+      const own = state.project.beatStyles && state.project.beatStyles[beatId];
+      const current = own && own.colorScheme;
+      const pool = candidates.filter((entry) => entry.id !== current);
+      const list = pool.length ? pool : candidates;
+      const pick = list[Math.min(list.length - 1, Math.floor(Math.random() * list.length))];
+      if (!pick) return null;
+      dispatch({
+        label: 'reroll beat colours',
+        areas: ['style'],
+        do(projectDoc) {
+          const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          bag.colorScheme = pick.id;
+        },
+      });
+      return pick;
     },
     setCredits(patch, options) {
       dispatch({

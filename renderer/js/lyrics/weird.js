@@ -61,6 +61,21 @@
     return clamp01(1 - (1 - raw(a.weird)) * (1 - clamp01(a.energy)));
   }
 
+  // The colour development rides the same raw axis as two chances:
+  //   basePaletteChance: a cue keeps the base palette (weird 0: every cue;
+  //                      weird 1: no cue)
+  //   colorChange:       the next beat moves to another scheme of its cue's
+  //                      palette (weird 0: never; weird 1: every beat)
+  function basePaletteChance(axes) {
+    const a = axes || {};
+    return 1 - raw(a.weird);
+  }
+
+  function colorChange(axes) {
+    const a = axes || {};
+    return raw(a.weird);
+  }
+
   return {
     TEXT_SCALE,
     BG_REVEAL,
@@ -72,5 +87,7 @@
     backdropContrast,
     glowScale,
     sizeChange,
+    basePaletteChance,
+    colorChange,
   };
 });
