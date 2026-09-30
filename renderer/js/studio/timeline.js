@@ -138,6 +138,24 @@ SA.timeline = (() => {
     return beat ? [beat] : [];
   }
 
+  // Beats whose resolved look carries a frame-wide graphic (see
+  // SA.fx.isGraphicsPost). Resolved once per project version.
+  let graphicsSpanCache = { version: -1, spans: new Map() };
+  function graphicsSpans(doc, cue) {
+    const version = SA.store.state.version && SA.store.state.version.project;
+    if (graphicsSpanCache.version !== version) graphicsSpanCache = { version, spans: new Map() };
+    if (graphicsSpanCache.spans.has(cue.id)) return graphicsSpanCache.spans.get(cue.id);
+    const spans = [];
+    if (SA.fx && SA.fx.isGraphicsPost) {
+      for (const beat of beatsFor(doc, cue)) {
+        const style = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+        if ((style.post || []).some((instance) => SA.fx.isGraphicsPost(instance))) spans.push({ start: beat.start, end: beat.end });
+      }
+    }
+    graphicsSpanCache.spans.set(cue.id, spans);
+    return spans;
+  }
+
   function originFor(path, cueId) {
     const doc = project();
     if (!doc) return 0;
@@ -342,9 +360,13 @@ SA.timeline = (() => {
       }
       if (track.kind === 'subtitle') {
         const cues = cueList().filter((cue) => (cue.trackId || 'sub1') === track.id);
-        rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: !expanded.has(track.id) });
+        rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: false });
         y += ROW_H;
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
+        // the track's graphics row sits directly under its cues: the frame-wide
+        // posts its look carries (see SA.fx.isGraphicsPost)
+        rows.push({ type: 'graphics-track', y, h: LAYER_H, trackId: track.id, track, cues });
+        y += LAYER_H;
         if (!expanded.has(track.id)) continue;
         const entries = laneEntriesForCues(doc, cues);
         for (const entry of entries) {
@@ -509,7 +531,7 @@ SA.timeline = (() => {
     const y = row.y;
     const height = row.h;
     const track = trackList().find((entry) => entry.id === row.trackId) || null;
-    const removable = opts.toggle !== false && removableTrack(track);
+    const removable = opts.toggle !== false && opts.removable !== false && removableTrack(track);
     const selected = (SA.store.state.selection.paths || []).some((path) => path === `track:${row.trackId}`);
     ctx.save();
     ctx.fillStyle = selected ? 'rgba(255, 138, 61, 0.1)' : opts.active ? 'rgba(255, 138, 61, 0.05)' : '#0d1017';
@@ -585,7 +607,7 @@ SA.timeline = (() => {
         ctx.stroke();
       }
       ctx.restore();
-      hitRegions.push({ type: 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
+      hitRegions.push({ type: opts.checkType || 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
     }
     if (opts.bgToggle) {
       // the subtitle track's text background: a small BG chip, struck through
@@ -735,6 +757,39 @@ SA.timeline = (() => {
     if (layer.type === 'solid') return t('layers.typeSolid');
     if (layer.type === 'video') return t('layers.typeVideo');
     return t('layers.typeImage');
+  }
+
+  // The subtitle track's graphics row: the frame-wide posts its look carries
+  // (light leaks, vignette, camera ...). Its checkbox is the track's
+  // `graphicsHidden` flag; the style data is never touched.
+  function drawGraphicsTrack(size, doc, row) {
+    const hidden = trackHidden(row.track) || !!(row.track && row.track.graphicsHidden);
+    drawTrackHeader(row, `${trackTitle(row.track)} ${t('studio.track.graphics')}`, {
+      color: '#c8a0ff',
+      hidden,
+      removable: false,
+      checkType: 'track-graphics-check',
+    });
+    const y = row.y;
+    const height = LAYER_H - 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
+    ctx.clip();
+    for (const cue of row.cues) {
+      for (const span of graphicsSpans(doc, cue)) {
+        const x = xOf(span.start);
+        const width = Math.max(2, (span.end - span.start) * pxPerSecond);
+        if (x + width < LABEL_W || x > size.width) continue;
+        ctx.fillStyle = hidden ? 'rgba(30, 34, 44, 0.6)' : 'rgba(200, 160, 255, 0.28)';
+        rounded(x, y + 1.5, width, height, 4);
+        ctx.fill();
+        ctx.strokeStyle = hidden ? '#3a4050' : '#c8a0ff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
   }
 
   function drawLayerTrack(size, row) {
@@ -1213,6 +1268,7 @@ SA.timeline = (() => {
     ctx.stroke();
     for (const row of rows) {
       if (row.type === 'cue-track') drawCueTrack(size, doc, row);
+      else if (row.type === 'graphics-track') drawGraphicsTrack(size, doc, row);
       else if (row.type === 'layer-track') drawLayerTrack(size, row);
       else if (row.type === 'clip-track') drawClipTrack(size, row);
       else if (row.type === 'credits') drawCredits(size, row);
@@ -1347,6 +1403,11 @@ SA.timeline = (() => {
       }
       drag = null;
       draw();
+    } else if (hit.type === 'track-graphics-check') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { graphicsHidden: !track.graphicsHidden });
+      drag = null;
+      draw();
     } else if (hit.type === 'track-bg') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { bgHidden: !track.bgHidden });
@@ -1428,7 +1489,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -1905,7 +1966,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-bg' || hit.type === 'track-remove') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-remove') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
@@ -1914,6 +1975,7 @@ SA.timeline = (() => {
           if (id) SA.store.setSelection([`track:${id}`], 'track');
         });
         add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
+        add(track.graphicsHidden ? t('studio.track.showGraphics') : t('studio.track.hideGraphics'), () => SA.store.commands.updateTrack(track.id, { graphicsHidden: !track.graphicsHidden }));
         add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
         add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
       } else if (track.kind === 'filler') {

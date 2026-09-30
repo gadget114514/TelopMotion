@@ -94,19 +94,30 @@
     return Number.isFinite(number) ? number : fallback;
   }
 
+  // where a post instance draws: 'text' (the lyric layer) or 'frame' (the
+  // finished picture). Extension packs (camera, shapeLayer) carry it in defaults.
+  function postTarget(instance) {
+    const type = (instance && instance.type) || 'vignette';
+    const entry = fx.get('post', type);
+    const entryTarget = entry && entry.defaults && entry.defaults.target;
+    return (instance && instance.target) || (instance && instance.defaults && instance.defaults.target) || entryTarget || 'text';
+  }
+
+  // frame posts that follow the text box belong with the lyrics; every other
+  // frame post is a graphic of its own (the subtitle track's graphics row)
+  const TEXT_LINKED_FRAME_POSTS = ['shapeLayer'];
+  function isGraphicsPost(instance) {
+    if (!instance || instance.enabled === false) return false;
+    return postTarget(instance) === 'frame' && !TEXT_LINKED_FRAME_POSTS.includes(instance.type);
+  }
+
   function postUniforms(instance, ctx) {
     const params = (instance && instance.params) || {};
     const type = (instance && instance.type) || 'vignette';
     const code = CODE_BY_TYPE[type] || 34;
     const context = ctx || {};
     const envelope = context.envelope == null ? 1 : Math.max(0, context.envelope);
-    const entry = fx.get('post', type);
-    const entryTarget = entry && entry.defaults && entry.defaults.target;
-    const target =
-      (instance && instance.target) ||
-      (instance && instance.defaults && instance.defaults.target) ||
-      entryTarget ||
-      'text';
+    const target = postTarget(instance);
     // extension packs (the camera) own their uniform layout
     const extension = fx.postExtensions && fx.postExtensions[type];
     if (extension) {
@@ -242,6 +253,8 @@
   }
 
   fx.postUniforms = postUniforms;
+  fx.postTarget = postTarget;
+  fx.isGraphicsPost = isGraphicsPost;
   fx.postTypes = CODE_BY_TYPE;
   return fx;
 });

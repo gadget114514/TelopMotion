@@ -319,6 +319,7 @@
     // subtitle background visibility is a per-track boolean (absent = shown)
     for (const track of merged.tracks || []) {
       if (track && track.kind === 'subtitle' && track.bgHidden != null) track.bgHidden = !!track.bgHidden;
+      if (track && track.kind === 'subtitle' && track.graphicsHidden != null) track.graphicsHidden = !!track.graphicsHidden;
     }
     if (!merged.meta.createdAt) merged.meta.createdAt = new Date().toISOString();
     merged.meta.updatedAt = project.meta && project.meta.updatedAt ? project.meta.updatedAt : merged.meta.createdAt;

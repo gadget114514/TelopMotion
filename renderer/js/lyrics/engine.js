@@ -72,6 +72,14 @@ SA.lyricsEngine = (() => {
     return !(track && track.bgHidden);
   }
 
+  // the frame-wide graphics a subtitle style carries (light leaks, vignette,
+  // camera moves ...) sit on the track's own graphics row: hidden with it, and
+  // dropped by the subtitle-only view
+  function subtitleGraphicsOn(track, view) {
+    if (view && view.subtitleOnly === true) return false;
+    return !(track && track.graphicsHidden);
+  }
+
   function createEngine(options) {
     const opts = options || {};
     const canvas = opts.canvas;
@@ -1617,6 +1625,9 @@ SA.lyricsEngine = (() => {
       // subtitle tracks whose text background was switched off keep their data
       // (bgShape is untouched) and simply skip the background pass
       const bgHiddenTracks = new Set(subtitleTracks.filter((track) => track.bgHidden).map((track) => track.id));
+      // the track's graphics row: frame-wide posts (light leaks, vignette,
+      // camera moves ...) are hidden with it, the style data is never touched
+      const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
       const trackOrder = subtitleTracks.map((track) => track.id);
       const beatsByTrack = new Map();
       for (const active of activeBeats) {
@@ -1629,6 +1640,7 @@ SA.lyricsEngine = (() => {
       for (const trackId of [...trackOrder].reverse()) drawOrder.push(trackId);
       for (const active of drawOrder.flatMap((trackId) => beatsByTrack.get(trackId) || [])) {
         const { beat, scene, result, style } = active;
+        const graphicsOn = subtitleGraphicsOn({ graphicsHidden: graphicsHiddenTracks.has(active.trackId) }, view);
         const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
         const bgOff = !subtitleBackgroundOn({ bgHidden: bgHiddenTracks.has(active.trackId) }, view);
         const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
@@ -1729,6 +1741,7 @@ SA.lyricsEngine = (() => {
         const audioFeatures = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
         for (const instance of style.post || []) {
           if (!instance || instance.enabled === false) continue;
+          if (!graphicsOn && SA.fx.isGraphicsPost && SA.fx.isGraphicsPost(instance)) continue;
           const uniforms = SA.fx.postUniforms(instance, {
             envelope: instance.envelope == null ? 1 : instance.envelope,
             progress,
@@ -1943,5 +1956,5 @@ SA.lyricsEngine = (() => {
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn };
 })();
