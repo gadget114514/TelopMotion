@@ -418,7 +418,9 @@ SA.glShaders = (() => {
     if (v_flash > 0.001) rgb = mix(rgb, vec3(v_color.a), clamp(v_flash, 0.0, 1.0));
     fragColor = vec4(rgb * vis, v_color.a * vis);
     float id = v_letter;
-    o_info = vec4(floor(id / 255.0), fract(id / 255.0), u * 0.5 + 0.5, v * 0.5 + 0.5);
+    float idHi = floor(id / 255.0);
+    float idLo = id - idHi * 255.0;
+    o_info = vec4(idHi / 255.0, idLo / 255.0, u * 0.5 + 0.5, v * 0.5 + 0.5);
   }`;
 
   // --- per-letter blur field ---------------------------------------------------
@@ -646,7 +648,7 @@ SA.glShaders = (() => {
     }
     // the per-letter highlight (range selector / karaoke sweep): row 4 of the
     // state texture carries how far the letter has moved to the accent colour
-    float id = info.x * 255.0 + info.y;
+    float id = round(info.x * 255.0) * 255.0 + round(info.y * 255.0);
     vec4 letterState = texelFetch(u_state, ivec2(int(id + 0.5), 4), 0);
     float mixAmount = clamp(letterState.z, 0.0, 1.0);
     if (mixAmount > 0.001) color = mix(color, u_colorB, mixAmount);
@@ -1563,7 +1565,9 @@ SA.glShaders = (() => {
     vec3 rgb = v_color.rgb;
     fragColor = vec4(rgb * a, a);
     float id = v_letter;
-    o_info = vec4(floor(id / 255.0), fract(id / 255.0), v_local.x * 0.5 + 0.5, v_local.y * 0.5 + 0.5);
+    float idHi = floor(id / 255.0);
+    float idLo = id - idHi * 255.0;
+    o_info = vec4(idHi / 255.0, idLo / 255.0, v_local.x * 0.5 + 0.5, v_local.y * 0.5 + 0.5);
   }`;
 
   // --- background pass ---------------------------------------------------------
