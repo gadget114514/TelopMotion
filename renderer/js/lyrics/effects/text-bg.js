@@ -92,7 +92,7 @@
   }
 
   // The text background is the one shape the definition allows: a per-letter
-  // square covering the letter's own cell. Everything else the old `bgShape`
+  // square covering the letter's own box (`inkBoxFor`). Everything else the old `bgShape`
   // carried (circles, stars, bars, em-sized washes, free offsets / rotations)
   // is a text ornament and lives in the separate `ornShape` group, so the
   // subtitle background switch never hides a decoration.
@@ -246,11 +246,12 @@
   }
 
   // The engine-side safety cap every text background passes through: a cell
-  // shape may span at most `limits.cell` cells and an em shape at most the
+  // shape may span at most `limits.cell` letter boxes and an em shape at most the
   // beat's text box width + 0.6 em, so a stored project cannot paint a giant
   // slab over the frame. The states are clamped in place and returned. The
-  // definition background is one cell wide and never reaches the cap; the limit
-  // stays as the guard for the ornaments, whose geometry the author controls.
+  // definition background is one letter box wide and never reaches the cap; the
+  // limit stays as the guard for the ornaments, whose geometry the author
+  // controls.
   function capBackground(states, unit, box, limits) {
     const opts = limits || {};
     const cellMax = Number.isFinite(Number(opts.cell)) ? Number(opts.cell) : 1.25;
@@ -298,7 +299,10 @@
 
   function cellMetrics(letter) {
     const size = num(letter.size, 1) || 1;
-    const advance = num(letter.advanceWithSpacing, null) != null ? num(letter.advanceWithSpacing, 1) : num(letter.advance, 1);
+    // `num(value, null)` answers 0, not null, so the spacing test is written
+    // out: a letter without it must fall back to its advance, not to 1 em
+    const spacing = letter && Number.isFinite(Number(letter.advanceWithSpacing)) ? Number(letter.advanceWithSpacing) : null;
+    const advance = spacing == null ? num(letter.advance, 1) : spacing;
     const vertical = !!(letter.vertical || (letter.style && letter.style.text && letter.style.text.direction === 'vertical'));
     const cellW = vertical ? size : Math.max(0.05, advance) * size;
     const cellH = vertical ? Math.max(0.05, num(letter.advanceV, advance)) * size : size;
@@ -309,6 +313,27 @@
     const centerX = vertical ? penX : penX + cellW / 2;
     const centerY = vertical ? penY + cellH / 2 : penY - cellH / 2;
     return { w: cellW, h: cellH, inkToCell: [centerX - cx, centerY - cy] };
+  }
+
+  // The box a letter's background / ornament is drawn on: the letter's own ink
+  // box, centred on the same point the glyph mesh is centred on (`local.cx/cy`,
+  // which is also what the layout formations, the overlay, frame-guard and the
+  // canvas2d fallback use).
+  //
+  // The advance cell above is a *layout* metric, not the letter's shape: at
+  // 100 px a lowercase 'a' has a 56 x 100 cell around a 43 x 55 glyph, so a
+  // shape anchored to the cell centre sat ~0.23 em below the letter and was
+  // stretched to the cell aspect (a `circle` came out as a tall ellipse). The
+  // shape has to be registered to the letter, so the quad carries this box and
+  // the shader's `a_inkToCell` stays 0.
+  function inkBoxFor(letter) {
+    const local = (letter && letter.local) || null;
+    const w = local ? num(local.w, 0) : 0;
+    const h = local ? num(local.h, 0) : 0;
+    if (w > 0 && h > 0) return { w, h };
+    // no ink box (a synthetic letter): the advance cell is the closest stand-in
+    const cell = cellMetricsFor(letter);
+    return { w: cell.w, h: cell.h };
   }
 
   function defaultInstance(group, type) {
@@ -587,6 +612,7 @@
     capBackground,
     cellMetrics,
     cellMetricsFor,
+    inkBoxFor,
     evaluateBg,
     defaultInstance,
     bgColorOf,

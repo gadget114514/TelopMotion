@@ -641,3 +641,23 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - **テスト**: `direct.test.js` の「a run always fills the gaps, whatever the document stored」（stored が無い / true / false の3通りで必ず埋まる）と「a run gives a document without the filler row somewhere to draw」（行が無い文書でも埋まり、行が background より手前に来る）、`project.test.js` に「migrate adds the managed rows a saved document may predate」（並び順と移行クリップの `auto`）。
 - **UI**: 自動演出の dispatch に `areas: ['fillers']` を足す（フィラー設定とクリップは文書の編集なので、undo 側の記録も filler 領域に入る）。
 - **検証**: 3パターン（新規 / `enabled:false` を保存済み / フィラー行なし＋v1 移行）を `direct.run` して、いずれも 3 クリップ（intro / interlude / long gap）で図形アニメーション付き。`npm test` 847件パス、`npm run check` 197ファイル。
+
+
+## バグ修正: 文字背景/飾りの基準値が文字じゃなかった（`7b7ff17` の次）
+
+「半円が直っても位置がずれている」のは別の原因。**文字の枠が 2 通りあり、bg パスだけが新しい基準値を作っていた。** エンジン全体（overlay `engine.js:2167` / frame-guard / `motion.js:787` / canvas2d-fallback / テキストメッシュ）は `letter.local.w/h` と `local.cx/cy`（= インク枠・インク中心）を使っているが、`passes.js` の `buildBgBatch` だけが `textBg.cellMetricsFor`（= **advance セル枠**、原点 = pen 位置）を `a_cell` に詰めていた。NotoSans 100px の実測（pen を (500,500)）:
+
+```
+char  インク枠 w x h @ 中心        |  セル枠 w x h @ 中心        | ずれ
+a       43.4 x  55.5 @ (526.3, 473.3) |  56.1 x 100.0 @ (528.0, 450.0) | +1.7 / -23.3
+i       10.3 x  73.7 @ (513.0, 463.2) |  25.8 x 100.0 @ (512.9, 450.0) | -0.1 / -13.2
+永       41.1 x  71.4 @ (529.9, 464.3) |  60.0 x 100.0 @ (530.0, 450.0) | +0.1 / -14.3
+```
+
+`cellH = 1em`（ベースラインが下端）で小文字のインク中心は 0.13〜0.23em 上にあるため、**形が常に 0.13〜0.23em 下に浮き**、幅 1.3 倍・高さ 1.8 倍になっていた。加えて `BG_VERT` の `v_half = halfSize / min(halfSize)` が枠のアスペクトに SDF を貼るので、`cell` ユニットの `circle`（0.56em × 1em の枠）は**縦長楕円**になっていた。`love` のハート（`unit: em, width: 2.1`）は 210×210px の枠をその下寄りの中心に乗せていた。
+
+- **修正**: `textBg.inkBoxFor(letter)` を追加（`local.w/h` = インク枠、無ければセル枠へフォールバック）。`buildBgBatch` は `a_cell` にその枠、`a_inkToCell` は 0 を入れる（`local.cx/cy` はグリフメッシュの中心と同じ点なので、恒等的に 0）。`a_em` は 1em 正方形のまま（em で書かれた装飾は em 単位の意図値）。`cellMetrics` はタイプライトレットカー用に残す。
+- **あわせて**: `cellMetrics` の `num(x, null) != null` は `num` が null を 0 に返すため「`advanceWithSpacing` 無し → 1em」に化けていた（実パイプラインは `font.js` が必ず設定するので顕在化しない潜在罠）。明示的な判定に直した。
+- **文言**: 「1セル四角」→「文字1つぶんの外形」に更新（`i18n.js` の `bgEmpty` en/ja、`engine.js` と `moods.js` のコメント2箇所、`text-bg.js` のコメント）。es/fr/ru は en にフォールバック。
+- **テスト**: `text-bg.test.js` に2件（`inkBoxFor` がインク枠を返しセル枠の中心が下であること／`buildBgBatch` が `inkBoxFor` を使い `a_inkToCell` に 0 を入れること）。`npm test` 853件中 852 パス（残 1 件は別セッションが進行中の `direct.test.js` の motif 数テストで、今回の変更とは無関係）、`npm run check` 198ファイル。
+- **決めていないこと**: SDF は枠のアスペクトに合わせて伸びるので、`circle` は ‘a’ では縦長楕円のまま（文字自身の縦長比）。真円にしたいなら形ごとに指定を足す。

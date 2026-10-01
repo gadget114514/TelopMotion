@@ -248,11 +248,16 @@ SA.glPasses = (() => {
     ];
     for (let i = 0; i < scene.letters.length; i += 1) {
       const letter = scene.letters[i];
-      const cell = SA.textBg ? SA.textBg.cellMetricsFor(letter) : { w: letter.size || 1, h: letter.size || 1, inkToCell: [0, 0] };
+      // The quad rides the letter's own ink box — the same box, and the same
+      // centre, the glyph mesh is built on — so a shape lands on its letter
+      // instead of on the advance cell, which sits lower and is a different
+      // aspect. `a_inkToCell` is therefore 0 here; `a_em` stays the em square
+      // for the shapes authored in em.
+      const box = SA.textBg ? SA.textBg.inkBoxFor(letter) : { w: letter.size || 1, h: letter.size || 1 };
       const em = Math.max(1, Number(letter.size) || 1);
       const base = positions.length / 9;
       for (const [cx, cy] of corners) {
-        positions.push(cx, cy, i, cell.inkToCell[0], cell.inkToCell[1], cell.w, cell.h, em, em);
+        positions.push(cx, cy, i, 0, 0, box.w, box.h, em, em);
       }
       indices.push(base, base + 1, base + 2, base, base + 2, base + 3);
     }

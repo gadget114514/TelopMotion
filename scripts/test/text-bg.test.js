@@ -215,6 +215,35 @@ test('the bg state texture and shader carry the trim / dash rows', () => {
   }
 });
 
+test('inkBoxFor is the letter itself, not the advance cell around it', () => {
+  // NotoSans at 100 px: 'a' has a 56 x 100 cell around a 43 x 55 glyph, and
+  // the glyph's ink centre sits 23 px above the cell centre. The shape quad
+  // rides the ink box (and the shader's a_inkToCell stays 0), otherwise the
+  // shape floats below the letter and is stretched to the cell aspect.
+  const letter = {
+    size: 100,
+    advance: 56.1,
+    advanceWithSpacing: 56.1,
+    local: { penX: 500, penY: 500, cx: 526.3, cy: 473.3, w: 43.4, h: 55.5 },
+  };
+  assert.deepEqual(textBg.inkBoxFor(letter), { w: 43.4, h: 55.5 });
+  // the advance cell is a different box, and stays available for the caret
+  const cell = textBg.cellMetricsFor(letter);
+  assert.ok(Math.abs(cell.w - 56.1) < 1e-6, `cell width ${cell.w}`);
+  assert.equal(cell.h, 100);
+  assert.ok(Math.abs(cell.inkToCell[1] - (450 - 473.3)) < 1e-6, 'the cell centre is the low one');
+  // a letter with no ink box (a synthetic one) falls back to that cell
+  assert.deepEqual(textBg.inkBoxFor({ size: 100, advance: 50, local: { penX: 0, penY: 0, cx: 0, cy: 0 } }), { w: 50, h: 100 });
+});
+
+test('the shape batch centres the quad on the letter, so no cell offset is uploaded', () => {
+  const passes = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'), 'utf8');
+  const body = passes.slice(passes.indexOf('function buildBgBatch'), passes.indexOf('function buildPiecesBatch'));
+  assert.ok(body.includes('inkBoxFor'), 'the batch uses the ink box');
+  assert.ok(/positions\.push\(cx, cy, i, 0, 0, box\.w, box\.h, em, em\)/.test(body), 'a_inkToCell is 0');
+  assert.ok(!body.includes('cellMetricsFor'), 'the advance cell no longer drives the quad');
+});
+
 test('the background is exactly one cell and carries no size knob', () => {
   assert.equal(textBg.backgroundScale, undefined, 'the background scale draw is gone');
   assert.equal(textBg.BG_SCALE_MIN, undefined);

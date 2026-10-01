@@ -2402,15 +2402,15 @@
     const params = { color: null, skipSpaces: true };
     if (adjusted === 'enclose') {
       params.unit = 'cell';
-      // an enclose ornament hugs the cell (P-E-2): 0.9-1.1 cells, never a slab
+      // an enclose ornament hugs the letter (P-E-2): 0.9-1.1 letter boxes, never a slab
       const cell = lerp(0.9, 1.1, random());
       params.width = round(cell * jitter, 2);
       params.height = params.width;
       params.layer = 'behind';
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
       // the definition background (the enclose square) draws no size of its own:
-      // the renderer paints one cell per letter, so it always tracks the font
-      // size. The draw above stays (it feeds the ornament path and keeps the
+      // the renderer paints one letter box per letter, so it always tracks the
+      // glyph. The draw above stays (it feeds the ornament path and keeps the
       // random stream -- every seed's picture -- unchanged).
     } else if (adjusted === 'accent') {
       params.unit = 'em';
@@ -2466,7 +2466,7 @@
     };
     if (isBackground) {
       // the background data carries no free geometry: the engine draws exactly
-      // one cell square per letter, so the box always matches the font size.
+      // one letter-box square per letter, so the box always matches the glyph.
       // Its per-letter colours stay in the TEXT_BG family.
       const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
       style.bgShape = {
