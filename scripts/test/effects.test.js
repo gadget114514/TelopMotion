@@ -60,6 +60,24 @@ test('every fill type resolves to uniforms', () => {
   }
 });
 
+test('the pattern fills pack their geometry into u_params2', () => {
+  const patternTypes = ['stripes', 'checker', 'diamondGrid', 'halftone', 'hatch', 'randomSpeckle'];
+  for (const type of patternTypes) {
+    const descriptor = fx.get('fill', type);
+    assert.ok(descriptor, `fill.${type} is not registered`);
+    assert.equal(descriptor.pack, 'pro', `fill.${type} must stay in the pro pack`);
+    assert.ok(descriptor.params.some((param) => param.key === 'ratio'), `fill.${type} has no ratio`);
+    const instance = fx.withDefaults({ type, params: { angle: 45, size: 40, ratio: 0.3, speed: 0.5 } }, 'fill');
+    const uniforms = fx.fillUniforms(instance, { colors: { fill: [1, 0.5, 0.2, 1], fill2: [0.2, 0.5, 1, 1] }, time: 2, progress: 0 });
+    assert.equal(uniforms.u_params2.length, 4, `fill.${type} u_params2 length`);
+    assert.ok(Math.abs(uniforms.u_params2[0] - Math.PI / 4) < 1e-9, `fill.${type} angle`);
+    assert.equal(uniforms.u_params2[1], 40);
+    assert.equal(uniforms.u_params2[2], 0.3);
+    assert.equal(uniforms.u_params2[3], 0.5);
+    assert.ok(uniforms.u_type >= 15, `fill.${type} code ${uniforms.u_type}`);
+  }
+});
+
 test('every edge type resolves to uniforms with a behind/top placement', () => {
   for (const descriptor of fx.list('edge')) {
     const instance = fx.withDefaults({ type: descriptor.type, params: {} }, 'edge');
@@ -92,6 +110,35 @@ test('the multi-line edge expands into a ring per layer', () => {
   // a single-line instance stays a single uniform
   const single = fx.withDefaults({ type: 'outline', params: {} }, 'edge');
   assert.equal(fx.edgeUniformsAll(single, { ...context, localTime: 0 }).length, 1);
+});
+
+test('the outline carries the pattern vocabulary and the widened width range', () => {
+  const patterns = require('../../renderer/js/lyrics/patterns.js');
+  const width = fx.get('edge', 'outline').params.find((param) => param.key === 'width');
+  assert.equal(width.min, 0.1, 'the hairline floor');
+  assert.equal(width.max, 100, 'the heavy ceiling');
+  const patternParam = fx.get('edge', 'outline').params.find((param) => param.key === 'pattern');
+  assert.deepEqual(patternParam.options, patterns.PATTERNS);
+  const checker = fx.withDefaults({ type: 'outline', params: { width: 120, pattern: 'checker' } }, 'edge');
+  const uniforms = fx.edgeUniforms(checker, { colorSet: { stroke: [1, 1, 1, 1] }, maxDistance: 108, width: 1920, height: 1080 });
+  assert.equal(uniforms.u_params2[0], patterns.CODES.checker, 'pattern code');
+  assert.ok(Number.isFinite(uniforms.u_params[0]) && uniforms.u_params[0] > 0, `width is carried (${uniforms.u_params[0]})`);
+  // a 100px stroke still fits inside the 192px field of a 1920px frame
+  const full = fx.edgeUniforms(
+    fx.withDefaults({ type: 'outline', params: { width: 100 } }, 'edge'),
+    { colorSet: { stroke: [1, 1, 1, 1] }, maxDistance: 192, width: 1920, height: 1080 }
+  );
+  assert.ok(full.u_params[0] <= 1, `the widest stroke stays inside the sdf field (${full.u_params[0]})`);
+  // every option the UI offers is a known code
+  for (const option of patternParam.options) {
+    assert.equal(typeof patterns.CODES[option], 'number', `${option} has no code`);
+  }
+  // the multi line stack packs its own pattern into the outline branch
+  const multi = fx.edgeUniformsAll(
+    fx.withDefaults({ type: 'multiLine', params: { count: 2, width: 2, pattern: 'railroad' } }, 'edge'),
+    { colorSet: { stroke: [1, 1, 1, 1] }, maxDistance: 108, width: 1920, height: 1080, localTime: 1 }
+  );
+  assert.equal(multi[0].u_params2[0], patterns.CODES.railroad);
 });
 
 test('every post type resolves to uniforms with a target', () => {

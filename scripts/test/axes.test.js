@@ -400,9 +400,9 @@ test('weirdPalette shifts the hues and keeps the text readable', () => {
 
 test('weirdDecoration exaggerates an edge but tames the glow', () => {
   const outline = moods.weirdDecoration({ type: 'outline', params: { width: 3 } }, 'edge', rng.mulberry32(1), 1);
-  assert.ok(outline.params.width > 3 && outline.params.width <= 20, `width ${outline.params.width}`);
+  assert.ok(outline.params.width > 3 && outline.params.width <= 100, `width ${outline.params.width}`);
   const wide = moods.weirdDecoration({ type: 'outline', params: { width: 18 } }, 'edge', rng.mulberry32(2), 1);
-  assert.ok(wide.params.width <= 20, `clamped width ${wide.params.width}`);
+  assert.ok(wide.params.width <= 100, `clamped width ${wide.params.width}`);
   // the glows shrink with the raw axis (they no longer bleed over the letters)
   const glow0 = moods.weirdDecoration({ type: 'neonGlow', params: { radius: 18, intensity: 1 } }, 'edge', rng.mulberry32(3), 0.7, 0);
   assert.equal(glow0.params.radius, 18, 'raw 0 leaves the glow alone');

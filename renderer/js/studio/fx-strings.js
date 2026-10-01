@@ -568,7 +568,10 @@
         flicker: 'Flicker', bleed: 'Bleed', float: 'Float', fall: 'Fall', draw: 'Draw',
       },
       edge: { drip: 'Drip' },
-      fill: { ink: 'Ink' },
+      fill: {
+        ink: 'Ink', stripes: 'Stripes', checker: 'Checker', diamondGrid: 'Diamond grid',
+        halftone: 'Halftone dots', hatch: 'Hatch', randomSpeckle: 'Random speckle',
+      },
       enter: { flickerIn: 'Flicker in', megaZoomIn: 'Mega zoom in' },
       exit: { creepOut: 'Creep out', megaZoomOut: 'Mega zoom out' },
       hold: {
@@ -591,6 +594,7 @@
       animate: 'Animation', sync: 'Sync', perLetterPhase: 'Per-letter phase', fill: 'Fill amount', max: 'Maximum',
       followText: 'Follow text', corner: 'Corner radius', dashOn: 'Dash on', dashOff: 'Dash off', dashOffset: 'Dash offset',
       repeatOffset: 'Repeat offset', pathOp: 'Path op', pathOpAmount: 'Path op amount', pathOpFreq: 'Path op frequency',
+      patternSize: 'Pattern size', patternRatio: 'Pattern ratio', patternFlow: 'Pattern flow', ratio: 'Ratio',
     },
     values: {
       cell: 'Cell', em: 'Em', behind: 'Behind', front: 'Front', cycle: 'Cycle', charClass: 'Character class',
@@ -598,6 +602,7 @@
       heartbeat: 'Heartbeat', shiver: 'Shiver', drift: 'Drift', bar: 'Bar', block: 'Block', underscore: 'Underscore',
       hide: 'Hide', blink: 'Blink', stay: 'Stay', solid: 'Solid', dashed: 'Dashed', dotted: 'Dotted', double: 'Double',
       sketch: 'Sketch', dot: 'Dot', heart: 'Heart', square: 'Square', rounded: 'Rounded', diamond: 'Diamond',
+      dashDot: 'Dash-dot', triple: 'Triple', checker: 'Checker', railroad: 'Railroad', hatch: 'Hatch', crosshatch: 'Crosshatch',
       blob: 'Blob', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket', paper: 'Paper', cloud: 'Cloud',
       star: 'Star', fade: 'Fade', pulse: 'Pulse', spin: 'Spin',
       grow: 'Grow', free: 'Free', sway: 'Sway', travel: 'Travel',
@@ -628,7 +633,10 @@
         none: 'なし', flicker: 'ちらつき', bleed: 'にじみ', float: '浮かぶ', fall: '落下', draw: '描画',
       },
       edge: { drip: '滴り' },
-      fill: { ink: '墨' },
+      fill: {
+        ink: '墨', stripes: 'ストライプ', checker: 'チェッカー', diamondGrid: 'ダイヤ格子',
+        halftone: 'ハーフトーン', hatch: 'ハッチング', randomSpeckle: 'ランダム斑点',
+      },
       enter: { flickerIn: 'ちらつき登場', megaZoomIn: '巨大ズームイン' },
       exit: { creepOut: '這い出し退場', megaZoomOut: '巨大ズームアウト' },
       hold: {
@@ -651,6 +659,7 @@
       animate: 'アニメーション', sync: '同期', perLetterPhase: '文字ごとの位相', fill: '埋める割合', max: '最大',
       followText: '文字に合わせる', corner: '角の丸み', dashOn: '破線の長さ', dashOff: '破線の間隔', dashOffset: '破線の位置',
       repeatOffset: 'リピート間隔', pathOp: 'パス変形', pathOpAmount: 'パス変形の量', pathOpFreq: 'パス変形の波長',
+      patternSize: 'パターンの大きさ', patternRatio: 'パターンの割合', patternFlow: 'パターンの流れ', ratio: '割合',
     },
     values: {
       cell: 'セル', em: 'em', behind: '文字の後ろ', front: '文字の前', cycle: '巡回', charClass: '文字種',
@@ -658,6 +667,7 @@
       heartbeat: '鼓動', shiver: '震え', drift: '漂流', bar: '縦棒', block: 'ブロック', underscore: '下線',
       hide: '隠す', blink: '点滅', stay: '表示', solid: '実線', dashed: '破線', dotted: '点線', double: '二重線',
       sketch: '手描き', dot: '点', heart: 'ハート', square: '四角', rounded: '角丸', diamond: 'ひし形',
+      dashDot: '点線ダッシュ', triple: '三重線', checker: 'チェッカー', railroad: '梯子', hatch: '斜線ハッチ', crosshatch: 'クロスハッチ',
       blob: '不定形', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく', bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
       star: '星', fade: 'フェード', pulse: 'パルス', spin: '回転',
       grow: '拡大', free: '自由', sway: '揺れ', travel: '流れる',

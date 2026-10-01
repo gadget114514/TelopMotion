@@ -305,6 +305,12 @@
     },
     fill: {
       marble: [0.55, 0.5, { minWeird: 0.4 }, 0.75],
+      stripes: [0.55, 0.5, { minWeird: 0.5 }, 0.7],
+      checker: [0.6, 0.45, { minWeird: 0.55 }, 0.75],
+      diamondGrid: [0.5, 0.55, { minWeird: 0.5 }, 0.7],
+      halftone: [0.6, 0.4, { minWeird: 0.55 }, 0.8],
+      hatch: [0.65, 0.35, { minWeird: 0.6 }, 0.85],
+      randomSpeckle: [0.75, 0.3, { minWeird: 0.65 }, 0.9],
     },
     post: {
       camera: [0.55, 0.5, {}, 0.7],
@@ -590,15 +596,41 @@
     return scored[scored.length - 1].hero;
   }
 
+  // The stroke keys the sixth axis may push to an extreme (hairline or very
+  // heavy). Only these two widths take the strokeVariety draw: every other
+  // `width` / `stroke` parameter keeps its own recommended range.
+  function isStrokeKey(group, type, key) {
+    if (key === 'width') return type === 'outline' || type === 'multiLine';
+    if (key === 'stroke') return type === 'shapeLayer';
+    return false;
+  }
+
+  // The resolved profile's strokeVariety when the caller carries one (manual
+  // values included), otherwise the value the axes derive. weird 0 derives 0,
+  // so the classic draws consume no extra random.
+  function strokeVarietyOf(axes, resolved) {
+    const fixed = resolved && resolved.strokeVariety;
+    if (fixed != null && Number.isFinite(Number(fixed))) return clamp01(fixed);
+    if (!genParamsMod || typeof genParamsMod.derive !== 'function') return 0;
+    return clamp01(genParamsMod.derive(axes).strokeVariety);
+  }
+
+  // The resolved profile when the caller passes only axes + manual keys.
+  function resolveParams(axes, params) {
+    if (!genParamsMod || typeof genParamsMod.resolve !== 'function') return null;
+    return genParamsMod.resolve({ axes, params: params || {} });
+  }
+
   // Numeric parameters stay inside the author's recommended range
   // (`param.random`); without one the author's default is kept. The sixth axis
   // may leave both premises: it widens the range and moves parameters that have
   // no range off their default, but never past the author's absolute min/max.
-  function sampleParams(random, group, type, axes, colors) {
+  function sampleParams(random, group, type, axes, colors, resolved) {
     const descriptor = fx.get(group, type);
     const params = {};
     if (!descriptor) return params;
     const w = textWeirdOf(axes);
+    const variety = strokeVarietyOf(axes, resolved);
     for (const param of descriptor.params || []) {
       // optional params (the newer additions like gravityFall's floor) are
       // never auto-drawn: they are hand-edited only, so the existing type
@@ -611,11 +643,16 @@
         const range = Array.isArray(param.random) && param.random.length >= 2 ? param.random : null;
         if (!range) {
           // I15: "no recommended range means the default" stops holding
+          let value;
           if (w > 0 && param.min != null && param.max != null && random() < w) {
             let v = fallback + (random() * 2 - 1) * 0.35 * w * (max - min);
             if (param.key === 'opacity') v = Math.max(0.6, v); // never erase text or decoration
-            params[param.key] = clampParam(group, type, param.key, v);
-          } else params[param.key] = param.kind === 'int' ? Math.round(fallback) : fallback;
+            value = clampParam(group, type, param.key, v);
+          } else value = param.kind === 'int' ? Math.round(fallback) : fallback;
+          if (param.key !== 'opacity' && isStrokeKey(group, type, param.key)) {
+            value = genParamsMod.extremeStroke(random, value, min, max, variety);
+          }
+          params[param.key] = param.kind === 'int' ? Math.round(value) : value;
           continue;
         }
         let lo = range[0];
@@ -632,7 +669,10 @@
         // range, so a weird look reads as "more of everything" without touching
         // the classic draws (no random() is consumed while weird is 0)
         const widened = w > 0 && random() < w ? (random() < 0.5 ? 0 : 1) : t;
-        const value = Math.max(min, Math.min(max, lo + (hi - lo) * widened));
+        let value = Math.max(min, Math.min(max, lo + (hi - lo) * widened));
+        if (isStrokeKey(group, type, param.key)) {
+          value = genParamsMod.extremeStroke(random, value, min, max, variety);
+        }
         params[param.key] = param.kind === 'int' ? Math.round(value) : round(value, Math.abs(value) < 0.1 ? 4 : 2);
       } else if (param.kind === 'select') {
         params[param.key] = pick(random, param.options || [param.default]);
@@ -713,7 +753,12 @@
     const type = pickEntry(random, group, axes, context, direction, exclude, genre, options);
     if (!type) return null;
     const w = textWeirdOf(axes);
-    const instance = { type, params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, w)), enabled: true, motion: motionFor(random, group, axes) };
+    const instance = {
+      type,
+      params: sampleParams(random, group, type, axes, colorPoolFor(type, colors, random, w), options && options.params),
+      enabled: true,
+      motion: motionFor(random, group, axes),
+    };
     return weirdDecoration(instance, group, random, w, weirdOf(axes));
   }
 
@@ -731,8 +776,13 @@
     switch (instance.type) {
       case 'outline':
         if (breaks(random, w)) {
-          p.pattern = pick(random, ['dashed', 'dotted', 'double', 'sketch']);
-          if (p.pattern !== 'double') set('flow', signed(random) * (0.5 + random() * 1.5) * w);
+          // the weird axis may pull any decoration pattern, not only the
+          // classic five (dashDot / triple / stripes / checker / ...)
+          p.pattern = pick(random, [
+            'dashed', 'dotted', 'dashDot', 'double', 'triple', 'stripes', 'checker',
+            'diamond', 'zigzag', 'wave', 'random', 'railroad', 'hatch', 'crosshatch', 'sketch',
+          ]);
+          if (p.pattern !== 'double' && p.pattern !== 'triple') set('flow', signed(random) * (0.5 + random() * 1.5) * w);
         }
         set('width', num('width', 3) * (1 + w));
         break;
@@ -845,7 +895,7 @@
       textS = Math.max(0.05, 0.25 * (1 - brightness));
       accentS = 0.65;
       accentV = 0.78;
-      strokeV = 0.06;
+      strokeV = 0.28;
     } else if (brightness <= 0.7) {
       const t = (brightness - 0.4) / 0.3;
       bgV = lerp(0.25, 0.45, t);
@@ -855,7 +905,7 @@
       textS = 0.12;
       accentS = 0.7;
       accentV = 0.82;
-      strokeV = lerp(0.1, 0.2, t);
+      strokeV = lerp(0.3, 0.4, t);
     } else {
       const t = (brightness - 0.7) / 0.3;
       bgV = lerp(0.85, 0.97, t);
@@ -895,7 +945,12 @@
     // (the weird axis only raises it through repairContrast / paletteContrast)
     text = color.ensureContrast(text, bg, 4.5);
     const accent = hsvHex(family.accentHue, accentS, accentV);
-    const stroke = hsvHex(family.bgHue + 5, 0.45, strokeV);
+    // The text edge is a colour role of its own, not a darker background: the
+    // old bg-hue stroke sat at value 0.06, so every palette re-roll drew the
+    // same black-looking swatch and a colour-only re-roll could never show it.
+    // It carries the accent hue at a value the outline can show, still on the
+    // light text's dark side (and the dark text's light side).
+    const stroke = hsvHex(family.accentHue, Math.min(0.9, Math.max(0.5, accentS)), strokeV);
     const accent2 = hsvHex(family.accentHue + 40, accentS * 0.9, Math.min(1, accentV * 1.08));
     return [bg, bg2, text, accent, stroke, accent2];
   }
@@ -2388,7 +2443,14 @@
       const edgeParams = fx.paramDefaults('bgEdge', edgeType);
       if (edgeType === 'outline') {
         const patternRoll = random();
-        edgeParams.pattern = patternRoll < 0.6 ? 'solid' : patternRoll < 0.85 ? 'dashed' : 'dotted';
+        edgeParams.pattern =
+          patternRoll < 0.6
+            ? 'solid'
+            : patternRoll < 0.85
+              ? 'dashed'
+              : patternRoll < 0.95
+                ? 'dotted'
+                : pick(random, ['dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'railroad']);
       }
       style[isBackground ? 'bgEdge' : 'ornEdge'] = [{ type: edgeType, params: edgeParams, enabled: true }];
     }
@@ -2533,6 +2595,9 @@
           ? 'horizontal'
           : (genre && genre.direction) || null;
     const random = rng.rngFor(seed, 'mood', 'theme');
+    // the resolved profile (axes + the user's fixed keys): the stroke-variety
+    // draw reads its manual override, while everything else keeps deriving
+    const profile = opts.params || null;
     const style = {};
     const palette = generatePalette(random, axes, null, genre && genre.palettes);
     style.palette = palette;
@@ -2555,20 +2620,20 @@
       if (group === 'layout' && direction === 'vertical') {
         style.layout = {
           type: 'vertical',
-          params: sampleParams(random, 'layout', 'vertical', axes, bright),
+          params: sampleParams(random, 'layout', 'vertical', axes, bright, profile),
           enabled: true,
           motion: motionFor(random, 'layout', axes),
         };
         continue;
       }
-      const instance = instanceFor(random, group, axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights });
+      const instance = instanceFor(random, group, axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights, params: profile });
       if (instance) style[group] = instance;
     }
     // holds: energy decides how often an idle motion shows up, softness its type
     const holdChance =
       (genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6) + 0.5 * w;
     if (random() < holdChance) {
-      const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights });
+      const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights, params: profile });
       if (instance) style.hold = [instance];
     }
     // edge / post: density decides how often and how many, softness the family
@@ -2586,9 +2651,9 @@
       for (let i = 0; i < count; i += 1) {
         // the genre's hero group is exempt from the hard exclusion (it keeps the
         // genre's identity; only the weight penalty applies)
-        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero && !!genre, typeWeights: opts.typeWeights });
+        const instance = instanceFor(random, group, axes, context, direction, colors, used, genre, { hero: isHero && !!genre, typeWeights: opts.typeWeights, params: profile });
         if (!instance) break;
-        if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w));
+        if (!instance.params || !Object.keys(instance.params).length) instance.params = sampleParams(random, group, instance.type, axes, colorPoolFor(instance.type, colors, random, w), profile);
         used.add(instance.type);
         stack.push(instance);
       }
@@ -2669,6 +2734,10 @@
     applyGenreBackground,
     enforceReadability,
     axesFromAudio,
+    strokeVarietyOf,
+    isStrokeKey,
+    resolveParams,
+    extremeStroke: genParamsMod && genParamsMod.extremeStroke,
     contextFor,
     contextForCue,
     countWords,

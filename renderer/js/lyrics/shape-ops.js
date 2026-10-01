@@ -1,16 +1,21 @@
 (function (root, factory) {
-  const api = factory();
+  const api = factory(
+    typeof module === 'object' && module.exports ? require('./patterns') : (root.SA || {}).patterns
+  );
   if (typeof module === 'object' && module.exports) module.exports = api;
   else {
     root.SA = root.SA || {};
     root.SA.shapeOps = api;
   }
-})(typeof self !== 'undefined' ? self : this, function () {
+})(typeof self !== 'undefined' ? self : this, function (patterns) {
   'use strict';
 
   // CPU side of the shape layer: one authored shape expands into the primitive
   // list the GL shape pass draws (repeater), and its trim / dash / path op are
   // normalised into the uniforms that pass understands.
+
+  const PATTERNS = (patterns && patterns.PATTERNS) || ['solid'];
+  const PATTERN_CODES = (patterns && patterns.CODES) || { solid: 0 };
 
   // The named shapes match post.shapeLayer, so a clip placed from the timeline
   // reads the same vocabulary. They are resolved against the text box handed
@@ -129,7 +134,7 @@
     const h = Math.max(1, y1 - y0);
     const cx = (x0 + x1) / 2;
     const cy = (y0 + y1) / 2;
-    const stroke = Math.max(0.5, num(source.stroke, 4));
+    const stroke = Math.max(0.1, num(source.stroke, 4));
     const corner = Math.max(0, num(source.corner, 0.12)) * Math.min(w, h) * 0.5;
     const segment = (x, y, length, angle) => ({ kind: 'capsule', x, y, length, angle, lineWidth: stroke });
     switch (source.shape) {
@@ -186,6 +191,8 @@
     const dash = normalizeDash(sourceSpec);
     const pathOp = normalizePathOp(sourceSpec, opts.time);
     const kind = sourceSpec.kind || sourceSpec.shape || 'rect';
+    const patternCode = PATTERN_CODES[sourceSpec.pattern] == null ? 0 : PATTERN_CODES[sourceSpec.pattern];
+    const patternSize = Math.max(0.5, num(sourceSpec.patternSize, 0));
     const base = {
       opacity: sourceSpec.opacity == null ? 1 : sourceSpec.opacity,
       color: sourceSpec.color,
@@ -196,6 +203,15 @@
       dash,
       cap: sourceSpec.cap,
       pathOp,
+      // 0 means "plain stroke"; the shader only reads the params when a
+      // pattern code above 0 is packed with them. The flow is already the
+      // phase for this frame (patternFlow * time), so the shape pass needs no
+      // clock of its own.
+      pattern: patternCode,
+      patternParams:
+        patternCode > 0
+          ? [patternSize, Math.max(0.02, Math.min(0.98, num(sourceSpec.patternRatio, 0.5))), num(sourceSpec.patternFlow, 0) * num(opts.time, 0)]
+          : [0, 0, 0],
     };
     const out = [];
     for (const instance of instances) {
@@ -216,7 +232,7 @@
         shape.y = y;
         shape.p0 = { x: x - Math.cos(angle) * length / 2, y: y - Math.sin(angle) * length / 2 };
         shape.p1 = { x: x + Math.cos(angle) * length / 2, y: y + Math.sin(angle) * length / 2 };
-        shape.lineWidth = Math.max(0.5, num(sourceSpec.lineWidth, num(sourceSpec.stroke, 2)));
+        shape.lineWidth = Math.max(0.1, num(sourceSpec.lineWidth, num(sourceSpec.stroke, 2)));
       } else if (kind === 'polygon') {
         shape.kind = 'polygon';
         shape.x = num(sourceSpec.x, 0) + instance.dx;
@@ -267,6 +283,8 @@
     FOLLOW_MODES,
     PATH_OPS,
     PATH_OP_CODES,
+    PATTERNS,
+    PATTERN_CODES,
     normalizeTrim,
     normalizeDash,
     normalizePathOp,

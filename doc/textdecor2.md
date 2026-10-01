@@ -77,7 +77,7 @@
 
 | 層 | 実装 | 場所 |
 |---|---|---|
-| fill（文字の内側） | `FILL_FRAG`、14 type | `renderer/js/lyrics/effects/fill.js`, `renderer/js/lyrics/gl/shaders.js` |
+| fill（文字の内側） | `FILL_FRAG`、20 type | `renderer/js/lyrics/effects/fill.js`, `renderer/js/lyrics/gl/shaders.js` |
 | edge（文字の縁） | `EDGE_FRAG`、8 type、SDF 距離場を使う | `renderer/js/lyrics/effects/edge.js`, `renderer/js/lyrics/gl/shaders.js` |
 | post（画面全体） | 54 type | `renderer/js/lyrics/effects/post.js` |
 | 背景（クリップの後ろ） | background / bgShape / bgFill / bgEdge / bgMotion | `renderer/js/lyrics/effects/background.js`, `text-bg.js` |
@@ -371,7 +371,7 @@
 | custom | H 配置 | なし |  |
 | grid[pro] | H 配置 | なし |  |
 
-### fill（14）
+### fill（20）
 
 | type | 主軸 | 駆動 | 備考 |
 |---|---|---|---|
@@ -389,12 +389,22 @@
 | textureFill | E 質感 | 時間 t / 進行 |  |
 | karaokeWipe | E 質感 | 時間 t / 進行 |  |
 | ink | E 質感 | 時間 t / 進行 |  |
+| stripes[pro] | E 質感 | 時間 t | 斜線ストライプ。params: colorA / colorB / angle / size / ratio / speed |
+| checker[pro] | E 質感 | 時間 t | 市松。`ratio` が色の割合 |
+| diamondGrid[pro] | E 質感 | 時間 t | ダイヤ格子（線幅が `ratio`） |
+| halftone[pro] | E 質感 | 時間 t | 網点（ドット径が `ratio`） |
+| hatch[pro] | E 質感 | 時間 t | 片方向ハッチング |
+| randomSpeckle[pro] | E 質感 | 時間 t | ランダム斑点ノイズ |
+
+> パターン系 fill は `pack:'pro'`。fx400 / fx800 のプールは従来の型リストのままで、Studio（`packs: ['font','pro']`）には表示される。
+>
+> 線幅: `edge.outline.width` は 0.1〜100px、`edge.multiLine.width` は 0.1〜40px、post / background `shapeLayer.stroke` は 0.1〜200px。極細側は SDF の `smoothstep` を最低1px幅に保って減衰させる（ヘアラインが消えない）。第六軸 `strokeVariety`（weird 0 で 0、weird 0.6 で 1）は基準幅の exp(ln 8 × u) 倍（細側 ×1/8、太側 ×8）を確率で引く。
 
 ### edge（9）
 
 | type | 主軸 | 駆動 | 備考 |
 |---|---|---|---|
-| outline | E 質感 | 時間 t / 進行 | P6 で内側半径（u_params2.w）が使えるようになった |
+| outline | E 質感 | 時間 t / 進行 | パターン語彙16種（solid / dashed / dotted / dashDot / double / triple / stripes / checker / diamond / zigzag / wave / random / railroad / hatch / crosshatch / sketch）。`width` は 0.1〜100px |
 | neonGlow | E 質感 | 時間 t / 進行 |  |
 | innerGlow | E 質感 | 時間 t / 進行 |  |
 | bevel | E 質感 | 時間 t / 進行 |  |
@@ -402,7 +412,7 @@
 | longShadow | E 質感 | 時間 t / 進行 |  |
 | dropShadow | E 質感 | 時間 t / 進行 |  |
 | drip | E 質感 | 時間 t / 進行 |  |
-| multiLine[pro] | E 質感 + K 多重 | 時間 t | P6 追加・count 本のリングへ展開 |
+| multiLine[pro] | E 質感 + K 多重 | 時間 t | P6 追加・count 本のリングへ展開。`pattern` も選べる（width 0.1〜40px） |
 
 ### post（54）
 

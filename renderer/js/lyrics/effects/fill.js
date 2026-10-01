@@ -22,6 +22,12 @@
     textureFill: 12,
     karaokeWipe: 13,
     ink: 14,
+    stripes: 15,
+    checker: 16,
+    diamondGrid: 17,
+    halftone: 18,
+    hatch: 19,
+    randomSpeckle: 20,
   };
 
   fx.register({
@@ -172,6 +178,72 @@
     cost: 2,
   });
 
+  // Pattern fills: the PowerPoint / After Effects geometry vocabulary as a
+  // foreground texture. They are pack 'pro' so the fx400 / fx800 pools keep
+  // their classic type list, while the Studio (packs font + pro) shows them.
+  const PATTERN_FILL_PARAMS = [
+    { key: 'colorA', kind: 'color', default: null },
+    { key: 'colorB', kind: 'color', default: null },
+    { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 0, random: [-30, 30] },
+    { key: 'size', kind: 'number', min: 2, max: 120, step: 1, default: 24, random: [10, 36] },
+    { key: 'ratio', kind: 'number', min: 0.05, max: 0.95, step: 0.01, default: 0.5 },
+    { key: 'speed', kind: 'number', min: -2, max: 2, step: 0.05, default: 0.3 },
+  ];
+
+  fx.register({
+    group: 'fill',
+    type: 'stripes',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
+  fx.register({
+    group: 'fill',
+    type: 'checker',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
+  fx.register({
+    group: 'fill',
+    type: 'diamondGrid',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
+  fx.register({
+    group: 'fill',
+    type: 'halftone',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
+  fx.register({
+    group: 'fill',
+    type: 'hatch',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
+  fx.register({
+    group: 'fill',
+    type: 'randomSpeckle',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: PATTERN_FILL_PARAMS,
+    cost: 1,
+  });
+
   function toRgba(value, fallback, ctx) {
     return color.toRgba(value, fallback || [1, 1, 1, 1], ctx);
   }
@@ -191,6 +263,7 @@
     let colorC = toRgba(colors.glow || colors.fill, [1, 1, 1, 1], context);
     let colorD = toRgba(colors.stroke || colors.fill, [1, 1, 1, 1], context);
     let params4 = [0, 0, 0, 0];
+    let params4b = [0, 0, 0, 0];
     if (type === 2 && context.category) {
       colorA = toRgba(context.category.tint, colorA, context);
       colorB = toRgba(context.category.tint2 || context.category.tint, colorB, context);
@@ -228,6 +301,17 @@
       if (params.colorAfter) colorB = toRgba(params.colorAfter, null, context);
     } else if (type === 14) {
       params4 = [num(params.scale, 3), num(params.threshold, 0.35), num(params.softness, 0.08), 0];
+    } else if (type >= 15) {
+      // pattern fills: angle (rad), size, ratio, speed; the two colours come
+      // from colorA / colorB so the palette drives them like every fill
+      params4b = [
+        (num(params.angle, 0) * Math.PI) / 180,
+        Math.max(2, num(params.size, 24)),
+        Math.max(0.02, Math.min(0.98, num(params.ratio, 0.5))),
+        num(params.speed, 0.3),
+      ];
+      if (params.colorA) colorA = toRgba(params.colorA, colorA, context);
+      if (params.colorB) colorB = toRgba(params.colorB, colorB, context);
     }
     return {
       u_type: type,
@@ -236,6 +320,7 @@
       u_colorC: colorC,
       u_colorD: colorD,
       u_params: params4,
+      u_params2: params4b,
       u_maskTint: context.role === 'bg' && context.maskTint ? 1 : 0,
       u_time: context.time || 0,
       u_progress: context.progress == null ? 0 : context.progress,

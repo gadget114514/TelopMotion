@@ -276,6 +276,23 @@ test('every generated palette keeps text contrast at 4.5 or better', () => {
   }
 });
 
+test('a palette re-roll repaints the text edge instead of a near-black stroke', () => {
+  // The edge used to be the legacy stroke at value 0.06: every draw returned
+  // a black-looking swatch, so the palette-set re-roll of the theme dialog
+  // looked broken. It is a colour role now, so the re-roll visibly moves it.
+  for (const brightness of [0.3, 0.6, 0.9]) {
+    const axes = { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness };
+    const hues = new Set();
+    for (let seed = 1; seed <= 60; seed += 1) {
+      const palette = moods.generatePalette(rng.mulberry32(seed), axes);
+      const edge = color.rgbToHsv(color.parse(palette.colors[4]));
+      assert.ok(edge.v >= 0.2, `brightness ${brightness} seed ${seed}: the text edge ${palette.colors[4]} is near-black`);
+      hues.add(Math.round(edge.h / 24) % 15);
+    }
+    assert.ok(hues.size >= 6, `brightness ${brightness}: the re-rolled edges span only ${hues.size} hue buckets`);
+  }
+});
+
 test('ballad and rock pick clearly different effects', () => {
   const gritty = new Set(['rgbShift', 'crt', 'lensDistortion', 'heatHaze', 'zoomBlur', 'rainbowFlow', 'holographic', 'fire', 'jitter', 'twist', 'wobbleWarp']);
   const sample = (axes) => {
@@ -306,6 +323,43 @@ test('weird is a sixth axis that defaults to 0 and stays out of look matching', 
   assert.equal(axes.fear, 0); // and the eighth prefers nothing
   assert.equal(axes.speed, 0.5);
   assert.equal(moods.normalizeAxes({ weird: 2 }).weird, 1);
+});
+
+test('the stroke variety draw reaches outline widths and a manual value overrides weird', () => {
+  const genParams = require('../../renderer/js/lyrics/gen-params.js');
+  const context = { letterCount: 10, cjk: false, aspect: '16:9' };
+  const base = { speed: 0.6, energy: 0.6, softness: 0.5, density: 0.7, brightness: 0.5, smartness: 0, fear: 0 };
+  const widths = (axes, params) => {
+    const out = [];
+    for (let seed = 1; seed <= 150; seed += 1) {
+      const style = moods.generate({ axes, seed, context, params }).style;
+      for (const edge of style.edge || []) {
+        if (edge.type === 'outline' && typeof edge.params.width === 'number') out.push(edge.params.width);
+      }
+    }
+    return out;
+  };
+  // weird 0 without pinned values: the classic recommended range only
+  const classic = widths({ ...base, weird: 0 }, null);
+  assert.ok(classic.length > 0, 'no outline was drawn');
+  for (const width of classic) assert.ok(width >= 1 && width <= 6, `classic width ${width}`);
+  // weird 0.6 derives a variety of 1, so an outline leaves the recommended
+  // range for the hairline / heavy end
+  const wide = widths({ ...base, weird: 0.6 }, null);
+  assert.ok(wide.length > 0, 'no outline was drawn at weird 0.6');
+  assert.ok(wide.some((width) => width < 1) && wide.some((width) => width > 6), `no extreme in ${wide.length} widths`);
+  for (const width of wide) assert.ok(width >= 0.1 && width <= 100, `clamped width ${width}`);
+  // a manually pinned strokeVariety applies even where weird 0 would not
+  const pinned = genParams.resolve({ axes: { ...base, weird: 0 }, params: { strokeVariety: 1 } });
+  const manual = widths({ ...base, weird: 0 }, pinned);
+  assert.ok(manual.length > 0, 'no outline was drawn with the pinned profile');
+  assert.ok(manual.some((width) => width < 1) && manual.some((width) => width > 6), `no extreme in ${manual.length} pinned widths`);
+  // and a pinned 0 leaves only the classic draw and the weird widening /
+  // scaling (never the x8 stroke swing): width stays inside [0.1, 8.5] x 2
+  const off = genParams.resolve({ axes: { ...base, weird: 1 }, params: { strokeVariety: 0 } });
+  const disabled = widths({ ...base, weird: 1 }, off);
+  assert.ok(disabled.length > 0, 'no outline was drawn with the disabled profile');
+  for (const width of disabled) assert.ok(width >= 0.1 && width <= 17.01, `disabled width ${width}`);
 });
 
 test('every generated font id names a bundled typeface', () => {

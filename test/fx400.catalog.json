@@ -9616,12 +9616,7 @@
         {
           "key": "pattern",
           "from": "solid",
-          "to": "dashed"
-        },
-        {
-          "key": "width",
-          "from": 3,
-          "to": 6
+          "to": "random"
         }
       ],
       "verified": "static",
@@ -9633,10 +9628,10 @@
             "type": "outline",
             "enabled": true,
             "params": {
-              "width": 6,
+              "width": 3,
               "color": null,
               "softness": 0.35,
-              "pattern": "dashed",
+              "pattern": "random",
               "dashLength": 14,
               "gapRatio": 0.45,
               "flow": 0,
@@ -13712,12 +13707,7 @@
         {
           "key": "pattern",
           "from": "solid",
-          "to": "dashed"
-        },
-        {
-          "key": "width",
-          "from": 3,
-          "to": 6
+          "to": "random"
         }
       ],
       "verified": "static",
@@ -13740,10 +13730,10 @@
             "type": "outline",
             "enabled": true,
             "params": {
-              "width": 6,
+              "width": 3,
               "color": null,
               "softness": 0.35,
-              "pattern": "dashed",
+              "pattern": "random",
               "dashLength": 14,
               "gapRatio": 0.45,
               "flow": 0,

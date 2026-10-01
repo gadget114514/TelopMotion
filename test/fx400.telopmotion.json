@@ -3,8 +3,8 @@
   "version": 3,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-09-30T16:37:21.172Z",
-    "updatedAt": "2026-09-30T16:37:21.172Z",
+    "createdAt": "2026-10-01T02:34:23.915Z",
+    "updatedAt": "2026-10-01T02:34:23.915Z",
     "lang": "ja"
   },
   "output": {
@@ -7697,10 +7697,10 @@
           "type": "outline",
           "enabled": true,
           "params": {
-            "width": 6,
+            "width": 3,
             "color": null,
             "softness": 0.35,
-            "pattern": "dashed",
+            "pattern": "random",
             "dashLength": 14,
             "gapRatio": 0.45,
             "flow": 0,
@@ -9265,10 +9265,10 @@
           "type": "outline",
           "enabled": true,
           "params": {
-            "width": 6,
+            "width": 3,
             "color": null,
             "softness": 0.35,
-            "pattern": "dashed",
+            "pattern": "random",
             "dashLength": 14,
             "gapRatio": 0.45,
             "flow": 0,

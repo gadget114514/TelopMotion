@@ -244,6 +244,7 @@
       u_params: p4,
       u_params2: p42,
       u_params3: p43,
+      u_params4: [0, 0, 0, 0],
       u_mode: mode,
       u_colorA: colorA,
       u_colorB: colorB,

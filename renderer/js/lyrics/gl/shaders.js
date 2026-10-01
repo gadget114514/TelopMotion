@@ -300,6 +300,108 @@ SA.glShaders = (() => {
   }
   `;
 
+  // --- shared decoration patterns ---------------------------------------------
+  // The fragment-stage half of the pattern vocabulary: one implementation of
+  // `patternMask` that the fill / edge / post passes and the shape pass all
+  // reuse. Only fragment shaders may include it (`fwidth` is fragment-only),
+  // so it is kept out of COMMON, which the vertex stages also compile.
+  //
+  //   kind    0 solid, 1 dashed, 2 dotted, 3 dashDot, 4 double, 5 triple,
+  //           6 stripes, 7 checker, 8 diamond, 9 zigzag, 10 wave, 11 random,
+  //           12 railroad, 13 hatch, 14 crosshatch, 15 sketch (see
+  //           renderer/js/lyrics/patterns.js for the names)
+  //   s       coordinate along the wire / path (px, or the caller's unit)
+  //   t       position across the stroke (0..1)
+  //   period  the pattern pitch in the same unit as s
+  //   ratio   the filled share of one period (0..1)
+  //   flow    phase offset in turns (the caller folds time in)
+  const PATTERN_GLSL = `
+  float patternMask(int kind, float s, float t, float period, float ratio, float flow) {
+    float p = max(period, 0.5);
+    float r = clamp(ratio, 0.02, 0.98);
+    float phase = fract(s / p - flow);
+    float aa = max(fwidth(s / p), 0.002);
+    if (kind <= 0) return 1.0;
+    if (kind == 1) {                      // dashed
+      return 1.0 - smoothstep(r - aa * 2.0, r + aa * 2.0, phase);
+    }
+    if (kind == 2) {                      // dotted
+      vec2 q = vec2((phase - 0.5) * p, (t - 0.5) * p);
+      float radius = max(p * r * 0.5, 0.05 * p);
+      return 1.0 - smoothstep(radius - aa * p, radius + aa * p, length(q));
+    }
+    if (kind == 3) {                      // dashDot
+      float dash = 1.0 - smoothstep(0.42 - aa * 2.0, 0.42 + aa * 2.0, phase);
+      float dot = 1.0 - smoothstep(0.16 - aa * 2.0, 0.16 + aa * 2.0, length(vec2((phase - 0.72) * p, (t - 0.5) * p)));
+      return max(dash, dot);
+    }
+    if (kind == 4) {                      // double
+      float a = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.28));
+      float b = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.72));
+      return max(a, b);
+    }
+    if (kind == 5) {                      // triple
+      float a = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.22));
+      float b = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.5));
+      float c = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.78));
+      return max(max(a, b), c);
+    }
+    if (kind == 6) {                      // stripes (diagonal bars)
+      float u = fract(phase + (t - 0.5) * 0.75);
+      return 1.0 - smoothstep(r - aa * 2.0, r + aa * 2.0, u);
+    }
+    if (kind == 7) {                      // checker
+      float cx = floor(s / p - flow);
+      float cy = floor(t * 2.0);
+      return 1.0 - step(0.5, mod(cx + cy, 2.0));
+    }
+    if (kind == 8) {                      // diamond grid
+      float dx = abs(phase - 0.5) * 2.0;
+      float dy = abs(t - 0.5) * 2.0;
+      float d = dx + dy - (0.4 + 0.8 * r);
+      return 1.0 - smoothstep(-aa * 2.0, aa * 2.0, d);
+    }
+    if (kind == 9) {                      // zigzag wire
+      float z = abs(phase - 0.5) * 2.0;
+      float line = abs(t - (0.5 + 0.32 * (z - 0.5)));
+      float w = 0.06 + 0.18 * r;
+      return 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, line);
+    }
+    if (kind == 10) {                     // sine wave wire
+      float w = 0.5 + 0.34 * sin((s / p - flow) * TAU);
+      float line = abs(t - w);
+      float ww = 0.06 + 0.18 * r;
+      return 1.0 - smoothstep(ww - aa * 2.0, ww + aa * 2.0, line);
+    }
+    if (kind == 11) {                     // random noise fill
+      vec2 cell = floor(vec2(s / p - flow, t * 3.0));
+      float n = hash12(cell);
+      float n2 = hash12(cell + vec2(3.1, 7.7));
+      return step(1.0 - r, mix(n, n2, 0.5));
+    }
+    if (kind == 12) {                     // railroad (ladder)
+      float rail = 1.0 - smoothstep(0.08 - aa * 2.0, 0.08 + aa * 2.0, min(abs(t - 0.2), abs(t - 0.8)));
+      float tie = 1.0 - smoothstep(0.16 - aa * 2.0, 0.16 + aa * 2.0, min(phase, 1.0 - phase));
+      return max(rail, tie);
+    }
+    if (kind == 13) {                     // hatch (rungs across the wire)
+      float w = 0.04 + 0.3 * r;
+      return 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, min(phase, 1.0 - phase));
+    }
+    if (kind == 14) {                     // crosshatch (two diagonal families)
+      float u = fract(phase + (t - 0.5) * 0.75);
+      float v = fract(phase - (t - 0.5) * 0.75);
+      float a = 1.0 - smoothstep(r * 0.5 - aa * 2.0, r * 0.5 + aa * 2.0, min(u, 1.0 - u));
+      float b = 1.0 - smoothstep(r * 0.5 - aa * 2.0, r * 0.5 + aa * 2.0, min(v, 1.0 - v));
+      return max(a, b);
+    }
+    // sketch: a hand-drawn wobble riding the wire
+    float jitter = (fbm(vec2(s / p * 2.0, t * 2.0), 3) - 0.5) * 0.6;
+    float w = 0.02 + 0.2 * r;
+    return 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, abs(t - 0.5 + jitter));
+  }
+  `;
+
   // --- text pass ---------------------------------------------------------------
 
   const TEXT_VERT = `#version 300 es
@@ -587,9 +689,11 @@ SA.glShaders = (() => {
   uniform vec4 u_colorC;
   uniform vec4 u_colorD;
   uniform vec4 u_params;
+  uniform vec4 u_params2;      // pattern fills: angle, size, ratio, speed
   uniform float u_maskTint;
   out vec4 fragColor;
   ${COMMON}
+  ${PATTERN_GLSL}
 
   vec4 premul(vec4 c) { return vec4(c.rgb * c.a, c.a); }
 
@@ -673,6 +777,55 @@ SA.glShaders = (() => {
       float soft = max(u_params.z, 0.001);
       float n = fbm(v_uv * max(u_params.x, 1.0) * 8.0, 4) + 0.35 * clamp(-distance * 8.0, 0.0, 1.0);
       color = vec4(u_colorA.rgb, u_colorA.a * smoothstep(threshold - soft, threshold + soft, n));
+    } else if (type >= 15) {
+      // pattern fills (stripes / checker / diamondGrid / halftone / hatch /
+      // randomSpeckle): u_params2 = angle (rad), size (px), ratio, speed.
+      float angle = u_params2.x;
+      float size = max(u_params2.y, 1.0);
+      float ratio = clamp(u_params2.z, 0.02, 0.98);
+      float speed = u_params2.w;
+      vec2 centered = v_uv - 0.5;
+      float ca = cos(angle);
+      float sa = sin(angle);
+      vec2 p = mat2(ca, -sa, sa, ca) * centered;
+      if (type == 15) {                    // stripes (diagonal bars)
+        float coord = dot(v_uv * u_resolution.y, vec2(cos(angle), sin(angle))) / size;
+        float phase = fract(coord - u_time * speed);
+        float aa = max(fwidth(phase), 0.002);
+        float m = 1.0 - smoothstep(ratio - aa * 2.0, ratio + aa * 2.0, phase);
+        color = mix(u_colorA, u_colorB, m);
+      } else if (type == 16) {             // checker
+        vec2 cell = floor(p * (u_resolution.y / size));
+        float on = 1.0 - step(0.5, mod(cell.x + cell.y, 2.0));
+        color = mix(u_colorA, u_colorB, mix(1.0 - ratio, ratio, on));
+      } else if (type == 17) {             // diamond grid
+        vec2 g = abs(fract(p * (u_resolution.y / size)) - 0.5);
+        float diamond = g.x + g.y;
+        float aa = max(fwidth(diamond), 0.002);
+        float line = 1.0 - smoothstep(0.5 * ratio - aa * 2.0, 0.5 * ratio + aa * 2.0, abs(diamond - 0.5));
+        color = mix(u_colorA, u_colorB, line);
+      } else if (type == 18) {             // halftone dots
+        vec2 grid = p * (u_resolution.y / size);
+        vec2 q = fract(grid) - 0.5;
+        float aa = max(fwidth(q.x), 0.002);
+        float radius = 0.5 * sqrt(ratio);
+        float dotMask = 1.0 - smoothstep(radius - aa * 2.0, radius + aa * 2.0, length(q));
+        color = mix(u_colorA, u_colorB, dotMask);
+      } else if (type == 19) {             // hatch (thin diagonal lines)
+        float coord = (p.x + p.y) * (u_resolution.y / size) - u_time * speed;
+        float phase = fract(coord);
+        float aa = max(fwidth(phase), 0.002);
+        float w = 0.5 * ratio;
+        float line = 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, min(phase, 1.0 - phase));
+        color = mix(u_colorA, u_colorB, line);
+      } else {                             // randomSpeckle (noise)
+        vec2 cell = floor(p * (u_resolution.y / size));
+        vec2 shift = vec2(floor(u_time * speed * 8.0) * 0.37, 0.0);
+        float n = hash12(cell + shift);
+        float n2 = hash12(cell + shift + vec2(11.3, 5.1));
+        float m = step(1.0 - ratio, mix(n, n2, 0.5));
+        color = mix(u_colorA, u_colorB, m);
+      }
     }
     if (u_maskTint > 0.5) {
       vec3 tint = text.rgb / max(text.a, 1e-4);
@@ -705,6 +858,7 @@ SA.glShaders = (() => {
   uniform vec2 u_offset;
   out vec4 fragColor;
   ${COMMON}
+  ${PATTERN_GLSL}
 
   float sdfAt(vec2 uv) {
     return texture(u_sdf, uv).r;
@@ -729,9 +883,15 @@ SA.glShaders = (() => {
       float soft = max(u_params.w, 0.0);
       float aa = max(fwidth(distance), 0.0008);
       float e = distance - u_params.z;
-      alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e));
+      if (width >= aa) {
+        alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e));
+      } else {
+        // a hairline keeps a one-pixel ramp and fades with its own width
+        // instead of dropping out or burning at full brightness
+        alpha = (1.0 - smoothstep(aa * (1.0 - soft), aa, abs(e))) * clamp(width / aa, 0.05, 1.0);
+      }
       int pattern = int(u_params2.x + 0.5);
-      if (pattern == 1) {
+      if (pattern > 0) {
         vec2 texel = 2.0 / u_resolution;
         vec2 grad = normalize(vec2(
           sdfAt(v_uv + vec2(texel.x, 0.0)) - sdfAt(v_uv - vec2(texel.x, 0.0)),
@@ -739,29 +899,10 @@ SA.glShaders = (() => {
         ) + vec2(1e-6));
         vec2 tangent = vec2(-grad.y, grad.x);
         float s = dot(v_uv * u_resolution, tangent);
-        float dashLength = max(u_params.y, 1.0);
-        float gap = clamp(u_params2.y, 0.05, 0.95);
-        float phase = fract(s / dashLength - u_params2.z * u_time);
-        alpha *= 1.0 - smoothstep(gap - 0.02, gap, phase);
-      } else if (pattern == 2) {
-        vec2 texel = 2.0 / u_resolution;
-        vec2 grad = normalize(vec2(
-          sdfAt(v_uv + vec2(texel.x, 0.0)) - sdfAt(v_uv - vec2(texel.x, 0.0)),
-          sdfAt(v_uv + vec2(0.0, texel.y)) - sdfAt(v_uv - vec2(0.0, texel.y))
-        ) + vec2(1e-6));
-        vec2 tangent = vec2(-grad.y, grad.x);
-        float s = dot(v_uv * u_resolution, tangent);
-        float gap = clamp(u_params2.y, 0.05, 0.95);
-        float period = max(2.0 * width / max(1.0 - gap, 0.05), 1.0);
-        float u = (fract(s / period - u_params2.z * u_time) - 0.5) * period;
-        alpha = 1.0 - smoothstep(width - aa, width, length(vec2(u, abs(e))));
-      } else if (pattern == 3) {
-        float line = 1.0 - smoothstep(width / 3.0 - aa, width / 3.0, abs(e));
-        float second = 1.0 - smoothstep(width / 3.0 - aa, width / 3.0, abs(abs(e) - width * 1.33));
-        alpha = max(line, second);
-      } else if (pattern == 4) {
-        float sketch = (fbm(v_uv * u_resolution / 24.0 + floor(u_time * 8.0), 3) - 0.5) * width * 0.8;
-        alpha = 1.0 - smoothstep(width * (1.0 - soft), width, abs(e + sketch));
+        float period = max(u_params.y, 1.0);
+        float ratio = 1.0 - clamp(u_params2.y, 0.05, 0.95);
+        float across = clamp(0.5 + 0.5 * e / max(width, 0.0005), 0.0, 1.0);
+        alpha *= patternMask(pattern, s, across, period, ratio, u_params2.z * u_time);
       }
       // the multi-line bands are rings: everything inside the inner radius is cut out
       float inner = max(u_params2.w, 0.0);
@@ -835,10 +976,12 @@ SA.glShaders = (() => {
   uniform vec4 u_params;
   uniform vec4 u_params2;
   uniform vec4 u_params3;
+  uniform vec4 u_params4;      // shapeLayer patterns: kind, period, ratio, flow
   uniform vec4 u_colorA;
   uniform vec4 u_colorB;
   out vec4 fragColor;
   ${COMMON}
+  ${PATTERN_GLSL}
 
   vec2 rotateUv(vec2 uv, float angle) {
     vec2 centered = uv - 0.5;
@@ -1232,7 +1375,7 @@ SA.glShaders = (() => {
       float trimStart = u_params.y;
       float trimEnd = u_params.z;
       float trimOffset = u_params.w;
-      float strokePx = max(u_params2.x, 0.5) / u_resolution.y;
+      float strokePx = max(u_params2.x, 0.1) / u_resolution.y;
       float repeat = max(u_params2.y, 1.0);
       float repeatScale = max(u_params2.z, 0.05);
       float repeatRotate = radians(u_params2.w);
@@ -1241,6 +1384,10 @@ SA.glShaders = (() => {
       float repeatOpacity = clamp(u_colorB.y, 0.0, 1.0);
       float capRound = u_colorB.z;
       float feather = max(u_colorB.w, 0.002);
+      int patternKind = int(u_params4.x + 0.5);
+      float patternPeriod = max(u_params4.y, 0.5);
+      float patternRatio = clamp(u_params4.z, 0.02, 0.98);
+      float patternFlow = u_params4.w;
       float aspect = u_resolution.x / max(u_resolution.y, 1.0);
       vec2 boxMin = vec2(u_params3.x, u_params3.y) - padding;
       vec2 boxMax = vec2(u_params3.z, u_params3.w) + padding;
@@ -1253,6 +1400,7 @@ SA.glShaders = (() => {
       float d = 1e9;
       float t = 0.0;
       float spokes = 1.0;
+      float pathPx = u_resolution.y;
       if (shape == 0 || shape == 1 || shape == 8) {
         // underline (bottom), strike (middle), diagonal (corner to corner)
         vec2 a;
@@ -1270,12 +1418,14 @@ SA.glShaders = (() => {
         vec2 ab = b - a;
         t = clamp(dot(q - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
         d = length(q - (a + ab * t));
+        pathPx = length(ab) * u_resolution.y;
       } else if (shape == 4 || shape == 5) {
         // circle / ring: the trim runs around the centre
         float r = length(q);
         t = atan(q.y, q.x) / TAU + 0.5;
         d = abs(r - radius);
         if (shape == 5) d = min(d, abs(r - radius * 0.55));
+        pathPx = TAU * radius * u_resolution.y;
       } else if (shape == 6 || shape == 7) {
         // burst / cross: repeat spokes from the centre, longest first
         spokes = shape == 7 ? 2.0 : repeat;
@@ -1299,11 +1449,13 @@ SA.glShaders = (() => {
         }
         d = best;
         t = bestT;
+        pathPx = TAU * radius * u_resolution.y;
       } else {
         // box / brackets: the trim walks around the perimeter
         vec2 rq = abs(q) - hb;
         d = length(max(rq, 0.0)) + min(max(rq.x, rq.y), 0.0);
         t = atan(q.y, q.x) / TAU + 0.5;
+        pathPx = 4.0 * (hb.x + hb.y) * u_resolution.y;
       }
       float halfStroke = strokePx * 0.5;
       float aa = max(fwidth(d), 0.0015);
@@ -1311,10 +1463,18 @@ SA.glShaders = (() => {
       float tt = fract(t + trimOffset);
       float trim = smoothstep(trimStart - feather, trimStart + feather, tt) * (1.0 - smoothstep(trimEnd - feather, trimEnd + feather, tt));
       alpha *= trim;
+      if (capRound < 0.5 && (shape == 0 || shape == 1 || shape == 8) && (t <= 0.0001 || t >= 0.9999)) alpha = 0.0;
       if (shape == 3) {
         // brackets keep the four corners only
         float corner = smoothstep(0.5, 0.8, min(abs(q.x) / max(hb.x, 1e-4), abs(q.y) / max(hb.y, 1e-4)));
         alpha *= corner;
+      }
+      if (patternKind > 0) {
+        // the wire runs from the path (across 0) to the stroke edge (1), so
+        // cross-width patterns draw their bands inside the visible stroke
+        float across = clamp(d / max(halfStroke, 1e-4), 0.0, 1.0);
+        float period = patternPeriod / max(pathPx, 1.0);
+        alpha *= patternMask(patternKind, t, across, period, patternRatio, patternFlow);
       }
       if (d > halfStroke && glow > 0.0) {
         float halo = exp(-max(d - halfStroke, 0.0) / max(strokePx * 3.0, 0.001)) * glow;
@@ -2126,6 +2286,7 @@ SA.glShaders = (() => {
 
   return {
     COMMON,
+    PATTERN_GLSL,
     TEXT_VERT,
     TEXT_FRAG,
     QUAD_VERT,

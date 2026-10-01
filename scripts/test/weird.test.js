@@ -81,3 +81,19 @@ test('the colour development rides the raw axis', () => {
     previous = value;
   }
 });
+
+test('stroke variety is a no-op at 0 and reaches 1 at weird 0.6', () => {
+  assert.equal(weird.strokeVariety({ weird: 0 }), 0);
+  assert.equal(weird.strokeVariety(undefined), 0);
+  assert.equal(weird.strokeVariety({ weird: 0.3 }), 0.5);
+  assert.equal(weird.strokeVariety({ weird: 0.6 }), 1);
+  assert.equal(weird.strokeVariety({ weird: 1 }), 1);
+  assert.equal(weird.strokeVariety({ weird: 2 }), 1);
+  assert.equal(weird.STROKE_VARIETY_SPAN, 0.6);
+  let previous = -1;
+  for (let v = 0; v <= 1.0001; v += 0.05) {
+    const value = weird.strokeVariety({ weird: Math.min(1, v) });
+    assert.ok(value >= previous, `strokeVariety fell at ${v}`);
+    previous = value;
+  }
+});

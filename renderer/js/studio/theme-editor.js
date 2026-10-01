@@ -35,6 +35,7 @@ SA.themeEditor = (() => {
     planes: 'studio.themeEditor.group.planes',
     motion: 'studio.themeEditor.group.motion',
     figure: 'studio.themeEditor.group.figure',
+    stroke: 'studio.themeEditor.group.stroke',
   };
 
   let draft = null;

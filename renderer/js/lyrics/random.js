@@ -39,7 +39,7 @@
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
   }
 
-  function sampleParam(param, random, intensity, colors) {
+  function sampleParam(param, random, intensity, colors, variety) {
     const level = Math.max(1, Math.min(3, intensity || 1));
     if (param.kind === 'number' || param.kind === 'int') {
       const min = param.min == null ? 0 : param.min;
@@ -47,9 +47,13 @@
       const fallback = param.default == null ? min : param.default;
       // stay inside the author's recommended range; without one keep the default
       const range = Array.isArray(param.random) && param.random.length >= 2 ? param.random : null;
-      if (!range) return param.kind === 'int' ? Math.round(fallback) : fallback;
+      if (!range) {
+        const value = moods.extremeStroke ? moods.extremeStroke(random, fallback, min, max, variety) : fallback;
+        return param.kind === 'int' ? Math.round(value) : value;
+      }
       const bias = ((level - 1) / 2) * 0.6;
-      const value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * Math.min(1, Math.max(0, bias + random() * 0.4))));
+      let value = Math.max(min, Math.min(max, range[0] + (range[1] - range[0]) * Math.min(1, Math.max(0, bias + random() * 0.4))));
+      if (moods.extremeStroke) value = moods.extremeStroke(random, value, min, max, variety);
       if (param.kind === 'int') return Math.round(value);
       const factor = Math.pow(10, Math.abs(value) < 0.1 ? 4 : 2);
       return Math.round(value * factor) / factor;
@@ -154,7 +158,11 @@
     const params = {};
     for (const param of descriptor.params || []) {
       if (param.random === undefined && param.kind !== 'bool') continue;
-      params[param.key] = sampleParam(param, random, intensity, colors);
+      const variety =
+        context && context.strokeVariety && moods.isStrokeKey && moods.isStrokeKey(group, descriptor.type, param.key)
+          ? context.strokeVariety
+          : 0;
+      params[param.key] = sampleParam(param, random, intensity, colors, variety);
     }
     const entry = { type: descriptor.type, params, enabled: true };
     if (SINGLE_GROUPS.includes(group)) {
@@ -314,16 +322,22 @@
     const intensity = opts.intensity == null ? axisIntensity : opts.intensity;
     const colors = opts.colors || [];
     const targets = [];
+    // the stroke-variety chance of the project: a weird song may draw hairlines
+    // or very heavy outlines / shape strokes; weird 0 leaves the draw untouched
+    const styleParams = project.styleMode ? project.styleMode.params || {} : {};
+    const resolvedStyleParams = moods.resolveParams ? moods.resolveParams(styleAxes, styleParams) : null;
+    const strokeVariety = moods.strokeVarietyOf ? moods.strokeVarietyOf(styleAxes, resolvedStyleParams) : 0;
+    const withVariety = (context) => ({ ...context, strokeVariety });
 
     if (opts.scope === 'project') {
-      targets.push({ key: 'project', scope: 'project', base: project.style, context: contextForProject(project) });
+      targets.push({ key: 'project', scope: 'project', base: project.style, context: withVariety(contextForProject(project)) });
     } else if (opts.scope === 'cues') {
       for (const cue of project.script.cues) {
-        targets.push({ key: `cue:${cue.id}`, scope: { cueId: cue.id }, base: resolveStyle(project, `cue:${cue.id}`), context: contextForCue(project, cue) });
+        targets.push({ key: `cue:${cue.id}`, scope: { cueId: cue.id }, base: resolveStyle(project, `cue:${cue.id}`), context: withVariety(contextForCue(project, cue)) });
       }
     } else if (opts.scope === 'elements') {
       for (const path of opts.paths || []) {
-        targets.push({ key: path, scope: 'element', path, base: resolveStyle(project, path), context: contextForPath(project, path), manual: !!(project.overrides || {})[path] });
+        targets.push({ key: path, scope: 'element', path, base: resolveStyle(project, path), context: withVariety(contextForPath(project, path)), manual: !!(project.overrides || {})[path] });
       }
     }
 
@@ -337,7 +351,14 @@
         const axisRun = mode.axes ? { axes: mode.axes, direction: mode.direction } : moods.randomAxes ? moods.randomAxes(rng.rngFor(seed, target.key, 'axes')) : null;
         const axes = moods.normalizeAxes(axisRun ? axisRun.axes : {});
         if (intensity >= 2) axes.energy = Math.min(1, axes.energy * 1.12);
-        style = moods.generate({ axes, seed, context: target.context, direction: axisRun && axisRun.direction, genre: mode.genre || null }).style;
+        style = moods.generate({
+          axes,
+          seed,
+          context: target.context,
+          direction: axisRun && axisRun.direction,
+          genre: mode.genre || null,
+          params: moods.resolveParams ? moods.resolveParams(axes, mode.params) : null,
+        }).style;
         for (const group of locks) delete style[group];
         if (!locks.has('repeat') && rng.rngFor(seed, target.key, 'repeat')() < 0.3) {
           const repeatPatch = groupPatch('repeat', target.base && target.base.repeat, rng.rngFor(seed, target.key, 'repeatParams'), { ...opts, colors }, target.context);

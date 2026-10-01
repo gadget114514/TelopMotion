@@ -24,6 +24,7 @@ void main() {
 
   const FRAG = `#version 300 es
 precision highp float;
+/*__PATTERN_LIB__*/
 in vec2 v_uv;
 uniform vec2 u_half;
 uniform int u_shape;
@@ -40,6 +41,8 @@ uniform vec3 u_trim;      // trim start, end, offset along the path
 uniform vec3 u_dash;      // dash on, off, offset (fractions of the path)
 uniform float u_cap;      // 0 butt, 1 round
 uniform vec4 u_warp;      // path warp: code, amount, freq, time
+uniform int u_pattern;    // pattern vocabulary code (0 = plain stroke)
+uniform vec3 u_patternParams; // period (px), ratio, flow phase (turns)
 uniform vec2 u_points[8]; // convex polygon (code 5), relative to the centre
 uniform float u_count;    // number of live points
 out vec4 outColor;
@@ -113,34 +116,55 @@ void main() {
   vec2 p = (v_uv - 0.5) * 2.0 * u_half;
   p = warpPoint(p, u_warp.x, u_warp.y, u_warp.z, u_warp.w, max(u_half.x, u_half.y));
   float d;
+  float pathPx = 1.0;
   if (u_shape == 0) {
     vec2 q = abs(p) - (u_half - vec2(u_radius));
     d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - u_radius;
+    pathPx = 2.0 * (u_half.x + u_half.y);
   } else if (u_shape == 1) {
     d = length(p) - u_radius;
+    pathPx = 6.283185307179586 * u_radius;
   } else if (u_shape == 2) {
     d = sdSegment(p, u_p0, u_p1) - u_lineWidth * 0.5;
+    pathPx = length(u_p1 - u_p0);
   } else if (u_shape == 3) {
     d = sdPolygon(p, u_radius, u_sides, u_angle);
+    pathPx = u_sides * 2.0 * u_radius * sin(3.141592653589793 / max(u_sides, 3.0));
   } else {
     d = sdConvex(p);
+    pathPx = 0.0;
+    int n = int(u_count + 0.5);
+    for (int i = 0; i < 8; i++) {
+      if (i >= n) break;
+      int j = i + 1;
+      if (j == n) j = 0;
+      pathPx += length(u_points[j] - u_points[i]);
+    }
+    pathPx = max(pathPx, 1.0);
   }
   vec4 color = u_color;
+  // across: 0 at the stroke centre, 1 at its outer edge; 0.5 without a stroke
+  float across = 0.5;
   if (u_stroke > 0.0) {
     d = abs(d) - u_stroke * 0.5;
     color = u_strokeColor;
+    across = clamp(d / max(u_stroke, 1e-4) + 0.5, 0.0, 1.0);
   }
   float alpha = color.a * (1.0 - smoothstep(-0.7, 0.7, d));
-  // trim path / dashes cut the outline by its own arc length
+  // trim path / patterns cut the outline by its own arc length
   float t = pathParam(p);
   float feather = max(fwidth(t), 0.004);
   float tt = fract(t + u_trim.z);
   float trim = smoothstep(u_trim.x - feather, u_trim.x + feather, tt) * (1.0 - smoothstep(u_trim.y - feather, u_trim.y + feather, tt));
   alpha *= trim;
   if (u_cap < 0.5 && u_shape == 2 && (t <= 0.0 || t >= 1.0)) alpha = 0.0;
-  if (u_dash.x > 0.0) {
-    float period = max(u_dash.x + u_dash.y, 1e-4);
-    if (mod(tt * period + u_dash.z, period) > u_dash.x) alpha = 0.0;
+  if (u_pattern > 0) {
+    float period = max(u_patternParams.x, 0.5) / max(pathPx, 1.0);
+    float ratio = clamp(u_patternParams.y, 0.02, 0.98);
+    alpha *= patternMask(u_pattern, t, across, period, ratio, u_patternParams.z);
+  } else if (u_dash.x > 0.0) {
+    float dashPeriod = max(u_dash.x + u_dash.y, 1e-4);
+    alpha *= patternMask(1, tt, across, 1.0, clamp(u_dash.x / dashPeriod, 0.02, 0.98), -u_dash.z / dashPeriod);
   }
   if (alpha <= 0.001) discard;
   outColor = vec4(color.rgb * alpha, alpha);
@@ -181,8 +205,24 @@ void main() {
     ];
   }
 
+  // The pattern library lives in gl/shaders.js (one definition of
+  // `patternMask`); the fragment is built here so the module also loads
+  // standalone in Node, where the shared library is absent and a stub keeps
+  // the shader compiling (no GL context exists there anyway).
+  const PATTERN_MARK = '/*__PATTERN_LIB__*/';
+  const PATTERN_STUB = `
+  float patternMask(int kind, float s, float t, float period, float ratio, float flow) { return 1.0; }
+  `;
+
+  function patternLibrary() {
+    if (typeof SA !== 'undefined' && SA.glShaders && SA.glShaders.PATTERN_GLSL) {
+      return `${SA.glShaders.COMMON || ''}\n${SA.glShaders.PATTERN_GLSL}`;
+    }
+    return PATTERN_STUB;
+  }
+
   function create(gl) {
-    const shapeProgram = compile(gl, VERT, FRAG, ['a_pos']);
+    const shapeProgram = compile(gl, VERT, FRAG.replace(PATTERN_MARK, () => patternLibrary()), ['a_pos']);
     const textProgram = compile(gl, TEXT_VERT, TEXT_FRAG, ['a_pos']);
     const shapeUniforms = shapeProgram ? locations(gl, shapeProgram) : null;
     const textUniforms = textProgram ? locations(gl, textProgram, ['u_resolution', 'u_offset', 'u_color']) : null;
@@ -240,6 +280,8 @@ void main() {
         'u_dash',
         'u_cap',
         'u_warp',
+        'u_pattern',
+        'u_patternParams',
       ];
       const result = {};
       for (const name of names) result[name.replace(/^u_/, '')] = context.getUniformLocation(program, name);
@@ -304,6 +346,17 @@ void main() {
       gl.uniform1f(shapeUniforms.cap, opts.cap === 'butt' ? 0 : 1);
       const warp = Array.isArray(opts.pathOp) ? opts.pathOp : [0, 0, 0, 0];
       gl.uniform4f(shapeUniforms.warp, warp[0], warp[1] == null ? 0 : warp[1], warp[2] == null ? 0 : warp[2], warp[3] == null ? 0 : warp[3]);
+      // decoration pattern: 0 keeps the plain stroke, so a shape without one
+      // draws exactly as before
+      const pattern = opts.pattern == null ? 0 : Math.max(0, Math.round(Number(opts.pattern) || 0));
+      gl.uniform1i(shapeUniforms.pattern, pattern);
+      const patternParams = Array.isArray(opts.patternParams) ? opts.patternParams : [0, 0, 0];
+      gl.uniform3f(
+        shapeUniforms.patternParams,
+        patternParams[0] == null ? 0 : patternParams[0],
+        patternParams[1] == null ? 0 : patternParams[1],
+        patternParams[2] == null ? 0 : patternParams[2]
+      );
       // convex points always reset, so a stale polygon never leaks into the
       // next shape drawn with this program
       const points = Array.isArray(opts.points) ? opts.points : [];
@@ -328,10 +381,13 @@ void main() {
       const opts = options || {};
       const w = Math.max(0, opts.w == null ? opts.width || 0 : opts.w);
       const h = Math.max(0, opts.h == null ? opts.height || 0 : opts.h);
+      // a stroked outline grows outwards: keep the quad wide enough so a heavy
+      // stroke is not clipped by the shape's own bounds
+      const pad = Math.max(0, Number(opts.stroke) || 0) * 0.5 + (opts.stroke ? 2 : 0);
       return drawShape({
         shape: 0,
         center: { x: opts.x + w / 2, y: opts.y + h / 2 },
-        half: { x: w / 2, y: h / 2 },
+        half: { x: w / 2 + pad, y: h / 2 + pad },
         radius: Math.max(0, Math.min(opts.radius || 0, Math.min(w, h) / 2)),
         angle: opts.angle,
         color: opts.color,
@@ -343,16 +399,19 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 
     function circle(options) {
       const opts = options || {};
       const r = Math.max(0.1, opts.r || opts.radius || 1);
+      const pad = Math.max(0, Number(opts.stroke) || 0) * 0.5 + 2;
       return drawShape({
         shape: 1,
         center: { x: opts.x, y: opts.y },
-        half: { x: r + 2, y: r + 2 },
+        half: { x: r + pad, y: r + pad },
         radius: r,
         color: opts.color,
         opacity: opts.opacity,
@@ -363,6 +422,8 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 
@@ -383,6 +444,8 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 
@@ -411,16 +474,19 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 
     function polygon(options) {
       const opts = options || {};
       const r = Math.max(0.1, opts.r || opts.radius || 1);
+      const pad = Math.max(0, Number(opts.stroke) || 0) * 0.5 + 2;
       return drawShape({
         shape: 3,
         center: { x: opts.x, y: opts.y },
-        half: { x: r + 2, y: r + 2 },
+        half: { x: r + pad, y: r + pad },
         radius: r,
         sides: Math.max(3, Math.min(12, Math.round(opts.sides || 6))),
         angleLocal: ((opts.rotation || opts.rot || 0) * Math.PI) / 180,
@@ -433,6 +499,8 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 
@@ -460,10 +528,11 @@ void main() {
         y1 = Math.max(y1, point.y);
       }
       const center = { x: (x0 + x1) / 2, y: (y0 + y1) / 2 };
+      const pad = Math.max(0, Number(opts.stroke) || 0) * 0.5 + 2;
       return drawShape({
         shape: 5,
         center,
-        half: { x: Math.max(1, (x1 - x0) / 2 + 2), y: Math.max(1, (y1 - y0) / 2 + 2) },
+        half: { x: Math.max(1, (x1 - x0) / 2 + pad), y: Math.max(1, (y1 - y0) / 2 + pad) },
         points: list.map((point) => ({ x: point.x - center.x, y: point.y - center.y })),
         color: opts.color,
         opacity: opts.opacity,
@@ -474,6 +543,8 @@ void main() {
         dash: opts.dash,
         cap: opts.cap,
         pathOp: opts.pathOp,
+        pattern: opts.pattern,
+        patternParams: opts.patternParams,
       });
     }
 

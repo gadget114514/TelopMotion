@@ -67,6 +67,10 @@
     { key: 'sizeSpread', kind: 'amount', tab: 'font', group: 'size', min: 0.05, max: 0.6, step: 0.01, derive: (a) => 0.18 + 0.22 * a.w },
     { key: 'sizeFollow', kind: 'amount', tab: 'font', group: 'size', min: 0, max: 1, step: 0.05, derive: (a) => 0.2 * a.b },
     { key: 'heroScale', kind: 'amount', tab: 'font', group: 'size', min: 1, max: 2.5, step: 0.05, derive: (a) => 1 + 0.3 * a.w },
+    // stroke variety: how often an outline / shape layer stroke leaves its
+    // recommended width for an extreme one (hairline or very heavy). Weird
+    // drives it through weird.strokeVariety (0 at weird 0, 1 at weird 0.6).
+    { key: 'strokeVariety', kind: 'chance', tab: 'font', group: 'stroke', min: 0, max: 1, step: 0.05, derive: (a, axes) => weird.strokeVariety(axes) },
     // foreground fill weights; `boldChance` is the chance a cue's body is 700
     { key: 'fgSolid', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: () => 1 },
     { key: 'fgVivid', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: (a) => 1.2 * a.w },
@@ -197,6 +201,29 @@
     return random() < Number(chance);
   }
 
+  // The widest stroke swing: an extreme width is `base * factor` (heavy) or
+  // `base / factor` (hairline) with the factor drawn from exp(ln(K) * u). Both
+  // ends land on K when u = 1; u = 0 is the base itself. A variety of 0 is the
+  // identity and consumes no random, so weird 0 keeps every existing draw.
+  const EXTREME_K = 8;
+
+  function extremeFactor(random) {
+    return Math.exp(Math.log(EXTREME_K) * Math.max(0, Math.min(1, random())));
+  }
+
+  // Re-rolls `base` into an extreme stroke with probability `variety`. Thin and
+  // heavy are 50:50, and the result is clamped to the parameter's own range.
+  function extremeStroke(random, base, min, max, variety) {
+    if (!(Number(variety) > 0)) return base;
+    if (!(random() < Number(variety))) return base;
+    const factor = extremeFactor(random);
+    const heavy = random() < 0.5;
+    const value = heavy ? base * factor : base / factor;
+    const lo = Number.isFinite(Number(min)) ? Number(min) : 0;
+    const hi = Number.isFinite(Number(max)) ? Number(max) : value;
+    return Math.max(lo, Math.min(hi, value));
+  }
+
   // Normalizes a weight group to a probability distribution. Returns null when
   // every weight is 0 (nothing to draw). Missing keys count as 0.
   function normalizeChances(obj, keys) {
@@ -264,6 +291,7 @@
     DECO_KEYS,
     PLANE_KEYS,
     TEXT_BG_KEYS,
+    EXTREME_K,
     keysOf,
     axisView,
     display,
@@ -271,6 +299,8 @@
     resolve,
     isPinned,
     roll,
+    extremeFactor,
+    extremeStroke,
     pickWeighted,
     typeWeight,
     lookTypeWeight,

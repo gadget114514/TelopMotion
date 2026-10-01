@@ -115,20 +115,49 @@ test('the drive and the dash reach the expanded primitives', () => {
 
 test('the shape pass carries the trim, dash, cap and path op', () => {
   const source = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'shapes.js'), 'utf8');
-  for (const token of ['u_trim', 'u_dash', 'u_cap', 'u_warp', 'pathParam', 'warpPoint']) {
+  for (const token of ['u_trim', 'u_dash', 'u_cap', 'u_warp', 'pathParam', 'warpPoint', 'u_pattern', 'u_patternParams', 'patternMask']) {
     assert.ok(source.includes(token), `shapes.js has no ${token}`);
   }
   // the trim defaults keep the previous look (no trim, no dash, round cap)
   assert.ok(source.includes('opts.trim || [0, 1, 0]'), 'the trim default changed');
   assert.ok(source.includes("Array.isArray(opts.dash) ? opts.dash : [0, 0, 0]"), 'the dash default changed');
   assert.ok(source.includes("opts.cap === 'butt' ? 0 : 1"), 'the cap default changed');
+  // the pattern library is shared with gl/shaders.js, not copied
+  assert.ok(source.includes('SA.glShaders.PATTERN_GLSL'), 'the shape pass does not reuse the shared pattern library');
   // every primitive wrapper forwards the shape-op uniforms
   for (const wrapper of ['rect', 'circle', 'ring', 'capsule', 'polygon']) {
     const start = source.indexOf(`function ${wrapper}(options)`);
     assert.ok(start > 0, `shapes.js has no ${wrapper} wrapper`);
     const body = source.slice(start, source.indexOf('\n    }', start));
-    for (const token of ['trim: opts.trim', 'dash: opts.dash', 'pathOp: opts.pathOp']) {
+    for (const token of ['trim: opts.trim', 'dash: opts.dash', 'pathOp: opts.pathOp', 'pattern: opts.pattern', 'patternParams: opts.patternParams']) {
       assert.ok(body.includes(token), `${wrapper} does not forward ${token}`);
     }
   }
+  // a stroked outline keeps room for the stroke: the quad is padded
+  const circle = source.slice(source.indexOf('function circle(options)'), source.indexOf('function ring(options)'));
+  assert.ok(circle.includes('opts.stroke'), 'circle does not pad its quad for a stroke');
+});
+
+test('the pattern vocabulary is shared and reaches the expanded primitives', () => {
+  const patterns = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'patterns.js'));
+  assert.deepEqual(ops.PATTERNS, patterns.PATTERNS);
+  assert.equal(ops.PATTERNS.length, 16, 'the vocabulary grew or shrank');
+  assert.equal(new Set(ops.PATTERNS).size, ops.PATTERNS.length, 'duplicate pattern name');
+  assert.equal(ops.PATTERN_CODES.solid, 0, 'solid must stay the no-op code');
+  assert.equal(ops.PATTERN_CODES.dashed, 1);
+  assert.equal(ops.PATTERN_CODES.dotted, 2);
+  assert.equal(ops.PATTERN_CODES.sketch, 15);
+  assert.equal(patterns.codeOf('nope'), 0);
+  // a spec with a pattern reaches the primitive list with the packed params
+  // (the flow is already this frame's phase: patternFlow x time)
+  const box = ops.expand({ shape: 'box', pattern: 'railroad', patternSize: 32, patternRatio: 0.4, patternFlow: 1.5 }, { box: { x0: 0, y0: 0, x1: 100, y1: 100 }, time: 2 });
+  assert.equal(box[0].pattern, ops.PATTERN_CODES.railroad);
+  assert.deepEqual(box[0].patternParams, [32, 0.4, 3]);
+  // solid / missing patterns pack the no-op params
+  const solid = ops.expand({ shape: 'box' }, { box: { x0: 0, y0: 0, x1: 100, y1: 100 } });
+  assert.equal(solid[0].pattern, 0);
+  assert.deepEqual(solid[0].patternParams, [0, 0, 0]);
+  // the stroke floor is the hairline scale on both paths
+  assert.equal(ops.expand({ kind: 'capsule', length: 10, stroke: 0.01 }, {})[0].lineWidth, 0.1);
+  assert.equal(ops.namedSpecs({ shape: 'box' }, { x0: 0, y0: 0, x1: 100, y1: 100 })[0].kind, 'rect');
 });

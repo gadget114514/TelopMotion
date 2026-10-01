@@ -24,6 +24,7 @@
   const TEXT_SCALE = 0.7;
   const BG_REVEAL = 0.4;
   const PALETTE_MAX = 5;
+  const STROKE_VARIETY_SPAN = 0.6;
 
   function clamp01(value) {
     const number = Number(value);
@@ -88,6 +89,15 @@
     return 1 + Math.round((m - 1) * raw((axes || {}).weird));
   }
 
+  // How often a stroke leaves its recommended width for an extreme (hairline
+  // or very heavy) one. Weird drives it like sizeChange / colorChange: 0 keeps
+  // the classic draw and consumes no random, and the chance reaches 1 at weird
+  // 0.6 (the adjustment anchor); above that it stays 1.
+  function strokeVariety(axes) {
+    const a = axes || {};
+    return Math.min(1, raw(a.weird) / STROKE_VARIETY_SPAN);
+  }
+
   // The size ladder's level weights: a Gaussian curve over the ten levels, the
   // centre 0..1 (0 = the legible floor, 1 = the screen-filling end) and the
   // spread in level units. Every level keeps at least a 0.02 share and the
@@ -109,6 +119,7 @@
     TEXT_SCALE,
     BG_REVEAL,
     PALETTE_MAX,
+    STROKE_VARIETY_SPAN,
     clamp01,
     raw,
     text,
@@ -119,6 +130,7 @@
     sizeChange,
     basePaletteChance,
     colorChange,
+    strokeVariety,
     paletteCount,
     sizeWeights,
   };

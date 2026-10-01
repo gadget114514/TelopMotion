@@ -50,6 +50,41 @@ test('the uniforms carry the shape, the trim, the stroke and the text box', () =
   assert.equal(uniforms.u_colorB[2], 1, 'round cap');
   assert.equal(uniforms.u_colorB[3], 0.02, 'feather');
   assert.equal(uniforms.u_colorA[3], 0.5, 'glow');
+  assert.deepEqual(uniforms.u_params4, [0, 16, 0.5, 0], 'a plain stroke packs no pattern');
+});
+
+test('the stroke pattern packs into u_params4 and clamps to the widened range', () => {
+  const patterns = require('../../renderer/js/lyrics/patterns.js');
+  const entry = fx.get('post', 'shapeLayer');
+  for (const key of ['pattern', 'patternSize', 'patternRatio', 'patternFlow', 'dashOn', 'dashOff', 'dashOffset']) {
+    assert.ok(entry.params.some((param) => param.key === key), `post.shapeLayer has no ${key}`);
+  }
+  const patternParam = entry.params.find((param) => param.key === 'pattern');
+  assert.deepEqual(patternParam.options, patterns.PATTERNS);
+  assert.equal(entry.params.find((param) => param.key === 'stroke').max, 200, 'the heavy ceiling');
+  const checker = fx.postUniforms(
+    { type: 'shapeLayer', params: { shape: 'underline', pattern: 'checker', patternSize: 40, patternRatio: 0.3, patternFlow: 2, stroke: 500 } },
+    ctx({ time: 1 })
+  );
+  assert.deepEqual(checker.u_params4, [patterns.CODES.checker, 40, 0.3, 2]);
+  assert.equal(checker.u_params2[0], 200, 'the stroke clamps to the range');
+  // a dash overrides the period / share and turns a solid pattern into dashed
+  const dash = fx.postUniforms(
+    { type: 'shapeLayer', params: { shape: 'underline', dashOn: 10, dashOff: 30, dashOffset: 0.25, patternFlow: 0 } },
+    ctx({ time: 0 })
+  );
+  assert.deepEqual(dash.u_params4, [patterns.CODES.dashed, 40, 0.25, -0.25 / 40]);
+  // an unknown pattern falls back to solid instead of leaking into the shader
+  const unknown = fx.postUniforms({ type: 'shapeLayer', params: { shape: 'box', pattern: 'nope' } }, ctx());
+  assert.equal(unknown.u_params4[0], 0);
+});
+
+test('the shape layer shader reads the pattern and the cap', () => {
+  const shaders = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'shaders.js'), 'utf8');
+  const post = shaders.slice(shaders.indexOf('const POST_FRAG'), shaders.indexOf('const BLOOM_BRIGHT_FRAG'));
+  for (const token of ['u_params4', 'patternMask', 'patternKind', 'patternFlow', 'capRound', 'pathPx']) {
+    assert.ok(post.includes(token), `the shape layer branch does not read ${token}`);
+  }
 });
 
 test('the drive moves the trim: enter grows the end, exit the start, hold and beat loop the offset', () => {

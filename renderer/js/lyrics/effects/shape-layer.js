@@ -22,6 +22,8 @@
   const SHAPES = (shapeOps && shapeOps.SHAPES) || ['underline', 'strike', 'box', 'brackets', 'circle', 'ring', 'burst', 'cross', 'diagonal'];
   const FOLLOW_MODES = (shapeOps && shapeOps.FOLLOW_MODES) || ['block', 'line'];
   const PATH_OPS = (shapeOps && shapeOps.PATH_OPS) || ['none', 'wiggle', 'zigzag', 'pucker', 'twist'];
+  const PATTERNS = (shapeOps && shapeOps.PATTERNS) || ['solid', 'dashed', 'dotted', 'dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'random', 'railroad', 'hatch', 'crosshatch', 'sketch'];
+  const PATTERN_CODES = (shapeOps && shapeOps.PATTERN_CODES) || { solid: 0, dashed: 1, dotted: 2, double: 3, sketch: 4 };
   const SHAPE_CODES = {};
   SHAPES.forEach((name, index) => {
     SHAPE_CODES[name] = index;
@@ -48,8 +50,15 @@
       { key: 'trimEnd', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'shape' },
       { key: 'trimOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0, section: 'shape' },
       { key: 'feather', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.06, section: 'shape' },
-      { key: 'stroke', kind: 'number', min: 0.5, max: 40, step: 0.5, default: 4, section: 'look' },
+      { key: 'stroke', kind: 'number', min: 0.1, max: 200, step: 0.5, default: 4, section: 'look' },
       { key: 'padding', kind: 'number', min: -0.2, max: 0.6, step: 0.01, default: 0.06, section: 'look' },
+      { key: 'pattern', kind: 'select', options: PATTERNS, default: 'solid', section: 'look' },
+      { key: 'patternSize', kind: 'number', min: 2, max: 200, step: 1, default: 16, section: 'look' },
+      { key: 'patternRatio', kind: 'number', min: 0.05, max: 0.95, step: 0.01, default: 0.5, section: 'look' },
+      { key: 'patternFlow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0, section: 'look' },
+      { key: 'dashOn', kind: 'number', min: 0, max: 200, step: 1, default: 0, section: 'look' },
+      { key: 'dashOff', kind: 'number', min: 0, max: 200, step: 1, default: 0, section: 'look' },
+      { key: 'dashOffset', kind: 'number', min: -1, max: 1, step: 0.05, default: 0, section: 'look' },
       { key: 'repeat', kind: 'int', min: 1, max: 12, step: 1, default: 4, section: 'look' },
       { key: 'repeatScale', kind: 'number', min: 0.1, max: 2, step: 0.05, default: 1, section: 'look' },
       { key: 'repeatRotate', kind: 'number', min: -180, max: 180, step: 5, default: 0, section: 'look' },
@@ -73,8 +82,15 @@
         trimEnd: Math.max(0, Math.min(1, num(source.trimEnd, 1))),
         trimOffset: num(source.trimOffset, 0),
         feather: Math.max(0, Math.min(0.5, num(source.feather, 0.06))),
-        stroke: Math.max(0.5, Math.min(40, num(source.stroke, 4))),
+        stroke: Math.max(0.1, Math.min(200, num(source.stroke, 4))),
         padding: Math.max(-0.2, Math.min(0.6, num(source.padding, 0.06))),
+        pattern: PATTERNS.includes(source.pattern) ? source.pattern : 'solid',
+        patternSize: Math.max(2, Math.min(200, num(source.patternSize, 16))),
+        patternRatio: Math.max(0.05, Math.min(0.95, num(source.patternRatio, 0.5))),
+        patternFlow: Math.max(-4, Math.min(4, num(source.patternFlow, 0))),
+        dashOn: Math.max(0, Math.min(200, num(source.dashOn, 0))),
+        dashOff: Math.max(0, Math.min(200, num(source.dashOff, 0))),
+        dashOffset: Math.max(-1, Math.min(1, num(source.dashOffset, 0))),
         repeat: Math.max(1, Math.min(12, Math.round(num(source.repeat, 4)))),
         repeatScale: num(source.repeatScale, 1),
         repeatRotate: num(source.repeatRotate, 0),
@@ -103,10 +119,14 @@
       { key: 'dashOn', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
       { key: 'dashOff', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
       { key: 'dashOffset', kind: 'number', min: -1, max: 1, step: 0.01, default: 0, section: 'shape' },
+      { key: 'pattern', kind: 'select', options: PATTERNS, default: 'solid', section: 'shape' },
+      { key: 'patternSize', kind: 'number', min: 2, max: 200, step: 1, default: 16, section: 'shape' },
+      { key: 'patternRatio', kind: 'number', min: 0.05, max: 0.95, step: 0.01, default: 0.5, section: 'shape' },
+      { key: 'patternFlow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0, section: 'shape' },
       { key: 'pathOp', kind: 'select', options: PATH_OPS, default: 'none', section: 'shape' },
       { key: 'pathOpAmount', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, section: 'shape' },
       { key: 'pathOpFreq', kind: 'number', min: 0.2, max: 8, step: 0.1, default: 2, section: 'shape' },
-      { key: 'stroke', kind: 'number', min: 0.5, max: 40, step: 0.5, default: 4, section: 'look' },
+      { key: 'stroke', kind: 'number', min: 0.1, max: 200, step: 0.5, default: 4, section: 'look' },
       { key: 'corner', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.12, section: 'look' },
       { key: 'padding', kind: 'number', min: -0.2, max: 0.6, step: 0.01, default: 0.08, section: 'look' },
       { key: 'repeat', kind: 'int', min: 1, max: 12, step: 1, default: 1, section: 'look' },
@@ -143,10 +163,27 @@
         offset += ((time * bpm) / 60) % 1;
       }
       const color = context.shapeColor || [1, 0.82, 0.42, 1];
+      // pattern packing: kind, period (px), ratio, phase. The phase already
+      // folds in `patternFlow * time`, and a set dashOn/dashOff overrides the
+      // period and share (a solid pattern becomes dashed).
+      let patternCode = PATTERN_CODES[p.pattern] == null ? 0 : PATTERN_CODES[p.pattern];
+      let patternPeriod = Math.max(0.5, num(p.patternSize, 16));
+      let patternRatio = Math.max(0.02, Math.min(0.98, num(p.patternRatio, 0.5)));
+      let patternPhase = num(p.patternFlow, 0) * time;
+      const dashOn = Math.max(0, num(p.dashOn, 0));
+      if (dashOn > 0) {
+        const dashOff = Math.max(0, num(p.dashOff, dashOn));
+        const total = Math.max(0.5, dashOn + dashOff);
+        if (patternCode === 0) patternCode = PATTERN_CODES.dashed || 1;
+        patternPeriod = total;
+        patternRatio = dashOn / total;
+        patternPhase -= num(p.dashOffset, 0) / total;
+      }
       return {
         u_params: [SHAPE_CODES[p.shape] == null ? 0 : SHAPE_CODES[p.shape], start, end, offset],
         u_params2: [p.stroke == null ? 4 : p.stroke, p.repeat == null ? 4 : p.repeat, p.repeatScale == null ? 1 : p.repeatScale, p.repeatRotate == null ? 0 : p.repeatRotate],
         u_params3: [box.x0, box.y0, box.x1, box.y1],
+        u_params4: [patternCode, patternPeriod, patternRatio, patternPhase],
         u_colorA: [color[0], color[1], color[2], (p.glow == null ? 0.25 : p.glow) * envelope],
         u_colorB: [p.padding == null ? 0.06 : p.padding, p.repeatOpacity == null ? 0.5 : p.repeatOpacity, p.cap === 'butt' ? 0 : 1, p.feather == null ? 0.06 : p.feather],
       };

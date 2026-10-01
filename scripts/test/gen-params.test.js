@@ -165,6 +165,46 @@ test('every chance is off at weird 0 except the documented ones', () => {
   for (const key of alwaysOn) assert.ok(derived[key] > 0, `${key} stays on at weird 0`);
 });
 
+test('strokeVariety derives from weird and a manual value wins', () => {
+  const def = genParams.PARAMS.find((param) => param.key === 'strokeVariety');
+  assert.ok(def, 'strokeVariety is not in the parameter table');
+  assert.equal(def.kind, 'chance');
+  assert.equal(def.group, 'stroke');
+  assert.equal(def.tab, 'font');
+  for (const weirdValue of [0, 0.3, 0.6, 1]) {
+    const axes = { ...BASE, weird: weirdValue };
+    assert.equal(genParams.derive(axes).strokeVariety, weird.strokeVariety(axes), `derive at ${weirdValue}`);
+  }
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 } }).strokeVariety, 0);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 }, params: { strokeVariety: 1 } }).strokeVariety, 1);
+});
+
+test('extremeStroke is the identity at variety 0 and clamps the extremes inside the range', () => {
+  let calls = 0;
+  const counting = () => {
+    calls += 1;
+    return 0.5;
+  };
+  assert.equal(genParams.extremeStroke(counting, 3, 0.1, 100, 0), 3);
+  assert.equal(calls, 0, 'a zero variety must not draw');
+  // the draw order is: variety roll, factor u, thin / heavy coin
+  const script = (...values) => {
+    const queue = [...values];
+    return () => (queue.length ? queue.shift() : 0);
+  };
+  const heavy = genParams.extremeStroke(script(0, 1, 0), 3, 0.1, 100, 1);
+  assert.ok(Math.abs(heavy - 3 * genParams.EXTREME_K) < 1e-9, `heavy ${heavy}`);
+  const thin = genParams.extremeStroke(script(0, 1, 1), 3, 0.1, 100, 1);
+  assert.ok(Math.abs(thin - 3 / genParams.EXTREME_K) < 1e-9, `thin ${thin}`);
+  // u = 0 leaves the base
+  assert.equal(genParams.extremeStroke(script(0, 0, 0), 3, 0.1, 100, 1), 3);
+  // the extremes clamp to the author's range
+  assert.equal(genParams.extremeStroke(script(0, 1, 0), 30, 0.1, 100, 1), 100, 'heavy clamps to the max');
+  assert.equal(genParams.extremeStroke(script(0, 1, 1), 0.2, 0.1, 100, 1), 0.1, 'thin clamps to the min');
+  // a low variety may still draw nothing (the roll comes back above it)
+  assert.equal(genParams.extremeStroke(script(1), 4, 0.1, 100, 0.5), 4);
+});
+
 test('display rounds for the UI but resolve keeps the full precision', () => {
   assert.equal(genParams.display(0.123456), 0.123);
   assert.equal(genParams.display(0.9999), 1);

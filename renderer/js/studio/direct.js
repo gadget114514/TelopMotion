@@ -426,6 +426,7 @@
         context: cueContext,
         emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
         typeWeights: ctx.typeWeights,
+        params: ctx.params || null,
       }).style;
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
         enter: generated.enter,
@@ -1188,6 +1189,7 @@
         genre: ctx.genre,
         context: cueContext,
         typeWeights: ctx.typeWeights,
+        params: ctx.params || null,
       }).style;
       if (generated.exit) patch.exit = generated.exit;
       if (generated.enter) {
@@ -1282,7 +1284,7 @@
         if (hold) beatPatch.hold = [hold];
       }
       if (SA.genParams.roll(wr, p.motionChance)) {
-        const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext, typeWeights: ctx.typeWeights }).style;
+        const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext, typeWeights: ctx.typeWeights, params: ctx.params || null }).style;
         if (g.enter) beatPatch.enter = g.enter;
         if (g.exit) beatPatch.exit = g.exit;
       }

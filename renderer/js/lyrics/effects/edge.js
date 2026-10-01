@@ -1,15 +1,20 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../patterns'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color);
+    factory(root.SA.fx, root.SA.color, root.SA.patterns);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, patternLib) {
   'use strict';
 
   const TYPES = { outline: 1, neonGlow: 2, innerGlow: 3, bevel: 4, extrude: 5, longShadow: 6, dropShadow: 7, drip: 8 };
   const TOP = new Set([3, 4]);
-  const PATTERNS = { solid: 0, dashed: 1, dotted: 2, double: 3, sketch: 4 };
+  // The decoration vocabulary lives in ../patterns.js (one list for the edge,
+  // the shape layer and the pattern fills). 0 keeps the plain line, so the
+  // codes 1..4 that the old outline wrote (dashed / dotted / double / sketch)
+  // are unchanged.
+  const PATTERNS = (patternLib && patternLib.CODES) || { solid: 0, dashed: 1, dotted: 2, double: 3, sketch: 4 };
+  const PATTERN_OPTIONS = (patternLib && patternLib.PATTERNS) || ['solid', 'dashed', 'dotted', 'double', 'sketch'];
 
   fx.register({
     group: 'edge',
@@ -17,10 +22,10 @@
     tags: ['basic'],
     stackable: true,
     params: [
-      { key: 'width', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 3, random: [1, 6] },
+      { key: 'width', kind: 'number', min: 0.1, max: 100, step: 0.1, default: 3, random: [1, 6] },
       { key: 'color', kind: 'color', default: null },
       { key: 'softness', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.35 },
-      { key: 'pattern', kind: 'select', options: ['solid', 'dashed', 'dotted', 'double', 'sketch'], default: 'solid' },
+      { key: 'pattern', kind: 'select', options: PATTERN_OPTIONS, default: 'solid' },
       { key: 'dashLength', kind: 'number', min: 2, max: 80, step: 1, default: 14 },
       { key: 'gapRatio', kind: 'number', min: 0.1, max: 0.9, step: 0.01, default: 0.45 },
       { key: 'flow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0 },
@@ -146,12 +151,13 @@
     cost: 3,
     params: [
       { key: 'count', kind: 'int', min: 2, max: 4, step: 1, default: 2, random: [2, 3] },
-      { key: 'width', kind: 'number', min: 0.5, max: 12, step: 0.5, default: 2, random: [1, 4] },
+      { key: 'width', kind: 'number', min: 0.1, max: 40, step: 0.1, default: 2, random: [1, 4] },
       { key: 'gap', kind: 'number', min: 0, max: 20, step: 0.5, default: 3 },
       { key: 'widthDecay', kind: 'number', min: 0.3, max: 1, step: 0.01, default: 0.75 },
       { key: 'colorRule', kind: 'select', options: ['same', 'alternate', 'gradient'], default: 'same' },
       { key: 'colorA', kind: 'color', default: null },
       { key: 'colorB', kind: 'color', default: null },
+      { key: 'pattern', kind: 'select', options: PATTERN_OPTIONS, default: 'solid' },
       { key: 'layerOffset', kind: 'vec2', default: { x: 0, y: 0 } },
       { key: 'layerDelay', kind: 'number', min: 0, max: 0.4, step: 0.01, default: 0.06 },
     ],
@@ -178,10 +184,11 @@
     const toNorm = (px) => px / maxDistance;
     const base = toRgba(context.colorSet && context.colorSet.stroke, [0, 0, 0, 1], context);
     const count = Math.max(2, Math.min(4, Math.round(num(params.count, 2))));
-    const width = Math.max(0.5, num(params.width, 2));
+    const width = Math.max(0.1, num(params.width, 2));
     const gap = Math.max(0, num(params.gap, 3));
     const decay = Math.max(0.05, Math.min(1, num(params.widthDecay, 0.75)));
     const rule = params.colorRule || 'same';
+    const pattern = PATTERNS[params.pattern] == null ? 0 : PATTERNS[params.pattern];
     const colorA = toRgba(params.colorA, base, context);
     const colorB = toRgba(params.colorB, base, context);
     const offsetX = num(params.layerOffset && params.layerOffset.x, 0);
@@ -203,7 +210,9 @@
         u_type: 1,
         u_color: color,
         u_params: [toNorm(layerWidth), 14, toNorm(radius), 0.2],
-        u_params2: [0, 0, 0, toNorm(Math.max(0, radius - layerWidth))],
+        // the outline branch reads x = pattern, y = gap ratio, z = flow,
+        // w = inner radius, so a multi-line stack can carry a pattern too
+        u_params2: [pattern, 0.45, 0, toNorm(Math.max(0, radius - layerWidth))],
         u_direction: [1, 1],
         u_offset: [offsetX / Math.max(1, num(context.width, 1920)) * layer, -offsetY / Math.max(1, num(context.height, 1080)) * layer],
         u_time: context.time || 0,
