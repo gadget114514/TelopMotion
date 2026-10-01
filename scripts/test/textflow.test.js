@@ -476,6 +476,48 @@ test('fill sizing measures vertical writing along the frame height', () => {
   assert.ok(vertical.pages[0].fontScale < horizontal.pages[0].fontScale, `vertical ${size} vs horizontal ${horizontal.pages[0].fontScale * 96}`);
 });
 
+test('the width-fill size gives every character frameW / (chars - 1) px of advance', () => {
+  const frame = { width: 1920, height: 1080 };
+  const lines = ['Hello world'];
+  const size = textflow.widthFillSize(lines, { frame, measure });
+  const chars = Array.from(lines[0]).length;
+  assert.ok(size > 0, `size ${size}`);
+  // one character of advance is frameW / (chars - 1) px, and the average
+  // character of the line measures that much at `size`
+  const perChar = 1920 / (chars - 1);
+  assert.ok(Math.abs(measure(lines[0], size) / chars - perChar) < 1e-6, `advance ${measure(lines[0], size) / chars} vs ${perChar}`);
+});
+
+test('a one-character line takes the whole frame', () => {
+  const frame = { width: 1920, height: 1080 };
+  const size = textflow.widthFillSize(['あ'], { frame, measure });
+  assert.ok(Math.abs(size - 1920) < 1e-6, `size ${size}`);
+  assert.ok(Math.abs(measure('あ', size) - 1920) < 1e-6, `glyph ${measure('あ', size)}`);
+});
+
+test('the width-fill size has no block-height term: the fold does not shrink it', () => {
+  const frame = { width: 1920, height: 1080 };
+  const folded = ['A much longer line', 'of lyrics here'];
+  const size = textflow.widthFillSize(folded, { frame, measure });
+  // the line count is not a term: the widest line sets the whole ladder top, so
+  // a beat that folds into three lines keeps the size its longest line reads at
+  const widest = folded[0];
+  const flat = textflow.widthFillSize([widest], { frame, measure });
+  assert.ok(Math.abs(flat - size) < 1e-6, `${flat} vs ${size}`);
+  // the classic ceiling, which the block height caps, does shrink with the fold
+  const classic = textflow.maxSizeForLines(folded, { frame, measure });
+  assert.ok(classic < flat, `classic ${classic} vs width fill ${flat}`);
+});
+
+test('the width-fill size follows the writing axis and the widest line', () => {
+  const frame = { width: 1920, height: 1080 };
+  const horizontal = textflow.widthFillSize(['Hello'], { frame, measure });
+  const vertical = textflow.widthFillSize(['Hello'], { frame, style: { direction: 'vertical' }, measure });
+  assert.ok(Math.abs(vertical - horizontal * (1080 / 1920)) < 1e-6, `${vertical} vs ${horizontal}`);
+  const mixed = textflow.widthFillSize(['Hi', 'Hello'], { frame, measure });
+  assert.ok(Math.abs(mixed - horizontal) < 1e-6, `${mixed} vs ${horizontal}`);
+});
+
 test('fixed sizing keeps the previous behavior when fit is unset', () => {
   const result = flow('愛してる', { end: 6 });
   assert.equal(result.pages[0].kind, 'single');

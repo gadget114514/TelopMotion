@@ -317,6 +317,64 @@ test('the ladder floor never drops below the legibility size threshold', () => {
 });
 
 // ---------------------------------------------------------------------------
+// the profile's two ends (sizeFloor / the width-fill ceiling)
+
+test('the profile floor doubles the legibility minimum at weird 0.6 and grows to weird 1', () => {
+  const beat = { id: 'b', text: 'Hello world' };
+  const frame = { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' };
+  const plain = SA.direct.sizeRangeFor(beat, {}, frame, 1);
+  const floorAt = (weird) => {
+    const params = SA.genParams.resolve({ axes: { ...FIXTURE.axes, weird } });
+    const range = SA.direct.sizeRangeFor(beat, {}, frame, 1, undefined, params);
+    return { params, range };
+  };
+  // weird 0 keeps the classic floor; the profile's ceiling is the other half of
+  // the switch, so only the floor is compared here
+  const zero = SA.direct.sizeRangeFor(beat, {}, frame, 1, undefined, { sizeFloor: 1 });
+  assert.equal(zero.floor, plain.floor);
+  assert.equal(zero.min, plain.min);
+  // 2x at weird 0.6, and the axis keeps climbing up to weird 1
+  const half = floorAt(0.6);
+  assert.ok(Math.abs(half.params.sizeFloor - 2) < 1e-9, `sizeFloor ${half.params.sizeFloor}`);
+  assert.equal(half.range.floor, Math.ceil(SA.legibility.MIN_SIZE_RATIO * 1080 * 2));
+  const one = floorAt(1);
+  assert.ok(one.range.floor > half.range.floor, `${one.range.floor} vs ${half.range.floor}`);
+  assert.ok(Math.abs(one.params.sizeFloor - (1 + 1 / 0.6)) < 1e-9, `sizeFloor ${one.params.sizeFloor}`);
+  // a pinned floor wins over the derived one, and never reads below 1
+  const pinned = SA.direct.sizeRangeFor(beat, {}, frame, 1, undefined, { sizeFloor: 3 });
+  assert.equal(pinned.floor, Math.ceil(SA.legibility.MIN_SIZE_RATIO * 1080 * 3));
+  assert.equal(SA.direct.sizeRangeFor(beat, {}, frame, 1, undefined, { sizeFloor: 0.5 }).floor, plain.floor);
+});
+
+test('the profile top is the width-fill size and a run at weird 0.6 doubles the floor', () => {
+  const { doc, ctx } = runFixture({ axes: { ...FIXTURE.axes, weird: 0.6 } });
+  assert.ok(ctx.curve, 'the profile is on');
+  const rows = beatRows(doc, ctx);
+  assert.ok(rows.length >= 4, `beats ${rows.length}`);
+  // every band ends where the beat's own folded line spans the frame width
+  for (const row of rows) {
+    const spans = (row.text.compose && row.text.compose.spans) || [];
+    const scales = spans.map((span) => Number(span.scale) || 1);
+    const expected = SA.textflow.widthFillSize(row.beat.lines || [row.beat.text], {
+      style: row.text,
+      frame: { width: ctx.frameW, height: ctx.frameH },
+      lang: ctx.lang,
+    });
+    assert.ok(expected > 0, `${row.beat.id} width fill ${expected}`);
+    assert.ok(Math.abs(row.range.full - expected) < 1e-9, `${row.beat.id} full ${row.range.full} vs ${expected}`);
+    assert.equal(row.range.max, Math.floor(expected / Math.max(1, ...scales)));
+  }
+  // the run's own smallest glyph is the boosted floor, not the legibility one,
+  // and the song grows past the one theme size weird 0 pins
+  const plain = runFixture({ axes: { ...FIXTURE.axes, weird: 0 } });
+  const plainRows = beatRows(plain.doc, plain.ctx);
+  assert.equal(new Set(plainRows.map((row) => row.px)).size, 1, 'weird 0 is one size for the song');
+  const floor = Math.ceil(SA.legibility.MIN_SIZE_RATIO * ctx.frameH * 2);
+  assert.ok(Math.min(...rows.map((row) => row.px)) >= floor - 1, `smallest ${Math.min(...rows.map((row) => row.px))} below ${floor}`);
+  assert.ok(Math.max(...rows.map((row) => row.px)) > plainRows[0].px, 'the profile run grows past the theme size');
+});
+
+// ---------------------------------------------------------------------------
 // resizeBeats
 
 test('resizeBeats gives a target a level neither neighbour uses and leaves the rest alone', () => {

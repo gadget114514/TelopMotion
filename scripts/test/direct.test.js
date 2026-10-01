@@ -634,7 +634,7 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
   }
   assert.ok(beats.length >= 4, `beats ${beats.length}`);
   const compIds = [];
-  const levels = [];
+  const bands = [];
   for (const { cue, beat } of beats) {
     const style = doc.beatStyles[beat.id];
     assert.ok(style && style.text && style.text.compose, `${beat.id} has a composition`);
@@ -648,7 +648,8 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
     assert.equal(style.location.type, 'grid', `${beat.id} grid location`);
     const cueStyle = doc.cueStyles[cue.id];
     assert.ok(!cueStyle || !cueStyle.clones, `${cue.id} has no clones`);
-    // the ladder size belongs to this beat's own range: map it back to a level
+    // the ladder size belongs to this beat's own range; keep the range with
+    // the px, the checks below read both
     const text = style.text;
     const spans = (text.compose && text.compose.spans) || [];
     const scales = spans.map((span) => Number(span.scale) || 1);
@@ -657,25 +658,26 @@ test('compose mode draws a composition per beat and drops the weird jitter', () 
       text,
       { frameW: 1920, frameH: 1080, portrait: false, screen: 1080, lang: 'en' },
       scales.length ? Math.max(1, ...scales) : 1,
-      scales.length ? Math.min(...scales) : 1
+      scales.length ? Math.min(...scales) : 1,
+      SA.direct.sizeProfile(ctx, cue.id)
     );
-    const size = style.text.size * (beat.fontScale || 1);
-    let level = 0;
-    for (let k = 0; k < 10; k += 1) {
-      const px = Math.round(range.min + ((range.max - range.min) * k) / 9);
-      const best = Math.round(range.min + ((range.max - range.min) * level) / 9);
-      if (Math.abs(px - size) < Math.abs(best - size)) level = k;
-    }
-    levels.push(level);
+    bands.push({ id: beat.id, range, px: style.text.size * (beat.fontScale || 1) });
+  }
+  // Every band above widens around the run's own band (a hero span caps the top,
+  // a particle lifts the floor and is raised again after the pick), so it holds
+  // the size the ladder chose.
+  for (const band of bands) {
+    assert.ok(band.px >= band.range.min - 1 && band.px <= band.range.max + 1, `${band.id} px ${band.px} outside ${band.range.min}..${band.range.max}`);
+  }
+  // weird 1 gives v = 1, so neighbouring beats never keep the size they had.
+  // (The guarantee is the ladder's level, not the px: the bands differ per beat,
+  // and the level is not recoverable from the finished document — size-ladder
+  // covers the level itself.)
+  for (let i = 1; i < bands.length; i += 1) {
+    assert.notEqual(bands[i].px, bands[i - 1].px, `beat ${i} keeps ${bands[i].px}`);
   }
   for (let i = 1; i < compIds.length; i += 1) {
     assert.notEqual(compIds[i], compIds[i - 1], `beat ${i} repeats ${compIds[i]}`);
-  }
-  // weird 1 gives v = 1, so neighbouring beats never stay on the same ladder
-  // level. (Different levels may still round to the same px when the ranges
-  // differ, so the guarantee is level-based.)
-  for (let i = 1; i < levels.length; i += 1) {
-    assert.notEqual(levels[i], levels[i - 1], `beat ${i} repeats level ${levels[i]}`);
   }
   // the whole run is deterministic for one seed in compose mode too
   const again = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, compose: true, params: NO_VARIATION });

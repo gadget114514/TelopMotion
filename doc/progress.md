@@ -494,6 +494,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `sizeCenter` | amount | 0..1 | `0.5 + 0.1 * Math.min(1, a.w / 0.6) + 0.1 * (a.e - 0.5)` |
 | `sizeSpread` | amount | 0..0.6 | `0.18 + 0.22 * a.w` |
 | `sizeFollow` | amount | 0..1 | `0.2 * a.b` |
+| `sizeFloor` | amount | 1..4 | `1 + a.w / 0.6` |
 | `heroScale` | amount | 1..2.5 | `1 + 0.3 * a.w` |
 | `fgSolid` | weight | 0..3 | `1` |
 | `fgVivid` | weight | 0..3 | `1.2 * a.w` |
@@ -673,3 +674,14 @@ i       10.3 x  73.7 @ (513.0, 463.2) |  25.8 x 100.0 @ (512.9, 450.0) | -0.1 / 
 - **テスト**: `direct.test.js` の「a run always fills the gaps, whatever the document stored」（stored が無い / true / false の3通りで必ず埋まる）と「a run gives a document without the filler row somewhere to draw」（行が無い文書でも埋まり、行が background より手前に来る）、`project.test.js` に「migrate adds the managed rows a saved document may predate」（並び順と移行クリップの `auto`）。
 - **UI**: 自動演出の dispatch に `areas: ['fillers']` を足す（フィラー設定とクリップは文書の編集なので、undo 側の記録も filler 領域に入る）。
 - **検証**: 3パターン（新規 / `enabled:false` を保存済み / フィラー行なし＋v1 移行）を `direct.run` して、いずれも 3 クリップ（intro / interlude / long gap）で図形アニメーション付き。`npm test` 847件パス、`npm run check` 197ファイル。
+
+## 修正: weird のサイズ帯 — 下限は2倍、上限は「折り返した行が画面幅を埋める」
+
+weird 0.6 の自動演出を見ると文字が小さすぎた。可読下限（`legibility.MIN_SIZE_RATIO` 0.045 × フレーム高）がそのままサイズラダーの下限になっていたため、10段のラダーのいちばん小さい段でも豆粒だった。**下限は weird に準じて上がり、上限はレンダラーの枠上限ではなく「そのビートを折り返した行が画面幅ちょうどに並ぶ」サイズになった。**
+
+- **`sizeFloor`（新規・`gen-params.js` / amount / 1..4）**: 可読下限に掛ける倍率。導出は `1 + a.w / 0.6` — weird 0 で 1（従来どおり）、**weird 0.6 で 2.0**、weird 1 で 2.67。0.6 以降も軸に準じて上がる。`styleMode.params.sizeFloor` で固定でき、テーマダイアログ「文字サイズ・フォント修飾」タブの「文字サイズ」節にスライダーが出る（`i18n.js` の en/ja/es/fr/ru）。`sizeChange` などと同じく amount なので乱数ストリームは増やさない。
+- **上限**: `sizeRangeFor` に `profile`（= `sizeProfile(ctx, cueId)`、プロファイルが有効なときだけ値を持つ）を渡した。`profile` があるときは `textflow.widthFillSize`（新規・export）を使う。**1文字の送り幅 = フレーム幅 / (文字数 − 1)（0 になるなら 1）** で、その送り幅を「その行の1文字あたりの平均送り幅」で割ったサイズ。行数は項にしないので、**長いビートは小さく萎むのではなく折り返して大きさを保つ**。縦書きはフレーム幅の代わりにフレーム高を軸にする（`maxSizeForLines` と同じ軸）。
+- **プロファイルオフ時**: `profile` が無いとき（生 weird 0 で固定値なし）は `maxSizeForLines` のままなので **weird 0 の出力はバイト単位で不変**。`composeBeat` / `directBeat` / `resizeBeats` の3経路すべてが同じ `sizeProfile` を通るので、生成と再抽選で帯が食い違わない。
+- **粒子・ヒーロー**: `minScale`（粒子 0.55）に対する下限上げと、`full / floor` でヒーロー倍率を丸める処理はそのまま。**下限が上がると長いビートの帯が潰れることがある**（下限 > 上限 ならラダーは上1段に収束する。既存の「長すぎる行は縮む」挙動と同じ）。
+- **テスト**: `size-ladder.test.js` に2件（`sizeFloor` の導出と固定/weird 0 は従来の下限・weird 0.6 の run で全ビートが下限以上で曲全体のテーマサイズを超える／各ビートの `full` がそのビートの `widthFillSize`）、`gen-params.test.js` に1件（1 / 2.0 / 2.667 と単調性・固定とクランプ）、`textflow.test.js` に4件（文字数 − 1 の除算 / 1文字なら画面幅 / 折り返しても縮まない / 縦書きと最長行）。`direct.test.js` の compose テストは階層の判定を px 直の比較に替えた（`fitComposeSpans` が選出のあと粒子跨度を書き換えるので、完成後の文書から段の番号は復元できない。段そのものは `size-ladder.test.js` が担保）。`npm test` 864件中 863 パス（残 1 件は別セッションが進行中の `direct.test.js` の motif 数テスト）、`npm run check` 197ファイル。
+- **決めていないこと**: weird 1 の下限 2.67 倍は導出式そのままなので、スライダーでは 4 倍まで好きなだけ上げられる。上限の式は「1文字 = フレーム幅 / (文字数 − 1)」に固定（图の幅が `maxWidth` 0.94 を超えるので、シーン側の1回再レイアウトが 0.94 倍に寄せる）。

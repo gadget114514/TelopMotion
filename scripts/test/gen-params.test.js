@@ -103,6 +103,25 @@ test('sizeSpread widens with weird and sizeCenter follows the documented curve',
   assert.ok(Math.abs(half.sizeCenter - 0.6) < 1e-9, `sizeCenter at w 0.6 is ${half.sizeCenter}`);
 });
 
+test('sizeFloor keeps the legibility minimum at weird 0 and doubles it at 0.6', () => {
+  assert.equal(genParams.derive({ ...BASE, weird: 0 }).sizeFloor, 1);
+  const half = genParams.derive({ ...BASE, weird: 0.6 });
+  assert.ok(Math.abs(half.sizeFloor - 2) < 1e-9, `sizeFloor at w 0.6 is ${half.sizeFloor}`);
+  // the axis keeps climbing past 0.6 up to weird 1 (2.67x)
+  const high = genParams.derive({ ...BASE, weird: 1 });
+  assert.ok(Math.abs(high.sizeFloor - (1 + 1 / 0.6)) < 1e-9, `sizeFloor at w 1 is ${high.sizeFloor}`);
+  let previous = 0;
+  for (let v = 0; v <= 1.0001; v += 0.05) {
+    const value = genParams.derive({ ...BASE, weird: Math.min(1, v) }).sizeFloor;
+    assert.ok(value >= previous - 1e-12, `weird ${v} fell`);
+    previous = value;
+  }
+  // a manual value wins and is clamped to the row's own range
+  assert.equal(genParams.resolve({ axes: BASE, params: { sizeFloor: 2.5 } }).sizeFloor, 2.5);
+  assert.equal(genParams.resolve({ axes: BASE, params: { sizeFloor: 99 } }).sizeFloor, genParams.PARAMS.find((def) => def.key === 'sizeFloor').max);
+  assert.ok(genParams.isPinned({ params: { sizeFloor: 2 } }, 'sizeFloor'));
+});
+
 test('the planes weights match the documented w 0.6 distribution', () => {
   const derived = genParams.derive({ ...BASE, weird: 0.6 });
   const total = derived.planes1 + derived.planes2 + derived.planes3 + derived.planes4;
