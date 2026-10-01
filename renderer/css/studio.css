@@ -1530,6 +1530,18 @@ body {
   gap: 6px;
 }
 
+.insp-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex: none;
+}
+
+.insp-head-enabled {
+  gap: 0;
+}
+
 .insp-inherit {
   color: #5d6785;
   font-size: 11px;

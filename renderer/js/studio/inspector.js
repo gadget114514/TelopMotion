@@ -243,6 +243,26 @@ SA.inspector = (() => {
     return body;
   }
 
+  // right-aligned "enabled" checkbox + delete button for an entry header row
+  function headActions(head, enabled, onEnabled, onRemove) {
+    const actions = document.createElement('span');
+    actions.className = 'insp-head-actions';
+    const toggle = document.createElement('label');
+    toggle.className = 'ctrl-bool-row insp-head-enabled';
+    toggle.title = t('studio.inspector.enabled');
+    toggle.appendChild(SA.controls.boolControl(enabled, onEnabled));
+    actions.appendChild(toggle);
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'btn btn-mini';
+    remove.textContent = '✕';
+    remove.title = t('studio.inspector.delete');
+    remove.addEventListener('click', onRemove);
+    actions.appendChild(remove);
+    head.appendChild(actions);
+    return actions;
+  }
+
   // --- selection ---------------------------------------------------------------
 
   function selectAt(rawPath) {
@@ -752,25 +772,14 @@ SA.inspector = (() => {
         [next[index + 1], next[index]] = [next[index], next[index + 1]];
         writeProp('motions', next);
       });
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = '✕';
-      remove.addEventListener('click', () => writeProp('motions', list.filter((entry, i) => i !== index)));
       head.appendChild(up);
       head.appendChild(down);
-      head.appendChild(remove);
-      box.appendChild(head);
-
       const update = (patch, coalesceKey) => {
         const next = list.map((entry, i) => (i === index ? { ...entry, ...patch } : entry));
         writeProp('motions', next, { coalesceKey });
       };
-      const enabledRow = document.createElement('label');
-      enabledRow.className = 'ctrl-bool-row';
-      enabledRow.textContent = t('studio.inspector.enabled');
-      enabledRow.appendChild(SA.controls.boolControl(motion.enabled !== false, (value) => update({ enabled: value })));
-      box.appendChild(enabledRow);
+      headActions(head, motion.enabled !== false, (value) => update({ enabled: value }), () => writeProp('motions', list.filter((entry, i) => i !== index)));
+      box.appendChild(head);
       box.appendChild(
         fieldRow(
           t('studio.motion.from'),
@@ -873,25 +882,15 @@ SA.inspector = (() => {
         [next[index + 1], next[index]] = [next[index], next[index + 1]];
         writeProp('clones', next);
       });
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = '✕';
-      remove.addEventListener('click', () => writeProp('clones', list.filter((entry, i) => i !== index)));
       head.appendChild(up);
       head.appendChild(down);
-      head.appendChild(remove);
-      box.appendChild(head);
       const key = clone.id || `clone_${index}`;
       const update = (patch, coalesceKey) => {
         const next = list.map((entry, i) => (i === index ? { ...entry, ...patch } : entry));
         writeProp('clones', next, { coalesceKey });
       };
-      const enabledRow = document.createElement('label');
-      enabledRow.className = 'ctrl-bool-row';
-      enabledRow.textContent = t('studio.inspector.enabled');
-      enabledRow.appendChild(SA.controls.boolControl(clone.enabled !== false, (value) => update({ enabled: value })));
-      box.appendChild(enabledRow);
+      headActions(head, clone.enabled !== false, (value) => update({ enabled: value }), () => writeProp('clones', list.filter((entry, i) => i !== index)));
+      box.appendChild(head);
       const fields = [
         ['dx', clone.dx == null ? 0 : clone.dx, { step: 0.01, default: 0 }],
         ['dy', clone.dy == null ? 0 : clone.dy, { step: 0.01, default: 0 }],
@@ -974,22 +973,15 @@ SA.inspector = (() => {
     if (explicit) {
       // delete: switch the effect off when the group has a "none" type,
       // otherwise drop the override so it follows the inherited value again
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = '✕';
-      remove.title = t('studio.inspector.delete');
-      remove.addEventListener('click', () => {
-        const hasNone = SA.fx.list(group, UI_PACKS).some((descriptor) => descriptor.type === 'none');
-        writeProp(group, hasNone ? { type: 'none', params: {} } : null, { coalesceKey: `${group}:type` });
-      });
-      typeRow.appendChild(remove);
-      const enabled = explicit.enabled !== false;
-      const enabledRow = document.createElement('label');
-      enabledRow.className = 'ctrl-bool-row';
-      enabledRow.textContent = t('studio.inspector.enabled');
-      enabledRow.appendChild(SA.controls.boolControl(enabled, (value) => writeProp(`${group}.enabled`, value)));
-      body.appendChild(enabledRow);
+      headActions(
+        typeRow,
+        explicit.enabled !== false,
+        (value) => writeProp(`${group}.enabled`, value),
+        () => {
+          const hasNone = SA.fx.list(group, UI_PACKS).some((descriptor) => descriptor.type === 'none');
+          writeProp(group, hasNone ? { type: 'none', params: {} } : null, { coalesceKey: `${group}:type` });
+        }
+      );
     } else {
       const inherit = document.createElement('div');
       inherit.className = 'insp-inherit';
@@ -1026,22 +1018,13 @@ SA.inspector = (() => {
           writeProp(group, nextList, { coalesceKey: `${group}:${index}:type` });
         }, SA.fx.list(group, UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(group, descriptor.type) })))
       );
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = '✕';
-      remove.addEventListener('click', () => writeProp(group, list.filter((entry, i) => i !== index)));
-      head.appendChild(remove);
-      box.appendChild(head);
-      const enabledRow = document.createElement('label');
-      enabledRow.className = 'ctrl-bool-row';
-      enabledRow.textContent = t('studio.inspector.enabled');
-      enabledRow.appendChild(
-        SA.controls.boolControl(instance.enabled !== false, (value) => {
-          writeProp(group, list.map((entry, i) => (i === index ? { ...entry, enabled: value } : entry)));
-        })
+      headActions(
+        head,
+        instance.enabled !== false,
+        (value) => writeProp(group, list.map((entry, i) => (i === index ? { ...entry, enabled: value } : entry))),
+        () => writeProp(group, list.filter((entry, i) => i !== index))
       );
-      box.appendChild(enabledRow);
+      box.appendChild(head);
       const descriptor = SA.fx.get(group, instance.type);
       const params = instance.params || {};
       for (const param of SA.controls.paramEntries(descriptor)) {
@@ -1115,18 +1098,13 @@ SA.inspector = (() => {
           update(list.map((item, i) => (i === index ? { ...item, type: next, params: {} } : item)));
         }, SA.fx.list(entry.group || 'hold', UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(entry.group || 'hold', descriptor.type) })))
       );
-      const remove = document.createElement('button');
-      remove.type = 'button';
-      remove.className = 'btn btn-mini';
-      remove.textContent = '✕';
-      remove.addEventListener('click', () => update(list.filter((item, i) => i !== index)));
-      head.appendChild(remove);
+      headActions(
+        head,
+        entry.enabled !== false,
+        (value) => update(list.map((item, i) => (i === index ? { ...item, enabled: value } : item))),
+        () => update(list.filter((item, i) => i !== index))
+      );
       box.appendChild(head);
-      const enabledRow = document.createElement('label');
-      enabledRow.className = 'ctrl-bool-row';
-      enabledRow.textContent = t('studio.inspector.enabled');
-      enabledRow.appendChild(SA.controls.boolControl(entry.enabled !== false, (value) => update(list.map((item, i) => (i === index ? { ...item, enabled: value } : item)))));
-      box.appendChild(enabledRow);
 
       // the scope editor
       const scope = entry.scope && entry.scope.kind ? entry.scope : { kind: 'all' };
@@ -1876,7 +1854,7 @@ SA.inspector = (() => {
     // group; `shapeLayer` is the user-placeable shape clip built by shape-ops.
     const fxBackground = isBackground || spec.type === 'shapeLayer';
     const usedTypes = isBackground
-      ? SA.fx.list('background', UI_PACKS).map((descriptor) => descriptor.type)
+      ? SA.fx.list('background', { packs: [null, ...UI_PACKS.packs] }).map((descriptor) => descriptor.type)
       : [...new Set(['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []).concat('shapeLayer'))];
     const typeLabelFor = (type) => (isBackground || type === 'shapeLayer' ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type));
     const typeSelect = selectControl(
