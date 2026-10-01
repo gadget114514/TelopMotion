@@ -972,6 +972,18 @@ SA.inspector = (() => {
     }, entries);
     const typeRow = row(body, group, t('studio.inspector.type'), typeControl);
     if (explicit) {
+      // delete: switch the effect off when the group has a "none" type,
+      // otherwise drop the override so it follows the inherited value again
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'btn btn-mini';
+      remove.textContent = '✕';
+      remove.title = t('studio.inspector.delete');
+      remove.addEventListener('click', () => {
+        const hasNone = SA.fx.list(group, UI_PACKS).some((descriptor) => descriptor.type === 'none');
+        writeProp(group, hasNone ? { type: 'none', params: {} } : null, { coalesceKey: `${group}:type` });
+      });
+      typeRow.appendChild(remove);
       const enabled = explicit.enabled !== false;
       const enabledRow = document.createElement('label');
       enabledRow.className = 'ctrl-bool-row';
@@ -1021,6 +1033,15 @@ SA.inspector = (() => {
       remove.addEventListener('click', () => writeProp(group, list.filter((entry, i) => i !== index)));
       head.appendChild(remove);
       box.appendChild(head);
+      const enabledRow = document.createElement('label');
+      enabledRow.className = 'ctrl-bool-row';
+      enabledRow.textContent = t('studio.inspector.enabled');
+      enabledRow.appendChild(
+        SA.controls.boolControl(instance.enabled !== false, (value) => {
+          writeProp(group, list.map((entry, i) => (i === index ? { ...entry, enabled: value } : entry)));
+        })
+      );
+      box.appendChild(enabledRow);
       const descriptor = SA.fx.get(group, instance.type);
       const params = instance.params || {};
       for (const param of SA.controls.paramEntries(descriptor)) {
@@ -1101,6 +1122,11 @@ SA.inspector = (() => {
       remove.addEventListener('click', () => update(list.filter((item, i) => i !== index)));
       head.appendChild(remove);
       box.appendChild(head);
+      const enabledRow = document.createElement('label');
+      enabledRow.className = 'ctrl-bool-row';
+      enabledRow.textContent = t('studio.inspector.enabled');
+      enabledRow.appendChild(SA.controls.boolControl(entry.enabled !== false, (value) => update(list.map((item, i) => (i === index ? { ...item, enabled: value } : item)))));
+      box.appendChild(enabledRow);
 
       // the scope editor
       const scope = entry.scope && entry.scope.kind ? entry.scope : { kind: 'all' };
