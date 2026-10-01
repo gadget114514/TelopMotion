@@ -711,18 +711,41 @@
   // span scale, so a hero word at 2x still fits. `minScale` is the smallest
   // span scale in play (a particle at 0.55): the body floor rises so even the
   // smallest on-screen glyph keeps the legibility minimum.
-  function sizeRangeFor(beat, textStyle, ctx, spanScale, minScale) {
+  //
+  // `profile` is the section's resolved parameters while the profile is on
+  // (raw weird above 0, or a pinned value). It carries the two ends of the
+  // ladder: `sizeFloor` multiplies the readable floor (2x at weird 0.6, so a
+  // weird song never whispers) and the top stops being the renderer's block
+  // limit — it becomes the size at which the folded line spans the frame
+  // (`textflow.widthFillSize`), so a long beat wraps instead of shrinking.
+  // Without it the classic range stands and weird 0 stays byte-identical.
+  function sizeRangeFor(beat, textStyle, ctx, spanScale, minScale, profile) {
     const ratio = (SA.legibility && SA.legibility.MIN_SIZE_RATIO) || 0.045;
-    const hardFloor = Math.max(SIZE_FLOOR_PX, Math.ceil(ratio * ctx.frameH));
+    const floorScale = profile && Number(profile.sizeFloor) > 1 ? Number(profile.sizeFloor) : 1;
+    const hardFloor = Math.max(SIZE_FLOOR_PX, Math.ceil(ratio * ctx.frameH * floorScale));
     const smallest = Math.max(0.7, Math.min(1, Number(minScale) == null || !Number.isFinite(Number(minScale)) ? 1 : Number(minScale)));
     const floor = Math.max(SIZE_FLOOR_PX, Math.ceil(hardFloor / smallest));
     const lines = beat.lines && beat.lines.length ? beat.lines : [beat.text || ''];
-    const full = SA.textflow && typeof SA.textflow.maxSizeForLines === 'function'
-      ? SA.textflow.maxSizeForLines(lines, { style: textStyle || {}, frame: { width: ctx.frameW, height: ctx.frameH }, aspect: ctx.portrait ? '9:16' : '16:9', lang: ctx.lang })
-      : ctx.screen * 0.3;
+    const measure = { style: textStyle || {}, frame: { width: ctx.frameW, height: ctx.frameH }, aspect: ctx.portrait ? '9:16' : '16:9', lang: ctx.lang };
+    const fill = profile
+      ? SA.textflow && typeof SA.textflow.widthFillSize === 'function'
+        ? SA.textflow.widthFillSize(lines, measure)
+        : null
+      : SA.textflow && typeof SA.textflow.maxSizeForLines === 'function'
+        ? SA.textflow.maxSizeForLines(lines, measure)
+        : null;
+    const full = fill != null && Number.isFinite(fill) && fill > 0 ? fill : ctx.screen * 0.3;
     const max = Math.floor(full / Math.max(1, spanScale || 1));
     // a very long line cannot reach the floor: the whole ladder collapses onto max
     return { min: Math.min(floor, max), max: Math.max(1, max), floor, full };
+  }
+
+  // The profile the size ladder of one cue reads, or null while the profile is
+  // off (weird 0 without a pinned value), which keeps the classic range.
+  function sizeProfile(ctx, cueId) {
+    if (!(ctx && ctx.curve)) return null;
+    const params = paramsFor(ctx, cueId) || ctx.params;
+    return params ? params : null;
   }
 
   function sizeLevels(range) {
@@ -763,11 +786,17 @@
     const fixedWeights =
       Array.isArray(options.weights) && options.weights.length === SIZE_LEVELS ? normalizeLevelWeights(options.weights) : null;
     const center = Number.isFinite(Number(options.center)) ? Math.max(0, Math.min(1, Number(options.center))) : null;
-    const spread = Number.isFinite(Number(options.spread)) ? Math.max(0.01, Number(options.spread)) : 0.28;
+    const spread = Number.isFinite(Number(options.spread)) ? Math.max(0, Number(options.spread)) : 0.28;
     const curved = !!(fixedWeights || center != null);
     function weightsFor(centerShift) {
       if (!curved) return null;
       if (fixedWeights) return fixedWeights;
+      // A zero spread is a delta - one level, no shape - so the beat's loudness
+      // has nothing to slide along the curve. Shifting the centre would only
+      // teleport the delta onto a different level (centre 1 minus a quiet beat's
+      // shift lands on the smallest one), which is the opposite of what pinning
+      // the spread to 0 asks for.
+      if (spread <= 0) return SA.weird.sizeWeights(SIZE_LEVELS, center, 0);
       const shift = Number(centerShift);
       const c = Math.max(0, Math.min(1, center + (Number.isFinite(shift) ? shift : 0)));
       return SA.weird.sizeWeights(SIZE_LEVELS, c, spread);
@@ -1346,14 +1375,15 @@
         const scales = spans.map((span) => Number(span.scale) || 1);
         const spanScale = scales.length ? Math.max(1, ...scales) : 1;
         const minScale = scales.length ? Math.min(...scales) : 1;
-        let range = sizeRangeFor(beat, text, ctx, spanScale, minScale);
+        const profile = sizeProfile(ctx, cue.id);
+        let range = sizeRangeFor(beat, text, ctx, spanScale, minScale, profile);
         // a hero that cannot clear the floor even at its own scale shrinks until
         // the whole line fits, then the range is measured again
         if (range.full > 0 && range.max < range.floor) {
           const cap = Math.max(1, range.full / range.floor);
           for (const span of spans) if ((Number(span.scale) || 1) > cap) span.scale = Math.round(cap * 100) / 100;
           const next = spans.map((span) => Number(span.scale) || 1);
-          range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1);
+          range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1, profile);
         }
         const px = ladderPx(ctx, beat, range, centerShift, cue.id);
         text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
@@ -1561,7 +1591,7 @@
     const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
     const jitter = beatRng(); // the old base-size draw: kept so the hold roll below stays on its stream
     const px = ctx.sizeLadder
-      ? ladderPx(ctx, beat, sizeRangeFor(beat, SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text, ctx, 1), undefined, cue.id)
+      ? ladderPx(ctx, beat, sizeRangeFor(beat, SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text, ctx, 1, undefined, sizeProfile(ctx, cue.id)), undefined, cue.id)
       : baseSize * (0.9 + jitter * 0.25);
     const size = Math.round(px / (beat.fontScale || 1)); // scene.js multiplies fontScale back in
     const beatPatch = { text: { size } };
@@ -1636,6 +1666,8 @@
     const change = resolved.sizeChange;
     const rawW = SA.weird && typeof SA.weird.raw === 'function' ? SA.weird.raw(axes && axes.weird) : Number((axes || {}).weird) || 0;
     const curve = opts.curve != null ? !!opts.curve : rawW > 0;
+    // the same two ends the run itself used (see sizeRangeFor)
+    const profile = curve && resolved ? resolved : null;
     const targets = new Set(targetIds);
     const rows = []; // song order: { cue, beat, range, px, target }
     for (const cue of projectDoc.script.cues || []) {
@@ -1643,7 +1675,7 @@
         const text = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text || {};
         const spans = (text.compose && text.compose.spans) || [];
         const scales = spans.map((s) => Number(s.scale) || 1);
-        const range = sizeRangeFor(beat, text, ctx, scales.length ? Math.max(1, ...scales) : 1, scales.length ? Math.min(...scales) : 1);
+        const range = sizeRangeFor(beat, text, ctx, scales.length ? Math.max(1, ...scales) : 1, scales.length ? Math.min(...scales) : 1, profile);
         rows.push({ cue, beat, range, px: (Number(text.size) || baseSize) * (beat.fontScale || 1), target: targets.has(beat.id) });
       }
     }
@@ -1746,11 +1778,13 @@
   // channel scales the counts and speeds.
   function fillerSettings(projectDoc, ctx) {
     const w = ctx.wb;
-    // The run fills the gaps again: `fillers.enabled` defaults to true, so a
-    // document that never made the choice fills, and one that switched fillers
-    // off keeps that choice. `regenerate fillers` is the explicit way to
-    // materialise the gaps on a document that did.
-    const enabled = SA.fillers && SA.fillers.settingsFor ? SA.fillers.settingsFor(projectDoc).enabled !== false : true;
+    // The run always fills: a gap is dead air, and "automatic" has to mean it.
+    // Nothing in the UI ever writes `enabled: false` (the escape hatch is the
+    // filler track's own hide switch, which `engine.activeClips` reads), so a
+    // stored false can only be the opt-in default that every project saved
+    // between that commit and this one inherited - it must not keep the run
+    // from drawing. `regenerate fillers` writes the same flag.
+    const enabled = true;
     // the drawn gaps that need a figure animation of their own
     const figuresOnly = new Set(['figures']);
     const interlude = withFigureLayer(fillerPresetSpec(ctx, 'interlude'), fillerPresetSpec(ctx, 'interlude-figures', figuresOnly));
@@ -2102,38 +2136,48 @@
       };
       const overlapOf = (candidate) => SA.legibility.figureOverlap(candidate, { ...figureCtx, geometry: true });
       if (overlapOf(spec) > AUTO_FIGURE_CLEAR) {
-        // motifs that frame the text box first, then the bold cuts, then the
-        // calmer centred ones; `proc` may draw a different composition on the
-        // next attempt, so a compliant procedural figure stays procedural
-        const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars', 'proc'];
-        const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
-        const shuffled = pool
-          .filter((name, position) => pool.indexOf(name) === position && name !== spec.params.motif)
-          .map((name) => ({ name, k: sr() }))
-          .sort((a, b) => a.k - b.k)
-          .map((entry) => entry.name);
+        const candidateFor = (motif, attempt) => SA.figures.generate({
+          span: { start: cue.start, end: cue.end },
+          beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
+          axes,
+          seed: seed + index * 53 + 1 + attempt,
+          id: cue.id,
+          palette,
+          sync,
+          density,
+          motif,
+          stroke: boldStroke ? 'bold' : undefined,
+          cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+        });
         let best = null;
         let bestOverlap = overlapOf(spec);
-        for (let attempt = 0; attempt < shuffled.length; attempt += 1) {
-          const candidate = SA.figures.generate({
-            span: { start: cue.start, end: cue.end },
-            beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
-            axes,
-            seed: seed + index * 53 + 1 + attempt,
-            id: cue.id,
-            palette,
-            sync,
-            density,
-            motif: shuffled[attempt],
-            stroke: boldStroke ? 'bold' : undefined,
-            cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
-          });
+        const consider = (candidate) => {
           const overlap = overlapOf(candidate);
           if (overlap < bestOverlap) {
             bestOverlap = overlap;
             best = candidate;
           }
-          if (overlap <= AUTO_FIGURE_CLEAR) break;
+          return overlap;
+        };
+        // 1) a procedural figure that only just missed the clearance keeps its
+        // family: another genome is grown before the fixed motifs take over, so
+        // the figure track does not fall back to the same library every cue
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          if (consider(candidateFor('proc', attempt)) <= AUTO_FIGURE_CLEAR) break;
+        }
+        // 2) motifs that frame the text box first, then the bold cuts, then the
+        // calmer centred ones
+        if (!(best && bestOverlap <= AUTO_FIGURE_CLEAR)) {
+          const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars'];
+          const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
+          const shuffled = pool
+            .filter((name, position) => pool.indexOf(name) === position && name !== spec.params.motif)
+            .map((name) => ({ name, k: sr() }))
+            .sort((a, b) => a.k - b.k)
+            .map((entry) => entry.name);
+          for (let attempt = 0; attempt < shuffled.length; attempt += 1) {
+            if (consider(candidateFor(shuffled[attempt], attempt)) <= AUTO_FIGURE_CLEAR) break;
+          }
         }
         if (best && bestOverlap <= AUTO_FIGURE_CLEAR) spec = best;
         else return null; // never lay a figure over the lyrics
@@ -2167,6 +2211,10 @@
   // cues and beats, the filler settings and finally the clips.
   function run(projectDoc, ctx) {
     const { w, seed, themeStyle, look, cueLooks } = ctx;
+    // 0) the tracks the run writes into. A document saved before the figure /
+    // filler rows existed has nowhere to put those clips, so the run adds the
+    // missing ones first (the same guarantee `project.migrate` gives).
+    if (SA.project && typeof SA.project.ensureManagedTracks === 'function') SA.project.ensureManagedTracks(projectDoc);
     // 0) one beat per musical bar: the bar length comes from the audio BPM
     // when a track is loaded (4/4 assumed), otherwise from a 120 BPM default
     const barDuration = Math.round((60 / ctx.bpm) * 4 * 1000) / 1000;
@@ -2623,6 +2671,7 @@
     decorationFor,
     fitComposeSpans,
     sizeRangeFor,
+    sizeProfile,
     resizeBeats,
     run,
   };

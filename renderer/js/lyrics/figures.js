@@ -125,7 +125,7 @@
     return value && list.includes(value) ? value : null;
   }
 
-  function assignMoves(beats, random, force, s, axes) {
+  function assignMoves(beats, random, force, s, axes, beatRandom) {
     let previousIn = null;
     let previousOut = null;
     for (const beat of beats) {
@@ -140,6 +140,13 @@
       const outPick = fxAxes.pickWeighted(random, 'figureOut', outs.length ? outs : OUTS, axes, { smartness: s });
       const variant = Math.floor(random() * 3);
       const accent = random() < 0.5;
+      // the sub-beat's own scale (0.6..1.4) and palette rotation, drawn from
+      // their own stream so the move sequence above stays exactly as before
+      const stream = beatRandom || random;
+      const size = round(0.6 + stream() * 0.8, 2);
+      const tone = Math.floor(stream() * 8);
+      beat.size = size;
+      beat.tone = tone;
       beat.move = {
         in: forcedMove(force, 'in', INS) || inPick,
         hold: forcedMove(force, 'hold', HOLDS) || holdPick,
@@ -178,7 +185,7 @@
     if (!requested && procRoll < PROC_CHANCE * (1 - fear)) motif = PROC;
     const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
     const force = { in: opts.in, hold: opts.hold, out: opts.out };
-    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes);
+    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes, rng.rngFor(seed, 'figure-beat', id));
     const palette = Array.isArray(opts.palette) ? opts.palette : [];
     const colors = palette.length >= 3 ? palette.slice(3, 8) : palette.slice();
     const density = Math.max(0.15, Math.min(1, num(opts.density, 0.4 + 0.5 * clamp01(axes.energy))));
@@ -193,6 +200,8 @@
         move: beat.move,
         variant: beat.variant,
         accent: beat.accent,
+        size: beat.size,
+        tone: beat.tone,
       })),
     };
     if (motif === PROC) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : procSeed;
@@ -340,11 +349,129 @@
         amp: rng.range(random, 0.15, 0.9),
         blobs: 2 + Math.floor(random() * 4),
         slope: rng.range(random, -0.6, 0.6),
-        avoidText: random() < 0.75,
         colorShift: Math.floor(random() * 5),
       });
     }
     return layers;
+  }
+
+  // The free area around the text box (the same centred band `textBox` returns
+  // when the engine has none). A composition that would land on the lyrics is
+  // moved into one of these bands and shrunk to fit, so a proc clip stays the
+  // composition the seed grew instead of being thrown away by the clearance
+  // gate in favour of one of the fixed motifs.
+  function procBands(tb, box) {
+    const margin = Math.max(8, box.short * 0.03);
+    return [
+      { x: 0, y: 0, w: box.width, h: Math.max(margin, tb.y0 - margin) },
+      { x: 0, y: tb.y1 + margin, w: box.width, h: Math.max(margin, box.height - tb.y1 - margin) },
+      { x: 0, y: tb.y0, w: Math.max(margin, tb.x0 - margin), h: Math.max(margin, tb.y1 - tb.y0) },
+      { x: tb.x1 + margin, y: tb.y0, w: Math.max(margin, box.width - tb.x1 - margin), h: Math.max(margin, tb.y1 - tb.y0) },
+    ];
+  }
+
+  function insideBox(x, y, pad, box) {
+    return x > box.x0 - pad && x < box.x1 + pad && y > box.y0 - pad && y < box.y1 + pad;
+  }
+
+  // the element's own half extents in pixels: what the clearance test and the
+  // band fit have to reserve for it (a wide rect needs more than its radius)
+  function procHalf(kind, layer, s, angleDeg, weightPx) {
+    const a = (angleDeg * Math.PI) / 180;
+    const cos = Math.abs(Math.cos(a));
+    const sin = Math.abs(Math.sin(a));
+    if (kind === 'rect') {
+      const w = s * 2 * layer.stretch;
+      const h = (s * 2) / Math.max(0.6, layer.stretch * 0.6);
+      return { x: (w * cos + h * sin) / 2, y: (w * sin + h * cos) / 2 };
+    }
+    if (kind === 'capsule' || kind === 'dash') {
+      const len = kind === 'dash' ? s * 1.2 : s * (1 + layer.stretch);
+      const halfWidth = Math.max(1, kind === 'dash' ? weightPx * 2.2 : weightPx) / 2;
+      return { x: cos * len + halfWidth, y: sin * len + halfWidth };
+    }
+    return { x: s, y: s };
+  }
+
+  function clampRange(value, min, max) {
+    if (!(min <= max)) return (min + max) / 2;
+    return Math.max(min, Math.min(max, value));
+  }
+
+  // The axis-aligned box of one shape (what the legibility measure uses), so
+  // the clearance pass can ask the same question the auto direction asks.
+  function procShapeBox(shape) {
+    if (!shape) return null;
+    if (Array.isArray(shape.points) && shape.points.length) {
+      let x0 = Infinity;
+      let y0 = Infinity;
+      let x1 = -Infinity;
+      let y1 = -Infinity;
+      for (const point of shape.points) {
+        x0 = Math.min(x0, point.x);
+        y0 = Math.min(y0, point.y);
+        x1 = Math.max(x1, point.x);
+        y1 = Math.max(y1, point.y);
+      }
+      return { x0, y0, x1, y1 };
+    }
+    if (shape.kind === 'rect') return { x0: shape.x, y0: shape.y, x1: shape.x + shape.w, y1: shape.y + shape.h };
+    if (shape.kind === 'capsule') {
+      const half = (shape.width || 0) / 2;
+      return { x0: Math.min(shape.x0, shape.x1) - half, y0: Math.min(shape.y0, shape.y1) - half, x1: Math.max(shape.x0, shape.x1) + half, y1: Math.max(shape.y0, shape.y1) + half };
+    }
+    const r = shape.r != null ? shape.r : shape.radius || 0;
+    const line = Math.max(0, (shape.thickness || shape.stroke || 0) / 2);
+    return { x0: shape.x - r - line, y0: shape.y - r - line, x1: shape.x + r + line, y1: shape.y + r + line };
+  }
+
+  // The morph hold crossfades two placements of one genome, and scatterIn /
+  // burstOut slide the finished shapes, so a shape can still reach the lyrics
+  // after the element pass. This runs last: anything that touches the text box
+  // is moved into the free band around it (shrunk to fit) or dropped when even
+  // the band cannot hold it.
+  function procClearShapes(shapes, tb, box) {
+    const bands = procBands(tb, box);
+    const kept = [];
+    for (const shape of shapes) {
+      const bounds = procShapeBox(shape);
+      if (!bounds) continue;
+      const hits = bounds.x1 > tb.x0 && bounds.x0 < tb.x1 && bounds.y1 > tb.y0 && bounds.y0 < tb.y1;
+      if (!hits) {
+        kept.push(shape);
+        continue;
+      }
+      const cx = (bounds.x0 + bounds.x1) / 2;
+      const cy = (bounds.y0 + bounds.y1) / 2;
+      const halfX = (bounds.x1 - bounds.x0) / 2;
+      const halfY = (bounds.y1 - bounds.y0) / 2;
+      let band = null;
+      let fit = 0;
+      for (const candidate of bands) {
+        const scale = Math.min(1, (candidate.w - 8) / (2 * halfX), (candidate.h - 8) / (2 * halfY));
+        if (scale > fit) {
+          fit = scale;
+          band = candidate;
+        }
+      }
+      if (!band || fit < 0.12) continue;
+      const shrunk = scaleShape(shape, fit, { x: cx, y: cy });
+      const dx = clampRange(cx, band.x + halfX * fit + 4, band.x + band.w - halfX * fit - 4) - cx;
+      const dy = clampRange(cy, band.y + halfY * fit + 4, band.y + band.h - halfY * fit - 4) - cy;
+      if (!dx && !dy) {
+        kept.push(shrunk);
+        continue;
+      }
+      transformShapes([shrunk], { originX: cx, originY: cy, scale: 1, dx, dy });
+      kept.push(shrunk);
+    }
+    return kept;
+  }
+
+  // a stable per-element jitter (no stream draw, so the stream stays time-free)
+  function hash01(value, salt) {
+    const x = Math.sin(value * 127.1 + salt * 311.7) * 43758.5453123;
+    return x - Math.floor(x);
   }
 
   function procCopies(layer) {
@@ -494,6 +621,7 @@
     const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
     const layers = procGenome(seed);
     const tb = textBox(ctx, box);
+    const bands = procBands(tb, box);
     const local = info.local;
     const shapes = [];
     layers.forEach((layer, li) => {
@@ -542,8 +670,8 @@
             uy = ux * Math.sin(a) + uy * Math.cos(a);
             ux = ox;
           }
-          const x = cx + (ux * cosT - uy * sinT) * spanX;
-          const y = cy + (ux * sinT + uy * cosT) * spanY + state.drift;
+          let x = cx + (ux * cosT - uy * sinT) * spanX;
+          let y = cy + (ux * sinT + uy * cosT) * spanY + state.drift;
           let s;
           if (layer.sizeRule === 'ramp') s = sizeBase * (0.3 + 1.4 * base.t);
           else if (layer.sizeRule === 'radial') s = sizeBase * (1.5 - Math.min(1.2, base.r));
@@ -559,10 +687,28 @@
           const first = shapes.length === 0;
           if (first) s = Math.max(s, 1.2);
           else if (s < 0.8) continue;
-          // keep the lyrics clear: skip what lands on the padded text box
-          if (layer.avoidText && !first) {
-            const pad = s * 1.6;
-            if (x > tb.x0 - pad && x < tb.x1 + pad && y > tb.y0 - pad && y < tb.y1 + pad) continue;
+          // keep the lyrics clear: an element whose own box touches the text box
+          // moves into a free band around it (shrunk to fit) instead of being
+          // dropped, so the clearance gate keeps this composition rather than
+          // the motif
+          const tilt = layer.tilt + tiltNoise + (point.turn ? (point.turn * 180) / Math.PI : 0) + (point.flip ? 180 : 0);
+          const spin = layer.motion === 'spin' ? local * layer.speed * 40 : 0;
+          let half = procHalf(kind, layer, s, tilt + spin, weight);
+          if (x + half.x > tb.x0 && x - half.x < tb.x1 && y + half.y > tb.y0 && y - half.y < tb.y1) {
+            let band = null;
+            let fit = 0;
+            for (const candidate of bands) {
+              const scale = Math.min(1, (candidate.w - 8) / (2 * half.x), (candidate.h - 8) / (2 * half.y));
+              if (scale > fit) {
+                fit = scale;
+                band = candidate;
+              }
+            }
+            if (!band || fit < 0.15) continue; // nothing sane fits: drop the element
+            s *= fit;
+            half = { x: half.x * fit, y: half.y * fit };
+            x = clampRange(x, band.x + half.x + 4, band.x + band.w - half.x - 4);
+            y = clampRange(y, band.y + half.y + 4, band.y + band.h - half.y - 4);
           }
           let colorIndex;
           if (layer.colorRule === 'random') colorIndex = Math.floor(colorRoll * 8);
@@ -571,7 +717,7 @@
           else if (layer.colorRule === 'single') colorIndex = layer.colorShift;
           else if (layer.colorRule === 'band') colorIndex = Math.floor(base.t * 4) + layer.colorShift;
           else colorIndex = index + layer.colorShift;
-          const angle = layer.tilt + tiltNoise + (point.turn ? (point.turn * 180) / Math.PI : 0) + (point.flip ? 180 : 0) + (layer.motion === 'spin' ? local * layer.speed * 40 : 0);
+          const angle = tilt + spin;
           procPush(shapes, layer, kind, { x, y, s, angle, color: colorOf(params, ctx, colorIndex + li), opacity: opacity * alpha, weight });
         }
       }
@@ -1090,6 +1236,9 @@
       }
       if (next.r != null) next.r *= factor;
       if (next.radius != null) next.radius *= factor;
+      // a scaled ring / outline keeps its line weight in proportion
+      if (next.thickness != null) next.thickness *= factor;
+      if (next.stroke != null) next.stroke *= factor;
     }
     return next;
   }
@@ -1174,6 +1323,12 @@
     const pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
     const drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
     const scale = (0.2 + 0.8 * progress) * pulse;
+    // the sub-beat's palette rotation: the same motif cycles its colours across
+    // the beats instead of repeating one assignment (a legacy beat without a
+    // tone keeps its historic colours)
+    const tone = Math.round(num(beat.tone, 0));
+    const palette = params.colors && params.colors.length ? params.colors : ((ctx && ctx.colors) || []);
+    const drawParams = tone && palette.length ? { ...params, colors: palette.map((_, i) => palette[(i + tone) % palette.length]) } : params;
     const state = { box, opacity, scale, rotation, pulse, drift, variant, tuning, spinRate: spinHold ? tuning.spinRate : 1, morphPhase: null };
     const morphHold = beat.move.hold === 'morph';
     let shapes;
@@ -1181,14 +1336,14 @@
       const phase = clamp01(info.local / Math.max(0.5, info.duration));
       const specific = motif === 'polyMorph' || motif === 'rings' || motif === 'bars';
       if (specific) {
-        shapes = buildMotif(motif, params, ctx, info, { ...state, morphPhase: phase });
+        shapes = buildMotif(motif, drawParams, ctx, info, { ...state, morphPhase: phase });
       } else {
-        const a = buildMotif(motif, params, ctx, info, { ...state, variant });
-        const b = buildMotif(motif, params, ctx, info, { ...state, variant: variant + 1 });
+        const a = buildMotif(motif, drawParams, ctx, info, { ...state, variant });
+        const b = buildMotif(motif, drawParams, ctx, info, { ...state, variant: variant + 1 });
         shapes = mixShapes(a, b, phase);
       }
     } else {
-      shapes = buildMotif(motif, params, ctx, info, state);
+      shapes = buildMotif(motif, drawParams, ctx, info, state);
     }
     // radius: the optional motif size, about the frame centre
     if (tuning.radius !== 1) {
@@ -1196,6 +1351,12 @@
     }
     if (tuning.aspect !== 1) shapes = stretchX(shapes, tuning.aspect, box.cx);
     if (tuning.stroke !== 1) shapes = scaleStroke(shapes, tuning.stroke);
+    // the sub-beat's own scale (0.6..1.4): the same motif reads bigger or
+    // smaller on every beat, so a clip never draws the identical stamp twice
+    const beatSize = Math.max(0.3, Math.min(2, num(beat.size, 1)));
+    if (beatSize !== 1) {
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], beatSize, { x: box.cx, y: box.cy });
+    }
     // accent: the emphasised sub-beat reads bigger and fully opaque
     if (beat.accent) {
       for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], 1.25, { x: box.cx, y: box.cy });
@@ -1243,6 +1404,9 @@
     if (beat.move.out === 'fade') {
       for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * Math.max(0, leave);
     }
+    // proc: scatterIn / burstOut / the morph hold can still slide a shape over
+    // the lyrics, so its clearance runs last
+    if (motif === PROC) shapes = procClearShapes(shapes, textBox(ctx, box), box);
     // an explicit layer opacity (the legibility gate dims a figure that would
     // cover the lyrics) multiplies the finished shapes; absent = 1
     const ownOpacity = num(params.opacity, 1);

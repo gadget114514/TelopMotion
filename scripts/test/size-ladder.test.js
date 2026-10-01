@@ -66,7 +66,7 @@ function beatRows(doc, ctx) {
   for (const cue of doc.script.cues) {
     for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
       const text = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`).text || {};
-      const range = SA.direct.sizeRangeFor(beat, text, ctx, 1);
+      const range = SA.direct.sizeRangeFor(beat, text, ctx, 1, undefined, SA.direct.sizeProfile(ctx, cue.id));
       rows.push({ cue, beat, text, range, px: text.size * (beat.fontScale || 1) });
     }
   }
@@ -261,7 +261,7 @@ test('a weird run never repeats a neighbour level and stays inside the range', (
   assert.ok(rows.length >= 4, `beats ${rows.length}`);
   let previous = null;
   for (const row of rows) {
-    const range = SA.direct.sizeRangeFor(row.beat, row.text, ctx, 1);
+    const range = SA.direct.sizeRangeFor(row.beat, row.text, ctx, 1, undefined, SA.direct.sizeProfile(ctx, row.cue.id));
     assert.ok(row.px >= range.min - 1, `${row.beat.id} px ${row.px} below ${range.min}`);
     assert.ok(row.px <= range.max + 1, `${row.beat.id} px ${row.px} above ${range.max}`);
     const level = levelOf(range, row.px);
@@ -470,6 +470,41 @@ test('a narrow curve on the largest size never visits the other levels', () => {
   for (let i = 0; i < 200; i += 1) {
     const range = { min: 60, max: 600 + (i % 5) * 50 };
     const pick = ladder.choose({ duration: 1, range, prev });
+    assert.equal(pick.px, range.max, `beat ${i} px ${pick.px}`);
+    prev = pick;
+  }
+});
+
+// A spread of 0 is the honest delta: one level at 100%, the rest at 0. The old
+// 0.02 floor could never get past ~85% however narrow the curve was.
+test('a zero spread puts the whole share on the level the centre sits on', () => {
+  const at = SA.weird.sizeWeights(10, 1, 0);
+  assert.equal(at.length, 10);
+  assert.equal(at[9], 1);
+  for (let k = 0; k < 9; k += 1) assert.equal(at[k], 0, `level ${k} ${at[k]}`);
+  const sum = (weights) => weights.reduce((total, value) => total + value, 0);
+  assert.ok(Math.abs(sum(at) - 1) < 1e-9, `the delta sums to ${sum(at)}`);
+  // the centre between two levels snaps to the nearer one, and a missing spread
+  // still falls back to the old default instead of collapsing to a delta
+  const middle = SA.weird.sizeWeights(10, 0.5, 0);
+  assert.equal(middle[5], 1);
+  assert.ok(Math.abs(sum(SA.weird.sizeWeights(10, 0.5)) - 1) < 1e-9);
+  assert.ok(Math.max(...SA.weird.sizeWeights(10, 0.5)) < 1);
+  assert.ok(Math.max(...SA.weird.sizeWeights(10, 0.5, null)) < 1);
+  // a spread far below the 1 / 9 grid step underflows the Gaussian to zero on
+  // every level; the delta keeps the result a distribution
+  const tiny = SA.weird.sizeWeights(10, 0.5, 1e-9);
+  assert.ok(Math.abs(sum(tiny) - 1) < 1e-9, `the underflow guard sums to ${sum(tiny)}`);
+  assert.equal(tiny[5], 1);
+});
+
+test('a delta curve holds its level on every beat whatever the range is', () => {
+  const ladder = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(51, 'delta'), center: 1, spread: 0 });
+  let prev = null;
+  for (let i = 0; i < 200; i += 1) {
+    const range = { min: 40 + (i % 7) * 10, max: 300 + (i % 11) * 40 };
+    const pick = ladder.choose({ duration: 1, range, prev, centerShift: (i % 3) - 1 });
+    assert.equal(pick.level, 9, `beat ${i} level ${pick.level}`);
     assert.equal(pick.px, range.max, `beat ${i} px ${pick.px}`);
     prev = pick;
   }

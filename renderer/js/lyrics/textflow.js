@@ -604,6 +604,38 @@
     return { scale: Math.min(fit.size / size, Math.max(0.05, heightScale)), bleed: fit.bleed };
   }
 
+  // The size at which the widest of `lines` exactly spans the frame along the
+  // writing direction: one character takes `along / (chars - 1)` px of advance
+  // (a one-character line takes the whole frame), so the size is that advance
+  // divided by the line's own average advance per character. Unlike
+  // `maxSizeForLines` there is no block-height term: a long beat wraps into
+  // more lines instead of shrinking, which is the top of the size ladder once
+  // the automatic direction's profile is on.
+  function widthFillSize(lines, options) {
+    const opts = options || {};
+    const style = opts.style || {};
+    const frame = { width: (opts.frame && opts.frame.width) || 1920, height: (opts.frame && opts.frame.height) || 1080 };
+    const list = (lines || []).map(String).filter((line) => line.trim());
+    if (!list.length) return 0;
+    const measurer = makeMeasurer({ ...opts, style, lang: opts.lang || 'en' });
+    const spacing = measurer.includesSpacing ? 0 : Number(style.letterSpacing) || 0;
+    const vertical = style.direction === 'vertical';
+    const along = vertical ? frame.height : frame.width;
+    let widest = 0;
+    let chars = 1;
+    for (const line of list) {
+      const count = Math.max(1, Array.from(line).length);
+      const em = measurer(line, FILL_REF_SIZE) / FILL_REF_SIZE + spacing * count;
+      if (em > widest) {
+        widest = em;
+        chars = count;
+      }
+    }
+    if (!(widest > 0)) return 0;
+    const perChar = along / (chars <= 1 ? 1 : chars - 1);
+    return perChar / (widest / chars);
+  }
+
   // The largest size at which fixed lines still fit the renderer's own block
   // limits (text.maxWidth × frame width, text.maxHeight × frame height) — the
   // "fills the screen" end of the auto-direct size ladder. No coverage term.
@@ -1658,6 +1690,7 @@
     fillFit,
     fitLinesScale,
     maxSizeForLines,
+    widthFillSize,
     flow,
     restructure,
     autoRecapDraw,

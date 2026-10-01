@@ -104,18 +104,39 @@
 
   // The size ladder's level weights: a Gaussian curve over the ten levels, the
   // centre 0..1 (0 = the legible floor, 1 = the screen-filling end) and the
-  // spread in level units. Every level keeps at least a 0.02 share and the
-  // result sums to 1, so the ladder's weighted pick always has a candidate.
+  // spread in level units. The result sums to 1, so the ladder's weighted pick
+  // always has a candidate.
+  //
+  // A spread of 0 is the honest delta: the whole share lands on the level
+  // nearest the centre (100% on one level, 0% on the rest). The Gaussian cannot
+  // do it - `(u - c) ** 2 / 0` is NaN on the peak and 0 everywhere else - and a
+  // per-level floor would cap the peak below 1 no matter how narrow the spread
+  // got (0.02 x 9 leftovers left at most 1 / 1.18). The ladder needs nothing
+  // more than the delta: its candidate filter keeps the levels above a tenth of
+  // the peak, so one real level means every beat holds it. A missing spread
+  // still falls back to the old 0.28.
   function sizeWeights(n, center, spread) {
     const count = Math.max(2, Math.min(64, Math.round(Number(n) || 10)));
     const c = clamp01(center == null ? 0.5 : center);
-    const sp = Math.max(0.01, Number(spread) || 0.28);
+    const raw = spread == null || spread === '' ? 0.28 : Number(spread);
+    const sp = Number.isFinite(raw) ? Math.max(0, raw) : 0.28;
+    // the level the centre sits on: the delta's peak, and the fallback when the
+    // Gaussian underflows to zero on every level (a spread far below the 1 /
+    // (count - 1) grid step)
+    const peak = Math.round(c * (count - 1));
+    const delta = () => {
+      const out = [];
+      for (let k = 0; k < count; k += 1) out.push(k === peak ? 1 : 0);
+      return out;
+    };
+    if (sp <= 0) return delta();
     const out = [];
     for (let k = 0; k < count; k += 1) {
       const u = k / (count - 1);
-      out.push(Math.max(0.02, Math.exp(-((u - c) ** 2) / (2 * sp * sp))));
+      out.push(Math.exp(-((u - c) ** 2) / (2 * sp * sp)));
     }
     const total = out.reduce((sum, value) => sum + value, 0);
+    if (!(total > 0)) return delta();
     return out.map((value) => value / total);
   }
 

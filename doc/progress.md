@@ -492,7 +492,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 |---|---|---|---|
 | `sizeChange` | chance | 0..1 | `weird.sizeChange(axes)` |
 | `sizeCenter` | amount | 0..1 | `0.5 + 0.1 * Math.min(1, a.w / 0.6) + 0.1 * (a.e - 0.5)` |
-| `sizeSpread` | amount | 0.05..0.6 | `0.18 + 0.22 * a.w` |
+| `sizeSpread` | amount | 0..0.6 | `0.18 + 0.22 * a.w` |
 | `sizeFollow` | amount | 0..1 | `0.2 * a.b` |
 | `heroScale` | amount | 1..2.5 | `1 + 0.3 * a.w` |
 | `fgSolid` | weight | 0..3 | `1` |
@@ -621,6 +621,19 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - **検証**: `scripts/sections-sheet.js`（新規）で `test/fx400.telopmotion.json` を section オフ/オンで2回走らせ、塊・energy・chorus・boost をログして比較（`test/fx400.plain/sections.telopmotion.json`）。maxCues を変えると後景プレーンの色がちょうどその長さで切り替わることを確認。
 - **決めていないこと**: `chorus` の基準（上位1/3 と 平均 + 0.5σ の併用）と強さダイヤルの上限（2.0）は実曲で見ながら詰める前提。解析なしのときは繰り返し歌詞によってサビ印は付くが、強調（ブースト）は掛けない。
 
+## 実装: フィラーの再設定＋全ギャップに図形アニメーション（`2a5451f`）
+
+`e350dd6` でフィラーがオプトイン（新ドキュメントは `fillers.enabled = false`）になり、自動演出が一度も gap を埋めていませんでした。ギャップは「無音の時間」なので既定は埋める側に戻し、さらに**どのギャップにも図形アニメーション（figures）を1つ必ず乗せる**ようにしました。フィラートラックが背景より手前であること（`engine.js` の描画順 background clips → background layers → backdrop → **filler** → figure / textAnim → 字幕）は変えません。
+
+- **既定を on に戻す**: `lyrics/fillers.js` の `DEFAULTS.enabled` と `studio/project.js` の既定を `true` に。`direct.fillerSettings` は `settingsFor(project).enabled !== false` を読むので、**明示的に off にしたプロジェクトはそのまま off**（その opt-out と `regenerate fillers` のフラグ無視は残す）。
+- **図形アニメーションを必ず入れる**: `direct.js` に `carriesFigures(spec)` / `withFigureLayer(base, figuresSpec)`。
+  - `fillerSettings`: 引いた interlude / longGap プリセットが pattern / split / particles だけのとき、同じ combo の隣に figures 層を足す（乱数キーは `interlude-figures` / `longGap-figures` と別なので他キーの抽選は動かない）。インスペクタが見る保存設定と生成されるクリップが同じ形になる。
+  - `fillerClips`: 空白ごとに 1 つ生成した figures を差し込む。`type: figures` の clip は従来どおり（`extraSeed 0`）、combo 内の figures は `extraSeed 1`、figures を持たない spec / combo は新しい層を `extraSeed 2` で生成。**すでに figures を持つプリセットは自分のモチーフを保つ**（同じモチーフを2回見せない）。
+  - intro / outro は従来どおり combo[credits, figures]。
+- **テスト**: `direct.test.js` に「実行でギャップが埋まる／明示 off は空のまま」「全ギャップに figures がある（motif が描かれている・1回だけ・保存設定も同じ形）」を追加。`duration.test.js` / `project.test.js` / `store.test.js` のオプトイン前提を既定 on に更新、`project.test.js` の migrate テストは「明示 off は生き残る」形に。`text-layer.test.js` に**フィラーが背景より手前**の回帰テスト（エンジンの描画順 ＋ 既定トラックの並び）。
+- **検証**: ギャップのある試作文書で `direct.run` を実行して、intro = combo[credits, figures(halftone)] / interlude = figures(frame) / long gap = combo[split, figures(proc)] になり、clip 中点で実際にシェイプ（60 / 4 / 161 個、パレット色つき）が出ることを確認。`npm test` 822件パス、`npm run check` 196ファイル。
+- **決めていないこと**: 既定を on に戻したので「何もしない空ドキュメント」は最初から gap を埋める。埋めたくない場合はフィラー行を非表示にするか `minGap` を上げる（既定 1.5 秒）。
+
 ## バグ修正: 文字背景/飾りが右半分だけになっていた（`cefc8c0` からの持ち越し）
 
 プレビューに「半円」「半分のハート」が出るのは、**文字1つぶんの背景/飾り（`bgShape` / `ornShape`）のクリップ面**が原因。`effects/text-bg.js` の `evaluateBg` は `let clip = 0` で始めていたが、**クリップなし の Sentinel は `-1`**（`gl/passes.js` は `state.clip == null` のとき `-1` を書き込み、`BG_FRAG` は `v_clip > -0.999` のときだけ中心を通る平面で alpha を落とす）。`wipe` 以外のすべてのモーションが `clip = 0` を返していたので、左右対称な形（circle / heart / square / cloud / bar）は**常に右半分だけ**描画されていた（自動演出が `love` ジャンルで入れるハート飾りが「半ハート」になっていたのはこのため）。
@@ -628,20 +641,6 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - **修正**: `let clip = -1`。`wipe` は従来どおり `-1 + 2 * smooth` で −1→1 を歩くので、wipe の見え方は変わらない。
 - **テスト**: `text-bg.test.js` に1件（`follow`/`fade`/`pop`/`stamp`/`spin`/`grow`/`flicker`/`bleed`/`float`/`fall`/`draw`/`none` × `square`/`circle`/`heart` で `clip === -1`、`wipe` の途中は 0 付近）。`npm test` 845件パス、`npm run check` 197ファイル。
 - **決めていないこと**: `clipDir`（クリップ面の方向）は誰も設定せず `passes.js` の既定 `[1, 0]`（右向き）。`bgMotion.wipe` の `dir` パラメータ（left/right/up/down）は `evaluateBg` に反映されていないので、wipe は常に左から右への wipe のまま。
-
-## 追記: フィラーが「おまかせで全く生成されない」件の切り分け（2つの原因）
-
-`2a5451f` の後も自動演出でフィラーが出ないので探ったところ、**独立した2つの原因**があった。片方だけ直しても「全く出ない」は直らないので、両方とも潰した。
-
-1. **`fillers.enabled: false` がファイルに焼き込まれていた**。`e350dd6` の既定（false）の間に保存されたプロジェクトは全部 `enabled: false` を持ち、**UI のどこにもこのフラグを書く場所が無い**（インスペクターのフィラー節は種類とプリセットだけ）。つまり false は「ユーザーの意思」ではなくただの旧既定で、それを尊重すると自動演出はずっと埋めない。→ `fillerSettings` は `enabled: true` を返す（おまかせは埋める）。逃げ道は行の**表示/非表示**スイッチ（`engine.activeClips` が `track.hidden` を読むので、元から効いている）。
-2. **フィラーの行が無く、クリップを置く場所が無い**。`fig` / `filler` 行は P5 で入ったもので、`migrate` が保証していたのは `figure` だけ。行の無い文書では `fillerClips` が `trackIdFor(projectDoc,'filler')` で黙って return するので、ギャップが一つも埋まらない。→ `project.ensureManagedTracks(project)` を足し、`migrate` と `direct.run` の先頭で呼ぶ（`figure` は字幕の後、`filler` は後景の後 = 既定の並びそのまま）。
-
-ついでに、`migrateToV2` が作るフィラークリップに `auto: true` が無く、自動演出がその上に2本目を重ねていた（v1 ファイルだけ 3 → 6 本）。システム生成の物なので `auto` を付けて、run が置換するようにした。
-
-- **テスト**: `direct.test.js` の「a run always fills the gaps, whatever the document stored」（stored が無い / true / false の3通りで必ず埋まる）と「a run gives a document without the filler row somewhere to draw」（行が無い文書でも埋まり、行が background より手前に来る）、`project.test.js` に「migrate adds the managed rows a saved document may predate」（並び順と移行クリップの `auto`）。
-- **UI**: 自動演出の dispatch に `areas: ['fillers']` を足す（フィラー設定とクリップは文書の編集なので、undo 側の記録も filler 領域に入る）。
-- **検証**: 3パターン（新規 / `enabled:false` を保存済み / フィラー行なし＋v1 移行）を `direct.run` して、いずれも 3 クリップ（intro / interlude / long gap）で図形アニメーション付き。`npm test` 847件パス、`npm run check` 197ファイル。
-
 
 ## バグ修正: 文字背景/飾りの基準値が文字じゃなかった（`7b7ff17` の次）
 
@@ -661,3 +660,16 @@ i       10.3 x  73.7 @ (513.0, 463.2) |  25.8 x 100.0 @ (512.9, 450.0) | -0.1 / 
 - **文言**: 「1セル四角」→「文字1つぶんの外形」に更新（`i18n.js` の `bgEmpty` en/ja、`engine.js` と `moods.js` のコメント2箇所、`text-bg.js` のコメント）。es/fr/ru は en にフォールバック。
 - **テスト**: `text-bg.test.js` に2件（`inkBoxFor` がインク枠を返しセル枠の中心が下であること／`buildBgBatch` が `inkBoxFor` を使い `a_inkToCell` に 0 を入れること）。`npm test` 853件中 852 パス（残 1 件は別セッションが進行中の `direct.test.js` の motif 数テストで、今回の変更とは無関係）、`npm run check` 198ファイル。
 - **決めていないこと**: SDF は枠のアスペクトに合わせて伸びるので、`circle` は ‘a’ では縦長楕円のまま（文字自身の縦長比）。真円にしたいなら形ごとに指定を足す。
+
+## 追記: フィラーが「おまかせで全く生成されない」件の切り分け（2つの原因）
+
+`2a5451f` の後も自動演出でフィラーが出ないので探ったところ、**独立した2つの原因**があった。片方だけ直しても「全く出ない」は直らないので、両方とも潰した。
+
+1. **`fillers.enabled: false` がファイルに焼き込まれていた**。`e350dd6` の既定（false）の間に保存されたプロジェクトは全部 `enabled: false` を持ち、**UI のどこにもこのフラグを書く場所が無い**（インスペクターのフィラー節は種類とプリセットだけ）。つまり false は「ユーザーの意思」ではなくただの旧既定で、それを尊重すると自動演出はずっと埋めない。→ `fillerSettings` は `enabled: true` を返す（おまかせは埋める）。逃げ道は行の**表示/非表示**スイッチ（`engine.activeClips` が `track.hidden` を読むので、元から効いている）。
+2. **フィラーの行が無く、クリップを置く場所が無い**。`fig` / `filler` 行は P5 で入ったもので、`migrate` が保証していたのは `figure` だけ。行の無い文書では `fillerClips` が `trackIdFor(projectDoc,'filler')` で黙って return するので、ギャップが一つも埋まらない。→ `project.ensureManagedTracks(project)` を足し、`migrate` と `direct.run` の先頭で呼ぶ（`figure` は字幕の後、`filler` は後景の後 = 既定の並びそのまま）。
+
+ついでに、`migrateToV2` が作るフィラークリップに `auto: true` が無く、自動演出がその上に2本目を重ねていた（v1 ファイルだけ 3 → 6 本）。システム生成の物なので `auto` を付けて、run が置換するようにした。
+
+- **テスト**: `direct.test.js` の「a run always fills the gaps, whatever the document stored」（stored が無い / true / false の3通りで必ず埋まる）と「a run gives a document without the filler row somewhere to draw」（行が無い文書でも埋まり、行が background より手前に来る）、`project.test.js` に「migrate adds the managed rows a saved document may predate」（並び順と移行クリップの `auto`）。
+- **UI**: 自動演出の dispatch に `areas: ['fillers']` を足す（フィラー設定とクリップは文書の編集なので、undo 側の記録も filler 領域に入る）。
+- **検証**: 3パターン（新規 / `enabled:false` を保存済み / フィラー行なし＋v1 移行）を `direct.run` して、いずれも 3 クリップ（intro / interlude / long gap）で図形アニメーション付き。`npm test` 847件パス、`npm run check` 197ファイル。

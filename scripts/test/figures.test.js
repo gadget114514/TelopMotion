@@ -379,8 +379,8 @@ test('generate picks proc most of the time and hands it back to fear', () => {
   for (let seed = 1; seed <= 200; seed += 1) {
     const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 0.5, energy: 0.5 } });
     if (spec.params.motif === 'proc') proc += 1;
-    // a classic draw keeps the historic beat fields only
-    else for (const beat of spec.params.beats) assert.deepEqual(Object.keys(beat).sort(), ['accent', 'end', 'move', 'start', 'variant']);
+    // a classic draw keeps the historic move fields, plus its own scale / tone
+    else for (const beat of spec.params.beats) assert.deepEqual(Object.keys(beat).sort(), ['accent', 'end', 'move', 'size', 'start', 'tone', 'variant']);
   }
   assert.ok(proc >= 120 && proc <= 180, `proc share ${proc}/200`);
   // the fear axis hands the pick back to the fixed library
@@ -398,6 +398,57 @@ test('generate picks proc most of the time and hands it back to fear', () => {
   const explicit = figures.generate({ span: SPAN, motif: 'proc', seed: 3, id: 'explicit' });
   assert.equal(explicit.params.motif, 'proc');
   assert.ok(Number.isFinite(Number(explicit.params.seed)));
+});
+
+// ---------------------------------------------------------------------------
+// variety: per-beat size / colour, and the clearance the auto direction needs
+
+test('every sub-beat draws its own size and palette rotation', () => {
+  for (const seed of [2, 7, 19, 42]) {
+    const spec = figures.generate({ span: SPAN, motif: 'burst', sync: 'beat', seed, id: 'fig_0', axes: { weird: 0.5, energy: 0.5 } });
+    const sizes = new Set();
+    const tones = new Set();
+    for (const beat of spec.params.beats) {
+      assert.ok(Number.isFinite(beat.size) && beat.size >= 0.6 && beat.size <= 1.4, `seed ${seed} size ${beat.size}`);
+      assert.ok(Number.isInteger(beat.tone) && beat.tone >= 0 && beat.tone < 8, `seed ${seed} tone ${beat.tone}`);
+      sizes.add(beat.size);
+      tones.add(beat.tone);
+    }
+    assert.ok(spec.params.beats.length < 2 || sizes.size >= 2, `seed ${seed} sizes ${[...sizes].join(',')}`);
+    assert.ok(spec.params.beats.length < 2 || tones.size >= 2, `seed ${seed} tones ${[...tones].join(',')}`);
+  }
+  // the size reaches the geometry: a big beat draws a bigger circle
+  const make = (size, tone) => ({ type: 'figure', params: { motif: 'orbit', density: 0.5, colors: ['#ff0000', '#00ff00', '#0000ff'], beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: true, size, tone }] } });
+  const ctxAt = (time) => ({ time, frame: FRAME, clip: { key: 'fig_var', start: 0, end: 3 }, seed: 8, colors: ['#ff0000', '#00ff00', '#0000ff'] });
+  const small = figures.drawList(make(0.6, 0), ctxAt(1)).shapes.find((shape) => shape.kind === 'circle');
+  const large = figures.drawList(make(1.4, 0), ctxAt(1)).shapes.find((shape) => shape.kind === 'circle');
+  assert.ok(large.r > small.r * 2, `size ${small.r} -> ${large.r}`);
+  // the tone rotates the palette through the shapes
+  const rotated = figures.drawList(make(1, 2), ctxAt(1)).shapes.map((shape) => shape.color).join('|');
+  const plain = figures.drawList(make(1, 0), ctxAt(1)).shapes.map((shape) => shape.color).join('|');
+  assert.notEqual(rotated, plain, 'the palette rotation changes the colours');
+});
+
+test('a proc figure never covers the lyrics (the gate keeps it procedural)', () => {
+  const legibility = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'legibility.js'));
+  const boxes = [
+    undefined,
+    { x0: FRAME.width * 0.4, y0: FRAME.height * 0.4, x1: FRAME.width * 0.6, y1: FRAME.height * 0.6 },
+    { x0: 200, y0: 300, x1: 1720, y1: 780 },
+    { x0: 400, y0: 820, x1: 1500, y1: 960 },
+  ];
+  for (let seed = 1; seed <= 60; seed += 1) {
+    for (const textBox of boxes) {
+      const spec = figures.generate({ span: SPAN, motif: 'proc', sync: 'beat', seed, id: `clear_${seed}` });
+      const overlap = legibility.figureOverlap(spec, {
+        frame: FRAME,
+        duration: SPAN.end - SPAN.start,
+        textBox,
+        geometry: true,
+      });
+      assert.ok(overlap <= legibility.FIGURE_OVERLAP + 1e-9, `seed ${seed} overlap ${overlap}`);
+    }
+  }
 });
 
 test('the figure lines are drawn thick (the legacy tuning stays the floor)', () => {

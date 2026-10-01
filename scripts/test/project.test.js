@@ -170,6 +170,29 @@ test('migrate fills the gaps unless the document switched fillers off', () => {
   assert.strictEqual(off.clips.filter((entry) => entry.trackId === 'filler').length, 0);
 });
 
+test('migrate adds the managed rows a saved document may predate', () => {
+  // a version 1 project only had the four original rows; without the figure /
+  // filler rows the automatic direction has nowhere to put its clips
+  const raw = {
+    format: 'telopmotion',
+    version: 1,
+    tracks: [
+      { id: 'fg', kind: 'foreground', name: '前景' },
+      { id: 'sub1', kind: 'subtitle', name: '字幕1' },
+      { id: 'mid', kind: 'backdrop', name: '後景' },
+      { id: 'bg', kind: 'background', name: '背景' },
+    ],
+    script: { cues: [{ id: 'c1', start: 3, end: 6, text: 'a' }] },
+  };
+  const doc = project.migrate(raw).project;
+  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']);
+  // the clips the migration drew are system clips: a run replaces them instead
+  // of stacking a second set on the same row
+  for (const clip of doc.clips.filter((entry) => entry.trackId === 'filler')) assert.strictEqual(clip.auto, true);
+  // running it again on the same document is idempotent
+  assert.strictEqual(project.ensureManagedTracks(doc), doc.tracks);
+});
+
 test('migrate rejects other formats and newer versions', () => {
   assert.strictEqual(project.migrate({ format: 'other', version: 1 }).ok, false);
   assert.strictEqual(project.migrate({ format: 'telopmotion', version: 99 }).ok, false);

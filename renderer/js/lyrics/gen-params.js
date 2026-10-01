@@ -64,8 +64,12 @@
     // font sizes
     { key: 'sizeChange', kind: 'chance', tab: 'font', group: 'size', min: 0, max: 1, step: 0.05, derive: (a, axes) => weird.sizeChange(axes) },
     { key: 'sizeCenter', kind: 'amount', tab: 'font', group: 'size', min: 0, max: 1, step: 0.05, derive: (a) => 0.5 + 0.1 * Math.min(1, a.w / 0.6) + 0.1 * (a.e - 0.5) },
-    { key: 'sizeSpread', kind: 'amount', tab: 'font', group: 'size', min: 0.05, max: 0.6, step: 0.01, derive: (a) => 0.18 + 0.22 * a.w },
+    { key: 'sizeSpread', kind: 'amount', tab: 'font', group: 'size', min: 0, max: 0.6, step: 0.01, derive: (a) => 0.18 + 0.22 * a.w },
     { key: 'sizeFollow', kind: 'amount', tab: 'font', group: 'size', min: 0, max: 1, step: 0.05, derive: (a) => 0.2 * a.b },
+    // the readable floor of the size ladder, as a multiplier: weird 0 keeps the
+    // legibility minimum (1), weird 0.6 doubles it and weird 1 reaches 2.67, so
+    // a weird song never whispers
+    { key: 'sizeFloor', kind: 'amount', tab: 'font', group: 'size', min: 1, max: 4, step: 0.05, derive: (a) => 1 + a.w / 0.6 },
     { key: 'heroScale', kind: 'amount', tab: 'font', group: 'size', min: 1, max: 2.5, step: 0.05, derive: (a) => 1 + 0.3 * a.w },
     // stroke variety: how often an outline / shape layer stroke leaves its
     // recommended width for an extreme one (hairline or very heavy). Weird

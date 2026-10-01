@@ -20,6 +20,30 @@
   ];
   const BACKDROP_FILLER_TYPES = new Set(['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'sineWave', 'progress']);
 
+  // The tracks the automatic direction writes into. A document saved before one
+  // of them existed simply gains the empty track (the id is stable, so nothing
+  // else changes) - without it the run has nowhere to put its clips and the
+  // gap is silently left unfilled.
+  //
+  // `after` is the kind the new track follows, so the row lands in the same
+  // place as in DEFAULT_TRACKS: the figure track above the mid layer, the
+  // filler track above the background.
+  const MANAGED_TRACKS = [
+    { kind: 'figure', after: 'subtitle', track: { id: 'fig', kind: 'figure', name: '図形' } },
+    { kind: 'filler', after: 'backdrop', track: { id: 'filler', kind: 'filler', name: 'フィラー' } },
+  ];
+
+  function ensureManagedTracks(project) {
+    const doc = project || {};
+    const tracks = Array.isArray(doc.tracks) && doc.tracks.length ? doc.tracks : (doc.tracks = DEFAULT_TRACKS.map((track) => ({ ...track })));
+    for (const entry of MANAGED_TRACKS) {
+      if (tracks.some((track) => track && track.kind === entry.kind)) continue;
+      let at = tracks.reduce((index, track, i) => (track && track.kind === entry.after ? i : index), -1);
+      tracks.splice(at + 1, 0, { ...entry.track });
+    }
+    return tracks;
+  }
+
   const DEFAULT_CATEGORY_COLORS = {
     catalog: { tint: '#4d8dff', tint2: '#6f5bff' },
     plays: { tint: '#5fd44d', tint2: '#22c07a' },
@@ -343,6 +367,9 @@
               fadeIn: 0.3,
               fadeOut: 0.3,
               colors: null,
+              // system-drawn, so a later automatic run replaces these clips
+              // instead of stacking a second set on top of them
+              auto: true,
             });
           }
         }
@@ -567,13 +594,7 @@
     if (version < 2) migrateToV2(merged);
     if (version < 3) migrateToV3(merged);
     if (version < 4) migrateToV4(merged);
-    // projects saved before the figure track simply gain the empty track (the
-    // id is stable, so nothing else changes)
-    if (!(merged.tracks || []).some((track) => track && track.kind === 'figure')) {
-      const tracks = merged.tracks || (merged.tracks = []);
-      let at = tracks.reduce((index, track, i) => (track && track.kind === 'subtitle' ? i : index), -1);
-      tracks.splice(at + 1, 0, { id: 'fig', kind: 'figure', name: '図形' });
-    }
+    ensureManagedTracks(merged);
     merged.version = VERSION;
     merged.format = FORMAT;
     // subtitle background visibility is a per-track boolean (absent = shown)
@@ -705,9 +726,11 @@
     VERSION,
     DEFAULT_CATEGORY_COLORS,
     DEFAULT_TRACKS,
+    MANAGED_TRACKS,
     defaults,
     create,
     migrate,
+    ensureManagedTracks,
     resolveStyle,
     resetLook,
     parsePath,

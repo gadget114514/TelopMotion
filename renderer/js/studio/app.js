@@ -1113,7 +1113,8 @@
     });
     store.dispatch({
       label: 'auto direct',
-      areas: ['script', 'style'],
+      // the run also rewrites the filler settings and places the gap clips
+      areas: ['script', 'style', 'fillers'],
       do: (projectDoc) => SA.direct.run(projectDoc, ctx),
     });
     lastRandom = { scope: '__auto', seed, intensity: 2, locks: SA.direct.AUTO_DIRECT_LOCKS, lookN: look ? look.n : null };

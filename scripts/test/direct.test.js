@@ -253,24 +253,36 @@ test('filler specs come from the preset library, deterministically and genre-awa
   }
 });
 
-test('a run fills the gaps, and an opted-out project keeps its filler track empty', () => {
-  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
-  delete doc.fillers;
-  runOn(doc, FIXTURE);
-  const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
-  const filled = doc.clips.filter((clip) => fillerIds.has(clip.trackId));
-  assert.equal(doc.fillers.enabled, true, 'a document that never chose fills its gaps');
-  assert.ok(filled.length >= 1, `a run materialises the gaps (${filled.length} clips)`);
+test('a run always fills the gaps, whatever the document stored', () => {
+  // a document that stored the old opt-in default (nothing in the UI ever
+  // writes `enabled: false`; the escape hatch is the filler track's hide
+  // switch) must not keep the automatic direction from drawing
+  for (const stored of [undefined, true, false]) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    if (stored === undefined) delete doc.fillers;
+    else doc.fillers = { ...(doc.fillers || {}), enabled: stored };
+    runOn(doc, FIXTURE);
+    const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
+    const filled = doc.clips.filter((clip) => fillerIds.has(clip.trackId));
+    assert.equal(doc.fillers.enabled, true, `the run writes enabled=true (stored ${stored})`);
+    assert.ok(filled.length >= 1, `stored ${stored} -> a run materialises the gaps (${filled.length} clips)`);
+  }
+});
 
-  const off = JSON.parse(JSON.stringify(FIXTURE.input));
-  off.fillers = { ...(off.fillers || {}), enabled: false };
-  runOn(off, FIXTURE);
-  assert.equal(off.clips.filter((clip) => fillerIds.has(clip.trackId)).length, 0, 'no filler clips are generated');
-  assert.equal(off.fillers.enabled, false, 'the run does not switch fillers back on');
-  // the explicit regeneration still materialises the gaps
-  const total = Math.max(...off.script.cues.map((cue) => cue.end));
-  const gaps = SA.fillers.gaps(off.script.cues, total, { ...SA.fillers.settingsFor(off), enabled: true });
-  assert.ok(gaps.length >= 1, 'regeneration is not blocked by the flag');
+test('a run gives a document without the filler row somewhere to draw', () => {
+  // a project saved before the figure / filler tracks existed: without the row
+  // there is nowhere to put the clips and the gap is silently left unfilled
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  doc.tracks = doc.tracks.filter((track) => track.kind !== 'filler' && track.kind !== 'figure');
+  assert.ok(!doc.tracks.some((track) => track.kind === 'filler'), 'the fixture lost the filler row');
+  runOn(doc, FIXTURE);
+  const filler = doc.tracks.find((track) => track.kind === 'filler');
+  assert.ok(filler, 'the run did not add the filler track');
+  const filled = doc.clips.filter((clip) => clip.trackId === filler.id);
+  assert.ok(filled.length >= 1, `the run materialises the gaps (${filled.length} clips)`);
+  // and it lands above the background row, where the renderer expects it
+  const kinds = doc.tracks.map((track) => track.kind);
+  assert.ok(kinds.indexOf('filler') < kinds.indexOf('background'), `track order ${kinds.join(',')}`);
 });
 
 test('every gap carries a figure animation', () => {
