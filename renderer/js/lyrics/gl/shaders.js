@@ -794,10 +794,10 @@ SA.glShaders = (() => {
         float aa = max(fwidth(phase), 0.002);
         float m = 1.0 - smoothstep(ratio - aa * 2.0, ratio + aa * 2.0, phase);
         color = mix(u_colorA, u_colorB, m);
-      } else if (type == 16) {             // checker
+      } else if (type == 16) {             // checker: the two colours alternate
         vec2 cell = floor(p * (u_resolution.y / size));
         float on = 1.0 - step(0.5, mod(cell.x + cell.y, 2.0));
-        color = mix(u_colorA, u_colorB, mix(1.0 - ratio, ratio, on));
+        color = mix(u_colorA, u_colorB, on);
       } else if (type == 17) {             // diamond grid
         vec2 g = abs(fract(p * (u_resolution.y / size)) - 0.5);
         float diamond = g.x + g.y;

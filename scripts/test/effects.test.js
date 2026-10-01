@@ -78,6 +78,25 @@ test('the pattern fills pack their geometry into u_params2', () => {
   }
 });
 
+test('the checker fill alternates its two colours instead of blending them', () => {
+  const vm = require('node:vm');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/lyrics/gl/shaders.js'), 'utf8');
+  const sandbox = { window: {} };
+  sandbox.SA = sandbox.window.SA = {};
+  vm.runInNewContext(source, sandbox);
+  const frag = sandbox.SA.glShaders.FILL_FRAG;
+  const start = frag.indexOf('type == 16');
+  assert.ok(start >= 0, 'the checker branch is missing');
+  const end = frag.indexOf('} else if', start);
+  const branch = frag.slice(start, end < 0 ? undefined : end);
+  // blending the two colours by ratio collapses to a flat colour at 0.5, so
+  // the cell parity has to pick a pure palette colour instead
+  assert.match(branch, /mix\(u_colorA, u_colorB, on\)/);
+  assert.ok(!branch.includes('1.0 - ratio'), 'the checker must not blend by ratio');
+});
+
 test('every edge type resolves to uniforms with a behind/top placement', () => {
   for (const descriptor of fx.list('edge')) {
     const instance = fx.withDefaults({ type: descriptor.type, params: {} }, 'edge');
