@@ -731,12 +731,13 @@ SA.store = (() => {
         return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
       }, 0);
     };
-    const context = SA.moods.contextFor(state.project);
+    // a plain random RGB palette of the current size, the furthest of a few
+    // candidates from the current one so the change is always visible
+    const size = avoid.length || (SA.paletteRoles && SA.paletteRoles.SIZE) || 5;
     let palette = null;
     let best = -1;
     for (let i = 0; i < (tries || 4); i += 1) {
-      const seed = Math.floor(Math.random() * 900000) + 1000;
-      const candidate = SA.moods.generate({ axes: mode.axes, seed, genre: mode.genre, direction: mode.direction, context }).style.palette;
+      const candidate = SA.colors.randomPalette(size);
       const score = distance(candidate.colors);
       if (score > best) {
         best = score;

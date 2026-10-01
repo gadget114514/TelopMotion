@@ -432,10 +432,8 @@ SA.themeEditor = (() => {
     spin.title = t('studio.themeEditor.paletteSpin');
     row.appendChild(spin);
     const reroll = smallButton('🎲', () => {
-      const next = SA.moods.generatePalette(Math.random, draft.axes);
-      let colors = next.colors.slice();
-      if (SA.paletteRoles && (draft.palette.colors || []).length >= SA.paletteRoles.SIZE) colors = SA.paletteRoles.upgradeColors(colors);
-      entry.colors = colors;
+      const next = SA.colors.randomPalette((entry.colors || []).length || (draft.palette.colors || []).length);
+      entry.colors = next.colors;
       if (entry.id == null) entry.id = next.id;
       if (entry.name == null) entry.name = next.name;
       delete entry.auto;
@@ -463,8 +461,8 @@ SA.themeEditor = (() => {
     actions.className = 'insp-actions';
     actions.appendChild(
       smallButton(`🎲 ${t('studio.themeEditor.paletteRandom')}`, () => {
-        const next = SA.moods.generatePalette(Math.random, draft.axes, 'theme');
-        draft.palette = { id: next.id, name: next.name, colors: next.colors.slice() };
+        const next = SA.colors.randomPalette((draft.palette.colors || []).length);
+        draft.palette = { id: next.id, name: next.name, colors: next.colors };
         render();
       })
     );
@@ -583,8 +581,8 @@ SA.themeEditor = (() => {
     useActions.appendChild(
       smallButton(t('studio.themeEditor.usePalettes.addCandidates'), () => {
         for (let i = 0; i < 4; i += 1) {
-          const next = SA.moods.generatePalette(Math.random, draft.axes, 'theme');
-          draft.usePalettes.push({ id: next.id, name: next.name, colors: next.colors.slice() });
+          const next = SA.colors.randomPalette((draft.palette.colors || []).length);
+          draft.usePalettes.push({ id: next.id, name: next.name, colors: next.colors });
         }
         render();
       })

@@ -612,7 +612,16 @@ SA.colors = (() => {
     drawPreview();
   }
 
+  // A palette of plain random RGB colours: no axes, roles or contrast repair.
+  function randomPalette(size) {
+    const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    const count = Math.max(1, Math.round(Number(size) || 5));
+    const id = `random-${Date.now().toString(36)}`;
+    return { id, name: 'Random', colors: Array.from({ length: count }, () => `#${channel()}${channel()}${channel()}`) };
+  }
+
   return {
+    randomPalette,
     BUILTIN_PALETTES,
     allPalettes,
     customPalettes,
