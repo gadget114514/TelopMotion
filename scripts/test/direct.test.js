@@ -363,7 +363,7 @@ const NO_VARIATION = {
   accentColorChance: 0,
   gradientColorChance: 0,
   fillEffectChance: 0,
-  patternFillChance: 1,
+  patternFillChance: 0,
   beatDecoChance: 0,
   maskChance: 0,
   textBgChance: 0,
