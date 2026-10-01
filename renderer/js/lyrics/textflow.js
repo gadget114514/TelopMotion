@@ -688,7 +688,8 @@
       const previous = groups[groups.length - 1];
       const particle = lang === 'ja' && (JA_PARTICLES.includes(unit.text) || /^[、。，．・：；！？）」』】〕〉》]/.test(unit.text));
       const punctuation = lang !== 'ja' && /^[.,;:!?…%)\]}"']/.test(unit.text);
-      if (previous && (particle || punctuation)) previous.push(unit);
+      // a symbol-only unit never stands as its own word
+      if (previous && (particle || punctuation || isSymbolOnly(unit.text))) previous.push(unit);
       else groups.push([unit]);
     }
     return groups;
@@ -749,6 +750,12 @@
   function targetChunkSources(units, target, lang, speeds, count) {
     if (!units.length) return [];
     const beats = Math.max(1, Math.round(count) || 1);
+    // English (space-separated) text is cut on whole words only: punctuation
+    // stays glued to its word, stray symbols ("-", "&", "♪") join a neighbour,
+    // and each cut lands on the word edge closest to the beat's share.
+    // Japanese keeps the TinySegmenter-unit strategy below.
+    const spaced = lang !== 'ja';
+    if (spaced) units = wholeWords(units);
     const totalReading = units.reduce((sum, unit) => sum + readingTime(unit.text, lang, speeds), 0) || units.length;
     const perBeat = totalReading / beats;
     const chunks = [];
@@ -757,30 +764,108 @@
     const flush = () => {
       if (!current.length) return;
       const text = lineText(current).trim();
-      if (text) chunks.push({ level: 'word', text, lines: [text] });
+      if (text) chunks.push({ level: 'word', text, lines: [text], hard: false, gap: !!(current[0].spaceBefore || (spaced && current[0].hardBreak)) });
       current = [];
       reading = 0;
     };
-    for (const unit of units) {
-      if (unit.hardPage || (unit.hardBreak && current.length)) flush();
+    for (let i = 0; i < units.length; i += 1) {
+      const unit = units[i];
+      if (unit.hardPage || (unit.hardBreak && current.length)) {
+        flush();
+        if (chunks.length) chunks[chunks.length - 1].hard = true;
+      }
       current.push(unit);
       reading += readingTime(unit.text, lang, speeds);
+      const next = units[i + 1];
+      // never cut before a symbol-only unit or where breaking is forbidden, and
+      // keep going past a mid-word cut (up to 1.5 beats) to reach a word edge
+      const forbidden = next && !next.hardBreak && !next.hardPage && (isSymbolOnly(next.text) || next.penalty === Infinity);
+      const midWord = next && !next.hardBreak && !next.hardPage && next.penalty >= 4 && !next.spaceBefore && reading < perBeat * 1.5;
+      if (forbidden || midWord) continue;
       const sentenceEnd = SENTENCE_END.test(unit.text) || /[.!?…]["')\]]?$/.test(unit.text);
+      const clauseEnd = /[,;:—–]["')\]]?$/.test(unit.text);
       if (reading >= perBeat || (sentenceEnd && reading >= perBeat * 0.6)) flush();
+      else if (spaced && next && !next.hardBreak && !next.hardPage) {
+        // stop early when the next word would overshoot the share by more than
+        // this cut undershoots it; a clause end is a cheap place to stop
+        const over = reading + readingTime(next.text, lang, speeds) - perBeat;
+        if (over > perBeat - reading || (clauseEnd && reading >= perBeat * 0.75)) flush();
+      }
     }
     flush();
+    // A beat must never be symbols only or a single stray character: fold it
+    // into its neighbour (previous first, the next one when it leads). Beats
+    // split by an explicit line / page break stay as written.
+    // the original gap between the two beats is kept (a space stays a space)
+    const joinText = (a, b, gap) => (gap || (spaced && spaceBetween(a, b)) ? `${a} ${b}` : `${a}${b}`).trim();
+    const tooSmall = (chunk) => isSymbolOnly(chunk.text) || graphemeCount(chunk.text.replace(/\s/g, '')) <= 1;
+    for (let i = 0; i < chunks.length && chunks.length > 1; ) {
+      // `hard` marks a forced break after the beat: it cannot merge across it
+      // (a symbol-only beat has no meaning alone, so it crosses a forced break)
+      const symbols = isSymbolOnly(chunks[i].text);
+      const canPrev = i > 0 && (symbols || !chunks[i - 1].hard);
+      const canNext = i < chunks.length - 1 && (symbols || !chunks[i].hard);
+      if (!tooSmall(chunks[i]) || (!canPrev && !canNext)) {
+        i += 1;
+        continue;
+      }
+      const target = canPrev ? i - 1 : i + 1;
+      const first = Math.min(i, target);
+      const second = Math.max(i, target);
+      chunks[first] = { ...chunks[first], text: joinText(chunks[first].text, chunks[second].text, chunks[second].gap), hard: chunks[second].hard };
+      chunks[first].lines = [chunks[first].text];
+      chunks.splice(second, 1);
+      i = Math.max(0, first);
+    }
     // Merge an over-short tail into the previous beat so the last beat is not a
     // stray word (unless the text is genuinely one word long).
     if (chunks.length > 1) {
       const last = chunks[chunks.length - 1];
       if (readingTime(last.text, lang, speeds) < perBeat * 0.35) {
         const previous = chunks[chunks.length - 2];
-        previous.text = `${previous.text} ${last.text}`.trim();
+        previous.text = joinText(previous.text, last.text, last.gap);
         previous.lines = [previous.text];
         chunks.pop();
       }
     }
-    return chunks;
+    return chunks.map(({ hard, gap, ...chunk }) => chunk);
+  }
+
+  // Joins the units of a space-separated language into whole words.
+  function wholeWords(units) {
+    const words = [];
+    for (const unit of units) {
+      const previous = words[words.length - 1];
+      const glue = previous && !unit.hardBreak && !unit.hardPage && (!unit.spaceBefore || isSymbolOnly(unit.text));
+      if (glue) {
+        const gap = unit.spaceBefore ? ' ' : '';
+        previous.text += gap + unit.text;
+      } else words.push({ ...unit });
+    }
+    // a leading symbol-only word belongs to the word after it
+    for (let i = 0; i < words.length - 1; i += 1) {
+      const next = words[i + 1];
+      if (isSymbolOnly(words[i].text) && !next.hardBreak && !next.hardPage) {
+        next.text = words[i].text + (next.spaceBefore ? ' ' : '') + next.text;
+        next.spaceBefore = words[i].spaceBefore;
+        next.hardBreak = words[i].hardBreak;
+        next.hardPage = words[i].hardPage;
+        words.splice(i, 1);
+        i -= 1;
+      }
+    }
+    return words;
+  }
+
+  // true when the text holds no letter / digit at all (only symbols, marks and
+  // spaces), e.g. "!?", "♪", "—", "…"
+  function isSymbolOnly(text) {
+    return !/[\p{L}\p{N}]/u.test(String(text || ''));
+  }
+
+  // a space is only kept between two Latin-ish runs; CJK text joins directly
+  function spaceBetween(a, b) {
+    return /[A-Za-z0-9À-ɏЀ-ӿ]$/.test(a) && /^[A-Za-z0-9À-ɏЀ-ӿ]/.test(b);
   }
 
   function subdivideChunk(chunk, lang) {

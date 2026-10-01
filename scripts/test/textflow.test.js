@@ -329,6 +329,21 @@ test('targetChunkDuration splits the cue into about three second beats', () => {
   assert.ok(result.pages.every((page) => page.text.trim().length > 0));
 });
 
+test('beats are never symbols only nor a single stray character', () => {
+  const cases = [
+    ['Hello ! ? ♪ world — yes ... go ! ! ! now', 0, 12],
+    ['今日はとても良い天気ですね！ ♪ 公園へ行きましょう…！ 東京都に行く', 0, 12],
+  ];
+  for (const [text, start, end] of cases) {
+    const result = flow(text, { start, end, settings: { chunk: 'phrase', targetChunkDuration: 1.5 } });
+    assert.ok(result.pages.length >= 1);
+    for (const page of result.pages) {
+      assert.ok(/[\p{L}\p{N}]/u.test(page.text), `symbol-only beat "${page.text}"`);
+      if (result.pages.length > 1) assert.ok(Array.from(page.text.replace(/\s/g, '')).length > 1, `stray char beat "${page.text}"`);
+    }
+  }
+});
+
 test('chunk mode still produces the full-text recap at the end', () => {
   const result = flow('one two three four five six seven eight nine ten', {
     start: 0,

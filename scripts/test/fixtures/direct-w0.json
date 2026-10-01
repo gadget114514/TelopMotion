@@ -911,62 +911,67 @@
   "beatStyles": {
     "c1:page1": {
       "text": {
-        "size": 95
+        "size": 109
       }
     },
     "c1:page2": {
       "text": {
-        "size": 94
+        "size": 109
       }
     },
     "c2:page1": {
       "text": {
-        "size": 101
+        "size": 187
       }
     },
     "c2:page2": {
       "text": {
-        "size": 95
+        "size": 156
       }
     },
     "c3:page1": {
       "text": {
-        "size": 93
+        "size": 156
       }
     },
     "c3:page2": {
       "text": {
-        "size": 88
-      }
-    },
-    "c3:page3": {
-      "text": {
-        "size": 101
+        "size": 49
       }
     },
     "c4:page1": {
       "text": {
-        "size": 91
+        "size": 49
       }
     },
     "c4:page2": {
       "text": {
-        "size": 95
+        "size": 527
+      }
+    },
+    "c4:page3": {
+      "text": {
+        "size": 288
+      }
+    },
+    "c4:page4": {
+      "text": {
+        "size": 288
       }
     },
     "c5:page1": {
       "text": {
-        "size": 98
+        "size": 146
       }
     },
     "c5:page2": {
       "text": {
-        "size": 82
+        "size": 170
       }
     },
     "c5:page3": {
       "text": {
-        "size": 97
+        "size": 170
       }
     }
   },
@@ -1361,6 +1366,60 @@
   },
   "clips": [
     {
+      "id": "clip_filler_0",
+      "trackId": "filler",
+      "start": 7.3500000000000005,
+      "end": 8.85,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "count": 40,
+          "flow": "drift",
+          "size": 3
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.3,
+      "fadeOut": 0.3,
+      "colors": null
+    },
+    {
+      "id": "clip_filler_1",
+      "trackId": "filler",
+      "start": 13.35,
+      "end": 14.85,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "count": 40,
+          "flow": "drift",
+          "size": 3
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.3,
+      "fadeOut": 0.3,
+      "colors": null
+    },
+    {
+      "id": "clip_filler_2",
+      "trackId": "filler",
+      "start": 18.549999999999997,
+      "end": 20.85,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "count": 40,
+          "flow": "drift",
+          "size": 3
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.3,
+      "fadeOut": 0.3,
+      "colors": null
+    },
+    {
       "id": "clip_bg_0",
       "trackId": "bg",
       "start": 0,
@@ -1493,60 +1552,6 @@
         "#3fb9d1",
         "#546be2"
       ]
-    },
-    {
-      "id": "clip_filler_0",
-      "trackId": "filler",
-      "start": 7.3500000000000005,
-      "end": 8.85,
-      "spec": {
-        "type": "particles",
-        "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.3,
-      "fadeOut": 0.3,
-      "colors": null
-    },
-    {
-      "id": "clip_filler_1",
-      "trackId": "filler",
-      "start": 13.35,
-      "end": 14.85,
-      "spec": {
-        "type": "particles",
-        "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.3,
-      "fadeOut": 0.3,
-      "colors": null
-    },
-    {
-      "id": "clip_filler_2",
-      "trackId": "filler",
-      "start": 18.549999999999997,
-      "end": 20.85,
-      "spec": {
-        "type": "particles",
-        "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.3,
-      "fadeOut": 0.3,
-      "colors": null
     }
   ]
 }
