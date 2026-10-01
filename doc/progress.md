@@ -464,7 +464,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 - 配線: `direct.prepare` が `ctx.params / ctx.pinned / ctx.typeWeights / ctx.usePalettes / ctx.curve` を持ち、`direct.run` が固定キーだけを書き戻す。`store.modeAxes()` が解決済みプロファイルを返し、ビート/キューの再抽選・`drawPalette` が同じカーブを使う。`looks.pick` / `looks.compose` / `moods.generate` / `moods.pickEntry` に `typeWeights` が届き、重み 0 の型はスタックから落ち、単体グループは `legibility.SAFE_FALLBACKS` に置換。`app.js` のおまかせが `opts.params` 等を渡し、`SA.studio.autoDirect` を公開。
 - サイズ(C1): `weird.sizeWeights(n, center, spread)` と重み付き `createSizeLadder`(時間 / 重みで段を選ぶ。重み・中心なしは従来と同一)。`sizeCenter` `sizeSpread` `sizeChange` `sizeFollow` `heroScale` が効き、拍の音量(`audioDriver.rangeEnergy`)で中心が動き、`sizeRangeFor` は粒子の最小倍率(0.55)から本文下限を引き上げ、`fitComposeSpans` がヒーロー倍率の縮小と助詞の可読下限を保証。`compositions.build` の倍率と `compositions.pick` の大小バイアスもプロファイルへ。
 - 後景(C2): `moods.planeBackdropSpec`。面数 1〜4 を重み抽選(`planes1..4`、weird 0.6 で約 13% / 52% / 35% / 0%)、面の色は背景スロットだけから導き(2面目 = 明度 ±0.10〜0.16・彩度 ×0.9、3面目 = スキーム色相、4面目 = 補助)、`color.separateFrom` + 明度移動で文字色とのコントラスト ≥ `backdropContrast` を保証。アクセント層は面の色の明度 ±0.12 の 2 色で不透明度 ≤ 0.45。`options.planes` が無い旧呼び出しは従来経路のまま。
-- 前景・装飾(C3 / C4): `direct.foregroundFor` が `fgSolid`(従来) / `fgVivid`(本文 = TEXT_FILL2、ヒーロー = TEXT_FILL、4.5 未満は solid へ) / `fgGradient` / `fgEffect` を重み抽選。`boldChance` はキュー単位で本文 700。`decorationFor` が `decoNone` … `decoGlow` から `cueStyles[id].edge` を組み(輪郭 / くっきり影 / 押し出し / ロングシャドウ / 二重線 / グロー)、2 面以上の後景では `none` を分離輪郭へ差し替え(ユーザー固定時を除く)。`repairContrast(colors, min, { keepText })` は背景を先に動かして文字色を残す。
+- 前景・装飾(C3 / C4): `direct.foregroundFor` が `fgSolid`(従来) / `fgVivid`(本文 = TEXT_FILL2、ヒーロー = TEXT_FILL、4.5 未満は solid へ) / `fgGradient` / `fgEffect` / `fgPattern`(stripes・checker・diamondGrid・hatch を読める 2 色で塗る。ムード候補プールを通さないので weird が低くても出る)を重み抽選。`boldChance` はキュー単位で本文 700。`decorationFor` が `decoNone` … `decoGlow` から `cueStyles[id].edge` を組み(輪郭 / くっきり影 / 押し出し / ロングシャドウ / 二重線 / グロー)、2 面以上の後景では `none` を分離輪郭へ差し替え(ユーザー固定時を除く)。`repairContrast(colors, min, { keepText })` は背景を先に動かして文字色を残す。
 - 図形(C5): `figures.js` に太い 6 モチーフ(`slabWipe` / `cornerBlocks` / `ringDraw` / `stripeRun` / `dotGrid` / `sideBars`)を追加。テキストボックスを避けて上・下・隅・端へ置き、`snap`(expoOut + 8% オーバーシュート)と長めの in ウィンドウ(最大 0.45s)を使う。`figureBold` で抽選し、減光フォールバックは `[...BOLD_MOTIFS, ...safeMotifs]` をシャッフルして重なり最小を採用。`figureClipFor` の色は後景面から導出(面と ≥1.5、文字と ≥ `backdropContrast`)。`smartness.RATINGS.figureMotif` と `scripts/fx-axes-overrides.json`(恐怖 0.2)+ `fx-axes` 表を再生成、`fx-strings.js` と `filler-render.js` に 5 言語ラベルと選択肢を追加。
 - 可読性(C6): `legibility.SMEAR_POSTS`(godRays / zoomBlur / spinBlur / motionBlur / echoTrail / chromaticAberration / rgbShift / turbulentDisplace / waveWarp / twirl / lensDistortion / heatHaze)を追加し、compose かつ weird > 0 のとき `postBlur` のロールでテーマから外す。`paletteRoles.schemes(colors, weird, range)` は range < 0.5 で `TMBD` / `MBTD` / `TBMD` の 3 つに限定。`direct.run` の最後に全ビートの最終検査(解決スタイルの `legibility.check(motion:false)` + 面の色とのコントラスト)を置き、失敗時は「可読性修復 → 配色オフ(原因のときだけ) → 本文色 solid へ → 分離輪郭」の順で必ず通す。
 - 使用パレット・確率(C7 / C8): `pickUsePalette` が avoid(ベース・直前キュー)から最も遠い使用パレットを選び `keepText` で修復。`cuePalette` と `drawPalette` が使用パレットを使う(1 件なら毎回同じ = キューごとに色が変わらない)。`pickEntry` は `typeWeights` を重みに掛けて 0 を候補から除外、`looks.weightFor` は `lookTypeWeight` を掛ける。
@@ -499,6 +499,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `fgVivid` | weight | 0..3 | `1.2 * a.w` |
 | `fgGradient` | weight | 0..3 | `1.0 * a.w` |
 | `fgEffect` | weight | 0..3 | `0.6 * a.w * (0.5 + a.e)` |
+| `fgPattern` | weight | 0..3 | `0.5 * a.w` |
 | `boldChance` | chance | 0..1 | `0.25 + 0.5 * a.e` |
 | `decoNone` | weight | 0..3 | `1` |
 | `decoOutline` | weight | 0..3 | `2.2 * a.w` |
@@ -508,8 +509,8 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `decoDouble` | weight | 0..3 | `0.6 * a.w * (0.4 + 0.6 * a.soft)` |
 | `decoGlow` | weight | 0..3 | `0.9 * a.w * (1 - a.bright)` |
 | `graphicChance` | chance | 0..1 | `0.3 + 0.4 * a.w` |
-| `fontChance` | chance | 0..1 | `0.3 * a.t` |
-| `beatFontChance` | chance | 0..1 | `0.25 * a.t` |
+| `fontChance` | chance | 0..1 | `min(1, 0.9 * a.t)` |
+| `beatFontChance` | chance | 0..1 | `min(1, 0.7 * a.t)` |
 | `beatBoldChance` | chance | 0..1 | `0.3 * a.t` |
 | `spacingChance` | chance | 0..1 | `a.t` |
 | `spacingRange` | amount | 0..1 | `a.t` |
@@ -518,6 +519,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `accentColorChance` | chance | 0..1 | `0.5 * a.t` |
 | `gradientColorChance` | chance | 0..1 | `0.3 * a.t` |
 | `fillEffectChance` | chance | 0..1 | `0.3 * a.t` |
+| `patternFillChance` | chance | 0..1 | `0.3 * a.t` |
 | `beatDecoChance` | chance | 0..1 | `0.3 * a.t` |
 | `maskChance` | chance | 0..1 | `0.3 * a.t` |
 | `textBgChance` | chance | 0..1 | `Math.min(1, 0.08 + 0.22 * a.d + 0.5 * a.t)` |

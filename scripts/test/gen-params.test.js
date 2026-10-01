@@ -128,7 +128,7 @@ test('every row declares a kind, chance rows span 0..1 and the keys are unique',
 });
 
 test('keysOf returns the weight groups in table order', () => {
-  assert.deepEqual(genParams.keysOf('fg'), ['fgSolid', 'fgVivid', 'fgGradient', 'fgEffect']);
+  assert.deepEqual(genParams.keysOf('fg'), ['fgSolid', 'fgVivid', 'fgGradient', 'fgEffect', 'fgPattern']);
   assert.deepEqual(genParams.keysOf('deco'), ['decoNone', 'decoOutline', 'decoShadow', 'decoExtrude', 'decoLongShadow', 'decoDouble', 'decoGlow']);
   assert.deepEqual(genParams.keysOf('planes'), ['planes1', 'planes2', 'planes3', 'planes4']);
   assert.deepEqual(genParams.keysOf('textBg'), ['bgEnclose', 'bgAccent', 'bgUnderlay']);

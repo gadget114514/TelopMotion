@@ -940,7 +940,47 @@
       const fill = fillEffectFor(random, ctx);
       return fill ? { fill } : null;
     }
+    if (type === 'fgPattern') {
+      const fill = patternFillFor(random, ctx, colors);
+      return fill ? { fill } : null;
+    }
     return null;
+  }
+
+  // The pattern fills that keep a glyph readable: halftone and speckle break
+  // the outline up, so the generator leaves them to hand editing.
+  const READABLE_PATTERN_FILLS = ['stripes', 'checker', 'diamondGrid', 'hatch'];
+
+  // A pattern fill painted between two readable text colours, drawn straight
+  // from READABLE_PATTERN_FILLS. A drawn look that already carries a fill wins;
+  // a palette without two readable colours yields nothing.
+  function patternFillFor(random, ctx, colors) {
+    const themeFill = ctx.themeStyle && ctx.themeStyle.fill;
+    if (themeFill && themeFill.type) return null;
+    const list = Array.isArray(colors) ? colors : (colors && Array.isArray(colors.colors) ? colors.colors : []);
+    if (list.length < 2 || !SA.fx || typeof SA.fx.paramDefaults !== 'function') return null;
+    const bg = SA.color.parse(list[0] || '#000000');
+    // the text roles first (fill, fill2), then the accent colours a short palette
+    // keeps at 5 / 6; every one has to clear the legibility floor on its own
+    const long = list.length >= 10;
+    const candidates = long ? [4, 5, 6] : [2, 3, 5, 6];
+    const readable = candidates.filter((i) => list[i] && SA.color.contrastRatio(SA.color.parse(list[i]), bg) >= 4.5);
+    if (readable.length < 2) return null;
+    const first = readable[0];
+    const others = readable.slice(1);
+    const type = pick(random, READABLE_PATTERN_FILLS);
+    return {
+      type,
+      params: {
+        ...SA.fx.paramDefaults('fill', type),
+        colorA: { kind: 'palette', index: first },
+        colorB: { kind: 'palette', index: pick(random, others) },
+        angle: Math.round((random() * 2 - 1) * 45),
+        size: Math.round(12 + random() * 20),
+        ratio: Math.round((0.5 + random() * 0.25) * 100) / 100,
+      },
+      enabled: true,
+    };
   }
 
   // A fill effect of the profile's grammar: the drawn look's own fill wins, and
@@ -1143,6 +1183,13 @@
     const fillRandom = stream('beat-fill');
     if (gp.roll(fillRandom, p.fillEffectChance)) {
       const fill = fillEffectFor(fillRandom, ctx);
+      if (fill) patch.fill = fill;
+    }
+    // pattern fill: its own stream, so pinning one chance never shifts the other
+    const patternRandom = stream('beat-pattern');
+    if (gp.roll(patternRandom, p.patternFillChance)) {
+      const colors = ctx.cuePaletteColors || (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
+      const fill = patternFillFor(patternRandom, ctx, colors);
       if (fill) patch.fill = fill;
     }
     // entrance mask: the wipe replaces the template's entrance, the motion

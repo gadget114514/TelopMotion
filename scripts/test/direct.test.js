@@ -363,6 +363,7 @@ const NO_VARIATION = {
   accentColorChance: 0,
   gradientColorChance: 0,
   fillEffectChance: 0,
+  patternFillChance: 1,
   beatDecoChance: 0,
   maskChance: 0,
   textBgChance: 0,
@@ -673,6 +674,7 @@ const ALL_CHANCES = {
   accentColorChance: 1,
   gradientColorChance: 1,
   fillEffectChance: 1,
+  patternFillChance: 1,
   beatDecoChance: 1,
   maskChance: 1,
   textBgChance: 1,
@@ -777,6 +779,19 @@ test('the fill effect draw only applies to a theme without its own fill', () => 
   assert.ok(beats.some(({ style }) => style.fill && style.fill.type), `no beat drew a fill effect (${beats.map(({ beat, style }) => `${beat.id}:${!!style.fill}`).join(' ')})`);
 });
 
+test('the pattern fill draw paints a readable pattern between two palette colours', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  delete theme.fill;
+  const doc = composedDoc({ ...NO_VARIATION, fillEffectChance: 0, patternFillChance: 1 }, { themeStyle: theme });
+  const fills = stylesOf(doc).map(({ style }) => style.fill).filter(Boolean);
+  assert.ok(fills.length, 'no beat drew a pattern fill');
+  for (const fill of fills) {
+    assert.ok(['stripes', 'checker', 'diamondGrid', 'hatch'].includes(fill.type), fill.type);
+    assert.equal(fill.params.colorA.kind, 'palette');
+    assert.notEqual(fill.params.colorA.index, fill.params.colorB.index);
+  }
+});
+
 // The chances only the compose path reads: pinning them must not move the
 // classic output.
 const COMPOSE_ONLY_CHANCES = {
@@ -785,6 +800,7 @@ const COMPOSE_ONLY_CHANCES = {
   alignChance: 1,
   widthChance: 1,
   fillEffectChance: 1,
+  patternFillChance: 1,
   maskChance: 1,
   beatDecoChance: 1,
   textBgChance: 1,

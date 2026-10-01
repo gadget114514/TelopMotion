@@ -76,6 +76,10 @@
     { key: 'fgVivid', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: (a) => 1.2 * a.w },
     { key: 'fgGradient', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: (a) => 1.0 * a.w },
     { key: 'fgEffect', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: (a) => 0.6 * a.w * (0.5 + a.e) },
+    // a pattern fill (stripes / checker / diamond / hatch) drawn straight from
+    // the readable pattern fills, not through the mood pool, so it shows up well
+    // before the weird gate of the pool's own fill effects
+    { key: 'fgPattern', kind: 'weight', tab: 'font', group: 'fg', min: 0, max: 3, step: 0.05, derive: (a) => 0.5 * a.w },
     { key: 'boldChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.25 + 0.5 * a.e },
     // surrounding decoration weights; outline leads so a weird project keeps a
     // separation even before the repair pass runs
@@ -89,8 +93,8 @@
     // a template without a graphic may gain a shape layer (compose mode)
     { key: 'graphicChance', kind: 'chance', tab: 'font', group: 'graphic', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 + 0.4 * a.w },
     // text treatment: one cue-level font draw and the per-beat follow-ups
-    { key: 'fontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
-    { key: 'beatFontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => 0.25 * a.t },
+    { key: 'fontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.9 * a.t) },
+    { key: 'beatFontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.7 * a.t) },
     { key: 'beatBoldChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'spacingChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => a.t },
     { key: 'spacingRange', kind: 'amount', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => a.t },
@@ -100,6 +104,7 @@
     { key: 'accentColorChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.5 * a.t },
     { key: 'gradientColorChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'fillEffectChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
+    { key: 'patternFillChance', kind: 'chance', tab: 'font', group: 'fg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'beatDecoChance', kind: 'chance', tab: 'font', group: 'deco', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     { key: 'maskChance', kind: 'chance', tab: 'font', group: 'mask', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // text background and ornaments: presence, placement weights and the
