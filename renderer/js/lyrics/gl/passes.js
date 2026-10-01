@@ -1009,10 +1009,15 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, source.texture);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, (uniforms && uniforms.sdfTexture) || targets.text.texture);
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, targets.mask ? targets.mask.texture : targets.text.texture);
       gl.useProgram(programs.post.program);
       applyUniforms(gl, programs.post, { ...uniforms, u_resolution: [width, height] });
       gl.uniform1i(programs.post.uniforms.u_text, 0);
       gl.uniform1i(programs.post.uniforms.u_sdf, 1);
+      gl.uniform1i(programs.post.uniforms.u_mask, 2);
+      // a text-target post moves with the letters: it is never masked
+      gl.uniform1f(programs.post.uniforms.u_maskAmount, 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
       // swap layer and postA
@@ -1021,7 +1026,12 @@ SA.glPasses = (() => {
       targets.postA = layer;
     }
 
-    function postFrame(uniforms) {
+    // Applies one frame-wide graphic over the whole picture. With `options.mask`
+    // the baked text mask is composited back from the source: the glyphs (and
+    // their padding ring) are restored, so a light leak, a shape layer or a
+    // camera move can never cover the subtitle.
+    function postFrame(uniforms, options) {
+      const opts = options || {};
       const source = targets.scene;
       const target = targets.postB;
       gl.disable(gl.BLEND);
@@ -1031,10 +1041,14 @@ SA.glPasses = (() => {
       gl.bindTexture(gl.TEXTURE_2D, source.texture);
       gl.activeTexture(gl.TEXTURE1);
       gl.bindTexture(gl.TEXTURE_2D, targets.text.texture);
+      gl.activeTexture(gl.TEXTURE2);
+      gl.bindTexture(gl.TEXTURE_2D, targets.mask ? targets.mask.texture : targets.text.texture);
       gl.useProgram(programs.post.program);
       applyUniforms(gl, programs.post, { ...uniforms, u_resolution: [width, height] });
       gl.uniform1i(programs.post.uniforms.u_text, 0);
       gl.uniform1i(programs.post.uniforms.u_sdf, 1);
+      gl.uniform1i(programs.post.uniforms.u_mask, 2);
+      gl.uniform1f(programs.post.uniforms.u_maskAmount, opts.mask ? 1 : 0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       gl.activeTexture(gl.TEXTURE0);
       const scene = targets.scene;

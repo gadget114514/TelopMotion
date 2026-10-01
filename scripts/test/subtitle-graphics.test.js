@@ -82,3 +82,37 @@ test('the engine drops the track graphics and the timeline draws their row', () 
     assert.ok(i18n.includes(key), `${key} missing from i18n`);
   }
 });
+
+test('graphicsPostsActive spots the frame graphics that need the text mask', () => {
+  const engine = globalThis.SA.lyricsEngine;
+  const previous = globalThis.SA.fx;
+  globalThis.SA.fx = fx;
+  try {
+    const beat = (post, trackId) => ({ trackId: trackId || 'sub1', style: { post } });
+    assert.equal(engine.graphicsPostsActive([beat([])], null), false);
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'sparkles', enabled: true }])], null), false, 'text posts stay unmasked');
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'vignette' }])], null), true);
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'shapeLayer' }])], null), true);
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'vignette', enabled: false }])], null), false);
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'vignette' }], 'sub2')], new Set(['sub2'])), false, 'a hidden graphics row is skipped');
+    assert.equal(engine.graphicsPostsActive([beat([{ type: 'vignette' }], 'sub2')], new Set(['sub1'])), true, 'another track still masks');
+    assert.equal(engine.graphicsPostsActive(null, null), false);
+  } finally {
+    globalThis.SA.fx = previous;
+  }
+});
+
+test('the frame posts composite with the text mask so the glyphs stay on top', () => {
+  const shaders = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'shaders.js'), 'utf8');
+  const post = shaders.slice(shaders.indexOf('const POST_FRAG'), shaders.indexOf('const BLOOM_BRIGHT_FRAG'));
+  assert.ok(post.includes('uniform sampler2D u_mask'), 'POST_FRAG does not read the mask');
+  assert.ok(post.includes('uniform float u_maskAmount'), 'POST_FRAG has no mask amount');
+  assert.ok(post.includes('mix(color, src, keep)'), 'POST_FRAG does not restore the glyphs');
+  const passes = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'), 'utf8');
+  assert.ok(passes.includes('function postFrame(uniforms, options)'), 'postFrame takes no mask option');
+  assert.ok(passes.includes('opts.mask ? 1 : 0'), 'postFrame never switches the mask on');
+  assert.ok(passes.includes('programs.post.uniforms.u_maskAmount'), 'the mask amount uniform is unset');
+  const engine = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
+  assert.ok(engine.includes('graphicsPostsActive(visibleBeats, graphicsHiddenTracks)'), 'the graphics do not request the mask');
+  assert.ok(engine.includes('pipeline.postFrame(uniforms, { mask: maskOn })'), 'the engine does not mask the frame posts');
+});

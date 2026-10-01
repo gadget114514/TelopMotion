@@ -979,6 +979,8 @@ SA.glShaders = (() => {
   uniform vec4 u_params4;      // shapeLayer patterns: kind, period, ratio, flow
   uniform vec4 u_colorA;
   uniform vec4 u_colorB;
+  uniform sampler2D u_mask;    // baked text mask (glyphs + padding ring)
+  uniform float u_maskAmount;  // 1 keeps the text under the frame-wide graphics
   out vec4 fragColor;
   ${COMMON}
   ${PATTERN_GLSL}
@@ -1486,6 +1488,12 @@ SA.glShaders = (() => {
       }
       float shapeAlpha = clamp(alpha * repeatFade, 0.0, 1.0);
       color = vec4(mix(color.rgb, u_colorA.rgb, shapeAlpha), max(color.a, shapeAlpha));
+    }
+    // The frame-wide graphics never paint over the subtitle: where the text
+    // mask holds a glyph (plus its padding ring) the pre-post source wins.
+    if (u_maskAmount > 0.0) {
+      float keep = clamp(texture(u_mask, v_uv).a * u_maskAmount, 0.0, 1.0);
+      color = mix(color, src, keep);
     }
     fragColor = color;
   }`;

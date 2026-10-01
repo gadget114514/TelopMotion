@@ -86,6 +86,21 @@ SA.lyricsEngine = (() => {
     return !(track && track.textMask === false);
   }
 
+  // Is any visible beat carrying an enabled frame-wide graphic (a post on the
+  // track's graphics row)? Those posts composite with the text mask, so the
+  // subtitle stays readable under them. Pure, so the tests can pin it.
+  function graphicsPostsActive(visibleBeats, graphicsHidden) {
+    if (!SA.fx || typeof SA.fx.isGraphicsPost !== 'function') return false;
+    for (const active of visibleBeats || []) {
+      if (!active || !active.style) continue;
+      if (graphicsHidden && graphicsHidden.has(active.trackId)) continue;
+      for (const instance of active.style.post || []) {
+        if (instance && instance.enabled !== false && SA.fx.isGraphicsPost(instance)) return true;
+      }
+    }
+    return false;
+  }
+
   function trackById(project, trackId) {
     return ((project && project.tracks) || []).find((track) => track && track.id === trackId) || null;
   }
@@ -1853,10 +1868,17 @@ SA.lyricsEngine = (() => {
       }
       const hiddenTracks = new Set(subtitleTracks.filter((track) => track.hidden).map((track) => track.id));
       const visibleBeats = activeBeats.filter((active) => !hiddenTracks.has(active.trackId));
-      // the text mask: baked once per frame, and only when a visible lyric
-      // meets a clip that still opted in (the figure / backdrop / filler tracks)
+      // the track's graphics row: frame-wide posts (light leaks, vignette,
+      // camera moves, shape layers ...) are hidden with it, the style data is
+      // never touched
+      const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
+      // the text mask: baked once per frame when a visible lyric meets a clip
+      // that still opted in (the figure / backdrop / filler tracks) or a
+      // frame-wide graphic about to draw; the glyphs composite back over the
+      // graphics, so they can never paint over the subtitle
+      const maskWanted = maskTargetsActive(project, t) || graphicsPostsActive(visibleBeats, graphicsHiddenTracks);
       let maskOn = false;
-      if (!subtitleOnly && visibleBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskTargetsActive(project, t)) {
+      if (!subtitleOnly && visibleBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskWanted) {
         maskOn = buildFrameTextMask(visibleBeats, project);
       }
       // back to front: background clips + background layers -> backdrop clips ->
@@ -1875,9 +1897,6 @@ SA.lyricsEngine = (() => {
       // subtitle tracks whose text background was switched off keep their data
       // (bgShape is untouched) and simply skip the background pass
       const bgHiddenTracks = new Set(subtitleTracks.filter((track) => track.bgHidden).map((track) => track.id));
-      // the track's graphics row: frame-wide posts (light leaks, vignette,
-      // camera moves ...) are hidden with it, the style data is never touched
-      const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
       const trackOrder = subtitleTracks.map((track) => track.id);
       const beatsByTrack = new Map();
       for (const active of visibleBeats) {
@@ -2071,7 +2090,9 @@ SA.lyricsEngine = (() => {
         drawForegroundLayers();
         renderAlwaysCredits(t, beats, drawForegroundLayers);
       }
-      for (const uniforms of framePosts.values()) pipeline.postFrame(uniforms);
+      // the frame-wide graphics never paint over the subtitle: the baked text
+      // mask restores the glyphs from the pre-post source
+      for (const uniforms of framePosts.values()) pipeline.postFrame(uniforms, { mask: maskOn });
       if (bloomNeeded) pipeline.bloom(0.6, 0.8);
       pipeline.finish();
       gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -2239,5 +2260,5 @@ SA.lyricsEngine = (() => {
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, backgroundBaseColor };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor };
 })();
