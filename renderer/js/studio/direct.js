@@ -2167,6 +2167,23 @@
       stroke: boldStroke ? 'bold' : undefined,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
+    // the same motif never plays on two cues in a row (the procedural motif's
+    // high draw chance would otherwise carry most of a song): redraw with the
+    // next seeds until another motif comes up
+    for (let attempt = 0; attempt < 6 && spec && spec.params && spec.params.motif === ctx.figurePrevMotif && !boldMotif; attempt += 1) {
+      spec = SA.figures.generate({
+        span: { start: cue.start, end: cue.end },
+        beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
+        axes,
+        seed: seed + index * 53 + 211 + attempt,
+        id: cue.id,
+        palette,
+        sync,
+        density,
+        stroke: boldStroke ? 'bold' : undefined,
+        cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+      });
+    }
     // the figure must stay clear of the lyrics: the auto direction measures the
     // geometric overlap (a dimmed shape still sits over the text), swaps the
     // motif for one that lives around the text box when needed, and draws no
@@ -2209,7 +2226,8 @@
         // 1) a procedural figure that only just missed the clearance keeps its
         // family: another genome is grown before the fixed motifs take over, so
         // the figure track does not fall back to the same library every cue
-        for (let attempt = 0; attempt < 3; attempt += 1) {
+        // (not when the previous cue already played it)
+        for (let attempt = 0; attempt < 3 && ctx.figurePrevMotif !== 'proc'; attempt += 1) {
           if (consider(candidateFor('proc', attempt)) <= AUTO_FIGURE_CLEAR) break;
         }
         // 2) motifs that frame the text box first, then the bold cuts, then the
