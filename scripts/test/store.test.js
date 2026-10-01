@@ -16,6 +16,7 @@ require('../../renderer/js/lyrics/effects/post.js');
 require('../../renderer/js/lyrics/effects/background.js');
 
 const projectModule = require('../../renderer/js/studio/project.js');
+globalThis.window = globalThis;
 globalThis.SA = globalThis.SA || {};
 globalThis.SA.project = projectModule;
 globalThis.SA.moods = require('../../renderer/js/lyrics/moods.js');
@@ -29,6 +30,9 @@ globalThis.SA.figures = require('../../renderer/js/lyrics/figures.js');
 globalThis.SA.keywords = require('../../renderer/js/lyrics/keywords.js');
 globalThis.SA.compositions = require('../../renderer/js/lyrics/compositions.js');
 globalThis.SA.direct = require('../../renderer/js/studio/direct.js');
+// the palette dice draw through the colors module (studio.html loads it after
+// the store; the test needs it on SA before the reroll commands run)
+require('../../renderer/js/studio/colors.js');
 require('../../renderer/js/studio/store.js');
 const store = globalThis.SA.store;
 

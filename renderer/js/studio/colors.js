@@ -16,6 +16,9 @@ SA.colors = (() => {
 
   let popover = null;
   let onChangeHandler = null;
+  // candidate palettes are deduplicated by id, and several may be drawn in the
+  // same millisecond, so the serial keeps every random palette distinct
+  let randomSerial = 0;
 
   function t(key, vars) {
     return SA.i18n.t(key, vars);
@@ -616,7 +619,8 @@ SA.colors = (() => {
   function randomPalette(size) {
     const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     const count = Math.max(1, Math.round(Number(size) || 5));
-    const id = `random-${Date.now().toString(36)}`;
+    randomSerial += 1;
+    const id = `random-${Date.now().toString(36)}-${randomSerial.toString(36)}`;
     return { id, name: 'Random', colors: Array.from({ length: count }, () => `#${channel()}${channel()}${channel()}`) };
   }
 
