@@ -60,6 +60,18 @@ test('every fill type resolves to uniforms', () => {
   }
 });
 
+test('the per-letter text colour is a fill uniform, off unless asked for', () => {
+  const instance = fx.withDefaults({ type: 'solid', params: {} }, 'fill');
+  const colors = { fill: [1, 0.5, 0.2, 1] };
+  // the glyph body paints itself in the beat fill unless a per-letter colour
+  // was declared (a scoped text span or a variation fgColor)
+  assert.equal(fx.fillUniforms(instance, { colors }).u_letterTint, 0);
+  assert.equal(fx.fillUniforms(instance, { colors, letterTint: true }).u_letterTint, 1);
+  // the background pass keeps its own gate: the tint multiplies the shape colour
+  assert.equal(fx.fillUniforms(instance, { colors, maskTint: true }).u_maskTint, 0, 'maskTint is the bg role only');
+  assert.equal(fx.fillUniforms(instance, { colors, role: 'bg', maskTint: true }).u_maskTint, 1);
+});
+
 test('the pattern fills pack their geometry into u_params2', () => {
   const patternTypes = ['stripes', 'checker', 'diamondGrid', 'halftone', 'hatch', 'randomSpeckle'];
   for (const type of patternTypes) {

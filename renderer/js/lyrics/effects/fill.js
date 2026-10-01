@@ -322,6 +322,8 @@
       u_params: params4,
       u_params2: params4b,
       u_maskTint: context.role === 'bg' && context.maskTint ? 1 : 0,
+      // the glyph body takes the per-letter colour when one was declared
+      u_letterTint: context.letterTint ? 1 : 0,
       u_time: context.time || 0,
       u_progress: context.progress == null ? 0 : context.progress,
       sdfTexture: context.sdfTexture || null,

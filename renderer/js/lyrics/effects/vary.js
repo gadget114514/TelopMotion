@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('../rng'), require('../../color'), require('./text-bg'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('../rng'), require('../../color'), require('./text-bg'), require('../scope'));
   else {
     root.SA = root.SA || {};
-    root.SA.vary = factory(root.SA.rng, root.SA.color, root.SA.textBg);
+    root.SA.vary = factory(root.SA.rng, root.SA.color, root.SA.textBg, root.SA.scope);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, color, textBg) {
+})(typeof self !== 'undefined' ? self : this, function (rng, color, textBg, scope) {
   'use strict';
 
   const CLIP_COLORS = ['#ffffff', '#f4f4f4', '#111111'];
@@ -15,6 +15,14 @@
   const LATIN = /[A-Za-z\u00c0-\u024f]/;
   const DIGIT = /[0-9\uff10-\uff19]/;
   const SKIPPABLE = /[\s\u3000]|[\p{P}\p{S}]/u;
+
+  // scope.js owns the "is this a letter" rule, so the `nth` letter scope and
+  // the background colour variation count the same letters. studio.html loads
+  // vary.js before scope.js, so the module is read at call time, not here.
+  function scopeApi() {
+    if (scope && typeof scope.isSkippable === 'function') return scope;
+    return typeof SA !== 'undefined' && SA && SA.scope ? SA.scope : null;
+  }
 
   function classIndex(char) {
     const value = String(char == null ? '' : char);
@@ -29,6 +37,8 @@
   }
 
   function isSkippable(char) {
+    const api = scopeApi();
+    if (api) return api.isSkippable(char);
     const value = String(char == null ? '' : char);
     if (!value) return true;
     return SKIPPABLE.test(value);

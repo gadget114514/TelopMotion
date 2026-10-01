@@ -1619,7 +1619,10 @@ SA.lyricsEngine = (() => {
     function bgVariationFor(scene, shape, style, beat, group) {
       const project = state.project;
       const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
-      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}`;
+      const scoped = scopedBgEntries(style);
+      // the scoped entries are part of the result, so they are part of the key
+      const scopedKey = scoped.length ? JSON.stringify(scoped.map((entry) => [entry.group, entry.type, entry.params || {}, entry.scope || null])) : '';
+      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}|${scopedKey}`;
       if (scene.__bgVary && scene.__bgVary.key === key) return scene.__bgVary.value;
       const palette = (style.palette && style.palette.colors) || [];
       const letters = scene.letters.map((letter) => ({
@@ -1628,7 +1631,7 @@ SA.lyricsEngine = (() => {
         wordIdx: letter.wordIdx,
         path: letter.path,
       }));
-      const value = SA.vary.letterVariation(shape.params, letters, palette, [seed, beat.id]);
+      const value = applyScopedBg(SA.vary.letterVariation(shape.params, letters, palette, [seed, beat.id]), scene, style);
       scene.__bgVary = { key, value };
       return value;
     }
@@ -1734,7 +1737,11 @@ SA.lyricsEngine = (() => {
             defaultFill: isBg ? '#101018' : '#ff8a3d',
           })
         : { arrays: { fill: [1, 0.54, 0.24, 1], fill2: [1, 0.54, 0.24, 1], stroke: [1, 1, 1, 1] } };
-      const hasVaryColor = variation.some((entry) => entry && entry.color && (entry.color[0] !== 1 || entry.color[1] !== 1 || entry.color[2] !== 1));
+      // the per-letter colour gate for the fill pass: the vary colours, or a scoped
+      // solid colour on any letter (a white scoped colour is a colour too)
+      const hasVaryColor =
+        scopedBgEntries(style).some((entry) => entry.group === 'bgFill' && entry.type === 'solid' && entry.params && entry.params.color) ||
+        variation.some((entry) => entry && entry.color && (entry.color[0] !== 1 || entry.color[1] !== 1 || entry.color[2] !== 1));
       const edgeUniformsFor = (instance) =>
         SA.fx.edgeUniforms(instance, {
           colorSet: colorSet.arrays,
@@ -1949,6 +1956,11 @@ SA.lyricsEngine = (() => {
         const variant = morphVariantFor(project, beat, scene);
         const colorOverride = variation ? bgColorOverrideFor(scene, variation) : null;
         pipeline.text(scene, result.letters, variant, colorOverride);
+        // A per-letter text colour is carried by the text mask the text pass
+        // just drew, so the glyph body takes it instead of the uniform fill
+        // colour. A `paletteIndex` span is left alone: the motion pass already
+        // mixes it toward colorB (state.colorMix), which keeps the fill effect.
+        const hasLetterColor = !!colorOverride || scene.letters.some((letter) => letter.span && letter.span.color);
         // per-letter blur (blurIn / blurOut / focus / depth of field) runs on
         // the text mask before the sdf so the edges follow the blurred shape
         pipeline.letterBlur(scene, result.letters);
@@ -2032,6 +2044,9 @@ SA.lyricsEngine = (() => {
         if (sdfTarget) {
           for (const edge of edges) if (!edge.top) pipeline.edge(edge);
         }
+        // A per-letter text colour (a scoped `text` span or a variation
+        // fgColor) is carried by the text mask the text pass just drew, so the
+        // glyph body takes it instead of the uniform fill colour.
         pipeline.fill(
           SA.fx.fillUniforms(fillInstance, {
             colors: colorSet.arrays,
@@ -2042,6 +2057,7 @@ SA.lyricsEngine = (() => {
             categoryColors: project.categoryColors || {},
             progress,
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
+            letterTint: hasLetterColor,
           })
         );
         if (sdfTarget) {
@@ -2270,5 +2286,50 @@ SA.lyricsEngine = (() => {
     };
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor };
+  // Scoped background attributes (`style.scoped`). The colour, the visibility
+  // and the opacity of the letters a scope covers ride the same variation entry
+  // the vary key already writes, so no new draw path is needed: the background
+  // fill pass tints each letter by `entry.color` (maskTint) and the shape quad
+  // reads `entry.visible` / `entry.opacity`. Later entries win.
+  const SCOPED_BG = ['bgFill', 'bgShape'];
+  function scopedBgEntries(style) {
+    const list = Array.isArray(style && style.scoped) ? style.scoped : [];
+    const out = [];
+    if (!SA.fx || typeof SA.fx.expandPreset !== 'function') return out;
+    for (const entry of list) {
+      if (!entry || entry.enabled === false || !SCOPED_BG.includes(entry.group) || !entry.type) continue;
+      // a letter-wise preset carries its parameters as defaults, so the entry is
+      // resolved (and a preset expanded to its primitive) before it is read
+      const resolved = SA.fx.expandPreset({ type: entry.type, params: entry.params, enabled: true }, entry.group);
+      if (!resolved || !resolved.type) continue;
+      out.push({ group: entry.group, type: resolved.type, params: resolved.params || {}, scope: entry.scope || null });
+    }
+    return out;
+  }
+  function applyScopedBg(value, scene, style) {
+    const entries = scopedBgEntries(style);
+    if (!entries.length || !SA.scope || typeof SA.scope.scopeMask !== 'function') return value;
+    for (const entry of entries) {
+      const mask = SA.scope.scopeMask(scene, entry.scope || null);
+      if (!mask) continue;
+      const params = entry.params || {};
+      for (let i = 0; i < value.length && i < mask.length; i += 1) {
+        if (!mask[i]) continue;
+        const slot = value[i];
+        if (!slot) continue;
+        if (entry.group === 'bgShape') {
+          // `none` hides the letter's square, any other type shows it again
+          if (entry.type === 'none') slot.visible = false;
+          else if (slot.visible === false) slot.visible = true;
+          if (params.opacity != null) slot.opacity = Math.max(0, Math.min(1, Number(params.opacity) || 0));
+        } else if (entry.type === 'solid') {
+          const rgba = params.color && SA.color && typeof SA.color.parse === 'function' ? SA.color.parse(params.color) : null;
+          if (rgba) slot.color = [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+        }
+      }
+    }
+    return value;
+  }
+
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg };
 })();

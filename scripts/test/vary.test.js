@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 require('../../renderer/js/lyrics/effects/registry.js');
 require('../../renderer/js/lyrics/effects/text-bg.js');
 const vary = require('../../renderer/js/lyrics/effects/vary.js');
+const scope = require('../../renderer/js/lyrics/scope.js');
 
 function letters(chars) {
   return chars.map((char, index) => ({ char, lineIdx: 0, wordIdx: 0, path: `l${index}` }));
@@ -117,12 +118,20 @@ test('fgColors wraps by its own length, not the background list', () => {
   assert.deepEqual(result[3].fgColor, result[1].fgColor);
   assert.deepEqual(result[4].fgColor, result[0].fgColor);
   assert.deepEqual(result[5].fgColor, result[1].fgColor);
-  // the other way round: two background colours, three text colours. The vary
-  // key only reaches 1, so the third colour never comes up
-  const narrow = { ...wide, varyColors: ['#000000', '#808080'] };
+  // the other way round: two background colours, three text colours. The
+  // running count is not reduced by the background list, so the third colour
+  // does come up (index 2 is reached on the third letter)
+  const narrow = { vary: 'cycle', varyColors: ['#000000', '#808080'], fgColors: ['#111111', '#222222', '#333333'], skipSpaces: false };
   const wrapped = vary.letterVariation(narrow, letters(six), [], 'seed');
-  assert.deepEqual(wrapped.map((entry) => entry.fgColor), [wrapped[0].fgColor, wrapped[1].fgColor, wrapped[0].fgColor, wrapped[1].fgColor, wrapped[0].fgColor, wrapped[1].fgColor]);
-  assert.deepEqual(wrapped[1].fgColor, [0x22 / 255, 0x22 / 255, 0x22 / 255, 1]);
+  assert.deepEqual(wrapped.map((entry) => entry.color), [wrapped[0].color, wrapped[1].color, wrapped[0].color, wrapped[1].color, wrapped[0].color, wrapped[1].color]);
+  assert.deepEqual(wrapped.map((entry) => entry.fgColor.slice(0, 3)), [
+    [0x11 / 255, 0x11 / 255, 0x11 / 255],
+    [0x22 / 255, 0x22 / 255, 0x22 / 255],
+    [0x33 / 255, 0x33 / 255, 0x33 / 255],
+    [0x11 / 255, 0x11 / 255, 0x11 / 255],
+    [0x22 / 255, 0x22 / 255, 0x22 / 255],
+    [0x33 / 255, 0x33 / 255, 0x33 / 255],
+  ]);
 });
 
 test('fgColors wins over fgAutoContrast', () => {
@@ -165,4 +174,32 @@ test('an empty fgColors leaves every letter on the beat fill', () => {
   const result = vary.letterVariation(params, letters(['a', 'b']), [], 'seed');
   assert.equal(result[0].fgColor, null);
   assert.equal(result[1].fgColor, null);
+});
+
+test('isSkippable is the scope rule the nth letter index counts with', () => {
+  for (const char of ['a', 'Z', 'あ', '漢', '1', ' ', '　', '！', '.', '、', '♪', '']) {
+    assert.equal(vary.isSkippable(char), scope.isSkippable(char), `${JSON.stringify(char)}`);
+  }
+});
+
+test('the alternate index and the nth letter index are the same letters', () => {
+  const chars = ['a', ' ', 'b', '！', 'c', 'd'];
+  const scene = {
+    letters: chars.map((char, index) => ({ char, lineIdx: 0, wordIdx: 0, globalIdx: index, textOffset: index })),
+  };
+  const varied = vary.letterVariation(
+    { vary: 'alternate', varyColors: ['#000000', '#ffffff'], skipSpaces: true },
+    letters(chars),
+    [],
+    'seed'
+  );
+  // the visible letters are a(0), b(2), c(4), d(5), so `alternate` and the
+  // two `nth` slots have to pick exactly the same pairs
+  const first = scope.scopeMask(scene, { kind: 'nth', unit: 'letter', every: 2, offset: 0 });
+  const second = scope.scopeMask(scene, { kind: 'nth', unit: 'letter', every: 2, offset: 1 });
+  const joined = varied.map((entry, index) => (first[index] ? 'A' : second[index] ? 'B' : '.')).join('');
+  assert.equal(joined, 'A.B.AB', 'a and c take the even slot, b and d the odd one');
+  // ... and the alternate colours really do alternate across them
+  const white = varied.filter((entry) => entry.visible && entry.color[0] > 0.5).length;
+  assert.equal(white, 2, 'two of the four visible letters are white');
 });

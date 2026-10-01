@@ -40,7 +40,7 @@ const fxAxes = requirePart('renderer/js/lyrics/fx-axes.js');
 const fx400 = requirePart('scripts/fx400.js');
 
 const AXES = fxAxes.AXES;
-const EFFECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
+const EFFECT_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat', 'text'];
 // alias groups read the same behaviour as their base group
 const BASE_GROUP = { bgFill: 'fill', bgEdge: 'edge', ornFill: 'fill', ornEdge: 'edge' };
 // The ornament shapes are the old text-background shapes under a second name:

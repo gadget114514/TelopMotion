@@ -595,7 +595,14 @@ SA.lyricsFont = (() => {
         const letterFonts = span && span.fontSet ? normalizedFontSet(span.fontSet) : fontSet;
         const { letter } = buildLetter(character, style, letterFonts, size * scale, lang, opts);
         letter.textOffset = cursor;
-        if (span) letter.span = span;
+        if (span) {
+          letter.span = span;
+          // the layout hands the spans over as copies (each carries its font
+          // set), so the `span` scope matches on this index rather than on the
+          // object identity; the composer sets it to its own span number
+          if (span.spanIndex != null) letter.spanIndex = span.spanIndex;
+          else letter.spanIndex = spans.indexOf(span);
+        }
         let breakBefore = false;
         if (previous != null && !/^\s+$/.test(character)) {
           if (/\s+$/.test(previous)) breakBefore = true;

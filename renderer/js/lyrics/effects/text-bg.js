@@ -171,7 +171,7 @@
     });
   }
 
-  // the background fill / edge reuse the foreground effect libraries; the
+  // The background fill / edge reuse the foreground effect libraries; the
   // ornament groups are the same libraries behind their own names
   if (typeof fx.alias === 'function') {
     fx.alias('bgFill', 'fill');
@@ -180,6 +180,24 @@
     fx.alias('ornEdge', 'edge');
     fx.alias('ornMotion', 'bgMotion');
   }
+
+  // The text attributes a scoped entry can set per letter. It is not a drawable
+  // group: the engine turns these params into synthetic composition spans, so
+  // the layout itself carries the size / weight / colour (see scene.js). `scale`
+  // multiplies the beat size, `weight` 0 keeps the beat weight, and the colour
+  // is a literal hex or a palette slot (`paletteIndex` -1 = the beat fill).
+  fx.register({
+    group: 'text',
+    type: 'span',
+    tags: ['basic'],
+    params: [
+      { key: 'scale', kind: 'number', min: 0.25, max: 4, step: 0.01, default: 1 },
+      { key: 'weight', kind: 'number', min: 0, max: 900, step: 100, default: 0 },
+      { key: 'color', kind: 'color', default: null },
+      { key: 'paletteIndex', kind: 'int', min: -1, max: 11, step: 1, default: -1 },
+    ],
+    cost: 0,
+  });
 
   function clamp01(value) {
     const number = Number(value);
@@ -539,7 +557,7 @@
         shapeIndex,
         motionScaleX: scaleX,
         motionScaleY: scaleY,
-        opacity: clamp01(opacity),
+        opacity: clamp01(opacity) * (vary && vary.opacity != null ? clamp01(vary.opacity) : 1),
         clip,
         color: varyColor || [1, 1, 1, 1],
         wobbleSeed,

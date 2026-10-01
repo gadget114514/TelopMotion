@@ -91,7 +91,9 @@
 
   function registerPreset(descriptor) {
     const group = descriptor.group;
-    const source = types.get(`${group}.${descriptor.primitive}`);
+    // `get` follows the group aliases, so a preset can sit in an aliased group
+    // (`bgFill` -> `fill`) and still inherit its primitive's schema
+    const source = get(group, descriptor.primitive);
     if (!source) return null;
     const params = { ...(descriptor.params || {}) };
     const entry = register({
@@ -104,6 +106,9 @@
         // defaults -> preset params -> instance params
         params,
         motion: descriptor.motion ? JSON.parse(JSON.stringify(descriptor.motion)) : source.defaults.motion,
+        // a scoped preset (a letter-wise attribute) pins the scope it needs, so
+        // picking the type writes a ready-to-see entry instead of an unscoped one
+        scope: descriptor.scope ? JSON.parse(JSON.stringify(descriptor.scope)) : undefined,
       },
       tags: descriptor.tags || source.tags,
       cost: source.cost,
@@ -143,13 +148,22 @@
 
   function list(group, options) {
     const packs = options && options.packs;
-    const direct = groups.get(group);
-    if (direct) return [...direct.values()].filter((entry) => packMatches(entry, packs));
+    // An aliased group keeps the base group's types and may add its own on top
+    // (a preset registered under `bgFill` must not hide the `fill` types behind
+    // the alias), so both sets are merged, base first, without duplicates.
     const base = aliases.get(group);
-    if (!base) return [];
-    return [...(groups.get(base) || new Map()).values()]
-      .filter((entry) => packMatches(entry, packs))
-      .map((entry) => ({ ...entry, group }));
+    const out = [];
+    const seen = new Set();
+    for (const source of [groups.get(group), base && base !== group ? groups.get(base) : null]) {
+      for (const entry of source ? source.values() : []) {
+        if (!packMatches(entry, packs)) continue;
+        const key = `${base && entry.group === base ? group : entry.group}.${entry.type}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        out.push(entry.group === group ? entry : { ...entry, group });
+      }
+    }
+    return out;
   }
 
   function packOf(group, type) {
@@ -213,7 +227,8 @@
       enabled: source.enabled !== false,
       params,
       motion: { ...((entry && entry.defaults.motion) || {}), ...(source.motion || {}) },
-      ...(source.scope == null ? {} : { scope: source.scope }),
+      // a scoped preset carries its scope; an explicit one on the instance wins
+      ...(source.scope != null || (entry && entry.defaults.scope) ? { scope: source.scope != null ? source.scope : entry.defaults.scope } : {}),
     };
   }
 

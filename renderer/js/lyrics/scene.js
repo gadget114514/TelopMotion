@@ -20,6 +20,113 @@ SA.lyricsScene = (() => {
     return Math.min(512, Math.max(64, rounded));
   }
 
+  // The text attributes a scoped `text` entry sets per letter (size / weight /
+  // colour) become synthetic composition spans, so the layout itself carries
+  // them. Returns null when the style declares no `text` entry, which keeps the
+  // plain layout byte-identical. `compose` is the style's own composition and
+  // is null for every other style.
+  function scopedTextEntries(style) {
+    const list = Array.isArray(style && style.scoped) ? style.scoped : [];
+    const out = [];
+    if (!SA.fx || typeof SA.fx.withDefaults !== 'function') return out;
+    for (const entry of list) {
+      if (!entry || entry.group !== 'text' || entry.enabled === false || !entry.type) continue;
+      // a letter-wise preset carries its parameters as defaults, so the entry is
+      // resolved before its scale / weight / colour are read
+      const resolved = SA.fx.withDefaults({ type: entry.type, params: entry.params, scope: entry.scope, enabled: true }, 'text');
+      if (resolved) out.push(resolved);
+    }
+    return out;
+  }
+
+  // The attribute set of one code point, overlaid in entry order on top of the
+  // composition's own spans. `masks` holds one mask per scoped entry, resolved
+  // once by the caller. `null` means "the beat default" (no span needed).
+  function attributesOf(compose, charIndex, entries, masks) {
+    const attrs = {};
+    let touched = false;
+    const apply = (source, spanIndex) => {
+      if (!source) return;
+      if (spanIndex != null && attrs.spanIndex == null) attrs.spanIndex = spanIndex;
+      const scale = Number(source.scale);
+      if (Number.isFinite(scale) && scale > 0 && Math.abs(scale - 1) > 1e-9) {
+        attrs.scale = (attrs.scale || 1) * scale;
+        touched = true;
+      }
+      const weight = Number(source.weight);
+      if (Number.isFinite(weight) && weight > 0) {
+        attrs.weight = weight;
+        touched = true;
+      }
+      const paletteIndex = Number(source.paletteIndex);
+      if (Number.isFinite(paletteIndex) && paletteIndex >= 0) {
+        attrs.paletteIndex = Math.floor(paletteIndex);
+        touched = true;
+      }
+      const color = typeof source.color === 'string' && source.color ? source.color : null;
+      if (color) {
+        attrs.color = color;
+        touched = true;
+      }
+    };
+    if (compose && Array.isArray(compose.spans)) {
+      // the composition's own span number rides along, so a `span` scope still
+      // addresses the composition and not the re-encoded run
+      compose.spans.forEach((span, index) => {
+        if (span && charIndex >= span.from && charIndex < span.to) apply(span, index);
+      });
+    }
+    for (let i = 0; i < entries.length; i += 1) {
+      const mask = masks[i];
+      if (mask && mask[charIndex]) apply(entries[i].params || {});
+    }
+    return touched ? attrs : null;
+  }
+
+  // Run-length encodes the per-code-point attributes into `{ from, to, ... }`
+  // spans. A run that carries nothing the beat does not already have never
+  // becomes a span, so a style with only colour set does not resize anything.
+  function encodeTextSpans(style, compose, text) {
+    const entries = scopedTextEntries(style);
+    if (!entries.length) return null;
+    // the same index space font.js counts in (code points, no line separators)
+    const chars = SA.scope.codePointsOf(text);
+    if (!chars.length) return null;
+    const spans = [];
+    // the composition's spans keep their own numbers; the synthetic runs are
+    // numbered after them
+    const base = compose && Array.isArray(compose.spans) ? compose.spans.length : 0;
+    const masks = entries.map((entry) => SA.scope.maskForText(text, entry.scope || null, compose));
+    let synthetic = 0;
+    let cursor = 0;
+    let current = null;
+    const flush = () => {
+      // `key` is only the run identity, never a span attribute
+      if (current) {
+        const { key, ...attrs } = current;
+        spans.push({ ...attrs, to: cursor });
+      }
+      current = null;
+    };
+    for (let i = 0; i < chars.length; i += 1) {
+      const attrs = attributesOf(compose, i, entries, masks);
+      const key = attrs ? JSON.stringify(attrs) : '';
+      if (!current || current.key !== key) {
+        flush();
+        // a run that carries no composition span gets its own number, past the
+        // composition's, so a `span` scope addressing span #n of the
+        // composition never picks up a synthetic run
+        if (attrs) {
+          current = { key, from: i, ...attrs, spanIndex: attrs.spanIndex == null ? base + synthetic : attrs.spanIndex };
+          synthetic += 1;
+        }
+      }
+      cursor = i + 1;
+    }
+    flush();
+    return spans.length ? spans : null;
+  }
+
   function resolveFillColor(project, style, beat) {
     const colorSet = style.color || {};
     const category = (beat.meta && beat.meta.category) || null;
@@ -124,13 +231,20 @@ SA.lyricsScene = (() => {
     const beatLines = compose ? null : Array.isArray(beat.lines) && beat.lines.length ? beat.lines : null;
     const fillBeat = !compose && beat.fit === 'fill' && !!beatLines;
     const layoutTextSource = compose ? beat.text || '' : beatLines ? beatLines.join('\n') : beat.text || '';
+    // The scoped text attributes are addressed in the layout's own index space,
+    // which for a fill beat is the joined flow lines and for a composition its
+    // beat text. `encodeTextSpans` returns null without a scoped `text` entry,
+    // so a plain style and a plain composition keep their exact span list.
+    const mergedSpans = encodeTextSpans(style, compose, compose ? beat.text || '' : layoutTextSource);
     let composeLayout = null;
-    if (compose) {
-      const spans = Array.isArray(compose.spans) ? compose.spans : [];
+    if (compose || (mergedSpans && mergedSpans.length)) {
+      // the composition keeps its own breaks; the synthetic spans from the
+      // scoped `text` entries have none, so the layout wraps as it always did
+      const spans = mergedSpans || (Array.isArray(compose.spans) ? compose.spans : []);
       const setsByWeight = new Map();
       composeLayout = {
-        breaks: new Set(Array.isArray(compose.breaks) ? compose.breaks : []),
-        spans: spans.map((span) => {
+        breaks: new Set(compose && Array.isArray(compose.breaks) ? compose.breaks : []),
+        spans: spans.map((span, index) => {
           if (!span) return span;
           const weight = span.weight == null ? textStyle.weight : span.weight;
           let set = setsByWeight.get(weight);
@@ -138,7 +252,12 @@ SA.lyricsScene = (() => {
             set = SA.lyricsFont && typeof SA.lyricsFont.orderFonts === 'function' ? SA.lyricsFont.orderFonts(loaded, textStyle.fontId, weight) : loaded;
             setsByWeight.set(weight, set);
           }
-          return { ...span, fontSet: span.fontSet || set };
+          // the layout copies every span (it adds the weight's font set), so the
+          // letters cannot be matched back by identity; the index is what the
+          // `span` scope asks for. For a composition it is the composition's own
+          // index, so a scoped span keeps addressing the user's spans even when
+          // the scoped text attributes added synthetic ones around them.
+          return { ...span, spanIndex: span.spanIndex == null ? index : span.spanIndex, fontSet: span.fontSet || set };
         }),
       };
     }
@@ -279,6 +398,7 @@ SA.lyricsScene = (() => {
             bbox: { x1: source.bbox.x1, y1: source.bbox.y1, x2: source.bbox.x2, y2: source.bbox.y2 },
             color: letterColor,
             span: source.span || null,
+            spanIndex: source.spanIndex == null ? null : source.spanIndex,
             style,
             mesh: null,
             samples: null,

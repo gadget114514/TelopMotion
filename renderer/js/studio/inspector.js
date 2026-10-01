@@ -25,6 +25,7 @@ SA.inspector = (() => {
     bgFill: 'studio.inspector.bgFill',
     bgEdge: 'studio.inspector.bgEdge',
     bgMotion: 'studio.inspector.bgMotion',
+    text: 'studio.inspector.text',
     ornShape: 'studio.inspector.ornShape',
     ornFill: 'studio.inspector.ornFill',
     ornEdge: 'studio.inspector.ornEdge',
@@ -1061,15 +1062,34 @@ SA.inspector = (() => {
   // replace the base instance for the covered letters, hold adds to the stack,
   // fill / edge draw a scoped overlay mask in the engine.
 
-  const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge'];
-  const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span'];
+  const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge', 'bgFill', 'bgShape', 'text'];
+  const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span', 'nth'];
   const SCOPE_KIND_LABELS = {
     all: 'studio.inspector.scopeAll',
     range: 'studio.inspector.scopeRange',
     word: 'studio.inspector.scopeWord',
     keyword: 'studio.inspector.scopeKeyword',
     span: 'studio.inspector.scopeSpan',
+    nth: 'studio.inspector.scopeNth',
   };
+  // The scoped background colour is a plain fill: a per-letter gradient would
+  // need a per-letter overlay pass. These groups list every type of their own
+  // (`bgShape` / `text` register no packed entry and `solid` is the text fill),
+  // so the picker is never empty for them.
+  const SCOPED_TYPE_LIMIT = { bgFill: ['solid'] };
+  const SCOPED_ALL_PACKS = new Set(['fill', 'bgFill', 'bgShape', 'text']);
+  function scopedTypes(group) {
+    const list = SA.fx.list(group, SCOPED_ALL_PACKS.has(group) ? { packs: 'all' } : UI_PACKS);
+    const limit = SCOPED_TYPE_LIMIT[group];
+    return limit ? list.filter((descriptor) => limit.includes(descriptor.type)) : list;
+  }
+  // A letter-wise preset pins the scope that makes its attribute letter-wise, so
+  // picking the type adopts it instead of leaving the letters unscoped.
+  function scopedDefaultScope(group, type) {
+    const descriptor = SA.fx.get(group, type);
+    const scope = descriptor && descriptor.defaults ? descriptor.defaults.scope : null;
+    return scope ? JSON.parse(JSON.stringify(scope)) : null;
+  }
 
   function numberParam(key, min, max, step, fallback) {
     return { key, kind: 'number', min, max, step, default: fallback };
@@ -1089,14 +1109,15 @@ SA.inspector = (() => {
       head.className = 'insp-stack-head';
       head.appendChild(
         SA.controls.selectControl({}, entry.group || 'hold', (next) => {
-          const descriptors = SA.fx.list(next, UI_PACKS);
-          update(list.map((item, i) => (i === index ? { ...item, group: next, type: descriptors.length ? descriptors[0].type : item.type, params: {} } : item)));
+          const descriptors = scopedTypes(next);
+          const type = descriptors.length ? descriptors[0].type : item.type;
+          update(list.map((item, i) => (i === index ? { ...item, group: next, type, params: {}, scope: scopedDefaultScope(next, type) || item.scope || null } : item)));
         }, SCOPED_GROUPS.map((group) => ({ value: group, label: t(GROUP_LABELS[group]) })))
       );
       head.appendChild(
         SA.controls.selectControl({}, entry.type, (next) => {
-          update(list.map((item, i) => (i === index ? { ...item, type: next, params: {} } : item)));
-        }, SA.fx.list(entry.group || 'hold', UI_PACKS).map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(entry.group || 'hold', descriptor.type) })))
+          update(list.map((item, i) => (i === index ? { ...item, type: next, params: {}, scope: scopedDefaultScope(item.group || 'hold', next) || item.scope || null } : item)));
+        }, scopedTypes(entry.group || 'hold').map((descriptor) => ({ value: descriptor.type, label: SA.controls.typeLabel(entry.group || 'hold', descriptor.type) })))
       );
       headActions(
         head,
@@ -1122,11 +1143,22 @@ SA.inspector = (() => {
         row(box, `scoped.${index}.match`, t('studio.inspector.scopeMatch'), SA.controls.textControl(scope.match || '', (next) => setScope({ match: String(next) })));
       } else if (scope.kind === 'span') {
         row(box, `scoped.${index}.spanIndex`, t('studio.inspector.scopeSpanIndex'), SA.controls.numberControl(numberParam('spanIndex', 0, 31, 1, 0), scope.spanIndex == null ? 0 : scope.spanIndex, (next) => setScope({ spanIndex: next }), { noSlider: true }));
+      } else if (scope.kind === 'nth') {
+        // the word / line units need the wrapped layout, which only exists once
+        // the scene is built, so they are not offered on the `text` group
+        const units = entry.group === 'text' ? ['letter'] : ['letter', 'word', 'line'];
+        const unit = units.includes(scope.unit) ? scope.unit : 'letter';
+        row(box, `scoped.${index}.unit`, t('studio.inspector.scopeUnit'), SA.controls.selectControl({}, unit, (next) => setScope({ unit: next }), units.map((value) => ({ value, label: t(`fx.value.${value}`) }))));
+        row(box, `scoped.${index}.every`, t('studio.inspector.scopeEvery'), SA.controls.numberControl(numberParam('every', 1, 64, 1, 2), scope.every == null ? 2 : scope.every, (next) => setScope({ every: next }), { noSlider: true }));
+        row(box, `scoped.${index}.offset`, t('studio.inspector.scopeOffset'), SA.controls.numberControl(numberParam('offset', 0, 63, 1, 0), scope.offset == null ? 0 : scope.offset, (next) => setScope({ offset: next }), { noSlider: true }));
+        row(box, `scoped.${index}.skipSpaces`, t('studio.inspector.scopeSkipSpaces'), SA.controls.boolControl(scope.skipSpaces !== false, (value) => setScope({ skipSpaces: value })));
       }
 
-      // the effect parameters (the same rows as a stack group)
+      // the effect parameters (the same rows as a stack group). A preset's own
+      // defaults are resolved first, so picking `spanEveryThird` shows its 1.45
+      // rather than the bare parameter default of 1
       const descriptor = SA.fx.get(entry.group || 'hold', entry.type);
-      const params = entry.params || {};
+      const params = (SA.fx.withDefaults({ type: entry.type, params: entry.params, enabled: true }, entry.group || 'hold') || {}).params || entry.params || {};
       for (const param of SA.controls.paramEntries(descriptor)) {
         const value = params[param.key] != null ? params[param.key] : param.default;
         const control = SA.controls.paramControl(entry.group || 'hold', param, value, (next) => {
@@ -1136,13 +1168,29 @@ SA.inspector = (() => {
       }
       body.appendChild(box);
     });
+    // The blue / white request in one click: two alternating pairs, each one a
+    // background colour plus the text colour that reads on it. The text colour
+    // is a scoped `text` span (the `fill` group takes no colour of its own).
+    const alternate = document.createElement('button');
+    alternate.type = 'button';
+    alternate.className = 'btn btn-mini';
+    alternate.textContent = t('studio.inspector.addAlternatingColors');
+    alternate.addEventListener('click', () => {
+      const pair = (offset, bg, fg) => ([
+        { group: 'bgFill', type: 'solid', params: { color: bg }, enabled: true, scope: { kind: 'nth', unit: 'letter', every: 2, offset } },
+        { group: 'text', type: 'span', params: { color: fg }, enabled: true, scope: { kind: 'nth', unit: 'letter', every: 2, offset } },
+      ]);
+      update([...list, ...pair(0, '#1e50ff', '#ffffff'), ...pair(1, '#ffffff', '#1e50ff')]);
+    });
+    body.appendChild(alternate);
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'btn btn-mini';
     add.textContent = `+ ${t('studio.inspector.addScoped')}`;
     add.addEventListener('click', () => {
-      const descriptors = SA.fx.list('hold', UI_PACKS);
-      update([...list, { group: 'hold', type: descriptors.length ? descriptors[0].type : 'none', params: {}, enabled: true, scope: { kind: 'all' } }]);
+      const descriptors = scopedTypes('hold');
+      const type = descriptors.length ? descriptors[0].type : 'none';
+      update([...list, { group: 'hold', type, params: {}, enabled: true, scope: scopedDefaultScope('hold', type) || { kind: 'all' } }]);
     });
     body.appendChild(add);
   }

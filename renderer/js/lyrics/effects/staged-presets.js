@@ -78,6 +78,23 @@
     { group: 'exit', primitive: 'tracking', type: 'trackOut', params: { amount: 1.1, trackAxis: 'x' }, motion: { out: { duration: 0.7, ease: 'expoIn' } } },
     { group: 'hold', primitive: 'tracking', type: 'trackBreath', params: { amount: 0.06, mode: 'breathe', freq: 0.2, trackAxis: 'x' } },
     { group: 'hold', primitive: 'tracking', type: 'trackBeat', params: { amount: 0.08, mode: 'beat', trackAxis: 'x' } },
+
+    // --- letter-wise attributes (style.scoped) --------------------------------
+    // These are the scoped groups, so each preset pins the scope that makes the
+    // attribute letter-wise: picking the type writes a ready-to-see entry (every
+    // other letter, every third, every other word) instead of an unscoped one.
+    // `text` sets the size / weight / colour of the letter itself, `bgFill`
+    // paints its background square and `bgShape none` hides it.
+    { group: 'text', primitive: 'span', type: 'spanEveryOther', params: { scale: 1.3 }, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 0 } },
+    { group: 'text', primitive: 'span', type: 'spanEveryOtherAlt', params: { scale: 1.3 }, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 1 } },
+    { group: 'text', primitive: 'span', type: 'spanEveryThird', params: { scale: 1.45 }, scope: { kind: 'nth', unit: 'letter', every: 3, offset: 0 } },
+    { group: 'text', primitive: 'span', type: 'spanEveryWord', params: { scale: 1.2 }, scope: { kind: 'nth', unit: 'word', every: 2, offset: 0 } },
+    { group: 'text', primitive: 'span', type: 'spanColorEveryOther', params: { color: '#ff8a3d' }, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 0 } },
+    { group: 'text', primitive: 'span', type: 'spanColorEveryLine', params: { color: '#4dc8ff' }, scope: { kind: 'nth', unit: 'line', every: 2, offset: 0 } },
+    { group: 'bgFill', primitive: 'solid', type: 'bgEveryOther', params: { color: '#ff8a3d' }, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 0 } },
+    { group: 'bgFill', primitive: 'solid', type: 'bgEveryThird', params: { color: '#4dc8ff' }, scope: { kind: 'nth', unit: 'letter', every: 3, offset: 0 } },
+    { group: 'bgShape', primitive: 'none', type: 'bgHideEveryOther', params: {}, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 1 } },
+    { group: 'bgShape', primitive: 'none', type: 'bgHideEveryThird', params: {}, scope: { kind: 'nth', unit: 'letter', every: 3, offset: 0 } },
   ];
 
   const registered = [];

@@ -91,6 +91,7 @@
       zoomSpeed: 'Zoom speed', fit: 'Fit',
       textFit: 'Sizing', fillCoverage: 'Screen coverage', fillBleed: 'Allowed overflow', fillMaxWidth: 'Max line width',
       fillMaxHeight: 'Max block height', fillMinSize: 'Min size', fillMaxSize: 'Max size', fillConsistency: 'Size across pages',
+      paletteIndex: 'Palette slot',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -558,6 +559,7 @@
         none: 'None', square: 'Square', rounded: 'Rounded', circle: 'Circle', diamond: 'Diamond', ring: 'Ring', bar: 'Bar',
         star: 'Star', blob: 'Blob', heart: 'Heart', splatter: 'Splatter', scratch: 'Scratch', drop: 'Drop', bracket: 'Bracket',
         paper: 'Paper', cloud: 'Cloud',
+        bgHideEveryOther: 'Hide every other', bgHideEveryThird: 'Hide every third',
       },
       ornShape: {
         none: 'None', square: 'Square', rounded: 'Rounded', circle: 'Circle', diamond: 'Diamond', ring: 'Ring', bar: 'Bar',
@@ -576,6 +578,7 @@
       fill: {
         ink: 'Ink', stripes: 'Stripes', checker: 'Checker', diamondGrid: 'Diamond grid',
         halftone: 'Halftone dots', hatch: 'Hatch', randomSpeckle: 'Random speckle',
+        bgEveryOther: 'Colour every other', bgEveryThird: 'Colour every third',
       },
       enter: { flickerIn: 'Flicker in', megaZoomIn: 'Mega zoom in' },
       exit: { creepOut: 'Creep out', megaZoomOut: 'Mega zoom out' },
@@ -584,11 +587,18 @@
         fontSize: 'Font size', fillScreen: 'Fill screen', squashStretch: 'Squash & stretch', swirl: 'Swirl',
         warp: 'Warp', letterWarp: 'Letter warp',
       },
+      text: {
+        span: 'Letter attributes',
+        spanEveryOther: 'Size: every other letter', spanEveryOtherAlt: 'Size: the other letters',
+        spanEveryThird: 'Size: every third letter', spanEveryWord: 'Size: every other word',
+        spanColorEveryOther: 'Colour: every other letter', spanColorEveryLine: 'Colour: every other line',
+      },
     },
     params: {
       unit: 'Unit', lockAspect: 'Lock aspect', rotateWithLetter: 'Rotate with letter', scaleWithLetter: 'Scale with letter',
       knockout: 'Knockout', layer: 'Layer', skipSpaces: 'Skip spaces', skipRate: 'Skip rate',
       fgAutoContrast: 'Auto text contrast', fgColors: 'Text colors (per letter)', vary: 'Vary', varyColors: 'Vary colors', varyShape: 'Vary shape',
+      paletteIndex: 'Palette slot',
       varyShapes: 'Shape candidates', varySize: 'Size wobble', varyOffset: 'Offset wobble', varyRotation: 'Rotation wobble',
       seedShift: 'Seed shift', spikes: 'Spikes', jag: 'Jaggedness', lead: 'Lead', exit: 'Exit', exitDuration: 'Exit duration',
       holdAmount: 'Hold amount', overshoot: 'Overshoot', turns: 'Turns', axis: 'Axis', roughness: 'Roughness', rise: 'Rise',
@@ -623,6 +633,7 @@
         none: 'なし', square: '四角', rounded: '角丸', circle: '円', diamond: 'ひし形', ring: 'リング', bar: '帯',
         star: '星', blob: '不定形', heart: 'ハート', splatter: '血しぶき', scratch: 'ひっかき傷', drop: 'しずく',
         bracket: 'カギ括弧', paper: '紙片', cloud: '雲',
+        bgHideEveryOther: '1つおきに消す', bgHideEveryThird: '3つおきに消す',
       },
       ornShape: {
         none: 'なし', square: '四角', rounded: '角丸', circle: '円', diamond: 'ひし形', ring: 'リング', bar: '帯',
@@ -641,6 +652,7 @@
       fill: {
         ink: '墨', stripes: 'ストライプ', checker: 'チェッカー', diamondGrid: 'ダイヤ格子',
         halftone: 'ハーフトーン', hatch: 'ハッチング', randomSpeckle: 'ランダム斑点',
+        bgEveryOther: '1つおきに色', bgEveryThird: '3つおきに色',
       },
       enter: { flickerIn: 'ちらつき登場', megaZoomIn: '巨大ズームイン' },
       exit: { creepOut: '這い出し退場', megaZoomOut: '巨大ズームアウト' },
@@ -649,11 +661,18 @@
         fontSize: '文字サイズ', fillScreen: '画面いっぱい', squashStretch: '伸び縮み', swirl: '渦変形',
         warp: 'ワープ', letterWarp: '文字ワープ',
       },
+      text: {
+        span: '文字ごとの属性',
+        spanEveryOther: '大きさ：1つおき', spanEveryOtherAlt: '大きさ：もう片方',
+        spanEveryThird: '大きさ：3つおき', spanEveryWord: '大きさ：単語ごと',
+        spanColorEveryOther: '色：1つおき', spanColorEveryLine: '色：行ごと',
+      },
     },
     params: {
       unit: '単位', lockAspect: '縦横比を固定', rotateWithLetter: '文字の回転に追従', scaleWithLetter: '文字の拡大に追従',
       knockout: '抜き文字', layer: 'レイヤー', skipSpaces: '空白を飛ばす', skipRate: '間引き率',
       fgAutoContrast: '文字色を自動調整', fgColors: '文字色（文字ごと）', vary: '文字ごとの変化', varyColors: '変化に使う色', varyShape: '形を変える',
+      paletteIndex: 'パレット番号',
       varyShapes: '形の候補', varySize: '大きさの揺らぎ', varyOffset: '位置の揺らぎ', varyRotation: '回転の揺らぎ',
       seedShift: '乱数シフト', spikes: 'トゲ', jag: 'ギザギザ', lead: '先行', exit: '消え方', exitDuration: '消える長さ',
       holdAmount: 'ゆらぎ量', overshoot: '行き過ぎ', turns: '回転数', axis: '軸', roughness: '粗さ', rise: '浮き上がり',
@@ -1284,26 +1303,36 @@
       scoped: 'Partial decorations', scopeKind: 'Scope', scopeAll: 'All letters', scopeRange: 'Range (code points)',
       scopeWord: 'Words', scopeKeyword: 'Keyword', scopeSpan: 'Composition span', scopeFrom: 'From', scopeTo: 'To',
       scopeWords: 'Word indices', scopeMatch: 'Match text', scopeSpanIndex: 'Span #', addScoped: 'Add a partial decoration',
+      scopeNth: 'Every Nth', scopeUnit: 'Unit', scopeEvery: 'Every', scopeOffset: 'Offset', scopeSkipSpaces: 'Skip spaces',
+      addAlternatingColors: 'Alternate colours',
     },
     ja: {
       scoped: '部分演出', scopeKind: '適用範囲', scopeAll: '全文字', scopeRange: '範囲（コードポイント）',
       scopeWord: '単語', scopeKeyword: 'キーワード', scopeSpan: 'コンポジション span', scopeFrom: '開始', scopeTo: '終了',
       scopeWords: '単語番号', scopeMatch: '一致文字列', scopeSpanIndex: 'span 番号', addScoped: '部分演出を追加',
+      scopeNth: 'n 個ごと', scopeUnit: '単位', scopeEvery: '周期', scopeOffset: '開始位置', scopeSkipSpaces: '空白を飛ばす',
+      addAlternatingColors: '色を交互に',
     },
     es: {
       scoped: 'Decoraciones parciales', scopeKind: 'Alcance', scopeAll: 'Todas las letras', scopeRange: 'Rango (puntos de código)',
       scopeWord: 'Palabras', scopeKeyword: 'Palabra clave', scopeSpan: 'Span de composición', scopeFrom: 'Desde', scopeTo: 'Hasta',
       scopeWords: 'Índices de palabras', scopeMatch: 'Texto a coincidir', scopeSpanIndex: 'Span n.º', addScoped: 'Añadir decoración parcial',
+      scopeNth: 'Cada N', scopeUnit: 'Unidad', scopeEvery: 'Cada', scopeOffset: 'Desplazamiento', scopeSkipSpaces: 'Omitir espacios',
+      addAlternatingColors: 'Colores alternos',
     },
     fr: {
       scoped: 'Décorations partielles', scopeKind: 'Portée', scopeAll: 'Toutes les lettres', scopeRange: 'Plage (points de code)',
       scopeWord: 'Mots', scopeKeyword: 'Mot-clé', scopeSpan: 'Span de composition', scopeFrom: 'De', scopeTo: 'À',
       scopeWords: 'Indices des mots', scopeMatch: 'Texte à trouver', scopeSpanIndex: 'N° de span', addScoped: 'Ajouter une décoration partielle',
+      scopeNth: 'Chaque N', scopeUnit: 'Unité', scopeEvery: 'Chaque', scopeOffset: 'Décalage', scopeSkipSpaces: 'Ignorer les espaces',
+      addAlternatingColors: 'Couleurs alternées',
     },
     ru: {
       scoped: 'Частичные украшения', scopeKind: 'Область', scopeAll: 'Все буквы', scopeRange: 'Диапазон (кодовые точки)',
       scopeWord: 'Слова', scopeKeyword: 'Ключевое слово', scopeSpan: 'Span композиции', scopeFrom: 'От', scopeTo: 'До',
       scopeWords: 'Индексы слов', scopeMatch: 'Текст совпадения', scopeSpanIndex: 'Span №', addScoped: 'Добавить частичное украшение',
+      scopeNth: 'Каждые N', scopeUnit: 'Единица', scopeEvery: 'Шаг', scopeOffset: 'Смещение', scopeSkipSpaces: 'Пропускать пробелы',
+      addAlternatingColors: 'Чередование цветов',
     },
   };
 

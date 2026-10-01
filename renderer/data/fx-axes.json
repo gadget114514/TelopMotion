@@ -25,8 +25,8 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 410,
-    "groups": 24,
+    "types": 421,
+    "groups": 25,
     "overridden": 581
   },
   "groups": {
@@ -310,6 +310,8 @@
     "bgShape": {
       "none": 143165576,
       "square": 680036488,
+      "bgHideEveryOther": 680036488,
+      "bgHideEveryThird": 680036488,
       "rounded": 680036488,
       "circle": 680036488,
       "diamond": 1753778312,
@@ -326,6 +328,8 @@
       "cloud": 1485539464
     },
     "bgFill": {
+      "bgEveryOther": 680036488,
+      "bgEveryThird": 680036488,
       "solid": 755535480,
       "categoryColor": 738757512,
       "gradientSweep": 671648148,
@@ -384,6 +388,15 @@
       "scatter": 2290661512,
       "brick": 1753790600,
       "fill": 2290673800
+    },
+    "text": {
+      "span": 680036488,
+      "spanEveryOther": 680036488,
+      "spanEveryOtherAlt": 680036488,
+      "spanEveryThird": 680036488,
+      "spanEveryWord": 680036488,
+      "spanColorEveryOther": 680036488,
+      "spanColorEveryLine": 680036488
     },
     "figureMotif": {
       "orbit": 646482056,

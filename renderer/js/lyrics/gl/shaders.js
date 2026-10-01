@@ -691,6 +691,9 @@ SA.glShaders = (() => {
   uniform vec4 u_params;
   uniform vec4 u_params2;      // pattern fills: angle, size, ratio, speed
   uniform float u_maskTint;
+  // per-letter colour (a scoped text span or a variation fgColor): the glyph
+  // takes the colour the text mask was drawn in instead of the beat fill
+  uniform float u_letterTint;
   out vec4 fragColor;
   ${COMMON}
   ${PATTERN_GLSL}
@@ -830,6 +833,12 @@ SA.glShaders = (() => {
     if (u_maskTint > 0.5) {
       vec3 tint = text.rgb / max(text.a, 1e-4);
       color.rgb *= mix(vec3(1.0), tint, 1.0);
+    }
+    if (u_letterTint > 0.5) {
+      // the text mask is drawn in each letter's own colour (premultiplied), so
+      // the glyph body takes it over the uniform fill colour
+      vec3 letterColor = text.rgb / max(text.a, 1e-4);
+      color = vec4(letterColor * color.a, color.a);
     }
     // the per-letter highlight (range selector / karaoke sweep): row 4 of the
     // state texture carries how far the letter has moved to the accent colour

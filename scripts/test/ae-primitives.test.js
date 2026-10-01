@@ -16,6 +16,7 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 }
 const warp = require(path.join(FX_DIR, 'warp.js'));
 const animator = require(path.join(FX_DIR, 'animator.js'));
+const stagedPresets = require(path.join(FX_DIR, 'staged-presets.js'));
 const geometry = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'geometry.js'));
 
 test('the block warp parameter survives the encode / decode round trip', () => {
@@ -65,6 +66,33 @@ test('a preset expands back into its primitive with the resolved parameters', ()
   assert.equal(resolved.params.bend, 0.5);
   // a non-preset passes through unchanged
   assert.deepEqual(fx.expandPreset({ type: 'jelly', params: {} }, 'hold'), { type: 'jelly', params: {} });
+});
+
+test('a letter-wise preset pins the scope that makes its attribute letter-wise', () => {
+  const scoped = stagedPresets.PRESETS.filter((preset) => preset.scope);
+  assert.ok(scoped.length >= 8, `letter-wise presets: ${scoped.length}`);
+  for (const preset of scoped) {
+    const descriptor = fx.get(preset.group, preset.type);
+    assert.ok(descriptor && descriptor.preset, `${preset.group}.${preset.type} is not a preset`);
+    assert.equal(descriptor.preset.primitive, preset.primitive, `${preset.type} primitive`);
+    // picking the type resolves to a scoped instance without the caller
+    // repeating the scope
+    const resolved = fx.withDefaults({ type: preset.type, params: {} }, preset.group);
+    assert.deepEqual(resolved.scope, preset.scope, `${preset.group}.${preset.type} scope`);
+    assert.equal(resolved.scope.kind, 'nth', `${preset.group}.${preset.type} is not nth`);
+    // an explicit scope on the instance wins over the preset's
+    const own = { kind: 'keyword', match: 'AB' };
+    assert.deepEqual(fx.withDefaults({ type: preset.type, params: {}, scope: own }, preset.group).scope, own);
+    // the primitive keeps its own schema, so the inspector rows still edit it
+    assert.deepEqual(fx.expandPreset({ type: preset.type, params: {} }, preset.group).type, preset.primitive);
+    // a preset registered in an aliased group must not hide the base types
+    assert.ok(fx.list(preset.group, { packs: 'all' }).length > 1, `${preset.group} list collapsed`);
+  }
+  // the letter-wise presets are packed, so the fx400 / fx800 sample books are
+  // untouched by them
+  assert.equal(fx.list('text').length, 1, 'text core types');
+  assert.equal(fx.list('bgShape').length, 2, 'bgShape core types');
+  for (const preset of scoped) assert.equal(fx.packOf(preset.group, preset.type), 'pro', `${preset.type} pack`);
 });
 
 test('the pack filter hides the extended entries unless they are asked for', () => {
