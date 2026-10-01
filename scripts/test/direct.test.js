@@ -183,9 +183,10 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   const output = outputOf(doc);
   // The filler gaps are the documented w=0 exception (item 8: they now show
   // figures); everything else must match the pre-extraction snapshot. The
-  // second documented exception is the size ladder: energy is not 0 at weird 0,
-  // so `beatStyles[*].text.size` belongs to the ladder now and is stripped from
-  // both sides before the comparison.
+  // second documented exception is the size ladder: the snapshot's sizes came
+  // from the old per-beat jitter and the ladder now pins the base size at weird
+  // 0, so `beatStyles[*].text.size` is stripped from both sides before the
+  // comparison.
   const stripSizes = (styles) => {
     if (!styles) return styles;
     for (const style of Object.values(styles)) {

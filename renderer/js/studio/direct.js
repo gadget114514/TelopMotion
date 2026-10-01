@@ -622,7 +622,7 @@
       record(level, duration);
       return { px, level };
     }
-    return { change, record, choose, levelOf: (px, range) => nearestLevel(sizeLevels(range), px) };
+    return { change, baseSize, record, choose, levelOf: (px, range) => nearestLevel(sizeLevels(range), px) };
   }
 
   // The ladder pick for one beat in song order: the caller's `ctx.sizePrev` is
@@ -1031,27 +1031,33 @@
     }
     varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy);
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, patch);
-    // the ladder owns the size above the template only while it is changing;
-    // at change 0 the composition itself is the picture
-    if (ctx.sizeLadder && ctx.sizeLadder.change > 0) {
+    // The ladder owns the size above the template. Above change 0 it picks a
+    // level per beat; at raw weird 0 it pins the run's base size, so the font
+    // size never changes with energy. A weird run with the change pinned to 0
+    // instead keeps the composition's own size (the composition is the picture).
+    if (ctx.sizeLadder && (ctx.sizeLadder.change > 0 || !(Number(ctx.rawW) > 0))) {
       const text = projectDoc.beatStyles[beat.id].text;
-      const spans = (text.compose && text.compose.spans) || [];
-      const scales = spans.map((span) => Number(span.scale) || 1);
-      const spanScale = scales.length ? Math.max(1, ...scales) : 1;
-      const minScale = scales.length ? Math.min(...scales) : 1;
-      let range = sizeRangeFor(beat, text, ctx, spanScale, minScale);
-      // a hero that cannot clear the floor even at its own scale shrinks until
-      // the whole line fits, then the range is measured again
-      if (range.full > 0 && range.max < range.floor) {
-        const cap = Math.max(1, range.full / range.floor);
-        for (const span of spans) if ((Number(span.scale) || 1) > cap) span.scale = Math.round(cap * 100) / 100;
-        const next = spans.map((span) => Number(span.scale) || 1);
-        range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1);
+      if (ctx.sizeLadder.change > 0) {
+        const spans = (text.compose && text.compose.spans) || [];
+        const scales = spans.map((span) => Number(span.scale) || 1);
+        const spanScale = scales.length ? Math.max(1, ...scales) : 1;
+        const minScale = scales.length ? Math.min(...scales) : 1;
+        let range = sizeRangeFor(beat, text, ctx, spanScale, minScale);
+        // a hero that cannot clear the floor even at its own scale shrinks until
+        // the whole line fits, then the range is measured again
+        if (range.full > 0 && range.max < range.floor) {
+          const cap = Math.max(1, range.full / range.floor);
+          for (const span of spans) if ((Number(span.scale) || 1) > cap) span.scale = Math.round(cap * 100) / 100;
+          const next = spans.map((span) => Number(span.scale) || 1);
+          range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1);
+        }
+        const px = ladderPx(ctx, beat, range, centerShift);
+        text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
+        // every particle span rises until its own glyph keeps the floor
+        fitComposeSpans(text, range, px);
+      } else {
+        text.size = Math.max(8, Math.round(ctx.sizeLadder.baseSize / (beat.fontScale || 1)));
       }
-      const px = ladderPx(ctx, beat, range, centerShift);
-      text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
-      // every particle span rises until its own glyph keeps the floor
-      fitComposeSpans(text, range, px);
     }
     history.push(comp);
     if (ctx.composeZones) {

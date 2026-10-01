@@ -1929,9 +1929,10 @@ SA.store = (() => {
               const ctx = composeRunContext(projectDoc, mode, seed + index + 1, history);
               SA.direct.composeBeat(projectDoc, target, beat, index, cueIndex, ctx);
             });
-            // the ladder re-picks the sizes; at change 0 the compositions
-            // themselves are the picture (matching run / composeBeat)
-            if (change > 0 && SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
+            // the ladder re-picks the sizes; at raw weird 0 it pins the run's
+            // base size (matching run / composeBeat), while a weird run with
+            // the change pinned to 0 keeps the compositions' own sizes
+            if ((change > 0 || !(mode.rawW > 0)) && SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
               SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
             }
             return;
@@ -1985,10 +1986,11 @@ SA.store = (() => {
           }
           // the size ladder re-picks the beat's size inside the song: the
           // neighbours' levels are respected and the other beats stay put.
-          // In compose mode the compositions are the picture at change 0.
+          // In compose mode a weird run with the change pinned to 0 keeps the
+          // composition's own size, while raw weird 0 pins the base size.
           const composeMode = !!(projectDoc.styleMode && projectDoc.styleMode.compose);
           const change = mode.params.sizeChange;
-          const ladderActive = !composeMode || change > 0;
+          const ladderActive = !composeMode || change > 0 || !(mode.rawW > 0);
           if (ladderActive && SA.direct && typeof SA.direct.resizeBeats === 'function') {
             SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000, { params: mode.params, curve: mode.curve });
           }

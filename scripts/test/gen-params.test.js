@@ -157,7 +157,7 @@ test('roll consumes no random at chance 0 and pickWeighted ignores zero weights'
 
 test('every chance is off at weird 0 except the documented ones', () => {
   const derived = genParams.derive({ ...BASE, weird: 0 });
-  const alwaysOn = new Set(['sizeChange', 'boldChance', 'graphicChance', 'pulseChance', 'textBgChance', 'bgVaryChance', 'bgEdgeChance']);
+  const alwaysOn = new Set(['boldChance', 'graphicChance', 'pulseChance', 'textBgChance', 'bgVaryChance', 'bgEdgeChance']);
   for (const def of genParams.PARAMS) {
     if (def.kind !== 'chance' || alwaysOn.has(def.key)) continue;
     assert.equal(derived[def.key], 0, `${def.key} at weird 0`);

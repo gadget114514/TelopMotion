@@ -1,7 +1,8 @@
 'use strict';
 
 // The auto-direct size ladder: ten levels from the legibility floor to the
-// screen-filling size, walked by the change value v = weird + energy churn.
+// screen-filling size, walked by the change value v = 1 - (1 - weird)(1 -
+// energy) above weird 0 and pinned to 0 at weird 0 (one size for the song).
 // `sizeChange` also feeds the density -> letter spacing conversion, which is
 // part of the width a "full screen" size is measured against.
 
@@ -98,10 +99,12 @@ test('sizeChange is 0 at rest, 1 at weird 1 and monotone in each axis', () => {
   assert.equal(SA.weird.sizeChange({ weird: 0, energy: 0 }), 0);
   assert.equal(SA.weird.sizeChange({ weird: 1 }), 1);
   assert.equal(SA.weird.sizeChange({ weird: 1, energy: 0 }), 1);
-  // the fixture's axes: 1 - (1 - 0)(1 - 0.55)
-  assert.ok(Math.abs(SA.weird.sizeChange(FIXTURE.axes) - 0.55) < 1e-9);
-  assert.equal(SA.weird.sizeChange({ weird: 0, energy: 1 }), 1);
-  assert.equal(SA.weird.sizeChange({ energy: 0.55 }), 0.55);
+  // weird 0 ignores energy: the one size stays for the whole song
+  assert.equal(SA.weird.sizeChange(FIXTURE.axes), 0);
+  assert.equal(SA.weird.sizeChange({ weird: 0, energy: 1 }), 0);
+  assert.equal(SA.weird.sizeChange({ energy: 0.55 }), 0);
+  // above 0 the classic formula stands: 1 - (1 - 0.4)(1 - 0.4)
+  assert.ok(Math.abs(SA.weird.sizeChange({ weird: 0.4, energy: 0.4 }) - 0.64) < 1e-9);
   // monotone in weird and in energy
   let previous = -1;
   for (let v = 0; v <= 1.0001; v += 0.05) {
@@ -267,12 +270,40 @@ test('a weird run never repeats a neighbour level and stays inside the range', (
   }
 });
 
-test('weird 0 and energy 0 keep one size for the whole song', () => {
-  const { doc, ctx } = runFixture({ axes: { ...FIXTURE.axes, weird: 0, energy: 0 } });
-  assert.equal(SA.weird.sizeChange({ weird: 0, energy: 0 }), 0);
-  for (const [beatId, style] of Object.entries(doc.beatStyles)) {
-    assert.equal(style.text.size, ctx.baseSize, `${beatId} is ${style.text.size}`);
+test('weird 0 keeps one size for the whole song at any energy', () => {
+  for (const energy of [0, 0.55, 1]) {
+    const axes = { ...FIXTURE.axes, weird: 0, energy };
+    const { doc, ctx } = runFixture({ axes });
+    assert.equal(SA.weird.sizeChange(axes), 0);
+    for (const [beatId, style] of Object.entries(doc.beatStyles)) {
+      assert.equal(style.text.size, ctx.baseSize, `${beatId} is ${style.text.size} at energy ${energy}`);
+    }
   }
+});
+
+test('weird 0 keeps one size in compose mode too', () => {
+  for (const energy of [0, 0.55, 1]) {
+    const axes = { ...FIXTURE.axes, weird: 0, energy };
+    const { doc, ctx } = runFixture({ axes, compose: true });
+    assert.equal(SA.weird.sizeChange(axes), 0);
+    let beats = 0;
+    for (const cue of doc.script.cues) {
+      for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+        beats += 1;
+        const style = doc.beatStyles[beat.id];
+        assert.ok(style && style.text && style.text.compose, `${beat.id} has a composition`);
+        assert.equal(style.text.size, ctx.baseSize, `${beat.id} is ${style.text.size} at energy ${energy}`);
+      }
+    }
+    assert.ok(beats >= 4, `beats ${beats}`);
+  }
+});
+
+test('a pinned sizeChange still moves the sizes at weird 0', () => {
+  const axes = { ...FIXTURE.axes, weird: 0, energy: 0.55 };
+  const { doc } = runFixture({ axes, params: { sizeChange: 1 } });
+  const sizes = new Set(Object.values(doc.beatStyles).map((style) => style.text.size));
+  assert.ok(sizes.size > 1, `a manual change must vary the sizes, got ${[...sizes].join(',')}`);
 });
 
 test('the ladder floor never drops below the legibility size threshold', () => {

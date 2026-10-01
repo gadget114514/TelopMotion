@@ -57,12 +57,16 @@
   }
 
   // The size ladder's change rate: how often the next beat moves to another of
-  // the ten size levels. Weird drives it outright; energy adds a lively song's
-  // own churn. 0 keeps one size for the whole song. (density is not used here:
-  // it sets letter spacing, see direct.js densitySpacing.)
+  // the ten size levels. Weird drives it outright; above 0, energy adds a
+  // lively song's own churn. Weird 0 keeps one size for the whole song: the
+  // size variation belongs to this axis alone, so energy never moves the
+  // ladder there. (density is not used here: it sets letter spacing, see
+  // direct.js densitySpacing.)
   function sizeChange(axes) {
     const a = axes || {};
-    return clamp01(1 - (1 - raw(a.weird)) * (1 - clamp01(a.energy)));
+    const w = raw(a.weird);
+    if (w <= 0) return 0;
+    return clamp01(1 - (1 - w) * (1 - clamp01(a.energy)));
   }
 
   // The colour development rides the same raw axis as two chances:

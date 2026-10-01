@@ -549,7 +549,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `postBlurChance` | chance | 0..1 | `Math.max(0, (a.w - 0.75) / 0.25)` |
 
 - `chance` は常に 0..1。`roll` は chance 0 で乱数を引かない。`weight` はグループ内で `normalizeChances` 相当に正規化され、合計 0 なら `null`（乱数なし）。
-- weird 0 で 0 にならない chance は `sizeChange`（energy）/ `boldChance` / `graphicChance` / `pulseChance` / `textBgChance` / `bgVaryChance` / `bgEdgeChance` のみ。
+- weird 0 で 0 にならない chance は `boldChance` / `graphicChance` / `pulseChance` / `textBgChance` / `bgVaryChance` / `bgEdgeChance` のみ（`sizeChange` は生の weird 0 で必ず 0）。
 
 ## 追加: 字幕を図形・後景から浮かせるテキストマスク + 後景アニメーションの多様化
 
@@ -575,3 +575,13 @@ weird > 0 の自動演出で、太い図形や後景のアクセント層が字�
 - 生成(`moods.js`): `applyGenreBackground` は乱数の引き方を変えず、`square × enclose` のときだけ `bgShape`（ジオメトリなし）+ `bgFill` / `bgEdge` / `bgMotion`、それ以外は `orn*` に書く。`varyColors` は背景なら `TEXT_BG` / `TEXT_EDGE` 系。`enforceReadability` は背景のみ対象。ジャンル定義のシグネチャも飾りは `orn*` へ更新。
 - UI: 字幕トラック直下に「文字N 文字背景」行（チェック = `track.bgHidden`）。インスペクタは「文字背景」節と「文字飾り」節に分割（`fx-strings.js` / `i18n.js` は5言語）。
 - テスト: `text-bg.test.js`（幾何強制・splitStyle・同一シードの振り分け）、`subtitle-bg.test.js`（スイッチは飾りを消さない）、`io.test.js`（rounded → ornShape）、`direct.test.js`（背景は四角のみ）、`legibility.test.js`（bracket は飾り）、`fx-axes.js`（orn* → bg* の読み替え）を更新。
+
+
+## 修正: weird 0 はフォントサイズを動かさない（energy の揺らぎを撤去）
+
+weird 0 でも energy が高い曲はサイズのラダーが動き、ビートごとにフォントサイズが変わっていた（`sizeChange = 1 − (1 − weird)(1 − energy)` が energy を拾っていた）。第六軸 0 を「曲全体で1つのサイズ」に戻した。**weird > 0 の出力は不変。**
+
+- `weird.js` の `sizeChange`: 生の weird が 0 なら energy に関係なく 0（weird > 0 は従来どおり `1 − (1 − w)(1 − e)`）。`gen-params` の派生値・テーマダイアログ・`store.modeAxes` の再抽選がそのまま追随する。
+- compose モード（おまかせは常時 compose）: `composeBeat` のラダー適用条件を「change > 0 または raw weird 0」に広げ、weird 0 では `createSizeLadder` が公開した `baseSize` を全ビートの `text.size` に置く（テンプレート自身の px を上書き）。change を固定した weird > 0 の run は従来どおりテンプレートのサイズのまま（`fitComposeSpans` は change > 0 のときだけ）。
+- 再抽選: `store.rerollCue` / `rerollBeat` は weird 0 の compose でも `resizeBeats` を呼び、対象ビートを baseSize に揃える。`sizeChange` を固定したプロジェクトは手動値が軸に勝つ（従来どおり）。
+- テスト: `size-ladder.test.js` の sizeChange 境界（weird 0 は energy 1 でも 0・weird 0.4 / energy 0.4 は 0.64）と「weird 0 は energy 0 / 0.55 / 1 で全ビート同サイズ（プレーン / compose）」「sizeChange 固定なら変化する」、`store.test.js` の weird 0 の compose 再抽選（キュー / ビート）がテーマサイズに揃うこと、`gen-params.test.js` の weird 0 chance 一覧から `sizeChange` を除外、`direct.test.js` のスナップショット注記を更新。`npm test`（774件）/ `npm run check`（192ファイル）。

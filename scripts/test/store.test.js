@@ -594,6 +594,30 @@ test('a composition-mode cue re-roll redraws its beats through composeBeat', () 
   assert.equal(store.undo(), true);
 });
 
+test('a weird-0 composition cue re-roll pins the beats to the theme size', () => {
+  const doc = fixture();
+  doc.styleMode.compose = true;
+  doc.style.text = { ...(doc.style.text || {}), size: 80 };
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  store.load(doc);
+  store.commands.rerollCue('c1');
+  const style = store.state.project.beatStyles['c1:page0'];
+  assert.ok(style.text && style.text.compose, 'the beat carries a composition');
+  assert.equal(style.text.size, 80, 'the weird-0 run keeps the one size');
+});
+
+test('a weird-0 composition beat re-roll keeps the theme size', () => {
+  const doc = fixture();
+  doc.styleMode.compose = true;
+  doc.style.text = { ...(doc.style.text || {}), size: 80 };
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  store.load(doc);
+  store.commands.rerollBeat('c1', 'c1:page0');
+  const bag = store.state.project.beatStyles['c1:page0'];
+  assert.ok(bag && bag.text, 'the beat carries a style');
+  assert.equal(bag.text.size, 80, 'the weird-0 run keeps the one size');
+});
+
 test('invertBeatScheme toggles the role order and undoes in one step', () => {
   const doc = fixture();
   doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
