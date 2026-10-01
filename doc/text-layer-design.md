@@ -4,7 +4,7 @@
 「背景」「字の上に描き足す処理」「Post 効果」を混同すると、放射ワイプが背景を削る・背景が字と一緒に加工される、といった取り違えが起きる。本書は描画の層構造と各処理の責務を 1 枚にまとめ、放射ワイプを自動選択から外す方針を記録する。
 
 - 対象コード: `renderer/js/lyrics/engine.js`、`renderer/js/lyrics/gl/passes.js`、`renderer/js/lyrics/effects/text-bg.js`、`renderer/js/lyrics/effects/post.js`、`renderer/js/lyrics/moods.js`
-- 実装状況: 層分離（§2）・背景スケール（§5）・放射ワイプの自動選択除外（§6）は実装済み。
+- 実装状況: 層分離（§2）・背景サイズ（§5）・放射ワイプの自動選択除外（§6）は実装済み。
 
 ---
 
@@ -17,8 +17,8 @@
 | 背景トラック / backdrop クリップ | 字幕レイヤーとは別レイヤーの映像・図形 | `project.tracks` の `background` / `backdrop` / `filler` / `figure` / `textAnim` トラックのクリップ | シーン（字幕トラックより下） |
 | Post 効果 | 字幕レイヤー（またはシーン全体）を後から加工する処理 | `style.post[]` の各インスタンス | `target` により字幕レイヤー / シーン |
 
-- テキストバックグラウンドは定義上「セル正方形」だけ。セルは送り幅×フォントサイズで、`cellMetrics`（`text-bg.js:295`）が em の送り幅から返す。ランタイムの scene レターは送り幅を px で運ぶため、実行経路は `cellMetricsFor`（`text-bg.js:284`）で px を em に正規化してから `cellMetrics` へ渡す。`evaluateBg`（`text-bg.js:383`）は `bgShape` に対して `unit` / `width` / `height` / `offset` / `rotation` を無視し、常に 1×1 セル・回転なしで状態を作る（`text-bg.js:397-400`, `text-bg.js:534-536`）。
-- `ornShape` は旧 `bgShape` の自由形状（円・星・em 正方形など）の受け皿で、`isBackground`（`text-bg.js:327`）が「cell の正方形かどうか」で振り分ける。エンジンは装飾 → バックグラウンドの順に描く（`engine.js:1941`, `engine.js:1945`）。
+- テキストバックグラウンドは定義上「セル正方形」だけ。セルは送り幅×フォントサイズで、`cellMetrics`（`text-bg.js:279`）が em の送り幅から返す。ランタイムの scene レターは送り幅を px で運ぶため、実行経路は `cellMetricsFor`（`text-bg.js:268`）で px を em に正規化してから `cellMetrics` へ渡す。`evaluateBg`（`text-bg.js:367`）は `bgShape` に対して `unit` / `width` / `height` / `offset` / `rotation` を無視し、常に 1×1 セル・回転なしで状態を作る（`text-bg.js:381-384`）。
+- `ornShape` は旧 `bgShape` の自由形状（円・星・em 正方形など）の受け皿で、`isBackground`（`text-bg.js:311`）が「cell の正方形かどうか」で振り分ける。エンジンは装飾 → バックグラウンドの順に描く（`engine.js:1929`, `engine.js:1933`）。
 - 背景トラック（`kind: 'background'` のクリップ）はフレーム全体の映像で、字幕の 1 ビートとは別の描画単位。`backdrop` clip は文字の背後に置く図形レイヤー。どちらも `activeClips`（`engine.js:140`）で字幕トラックより前に描かれる（`engine.js:1901-1908`）。
 - Post 効果は「テクスチャを入力に取り、加工して書き戻す」処理。ジオメトリを足すのではなく、既に描かれた字幕レイヤー/シーンをサンプリングして色とアルファを作り直す（`passes.js:1002`, `passes.js:1033`）。
 
@@ -31,7 +31,7 @@
 1. background clip → background layers → backdrop clip → filler → figure / textAnim（`engine.js:1901-1908`）
 2. 字幕トラック（下のトラックから順に）。1 ビートごとに:
    1. `beginLayer`（`engine.js:1932`）
-   2. **装飾 → バックグラウンド**（`engine.js:1941`, `engine.js:1945` → `drawBackgroundPass` `engine.js:1677`）。どちらも字の裏。`pipeline.textBackground`（`passes.js:887`）でセル/装飾を描き、`pipeline.fill` / `pipeline.edge` で背景レイヤーに色を乗せる。
+   2. **装飾 → バックグラウンド**（`engine.js:1929`, `engine.js:1933` → `drawBackgroundPass` `engine.js:1677`）。どちらも字の裏。`pipeline.textBackground`（`passes.js:887`）でセル/装飾を描き、`pipeline.fill` / `pipeline.edge` で背景レイヤーに色を乗せる。
    3. 字のマスク（`pipeline.text` `engine.js:1963` / `passes.js:666`）と per-letter blur（`pipeline.letterBlur` `engine.js:1966`）。
    4. **`knockout`（`engine.js:1973` / `passes.js:940`）で字の部分を背景レイヤーからくり抜き、`commitLayer(1)`（`engine.js:1974` / `passes.js:1059`）で背景レイヤーをシーンへ先に確定。** 続けて `beginLayer`（`engine.js:1975`）で空のレイヤーを取り直す。
    5. repeat コピー（`drawRepeatCopies` `engine.js:1996`）と `sdf()`（`engine.js:1997`）。コピーはシーンへ直接 commit され、字の裏に回る。
@@ -88,13 +88,15 @@ Post 効果は `target` で 2 つに分かれる（`postTarget` `post.js:99`）�
 
 ## 5. 背景の大きさの決め方
 
-背景の正方形は「セル基準の一辺」で決まる。セルは `cellMetrics`（`text-bg.js:295`）が送り幅×フォントサイズから作る。セルの送り幅は em 単位が契約だが、scene のレターは px で運ぶため、実行経路は `cellMetricsFor`（`text-bg.js:284`）で px を em に正規化する。旧実装は px の送り幅に `size` を掛けてセルが `送り幅(px)×size²` に膨らみ、正方形が字の右へ大きくずれていた。
+**背景は常に 1 セル正方形で、フォントの大きさにそのまま追従する。** `project.styleMode.seed` や `beat.id` から引く大きさの抽選は行わない（背景スケールは廃止。`text-bg.backgroundScale` と `params.maxScale` は削除）。2.5 セルまでのランダム拡大が「背景だけが字の大きさと合わない」原因だったので取り除いた。
 
-- **基準**: `bgShape` の `evaluateBg` は `sizeX = sizeY = 1` セルを返す（`text-bg.js:397-400`, `text-bg.js:534-536`）。`unit` や `width` は `bgShape` では読まれない。
-- **自動演出の選択**: `applyGenreBackground`（`moods.js:2369`）は enclose 正方形を背景にするとき、従来の「セルに密着する 0.9〜1.1」の抽選（1 乱数）をそのまま使い、0.9〜1.1 を 1〜2.5 セルへ写像した値を `params.maxScale` として `bgShape` に保存する（`moods.js:2416`, `moods.js:2473-2480`）。乱数消費は変えないので、同じ seed の絵は従来どおり再現される。
-- **エンジンの適用**: `drawBackgroundPass`（`engine.js:1677`）が `text-bg.backgroundScale`（`text-bg.js:269`）を呼び、`params.maxScale` があればその値、なければ `project.styleMode.seed` と `beat.id` から `rngFor(seed, beatId, 'bg-scale')` で 1〜2.5 セルを引く。引いた値を全文字の `sizeX` / `sizeY` に掛ける（`engine.js:1701-1713`）。seed と beat が同じならスクラブでも書き出しでも同じ大きさになる。
-- **上限**: `capBackground`（`text-bg.js:233`）を背景にも掛ける。セルの上限は背景 2.5 / 装飾 1.25、em は「テキストボックス + 0.6 em」（`engine.js:1714-1721`）。`params.maxScale` はこの上限としても優先される。
-- **安全性**: 背景は字より下の層にあり、字の部分は `knockout` でくり抜かれる（§2-4）。大きさを変えても字を覆い隠さない。`bgHidden`（トラックの背景オフ）は従来どおり背景だけを止め、装飾は残る（`engine.js:1929-1931`）。
+セルは `cellMetrics`（`text-bg.js:279`）が送り幅×フォントサイズから作る。セルの送り幅は em 単位が契約だが、scene のレターは px で運ぶため、実行経路は `cellMetricsFor`（`text-bg.js:268`）で px を em に正規化する。旧実装は px の送り幅に `size` を掛けてセルが `送り幅(px)×size²` に膨らみ、正方形が字の右へ大きくずれていた。
+
+- **基準**: `bgShape` の `evaluateBg` は `sizeX = sizeY = 1` セルを返す（`text-bg.js:381-384`）。`unit` や `width` は `bgShape` では読まれない。`BG_PARAM_KEYS`（`text-bg.js:105`）にもサイズの項目は無いので、Studio のインスペクタに大きさのノブは出ない。
+- **エンジン**: `drawBackgroundPass`（`engine.js:1677`）は `evaluateBg` の状態をそのまま `pipeline.textBackground`（`engine.js:1716`）へ渡す。サイズを求める乱数を引かないので、スクラブでも書き出しでも同じ絵になる。
+- **自動演出**: `applyGenreBackground`（`moods.js:2369`）は `bgShape` に色・`vary`・`skipSpaces` だけを書く（`moods.js:2467-2477`）。`square × enclose` の判定と乱数の引き方は変えていないので、同じ seed の絵は従来どおり再現される。
+- **上限**: `capBackground`（`text-bg.js:234`）は装飾の安全網として残す。セルの上限は装飾 1.25、em は「テキストボックス + 0.6 em」（`engine.js:1705-1709`）。背景は 1 セルなので上限には当たらない。背景側の `cell` は 2.5 のままにして、`bgMotion` の `pop` / `stamp` などの動きスケールを潰させない。
+- **安全性**: 背景は字より下の層にあり、字の部分は `knockout` でくり抜かれる（§2-4）。大きさを変えても字を覆い隠さない。`bgHidden`（トラックの背景オフ）は従来どおり背景だけを止め、装飾は残る（`engine.js:1917-1919`）。
 
 ---
 
@@ -124,8 +126,8 @@ Post 効果は `target` で 2 つに分かれる（`postTarget` `post.js:99`）�
 
 ## 7. 未解決事項
 
-1. **テキストバックグラウンドの概念が狙いと合っているか**
-   `bgShape` は「セル正方形を字の裏に置く」定義に整理したが、ユーザーが求める「帯・下敷き・囲み」のどれを指すのか、そもそも別概念（背景トラックの図形 / backdrop clip）に寄せるべきかは未確認。狙いを確認したうえで、この設計書に章を追加する。
+1. **テキストバックグラウンドの概念が狙いと合っているか（大きさの部分は解決）**
+   「大きさはフォントに合わせる」は §5 のとおり解決（背景 = 1 セル正方形）。残る論点は定義そのもので、ユーザーが求める「帯・下敷き・囲み」のどれを指すのか、そもそも別概念（背景トラックの図形 / backdrop clip）に寄せるべきかは未確認。狙いを確認したうえで、この設計書に章を追加する。
 2. **repeat / clones と背景の前後関係**
    分離前は repeat / clones が背景レイヤーの下に沈むことがあった。分離後は「背景 → repeat / clones → 字」の順になり、コピーが背景の上に出る。意図した前後関係かを目視で確認する。
 3. **部分装飾（scope）と背景**

@@ -2408,12 +2408,10 @@
       params.height = params.width;
       params.layer = 'behind';
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
-      // B (doc/text-layer-design.md): the definition background (the enclose
-      // square) takes a bold per-beat scale instead. The same draw maps
-      // 0.9..1.1 onto 1..2.5 cells, so the random stream -- and every seed's
-      // picture -- does not move. The renderer reads it back through
-      // text-bg `backgroundScale`; a hand-set maxScale still wins there.
-      if (shape === 'square') params.maxScale = round(1 + ((cell - 0.9) / 0.2) * 1.5, 2);
+      // the definition background (the enclose square) draws no size of its own:
+      // the renderer paints one cell per letter, so it always tracks the font
+      // size. The draw above stays (it feeds the ornament path and keeps the
+      // random stream -- every seed's picture -- unchanged).
     } else if (adjusted === 'accent') {
       params.unit = 'em';
       // an accent does not grow with the weird axis (it must not swallow text)
@@ -2467,13 +2465,13 @@
       return colors[legacy];
     };
     if (isBackground) {
-      // the background data carries no free geometry: the engine draws a cell
-      // square. `maxScale` is the bold per-beat scale the engine applies (B);
-      // its per-letter colours stay in the TEXT_BG family.
+      // the background data carries no free geometry: the engine draws exactly
+      // one cell square per letter, so the box always matches the font size.
+      // Its per-letter colours stay in the TEXT_BG family.
       const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
       style.bgShape = {
         type: 'square',
-        params: { color: null, skipSpaces: true, maxScale: params.maxScale, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
+        params: { color: null, skipSpaces: true, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
         enabled: true,
       };
     } else {

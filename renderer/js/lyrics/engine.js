@@ -1698,22 +1698,10 @@ SA.lyricsEngine = (() => {
         group: shapeKey,
       });
       if (!bg || !bg.states.length) return null;
-      const seed = (project.styleMode && project.styleMode.seed) || 12345;
-      // B: the definition background takes a bold per-beat scale (1..2.5
-      // cells). `params.maxScale` wins; otherwise the value is drawn from the
-      // project seed and the beat id. Ornaments keep their stored geometry.
-      if (isBg && SA.textBg.backgroundScale) {
-        const scale = SA.textBg.backgroundScale(shape.params, seed, beat.id);
-        if (scale !== 1) {
-          for (const state of bg.states) {
-            state.sizeX *= scale;
-            state.sizeY *= scale;
-          }
-        }
-      }
       // the engine-side safety cap: a stored project cannot paint a slab that
-      // swallows the text (background cell 2.5 / ornament cell 1.25, em = text
-      // box width + 0.6 em). `params.maxScale` wins inside.
+      // swallows the text (the definition background is one cell and never
+      // reaches the cap; the ornaments are held at cell 1.25, em = text box
+      // width + 0.6 em).
       if (SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;

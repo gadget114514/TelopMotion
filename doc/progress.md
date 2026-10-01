@@ -587,3 +587,14 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - compose モード（おまかせは常時 compose）: `composeBeat` のラダー適用条件を「change > 0 または raw weird 0」に広げ、weird 0 では `createSizeLadder` が公開した `baseSize` を全ビートの `text.size` に置く（テンプレート自身の px を上書き）。change を固定した weird > 0 の run は従来どおりテンプレートのサイズのまま（`fitComposeSpans` は change > 0 のときだけ）。
 - 再抽選: `store.rerollCue` / `rerollBeat` は weird 0 の compose でも `resizeBeats` を呼び、対象ビートを baseSize に揃える。`sizeChange` を固定したプロジェクトは手動値が軸に勝つ（従来どおり）。
 - テスト: `size-ladder.test.js` の sizeChange 境界（weird 0 は energy 1 でも 0・weird 0.4 / energy 0.4 は 0.64）と「weird 0 は energy 0 / 0.55 / 1 で全ビート同サイズ（プレーン / compose）」「sizeChange 固定なら変化する」、`store.test.js` の weird 0 の compose 再抽選（キュー / ビート）がテーマサイズに揃うこと、`gen-params.test.js` の weird 0 chance 一覧から `sizeChange` を除外、`direct.test.js` のスナップショット注記を更新。`npm test`（774件）/ `npm run check`（192ファイル）。
+
+## 修正: 文字背景の大きさをフォントのセルに合わせる（背景スケールを廃止）
+
+文字背景（`bgShape`）が **1〜2.5 セルのランダム拡大**を掛けられていたため、フォントの大きさと合ってに見えなかった。`styleMode.seed` + `beat.id` から引く `backgroundScale` と、それを保存する `params.maxScale` を廃止し、**背景は常に 1 セル正方形**（送り幅 × フォントサイズ）にした。手動の `bgShape` と自動演出（`moods.applyGenreBackground`）の両方に効く。
+
+- `text-bg.js`: `backgroundScale` / `BG_SCALE_MIN` / `BG_SCALE_MAX` を削除。`BG_PARAM_KEYS` から `maxScale` を外し、`capBackground` の `maxScale` による上限の優先も撤去。残った `cell: 2.5` は 1 セルには当たらない安全網で、`bgMotion` の動きスケール（`pop` / `stamp`）を潰さないためのもの。
+- `engine.js`: `drawBackgroundPass` から毎ビートの倍率計算を削除。`evaluateBg` の状態をそのまま `pipeline.textBackground` へ渡す。
+- `moods.js`: `bgShape` に `maxScale` を書かない（乱数の引き方そのものは変えないので、同一 seed の絵は従来どおり再現される）。
+- 移行不要: `maxScale` は Studio のインスペクタに出ない項目で、書き手の `moods.js` と読み手の `text-bg.js` にしか無い。保存済みプロジェクト / `test/fx400.telopmotion.json` / `fx800.looks.json` には入っていない。
+- テスト: `text-bg.test.js`（`backgroundScale` 撤去・`bgShape` はどんなパラメータでも 1 セル・生成スタイルが `maxScale` / `width` を持たないこと）を更新、`text-layer.test.js` の「背景スケール配線」テストを「1 セルのまま・スケールしない」テストへ差し替え。
+- 検証: `node --test scripts/test/text-bg.test.js scripts/test/text-layer.test.js`（25件パス）。`store.test.js` の `composeBeat`（`direct.js:1222`）失敗は本件と無関係の既存の不具合。

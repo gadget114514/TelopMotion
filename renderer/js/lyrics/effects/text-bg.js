@@ -100,9 +100,9 @@
   // The background keeps only the modifiers that do not move or resize it:
   // colour variation, fill / stroke / trim / dash and letter following. Geometry
   // (unit / width / height / offset / rotation / wobble / vary* geometry) is
-  // ignored by evaluateBg for the background group.
+  // ignored by evaluateBg for the background group. The background has no size
+  // knob at all: it is exactly the letter's cell, so it tracks the font size.
   const BG_PARAM_KEYS = new Set([
-    'maxScale',
     'rotateWithLetter', 'scaleWithLetter', 'opacity', 'skipSpaces', 'skipRate',
     'fgAutoContrast', 'vary', 'varyColors', 'stroke', 'fill',
     'trimStart', 'trimEnd', 'trimOffset', 'dashOn', 'dashOff', 'dashOffset',
@@ -226,10 +226,11 @@
   }
 
   // The engine-side safety cap every text background passes through: a cell
-  // background may span at most 2.5 cells (the bold per-beat scale below) and
-  // an em background at most the beat's text box width + 0.6 em, so a stored
-  // project cannot paint a giant slab over the frame. `params.maxScale` (an
-  // explicit author value) wins. The states are clamped in place and returned.
+  // shape may span at most `limits.cell` cells and an em shape at most the
+  // beat's text box width + 0.6 em, so a stored project cannot paint a giant
+  // slab over the frame. The states are clamped in place and returned. The
+  // definition background is one cell wide and never reaches the cap; the limit
+  // stays as the guard for the ornaments, whose geometry the author controls.
   function capBackground(states, unit, box, limits) {
     const opts = limits || {};
     const cellMax = Number.isFinite(Number(opts.cell)) ? Number(opts.cell) : 1.25;
@@ -240,37 +241,20 @@
     const fallback = unit === 'em' ? 1.6 : cellMax;
     for (const state of states || []) {
       if (!state) continue;
-      const explicit = Number(state.params && state.params.maxScale);
-      const hasExplicit = Number.isFinite(explicit) && explicit > 0;
       const scaleX = Math.abs(Number(state.motionScaleX) || 1) || 1;
       const scaleY = Math.abs(Number(state.motionScaleY) || 1) || 1;
       if (unit === 'em') {
         // the em limit is expressed in the beat's own font size
-        const maxX = hasExplicit ? explicit : emPx > 0 && width > 0 ? width / emPx + emExtra : fallback;
-        const maxY = hasExplicit ? explicit : emPx > 0 && height > 0 ? height / emPx + emExtra : fallback;
+        const maxX = emPx > 0 && width > 0 ? width / emPx + emExtra : fallback;
+        const maxY = emPx > 0 && height > 0 ? height / emPx + emExtra : fallback;
         if (state.sizeX * scaleX > maxX) state.sizeX = maxX / scaleX;
         if (state.sizeY * scaleY > maxY) state.sizeY = maxY / scaleY;
       } else {
-        const cap = hasExplicit ? explicit : fallback;
-        if (state.sizeX * scaleX > cap) state.sizeX = cap / scaleX;
-        if (state.sizeY * scaleY > cap) state.sizeY = cap / scaleY;
+        if (state.sizeX * scaleX > cellMax) state.sizeX = cellMax / scaleX;
+        if (state.sizeY * scaleY > cellMax) state.sizeY = cellMax / scaleY;
       }
     }
     return states;
-  }
-  // B (doc/text-layer-design.md): the definition background takes a bold
-  // per-beat scale, 1..2.5 cells. The value is drawn from the project seed and
-  // the beat id with the same `rngFor` stream the decoration draws use, so
-  // scrubbing and the export stay deterministic. An explicit `params.maxScale`
-  // (the author value the cap already honours) wins over the draw.
-  const BG_SCALE_MIN = 1;
-  const BG_SCALE_MAX = 2.5;
-
-  function backgroundScale(params, seed, beatId) {
-    const explicit = Number(params && params.maxScale);
-    if (Number.isFinite(explicit) && explicit > 0) return explicit;
-    const random = rng.rngFor(seed == null ? 12345 : seed, beatId == null ? '' : beatId, 'bg-scale');
-    return BG_SCALE_MIN + (BG_SCALE_MAX - BG_SCALE_MIN) * random();
   }
 
   // `cellMetrics` reads the advance in em (the unit the layout tests use):
@@ -576,10 +560,7 @@
     BG_SHAPE_TYPES,
     ORN_SHAPE_TYPES,
     VARY_MODES,
-    BG_SCALE_MIN,
-    BG_SCALE_MAX,
     capBackground,
-    backgroundScale,
     cellMetrics,
     cellMetricsFor,
     evaluateBg,
