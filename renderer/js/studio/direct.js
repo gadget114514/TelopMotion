@@ -603,8 +603,36 @@
         level = weights ? weights.indexOf(Math.max(...weights)) : nearestLevel(levels, baseSize);
         px = levels[level];
       } else if (random() >= change) {
-        px = Math.max(levels[0], Math.min(levels[SIZE_LEVELS - 1], prev.px)); // keep the size
-        level = prev.level == null ? nearestLevel(levels, px) : prev.level;
+        if (weights && prev.level != null) {
+          // keep the level, so a narrow curve (e.g. the largest size only) holds
+          // on every beat even when the range differs
+          level = prev.level;
+          px = levels[level];
+        } else {
+          px = Math.max(levels[0], Math.min(levels[SIZE_LEVELS - 1], prev.px)); // keep the size
+          level = prev.level == null ? nearestLevel(levels, px) : prev.level;
+        }
+      } else if (weights) {
+        // the curve is a probability: a weighted draw over the levels that carry
+        // a real share (the least-time balance would visit every level early,
+        // whatever its weight). A move never lands on the previous level unless
+        // it is the only one left.
+        const peak = Math.max(...weights);
+        const real = levels.map((_, k) => k).filter((k) => weights[k] >= 0.1 * peak);
+        let candidates = real.filter((k) => k !== prev.level && k !== avoid);
+        if (!candidates.length) candidates = real.filter((k) => k !== prev.level);
+        if (!candidates.length) candidates = real;
+        const total = candidates.reduce((sum, k) => sum + weights[k], 0);
+        let pickAt = random() * total;
+        level = candidates[candidates.length - 1];
+        for (const k of candidates) {
+          pickAt -= weights[k];
+          if (pickAt < 0) {
+            level = k;
+            break;
+          }
+        }
+        px = levels[level];
       } else {
         const banned = new Set([prev.level, avoid].filter((k) => k != null));
         let candidates = levels.map((_, k) => k).filter((k) => !banned.has(k));

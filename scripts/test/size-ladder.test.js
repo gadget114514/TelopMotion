@@ -463,3 +463,14 @@ test('fitComposeSpans shrinks a hero and raises the particles to the floor', () 
   SA.direct.fitComposeSpans(plain, { floor: 60, full: 300 }, 150);
   assert.equal(plain.compose.spans[0].scale, 1.5);
 });
+
+test('a narrow curve on the largest size never visits the other levels', () => {
+  const ladder = SA.direct.createSizeLadder({ change: 1, baseSize: 96, random: SA.rng.rngFor(41, 'max-only'), center: 1, spread: 0.05 });
+  let prev = null;
+  for (let i = 0; i < 200; i += 1) {
+    const range = { min: 60, max: 600 + (i % 5) * 50 };
+    const pick = ladder.choose({ duration: 1, range, prev });
+    assert.equal(pick.px, range.max, `beat ${i} px ${pick.px}`);
+    prev = pick;
+  }
+});
