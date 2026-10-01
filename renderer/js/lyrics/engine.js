@@ -1698,13 +1698,26 @@ SA.lyricsEngine = (() => {
         group: shapeKey,
       });
       if (!bg || !bg.states.length) return null;
+      const seed = (project.styleMode && project.styleMode.seed) || 12345;
+      // B: the definition background takes a bold per-beat scale (1..2.5
+      // cells). `params.maxScale` wins; otherwise the value is drawn from the
+      // project seed and the beat id. Ornaments keep their stored geometry.
+      if (isBg && SA.textBg.backgroundScale) {
+        const scale = SA.textBg.backgroundScale(shape.params, seed, beat.id);
+        if (scale !== 1) {
+          for (const state of bg.states) {
+            state.sizeX *= scale;
+            state.sizeY *= scale;
+          }
+        }
+      }
       // the engine-side safety cap: a stored project cannot paint a slab that
-      // swallows the text (cell 1.25, em = text box width + 0.6 em). The
-      // background is a fixed cell square, so only the ornaments need it.
-      if (!isBg && SA.textBg.capBackground) {
+      // swallows the text (background cell 2.5 / ornament cell 1.25, em = text
+      // box width + 0.6 em). `params.maxScale` wins inside.
+      if (SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
-        SA.textBg.capBackground(bg.states, bg.unit, box, { cell: 1.25, emExtra: 0.6, emPx: scene.size });
+        SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: 2.5, emExtra: 0.6, emPx: scene.size } : { cell: 1.25, emExtra: 0.6, emPx: scene.size });
       }
       const amountKey = BG_AMOUNT_KEY[shape.type];
       const params = shape.params || {};
@@ -1787,7 +1800,7 @@ SA.lyricsEngine = (() => {
       if (!entering && after === 'hide') return;
       const blink = Number(params.blink) || 0;
       if (!entering && after === 'blink' && blink > 0 && Math.floor(t / blink) % 2 === 1) return;
-      const cell = SA.textBg.cellMetrics(letter);
+      const cell = SA.textBg.cellMetricsFor(letter);
       const shapeName = params.cursorShape || 'bar';
       const cursorW = shapeName === 'bar' ? 0.08 * cell.w : 0.6 * cell.w;
       const cursorH = shapeName === 'underscore' ? 0.08 * cell.h : cell.h;
@@ -1917,9 +1930,12 @@ SA.lyricsEngine = (() => {
         const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
         const ornActive = !!(ornShape && ornShape.type && ornShape.type !== 'none');
         pipeline.beginLayer();
-        // both shape passes always draw behind the glyphs; their fills are then
-        // masked by the foreground mask (the knockout below), so they can never
-        // cover the subtitle. Ornaments sit under the background.
+        // both shape passes draw behind the glyphs and commit as a layer of
+        // their own (see doc/text-layer-design.md): the foreground mask knocks
+        // the glyphs out of it and the layer reaches the scene before the
+        // glyph body, so the background / ornaments stay under the text while
+        // a text-target post no longer grades them. Ornaments sit under the
+        // background.
         const variations = [];
         if (ornActive) {
           const ornVariation = drawBackgroundPass(active, t, project, 'orn');
@@ -1948,6 +1964,16 @@ SA.lyricsEngine = (() => {
         // per-letter blur (blurIn / blurOut / focus / depth of field) runs on
         // the text mask before the sdf so the edges follow the blurred shape
         pipeline.letterBlur(scene, result.letters);
+        // A: the definition background (and the ornaments) is a layer of its
+        // own. The glyphs are knocked out of it and it commits before the
+        // glyph body draws into a fresh layer, so a text-target post (radial
+        // wipes, glitch, blur...) can only touch the glyphs. The mask stays
+        // in targets.text for the fill / edge passes below.
+        if (variation) {
+          pipeline.knockout();
+          pipeline.commitLayer(1);
+          pipeline.beginLayer();
+        }
         const colorSet = SA.fx.resolveColorSet
           ? SA.fx.resolveColorSet(style.color, {
               palettes: project.palettes || [],
@@ -1969,10 +1995,6 @@ SA.lyricsEngine = (() => {
         // typefaces re-render the mask, so the sdf is created afterwards.
         drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
         const sdfTarget = pipeline.sdf();
-        // the background fill is masked by the text foreground: the layer's
-        // background is punched out wherever the glyphs sit, so a translucent
-        // or front background never paints over the subtitle
-        if (variation) pipeline.knockout();
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
         const clones = Array.isArray(style.clones) ? style.clones : [];

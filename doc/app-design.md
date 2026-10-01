@@ -976,6 +976,8 @@ Default is `text`. Effects with a † are shown in the UI as "featured".
 **Performance options:** effects that render the text pass several times (motionBlur, echoTrail) have a `cost` weight in their descriptor (§14).
 
 ### 7.10 Background (per-cue background treatment)
+> **字幕レイヤーの層構造と Post の責務**: テキストバックグラウンド（`bgShape`）・装飾（`ornShape`）・Post 効果の描画順と分離、放射ワイプを自動選択から外す決定は [text-layer-design.md](./text-layer-design.md) にある。
+
 This controls the **card camera and treatment per cue**. The media underneath comes from the layers (§7.11).
 
 | type | params |

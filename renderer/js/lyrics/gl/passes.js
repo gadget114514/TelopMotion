@@ -248,7 +248,7 @@ SA.glPasses = (() => {
     ];
     for (let i = 0; i < scene.letters.length; i += 1) {
       const letter = scene.letters[i];
-      const cell = SA.textBg ? SA.textBg.cellMetrics(letter) : { w: letter.size || 1, h: letter.size || 1, inkToCell: [0, 0] };
+      const cell = SA.textBg ? SA.textBg.cellMetricsFor(letter) : { w: letter.size || 1, h: letter.size || 1, inkToCell: [0, 0] };
       const em = Math.max(1, Number(letter.size) || 1);
       const base = positions.length / 9;
       for (const [cx, cy] of corners) {

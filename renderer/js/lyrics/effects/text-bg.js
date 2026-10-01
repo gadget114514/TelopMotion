@@ -102,6 +102,7 @@
   // (unit / width / height / offset / rotation / wobble / vary* geometry) is
   // ignored by evaluateBg for the background group.
   const BG_PARAM_KEYS = new Set([
+    'maxScale',
     'rotateWithLetter', 'scaleWithLetter', 'opacity', 'skipSpaces', 'skipRate',
     'fgAutoContrast', 'vary', 'varyColors', 'stroke', 'fill',
     'trimStart', 'trimEnd', 'trimOffset', 'dashOn', 'dashOff', 'dashOffset',
@@ -225,10 +226,10 @@
   }
 
   // The engine-side safety cap every text background passes through: a cell
-  // background may span at most 1.25 cells and an em background at most the
-  // beat's text box width + 0.6 em, so a stored project cannot paint a giant
-  // slab over the frame. `params.maxScale` (an explicit author value) wins.
-  // The states are clamped in place and returned.
+  // background may span at most 2.5 cells (the bold per-beat scale below) and
+  // an em background at most the beat's text box width + 0.6 em, so a stored
+  // project cannot paint a giant slab over the frame. `params.maxScale` (an
+  // explicit author value) wins. The states are clamped in place and returned.
   function capBackground(states, unit, box, limits) {
     const opts = limits || {};
     const cellMax = Number.isFinite(Number(opts.cell)) ? Number(opts.cell) : 1.25;
@@ -257,9 +258,40 @@
     }
     return states;
   }
-  // The cell is the advance box: horizontal text uses advance x size, vertical
-  // text uses the vertical advance. The returned offset is the vector from the
-  // ink bbox centre (glyph-local origin) to the cell centre, in px.
+  // B (doc/text-layer-design.md): the definition background takes a bold
+  // per-beat scale, 1..2.5 cells. The value is drawn from the project seed and
+  // the beat id with the same `rngFor` stream the decoration draws use, so
+  // scrubbing and the export stay deterministic. An explicit `params.maxScale`
+  // (the author value the cap already honours) wins over the draw.
+  const BG_SCALE_MIN = 1;
+  const BG_SCALE_MAX = 2.5;
+
+  function backgroundScale(params, seed, beatId) {
+    const explicit = Number(params && params.maxScale);
+    if (Number.isFinite(explicit) && explicit > 0) return explicit;
+    const random = rng.rngFor(seed == null ? 12345 : seed, beatId == null ? '' : beatId, 'bg-scale');
+    return BG_SCALE_MIN + (BG_SCALE_MAX - BG_SCALE_MIN) * random();
+  }
+
+  // `cellMetrics` reads the advance in em (the unit the layout tests use):
+  // horizontal text spans `advance em x 1 em`, vertical text `1 em x advance`.
+  // The runtime scene letters carry the advance in px instead (see font.js
+  // layoutText), so `cellMetricsFor` normalises the px advance to em and
+  // delegates: the cell is the advance box behind the letter either way.
+  //
+  // The returned offset is the vector from the ink bbox centre (glyph-local
+  // origin) to the cell centre, in px.
+  function cellMetricsFor(letter) {
+    const size = num(letter && letter.size, 1) || 1;
+    const copy = { ...(letter || {}) };
+    if (letter) {
+      if (Number.isFinite(Number(letter.advanceWithSpacing))) copy.advanceWithSpacing = Number(letter.advanceWithSpacing) / size;
+      if (Number.isFinite(Number(letter.advance))) copy.advance = Number(letter.advance) / size;
+      if (Number.isFinite(Number(letter.advanceV))) copy.advanceV = Number(letter.advanceV) / size;
+    }
+    return cellMetrics(copy);
+  }
+
   function cellMetrics(letter) {
     const size = num(letter.size, 1) || 1;
     const advance = num(letter.advanceWithSpacing, null) != null ? num(letter.advanceWithSpacing, 1) : num(letter.advance, 1);
@@ -544,8 +576,12 @@
     BG_SHAPE_TYPES,
     ORN_SHAPE_TYPES,
     VARY_MODES,
+    BG_SCALE_MIN,
+    BG_SCALE_MAX,
     capBackground,
+    backgroundScale,
     cellMetrics,
+    cellMetricsFor,
     evaluateBg,
     defaultInstance,
     bgColorOf,

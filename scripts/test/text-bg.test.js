@@ -112,6 +112,26 @@ test('cellMetrics keeps the cell centred for narrow glyphs', () => {
   assert.ok(Math.abs(cell.inkToCell[1] - (-50 - -30)) < 1e-6);
 });
 
+test('cellMetricsFor normalises the runtime px advance to em', () => {
+  // the scene letters carry px: 25 px advance at size 100 is the same cell as
+  // 0.25 em -- the two must agree, and not span advance * size
+  const px = {
+    size: 100,
+    advance: 20,
+    advanceWithSpacing: 25,
+    local: { penX: 0, penY: 0, cx: 12, cy: -30 },
+  };
+  const cell = textBg.cellMetricsFor(px);
+  const em = textBg.cellMetrics({ ...px, advance: 0.2, advanceWithSpacing: 0.25 });
+  assert.deepEqual(cell, em);
+  assert.equal(cell.w, 25);
+  assert.equal(cell.h, 100);
+  // vertical text normalises the vertical advance the same way
+  const vertical = textBg.cellMetricsFor({ size: 100, advanceV: 120, vertical: true, local: { penX: 0, penY: 0, cx: 0, cy: 0 } });
+  assert.equal(vertical.w, 100);
+  assert.equal(vertical.h, 120);
+});
+
 test('the trim / dash / stroke parameters reach the bg state', () => {
   const shape = { type: 'square', params: { unit: 'cell', stroke: 0.08, fill: 0.5, trimStart: 0.1, trimEnd: 0.9, trimOffset: 0.2, dashOn: 0.1, dashOff: 0.05, dashOffset: 0.3 } };
   const result = textBg.evaluateBg(shape, { type: 'none', params: {} }, [entry()], null, null, 0, { seed: 1 });
@@ -169,6 +189,29 @@ test('the bg state texture and shader carry the trim / dash rows', () => {
   for (const token of ['v_trim', 'v_dash', 'shapeParam', 'dashOn', 'fract(t + v_trim.z)']) {
     assert.ok(bg.includes(token), `BG_FRAG has no ${token}`);
   }
+});
+
+test('backgroundScale is the explicit maxScale or a deterministic 1..2.5 cell draw', () => {
+  assert.equal(textBg.BG_SCALE_MIN, 1);
+  assert.equal(textBg.BG_SCALE_MAX, 2.5);
+  assert.equal(textBg.backgroundScale({ maxScale: 1.7 }, 1, 'b1'), 1.7);
+  const first = textBg.backgroundScale({}, 4242, 'beat-1');
+  assert.equal(textBg.backgroundScale({}, 4242, 'beat-1'), first, 'the same seed and beat draw the same size');
+  assert.ok(first >= 1 && first <= 2.5, `derived scale ${first}`);
+  const scales = [];
+  for (let beat = 0; beat < 60; beat += 1) scales.push(textBg.backgroundScale({}, 4242, `b${beat}`));
+  assert.ok(Math.max(...scales) > 2, `no bold size in 60 beats (max ${Math.max(...scales)})`);
+  assert.ok(Math.min(...scales) < 1.5, `no small size in 60 beats (min ${Math.min(...scales)})`);
+});
+
+test('the raised background cap keeps the bold size and still clamps motion', () => {
+  const states = [{ sizeX: 2.4, sizeY: 2.4, motionScaleX: 1.2, motionScaleY: 1, params: {} }];
+  textBg.capBackground(states, 'cell', { w: 800, h: 200 }, { cell: 2.5, emExtra: 0.6, emPx: 96 });
+  assert.ok(Math.abs(states[0].sizeX * 1.2 - 2.5) < 1e-9, `the cap includes the motion scale (${states[0].sizeX * 1.2})`);
+  // the old 1.25 cap would have cut the bold size down; the ornament keeps it
+  const ornament = [{ sizeX: 2.4, sizeY: 2.4, motionScaleX: 1, motionScaleY: 1, params: {} }];
+  textBg.capBackground(ornament, 'cell', null, { cell: 1.25 });
+  assert.equal(ornament[0].sizeX, 1.25);
 });
 
 test('capBackground keeps cell / em sizes inside the engine caps', () => {
@@ -298,6 +341,9 @@ test('generated text backgrounds stay inside the caps', () => {
     const shape = style.bgShape;
     if (shape && shape.type && shape.type !== 'none') {
       assert.equal(shape.type, 'square', `seed ${seed} background type ${shape.type}`);
+      // B: the automatic direction stores the bold per-beat scale it drew
+      const maxScale = Number(shape.params.maxScale);
+      assert.ok(maxScale >= 1 && maxScale <= 2.5, `seed ${seed} background maxScale ${shape.params.maxScale}`);
       const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'bgShape' });
       assert.ok(bg, `seed ${seed} background does not evaluate`);
       for (const state of bg.states) {

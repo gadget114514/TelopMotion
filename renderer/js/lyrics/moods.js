@@ -320,7 +320,6 @@
       spinBlur: [0.75, 0.4, { minWeird: 0.5 }, 0.8],
       strobeFlash: [0.95, 0.1, { minWeird: 0.6, minEnergy: 0.6 }, 0.9],
       anamorphicStreak: [0.7, 0.4, { minWeird: 0.5 }, 0.75],
-      radialWipe: [0.6, 0.5, { minWeird: 0.55 }, 0.8],
       venetianBlinds: [0.65, 0.45, { minWeird: 0.55 }, 0.85],
       echoTrail: [0.7, 0.4, { minWeird: 0.75 }, 0.9],
       glitchSlice: [0.9, 0.1, { minWeird: 0.75 }, 0.95],
@@ -2403,11 +2402,18 @@
     const params = { color: null, skipSpaces: true };
     if (adjusted === 'enclose') {
       params.unit = 'cell';
-      // the background hugs the cell (P-E-2): 0.9-1.1 cells, never a slab
-      params.width = round(lerp(0.9, 1.1, random()) * jitter, 2);
+      // an enclose ornament hugs the cell (P-E-2): 0.9-1.1 cells, never a slab
+      const cell = lerp(0.9, 1.1, random());
+      params.width = round(cell * jitter, 2);
       params.height = params.width;
       params.layer = 'behind';
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
+      // B (doc/text-layer-design.md): the definition background (the enclose
+      // square) takes a bold per-beat scale instead. The same draw maps
+      // 0.9..1.1 onto 1..2.5 cells, so the random stream -- and every seed's
+      // picture -- does not move. The renderer reads it back through
+      // text-bg `backgroundScale`; a hand-set maxScale still wins there.
+      if (shape === 'square') params.maxScale = round(1 + ((cell - 0.9) / 0.2) * 1.5, 2);
     } else if (adjusted === 'accent') {
       params.unit = 'em';
       // an accent does not grow with the weird axis (it must not swallow text)
@@ -2461,12 +2467,13 @@
       return colors[legacy];
     };
     if (isBackground) {
-      // the background data carries no geometry: the engine always draws a
-      // cell-size square. Its per-letter colours stay in the TEXT_BG family.
+      // the background data carries no free geometry: the engine draws a cell
+      // square. `maxScale` is the bold per-beat scale the engine applies (B);
+      // its per-letter colours stay in the TEXT_BG family.
       const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
       style.bgShape = {
         type: 'square',
-        params: { color: null, skipSpaces: true, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
+        params: { color: null, skipSpaces: true, maxScale: params.maxScale, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
         enabled: true,
       };
     } else {
