@@ -332,7 +332,60 @@
   // so a size step alone reads as another backdrop pattern; `count` drives how
   // many elements there are. pattern-variants.js enumerates the steps that are
   // far enough apart to be told apart and never picks a static speed.
+  function shapeCenter(shape) {
+    if (shape.kind === 'rect') return { x: shape.x + shape.w / 2, y: shape.y + shape.h / 2 };
+    if (shape.kind === 'capsule') return { x: (shape.x0 + shape.x1) / 2, y: (shape.y0 + shape.y1) / 2 };
+    return { x: shape.x, y: shape.y };
+  }
+
+  // Knock-outs (`params.hole`): drop the elements that fall inside a region so
+  // the same pattern reads differently - a clear middle for the lyrics, a clear
+  // band, a checkered thinning or a seeded scatter of missing cells. `holeSize`
+  // (0.1..0.9) is the share of the frame the hole takes.
+  const HOLES = ['none', 'center', 'band', 'sides', 'corners', 'diagonal', 'thin', 'scatter'];
+
+  function applyHole(list, params, ctx) {
+    const hole = params.hole;
+    if (!hole || hole === 'none' || !list.shapes.length) return list;
+    const width = ctx.frame.width;
+    const height = ctx.frame.height;
+    const amount = Math.max(0.1, Math.min(0.9, num(params.holeSize, 0.4)));
+    const seeds = seededRandom(hashString(`${(ctx.clip && ctx.clip.key) || 'hole'}|${hole}|${amount}`));
+    const cut = (shape, index) => {
+      const c = shapeCenter(shape);
+      const nx = c.x / width - 0.5;
+      const ny = c.y / height - 0.5;
+      if (hole === 'center') return (nx / (amount * 0.9)) ** 2 + (ny / amount) ** 2 < 0.25;
+      if (hole === 'band') return Math.abs(ny) < amount * 0.35;
+      if (hole === 'sides') return Math.abs(nx) > 0.5 - amount * 0.35;
+      if (hole === 'corners') return Math.abs(nx) > 0.5 - amount * 0.4 && Math.abs(ny) > 0.5 - amount * 0.4;
+      if (hole === 'diagonal') return Math.abs(nx * height - ny * width * 0.6) < amount * 0.3 * width * 0.5;
+      if (hole === 'thin') return index % Math.max(2, Math.round(1 / amount)) === 0;
+      if (hole === 'scatter') return seeds() < amount * 0.8;
+      return false;
+    };
+    return { ...list, shapes: list.shapes.filter((shape, index) => !cut(shape, index)) };
+  }
+
+  // A second colour for part of the elements (`params.accent` + `accentEvery`):
+  // every n-th element takes it, so one backdrop carries two tones.
+  function applyAccent(list, params) {
+    const accent = params.accent;
+    if (!accent) return list;
+    const every = Math.max(2, Math.round(num(params.accentEvery, 5)));
+    list.shapes.forEach((shape, index) => {
+      if (index % every !== 0) return;
+      shape.color = accent;
+      if (shape.strokeColor) shape.strokeColor = accent;
+    });
+    return list;
+  }
+
   function patternShapes(params, ctx) {
+    return applyAccent(applyHole(patternBase(params, ctx), params, ctx), params);
+  }
+
+  function patternBase(params, ctx) {
     const width = ctx.frame.width;
     const height = ctx.frame.height;
     const color = colorOf(params, ctx, '#8d96ab');
@@ -970,6 +1023,10 @@
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.6 },
       { key: 'color', kind: 'color', default: '#8d96ab' },
+      { key: 'hole', kind: 'select', options: HOLES, default: 'none' },
+      { key: 'holeSize', kind: 'number', min: 0.1, max: 0.9, step: 0.05, default: 0.4 },
+      { key: 'accent', kind: 'color', default: '' },
+      { key: 'accentEvery', kind: 'int', min: 2, max: 12, step: 1, default: 5 },
     ],
     particles: [
       { key: 'count', kind: 'int', min: 1, max: 120, step: 1, default: 24 },

@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('sunoApi', {
   studioAutosaveWrite: (payload) => ipcRenderer.invoke('studio:autosave-write', payload),
   recentList: () => ipcRenderer.invoke('recent:list'),
   recentAdd: (entry) => ipcRenderer.invoke('recent:add', entry),
+  appInfo: () => ipcRenderer.invoke('app:info'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', { url }),
   onProgress: (callback) => {
     const listener = (_event, payload) => callback(payload);

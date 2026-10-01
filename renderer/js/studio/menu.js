@@ -164,6 +164,11 @@ SA.menu = (() => {
         { key: 'studio.view.debugConsole', action: 'toggleConsole', checked: () => handlers.isConsoleOpen && handlers.isConsoleOpen() },
       ],
     },
+    {
+      id: 'help',
+      labelKey: 'studio.menu.help',
+      items: () => [{ key: 'studio.about.item', action: 'about' }],
+    },
   ];
 
   function itemLabel(item) {

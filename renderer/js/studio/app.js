@@ -1250,6 +1250,38 @@
     });
   }
 
+  // Help > About: the app version (package.json via the main process) and the
+  // data file format version (project.js VERSION) the saved files carry.
+  async function aboutDialog() {
+    let appVersion = '-';
+    let runtime = '';
+    try {
+      const reply = window.sunoApi && window.sunoApi.appInfo ? await window.sunoApi.appInfo() : null;
+      const info = reply && (reply.data || reply.result || reply.value || reply);
+      if (info && info.version) appVersion = info.version;
+      if (info && info.electron) runtime = `Electron ${info.electron} / Chromium ${info.chrome}`;
+    } catch {
+      // keep the placeholder
+    }
+    const dataVersion = SA.project && SA.project.VERSION != null ? SA.project.VERSION : '-';
+    el.dialogRoot.innerHTML = '';
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog';
+    dialog.innerHTML = `
+      <h3>${t('studio.about.title')}</h3>
+      <div class="field"><span>${t('studio.about.app')}</span><strong>${appVersion}</strong></div>
+      <div class="field"><span>${t('studio.about.data')}</span><strong>${dataVersion}</strong></div>
+      ${runtime ? `<div class="field"><span></span><small>${runtime}</small></div>` : ''}
+      <div class="dialog-actions">
+        <button type="button" class="btn btn-primary" data-action="ok">${t('studio.about.ok')}</button>
+      </div>`;
+    el.dialogRoot.appendChild(dialog);
+    el.dialogRoot.hidden = false;
+    dialog.querySelector('[data-action="ok"]').addEventListener('click', () => {
+      el.dialogRoot.hidden = true;
+    });
+  }
+
   function randomDialog() {
     const doc = project();
     if (!doc) return;
@@ -1605,6 +1637,7 @@
       layers: () => SA.layersDialog.open(),
       audio: () => SA.audioDialog.open(),
       fonts: () => SA.fontsDialog.open(),
+      about: aboutDialog,
       credits: () => SA.creditsDialog.open(),
       exportSrt,
       exportSrtBeats,
