@@ -24,11 +24,19 @@
   // profile's figureBoldChance roll succeeds.
   const BOLD_MOTIFS = ['slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars'];
   MOTIFS.push(...BOLD_MOTIFS);
+  // the procedural motif: a composition grown from a seed (layers x layout x
+  // symmetry x element kinds x size / colour / motion rules x continuous
+  // values). `generate` draws it most of the time, so clips rarely look alike.
+  const PROC = 'proc';
+  MOTIFS.push(PROC);
+  const PROC_CHANCE = 0.75;
+  const PROC_LAYER_BUDGET = 240;
+  const PROC_TOTAL_BUDGET = 480;
   const INS = ['pop', 'draw', 'wipe', 'scatterIn'];
   const HOLDS = ['spin', 'pulse', 'drift', 'morph'];
   const OUTS = ['shrink', 'fade', 'burstOut'];
   const SYNCS = ['beat', 'free', 'text'];
-  const STROKES = { thin: 0.55, med: 1, bold: 1.9 };
+  const STROKES = { thin: 0.7, med: 1.3, bold: 2.2 };
   const TAU = Math.PI * 2;
 
   // Optional per-clip tuning (the filler params): count 3..24, radius 0.3..1.2,
@@ -158,9 +166,16 @@
     const w = weird.bg(axes.weird);
     const s = smartness.smartOf(axes);
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
-    const motifPool = w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone');
+    const motifPool = (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC);
     // the motif pool answers the smartness and fear axes (a no-op at 0)
-    const motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
+    let motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
+    // the procedural motif draws from its own stream, so every other draw below
+    // is unchanged; the fear axis hands the pick back to the scary fixed motifs
+    const procRandom = rng.rngFor(seed, 'figure-proc', id);
+    const procRoll = procRandom();
+    const procSeed = Math.floor(procRandom() * 1e9);
+    const fear = Number.isFinite(Number(axes.fear)) ? clamp01(axes.fear) : 0;
+    if (!requested && procRoll < PROC_CHANCE * (1 - fear)) motif = PROC;
     const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
     const force = { in: opts.in, hold: opts.hold, out: opts.out };
     const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes);
@@ -180,6 +195,7 @@
         accent: beat.accent,
       })),
     };
+    if (motif === PROC) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : procSeed;
     if (opts.scale != null && Number.isFinite(Number(opts.scale))) params.scale = Number(opts.scale);
     if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
     if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
@@ -265,6 +281,305 @@
   }
 
   // ---------------------------------------------------------------------------
+  // procedural motif
+  //
+  // A clip's `seed` grows a genome of 1..3 layers. Every layer independently
+  // draws a layout, a symmetry, one to three element kinds, a size rule, a
+  // colour rule, a motion rule and the continuous values (count, size, spread,
+  // offset, jitter, tilt, opacity...). The sub-beat only reshuffles the
+  // placement, so a clip keeps its family while its beats still differ.
+
+  const PROC_LAYOUTS = ['radial', 'grid', 'scatter', 'spiral', 'curve', 'cluster', 'brick', 'edge', 'bands', 'burst'];
+  const PROC_KINDS = ['circle', 'ring', 'rect', 'capsule', 'polygon', 'polyline', 'cross', 'shard', 'dash'];
+  const PROC_SIZE_RULES = ['flat', 'ramp', 'radial', 'invRadial', 'random', 'alternate'];
+  const PROC_COLOR_RULES = ['index', 'random', 'radius', 'angle', 'single', 'band'];
+  const PROC_MOTIONS = ['spin', 'breathe', 'wave', 'flow', 'orbit', 'still', 'twinkle'];
+  const PROC_SYMMETRIES = ['none', 'none', 'mirrorX', 'mirrorY', 'mirror4', 'fold', 'fold'];
+
+  function logRange(random, lo, hi) {
+    return Math.exp(rng.range(random, Math.log(lo), Math.log(hi)));
+  }
+
+  function procGenome(seed) {
+    const random = rng.rngFor(seed, 'proc-genome');
+    const layerCount = 1 + (random() < 0.55 ? 1 : 0) + (random() < 0.2 ? 1 : 0);
+    const layers = [];
+    for (let l = 0; l < layerCount; l += 1) {
+      const kindCount = 1 + (random() < 0.5 ? 1 : 0) + (random() < 0.2 ? 1 : 0);
+      const kinds = [];
+      for (let k = 0; k < kindCount; k += 1) kinds.push(pick(random, PROC_KINDS));
+      layers.push({
+        layout: pick(random, PROC_LAYOUTS),
+        kinds,
+        symmetry: pick(random, PROC_SYMMETRIES),
+        folds: 2 + Math.floor(random() * 7),
+        sizeRule: pick(random, PROC_SIZE_RULES),
+        colorRule: pick(random, PROC_COLOR_RULES),
+        motion: pick(random, PROC_MOTIONS),
+        count: Math.round(logRange(random, 5, 90)),
+        size: logRange(random, 0.006, 0.075),
+        stretch: logRange(random, 0.4, 5),
+        spreadX: rng.range(random, 0.12, 0.5),
+        spreadY: rng.range(random, 0.12, 0.5),
+        offsetX: rng.range(random, -0.22, 0.22),
+        offsetY: rng.range(random, -0.2, 0.2),
+        jitter: random() < 0.4 ? 0 : rng.range(random, 0.02, 0.6),
+        tilt: random() < 0.4 ? 0 : rng.range(random, 0, 360),
+        tiltRandom: random() < 0.5 ? 0 : rng.range(random, 0, 180),
+        opacity: rng.range(random, 0.35, 0.95),
+        sides: 3 + Math.floor(random() * 7),
+        filled: random() < 0.5,
+        weight: logRange(random, 0.0015, 0.012),
+        speed: rng.range(random, 0.25, 1.6) * (random() < 0.5 ? -1 : 1),
+        phase: random() * TAU,
+        rings: 1 + Math.floor(random() * 4),
+        aspect: rng.range(random, 0.5, 2),
+        twist: random() < 0.5 ? 2.39996 : rng.range(random, 0.2, 3),
+        freqA: 1 + Math.floor(random() * 5),
+        freqB: 1 + Math.floor(random() * 5),
+        amp: rng.range(random, 0.15, 0.9),
+        blobs: 2 + Math.floor(random() * 4),
+        slope: rng.range(random, -0.6, 0.6),
+        avoidText: random() < 0.75,
+        colorShift: Math.floor(random() * 5),
+      });
+    }
+    return layers;
+  }
+
+  function procCopies(layer) {
+    if (layer.symmetry === 'mirrorX' || layer.symmetry === 'mirrorY') return 2;
+    if (layer.symmetry === 'mirror4') return 4;
+    if (layer.symmetry === 'fold') return layer.folds;
+    return 1;
+  }
+
+  // unit-space points in [-1, 1]^2 with the order fraction `t`, radius `r`, angle `a`
+  function procPoints(layer, n, random) {
+    const points = [];
+    const push = (x, y, t) => points.push({ x, y, t, r: Math.min(1.5, Math.hypot(x, y)), a: Math.atan2(y, x) });
+    const layout = layer.layout;
+    if (layout === 'radial') {
+      const per = Math.max(1, Math.round(n / layer.rings));
+      for (let ring = 0; ring < layer.rings; ring += 1) {
+        const offset = random() * TAU;
+        for (let i = 0; i < per; i += 1) {
+          const a = offset + (i / per) * TAU;
+          const rad = (ring + 1) / layer.rings;
+          push(Math.cos(a) * rad, Math.sin(a) * rad, (ring * per + i) / (layer.rings * per));
+        }
+      }
+    } else if (layout === 'grid') {
+      const cols = Math.max(2, Math.round(Math.sqrt(n * layer.aspect)));
+      const rows = Math.max(2, Math.ceil(n / cols));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) push((col / (cols - 1)) * 2 - 1, (row / (rows - 1)) * 2 - 1, (row * cols + col) / (rows * cols));
+      }
+    } else if (layout === 'spiral') {
+      for (let i = 0; i < n; i += 1) {
+        const rad = Math.sqrt((i + 0.5) / n);
+        push(Math.cos(i * layer.twist) * rad, Math.sin(i * layer.twist) * rad, i / n);
+      }
+    } else if (layout === 'curve') {
+      for (let i = 0; i < n; i += 1) {
+        const u = i / Math.max(1, n - 1);
+        if (layer.freqB > 3) push(Math.sin(layer.freqA * u * TAU + layer.phase), Math.sin(layer.freqB * u * TAU), u);
+        else push(u * 2 - 1, Math.sin(u * TAU * layer.freqA * 0.5 + layer.phase) * layer.amp, u);
+      }
+    } else if (layout === 'cluster') {
+      const centers = [];
+      for (let b = 0; b < layer.blobs; b += 1) centers.push({ x: rng.range(random, -0.7, 0.7), y: rng.range(random, -0.7, 0.7), s: rng.range(random, 0.1, 0.35) });
+      for (let i = 0; i < n; i += 1) {
+        const c = centers[i % centers.length];
+        push(c.x + rng.gauss(random) * c.s, c.y + rng.gauss(random) * c.s, i / n);
+      }
+    } else if (layout === 'brick') {
+      const rows = 2 + Math.floor(random() * 5);
+      const per = Math.max(2, Math.round(n / rows));
+      for (let row = 0; row < rows; row += 1) {
+        for (let i = 0; i < per; i += 1) push(((i + (row % 2 ? 0.5 : 0)) / per) * 2 - 1, (row / (rows - 1)) * 2 - 1, (row * per + i) / (rows * per));
+      }
+    } else if (layout === 'edge') {
+      for (let i = 0; i < n; i += 1) {
+        const u = (i / n) * 4;
+        const side = Math.floor(u);
+        const f = (u - side) * 2 - 1;
+        const at = [[f, -1], [1, f], [-f, 1], [-1, -f]][side % 4];
+        push(at[0], at[1], i / n);
+      }
+    } else if (layout === 'bands') {
+      const rows = 2 + Math.floor(random() * 5);
+      const per = Math.max(2, Math.round(n / rows));
+      for (let row = 0; row < rows; row += 1) {
+        for (let i = 0; i < per; i += 1) {
+          const x = (i / (per - 1)) * 2 - 1;
+          push(x, (row / (rows - 1)) * 2 - 1 + x * layer.slope, (row * per + i) / (rows * per));
+        }
+      }
+    } else if (layout === 'burst') {
+      const arms = 3 + Math.floor(random() * 10);
+      const per = Math.max(1, Math.round(n / arms));
+      for (let arm = 0; arm < arms; arm += 1) {
+        const a = (arm / arms) * TAU + layer.phase;
+        for (let i = 0; i < per; i += 1) push(Math.cos(a) * ((i + 1) / per), Math.sin(a) * ((i + 1) / per), (arm * per + i) / (arms * per));
+      }
+    } else {
+      // scatter: a disc on even freqA, a rectangle otherwise
+      for (let i = 0; i < n; i += 1) {
+        if (layer.freqA % 2 === 0) {
+          const rad = Math.sqrt(random());
+          const a = random() * TAU;
+          push(Math.cos(a) * rad, Math.sin(a) * rad, i / n);
+        } else {
+          push(random() * 2 - 1, random() * 2 - 1, i / n);
+        }
+      }
+    }
+    return points;
+  }
+
+  // the point plus its symmetric copies (`turn` / `flip` feed the element tilt)
+  function procMirror(layer, point) {
+    const list = [point];
+    if (layer.symmetry === 'mirrorX') list.push({ ...point, x: -point.x, flip: true });
+    else if (layer.symmetry === 'mirrorY') list.push({ ...point, y: -point.y, flip: true });
+    else if (layer.symmetry === 'mirror4') list.push({ ...point, x: -point.x, flip: true }, { ...point, y: -point.y, flip: true }, { ...point, x: -point.x, y: -point.y });
+    else if (layer.symmetry === 'fold') {
+      for (let k = 1; k < layer.folds; k += 1) {
+        const a = (k / layer.folds) * TAU;
+        const cos = Math.cos(a);
+        const sin = Math.sin(a);
+        list.push({ ...point, x: point.x * cos - point.y * sin, y: point.x * sin + point.y * cos, turn: a });
+      }
+    }
+    return list;
+  }
+
+  // one element -> plain shapes (e: x, y, s(size px), angle(deg), color, opacity, weight(px))
+  function procPush(shapes, layer, kind, e) {
+    const { x, y, s, angle, color, opacity, weight } = e;
+    const rad = (angle * Math.PI) / 180;
+    if (kind === 'circle') shapes.push({ kind: 'circle', x, y, r: s, color, opacity });
+    else if (kind === 'ring') shapes.push({ kind: 'ring', x, y, r: s, thickness: Math.max(1, weight), color, opacity });
+    else if (kind === 'rect') {
+      const w = s * 2 * layer.stretch;
+      const h = (s * 2) / Math.max(0.6, layer.stretch * 0.6);
+      shapes.push({ kind: 'rect', x: x - w / 2, y: y - h / 2, w, h, radius: Math.min(w, h) * 0.15, angle, color, opacity });
+    } else if (kind === 'capsule' || kind === 'dash') {
+      const len = kind === 'dash' ? s * 1.2 : s * (1 + layer.stretch);
+      shapes.push({ kind: 'capsule', x0: x - Math.cos(rad) * len, y0: y - Math.sin(rad) * len, x1: x + Math.cos(rad) * len, y1: y + Math.sin(rad) * len, width: Math.max(1, kind === 'dash' ? weight * 2.2 : weight), color, opacity });
+    } else if (kind === 'polygon') {
+      shapes.push({ kind: 'polygon', x, y, r: s, sides: layer.sides, rotation: angle, stroke: Math.max(1, weight), strokeColor: color, color: layer.filled ? color : null, opacity });
+    } else if (kind === 'polyline') {
+      shapes.push({ kind: 'polygon', x, y, r: s, sides: layer.sides, rotation: angle, stroke: Math.max(1, weight * 1.4), strokeColor: color, color: null, opacity });
+    } else if (kind === 'cross') {
+      for (let k = 0; k < 2; k += 1) {
+        const a = rad + (k * Math.PI) / 2;
+        shapes.push({ kind: 'capsule', x0: x - Math.cos(a) * s, y0: y - Math.sin(a) * s, x1: x + Math.cos(a) * s, y1: y + Math.sin(a) * s, width: Math.max(1, weight), color, opacity });
+      }
+    } else if (kind === 'shard') {
+      const corners = 3 + (layer.sides % 2);
+      const points = [];
+      for (let k = 0; k < corners; k += 1) {
+        const a = rad + (k / corners) * TAU;
+        const reach = s * (k % 2 ? 0.55 : 1.15);
+        points.push({ x: x + Math.cos(a) * reach * Math.min(2, layer.stretch) * 0.5, y: y + Math.sin(a) * reach });
+      }
+      shapes.push({ kind: 'convex', points, color, opacity });
+    }
+  }
+
+  function procShapes(params, ctx, info, state, tuning, density) {
+    const { box, opacity } = state;
+    const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
+    const layers = procGenome(seed);
+    const tb = textBox(ctx, box);
+    const local = info.local;
+    const shapes = [];
+    layers.forEach((layer, li) => {
+      if (shapes.length >= PROC_TOTAL_BUDGET) return;
+      const random = rng.rngFor(seed, 'proc-place', li, info.index, state.variant);
+      const copies = procCopies(layer);
+      const countScale = tuning.count == null ? 0.6 + density : tuning.count / 8;
+      const n = Math.max(3, Math.min(150, Math.round(layer.count * countScale)));
+      let points = procPoints(layer, n, random);
+      // decimate evenly when symmetry would blow the per-layer budget
+      const cap = Math.max(3, Math.floor(PROC_LAYER_BUDGET / copies));
+      if (points.length > cap) {
+        const stride = Math.ceil(points.length / cap);
+        points = points.filter((_, i) => i % stride === 0);
+      }
+      const spanX = box.width * layer.spreadX * state.scale;
+      const spanY = box.height * layer.spreadY * state.scale;
+      const cx = box.cx + box.width * layer.offsetX;
+      const cy = box.cy + box.height * layer.offsetY;
+      const turn = (state.rotation * Math.PI) / 180 + (layer.motion === 'spin' ? local * layer.speed * 0.8 : 0);
+      const cosT = Math.cos(turn);
+      const sinT = Math.sin(turn);
+      const sizeBase = box.short * layer.size * state.scale;
+      const weight = box.short * layer.weight;
+      let counter = 0;
+      for (const base of points) {
+        // every random value of the element is drawn here, before any element
+        // can be skipped, so the stream never depends on the time
+        const jx = layer.jitter ? (random() * 2 - 1) * layer.jitter * 0.25 : 0;
+        const jy = layer.jitter ? (random() * 2 - 1) * layer.jitter * 0.25 : 0;
+        const tiltNoise = layer.tiltRandom ? (random() * 2 - 1) * layer.tiltRandom : 0;
+        const sizeNoise = Math.exp(rng.gauss(random) * 0.45);
+        const kind = layer.kinds[Math.floor(random() * layer.kinds.length)];
+        const colorRoll = random();
+        for (const point of procMirror(layer, { ...base, x: base.x + jx, y: base.y + jy })) {
+          const index = counter;
+          counter += 1;
+          let ux = point.x;
+          let uy = point.y;
+          const phase = index * 0.7 + layer.phase;
+          if (layer.motion === 'wave') uy += Math.sin(local * layer.speed * 2.2 + ux * 3 + layer.phase) * 0.12;
+          else if (layer.motion === 'flow') ux = ((((ux + 1) / 2 + local * layer.speed * 0.12) % 1) + 1) % 1 * 2 - 1;
+          else if (layer.motion === 'orbit') {
+            const a = local * layer.speed * (0.4 + base.r * 0.6);
+            const ox = ux * Math.cos(a) - uy * Math.sin(a);
+            uy = ux * Math.sin(a) + uy * Math.cos(a);
+            ux = ox;
+          }
+          const x = cx + (ux * cosT - uy * sinT) * spanX;
+          const y = cy + (ux * sinT + uy * cosT) * spanY + state.drift;
+          let s;
+          if (layer.sizeRule === 'ramp') s = sizeBase * (0.3 + 1.4 * base.t);
+          else if (layer.sizeRule === 'radial') s = sizeBase * (1.5 - Math.min(1.2, base.r));
+          else if (layer.sizeRule === 'invRadial') s = sizeBase * (0.3 + Math.min(1.2, base.r));
+          else if (layer.sizeRule === 'random') s = sizeBase * sizeNoise;
+          else if (layer.sizeRule === 'alternate') s = sizeBase * (index % 2 ? 0.45 : 1.3);
+          else s = sizeBase;
+          let alpha = layer.opacity;
+          if (layer.motion === 'breathe') s *= 0.65 + 0.35 * Math.sin(local * layer.speed * 2 + phase);
+          else if (layer.motion === 'twinkle') alpha *= 0.3 + 0.7 * Math.abs(Math.sin(local * layer.speed * 1.5 + phase));
+          // the beat never draws empty: the first element is kept even if the
+          // placement would skip it, so a clip cannot vanish between two frames
+          const first = shapes.length === 0;
+          if (first) s = Math.max(s, 1.2);
+          else if (s < 0.8) continue;
+          // keep the lyrics clear: skip what lands on the padded text box
+          if (layer.avoidText && !first) {
+            const pad = s * 1.6;
+            if (x > tb.x0 - pad && x < tb.x1 + pad && y > tb.y0 - pad && y < tb.y1 + pad) continue;
+          }
+          let colorIndex;
+          if (layer.colorRule === 'random') colorIndex = Math.floor(colorRoll * 8);
+          else if (layer.colorRule === 'radius') colorIndex = Math.floor(Math.min(1, base.r) * 4);
+          else if (layer.colorRule === 'angle') colorIndex = Math.floor(((base.a + Math.PI) / TAU) * 5);
+          else if (layer.colorRule === 'single') colorIndex = layer.colorShift;
+          else if (layer.colorRule === 'band') colorIndex = Math.floor(base.t * 4) + layer.colorShift;
+          else colorIndex = index + layer.colorShift;
+          const angle = layer.tilt + tiltNoise + (point.turn ? (point.turn * 180) / Math.PI : 0) + (point.flip ? 180 : 0) + (layer.motion === 'spin' ? local * layer.speed * 40 : 0);
+          procPush(shapes, layer, kind, { x, y, s, angle, color: colorOf(params, ctx, colorIndex + li), opacity: opacity * alpha, weight });
+        }
+      }
+    });
+    return shapes.length > PROC_TOTAL_BUDGET ? shapes.slice(0, PROC_TOTAL_BUDGET) : shapes;
+  }
+
+  // ---------------------------------------------------------------------------
   // motif geometry
 
   // The shapes of one motif for one sub-beat. `state` carries the shared
@@ -289,15 +604,17 @@
     const scale = state.scale;
     const morph = state.morphPhase == null ? null : clamp01(state.morphPhase);
     const countOf = (fallback) => (tuning.count == null ? fallback : tuning.count);
-    const stroke = box.short * 0.004 * tuning.stroke;
+    const stroke = box.short * 0.006 * tuning.stroke;
     const spinRate = state.spinRate == null ? 1 : state.spinRate;
+
+    if (motif === PROC) return procShapes(params, ctx, info, state, tuning, density);
 
     if (motif === 'orbit') {
       const radius = box.short * (0.14 + 0.1 * density) * scale;
       const rings = tuning.count == null ? 3 : Math.max(3, Math.min(6, tuning.count));
       for (let i = 0; i < rings; i += 1) {
         const angle = info.local * (0.8 + i * 0.25) * spinRate + (variant * TAU) / 3;
-        shapes.push({ kind: 'ring', x: box.cx + Math.cos(angle) * radius, y: box.cy + Math.sin(angle) * radius * 0.72, r: box.short * 0.02 * (1 + i * 0.4), thickness: box.short * 0.005 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
+        shapes.push({ kind: 'ring', x: box.cx + Math.cos(angle) * radius, y: box.cy + Math.sin(angle) * radius * 0.72, r: box.short * 0.02 * (1 + i * 0.4), thickness: box.short * 0.008 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.8 });
       }
       shapes.push({ kind: 'circle', x: box.cx, y: box.cy, r: box.short * 0.03 * scale, color: colorOf(params, ctx, 0), opacity });
     } else if (motif === 'burst') {
@@ -305,7 +622,7 @@
       const reach = box.short * 0.22 * scale;
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.05;
-        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * reach, y1: box.cy + Math.sin(angle) * reach, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * reach, y1: box.cy + Math.sin(angle) * reach, width: box.short * 0.009 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'bars') {
       const bars = Math.max(5, Math.round(8 + density * 16));
@@ -324,7 +641,7 @@
         const phase = ((info.local * 0.8 + i / count) % 1 + 1) % 1;
         // morph: the radius itself breathes between two shapes
         const baseR = morph == null ? 0.28 : 0.2 + 0.14 * morph;
-        shapes.push({ kind: 'ring', x: box.cx, y: box.cy, r: phase * box.short * baseR * (0.7 + 0.3 * scale), thickness: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (1 - phase) * 0.9 });
+        shapes.push({ kind: 'ring', x: box.cx, y: box.cy, r: phase * box.short * baseR * (0.7 + 0.3 * scale), thickness: box.short * 0.007 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (1 - phase) * 0.9 });
       }
     } else if (motif === 'confetti') {
       const count = countOf(Math.max(4, Math.round(6 + density * 30)));
@@ -359,14 +676,14 @@
       const x1 = tb.x1 + tb.w * 0.05;
       const y = tb.y1 + tb.h * (0.18 + 0.12 * density);
       const sweep = x0 + (x1 - x0) * progress;
-      shapes.push({ kind: 'capsule', x0, y0: y, x1: sweep, y1: y + drift, width: box.short * 0.012 * tuning.stroke, color: colorOf(params, ctx, 0), opacity });
-      if (variant > 0) shapes.push({ kind: 'capsule', x0, y0: y + box.short * 0.02, x1: x0 + (sweep - x0) * 0.6, y1: y + box.short * 0.02, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
+      shapes.push({ kind: 'capsule', x0, y0: y, x1: sweep, y1: y + drift, width: box.short * 0.016 * tuning.stroke, color: colorOf(params, ctx, 0), opacity });
+      if (variant > 0) shapes.push({ kind: 'capsule', x0, y0: y + box.short * 0.02, x1: x0 + (sweep - x0) * 0.6, y1: y + box.short * 0.02, width: box.short * 0.009 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
     } else if (motif === 'bracketsPop') {
       const tb = textBox(ctx, box);
       const push = tb.w * (0.08 + 0.08 * density) * (0.5 + 0.5 * progress) * (1 + 0.15 * Math.sin(info.local * 4));
       const y0 = tb.y0 - tb.h * 0.2;
       const y1 = tb.y1 + tb.h * 0.2;
-      const w = box.short * 0.012 * tuning.stroke;
+      const w = box.short * 0.016 * tuning.stroke;
       shapes.push({ kind: 'capsule', x0: tb.x0 - push, y0, x1: tb.x0 - push, y1, width: w, color: colorOf(params, ctx, 0), opacity });
       shapes.push({ kind: 'capsule', x0: tb.x1 + push, y0, x1: tb.x1 + push, y1, width: w, color: colorOf(params, ctx, 1), opacity });
     } else if (motif === 'polyMorph') {
@@ -389,7 +706,7 @@
         points.push({ x: box.cx - box.width * 0.3 + box.width * 0.6 * u, y: box.cy + Math.sin(u * TAU * waves + info.local * 2) * amp + drift });
       }
       for (let i = 0; i < points.length - 1; i += 1) {
-        shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.008 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.011 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'ticker') {
       const countTick = countOf(Math.max(4, Math.round(10 + density * 10)));
@@ -398,7 +715,7 @@
         const u = (i / countTick + info.local * 0.15 * spinRate) % 1;
         const x = box.cx - width / 2 + width * u;
         const h = box.short * (0.01 + 0.02 * ((i * 7) % 5) / 5) * (0.5 + 0.5 * progress);
-        shapes.push({ kind: 'rect', x, y: box.cy - h, w: box.short * 0.004, h: h * 2, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
+        shapes.push({ kind: 'rect', x, y: box.cy - h, w: box.short * 0.006, h: h * 2, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
       }
     } else if (motif === 'halftone') {
       const cols = tuning.count == null ? Math.max(3, Math.round(4 + density * 6)) : Math.max(3, Math.min(12, Math.round(tuning.count / 2)));
@@ -424,7 +741,7 @@
         const my = originY + Math.sin(angle) * length * kink;
         const ex = mx + Math.cos(angle + (random() - 0.5) * 0.9) * length * (1 - kink);
         const ey = my + Math.sin(angle + (random() - 0.5) * 0.9) * length * (1 - kink);
-        const w = box.short * 0.0035 * tuning.stroke;
+        const w = box.short * 0.005 * tuning.stroke;
         shapes.push({ kind: 'capsule', x0: originX, y0: originY, x1: mx, y1: my, width: w, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
         shapes.push({ kind: 'capsule', x0: mx, y0: my, x1: ex, y1: ey, width: w * 0.7, color: colorOf(params, ctx, i + 1), opacity: opacity * 0.8 });
       }
@@ -434,7 +751,7 @@
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.04;
         const length = reach * (0.5 + 0.5 * Math.abs(Math.sin(info.local * 1.6 + i)));
-        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * length, y1: box.cy + Math.sin(angle) * length, width: box.short * 0.0025 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+        shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * length, y1: box.cy + Math.sin(angle) * length, width: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'eyes') {
       const random = rng.rngFor(0x0e75, 'eyes', info.index, variant);
@@ -444,7 +761,7 @@
         const ey = box.cy + (random() * 2 - 1) * box.height * 0.16;
         const blink = 0.5 + 0.5 * Math.abs(Math.sin(info.local * 1.1 + i * 1.7));
         const r = box.short * (0.02 + 0.014 * random()) * scale;
-        shapes.push({ kind: 'ring', x: ex, y: ey, r: r * 1.6, thickness: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
+        shapes.push({ kind: 'ring', x: ex, y: ey, r: r * 1.6, thickness: box.short * 0.007 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
         shapes.push({ kind: 'circle', x: ex, y: ey, r: r * 0.7 * blink, color: colorOf(params, ctx, i + 1), opacity });
       }
     } else if (motif === 'scratches') {
@@ -456,7 +773,7 @@
         const y = box.cy + (random() * 2 - 1) * box.height * 0.25;
         const length = box.short * (0.12 + 0.22 * random()) * (0.5 + 0.5 * progress);
         const angle = baseAngle + (random() - 0.5) * 0.25;
-        shapes.push({ kind: 'capsule', x0: x - Math.cos(angle) * length * 0.5, y0: y - Math.sin(angle) * length * 0.5, x1: x + Math.cos(angle) * length * 0.5, y1: y + Math.sin(angle) * length * 0.5, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (0.6 + 0.4 * random()) });
+        shapes.push({ kind: 'capsule', x0: x - Math.cos(angle) * length * 0.5, y0: y - Math.sin(angle) * length * 0.5, x1: x + Math.cos(angle) * length * 0.5, y1: y + Math.sin(angle) * length * 0.5, width: box.short * 0.0045 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (0.6 + 0.4 * random()) });
       }
     } else if (motif === 'drips') {
       const random = rng.rngFor(0x0d71, 'drips', info.index, variant);
@@ -466,7 +783,7 @@
         const top = box.cy - box.height * 0.18;
         const grow = ((info.local * (0.2 + random() * 0.4) + random()) % 1 + 1) % 1;
         const length = box.short * (0.04 + 0.18 * grow) * (0.4 + 0.6 * progress);
-        const w = box.short * 0.006 * tuning.stroke * (0.7 + 0.3 * random());
+        const w = box.short * 0.009 * tuning.stroke * (0.7 + 0.3 * random());
         shapes.push({ kind: 'capsule', x0: x, y0: top, x1: x, y1: top + length, width: w, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
         shapes.push({ kind: 'circle', x, y: top + length + w * 0.4, r: w * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
       }
@@ -477,12 +794,12 @@
       const step = (2 * spanX) / Math.max(1, cells);
       for (let i = 0; i <= cells; i += 1) {
         const x = box.cx - spanX + step * i;
-        shapes.push({ kind: 'capsule', x0: x, y0: box.cy - spanY, x1: x, y1: box.cy + spanY, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, 0), opacity: opacity * 0.7 });
-        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - spanY + step * i * 0.75, x1: box.cx + spanX, y1: box.cy - spanY + step * i * 0.75, width: box.short * 0.0028 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
+        shapes.push({ kind: 'capsule', x0: x, y0: box.cy - spanY, x1: x, y1: box.cy + spanY, width: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, 0), opacity: opacity * 0.7 });
+        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - spanY + step * i * 0.75, x1: box.cx + spanX, y1: box.cy - spanY + step * i * 0.75, width: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.7 });
       }
       for (let i = 0; i < 2; i += 1) {
         const sign = i === 0 ? 1 : -1;
-        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - sign * spanY, x1: box.cx + spanX, y1: box.cy + sign * spanY, width: box.short * 0.004 * tuning.stroke, color: colorOf(params, ctx, 2), opacity: opacity * 0.8 });
+        shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - sign * spanY, x1: box.cx + spanX, y1: box.cy + sign * spanY, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, 2), opacity: opacity * 0.8 });
       }
     } else if (motif === 'waves') {
       const bands = countOf(3);
@@ -495,7 +812,7 @@
           points.push({ x: box.cx - box.width * 0.35 + box.width * 0.7 * u, y: box.cy + Math.sin(u * TAU * (1 + b) * 0.5 + phase) * amp + (b - (bands - 1) / 2) * amp * 1.6 });
         }
         for (let i = 0; i < points.length - 1; i += 1) {
-          shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.0045 * tuning.stroke, color: colorOf(params, ctx, b), opacity: opacity * (0.9 - b * 0.15) });
+          shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.0065 * tuning.stroke, color: colorOf(params, ctx, b), opacity: opacity * (0.9 - b * 0.15) });
         }
       }
     } else if (motif === 'comets') {
@@ -507,7 +824,7 @@
         const progressAlong = ((info.local * speed + random()) % 1 + 1) % 1;
         const dir = variant % 2 ? -1 : 1;
         const x = dir > 0 ? box.width * (0.05 + progressAlong * 0.9) : box.width * (0.95 - progressAlong * 0.9);
-        const r = box.short * (0.008 + 0.008 * random()) * scale;
+        const r = box.short * (0.009 + 0.009 * random()) * scale;
         const tail = box.short * 0.09 * (0.4 + 0.6 * progress);
         shapes.push({ kind: 'capsule', x0: x, y0: lane, x1: x - dir * tail, y1: lane, width: r * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
         shapes.push({ kind: 'circle', x, y: lane, r, color: colorOf(params, ctx, i + 1), opacity });
@@ -592,7 +909,7 @@
           y0: lane,
           x1,
           y1: lane + extent,
-          width: box.short * 0.014 * tuning.stroke,
+          width: box.short * 0.018 * tuning.stroke,
           color: colorOf(params, ctx, i),
           opacity: opacity * 0.9,
         });
@@ -630,9 +947,9 @@
           const h = box.height * 0.16 * pulse * (0.7 + 0.3 * fall) * scale;
           shapes.push({
             kind: 'rect',
-            x: x - box.short * 0.006,
+            x: x - box.short * 0.009,
             y: box.cy - h / 2 + (i - (countBars - 1) / 2) * box.short * 0.12,
-            w: box.short * 0.012 * tuning.stroke,
+            w: box.short * 0.016 * tuning.stroke,
             h,
             radius: 3,
             color: colorOf(params, ctx, i),
@@ -1045,6 +1362,7 @@
         radius: params.radius,
         aspect: params.aspect,
         spinRate: params.spinRate,
+        procSeed: params.seed,
         axes: { weird: 0.5, energy: 0.5 },
       });
       beats = generated.params.beats;

@@ -101,6 +101,8 @@
     figureMotif: {
       ribbon: 0.1, confetti: 0.15, burst: 0.25, bracketsPop: 0.3, orbit: 0.4, polyMorph: 0.4,
       rings: 0.45, halftone: 0.55, bars: 0.6, ticker: 0.65, underlineSweep: 0.8, frame: 0.8,
+      // the procedural motif: its compositions are grown, not authored
+      proc: 0.7,
       // fear / variety pack
       spikes: 0.2, scratches: 0.25, cracks: 0.3, comets: 0.3, drips: 0.35, waves: 0.5,
       eyes: 0.5, lattice: 0.55,

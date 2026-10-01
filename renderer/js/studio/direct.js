@@ -1804,8 +1804,9 @@
       const overlapOf = (candidate) => SA.legibility.figureOverlap(candidate, { ...figureCtx, geometry: true });
       if (overlapOf(spec) > AUTO_FIGURE_CLEAR) {
         // motifs that frame the text box first, then the bold cuts, then the
-        // calmer centred ones
-        const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars'];
+        // calmer centred ones; `proc` may draw a different composition on the
+        // next attempt, so a compliant procedural figure stays procedural
+        const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars', 'proc'];
         const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
         const shuffled = pool
           .filter((name, position) => pool.indexOf(name) === position && name !== spec.params.motif)

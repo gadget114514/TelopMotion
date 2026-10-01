@@ -292,3 +292,123 @@ test('the bold motifs draw thick shapes and stay clear of the text box', () => {
   // the bold set is part of the drawn library
   for (const motif of figures.BOLD_MOTIFS) assert.ok(figures.MOTIFS.includes(motif), `${motif} missing from MOTIFS`);
 });
+
+// ---------------------------------------------------------------------------
+// the procedural `proc` motif
+
+test('proc draws finite, budgeted shapes of the six GL kinds over 3000 seeds', () => {
+  const kinds = new Set(['rect', 'circle', 'ring', 'capsule', 'polygon', 'convex']);
+  const times = [3.1, 5.2, 7.8, 10.5, 13.2];
+  let bad = null;
+  for (let seed = 1; seed <= 3000; seed += 1) {
+    const spec = figures.generate({ span: SPAN, motif: 'proc', seed, id: `proc_${seed}`, axes: { weird: 0.6, energy: 0.6 } });
+    if (spec.params.motif !== 'proc') bad = `seed ${seed} motif ${spec.params.motif}`;
+    if (!Number.isFinite(Number(spec.params.seed))) bad = `seed ${seed} has no proc seed`;
+    if (bad) break;
+    for (const time of times) {
+      const list = figures.drawList(spec, ctx({ time }));
+      if (!list.shapes.length) { bad = `seed ${seed} draws nothing at ${time}`; break; }
+      if (list.shapes.length > 480) { bad = `seed ${seed} budget ${list.shapes.length}`; break; }
+      for (const shape of list.shapes) {
+        if (!kinds.has(shape.kind)) { bad = `seed ${seed} kind ${shape.kind}`; break; }
+        for (const key of ['x', 'y', 'r', 'w', 'h', 'x0', 'y0', 'x1', 'y1', 'width', 'thickness', 'opacity']) {
+          if (shape[key] != null && !Number.isFinite(shape[key])) { bad = `seed ${seed} ${key} at ${time}`; break; }
+        }
+        if (bad) break;
+        if (shape.points) {
+          for (const point of shape.points) {
+            if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) { bad = `seed ${seed} point at ${time}`; break; }
+          }
+        }
+        if (bad) break;
+      }
+      if (bad) break;
+    }
+    if (bad) break;
+  }
+  assert.equal(bad, null);
+});
+
+test('proc seeds yield almost only unique compositions (< 1% duplicates)', () => {
+  const signatures = new Set();
+  const total = 3000;
+  for (let seed = 1; seed <= total; seed += 1) {
+    const spec = figures.generate({ span: SPAN, motif: 'proc', seed, id: `sig_${seed}` });
+    const list = figures.drawList(spec, ctx({ time: 6 }));
+    signatures.add(
+      list.shapes
+        .map((shape) => [shape.kind, Math.round(shape.x || shape.x0 || 0), Math.round(shape.y || shape.y0 || 0), Math.round(shape.r || shape.width || shape.w || 0)].join(':'))
+        .join(';')
+    );
+  }
+  const duplicates = total - signatures.size;
+  assert.ok(duplicates / total < 0.01, `duplicates ${duplicates} of ${total}`);
+  assert.ok(signatures.size > total * 0.99, `unique ${signatures.size}/${total}`);
+});
+
+test('proc is deterministic and holds its shape count frame to frame', () => {
+  const a = figures.generate({ span: SPAN, motif: 'proc', seed: 4242, id: 'det' });
+  const b = figures.generate({ span: SPAN, motif: 'proc', seed: 4242, id: 'det' });
+  assert.deepEqual(a, b);
+  assert.deepEqual(figures.drawList(a, ctx({ time: 8 })).shapes, figures.drawList(b, ctx({ time: 8 })).shapes);
+  // one hold beat sampled every frame: the count stays within a small delta
+  // (the per-element phase keeps the entrance / exit from popping all at once)
+  for (const seed of [5, 21, 72, 94, 123]) {
+    const spec = { type: 'figure', params: { motif: 'proc', seed: 1000 + seed, density: 0.6, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 6, move: { in: 'pop', hold: 'still', out: 'fade' }, variant: 0, accent: false }] } };
+    let previous = null;
+    let peak = 0;
+    for (let time = 1; time <= 5; time += 1 / 60) {
+      const count = figures.drawList(spec, ctx({ time })).shapes.length;
+      peak = Math.max(peak, count);
+      if (previous != null) assert.ok(Math.abs(count - previous) <= 20, `seed ${seed} jumped ${previous} -> ${count} at ${time}`);
+      previous = count;
+    }
+    assert.ok(peak > 0);
+  }
+});
+
+test('generate picks proc most of the time and hands it back to fear', () => {
+  let proc = 0;
+  for (let seed = 1; seed <= 200; seed += 1) {
+    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 0.5, energy: 0.5 } });
+    if (spec.params.motif === 'proc') proc += 1;
+    // a classic draw keeps the historic beat fields only
+    else for (const beat of spec.params.beats) assert.deepEqual(Object.keys(beat).sort(), ['accent', 'end', 'move', 'start', 'variant']);
+  }
+  assert.ok(proc >= 120 && proc <= 180, `proc share ${proc}/200`);
+  // the fear axis hands the pick back to the fixed library
+  let feared = 0;
+  for (let seed = 1; seed <= 200; seed += 1) {
+    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 0.5, energy: 0.5, fear: 0.9 } });
+    if (spec.params.motif === 'proc') feared += 1;
+  }
+  assert.ok(feared < proc / 2, `feared proc ${feared} vs ${proc}`);
+  // fear 0 is the legacy no-op: the whole spec is unchanged
+  const withFear = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 0.5, energy: 0.5, fear: 0 } });
+  const without = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 0.5, energy: 0.5 } });
+  assert.deepEqual(withFear, without);
+  // an explicit proc request always carries a finite seed
+  const explicit = figures.generate({ span: SPAN, motif: 'proc', seed: 3, id: 'explicit' });
+  assert.equal(explicit.params.motif, 'proc');
+  assert.ok(Number.isFinite(Number(explicit.params.seed)));
+});
+
+test('the figure lines are drawn thick (the legacy tuning stays the floor)', () => {
+  const manual = {
+    type: 'figure',
+    params: {
+      motif: 'rings',
+      density: 0.5,
+      colors: ['#ffffff'],
+      beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: false }],
+    },
+  };
+  const context = { time: 1, frame: FRAME, clip: { key: 'fig_thick', start: 0, end: 3 }, seed: 2, colors: ['#ffffff'] };
+  let thickest = 0;
+  for (const shape of figures.drawList(manual, context).shapes) {
+    if (shape.thickness) thickest = Math.max(thickest, shape.thickness);
+    if (shape.width) thickest = Math.max(thickest, shape.width);
+  }
+  assert.ok(thickest >= FRAME.height * 0.005, `line thickness ${thickest}`);
+  assert.ok(figures.drawList(manual, context).shapes.length > 0);
+});
