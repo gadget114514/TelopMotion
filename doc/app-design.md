@@ -997,7 +997,7 @@ This controls the **card camera and treatment per cue**. The media underneath co
 
 **Frame base (the background track's colour):**
 - The background track owns the frame base colour: the stage behind the clips and the layers. It is a saved track property (`track.color`, a ColorValue or a hex string), so the track's checkbox toggles it together with its clips and layers.
-- Unset = transparent. The chroma key green is just a preset of that colour (`#00b140`), never an implicit engine default; the canvas keeps its alpha and the stage shows through between the clips.
+- Unset = transparent. The chroma key green is just a preset of that colour (`#00b140`), never an implicit engine default; the canvas keeps its alpha and the stage shows through between the clips. The studio preview paints a grey checkerboard behind the canvas (CSS only), so a transparent base reads as transparency; exports never include it.
 
 **Transparency:**
 - The lyrics layer is rendered into its own premultiplied-alpha RGBA target. It is cleared to (0, 0, 0, 0), not black.
