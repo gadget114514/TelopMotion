@@ -1986,7 +1986,7 @@ SA.timeline = (() => {
         menu.className = 'timeline-menu';
         const options =
           kind === 'background'
-            ? SA.fx.list('background', { packs: ['font', 'pro'] }).map((descriptor) => ({ type: descriptor.type, fx: true }))
+            ? SA.fx.list('background', { packs: [null, 'font', 'pro'] }).map((descriptor) => ({ type: descriptor.type, fx: true }))
             : [...new Set([...SA.fillerRender.types(), 'shapeLayer'])].map((type) => ({ type, fx: type === 'shapeLayer' }));
         for (const option of options) {
           const item = document.createElement('button');

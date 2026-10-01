@@ -143,3 +143,17 @@ test('the engine and the studio wire the placeable clip', () => {
   const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
   assert.ok(timeline.includes('addClipTypeMenu'), 'the timeline has no clip type menu');
 });
+
+test('the timeline background menu offers the unpacked types too', () => {
+  // `packs: ['font', 'pro']` would hide every unpacked primitive, so the menu
+  // could not reach `plain` / `solid` / `gradient` / `card` at all
+  const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
+  assert.match(timeline, /SA\.fx\.list\('background', \{ packs: \[null,/, 'the timeline drops the unpacked background types');
+  const FX_DIR = path.join(ROOT, 'renderer', 'js', 'lyrics', 'effects');
+  const fx = require(path.join(FX_DIR, 'registry.js'));
+  require(path.join(FX_DIR, 'background.js'));
+  const offered = fx.list('background', { packs: [null, 'font', 'pro'] }).map((descriptor) => descriptor.type);
+  for (const type of ['none', 'plain', 'solid', 'gradient', 'noiseGradient', 'card', 'cover', 'image']) {
+    assert.ok(offered.includes(type), `the menu does not offer background.${type}`);
+  }
+});
