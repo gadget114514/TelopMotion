@@ -307,12 +307,10 @@ SA.paletteDialog = (() => {
     return (jittered && jittered.colors && jittered.colors[0]) || hex;
   }
 
-  // The big-jump sibling of jitterOne: the same colour role, any hue.
-  function rerollOne(hex, index, colors) {
-    if (typeof SA === 'undefined' || !SA.moods || !SA.rng) return hex;
-    const mode = (SA.store.state.project && SA.store.state.project.styleMode) || {};
-    const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog-jump', index);
-    return SA.moods.rerollColor(random, hex, mode.axes, isEdgeIndex(index, colors) ? { edgeIndex: 0 } : null);
+  // The big-jump sibling of jitterOne: a plain random RGB, no axes or role.
+  function rerollOne() {
+    const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
+    return `#${channel()}${channel()}${channel()}`;
   }
 
   function preview() {
@@ -440,7 +438,7 @@ SA.paletteDialog = (() => {
         reroll.classList.add('btn', 'btn-mini');
         reroll.title = t('palette.rerollColor');
         row.appendChild(reroll);
-        const jump = button('🎲', () => setColor(index, rerollOne(hex, index, palette.colors)));
+        const jump = button('🎲', () => setColor(index, rerollOne()));
         jump.classList.add('btn', 'btn-mini');
         jump.title = t('palette.rerollColorWide');
         row.appendChild(jump);
