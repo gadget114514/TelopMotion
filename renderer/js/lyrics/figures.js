@@ -1317,7 +1317,7 @@
 
   // drawList for the figure clip type: resolve the sub-beat and build shapes.
   function drawList(spec, ctx) {
-    const params = (spec && spec.params) || {};
+    let params = (spec && spec.params) || {};
     const time = num(ctx && ctx.time, 0);
     let beats = Array.isArray(params.beats) ? params.beats : [];
     const force = {};
@@ -1366,6 +1366,10 @@
         axes: { weird: 0.5, energy: 0.5 },
       });
       beats = generated.params.beats;
+      // a hand-made `proc` clip has no genome seed stored yet: keep the one the
+      // generator just drew, deterministic from the clip key, so every frame
+      // grows the same composition
+      if (!params.seed && generated.params.seed != null) params = { ...params, seed: generated.params.seed };
     } else if (forced) {
       // editing an in / hold / out move on an already generated figure must take
       // effect without regenerating: override on a shallow copy, never in place
@@ -1379,5 +1383,5 @@
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, PROC, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

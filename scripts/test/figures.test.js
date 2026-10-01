@@ -351,6 +351,13 @@ test('proc is deterministic and holds its shape count frame to frame', () => {
   const b = figures.generate({ span: SPAN, motif: 'proc', seed: 4242, id: 'det' });
   assert.deepEqual(a, b);
   assert.deepEqual(figures.drawList(a, ctx({ time: 8 })).shapes, figures.drawList(b, ctx({ time: 8 })).shapes);
+  // a hand-made proc clip (no beats, no seed) grows its composition from the
+  // clip key, so two clips never share the seed-1 genome
+  const handmade = figures.blank({ motif: 'proc', sync: 'beat' });
+  const first = figures.drawList(handmade, ctx({ time: 5.2 }));
+  const other = figures.drawList(handmade, { ...ctx({ time: 5.2 }), clip: { key: 'fig_other', start: SPAN.start, end: SPAN.end } });
+  assert.ok(first.shapes.length > 0 && other.shapes.length > 0);
+  assert.notDeepEqual(first.shapes, other.shapes);
   // one hold beat sampled every frame: the count stays within a small delta
   // (the per-element phase keeps the entrance / exit from popping all at once)
   for (const seed of [5, 21, 72, 94, 123]) {

@@ -1,10 +1,10 @@
 {
   "format": "telopmotion",
-  "version": 3,
+  "version": 4,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-01T02:34:23.915Z",
-    "updatedAt": "2026-10-01T02:34:23.915Z",
+    "createdAt": "2026-10-01T16:19:51.555Z",
+    "updatedAt": "2026-10-01T16:19:51.555Z",
     "lang": "ja"
   },
   "output": {
@@ -8433,56 +8433,6 @@
         }
       ]
     },
-    "fx_335": {
-      "bgShape": {
-        "type": "none",
-        "enabled": true,
-        "params": {
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "alternate",
-          "varyColors": [],
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_336": {
-      "bgShape": {
-        "type": "square",
-        "enabled": true,
-        "params": {
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "vary": "alternate",
-          "varyColors": [],
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
     "fx_337": {
       "bgShape": {
         "type": "none",
@@ -8494,7 +8444,7 @@
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "cycle",
+          "vary": "alternate",
           "varyColors": [],
           "stroke": 0,
           "fill": 1,
@@ -8519,7 +8469,7 @@
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "cycle",
+          "vary": "alternate",
           "varyColors": [],
           "stroke": 0,
           "fill": 1,
@@ -8544,7 +8494,7 @@
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "random",
+          "vary": "cycle",
           "varyColors": [],
           "stroke": 0,
           "fill": 1,
@@ -8569,7 +8519,7 @@
           "skipSpaces": true,
           "skipRate": 0,
           "fgAutoContrast": false,
-          "vary": "random",
+          "vary": "cycle",
           "varyColors": [],
           "stroke": 0,
           "fill": 1,
@@ -8584,6 +8534,56 @@
       }
     },
     "fx_341": {
+      "bgShape": {
+        "type": "none",
+        "enabled": true,
+        "params": {
+          "rotateWithLetter": true,
+          "scaleWithLetter": true,
+          "opacity": 1,
+          "skipSpaces": true,
+          "skipRate": 0,
+          "fgAutoContrast": false,
+          "vary": "random",
+          "varyColors": [],
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
+        },
+        "motion": {}
+      }
+    },
+    "fx_342": {
+      "bgShape": {
+        "type": "square",
+        "enabled": true,
+        "params": {
+          "rotateWithLetter": true,
+          "scaleWithLetter": true,
+          "opacity": 1,
+          "skipSpaces": true,
+          "skipRate": 0,
+          "fgAutoContrast": false,
+          "vary": "random",
+          "varyColors": [],
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
+        },
+        "motion": {}
+      }
+    },
+    "fx_343": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8605,7 +8605,7 @@
         "motion": {}
       }
     },
-    "fx_342": {
+    "fx_344": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8629,7 +8629,7 @@
         "motion": {}
       }
     },
-    "fx_343": {
+    "fx_345": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8652,7 +8652,7 @@
         "motion": {}
       }
     },
-    "fx_344": {
+    "fx_346": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8674,7 +8674,7 @@
         "motion": {}
       }
     },
-    "fx_345": {
+    "fx_347": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8696,7 +8696,7 @@
         "motion": {}
       }
     },
-    "fx_346": {
+    "fx_348": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8719,7 +8719,7 @@
         "motion": {}
       }
     },
-    "fx_347": {
+    "fx_349": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8743,7 +8743,7 @@
         "motion": {}
       }
     },
-    "fx_348": {
+    "fx_350": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8766,7 +8766,7 @@
         "motion": {}
       }
     },
-    "fx_349": {
+    "fx_351": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8789,7 +8789,7 @@
         "motion": {}
       }
     },
-    "fx_350": {
+    "fx_352": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8815,7 +8815,7 @@
         "motion": {}
       }
     },
-    "fx_351": {
+    "fx_353": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8838,7 +8838,7 @@
         "motion": {}
       }
     },
-    "fx_352": {
+    "fx_354": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8861,7 +8861,7 @@
         "motion": {}
       }
     },
-    "fx_353": {
+    "fx_355": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8883,7 +8883,7 @@
         "motion": {}
       }
     },
-    "fx_354": {
+    "fx_356": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8907,7 +8907,7 @@
         "motion": {}
       }
     },
-    "fx_355": {
+    "fx_357": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8930,7 +8930,7 @@
         "motion": {}
       }
     },
-    "fx_356": {
+    "fx_358": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8961,7 +8961,7 @@
         "motion": {}
       }
     },
-    "fx_357": {
+    "fx_359": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8983,7 +8983,7 @@
         "motion": {}
       }
     },
-    "fx_358": {
+    "fx_360": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9006,7 +9006,7 @@
         "motion": {}
       }
     },
-    "fx_359": {
+    "fx_361": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9030,7 +9030,7 @@
         "motion": {}
       }
     },
-    "fx_360": {
+    "fx_362": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9062,7 +9062,7 @@
         "motion": {}
       }
     },
-    "fx_361": {
+    "fx_363": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9085,7 +9085,7 @@
         "motion": {}
       }
     },
-    "fx_362": {
+    "fx_364": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9111,7 +9111,7 @@
         "motion": {}
       }
     },
-    "fx_363": {
+    "fx_365": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9134,7 +9134,7 @@
         "motion": {}
       }
     },
-    "fx_364": {
+    "fx_366": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9157,7 +9157,7 @@
         "motion": {}
       }
     },
-    "fx_365": {
+    "fx_367": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9179,7 +9179,7 @@
         "motion": {}
       }
     },
-    "fx_366": {
+    "fx_368": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9199,51 +9199,6 @@
           "lightness": 0.33,
           "speed": 0.5,
           "perLetter": false
-        },
-        "motion": {}
-      }
-    },
-    "fx_367": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "holographic",
-        "enabled": true,
-        "params": {
-          "iridescence": 0.25,
-          "fresnel": 0.4,
-          "speed": 0.5
-        },
-        "motion": {}
-      }
-    },
-    "fx_368": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "chrome",
-        "enabled": true,
-        "params": {
-          "envColors": null,
-          "sharpness": 0.75
         },
         "motion": {}
       }
@@ -17065,6 +17020,22 @@
       "start": 623.88,
       "end": 626.12,
       "spec": {
+        "type": "plain",
+        "params": {
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_2",
+      "trackId": "bg",
+      "start": 625.88,
+      "end": 628.12,
+      "spec": {
         "type": "gradient",
         "params": {
           "colors": [
@@ -17087,10 +17058,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_2",
+      "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 625.88,
-      "end": 628.12,
+      "start": 627.88,
+      "end": 630.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17105,10 +17076,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_3",
+      "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 627.88,
-      "end": 630.12,
+      "start": 629.88,
+      "end": 632.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17125,10 +17096,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_4",
+      "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 629.88,
-      "end": 632.12,
+      "start": 631.88,
+      "end": 634.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17144,10 +17115,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_5",
+      "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 631.88,
-      "end": 634.12,
+      "start": 633.88,
+      "end": 636.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17163,10 +17134,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_6",
+      "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 633.88,
-      "end": 636.12,
+      "start": 635.88,
+      "end": 638.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17184,10 +17155,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_7",
+      "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 635.88,
-      "end": 638.12,
+      "start": 637.88,
+      "end": 640.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17205,10 +17176,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_8",
+      "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 637.88,
-      "end": 640.12,
+      "start": 639.88,
+      "end": 642.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17221,10 +17192,26 @@
       "colors": null
     },
     {
-      "id": "clip_bg_9",
+      "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 639.88,
-      "end": 642.12,
+      "start": 641.88,
+      "end": 644.12,
+      "spec": {
+        "type": "plain",
+        "params": {
+          "color": "#4dc8ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_11",
+      "trackId": "bg",
+      "start": 643.88,
+      "end": 646.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17239,10 +17226,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_10",
+      "id": "clip_bg_12",
       "trackId": "bg",
-      "start": 641.88,
-      "end": 644.12,
+      "start": 645.88,
+      "end": 648.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17266,10 +17253,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_11",
+      "id": "clip_bg_13",
       "trackId": "bg",
-      "start": 643.88,
-      "end": 646.12,
+      "start": 647.88,
+      "end": 650.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17286,10 +17273,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_12",
+      "id": "clip_bg_14",
       "trackId": "bg",
-      "start": 645.88,
-      "end": 648.12,
+      "start": 649.88,
+      "end": 652.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17305,10 +17292,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_13",
+      "id": "clip_bg_15",
       "trackId": "bg",
-      "start": 647.88,
-      "end": 650.12,
+      "start": 651.88,
+      "end": 654.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17324,10 +17311,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_14",
+      "id": "clip_bg_16",
       "trackId": "bg",
-      "start": 649.88,
-      "end": 652.12,
+      "start": 653.88,
+      "end": 656.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17345,10 +17332,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_15",
+      "id": "clip_bg_17",
       "trackId": "bg",
-      "start": 651.88,
-      "end": 654.12,
+      "start": 655.88,
+      "end": 658.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17366,10 +17353,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_16",
+      "id": "clip_bg_18",
       "trackId": "bg",
-      "start": 653.88,
-      "end": 656.12,
+      "start": 657.88,
+      "end": 660.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17393,10 +17380,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_17",
+      "id": "clip_bg_19",
       "trackId": "bg",
-      "start": 655.88,
-      "end": 658.12,
+      "start": 659.88,
+      "end": 662.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17411,10 +17398,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_18",
+      "id": "clip_bg_20",
       "trackId": "bg",
-      "start": 657.88,
-      "end": 660.12,
+      "start": 661.88,
+      "end": 664.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17431,10 +17418,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_19",
+      "id": "clip_bg_21",
       "trackId": "bg",
-      "start": 659.88,
-      "end": 662.12,
+      "start": 663.88,
+      "end": 666.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17450,10 +17437,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_20",
+      "id": "clip_bg_22",
       "trackId": "bg",
-      "start": 661.88,
-      "end": 664.12,
+      "start": 665.88,
+      "end": 668.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17469,10 +17456,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_21",
+      "id": "clip_bg_23",
       "trackId": "bg",
-      "start": 663.88,
-      "end": 666.12,
+      "start": 667.88,
+      "end": 670.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17490,10 +17477,10 @@
       "colors": null
     },
     {
-      "id": "clip_bg_22",
+      "id": "clip_bg_24",
       "trackId": "bg",
-      "start": 665.88,
-      "end": 668.12,
+      "start": 669.88,
+      "end": 672.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17512,7 +17499,7 @@
     }
   ],
   "fillers": {
-    "enabled": true,
+    "enabled": false,
     "minGap": 1.5,
     "margin": 0.25,
     "byKind": {},
