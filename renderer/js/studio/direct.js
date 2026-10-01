@@ -17,7 +17,7 @@
   // stay with the song so the lyrics keep their place and palette (a very weird
   // song lets the cue look move layout and location too).
   const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg', 'orn'];
   // the tracks a run owns (only clips carrying `auto` are replaced)
   const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
@@ -293,7 +293,7 @@
     // literal colours follow through resolveStyle; the cue's own colours are
     // moved here, and the previous cue's palette joins the avoid list.
     const baseColors = (themeStyle && themeStyle.palette && themeStyle.palette.colors) || [];
-    const drawnPalette = cuePalette(projectDoc, cue, cueIndex, ctx, ctx.cuePaletteColors);
+    const drawnPalette = cueHasLegacyBeat(projectDoc, cue) ? cuePalette(projectDoc, cue, cueIndex, ctx, ctx.cuePaletteColors) : null;
     if (drawnPalette) {
       const ownColors = projectDoc.cueStyles[cue.id] || {};
       projectDoc.cueStyles[cue.id] = {
@@ -661,14 +661,10 @@
   // ---------------------------------------------------------------------------
 
   // How far two palettes are apart, same-index RGB difference summed (the same
-  // measure the palette dialog uses to keep a re-roll visible).
+  // measure the palette dialog uses to keep a re-roll visible). The body lives
+  // in moods now (the palette-set generation shares it); the export stays.
   function paletteDistance(colors, avoid) {
-    if (!Array.isArray(colors) || !colors.length || !Array.isArray(avoid) || !avoid.length) return 0;
-    return colors.reduce((sum, hex, index) => {
-      const a = SA.color.parse(hex);
-      const b = SA.color.parse(avoid[index % avoid.length]);
-      return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
-    }, 0);
+    return SA.moods && typeof SA.moods.paletteDistance === 'function' ? SA.moods.paletteDistance(colors, avoid) : 0;
   }
 
   // The palette a run draws from when the profile lists use-palettes: the
@@ -697,6 +693,14 @@
       SA.moods.repairContrast(colors, contrast, { keepText: true });
     }
     return { id: best.id || 'use-palette', name: best.name || 'palette', colors };
+  }
+
+  // A cue draws from the cue palette lottery only when at least one of its
+  // beats is set to the classic colour mode: the new method lives on the beat,
+  // so a cue without a legacy beat never needs a palette of its own.
+  function cueHasLegacyBeat(projectDoc, cue) {
+    return ((projectDoc.beats && projectDoc.beats[cue.id]) || [])
+      .some((beat) => projectDoc.beatStyles && projectDoc.beatStyles[beat.id] && projectDoc.beatStyles[beat.id].colorLegacy);
   }
 
   // The cue palette lottery: weird 0 keeps every cue on the base palette, weird
@@ -793,6 +797,23 @@
       return pick;
     }
     return { change, record, choose };
+  }
+
+  // The palette ladder: `count` palettes of the theme's set, `change` the chance
+  // the next beat moves (0 = never, 1 = always another palette). The move picks
+  // any other palette uniformly. count < 2 or change 0 draws no random.
+  function createPaletteLadder(options) {
+    const count = Math.max(1, Math.floor(Number(options && options.count) || 1));
+    const change = Math.max(0, Math.min(1, Number(options && options.change) || 0));
+    const random = options && options.random;
+    function choose(prev) {
+      if (prev == null) return 0;              // the song opens on palette #1
+      if (count < 2 || change <= 0) return prev;
+      if (change < 1 && random() >= change) return prev;
+      const pick = Math.floor(random() * (count - 1));
+      return pick >= prev ? pick + 1 : pick;   // never the previous one
+    }
+    return { count, change, choose };
   }
 
   const DECO_TYPES = {
@@ -1828,6 +1849,23 @@
       for (const group of AUTO_DIRECT_BEAT_GROUPS) delete existing[group];
       if (!Object.keys(existing).length) delete projectDoc.beatStyles[beatId];
     }
+    // 1.1) the theme's palette set: the user's own palettes stay, the auto ones
+    // are rebuilt from the base palette for the count the weird axis asks for.
+    // A project without a set and nothing to add stays untouched (weird 0).
+    const roles = SA.paletteRoles;
+    if (roles && typeof roles.paletteSetOf === 'function') {
+      const rawSet = projectDoc.style.paletteSet;
+      const setInfo = roles.paletteSetOf(projectDoc.style);
+      const kept = setInfo.extra.filter((entry) => entry && !entry.auto); // the user's palettes stay
+      const want = SA.weird.paletteCount(ctx.axes, setInfo.max) - 1;
+      const baseColors = (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+      let extra = kept;
+      if (want > kept.length && baseColors.length && SA.moods && typeof SA.moods.paletteSetFor === 'function') {
+        const genre = ctx.genre && SA.genres && SA.genres.get ? SA.genres.get(ctx.genre) : null;
+        extra = kept.concat(SA.moods.paletteSetFor(SA.rng.rngFor(seed, 'palette-set'), ctx.axes, baseColors, kept, want + 1, genre && genre.palettes));
+      }
+      if (rawSet || extra.length) projectDoc.style.paletteSet = { ...(rawSet || {}), max: setInfo.max, change: setInfo.change, invert: setInfo.invert, extra };
+    }
     // 2) per-cue motion inside the same theme ...
     ctx.cuePaletteColors = null;
     projectDoc.script.cues.forEach((cue, cueIndex) => {
@@ -1870,53 +1908,117 @@
         directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
       });
     });
-    // 2.4) beat colour schemes: inside each cue's palette the beats may swap
-    // the four colour roles. weird drives the change rate; the song opens on
-    // the base roles. The background track must be visible for the swap to
-    // have a stage to repaint.
-    const colorChange = ctx.params.colorChange;
-    const backgroundTrack = (projectDoc.tracks || []).find((track) => track && track.kind === 'background');
-    if (colorChange > 0 && backgroundTrack && !backgroundTrack.hidden && SA.paletteRoles && typeof SA.paletteRoles.schemes === 'function') {
-      // the invert owns its own stream; it only joins the compose profile (the
-      // classic path keeps drawing TMBD from the normal pool)
-      const invert = ctx.compose && ctx.curve ? ctx.params.paletteInvertChance : null;
-      const ladderOptions = { change: colorChange, random: SA.rng.rngFor(seed, 'color-ladder') };
-      if (invert != null) {
-        ladderOptions.invert = invert;
-        ladderOptions.invertRandom = SA.rng.rngFor(seed, 'color-invert');
-      }
-      const ladder = createColorLadder(ladderOptions);
-      const candidatesByColors = new Map();
-      let prev = null;
-      for (const cue of projectDoc.script.cues) {
-        const cueStyle = SA.project.resolveStyle(projectDoc, `cue:${cue.id}`);
-        const cueColors = (cueStyle.palette && cueStyle.palette.colors) || [];
-        const cacheKey = cueColors.join('|');
-        let candidates = candidatesByColors.get(cacheKey);
-        if (!candidates) {
-          candidates = cueColors.length ? SA.paletteRoles.schemes(cueColors, ctx.rawW, ctx.params ? ctx.params.schemeRange : undefined) : [];
-          // the invert toggle owns TMBD when it is on
-          if (invert != null) {
-            const invertId = SA.paletteRoles.SCHEME_INVERT || 'TMBD';
-            candidates = candidates.filter((entry) => entry.id !== invertId);
-          }
-          candidatesByColors.set(cacheKey, candidates);
+    // 2.4) beat colour: each beat draws from the theme's palette set at the
+    // set's change chance and/or inverts its roles at the set's invert chance.
+    // A beat flagged `colorLegacy` keeps the classic path instead: the cue
+    // palette lottery (step 2) plus a scheme ladder inside the cue's palette.
+    if (roles) {
+      const set = roles.paletteSetOf(projectDoc.style);
+      const count = Math.min(1 + set.extra.length, SA.weird.paletteCount(ctx.axes, set.max));
+      const paletteLadder = createPaletteLadder({
+        count,
+        change: set.change,
+        random: SA.rng.rngFor(seed, 'palette-ladder'),
+      });
+      // weird 0 never inverts (and the ladder consumes no random either)
+      const invertRandom = ctx.rawW > 0 && set.invert > 0 ? SA.rng.rngFor(seed, 'palette-invert') : null;
+      const colorChange = ctx.params.colorChange;
+      const backgroundTrack = (projectDoc.tracks || []).find((track) => track && track.kind === 'background');
+      const schemeReady = colorChange > 0 && !!(backgroundTrack && !backgroundTrack.hidden) && typeof roles.schemes === 'function';
+      // the classic ladder, prepared only when at least one legacy beat may use it
+      let ladder = null;
+      let candidatesByColors = null;
+      let schemeInvert = null;
+      if (schemeReady) {
+        // the invert owns its own stream; it only joins the compose profile (the
+        // classic path keeps drawing TMBD from the normal pool)
+        schemeInvert = ctx.compose && ctx.curve ? ctx.params.paletteInvertChance : null;
+        const ladderOptions = { change: colorChange, random: SA.rng.rngFor(seed, 'color-ladder') };
+        if (schemeInvert != null) {
+          ladderOptions.invert = schemeInvert;
+          ladderOptions.invertRandom = SA.rng.rngFor(seed, 'color-invert');
         }
+        ladder = createColorLadder(ladderOptions);
+        candidatesByColors = new Map();
+      }
+      let prevIndex = null;
+      let prevScheme = null;
+      for (const cue of projectDoc.script.cues) {
+        let cueColors = null;
+        let candidates = null;
         for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
-          const duration = Math.max(0.05, (Number(beat.end) || 0) - (Number(beat.start) || 0));
-          const pick = ladder.choose({ start: Number(beat.start) || 0, duration, candidates, prev });
           const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
-          if (pick) bag.colorScheme = pick;
-          else delete bag.colorScheme;
-          if (pick) {
-            // the readable contrast floor still applies to the swapped result
-            const resolved = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`);
-            const report = SA.legibility && typeof SA.legibility.check === 'function'
-              ? SA.legibility.check(resolved, { palette: cueColors, motion: false })
-              : { ok: true, reasons: [] };
-            if ((report.reasons || []).some((reason) => String(reason).startsWith('contrast:'))) delete bag.colorScheme;
+          if (bag.colorLegacy) {
+            delete bag.paletteIndex;
+            delete bag.paletteInvert;
+            if (schemeReady) {
+              if (!cueColors) {
+                const cueStyle = SA.project.resolveStyle(projectDoc, `cue:${cue.id}`);
+                cueColors = (cueStyle.palette && cueStyle.palette.colors) || [];
+                const cacheKey = cueColors.join('|');
+                candidates = candidatesByColors.get(cacheKey);
+                if (!candidates) {
+                  candidates = cueColors.length ? roles.schemes(cueColors, ctx.rawW, ctx.params ? ctx.params.schemeRange : undefined) : [];
+                  // the invert toggle owns TMBD when it is on
+                  if (schemeInvert != null) {
+                    const invertId = roles.SCHEME_INVERT || 'TMBD';
+                    candidates = candidates.filter((entry) => entry.id !== invertId);
+                  }
+                  candidatesByColors.set(cacheKey, candidates);
+                }
+              }
+              const duration = Math.max(0.05, (Number(beat.end) || 0) - (Number(beat.start) || 0));
+              const pick = ladder.choose({ start: Number(beat.start) || 0, duration, candidates, prev: prevScheme });
+              if (pick) bag.colorScheme = pick;
+              else delete bag.colorScheme;
+              if (pick) {
+                // the readable contrast floor still applies to the swapped result
+                const resolved = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`);
+                const report = SA.legibility && typeof SA.legibility.check === 'function'
+                  ? SA.legibility.check(resolved, { palette: cueColors, motion: false })
+                  : { ok: true, reasons: [] };
+                if ((report.reasons || []).some((reason) => String(reason).startsWith('contrast:'))) delete bag.colorScheme;
+              }
+              if (!prevScheme || pick !== prevScheme.id) prevScheme = { id: pick, start: Number(beat.start) || 0 };
+            } else {
+              delete bag.colorScheme;
+            }
+            continue;
           }
-          if (!prev || pick !== prev.id) prev = { id: pick, start: Number(beat.start) || 0 };
+          delete bag.colorScheme;
+          let index = paletteLadder.choose(prevIndex);
+          let invert = invertRandom ? invertRandom() < set.invert : false; // drawn every beat: the stream stays aligned
+          const write = () => {
+            if (index) bag.paletteIndex = index;
+            else delete bag.paletteIndex;
+            if (invert) bag.paletteInvert = true;
+            else delete bag.paletteInvert;
+          };
+          const fails = () => {
+            const resolved = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`);
+            const palette = (resolved.palette && resolved.palette.colors) || [];
+            const report = SA.legibility && typeof SA.legibility.check === 'function'
+              ? SA.legibility.check(resolved, { palette, motion: false })
+              : { reasons: [] };
+            return (report.reasons || []).some((reason) => String(reason).startsWith('contrast:'));
+          };
+          write();
+          if ((index || invert) && fails()) {
+            if (invert) {
+              invert = false;
+              write();
+            }
+            if ((index || invert) && fails() && index !== (prevIndex || 0)) {
+              index = prevIndex || 0;
+              write();
+            }
+            if (index && fails()) {
+              index = 0;
+              write();
+            }
+          }
+          prevIndex = index;
+          if (!Object.keys(bag).length) delete projectDoc.beatStyles[beat.id];
         }
       }
     }
@@ -1955,13 +2057,21 @@
           container.edge = stack;
         }
         // the compose profile also lets individual beats draw their own
-        // decoration, so one cue can change gear mid-phrase
+        // decoration, so one cue can change gear mid-phrase. A beat that moved
+        // to another palette of the set (or inverted its roles) draws from the
+        // resolved colours, so its own edge literals follow the switch too.
         if (ctx.compose) {
           const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
           beats.forEach((beat) => {
             const beatRandom = SA.rng.rngFor(seed + index * 131, beat.id, 'beat-deco');
             if (!SA.genParams.roll(beatRandom, ctx.params.beatDecoChance)) return;
-            const beatStack = decorationFor(beatRandom, ctx, colors, planes ? planes.length : 0);
+            const own = projectDoc.beatStyles[beat.id];
+            let beatColors = colors;
+            if (own && (own.paletteIndex || own.paletteInvert)) {
+              const resolved = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`);
+              beatColors = (resolved.palette && resolved.palette.colors) || colors;
+            }
+            const beatStack = decorationFor(beatRandom, ctx, beatColors, planes ? planes.length : 0);
             if (!beatStack) return;
             const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
             bag.edge = beatStack;
@@ -2095,6 +2205,7 @@
     figureClips,
     createSizeLadder,
     createColorLadder,
+    createPaletteLadder,
     paletteDistance,
     cuePalette,
     pickUsePalette,

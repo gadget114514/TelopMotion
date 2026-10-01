@@ -386,6 +386,61 @@ SA.themeEditor = (() => {
     return node;
   }
 
+  // The swatch strip of one extra palette of the set: a fixed colour count,
+  // click to edit. Editing a colour or re-rolling claims the palette as the
+  // user's own (the auto marker drops, so a generated run keeps it).
+  function swatchRow(entry, index, set) {
+    const row = document.createElement('div');
+    row.className = 'palette-set-row';
+    const label = document.createElement('span');
+    label.className = 'palette-role';
+    label.textContent = `#${index + 2}`;
+    row.appendChild(label);
+    const swatches = document.createElement('span');
+    swatches.className = 'palette-swatches';
+    (entry.colors || []).forEach((hex, colorIndex) => {
+      const swatch = document.createElement('button');
+      swatch.type = 'button';
+      swatch.className = 'palette-dot palette-dot-edit';
+      swatch.style.background = hex;
+      swatch.title = `${hex} — ${t('studio.inspector.paletteEdit')}`;
+      swatch.addEventListener('click', () => {
+        SA.colors.openPicker({
+          value: hex,
+          anchor: swatch,
+          onChange(next) {
+            const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+            if (!value) return;
+            entry.colors[colorIndex] = value;
+            delete entry.auto;
+            render();
+          },
+        });
+      });
+      swatches.appendChild(swatch);
+    });
+    row.appendChild(swatches);
+    const reroll = smallButton('↻', () => {
+      const next = SA.moods.generatePalette(Math.random, draft.axes);
+      let colors = next.colors.slice();
+      if (SA.paletteRoles && (draft.palette.colors || []).length >= SA.paletteRoles.SIZE) colors = SA.paletteRoles.upgradeColors(colors);
+      entry.colors = colors;
+      if (entry.id == null) entry.id = next.id;
+      if (entry.name == null) entry.name = next.name;
+      delete entry.auto;
+      render();
+    });
+    reroll.title = t('studio.themeEditor.paletteRandom');
+    row.appendChild(reroll);
+    const remove = smallButton('✕', () => {
+      set.extra.splice(index, 1);
+      render();
+    });
+    remove.title = t('studio.themeEditor.usePalettes.remove');
+    row.appendChild(remove);
+    return row;
+  }
+
   function paletteTab() {
     const wrap = document.createElement('div');
     heading(wrap, 'studio.themeEditor.palette');
@@ -415,6 +470,53 @@ SA.themeEditor = (() => {
       ])
     );
     wrap.appendChild(actions);
+
+    // the palette set: #1 above plus up to `max - 1` extra palettes, the
+    // per-beat switch chance and the role-invert chance
+    heading(wrap, 'studio.themeEditor.paletteSet');
+    const set = draft.paletteSet || (draft.paletteSet = { max: 5, change: 0.5, invert: 0.2, extra: [] });
+    const setHint = document.createElement('div');
+    setHint.className = 'insp-inherit';
+    setHint.textContent = t('studio.themeEditor.paletteSetHint');
+    wrap.appendChild(setHint);
+    const numberRow = (labelKey, key, def) => {
+      const row = document.createElement('label');
+      row.className = 'axis-row';
+      const label = document.createElement('span');
+      label.textContent = t(labelKey);
+      row.appendChild(label);
+      row.appendChild(
+        SA.controls.numberControl(def, set[key], (value) => {
+          set[key] = value;
+          if (key === 'max') {
+            const max = Math.max(1, Math.min(8, Math.round(value)));
+            set.max = max;
+            if (set.extra.length > max - 1) set.extra.length = max - 1;
+            render();
+          }
+        })
+      );
+      return row;
+    };
+    wrap.appendChild(numberRow('studio.themeEditor.paletteMax', 'max', { min: 1, max: 8, step: 1, default: 5 }));
+    wrap.appendChild(numberRow('studio.themeEditor.paletteChange', 'change', { min: 0, max: 1, step: 0.05, default: 0.5 }));
+    wrap.appendChild(numberRow('studio.themeEditor.paletteInvert', 'invert', { min: 0, max: 1, step: 0.05, default: 0.2 }));
+    set.extra.forEach((entry, index) => {
+      if (!entry || !Array.isArray(entry.colors)) return;
+      wrap.appendChild(swatchRow(entry, index, set));
+    });
+    const addRow = document.createElement('div');
+    addRow.className = 'insp-actions';
+    const add = smallButton(t('studio.themeEditor.paletteAdd'), () => {
+      const next = SA.moods.generatePalette(Math.random, draft.axes);
+      let colors = next.colors.slice();
+      if (SA.paletteRoles && (draft.palette.colors || []).length >= SA.paletteRoles.SIZE) colors = SA.paletteRoles.upgradeColors(colors);
+      set.extra.push({ id: next.id, name: next.name, colors });
+      render();
+    });
+    add.disabled = set.extra.length >= set.max - 1;
+    addRow.appendChild(add);
+    wrap.appendChild(addRow);
 
     // use-palettes: the automatic direction draws the cue palettes from these
     heading(wrap, 'studio.themeEditor.usePalettes.title', 'insp-inherit');
@@ -733,6 +835,18 @@ SA.themeEditor = (() => {
         else delete mode.typeWeights;
         if (profile.usePalettes.length) mode.usePalettes = SA.store.clone(profile.usePalettes);
         else delete mode.usePalettes;
+        // the palette set lives on the style the run reads
+        const source = { paletteSet: draft.paletteSet };
+        const set = SA.paletteRoles && typeof SA.paletteRoles.paletteSetOf === 'function'
+          ? SA.paletteRoles.paletteSetOf(source)
+          : { max: 5, change: 0.5, invert: 0.2, extra: [] };
+        projectDoc.style = projectDoc.style || {};
+        projectDoc.style.paletteSet = {
+          max: set.max,
+          change: set.change,
+          invert: set.invert,
+          extra: SA.store.clone(Array.isArray(set.extra) ? set.extra : []),
+        };
       },
     });
     SA.studio.toast('studio.toast.themeApplied', { name: draft.name });
@@ -743,6 +857,7 @@ SA.themeEditor = (() => {
     const doc = project();
     const profile = profileOf();
     const style = doc && doc.style ? SA.store.clone(doc.style) : {};
+    style.paletteSet = SA.store.clone(draft.paletteSet || { max: 5, change: 0.5, invert: 0.2, extra: [] });
     const entry = draft.id
       ? SA.themes.update(draft.id, {
           name: draft.name,
@@ -778,6 +893,10 @@ SA.themeEditor = (() => {
       ? SA.store.clone(style.palette)
       : SA.moods.generatePalette(Math.random, axes, 'theme');
     const profile = (existing && existing.profile) || {};
+    const setSource = style.paletteSet;
+    const setInfo = SA.paletteRoles && typeof SA.paletteRoles.paletteSetOf === 'function'
+      ? SA.paletteRoles.paletteSetOf({ paletteSet: setSource })
+      : { max: 5, change: 0.5, invert: 0.2, extra: [] };
     draft = {
       id: existing && !existing.builtin ? existing.id : null,
       name: existing ? existing.name : t('studio.themes.untitled'),
@@ -788,6 +907,12 @@ SA.themeEditor = (() => {
       params: { ...(profile.params || mode.params || {}) },
       typeWeights: SA.store.clone(profile.typeWeights || mode.typeWeights || {}),
       palette: { id: currentPalette.id, name: currentPalette.name, colors: currentPalette.colors.slice() },
+      paletteSet: {
+        max: setInfo.max,
+        change: setInfo.change,
+        invert: setInfo.invert,
+        extra: (setInfo.extra || []).map((entry) => SA.store.clone(entry)),
+      },
       usePalettes: SA.store.clone(profile.usePalettes || mode.usePalettes || []),
       keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
       tab: 'axis',

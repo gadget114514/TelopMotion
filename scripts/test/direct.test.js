@@ -599,7 +599,25 @@ test('neighbouring profile backdrops never repeat their motion, mode or transiti
 test('the profile use-palettes are the only source of the cue palettes', () => {
   const paletteA = { id: 'pa', name: 'A', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
   const paletteB = { id: 'pb', name: 'B', colors: ['#1d0b0b', '#331111', '#ffe0d0', '#ff5a5a', '#180404', '#ffb37a'] };
-  const { doc } = profileRun(4242, {}, { usePalettes: [paletteA, paletteB] });
+  // the use-palettes feed the classic cue lottery: flag the beats the run builds
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const originalApply = SA.textflow.apply;
+  SA.textflow.apply = (project, options) => {
+    const result = originalApply(project, options);
+    project.beatStyles = project.beatStyles || {};
+    for (const cue of project.script.cues || []) {
+      for (const beat of (project.beats && project.beats[cue.id]) || []) {
+        const bag = project.beatStyles[beat.id] || (project.beatStyles[beat.id] = {});
+        bag.colorLegacy = true;
+      }
+    }
+    return result;
+  };
+  try {
+    SA.direct.run(doc, prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, seed: 4242, compose: true, usePalettes: [paletteA, paletteB] }));
+  } finally {
+    SA.textflow.apply = originalApply;
+  }
   const texts = new Set();
   for (const cue of doc.script.cues) {
     const own = doc.cueStyles[cue.id];
@@ -654,7 +672,6 @@ const ALL_CHANCES = {
   holdChance: 1,
   pulseChance: 1,
   motionChance: 1,
-  paletteInvertChance: 1,
   figureBoldChance: 1,
 };
 
@@ -724,14 +741,18 @@ test('the compose chances on draw every optional element', () => {
     doc.clips.filter((clip) => clip.trackId === figureTrack.id).some((clip) => clip.spec.params.stroke === 'bold'),
     'a bold-stroke figure'
   );
-  // the invert toggles TMBD somewhere (the readability sweep may drop it from a
-  // beat, so the check is that the scheme set moved)
-  const schemes = (document) => {
+  // the theme palette set's invert chance toggles the roles somewhere (the
+  // default 0.2; the compose-only paletteInvertChance now belongs to the
+  // legacy beat path only)
+  const paletteState = (document) => {
     const out = [];
-    for (const cue of document.script.cues) for (const beat of (document.beats && document.beats[cue.id]) || []) out.push((document.beatStyles[beat.id] || {}).colorScheme || null);
+    for (const cue of document.script.cues) for (const beat of (document.beats && document.beats[cue.id]) || []) {
+      const own = (document.beatStyles && document.beatStyles[beat.id]) || {};
+      out.push(`${own.paletteIndex || 0}${own.paletteInvert ? 'i' : ''}`);
+    }
     return out.join(',');
   };
-  assert.notEqual(schemes(doc), schemes(base), 'the colour schemes moved');
+  assert.ok(paletteState(doc).includes('i'), `the palette invert toggled (${paletteState(doc)})`);
 });
 
 test('the fill effect draw only applies to a theme without its own fill', () => {

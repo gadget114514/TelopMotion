@@ -626,6 +626,35 @@ test('rerollBeatScheme picks another role order of the same palette', () => {
   assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, pick.id);
 });
 
+test('setBeatColorLegacy switches between the classic and the palette-set modes', () => {
+  const doc = fixture();
+  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  doc.style.paletteSet = { max: 5, change: 0.5, invert: 0.2, extra: [{ id: 'p2', name: 'p2', colors: ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008', '#9be8c8'] }] };
+  doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
+  store.load(doc);
+  const before = snapshot();
+  // ON: the beat takes the classic mode and draws a scheme now
+  const scheme = store.commands.setBeatColorLegacy('c1', 'c1:page0', true);
+  assert.ok(scheme && scheme.length === 4, `scheme ${scheme}`);
+  const on = store.state.project.beatStyles['c1:page0'];
+  assert.equal(on.colorLegacy, true);
+  assert.equal(on.colorScheme, scheme);
+  assert.equal(on.paletteIndex, undefined);
+  assert.equal(on.paletteInvert, undefined);
+  // OFF: the classic state is replaced by the palette-set draw
+  const result = store.commands.setBeatColorLegacy('c1', 'c1:page0', false);
+  const off = store.state.project.beatStyles['c1:page0'] || {};
+  assert.equal(off.colorLegacy, undefined);
+  assert.equal(off.colorScheme, undefined);
+  if (result.index) assert.equal(off.paletteIndex, result.index);
+  if (result.invert) assert.equal(off.paletteInvert, true);
+  // undo walks back OFF -> ON -> the original beat
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, scheme);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
 test('resetTheme leaves a plain subtitle and unpins the hand edits', () => {
   const doc = fixture();
   doc.style.text.fontId = 'NotoSansJP-Bold';

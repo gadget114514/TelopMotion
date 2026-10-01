@@ -31,6 +31,38 @@
   const FIG_SLOTS = [SLOT.FIG_A, SLOT.FIG_B];
   const SIZE = 10;
 
+  // --- the theme's palette set ------------------------------------------------
+  // `style.palette` is #1; `style.paletteSet.extra` holds #2..#max. `max` is the
+  // palette count at weird 1, `change` the chance the next beat moves to
+  // another palette and `invert` the chance the beat's roles are inverted.
+  const PALETTE_SET_DEFAULTS = Object.freeze({ max: 5, change: 0.5, invert: 0.2 });
+
+  // The theme's palette set with its defaults; `extra` is returned unfiltered
+  // so a stored paletteIndex keeps pointing at the same entry.
+  function paletteSetOf(style) {
+    const set = (style && style.paletteSet) || {};
+    const num = (v, d) => (Number.isFinite(Number(v)) && v !== null && v !== '' ? Number(v) : d);
+    return {
+      max: Math.max(1, Math.min(8, Math.round(num(set.max, PALETTE_SET_DEFAULTS.max)))),
+      change: clamp01(num(set.change, PALETTE_SET_DEFAULTS.change)),
+      invert: clamp01(num(set.invert, PALETTE_SET_DEFAULTS.invert)),
+      extra: Array.isArray(set.extra) ? set.extra : [],
+    };
+  }
+
+  // Colours of palette #index (0 = style.palette); null when missing / too
+  // short. A copy is returned so a caller can never mutate the stored palette.
+  function setColors(style, index) {
+    const palette = style && style.palette;
+    if (index == null || !Number.isFinite(Number(index))) return null;
+    const k = Math.max(0, Math.floor(Number(index)));
+    if (k === 0) return palette && Array.isArray(palette.colors) && palette.colors.length ? palette.colors.slice() : null;
+    const set = (style && style.paletteSet) || {};
+    const entry = Array.isArray(set.extra) ? set.extra[k - 1] : null;
+    if (!entry || !Array.isArray(entry.colors) || entry.colors.length < 6) return null;
+    return entry.colors.slice();
+  }
+
   // The colour schemes the mid C/D planes are built from. `angles` rotate the
   // background hue: [C, D] are the plane pair, the rest document the family.
   const SCHEMES = {
@@ -528,6 +560,9 @@
     TEXT_SLOTS,
     FIG_SLOTS,
     SIZE,
+    PALETTE_SET_DEFAULTS,
+    paletteSetOf,
+    setColors,
     SCHEMES,
     SCHEME_IDS,
     CONTRAST,

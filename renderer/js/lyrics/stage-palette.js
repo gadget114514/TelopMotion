@@ -7,14 +7,14 @@
 })(typeof self !== 'undefined' ? self : this, function (color, roles) {
   'use strict';
 
-  // The stage follow for the beat colour schemes. The lyrics' own style is
-  // resolved per beat (project.js applies the cue palette and the beat scheme),
-  // so the text, the edges and the text background already move. This module
-  // answers, for the current frame, which palette the timeline clips should be
-  // painted with: the background track was drawn with the project palette
-  // (`stage.base`), the backdrop / figure / filler clips with their cue's
-  // palette (`stage.cue`), and both follow the live beat's resolved palette
-  // (`stage.to`).
+  // The stage follow for the beat colour schemes and the theme palette set. The
+  // lyrics' own style is resolved per beat (project.js applies the cue palette,
+  // the beat palette and the beat scheme), so the text, the edges and the text
+  // background already move. This module answers, for the current frame, which
+  // palette the timeline clips should be painted with: the background track was
+  // drawn with the project palette (`stage.base`), the backdrop / figure /
+  // filler clips with their cue's palette (`stage.cue`), and both follow the
+  // live beat's resolved palette (`stage.to`).
 
   function clamp01(value) {
     const number = Number(value);
@@ -53,18 +53,20 @@
   }
 
   // The live stage palette: `{ base, cue, to, text, key }` or null when the
-  // project paints the classic way (no auto cue palette, no beat scheme).
+  // project paints the classic way (no auto cue palette, no beat palette set,
+  // no beat scheme).
   function stageAt(project, t, resolveStyle) {
     if (!project || typeof resolveStyle !== 'function') return null;
     const beat = stageBeat(project, t);
     if (!beat) return null;
     const beatStyle = resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`);
     const scheme = beatStyle && beatStyle.palette && beatStyle.palette.scheme;
+    const set = beatStyle && beatStyle.palette && beatStyle.palette.set;
     const to = paletteOf(beatStyle);
     if (!to.length) return null;
     const cue = project.cueStyles && project.cueStyles[beat.cueId];
     const cueAuto = !!(cue && cue.palette && cue.palette.auto);
-    if (!scheme && !cueAuto) return null;
+    if (!scheme && !set && !cueAuto) return null;
     const cueColors = paletteOf(resolveStyle(project, `cue:${beat.cueId}`));
     const base = paletteOf(resolveStyle(project, ''));
     const slots = roles.roleSlots(to);
@@ -72,9 +74,12 @@
     return {
       beatId: beat.id,
       base,
-      // the palette the clips were drawn with: the pre-scheme cue palette when
-      // a scheme is live, the cue's own palette otherwise
-      cue: scheme && Array.isArray(scheme.from) && scheme.from.length ? scheme.from.slice() : cueColors,
+      // the palette the clips were drawn with: the pre-beat palette when a beat
+      // palette or a scheme is live, the cue's own palette otherwise. A beat
+      // palette sits on the cue palette, so its `from` comes first.
+      cue: set && Array.isArray(set.from) && set.from.length ? set.from.slice()
+        : scheme && Array.isArray(scheme.from) && scheme.from.length ? scheme.from.slice()
+        : cueColors,
       to: to.slice(),
       text,
       key: to.join('|'),

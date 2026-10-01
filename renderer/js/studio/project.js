@@ -167,6 +167,33 @@
     return { ...roles.recolor(rest, inherited.colors, palette.colors), palette: inherited };
   }
 
+  // A beat may pick another palette of the theme's palette set and/or the
+  // inverted role order. The inherited literal colours follow; the resolved
+  // palette records where it came from so the stage can follow too.
+  function applyBeatPalette(merged, doc, parsed) {
+    const own = parsed.beatId && doc.beatStyles && doc.beatStyles[parsed.beatId];
+    if (!own || (!own.paletteIndex && !own.paletteInvert)) return merged;
+    if (!merged.palette || !Array.isArray(merged.palette.colors)) return merged;
+    const roles = paletteRolesModule();
+    if (!roles || typeof roles.setColors !== 'function') return merged;
+    const from = merged.palette.colors;
+    const index = Math.max(0, Math.floor(Number(own.paletteIndex) || 0));
+    const entry = index > 0 ? roles.paletteSetOf(doc.style).extra[index - 1] : null;
+    let to = index > 0 ? roles.setColors(doc.style, index) || from : from;
+    if (own.paletteInvert) to = roles.applyScheme(to, roles.SCHEME_INVERT, projectWeirdOf(doc)) || to;
+    if (to === from) return merged;
+    const { palette, ...rest } = merged;
+    return {
+      ...roles.recolor(rest, from, to),
+      palette: {
+        ...palette,
+        ...(entry ? { id: entry.id, name: entry.name } : {}),
+        colors: to.slice(),
+        set: { index, invert: !!own.paletteInvert, from: from.slice() },
+      },
+    };
+  }
+
   // A beat may carry a 4-letter colour scheme. The colours themselves are not
   // stored: the scheme permutes the inherited palette and the inherited
   // literal colours follow their roles. The resolved palette carries the
@@ -533,6 +560,7 @@
     if (parsed.kind && doc.beatKindStyle && doc.beatKindStyle[parsed.kind]) {
       merged = mergeDeep(merged, doc.beatKindStyle[parsed.kind]);
     }
+    merged = applyBeatPalette(merged, doc, parsed);
     merged = applyBeatScheme(merged, doc, parsed);
     if (parsed.beatId && doc.beatStyles && doc.beatStyles[parsed.beatId]) {
       merged = mergeDeep(merged, doc.beatStyles[parsed.beatId]);

@@ -2205,6 +2205,34 @@ SA.store = (() => {
       });
       return pick;
     },
+    // The beat's colour mode. ON: the classic cue lottery + role schemes (a scheme
+    // is drawn now; the cue lottery needs the next auto-direct run). OFF: the
+    // theme's palette set (a palette and the invert are drawn now).
+    setBeatColorLegacy(cueId, beatId, on) {
+      if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
+      const roles = SA.paletteRoles;
+      const weird = beatSchemeWeird();
+      let scheme = null, index = 0, invert = false;
+      if (on) {
+        const parent = paletteColorsAt(state.project, `cue:${cueId}`);
+        const candidates = parent.length ? roles.schemes(parent, weird) : [];
+        if (candidates.length) scheme = candidates[Math.floor(Math.random() * candidates.length)].id;
+      } else {
+        const set = roles.paletteSetOf(state.project.style);
+        const axes = state.project.styleMode && state.project.styleMode.axes;
+        const count = Math.min(1 + set.extra.length, SA.weird ? SA.weird.paletteCount(axes, set.max) : 1);
+        index = count > 1 ? Math.floor(Math.random() * count) : 0;
+        invert = weird > 0 && Math.random() < set.invert
+          && !!roles.applyScheme(roles.setColors(state.project.style, index) || [], roles.SCHEME_INVERT, weird);
+      }
+      dispatch({ label: 'beat colour mode', areas: ['style'], do(projectDoc) {
+        const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+        if (on) { bag.colorLegacy = true; delete bag.paletteIndex; delete bag.paletteInvert; if (scheme) bag.colorScheme = scheme; else delete bag.colorScheme; }
+        else { delete bag.colorLegacy; delete bag.colorScheme; if (index) bag.paletteIndex = index; else delete bag.paletteIndex; if (invert) bag.paletteInvert = true; else delete bag.paletteInvert; }
+        if (!Object.keys(bag).length) delete projectDoc.beatStyles[beatId];
+      } });
+      return on ? scheme : { index, invert };
+    },
     setCredits(patch, options) {
       dispatch({
         label: 'credits',

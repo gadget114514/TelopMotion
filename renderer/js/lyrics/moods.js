@@ -1187,6 +1187,17 @@
     return colors;
   }
 
+  // How far two palettes are apart, same-index RGB difference summed (the same
+  // measure the palette dialog uses to keep a re-roll visible).
+  function paletteDistance(colors, avoid) {
+    if (!Array.isArray(colors) || !colors.length || !Array.isArray(avoid) || !avoid.length) return 0;
+    return colors.reduce((sum, hex, index) => {
+      const a = color.parse(hex);
+      const b = color.parse(avoid[index % avoid.length]);
+      return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
+    }, 0);
+  }
+
   // a random palette that keeps the mood's character: derived from a matching family
   function generatePalette(random, axes, name, allowed) {
     const w = textWeirdOf(axes);
@@ -1207,6 +1218,44 @@
     }
     repairContrast(colors, weirdMod.paletteContrast(weirdOf(axes)), { keepText: w > 0 });
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
+  }
+
+  // The auto palettes of the theme's set: `count` palettes total including the
+  // base #1, so the returned list fills `count - 1 - existing.length` slots.
+  // Each one is the best of three draws — the candidate furthest from the base
+  // and every palette already in play. When the base carries the 10 role slots
+  // the candidate is repaired onto the same slots, so recolor reaches the
+  // text-background slots a 6-colour palette leaves behind. Entries carry
+  // `auto: true`: the next run replaces them.
+  function paletteSetFor(random, axes, baseColors, existing, count, allowed) {
+    const out = [];
+    const kept = Array.isArray(existing) ? existing : [];
+    const base = Array.isArray(baseColors) && baseColors.length ? baseColors : [];
+    const want = Math.max(0, Math.floor(Number(count) || 0) - 1 - kept.length);
+    if (!want || !base.length || typeof generatePalette !== 'function') return out;
+    const avoid = [base].concat(kept.map((entry) => (entry && entry.colors) || []).filter((colors) => colors.length));
+    const weird = weirdOf(axes);
+    for (let i = 0; i < want; i += 1) {
+      let best = null;
+      let bestScore = -1;
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const candidate = generatePalette(random, axes, null, allowed);
+        if (!candidate || !Array.isArray(candidate.colors) || !candidate.colors.length) continue;
+        const score = Math.min(...avoid.map((colors) => paletteDistance(candidate.colors, colors)));
+        if (score > bestScore) {
+          bestScore = score;
+          best = candidate;
+        }
+      }
+      if (!best) break;
+      let colors = best.colors.slice();
+      if (base.length >= paletteRoles.SIZE) {
+        colors = paletteRoles.repairPalette(paletteRoles.upgradeColors(colors), weird, repairContrast);
+      }
+      out.push({ id: best.id, name: best.name, colors, auto: true });
+      avoid.push(colors);
+    }
+    return out;
   }
 
   // a variant of an existing palette (used by the per-scope "random palette"
@@ -2601,6 +2650,8 @@
     generate,
     generatePalette,
     generatePaletteSet,
+    paletteSetFor,
+    paletteDistance,
     paletteColors10,
     paletteFor10,
     variantPalette,

@@ -301,9 +301,36 @@ function prepareRun(doc, extra) {
   });
 }
 
+// Flags every beat the run builds with the classic colour mode. The run calls
+// SA.textflow.apply itself (with its own chunk settings and rhythm plan), so the
+// beat ids only exist then: wrap the pass and flag what it produced.
+function withLegacyBeats(doc, fn) {
+  const original = SA.textflow.apply;
+  SA.textflow.apply = (project, options) => {
+    const result = original(project, options);
+    project.beatStyles = project.beatStyles || {};
+    for (const cue of project.script.cues || []) {
+      for (const beat of (project.beats && project.beats[cue.id]) || []) {
+        const bag = project.beatStyles[beat.id] || (project.beatStyles[beat.id] = {});
+        bag.colorLegacy = true;
+      }
+    }
+    return result;
+  };
+  try {
+    return fn();
+  } finally {
+    SA.textflow.apply = original;
+  }
+}
+
 function runOn(extra) {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
-  SA.direct.run(doc, prepareRun(doc, extra));
+  const opts = extra || {};
+  // the legacy option flags every beat with the classic colour mode: only then
+  // does the run use the cue palette lottery and the scheme ladder
+  if (opts.legacy) withLegacyBeats(doc, () => SA.direct.run(doc, prepareRun(doc, opts)));
+  else SA.direct.run(doc, prepareRun(doc, opts));
   return doc;
 }
 
@@ -327,11 +354,11 @@ function autoCues(doc) {
 
 test('a weird run draws cue palettes and beat schemes, weird 0 draws neither', () => {
   for (const compose of [true, false]) {
-    const zero = runOn({ axes: { weird: 0 }, compose });
+    const zero = runOn({ legacy: true, axes: { weird: 0 }, compose });
     assert.equal(autoCues(zero), 0, `no cue palette at weird 0 (compose ${compose})`);
     assert.ok(schemesOf(zero).every((id) => id == null), `no beat scheme at weird 0 (compose ${compose})`);
 
-    const weird = runOn({ axes: { weird: 1 }, compose });
+    const weird = runOn({ legacy: true, axes: { weird: 1 }, compose });
     assert.equal(autoCues(weird), weird.script.cues.length, `weird 1 re-rolls every cue (compose ${compose})`);
     const schemes = schemesOf(weird);
     assert.ok(schemes.some((id) => id != null), `at least one beat carries a scheme (compose ${compose})`);
@@ -350,11 +377,11 @@ test('a weird run draws cue palettes and beat schemes, weird 0 draws neither', (
 });
 
 test('a re-run replaces the schemes instead of stacking them', () => {
-  const first = runOn({ axes: { weird: 1, seed: 5 } });
+  const first = runOn({ legacy: true, axes: { weird: 1, seed: 5 } });
   const before = schemesOf(first).join(',');
   SA.direct.run(first, prepareRun(first, { axes: { weird: 1, seed: 5 } }));
   const after = schemesOf(first).join(',');
-  const fresh = runOn({ axes: { weird: 1, seed: 5 } });
+  const fresh = runOn({ legacy: true, axes: { weird: 1, seed: 5 } });
   assert.equal(after, schemesOf(fresh).join(','));
   assert.ok(before.length > 0);
 });
@@ -364,8 +391,24 @@ test('a hidden background track skips the beat schemes', () => {
   const track = (doc.tracks || []).find((entry) => entry.kind === 'background');
   assert.ok(track, 'the fixture has a background track');
   track.hidden = true;
-  SA.direct.run(doc, prepareRun(doc, { axes: { weird: 1 } }));
+  withLegacyBeats(doc, () => SA.direct.run(doc, prepareRun(doc, { axes: { weird: 1 } })));
   assert.ok(schemesOf(doc).every((id) => id == null));
+});
+
+test('without the legacy beat flag the run draws the palette set instead', () => {
+  for (const compose of [true, false]) {
+    const doc = runOn({ axes: { weird: 1 }, compose });
+    assert.equal(autoCues(doc), 0, `no cue palette without a legacy beat (compose ${compose})`);
+    assert.ok(schemesOf(doc).every((id) => id == null), `no beat scheme without a legacy beat (compose ${compose})`);
+    const indexed = [];
+    for (const cue of doc.script.cues) {
+      for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+        const own = doc.beatStyles && doc.beatStyles[beat.id];
+        if (own && own.paletteIndex) indexed.push(own.paletteIndex);
+      }
+    }
+    assert.ok(indexed.length > 0, `the palette ladder moved some beat (compose ${compose})`);
+  }
 });
 
 // --- stage follow -----------------------------------------------------------

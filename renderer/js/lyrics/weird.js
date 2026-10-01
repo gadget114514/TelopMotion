@@ -15,12 +15,15 @@
   //   bg      raw / 0.4    the backdrop reaches its full character at raw 0.4
   //   palette 4.5..7       text-vs-background contrast climbs with the axis
   //   glow    1..0.55      neon / inner glow shrink as the axis rises
+  //   palettes 1..max      the number of theme palettes in rotation (weird 1
+  //                        reaches the set's maximum)
   //
   // Every function maps 0 to a no-op value, so weird 0 keeps every existing
   // draw byte-identical and consumes no extra random.
 
   const TEXT_SCALE = 0.7;
   const BG_REVEAL = 0.4;
+  const PALETTE_MAX = 5;
 
   function clamp01(value) {
     const number = Number(value);
@@ -76,6 +79,13 @@
     return raw(a.weird);
   }
 
+  // The number of palettes of the theme's palette set the song uses: weird 0
+  // keeps the single #1, weird 1 reaches `max` (clamped to 1..8).
+  function paletteCount(axes, max) {
+    const m = Math.max(1, Math.min(8, Math.round(Number(max) || PALETTE_MAX)));
+    return 1 + Math.round((m - 1) * raw((axes || {}).weird));
+  }
+
   // The size ladder's level weights: a Gaussian curve over the ten levels, the
   // centre 0..1 (0 = the legible floor, 1 = the screen-filling end) and the
   // spread in level units. Every level keeps at least a 0.02 share and the
@@ -96,6 +106,7 @@
   return {
     TEXT_SCALE,
     BG_REVEAL,
+    PALETTE_MAX,
     clamp01,
     raw,
     text,
@@ -106,6 +117,7 @@
     sizeChange,
     basePaletteChance,
     colorChange,
+    paletteCount,
     sizeWeights,
   };
 });
