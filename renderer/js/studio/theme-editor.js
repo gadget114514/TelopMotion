@@ -421,7 +421,16 @@ SA.themeEditor = (() => {
       swatches.appendChild(swatch);
     });
     row.appendChild(swatches);
-    const reroll = smallButton('↻', () => {
+    // ↻ keeps the palette's theme (a colour variant of it), 🎲 draws a new one
+    const spin = smallButton('↻', () => {
+      const jittered = SA.moods.jitterPalette(Math.random, { colors: entry.colors }, draft.axes, 2.5);
+      if (jittered && Array.isArray(jittered.colors)) entry.colors = jittered.colors;
+      delete entry.auto;
+      render();
+    });
+    spin.title = t('studio.themeEditor.paletteSpin');
+    row.appendChild(spin);
+    const reroll = smallButton('🎲', () => {
       const next = SA.moods.generatePalette(Math.random, draft.axes);
       let colors = next.colors.slice();
       if (SA.paletteRoles && (draft.palette.colors || []).length >= SA.paletteRoles.SIZE) colors = SA.paletteRoles.upgradeColors(colors);
@@ -452,9 +461,16 @@ SA.themeEditor = (() => {
     const actions = document.createElement('div');
     actions.className = 'insp-actions';
     actions.appendChild(
-      smallButton(t('studio.themeEditor.paletteRandom'), () => {
+      smallButton(`🎲 ${t('studio.themeEditor.paletteRandom')}`, () => {
         const next = SA.moods.generatePalette(Math.random, draft.axes, 'theme');
         draft.palette = { id: next.id, name: next.name, colors: next.colors.slice() };
+        render();
+      })
+    );
+    actions.appendChild(
+      smallButton(`↻ ${t('studio.themeEditor.paletteSpin')}`, () => {
+        const jittered = SA.moods.jitterPalette(Math.random, draft.palette, draft.axes, 2.5);
+        if (jittered && Array.isArray(jittered.colors)) draft.palette = { ...draft.palette, colors: jittered.colors.slice() };
         render();
       })
     );

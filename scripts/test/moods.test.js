@@ -276,20 +276,27 @@ test('every generated palette keeps text contrast at 4.5 or better', () => {
   }
 });
 
-test('a palette re-roll repaints the text edge instead of a near-black stroke', () => {
+test('a palette re-roll repaints the text edge across a wide value and hue range', () => {
   // The edge used to be the legacy stroke at value 0.06: every draw returned
   // a black-looking swatch, so the palette-set re-roll of the theme dialog
-  // looked broken. It is a colour role now, so the re-roll visibly moves it.
+  // looked broken. It is a swept colour role now, so a re-roll can come back
+  // deep or bright, in any family hue.
   for (const brightness of [0.3, 0.6, 0.9]) {
     const axes = { speed: 0.5, energy: 0.5, softness: 0.6, density: 0.5, brightness };
     const hues = new Set();
+    let minV = 1;
+    let maxV = 0;
     for (let seed = 1; seed <= 60; seed += 1) {
       const palette = moods.generatePalette(rng.mulberry32(seed), axes);
       const edge = color.rgbToHsv(color.parse(palette.colors[4]));
-      assert.ok(edge.v >= 0.2, `brightness ${brightness} seed ${seed}: the text edge ${palette.colors[4]} is near-black`);
+      assert.ok(edge.v >= 0.4, `brightness ${brightness} seed ${seed}: the text edge ${palette.colors[4]} is still dark`);
       hues.add(Math.round(edge.h / 24) % 15);
+      minV = Math.min(minV, edge.v);
+      maxV = Math.max(maxV, edge.v);
     }
     assert.ok(hues.size >= 6, `brightness ${brightness}: the re-rolled edges span only ${hues.size} hue buckets`);
+    assert.ok(maxV - minV >= 0.25, `brightness ${brightness}: the edge value span is only ${(maxV - minV).toFixed(2)}`);
+    assert.ok(maxV >= 0.75, `brightness ${brightness}: the edge never gets bright (max ${maxV.toFixed(2)})`);
   }
 });
 

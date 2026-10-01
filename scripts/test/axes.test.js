@@ -21,6 +21,7 @@ const classify = require(path.join(ROOT, 'scripts', 'looks-classify.js'));
 const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
 const rng = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js'));
 const looks = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'looks.js'));
+const paletteRoles = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js'));
 
 const PLAIN_AXES = { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.6, brightness: 0.3 };
 const PLAIN_CONTEXT = { letterCount: 12, cjk: false, aspect: '16:9' };
@@ -192,29 +193,31 @@ test('the weird palette raises text saturation and lifts the contrast target', (
   assert.ok(plain.worst >= 4.5, `classic contrast ${plain.worst}`);
 });
 
-test('a weird look lets shadows leave the dark tone', () => {
+test('a weird look lets shadows leave the contrast tone', () => {
   const axes = { speed: 0.5, energy: 0.9, softness: 0.1, density: 0.9, brightness: 0.3 };
   const sample = (weird) => {
-    let darkStroke = 0;
+    let darkTone = 0;
     let light = 0;
     let total = 0;
     for (let seed = 1; seed <= 500; seed += 1) {
       const style = moods.generate({ axes: { ...axes, weird }, seed, context: PLAIN_CONTEXT }).style;
-      const dark = String(style.palette.colors[4] || '').toLowerCase();
+      // the shadow pool falls back to the tone opposite the text (the edge is a
+      // swept colour role of its own, so it no longer owns the shadow tone)
+      const dark = String(paletteRoles.luminanceOpposite(style.palette.colors[2]) || '').toLowerCase();
       for (const edge of style.edge || []) {
         if (!['dropShadow', 'longShadow', 'extrude'].includes(edge.type)) continue;
         if (!edge.params || typeof edge.params.color !== 'string') continue;
         total += 1;
-        if (edge.params.color.toLowerCase() === dark) darkStroke += 1;
+        if (edge.params.color.toLowerCase() === dark) darkTone += 1;
         if (color.rgbToHsv(color.parse(edge.params.color)).v >= 0.5) light += 1;
       }
     }
-    return { darkStroke, light, total, rate: darkStroke / Math.max(1, total) };
+    return { darkTone, light, total, rate: darkTone / Math.max(1, total) };
   };
   const plain = sample(0);
   const odd = sample(1);
   assert.ok(plain.total > 0 && odd.total > 0, 'shadow edges were drawn');
-  assert.ok(plain.darkStroke > 0, 'the classic pool may fall back to the dark stroke');
+  assert.ok(plain.darkTone > 0, 'the classic pool may fall back to the contrast tone');
   // the tamed text channel keeps a 30% dark fallback at raw 1, so the weird
   // pool leaves the dark tone far more often than the classic one
   assert.ok(odd.rate < plain.rate, `weird dark rate ${odd.rate} vs classic ${plain.rate}`);

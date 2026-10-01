@@ -895,7 +895,7 @@
       textS = Math.max(0.05, 0.25 * (1 - brightness));
       accentS = 0.65;
       accentV = 0.78;
-      strokeV = 0.28;
+      strokeV = 0.45;
     } else if (brightness <= 0.7) {
       const t = (brightness - 0.4) / 0.3;
       bgV = lerp(0.25, 0.45, t);
@@ -905,7 +905,7 @@
       textS = 0.12;
       accentS = 0.7;
       accentV = 0.82;
-      strokeV = lerp(0.3, 0.4, t);
+      strokeV = lerp(0.5, 0.58, t);
     } else {
       const t = (brightness - 0.7) / 0.3;
       bgV = lerp(0.85, 0.97, t);
@@ -915,7 +915,7 @@
       textS = 0.3;
       accentS = 0.75;
       accentV = 0.3;
-      strokeV = 0.95;
+      strokeV = 0.68;
     }
     // a family may force its own saturation / value ranges and text hue
     if (family.bgS != null) bgS = family.bgS;
@@ -948,8 +948,8 @@
     // The text edge is a colour role of its own, not a darker background: the
     // old bg-hue stroke sat at value 0.06, so every palette re-roll drew the
     // same black-looking swatch and a colour-only re-roll could never show it.
-    // It carries the accent hue at a value the outline can show, still on the
-    // light text's dark side (and the dark text's light side).
+    // It carries the accent hue and generatePalette sweeps its value across a
+    // wide band, so a re-roll can come back deep or bright.
     const stroke = hsvHex(family.accentHue, Math.min(0.9, Math.max(0.5, accentS)), strokeV);
     const accent2 = hsvHex(family.accentHue + 40, accentS * 0.9, Math.min(1, accentV * 1.08));
     return [bg, bg2, text, accent, stroke, accent2];
@@ -1265,7 +1265,14 @@
     const hueShift = (random() * 2 - 1) * (0.055 + 0.4 * w) * narrow;
     const satScale = 0.9 + random() * (0.2 + 0.5 * w);
     const lightScale = 0.94 + random() * 0.12;
-    const colors = base.colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale));
+    // the edge sweeps its own light band each draw: a fixed stroke tone kept
+    // the edge dark and made two re-rolls of one brightness look identical.
+    // The gain reuses the light draw, so the random stream is unchanged.
+    const edgeGain = 1 + ((lightScale - 0.94) / 0.12) * 0.9;
+    const colors = base.colors.map((hex, index) => {
+      if (index === 4) return shiftColor(hex, hueShift, satScale, edgeGain);
+      return shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale);
+    });
     colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
     if (w > 0 && random() < w * narrow) {
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
@@ -1315,12 +1322,15 @@
 
   // a variant of an existing palette (used by the per-scope "random palette"
   // and by the mid layer's per-section shift). `spread` widens the jitter: the
-  // default keeps the old values exactly.
-  function jitterPalette(random, palette, axes, spread) {
+  // default keeps the old values exactly. `hueSpread` (in turns) overrides the
+  // hue swing: the default stays inside the family (0.06 * spread), 0.5 lets a
+  // single colour land anywhere on the wheel.
+  function jitterPalette(random, palette, axes, spread, hueSpread) {
     const colors = (palette && palette.colors) || [];
     if (!colors.length) return generatePalette(random, normalizeAxes({}));
     const k = spread == null || !(Number(spread) > 0) ? 1 : Number(spread);
-    const hueShift = (random() * 2 - 1) * 0.06 * k;
+    const hue = hueSpread == null || !(Number(hueSpread) > 0) ? 0.06 * k : Number(hueSpread);
+    const hueShift = (random() * 2 - 1) * hue;
     const satScale = 1 + (0.9 + random() * 0.3 - 1) * k;
     const lightScale = 1 + (0.94 + random() * 0.16 - 1) * k;
     const next = colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale));
@@ -1330,6 +1340,16 @@
       name: palette.name || 'palette',
       colors: next,
     };
+  }
+
+  // The palette editor's big-jump re-roll: the colour keeps its saturation /
+  // lightness role (spread 2.5) but lands anywhere on the hue wheel, so a red
+  // can come back blue. The plain jitterPalette is the in-family nudge.
+  const REROLL_WIDE_HUE = 0.5;
+
+  function rerollColor(random, hex, axes) {
+    const jittered = jitterPalette(random, { colors: [hex] }, axes, 2.5, REROLL_WIDE_HUE);
+    return (jittered && jittered.colors && jittered.colors[0]) || hex;
   }
 
   // A per-cue palette for the weird axis: the same roles with the hue moved and
@@ -2602,13 +2622,16 @@
     const palette = generatePalette(random, axes, null, genre && genre.palettes);
     style.palette = palette;
     // effect colors come from the readable part of the palette (text / accent),
-    // plus one dark tone for shadows and extruded edges only. On a light theme
-    // the text itself is dark, so keep a visible tone in the pool.
+    // plus one contrast tone for shadows and extruded edges only. The edge is a
+    // swept colour role now, so the tone is the luminance opposite of the text:
+    // dark under a light text, light under a dark one.
     const visible = (hex) => color.rgbToHsv(color.parse(hex)).v >= 0.25;
     const brightPool = [palette.colors[2], palette.colors[3], palette.colors[5] || palette.colors[3]].filter(Boolean);
     let bright = brightPool.filter(visible);
     if (!bright.length) bright = brightPool;
-    const dark = palette.colors[4] || palette.colors[0];
+    const dark = paletteRoles && typeof paletteRoles.luminanceOpposite === 'function'
+      ? paletteRoles.luminanceOpposite(palette.colors[2])
+      : palette.colors[4] || palette.colors[0];
     // H4: the accents join every colour pool once the axis is on
     const colors = { bright, dark, accents: [palette.colors[3], palette.colors[5], palette.colors[6]].filter(Boolean) };
     style.color = colorSetFor(random, palette, axes);
@@ -2722,6 +2745,7 @@
     variantPalette,
     schemeFor,
     jitterPalette,
+    rerollColor,
     recolor,
     paletteFor,
     paletteColors,

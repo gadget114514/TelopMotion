@@ -22,6 +22,7 @@ window.SA = window.SA || {};
         name: 'Name',
         addColor: 'Add colour',
         rerollColor: 'Re-roll this colour',
+        rerollColorWide: 'Re-roll this colour in any hue',
         removeColor: 'Remove colour',
         contrast: 'Text vs background: {ratio}:1',
         contrastWarn: 'text may be hard to read',
@@ -66,6 +67,7 @@ window.SA = window.SA || {};
         name: '名前',
         addColor: '色を追加',
         rerollColor: 'この色を引き直す',
+        rerollColorWide: 'この色を別の色相に引き直す',
         removeColor: 'この色を削除',
         contrast: '文字と背景のコントラスト: {ratio}:1',
         contrastWarn: '文字が読みにくい可能性があります',
@@ -110,6 +112,7 @@ window.SA = window.SA || {};
         name: 'Nombre',
         addColor: 'Añadir color',
         rerollColor: 'Volver a sortear este color',
+        rerollColorWide: 'Volver a sortear este color en otro tono',
         removeColor: 'Quitar color',
         contrast: 'Texto sobre fondo: {ratio}:1',
         contrastWarn: 'el texto puede costar de leer',
@@ -154,6 +157,7 @@ window.SA = window.SA || {};
         name: 'Nom',
         addColor: 'Ajouter une couleur',
         rerollColor: 'Retirer cette couleur au sort',
+        rerollColorWide: 'Retirer cette couleur au sort sur une autre teinte',
         removeColor: 'Supprimer cette couleur',
         contrast: 'Texte sur fond : {ratio}:1',
         contrastWarn: 'le texte peut être difficile à lire',
@@ -198,6 +202,7 @@ window.SA = window.SA || {};
         name: 'Название',
         addColor: 'Добавить цвет',
         rerollColor: 'Пересобрать этот цвет',
+        rerollColorWide: 'Пересобрать этот цвет в другом оттенке',
         removeColor: 'Удалить цвет',
         contrast: 'Текст на фоне: {ratio}:1',
         contrastWarn: 'текст может плохо читаться',
@@ -293,6 +298,14 @@ SA.paletteDialog = (() => {
     const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog', index);
     const jittered = SA.moods.jitterPalette(random, { colors: [hex] }, mode.axes, 2.5);
     return (jittered && jittered.colors && jittered.colors[0]) || hex;
+  }
+
+  // The big-jump sibling of jitterOne: the same colour role, any hue.
+  function rerollOne(hex, index) {
+    if (typeof SA === 'undefined' || !SA.moods || !SA.rng) return hex;
+    const mode = (SA.store.state.project && SA.store.state.project.styleMode) || {};
+    const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog-jump', index);
+    return SA.moods.rerollColor(random, hex, mode.axes);
   }
 
   function preview() {
@@ -420,6 +433,10 @@ SA.paletteDialog = (() => {
         reroll.classList.add('btn', 'btn-mini');
         reroll.title = t('palette.rerollColor');
         row.appendChild(reroll);
+        const jump = button('🎲', () => setColor(index, rerollOne(hex, index)));
+        jump.classList.add('btn', 'btn-mini');
+        jump.title = t('palette.rerollColorWide');
+        row.appendChild(jump);
         if (index >= 5) {
           const remove = button('✕', () => {
             palette.colors.splice(index, 1);

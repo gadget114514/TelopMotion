@@ -14,6 +14,7 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 }
 const moods = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js'));
 const rng = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js'));
+const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
 
 const FROM = ['#101018', '#202838', '#ffffff', '#ff0000', '#000000'];
 const TO = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008'];
@@ -94,4 +95,22 @@ test('jitterPalette with spread omitted gives the old result', () => {
   // no palette at all still falls back to a generated theme
   const generated = moods.jitterPalette(rng.mulberry32(2), null, { weird: 0 });
   assert.ok(generated && generated.colors.length >= 3);
+});
+
+test('the two per-colour re-rolls: family nudge vs full hue jump', () => {
+  const distanceFromRed = (hex) => {
+    const hue = color.rgbToHsv(color.parse(hex)).h;
+    return Math.min(hue, 360 - hue);
+  };
+  let far = 0;
+  for (let seed = 1; seed <= 60; seed += 1) {
+    // the local ↻ stays inside the family (about ±54°)
+    const nudged = moods.jitterPalette(rng.mulberry32(seed), { colors: ['#ff0000'] }, { weird: 0 }, 2.5).colors[0];
+    assert.ok(distanceFromRed(nudged) <= 56, `seed ${seed}: the family nudge left red (${nudged})`);
+    // the big jump can land on the other side of the wheel
+    const jumped = moods.rerollColor(rng.mulberry32(seed), '#ff0000', { weird: 0 });
+    assert.match(jumped, /^#[0-9a-f]{6}$/i);
+    if (distanceFromRed(jumped) > 120) far += 1;
+  }
+  assert.ok(far >= 10, `only ${far}/60 jumps left the red family`);
 });
