@@ -437,7 +437,11 @@
       let offsetX = num(offset.x, 0);
       let offsetY = num(offset.y, 0);
       let rot = rotation;
-      let clip = 0;
+      // -1 is the "no clip" sentinel the BG_FRAG clip plane reads (v_clip >
+      // -0.999 skips it). Only `wipe` walks it up from -1 to 1; every other
+      // motion must keep it there, or the plane cuts the shape at its centre
+      // and a circle / heart / square is drawn as its right half.
+      let clip = -1;
       const entry = Math.max(1e-4, num(motionParams.duration, 0.35));
       const e = clamp01(pin);
       const smooth = easing.get(motionParams.ease || 'easeOutCubic')(e);

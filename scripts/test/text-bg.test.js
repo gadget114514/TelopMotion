@@ -148,6 +148,30 @@ test('the trim / dash / stroke parameters reach the bg state', () => {
   assert.equal(plain.states[0].fill, 1);
 });
 
+test('only the wipe motion clips the shape; every other motion keeps clip off', () => {
+  // BG_FRAG skips the clip plane for v_clip <= -0.999, so -1 is the "off"
+  // sentinel. A 0 here cuts the shape at its centre and draws its right half
+  // only (a circle / heart / square came out as a semicircle).
+  const motions = ['follow', 'fade', 'pop', 'stamp', 'spin', 'grow', 'flicker', 'bleed', 'float', 'fall', 'draw', 'none'];
+  for (const type of motions) {
+    for (const shapeType of ['square', 'circle', 'heart']) {
+      const result = textBg.evaluateBg({ type: shapeType, params: { unit: 'em', width: 2 } }, { type, params: {} }, [entry()], null, null, 2, { seed: 1 });
+      assert.equal(result.states[0].clip, -1, `${type}/${shapeType} clips the shape`);
+    }
+  }
+  // the wipe walks the same plane from -1 to 1
+  const wipe = textBg.evaluateBg(
+    { type: 'heart', params: { unit: 'em', width: 2 } },
+    { type: 'wipe', params: { lead: 0, duration: 1, ease: 'linear' } },
+    [entry({ timing: { enterStart: 0, exitStart: 9, exitDur: 0.5 } })],
+    null,
+    null,
+    0.5,
+    { seed: 1 }
+  );
+  assert.ok(Math.abs(wipe.states[0].clip) < 1e-6, `halfway ${wipe.states[0].clip}`);
+});
+
 test('bgMotion.draw traces the outline first and fills when the line is complete', () => {
   const shape = { type: 'square', params: { unit: 'cell', stroke: 0.06 } };
   const motion = { type: 'draw', params: { lead: 0, duration: 1, ease: 'linear' } };

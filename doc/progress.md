@@ -620,3 +620,24 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - **テスト**: 新規 `sections.test.js`（7件: 2.0 ちょうどが境界 / 1.99 は非境界、maxCues の擬似分割、解析なし、chorus 判定3種、純関数性）、`direct.test.js` に8件（sections 未指定で出力不変、塊の保存、決定性＋pin 保持、weird 0 で boost 0、強さダイヤル、サビ > 静か、境界で必ずパレット変更、compose で可読性を保つ、restoreSections）、`store.test.js` に2件（保存済み plan での再抽選 / plan 無しの再抽選）。`npm test` 813件パス、`npm run check` 195ファイル。
 - **検証**: `scripts/sections-sheet.js`（新規）で `test/fx400.telopmotion.json` を section オフ/オンで2回走らせ、塊・energy・chorus・boost をログして比較（`test/fx400.plain/sections.telopmotion.json`）。maxCues を変えると後景プレーンの色がちょうどその長さで切り替わることを確認。
 - **決めていないこと**: `chorus` の基準（上位1/3 と 平均 + 0.5σ の併用）と強さダイヤルの上限（2.0）は実曲で見ながら詰める前提。解析なしのときは繰り返し歌詞によってサビ印は付くが、強調（ブースト）は掛けない。
+
+## バグ修正: 文字背景/飾りが右半分だけになっていた（`cefc8c0` からの持ち越し）
+
+プレビューに「半円」「半分のハート」が出るのは、**文字1つぶんの背景/飾り（`bgShape` / `ornShape`）のクリップ面**が原因。`effects/text-bg.js` の `evaluateBg` は `let clip = 0` で始めていたが、**クリップなし の Sentinel は `-1`**（`gl/passes.js` は `state.clip == null` のとき `-1` を書き込み、`BG_FRAG` は `v_clip > -0.999` のときだけ中心を通る平面で alpha を落とす）。`wipe` 以外のすべてのモーションが `clip = 0` を返していたので、左右対称な形（circle / heart / square / cloud / bar）は**常に右半分だけ**描画されていた（自動演出が `love` ジャンルで入れるハート飾りが「半ハート」になっていたのはこのため）。
+
+- **修正**: `let clip = -1`。`wipe` は従来どおり `-1 + 2 * smooth` で −1→1 を歩くので、wipe の見え方は変わらない。
+- **テスト**: `text-bg.test.js` に1件（`follow`/`fade`/`pop`/`stamp`/`spin`/`grow`/`flicker`/`bleed`/`float`/`fall`/`draw`/`none` × `square`/`circle`/`heart` で `clip === -1`、`wipe` の途中は 0 付近）。`npm test` 845件パス、`npm run check` 197ファイル。
+- **決めていないこと**: `clipDir`（クリップ面の方向）は誰も設定せず `passes.js` の既定 `[1, 0]`（右向き）。`bgMotion.wipe` の `dir` パラメータ（left/right/up/down）は `evaluateBg` に反映されていないので、wipe は常に左から右への wipe のまま。
+
+## 追記: フィラーが「おまかせで全く生成されない」件の切り分け（2つの原因）
+
+`2a5451f` の後も自動演出でフィラーが出ないので探ったところ、**独立した2つの原因**があった。片方だけ直しても「全く出ない」は直らないので、両方とも潰した。
+
+1. **`fillers.enabled: false` がファイルに焼き込まれていた**。`e350dd6` の既定（false）の間に保存されたプロジェクトは全部 `enabled: false` を持ち、**UI のどこにもこのフラグを書く場所が無い**（インスペクターのフィラー節は種類とプリセットだけ）。つまり false は「ユーザーの意思」ではなくただの旧既定で、それを尊重すると自動演出はずっと埋めない。→ `fillerSettings` は `enabled: true` を返す（おまかせは埋める）。逃げ道は行の**表示/非表示**スイッチ（`engine.activeClips` が `track.hidden` を読むので、元から効いている）。
+2. **フィラーの行が無く、クリップを置く場所が無い**。`fig` / `filler` 行は P5 で入ったもので、`migrate` が保証していたのは `figure` だけ。行の無い文書では `fillerClips` が `trackIdFor(projectDoc,'filler')` で黙って return するので、ギャップが一つも埋まらない。→ `project.ensureManagedTracks(project)` を足し、`migrate` と `direct.run` の先頭で呼ぶ（`figure` は字幕の後、`filler` は後景の後 = 既定の並びそのまま）。
+
+ついでに、`migrateToV2` が作るフィラークリップに `auto: true` が無く、自動演出がその上に2本目を重ねていた（v1 ファイルだけ 3 → 6 本）。システム生成の物なので `auto` を付けて、run が置換するようにした。
+
+- **テスト**: `direct.test.js` の「a run always fills the gaps, whatever the document stored」（stored が無い / true / false の3通りで必ず埋まる）と「a run gives a document without the filler row somewhere to draw」（行が無い文書でも埋まり、行が background より手前に来る）、`project.test.js` に「migrate adds the managed rows a saved document may predate」（並び順と移行クリップの `auto`）。
+- **UI**: 自動演出の dispatch に `areas: ['fillers']` を足す（フィラー設定とクリップは文書の編集なので、undo 側の記録も filler 領域に入る）。
+- **検証**: 3パターン（新規 / `enabled:false` を保存済み / フィラー行なし＋v1 移行）を `direct.run` して、いずれも 3 クリップ（intro / interlude / long gap）で図形アニメーション付き。`npm test` 847件パス、`npm run check` 197ファイル。
