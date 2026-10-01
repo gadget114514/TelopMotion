@@ -81,6 +81,7 @@ function fakeElement(id) {
 }
 
 const nodes = new Map();
+const created = [];
 globalThis.document = {
   body: fakeElement('body'),
   documentElement: fakeElement('html'),
@@ -91,7 +92,11 @@ globalThis.document = {
   querySelector: (selector) => fakeElement(selector),
   querySelectorAll: () => [],
   addEventListener() {},
-  createElement: () => fakeElement('created'),
+  createElement: () => {
+    const node = fakeElement('created');
+    created.push(node);
+    return node;
+  },
 };
 globalThis.window = { addEventListener() {}, removeEventListener() {}, devicePixelRatio: 1 };
 globalThis.localStorage = { getItem: () => null, setItem() {}, removeItem() {} };
@@ -308,6 +313,32 @@ test('dragging on a figure track creates a clip', () => {
   assert.equal(clips.length, 1, 'one clip was created');
   assert.equal(clips[0].spec.type, 'figure');
   assert.ok(clips[0].end > clips[0].start, 'the drag set the span');
+});
+
+test('hovering a truncated row label reveals its full text', () => {
+  const doc = fixture();
+  doc.tracks.find((track) => track.id === 'sub1').name = '字幕1とても長いテスト名';
+  store.load(doc);
+  timeline.init();
+  const canvas = document.getElementById('timeline-canvas');
+  // metrics that actually truncate the 90 px fixed label column
+  const context = canvas.getContext('2d');
+  context.measureText = (text) => ({ width: String(text).length * 7 });
+  timeline.draw();
+
+  const tip = created.filter((node) => node.className === 'timeline-tip').pop();
+  assert.ok(tip, 'the label tooltip element is created');
+  assert.equal(tip.hidden, true, 'hidden while no label is hovered');
+
+  const move = canvas.listeners.pointermove[0];
+  // the subtitle cue row starts at y 46 (ruler 24 + foreground 22), height 26
+  const overLabel = { pointerId: 1, clientX: 40, clientY: 46 + 13 - 24, currentTarget: canvas, preventDefault() {} };
+  move(overLabel);
+  assert.equal(tip.hidden, false, 'the truncated label shows its tooltip');
+  assert.equal(tip.textContent, 'studio.track.subtitle 1とても長いテスト名', 'the full label text is shown');
+
+  move({ ...overLabel, clientX: 400 });
+  assert.equal(tip.hidden, true, 'the tooltip hides over the time area');
 });
 
 test('store.commands.importSrt fires script-imported', () => {

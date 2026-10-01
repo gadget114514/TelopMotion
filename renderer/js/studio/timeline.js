@@ -27,6 +27,10 @@ SA.timeline = (() => {
   let scrollX = 0;
   let hitRegions = [];
   let keyRegions = [];
+  // Row labels that `fitLabel` had to truncate: hovering the fixed label column
+  // shows their full text in a tooltip. Recorded on every draw.
+  let labelRegions = [];
+  let tipSize = { w: 0, h: 0 };
   let rows = [];
   let cueRects = new Map();
   let drag = null;
@@ -586,7 +590,17 @@ SA.timeline = (() => {
     const removeSize = 14;
     const removeX = LABEL_W - 20 - removeSize - 2;
     const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0);
-    ctx.fillText(fitLabel(title, LABEL_W - textX - reserve), textX, y + height / 2);
+    const fullTitle = String(title == null ? '' : title);
+    const titleText = fitLabel(title, LABEL_W - textX - reserve);
+    ctx.fillText(titleText, textX, y + height / 2);
+    labelRegions.push({
+      x: textX,
+      y,
+      w: Math.max(1, LABEL_W - textX - reserve),
+      h: height,
+      text: fullTitle,
+      clipped: titleText !== fullTitle,
+    });
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
     if (removable) {
@@ -1100,7 +1114,10 @@ SA.timeline = (() => {
       ctx.fillStyle = '#5d6785';
       ctx.font = '10px "Segoe UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
-      ctx.fillText(fitLabel(t('studio.timeline.noKeys'), LABEL_W - 16), 8, row.y + row.h / 2);
+      const emptyText = t('studio.timeline.noKeys');
+      const emptyLabel = fitLabel(emptyText, LABEL_W - 16);
+      ctx.fillText(emptyLabel, 8, row.y + row.h / 2);
+      labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: emptyText, clipped: emptyLabel !== emptyText });
       return;
     }
     const cue = cueList().find((entry) => entry.id === row.cueId);
@@ -1126,11 +1143,10 @@ SA.timeline = (() => {
     ctx.fillStyle = '#6f7a94';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(
-      fitLabel(`${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`, LABEL_W - 16),
-      8,
-      row.y + row.h / 2
-    );
+    const fullLane = `${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`;
+    const laneText = fitLabel(fullLane, LABEL_W - 16);
+    ctx.fillText(laneText, 8, row.y + row.h / 2);
+    labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: fullLane, clipped: laneText !== fullLane });
     ctx.restore();
     ctx.save();
     ctx.beginPath();
@@ -1268,10 +1284,12 @@ SA.timeline = (() => {
 
   function draw() {
     if (!ctx) return;
+    labelRegions = [];
     const size = resize();
     updateZoomBounds();
     updateHScroll();
     if (!project()) {
+      hideLabelTip();
       if (rulerCtx) {
         rulerCtx.clearRect(0, 0, size.width, fixedHeight);
         rulerCtx.fillStyle = '#10131b';
@@ -1412,6 +1430,7 @@ SA.timeline = (() => {
   function onPointerDown(event) {
     if (event.button !== 0) return;
     hideMenu();
+    hideLabelTip();
     const point = localPoint(event);
     const hit = hitTest(point);
     if (event.shiftKey && (hit.type === 'lane' || hit.type === 'empty')) {
@@ -1551,9 +1570,59 @@ SA.timeline = (() => {
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
+  // --- row label tooltip -------------------------------------------------------
+
+  function hideLabelTip() {
+    if (el.tip && !el.tip.hidden) {
+      el.tip.hidden = true;
+      el.tip.textContent = '';
+    }
+  }
+
+  function labelAt(point) {
+    for (let i = labelRegions.length - 1; i >= 0; i -= 1) {
+      const region = labelRegions[i];
+      if (point.x < region.x || point.x > region.x + region.w) continue;
+      if (point.y < region.y || point.y > region.y + region.h) continue;
+      return region;
+    }
+    return null;
+  }
+
+  // Shows the full text of a truncated row label while the pointer rests on the
+  // fixed label column.
+  function updateLabelTip(event) {
+    if (!el.tip || event.currentTarget !== el.canvas) {
+      hideLabelTip();
+      return;
+    }
+    const point = localPoint(event);
+    const region = point.x <= LABEL_W ? labelAt(point) : null;
+    if (!region || !region.clipped) {
+      hideLabelTip();
+      return;
+    }
+    if (el.tip.textContent !== region.text) {
+      el.tip.textContent = region.text;
+      el.tip.hidden = false;
+      tipSize = { w: el.tip.offsetWidth || 0, h: el.tip.offsetHeight || 0 };
+    } else if (el.tip.hidden) {
+      el.tip.hidden = false;
+    }
+    const bodyRect = el.body ? el.body.getBoundingClientRect() : null;
+    if (!bodyRect) return;
+    const maxLeft = Math.max(4, (bodyRect.width || 0) - tipSize.w - 6);
+    const maxTop = Math.max(4, (bodyRect.height || 0) - tipSize.h - 6);
+    const left = Math.max(4, Math.min(event.clientX - bodyRect.left + 14, maxLeft));
+    const top = Math.max(4, Math.min(event.clientY - bodyRect.top + 16, maxTop));
+    el.tip.style.left = `${left}px`;
+    el.tip.style.top = `${top}px`;
+  }
+
   function onPointerMove(event) {
     if (!drag) {
       updateCursor(event);
+      updateLabelTip(event);
       return;
     }
     const point = localPoint(event);
@@ -1807,6 +1876,7 @@ SA.timeline = (() => {
   function showMenu(event) {
     event.preventDefault();
     hideMenu();
+    hideLabelTip();
     const point = localPoint(event);
     const hit = hitTest(point);
     if (hit.type === 'empty') return;
@@ -2311,6 +2381,7 @@ SA.timeline = (() => {
   }
 
   function onWheel(event) {
+    hideLabelTip();
     if (event.ctrlKey) {
       event.preventDefault();
       setZoom(pxPerSecond * (event.deltaY < 0 ? 1.15 : 0.87), localPoint(event).x);
@@ -2359,7 +2430,10 @@ SA.timeline = (() => {
         SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
       });
       surface.addEventListener('wheel', onWheel, { passive: false });
+      surface.addEventListener('pointerleave', hideLabelTip);
     }
+    // rows move under a resting pointer while the timeline scrolls
+    if (el.scroll) el.scroll.addEventListener('scroll', hideLabelTip);
     document.addEventListener('keydown', onKeyDown);
     if (el.hscrollThumb) {
       let hDrag = null;
@@ -2428,6 +2502,11 @@ SA.timeline = (() => {
     el.addTextTrack = document.getElementById('tl-add-text-track');
     el.addFigureTrack = document.getElementById('tl-add-figure-track');
     el.addFillerTrack = document.getElementById('tl-add-filler-track');
+    // hover tooltip for row labels the fixed label column had to truncate
+    el.tip = document.createElement('div');
+    el.tip.className = 'timeline-tip';
+    el.tip.hidden = true;
+    if (el.body) el.body.appendChild(el.tip);
     if (!el.canvas) return;
     ctx = el.canvas.getContext('2d');
     if (el.rulerCanvas) rulerCtx = el.rulerCanvas.getContext('2d');

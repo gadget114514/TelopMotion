@@ -424,6 +424,22 @@ body {
   resize: both;
 }
 
+.timeline-tip {
+  position: absolute;
+  z-index: 80;
+  max-width: 360px;
+  padding: 4px 8px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
 .timeline-menu {
   position: absolute;
   z-index: 70;
