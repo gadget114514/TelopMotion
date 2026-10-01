@@ -1402,6 +1402,10 @@
   // channel scales the counts and speeds.
   function fillerSettings(projectDoc, ctx) {
     const w = ctx.wb;
+    // The run must not switch fillers on by itself: new documents default to
+    // off, and an existing project keeps whatever the user set. `regenerate
+    // fillers` is the explicit way to materialise the gaps.
+    const enabled = SA.fillers && SA.fillers.settingsFor ? SA.fillers.settingsFor(projectDoc).enabled === true : true;
     const interlude = fillerPresetSpec(ctx, 'interlude');
     const longGap = fillerPresetSpec(ctx, 'longGap');
     // intro / outro keep a figures motif next to the credits element
@@ -1425,7 +1429,7 @@
       bump(longGap);
     }
     return {
-      enabled: true,
+      enabled,
       minGap: 0.8,
       margin: 0.15,
       byKind: kinds,

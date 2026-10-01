@@ -15,6 +15,7 @@ test('defaults produce a valid version 3 project with tracks', () => {
   assert.deepStrictEqual(doc.overrides, {});
   assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']);
   assert.deepStrictEqual(doc.clips, []);
+  assert.strictEqual(doc.fillers.enabled, false, 'fillers are opt-in for new projects');
 });
 
 test('create embeds the dataset and applies the aspect', () => {
@@ -119,6 +120,17 @@ test('migrate materialises the gap fillers as clips', () => {
   assert.strictEqual(clips[1].start, 6.25);
   assert.strictEqual(clips[1].end, 8.75);
   assert.strictEqual(clips[1].spec.type, 'credits');
+});
+
+test('migrate leaves the gaps alone when fillers are off', () => {
+  const raw = {
+    format: 'telopmotion',
+    version: 1,
+    script: { cues: [{ id: 'c1', start: 3, end: 6, text: 'a' }, { id: 'c2', start: 9, end: 11, text: 'b' }] },
+  };
+  const doc = project.migrate(raw).project;
+  assert.strictEqual(doc.fillers.enabled, false);
+  assert.strictEqual(doc.clips.filter((entry) => entry.trackId === 'filler').length, 0);
 });
 
 test('migrate rejects other formats and newer versions', () => {

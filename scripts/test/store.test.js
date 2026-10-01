@@ -122,7 +122,9 @@ test('setCueTrack moves a cue and refuses overlaps on the target track', () => {
 });
 
 test('regenerateFillers rebuilds the filler clips from the gaps', () => {
-  store.load(fixture());
+  const doc = fixture();
+  assert.equal(doc.fillers.enabled, false, 'the fresh fixture opts out of automatic fillers');
+  store.load(doc);
   store.commands.regenerateFillers();
   const clips = store.state.project.clips.filter((clip) => clip.trackId === 'filler');
   assert.ok(clips.length >= 1, `clips ${clips.length}`);

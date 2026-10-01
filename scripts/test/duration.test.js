@@ -75,7 +75,7 @@ test('cut gives exactly the maximum length', () => {
 
 test('gaps finds intro, interlude and outro and respects minGap and margin', () => {
   const cues = [{ id: 'a', start: 3, end: 6 }, { id: 'b', start: 10, end: 12 }];
-  const result = fillers.gaps(cues, 20);
+  const result = fillers.gaps(cues, 20, { enabled: true });
   assert.equal(result.length, 3);
   assert.equal(result[0].kind, 'intro');
   assert.equal(result[1].kind, 'interlude');
@@ -86,17 +86,24 @@ test('gaps finds intro, interlude and outro and respects minGap and margin', () 
   assert.equal(result[1].to, 10 - 0.25);
   assert.equal(result[2].from, 12 + 0.25);
   assert.equal(result[2].to, 20);
-  const tight = fillers.gaps([{ id: 'a', start: 0, end: 5 }, { id: 'b', start: 5.8, end: 8 }], 10);
+  const tight = fillers.gaps([{ id: 'a', start: 0, end: 5 }, { id: 'b', start: 5.8, end: 8 }], 10, { enabled: true });
   assert.ok(!tight.some((gap) => gap.kind === 'interlude'), 'short gap skipped');
+});
+
+test('gaps stay empty until fillers are enabled', () => {
+  const cues = [{ id: 'a', start: 3, end: 6 }, { id: 'b', start: 10, end: 12 }];
+  assert.deepEqual(fillers.gaps(cues, 20), []);
+  assert.equal(fillers.settingsFor({ fillers: { enabled: true } }).enabled, true);
+  assert.equal(fillers.settingsFor({ fillers: { enabled: false } }).enabled, false);
 });
 
 test('long gaps pick the longGap spec and pinned clips follow their cues', () => {
   const cues = [{ id: 'a', start: 2, end: 4 }, { id: 'b', start: 20, end: 22 }];
-  const result = fillers.gaps(cues, 30);
+  const result = fillers.gaps(cues, 30, { enabled: true });
   const interlude = result.find((gap) => gap.kind === 'interlude');
   assert.equal(interlude.long, true);
   assert.equal(interlude.spec.type, 'figures');
-  const pinned = fillers.gaps(cues, 30, { clips: { 'a>b': { type: 'countdown', params: {} } } });
+  const pinned = fillers.gaps(cues, 30, { enabled: true, clips: { 'a>b': { type: 'countdown', params: {} } } });
   const pinnedGap = pinned.find((gap) => gap.kind === 'interlude');
   assert.equal(pinnedGap.pinned, true);
   assert.equal(pinnedGap.spec.type, 'countdown');

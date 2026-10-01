@@ -1057,7 +1057,7 @@ Each preset is a partial StyleSet with original names and values:
 ---
 
 ### 7.14 Gap fillers: what plays when no cue is showing (`lyrics/fillers.js`)
-An SRT has stretches with no text: before the first line, between lines, and after the last line. The engine computes these **gaps** and fills them automatically. Each filled gap becomes a **filler clip** on its own timeline track, and you can edit it.
+An SRT has stretches with no text: before the first line, between lines, and after the last line. The engine can compute these **gaps** and materialise them as **filler clips** on their own timeline track. Fillers are opt-in: new projects ship with `fillers.enabled = false`, so nothing is drawn until you run **Regenerate fillers** (timeline context menu), add a clip by hand, or switch the setting on; an auto-direct run only fills gaps while it is on. Each filled gap becomes a **filler clip**, and you can edit it.
 
 **Finding gaps:** `gaps(cues, duration)` returns `[{ from, to, kind: 'intro'|'interlude'|'outro', prevCueId, nextCueId }]`.
 - A gap only counts if `to − from ≥ fillers.minGap` (default 1.5 s).
@@ -1068,7 +1068,7 @@ An SRT has stretches with no text: before the first line, between lines, and aft
 **FillerSettings:**
 ```js
 {
-  enabled: true, minGap: 1.5, margin: 0.25,
+  enabled: false, minGap: 1.5, margin: 0.25,                                  // opt-in; Regenerate fillers ignores the flag
   byKind: { intro: FillerSpec, interlude: FillerSpec, outro: FillerSpec },   // defaults per gap kind
   longGap: { threshold: 8, spec: FillerSpec },                                 // different filler for long instrumental breaks
   clips: { [gapKey]: FillerSpec & { pinned: true } }                           // manual per-gap edits; gapKey = prevCueId+'>'+nextCueId

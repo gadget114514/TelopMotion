@@ -249,6 +249,19 @@ test('filler specs come from the preset library, deterministically and genre-awa
   }
 });
 
+test('an opted-out project keeps its filler track empty on a run', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  doc.fillers = { ...(doc.fillers || {}), enabled: false };
+  runOn(doc, FIXTURE);
+  const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
+  assert.equal(doc.clips.filter((clip) => fillerIds.has(clip.trackId)).length, 0, 'no filler clips are generated');
+  assert.equal(doc.fillers.enabled, false, 'the run does not switch fillers back on');
+  // the explicit regeneration still materialises the gaps
+  const total = Math.max(...doc.script.cues.map((cue) => cue.end));
+  const gaps = SA.fillers.gaps(doc.script.cues, total, { ...SA.fillers.settingsFor(doc), enabled: true });
+  assert.ok(gaps.length >= 1, 'regeneration is not blocked by the flag');
+});
+
 test('the run is deterministic for one seed', () => {
   const first = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
   const second = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);

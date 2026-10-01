@@ -1874,7 +1874,10 @@ SA.store = (() => {
       if (!project || typeof SA === 'undefined' || !SA.fillers) return;
       const cues = (project.script && project.script.cues) || [];
       const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
-      const gaps = SA.fillers.gaps(cues, duration, SA.fillers.settingsFor(project));
+      // An explicit regeneration always materialises the gaps, even when the
+      // document's `enabled` flag is off (that flag only governs the automatic
+      // generation inside an auto-direct run).
+      const gaps = SA.fillers.gaps(cues, duration, { ...SA.fillers.settingsFor(project), enabled: true });
       dispatch({
         label: 'regenerate fillers',
         areas: ['project'],
