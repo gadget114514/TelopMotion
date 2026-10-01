@@ -634,15 +634,18 @@ test('setBeatColorLegacy switches between the classic and the palette-set modes'
   store.load(doc);
   const before = snapshot();
   // ON: the beat takes the classic mode and draws a scheme now
-  const scheme = store.commands.setBeatColorLegacy('c1', 'c1:page0', true);
-  assert.ok(scheme && scheme.length === 4, `scheme ${scheme}`);
+  const classic = store.commands.setBeatColorLegacy('c1', 'c1:page0', true);
+  assert.ok(classic.scheme && classic.scheme.length === 4, `scheme ${classic.scheme}`);
+  assert.equal(classic.index, 0);
+  assert.equal(classic.invert, false);
   const on = store.state.project.beatStyles['c1:page0'];
   assert.equal(on.colorLegacy, true);
-  assert.equal(on.colorScheme, scheme);
+  assert.equal(on.colorScheme, classic.scheme);
   assert.equal(on.paletteIndex, undefined);
   assert.equal(on.paletteInvert, undefined);
   // OFF: the classic state is replaced by the palette-set draw
   const result = store.commands.setBeatColorLegacy('c1', 'c1:page0', false);
+  assert.equal(result.scheme, null, 'the palette-set mode draws no scheme');
   const off = store.state.project.beatStyles['c1:page0'] || {};
   assert.equal(off.colorLegacy, undefined);
   assert.equal(off.colorScheme, undefined);
@@ -650,7 +653,7 @@ test('setBeatColorLegacy switches between the classic and the palette-set modes'
   if (result.invert) assert.equal(off.paletteInvert, true);
   // undo walks back OFF -> ON -> the original beat
   assert.equal(store.undo(), true);
-  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, scheme);
+  assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, classic.scheme);
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
 });

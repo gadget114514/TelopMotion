@@ -489,9 +489,10 @@ SA.themeEditor = (() => {
         SA.controls.numberControl(def, set[key], (value) => {
           set[key] = value;
           if (key === 'max') {
-            const max = Math.max(1, Math.min(8, Math.round(value)));
-            set.max = max;
-            if (set.extra.length > max - 1) set.extra.length = max - 1;
+            // the stored extras are never cut here: lowering the maximum keeps
+            // every palette (only the first max - 1 are in play), so raising it
+            // again brings them back instead of losing a user's edit
+            set.max = Math.max(1, Math.min(8, Math.round(value)));
             render();
           }
         })

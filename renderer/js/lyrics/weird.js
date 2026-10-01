@@ -82,7 +82,9 @@
   // The number of palettes of the theme's palette set the song uses: weird 0
   // keeps the single #1, weird 1 reaches `max` (clamped to 1..8).
   function paletteCount(axes, max) {
-    const m = Math.max(1, Math.min(8, Math.round(Number(max) || PALETTE_MAX)));
+    // a missing maximum falls back to the default; an explicit 0 clamps to 1
+    const limit = max == null || max === '' ? NaN : Number(max);
+    const m = Math.max(1, Math.min(8, Math.round(Number.isFinite(limit) ? limit : PALETTE_MAX)));
     return 1 + Math.round((m - 1) * raw((axes || {}).weird));
   }
 

@@ -60,6 +60,8 @@ test('paletteCount walks from one palette to the set maximum', () => {
   assert.equal(SA.weird.paletteCount({ weird: 1 }, 3), 3);
   assert.equal(SA.weird.paletteCount({ weird: 1 }, 1), 1);
   assert.equal(SA.weird.paletteCount({}, 8), 1);
+  assert.equal(SA.weird.paletteCount({ weird: 1 }, 0), 1, 'an explicit 0 clamps to one palette');
+  assert.equal(SA.weird.paletteCount({ weird: 1 }), 5, 'a missing maximum uses the default');
 });
 
 test('paletteSetOf defaults and clamps a stored set', () => {
@@ -174,6 +176,17 @@ test('a beat palette sits on the cue palette and records it as from', () => {
   const resolved = projectModule.resolveStyle(doc, 'cue:c1/beat:b1');
   assert.deepEqual(resolved.palette.colors, EXTRA);
   assert.deepEqual(resolved.palette.set.from, CUE);
+});
+
+test('a short extra under a 10-role base upgrades to the base role count', () => {
+  const raw = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008', '#9be8c8'];
+  const doc = baseDoc();
+  doc.style.palette.colors = roles.upgradeColors(SWAP_BG);
+  doc.style.paletteSet.extra = [{ id: 'two', name: 'two', colors: raw.slice() }];
+  assert.deepEqual(roles.setColors(doc.style, 1), roles.upgradeColors(raw));
+  const resolved = projectModule.resolveStyle(doc, 'cue:c1/beat:b1');
+  assert.deepEqual(resolved.palette.colors, roles.upgradeColors(raw));
+  assert.equal(resolved.palette.set.from.length, resolved.palette.colors.length, 'both sides carry the same role count');
 });
 
 // --- stage follow -----------------------------------------------------------

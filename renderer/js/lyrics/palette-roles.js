@@ -52,6 +52,9 @@
 
   // Colours of palette #index (0 = style.palette); null when missing / too
   // short. A copy is returned so a caller can never mutate the stored palette.
+  // A short extra under a full 10-role base is read through the same upgrade
+  // get() applies, so recolor lines the two palettes up slot by slot instead
+  // of mixing a 10-colour source with a 6-colour target.
   function setColors(style, index) {
     const palette = style && style.palette;
     if (index == null || !Number.isFinite(Number(index))) return null;
@@ -60,7 +63,10 @@
     const set = (style && style.paletteSet) || {};
     const entry = Array.isArray(set.extra) ? set.extra[k - 1] : null;
     if (!entry || !Array.isArray(entry.colors) || entry.colors.length < 6) return null;
-    return entry.colors.slice();
+    const colors = entry.colors.slice();
+    const base = palette && Array.isArray(palette.colors) ? palette.colors : [];
+    if (base.length >= SIZE && colors.length < SIZE) return upgradeColors(colors);
+    return colors;
   }
 
   // The colour schemes the mid C/D planes are built from. `angles` rotate the

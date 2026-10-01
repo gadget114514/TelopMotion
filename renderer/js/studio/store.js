@@ -2207,7 +2207,9 @@ SA.store = (() => {
     },
     // The beat's colour mode. ON: the classic cue lottery + role schemes (a scheme
     // is drawn now; the cue lottery needs the next auto-direct run). OFF: the
-    // theme's palette set (a palette and the invert are drawn now).
+    // theme's palette set (a palette and the invert are drawn now). Always
+    // returns the same shape: `{ scheme, index, invert }`, the unused draw
+    // fields staying null / 0 / false.
     setBeatColorLegacy(cueId, beatId, on) {
       if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
       const roles = SA.paletteRoles;
@@ -2231,7 +2233,7 @@ SA.store = (() => {
         else { delete bag.colorLegacy; delete bag.colorScheme; if (index) bag.paletteIndex = index; else delete bag.paletteIndex; if (invert) bag.paletteInvert = true; else delete bag.paletteInvert; }
         if (!Object.keys(bag).length) delete projectDoc.beatStyles[beatId];
       } });
-      return on ? scheme : { index, invert };
+      return { scheme, index, invert };
     },
     setCredits(patch, options) {
       dispatch({
