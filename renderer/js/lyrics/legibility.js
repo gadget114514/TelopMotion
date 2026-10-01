@@ -198,6 +198,16 @@
     return shape.type === 'square' && (shape.params || {}).unit !== 'em';
   }
 
+  // True when the background already decides the per-letter text colour: an
+  // explicit `fgColors` list (paired with `varyColors` by the vary key) or the
+  // binary auto-contrast pick. Either way the declared fill colour is free, so
+  // the contrast contract must not flatten it.
+  function fgPerLetter(params) {
+    if (!params) return false;
+    if (Array.isArray(params.fgColors) && params.fgColors.length) return true;
+    return params.fgAutoContrast === true;
+  }
+
   function bgColors(style, ctx) {
     const palette = paletteOf(style, ctx);
     const params = (style && style.bgShape && style.bgShape.params) || {};
@@ -377,11 +387,11 @@
     const backgrounds = bgColors(style, context);
     const shapeActive = bgShapeActive(style);
     const params = (style.bgShape && style.bgShape.params) || {};
-    // an almost transparent background does not have to hold the contrast; an
-    // auto-contrasted background fixes the per-letter foreground itself, so the
-    // declared fill colour is allowed to be anything
+    // an almost transparent background does not have to hold the contrast; a
+    // per-letter foreground (fgColors / auto contrast) fixes the text colour
+    // itself, so the declared fill colour is allowed to be anything
     const bgOpacity = params.opacity == null ? 1 : Number(params.opacity);
-    const fgAuto = params.fgAutoContrast === true;
+    const fgAuto = fgPerLetter(params);
     if (shapeActive && bgOpacity >= 0.5 && !fgAuto && targets.length) {
       for (const bg of backgrounds) {
         for (const text of targets) {
@@ -545,7 +555,7 @@
     const shapeParams = (style.bgShape && style.bgShape.params) || {};
     const declared = textColors(style, ctx);
     const declaredFails = declared.some((hex) => backgrounds.some((bg) => contrast(hex, bg) < MIN_CONTRAST));
-    if (shapeActive && declaredFails && !shapeParams.fgAutoContrast) {
+    if (shapeActive && declaredFails && !fgPerLetter(shapeParams)) {
       // the background shape decides the contrast: let the engine pick a
       // readable per-letter foreground instead of flattening the fill
       style.bgShape.params = { ...shapeParams, fgAutoContrast: true };

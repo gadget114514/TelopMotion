@@ -598,3 +598,25 @@ weird 0 でも energy が高い曲はサイズのラダーが動き、ビート�
 - 移行不要: `maxScale` は Studio のインスペクタに出ない項目で、書き手の `moods.js` と読み手の `text-bg.js` にしか無い。保存済みプロジェクト / `test/fx400.telopmotion.json` / `fx800.looks.json` には入っていない。
 - テスト: `text-bg.test.js`（`backgroundScale` 撤去・`bgShape` はどんなパラメータでも 1 セル・生成スタイルが `maxScale` / `width` を持たないこと）を更新、`text-layer.test.js` の「背景スケール配線」テストを「1 セルのまま・スケールしない」テストへ差し替え。
 - 検証: `node --test scripts/test/text-bg.test.js scripts/test/text-layer.test.js`（25件パス）。`store.test.js` の `composeBeat`（`direct.js:1222`）失敗は本件と無関係の既存の不具合。
+
+## 実装: セクション認識 + セクション連動の自動演出（`a8404fe` / `febcbba`）
+
+キューは平坦なリストで、自動演出（`direct.js`）も曲全体で1つの axes/params を使うため、サビで配色や演出を強められなかった。キュー列を「聴き手が感じる塊（verse / chorus）」に区切り、塊ごとに配色・演出を切り替え、大胆さを塊の音量（およびサビ）へ連動させた。
+
+- **検出（新規・純関数）** `renderer/js/lyrics/sections.js`: `detect(cues, { analysis, gap, maxCues })` → `[{ index, cueIds, start, end, energy, chorus }]`。
+  - 境界は「無音」: `next.start - prev.end >= gap`（既定 2 秒）。音声解析が無くても必ず動く。フィラーの interlude とは別物で `fillers.gaps` は触らない。
+  - `maxCues`（既定 4）を超える塊は**均等に近い擬似分割**（`ceil(n / maxCues)` 分割、余りは先頭から）。
+  - `energy` は `audioDriver.rangeEnergy` の区間平均（曲自身の p90 比、解析なしは null）。`audioDriver.energyRef` を追加し、**p90 のソートは1回だけ**して全ブロックで使い回す。
+  - `chorus` は3信号: ① `cue.meta.section === 'chorus'`（明示ラベルが最優先）② 音量（平均 + 0.5σ 以上 **または** 上位1/3。両方を判定に使うので最上位が并列なら両方ともサビ）③ 解析なしのときは繰り返し歌詞（同一テキストの再出現）。ブロックが1つだけの曲にサビは作らない。
+- **direct.js**: `prepare` は `options.sections` が真のときだけ `ctx.sections` / `ctx.sectionOf` を作る（`rhythm` の隣）。既定オフなので既存プロジェクトと w=0 スナップショットは不変。
+  - ブーストは **weird の残り（headroom = 1 - raw）** への割合: `rawW * (0.3 + 0.7 * energy)` ＋ サビ加成（`CHORUS_BOOST = 0.3 * rawW`）、`SECTION_ENERGY = 0.35` で energy 軸も少し上げる。最大でも weird 1 を超えない。**weird 0 では boost 0**（塊の切替だけが残る）。
+  - `paramsFor(ctx, cueId)` が塊の `genParams.resolve({ axes, params: paramsSource })` を返す（pin は `resolve` が純関数なので保存される）。boost 0 の塊は曲自身の `ctx.params` を**同一参照**で返す。
+  - 読み出し側は `ctx.params` / `ctx.w` / `ctx.rawW` / `ctx.axes` を `paramsFor` / `wFor` / `rawWFor` / `axesFor` に置き換え: `directCue` の色・パレット・foreground、`varyBeat` / `directBeat` の motionChance / holdChance / tilt / mask、fill・decoration・backdrop・figure・ビートの配色スキーム・サイズラダー（`choose` が beat ごとの `change` を受け取れるようにした）。
+  - **パレット切替**: 塊の頭キューは `paletteSwitchChance` のサイコロに関係なく必ず再抽選（境界キューではサイコロを引かないので、他キューの乱数列は変わらない）。これは weird 0 でも効く（解析なしでも「塊ごとに色が動く」）。
+  - **演出の切替**: `stagingSeed` が `rngFor(seed, 'section', index)` の salt を足すので、`moods.generate` / `compositions.pick` / `build` の乱数ストリームが塊ごとに変わる（後景プレーンの `Math.floor(index / 4)` も塊番号に置き換え）。
+  - `run` が `styleMode.sections`（塊・energy・chorus・boost・salt）を保存し、`restoreSections` が再抽選用に復元する。
+- **store.js**: `modeAxes` が `sections` を返し、`sectionPlanFor` → `SA.direct.restoreSections` で再抽選（`composeRunContext`）の ctx に復元する。`paramsSource` は resolved ではなく `pinned` を使う（resolved を渡すと全パラメータが固定値になってしまう）。
+- **UI**: ジャンルダイアログに「セクション連動」チェック（既定 ON）と、切れ目秒数（既定 2.0）・1塊のキュー数・強さ スライダー。`autoDirect({ sections: { gap, maxCues, strength } })` に渡す。**`autoDirect` 側の既定は OFF**（既存のテストと既存プロジェクトの出力を変えない）。i18n は en/ja ＋ es/fr/ru。
+- **テスト**: 新規 `sections.test.js`（7件: 2.0 ちょうどが境界 / 1.99 は非境界、maxCues の擬似分割、解析なし、chorus 判定3種、純関数性）、`direct.test.js` に8件（sections 未指定で出力不変、塊の保存、決定性＋pin 保持、weird 0 で boost 0、強さダイヤル、サビ > 静か、境界で必ずパレット変更、compose で可読性を保つ、restoreSections）、`store.test.js` に2件（保存済み plan での再抽選 / plan 無しの再抽選）。`npm test` 813件パス、`npm run check` 195ファイル。
+- **検証**: `scripts/sections-sheet.js`（新規）で `test/fx400.telopmotion.json` を section オフ/オンで2回走らせ、塊・energy・chorus・boost をログして比較（`test/fx400.plain/sections.telopmotion.json`）。maxCues を変えると後景プレーンの色がちょうどその長さで切り替わることを確認。
+- **決めていないこと**: `chorus` の基準（上位1/3 と 平均 + 0.5σ の併用）と強さダイヤルの上限（2.0）は実曲で見ながら詰める前提。解析なしのときは繰り返し歌詞によってサビ印は付くが、強調（ブースト）は掛けない。

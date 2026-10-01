@@ -110,6 +110,24 @@ test('the background shape hands the contrast to fgAutoContrast instead of flatt
   assert.equal(legibility.check(repaired.style, { frame: FRAME, duration: 3, letterCount: 12 }).ok, true);
 });
 
+test('an explicit fgColors keeps the per-letter text colour and never falls back to auto contrast', () => {
+  const style = plainStyle({
+    bgShape: { type: 'square', params: { opacity: 1, varyColors: ['#00bbf9', '#081dff'], fgColors: ['#ffffff', '#eef2ff'] } },
+  });
+  // the list already decides the text colour, so the declared fill is free
+  const before = legibility.check(style, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.ok(!before.reasons.some((reason) => reason.startsWith('contrast')), before.reasons.join(' / '));
+  const repaired = legibility.repair(style, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.deepEqual(repaired.style.bgShape.params.fgColors, ['#ffffff', '#eef2ff'], 'the list survives');
+  assert.equal(repaired.style.bgShape.params.fgAutoContrast, undefined, 'auto contrast is not added');
+  assert.equal(repaired.style.color.fill.index, 2, 'the fill role survives');
+  // without a list the declared fill is repaired and auto contrast takes over
+  const bare = plainStyle({ bgShape: { type: 'square', params: { opacity: 1, varyColors: ['#00bbf9', '#081dff'] } } });
+  const fixed = legibility.repair(bare, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.equal(fixed.style.bgShape.params.fgAutoContrast, true);
+  assert.equal(fixed.style.bgShape.params.fgColors, undefined);
+});
+
 test('a text ornament does not change the text contrast contract', () => {
   // a bracket in em units is an ornament now: the engine paints it behind the
   // glyphs, but it is not the background the contrast contract is measured on

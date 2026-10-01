@@ -8,11 +8,12 @@
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
-  // Fillers are opt-in: a fresh document discovers no gaps until the user
-  // regenerates the clips or flips `project.fillers.enabled`. Existing projects
-  // carry their own setting, so this default only shapes new documents.
+  // Fillers are on by default: a gap is dead air, and the automatic direction
+  // fills it. A project that switched them off (`project.fillers.enabled:
+  // false`) keeps that choice, and `regenerate fillers` always materialises the
+  // gaps whatever the flag says.
   const DEFAULTS = {
-    enabled: false,
+    enabled: true,
     minGap: 1.5,
     margin: 0.25,
     byKind: {

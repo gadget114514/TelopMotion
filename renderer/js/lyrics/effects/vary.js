@@ -54,6 +54,12 @@
     return [];
   }
 
+  // explicit list only: unlike varyColors there is no palette fallback, so an
+  // empty fgColors leaves every letter on the beat fill (feature off)
+  function explicitColors(list) {
+    return Array.isArray(list) && list.length ? list.map((hex) => parseHex(hex, '#ffffff')) : [];
+  }
+
   /**
    * Per-letter background variation. Returns one entry per letter:
    * { visible, color[4], shapeIndex, sizeMul[2], offsetAdd[2], rotAdd, fgColor }
@@ -63,6 +69,9 @@
     const list = Array.isArray(letters) ? letters : [];
     const mode = opts.vary || 'none';
     const colors = normalizeColors(opts.varyColors, palette);
+    // the foreground list wraps by its own length, so it may differ from
+    // varyColors; an empty one falls through to fgAutoContrast
+    const fgList = explicitColors(opts.fgColors);
     const shapes = Array.isArray(opts.varyShapes) && opts.varyShapes.length ? opts.varyShapes : ['square', 'circle'];
     const shapeIndexMap = (textBg && textBg.SHAPES) || {};
     const skipSpaces = opts.skipSpaces !== false;
@@ -122,7 +131,11 @@
       let key = 0;
       if (entry.visible) {
         if (mode === 'alternate') key = count % 2;
-        else if (mode === 'cycle') key = colors.length ? count % colors.length : 0;
+        // `cycle` keeps the raw running count: the colour index wraps on
+        // `colors.length` below and the text colour on `fgColors.length`, so
+        // reducing here would cap the key at the background list length and
+        // leave the rest of `fgColors` unreachable
+        else if (mode === 'cycle') key = count;
         else if (mode === 'random') {
           if (colors.length) {
             key = Math.floor(random() * colors.length);
@@ -148,12 +161,15 @@
       const offsetAdd = varyOffset > 0 ? [(random() * 2 - 1) * varyOffset, (random() * 2 - 1) * varyOffset] : [0, 0];
       const rotAdd = varyRotation > 0 ? (random() * 2 - 1) * varyRotation : 0;
       const shapeName = opts.varyShape ? shapes[Math.floor(random() * shapes.length) % shapes.length] : null;
-      const fgColor =
-        opts.fgAutoContrast && entry.visible
-          ? relativeLuminance(rgb) > 0.5
-            ? [0.067, 0.067, 0.067, 1]
-            : [0.957, 0.957, 0.957, 1]
-          : null;
+      const fgColor = entry.visible
+        ? fgList.length
+          ? fgList[((key % fgList.length) + fgList.length) % fgList.length]
+          : opts.fgAutoContrast
+            ? relativeLuminance(rgb) > 0.5
+              ? [0.067, 0.067, 0.067, 1]
+              : [0.957, 0.957, 0.957, 1]
+            : null
+        : null;
       entries[index] = {
         visible: entry.visible && entry.running >= 0,
         color: rgb,

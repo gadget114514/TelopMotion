@@ -588,7 +588,7 @@
     params: {
       unit: 'Unit', lockAspect: 'Lock aspect', rotateWithLetter: 'Rotate with letter', scaleWithLetter: 'Scale with letter',
       knockout: 'Knockout', layer: 'Layer', skipSpaces: 'Skip spaces', skipRate: 'Skip rate',
-      fgAutoContrast: 'Auto text contrast', vary: 'Vary', varyColors: 'Vary colors', varyShape: 'Vary shape',
+      fgAutoContrast: 'Auto text contrast', fgColors: 'Text colors (per letter)', vary: 'Vary', varyColors: 'Vary colors', varyShape: 'Vary shape',
       varyShapes: 'Shape candidates', varySize: 'Size wobble', varyOffset: 'Offset wobble', varyRotation: 'Rotation wobble',
       seedShift: 'Seed shift', spikes: 'Spikes', jag: 'Jaggedness', lead: 'Lead', exit: 'Exit', exitDuration: 'Exit duration',
       holdAmount: 'Hold amount', overshoot: 'Overshoot', turns: 'Turns', axis: 'Axis', roughness: 'Roughness', rise: 'Rise',
@@ -653,7 +653,7 @@
     params: {
       unit: '単位', lockAspect: '縦横比を固定', rotateWithLetter: '文字の回転に追従', scaleWithLetter: '文字の拡大に追従',
       knockout: '抜き文字', layer: 'レイヤー', skipSpaces: '空白を飛ばす', skipRate: '間引き率',
-      fgAutoContrast: '文字色を自動調整', vary: '文字ごとの変化', varyColors: '変化に使う色', varyShape: '形を変える',
+      fgAutoContrast: '文字色を自動調整', fgColors: '文字色（文字ごと）', vary: '文字ごとの変化', varyColors: '変化に使う色', varyShape: '形を変える',
       varyShapes: '形の候補', varySize: '大きさの揺らぎ', varyOffset: '位置の揺らぎ', varyRotation: '回転の揺らぎ',
       seedShift: '乱数シフト', spikes: 'トゲ', jag: 'ギザギザ', lead: '先行', exit: '消え方', exitDuration: '消える長さ',
       holdAmount: 'ゆらぎ量', overshoot: '行き過ぎ', turns: '回転数', axis: '軸', roughness: '粗さ', rise: '浮き上がり',

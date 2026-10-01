@@ -49,6 +49,7 @@
     { key: 'skipSpaces', kind: 'bool', default: true },
     { key: 'skipRate', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
     { key: 'fgAutoContrast', kind: 'bool', default: false },
+    { key: 'fgColors', kind: 'colors', default: [] },
     { key: 'vary', kind: 'select', options: VARY_MODES, default: 'none' },
     { key: 'varyColors', kind: 'colors', default: [] },
     { key: 'varyShape', kind: 'bool', default: false },
@@ -98,13 +99,14 @@
   const BG_SHAPE_TYPES = ['none', 'square'];
   const ORN_SHAPE_TYPES = SHAPE_TYPES.filter((type) => type !== 'none');
   // The background keeps only the modifiers that do not move or resize it:
-  // colour variation, fill / stroke / trim / dash and letter following. Geometry
+  // colour variation (the background and the per-letter text colour),
+  // fill / stroke / trim / dash and letter following. Geometry
   // (unit / width / height / offset / rotation / wobble / vary* geometry) is
   // ignored by evaluateBg for the background group. The background has no size
   // knob at all: it is exactly the letter's cell, so it tracks the font size.
   const BG_PARAM_KEYS = new Set([
     'rotateWithLetter', 'scaleWithLetter', 'opacity', 'skipSpaces', 'skipRate',
-    'fgAutoContrast', 'vary', 'varyColors', 'stroke', 'fill',
+    'fgAutoContrast', 'fgColors', 'vary', 'varyColors', 'stroke', 'fill',
     'trimStart', 'trimEnd', 'trimOffset', 'dashOn', 'dashOff', 'dashOffset',
   ]);
 

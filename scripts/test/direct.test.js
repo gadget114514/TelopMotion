@@ -253,17 +253,46 @@ test('filler specs come from the preset library, deterministically and genre-awa
   }
 });
 
-test('an opted-out project keeps its filler track empty on a run', () => {
+test('a run fills the gaps, and an opted-out project keeps its filler track empty', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
-  doc.fillers = { ...(doc.fillers || {}), enabled: false };
+  delete doc.fillers;
   runOn(doc, FIXTURE);
   const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
-  assert.equal(doc.clips.filter((clip) => fillerIds.has(clip.trackId)).length, 0, 'no filler clips are generated');
-  assert.equal(doc.fillers.enabled, false, 'the run does not switch fillers back on');
+  const filled = doc.clips.filter((clip) => fillerIds.has(clip.trackId));
+  assert.equal(doc.fillers.enabled, true, 'a document that never chose fills its gaps');
+  assert.ok(filled.length >= 1, `a run materialises the gaps (${filled.length} clips)`);
+
+  const off = JSON.parse(JSON.stringify(FIXTURE.input));
+  off.fillers = { ...(off.fillers || {}), enabled: false };
+  runOn(off, FIXTURE);
+  assert.equal(off.clips.filter((clip) => fillerIds.has(clip.trackId)).length, 0, 'no filler clips are generated');
+  assert.equal(off.fillers.enabled, false, 'the run does not switch fillers back on');
   // the explicit regeneration still materialises the gaps
-  const total = Math.max(...doc.script.cues.map((cue) => cue.end));
-  const gaps = SA.fillers.gaps(doc.script.cues, total, { ...SA.fillers.settingsFor(doc), enabled: true });
+  const total = Math.max(...off.script.cues.map((cue) => cue.end));
+  const gaps = SA.fillers.gaps(off.script.cues, total, { ...SA.fillers.settingsFor(off), enabled: true });
   assert.ok(gaps.length >= 1, 'regeneration is not blocked by the flag');
+});
+
+test('every gap carries a figure animation', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  runOn(doc, FIXTURE);
+  const fillerIds = new Set(doc.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
+  const clips = doc.clips.filter((clip) => fillerIds.has(clip.trackId));
+  assert.ok(clips.length >= 1, `a run materialises the gaps (${clips.length} clips)`);
+  for (const clip of clips) {
+    assert.ok(SA.direct.carriesFigures(clip.spec), `${clip.id} (${clip.spec.type}) has no figures layer`);
+    const figures = SA.fillerRender.layersOf(clip.spec).filter((layer) => layer.type === 'figures');
+    assert.equal(figures.length, 1, `${clip.id} shows the figure animation once`);
+    // a generated gap motif: the figure layer is drawn, not an empty stub
+    assert.ok((figures[0].params || {}).motif, `${clip.id} has no drawn motif`);
+  }
+  // the settings the inspector edits carry the same animation, so a re-run and
+  // the stored kind agree
+  const probe = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { seed: 7 });
+  const settings = SA.direct.fillerSettings(JSON.parse(JSON.stringify(FIXTURE.input)), probe);
+  for (const entry of [settings.byKind.intro, settings.byKind.interlude, settings.byKind.outro, settings.longGap.spec]) {
+    assert.ok(SA.direct.carriesFigures(entry), `a stored kind (${entry.type}) has no figures layer`);
+  }
 });
 
 test('the run is deterministic for one seed', () => {

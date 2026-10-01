@@ -90,9 +90,10 @@ test('gaps finds intro, interlude and outro and respects minGap and margin', () 
   assert.ok(!tight.some((gap) => gap.kind === 'interlude'), 'short gap skipped');
 });
 
-test('gaps stay empty until fillers are enabled', () => {
+test('gaps fill by default and stay empty once fillers are switched off', () => {
   const cues = [{ id: 'a', start: 3, end: 6 }, { id: 'b', start: 10, end: 12 }];
-  assert.deepEqual(fillers.gaps(cues, 20), []);
+  assert.equal(fillers.gaps(cues, 20).length, 3, 'a document that never chose fills its gaps');
+  assert.deepEqual(fillers.gaps(cues, 20, { enabled: false }), []);
   assert.equal(fillers.settingsFor({ fillers: { enabled: true } }).enabled, true);
   assert.equal(fillers.settingsFor({ fillers: { enabled: false } }).enabled, false);
 });

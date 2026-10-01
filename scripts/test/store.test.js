@@ -127,7 +127,7 @@ test('setCueTrack moves a cue and refuses overlaps on the target track', () => {
 
 test('regenerateFillers rebuilds the filler clips from the gaps', () => {
   const doc = fixture();
-  assert.equal(doc.fillers.enabled, false, 'the fresh fixture opts out of automatic fillers');
+  assert.equal(doc.fillers.enabled, true, 'a fresh document fills its gaps');
   store.load(doc);
   store.commands.regenerateFillers();
   const clips = store.state.project.clips.filter((clip) => clip.trackId === 'filler');
@@ -620,6 +620,52 @@ test('a weird-0 composition beat re-roll keeps the theme size', () => {
   const bag = store.state.project.beatStyles['c1:page0'];
   assert.ok(bag && bag.text, 'the beat carries a style');
   assert.equal(bag.text.size, 80, 'the weird-0 run keeps the one size');
+});
+
+test('a beat re-roll follows the section plan the run stored', () => {
+  // The run stored its blocks (with their boost) on the styleMode. A re-roll
+  // has no music to measure, so it restores the plan: the beat is redrawn with
+  // its own block's profile instead of the song's average.
+  const doc = fixture();
+  doc.script.cues = [
+    { id: 'c1', start: 0, end: 3, text: 'first block', trackId: 'sub1' },
+    { id: 'c2', start: 10, end: 13, text: 'second block', trackId: 'sub1' },
+  ];
+  doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.6 };
+  doc.styleMode.compose = true;
+  doc.styleMode.sections = {
+    gap: 2,
+    maxCues: 4,
+    strength: 1,
+    list: [
+      { index: 0, cueIds: ['c1'], start: 0, end: 3, energy: 1, chorus: true, boost: 0.3, salt: 111 },
+      { index: 1, cueIds: ['c2'], start: 10, end: 13, energy: 0.2, chorus: false, boost: 0.05, salt: 222 },
+    ],
+  };
+  doc.beats = {
+    c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 3, kind: 'page', text: 'first block' }],
+    c2: [{ id: 'c2:page0', cueId: 'c2', start: 10, end: 13, kind: 'page', text: 'second block' }],
+  };
+  store.load(doc);
+  // the plan survives the load and drives the re-roll
+  store.commands.rerollBeat('c1', 'c1:page0');
+  const bag = store.state.project.beatStyles['c1:page0'];
+  assert.ok(bag && bag.text && bag.text.compose, 'the beat is redrawn as a composition');
+  assert.ok(globalThis.SA.compositions.get(bag.text.compose.id), `known composition ${bag.text.compose.id}`);
+  assert.equal(store.state.project.styleMode.sections.list.length, 2, 'the plan is untouched');
+  assert.equal(store.undo(), true);
+});
+
+test('a project without a section plan re-rolls on the song profile', () => {
+  const doc = fixture();
+  doc.styleMode.compose = true;
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  store.load(doc);
+  assert.equal(store.state.project.styleMode.sections, undefined);
+  store.commands.rerollBeat('c1', 'c1:page0');
+  const bag = store.state.project.beatStyles['c1:page0'];
+  assert.ok(bag && bag.text && bag.text.compose, 'the beat is redrawn');
+  assert.equal(store.undo(), true);
 });
 
 test('invertBeatScheme toggles the role order and undoes in one step', () => {

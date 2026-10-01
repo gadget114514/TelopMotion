@@ -1720,25 +1720,46 @@
     return SA.fillerPresets.specOf(preset.id);
   }
 
+  // Every gap carries a figure animation. A drawn preset may be a plain
+  // pattern / split / particles field: it holds the frame but says nothing, so
+  // the figures motif rides beside it in the same combo (the intro / outro
+  // already pair it with the credits element). A preset that draws figures
+  // itself keeps its own, so the gap never shows the same motif twice.
+  function carriesFigures(spec) {
+    if (!spec || typeof spec !== 'object') return false;
+    if (spec.type === 'figures') return true;
+    const list = spec.params && Array.isArray(spec.params.list) ? spec.params.list : null;
+    return !!(list && list.some((part) => carriesFigures(part)));
+  }
+
+  // `base` with a figures layer beside it. `figuresSpec` may be null (the pool
+  // had nothing to offer), which leaves the spec exactly as drawn.
+  function withFigureLayer(base, figuresSpec) {
+    const spec = base || { type: 'figures', params: {} };
+    if (!figuresSpec || carriesFigures(spec)) return spec;
+    return { type: 'combo', params: { list: [spec, figuresSpec] } };
+  }
+
   // The filler kinds a run writes into the project settings. Item 8: gaps show
   // the built-in preset library (figures and the other moving primitives)
   // instead of the fixed shapes / spectrum / particles trio. The backdrop
   // channel scales the counts and speeds.
   function fillerSettings(projectDoc, ctx) {
     const w = ctx.wb;
-    // The run must not switch fillers on by itself: new documents default to
-    // off, and an existing project keeps whatever the user set. `regenerate
-    // fillers` is the explicit way to materialise the gaps.
-    const enabled = SA.fillers && SA.fillers.settingsFor ? SA.fillers.settingsFor(projectDoc).enabled === true : true;
-    const interlude = fillerPresetSpec(ctx, 'interlude');
-    const longGap = fillerPresetSpec(ctx, 'longGap');
-    // intro / outro keep a figures motif next to the credits element
+    // The run fills the gaps again: `fillers.enabled` defaults to true, so a
+    // document that never made the choice fills, and one that switched fillers
+    // off keeps that choice. `regenerate fillers` is the explicit way to
+    // materialise the gaps on a document that did.
+    const enabled = SA.fillers && SA.fillers.settingsFor ? SA.fillers.settingsFor(projectDoc).enabled !== false : true;
+    // the drawn gaps that need a figure animation of their own
     const figuresOnly = new Set(['figures']);
+    const interlude = withFigureLayer(fillerPresetSpec(ctx, 'interlude'), fillerPresetSpec(ctx, 'interlude-figures', figuresOnly));
+    const longGap = withFigureLayer(fillerPresetSpec(ctx, 'longGap'), fillerPresetSpec(ctx, 'longGap-figures', figuresOnly));
     const introFigures = fillerPresetSpec(ctx, 'intro-figures', figuresOnly);
     const outroFigures = fillerPresetSpec(ctx, 'outro-figures', figuresOnly);
     const kinds = {
       intro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, introFigures || { type: 'figures', params: {} }] } },
-      interlude: interlude || { type: 'figures', params: {} },
+      interlude,
       outro: { type: 'combo', params: { list: [{ type: 'credits', params: {} }, outroFigures || { type: 'figures', params: {} }] } },
     };
     if (w > 0) {
@@ -1757,7 +1778,7 @@
       minGap: 0.8,
       margin: 0.15,
       byKind: kinds,
-      longGap: { threshold: 5, spec: longGap || { type: 'figures', params: {} } },
+      longGap: { threshold: 5, spec: longGap },
     };
   }
 
@@ -1987,6 +2008,16 @@
           spec = regenerate(spec, 0, gap.key);
         } else if (spec.type === 'combo' && Array.isArray(spec.params && spec.params.list)) {
           spec.params.list = spec.params.list.map((part) => (asFigures(part) ? regenerate(part, 1, `${gap.key}:combo`) : part));
+          // a combo the draw left without a figure animation gets one of its
+          // own, generated for this gap (the credits element is left as it is)
+          if (!carriesFigures(spec)) {
+            const list = spec.params.list;
+            spec = { type: 'combo', params: { list: [...list, regenerate(null, 2, `${gap.key}:figures`)] } };
+          }
+        } else {
+          // a plain pattern / split / particles field rides the filler alone:
+          // the figure animation is what makes the gap part of the song
+          spec = withFigureLayer(spec, regenerate(null, 2, `${gap.key}:figures`));
         }
       }
       projectDoc.clips.push(nextClip(projectDoc, 'clip_filler', {
@@ -2578,6 +2609,7 @@
     avoidForClip,
     fillerSettings,
     fillerClips,
+    carriesFigures,
     figureClipFor,
     figureClips,
     createSizeLadder,
