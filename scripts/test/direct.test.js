@@ -648,6 +648,16 @@ test('a pinned decoOutline gives every cue an outline and a zeroed type never ap
   for (const cue of doc.script.cues) {
     const cueStyle = SA.project.resolveStyle(doc, `cue:${cue.id}`);
     assert.ok(Array.isArray(cueStyle.edge) && cueStyle.edge.some((entry) => entry && entry.type === 'outline'), `${cue.id} has no outline`);
+    // the outline wears the palette's edge role as a live reference, so a
+    // palette re-roll moves the rendered edge
+    const outline = cueStyle.edge.find((entry) => entry && entry.type === 'outline');
+    const colors = (cueStyle.palette && cueStyle.palette.colors) || [];
+    const slot = colors.length >= SA.paletteRoles.SIZE ? SA.paletteRoles.SLOT.TEXT_EDGE : 4;
+    assert.deepEqual(outline.params.color, { kind: 'palette', index: slot }, `${cue.id} outline is not the edge role`);
+    const before = SA.color.toRgba(outline.params.color, null, { palette: cueStyle.palette });
+    const rerolled = { ...cueStyle.palette, colors: colors.map((hex, index) => (index === slot ? '#ff00ff' : hex)) };
+    const after = SA.color.toRgba(outline.params.color, null, { palette: rerolled });
+    assert.notDeepEqual(before, after, `${cue.id} edge does not follow the palette`);
   }
   const { doc: glitch } = profileRun(4242, {}, { typeWeights: { enter: { glitchIn: 0 } } });
   for (const cue of glitch.script.cues) {

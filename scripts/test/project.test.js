@@ -4,11 +4,13 @@ const test = require('node:test');
 const assert = require('node:assert');
 
 const project = require('../../renderer/js/studio/project');
+const color = require('../../renderer/js/color');
+const roles = require('../../renderer/js/lyrics/palette-roles');
 
-test('defaults produce a valid version 3 project with tracks', () => {
+test('defaults produce a valid version 4 project with tracks', () => {
   const doc = project.defaults();
   assert.strictEqual(doc.format, 'telopmotion');
-  assert.strictEqual(doc.version, 3);
+  assert.strictEqual(doc.version, 4);
   assert.strictEqual(doc.output.aspect, '16:9');
   assert.strictEqual(doc.output.width, 1920);
   assert.ok(Array.isArray(doc.script.cues));
@@ -37,11 +39,42 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
   const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
   assert.strictEqual(result.ok, true);
-  assert.strictEqual(result.project.version, 3);
+  assert.strictEqual(result.project.version, 4);
   assert.deepStrictEqual(result.project.custom, { hello: 'world' });
   assert.strictEqual(result.project.meta.title, 'Song');
   assert.strictEqual(result.project.output.aspect, '16:9');
   assert.ok(result.project.meta.createdAt);
+});
+
+test('migrate re-roles a frozen decoration outline onto the live edge slot', () => {
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const frozen = roles.get(palette, roles.SLOT.TEXT_BG);
+  assert.ok(typeof frozen === 'string' && frozen.length, 'the fixture has a text background tone');
+  const raw = {
+    format: 'telopmotion',
+    version: 3,
+    style: {
+      palette: { id: 'p', name: 'p', colors: palette },
+      edge: [
+        { type: 'outline', params: { width: 3, color: frozen }, enabled: true },
+        { type: 'dropShadow', params: { color: '#000000' }, enabled: true },
+      ],
+    },
+  };
+  const doc = project.migrate(raw).project;
+  assert.deepStrictEqual(doc.style.edge[0].params.color, { kind: 'palette', index: 4 });
+  assert.strictEqual(doc.style.edge[1].params.color, '#000000', 'a non-role colour stays');
+  const rgba = color.toRgba(doc.style.edge[0].params.color, null, { palette: doc.style.palette });
+  const hex = color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
+  assert.strictEqual(hex, roles.get(palette, roles.SLOT.TEXT_EDGE));
+  // the reference follows a re-rolled palette: the rendered edge moves
+  const rerolled = { id: 'q', name: 'q', colors: palette.slice() };
+  rerolled.colors[4] = '#ff00ff';
+  const next = color.toRgba(doc.style.edge[0].params.color, null, { palette: rerolled });
+  assert.strictEqual(color.toHex({ r: next[0], g: next[1], b: next[2], a: 1 }), '#ff00ff');
+  // and the rewrite is a fixed point
+  const twice = project.migrate(JSON.parse(JSON.stringify(doc))).project;
+  assert.deepStrictEqual(twice.style.edge[0].params.color, { kind: 'palette', index: 4 });
 });
 
 test('migrate turns the old style background into a whole-song clip', () => {

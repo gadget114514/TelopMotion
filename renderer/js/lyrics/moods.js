@@ -1320,12 +1320,39 @@
     return out;
   }
 
+  // The edge role of a palette array: the fixed TEXT_EDGE slot on a full
+  // 10-role palette, the legacy stroke 4 on a short one, -1 when the array is
+  // too short to carry an edge slot.
+  function edgeIndexOf(colors) {
+    const list = Array.isArray(colors) ? colors : [];
+    if (list.length < 5) return -1;
+    if (paletteRoles && Number.isFinite(paletteRoles.SIZE) && list.length >= paletteRoles.SIZE) {
+      return paletteRoles.SLOT ? paletteRoles.SLOT.TEXT_EDGE : 6;
+    }
+    return 4;
+  }
+
+  // The edge is a decoration role: its light level is free to travel the wide
+  // band a fresh palette draws (generatePalette), so a re-roll leaves the dark
+  // stroke an old palette stored. The other roles keep their own light level.
+  function sweepEdge(random, hex) {
+    let hsv;
+    try {
+      hsv = color.rgbToHsv(color.parse(hex));
+    } catch {
+      return hex;
+    }
+    const value = 0.4 + random() * 0.6;
+    return color.toHex({ ...color.hsvToRgb({ h: hsv.h, s: hsv.s, v: value, a: 1 }), a: 1 });
+  }
+
   // a variant of an existing palette (used by the per-scope "random palette"
   // and by the mid layer's per-section shift). `spread` widens the jitter: the
   // default keeps the old values exactly. `hueSpread` (in turns) overrides the
   // hue swing: the default stays inside the family (0.06 * spread), 0.5 lets a
-  // single colour land anywhere on the wheel.
-  function jitterPalette(random, palette, axes, spread, hueSpread) {
+  // single colour land anywhere on the wheel. `options.edgeIndex` marks the
+  // one colour that sweeps its light level (the edge role).
+  function jitterPalette(random, palette, axes, spread, hueSpread, options) {
     const colors = (palette && palette.colors) || [];
     if (!colors.length) return generatePalette(random, normalizeAxes({}));
     const k = spread == null || !(Number(spread) > 0) ? 1 : Number(spread);
@@ -1333,7 +1360,11 @@
     const hueShift = (random() * 2 - 1) * hue;
     const satScale = 1 + (0.9 + random() * 0.3 - 1) * k;
     const lightScale = 1 + (0.94 + random() * 0.16 - 1) * k;
-    const next = colors.map((hex, index) => shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale));
+    const edgeIndex = options && Number.isInteger(options.edgeIndex) ? options.edgeIndex : -1;
+    const next = colors.map((hex, index) => {
+      const shifted = shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale);
+      return index === edgeIndex ? sweepEdge(random, shifted) : shifted;
+    });
     repairContrast(next, weirdMod.paletteContrast(weirdOf(axes)));
     return {
       id: `theme_${Math.floor(random() * 1e9).toString(16)}`,
@@ -1344,11 +1375,12 @@
 
   // The palette editor's big-jump re-roll: the colour keeps its saturation /
   // lightness role (spread 2.5) but lands anywhere on the hue wheel, so a red
-  // can come back blue. The plain jitterPalette is the in-family nudge.
+  // can come back blue. The plain jitterPalette is the in-family nudge. An
+  // edge role also sweeps its light level across the wide band.
   const REROLL_WIDE_HUE = 0.5;
 
-  function rerollColor(random, hex, axes) {
-    const jittered = jitterPalette(random, { colors: [hex] }, axes, 2.5, REROLL_WIDE_HUE);
+  function rerollColor(random, hex, axes, options) {
+    const jittered = jitterPalette(random, { colors: [hex] }, axes, 2.5, REROLL_WIDE_HUE, options);
     return (jittered && jittered.colors && jittered.colors[0]) || hex;
   }
 
@@ -2744,6 +2776,7 @@
     paletteFor10,
     variantPalette,
     schemeFor,
+    edgeIndexOf,
     jitterPalette,
     rerollColor,
     recolor,

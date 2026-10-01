@@ -177,7 +177,7 @@ test('new feature data survives the round trip unchanged', async () => {
   assert.equal(loaded.style.bgShape, undefined);
   assert.equal(loaded.style.ornFill.type, 'solid');
   assert.equal(loaded.style.ornMotion.type, 'pop');
-  assert.equal(loaded.version, 3);
+  assert.equal(loaded.version, 4);
   assert.deepEqual(loaded.style.repeat, doc.style.repeat);
   assert.deepEqual(loaded.style.clones, doc.style.clones);
   assert.deepEqual(loaded.layers, doc.layers);

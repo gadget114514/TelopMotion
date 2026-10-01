@@ -423,7 +423,8 @@ SA.themeEditor = (() => {
     row.appendChild(swatches);
     // ↻ keeps the palette's theme (a colour variant of it), 🎲 draws a new one
     const spin = smallButton('↻', () => {
-      const jittered = SA.moods.jitterPalette(Math.random, { colors: entry.colors }, draft.axes, 2.5);
+      const edgeIndex = SA.moods && typeof SA.moods.edgeIndexOf === 'function' ? SA.moods.edgeIndexOf(entry.colors) : -1;
+      const jittered = SA.moods.jitterPalette(Math.random, { colors: entry.colors }, draft.axes, 2.5, null, { edgeIndex });
       if (jittered && Array.isArray(jittered.colors)) entry.colors = jittered.colors;
       delete entry.auto;
       render();
@@ -469,7 +470,8 @@ SA.themeEditor = (() => {
     );
     actions.appendChild(
       smallButton(`↻ ${t('studio.themeEditor.paletteSpin')}`, () => {
-        const jittered = SA.moods.jitterPalette(Math.random, draft.palette, draft.axes, 2.5);
+        const edgeIndex = SA.moods && typeof SA.moods.edgeIndexOf === 'function' ? SA.moods.edgeIndexOf(draft.palette.colors) : -1;
+        const jittered = SA.moods.jitterPalette(Math.random, draft.palette, draft.axes, 2.5, null, { edgeIndex });
         if (jittered && Array.isArray(jittered.colors)) draft.palette = { ...draft.palette, colors: jittered.colors.slice() };
         render();
       })

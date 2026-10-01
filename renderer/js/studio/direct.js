@@ -833,6 +833,20 @@
     return (colors || [])[legacy];
   }
 
+  // A live palette reference to a role: the fixed slot on a full 10-role
+  // palette, the legacy index on a short one. A stored reference follows every
+  // palette re-roll / dice at render time, so the decoration keeps the edge
+  // role instead of the colour the palette happened to hold at generation.
+  // `fallback` is used when the palette is too short to carry the role.
+  function roleRef(colors, name, legacy, fallback) {
+    const list = Array.isArray(colors) ? colors : [];
+    const roles = SA.paletteRoles;
+    const slot = roles && roles.SLOT ? roles.SLOT[name] : null;
+    if (slot != null && roles.SIZE && list.length >= roles.SIZE) return { kind: 'palette', index: slot };
+    if (list.length > legacy) return { kind: 'palette', index: legacy };
+    return fallback;
+  }
+
   // The surrounding decoration of one cue, drawn from the profile's weights.
   // Returns an edge stack for `cueStyles[id].edge` or null (keep the theme's
   // own edge). A cue whose backdrop paints two or more planes always gets a
@@ -862,35 +876,37 @@
     if (!dark) weights.decoGlow = 0;
     const keys = genParams.DECO_KEYS.filter((key) => weights[key] != null);
     const type = genParams.pickWeighted(random, weights, keys);
+    const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
+    const textEdge = roleHex(colors, 'TEXT_EDGE', 6) || textBg;
+    const textFill2 = roleHex(colors, 'TEXT_FILL2', 5) || '#ffffff';
+    // the outline wears the palette's edge role live, so a palette re-roll or
+    // dice moves the rendered edge instead of leaving the frozen tone
+    const edgeRef = roleRef(colors, 'TEXT_EDGE', 4, textEdge);
     if (!type || type === 'decoNone') {
       // the separation guarantee: two or more planes behind the text need an
       // outline, unless the profile pinned decoNone on purpose
       if (planeCount >= 2 && ctx.pinned.decoNone == null) {
-        const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
-        return [{ type: 'outline', params: { width: 2.5, color: textBg }, enabled: true }];
+        return [{ type: 'outline', params: { width: 2.5, color: edgeRef }, enabled: true }];
       }
       return null;
     }
-    const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
-    const textEdge = roleHex(colors, 'TEXT_EDGE', 6) || textBg;
-    const textFill2 = roleHex(colors, 'TEXT_FILL2', 5) || '#ffffff';
     const instanceOf = (edgeType, params2) => ({ type: edgeType, params: { ...SA.fx.paramDefaults('edge', edgeType), ...params2 }, enabled: true });
     switch (type) {
       case 'decoOutline':
-        return [instanceOf('outline', { width: Math.round((3 + random() * 3) * 10) / 10, color: textBg })];
+        return [instanceOf('outline', { width: Math.round((3 + random() * 3) * 10) / 10, color: edgeRef })];
       case 'decoShadow':
         return [
-          instanceOf('outline', { width: 2, color: textBg }),
+          instanceOf('outline', { width: 2, color: edgeRef }),
           instanceOf('dropShadow', { offset: { x: 5, y: 6 }, blur: 0, opacity: 0.9 }),
         ];
       case 'decoExtrude':
-        return [instanceOf('extrude', { depth: Math.round(10 + random() * 12), angle: 135, colorNear: textEdge, colorFar: textBg })];
+        return [instanceOf('extrude', { depth: Math.round(10 + random() * 12), angle: 135, colorNear: edgeRef, colorFar: textBg })];
       case 'decoLongShadow':
         return [instanceOf('longShadow', { length: Math.round(30 + random() * 30), angle: 135, fade: 0.6 })];
       case 'decoDouble':
-        return [instanceOf('multiLine', { count: 2, width: 2.5, gap: 3, colorRule: 'alternate', colorA: textBg, colorB: textFill2 })];
+        return [instanceOf('multiLine', { count: 2, width: 2.5, gap: 3, colorRule: 'alternate', colorA: edgeRef, colorB: textFill2 })];
       case 'decoGlow': {
-        const stack = [instanceOf('outline', { width: 2, color: textBg }), instanceOf('neonGlow', {})];
+        const stack = [instanceOf('outline', { width: 2, color: edgeRef }), instanceOf('neonGlow', {})];
         SA.moods.tameGlow({ edge: stack }, ctx.rawW);
         return stack;
       }
@@ -2215,10 +2231,12 @@
           bag.color = { fill: { kind: 'palette', index: ref(4, 2) }, fill2: { kind: 'palette', index: ref(5, 3) } };
           delete cueBag.fill;
           if (!bad()) continue;
-          // (3) a separation outline as the last resort
+          // (3) a separation outline as the last resort, in the palette's edge
+          // role (a live reference, so a later palette re-roll moves it too)
           const stack = Array.isArray(cueBag.edge) ? cueBag.edge.slice() : [];
           if (!stack.some((entry) => entry && entry.type === 'outline')) {
-            const color = roles && typeof roles.get === 'function' ? roles.get(cueColors, roles.SLOT.TEXT_BG) || '#000000' : '#000000';
+            const roleFallback = roles && typeof roles.get === 'function' ? roles.get(cueColors, roles.SLOT.TEXT_EDGE) || '#000000' : '#000000';
+            const color = roleRef(cueColors, 'TEXT_EDGE', 4, roleFallback);
             stack.unshift({ type: 'outline', params: { width: 3.5, color }, enabled: true });
           }
           cueBag.edge = stack;

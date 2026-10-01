@@ -322,27 +322,30 @@ test('invert: 1 marks beats and every resolved beat stays readable', () => {
 });
 
 test('a beat that switched palette draws its own edge in the new colours', () => {
-  // pin one outline deco so every beat draws a literal edge colour; a change:0
-  // run is the cue-palette baseline and change:1 forces a switch on every beat
+  // pin one outline deco so every beat draws its own edge; a change:0 run is
+  // the cue-palette baseline and change:1 forces a switch on every beat. The
+  // outline stores a live palette reference, so what follows the beat palette
+  // is the colour it resolves to.
   const params = { beatDecoChance: 1, decoNone: 0, decoOutline: 1, decoShadow: 0, decoExtrude: 0, decoLongShadow: 0, decoDouble: 0, decoGlow: 0 };
   const withChange = (change) => (projectDoc) => {
     projectDoc.style.paletteSet = { max: 5, change, invert: 0, extra: [] };
   };
   const switched = runWith(withChange(1), { axes: { weird: 1 }, compose: true, params });
   const plain = runWith(withChange(0), { axes: { weird: 1 }, compose: true, params });
-  const edgesOf = (doc) => {
-    const map = new Map();
-    for (const { beat, bag } of beatsOf(doc)) if (Array.isArray(bag.edge)) map.set(beat.id, JSON.stringify(bag.edge));
-    return map;
+  const edgeColorOf = (doc, cueId, beatId) => {
+    const style = projectModule.resolveStyle(doc, `cue:${cueId}/beat:${beatId}`);
+    const outline = (style.edge || []).find((entry) => entry && entry.type === 'outline');
+    if (!outline || !outline.params) return null;
+    const rgba = color.toRgba(outline.params.color, null, { palette: style.palette || null });
+    return rgba ? color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 }) : null;
   };
-  const after = edgesOf(switched);
-  const before = edgesOf(plain);
   let followed = 0;
-  for (const { beat, bag } of beatsOf(switched)) {
-    if (!bag.paletteIndex || !after.has(beat.id) || !before.has(beat.id)) continue;
-    // the same beat-deco draw ran in both runs (same seed / pins): only the
-    // palette it drew from changed, so the stack must differ
-    assert.notEqual(after.get(beat.id), before.get(beat.id), `${beat.id} own edge follows the beat palette`);
+  for (const { cue, beat, bag } of beatsOf(switched)) {
+    if (!bag.paletteIndex) continue;
+    const after = edgeColorOf(switched, cue.id, beat.id);
+    const before = edgeColorOf(plain, cue.id, beat.id);
+    if (!after || !before) continue;
+    assert.notEqual(after, before, `${beat.id} own edge follows the beat palette`);
     followed += 1;
   }
   assert.ok(followed > 0, 'some switched beat drew its own edge');

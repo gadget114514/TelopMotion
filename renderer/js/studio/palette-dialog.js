@@ -292,20 +292,27 @@ SA.paletteDialog = (() => {
     return t('palette.roleExtra', { n: index });
   }
 
-  function jitterOne(hex, index) {
+  // The edge role of the palette being edited: its re-rolls sweep the light
+  // level (the other colours keep their own).
+  function isEdgeIndex(index, colors) {
+    return typeof SA !== 'undefined' && SA.moods && typeof SA.moods.edgeIndexOf === 'function' && SA.moods.edgeIndexOf(colors) === index;
+  }
+
+  function jitterOne(hex, index, colors) {
     if (typeof SA === 'undefined' || !SA.moods || !SA.rng) return hex;
     const mode = (SA.store.state.project && SA.store.state.project.styleMode) || {};
     const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog', index);
-    const jittered = SA.moods.jitterPalette(random, { colors: [hex] }, mode.axes, 2.5);
+    const options = isEdgeIndex(index, colors) ? { edgeIndex: 0 } : null;
+    const jittered = SA.moods.jitterPalette(random, { colors: [hex] }, mode.axes, 2.5, null, options);
     return (jittered && jittered.colors && jittered.colors[0]) || hex;
   }
 
   // The big-jump sibling of jitterOne: the same colour role, any hue.
-  function rerollOne(hex, index) {
+  function rerollOne(hex, index, colors) {
     if (typeof SA === 'undefined' || !SA.moods || !SA.rng) return hex;
     const mode = (SA.store.state.project && SA.store.state.project.styleMode) || {};
     const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog-jump', index);
-    return SA.moods.rerollColor(random, hex, mode.axes);
+    return SA.moods.rerollColor(random, hex, mode.axes, isEdgeIndex(index, colors) ? { edgeIndex: 0 } : null);
   }
 
   function preview() {
@@ -429,11 +436,11 @@ SA.paletteDialog = (() => {
           setColor(index, input.value);
         });
         row.appendChild(input);
-        const reroll = button('↻', () => setColor(index, jitterOne(hex, index)));
+        const reroll = button('↻', () => setColor(index, jitterOne(hex, index, palette.colors)));
         reroll.classList.add('btn', 'btn-mini');
         reroll.title = t('palette.rerollColor');
         row.appendChild(reroll);
-        const jump = button('🎲', () => setColor(index, rerollOne(hex, index)));
+        const jump = button('🎲', () => setColor(index, rerollOne(hex, index, palette.colors)));
         jump.classList.add('btn', 'btn-mini');
         jump.title = t('palette.rerollColorWide');
         row.appendChild(jump);
@@ -455,7 +462,7 @@ SA.paletteDialog = (() => {
         button(t('palette.addColor'), () => {
           if (palette.colors.length >= MAX_COLORS) return;
           const last = palette.colors[palette.colors.length - 1] || '#ffffff';
-          palette.colors.push(jitterOne(last, palette.colors.length));
+          palette.colors.push(jitterOne(last, palette.colors.length, palette.colors));
           notify();
           rebuild();
         })

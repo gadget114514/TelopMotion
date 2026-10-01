@@ -114,3 +114,34 @@ test('the two per-colour re-rolls: family nudge vs full hue jump', () => {
   }
   assert.ok(far >= 10, `only ${far}/60 jumps left the red family`);
 });
+
+test('the edge role sweeps its light level on a re-roll', () => {
+  // the edge used to keep its own deep tone through every re-roll: marked as the
+  // edge slot, both the family nudge and the dice sweep the wide band a fresh
+  // palette draws (0.4..1.0), while the other colours keep their level
+  const v = (hex) => color.rgbToHsv(color.parse(hex)).v;
+  assert.equal(moods.edgeIndexOf(['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247']), 4);
+  assert.equal(moods.edgeIndexOf(['#101018', '#202838', '#eef2ff', '#ff8a3d']), -1);
+  const ten = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247', '#6d8cff', '#2a3348', '#9db2ff', '#ffd7a8'];
+  assert.equal(moods.edgeIndexOf(ten), 6);
+  const dark = '#1a141f';
+  let min = 1;
+  let max = 0;
+  for (let seed = 1; seed <= 60; seed += 1) {
+    const spin = moods.jitterPalette(rng.mulberry32(seed), { colors: [dark] }, { weird: 0 }, 2.5, null, { edgeIndex: 0 }).colors[0];
+    const dice = moods.rerollColor(rng.mulberry32(seed), dark, { weird: 0 }, { edgeIndex: 0 });
+    for (const hex of [spin, dice]) {
+      assert.ok(v(hex) >= 0.4 - 1e-6, `seed ${seed}: the re-rolled edge ${hex} is still dark`);
+      min = Math.min(min, v(hex));
+      max = Math.max(max, v(hex));
+    }
+  }
+  assert.ok(max - min >= 0.4, `the edge value span is only ${(max - min).toFixed(2)}`);
+  assert.ok(max >= 0.9, `the edge never gets bright (max ${max.toFixed(2)})`);
+  assert.ok(min <= 0.5, `the edge never comes back deep (min ${min.toFixed(2)})`);
+  // a palette-wide nudge sweeps only the marked edge slot
+  const palette = ['#101010', '#202020', '#303030', '#404040', '#1a141f', '#606060'];
+  const swept = moods.jitterPalette(rng.mulberry32(9), { colors: palette }, { weird: 0 }, 2.5, null, { edgeIndex: 4 }).colors;
+  assert.ok(v(swept[4]) >= 0.4, `the edge slot did not sweep (${swept[4]})`);
+  assert.ok(v(swept[0]) < 0.4, `a plain colour left its own level (${swept[0]})`);
+});

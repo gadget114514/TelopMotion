@@ -9,7 +9,7 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 3;
+  const VERSION = 4;
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
@@ -457,6 +457,88 @@
     return project;
   }
 
+  // Version 4: the auto decoration used to freeze the palette role colours into
+  // literal hexes (the outline took the TEXT_BG tone), so re-rolling a palette
+  // moved the swatches but the rendered edge stayed dark. Decorations now store
+  // live palette references; this rewrites the stored literals that exactly
+  // match the role colour resolved for their own scope.
+  function migrateToV4(project) {
+    const roles = paletteRolesModule();
+    if (!roles || typeof roles.get !== 'function' || !roles.SLOT || !Number.isFinite(roles.SIZE)) return project;
+    const snapshot = {
+      style: JSON.parse(JSON.stringify(project.style || {})),
+      cueStyles: JSON.parse(JSON.stringify(project.cueStyles || {})),
+      beatKindStyle: JSON.parse(JSON.stringify(project.beatKindStyle || {})),
+      beatStyles: JSON.parse(JSON.stringify(project.beatStyles || {})),
+      overrides: JSON.parse(JSON.stringify(project.overrides || {})),
+      styleMode: project.styleMode,
+      beats: project.beats,
+    };
+    const paletteAt = (path) => {
+      try {
+        const style = resolveStyle(snapshot, path);
+        return style && style.palette && Array.isArray(style.palette.colors) ? style.palette.colors : [];
+      } catch {
+        return [];
+      }
+    };
+    const roleHexOf = (colors, name) => {
+      if (roles.SLOT[name] == null) return null;
+      try {
+        const hex = roles.get(colors, roles.SLOT[name]);
+        return typeof hex === 'string' ? hex.toLowerCase() : null;
+      } catch {
+        return null;
+      }
+    };
+    const refFor = (colors, name, legacy) => (colors.length >= roles.SIZE ? { kind: 'palette', index: roles.SLOT[name] } : { kind: 'palette', index: legacy });
+    // [param key, the role the frozen literal matched, the role it becomes, the
+    // legacy index of the target role on a short palette]
+    const instanceRoles = {
+      outline: [['color', 'TEXT_BG', 'TEXT_EDGE', 4]],
+      multiLine: [['colorA', 'TEXT_BG', 'TEXT_EDGE', 4], ['colorB', 'TEXT_FILL2', 'TEXT_FILL2', 3]],
+      extrude: [['colorNear', 'TEXT_EDGE', 'TEXT_EDGE', 4]],
+    };
+    const rewriteInstance = (instance, colors) => {
+      if (!isPlainObject(instance) || !isPlainObject(instance.params)) return;
+      const targets = instanceRoles[instance.type];
+      if (!targets) return;
+      for (const [key, matchRole, targetRole, legacy] of targets) {
+        const expected = roleHexOf(colors, matchRole);
+        const value = instance.params[key];
+        if (expected && typeof value === 'string' && value.toLowerCase() === expected) {
+          instance.params[key] = refFor(colors, targetRole, legacy);
+        }
+      }
+    };
+    const rewriteBag = (bag, path) => {
+      if (!isPlainObject(bag) || !Array.isArray(bag.edge) || !bag.edge.length) return;
+      const colors = paletteAt(path);
+      if (colors.length < 5) return;
+      for (const instance of bag.edge) rewriteInstance(instance, colors);
+    };
+    rewriteBag(project.style, '');
+    for (const [cueId, bag] of Object.entries(project.cueStyles || {})) rewriteBag(bag, `cue:${cueId}`);
+    for (const [beatId, bag] of Object.entries(project.beatStyles || {})) {
+      const cueId = String(beatId).split(':')[0];
+      rewriteBag(bag, `cue:${cueId}/beat:${beatId}`);
+    }
+    for (const [kind, bag] of Object.entries(project.beatKindStyle || {})) {
+      // resolve the kind's palette through the first beat of that kind
+      let path = '';
+      for (const [cueId, beats] of Object.entries(project.beats || {})) {
+        const beat = (beats || []).find((entry) => entry && entry.kind === kind);
+        if (beat) {
+          path = `cue:${cueId}/beat:${beat.id}`;
+          break;
+        }
+      }
+      rewriteBag(bag, path);
+    }
+    for (const [key, bag] of Object.entries(project.overrides || {})) rewriteBag(bag, key);
+    return project;
+  }
+
   function normalizeTrackColor(value) {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -484,6 +566,7 @@
     const merged = defaults(project);
     if (version < 2) migrateToV2(merged);
     if (version < 3) migrateToV3(merged);
+    if (version < 4) migrateToV4(merged);
     // projects saved before the figure track simply gain the empty track (the
     // id is stable, so nothing else changes)
     if (!(merged.tracks || []).some((track) => track && track.kind === 'figure')) {
