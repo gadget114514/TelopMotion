@@ -3,7 +3,7 @@
   "version": 2,
   "seed": 400400,
   "total": 400,
-  "typeCount": 187,
+  "typeCount": 188,
   "sample": "今日はとてもいい天気ですね、散歩でもしましょうか",
   "verification": {
     "motion": [
@@ -78,8 +78,8 @@
     },
     {
       "group": "background",
-      "types": 9,
-      "entries": 23
+      "types": 10,
+      "entries": 25
     },
     {
       "group": "bgShape",
@@ -89,7 +89,7 @@
     {
       "group": "bgFill",
       "types": 14,
-      "entries": 28
+      "entries": 26
     },
     {
       "group": "bgEdge",
@@ -11384,6 +11384,31 @@
     },
     {
       "n": 313,
+      "id": "background.plain.v1",
+      "group": "background",
+      "type": "plain",
+      "variant": 1,
+      "label": "背景 / ベタ塗り（代表1）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#ff8a3d"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "plain",
+        "params": {
+          "color": "#ff8a3d"
+        }
+      }
+    },
+    {
+      "n": 314,
       "id": "background.gradient.v1",
       "group": "background",
       "type": "gradient",
@@ -11428,7 +11453,7 @@
       }
     },
     {
-      "n": 314,
+      "n": 315,
       "id": "background.noiseGradient.v1",
       "group": "background",
       "type": "noiseGradient",
@@ -11460,7 +11485,7 @@
       }
     },
     {
-      "n": 315,
+      "n": 316,
       "id": "background.card.v1",
       "group": "background",
       "type": "card",
@@ -11496,7 +11521,7 @@
       }
     },
     {
-      "n": 316,
+      "n": 317,
       "id": "background.cover.v1",
       "group": "background",
       "type": "cover",
@@ -11526,7 +11551,7 @@
       }
     },
     {
-      "n": 317,
+      "n": 318,
       "id": "background.image.v1",
       "group": "background",
       "type": "image",
@@ -11556,7 +11581,7 @@
       }
     },
     {
-      "n": 318,
+      "n": 319,
       "id": "background.pattern.v1",
       "group": "background",
       "type": "pattern",
@@ -11586,7 +11611,7 @@
       }
     },
     {
-      "n": 319,
+      "n": 320,
       "id": "background.shapes.v1",
       "group": "background",
       "type": "shapes",
@@ -11616,7 +11641,7 @@
       }
     },
     {
-      "n": 320,
+      "n": 321,
       "id": "background.solid.v2",
       "group": "background",
       "type": "solid",
@@ -11641,7 +11666,32 @@
       }
     },
     {
-      "n": 321,
+      "n": 322,
+      "id": "background.plain.v2",
+      "group": "background",
+      "type": "plain",
+      "variant": 2,
+      "label": "背景 / ベタ塗り（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#4dc8ff"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "plain",
+        "params": {
+          "color": "#4dc8ff"
+        }
+      }
+    },
+    {
+      "n": 323,
       "id": "background.gradient.v2",
       "group": "background",
       "type": "gradient",
@@ -11668,7 +11718,7 @@
       }
     },
     {
-      "n": 322,
+      "n": 324,
       "id": "background.noiseGradient.v2",
       "group": "background",
       "type": "noiseGradient",
@@ -11723,7 +11773,7 @@
       }
     },
     {
-      "n": 323,
+      "n": 325,
       "id": "background.card.v2",
       "group": "background",
       "type": "card",
@@ -11759,7 +11809,7 @@
       }
     },
     {
-      "n": 324,
+      "n": 326,
       "id": "background.cover.v2",
       "group": "background",
       "type": "cover",
@@ -11794,7 +11844,7 @@
       }
     },
     {
-      "n": 325,
+      "n": 327,
       "id": "background.image.v2",
       "group": "background",
       "type": "image",
@@ -11829,7 +11879,7 @@
       }
     },
     {
-      "n": 326,
+      "n": 328,
       "id": "background.pattern.v2",
       "group": "background",
       "type": "pattern",
@@ -11859,7 +11909,7 @@
       }
     },
     {
-      "n": 327,
+      "n": 329,
       "id": "background.shapes.v2",
       "group": "background",
       "type": "shapes",
@@ -11889,7 +11939,7 @@
       }
     },
     {
-      "n": 328,
+      "n": 330,
       "id": "background.gradient.v3",
       "group": "background",
       "type": "gradient",
@@ -11939,7 +11989,7 @@
       }
     },
     {
-      "n": 329,
+      "n": 331,
       "id": "background.noiseGradient.v3",
       "group": "background",
       "type": "noiseGradient",
@@ -11971,7 +12021,7 @@
       }
     },
     {
-      "n": 330,
+      "n": 332,
       "id": "background.card.v3",
       "group": "background",
       "type": "card",
@@ -12007,7 +12057,7 @@
       }
     },
     {
-      "n": 331,
+      "n": 333,
       "id": "background.cover.v3",
       "group": "background",
       "type": "cover",
@@ -12042,7 +12092,7 @@
       }
     },
     {
-      "n": 332,
+      "n": 334,
       "id": "background.image.v3",
       "group": "background",
       "type": "image",
@@ -12077,7 +12127,7 @@
       }
     },
     {
-      "n": 333,
+      "n": 335,
       "id": "background.pattern.v3",
       "group": "background",
       "type": "pattern",
@@ -12107,7 +12157,7 @@
       }
     },
     {
-      "n": 334,
+      "n": 336,
       "id": "background.shapes.v3",
       "group": "background",
       "type": "shapes",
@@ -12137,7 +12187,7 @@
       }
     },
     {
-      "n": 335,
+      "n": 337,
       "id": "bgShape.none.v1",
       "group": "bgShape",
       "type": "none",
@@ -12181,7 +12231,7 @@
       }
     },
     {
-      "n": 336,
+      "n": 338,
       "id": "bgShape.square.v1",
       "group": "bgShape",
       "type": "square",
@@ -12225,7 +12275,7 @@
       }
     },
     {
-      "n": 337,
+      "n": 339,
       "id": "bgShape.none.v2",
       "group": "bgShape",
       "type": "none",
@@ -12269,7 +12319,7 @@
       }
     },
     {
-      "n": 338,
+      "n": 340,
       "id": "bgShape.square.v2",
       "group": "bgShape",
       "type": "square",
@@ -12313,7 +12363,7 @@
       }
     },
     {
-      "n": 339,
+      "n": 341,
       "id": "bgShape.none.v3",
       "group": "bgShape",
       "type": "none",
@@ -12357,7 +12407,7 @@
       }
     },
     {
-      "n": 340,
+      "n": 342,
       "id": "bgShape.square.v3",
       "group": "bgShape",
       "type": "square",
@@ -12401,7 +12451,7 @@
       }
     },
     {
-      "n": 341,
+      "n": 343,
       "id": "bgFill.gradientSweep.v1",
       "group": "bgFill",
       "type": "gradientSweep",
@@ -12442,7 +12492,7 @@
       }
     },
     {
-      "n": 342,
+      "n": 344,
       "id": "bgFill.rainbowFlow.v1",
       "group": "bgFill",
       "type": "rainbowFlow",
@@ -12485,7 +12535,7 @@
       }
     },
     {
-      "n": 343,
+      "n": 345,
       "id": "bgFill.holographic.v1",
       "group": "bgFill",
       "type": "holographic",
@@ -12532,7 +12582,7 @@
       }
     },
     {
-      "n": 344,
+      "n": 346,
       "id": "bgFill.chrome.v1",
       "group": "bgFill",
       "type": "chrome",
@@ -12573,7 +12623,7 @@
       }
     },
     {
-      "n": 345,
+      "n": 347,
       "id": "bgFill.goldFoil.v1",
       "group": "bgFill",
       "type": "goldFoil",
@@ -12614,7 +12664,7 @@
       }
     },
     {
-      "n": 346,
+      "n": 348,
       "id": "bgFill.fire.v1",
       "group": "bgFill",
       "type": "fire",
@@ -12661,7 +12711,7 @@
       }
     },
     {
-      "n": 347,
+      "n": 349,
       "id": "bgFill.caustics.v1",
       "group": "bgFill",
       "type": "caustics",
@@ -12704,7 +12754,7 @@
       }
     },
     {
-      "n": 348,
+      "n": 350,
       "id": "bgFill.marble.v1",
       "group": "bgFill",
       "type": "marble",
@@ -12751,7 +12801,7 @@
       }
     },
     {
-      "n": 349,
+      "n": 351,
       "id": "bgFill.glass.v1",
       "group": "bgFill",
       "type": "glass",
@@ -12793,7 +12843,7 @@
       }
     },
     {
-      "n": 350,
+      "n": 352,
       "id": "bgFill.textureFill.v1",
       "group": "bgFill",
       "type": "textureFill",
@@ -12838,7 +12888,7 @@
       }
     },
     {
-      "n": 351,
+      "n": 353,
       "id": "bgFill.karaokeWipe.v1",
       "group": "bgFill",
       "type": "karaokeWipe",
@@ -12880,7 +12930,7 @@
       }
     },
     {
-      "n": 352,
+      "n": 354,
       "id": "bgFill.ink.v1",
       "group": "bgFill",
       "type": "ink",
@@ -12927,7 +12977,7 @@
       }
     },
     {
-      "n": 353,
+      "n": 355,
       "id": "bgFill.gradientSweep.v2",
       "group": "bgFill",
       "type": "gradientSweep",
@@ -12968,7 +13018,7 @@
       }
     },
     {
-      "n": 354,
+      "n": 356,
       "id": "bgFill.rainbowFlow.v2",
       "group": "bgFill",
       "type": "rainbowFlow",
@@ -13011,7 +13061,7 @@
       }
     },
     {
-      "n": 355,
+      "n": 357,
       "id": "bgFill.holographic.v2",
       "group": "bgFill",
       "type": "holographic",
@@ -13058,7 +13108,7 @@
       }
     },
     {
-      "n": 356,
+      "n": 358,
       "id": "bgFill.chrome.v2",
       "group": "bgFill",
       "type": "chrome",
@@ -13122,7 +13172,7 @@
       }
     },
     {
-      "n": 357,
+      "n": 359,
       "id": "bgFill.goldFoil.v2",
       "group": "bgFill",
       "type": "goldFoil",
@@ -13163,7 +13213,7 @@
       }
     },
     {
-      "n": 358,
+      "n": 360,
       "id": "bgFill.fire.v2",
       "group": "bgFill",
       "type": "fire",
@@ -13210,7 +13260,7 @@
       }
     },
     {
-      "n": 359,
+      "n": 361,
       "id": "bgFill.caustics.v2",
       "group": "bgFill",
       "type": "caustics",
@@ -13258,7 +13308,7 @@
       }
     },
     {
-      "n": 360,
+      "n": 362,
       "id": "bgFill.marble.v2",
       "group": "bgFill",
       "type": "marble",
@@ -13328,7 +13378,7 @@
       }
     },
     {
-      "n": 361,
+      "n": 363,
       "id": "bgFill.glass.v2",
       "group": "bgFill",
       "type": "glass",
@@ -13375,7 +13425,7 @@
       }
     },
     {
-      "n": 362,
+      "n": 364,
       "id": "bgFill.textureFill.v2",
       "group": "bgFill",
       "type": "textureFill",
@@ -13420,7 +13470,7 @@
       }
     },
     {
-      "n": 363,
+      "n": 365,
       "id": "bgFill.karaokeWipe.v2",
       "group": "bgFill",
       "type": "karaokeWipe",
@@ -13467,7 +13517,7 @@
       }
     },
     {
-      "n": 364,
+      "n": 366,
       "id": "bgFill.ink.v2",
       "group": "bgFill",
       "type": "ink",
@@ -13514,7 +13564,7 @@
       }
     },
     {
-      "n": 365,
+      "n": 367,
       "id": "bgFill.gradientSweep.v3",
       "group": "bgFill",
       "type": "gradientSweep",
@@ -13560,7 +13610,7 @@
       }
     },
     {
-      "n": 366,
+      "n": 368,
       "id": "bgFill.rainbowFlow.v3",
       "group": "bgFill",
       "type": "rainbowFlow",
@@ -13602,94 +13652,6 @@
             "lightness": 0.33,
             "speed": 0.5,
             "perLetter": false
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 367,
-      "id": "bgFill.holographic.v3",
-      "group": "bgFill",
-      "type": "holographic",
-      "variant": 3,
-      "label": "文字背景の塗り / ホログラフィック（代表3）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "iridescence",
-          "from": 0.6,
-          "to": 0.25
-        },
-        {
-          "key": "speed",
-          "from": 0.3,
-          "to": 0.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "holographic",
-          "enabled": true,
-          "params": {
-            "iridescence": 0.25,
-            "fresnel": 0.4,
-            "speed": 0.5
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 368,
-      "id": "bgFill.chrome.v3",
-      "group": "bgFill",
-      "type": "chrome",
-      "variant": 3,
-      "label": "文字背景の塗り / クローム（代表3）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "sharpness",
-          "from": 0.6,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "chrome",
-          "enabled": true,
-          "params": {
-            "envColors": null,
-            "sharpness": 0.75
           },
           "motion": {}
         }

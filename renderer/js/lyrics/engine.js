@@ -1391,7 +1391,7 @@ SA.lyricsEngine = (() => {
       if (envelope <= 0) return;
       const theme = SA.card && SA.card.theme ? SA.card.theme(state.project) : null;
       const params = { ...(spec.params || {}) };
-      if (spec.type === 'solid' && colors && !params.color) params.color = colors[0];
+      if ((spec.type === 'solid' || spec.type === 'plain') && colors && !params.color) params.color = colors[0];
       const stagePalette = stage && Array.isArray(stage.to) && stage.to.length ? { colors: stage.to } : palette;
       pipeline.drawBackground(
         SA.fx.backgroundUniforms({ type: spec.type, params }, {

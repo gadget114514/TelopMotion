@@ -1519,7 +1519,10 @@
     // calm noise gradient (flat gradients as the floor). The weird axis no
     // longer rewrites the background: it expands the mid (backdrop) layer.
     const result = SA.moods.rerollClipSpec('background', { axes, seed, genre });
-    const spec = lookClip || (result && result.spec && result.spec.type !== 'solid' && result.spec.type !== 'gradient' ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
+    // the flat types are the floor, not a roll: the auto direction always
+    // lands on the noise gradient unless a drawn look brings its own backdrop
+    const FLAT_BG = new Set(['plain', 'solid', 'gradient']);
+    const spec = lookClip || (result && result.spec && !FLAT_BG.has(result.spec.type) ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
     projectDoc.clips.push(nextClip(projectDoc, 'clip_bg', {
       trackId: bgTrack,
       start: 0,

@@ -2136,6 +2136,12 @@ SA.glShaders = (() => {
       color = mix(u_colorA.rgb, u_colorB.rgb, clamp(pattern, 0.0, 1.0));
       color += u_colorC.rgb * pow(clamp(pattern, 0.0, 1.0), 6.0) * 0.8;
       color *= fade;
+    } else if (u_type == 13) {
+      // plain: the branch above already starts from a flat u_colorA, so this
+      // only pins the intent. Pinned here so the flat look cannot drift if the
+      // chain gains a final else.
+      color = u_colorA.rgb;
+      alpha = u_colorA.a;
     }
     float opacity = clamp(u_opacity, 0.0, 1.0);
     fragColor = vec4(color * opacity, alpha * opacity);

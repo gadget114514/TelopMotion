@@ -248,7 +248,7 @@
     const colors = (palette && palette.colors) || [];
     const spec = clone(clip);
     spec.params = spec.params || {};
-    if (spec.type === 'solid') spec.params.color = colors[0] || '#101018';
+    if (spec.type === 'solid' || spec.type === 'plain') spec.params.color = colors[0] || '#101018';
     else if (spec.type === 'gradient' || spec.type === 'noiseGradient') spec.params.colors = [colors[0] || '#101018', colors[1] || colors[4] || '#202838'];
     else if (spec.type === 'pattern' || spec.type === 'shapes') spec.params.color = colors[3] || '#4d8dff';
     return spec;

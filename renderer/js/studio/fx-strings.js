@@ -60,7 +60,7 @@
       vignette: 'Vignette', sparkles: 'Sparkles', lensFlare: 'Lens flare',
     },
     background: {
-      none: 'None', solid: 'Solid', gradient: 'Gradient', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
+      none: 'None', solid: 'Solid', plain: 'Plain colour', gradient: 'Gradient', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
     },
     param: {
       order: 'Order', each: 'Interval', ease: 'Ease', from: 'Start', unit: 'Unit', exitOrder: 'Exit order', overlap: 'Overlap',
@@ -164,7 +164,7 @@
       lensFlare: 'レンズフレア',
     },
     background: {
-      none: 'なし', solid: '単色', gradient: 'グラデーション', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
+      none: 'なし', solid: '単色', plain: 'ベタ塗り', gradient: 'グラデーション', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
     },
     param: {
       order: '順序', each: '間隔', ease: 'イージング', from: '開始位置', unit: '単位', exitOrder: '退場順序', overlap: '重なり',
@@ -271,7 +271,7 @@
       vignette: 'Viñeta', sparkles: 'Destellos', lensFlare: 'Reflejo de lente',
     },
     background: {
-      none: 'Ninguno', solid: 'Sólido', gradient: 'Degradado', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
+      none: 'Ninguno', solid: 'Sólido', plain: 'Color plano', gradient: 'Degradado', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
       cover: 'Portada de la canción', image: 'Imagen',
     },
     param: {
@@ -383,7 +383,7 @@
       lightLeak: 'Fuite de lumière', vignette: 'Vignettage', sparkles: 'Étincelles', lensFlare: 'Reflet de lentille',
     },
     background: {
-      none: 'Aucun', solid: 'Uni', gradient: 'Dégradé', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
+      none: 'Aucun', solid: 'Uni', plain: 'Couleur unie', gradient: 'Dégradé', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
       image: 'Image',
     },
     param: {
@@ -495,7 +495,7 @@
       lensFlare: 'Блик объектива',
     },
     background: {
-      none: 'Нет', solid: 'Сплошной', gradient: 'Градиент', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
+      none: 'Нет', solid: 'Сплошной', plain: 'Простой цвет', gradient: 'Градиент', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
       cover: 'Обложка трека', image: 'Изображение',
     },
     param: {

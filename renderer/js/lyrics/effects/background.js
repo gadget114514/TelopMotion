@@ -7,7 +7,7 @@
 })(typeof self !== 'undefined' ? self : this, function (fx, color) {
   'use strict';
 
-  const TYPES = { none: 1, solid: 1, gradient: 2, noiseGradient: 2, card: 3, cover: 4, image: 5, fractalNoise: 6, rays: 7, gradient4: 8, cellPattern: 9, particleField: 10, perspectiveGrid: 11, tunnel: 12 };
+  const TYPES = { none: 1, solid: 1, plain: 13, gradient: 2, noiseGradient: 2, card: 3, cover: 4, image: 5, fractalNoise: 6, rays: 7, gradient4: 8, cellPattern: 9, particleField: 10, perspectiveGrid: 11, tunnel: 12 };
 
   fx.register({
     group: 'background',
@@ -20,6 +20,16 @@
   fx.register({
     group: 'background',
     type: 'solid',
+    params: [{ key: 'color', kind: 'color', default: null }],
+    cost: 0,
+  });
+
+  // The plain colour: one flat field, no glow, drift or vignette. `solid`
+  // keeps its soft centre lift, this one is the bare base plate.
+  fx.register({
+    group: 'background',
+    type: 'plain',
+    tags: ['basic'],
     params: [{ key: 'color', kind: 'color', default: null }],
     cost: 0,
   });
@@ -286,6 +296,9 @@
     if (type === 1) {
       colorA = toRgb(params.color, colorA, context);
       p4[2] = glow;
+    } else if (type === 13) {
+      // plain: the shader's flat branch only reads u_colorA
+      colorA = toRgb(params.color, colorA, context);
     } else if (type === 2) {
       const stops = Array.isArray(params.colors)
         ? params.colors

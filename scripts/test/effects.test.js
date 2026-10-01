@@ -171,12 +171,31 @@ test('every post type resolves to uniforms with a target', () => {
 });
 
 test('every background type resolves to uniforms', () => {
+  // the unpacked types keep the original five shader codes so the older
+  // effect catalogues stay byte-identical; `plain` is the flat-colour branch
+  // added on top of them
+  const CODE_RANGE = { plain: [13, 13] };
   for (const descriptor of fx.list('background')) {
     const instance = fx.withDefaults({ type: descriptor.type, params: {} }, 'background');
     const uniforms = fx.backgroundUniforms(instance, { time: 1, theme: null });
     assertUniforms(uniforms, `background.${descriptor.type}`);
-    assert.ok(uniforms.u_type >= 1 && uniforms.u_type <= 5, `background.${descriptor.type} code`);
+    const range = CODE_RANGE[descriptor.type] || [1, 5];
+    assert.ok(uniforms.u_type >= range[0] && uniforms.u_type <= range[1], `background.${descriptor.type} code`);
   }
+});
+
+test('plain is a flat colour field and solid keeps its centre glow', () => {
+  const plain = fx.backgroundUniforms({ type: 'plain', params: { color: '#204080' } }, { theme: null });
+  const solid = fx.backgroundUniforms({ type: 'solid', params: { color: '#204080' } }, { theme: null });
+  assert.equal(plain.u_type, 13);
+  assert.deepEqual(plain.u_colorA, solid.u_colorA, 'both read the same colour');
+  // solid rides the glow in u_params.z (the shader's -1 sentinel lifts it);
+  // plain leaves it at the default 0 the flat branch never reads
+  assert.equal(plain.u_params[2], 0);
+  assert.equal(solid.u_params[2], -1);
+  // the params schema matches, so the inspector builds the same colour control
+  const keys = (type) => fx.get('background', type).params.map((param) => param.key);
+  assert.deepEqual(keys('plain'), keys('solid'));
 });
 
 test('resolveColorSet turns ColorValues into rgba arrays', () => {
@@ -236,4 +255,26 @@ test('every post effect code has exactly one branch in the post shader', () => {
   // lightSweep must reach the sweep band, not the kaleidoscope swirl.
   const sweep = frag.slice(frag.indexOf(`type == ${fx.postTypes.lightSweep})`));
   assert.match(sweep.slice(0, sweep.indexOf('} else if')), /band/);
+});
+
+test('every background shader code has exactly one branch', () => {
+  const vm = require('node:vm');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/lyrics/gl/shaders.js'), 'utf8');
+  const sandbox = { window: {} };
+  sandbox.SA = sandbox.window.SA = {};
+  vm.runInNewContext(source, sandbox);
+  const frag = sandbox.SA.glShaders.BACKGROUND_FRAG;
+  // codes 3/4/5 (card / cover / image) share one `||` branch, so the match is
+  // on the comparison rather than on a closing paren
+  const branches = [...frag.matchAll(/u_type == (\d+)/g)].map((match) => Number(match[1]));
+  // `none`/`solid` and `gradient`/`noiseGradient` share a code, so the check is
+  // per distinct code rather than per type
+  for (const code of new Set(Object.values(fx.backgroundTypes))) {
+    assert.equal(branches.filter((value) => value === code).length, 1, `background code ${code}`);
+  }
+  // the flat branch must not grow a lift or a drift behind solid's glow
+  const flat = frag.slice(frag.indexOf('u_type == 13)'), frag.indexOf('float opacity = clamp'));
+  assert.equal(flat.includes('u_time'), false, 'the plain branch ignores the clock');
 });
