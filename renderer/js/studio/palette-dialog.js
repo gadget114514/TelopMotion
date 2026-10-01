@@ -23,6 +23,7 @@ window.SA = window.SA || {};
         addColor: 'Add colour',
         rerollColor: 'Re-roll this colour',
         rerollColorWide: 'Re-roll this colour in any hue',
+        contrastFix: 'Fix contrast against the background',
         removeColor: 'Remove colour',
         contrast: 'Text vs background: {ratio}:1',
         contrastWarn: 'text may be hard to read',
@@ -68,6 +69,7 @@ window.SA = window.SA || {};
         addColor: '色を追加',
         rerollColor: 'この色を引き直す',
         rerollColorWide: 'この色を別の色相に引き直す',
+        contrastFix: '背景とのコントラストを補正',
         removeColor: 'この色を削除',
         contrast: '文字と背景のコントラスト: {ratio}:1',
         contrastWarn: '文字が読みにくい可能性があります',
@@ -113,6 +115,7 @@ window.SA = window.SA || {};
         addColor: 'Añadir color',
         rerollColor: 'Volver a sortear este color',
         rerollColorWide: 'Volver a sortear este color en otro tono',
+        contrastFix: 'Corregir el contraste con el fondo',
         removeColor: 'Quitar color',
         contrast: 'Texto sobre fondo: {ratio}:1',
         contrastWarn: 'el texto puede costar de leer',
@@ -158,6 +161,7 @@ window.SA = window.SA || {};
         addColor: 'Ajouter une couleur',
         rerollColor: 'Retirer cette couleur au sort',
         rerollColorWide: 'Retirer cette couleur au sort sur une autre teinte',
+        contrastFix: 'Corriger le contraste avec le fond',
         removeColor: 'Supprimer cette couleur',
         contrast: 'Texte sur fond : {ratio}:1',
         contrastWarn: 'le texte peut être difficile à lire',
@@ -203,6 +207,7 @@ window.SA = window.SA || {};
         addColor: 'Добавить цвет',
         rerollColor: 'Пересобрать этот цвет',
         rerollColorWide: 'Пересобрать этот цвет в другом оттенке',
+        contrastFix: 'Исправить контраст с фоном',
         removeColor: 'Удалить цвет',
         contrast: 'Текст на фоне: {ratio}:1',
         contrastWarn: 'текст может плохо читаться',
@@ -311,6 +316,43 @@ SA.paletteDialog = (() => {
   function rerollOne() {
     const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
     return `#${channel()}${channel()}${channel()}`;
+  }
+
+  // The nearest value of `hex` (lighter or darker, whichever moves less) that
+  // clears `target` against `bg`; hue and saturation stay.
+  function fixContrastOne(hex, bg, target) {
+    const front = SA.color.parse(hex);
+    const back = SA.color.parse(bg);
+    if (SA.color.contrastRatio(front, back) >= target) return hex;
+    const hsv = SA.color.rgbToHsv(front);
+    let best = hex;
+    let bestRatio = SA.color.contrastRatio(front, back);
+    for (let step = 1; step <= 20; step += 1) {
+      for (const direction of [-1, 1]) {
+        const v = Math.min(1, Math.max(0, hsv.v + direction * step * 0.05));
+        const candidate = SA.color.hsvToRgb({ h: hsv.h, s: hsv.s, v, a: 1 });
+        const ratio = SA.color.contrastRatio(candidate, back);
+        if (ratio >= target) return SA.color.toHex(candidate);
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = SA.color.toHex(candidate);
+        }
+      }
+    }
+    return best;
+  }
+
+  // Contrast correction of one palette entry: the background (index 0) moves
+  // the whole palette through repairContrast, any other colour moves against
+  // the background.
+  function fixContrast(colors, index) {
+    if (!Array.isArray(colors) || !colors.length) return colors;
+    if (index === 0) {
+      if (SA.moods && typeof SA.moods.repairContrast === 'function') SA.moods.repairContrast(colors, 4.5);
+    } else {
+      colors[index] = fixContrastOne(colors[index], colors[0], 4.5);
+    }
+    return colors;
   }
 
   function preview() {
@@ -442,6 +484,13 @@ SA.paletteDialog = (() => {
         jump.classList.add('btn', 'btn-mini');
         jump.title = t('palette.rerollColorWide');
         row.appendChild(jump);
+        const fix = button('◐', () => {
+          fixContrast(palette.colors, index);
+          notify();
+          rebuild();
+        }, 'btn btn-mini');
+        fix.title = t('palette.contrastFix');
+        row.appendChild(fix);
         if (index >= 5) {
           const remove = button('✕', () => {
             palette.colors.splice(index, 1);
@@ -717,5 +766,5 @@ SA.paletteDialog = (() => {
     active.unsubscribe = SA.store.subscribe(null, () => refresh());
   }
 
-  return { open, close, editorNode };
+  return { open, close, editorNode, fixContrast };
 })();

@@ -441,6 +441,15 @@ SA.themeEditor = (() => {
     });
     reroll.title = t('studio.themeEditor.paletteRandom');
     row.appendChild(reroll);
+    const fix = smallButton('◐', () => {
+      if (SA.paletteDialog && typeof SA.paletteDialog.fixContrast === 'function') {
+        for (let index = 1; index < entry.colors.length; index += 1) SA.paletteDialog.fixContrast(entry.colors, index);
+      }
+      delete entry.auto;
+      render();
+    });
+    fix.title = t('palette.contrastFix');
+    row.appendChild(fix);
     const remove = smallButton('✕', () => {
       set.extra.splice(index, 1);
       render();
