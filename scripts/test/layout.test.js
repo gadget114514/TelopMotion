@@ -76,6 +76,36 @@ test('vertical formation fills columns top to bottom and right to left', () => {
   }
 });
 
+test('a rotated letter steps the column by its own advance', () => {
+  const { letters, blockBBox } = lettersFrom('あAい');
+  for (const letter of letters) letter.vertRotate = letter.char === 'A';
+  const points = layout.formation('vertical', { columnGap: 1.2 }, letters, blockBBox, FRAME, rng.mulberry32(5));
+  assertFinite(points);
+  assert.equal(points[1].rot, 90, 'the latin letter turns 90');
+  assert.equal(points[0].rot, 0, 'the CJK letter stays upright');
+  // each cell is centred on its own step: upright 96 * 1.15, rotated the 52.8
+  // advance, so the centre-to-centre distance is half a step on each side
+  const upright = 96 * 1.15;
+  const rotated = 96 * 0.55;
+  assert.ok(Math.abs(points[1].y - points[0].y - (upright + rotated) / 2) < 1e-6, `first gap ${points[1].y - points[0].y}`);
+  assert.ok(Math.abs(points[2].y - points[1].y - (rotated + upright) / 2) < 1e-6, `second gap ${points[2].y - points[1].y}`);
+  // a rotated run is tighter than the em grid, and still goes top to bottom
+  assert.ok(rotated < upright, 'the sideways run closes up');
+  assert.ok(points[1].y > points[0].y && points[2].y > points[1].y, 'letters go top to bottom');
+});
+
+test('a vertical column breaks to the next one instead of overrunning the frame', () => {
+  const text = 'あ'.repeat(40);
+  const { letters, blockBBox } = lettersFrom(text);
+  const points = layout.formation('vertical', { columnGap: 1.2 }, letters, blockBBox, FRAME, rng.mulberry32(6));
+  assertFinite(points);
+  const safe = FRAME.height * 0.84;
+  const top = Math.min(...points.map((point) => point.y));
+  const bottom = Math.max(...points.map((point) => point.y));
+  assert.ok(bottom - top <= safe, `column runs ${bottom - top} past ${safe}`);
+  assert.ok(points.some((point) => point.x > 0) && points.some((point) => point.x < 0), 'more than one column');
+});
+
 test('wave formation follows the sine and the tangent', () => {
   const { letters, blockBBox } = lettersFrom('ABCDEFGH');
   const points = layout.formation('wave', { amp: 0.1, wavelength: 0.5 }, letters, blockBBox, FRAME, rng.mulberry32(4));

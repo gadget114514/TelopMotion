@@ -131,3 +131,31 @@ test('vertical columns step by their own tallest letter', () => {
   assert.equal(second[0].x, -240);
   assert.equal(result.width, 200);
 });
+
+test('English in a vertical column rotates 90 instead of stacking upright', () => {
+  const result = layout('愛Love 12', null, { direction: 'vertical' });
+  const letters = result.lines[0].words.flatMap((word) => word.letters);
+  const byChar = new Map(letters.map((letter) => [letter.char, letter]));
+  // CJK stays upright
+  assert.equal(byChar.get('愛').vertRotate, false);
+  // every latin letter and digit is turned, so the run reads sideways
+  for (const character of ['L', 'o', 'v', 'e', '1', '2']) {
+    assert.equal(byChar.get(character).vertRotate, true, `${character} should rotate`);
+  }
+  // a space is neither rotated nor rendered sideways
+  assert.equal(byChar.get(' ').vertRotate, false);
+});
+
+test('the vertical column runs a rotated letter by its own advance', () => {
+  const result = layout('愛Love', null, { direction: 'vertical' });
+  const letters = result.lines[0].words.flatMap((word) => word.letters);
+  const [cjk, l, o, v, e] = letters;
+  // the CJK letter steps by its em, then the sideways run by the glyph widths
+  assert.equal(l.y, cjk.advance);
+  assert.equal(o.y, l.y + l.advance);
+  assert.equal(v.y, o.y + o.advance);
+  assert.equal(e.y, v.y + v.advance);
+  // no tate-chu-yoko: the digits keep their own advance instead of overlapping
+  const digits = layout('12', null, { direction: 'vertical' }).lines[0].words.flatMap((word) => word.letters);
+  assert.ok(digits[1].y > digits[0].y, 'digits step down the column');
+});

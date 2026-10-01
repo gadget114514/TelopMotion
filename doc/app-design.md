@@ -670,9 +670,10 @@ A tween is a pure function of `(kind, a, b, p, ease)`; it never reads wall-clock
   - Positions are in px at the target font size, relative to the baseline origin of the text block.
   - **Vertical:** columns go top→bottom and right→left.
     - Full-width characters stay upright.
-    - ASCII letters and digits are rotated 90° clockwise (`vertRotate`). Runs of 1–2 digits are set upright side by side (tate-chu-yoko).
+    - **English (and any other non-CJK) text is not written vertically. It is rotated 90° clockwise** (`vertRotate`) and read as a sideways run, the way `writing-mode: vertical-rl` handles it: the column runs the glyph's own advance, not the em. Latin letters, digits and halfwidth ASCII punctuation match `[\u0021-\u007e\u00a1-\u024f\u0370-\u03ff\u0400-\u04ff]`; CJK, kana and fullwidth forms stay upright. There is no tate-chu-yoko: digit runs rotate too.
     - Substitution map: `、。` → shifted to the top-right quadrant; `ー—〜…` → rotated; `「」『』（）【】` → vertical forms `﹁﹂﹃﹄︵︶︻︼` when the font has them, otherwise rotated 90°.
-    - Column advance = size × lineHeight.
+    - Column advance: an upright letter steps by size × lineHeight; a rotated one by its own advance.
+    - The `vertical` formation (`layout.js`) packs the columns the same way — per-letter step, filling the safe height and breaking to the next column right→left.
 
 ### 6.4 `lyrics/geometry.js` (pure; works on opentype path commands)
 - `glyphContours(path, tolerance)`: flatten M/L/Q/C/Z commands into polylines, using adaptive subdivision (split until the flatness is below `tolerance`; default 0.35 px at the render size). Returns `[{ points: Float32Array, closed: true, area, length }]`.
@@ -715,7 +716,7 @@ Letters are the smallest unit that gets a transform. "Parts of a letter" (contou
 | type | params (default) | formula / behavior |
 |---|---|---|
 | `row` | — | Positions straight from `layoutText` (horizontal). |
-| `vertical` | `columnGap: 1.2` | Uses the vertical `layoutText` result. |
+| `vertical` | `columnGap: 1.2` | Uses the vertical `layoutText` result. The column steps by `size × 1.15` for an upright letter and by the letter's own advance for a rotated one (an English run reads as a sideways word); the column fills top→bottom within the safe height, then the next column starts to its left. |
 | `circle` | `radius: 0.28` (× short side), `startAngle: -90`, `clockwise: true`, `faceOut: true` | θ_i = start + 360·(arcLen_i/total); pos = r(cosθ, sinθ); rot = θ + 90 if faceOut, otherwise 0. `arcLen` uses the letter advances, so spacing follows letter widths. |
 | `arc` | `radius: 0.6`, `sweep: 120`, `bulge: 'up'` | Same as circle, but spread over `sweep` degrees and centered. |
 | `spiral` | `r0: 0.05`, `r1: 0.35`, `turns: 2.5` | r = lerp(r0, r1, u), θ = u·turns·360, u = i/(N-1); rotation follows the tangent. |

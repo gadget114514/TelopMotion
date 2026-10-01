@@ -145,7 +145,7 @@ SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .
   - **P7 に送る近似**（CPU では状態値を正しく出し、見た目は P7 のパスで完成）: blurIn/blurOut のボケ、dissolve/burnAway/noiseDissolveIn のノイズ閾値、glitch 系の RGB 分離、neonGlow/bloom、particles/shatter/stroke の各表現、scramble のランダム文字置換（現在はジッター＋点滅）、typewriter/strokeDrawOn のワイプは mesh の visibleFrac クリップで表現（stroke リボンは P7）
   - **deform**: hold の jelly/wobbleWarp/twist/breathing/melt は状態テクスチャ4行目（type/amount/time/param）に載せ、頂点シェーダで適用。複数の deform は先頭のみ（P7 で拡張）
   - **オーバーライド/キーフレーム**: `motion.applyOverrides` が cue→beat→line→word→letter を解決（親レベルは親中心まわりの回転、位置は加算、scale/opacity は乗算）。キーフレームは変換を加算・乗算、`<group>.params.*` は効果パラメータを置換、`color.fill` は `colorMix`（実色は P7）
-  - **vertical 自動判定**: `style.layout.type === 'vertical'` のとき scene を縦組みで作り直す（`scene.buildScene(project, beat, fonts, {direction})`）。縦フォーメーションは列を右→左、ASCII は `vertRotate` で 90° 回転
+  - **vertical 自動判定**: `style.layout.type === 'vertical'` のとき scene を縦組みで作り直す（`scene.buildScene(project, beat, fonts, {direction})`）。縦フォーメーションは列を右→左。**英語（および CJK 以外の文字）は縦書きにせず `vertRotate` で 90° 回転**し、列は upright 文字なら `size × lineHeight`、回転文字ならその文字の advance ずつ進む（縦中横は廃止、数字も回転）
 - **P7 のレンダリング（決定）**:
   - パイプラインは `gl/passes.js` の `createPipeline`（シェーダが1つでもコンパイル失敗したら `null` を返し、エンジンは P5 の簡易テキストパスへフォールバックする。フォールバックは表現/フィル/ポストなし）
   - **MRT**: テキストパスは `location=0` = premultiplied カラー、`location=1` = `(idLo, idHi, u, v)`。マスクはカラーの alpha。状態テクスチャは **5行**（仕様の4行＋P7 の `represent/reprProgress/colorMix/seed`）

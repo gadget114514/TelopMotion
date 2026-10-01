@@ -62,19 +62,43 @@
       const gap = (p.columnGap == null ? 1.2 : p.columnGap) * size;
       const lineAdvance = size * 1.15;
       const safeHeight = frame.height * (1 - SAFE * 2);
-      const perColumn = Math.max(1, Math.floor(safeHeight / lineAdvance));
-      const columns = Math.ceil(N / perColumn);
-      const result = [];
+      // An upright letter steps down the column by the em; a rotated one runs by
+      // its own advance, which is the glyph width now turned along the column.
+      const stepOf = (letter) => {
+        if (!letter || !letter.vertRotate) return lineAdvance;
+        const advance = Number(letter.advanceWithSpacing);
+        const width = Number.isFinite(advance) && advance > 0 ? advance : Number(letter.advance);
+        if (!Number.isFinite(width) || width <= 0) return lineAdvance;
+        return Math.min(Math.max(width, size * 0.2), lineAdvance * 1.5);
+      };
+      const rows = [];
+      let row = null;
+      let used = 0;
       for (let i = 0; i < N; i += 1) {
-        const column = Math.floor(i / perColumn);
-        const row = i % perColumn;
-        const columnLength = Math.min(perColumn, N - column * perColumn);
-        result.push({
-          x: ((columns - 1) / 2 - column) * gap,
-          y: row * lineAdvance - ((columnLength - 1) * lineAdvance) / 2,
-          rot: list[i].vertRotate ? 90 : 0,
-          scale: 1,
-        });
+        const step = stepOf(list[i]);
+        if (!row || used + step > safeHeight) {
+          row = { indices: [], used: 0 };
+          rows.push(row);
+          used = 0;
+        }
+        row.indices.push({ index: i, step, offset: used });
+        used += step;
+        row.used = used;
+      }
+      const columns = rows.length;
+      const result = new Array(N);
+      for (let c = 0; c < columns; c += 1) {
+        const current = rows[c];
+        for (const entry of current.indices) {
+          // centre the column on the same point the block is anchored at
+          const y = entry.offset + entry.step / 2 - current.used / 2;
+          result[entry.index] = {
+            x: ((columns - 1) / 2 - c) * gap,
+            y,
+            rot: list[entry.index].vertRotate ? 90 : 0,
+            scale: 1,
+          };
+        }
       }
       return result;
     }

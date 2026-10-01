@@ -26,6 +26,12 @@ SA.lyricsFont = (() => {
   const NO_LINE_END = '「『（【〔〈《';
   const VERTICAL_MAP = { '「': '﹁', '」': '﹂', '『': '﹃', '』': '﹄', '（': '︵', '）': '︶', '【': '︻', '】': '︼' };
   const VERTICAL_ROTATE = 'ー―〜…‥—';
+  // Latin, digits and the halfwidth ASCII punctuation have no vertical form:
+  // a tategaki column turns them 90° clockwise (what `writing-mode: vertical-rl`
+  // does) rather than stacking them upright one per line. CJK, kana and the
+  // fullwidth forms stay upright; the ranges cover Latin-1 / Latin Extended,
+  // Greek and Cyrillic, which are rotated for the same reason.
+  const VERTICAL_ROTATED_RE = /[\u0021-\u007e\u00a1-\u024f\u0370-\u03ff\u0400-\u04ff]/;
 
   const parsed = new Map();
   const pending = new Map();
@@ -481,6 +487,7 @@ SA.lyricsFont = (() => {
       return { char: character, rotated: true };
     }
     if (VERTICAL_ROTATE.includes(character)) return { char: character, rotated: true };
+    if (VERTICAL_ROTATED_RE.test(character)) return { char: character, rotated: true };
     if (character === '、' || character === '。') return { char: character, rotated: false, quadrant: true };
     return { char: character, rotated: false };
   }
@@ -823,15 +830,10 @@ SA.lyricsFont = (() => {
         if (word) outWords.push(word);
         word = { letters: [], width: 0, isSpace };
       }
-      const previous = word.letters.length ? word.letters[word.letters.length - 1] : null;
-      let advance = letter.advance + letterSpacing;
-      let x = columnX;
-      if (!letter.vertRotate && previous && /^[0-9]$/.test(previous.char) && /^[0-9]$/.test(letter.char)) {
-        previous.x = columnX - letter.size * 0.25;
-        x = columnX + letter.size * 0.25;
-        advance = 0;
-      }
-      letter.x = x;
+      // Every letter steps the column by its own advance: upright (CJK) by the
+      // em, a rotated one by the glyph width that now runs down the column.
+      const advance = letter.advance + letterSpacing;
+      letter.x = columnX;
       letter.y = pen;
       letter.advanceWithSpacing = advance;
       pen += advance;
