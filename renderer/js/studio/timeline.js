@@ -848,10 +848,13 @@ SA.timeline = (() => {
     // the background track also owns the frame base colour: a set colour keeps
     // the track "visible" even without layers (the header shows a swatch)
     const baseColor = !foreground && row.track && row.track.color ? (typeof row.track.color === 'string' ? row.track.color : row.track.color.value) : null;
+    // ... and the background clips the auto direction places on it: they are
+    // content of the same track, so the header checkbox has to count them too
+    const clips = foreground ? [] : clipsOnTrack(project(), row.trackId);
     if (row.first) {
       drawTrackHeader(row, trackTitle(row.track), {
         color: foreground ? '#4dc8a0' : '#4d8fc8',
-        hidden: trackHidden(row.track) || !(anyEnabled || !!baseColor),
+        hidden: trackHidden(row.track) || !(anyEnabled || !!baseColor || clips.length > 0),
         swatch: baseColor,
       });
     }

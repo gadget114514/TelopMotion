@@ -259,11 +259,27 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   // the background clip is visible on its own lane and can be selected
   click(210, clipLaneCenter);
   assert.deepEqual(store.state.selection.paths, ['clip:bgclip'], 'the background clip is selectable');
+  // the header checkbox must reflect that the clips count as track content:
+  // green (drawn) while the track is visible, grey once it is hidden
+  const context = canvas.getContext('2d');
+  const boxes = [];
+  context.rect = (x, y, w, h) => {
+    if (Math.abs(w - 9) < 0.01 && Math.abs(h - 9) < 0.01) boxes.push({ color: context.strokeStyle, y });
+  };
+  const boxColor = () => {
+    boxes.length = 0;
+    timeline.draw();
+    const box = boxes.find((entry) => Math.abs(entry.y - (bgLayerCenter - 4.5)) < 0.01);
+    return box ? box.color : null;
+  };
+  assert.equal(boxColor(), '#4dc8a0', 'the background clips keep the checkbox checked');
   // the checkbox hides the whole track: its clips and its layers
   click(80, bgLayerCenter);
   assert.equal(bg().hidden, true, 'the checkbox sets the hidden flag');
+  assert.equal(boxColor(), '#6b7386', 'a hidden track draws an unchecked box');
   click(80, bgLayerCenter);
   assert.equal(!!bg().hidden, false, 'clicking again shows the track');
+  assert.equal(boxColor(), '#4dc8a0', 'the checkbox reports the track visible again');
 });
 
 test('dragging on a figure track creates a clip', () => {
