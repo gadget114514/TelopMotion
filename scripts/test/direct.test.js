@@ -19,6 +19,8 @@ for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 
 const SA = {
   fx,
   rng: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'rng.js')),
+  audioDriver: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'audio-driver.js')),
+  sections: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'sections.js')),
   color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
   moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
   weird: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'weird.js')),
@@ -34,6 +36,7 @@ const SA = {
   fillerRender: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js')),
   fillerPresets: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-presets.js')),
   compositions: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'compositions.js')),
+  audioAnalysis: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'audio-analysis.js')),
   genres: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'genres.js')),
   random: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'random.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
@@ -267,6 +270,204 @@ test('the run is deterministic for one seed', () => {
   const first = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
   const second = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
   assert.deepEqual(outputOf(first), outputOf(second));
+});
+
+// ---------------------------------------------------------------------------
+// section awareness (direct side)
+//
+// `prepare` only plans the blocks when the caller passes `sections`, so the
+// w=0 snapshot above still holds; a run without the option must stay identical.
+
+const SECTIONS = { gap: 2, maxCues: 4, strength: 1 };
+
+// Two seconds of analysis at 30 fps: the loud half sits where `loudSecond` says.
+function fakeAnalysis(loudSecond) {
+  const frames = [];
+  for (let i = 0; i < 60; i += 1) {
+    const loud = loudSecond ? i >= 30 : i < 30;
+    frames.push({ rms: loud ? 0.5 : 0, bands: new Float32Array(128), wave: new Float32Array(4) });
+  }
+  return { fps: 30, frameCount: frames.length, frames };
+}
+
+test('without the sections option the run keeps its exact output', () => {
+  const plain = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
+  const withoutProfile = (doc) => {
+    const out = outputOf(doc);
+    delete out.styleMode;
+    return out;
+  };
+  // `sections: false` / `sections: {}` (no cues in scope) must not add a plan
+  const off = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { sections: false });
+  assert.deepEqual(withoutProfile(off), withoutProfile(plain));
+  assert.equal(prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE).sections, null);
+  assert.equal(prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { sections: false }).sections, null);
+});
+
+test('a section-aware run plans the blocks and stores them on the project', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { sections: SECTIONS });
+  assert.ok(Array.isArray(ctx.sections) && ctx.sections.length >= 2, `sections ${ctx.sections && ctx.sections.length}`);
+  // every cue belongs to exactly one block, and the blocks cover the run in order
+  const seen = new Set();
+  let at = 0;
+  for (const section of ctx.sections) {
+    assert.ok(section.cueIds.length >= 1, 'a block is never empty');
+    for (const cueId of section.cueIds) {
+      assert.ok(!seen.has(cueId), `${cueId} is in two blocks`);
+      seen.add(cueId);
+      assert.equal(ctx.sectionOf[cueId], section);
+    }
+    assert.ok(section.start >= at - 1e-9, `block ${section.index} starts before the previous one ends`);
+    at = section.end;
+  }
+  assert.deepEqual([...seen], doc.script.cues.map((cue) => cue.id), 'every cue is covered');
+  // the fixture's cue gaps: 0.5, 1.8, 1.8, 2.6 -> only the last one is a boundary
+  assert.deepEqual(ctx.sections[0].cueIds, ['c1', 'c2', 'c3', 'c4']);
+  assert.deepEqual(ctx.sections[1].cueIds, ['c5']);
+  assert.equal(ctx.sectionConfig.gap, 2);
+  assert.equal(ctx.sectionConfig.maxCues, 4);
+  assert.equal(ctx.sectionConfig.strength, 1);
+  SA.direct.run(doc, ctx);
+  const saved = doc.styleMode.sections;
+  assert.ok(saved && Array.isArray(saved.list), 'the plan is stored for the re-rolls');
+  assert.equal(saved.gap, 2);
+  assert.equal(saved.list.length, ctx.sections.length);
+  for (const entry of saved.list) {
+    assert.ok(Number.isFinite(entry.boost), 'the boost is stored');
+    assert.equal(typeof entry.chorus, 'boolean');
+    assert.ok(Array.isArray(entry.cueIds) && entry.cueIds.length);
+  }
+  // a run without the option clears the plan again (no stale blocks)
+  runOn(doc, FIXTURE);
+  assert.equal(doc.styleMode.sections, undefined);
+});
+
+test('the section-aware run is deterministic and pinned values survive the boost', () => {
+  const first = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { sections: SECTIONS, params: { tiltChance: 0.42 } });
+  const second = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { sections: SECTIONS, params: { tiltChance: 0.42 } });
+  assert.deepEqual(outputOf(first), outputOf(second));
+  // the pinned value is the same in every block (resolve is pure)
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { sections: SECTIONS, params: { tiltChance: 0.42 } });
+  assert.ok(ctx.sections.length >= 1);
+  for (const section of ctx.sections) assert.equal(section.params.tiltChance, 0.42, `block ${section.index} lost the pin`);
+  // the boost lifts the derived chances of the loud block only
+  const boosted = ctx.sections.filter((section) => section.boost > 0);
+  for (const section of boosted) {
+    assert.ok(section.params.motionChance >= ctx.params.motionChance, `block ${section.index} motion`);
+    assert.ok(section.axes.weird > ctx.rawW, `block ${section.index} weird`);
+    assert.ok(section.axes.weird <= 1, 'the boost never passes the axis');
+  }
+  for (const section of ctx.sections.filter((entry) => entry.boost === 0)) {
+    assert.equal(section.params, ctx.params, 'a zero boost reuses the song profile');
+  }
+});
+
+test('weird 0 gives every block no boost at all', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { sections: SECTIONS });
+  assert.ok(ctx.sections.length >= 2, 'the blocks are still named');
+  assert.equal(ctx.rawW, 0);
+  for (const section of ctx.sections) {
+    assert.equal(section.boost, 0, `block ${section.index} boosted without the axis`);
+    assert.equal(section.params, ctx.params);
+    assert.equal(section.axes, ctx.axes);
+  }
+});
+
+test('the strength dial only scales the boost', () => {
+  const axes = { ...FIXTURE.axes, weird: 0.5 };
+  const at = (strength) => prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { axes, sections: { ...SECTIONS, strength } }).sections;
+  const base = at(1);
+  for (const section of at(0)) assert.equal(section.boost, 0, 'strength 0 never boosts');
+  for (const section of at(2)) {
+    const plain = base.find((entry) => entry.index === section.index);
+    assert.ok(section.boost >= plain.boost, `block ${section.index} got weaker with a higher strength`);
+  }
+});
+
+test('a chorus block leans harder on the axis than the quiet one', () => {
+  // The fixture runs 26 s, so the analysis is stretched to cover it: the first
+  // half is the loud one and the last cue sits in the quiet half.
+  const analysis = fakeAnalysis(false);
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, analysis, sections: SECTIONS });
+  assert.equal(ctx.sections.length, 2);
+  const [first, second] = ctx.sections;
+  assert.ok(first.energy > second.energy, `energy ${first.energy} vs ${second.energy}`);
+  assert.equal(first.chorus, true, 'the loud block is the chorus');
+  assert.equal(second.chorus, false);
+  assert.ok(first.boost > second.boost, `boost ${first.boost} vs ${second.boost}`);
+  // the chorus takes the stronger chances
+  for (const key of ['motionChance', 'holdChance', 'accentColorChance', 'gradientColorChance', 'fillEffectChance', 'fgVivid']) {
+    assert.ok(first.params[key] > second.params[key], `${key}: ${first.params[key]} vs ${second.params[key]}`);
+  }
+  for (const key of ['heroScale', 'figureDensity', 'sizeChange']) {
+    assert.ok(first.params[key] >= second.params[key], `${key}: ${first.params[key]} vs ${second.params[key]}`);
+  }
+});
+
+test('a block boundary always moves the palette, whatever the switch dice says', () => {
+  // paletteSwitchChance 0: only a block boundary may change the cue palette
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { sections: SECTIONS, params: { paletteSwitchChance: 0 } });
+  const cues = doc.script.cues;
+  const themeColors = ctx.themeStyle.palette.colors;
+  const drawn = cues.map((cue) => {
+    const palette = SA.direct.cuePalette(doc, cue, cues.indexOf(cue), ctx, null);
+    return palette ? palette.colors : null;
+  });
+  // the first cue is the head of its block, so it draws; nothing else may
+  assert.ok(drawn[0], 'the opening cue of a block draws a palette');
+  assert.equal(drawn[1], null, 'a cue inside a block keeps the base palette');
+  assert.equal(drawn[2], null);
+  assert.equal(drawn[3], null);
+  assert.ok(drawn[4], 'the cue that opens the second block draws a palette');
+  // and the drawn palette really moves away from the base colours
+  assert.notDeepEqual(drawn[0], themeColors);
+  assert.notDeepEqual(drawn[4], themeColors);
+  // without sections the same dice keeps every cue on the base palette
+  const plain = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, { params: { paletteSwitchChance: 0 } });
+  for (const cue of cues) assert.equal(SA.direct.cuePalette(doc, cue, cues.indexOf(cue), plain, null), null);
+});
+
+test('a section-aware run stays legible in compose mode', () => {
+  for (const seed of [4242, 777]) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, seed, compose: true, sections: SECTIONS });
+    SA.direct.run(doc, ctx);
+    for (const cue of doc.script.cues) {
+      const colors = (SA.project.resolveStyle(doc, `cue:${cue.id}`).palette || {}).colors || [];
+      for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+        const resolved = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+        const report = SA.legibility.check(resolved, { palette: colors, motion: false });
+        assert.ok(report.ok, `seed ${seed} ${beat.id}: ${JSON.stringify(report.reasons)}`);
+      }
+    }
+  }
+});
+
+test('restoreSections rebuilds the stored plan for a re-roll', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 0.6 }, sections: SECTIONS, params: { tiltChance: 0.42 } });
+  SA.direct.run(doc, ctx);
+  const saved = doc.styleMode.sections;
+  // a re-roll has no music: the stored boosts are what the blocks draw with
+  const restored = SA.direct.restoreSections(
+    { axes: ctx.axes, rawW: ctx.rawW, w: ctx.w, energy: ctx.energy, params: ctx.params, paramsSource: ctx.paramsSource, seed: ctx.seed },
+    saved
+  );
+  assert.ok(restored && restored.list.length === ctx.sections.length);
+  assert.equal(restored.gap, saved.gap);
+  assert.equal(restored.maxCues, saved.maxCues);
+  for (const [i, section] of restored.list.entries()) {
+    assert.equal(section.boost, saved.list[i].boost, `block ${i} boost`);
+    assert.deepEqual(section.cueIds, saved.list[i].cueIds);
+    assert.equal(section.params.tiltChance, 0.42, `block ${i} lost the pin`);
+  }
+  assert.equal(SA.direct.restoreSections({ axes: ctx.axes, rawW: ctx.rawW }, null), null);
+  assert.equal(SA.direct.restoreSections({ axes: ctx.axes, rawW: ctx.rawW }, { list: [] }), null);
 });
 
 test('generated clips carry auto: true and re-runs replace only those', () => {

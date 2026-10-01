@@ -1107,6 +1107,9 @@
       params: opts.params,
       typeWeights: opts.typeWeights,
       usePalettes: opts.usePalettes,
+      // section following is off unless the dialog asked for it (a plain
+      // "random look" keeps the classic one-axes-for-the-song run)
+      sections: opts.sections ? { gap: opts.sections.gap, maxCues: opts.sections.maxCues, strength: opts.sections.strength } : null,
     });
     store.dispatch({
       label: 'auto direct',
@@ -1131,6 +1134,12 @@
     const resolvedProfile = SA.genParams ? SA.genParams.resolve({ axes: (doc.styleMode && doc.styleMode.axes) || {} }) : null;
     const sizeCenter = resolvedProfile && resolvedProfile.sizeCenter != null ? resolvedProfile.sizeCenter : 0.6;
     let sizeTouched = false;
+    // section following: on by default in the dialog, but a run only follows the
+    // sections when it is asked to (autoDirect defaults to off)
+    const savedSections = (doc.styleMode && doc.styleMode.sections) || null;
+    const sectionGap = savedSections && Number(savedSections.gap) > 0 ? Number(savedSections.gap) : SA.sections ? SA.sections.DEFAULT_GAP : 2;
+    const sectionMaxCues = savedSections && Number(savedSections.maxCues) > 0 ? Number(savedSections.maxCues) : SA.sections ? SA.sections.DEFAULT_MAX_CUES : 4;
+    const sectionStrength = savedSections && Number(savedSections.strength) > 0 ? Number(savedSections.strength) : 1;
     dialog.innerHTML = `
       <h3>${t('studio.genres.title')}</h3>
       <div class="field"><span>${t('studio.genres.pick')}</span>
@@ -1158,12 +1167,36 @@
         <input type="range" min="0" max="1" step="0.05" data-field="size-center" value="${sizeCenter}">
         <span class="axis-value" data-field="size-center-value">${Number(sizeCenter).toFixed(2)}</span>
       </label>
+      <label class="axis-row"><span>${t('studio.genres.sections.title')}</span>
+        <input type="checkbox" data-field="sections" checked>
+      </label>
+      <div class="insp-inherit axis-hint">${t('studio.genres.sections.hint')}</div>
+      <label class="axis-row" data-sections-only><span>${t('studio.genres.sections.gap')}</span>
+        <input type="range" min="0.5" max="6" step="0.1" data-field="sections-gap" value="${sectionGap}">
+        <span class="axis-value" data-field="sections-gap-value">${sectionGap.toFixed(1)}</span>
+      </label>
+      <label class="axis-row" data-sections-only><span>${t('studio.genres.sections.maxCues')}</span>
+        <input type="range" min="2" max="8" step="1" data-field="sections-max" value="${sectionMaxCues}">
+        <span class="axis-value" data-field="sections-max-value">${sectionMaxCues}</span>
+      </label>
+      <label class="axis-row" data-sections-only><span>${t('studio.genres.sections.strength')}</span>
+        <input type="range" min="0" max="2" step="0.05" data-field="sections-strength" value="${sectionStrength}">
+        <span class="axis-value" data-field="sections-strength-value">${sectionStrength.toFixed(2)}</span>
+      </label>
       <div class="dialog-actions">
         <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
         <button type="button" class="btn btn-primary" data-action="apply">${t('studio.random.apply')}</button>
       </div>`;
     el.dialogRoot.appendChild(dialog);
     el.dialogRoot.hidden = false;
+    // the section sliders only exist while the checkbox is on
+    const sectionRows = Array.from(dialog.querySelectorAll('[data-sections-only]'));
+    const sectionsInput = dialog.querySelector('[data-field="sections"]');
+    const syncSections = () => {
+      for (const row of sectionRows) row.hidden = !sectionsInput.checked;
+    };
+    sectionsInput.addEventListener('change', syncSections);
+    syncSections();
     const weirdInput = dialog.querySelector('[data-field="weird"]');
     weirdInput.addEventListener('input', () => {
       dialog.querySelector('[data-field="weird-value"]').textContent = Number(weirdInput.value).toFixed(2);
@@ -1181,6 +1214,18 @@
       sizeTouched = true;
       dialog.querySelector('[data-field="size-center-value"]').textContent = Number(sizeInput.value).toFixed(2);
     });
+    const sectionGapInput = dialog.querySelector('[data-field="sections-gap"]');
+    sectionGapInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="sections-gap-value"]').textContent = Number(sectionGapInput.value).toFixed(1);
+    });
+    const sectionMaxInput = dialog.querySelector('[data-field="sections-max"]');
+    sectionMaxInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="sections-max-value"]').textContent = String(Math.round(Number(sectionMaxInput.value)));
+    });
+    const sectionStrengthInput = dialog.querySelector('[data-field="sections-strength"]');
+    sectionStrengthInput.addEventListener('input', () => {
+      dialog.querySelector('[data-field="sections-strength-value"]').textContent = Number(sectionStrengthInput.value).toFixed(2);
+    });
     dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
       el.dialogRoot.hidden = true;
     });
@@ -1193,6 +1238,13 @@
         smartness: Number(smartInput.value),
         fear: Number(fearInput.value),
         params: sizeTouched ? { sizeCenter: Number(sizeInput.value) } : undefined,
+        sections: sectionsInput.checked
+          ? {
+              gap: Number(sectionGapInput.value),
+              maxCues: Math.round(Number(sectionMaxInput.value)),
+              strength: Number(sectionStrengthInput.value),
+            }
+          : null,
       });
     });
   }

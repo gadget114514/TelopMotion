@@ -26,6 +26,18 @@
   // spec's opacity (a dimmed shape still sits over the text), so a figure that
   // cannot stay clear is dropped instead of dimmed over the subtitle.
   const AUTO_FIGURE_CLEAR = 0.05;
+  // How far a chorus may out-shout the rest of the song: a share of the weird
+  // axis on top of its own loudness (see planSections).
+  const CHORUS_BOOST = 0.3;
+  // The energy axis follows a section's boost at this share, so a loud block
+  // also wants more motion (the size curve and the figure density read it).
+  const SECTION_ENERGY = 0.35;
+
+  function clamp01(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number)) return 0;
+    return Math.max(0, Math.min(1, number));
+  }
 
   function pick(random, list) {
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
@@ -107,6 +119,160 @@
     const tempo = bpm >= 70 ? Math.max(0, Math.min(1, (bpm - 70) / 60)) : 0;
     const onset = Math.max(0, Math.min(1, onsets / 4));
     return Math.max(0, Math.min(1, 0.2 + 0.5 * tempo + 0.4 * onset + 0.25 * energy));
+  }
+
+  // ---------------------------------------------------------------------------
+  // Section awareness
+  // ---------------------------------------------------------------------------
+  //
+  // The cue list is a flat run, so the run that draws it is flat too: one set of
+  // axes for the whole song. `SA.sections.detect` names the blocks (a silence, or
+  // a pseudo-split of a lyric wall) and every block may then carry its own
+  // profile: the loud ones (and the chorus) lean on a stronger weird / energy,
+  // every block draws its staging from its own stream and its boundary always
+  // moves the palette.
+  //
+  // The boost is a share of the weird axis' own headroom (1 - raw), so it can
+  // never push a song past the axis the user picked, and it is 0 when the axis
+  // is 0: a plain run keeps the classic profile everywhere, and only the block
+  // switches (palette / staging) remain.
+  //
+  // The block's boost: `rawW * (0.3 + 0.7 * energy)` of the axis' headroom,
+  // plus a chorus bonus. No music means no energy and no chorus bonus, so a
+  // section-aware run without audio still switches blocks but never boosts.
+  // `strength` is the dialog's dial (0 = no boost at all, 1 = the formula).
+  function boostOf(entry, rawW, strength) {
+    const headroom = Math.max(0, 1 - rawW);
+    const energy = entry.energy == null ? null : clamp01(entry.energy);
+    let value = rawW * (0.3 + 0.7 * (energy == null ? 0.5 : energy));
+    if (entry.chorus && energy != null) value += CHORUS_BOOST * rawW;
+    return Math.round(headroom * Math.min(1, Math.max(0, value * strength)) * 1e4) / 1e4;
+  }
+
+  // The section entry a run hands to the cue / beat draws. A zero boost reuses
+  // the song's own objects, so the classic path is untouched by identity, not
+  // only by value. The ctx needs `axes`, `rawW`, `w`, `energy`, `params`,
+  // `paramsSource` and `seed`.
+  function sectionEntry(ctx, entry, boost) {
+    const rawW = Number(ctx.rawW) || 0;
+    const lifted = boost > 0;
+    const axes = lifted ? { ...ctx.axes, weird: Math.min(1, rawW + boost), energy: clamp01(ctx.energy + SECTION_ENERGY * boost) } : ctx.axes;
+    return {
+      index: Number(entry.index) || 0,
+      cueIds: Array.isArray(entry.cueIds) ? entry.cueIds : [],
+      start: Number(entry.start) || 0,
+      end: Number(entry.end) || 0,
+      energy: entry.energy == null ? null : Number(entry.energy),
+      chorus: !!entry.chorus,
+      boost,
+      axes,
+      w: lifted ? SA.moods.textWeirdOf(axes) : ctx.w,
+      rawW: lifted ? axes.weird : rawW,
+      params: lifted ? SA.genParams.resolve({ axes, params: ctx.paramsSource || {} }) : ctx.params,
+      // the staging salt: one draw per block, so a block of cues shares a
+      // staging tendency and the next block moves on
+      salt: Math.floor(SA.rng.rngFor(ctx.seed, 'section', entry.index)() * 1e6),
+    };
+  }
+
+  function planSections(ctx, cues, options) {
+    const opts = options || {};
+    if (!SA.sections || typeof SA.sections.detect !== 'function') return null;
+    const detected = SA.sections.detect(cues, { analysis: ctx.analysis, gap: opts.gap, maxCues: opts.maxCues });
+    if (!detected.length) return null;
+    return assembleSections(ctx, detected, opts.strength, opts);
+  }
+
+  // The blocks of a run, indexed by cue. `strength` scales the boost.
+  function assembleSections(ctx, entries, strength, config) {
+    const value = Number(strength);
+    const scale = Number.isFinite(value) ? Math.max(0, value) : 1;
+    const list = [];
+    const sectionOf = {};
+    for (const entry of entries) {
+      const section = sectionEntry(ctx, entry, boostOf(entry, Number(ctx.rawW) || 0, scale));
+      list.push(section);
+      for (const cueId of section.cueIds) sectionOf[cueId] = section;
+    }
+    return {
+      gap: config && config.gap != null ? config.gap : SA.sections.DEFAULT_GAP,
+      maxCues: config && config.maxCues != null ? config.maxCues : SA.sections.DEFAULT_MAX_CUES,
+      strength: scale,
+      list,
+      sectionOf,
+    };
+  }
+
+  // The saved plan of a run, rebuilt for a re-roll: the run stored the blocks
+  // with their boost and staging salt, so a re-rolled cue / beat keeps its own
+  // block's profile without the music (and without measuring it again). Returns
+  // null when the run had no sections.
+  function restoreSections(ctx, saved) {
+    const list = saved && Array.isArray(saved.list) ? saved.list : null;
+    if (!list || !list.length) return null;
+    const out = [];
+    const sectionOf = {};
+    for (const entry of list) {
+      const boost = entry.boost == null ? boostOf(entry, Number(ctx.rawW) || 0, 1) : clamp01(Number(entry.boost));
+      const section = sectionEntry(ctx, entry, boost);
+      if (entry.salt != null) section.salt = Number(entry.salt) || 0;
+      out.push(section);
+      for (const cueId of section.cueIds) sectionOf[cueId] = section;
+    }
+    const strength = Number(saved.strength);
+    return {
+      gap: saved.gap == null ? SA.sections.DEFAULT_GAP : saved.gap,
+      maxCues: saved.maxCues == null ? SA.sections.DEFAULT_MAX_CUES : saved.maxCues,
+      strength: strength > 0 ? strength : 1,
+      list: out,
+      sectionOf,
+    };
+  }
+
+  // The section a cue belongs to (null when the run does not follow sections).
+  function sectionOf(ctx, cueId) {
+    if (!ctx || !ctx.sectionOf) return null;
+    return ctx.sectionOf[cueId] || null;
+  }
+
+  // The profile one cue draws with: its section's boosted copy, or the song's
+  // own. A pinned value keeps its number (resolve is pure), and a run without
+  // sections hands back `ctx.params` itself.
+  function paramsFor(ctx, cueId) {
+    const own = ctx ? ctx.params : null;
+    const section = sectionOf(ctx, cueId);
+    return (section && section.params) || own;
+  }
+
+  // The axes / weird channels one cue draws with (see paramsFor).
+  function axesFor(ctx, cueId) {
+    const section = sectionOf(ctx, cueId);
+    return (section && section.axes) || (ctx && ctx.axes);
+  }
+
+  function rawWFor(ctx, cueId) {
+    const section = sectionOf(ctx, cueId);
+    return section && section.rawW != null ? section.rawW : (ctx && ctx.rawW) || 0;
+  }
+
+  function wFor(ctx, cueId) {
+    const section = sectionOf(ctx, cueId);
+    return section && section.w != null ? section.w : (ctx && ctx.w) || 0;
+  }
+
+  // A cue that opens a section always moves the palette, whatever the
+  // paletteSwitchChance dice says.
+  function opensSection(ctx, cueId) {
+    const section = sectionOf(ctx, cueId);
+    return !!(section && section.cueIds[0] === cueId);
+  }
+
+  // The staging seed of one draw: its classic value plus its block's salt, so a
+  // block shares a staging tendency. Without sections the salt is 0 and every
+  // seed stays the classic one.
+  function stagingSeed(ctx, base, cueId) {
+    const section = sectionOf(ctx, cueId);
+    return section ? base + section.salt : base;
   }
 
   // Common preparation: the axes, the size band, the palette and the accent
@@ -212,6 +378,13 @@
         })),
       });
     }
+    // Section awareness (next to the rhythm plan): the blocks of the cue list,
+    // each with the profile its loudness asks for. Off unless the caller passes
+    // `sections`, so an existing project keeps its output byte for byte.
+    const sectionOpts = opts.sections ? (typeof opts.sections === 'object' && opts.sections ? opts.sections : {}) : null;
+    const sectionPlan = sectionOpts && doc && doc.script && Array.isArray(doc.script.cues) && doc.script.cues.length
+      ? planSections({ axes, rawW, w, params, paramsSource, energy, analysis, seed: opts.seed }, doc.script.cues, sectionOpts)
+      : null;
     return {
       axes,
       w,
@@ -233,6 +406,14 @@
       bpm,
       beatFit,
       rhythm,
+      // the manual profile the section boost re-resolves from (never the
+      // already resolved `params`: that would pin every derived value)
+      paramsSource,
+      // the blocks of the run (null unless the caller asked for sections: the
+      // re-roll path rebuilds them from styleMode.sections with restoreSections)
+      sections: sectionPlan ? sectionPlan.list : null,
+      sectionConfig: sectionPlan ? { gap: sectionPlan.gap, maxCues: sectionPlan.maxCues, strength: sectionPlan.strength } : null,
+      sectionOf: sectionPlan ? sectionPlan.sectionOf : null,
       portrait,
       frameW,
       frameH,
@@ -285,7 +466,11 @@
   // repeat, clones) plus the fallback entrance/exit when the run has no drawn
   // look. Beat-level work is directBeat.
   function directCue(projectDoc, cue, cueIndex, ctx) {
-    const { w, axes, seed, genre, direction, themeStyle, cueLooks, look } = ctx;
+    const { seed, genre, direction, themeStyle, cueLooks, look } = ctx;
+    // the cue's own section view: a block of a section-aware run draws with the
+    // block's profile, staging stream and weird channels
+    const axes = axesFor(ctx, cue.id);
+    const w = wFor(ctx, cue.id);
     if (!ctx.compose && cueLooks[cue.id]) {
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, JSON.parse(JSON.stringify(cueLooks[cue.id].style)));
     }
@@ -308,7 +493,7 @@
       // font, repeat and clones. The draws are seeded per cue, so a seed
       // reproduces them and weird 0 consumes none of them. The thresholds are
       // the profile's chances (their derived values are the old literals).
-      const p = ctx.params;
+      const p = paramsFor(ctx, cue.id);
       const cr = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'weird-cue');
       const own = () => projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
       // location (G8): nudge the anchor and sometimes let it float
@@ -348,8 +533,9 @@
       // value), so weird 0 stays untouched.
       ctx.cueContext = cueContext;
       const colors = ctx.cuePaletteColors || baseColors;
+      const cueParams = paramsFor(ctx, cue.id);
       const fr = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'foreground');
-      const foreground = foregroundFor(fr, ctx, colors);
+      const foreground = foregroundFor(fr, ctx, colors, cueParams, cue.id);
       if (foreground) {
         if (foreground.fill) {
           const own = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
@@ -357,7 +543,7 @@
         }
         if (foreground.color) ctx.cueForeground[cue.id] = foreground;
       }
-      const params = ctx.params || {};
+      const params = cueParams || {};
       if (params.boldChance > 0) {
         const br = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'bold');
         if (br() < params.boldChance) ctx.cueBold[cue.id] = true;
@@ -388,7 +574,7 @@
         const repeatRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'repeat');
         if (SA.random && SA.random.repeatPatch && gp.roll(repeatRandom, params.repeatChance)) {
           const merged = { ...themeStyle, ...own() };
-          const repeat = SA.random.repeatPatch(repeatRandom, { ...cueContext, weird: ctx.w });
+          const repeat = SA.random.repeatPatch(repeatRandom, { ...cueContext, weird: w });
           if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) {
             own().repeat = repeat;
             ctx.cueRepeat[cue.id] = repeat;
@@ -396,7 +582,7 @@
         }
         // clones (G3)
         const clonesRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'clones');
-        if (gp.roll(clonesRandom, params.clonesChance)) own().clones = clonesFor(clonesRandom, ctx.w);
+        if (gp.roll(clonesRandom, params.clonesChance)) own().clones = clonesFor(clonesRandom, w);
         // text background: pinned profile values win, otherwise the genre's
         // own tables, otherwise the derived defaults. The draw happens inside
         // applyGenreBackground on this cue's own stream.
@@ -420,13 +606,13 @@
     if (!look) {
       const generated = SA.moods.generate({
         axes,
-        seed: seed + cueIndex * 131 + 1,
+        seed: stagingSeed(ctx, seed + cueIndex * 131 + 1, cue.id),
         direction,
         genre,
         context: cueContext,
         emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
         typeWeights: ctx.typeWeights,
-        params: ctx.params || null,
+        params: paramsFor(ctx, cue.id) || null,
       }).style;
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
         enter: generated.enter,
@@ -565,6 +751,8 @@
   // time/weight so far (ties at random), never the previous one. Without
   // weights / center the weights are all 1 and the pick is exactly the old
   // least-screen-time draw. change 0 returns baseSize and draws no random.
+  // `choose` may pass its own `change`, which is how a section-aware run gives
+  // every block its own size change rate.
   function createSizeLadder(options) {
     const change = Math.max(0, Math.min(1, Number(options.change) || 0));
     const baseSize = Number(options.baseSize) || 96;
@@ -591,8 +779,9 @@
       spent += d;
       count += 1;
     }
-    function choose({ duration, range, prev, avoid, centerShift }) {
-      if (change <= 0) return { px: baseSize, level: null };
+    function choose({ duration, range, prev, avoid, centerShift, change: ownChange }) {
+      const rate = ownChange == null ? change : Math.max(0, Math.min(1, Number(ownChange) || 0));
+      if (rate <= 0) return { px: baseSize, level: null };
       const levels = sizeLevels(range);
       const weights = weightsFor(centerShift);
       let level;
@@ -602,7 +791,7 @@
         // most likely level instead
         level = weights ? weights.indexOf(Math.max(...weights)) : nearestLevel(levels, baseSize);
         px = levels[level];
-      } else if (random() >= change) {
+      } else if (random() >= rate) {
         if (weights && prev.level != null) {
           // keep the level, so a narrow curve (e.g. the largest size only) holds
           // on every beat even when the range differs
@@ -655,9 +844,17 @@
 
   // The ladder pick for one beat in song order: the caller's `ctx.sizePrev` is
   // the previous beat's pick. `centerShift` moves this beat's curve with the
-  // music (the beat's energy against the song average).
-  function ladderPx(ctx, beat, range, centerShift) {
-    const pick = ctx.sizeLadder.choose({ duration: beat.end - beat.start, range, prev: ctx.sizePrev, centerShift });
+  // music (the beat's energy against the song average). A section-aware run
+  // passes its cue id, so the block's own size change rate applies.
+  function ladderPx(ctx, beat, range, centerShift, cueId) {
+    const own = cueId ? paramsFor(ctx, cueId) : null;
+    const pick = ctx.sizeLadder.choose({
+      duration: beat.end - beat.start,
+      range,
+      prev: ctx.sizePrev,
+      centerShift,
+      change: own ? own.sizeChange : undefined,
+    });
     ctx.sizePrev = pick;
     return pick.px;
   }
@@ -738,26 +935,38 @@
   // visible. Returns the drawn palette (without the `auto` marker) or null.
   // The keep roll stays `random() < 1 - switchChance`, the exact form the old
   // keep-the-base draw used, so a seed switches the same cues as before.
+  //
+  // A section-aware run adds one rule on top: a cue that opens a section always
+  // moves, whatever the dice says (a block that starts on the old palette would
+  // read as no change at all). The dice is not drawn on such a cue, so the rest
+  // of the run keeps its stream, and the boundary switch works at weird 0 too -
+  // that is the plainest way to follow the sections.
   function cuePalette(projectDoc, cue, cueIndex, ctx, prevColors) {
-    const switchChance = ctx.params ? ctx.params.paletteSwitchChance : 0;
-    if (!(switchChance > 0) || !cue || !SA.moods || !SA.rng) return null;
+    const boundary = cue ? opensSection(ctx, cue.id) : false;
+    const p = paramsFor(ctx, cue && cue.id);
+    const switchChance = p ? p.paletteSwitchChance : 0;
+    if ((!(switchChance > 0) && !boundary) || !cue || !SA.moods || !SA.rng) return null;
     const baseColors = (ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [];
     if (!baseColors.length || typeof SA.moods.generatePalette !== 'function') return null;
     const random = SA.rng.rngFor(ctx.seed + cueIndex * 131, cue.id, 'cue-palette');
-    if (random() < 1 - switchChance) return null;
+    if (!boundary && random() < 1 - switchChance) return null;
     const avoid = [baseColors];
     if (Array.isArray(prevColors) && prevColors.length) avoid.push(prevColors);
+    // the section view: a chorus draws a louder, more saturated palette and asks
+    // for a higher text / background contrast
+    const rawW = rawWFor(ctx, cue.id);
+    const axes = axesFor(ctx, cue.id);
     // the profile's use-palettes replace the on-the-fly generation entirely
     const usePalettes = Array.isArray(ctx.usePalettes) ? ctx.usePalettes : [];
     if (usePalettes.length && typeof pickUsePalette === 'function') {
-      const picked = pickUsePalette(random, usePalettes, avoid, ctx.rawW);
+      const picked = pickUsePalette(random, usePalettes, avoid, rawW);
       if (picked) return picked;
     }
     const genre = ctx.genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(ctx.genre) : null;
     let best = null;
     let bestScore = -1;
     for (let i = 0; i < 3; i += 1) {
-      const candidate = SA.moods.generatePalette(random, ctx.axes, null, genre && genre.palettes);
+      const candidate = SA.moods.generatePalette(random, axes, null, genre && genre.palettes);
       if (!candidate || !Array.isArray(candidate.colors) || !candidate.colors.length) continue;
       const score = Math.min(...avoid.map((colors) => paletteDistance(candidate.colors, colors)));
       if (score > bestScore) {
@@ -879,10 +1088,10 @@
   // Returns an edge stack for `cueStyles[id].edge` or null (keep the theme's
   // own edge). A cue whose backdrop paints two or more planes always gets a
   // separation outline when the draw picked `none` — unless the user pinned
-  // the decoration keys themselves.
-  function decorationFor(random, ctx, colors, planeCount) {
+  // the decoration keys themselves. `cueId` gives the draw its section profile.
+  function decorationFor(random, ctx, colors, planeCount, cueId) {
     const genParams = SA.genParams;
-    const params = ctx.params;
+    const params = paramsFor(ctx, cueId);
     if (!genParams || !params) return null;
     const profile = { typeWeights: ctx.typeWeights };
     const weights = {};
@@ -935,7 +1144,7 @@
         return [instanceOf('multiLine', { count: 2, width: 2.5, gap: 3, colorRule: 'alternate', colorA: edgeRef, colorB: textFill2 })];
       case 'decoGlow': {
         const stack = [instanceOf('outline', { width: 2, color: edgeRef }), instanceOf('neonGlow', {})];
-        SA.moods.tameGlow({ edge: stack }, ctx.rawW);
+        SA.moods.tameGlow({ edge: stack }, rawWFor(ctx, cueId));
         return stack;
       }
       default:
@@ -948,11 +1157,13 @@
   // swaps the body onto the accent role and the hero onto the text role;
   // `gradient` paints the body between the two; `effect` keeps the drawn fill
   // when the theme has one, otherwise it draws a fill effect of its own.
-  function foregroundFor(random, ctx, colors) {
+  // `params` / `cueId` are the caller's section view (the cue's own profile
+  // copy), so a chorus draws its louder foreground.
+  function foregroundFor(random, ctx, colors, params, cueId) {
     const genParams = SA.genParams;
-    const params = ctx.params;
-    if (!genParams || !params) return null;
-    const type = genParams.pickWeighted(random, params, genParams.FG_KEYS);
+    const own = params || ctx.params;
+    if (!genParams || !own) return null;
+    const type = genParams.pickWeighted(random, own, genParams.FG_KEYS);
     if (!type || type === 'fgSolid') return null;
     const list = Array.isArray(colors) ? colors : (colors && Array.isArray(colors.colors) ? colors.colors : []);
     if (!list.length) return null;
@@ -981,7 +1192,7 @@
       };
     }
     if (type === 'fgEffect') {
-      const fill = fillEffectFor(random, ctx);
+      const fill = fillEffectFor(random, ctx, cueId);
       return fill ? { fill } : null;
     }
     if (type === 'fgPattern') {
@@ -1029,12 +1240,14 @@
 
   // A fill effect of the profile's grammar: the drawn look's own fill wins, and
   // a missing registry / pool yields nothing. Shared by the cue-level
-  // foreground (which wraps it in `{ fill }`) and the per-beat fill roll.
-  function fillEffectFor(random, ctx) {
+  // foreground (which wraps it in `{ fill }`) and the per-beat fill roll. The
+  // pick is weighted by the axes, so the cue's section view (a loud block opens
+  // the louder fill grammar) needs the cue id.
+  function fillEffectFor(random, ctx, cueId) {
     const themeFill = ctx.themeStyle && ctx.themeStyle.fill;
     if (themeFill && themeFill.type) return null; // the drawn look already carries one
     if (!SA.moods || typeof SA.moods.pickEntry !== 'function') return null;
-    const entry = SA.moods.pickEntry(random, 'fill', ctx.axes, ctx.cueContext || {}, ctx.direction, null, null, { typeWeights: ctx.typeWeights });
+    const entry = SA.moods.pickEntry(random, 'fill', axesFor(ctx, cueId), ctx.cueContext || {}, ctx.direction, null, null, { typeWeights: ctx.typeWeights });
     if (!entry) return null;
     const fallback = SA.fx && typeof SA.fx.paramDefaults === 'function' ? SA.fx.paramDefaults('fill', entry) : {};
     return { type: entry, params: fallback, enabled: true };
@@ -1049,12 +1262,19 @@
     const keywordWords = SA.keywords && typeof SA.keywords.listFor === 'function' ? SA.keywords.listFor(styleMode).words : [];
     const lang = (projectDoc.meta && projectDoc.meta.lang) || null;
     const analysis = SA.compositions.analyzeBeat(beat.text, lang, keywordWords);
-    let energy = ctx.energy;
+    // the beat's own loudness wins; without audio the section's energy axis is
+    // the loudness (a boosted block wants the livelier composition)
+    const sectionAxes = axesFor(ctx, cue.id);
+    let energy = Number.isFinite(sectionAxes.energy) ? sectionAxes.energy : ctx.energy;
     if (ctx.analysis && SA.audioDriver && typeof SA.audioDriver.rangeEnergy === 'function') {
       const sampled = SA.audioDriver.rangeEnergy(ctx.analysis, beat.start, beat.end);
       if (sampled != null) energy = sampled;
     }
-    const params = ctx.params || {};
+    const params = paramsFor(ctx, cue.id) || {};
+    const rawW = rawWFor(ctx, cue.id);
+    // the staging seeds: one salt per section, so a block of beats shares a
+    // staging tendency and the next block draws its own
+    const staging = stagingSeed(ctx, ctx.seed, cue.id);
     // the beat's own loudness moves its size curve: a loud beat grows, a quiet
     // one shrinks, always around the song's own average (0 without audio)
     let centerShift = 0;
@@ -1076,18 +1296,18 @@
       prevScale: last ? last.scaleClass : null,
     };
     const comp = SA.compositions.pick(features, {
-      seed: ctx.seed,
+      seed: staging,
       beatId: beat.id,
-      w: ctx.rawW,
+      w: rawW,
       history,
       // the size centre bias only applies once the curve is on (raw weird > 0
       // or a pinned parameter), so weird 0 keeps the classic composition draw
       sizeCenter: ctx.curve ? params.sizeCenter : undefined,
     });
     const patch = SA.compositions.build(comp, analysis, {
-      seed: ctx.seed,
+      seed: staging,
       beatId: beat.id,
-      w: ctx.rawW,
+      w: rawW,
       screen: ctx.screen,
       themeStyle: ctx.themeStyle,
       palette: (ctx.themeStyle && ctx.themeStyle.palette) || (projectDoc.style && projectDoc.style.palette) || null,
@@ -1135,7 +1355,7 @@
           const next = spans.map((span) => Number(span.scale) || 1);
           range = sizeRangeFor(beat, text, ctx, next.length ? Math.max(1, ...next) : 1, next.length ? Math.min(...next) : 1);
         }
-        const px = ladderPx(ctx, beat, range, centerShift);
+        const px = ladderPx(ctx, beat, range, centerShift, cue.id);
         text.size = Math.max(8, Math.round(px / (beat.fontScale || 1)));
         // every particle span rises until its own glyph keeps the floor
         fitComposeSpans(text, range, px);
@@ -1166,7 +1386,10 @@
   // untouched.
   function varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy) {
     if (!ctx.compose || !ctx.curve || !ctx.params || !patch || !patch.text || !SA.genParams) return;
-    const p = ctx.params;
+    // the beat's section view: its own profile copy, weird channels and axes
+    const p = paramsFor(ctx, cue.id);
+    const w = wFor(ctx, cue.id);
+    const axes = axesFor(ctx, cue.id);
     const gp = SA.genParams;
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     ctx.cueContext = cueContext;
@@ -1216,7 +1439,7 @@
               { pos: 0, paletteIndex: a },
               { pos: 1, paletteIndex: b },
             ],
-            animate: { angleSpeed: Math.round((colorRandom() * 2 - 1) * 90 * ctx.w), shiftSpeed: 0 },
+            animate: { angleSpeed: Math.round((colorRandom() * 2 - 1) * 90 * w), shiftSpeed: 0 },
           },
         };
       } else if (gp.roll(colorRandom, p.accentColorChance)) {
@@ -1226,7 +1449,7 @@
     // fill effect
     const fillRandom = stream('beat-fill');
     if (gp.roll(fillRandom, p.fillEffectChance)) {
-      const fill = fillEffectFor(fillRandom, ctx);
+      const fill = fillEffectFor(fillRandom, ctx, cue.id);
       if (fill) patch.fill = fill;
     }
     // pattern fill: its own stream, so pinning one chance never shifts the other
@@ -1262,9 +1485,9 @@
       const holdRandom = stream('beat-hold');
       if (gp.roll(holdRandom, p.holdChance)) {
         const hold =
-          ctx.w >= 0.5
-            ? SA.moods.weirdBeatHold(holdRandom, ctx.axes, cueContext, ctx.accentHexes)
-            : smartHold(holdRandom, ctx.s, Math.round((0.06 + 0.1 * ctx.w) * 1000) / 1000, Math.round(ctx.bpm * pick(holdRandom, [0.5, 1, 1, 2])), ctx.axes, ctx.beatFit);
+          w >= 0.5
+            ? SA.moods.weirdBeatHold(holdRandom, axes, cueContext, ctx.accentHexes)
+            : smartHold(holdRandom, ctx.s, Math.round((0.06 + 0.1 * w) * 1000) / 1000, Math.round(ctx.bpm * pick(holdRandom, [0.5, 1, 1, 2])), axes, ctx.beatFit);
         if (hold) patch.hold = [hold];
       }
     }
@@ -1272,21 +1495,21 @@
     if ((!Array.isArray(patch.hold) || !patch.hold.length) && duration >= 1.2 && (Number(energy) || 0) > 0.45) {
       const pulseRandom = stream('pulse');
       if (gp.roll(pulseRandom, p.pulseChance)) {
-        const pulseBpm = ctx.w > 0 ? Math.round(ctx.bpm * pick(pulseRandom, [0.5, 1, 1, 2])) : Math.round(ctx.bpm);
-        patch.hold = [smartHold(pulseRandom, ctx.s, Math.round((0.02 + (Number(energy) || 0) * 0.08) * 1000) / 1000, pulseBpm, ctx.axes, ctx.beatFit)];
+        const pulseBpm = w > 0 ? Math.round(ctx.bpm * pick(pulseRandom, [0.5, 1, 1, 2])) : Math.round(ctx.bpm);
+        patch.hold = [smartHold(pulseRandom, ctx.s, Math.round((0.02 + (Number(energy) || 0) * 0.08) * 1000) / 1000, pulseBpm, axes, ctx.beatFit)];
       }
     }
     // entrance / exit: a fresh grammar draw, the mask keeps its entrance
     const motionRandom = stream('beat-motion');
     if (gp.roll(motionRandom, p.motionChance)) {
       const generated = SA.moods.generate({
-        axes: ctx.axes,
-        seed: ctx.seed + cueIndex * 131 + beatIndex + 1,
+        axes,
+        seed: stagingSeed(ctx, ctx.seed + cueIndex * 131 + beatIndex + 1, cue.id),
         direction: ctx.direction,
         genre: ctx.genre,
         context: cueContext,
         typeWeights: ctx.typeWeights,
-        params: ctx.params || null,
+        params: p,
       }).style;
       if (generated.exit) patch.exit = generated.exit;
       if (generated.enter) {
@@ -1328,18 +1551,22 @@
       composeBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
       return;
     }
-    const { w, s, axes, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes, beatFit } = ctx;
+    const { s, seed, genre, direction, themeStyle, baseSize, energy, bpm, accentIdx, accentHexes, beatFit } = ctx;
+    // the beat's section view (a section-aware run gives each block its own
+    // profile, weird channels and staging stream)
+    const w = wFor(ctx, cue.id);
+    const axes = axesFor(ctx, cue.id);
     const cueContext = SA.moods.contextForCue(projectDoc, cue);
     const beatSeed = seed + cueIndex * 131 + beatIndex + 1;
     const beatRng = SA.rng.rngFor(beatSeed, beat.id, 'beat');
     const jitter = beatRng(); // the old base-size draw: kept so the hold roll below stays on its stream
     const px = ctx.sizeLadder
-      ? ladderPx(ctx, beat, sizeRangeFor(beat, SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text, ctx, 1))
+      ? ladderPx(ctx, beat, sizeRangeFor(beat, SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`).text, ctx, 1), undefined, cue.id)
       : baseSize * (0.9 + jitter * 0.25);
     const size = Math.round(px / (beat.fontScale || 1)); // scene.js multiplies fontScale back in
     const beatPatch = { text: { size } };
     const beatDuration = Math.max(0.2, beat.end - beat.start);
-    const p = ctx.params;
+    const p = paramsFor(ctx, cue.id);
     if (beatDuration >= 1.2 && energy > 0.45 && SA.genParams.roll(beatRng, p.pulseChance)) {
       const pulseBpm = w > 0 ? Math.round(bpm * pick(beatRng, [0.5, 1, 1, 2])) : Math.round(bpm);
       beatPatch.hold = [smartHold(beatRng, s, Math.round((0.02 + energy * 0.08) * 1000) / 1000, pulseBpm, axes, beatFit)];
@@ -1381,7 +1608,7 @@
         if (hold) beatPatch.hold = [hold];
       }
       if (SA.genParams.roll(wr, p.motionChance)) {
-        const g = SA.moods.generate({ axes, seed: beatSeed * 7 + 3, direction, genre, context: cueContext, typeWeights: ctx.typeWeights, params: ctx.params || null }).style;
+        const g = SA.moods.generate({ axes, seed: stagingSeed(ctx, beatSeed * 7 + 3, cue.id), direction, genre, context: cueContext, typeWeights: ctx.typeWeights, params: p || null }).style;
         if (g.enter) beatPatch.enter = g.enter;
         if (g.exit) beatPatch.exit = g.exit;
       }
@@ -1611,16 +1838,22 @@
   // cue (the first from 0, the last to the end of the song) so the backdrop
   // never blinks out in a filler gap.
   function backdropClipFor(projectDoc, cue, index, ctx, avoid) {
-    const { axes, seed, genre, wb: w, themeStyle } = ctx;
+    const { seed, genre, wb: w, themeStyle } = ctx;
+    const axes = axesFor(ctx, cue.id);
+    const rawW = rawWFor(ctx, cue.id);
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || null;
     let palette = (cueStyle && cueStyle.palette) || (themeStyle && themeStyle.palette) || null;
     // the plane separation anchors on the cue's own (unjittered) text colours
     const sourceColors = (palette && palette.colors) || [];
-    // the mid layer changes colour every four cues, so a long song never sits
-    // on one palette (w=0 keeps the classic look alone). The profile path
-    // keeps the jitter tight so the planes stay on the drawn palette.
+    // The mid layer changes colour every four cues, so a long song never sits on
+    // one palette (w=0 keeps the classic look alone). A section-aware run follows
+    // the sections instead: the block number is the stream, so the planes move
+    // where the song moves. The profile path keeps the jitter tight so the planes
+    // stay on the drawn palette.
     if (w > 0 && palette && Array.isArray(palette.colors) && palette.colors.length) {
-      const random = SA.rng.rngFor(seed, 'mid-section', Math.floor(index / 4));
+      const section = sectionOf(ctx, cue.id);
+      const group = section ? section.index : Math.floor(index / 4);
+      const random = SA.rng.rngFor(seed, 'mid-section', group);
       palette = SA.moods.jitterPalette(random, palette, axes, ctx.curve ? 1 + w : 1 + 3 * w);
     }
     const options = {
@@ -1635,8 +1868,8 @@
     // the profile hands the plane weights and the cue's own text colours down,
     // so the planes hold their distance from the lyrics
     if (ctx.curve && ctx.params) {
-      options.planes = ctx.params;
-      options.rawW = ctx.rawW;
+      options.planes = paramsFor(ctx, cue.id);
+      options.rawW = rawW;
       options.textColors = textColorsOf(sourceColors);
     }
     // the neighbouring clip's layout / motion / mode / transition never repeat
@@ -1770,13 +2003,17 @@
   }
 
   // One figure clip per cue: animated motifs on the figure track (only once the
-  // backdrop channel is on, so the w=0 output stays exactly as before).
+  // backdrop channel is on, so the w=0 output stays exactly as before). The cue
+  // section drives the density and the figure colours, so a chorus fills up.
   function figureClipFor(projectDoc, cue, index, ctx) {
     const track = trackIdFor(projectDoc, 'figure');
     if (!track || !SA.figures) return null;
-    const { wb: w, axes, seed } = ctx;
-    const params = ctx.curve && ctx.params ? ctx.params : null;
-    const density = params ? Math.max(0.15, params.figureDensity) : Math.max(0.15, Math.min(1, 0.25 + 0.6 * ctx.energy + 0.2 * w));
+    const { wb: w, seed } = ctx;
+    const axes = axesFor(ctx, cue.id);
+    const rawW = rawWFor(ctx, cue.id);
+    const params = ctx.curve && ctx.params ? paramsFor(ctx, cue.id) : null;
+    const energy = Number.isFinite(axes.energy) ? axes.energy : ctx.energy;
+    const density = params ? Math.max(0.15, params.figureDensity) : Math.max(0.15, Math.min(1, 0.25 + 0.6 * energy + 0.2 * w));
     if (density < 0.3 && w < 0.2 && index % 3 !== 0) return null;
     const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || {};
@@ -1785,7 +2022,7 @@
     // from the planes and the backdrop floor from the text
     if (params) {
       const planes = ctx.backdropPlanes && ctx.backdropPlanes[cue.id];
-      const derived = figureColors(planes, textColorsOf(palette), ctx.rawW);
+      const derived = figureColors(planes, textColorsOf(palette), rawW);
       if (derived) palette = [...palette.slice(0, 3), derived[0], derived[1]].filter(Boolean);
     }
     const roll = SA.rng.rngFor(seed + index * 313, cue.id, 'figure')();
@@ -1944,6 +2181,24 @@
     // the composition mode is part of the saved run: beat / cue re-rolls read it
     if (ctx.compose) projectDoc.styleMode.compose = true;
     else delete projectDoc.styleMode.compose;
+    // the section plan is part of the saved run too: a beat / cue re-roll reads
+    // its block's profile out of it (the boosts are stored, so a re-roll never
+    // has to re-measure the music).
+    if (Array.isArray(ctx.sections) && ctx.sections.length) {
+      projectDoc.styleMode.sections = {
+        ...(ctx.sectionConfig || {}),
+        list: ctx.sections.map((section) => ({
+          index: section.index,
+          cueIds: section.cueIds.slice(),
+          start: section.start,
+          end: section.end,
+          energy: section.energy,
+          chorus: section.chorus,
+          boost: section.boost,
+          salt: section.salt,
+        })),
+      };
+    } else delete projectDoc.styleMode.sections;
     for (const cue of projectDoc.script.cues) {
       const container = projectDoc.cueStyles[cue.id];
       if (!container) continue;
@@ -2062,10 +2317,14 @@
               if (!cueColors) {
                 const cueStyle = SA.project.resolveStyle(projectDoc, `cue:${cue.id}`);
                 cueColors = (cueStyle.palette && cueStyle.palette.colors) || [];
-                const cacheKey = cueColors.join('|');
+                // the candidates follow the cue's section (a chorus opens a
+                // wider scheme range), so the cache key carries the block too
+                const section = sectionOf(ctx, cue.id);
+                const cueParams = paramsFor(ctx, cue.id);
+                const cacheKey = `${cueColors.join('|')}#${section ? section.index : ''}`;
                 candidates = candidatesByColors.get(cacheKey);
                 if (!candidates) {
-                  candidates = cueColors.length ? roles.schemes(cueColors, ctx.rawW, ctx.params ? ctx.params.schemeRange : undefined) : [];
+                  candidates = cueColors.length ? roles.schemes(cueColors, rawWFor(ctx, cue.id), cueParams ? cueParams.schemeRange : undefined) : [];
                   // the invert toggle owns TMBD when it is on
                   if (schemeInvert != null) {
                     const invertId = roles.SCHEME_INVERT || 'TMBD';
@@ -2158,7 +2417,7 @@
         const colors = (cueStyle.palette && cueStyle.palette.colors) || [];
         const planes = ctx.backdropPlanes && ctx.backdropPlanes[cue.id];
         const random = SA.rng.rngFor(seed + index * 131, cue.id, 'decoration');
-        const stack = decorationFor(random, ctx, colors, planes ? planes.length : 0);
+        const stack = decorationFor(random, ctx, colors, planes ? planes.length : 0, cue.id);
         if (stack) {
           const container = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
           container.edge = stack;
@@ -2171,14 +2430,14 @@
           const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
           beats.forEach((beat) => {
             const beatRandom = SA.rng.rngFor(seed + index * 131, beat.id, 'beat-deco');
-            if (!SA.genParams.roll(beatRandom, ctx.params.beatDecoChance)) return;
+            if (!SA.genParams.roll(beatRandom, paramsFor(ctx, cue.id).beatDecoChance)) return;
             const own = projectDoc.beatStyles[beat.id];
             let beatColors = colors;
             if (own && (own.paletteIndex || own.paletteInvert)) {
               const resolved = SA.project.resolveStyle(projectDoc, `cue:${cue.id}/beat:${beat.id}`);
               beatColors = (resolved.palette && resolved.palette.colors) || colors;
             }
-            const beatStack = decorationFor(beatRandom, ctx, beatColors, planes ? planes.length : 0);
+            const beatStack = decorationFor(beatRandom, ctx, beatColors, planes ? planes.length : 0, cue.id);
             if (!beatStack) return;
             const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
             bag.edge = beatStack;
@@ -2300,6 +2559,15 @@
     beatFitOf,
     densitySpacing,
     prepare,
+    planSections,
+    restoreSections,
+    sectionOf,
+    paramsFor,
+    axesFor,
+    rawWFor,
+    wFor,
+    opensSection,
+    stagingSeed,
     directCue,
     directBeat,
     composeBeat,

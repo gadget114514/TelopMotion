@@ -64,13 +64,27 @@
     return !!value && typeof value === 'object' && !Array.isArray(value) && !!value.audio;
   }
 
+  // The song's own loudness reference: the p90 of its RMS frames. Sorting every
+  // frame on every call is what made `rangeEnergy` expensive, so a caller that
+  // measures many ranges (the section detector) computes the reference once and
+  // hands it back in. Returns null when there is nothing to measure.
+  function energyRef(analysis) {
+    if (!analysis || !Array.isArray(analysis.frames) || !analysis.frames.length) return null;
+    const sorted = analysis.frames.map((frame) => Number(frame.rms) || 0).sort((a, b) => a - b);
+    const p90 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.9))] || 0;
+    return { analysis, fps: analysis.fps || 30, length: analysis.frames.length, p90 };
+  }
+
   // The average RMS over a time range, normalised to the song's own p90 so the
   // value means "how loud is this beat for this song" (0..1) instead of an
   // absolute level. No analysis frame -> null, so callers keep their fallback.
-  function rangeEnergy(analysis, start, end) {
+  // `ref` is an `energyRef` of the same analysis; without it the reference is
+  // computed here (the classic single-range call).
+  function rangeEnergy(analysis, start, end, ref) {
     if (!analysis || !Array.isArray(analysis.frames) || !analysis.frames.length) return null;
-    const fps = analysis.fps || 30;
-    const last = analysis.frames.length - 1;
+    const use = ref && ref.analysis === analysis ? ref : energyRef(analysis);
+    const fps = use.fps;
+    const last = use.length - 1;
     const from = Math.max(0, Math.min(last, Math.floor(Math.max(0, Number(start) || 0) * fps)));
     const to = Math.max(from, Math.min(last, Math.ceil(Math.max(0, Number(end) || 0) * fps) - 1));
     let sum = 0;
@@ -81,10 +95,8 @@
     }
     if (!count) return null;
     const average = sum / count;
-    const sorted = analysis.frames.map((frame) => Number(frame.rms) || 0).sort((a, b) => a - b);
-    const p90 = sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.9))] || 0;
-    if (!(p90 > 0)) return 0;
-    return Math.max(0, Math.min(1, average / p90));
+    if (!(use.p90 > 0)) return 0;
+    return Math.max(0, Math.min(1, average / use.p90));
   }
 
   function resolveValue(value, analysis, t) {
@@ -167,6 +179,7 @@
     frameAt,
     level,
     sample,
+    energyRef,
     rangeEnergy,
     isAudioValue,
     resolveValue,

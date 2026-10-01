@@ -512,6 +512,7 @@ SA.store = (() => {
     const rawW = Number(axes.weird) || 0;
     return {
       axes,
+      seed: Number(mode.seed) || 1,
       direction: mode.direction || 'horizontal',
       genre: mode.genre || null,
       rawW,
@@ -520,7 +521,35 @@ SA.store = (() => {
       curve: rawW > 0 || Object.keys(pinned).length > 0,
       typeWeights: mode.typeWeights || null,
       usePalettes: Array.isArray(mode.usePalettes) ? mode.usePalettes : [],
+      sections: mode.sections || null,
     };
+  }
+
+  // The section plan a re-roll draws with: the run stored its blocks (with
+  // their boost and staging salt) on the styleMode, so a re-rolled cue / beat
+  // keeps the profile of the block it belongs to. `SA.direct.restoreSections`
+  // rebuilds the entries from the stored boosts, so the boost formula stays in
+  // one place.
+  function sectionPlanFor(mode) {
+    const saved = mode && mode.sections;
+    if (!saved) return null;
+    if (typeof SA === 'undefined' || !SA.direct || typeof SA.direct.restoreSections !== 'function') return null;
+    const axes = (mode && mode.axes) || {};
+    return SA.direct.restoreSections(
+      {
+        axes,
+        rawW: typeof SA.moods && typeof SA.moods.weirdOf === 'function' ? SA.moods.weirdOf(axes) : Number(axes.weird) || 0,
+        w: typeof SA.moods && typeof SA.moods.textWeirdOf === 'function' ? SA.moods.textWeirdOf(axes) : Number(axes.weird) || 0,
+        energy: Number.isFinite(Number(axes.energy)) ? Number(axes.energy) : 0.5,
+        // the resolved profile is what the run drew with; `pinned` keeps the
+        // manual keys on top of a fresh resolve (the resolved values must not
+        // become the new pins)
+        params: (mode && mode.params) || null,
+        paramsSource: (mode && mode.pinned) || {},
+        seed: (mode && mode.seed) || 1,
+      },
+      saved
+    );
   }
 
   // The raw weird axis the beat colour schemes are resolved with (the same
@@ -571,6 +600,10 @@ SA.store = (() => {
       if (container && container.text && container.text.fontId) cueFont[cueId] = container.text.fontId;
       if (container && container.repeat) cueRepeat[cueId] = container.repeat;
     }
+    // the section plan the run stored: a re-rolled beat keeps its block's
+    // profile (its own params copy is left null on a zero boost, so the run's
+    // profile is used)
+    const plan = sectionPlanFor(mode);
     return {
       compose: true,
       seed,
@@ -589,17 +622,24 @@ SA.store = (() => {
       direction: (mode && mode.direction) || 'horizontal',
       accentIdx: accents.accentIdx,
       accentHexes: accents.accentHexes,
+      // the axes the re-roll draws with (composeBeat reads the energy channel,
+      // and the section plan lifts its own copy of them)
+      axes,
       cueFont,
       cueShift: {},
       cueRepeat,
       themeStyle: projectDoc.style || null,
       composeHistory: history || [],
       composeZones: {},
+      paramsSource: (mode && mode.pinned) || {},
       params: (mode && mode.params) || null,
       pinned: (mode && mode.pinned) || {},
       curve: !!(mode && mode.curve),
       typeWeights: (mode && mode.typeWeights) || null,
       usePalettes: (mode && mode.usePalettes) || [],
+      sections: plan ? plan.list : null,
+      sectionConfig: plan ? { gap: plan.gap, maxCues: plan.maxCues, strength: plan.strength } : null,
+      sectionOf: plan ? plan.sectionOf : null,
       cueForeground: {},
       cueBold: {},
     };
