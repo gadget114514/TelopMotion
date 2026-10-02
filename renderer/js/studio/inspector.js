@@ -232,6 +232,7 @@ SA.inspector = (() => {
   }
 
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+  const TEXT_GROUPS = ['text', 'fill', 'edge', 'repeat', 'clones'];
 
   function section(container, key, title) {
     const node = document.createElement('details');
@@ -242,6 +243,12 @@ SA.inspector = (() => {
     if (BG_GROUPS.includes(key) && (selectedSubtitleTrack() || {}).bgHidden) {
       node.classList.add('insp-track-off');
       node.title = t('studio.inspector.bgTrackOff');
+    }
+    const textTrack = selectedSubtitleTrack();
+    const textDisabled = (textTrack && textTrack.textHidden) || readEffective('text.enabled') === false;
+    if (TEXT_GROUPS.includes(key) && textDisabled) {
+      node.classList.add('insp-track-off');
+      node.title = t('studio.inspector.textTrackOff');
     }
     const summary = document.createElement('summary');
     summary.textContent = title;
@@ -460,6 +467,10 @@ SA.inspector = (() => {
       });
       body.appendChild(list);
     }
+    const disableControl = SA.controls.boolControl(!cue.disabled, (value) => {
+      SA.store.commands.setCueDisabled(sel.cueId, !value);
+    });
+    row(body, 'cue.enabled', t('studio.inspector.enabled'), disableControl, { noKey: true, noReset: true });
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: cue.start }, cue.start, (value) => {
       SA.store.commands.moveCue(sel.cueId, value, { coalesceKey: `cue:${sel.cueId}:start` });
     });
@@ -558,6 +569,10 @@ SA.inspector = (() => {
     }, { multiline: true });
     beatText.classList.add('cue-text');
     body.appendChild(beatText);
+    const disableControl = SA.controls.boolControl(!beat.disabled, (value) => {
+      SA.store.commands.setBeatDisabled(sel.cueId, beat.id, !value);
+    });
+    row(body, `beat:${beat.id}:enabled`, t('studio.inspector.enabled'), disableControl, { noKey: true, noReset: true });
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: beat.start }, beat.start, (value) => {
       SA.store.commands.moveBeatEdge(sel.cueId, beat.id, 'start', value, { coalesceKey: `beat:${beat.id}:start` });
     });
@@ -590,6 +605,8 @@ SA.inspector = (() => {
 
   function renderTextSection(container) {
     const body = section(container, 'text', t('studio.inspector.text'));
+    const textEnabled = readEffective('text.enabled') !== false;
+    row(body, 'text.enabled', t('studio.inspector.enabled'), SA.controls.boolControl(textEnabled, (v) => writeProp('text.enabled', v)), { noKey: true });
     const fields = [
       ['text.fontId', 'font'],
       ['text.size', 'size'],
@@ -1923,9 +1940,11 @@ SA.inspector = (() => {
       const descriptor = { params: SA.fillerRender ? SA.fillerRender.paramsOf('figures') : [] };
       const params = { ...(spec.params || {}) };
       for (const param of SA.controls.paramEntries(descriptor)) {
-        const value = params[param.key] != null ? params[param.key] : param.default;
+        const value = params[param.key] != null ? params[param.key] : (param.key === 'enabled' && clip.disabled != null ? !clip.disabled : param.default);
         const control = SA.controls.paramControl('filler', param, value, (next) => {
-          SA.store.commands.updateClip(clip.id, { spec: { ...spec, params: { ...params, [param.key]: next } } }, { coalesceKey: `clip:${clip.id}:${param.key}` });
+          const patch = { spec: { ...spec, params: { ...params, [param.key]: next } } };
+          if (param.key === 'enabled') patch.disabled = !next;
+          SA.store.commands.updateClip(clip.id, patch, { coalesceKey: `clip:${clip.id}:${param.key}` });
         });
         body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
       }
@@ -1940,6 +1959,12 @@ SA.inspector = (() => {
       }, { multiline: true });
       text.classList.add('cue-text');
       body.appendChild(text);
+      const enabledControl = SA.controls.boolControl(!SA.lyricsEngine.isClipDisabled(clip), (value) => {
+        const patch = { disabled: !value };
+        if (spec.params) patch.spec = { ...spec, params: { ...spec.params, disabled: !value } };
+        SA.store.commands.updateClip(clip.id, patch);
+      });
+      row(body, `clip:${clip.id}:enabled`, t('studio.inspector.enabled'), enabledControl, { noKey: true, noReset: true });
       appendClipCommon(body, doc, clip, { colors: false });
       return;
     }
@@ -2327,13 +2352,28 @@ SA.inspector = (() => {
     heading('studio.inspector.sectionMotion');
     renderGroups(['animation', 'layout', 'enter', 'exit', 'hold', 'location']);
     heading('studio.inspector.sectionText');
+    const selection = selectionInfo();
+    const selectedCue = selection.cueId && SA.store.state.project ? SA.store.state.project.script.cues.find((entry) => entry.id === selection.cueId) : null;
+    const cueTrack = selectedCue && SA.store.state.project ? (SA.store.state.project.tracks || []).find((entry) => entry.id === (selectedCue.trackId || 'sub1')) : null;
+    if (cueTrack && cueTrack.kind === 'subtitle') {
+      const row = document.createElement('label');
+      row.className = 'insp-inherit';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = !cueTrack.textHidden;
+      box.addEventListener('change', () => {
+        SA.store.commands.updateTrack(cueTrack.id, { textHidden: !box.checked });
+      });
+      const text = document.createElement('span');
+      text.textContent = ` ${t('studio.inspector.textTrackVisible')}`;
+      row.appendChild(box);
+      row.appendChild(text);
+      container.appendChild(row);
+    }
     renderGroups(['fill', 'edge', 'repeat']);
     heading('studio.inspector.sectionBg');
     // the subtitle track's background switch (data kept; the row's checkbox on
     // the timeline and this checkbox are the same flag)
-    const selection = selectionInfo();
-    const selectedCue = selection.cueId && SA.store.state.project ? SA.store.state.project.script.cues.find((entry) => entry.id === selection.cueId) : null;
-    const cueTrack = selectedCue && SA.store.state.project ? (SA.store.state.project.tracks || []).find((entry) => entry.id === (selectedCue.trackId || 'sub1')) : null;
     if (cueTrack && cueTrack.kind === 'subtitle') {
       const row = document.createElement('label');
       row.className = 'insp-inherit';

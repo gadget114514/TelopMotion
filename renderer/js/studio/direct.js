@@ -750,6 +750,19 @@
     { shape: 'brackets', drive: 'enter', stroke: 4, padding: 0.12, feather: 0.05, glow: 0.3 },
   ];
 
+  const FRAME_SHAPES = new Set(['box', 'brackets', 'topBottom', 'sides', 'sidesSemicircle', 'sidesSemiellipse', 'capsule', 'plate']);
+
+  function resolveGraphicParams(graphic, rng) {
+    const params = { ...(graphic || {}) };
+    if (FRAME_SHAPES.has(params.shape)) {
+      const roll = typeof rng === 'function' ? rng : Math.random;
+      params.padding = Math.round((0.06 + roll() * 0.18) * 100) / 100;
+      params.stroke = Math.round((2.5 + roll() * 3.5) * 10) / 10;
+      params.scale = Math.round((0.9 + roll() * 0.25) * 100) / 100;
+    }
+    return params;
+  }
+
   // Rough px box of the first beat's composed text (no font metrics are loaded
   // here): line widths from the span scales and a 1em / 0.58em per character
   // estimate. The figure layer uses it to keep clear of the lyrics.
@@ -1391,7 +1404,7 @@
     const analysis = SA.compositions.analyzeBeat(beat.text, lang, keywordWords);
     // the beat's own loudness wins; without audio the section's energy axis is
     // the loudness (a boosted block wants the livelier composition)
-    const sectionAxes = axesFor(ctx, cue.id);
+    const sectionAxes = axesFor(ctx, cue.id) || {};
     let energy = Number.isFinite(sectionAxes.energy) ? sectionAxes.energy : ctx.energy;
     if (ctx.analysis && SA.audioDriver && typeof SA.audioDriver.rangeEnergy === 'function') {
       const sampled = SA.audioDriver.rangeEnergy(ctx.analysis, beat.start, beat.end);
@@ -1449,15 +1462,39 @@
     }
     // boldChance: some cues set the body in 700 (400-weight templates only)
     if (ctx.cueBold && ctx.cueBold[cue.id] && patch.text && patch.text.weight === 400) patch.text.weight = 700;
-    // graphicChance: templates without a graphic may still gain an underline /
-    // box / brackets shape layer behind the text
-    const graphicChance = ctx.curve && params.graphicChance != null ? Number(params.graphicChance) : 0;
-    if (!comp.graphic && graphicChance > 0) {
-      const gr = SA.rng.rngFor(ctx.seed + cueIndex * 131, beat.id, 'graphic');
-      if (gr() < graphicChance) {
-        const graphic = pick(gr, COMPOSE_GRAPHICS);
-        const layer = { type: 'shapeLayer', params: { ...graphic }, enabled: true };
-        patch.post = Array.isArray(patch.post) ? patch.post.concat([layer]) : [layer];
+    // POST shape layer handling: at most 1 shape layer across the song (probability <= 1 at weird 1)
+    const gr = SA.rng.rngFor(ctx.seed + cueIndex * 131, beat.id, 'graphic');
+    let isShapeBeat = false;
+    if (ctx.shapeLayerBeatId !== undefined) {
+      isShapeBeat = ctx.shapeLayerBeatId !== null && beat.id === ctx.shapeLayerBeatId;
+    } else {
+      // Standalone composeBeat call or re-roll without explicit ctx.shapeLayerBeatId:
+      // Ensure at most 1 shape layer exists across projectDoc.beatStyles
+      const otherHasShape = Object.entries(projectDoc.beatStyles || {}).some(([bId, bs]) => {
+        return bId !== beat.id && bs && Array.isArray(bs.post) && bs.post.some((p) => p && p.type === 'shapeLayer');
+      });
+      if (!otherHasShape) {
+        const graphicChance = ctx.curve && params.graphicChance != null ? Number(params.graphicChance) : 0;
+        if (comp.graphic) {
+          isShapeBeat = true;
+        } else if (graphicChance > 0 && gr() < graphicChance) {
+          isShapeBeat = true;
+        }
+      }
+    }
+
+    if (!isShapeBeat) {
+      if (Array.isArray(patch.post)) {
+        patch.post = patch.post.filter((entry) => !entry || entry.type !== 'shapeLayer');
+      }
+    } else {
+      let shapeEntry = Array.isArray(patch.post) ? patch.post.find((entry) => entry && entry.type === 'shapeLayer') : null;
+      if (!shapeEntry) {
+        const base = pick(gr, COMPOSE_GRAPHICS);
+        shapeEntry = { type: 'shapeLayer', params: resolveGraphicParams(base, gr), enabled: true };
+        patch.post = Array.isArray(patch.post) ? patch.post.concat([shapeEntry]) : [shapeEntry];
+      } else if (shapeEntry.params) {
+        shapeEntry.params = resolveGraphicParams(shapeEntry.params, gr);
       }
     }
     varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy);
@@ -2519,6 +2556,30 @@
       spread: ctx.curve && ctx.params ? ctx.params.sizeSpread : undefined,
     });
     ctx.sizePrev = null;
+    ctx.shapeLayerBeatId = null;
+    if (ctx.compose) {
+      const allBeats = [];
+      for (const cue of projectDoc.script.cues || []) {
+        for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          allBeats.push({ cue, beat });
+        }
+      }
+      if (allBeats.length > 0) {
+        const graphicChance = ctx.curve && ctx.params && ctx.params.graphicChance != null
+          ? Math.min(1, Math.max(0, Number(ctx.params.graphicChance)))
+          : (ctx.curve ? Math.min(1, Math.max(0, Number(ctx.rawW) || 0)) : 0);
+        const songRng = SA.rng.rngFor(seed, 'song-shape-layer');
+        if (graphicChance > 0 && songRng() < graphicChance) {
+          const chorusBeats = allBeats.filter(({ cue }) => {
+            const s = (ctx.sections || []).find((sec) => sec.cueIds && sec.cueIds.includes(cue.id));
+            return s && (s.chorus || (Number(s.energy) || 0) > 0.6);
+          });
+          const pool = chorusBeats.length ? chorusBeats : allBeats;
+          const picked = pool[Math.floor(songRng() * pool.length)];
+          ctx.shapeLayerBeatId = picked ? picked.beat.id : null;
+        }
+      }
+    }
     projectDoc.script.cues.forEach((cue, cueIndex) => {
       const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
       beats.forEach((beat, beatIndex) => {

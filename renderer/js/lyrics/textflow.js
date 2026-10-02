@@ -1032,12 +1032,14 @@
     const output = [];
     const cues = project && project.script ? project.script.cues || [] : [];
     for (const cue of cues) {
+      if (cue.disabled) continue;
       const beats = project.beats && project.beats[cue.id];
       if (!beats || !beats.length) {
         if (cue.text) output.push({ start: cue.start, end: cue.end, text: cue.text });
         continue;
       }
       for (const beat of [...beats].sort((a, b) => a.start - b.start)) {
+        if (beat.disabled) continue;
         const lines = Array.isArray(beat.lines) && beat.lines.length ? beat.lines : String(beat.text || '').split(/\r?\n/);
         const text = lines.join('\n').trim();
         if (!text) continue;

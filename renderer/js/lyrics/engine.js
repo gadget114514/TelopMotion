@@ -37,15 +37,17 @@ SA.lyricsEngine = (() => {
     const cues = project && project.script ? project.script.cues || [] : [];
     const beats = [];
     for (const cue of cues) {
+      if (cue.disabled) continue;
       if (t < cue.start - 1e-4 || t > cue.end + 1e-4) continue;
       const list = project.beats && project.beats[cue.id];
       if (list && list.length) {
         for (const beat of list) {
+          if (beat.disabled) continue;
           if (t >= beat.start - 1e-4 && t <= beat.end + 1e-4) beats.push(beat);
         }
       } else {
         const beat = beatForCue(cue);
-        if (beat) beats.push(beat);
+        if (beat && !beat.disabled) beats.push(beat);
       }
     }
     beats.sort((a, b) => a.start - b.start || a.end - b.end);
@@ -76,6 +78,16 @@ SA.lyricsEngine = (() => {
   function subtitleGraphicsOn(track, view) {
     if (view && view.subtitleOnly === true) return false;
     return !(track && track.graphicsHidden);
+  }
+
+  // Subtitle text (glyphs, fill, edge, repeats, clones, text posts) can be
+  // disabled per track (`track.textHidden`, saved in the project), per view
+  // (`view.subtitleText === false`), or per style (`style.text.enabled === false`).
+  function subtitleTextOn(track, view, style) {
+    if (view && view.subtitleText === false) return false;
+    if (track && track.textHidden) return false;
+    if (style && style.text && style.text.enabled === false) return false;
+    return true;
   }
 
   // The track's text-mask switch: absent = on (the engine default). A figure /
@@ -136,13 +148,21 @@ SA.lyricsEngine = (() => {
     return { planes, accents, ordered: planes.length > 0 && accents.length > 0 && lastPlane < firstAccent };
   }
 
+  function isClipDisabled(clip) {
+    if (!clip) return false;
+    if (clip.disabled || clip.enabled === false) return true;
+    const params = clip.spec && clip.spec.params;
+    if (params && (params.disabled || params.enabled === false)) return true;
+    return false;
+  }
+
   // Clips of one track kind, hidden tracks excluded, in start order.
   function activeClips(project, kind) {
     const ids = new Set(
       ((project && project.tracks) || []).filter((track) => track && track.kind === kind && !track.hidden).map((track) => track.id)
     );
     if (!ids.size) return [];
-    return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId)).sort((a, b) => a.start - b.start);
+    return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId) && !isClipDisabled(clip)).sort((a, b) => a.start - b.start);
   }
 
   // The layer tracks (foreground / background) own the layers of their slot:
@@ -325,12 +345,15 @@ SA.lyricsEngine = (() => {
       const cues = project && project.script ? project.script.cues || [] : [];
       const beats = [];
       for (const cue of cues) {
+        if (cue.disabled) continue;
         const list = project.beats && project.beats[cue.id];
         if (list && list.length) {
-          for (const beat of list) beats.push(beat);
+          for (const beat of list) {
+            if (!beat.disabled) beats.push(beat);
+          }
         } else {
           const beat = beatForCue(cue);
-          if (beat) beats.push(beat);
+          if (beat && !beat.disabled) beats.push(beat);
         }
       }
       beats.sort((a, b) => a.start - b.start);
@@ -1254,7 +1277,7 @@ SA.lyricsEngine = (() => {
     // A figure clip: animated motifs built from the shape primitives, drawn on
     // the figure track between the mid layer and the subtitles.
     function drawFigureClip(clip, t, duration, stage, stageWeird, mask) {
-      if (!shapesPass || !SA.figures) return;
+      if (!shapesPass || !SA.figures || isClipDisabled(clip)) return;
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
       const spec = (recolored ? recolored.spec : clip.spec) || {};
       if (spec.type !== 'figure') return;
@@ -1417,7 +1440,7 @@ SA.lyricsEngine = (() => {
     function fillerClipContext(t, clip, duration) {
       const project = state.project;
       const clipDuration = Math.max(1e-3, clip.end - clip.start);
-      const cues = (project.script && project.script.cues) || [];
+      const cues = ((project.script && project.script.cues) || []).filter((entry) => !entry.disabled);
       const next = cues.find((entry) => entry.start >= clip.end - 1e-4);
       const previous = [...cues].reverse().find((entry) => entry.end <= clip.start + 1e-4);
       const features = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
@@ -1964,14 +1987,18 @@ SA.lyricsEngine = (() => {
       // camera moves, shape layers ...) are hidden with it, the style data is
       // never touched
       const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
+      const textHiddenTracks = new Set(subtitleTracks.filter((track) => track.textHidden).map((track) => track.id));
+      const textActiveBeats = visibleBeats.filter((active) =>
+        subtitleTextOn({ textHidden: textHiddenTracks.has(active.trackId) }, view, active.style)
+      );
       // the text mask: baked once per frame when a visible lyric meets a clip
       // that still opted in (the figure / backdrop / filler tracks) or a
       // frame-wide graphic about to draw; the glyphs composite back over the
       // graphics, so they can never paint over the subtitle
       const maskWanted = maskTargetsActive(project, t) || graphicsPostsActive(visibleBeats, graphicsHiddenTracks);
       let maskOn = false;
-      if (!subtitleOnly && visibleBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskWanted) {
-        maskOn = buildFrameTextMask(visibleBeats, project);
+      if (!subtitleOnly && textActiveBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskWanted) {
+        maskOn = buildFrameTextMask(textActiveBeats, project);
       }
       // back to front: background clips + background layers -> backdrop clips ->
       // filler clips -> subtitle tracks (bottom to top) -> foreground layers
@@ -2001,6 +2028,7 @@ SA.lyricsEngine = (() => {
       for (const active of drawOrder.flatMap((trackId) => beatsByTrack.get(trackId) || [])) {
         const { beat, scene, result, style } = active;
         const graphicsOn = subtitleGraphicsOn({ graphicsHidden: graphicsHiddenTracks.has(active.trackId) }, view);
+        const textOn = subtitleTextOn({ textHidden: textHiddenTracks.has(active.trackId) }, view, style);
         const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
         const ornShape = SA.fx.withDefaults(style.ornShape, 'ornShape');
         // the subtitle background switch only silences the definition
@@ -2040,7 +2068,9 @@ SA.lyricsEngine = (() => {
         }
         const variant = morphVariantFor(project, beat, scene);
         const colorOverride = variation ? bgColorOverrideFor(scene, variation) : null;
-        pipeline.text(scene, result.letters, variant, colorOverride);
+        if (textOn) {
+          pipeline.text(scene, result.letters, variant, colorOverride);
+        }
         // A per-letter text colour is carried by the text mask the text pass
         // just drew, so the glyph body takes it instead of the uniform fill
         // colour. A `paletteIndex` span is left alone: the motion pass already
@@ -2048,14 +2078,16 @@ SA.lyricsEngine = (() => {
         const hasLetterColor = !!colorOverride || scene.letters.some((letter) => letter.span && letter.span.color);
         // per-letter blur (blurIn / blurOut / focus / depth of field) runs on
         // the text mask before the sdf so the edges follow the blurred shape
-        pipeline.letterBlur(scene, result.letters);
+        if (textOn) {
+          pipeline.letterBlur(scene, result.letters);
+        }
         // A: the definition background (and the ornaments) is a layer of its
         // own. The glyphs are knocked out of it and it commits before the
         // glyph body draws into a fresh layer, so a text-target post (radial
         // wipes, glitch, blur...) can only touch the glyphs. The mask stays
         // in targets.text for the fill / edge passes below.
         if (variation) {
-          pipeline.knockout();
+          if (textOn) pipeline.knockout();
           pipeline.commitLayer(1);
           pipeline.beginLayer();
         }
@@ -2076,36 +2108,40 @@ SA.lyricsEngine = (() => {
           beat.meta && beat.meta.category
             ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
             : null;
-        // repeat: arranged copies of the string behind the main text. Variant
-        // typefaces re-render the mask, so the sdf is created afterwards.
-        drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
-        const sdfTarget = pipeline.sdf();
+        if (textOn) {
+          // repeat: arranged copies of the string behind the main text. Variant
+          // typefaces re-render the mask, so the sdf is created afterwards.
+          drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
+        }
+        const sdfTarget = textOn ? pipeline.sdf() : null;
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
-        const clones = Array.isArray(style.clones) ? style.clones : [];
-        for (const clone of clones) {
-          if (!clone || clone.enabled === false) continue;
-          const env = cloneEnvelope(clone, t, beat);
-          if (env <= 0) continue;
-          const transform = cloneTransform(clone, t, state.width, state.height);
-          pipeline.beginLayer();
-          pipeline.fill(
-            SA.fx.fillUniforms(fillInstance, {
-              colors: cloneColors(colorSet.arrays, clone, style, project),
-              category,
-              time: t,
-              palette: style.palette || null,
-              palettes: project.palettes || [],
-              categoryColors: project.categoryColors || {},
-              progress,
-              sdfTexture: sdfTarget ? sdfTarget.texture : null,
-            })
-          );
-          pipeline.commitLayer((clone.opacity == null ? 0.5 : Number(clone.opacity)) * env, transform);
+        if (textOn) {
+          const clones = Array.isArray(style.clones) ? style.clones : [];
+          for (const clone of clones) {
+            if (!clone || clone.enabled === false) continue;
+            const env = cloneEnvelope(clone, t, beat);
+            if (env <= 0) continue;
+            const transform = cloneTransform(clone, t, state.width, state.height);
+            pipeline.beginLayer();
+            pipeline.fill(
+              SA.fx.fillUniforms(fillInstance, {
+                colors: cloneColors(colorSet.arrays, clone, style, project),
+                category,
+                time: t,
+                palette: style.palette || null,
+                palettes: project.palettes || [],
+                categoryColors: project.categoryColors || {},
+                progress,
+                sdfTexture: sdfTarget ? sdfTarget.texture : null,
+              })
+            );
+            pipeline.commitLayer((clone.opacity == null ? 0.5 : Number(clone.opacity)) * env, transform);
+          }
+          pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
+          pipeline.representation(scene, result.letters, 'pieces', variant);
+          pipeline.representation(scene, result.letters, 'particles', variant);
         }
-        pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
-        pipeline.representation(scene, result.letters, 'pieces', variant);
-        pipeline.representation(scene, result.letters, 'particles', variant);
         const edgeContext = {
           colorSet: colorSet.arrays,
           maxDistance,
@@ -2126,29 +2162,31 @@ SA.lyricsEngine = (() => {
               ? SA.fx.edgeUniformsAll(instance, edgeContext)
               : [SA.fx.edgeUniforms(instance, edgeContext)].filter(Boolean)
           );
-        if (sdfTarget) {
+        if (textOn && sdfTarget) {
           for (const edge of edges) if (!edge.top) pipeline.edge(edge);
         }
         // A per-letter text colour (a scoped `text` span or a variation
         // fgColor) is carried by the text mask the text pass just drew, so the
         // glyph body takes it instead of the uniform fill colour.
-        pipeline.fill(
-          SA.fx.fillUniforms(fillInstance, {
-            colors: colorSet.arrays,
-            category,
-            time: t,
-            palette: style.palette || null,
-            palettes: project.palettes || [],
-            categoryColors: project.categoryColors || {},
-            progress,
-            sdfTexture: sdfTarget ? sdfTarget.texture : null,
-            letterTint: hasLetterColor,
-          })
-        );
-        if (sdfTarget) {
-          for (const edge of edges) if (edge.top) pipeline.edge(edge);
+        if (textOn) {
+          pipeline.fill(
+            SA.fx.fillUniforms(fillInstance, {
+              colors: colorSet.arrays,
+              category,
+              time: t,
+              palette: style.palette || null,
+              palettes: project.palettes || [],
+              categoryColors: project.categoryColors || {},
+              progress,
+              sdfTexture: sdfTarget ? sdfTarget.texture : null,
+              letterTint: hasLetterColor,
+            })
+          );
+          if (sdfTarget) {
+            for (const edge of edges) if (edge.top) pipeline.edge(edge);
+          }
+          drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
         }
-        drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
         for (const instance of style.edge || []) {
           if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
         }
@@ -2173,26 +2211,30 @@ SA.lyricsEngine = (() => {
           if (uniforms.target === 'frame') {
             const existing = framePosts.get(instance.type);
             if (!existing || uniforms.u_params[3] > existing.u_params[3]) framePosts.set(instance.type, uniforms);
-          } else {
+          } else if (textOn) {
             pipeline.post(uniforms);
           }
         }
         const enterInstance = SA.fx.withDefaults(style.enter, 'enter');
-        if (enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
-        for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
+        if (textOn && enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
+        if (textOn) {
+          for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
+        }
         pipeline.commitLayer(1);
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
-        for (let i = 0; i < scene.letters.length; i += 1) {
-          const letter = scene.letters[i];
-          const letterState = result.letters[i];
-          entry.letters.push({
-            path: letter.path,
-            char: letter.char,
-            quad: quadForLetter(letter, letterState),
-            bbox: { x: letterState.x - letter.local.w / 2, y: letterState.y - letter.local.h / 2, w: letter.local.w, h: letter.local.h },
-            center: { x: letterState.x, y: letterState.y },
-            opacity: letterState.opacity,
-          });
+        if (textOn) {
+          for (let i = 0; i < scene.letters.length; i += 1) {
+            const letter = scene.letters[i];
+            const letterState = result.letters[i];
+            entry.letters.push({
+              path: letter.path,
+              char: letter.char,
+              quad: quadForLetter(letter, letterState),
+              bbox: { x: letterState.x - letter.local.w / 2, y: letterState.y - letter.local.h / 2, w: letter.local.w, h: letter.local.h },
+              center: { x: letterState.x, y: letterState.y },
+              opacity: letterState.opacity,
+            });
+          }
         }
         frame.cues.push(entry);
       }
@@ -2238,8 +2280,18 @@ SA.lyricsEngine = (() => {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
+      const subtitleTracks = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
+      const textHiddenTracks = new Set(subtitleTracks.filter((track) => track.textHidden).map((track) => track.id));
+      const cueTrackId = (beat) => {
+        const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
+        return (cue && cue.trackId) || 'sub1';
+      };
+
       const fonts = state.assets.fonts || [];
       for (const beat of beats) {
+        const textTrackId = cueTrackId(beat);
+        const baseStyle = SA.project && SA.project.resolveStyle ? SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`) : {};
+        const textOn = subtitleTextOn({ textHidden: textHiddenTracks.has(textTrackId) }, view, baseStyle);
         const scene = buildBeatScene(project, beat, fonts);
         if (!scene.letters.length) continue;
         let result;
@@ -2260,19 +2312,21 @@ SA.lyricsEngine = (() => {
           };
         }
         if (!result.active || !result.letters.length) continue;
-        textPass.draw(gl, scene, result.letters, { width: state.width, height: state.height });
+        if (textOn) textPass.draw(gl, scene, result.letters, { width: state.width, height: state.height });
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
-        for (let i = 0; i < scene.letters.length; i += 1) {
-          const letter = scene.letters[i];
-          const letterState = result.letters[i];
-          entry.letters.push({
-            path: letter.path,
-            char: letter.char,
-            quad: quadForLetter(letter, letterState),
-            bbox: { x: letterState.x - letter.local.w / 2, y: letterState.y - letter.local.h / 2, w: letter.local.w, h: letter.local.h },
-            center: { x: letterState.x, y: letterState.y },
-            opacity: letterState.opacity,
-          });
+        if (textOn) {
+          for (let i = 0; i < scene.letters.length; i += 1) {
+            const letter = scene.letters[i];
+            const letterState = result.letters[i];
+            entry.letters.push({
+              path: letter.path,
+              char: letter.char,
+              quad: quadForLetter(letter, letterState),
+              bbox: { x: letterState.x - letter.local.w / 2, y: letterState.y - letter.local.h / 2, w: letter.local.w, h: letter.local.h },
+              center: { x: letterState.x, y: letterState.y },
+              opacity: letterState.opacity,
+            });
+          }
         }
         frame.cues.push(entry);
       }
@@ -2416,5 +2470,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips };
 })();

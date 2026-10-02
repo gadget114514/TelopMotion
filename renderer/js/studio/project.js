@@ -599,6 +599,7 @@
     merged.format = FORMAT;
     // subtitle background visibility is a per-track boolean (absent = shown)
     for (const track of merged.tracks || []) {
+      if (track && track.kind === 'subtitle' && track.textHidden != null) track.textHidden = !!track.textHidden;
       if (track && track.kind === 'subtitle' && track.bgHidden != null) track.bgHidden = !!track.bgHidden;
       if (track && track.kind === 'subtitle' && track.graphicsHidden != null) track.graphicsHidden = !!track.graphicsHidden;
       // the text mask is a per-track boolean (absent = on), on every track kind

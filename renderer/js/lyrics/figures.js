@@ -222,6 +222,8 @@
     if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
     if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
     if (opts.color) params.color = String(opts.color);
+    if (opts.enabled != null) params.enabled = Boolean(opts.enabled);
+    else if (opts.disabled != null) params.enabled = !opts.disabled;
     // optional motif tuning (the filler editor writes these)
     if (opts.stroke != null) params.stroke = STROKES[opts.stroke] != null ? opts.stroke : 'med';
     for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
@@ -1496,6 +1498,8 @@
   // drawList for the figure clip type: resolve the sub-beat and build shapes.
   function drawList(spec, ctx) {
     let params = (spec && spec.params) || {};
+    if (params.disabled || params.enabled === false) return { shapes: [], texts: [] };
+    if (ctx && ctx.clip && (ctx.clip.disabled || ctx.clip.enabled === false)) return { shapes: [], texts: [] };
     const time = num(ctx && ctx.time, 0);
     let beats = Array.isArray(params.beats) ? params.beats : [];
     const force = {};

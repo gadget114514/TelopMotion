@@ -694,7 +694,13 @@ SA.timeline = (() => {
       const selected = (SA.store.state.selection.paths || []).some((path) => path === `cue:${cue.id}` || path.startsWith(`cue:${cue.id}/`));
       const warnings = (projectDoc.beatWarnings && projectDoc.beatWarnings[cue.id]) || [];
       const tint = categoryColor(cue);
-      ctx.fillStyle = trackHidden(row.track) ? 'rgba(21, 25, 36, 0.55)' : 'rgba(21, 25, 36, 0.92)';
+      const cueDisabled = !!cue.disabled;
+      if (cueDisabled) {
+        ctx.save();
+        ctx.globalAlpha = 0.42;
+      }
+      const textDimmed = trackHidden(row.track) || !!(row.track && row.track.textHidden);
+      ctx.fillStyle = textDimmed ? 'rgba(21, 25, 36, 0.55)' : 'rgba(21, 25, 36, 0.92)';
       rounded(x, y + 2, width, height, 6);
       ctx.fill();
       ctx.strokeStyle = warnings.length ? '#ff5c5c' : selected ? '#ff8a3d' : tint;
@@ -710,7 +716,7 @@ SA.timeline = (() => {
       ctx.beginPath();
       ctx.rect(x + 2, y, width - 4, height + 4);
       ctx.clip();
-      ctx.fillStyle = 'rgba(233, 236, 244, 0.45)';
+      ctx.fillStyle = textDimmed ? 'rgba(233, 236, 244, 0.22)' : 'rgba(233, 236, 244, 0.45)';
       ctx.font = '11px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
       ctx.textBaseline = 'top';
       ctx.fillText((cue.text || '').split('\n')[0], x + 6, y + 4);
@@ -721,6 +727,11 @@ SA.timeline = (() => {
         const bw = Math.max(1.5, ((beat.end - beat.start) / Math.max(0.001, cue.end - cue.start)) * innerWidth);
         if (bx + bw < 0 || bx > size.width) continue;
         const selectedBeat = (SA.store.state.selection.paths || []).includes(`cue:${cue.id}/beat:${beat.id}`);
+        const beatDisabled = !cueDisabled && !!beat.disabled;
+        if (beatDisabled) {
+          ctx.save();
+          ctx.globalAlpha = 0.38;
+        }
         ctx.fillStyle = beat.pinned
           ? 'rgba(255, 138, 61, 0.34)'
           : beat.kind === 'recap'
@@ -769,6 +780,7 @@ SA.timeline = (() => {
           ctx.restore();
         }
         hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
+        if (beatDisabled) ctx.restore();
         beatIndex += 1;
       }
       if (warnings.length) {
@@ -780,6 +792,7 @@ SA.timeline = (() => {
         ctx.closePath();
         ctx.fill();
       }
+      if (cueDisabled) ctx.restore();
     }
     ctx.restore();
   }
@@ -981,6 +994,14 @@ SA.timeline = (() => {
     return SA.controls ? SA.controls.prettify(type) : String(type);
   }
 
+  function isClipDisabled(clip) {
+    if (!clip) return false;
+    if (clip.disabled || clip.enabled === false) return true;
+    const params = clip.spec && clip.spec.params;
+    if (params && (params.disabled || params.enabled === false)) return true;
+    return false;
+  }
+
   // One generic renderer for backdrop / filler / background clips.
   function drawClipTrack(size, row) {
     if (row.first) {
@@ -998,13 +1019,16 @@ SA.timeline = (() => {
       const width = Math.max(3, (clip.end - clip.start) * pxPerSecond);
       if (x + width < 0 || x > size.width) continue;
       const selected = (SA.store.state.selection.paths || []).some((path) => path === `clip:${clip.id}`);
+      const disabled = isClipDisabled(clip);
       const fill = CLIP_COLORS[(clip.spec && clip.spec.type) || 'none'] || CLIP_COLORS.none;
-      ctx.fillStyle = trackHidden(row.track) ? 'rgba(30, 34, 44, 0.6)' : fill[0];
+      ctx.fillStyle = disabled || trackHidden(row.track) ? 'rgba(30, 34, 44, 0.6)' : fill[0];
       rounded(x, y + 1.5, width, height, 4);
       ctx.fill();
-      ctx.strokeStyle = selected ? '#ff8a3d' : fill[1];
+      ctx.strokeStyle = selected ? '#ff8a3d' : (disabled ? '#4a5266' : fill[1]);
       ctx.lineWidth = selected ? 1.6 : 1;
+      if (disabled) ctx.setLineDash([3, 3]);
       ctx.stroke();
+      if (disabled) ctx.setLineDash([]);
       // fade wedges show the envelope
       const fadeIn = Math.max(0, Number(clip.fadeIn) || 0);
       const fadeOut = Math.max(0, Number(clip.fadeOut) || 0);
@@ -1037,7 +1061,7 @@ SA.timeline = (() => {
         ctx.beginPath();
         ctx.rect(x + 3, y, width - 6, height);
         ctx.clip();
-        ctx.fillStyle = '#d6dbe9';
+        ctx.fillStyle = disabled ? '#8d96ab' : '#d6dbe9';
         ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
         ctx.textBaseline = 'middle';
         ctx.fillText(clipTypeLabel(clip), x + 6, y + height / 2 + 0.5);
@@ -2076,6 +2100,14 @@ SA.timeline = (() => {
       const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
       if (!clip) return;
       SA.store.setSelection([`clip:${clip.id}`], 'clip');
+      const disabled = isClipDisabled(clip);
+      add(disabled ? t('studio.timeline.enableClip') : t('studio.timeline.disableClip'), () => {
+        const patch = { disabled: !disabled };
+        if (clip.spec && clip.spec.params) {
+          patch.spec = { ...clip.spec, params: { ...clip.spec.params, disabled: !disabled } };
+        }
+        SA.store.commands.updateClip(clip.id, patch);
+      });
       if (hit.kind === 'background' || hit.kind === 'backdrop') addClipTypeMenu(clip, hit.kind);
       if (hit.kind === 'filler') {
         addFillerPresetMenu(clip);
@@ -2102,6 +2134,7 @@ SA.timeline = (() => {
           const id = SA.store.commands.addTrack('subtitle');
           if (id) SA.store.setSelection([`track:${id}`], 'track');
         });
+        add(track.textHidden ? t('studio.track.showText') : t('studio.track.hideText'), () => SA.store.commands.updateTrack(track.id, { textHidden: !track.textHidden }));
         add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
         add(track.graphicsHidden ? t('studio.track.showGraphics') : t('studio.track.hideGraphics'), () => SA.store.commands.updateTrack(track.id, { graphicsHidden: !track.graphicsHidden }));
         add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
@@ -2150,6 +2183,7 @@ SA.timeline = (() => {
     if (!cueId) return;
     if (hit.type === 'beat') {
       const beat = (project().beats[cueId] || []).find((entry) => entry.id === hit.beatId);
+      add(beat && beat.disabled ? t('studio.inspector.enabled') : t('studio.inspector.disabled'), () => SA.store.commands.setBeatDisabled(cueId, hit.beatId, !(beat && beat.disabled)));
       add(beat && beat.pinned ? t('studio.beat.unpin') : t('studio.beat.pin'), () => SA.store.commands.setBeatPinned(cueId, hit.beatId, !(beat && beat.pinned)));
       add(t('studio.beat.splitAtPlayhead'), () => SA.store.commands.splitBeat(cueId, hit.beatId, SA.store.state.playhead));
       add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
@@ -2169,6 +2203,8 @@ SA.timeline = (() => {
         add(t('studio.motion.clearHere'), () => SA.store.commands.setStyleProp({ cueId, beatId: hit.beatId }, 'motions', undefined));
       }
     } else {
+      const cue = cueList().find((entry) => entry.id === cueId);
+      add(cue && cue.disabled ? t('studio.inspector.enabled') : t('studio.inspector.disabled'), () => SA.store.commands.setCueDisabled(cueId, !(cue && cue.disabled)));
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
       add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));

@@ -1333,6 +1333,28 @@ SA.store = (() => {
         },
       });
     },
+    setBeatDisabled(cueId, beatId, disabled) {
+      const cue = findCue(cueId);
+      const beat = findBeat(state.project, cueId, beatId) || (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
+      if (!beat || !state.project) return;
+      const next = !!disabled;
+      if (!!beat.disabled === next) return;
+      dispatch({
+        label: next ? 'disable beat' : 'enable beat',
+        areas: ['script'],
+        do(projectDoc) {
+          const target = materializeBeat(projectDoc, cueId, beatId);
+          if (target) {
+            if (next) {
+              target.disabled = true;
+              target.pinned = true;
+            } else {
+              delete target.disabled;
+            }
+          }
+        },
+      });
+    },
     addKeyframe(path, propPath, key) {
       dispatch({
         label: 'add keyframe',
@@ -1784,6 +1806,23 @@ SA.store = (() => {
         },
       });
     },
+    setCueDisabled(cueId, disabled) {
+      const cue = findCue(cueId);
+      if (!cue || !state.project) return;
+      const next = !!disabled;
+      if (!!cue.disabled === next) return;
+      dispatch({
+        label: next ? 'disable cue' : 'enable cue',
+        areas: ['script'],
+        do(projectDoc) {
+          const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
+          if (target) {
+            if (next) target.disabled = true;
+            else delete target.disabled;
+          }
+        },
+      });
+    },
     addClip(clip, trackId) {
       if (!clip) return null;
       const project = state.project;
@@ -2074,6 +2113,7 @@ SA.store = (() => {
               y: params.y,
               color: params.color,
               cuts: params.cuts,
+              enabled: params.enabled != null ? params.enabled : (target.disabled != null ? !target.disabled : undefined),
             });
             return;
           }

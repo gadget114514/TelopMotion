@@ -581,6 +581,29 @@ test('rerollClip redraws a figure clip with a fresh motif and moves', () => {
   assert.equal(store.undo(), true);
 });
 
+test('rerollClip preserves figure clip disabled state', () => {
+  const doc = fixture();
+  doc.tracks.push({ id: 'fig', kind: 'figure', name: '図形' });
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  doc.clips.push({
+    id: 'fig_dis',
+    trackId: 'fig',
+    start: 0,
+    end: 4,
+    disabled: true,
+    spec: SA.figures.generate({ span: { start: 0, end: 4 }, axes: { weird: 0.5 }, seed: 1, id: 'fig_dis', enabled: false }),
+    opacity: 0.9,
+    fadeIn: 0,
+    fadeOut: 0,
+    colors: null,
+  });
+  store.load(doc);
+  store.commands.rerollClip('fig_dis');
+  const clip = store.state.project.clips.find((c) => c.id === 'fig_dis');
+  assert.equal(clip.spec.params.enabled, false);
+  assert.equal(clip.disabled, true);
+});
+
 test('a composition-mode cue re-roll redraws its beats through composeBeat', () => {
   const doc = fixture();
   doc.styleMode.compose = true;

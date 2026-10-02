@@ -470,3 +470,38 @@ test('the figure lines are drawn thick (the legacy tuning stays the floor)', () 
   assert.ok(thickest >= FRAME.height * 0.005, `line thickness ${thickest}`);
   assert.ok(figures.drawList(manual, context).shapes.length > 0);
 });
+
+
+test('figures.generate and drawList support disabled flag', () => {
+  const specDisabled = figures.generate({ span: SPAN, motif: 'orbit', enabled: false, seed: 1, id: 'fig_d1' });
+  assert.equal(specDisabled.params.enabled, false);
+
+  const resDisabled = figures.drawList(specDisabled, ctx());
+  assert.deepEqual(resDisabled, { shapes: [], texts: [] });
+
+  const specEnabled = figures.generate({ span: SPAN, motif: 'orbit', enabled: true, seed: 1, id: 'fig_d2' });
+  assert.equal(specEnabled.params.enabled, true);
+  const resEnabled = figures.drawList(specEnabled, ctx());
+  assert.ok(resEnabled.shapes.length > 0);
+
+  // clip-level disabled in context
+  const resClipDisabled = figures.drawList(specEnabled, ctx({ clip: { key: 'fig_0', start: SPAN.start, end: SPAN.end, disabled: true } }));
+  assert.deepEqual(resClipDisabled, { shapes: [], texts: [] });
+
+  // params.enabled === false
+  const resParamEnabledFalse = figures.drawList({ type: 'figure', params: { ...specEnabled.params, enabled: false } }, ctx());
+  assert.deepEqual(resParamEnabledFalse, { shapes: [], texts: [] });
+});
+
+test('fillerRender includes disabled parameter for figures and figuresShapes respects it', () => {
+  const fillerRender = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js'));
+  const params = fillerRender.paramsOf('figures');
+  assert.ok(params.some((p) => p.key === 'enabled' && p.kind === 'bool' && p.default === true));
+
+  // figuresShapes respects disabled
+  const shapes = fillerRender.drawList({ type: 'figures', params: { enabled: false, motif: 'orbit' } }, ctx());
+  assert.deepEqual(shapes, { shapes: [], texts: [] });
+
+  const shapesEnabled = fillerRender.drawList({ type: 'figures', params: { enabled: true, motif: 'orbit' } }, ctx());
+  assert.ok(shapesEnabled.shapes.length > 0);
+});

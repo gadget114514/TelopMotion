@@ -765,6 +765,7 @@
   // the params carrying the generated figure (or generated here for an empty
   // hand-made gap clip).
   function figuresShapes(params, ctx) {
+    if (params && (params.disabled || params.enabled === false)) return { shapes: [], texts: [] };
     if (!figures || typeof figures.drawList !== 'function') return { shapes: [], texts: [] };
     // an empty hand-made clip gets its sub-beats generated in drawList from the
     // context (the clip's own from / to or start / end); pass every tuning
@@ -1047,6 +1048,7 @@
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
     ],
     figures: [
+      { key: 'enabled', kind: 'bool', default: true },
       { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets', 'slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars', 'proc'], default: 'orbit' },
       { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
       { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
