@@ -321,3 +321,39 @@ test('animation layer drives enter, exit, and hold animations', () => {
   assert.ok(holdFlow[0].trim[2] > 0);
 });
 
+test('decorPrimitives expands high-level page decor items into GL primitives', () => {
+  const decor = [
+    { kind: 'rect', role: 'paper', x: 10, y: 20, w: 200, h: 100, radius: 8 },
+    { kind: 'line', role: 'rule', x0: 0, y0: 50, x1: 200, y1: 50, lineWidth: 2 },
+    { kind: 'circle', role: 'accent', x: 30, y: 30, r: 12 },
+    { kind: 'bubble', role: 'paper', x: 50, y: 50, w: 100, h: 40, tailSide: 'left' },
+    { kind: 'cells', role: 'rule', x: 0, y: 0, w: 100, h: 100, cols: 2, rows: 2 },
+  ];
+  const colors = {
+    paper: '#111122',
+    rule: '#444455',
+    accent: '#ff2266',
+  };
+  const offset = { x: 50, y: 100 };
+  const prims = ops.decorPrimitives(decor, { colors, offset, opacity: 0.8 });
+
+  assert.ok(prims.length >= 5);
+  // rect shifted by offset
+  const rect = prims.find((p) => p.kind === 'rect' && p.w === 200);
+  assert.equal(rect.x, 60);
+  assert.equal(rect.y, 120);
+  assert.equal(rect.color, '#111122');
+  assert.equal(rect.opacity, 0.8);
+
+  // capsule shifted by offset
+  const line = prims.find((p) => p.kind === 'capsule' && p.lineWidth === 2);
+  assert.equal(line.x0, 50);
+  assert.equal(line.y0, 150);
+  assert.equal(line.x1, 250);
+  assert.equal(line.y1, 150);
+
+  // bubble has both rect body and convex tail
+  assert.ok(prims.some((p) => p.kind === 'convex'));
+});
+
+

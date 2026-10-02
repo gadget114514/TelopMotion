@@ -636,6 +636,7 @@
       state.x = anchorX + formationPoint.x;
       state.y = anchorY + formationPoint.y;
       state.rot = formationPoint.rot;
+      if (letter.baseRot) state.rot += letter.baseRot;
       state.scaleX *= formationPoint.scale == null ? 1 : formationPoint.scale;
       state.scaleY *= formationPoint.scale == null ? 1 : formationPoint.scale;
       if (drift.x || drift.y) {

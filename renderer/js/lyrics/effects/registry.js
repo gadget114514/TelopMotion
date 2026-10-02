@@ -42,6 +42,7 @@
     ornEdge: null,
     ornMotion: { type: 'follow', params: {} },
     repeat: { type: 'none', params: {} },
+    page: { type: 'none', params: {} },
   };
 
   function alias(group, baseGroup) {

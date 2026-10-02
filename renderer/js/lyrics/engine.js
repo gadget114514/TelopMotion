@@ -306,7 +306,9 @@ SA.lyricsEngine = (() => {
       if (typeof SA.project === 'undefined' || typeof SA.project.resolveStyle !== 'function') return undefined;
       const style = SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`);
       const layoutType = style && style.layout && style.layout.type;
-      return layoutType === 'vertical' ? 'vertical' : undefined;
+      const pageType = style && style.page && style.page.type;
+      if (layoutType === 'vertical' || pageType === 'vertical' || (pageType === 'manuscript' && (!style.page.params || style.page.params.vertical !== false))) return 'vertical';
+      return undefined;
     }
 
     function buildBeatScene(project, beat, fonts) {
@@ -1708,6 +1710,53 @@ SA.lyricsEngine = (() => {
       return { kind: 'palette', index };
     }
 
+    function pageColors(style) {
+      const ink = textColorHex(style) || '#ffffff';
+      let paper = '#14141c';
+      if (ink) {
+        const rgb = SA.color && SA.color.parse ? SA.color.parse(ink) : null;
+        if (rgb) {
+          const lum = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+          paper = lum > 128 ? '#14141c' : '#f5f5f7';
+        }
+      }
+      const palette = projectPalette();
+      const accent = (palette && (palette.accent || palette.primary)) || '#e0245e';
+      return {
+        ink,
+        paper,
+        accent,
+        rule: ink,
+        muted: ink,
+        avatar: accent,
+      };
+    }
+
+    function drawPageDecor(active, t) {
+      if (!shapesPass || !SA.shapeOps || !active) return;
+      const { scene, result, style } = active;
+      if (!scene || !scene.decor || !scene.decor.length) return;
+
+      const anchor = (result && result.meta && result.meta.anchor) || { x: state.width / 2, y: state.height / 2 };
+      const offset = {
+        x: anchor.x - (scene.width || state.width) / 2,
+        y: anchor.y - (scene.height || state.height) / 2,
+      };
+
+      const firstLetter = result.letters && result.letters[0];
+      const pe = firstLetter ? (firstLetter.pe != null ? firstLetter.pe : 1) : 1;
+      const px = firstLetter ? (firstLetter.px != null ? firstLetter.px : 0) : 0;
+      const lead = (style.page && style.page.params && style.page.params.decorLead != null) ? Number(style.page.params.decorLead) : 0.15;
+      const fadeIn = Math.min(1, pe + lead * 2);
+      const fadeOut = Math.max(0, 1 - (px - lead * 2));
+      const opacity = Math.max(0, Math.min(1, fadeIn * fadeOut));
+      if (opacity <= 0.001) return;
+
+      const colors = pageColors(style);
+      const prims = SA.shapeOps.decorPrimitives(scene.decor, { colors, offset, opacity });
+      drawPrimitives(prims);
+    }
+
     // Draws one of the two text-shape passes. `family` 'bg' is the definition
     // background (per-letter cell squares); 'orn' is the text ornament group.
     // Both draw behind the glyphs into the same layer; the caller knocks the
@@ -1960,6 +2009,7 @@ SA.lyricsEngine = (() => {
         const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
         const ornActive = !!(ornShape && ornShape.type && ornShape.type !== 'none');
         pipeline.beginLayer();
+        drawPageDecor(active, t);
         // both shape passes draw behind the glyphs and commit as a layer of
         // their own (see doc/text-layer-design.md): the foreground mask knocks
         // the glyphs out of it and the layer reaches the scene before the

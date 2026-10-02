@@ -603,6 +603,191 @@
     return [a, b, o];
   }
 
+  function decorPrimitives(decorList, options) {
+    if (!decorList || !decorList.length) return [];
+    const opts = options || {};
+    const colors = opts.colors || {};
+    const ox = (opts.offset && Number(opts.offset.x)) || 0;
+    const oy = (opts.offset && Number(opts.offset.y)) || 0;
+    const globalOpacity = opts.opacity == null ? 1 : clamp01(Number(opts.opacity));
+    const prims = [];
+
+    function resolveColor(item) {
+      if (item.color) return item.color;
+      const role = item.role || 'rule';
+      if (role === 'ink') return colors.ink || '#ffffff';
+      if (role === 'paper') return colors.paper || '#111118';
+      if (role === 'accent') return colors.accent || '#ff0055';
+      if (role === 'muted') return colors.muted || 'rgba(255,255,255,0.3)';
+      if (role === 'avatar') return colors.avatar || colors.accent || '#8888aa';
+      return colors.rule || 'rgba(255,255,255,0.55)';
+    }
+
+    for (let i = 0; i < decorList.length; i++) {
+      const item = decorList[i];
+      if (!item) continue;
+      const color = resolveColor(item);
+      const alpha = (item.opacity == null ? 1 : clamp01(Number(item.opacity))) * globalOpacity;
+      if (alpha <= 0.001) continue;
+
+      const kind = item.kind;
+      if (kind === 'rect' || kind === 'roundRect') {
+        const x = (item.x || 0) + ox;
+        const y = (item.y || 0) + oy;
+        const w = Math.max(0, item.w || item.width || 0);
+        const h = Math.max(0, item.h || item.height || 0);
+        const radius = item.radius || 0;
+
+        if (item.stroke) {
+          prims.push({
+            kind: 'rect',
+            x,
+            y,
+            w,
+            h,
+            radius,
+            stroke: Number(item.stroke) || 1,
+            strokeColor: color,
+            color: [0, 0, 0, 0],
+            opacity: alpha,
+          });
+        } else {
+          prims.push({
+            kind: 'rect',
+            x,
+            y,
+            w,
+            h,
+            radius,
+            color,
+            opacity: alpha,
+          });
+        }
+      } else if (kind === 'circle') {
+        prims.push({
+          kind: 'circle',
+          x: (item.x || 0) + ox,
+          y: (item.y || 0) + oy,
+          r: item.r || item.radius || 4,
+          color,
+          opacity: alpha,
+        });
+      } else if (kind === 'ring') {
+        prims.push({
+          kind: 'ring',
+          x: (item.x || 0) + ox,
+          y: (item.y || 0) + oy,
+          r: item.r || item.radius || 4,
+          thickness: item.thickness || 2,
+          color,
+          opacity: alpha,
+        });
+      } else if (kind === 'line') {
+        prims.push({
+          kind: 'capsule',
+          x0: (item.x0 || 0) + ox,
+          y0: (item.y0 || 0) + oy,
+          x1: (item.x1 || 0) + ox,
+          y1: (item.y1 || 0) + oy,
+          lineWidth: item.lineWidth || 1.5,
+          color,
+          opacity: alpha,
+          dash: item.dash,
+        });
+      } else if (kind === 'dashLine') {
+        prims.push({
+          kind: 'capsule',
+          x0: (item.x0 || 0) + ox,
+          y0: (item.y0 || 0) + oy,
+          x1: (item.x1 || 0) + ox,
+          y1: (item.y1 || 0) + oy,
+          lineWidth: item.lineWidth || 1.5,
+          color,
+          opacity: alpha,
+          dash: [item.dashOn || 6, item.dashOff || 6, 0],
+        });
+      } else if (kind === 'polygon') {
+        prims.push({
+          kind: 'polygon',
+          x: (item.x || 0) + ox,
+          y: (item.y || 0) + oy,
+          r: item.r || 6,
+          sides: item.sides || 6,
+          rot: item.rot || 0,
+          color,
+          opacity: alpha,
+        });
+      } else if (kind === 'bubble') {
+        const x = (item.x || 0) + ox;
+        const y = (item.y || 0) + oy;
+        const w = item.w || 60;
+        const h = item.h || 36;
+        // Bubble body
+        prims.push({
+          kind: 'rect',
+          x,
+          y,
+          w,
+          h,
+          radius: item.radius || 12,
+          color,
+          opacity: alpha,
+        });
+        // Tail triangle (convex)
+        const isLeft = (item.tailSide === 'left');
+        const pts = isLeft
+          ? [{ x: x + 12, y: y + h - 2 }, { x: x + 26, y: y + h - 2 }, { x: x + 4, y: y + h + 8 }]
+          : [{ x: x + w - 12, y: y + h - 2 }, { x: x + w - 26, y: y + h - 2 }, { x: x + w - 4, y: y + h + 8 }];
+        prims.push({
+          kind: 'convex',
+          points: pts,
+          color,
+          opacity: alpha,
+        });
+      } else if (kind === 'cells') {
+        const x = (item.x || 0) + ox;
+        const y = (item.y || 0) + oy;
+        const w = item.w || 200;
+        const h = item.h || 200;
+        const cols = item.cols || 8;
+        const rows = item.rows || 8;
+        const cellW = item.cellW || (w / cols);
+        const cellH = item.cellH || (h / rows);
+
+        // Vertical divider capsules
+        for (let c = 1; c < cols; c++) {
+          const lx = x + c * cellW;
+          prims.push({
+            kind: 'capsule',
+            x0: lx,
+            y0: y,
+            x1: lx,
+            y1: y + h,
+            lineWidth: 0.75,
+            color,
+            opacity: alpha * 0.6,
+          });
+        }
+        // Horizontal divider capsules
+        for (let r = 1; r < rows; r++) {
+          const ly = y + r * cellH;
+          prims.push({
+            kind: 'capsule',
+            x0: x,
+            y0: ly,
+            x1: x + w,
+            y1: ly,
+            lineWidth: 0.75,
+            color,
+            opacity: alpha * 0.6,
+          });
+        }
+      }
+    }
+
+    return prims;
+  }
+
   return {
     SHAPES,
     FOLLOW_MODES,
@@ -625,5 +810,6 @@
     computeMotion,
     expand,
     trimForDrive,
+    decorPrimitives,
   };
 });

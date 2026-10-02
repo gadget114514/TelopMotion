@@ -7,9 +7,10 @@ SA.inspector = (() => {
   // the extended primitives
   const UI_PACKS = { packs: ['font', 'pro'] };
 
-  const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold'];
+  const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold', 'page'];
   const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
   const GROUP_LABELS = {
+    page: 'studio.inspector.page',
     animation: 'studio.inspector.animation',
     layout: 'studio.inspector.layout',
     enter: 'studio.inspector.enter',
@@ -32,7 +33,7 @@ SA.inspector = (() => {
     ornMotion: 'studio.inspector.ornMotion',
     repeat: 'studio.inspector.repeat',
   };
-  const CONTROL_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
+  const CONTROL_GROUPS = ['page', 'animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
 
   const el = {};
   let lastSelection = '';
@@ -988,6 +989,26 @@ SA.inspector = (() => {
       inherit.className = 'insp-inherit';
       inherit.textContent = t('studio.inspector.inheritedHint');
       body.appendChild(inherit);
+    }
+    if (group === 'page') {
+      const presetBtn = document.createElement('button');
+      presetBtn.type = 'button';
+      presetBtn.className = 'btn btn-mini btn-accent';
+      presetBtn.style.marginTop = '4px';
+      presetBtn.textContent = `✦ ${t('studio.inspector.selectPreset') || 'プリセットを選択…'}`;
+      presetBtn.addEventListener('click', () => {
+        if (SA.pageDialog && SA.pageDialog.open) SA.pageDialog.open();
+      });
+      body.appendChild(presetBtn);
+    }
+    if (group === 'layout') {
+      const pageInst = style.page;
+      if (pageInst && pageInst.type && pageInst.type !== 'none' && pageInst.enabled !== false) {
+        const pageNotice = document.createElement('div');
+        pageNotice.className = 'insp-inherit insp-page-notice';
+        pageNotice.textContent = t('studio.inspector.pageActiveNotice') || '※ 紙面レイアウト有効中';
+        body.appendChild(pageNotice);
+      }
     }
     const descriptor = SA.fx.get(group, instance && instance.type);
     const params = (instance && instance.params) || {};
@@ -2273,6 +2294,8 @@ SA.inspector = (() => {
         container.appendChild(actions);
       }
     };
+    heading('studio.inspector.sectionPage');
+    renderGroups(['page']);
     heading('studio.inspector.sectionMotion');
     renderGroups(['animation', 'layout', 'enter', 'exit', 'hold', 'location']);
     heading('studio.inspector.sectionText');
