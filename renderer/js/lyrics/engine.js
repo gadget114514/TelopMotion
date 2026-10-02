@@ -1787,12 +1787,12 @@ SA.lyricsEngine = (() => {
       if (!bg || !bg.states.length) return null;
       // the engine-side safety cap: a stored project cannot paint a slab that
       // swallows the text (the definition background is one letter box and never
-      // reaches the cap; the ornaments are held at 1.25 letter boxes, em = text
+      // reaches the cap; the ornaments are held at 2.4 letter boxes, em = text
       // box width + 0.6 em).
       if (SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
-        SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: 2.5, emExtra: 0.6, emPx: scene.size } : { cell: 1.25, emExtra: 0.6, emPx: scene.size });
+        SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: 2.5, emExtra: 0.6, emPx: scene.size } : { cell: 2.4, emExtra: 0.6, emPx: scene.size });
       }
       const amountKey = BG_AMOUNT_KEY[shape.type];
       const params = shape.params || {};

@@ -2390,7 +2390,7 @@
     let chance;
     if (opts.chance != null) chance = clamp01(opts.chance);
     else if (config && config.chance != null) chance = (Number(config.chance) + 0.5 * w) * BG_AUTO_SCALE;
-    else chance = genParamsMod.derive(axes).textBgChance * BG_AUTO_SCALE;
+    else chance = genParamsMod.derive(axes).textBgChance;
     if (!forced && random() >= Math.min(1, chance)) return false;
     // placement: pinned weights, then the genre's table, then the derived
     // defaults (the classic 0.55 / 0.25 / 0.2)
@@ -2445,12 +2445,23 @@
       params.varyRotation = round(random() * 25 * (1 + 2 * w), 1);
     }
     if (shape === 'bar' && adjusted !== 'underlay') params.offset = { x: 0, y: 0.3 };
+    // the scatter knobs of the theme (pinned value, else the derived default):
+    // centre offset / size of a mark (a background square never moves) and how
+    // many colours it draws from
+    const autoParams = genParamsMod.derive(axes);
+    const scatterOf = (pinned, key) => (pinned == null ? autoParams[key] : clamp01(pinned));
+    const offsetScatter = scatterOf(opts.offsetScatter, 'bgOffsetScatter');
+    const sizeScatter = scatterOf(opts.sizeScatter, 'bgSizeScatter');
+    const colorScatter = scatterOf(opts.colorScatter, 'bgColorScatter');
     if (BG_LETTER_SHAPES.has(shape)) {
       // a letter-sized mark behind its letter (the random draws above are kept,
       // so the stream stays put): one letter box, no offset, no spin, no wash
       params.unit = 'cell';
-      params.width = 1;
-      params.height = 1;
+      // the size scatter widens the look's base size: smaller or bigger than
+      // its letter, one size per look
+      const base = sizeScatter > 0 ? round(lerp(1 - 0.35 * sizeScatter, 1 + 0.7 * sizeScatter, random()), 2) : 1;
+      params.width = base;
+      params.height = base;
       params.layer = 'behind';
       params.opacity = 1;
       delete params.offset;
@@ -2464,11 +2475,6 @@
     } else {
       vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
     }
-    // the scatter knobs of the theme: centre offset / size of a mark (a
-    // background square never moves) and how many colours it draws from
-    const offsetScatter = opts.offsetScatter == null ? 0 : clamp01(opts.offsetScatter);
-    const sizeScatter = opts.sizeScatter == null ? 0 : clamp01(opts.sizeScatter);
-    const colorScatter = opts.colorScatter == null ? 0 : clamp01(opts.colorScatter);
     if (offsetScatter > 0) params.varyOffset = round(offsetScatter * 0.6, 2);
     if (sizeScatter > 0) params.varySize = round(sizeScatter * 0.8, 2);
     if (colorScatter > 0 && vary === 'none') vary = 'random';

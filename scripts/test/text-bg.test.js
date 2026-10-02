@@ -514,7 +514,7 @@ test('the same seed keeps its draw and only the destination splits', () => {
     }
     if (ornOn) {
       // a letter-sized mark is a cell shape of exactly one letter box
-      if (first.ornShape.type === 'square') assert.ok(first.ornShape.params.unit === 'em' || first.ornShape.params.width === 1, `seed ${seed} ornament square`);
+      if (first.ornShape.type === 'square') assert.ok(first.ornShape.params.unit === 'em' || (first.ornShape.params.width >= 0.6 && first.ornShape.params.width <= 1.8), `seed ${seed} ornament square`);
       ornaments += 1;
     }
   }
@@ -531,6 +531,7 @@ test('basic marks are letter-sized and centred, and the background edge uses the
   const edgeTypes = new Set();
   let letterSized = 0;
   let applied = 0;
+  const sizes = new Set();
   for (let seed = 1; seed <= 200; seed += 1) {
     const style = {};
     if (!moods.applyGenreBackground(style, null, axes, rng.rngFor(seed, 'bg-basic'), palette, false, { chance: 1, edgeChance: 1 })) continue;
@@ -538,8 +539,9 @@ test('basic marks are letter-sized and centred, and the background edge uses the
     const orn = style.ornShape;
     if (orn && basic.has(orn.type)) {
       assert.equal(orn.params.unit, 'cell', `seed ${seed} ${orn.type} unit`);
-      assert.equal(orn.params.width, 1);
-      assert.equal(orn.params.height, 1);
+      assert.ok(orn.params.width >= 0.6 && orn.params.width <= 1.8, `seed ${seed} size ${orn.params.width}`);
+      assert.equal(orn.params.height, orn.params.width);
+      sizes.add(orn.params.width);
       assert.equal(orn.params.offset, undefined, `seed ${seed} ${orn.type} must stay centred`);
       assert.equal(orn.params.layer, 'behind');
       letterSized += 1;
@@ -547,6 +549,8 @@ test('basic marks are letter-sized and centred, and the background edge uses the
     for (const edge of style.ornEdge || style.bgEdge || []) edgeTypes.add(edge.type);
   }
   assert.ok(letterSized > 10, `only ${letterSized} letter-sized marks`);
+  assert.ok(sizes.size > 5, 'the mark size should vary between looks');
+  assert.ok(Math.min(...sizes) < 1 && Math.max(...sizes) > 1, 'marks should come both smaller and bigger than the letter');
   assert.ok(edgeTypes.has('neonGlow') && edgeTypes.has('outline'), [...edgeTypes].join());
   // unpinned, the background is the exception
   let present = 0;
@@ -569,7 +573,7 @@ test('the theme scatter knobs drive offset, size and colour spread of the marks'
   for (let seed = 1; seed <= 80; seed += 1) {
     const flat = {};
     const spread = {};
-    const base = { chance: 1, placement: { bgAccent: 1 } };
+    const base = { chance: 1, placement: { bgAccent: 1 }, offsetScatter: 0, sizeScatter: 0, colorScatter: 0 };
     moods.applyGenreBackground(flat, null, axes, rng.rngFor(seed, 'sc'), palette, false, base);
     moods.applyGenreBackground(spread, null, axes, rng.rngFor(seed, 'sc'), palette, false, { ...base, offsetScatter: 1, sizeScatter: 1, colorScatter: 1 });
     if (!flat.ornShape) continue;
