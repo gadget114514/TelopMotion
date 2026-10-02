@@ -1075,6 +1075,9 @@ SA.inspector = (() => {
       const descriptor = SA.fx.get(group, instance.type);
       const params = instance.params || {};
       for (const param of SA.controls.paramEntries(descriptor)) {
+        // the header checkbox is the one on / off switch of a stack entry; the
+        // layer's own `enabled` parameter would be a second, confusing one
+        if (group === 'post' && param.key === 'enabled') continue;
         const value = params[param.key] != null ? params[param.key] : param.default;
         const propPath = `${group}.${index}.params.${param.key}`;
         const control = SA.controls.paramControl(

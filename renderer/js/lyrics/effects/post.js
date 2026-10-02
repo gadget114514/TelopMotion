@@ -108,8 +108,14 @@
   // shape layer only follows the whole text block and its repeats / glow
   // spread far from the letters. What moves with the letters (text posts,
   // bgShape, edges, clones) stays with the lyrics.
+  // an instance is off when its stack checkbox (`enabled`) or the layer's own
+  // `enabled` parameter (shape layer / camera / every post) is cleared
+  function postOn(instance) {
+    return !!instance && instance.enabled !== false && !(instance.params && instance.params.enabled === false);
+  }
+
   function isGraphicsPost(instance) {
-    if (!instance || instance.enabled === false) return false;
+    if (!postOn(instance)) return false;
     return postTarget(instance) === 'frame';
   }
 
@@ -258,6 +264,7 @@
   fx.postUniforms = postUniforms;
   fx.postTarget = postTarget;
   fx.isGraphicsPost = isGraphicsPost;
+  fx.postOn = postOn;
   fx.postTypes = CODE_BY_TYPE;
   return fx;
 });

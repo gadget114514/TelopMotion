@@ -782,7 +782,7 @@ SA.lyricsEngine = (() => {
       if (!SA.camera || typeof SA.camera.maxExtent !== 'function') return null;
       let worst = null;
       for (const instance of list) {
-        if (!instance || instance.enabled === false || instance.type !== 'camera') continue;
+        if (!instance || instance.enabled === false || (instance.params && instance.params.enabled === false) || instance.type !== 'camera') continue;
         const extent = SA.camera.maxExtent(instance.params || {});
         if (!extent) continue;
         if (!worst) worst = { zoom: extent.zoom, ox: Math.abs(extent.ox), oy: Math.abs(extent.oy) };
@@ -2154,7 +2154,7 @@ SA.lyricsEngine = (() => {
         }
         const audioFeatures = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
         for (const instance of style.post || []) {
-          if (!instance || instance.enabled === false) continue;
+          if (!instance || instance.enabled === false || (instance.params && instance.params.enabled === false)) continue;
           if (!graphicsOn && SA.fx.isGraphicsPost && SA.fx.isGraphicsPost(instance)) continue;
           const uniforms = SA.fx.postUniforms(instance, {
             envelope: instance.envelope == null ? 1 : instance.envelope,
