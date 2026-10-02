@@ -53,44 +53,47 @@ globalThis.document = {
   createElement: (tag) => mockElement(tag),
 };
 
-const SA = {
-  i18n: require(path.join(ROOT, 'renderer', 'js', 'i18n.js')),
-  color: require(path.join(ROOT, 'renderer', 'js', 'color.js')),
-  moods: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js')),
-  genParams: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gen-params.js')),
-  genres: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'genres.js')),
-  keywords: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'keywords.js')),
-  paletteRoles: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js')),
-  project: require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js')),
-  store: {
-    state: {
-      project: {
-        style: {
-          palette: { id: 'p_custom', name: 'Custom Palette', colors: ['#ff0000', '#00ff00', '#0000ff'] },
-        },
-        styleMode: {
-          axes: { speed: 0.9, energy: 0.8, weird: 0.9 },
-          genre: 'rock',
-          params: { holdChance: 0.99, sizeCenter: 0.8, decoNone: 1 },
-          typeWeights: { hold: { pulse: 0 } },
-          usePalettes: ['p_custom'],
-        },
+const SA = (globalThis.SA = {});
+
+require(path.join(ROOT, 'renderer', 'js', 'i18n.js'));
+SA.color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
+SA.moods = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js'));
+SA.genParams = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gen-params.js'));
+SA.genres = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'genres.js'));
+SA.keywords = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'keywords.js'));
+SA.paletteRoles = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles.js'));
+SA.project = require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js'));
+
+SA.store = {
+  state: {
+    project: {
+      style: {
+        palette: { id: 'p_custom', name: 'Custom Palette', colors: ['#ff0000', '#00ff00', '#0000ff'] },
+      },
+      styleMode: {
+        axes: { speed: 0.9, energy: 0.8, weird: 0.9 },
+        genre: 'rock',
+        params: { holdChance: 0.99, sizeCenter: 0.8, decoNone: 1 },
+        typeWeights: { hold: { pulse: 0 } },
+        usePalettes: ['p_custom'],
       },
     },
-    clone: (v) => (v == null ? v : JSON.parse(JSON.stringify(v))),
-    dispatch: () => {},
   },
-  controls: {
-    typeLabel: (g, t) => `${g}:${t}`,
-  },
-  studio: {
-    toast: () => {},
-  },
-  themes: {
-    get: () => null,
-  },
+  clone: (v) => (v == null ? v : JSON.parse(JSON.stringify(v))),
+  dispatch: () => {},
 };
-globalThis.SA = SA;
+
+SA.controls = {
+  typeLabel: (g, t) => `${g}:${t}`,
+};
+
+SA.studio = {
+  toast: () => {},
+};
+
+SA.themes = {
+  get: () => null,
+};
 
 require(path.join(ROOT, 'renderer', 'js', 'studio', 'theme-editor.js'));
 
