@@ -94,7 +94,10 @@ SA.themes = (() => {
         if (cueId) container = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
         for (const group of THEME_GROUPS) delete container[group];
         // a stored theme may predate the background / ornament split
-        const themeStyle = SA.textBg && typeof SA.textBg.splitStyle === 'function' ? SA.textBg.splitStyle(theme.style, { shadow: false }).style : theme.style;
+        let themeStyle = SA.textBg && typeof SA.textBg.splitStyle === 'function' ? SA.textBg.splitStyle(theme.style, { shadow: false }).style : theme.style;
+        if (projectDoc.styleMode && SA.genParams && typeof SA.genParams.filterStyle === 'function') {
+          themeStyle = SA.genParams.filterStyle(themeStyle, projectDoc.styleMode);
+        }
         const merged = SA.project.mergeDeep(container, themeStyle);
         // backgrounds live on the background track now, not in the style
         delete merged.background;

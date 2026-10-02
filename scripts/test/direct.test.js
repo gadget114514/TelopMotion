@@ -1086,3 +1086,125 @@ test('a pinned text background chance overrides the genre setting', () => {
   const off = composedDoc({ ...NO_VARIATION, textBgChance: 0 }, { genre });
   assert.ok(off.script.cues.every((cue) => !(off.cueStyles[cue.id] || {}).bgShape && !(off.cueStyles[cue.id] || {}).ornShape), 'pinned 0 did not block');
 });
+
+test('pinned holdChance: 0 in styleMode overrides preset look hold', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.hold = [{ type: 'floatBob', params: {}, enabled: true }];
+  const cueLooks = {
+    [FIXTURE.input.script.cues[0].id]: { n: 1, style: { hold: [{ type: 'pulse', params: {}, enabled: true }] } },
+  };
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, {
+    axes: { ...FIXTURE.axes, weird: 0.6 },
+    themeStyle: theme,
+    cueLooks,
+    params: { holdChance: 0 },
+    compose: true,
+  });
+  SA.direct.run(doc, ctx);
+  assert.ok(!ctx.themeStyle.hold, 'themeStyle hold was not removed by pinned holdChance: 0');
+  for (const entry of Object.values(ctx.cueLooks)) {
+    assert.ok(!entry.style.hold, 'cueLook hold was not removed by pinned holdChance: 0');
+  }
+});
+
+test('pinned typeWeights: 0 in styleMode drops matching types from preset theme and cues', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.edge = [{ type: 'neonGlow', params: {}, enabled: true }, { type: 'outline', params: {}, enabled: true }];
+  theme.animation = { type: 'wave', params: {}, enabled: true };
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, {
+    axes: { ...FIXTURE.axes, weird: 0.6 },
+    themeStyle: theme,
+    typeWeights: { edge: { neonGlow: 0 }, animation: { wave: 0 } },
+    compose: true,
+  });
+  SA.direct.run(doc, ctx);
+  assert.ok(Array.isArray(ctx.themeStyle.edge) && !ctx.themeStyle.edge.some((e) => e.type === 'neonGlow'), 'neonGlow was not dropped');
+  assert.ok(!ctx.themeStyle.animation || ctx.themeStyle.animation.type !== 'wave', 'wave animation was not dropped');
+});
+
+test('pinned decoNone: 1 in styleMode removes edge from preset look and cues', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.edge = [{ type: 'extrude', params: {}, enabled: true }];
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, {
+    axes: { ...FIXTURE.axes, weird: 0.6 },
+    themeStyle: theme,
+    params: { decoNone: 1, decoOutline: 0, decoShadow: 0, decoExtrude: 0, decoLongShadow: 0, decoDouble: 0, decoGlow: 0 },
+    compose: true,
+  });
+  SA.direct.run(doc, ctx);
+  assert.ok(!ctx.themeStyle.edge, 'themeStyle.edge was not removed by pinned decoNone: 1');
+  for (const cue of doc.script.cues) {
+    const cueEdge = (doc.cueStyles[cue.id] || {}).edge;
+    assert.ok(!cueEdge || !cueEdge.length, `cue ${cue.id} still had edge despite pinned decoNone`);
+  }
+});
+
+test('pinned fgSolid: 1 in styleMode removes complex fill from preset look', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.fill = { type: 'pattern', params: {}, enabled: true };
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, {
+    axes: { ...FIXTURE.axes, weird: 0.6 },
+    themeStyle: theme,
+    params: { fgSolid: 1, fgVivid: 0, fgGradient: 0, fgEffect: 0, fgPattern: 0 },
+    compose: true,
+  });
+  SA.direct.run(doc, ctx);
+  assert.ok(!ctx.themeStyle.fill, 'themeStyle.fill was not cleared by pinned fgSolid: 1');
+});
+
+test('pinned repeatChance: 0 and locationChance: 0 in styleMode remove repeat and location', () => {
+  const theme = JSON.parse(JSON.stringify(FIXTURE.themeStyle));
+  theme.repeat = { type: 'grid', params: {} };
+  theme.location = { type: 'lowerThird', params: {} };
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, {
+    axes: { ...FIXTURE.axes, weird: 0.6 },
+    themeStyle: theme,
+    params: { repeatChance: 0, locationChance: 0 },
+    compose: true,
+  });
+  SA.direct.run(doc, ctx);
+  assert.ok(!ctx.themeStyle.repeat, 'themeStyle.repeat was not cleared');
+  assert.ok(!ctx.themeStyle.location, 'themeStyle.location was not cleared');
+});
+
+test('SA.genParams.filterStyle filters preset styles according to styleMode', () => {
+  const presetStyle = {
+    hold: [{ type: 'pulse', params: {} }],
+    edge: [{ type: 'neonGlow', params: {} }],
+    repeat: { type: 'echo' },
+    location: { type: 'karaoke' },
+    enter: { type: 'fade' },
+    exit: { type: 'fade' },
+    fill: { type: 'pattern', params: {} },
+    bgShape: { type: 'square' },
+  };
+  const styleMode = {
+    params: {
+      holdChance: 0,
+      repeatChance: 0,
+      locationChance: 0,
+      motionChance: 0,
+      textBgChance: 0,
+      decoNone: 1,
+      fgSolid: 1,
+    },
+    typeWeights: {
+      edge: { neonGlow: 0 },
+    },
+  };
+  const filtered = SA.genParams.filterStyle(presetStyle, styleMode);
+  assert.ok(!filtered.hold, 'hold was not filtered');
+  assert.ok(!filtered.edge, 'edge was not filtered');
+  assert.ok(!filtered.repeat, 'repeat was not filtered');
+  assert.ok(!filtered.location, 'location was not filtered');
+  assert.ok(!filtered.enter, 'enter was not filtered');
+  assert.ok(!filtered.exit, 'exit was not filtered');
+  assert.ok(!filtered.fill, 'fill was not filtered');
+  assert.ok(!filtered.bgShape, 'bgShape was not filtered');
+});
+

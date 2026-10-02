@@ -201,8 +201,10 @@
     const axes = opts.axes || {};
     // the profile's type weights: a look built around a weighted-out type is
     // removed from the automatic draw (missing weights stay 1)
+    let tw = 1;
     if (opts.typeWeights && genParams && typeof genParams.lookTypeWeight === 'function') {
-      if (!(genParams.lookTypeWeight({ typeWeights: opts.typeWeights }, entry && entry.style) > 0)) return 0;
+      tw = genParams.lookTypeWeight({ typeWeights: opts.typeWeights }, entry && entry.style);
+      if (!(tw > 0)) return 0;
     }
     const target = opts.motion == null ? motionTarget(axes) : clamp01(opts.motion);
     const motionNorm = entry.motion && entry.motion.norm != null ? clamp01(entry.motion.norm) : 0.5;
@@ -216,7 +218,7 @@
     // too harmless for a horror target and > 1 for the frightening side
     const fear = fxAxes.fearFactor(fxAxes.ofLook(entry), axes);
     if (!(fear > 0)) return 0;
-    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme) * smart * fear;
+    return Math.exp(-4.2 * distance) * (0.1 + 1.4 * theme) * smart * fear * tw;
   }
 
   function pickFrom(list, options) {
@@ -302,6 +304,7 @@
       direction: opts.direction,
       context: opts.context,
       typeWeights: opts.typeWeights,
+      params: opts.params,
     }).style;
     if (generated.palette) style.palette = clone(generated.palette);
     if (!style.color && generated.color) style.color = clone(generated.color);
@@ -347,6 +350,7 @@
       compose,
       expand,
       stripDefaults,
+      dropWeightedTypes,
     };
   }
 

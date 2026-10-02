@@ -1023,9 +1023,13 @@
     const doc = project();
     const opts = options || {};
     if (!doc) return;
+    const mode = (doc && doc.styleMode) || {};
+    const typeWeights = opts.typeWeights !== undefined ? opts.typeWeights : mode.typeWeights;
+    const params = opts.params !== undefined ? opts.params : mode.params;
+    const usePalettes = opts.usePalettes !== undefined ? opts.usePalettes : mode.usePalettes;
     // genre first: an explicit genre, a random one, or the music's own axes
     const analysis = SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
-    const explicitGenre = opts.genre && opts.genre !== '__random' ? opts.genre : null;
+    const explicitGenre = opts.genre && opts.genre !== '__random' ? opts.genre : (opts.genre === '__random' ? null : mode.genre || null);
     const picked = SA.moods.randomGenre ? SA.moods.randomGenre() : SA.moods.randomAxes();
     const genre = explicitGenre || picked.genre || null;
     let axes;
@@ -1033,8 +1037,8 @@
     if (analysis && !explicitGenre) {
       axes = SA.moods.axesFromAudio(SA.audioAnalysis.features(analysis));
     } else {
-      axes = picked.axes;
-      direction = picked.direction;
+      axes = mode.axes ? { ...picked.axes, ...mode.axes } : picked.axes;
+      direction = opts.direction || mode.direction || picked.direction;
     }
     // weird, smartness and fear are never derived from a genre or the music:
     // they are the user's choices (genre dialog / theme editor) and stick to
@@ -1065,10 +1069,10 @@
       await step('studio.busy.looks', 0.15);
       const pool = SA.looks && SA.looks.load ? await SA.looks.load() : null;
       if (pool) {
-        const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude, typeWeights: opts.typeWeights });
+        const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude, typeWeights });
         if (entry) {
           await step('studio.busy.compose', 0.4);
-          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context, typeWeights: opts.typeWeights });
+          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context, typeWeights, params });
           look = composed.look;
           lookClip = composed.clip;
           themeStyle = composed.style;
@@ -1086,7 +1090,7 @@
     }
     if (!themeStyle) {
       await step('studio.busy.compose', 0.4);
-      themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true }).style;
+      themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true, typeWeights, params }).style;
     }
     await step('studio.busy.apply', 0.7);
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';
@@ -1104,9 +1108,9 @@
       cueLooks,
       analysis,
       compose: true,
-      params: opts.params,
-      typeWeights: opts.typeWeights,
-      usePalettes: opts.usePalettes,
+      params,
+      typeWeights,
+      usePalettes,
       // section following is off unless the dialog asked for it (a plain
       // "random look" keeps the classic one-axes-for-the-song run)
       sections: opts.sections ? { gap: opts.sections.gap, maxCues: opts.sections.maxCues, strength: opts.sections.strength } : null,

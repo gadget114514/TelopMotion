@@ -302,6 +302,132 @@
     return min;
   }
 
+  // A style must not keep an instance the profile zeroed: stacks lose
+  // the entry, single groups fall back to a plain type (or disappear).
+  const TYPE_WEIGHT_STACKS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
+  const TYPE_WEIGHT_SINGLES = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'bgShape', 'bgFill', 'bgMotion', 'ornShape', 'ornFill', 'ornMotion', 'repeat'];
+  const SAFE_FALLBACKS = {
+    animation: 'simultaneous',
+    layout: 'row',
+    enter: 'fade',
+    exit: 'fade',
+    fill: 'solid',
+    background: 'gradient',
+    bgShape: 'none',
+    bgFill: 'solid',
+    bgMotion: 'follow',
+    ornShape: 'none',
+    ornFill: 'solid',
+    ornMotion: 'follow',
+    repeat: 'none',
+  };
+
+  function dropWeightedTypes(style, typeWeights) {
+    if (!style || !typeWeights) return style;
+    const profile = { typeWeights };
+    const out = { ...style };
+    for (const group of TYPE_WEIGHT_STACKS) {
+      const value = out[group];
+      if (Array.isArray(value)) {
+        const kept = value.filter((instance) => !instance || !instance.type || typeWeight(profile, group, instance.type) > 0);
+        if (kept.length) out[group] = kept;
+        else delete out[group];
+      } else if (value && value.type && typeWeight(profile, group, value.type) <= 0) {
+        delete out[group];
+      }
+    }
+    for (const group of TYPE_WEIGHT_SINGLES) {
+      const value = out[group];
+      if (!value || !value.type) continue;
+      if (typeWeight(profile, group, value.type) > 0) continue;
+      const fallback = SAFE_FALLBACKS[group];
+      if (fallback) out[group] = { ...value, type: fallback, params: {} };
+      else delete out[group];
+    }
+    return out;
+  }
+
+  // Filters a style (preset or theme) so that values configured in the Theme
+  // dialogue (styleMode) take precedence over the style's built-in values.
+  function filterStyle(style, styleMode) {
+    if (!style || typeof style !== 'object') return style;
+    let out = JSON.parse(JSON.stringify(style));
+    if (!styleMode) return out;
+
+    if (styleMode.typeWeights) {
+      out = dropWeightedTypes(out, styleMode.typeWeights);
+    }
+
+    const params = styleMode.params || {};
+
+    if (isPinned(styleMode, 'holdChance') && Number(params.holdChance) <= 0) {
+      delete out.hold;
+    }
+
+    if (isPinned(styleMode, 'pulseChance') && Number(params.pulseChance) <= 0) {
+      if (Array.isArray(out.hold)) {
+        out.hold = out.hold.filter((inst) => !inst || (inst.type !== 'pulse' && inst.type !== 'opacityPulse'));
+        if (!out.hold.length) delete out.hold;
+      } else if (out.hold && (out.hold.type === 'pulse' || out.hold.type === 'opacityPulse')) {
+        delete out.hold;
+      }
+    }
+
+    if (isPinned(styleMode, 'repeatChance') && Number(params.repeatChance) <= 0) {
+      delete out.repeat;
+    }
+
+    if (isPinned(styleMode, 'clonesChance') && Number(params.clonesChance) <= 0) {
+      delete out.clones;
+    }
+
+    if (isPinned(styleMode, 'locationChance') && Number(params.locationChance) <= 0) {
+      delete out.location;
+    }
+
+    if (isPinned(styleMode, 'motionChance') && Number(params.motionChance) <= 0) {
+      delete out.enter;
+      delete out.exit;
+    }
+
+    if (isPinned(styleMode, 'textBgChance') && Number(params.textBgChance) <= 0) {
+      for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {
+        delete out[group];
+      }
+    }
+
+    if (isPinned(styleMode, 'postBlurChance') && Number(params.postBlurChance) <= 0) {
+      const smearTypes = new Set(['godRays', 'zoomBlur', 'spinBlur', 'motionBlur', 'echoTrail', 'chromaticAberration', 'rgbShift', 'turbulentDisplace', 'waveWarp', 'twirl', 'lensDistortion', 'heatHaze', 'blur', 'displacement', 'directionalBlur', 'radialBlur']);
+      if (Array.isArray(out.post)) {
+        out.post = out.post.filter((entry) => !entry || !smearTypes.has(entry.type));
+        if (!out.post.length) delete out.post;
+      } else if (out.post && smearTypes.has(out.post.type)) {
+        delete out.post;
+      }
+    }
+
+    if (isPinned(styleMode, 'decoNone') && Number(params.decoNone) >= 1) {
+      const otherDeco = DECO_KEYS.filter((k) => k !== 'decoNone').some((k) => isPinned(styleMode, k) && Number(params[k]) > 0);
+      if (!otherDeco) {
+        delete out.edge;
+      }
+    }
+
+    if (isPinned(styleMode, 'fgSolid') && Number(params.fgSolid) >= 1) {
+      const otherFg = FG_KEYS.filter((k) => k !== 'fgSolid').some((k) => isPinned(styleMode, k) && Number(params[k]) > 0);
+      if (!otherFg) {
+        if (out.fill && (out.fill.type === 'pattern' || out.fill.type === 'stripes' || out.fill.type === 'checker' || out.fill.type === 'diamondGrid' || out.fill.type === 'hatch' || out.fill.type === 'chrome' || out.fill.type === 'gradient' || out.fill.type === 'noiseGradient')) {
+          delete out.fill;
+        }
+        if (out.color && out.color.fill && out.color.fill.kind === 'gradient') {
+          delete out.color;
+        }
+      }
+    }
+
+    return out;
+  }
+
   return {
     AXIS_DEFAULTS,
     PARAMS,
@@ -322,6 +448,8 @@
     pickWeighted,
     typeWeight,
     lookTypeWeight,
+    dropWeightedTypes,
+    filterStyle,
     normalizeChances,
   };
 });

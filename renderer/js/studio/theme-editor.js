@@ -874,6 +874,21 @@ SA.themeEditor = (() => {
           invert: set.invert,
           extra: SA.store.clone(Array.isArray(set.extra) ? set.extra : []),
         };
+        // Values configured in Theme dialogue take precedence over existing preset styles
+        if (SA.genParams && typeof SA.genParams.filterStyle === 'function') {
+          projectDoc.style = SA.genParams.filterStyle(projectDoc.style, mode);
+          if (draft.style) {
+            const filtered = SA.genParams.filterStyle(draft.style, mode);
+            projectDoc.style = SA.project.mergeDeep(projectDoc.style, filtered);
+          }
+          if (projectDoc.cueStyles) {
+            for (const cueId of Object.keys(projectDoc.cueStyles)) {
+              if (projectDoc.cueStyles[cueId]) {
+                projectDoc.cueStyles[cueId] = SA.genParams.filterStyle(projectDoc.cueStyles[cueId], mode);
+              }
+            }
+          }
+        }
       },
     });
     SA.studio.toast('studio.toast.themeApplied', { name: draft.name });
@@ -883,7 +898,14 @@ SA.themeEditor = (() => {
   function saveDraft() {
     const doc = project();
     const profile = profileOf();
-    const style = doc && doc.style ? SA.store.clone(doc.style) : {};
+    const mode = { ...profile, axes: draft.axes };
+    let style = doc && doc.style ? SA.store.clone(doc.style) : {};
+    if (draft.style && SA.project && typeof SA.project.mergeDeep === 'function') {
+      style = SA.project.mergeDeep(style, draft.style);
+    }
+    if (SA.genParams && typeof SA.genParams.filterStyle === 'function') {
+      style = SA.genParams.filterStyle(style, mode);
+    }
     style.paletteSet = SA.store.clone(draft.paletteSet || { max: 5, change: 0.5, invert: 0.2, extra: [] });
     const entry = draft.id
       ? SA.themes.update(draft.id, {
@@ -942,6 +964,7 @@ SA.themeEditor = (() => {
       },
       usePalettes: SA.store.clone(profile.usePalettes || mode.usePalettes || []),
       keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
+      style: existing && existing.style ? SA.store.clone(existing.style) : null,
       tab: 'axis',
       features: null,
     };

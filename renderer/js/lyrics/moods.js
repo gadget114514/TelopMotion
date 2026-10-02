@@ -2771,8 +2771,9 @@
       if (instance) style[group] = instance;
     }
     // holds: energy decides how often an idle motion shows up, softness its type
-    const holdChance =
-      (genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6) + 0.5 * w;
+    const holdChance = profile && profile.holdChance != null
+      ? profile.holdChance
+      : (genre && genre.density && genre.density.hold != null ? Number(genre.density.hold) : 0.1 + axes.energy * 0.6) + 0.5 * w;
     if (random() < holdChance) {
       const instance = instanceFor(random, 'hold', axes, context, direction, colors, null, genre, { typeWeights: opts.typeWeights, params: profile });
       if (instance) style.hold = [instance];
@@ -2807,7 +2808,20 @@
     }
     // generic background rules also apply without a genre (low chance)
     const forced = hero === 'bg';
-    applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg');
+    const bgOptions = {};
+    if (profile) {
+      if (profile.textBgChance != null) bgOptions.chance = profile.textBgChance;
+      if (profile.bgEnclose != null || profile.bgAccent != null || profile.bgUnderlay != null) {
+        bgOptions.placement = { bgEnclose: profile.bgEnclose, bgAccent: profile.bgAccent, bgUnderlay: profile.bgUnderlay };
+      }
+      if (profile.bgVaryChance != null) bgOptions.varyChance = profile.bgVaryChance;
+      if (profile.bgEdgeChance != null) bgOptions.edgeChance = profile.bgEdgeChance;
+      if (profile.bgIndependentChance != null) bgOptions.independentChance = profile.bgIndependentChance;
+      if (profile.bgOffsetScatter != null) bgOptions.offsetScatter = profile.bgOffsetScatter;
+      if (profile.bgSizeScatter != null) bgOptions.sizeScatter = profile.bgSizeScatter;
+      if (profile.bgColorScatter != null) bgOptions.colorScatter = profile.bgColorScatter;
+    }
+    applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg', bgOptions);
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
     enforceReadability(style, palette.colors, random, w, weirdOf(axes), fearOf(axes));

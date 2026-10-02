@@ -309,7 +309,7 @@
     const screen = Math.min(frameW, frameH);
     const minSize = (portrait ? 52 : 72) - 16 * w;
     const maxSize = (portrait ? 96 : 124) + (portrait ? 50 : 80) * w;
-    const themeStyle = opts.themeStyle ? SA.project.mergeDeep({}, opts.themeStyle) : null;
+    let themeStyle = opts.themeStyle ? SA.project.mergeDeep({}, opts.themeStyle) : null;
     // the stored looks carry frozen glow params; tame them once for the text
     // channel (the generator tames the edges it draws itself)
     if (themeStyle) SA.moods.tameGlow(themeStyle, rawW);
@@ -339,7 +339,6 @@
     }
     const palette = (themeStyle && themeStyle.palette && themeStyle.palette.colors) || [];
     const { accentIdx, accentHexes } = accentsOf(palette);
-    const baseSize = Number((themeStyle && themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
     const energy = Math.max(0, Math.min(1, Number(axes.energy) || 0.5));
     // The tunable profile (theme dialog / saved themes): the axes derive every
     // parameter, `params` overrides the ones the user fixed. The manual keys
@@ -355,6 +354,16 @@
       if (genParams.isPinned({ params: paramsSource || {} }, def.key)) pinned[def.key] = params[def.key];
     }
     const typeWeights = opts.typeWeights !== undefined ? opts.typeWeights : styleMode.typeWeights || null;
+    if (typeWeights && genParams && typeof genParams.dropWeightedTypes === 'function') {
+      if (themeStyle) themeStyle = genParams.dropWeightedTypes(themeStyle, typeWeights);
+      for (const entry of Object.values(cueLooks)) {
+        if (entry && entry.style) entry.style = genParams.dropWeightedTypes(entry.style, typeWeights);
+      }
+    }
+    if (pinned.sizeCenter != null && themeStyle && themeStyle.text) {
+      themeStyle.text.size = Math.round(minSize + (maxSize - minSize) * pinned.sizeCenter);
+    }
+    const baseSize = Number((themeStyle && themeStyle.text && themeStyle.text.size) || (portrait ? 72 : 96));
     const usePalettes = opts.usePalettes !== undefined ? opts.usePalettes : Array.isArray(styleMode.usePalettes) ? styleMode.usePalettes : [];
     // The size curve / foreground / decoration draws only change the picture
     // once the curve is on: raw weird above 0 or at least one pinned parameter.
@@ -364,12 +373,68 @@
     // the compose mode is on: the lyrics only sit under one on a successful
     // roll. weird 0 keeps the drawn look, and no extra random is drawn
     // otherwise.
-    if (opts.compose && rawW > 0 && themeStyle && SA.legibility && SA.legibility.SMEAR_POSTS && Array.isArray(themeStyle.post)) {
+    if (opts.compose && (rawW > 0 || pinned.postBlurChance != null) && themeStyle && SA.legibility && SA.legibility.SMEAR_POSTS && Array.isArray(themeStyle.post)) {
       const gate = params.postBlurChance;
       const roll = SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'smear')();
-      if (roll >= gate) {
+      if (pinned.postBlurChance === 0 || roll >= gate) {
         themeStyle.post = themeStyle.post.filter((entry) => !entry || !SA.legibility.SMEAR_POSTS.has(entry.type));
         if (!themeStyle.post.length) delete themeStyle.post;
+      }
+    }
+    // Gating for hold, pulse, repeat, clones, location and motion chances when pinned in the Theme dialogue
+    if (themeStyle) {
+      if (pinned.holdChance != null) {
+        const holdRoll = genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-hold'), params.holdChance);
+        if (!holdRoll) {
+          delete themeStyle.hold;
+          for (const entry of Object.values(cueLooks)) if (entry && entry.style) delete entry.style.hold;
+        }
+      }
+      if (pinned.pulseChance != null && (pinned.pulseChance === 0 || !genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-pulse'), params.pulseChance))) {
+        const stripPulse = (style) => {
+          if (!style || !Array.isArray(style.hold)) return;
+          style.hold = style.hold.filter((instance) => !instance || !PULSE_TYPES.has(instance.type));
+          if (!style.hold.length) delete style.hold;
+        };
+        stripPulse(themeStyle);
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) stripPulse(entry.style);
+      }
+      if (pinned.repeatChance != null && (pinned.repeatChance === 0 || !genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-repeat'), params.repeatChance))) {
+        delete themeStyle.repeat;
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) delete entry.style.repeat;
+      }
+      if (pinned.clonesChance != null && (pinned.clonesChance === 0 || !genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-clones'), params.clonesChance))) {
+        delete themeStyle.clones;
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) delete entry.style.clones;
+      }
+      if (pinned.locationChance != null && (pinned.locationChance === 0 || !genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-location'), params.locationChance))) {
+        delete themeStyle.location;
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) delete entry.style.location;
+      }
+      if (pinned.motionChance != null && (pinned.motionChance === 0 || !genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-motion'), params.motionChance))) {
+        delete themeStyle.enter;
+        delete themeStyle.exit;
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) {
+          delete entry.style.enter;
+          delete entry.style.exit;
+        }
+      }
+    }
+    const hasPinnedDeco = genParams.DECO_KEYS.some((k) => pinned[k] != null);
+    if (hasPinnedDeco && themeStyle) {
+      const decoOnlyNone = pinned.decoNone >= 1 && !genParams.DECO_KEYS.filter((k) => k !== 'decoNone').some((k) => pinned[k] > 0);
+      if (decoOnlyNone) {
+        delete themeStyle.edge;
+      }
+    }
+    const hasPinnedFg = genParams.FG_KEYS.some((k) => pinned[k] != null);
+    if (hasPinnedFg && themeStyle) {
+      const fgOnlySolid = pinned.fgSolid >= 1 && !genParams.FG_KEYS.filter((k) => k !== 'fgSolid').some((k) => pinned[k] > 0);
+      if (fgOnlySolid) {
+        delete themeStyle.fill;
+        if (themeStyle.color && themeStyle.color.fill && themeStyle.color.fill.kind === 'gradient') {
+          delete themeStyle.color;
+        }
       }
     }
     // The text background of the drawn theme follows the same profile: a
@@ -455,6 +520,8 @@
       typeWeights,
       usePalettes,
       curve,
+      hasPinnedDeco: !!hasPinnedDeco,
+      hasPinnedFg: !!hasPinnedFg,
       cueForeground: {},
       cueBold: {},
       cueFont: {},
@@ -1271,7 +1338,7 @@
   // a palette without two readable colours yields nothing.
   function patternFillFor(random, ctx, colors) {
     const themeFill = ctx.themeStyle && ctx.themeStyle.fill;
-    if (themeFill && themeFill.type) return null;
+    if (themeFill && themeFill.type && !(ctx && ctx.hasPinnedFg)) return null;
     const list = Array.isArray(colors) ? colors : (colors && Array.isArray(colors.colors) ? colors.colors : []);
     if (list.length < 2 || !SA.fx || typeof SA.fx.paramDefaults !== 'function') return null;
     const bg = SA.color.parse(list[0] || '#000000');
@@ -1305,7 +1372,7 @@
   // the louder fill grammar) needs the cue id.
   function fillEffectFor(random, ctx, cueId) {
     const themeFill = ctx.themeStyle && ctx.themeStyle.fill;
-    if (themeFill && themeFill.type) return null; // the drawn look already carries one
+    if (themeFill && themeFill.type && !(ctx && ctx.hasPinnedFg)) return null; // the drawn look already carries one
     if (!SA.moods || typeof SA.moods.pickEntry !== 'function') return null;
     const entry = SA.moods.pickEntry(random, 'fill', axesFor(ctx, cueId), ctx.cueContext || {}, ctx.direction, null, null, { typeWeights: ctx.typeWeights });
     if (!entry) return null;
@@ -2609,6 +2676,9 @@
         if (stack) {
           const container = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
           container.edge = stack;
+        } else if (ctx.hasPinnedDeco) {
+          const container = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
+          container.edge = [];
         }
         // the compose profile also lets individual beats draw their own
         // decoration, so one cue can change gear mid-phrase. A beat that moved
@@ -2626,7 +2696,13 @@
               beatColors = (resolved.palette && resolved.palette.colors) || colors;
             }
             const beatStack = decorationFor(beatRandom, ctx, beatColors, planes ? planes.length : 0, cue.id);
-            if (!beatStack) return;
+            if (!beatStack) {
+              if (ctx.hasPinnedDeco) {
+                const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
+                bag.edge = [];
+              }
+              return;
+            }
             const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
             bag.edge = beatStack;
           });
@@ -2711,7 +2787,11 @@
           delete cueBag.fill;
           if (!bad()) continue;
           // (3) a separation outline as the last resort, in the palette's edge
-          // role (a live reference, so a later palette re-roll moves it too)
+          // role (a live reference, so a later palette re-roll moves it too).
+          // Honor Theme dialogue pinned settings: do not add outline if decoNone >= 1 or decoOutline === 0.
+          if (ctx.hasPinnedDeco && (ctx.params.decoNone >= 1 || ctx.params.decoOutline === 0)) {
+            continue;
+          }
           const stack = Array.isArray(cueBag.edge) ? cueBag.edge.slice() : [];
           if (!stack.some((entry) => entry && entry.type === 'outline')) {
             const roleFallback = roles && typeof roles.get === 'function' ? roles.get(cueColors, roles.SLOT.TEXT_EDGE) || '#000000' : '#000000';
