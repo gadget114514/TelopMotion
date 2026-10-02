@@ -119,6 +119,7 @@ test('pinned graphicChance: 1 produces exactly 1 shape layer, and pinned 0 produ
 test('frame size (padding) is variable across runs', () => {
   const paddings = new Set();
   const strokes = new Set();
+  const scales = new Set();
   for (let seed = 1; seed <= 20; seed += 1) {
     const doc = JSON.parse(JSON.stringify(FIXTURE.input));
     const ctx = SA.direct.prepare(doc, {
@@ -134,14 +135,18 @@ test('frame size (padding) is variable across runs', () => {
         if (p && p.type === 'shapeLayer' && (p.params.shape === 'box' || p.params.shape === 'brackets')) {
           assert.ok(typeof p.params.padding === 'number', 'padding should be a number');
           assert.ok(p.params.padding >= 0.05 && p.params.padding <= 0.3, `padding ${p.params.padding} out of expected range`);
+          assert.ok(typeof p.params.scale === 'number', 'scale should be a number');
+          assert.ok(p.params.scale >= 0.85 && p.params.scale <= 1.25, `scale ${p.params.scale} out of expected range`);
           paddings.add(p.params.padding);
           strokes.add(p.params.stroke);
+          scales.add(p.params.scale);
         }
       }
     }
   }
   assert.ok(paddings.size >= 2, `paddings should be variable across seeds, got ${paddings.size} distinct values: ${Array.from(paddings)}`);
   assert.ok(strokes.size >= 2, `strokes should be variable across seeds, got ${strokes.size} distinct values: ${Array.from(strokes)}`);
+  assert.ok(scales.size >= 2, `scales should be variable across seeds, got ${scales.size} distinct values: ${Array.from(scales)}`);
 });
 
 test('standalone beat re-rolls preserve the at-most-1 shape layer rule', () => {

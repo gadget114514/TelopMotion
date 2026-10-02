@@ -2923,6 +2923,7 @@
     sizeRangeFor,
     sizeProfile,
     resizeBeats,
+    resolveGraphicParams,
     run,
   };
 });

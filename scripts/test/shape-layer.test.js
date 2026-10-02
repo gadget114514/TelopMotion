@@ -159,3 +159,33 @@ test('the timeline background menu offers the unpacked types too', () => {
     assert.ok(offered.includes(type), `the menu does not offer background.${type}`);
   }
 });
+
+test('scale parameter is defined with random range and scales the text box bounds', () => {
+  const entry = fx.get('post', 'shapeLayer');
+  const scaleParam = entry.params.find((param) => param.key === 'scale');
+  assert.ok(scaleParam, 'scale param is registered');
+  assert.deepEqual(scaleParam.random, [0.85, 1.25], 'scale param defines random range');
+
+  const scaled = fx.postUniforms(
+    { type: 'shapeLayer', params: { shape: 'box', scale: 1.5 } },
+    ctx()
+  );
+  // cx = 0.5, cy = 0.5; box is { x0: 0.2, y0: 0.4, x1: 0.8, y1: 0.6 }
+  // scaled x0 = 0.5 + (0.2 - 0.5) * 1.5 = 0.05
+  // scaled y0 = 0.5 + (0.4 - 0.5) * 1.5 = 0.35
+  // scaled x1 = 0.5 + (0.8 - 0.5) * 1.5 = 0.95
+  // scaled y1 = 0.5 + (0.6 - 0.5) * 1.5 = 0.65
+  assert.ok(Math.abs(scaled.u_params3[0] - 0.05) < 1e-6);
+  assert.ok(Math.abs(scaled.u_params3[1] - 0.35) < 1e-6);
+  assert.ok(Math.abs(scaled.u_params3[2] - 0.95) < 1e-6);
+  assert.ok(Math.abs(scaled.u_params3[3] - 0.65) < 1e-6);
+});
+
+test('resolveGraphicParams randomizes scale for frame shapes', () => {
+  const direct = require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js'));
+  const boxResolved = direct.resolveGraphicParams({ shape: 'box' }, () => 0.5);
+  assert.equal(boxResolved.scale, Math.round((0.9 + 0.5 * 0.25) * 100) / 100);
+  assert.equal(boxResolved.padding, Math.round((0.06 + 0.5 * 0.18) * 100) / 100);
+  assert.equal(boxResolved.stroke, Math.round((2.5 + 0.5 * 3.5) * 10) / 10);
+});
+
