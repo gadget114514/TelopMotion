@@ -595,6 +595,9 @@
         }
         if (pinned.bgVaryChance != null) bgOptions.varyChance = params.bgVaryChance;
         if (pinned.bgEdgeChance != null) bgOptions.edgeChance = params.bgEdgeChance;
+        if (pinned.bgOffsetScatter != null) bgOptions.offsetScatter = params.bgOffsetScatter;
+        if (pinned.bgSizeScatter != null) bgOptions.sizeScatter = params.bgSizeScatter;
+        if (pinned.bgColorScatter != null) bgOptions.colorScatter = params.bgColorScatter;
         const genreDef = genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(genre) : null;
         if (SA.moods.applyGenreBackground(bgStyle, genreDef, axes, bgRandom, colors, false, bgOptions)) {
           for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {

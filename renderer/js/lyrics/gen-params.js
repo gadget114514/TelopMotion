@@ -122,6 +122,11 @@
     { key: 'bgUnderlay', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.2 },
     { key: 'bgVaryChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 + 0.7 * a.t },
     { key: 'bgEdgeChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0.4 },
+    // how far the ornament marks scatter from their letter: centre offset,
+    // size and colour (0 = every mark sits centred, letter-sized, one colour)
+    { key: 'bgOffsetScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0 },
+    { key: 'bgSizeScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0 },
+    { key: 'bgColorScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // palette / backdrop
     { key: 'colorChange', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a, axes) => weird.colorChange(axes) },
     { key: 'paletteSwitchChance', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a) => a.w },

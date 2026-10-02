@@ -2351,6 +2351,13 @@
     }
   }
 
+  // The background edge draws from the same edge library as the text font: a
+  // plain / double / dashed outline, a drop shadow or a blurred neon glow.
+  function pickBgEdgeType(random) {
+    const roll = random();
+    return roll < 0.5 ? 'outline' : roll < 0.7 ? 'dropShadow' : 'neonGlow';
+  }
+
   // Picks one of the three placements from a weight map keyed by the profile's
   // keys (bgEnclose / bgAccent / bgUnderlay).
   function pickPlacement(weights, random) {
@@ -2360,6 +2367,13 @@
       underlay: weights && weights.bgUnderlay,
     }, random);
   }
+
+  // Without a pinned chance the text background is the exception, not the rule:
+  // the derived / genre presence is scaled down so most looks carry none.
+  const BG_AUTO_SCALE = 0.4;
+  // The basic marks hug their letter: same size as the letter box, centred on
+  // the letter, whatever the placement the draw picked.
+  const BG_LETTER_SHAPES = new Set(['square', 'rounded', 'circle', 'diamond', 'star', 'heart']);
 
   // The text background of one look. The optional `options` (the compose
   // profile) may pin the presence chance / placement weights / vary and edge
@@ -2375,8 +2389,8 @@
     // weird look grows a text background more often.
     let chance;
     if (opts.chance != null) chance = clamp01(opts.chance);
-    else if (config && config.chance != null) chance = Number(config.chance) + 0.5 * w;
-    else chance = genParamsMod.derive(axes).textBgChance;
+    else if (config && config.chance != null) chance = (Number(config.chance) + 0.5 * w) * BG_AUTO_SCALE;
+    else chance = genParamsMod.derive(axes).textBgChance * BG_AUTO_SCALE;
     if (!forced && random() >= Math.min(1, chance)) return false;
     // placement: pinned weights, then the genre's table, then the derived
     // defaults (the classic 0.55 / 0.25 / 0.2)
@@ -2431,6 +2445,17 @@
       params.varyRotation = round(random() * 25 * (1 + 2 * w), 1);
     }
     if (shape === 'bar' && adjusted !== 'underlay') params.offset = { x: 0, y: 0.3 };
+    if (BG_LETTER_SHAPES.has(shape)) {
+      // a letter-sized mark behind its letter (the random draws above are kept,
+      // so the stream stays put): one letter box, no offset, no spin, no wash
+      params.unit = 'cell';
+      params.width = 1;
+      params.height = 1;
+      params.layer = 'behind';
+      params.opacity = 1;
+      delete params.offset;
+      delete params.varyRotation;
+    }
     // variation
     const varyTable = (config && config.vary) || null;
     let vary;
@@ -2439,6 +2464,14 @@
     } else {
       vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
     }
+    // the scatter knobs of the theme: centre offset / size of a mark (a
+    // background square never moves) and how many colours it draws from
+    const offsetScatter = opts.offsetScatter == null ? 0 : clamp01(opts.offsetScatter);
+    const sizeScatter = opts.sizeScatter == null ? 0 : clamp01(opts.sizeScatter);
+    const colorScatter = opts.colorScatter == null ? 0 : clamp01(opts.colorScatter);
+    if (offsetScatter > 0) params.varyOffset = round(offsetScatter * 0.6, 2);
+    if (sizeScatter > 0) params.varySize = round(sizeScatter * 0.8, 2);
+    if (colorScatter > 0 && vary === 'none') vary = 'random';
     params.vary = vary;
     const colorMode = (config && config.colors) || 'accent';
     const varyColors =
@@ -2447,6 +2480,13 @@
         : colorMode === 'mixed'
           ? [palette[3], palette[5], palette[2]].filter(Boolean)
           : [palette[3], palette[5] || palette[3]].filter(Boolean);
+    if (colorScatter > 0) {
+      // more scatter = more palette colours in the draw
+      const count = Math.min(palette.length, 2 + Math.round(colorScatter * 4));
+      for (let slot = 0; varyColors.length < count && slot < palette.length; slot += 1) {
+        if (slot !== 0 && palette[slot] && !varyColors.includes(palette[slot])) varyColors.push(palette[slot]);
+      }
+    }
     // A square drawn in the enclose placement is the text background by the
     // definition (a per-letter cell square); everything else the old table
     // could draw (accent squares, underlays, circles / stars / bars ...) is a
@@ -2491,23 +2531,28 @@
     const edgeTable = (config && config.edge) || null;
     let edgeType;
     if (opts.edgeChance != null) {
-      edgeType = random() < clamp01(opts.edgeChance) ? (random() < 0.6 ? 'outline' : 'dropShadow') : null;
+      edgeType = random() < clamp01(opts.edgeChance) ? pickBgEdgeType(random) : null;
     } else {
       edgeType = pickWeightedEntry(edgeTable, random);
-      if (!edgeType && random() < 0.4) edgeType = random() < 0.6 ? 'outline' : 'dropShadow';
+      if (!edgeType && random() < 0.4) edgeType = pickBgEdgeType(random);
     }
     if (edgeType && edgeType !== 'none') {
       const edgeParams = fx.paramDefaults('bgEdge', edgeType);
       if (edgeType === 'outline') {
+        // the same decoration vocabulary the text font edge draws: double /
+        // triple lines, dashes, and a soft (blurred) line
         const patternRoll = random();
         edgeParams.pattern =
-          patternRoll < 0.6
+          patternRoll < 0.4
             ? 'solid'
-            : patternRoll < 0.85
-              ? 'dashed'
-              : patternRoll < 0.95
-                ? 'dotted'
-                : pick(random, ['dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'railroad']);
+            : patternRoll < 0.6
+              ? 'double'
+              : patternRoll < 0.75
+                ? 'dashed'
+                : patternRoll < 0.82
+                  ? 'dotted'
+                  : pick(random, ['dashDot', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'railroad']);
+        if (random() < 0.35) edgeParams.softness = round(lerp(0.5, 1, random()), 2);
       }
       style[isBackground ? 'bgEdge' : 'ornEdge'] = [{ type: edgeType, params: edgeParams, enabled: true }];
     }
