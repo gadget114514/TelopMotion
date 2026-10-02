@@ -803,6 +803,7 @@ SA.themeEditor = (() => {
     actions.appendChild(smallButton(t('studio.themeEditor.generate'), () => runGenerate(), true));
     actions.appendChild(smallButton(t('studio.themes.apply'), () => applyDraft()));
     actions.appendChild(smallButton(t('studio.themeEditor.save'), () => saveDraft()));
+    actions.appendChild(smallButton(t('studio.themeEditor.reset'), () => resetDraft()));
     actions.appendChild(smallButton(t('studio.themes.close'), () => {
       root.hidden = true;
     }));
@@ -924,6 +925,40 @@ SA.themeEditor = (() => {
     }
   }
 
+  function resetDraft() {
+    const axes = defaultAxes();
+    const currentTab = draft ? draft.tab : 'axis';
+    const defaultPalette = SA.moods && typeof SA.moods.generatePalette === 'function'
+      ? SA.moods.generatePalette(Math.random, axes, 'theme')
+      : { id: 'p_default', name: 'Default', colors: ['#ffffff', '#000000', '#222222', '#ffaa00', '#00aaff'] };
+    draft = {
+      id: null,
+      name: t('studio.themes.untitled'),
+      genre: null,
+      direction: 'horizontal',
+      axes,
+      seed: seedNow(),
+      params: {},
+      typeWeights: {},
+      palette: { id: defaultPalette.id, name: defaultPalette.name, colors: defaultPalette.colors ? defaultPalette.colors.slice() : [] },
+      paletteSet: {
+        max: 5,
+        change: 0.5,
+        invert: 0.2,
+        extra: [],
+      },
+      usePalettes: [],
+      keywords: { enabled: true, extra: '', exclude: '' },
+      style: null,
+      tab: currentTab,
+      features: null,
+    };
+    if (SA.studio && typeof SA.studio.toast === 'function') {
+      SA.studio.toast('studio.toast.themeEditorReset');
+    }
+    render();
+  }
+
   function open(themeId) {
     root = document.getElementById('dialog-root');
     if (!root) return;
@@ -971,5 +1006,5 @@ SA.themeEditor = (() => {
     render();
   }
 
-  return { open, getDraft: () => draft };
+  return { open, getDraft: () => draft, resetDraft };
 })();

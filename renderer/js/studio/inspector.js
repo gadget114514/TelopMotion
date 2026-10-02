@@ -231,10 +231,18 @@ SA.inspector = (() => {
     return node;
   }
 
+  const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
+
   function section(container, key, title) {
     const node = document.createElement('details');
     node.className = 'insp-section';
     node.open = true;
+    // the text background groups of a track that hides its background stay
+    // editable but greyed out: nothing of them is drawn
+    if (BG_GROUPS.includes(key) && (selectedSubtitleTrack() || {}).bgHidden) {
+      node.classList.add('insp-track-off');
+      node.title = t('studio.inspector.bgTrackOff');
+    }
     const summary = document.createElement('summary');
     summary.textContent = title;
     node.appendChild(summary);
