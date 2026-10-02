@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -1053,7 +1053,14 @@
   ];
 
   function motionPresets() {
-    return MOTION_PRESETS.map((preset) => ({ ...preset, params: { ...preset.params } }));
+    const list = MOTION_PRESETS.map((preset) => ({ ...preset, params: { ...preset.params } }));
+    if (textEffectsData && typeof textEffectsData.list === 'function') {
+      const effects = textEffectsData.list();
+      for (const item of effects) {
+        list.push({ ...item, params: { ...item.params } });
+      }
+    }
+    return list;
   }
 
   return {

@@ -32,6 +32,10 @@
     'hatch',
     'crosshatch',
     'sketch',
+    'doubleDashed',
+    'squareChain',
+    'chain',
+    'ornament',
   ];
 
   const CODES = {};

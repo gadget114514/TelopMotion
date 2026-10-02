@@ -2200,3 +2200,244 @@ body {
   align-items: center;
   gap: 6px;
 }
+
+/* Motion Preset Search & Dialog */
+.motion-dialog {
+  max-width: 820px;
+  width: 90vw;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.motion-dialog-search-bar {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 8px;
+}
+
+.motion-dialog-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-deep, #141419);
+  border: 1px solid var(--line, #2c2d38);
+  border-radius: 6px;
+  color: var(--text, #f0f1f5);
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.motion-dialog-search-input:focus {
+  border-color: var(--accent, #4dc8ff);
+  box-shadow: 0 0 0 2px rgba(77, 200, 255, 0.2);
+}
+
+.motion-dialog-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.motion-dialog-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.motion-dialog-tab {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--line, #2c2d38);
+  border-radius: 12px;
+  color: var(--muted, #8a8d9f);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.motion-dialog-tab:hover {
+  color: var(--text, #f0f1f5);
+  border-color: var(--accent, #4dc8ff);
+}
+
+.motion-dialog-tab.is-active {
+  background: var(--accent, #4dc8ff);
+  border-color: var(--accent, #4dc8ff);
+  color: #0b0c10;
+  font-weight: 600;
+}
+
+.motion-dialog-cat-select {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  background: var(--bg-deep, #141419);
+  border: 1px solid var(--line, #2c2d38);
+  color: var(--text, #f0f1f5);
+}
+
+.motion-dialog-count {
+  font-size: 11px;
+  color: var(--muted, #8a8d9f);
+  margin-left: auto;
+}
+
+.motion-dialog-list {
+  max-height: 56vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  padding: 4px 4px 4px 0;
+  box-sizing: border-box;
+}
+
+.motion-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 12px;
+  background: var(--panel-sub, #1e1f29);
+  border: 1px solid var(--line, #2c2d38);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.motion-card:hover {
+  background: var(--panel-hover, #262836);
+  border-color: var(--accent, #4dc8ff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.motion-card.is-active {
+  border-color: #2ed573;
+  background: rgba(46, 213, 115, 0.1);
+}
+
+.motion-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.motion-card-title-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.motion-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #f0f1f5);
+}
+
+.motion-card-subname {
+  font-size: 11px;
+  color: var(--muted, #8a8d9f);
+}
+
+.motion-card-badges {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.motion-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.motion-badge-entrance {
+  background: rgba(77, 200, 255, 0.15);
+  color: #4dc8ff;
+  border: 1px solid rgba(77, 200, 255, 0.3);
+}
+
+.motion-badge-emphasis {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+  border: 1px solid rgba(255, 170, 0, 0.3);
+}
+
+.motion-badge-exit {
+  background: rgba(255, 71, 87, 0.15);
+  color: #ff4757;
+  border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+.motion-badge-category {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted, #8a8d9f);
+}
+
+.motion-card-desc {
+  font-size: 11px;
+  color: var(--muted, #a0a3b5);
+  line-height: 1.4;
+  margin-top: 4px;
+  flex: 1;
+}
+
+.motion-card-desc mark,
+.motion-card-name mark,
+.motion-card-subname mark {
+  background: rgba(255, 215, 0, 0.3);
+  color: #fff;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+.motion-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.motion-card-meta {
+  font-size: 10px;
+  color: var(--muted, #6c6f80);
+}
+
+.motion-card-add-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: var(--bg-deep, #141419);
+  border: 1px solid var(--line, #2c2d38);
+  color: var(--text, #f0f1f5);
+  cursor: pointer;
+}
+
+.motion-card:hover .motion-card-add-btn {
+  background: var(--accent, #4dc8ff);
+  color: #0b0c10;
+  border-color: var(--accent, #4dc8ff);
+}
+
+.motion-dialog-empty {
+  grid-column: 1 / -1;
+  padding: 30px 10px;
+  text-align: center;
+  color: var(--muted, #8a8d9f);
+  font-size: 13px;
+}
+

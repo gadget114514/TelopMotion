@@ -1153,7 +1153,8 @@ SA.lyricsEngine = (() => {
         const resolved = SA.fx.withDefaults({ type: 'shapeLayer', params: restParams }, 'background');
         if (!resolved || !SA.shapeOps.SHAPES.includes(resolved.params.shape)) return;
         const params = { ...resolved.params, color: fill };
-        const boxes = params.followText === 'line' || params.followText === 'block' ? textBoxesForClip(t) : null;
+        const followMode = params.followText || 'block';
+        const boxes = followMode !== 'none' ? textBoxesForClip(t) : null;
         // the drive follows the text on screen (each cue draws its own shape);
         // without a beat it falls back to the clip's own progress
         const beatSpan = onScreen ? Math.max(0.001, onScreen.end - onScreen.start) : 0;
@@ -1162,6 +1163,10 @@ SA.lyricsEngine = (() => {
         const primitives = SA.shapeOps.expand(params, {
           box: boxes ? boxes.box : null,
           boxes: boxes ? boxes.lines : null,
+          lines: boxes ? boxes.lines : null,
+          words: boxes ? boxes.words : null,
+          chars: boxes ? boxes.chars : null,
+          text: boxes ? boxes.text : '',
           frame: { width: state.width, height: state.height },
           progress: driveProgress,
           time: t,
@@ -1544,10 +1549,12 @@ SA.lyricsEngine = (() => {
       };
     }
 
-    // The same bounds in frame pixels (y down), split per line. Backdrop shape
-    // clips (background.shapeLayer + followText) are laid out against these.
+    // The same bounds in frame pixels (y down), split per line, word, and character.
+    // Backdrop shape clips (background.shapeLayer + followText) are laid out against these.
     function textBoxesPx(scene, states) {
       const lines = new Map();
+      const words = new Map();
+      const chars = [];
       let x0 = Infinity;
       let y0 = Infinity;
       let x1 = -Infinity;
@@ -1563,22 +1570,50 @@ SA.lyricsEngine = (() => {
         const halfH = Math.max(6, (letter.size * scaleY) / 2 + 4);
         const x = letterState.x || 0;
         const y = letterState.y || 0;
-        x0 = Math.min(x0, x - halfW);
-        x1 = Math.max(x1, x + halfW);
-        y0 = Math.min(y0, y - halfH);
-        y1 = Math.max(y1, y + halfH);
-        const key = letter.lineIdx == null ? 0 : letter.lineIdx;
-        const line = lines.get(key) || { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
-        line.x0 = Math.min(line.x0, x - halfW);
-        line.y0 = Math.min(line.y0, y - halfH);
-        line.x1 = Math.max(line.x1, x + halfW);
-        line.y1 = Math.max(line.y1, y + halfH);
-        lines.set(key, line);
+        const cx0 = x - halfW;
+        const cx1 = x + halfW;
+        const cy0 = y - halfH;
+        const cy1 = y + halfH;
+        x0 = Math.min(x0, cx0);
+        x1 = Math.max(x1, cx1);
+        y0 = Math.min(y0, cy0);
+        y1 = Math.max(y1, cy1);
+
+        const lineKey = letter.lineIdx == null ? 0 : letter.lineIdx;
+        const line = lines.get(lineKey) || { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity, lineIdx: lineKey };
+        line.x0 = Math.min(line.x0, cx0);
+        line.y0 = Math.min(line.y0, cy0);
+        line.x1 = Math.max(line.x1, cx1);
+        line.y1 = Math.max(line.y1, cy1);
+        lines.set(lineKey, line);
+
+        const wordKey = `${lineKey}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
+        const word = words.get(wordKey) || { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity, lineIdx: lineKey, wordIdx: letter.wordIdx };
+        word.x0 = Math.min(word.x0, cx0);
+        word.y0 = Math.min(word.y0, cy0);
+        word.x1 = Math.max(word.x1, cx1);
+        word.y1 = Math.max(word.y1, cy1);
+        words.set(wordKey, word);
+
+        chars.push({
+          x0: cx0,
+          y0: cy0,
+          x1: cx1,
+          y1: cy1,
+          char: letter.char,
+          index: i,
+          lineIdx: lineKey,
+          wordIdx: letter.wordIdx,
+        });
       }
       if (!Number.isFinite(x0)) return null;
+      const fullText = chars.map((c) => c.char || '').join('');
       return {
-        box: { x0, y0, x1, y1 },
+        box: { x0, y0, x1, y1, text: fullText },
         lines: [...lines.values()].sort((a, b) => a.y0 - b.y0),
+        words: [...words.values()].sort((a, b) => (a.y0 === b.y0 ? a.x0 - b.x0 : a.y0 - b.y0)),
+        chars,
+        text: fullText,
       };
     }
 

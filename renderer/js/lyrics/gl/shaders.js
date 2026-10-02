@@ -395,10 +395,49 @@ SA.glShaders = (() => {
       float b = 1.0 - smoothstep(r * 0.5 - aa * 2.0, r * 0.5 + aa * 2.0, min(v, 1.0 - v));
       return max(a, b);
     }
-    // sketch: a hand-drawn wobble riding the wire
-    float jitter = (fbm(vec2(s / p * 2.0, t * 2.0), 3) - 0.5) * 0.6;
-    float w = 0.02 + 0.2 * r;
-    return 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, abs(t - 0.5 + jitter));
+    if (kind == 15) {                     // sketch: a hand-drawn wobble riding the wire
+      float jitter = (fbm(vec2(s / p * 2.0, t * 2.0), 3) - 0.5) * 0.6;
+      float w = 0.02 + 0.2 * r;
+      return 1.0 - smoothstep(w - aa * 2.0, w + aa * 2.0, abs(t - 0.5 + jitter));
+    }
+    if (kind == 16) {                     // doubleDashed (two parallel dashed lines)
+      float dash = 1.0 - smoothstep(r - aa * 2.0, r + aa * 2.0, phase);
+      float a = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.28));
+      float b = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.72));
+      return dash * max(a, b);
+    }
+    if (kind == 17) {                     // squareChain (rectangular links chained)
+      vec2 q = vec2(abs(phase - 0.5) * 2.0, abs(t - 0.5) * 2.0);
+      float outer = 1.0 - smoothstep(0.92 - aa * 2.0, 0.92 + aa * 2.0, max(q.x, q.y));
+      float inner = 1.0 - smoothstep(0.50 - aa * 2.0, 0.50 + aa * 2.0, max(q.x, q.y));
+      float link = max(outer - inner, 0.0);
+      float pin = (1.0 - smoothstep(0.18 - aa * 2.0, 0.18 + aa * 2.0, abs(t - 0.5))) *
+                  (1.0 - smoothstep(0.18 - aa * 2.0, 0.18 + aa * 2.0, min(phase, 1.0 - phase) * 2.0));
+      return max(link, pin);
+    }
+    if (kind == 18) {                     // chain (interlocking oval links)
+      vec2 q = vec2((phase - 0.5) * 1.6, (t - 0.5) * 2.2);
+      float dist = length(q);
+      float outer = 1.0 - smoothstep(0.85 - aa * 2.0, 0.85 + aa * 2.0, dist);
+      float inner = 1.0 - smoothstep(0.42 - aa * 2.0, 0.42 + aa * 2.0, dist);
+      float ring = max(outer - inner, 0.0);
+      float altPhase = fract(phase + 0.5);
+      vec2 q2 = vec2((altPhase - 0.5) * 2.2, (t - 0.5) * 1.3);
+      float dist2 = length(q2);
+      float outer2 = 1.0 - smoothstep(0.72 - aa * 2.0, 0.72 + aa * 2.0, dist2);
+      float inner2 = 1.0 - smoothstep(0.35 - aa * 2.0, 0.35 + aa * 2.0, dist2);
+      float ring2 = max(outer2 - inner2, 0.0) * 0.85;
+      return max(ring, ring2);
+    }
+    if (kind == 19) {                     // ornament (flourish / diamond beaded line)
+      float dx = abs(phase - 0.5) * 2.0;
+      float dy = abs(t - 0.5) * 2.0;
+      float diamond = 1.0 - smoothstep(0.55 - aa * 2.0, 0.55 + aa * 2.0, dx * 0.85 + dy * 1.15);
+      float bead = 1.0 - smoothstep(0.12 - aa * 2.0, 0.12 + aa * 2.0, abs(t - 0.5));
+      float dot = 1.0 - smoothstep(0.20 - aa * 2.0, 0.20 + aa * 2.0, length(vec2(min(phase, 1.0 - phase) * 2.0, t - 0.5)));
+      return max(max(diamond, dot), bead * (1.0 - smoothstep(0.65, 0.9, dx)));
+    }
+    return 1.0;
   }
   `;
 
@@ -1412,8 +1451,8 @@ SA.glShaders = (() => {
       float t = 0.0;
       float spokes = 1.0;
       float pathPx = u_resolution.y;
-      if (shape == 0 || shape == 1 || shape == 8) {
-        // underline (bottom), strike (middle), diagonal (corner to corner)
+      if (shape == 0 || shape == 1 || shape == 8 || shape == 9) {
+        // underline (bottom), strike (middle), diagonal, overline (top)
         vec2 a;
         vec2 b;
         if (shape == 0) {
@@ -1422,6 +1461,9 @@ SA.glShaders = (() => {
         } else if (shape == 1) {
           a = vec2(-hb.x, 0.0);
           b = vec2(hb.x, 0.0);
+        } else if (shape == 9) {
+          a = vec2(-hb.x, hb.y);
+          b = vec2(hb.x, hb.y);
         } else {
           a = vec2(-hb.x, -hb.y);
           b = vec2(hb.x, hb.y);
@@ -1430,6 +1472,81 @@ SA.glShaders = (() => {
         t = clamp(dot(q - a, ab) / max(dot(ab, ab), 1e-8), 0.0, 1.0);
         d = length(q - (a + ab * t));
         pathPx = length(ab) * u_resolution.y;
+      } else if (shape == 10) {
+        // topBottom: both top and bottom lines
+        vec2 aTop = vec2(-hb.x, hb.y);
+        vec2 bTop = vec2(hb.x, hb.y);
+        vec2 aBot = vec2(-hb.x, -hb.y);
+        vec2 bBot = vec2(hb.x, -hb.y);
+        float tTop = clamp(dot(q - aTop, bTop - aTop) / max(dot(bTop - aTop, bTop - aTop), 1e-8), 0.0, 1.0);
+        float tBot = clamp(dot(q - aBot, bBot - aBot) / max(dot(bBot - aBot, bBot - aBot), 1e-8), 0.0, 1.0);
+        float dTop = length(q - (aTop + (bTop - aTop) * tTop));
+        float dBot = length(q - (aBot + (bBot - aBot) * tBot));
+        if (dTop < dBot) {
+          d = dTop;
+          t = tTop;
+        } else {
+          d = dBot;
+          t = tBot;
+        }
+        pathPx = 2.0 * hb.x * u_resolution.y;
+      } else if (shape == 11) {
+        // sides: left and right vertical lines
+        vec2 aL = vec2(-hb.x, -hb.y);
+        vec2 bL = vec2(-hb.x, hb.y);
+        vec2 aR = vec2(hb.x, -hb.y);
+        vec2 bR = vec2(hb.x, hb.y);
+        float tL = clamp(dot(q - aL, bL - aL) / max(dot(bL - aL, bL - aL), 1e-8), 0.0, 1.0);
+        float tR = clamp(dot(q - aR, bR - aR) / max(dot(bR - aR, bR - aR), 1e-8), 0.0, 1.0);
+        float dL = length(q - (aL + (bL - aL) * tL));
+        float dR = length(q - (aR + (bR - aR) * tR));
+        if (dL < dR) {
+          d = dL;
+          t = tL;
+        } else {
+          d = dR;
+          t = tR;
+        }
+        pathPx = 2.0 * hb.y * u_resolution.y;
+      } else if (shape == 12) {
+        // sidesSemicircle: outward semicircles on sides
+        float r = hb.y;
+        vec2 cL = vec2(-hb.x, 0.0);
+        vec2 cR = vec2(hb.x, 0.0);
+        float dL = (q.x <= -hb.x) ? abs(length(q - cL) - r) : min(length(q - vec2(-hb.x, r)), length(q - vec2(-hb.x, -r)));
+        float dR = (q.x >= hb.x) ? abs(length(q - cR) - r) : min(length(q - vec2(hb.x, r)), length(q - vec2(hb.x, -r)));
+        if (dL < dR) {
+          d = dL;
+          t = atan(q.y - cL.y, -(q.x - cL.x)) / PI * 0.5 + 0.5;
+        } else {
+          d = dR;
+          t = atan(q.y - cR.y, q.x - cR.x) / PI * 0.5 + 0.5;
+        }
+        pathPx = PI * r * 2.0 * u_resolution.y;
+      } else if (shape == 13) {
+        // sidesSemiellipse: outward semi-ellipses on sides
+        vec2 eR = vec2(max(hb.y * 0.7, 0.01), hb.y);
+        vec2 cL = vec2(-hb.x, 0.0);
+        vec2 cR = vec2(hb.x, 0.0);
+        vec2 pL = (q - cL) / eR;
+        vec2 pR = (q - cR) / eR;
+        float dL = (q.x <= -hb.x) ? abs(length(pL) - 1.0) * min(eR.x, eR.y) : min(length(q - vec2(-hb.x, eR.y)), length(q - vec2(-hb.x, -eR.y)));
+        float dR = (q.x >= hb.x) ? abs(length(pR) - 1.0) * min(eR.x, eR.y) : min(length(q - vec2(hb.x, eR.y)), length(q - vec2(hb.x, -eR.y)));
+        if (dL < dR) {
+          d = dL;
+          t = atan(pL.y, -pL.x) / PI * 0.5 + 0.5;
+        } else {
+          d = dR;
+          t = atan(pR.y, pR.x) / PI * 0.5 + 0.5;
+        }
+        pathPx = PI * hb.y * 2.0 * u_resolution.y;
+      } else if (shape == 14) {
+        // capsule: rounded box with full semicircles
+        float capR = hb.y;
+        vec2 pCap = vec2(max(abs(q.x) - max(hb.x - capR, 0.0), 0.0), q.y);
+        d = abs(length(pCap) - capR);
+        t = atan(q.y, q.x) / TAU + 0.5;
+        pathPx = (4.0 * max(hb.x - capR, 0.0) + TAU * capR) * u_resolution.y;
       } else if (shape == 4 || shape == 5) {
         // circle / ring: the trim runs around the centre
         float r = length(q);
@@ -1462,7 +1579,7 @@ SA.glShaders = (() => {
         t = bestT;
         pathPx = TAU * radius * u_resolution.y;
       } else {
-        // box / brackets: the trim walks around the perimeter
+        // box / brackets / plate / ornament: the trim walks around the perimeter
         vec2 rq = abs(q) - hb;
         d = length(max(rq, 0.0)) + min(max(rq.x, rq.y), 0.0);
         t = atan(q.y, q.x) / TAU + 0.5;
@@ -1474,11 +1591,11 @@ SA.glShaders = (() => {
       float tt = fract(t + trimOffset);
       float trim = smoothstep(trimStart - feather, trimStart + feather, tt) * (1.0 - smoothstep(trimEnd - feather, trimEnd + feather, tt));
       alpha *= trim;
-      if (capRound < 0.5 && (shape == 0 || shape == 1 || shape == 8) && (t <= 0.0001 || t >= 0.9999)) alpha = 0.0;
-      if (shape == 3) {
-        // brackets keep the four corners only
+      if (capRound < 0.5 && (shape == 0 || shape == 1 || shape == 8 || shape == 9 || shape == 10 || shape == 11) && (t <= 0.0001 || t >= 0.9999)) alpha = 0.0;
+      if (shape == 3 || shape == 16) {
+        // brackets and ornament keep ornate corners
         float corner = smoothstep(0.5, 0.8, min(abs(q.x) / max(hb.x, 1e-4), abs(q.y) / max(hb.y, 1e-4)));
-        alpha *= corner;
+        alpha *= (shape == 16 ? max(corner, 0.35) : corner);
       }
       if (patternKind > 0) {
         // the wire runs from the path (across 0) to the stroke edge (1), so
