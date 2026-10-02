@@ -37,7 +37,7 @@
   const PLAIN_OUTS = ['shrink', 'fade'];
   function isPlainRun(axes) {
     const a = axes || {};
-    return !(weird.raw(a.weird) >= 0.6) && !(clamp01(a.fear) >= 0.5);
+    return !(weird.bg(a.weird) >= 0.6) && !(clamp01(a.fear) >= 0.5);
   }
   const PROC_CHANCE = 0.75;
   const PROC_LAYER_BUDGET = 240;
