@@ -2568,6 +2568,17 @@
     const motionParams = fx.paramDefaults('bgMotion', motionType);
     motionParams.lead = round(lerp(0.12, 0.02, axes.speed), 2);
     motionParams.duration = round(lerp(0.5, 0.2, axes.speed), 2);
+    // independent clock: when the look is weird enough the background gets its
+    // own entrance timing, exit and hold instead of following the text
+    const independentChance = opts.independentChance != null ? clamp01(opts.independentChance) : genParamsMod.derive(axes).bgIndependentChance;
+    if (independentChance > 0 && random() < independentChance) {
+      motionParams.lead = round(lerp(-0.4, 0.5, random()), 2);
+      motionParams.duration = round(lerp(0.2, 0.9, random()), 2);
+      motionParams.exit = pick(random, ['fade', 'shrink', 'none']);
+      motionParams.exitDuration = round(lerp(0.15, 0.8, random()), 2);
+      motionParams.hold = pick(random, ['pulse', 'wobble', 'spin', 'beat', 'heartbeat', 'shiver', 'drift']);
+      motionParams.holdAmount = round(lerp(0.2, 0.8, random()), 2);
+    }
     style[isBackground ? 'bgMotion' : 'ornMotion'] = { type: motionType, params: motionParams, enabled: true };
     return true;
   }

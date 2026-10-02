@@ -586,3 +586,31 @@ test('the theme scatter knobs drive offset, size and colour spread of the marks'
   }
   assert.ok(checked > 10);
 });
+
+test('a weird look may run its background on its own enter / exit / hold clock', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const calm = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const wild = { ...calm, weird: 1 };
+  let independent = 0;
+  for (let seed = 1; seed <= 60; seed += 1) {
+    const a = {};
+    const b = {};
+    moods.applyGenreBackground(a, null, calm, rng.rngFor(seed, 'ind'), palette, true, { chance: 1 });
+    moods.applyGenreBackground(b, null, wild, rng.rngFor(seed, 'ind'), palette, true, { chance: 1 });
+    const calmMotion = (a.bgMotion || a.ornMotion).params;
+    assert.equal(calmMotion.exit, 'withText');
+    assert.equal(calmMotion.hold, 'none');
+    const wildMotion = (b.bgMotion || b.ornMotion).params;
+    if (wildMotion.hold !== 'none') {
+      assert.notEqual(wildMotion.exit, 'withText');
+      independent += 1;
+    }
+    // a pinned zero keeps even the weird look on the text clock
+    const c = {};
+    moods.applyGenreBackground(c, null, wild, rng.rngFor(seed, 'ind'), palette, true, { chance: 1, independentChance: 0 });
+    assert.equal((c.bgMotion || c.ornMotion).params.hold, 'none');
+  }
+  assert.ok(independent > 20, `only ${independent} independent backgrounds at weird 1`);
+});

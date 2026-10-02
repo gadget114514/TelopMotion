@@ -595,6 +595,7 @@
         }
         if (pinned.bgVaryChance != null) bgOptions.varyChance = params.bgVaryChance;
         if (pinned.bgEdgeChance != null) bgOptions.edgeChance = params.bgEdgeChance;
+        if (pinned.bgIndependentChance != null) bgOptions.independentChance = params.bgIndependentChance;
         if (pinned.bgOffsetScatter != null) bgOptions.offsetScatter = params.bgOffsetScatter;
         if (pinned.bgSizeScatter != null) bgOptions.sizeScatter = params.bgSizeScatter;
         if (pinned.bgColorScatter != null) bgOptions.colorScatter = params.bgColorScatter;
