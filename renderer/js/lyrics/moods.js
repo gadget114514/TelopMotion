@@ -2261,6 +2261,16 @@
     cloud: [0.3, 0.9],
   };
 
+  const BG_PLAIN_TRAITS = {
+    square: BG_SHAPE_TRAITS.square,
+    rounded: BG_SHAPE_TRAITS.rounded,
+    circle: BG_SHAPE_TRAITS.circle,
+    diamond: BG_SHAPE_TRAITS.diamond,
+    bar: BG_SHAPE_TRAITS.bar,
+    ring: BG_SHAPE_TRAITS.ring,
+  };
+  const BG_PLAIN_MOTIONS = { follow: 3, pop: 2, wipe: 1, grow: 1 };
+
   const BG_MOTION_TRAITS = {
     follow: [0.3, 0.8],
     fade: [0.2, 0.9],
@@ -2390,7 +2400,13 @@
       placement = pickWeightedEntry({ enclose: auto.bgEnclose, accent: auto.bgAccent, underlay: auto.bgUnderlay }, random) || 'enclose';
     }
     const shapeWeights = config && config.shapes ? config.shapes : null;
-    const shape = weightedFromTraits(BG_SHAPE_TRAITS, shapeWeights, random, axes) || 'square';
+    // plain by default: flat square / rounded / circle / diamond / bar / ring,
+    // solid, snapping in fast. The fancy shapes (splatter, scratch, paper, cloud
+    // ...) only come with a weird or fearful run.
+    const plain = w < 0.6 && fearOf(axes) < 0.5;
+    const shape = weightedFromTraits(plain ? BG_PLAIN_TRAITS : BG_SHAPE_TRAITS, shapeWeights, random, axes) || 'square';
+    // a fearful look never draws the soft heart / circle shapes
+    if (fearOf(axes) >= 0.5 && (shape === 'heart' || shape === 'circle' || shape === 'ring')) return false;
     // placement constraints (I13: a weird look may break them)
     let adjusted = placement;
     if (!breaks(random, w, 0.6)) {
@@ -2484,7 +2500,7 @@
     if (!fillType) {
       const holographic = axes.energy >= 0.72;
       const roll = random();
-      fillType = roll < 0.7 ? 'solid' : roll < 0.9 ? 'gradientSweep' : holographic ? 'holographic' : 'solid';
+      fillType = plain ? 'solid' : roll < 0.7 ? 'solid' : roll < 0.9 ? 'gradientSweep' : holographic ? 'holographic' : 'solid';
     }
     style[isBackground ? 'bgFill' : 'ornFill'] = { type: fillType, params: fx.paramDefaults('bgFill', fillType), enabled: true };
     // edge
@@ -2501,7 +2517,9 @@
       if (edgeType === 'outline') {
         const patternRoll = random();
         edgeParams.pattern =
-          patternRoll < 0.6
+          plain
+            ? 'solid'
+            : patternRoll < 0.6
             ? 'solid'
             : patternRoll < 0.85
               ? 'dashed'
@@ -2513,10 +2531,11 @@
     }
     // motion
     const motionTable = (config && config.motions) || null;
-    const motionType = pickWeightedEntry(motionTable, random) || weightedFromTraits(BG_MOTION_TRAITS, null, random, axes) || 'follow';
+    const motionType = (plain ? pickWeightedEntry(BG_PLAIN_MOTIONS, random) : pickWeightedEntry(motionTable, random)) || weightedFromTraits(BG_MOTION_TRAITS, null, random, axes) || 'follow';
     const motionParams = fx.paramDefaults('bgMotion', motionType);
     motionParams.lead = round(lerp(0.12, 0.02, axes.speed), 2);
-    motionParams.duration = round(lerp(0.5, 0.2, axes.speed), 2);
+    motionParams.duration = round(plain ? lerp(0.22, 0.12, axes.speed) : lerp(0.5, 0.2, axes.speed), 2);
+    if (plain) motionParams.hold = 'none';
     style[isBackground ? 'bgMotion' : 'ornMotion'] = { type: motionType, params: motionParams, enabled: true };
     return true;
   }

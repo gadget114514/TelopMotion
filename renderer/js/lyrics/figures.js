@@ -29,6 +29,16 @@
   // values). `generate` draws it most of the time, so clips rarely look alike.
   const PROC = 'proc';
   MOTIFS.push(PROC);
+  // the plain default: flat bars / rings / frames that snap in fast. Anything
+  // ornate (proc, cracks, eyes, drips ...) only appears on a weird or fearful run.
+  const PLAIN_MOTIFS = ['bars', 'rings', 'underlineSweep', 'bracketsPop', 'ticker', 'slabWipe', 'cornerBlocks', 'stripeRun', 'sideBars', 'dotGrid', 'ringDraw'];
+  const PLAIN_INS = ['pop', 'wipe'];
+  const PLAIN_HOLDS = ['pulse', 'drift'];
+  const PLAIN_OUTS = ['shrink', 'fade'];
+  function isPlainRun(axes) {
+    const a = axes || {};
+    return !(weird.bg(a.weird) >= 0.6) && !(clamp01(a.fear) >= 0.5);
+  }
   const PROC_CHANCE = 0.75;
   const PROC_LAYER_BUDGET = 240;
   const PROC_TOTAL_BUDGET = 480;
@@ -128,16 +138,17 @@
   function assignMoves(beats, random, force, s, axes, beatRandom) {
     let previousIn = null;
     let previousOut = null;
+    const plain = isPlainRun(axes);
     for (const beat of beats) {
-      const ins = INS.filter((name) => name !== previousIn);
-      const outs = OUTS.filter((name) => name !== previousOut);
+      const ins = (plain ? PLAIN_INS : INS).filter((name) => name !== previousIn);
+      const outs = (plain ? PLAIN_OUTS : OUTS).filter((name) => name !== previousOut);
       // the random draws always run, forced or not, so the variant / accent
       // sequence stays stable when a move is pinned. The seventh axis demotes
       // the cheap moves and the eighth prefers the fear-heavy ones (a no-op at
       // 0, where the plain pick returns).
-      const inPick = fxAxes.pickWeighted(random, 'figureIn', ins.length ? ins : INS, axes, { smartness: s });
-      const holdPick = fxAxes.pickWeighted(random, 'figureHold', HOLDS, axes, { smartness: s });
-      const outPick = fxAxes.pickWeighted(random, 'figureOut', outs.length ? outs : OUTS, axes, { smartness: s });
+      const inPick = fxAxes.pickWeighted(random, 'figureIn', ins.length ? ins : plain ? PLAIN_INS : INS, axes, { smartness: s });
+      const holdPick = fxAxes.pickWeighted(random, 'figureHold', plain ? PLAIN_HOLDS : HOLDS, axes, { smartness: s });
+      const outPick = fxAxes.pickWeighted(random, 'figureOut', outs.length ? outs : plain ? PLAIN_OUTS : OUTS, axes, { smartness: s });
       const variant = Math.floor(random() * 3);
       const accent = random() < 0.5;
       // the sub-beat's own scale (0.6..1.4) and palette rotation, drawn from
@@ -173,7 +184,9 @@
     const w = weird.bg(axes.weird);
     const s = smartness.smartOf(axes);
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
-    const motifPool = (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC);
+    const plainRun = isPlainRun(axes);
+    // the frame motif is the heavy one: below weird 0.8 it never draws
+    const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8);
     // the motif pool answers the smartness and fear axes (a no-op at 0)
     let motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
     // the procedural motif draws from its own stream, so every other draw below
@@ -182,7 +195,7 @@
     const procRoll = procRandom();
     const procSeed = Math.floor(procRandom() * 1e9);
     const fear = Number.isFinite(Number(axes.fear)) ? clamp01(axes.fear) : 0;
-    if (!requested && procRoll < PROC_CHANCE * (1 - fear)) motif = PROC;
+    if (!requested && !plainRun && procRoll < PROC_CHANCE * (1 - fear)) motif = PROC;
     const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
     const force = { in: opts.in, hold: opts.hold, out: opts.out };
     const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes, rng.rngFor(seed, 'figure-beat', id));
@@ -241,8 +254,9 @@
         const duration = Math.max(0.001, beat.end - beat.start);
         const local = time - beat.start;
         const window = Math.min(bold ? 0.45 : 0.3, duration * (bold ? 0.35 : 0.25));
-        const inProgress = window > 0 ? clamp01(local / window) : 1;
-        const outProgress = window > 0 ? clamp01((beat.end - time) / window) : 1;
+        const fast = PLAIN_MOTIFS.includes(motif) ? Math.min(window, 0.18) : window;
+        const inProgress = fast > 0 ? clamp01(local / fast) : 1;
+        const outProgress = fast > 0 ? clamp01((beat.end - time) / fast) : 1;
         return { beat, index: i, local, duration, inProgress, outProgress };
       }
     }

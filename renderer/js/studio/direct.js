@@ -229,6 +229,16 @@
     };
   }
 
+  const TEXT_BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  const SOFT_SHAPE_FEAR = 0.5;
+  const SOFT_SHAPES = new Set(['heart', 'circle', 'ring']);
+
+  // Drops a heart / circle ornament (with its fill / edge / motion) from a style bag.
+  function stripSoftOrnament(style) {
+    if (!style || !style.ornShape || !SOFT_SHAPES.has(style.ornShape.type)) return;
+    for (const group of ['ornShape', 'ornFill', 'ornEdge', 'ornMotion']) delete style[group];
+  }
+
   // The section a cue belongs to (null when the run does not follow sections).
   function sectionOf(ctx, cueId) {
     if (!ctx || !ctx.sectionOf) return null;
@@ -360,6 +370,23 @@
       if (roll >= gate) {
         themeStyle.post = themeStyle.post.filter((entry) => !entry || !SA.legibility.SMEAR_POSTS.has(entry.type));
         if (!themeStyle.post.length) delete themeStyle.post;
+      }
+    }
+    // The text background of the drawn theme follows the same profile: a
+    // pinned textBgChance gates the whole look's background / ornament groups
+    // (0 strips them, so the dialog's 0 really means none), and a fearful run
+    // never keeps the soft heart / circle ornaments.
+    if (opts.compose && themeStyle) {
+      if (pinned.textBgChance != null) {
+        const bgRoll = genParams.roll(SA.rng.rngFor(opts.seed == null ? 1 : opts.seed, 'theme-text-bg'), params.textBgChance);
+        if (!bgRoll) {
+          for (const group of TEXT_BG_GROUPS) delete themeStyle[group];
+          for (const entry of Object.values(cueLooks)) if (entry && entry.style) for (const group of TEXT_BG_GROUPS) delete entry.style[group];
+        }
+      }
+      if (SA.moods.fearOf(axes) >= SOFT_SHAPE_FEAR) {
+        stripSoftOrnament(themeStyle);
+        for (const entry of Object.values(cueLooks)) if (entry && entry.style) stripSoftOrnament(entry.style);
       }
     }
     // Phrase rhythm: a weird song lays a pattern library over the bars instead
@@ -1704,6 +1731,12 @@
   // The filler presets a run may place: pattern / split / figures / combo /
   // particles (never text — a gap is not a caption), minus the genre's excludes
   // and minus the specs the seventh axis rates below its floor.
+  const FRAME_LAYER_WEIRD = 0.8;
+  function isFrameLayer(layer) {
+    const params = (layer && layer.params) || {};
+    return (layer.type === 'split' && params.layout === 'frame') || (layer.type === 'figures' && params.motif === 'frame');
+  }
+
   function fillerPresetPool(ctx, groupSet) {
     if (!SA.fillerPresets || typeof SA.fillerPresets.list !== 'function' || !SA.fillerRender) return [];
     const groups = groupSet || new Set(['pattern', 'split', 'figures', 'combo', 'particles']);
@@ -1716,7 +1749,11 @@
       if (SA.moods.smartness.weight(SA.moods.smartness.rateSpec(preset.spec), s) <= 0) return false;
       // the fear axis drops the presets far below the target (a no-op at 0)
       if (ctx && ctx.axes && SA.moods.fearOf(ctx.axes) > 0 && !(SA.fxAxes.affinity(SA.fxAxes.ofFiller(preset.spec), ctx.axes) > 0)) return false;
-      return !SA.fillerRender.layersOf(preset.spec).some((layer) => exclude.has(layer.type));
+      const layers = SA.fillerRender.layersOf(preset.spec);
+      // the frame layer (corner-by-corner draw / frame split) is the heavy,
+      // monotonous one: it only joins the pool on a weird run
+      if (!(Number(ctx && ctx.rawW) >= FRAME_LAYER_WEIRD) && layers.some(isFrameLayer)) return false;
+      return !layers.some((layer) => exclude.has(layer.type));
     });
   }
 
@@ -1769,7 +1806,10 @@
   function withFigureLayer(base, figuresSpec) {
     const spec = base || { type: 'figures', params: {} };
     if (!figuresSpec || carriesFigures(spec)) return spec;
-    return { type: 'combo', params: { list: [spec, figuresSpec] } };
+    const combo = { type: 'combo', params: { list: [spec, figuresSpec] } };
+    // the pair keeps the drawn preset's identity (the preset id marks a drawn gap)
+    if (spec.presetId) combo.presetId = spec.presetId;
+    return combo;
   }
 
   // The filler kinds a run writes into the project settings. Item 8: gaps show
@@ -2168,7 +2208,7 @@
         // 2) motifs that frame the text box first, then the bold cuts, then the
         // calmer centred ones
         if (!(best && bestOverlap <= AUTO_FIGURE_CLEAR)) {
-          const pool = ['frame', 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars'];
+          const pool = [...(rawW >= FRAME_LAYER_WEIRD ? ['frame'] : []), 'underlineSweep', 'bracketsPop', ...SA.figures.BOLD_MOTIFS, 'orbit', 'ribbon', 'rings', 'ticker', 'bars'];
           const sr = SA.rng.rngFor(seed + index * 53, cue.id, 'figure-safe');
           const shuffled = pool
             .filter((name, position) => pool.indexOf(name) === position && name !== spec.params.motif)
