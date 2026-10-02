@@ -1811,16 +1811,19 @@ SA.lyricsEngine = (() => {
       const seed = (project.styleMode && project.styleMode.seed) || 12345;
       const styleParams = (project.styleMode && project.styleMode.params) || {};
       const themeScale = Number(styleParams.textBgScale != null ? styleParams.textBgScale : styleParams.bgScale);
-      const baseScale = Number.isFinite(themeScale) ? themeScale : 1;
-      if (isBg && SA.textBg.backgroundScale) {
-        const hasExplicit = shape.params && (shape.params.scale != null || shape.params.maxScale != null);
-        if (!hasExplicit) {
-          const scale = SA.textBg.backgroundScale(shape.params, seed, beat.id, baseScale);
-          if (scale !== 1) {
-            for (const entry of bg.states) {
-              entry.sizeX *= scale;
-              entry.sizeY *= scale;
-            }
+      const rawBase = Number.isFinite(themeScale) && themeScale > 0
+        ? themeScale
+        : Number(shape.params && (shape.params.scale != null ? shape.params.scale : shape.params.maxScale));
+      const baseScale = Number.isFinite(rawBase) && rawBase > 0 ? rawBase : 1;
+      if (SA.textBg.backgroundScale && (isBg || (shape.params && shape.params.unit === 'cell' && shape.params.layer === 'behind'))) {
+        const scale = SA.textBg.backgroundScale(shape.params, seed, beat.id, baseScale);
+        for (const entry of bg.states) {
+          if (isBg) {
+            entry.sizeX = scale;
+            entry.sizeY = scale;
+          } else {
+            entry.sizeX *= (scale / baseScale);
+            entry.sizeY *= (scale / baseScale);
           }
         }
       }
@@ -1829,7 +1832,7 @@ SA.lyricsEngine = (() => {
       if (SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
-        const cellCap = Math.max(10, baseScale * 1.5);
+        const cellCap = Math.max(10, baseScale * 2.5);
         SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: cellCap, emExtra: 0.6, emPx: scene.size } : { cell: 2.4, emExtra: 0.6, emPx: scene.size });
       }
       const amountKey = BG_AMOUNT_KEY[shape.type];

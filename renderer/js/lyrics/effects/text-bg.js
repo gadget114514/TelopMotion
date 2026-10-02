@@ -251,13 +251,17 @@
 
   function backgroundScale(params, seed, beatId, baseScale) {
     const p = params || {};
-    const explicit = Number(p.scale != null ? p.scale : p.maxScale);
-    if (Number.isFinite(explicit) && explicit > 0) {
-      return Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, explicit));
+    if (p.randomize === false || p.scaleLocked) {
+      const explicit = Number(p.scale != null ? p.scale : p.maxScale);
+      if (Number.isFinite(explicit) && explicit > 0) return Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, explicit));
     }
-    const base = Number.isFinite(Number(baseScale)) ? Number(baseScale) : 1;
+    const rawBase = baseScale != null ? baseScale : (p.scale != null ? p.scale : p.maxScale);
+    const base = Number.isFinite(Number(rawBase)) && Number(rawBase) > 0 ? Number(rawBase) : 1;
     const random = rng.rngFor(seed == null ? 12345 : seed, beatId == null ? '' : beatId, 'bg-scale');
-    const scale = base * (0.85 + random() * 0.3);
+    // Appropriately randomize around baseScale:
+    // A factor between 0.65 and 1.85: gives beats varied, well-proportioned backgrounds.
+    const factor = 0.65 + random() * 1.2;
+    const scale = base * factor;
     return Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, Math.round(scale * 100) / 100));
   }
 

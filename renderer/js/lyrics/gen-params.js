@@ -408,8 +408,16 @@
 
     if (isPinned(styleMode, 'textBgScale') || isPinned(styleMode, 'bgScale')) {
       const bgScaleVal = isPinned(styleMode, 'textBgScale') ? params.textBgScale : params.bgScale;
-      if (bgScaleVal != null && out.bgShape && out.bgShape.params) {
-        out.bgShape.params.scale = Math.max(0.1, Math.min(10, Number(bgScaleVal)));
+      if (bgScaleVal != null) {
+        const val = Math.max(0.1, Math.min(10, Number(bgScaleVal)));
+        if (out.bgShape && out.bgShape.params) {
+          out.bgShape.params.scale = val;
+          out.bgShape.params.maxScale = val;
+        }
+        if (out.ornShape && out.ornShape.params && out.ornShape.params.unit === 'cell') {
+          out.ornShape.params.scale = val;
+          out.ornShape.params.maxScale = val;
+        }
       }
     }
 

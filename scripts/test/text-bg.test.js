@@ -247,14 +247,15 @@ test('the shape batch centres the quad on the letter, so no cell offset is uploa
 test('backgroundScale is the explicit scale or a deterministic 0.1..10 cell draw', () => {
   assert.equal(textBg.BG_SCALE_MIN, 0.1);
   assert.equal(textBg.BG_SCALE_MAX, 10);
-  assert.equal(textBg.backgroundScale({ scale: 1.7 }, 1, 'b1'), 1.7);
+  assert.equal(textBg.backgroundScale({ scale: 1.7, randomize: false }, 1, 'b1'), 1.7);
   const first = textBg.backgroundScale({}, 4242, 'beat-1');
   assert.equal(textBg.backgroundScale({}, 4242, 'beat-1'), first, 'the same seed and beat draw the same size');
   assert.ok(first >= 0.1 && first <= 10, `derived scale ${first}`);
   const scales = [];
   for (let beat = 0; beat < 60; beat += 1) scales.push(textBg.backgroundScale({}, 4242, `b${beat}`));
-  assert.ok(Math.max(...scales) > 0.9, `max ${Math.max(...scales)}`);
-  assert.ok(Math.min(...scales) < 1.1, `min ${Math.min(...scales)}`);
+  assert.ok(Math.max(...scales) > 1.3, `max ${Math.max(...scales)}`);
+  assert.ok(Math.min(...scales) < 0.9, `min ${Math.min(...scales)}`);
+  assert.ok(new Set(scales).size > 30, 'scales vary across beats');
   // evaluateBg respects scale
   const bg = textBg.evaluateBg({ type: 'square', params: { scale: 2.4 } }, { type: 'follow', params: {} }, [entry(), entry()], null, null, 2, { seed: 4242, group: 'bgShape' });
   for (const state of bg.states) {

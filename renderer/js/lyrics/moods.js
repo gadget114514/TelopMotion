@@ -2445,7 +2445,7 @@
         // picture -- does not move.
         const rawScale = opts.scale != null ? opts.scale : (opts.textBgScale != null ? opts.textBgScale : opts.bgScale);
         const baseScale = Number.isFinite(Number(rawScale)) ? Number(rawScale) : 1;
-        const bgScale = Math.max(0.1, Math.min(10, round(baseScale * (1 + ((cell - 1) * 1.5)), 2)));
+        const bgScale = Math.max(0.1, Math.min(10, round(baseScale * (0.65 + ((cell - 0.9) / 0.2) * 1.1), 2)));
         params.scale = bgScale;
         params.maxScale = bgScale;
       }
@@ -2480,11 +2480,15 @@
       // a letter-sized mark behind its letter (the random draws above are kept,
       // so the stream stays put): one letter box, no offset, no spin, no wash
       params.unit = 'cell';
+      const rawScale = opts.scale != null ? opts.scale : (opts.textBgScale != null ? opts.textBgScale : opts.bgScale);
+      const baseScale = Number.isFinite(Number(rawScale)) ? Number(rawScale) : 1;
       // the size scatter widens the look's base size: smaller or bigger than
       // its letter, one size per look
       const base = sizeScatter > 0 ? round(lerp(1 - 0.35 * sizeScatter, 1 + 0.7 * sizeScatter, random()), 2) : 1;
-      params.width = base;
-      params.height = base;
+      params.width = round(base * baseScale, 2);
+      params.height = params.width;
+      params.scale = baseScale;
+      params.maxScale = baseScale;
       params.layer = 'behind';
       params.opacity = 1;
       delete params.offset;
