@@ -116,12 +116,21 @@
     // there is the definition background (a per-letter cell square), while
     // accent / underlay and every other shape are text ornaments. The keys
     // stay as they are for saved profile compatibility.
-    { key: 'textBgChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.08 + 0.22 * a.d + 0.5 * a.t) },
+    { key: 'textBgChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.4 * (0.08 + 0.22 * a.d + 0.5 * a.t)) },
     { key: 'bgEnclose', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.55 },
     { key: 'bgAccent', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.25 },
     { key: 'bgUnderlay', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.2 },
     { key: 'bgVaryChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 + 0.7 * a.t },
     { key: 'bgEdgeChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0.4 },
+    // how far the ornament marks scatter from their letter: centre offset,
+    // size and colour (0 = every mark sits centred, letter-sized, one colour; the size scatter
+    // also spreads the look's base size from 0.65x to 1.7x of the letter)
+    // a weird look may run its background on its own clock: its own entrance
+    // timing, exit and hold, independent of the text (0 below weird 0.5)
+    { key: 'bgIndependentChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => Math.max(0, Math.min(1, (a.w - 0.5) * 2)) },
+    { key: 'bgOffsetScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0 },
+    { key: 'bgSizeScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0.5 },
+    { key: 'bgColorScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // palette / backdrop
     { key: 'colorChange', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a, axes) => weird.colorChange(axes) },
     { key: 'paletteSwitchChance', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a) => a.w },

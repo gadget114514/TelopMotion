@@ -281,42 +281,65 @@ SA.lyricsScene = (() => {
 
     const size = (textStyle.size || 96) * (beat.fontScale || 1) * scale;
     const fillColor = resolveFillColor(project, style, beat);
-    let layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
-      size,
-      lang: (project.meta && project.meta.lang) || 'en',
-      direction,
-      compose: composeLayout || undefined,
-      // a fill beat carries the exact lines the flow picked, so it must not be
-      // re-wrapped even when the enlarged / bleeding lines exceed maxWidth. A
-      // composition may ask for a wider than frame ratio on purpose (bleed).
-      maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 ? textStyle.maxWidth * output.width * scale : undefined,
-    });
-    // Fit the laid-out block into the frame. The width stays inside maxWidth;
-    // the height budget is 80% of the frame by default and opens with the weird
-    // axis up to 120%, so a weird beat may deliberately fill the screen (the
-    // frame guard keeps at least half of it visible). One re-layout only, and
-    // with maxWidth Infinity so the chosen wrap survives.
     const frameW = output.width * scale;
     const frameH = output.height * scale;
-    const weird = SA.weird.text(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0);
-    const maxHeightBase = textStyle.maxHeight > 0 ? Number(textStyle.maxHeight) : 0.8;
-    const limitHRatio = maxHeightBase + (Math.max(maxHeightBase, 1.2) - maxHeightBase) * weird;
-    const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 ? textStyle.maxWidth : 0.94) * frameW;
-    const limitH = limitHRatio * frameH;
-    const bbox = layout.bbox;
-    if (bbox && size > 1) {
-      const boxW = Math.max(0, bbox.x2 - bbox.x1);
-      const boxH = Math.max(0, bbox.y2 - bbox.y1);
-      if (boxW > limitW + 0.5 || boxH > limitH + 0.5) {
-        const k = Math.min(1, limitW / Math.max(1e-6, boxW), limitH / Math.max(1e-6, boxH));
-        if (k < 0.999) {
-          layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
-            size: size * k,
-            lang: (project.meta && project.meta.lang) || 'en',
-            direction,
-            compose: composeLayout || undefined,
-            maxWidth: Infinity,
-          });
+    const pageInst = SA.fx && SA.fx.withDefaults ? SA.fx.withDefaults(style.page, 'page') : style.page;
+    const usePage = pageInst && pageInst.type && pageInst.type !== 'none' && pageInst.enabled !== false && SA.pageScene;
+
+    let layout = usePage
+      ? SA.pageScene.build({
+          compose: SA.pageLayout ? SA.pageLayout.compose : null,
+          layoutText: SA.lyricsFont.layoutText,
+          fonts: fontList,
+          textStyle,
+          source: layoutTextSource,
+          composeLayout,
+          size,
+          lang: (project.meta && project.meta.lang) || 'en',
+          frame: { w: frameW, h: frameH },
+          style,
+          rng: SA.rng && SA.rng.rngFor ? SA.rng.rngFor(0x5eed, cueId, beatId) : null,
+          fillColor,
+          project,
+          beat,
+        })
+      : SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
+          size,
+          lang: (project.meta && project.meta.lang) || 'en',
+          direction,
+          compose: composeLayout || undefined,
+          // a fill beat carries the exact lines the flow picked, so it must not be
+          // re-wrapped even when the enlarged / bleeding lines exceed maxWidth. A
+          // composition may ask for a wider than frame ratio on purpose (bleed).
+          maxWidth: fillBeat ? Infinity : textStyle.maxWidth > 0 ? textStyle.maxWidth * output.width * scale : undefined,
+        });
+
+    if (!usePage) {
+      // Fit the laid-out block into the frame. The width stays inside maxWidth;
+      // the height budget is 80% of the frame by default and opens with the weird
+      // axis up to 120%, so a weird beat may deliberately fill the screen (the
+      // frame guard keeps at least half of it visible). One re-layout only, and
+      // with maxWidth Infinity so the chosen wrap survives.
+      const weird = SA.weird.text(project.styleMode && project.styleMode.axes ? project.styleMode.axes.weird : 0);
+      const maxHeightBase = textStyle.maxHeight > 0 ? Number(textStyle.maxHeight) : 0.8;
+      const limitHRatio = maxHeightBase + (Math.max(maxHeightBase, 1.2) - maxHeightBase) * weird;
+      const limitW = fillBeat ? Infinity : (textStyle.maxWidth > 0 ? textStyle.maxWidth : 0.94) * frameW;
+      const limitH = limitHRatio * frameH;
+      const bbox = layout.bbox;
+      if (bbox && size > 1) {
+        const boxW = Math.max(0, bbox.x2 - bbox.x1);
+        const boxH = Math.max(0, bbox.y2 - bbox.y1);
+        if (boxW > limitW + 0.5 || boxH > limitH + 0.5) {
+          const k = Math.min(1, limitW / Math.max(1e-6, boxW), limitH / Math.max(1e-6, boxH));
+          if (k < 0.999) {
+            layout = SA.lyricsFont.layoutText(layoutTextSource, textStyle, fontList, {
+              size: size * k,
+              lang: (project.meta && project.meta.lang) || 'en',
+              direction,
+              compose: composeLayout || undefined,
+              maxWidth: Infinity,
+            });
+          }
         }
       }
     }
@@ -339,6 +362,8 @@ SA.lyricsScene = (() => {
       scale,
       direction,
       fillColor,
+      regions: layout.regions || null,
+      decor: layout.decor || null,
     };
 
     for (let lineIdx = 0; lineIdx < layout.lines.length; lineIdx += 1) {
@@ -385,6 +410,9 @@ SA.lyricsScene = (() => {
             quadrant: !!source.quadrant,
             offsetX: source.offsetX || 0,
             offsetY: source.offsetY || 0,
+            baseRot: source.baseRot || 0,
+            regionId: source.regionId ?? null,
+            role: source.role || null,
             local: {
               x: box.x,
               y: box.y,

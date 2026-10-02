@@ -19,16 +19,59 @@
   // clip the user places on the timeline: shape-ops expands it against the
   // current text box (`followText: block / line`) and the GL shape pass draws
   // it behind the lyrics.
-  const SHAPES = (shapeOps && shapeOps.SHAPES) || ['underline', 'strike', 'box', 'brackets', 'circle', 'ring', 'burst', 'cross', 'diagonal'];
-  const FOLLOW_MODES = (shapeOps && shapeOps.FOLLOW_MODES) || ['block', 'line'];
+  const SHAPES = (shapeOps && shapeOps.SHAPES) || [
+    'underline',
+    'strike',
+    'box',
+    'brackets',
+    'circle',
+    'ring',
+    'burst',
+    'cross',
+    'diagonal',
+    'overline',
+    'topBottom',
+    'sides',
+    'sidesSemicircle',
+    'sidesSemiellipse',
+    'capsule',
+    'plate',
+    'ornament',
+  ];
+  const FOLLOW_MODES = (shapeOps && shapeOps.FOLLOW_MODES) || ['block', 'line', 'word', 'char', 'span'];
   const PATH_OPS = (shapeOps && shapeOps.PATH_OPS) || ['none', 'wiggle', 'zigzag', 'pucker', 'twist'];
-  const PATTERNS = (shapeOps && shapeOps.PATTERNS) || ['solid', 'dashed', 'dotted', 'dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'random', 'railroad', 'hatch', 'crosshatch', 'sketch'];
-  const PATTERN_CODES = (shapeOps && shapeOps.PATTERN_CODES) || { solid: 0, dashed: 1, dotted: 2, double: 3, sketch: 4 };
+  const PATTERNS = (shapeOps && shapeOps.PATTERNS) || ['solid', 'dashed', 'dotted', 'dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'random', 'railroad', 'hatch', 'crosshatch', 'sketch', 'doubleDashed', 'squareChain', 'chain', 'ornament'];
+  const PATTERN_CODES = (shapeOps && shapeOps.PATTERN_CODES) || {
+    solid: 0,
+    dashed: 1,
+    dotted: 2,
+    dashDot: 3,
+    double: 4,
+    triple: 5,
+    stripes: 6,
+    checker: 7,
+    diamond: 8,
+    zigzag: 9,
+    wave: 10,
+    random: 11,
+    railroad: 12,
+    hatch: 13,
+    crosshatch: 14,
+    sketch: 15,
+    doubleDashed: 16,
+    squareChain: 17,
+    chain: 18,
+    ornament: 19,
+  };
+  const ENTER_ANIMS = (shapeOps && shapeOps.ENTER_ANIMS) || ['draw', 'pop', 'fade', 'slide', 'expand', 'none'];
+  const EXIT_ANIMS = (shapeOps && shapeOps.EXIT_ANIMS) || ['erase', 'shrink', 'fade', 'slide', 'none'];
+  const HOLD_ANIMS = (shapeOps && shapeOps.HOLD_ANIMS) || ['flow', 'pulse', 'float', 'shiver', 'none'];
+  const BG_PATTERNS = (shapeOps && shapeOps.BG_PATTERNS) || ['none', 'stripes', 'dots', 'grid', 'checker', 'diamond', 'wave', 'hatch', 'crosshatch', 'chain', 'random'];
   const SHAPE_CODES = {};
   SHAPES.forEach((name, index) => {
     SHAPE_CODES[name] = index;
   });
-  const DRIVES = ['enter', 'exit', 'hold', 'beat'];
+  const DRIVES = ['enter', 'exit', 'hold', 'beat', 'auto'];
 
   function num(value, fallback) {
     const number = Number(value);
@@ -45,6 +88,9 @@
     params: [
       { key: 'shape', kind: 'select', options: SHAPES, default: 'underline', section: 'shape' },
       { key: 'drive', kind: 'select', options: DRIVES, default: 'enter', section: 'shape' },
+      { key: 'enterAnim', kind: 'select', options: ENTER_ANIMS, default: 'draw', section: 'shape' },
+      { key: 'exitAnim', kind: 'select', options: EXIT_ANIMS, default: 'erase', section: 'shape' },
+      { key: 'holdAnim', kind: 'select', options: HOLD_ANIMS, default: 'flow', section: 'shape' },
       { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.6, section: 'shape' },
       { key: 'trimStart', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
       { key: 'trimEnd', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'shape' },
@@ -59,6 +105,12 @@
       { key: 'dashOn', kind: 'number', min: 0, max: 200, step: 1, default: 0, section: 'look' },
       { key: 'dashOff', kind: 'number', min: 0, max: 200, step: 1, default: 0, section: 'look' },
       { key: 'dashOffset', kind: 'number', min: -1, max: 1, step: 0.05, default: 0, section: 'look' },
+      { key: 'fillColor', kind: 'color', default: null, section: 'plate' },
+      { key: 'fillOpacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'plate' },
+      { key: 'bgPattern', kind: 'select', options: BG_PATTERNS, default: 'none', section: 'plate' },
+      { key: 'bgPatternSize', kind: 'number', min: 2, max: 200, step: 1, default: 24, section: 'plate' },
+      { key: 'bgPatternOpacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5, section: 'plate' },
+      { key: 'bgPatternFlow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0, section: 'plate' },
       { key: 'repeat', kind: 'int', min: 1, max: 12, step: 1, default: 4, section: 'look' },
       { key: 'repeatScale', kind: 'number', min: 0.1, max: 2, step: 0.05, default: 1, section: 'look' },
       { key: 'repeatRotate', kind: 'number', min: -180, max: 180, step: 5, default: 0, section: 'look' },
@@ -78,6 +130,9 @@
         ...source,
         shape: SHAPES.includes(source.shape) ? source.shape : 'underline',
         drive: DRIVES.includes(source.drive) ? source.drive : 'enter',
+        enterAnim: ENTER_ANIMS.includes(source.enterAnim) ? source.enterAnim : 'draw',
+        exitAnim: EXIT_ANIMS.includes(source.exitAnim) ? source.exitAnim : 'erase',
+        holdAnim: HOLD_ANIMS.includes(source.holdAnim) ? source.holdAnim : 'flow',
         trimStart: Math.max(0, Math.min(1, num(source.trimStart, 0))),
         trimEnd: Math.max(0, Math.min(1, num(source.trimEnd, 1))),
         trimOffset: num(source.trimOffset, 0),
@@ -91,6 +146,11 @@
         dashOn: Math.max(0, Math.min(200, num(source.dashOn, 0))),
         dashOff: Math.max(0, Math.min(200, num(source.dashOff, 0))),
         dashOffset: Math.max(-1, Math.min(1, num(source.dashOffset, 0))),
+        fillOpacity: Math.max(0, Math.min(1, num(source.fillOpacity, 0))),
+        bgPattern: BG_PATTERNS.includes(source.bgPattern) ? source.bgPattern : 'none',
+        bgPatternSize: Math.max(2, Math.min(200, num(source.bgPatternSize, 24))),
+        bgPatternOpacity: Math.max(0, Math.min(1, num(source.bgPatternOpacity, 0.5))),
+        bgPatternFlow: Math.max(-4, Math.min(4, num(source.bgPatternFlow, 0))),
         repeat: Math.max(1, Math.min(12, Math.round(num(source.repeat, 4)))),
         repeatScale: num(source.repeatScale, 1),
         repeatRotate: num(source.repeatRotate, 0),
@@ -111,7 +171,13 @@
     params: [
       { key: 'shape', kind: 'select', options: SHAPES, default: 'box', section: 'shape' },
       { key: 'followText', kind: 'select', options: FOLLOW_MODES, default: 'block', section: 'shape' },
+      { key: 'matchText', kind: 'string', default: '', section: 'shape' },
+      { key: 'spanFrom', kind: 'int', min: 0, max: 500, step: 1, default: 0, section: 'shape' },
+      { key: 'spanTo', kind: 'int', min: 0, max: 500, step: 1, default: 0, section: 'shape' },
       { key: 'drive', kind: 'select', options: DRIVES, default: 'enter', section: 'shape' },
+      { key: 'enterAnim', kind: 'select', options: ENTER_ANIMS, default: 'draw', section: 'shape' },
+      { key: 'exitAnim', kind: 'select', options: EXIT_ANIMS, default: 'erase', section: 'shape' },
+      { key: 'holdAnim', kind: 'select', options: HOLD_ANIMS, default: 'flow', section: 'shape' },
       { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.6, section: 'shape' },
       { key: 'trimStart', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'shape' },
       { key: 'trimEnd', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'shape' },
@@ -129,6 +195,12 @@
       { key: 'stroke', kind: 'number', min: 0.1, max: 200, step: 0.5, default: 4, section: 'look' },
       { key: 'corner', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.12, section: 'look' },
       { key: 'padding', kind: 'number', min: -0.2, max: 0.6, step: 0.01, default: 0.08, section: 'look' },
+      { key: 'fillColor', kind: 'color', default: null, section: 'plate' },
+      { key: 'fillOpacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, section: 'plate' },
+      { key: 'bgPattern', kind: 'select', options: BG_PATTERNS, default: 'none', section: 'plate' },
+      { key: 'bgPatternSize', kind: 'number', min: 2, max: 200, step: 1, default: 24, section: 'plate' },
+      { key: 'bgPatternOpacity', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5, section: 'plate' },
+      { key: 'bgPatternFlow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0, section: 'plate' },
       { key: 'repeat', kind: 'int', min: 1, max: 12, step: 1, default: 1, section: 'look' },
       { key: 'repeatOffset', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, section: 'look' },
       { key: 'repeatScale', kind: 'number', min: 0.1, max: 2, step: 0.05, default: 1, section: 'look' },
@@ -161,6 +233,12 @@
       else if (drive === 'beat') {
         const bpm = context.audioFeatures && Number(context.audioFeatures.bpm) > 0 ? Number(context.audioFeatures.bpm) : 120;
         offset += ((time * bpm) / 60) % 1;
+      } else if (shapeOps && shapeOps.computeMotion) {
+        const bpm = context.audioFeatures && Number(context.audioFeatures.bpm) > 0 ? Number(context.audioFeatures.bpm) : 120;
+        const motion = shapeOps.computeMotion(p, { progress, time, bpm });
+        start = motion.trim[0];
+        end = motion.trim[1];
+        offset = motion.trim[2];
       }
       const color = context.shapeColor || [1, 0.82, 0.42, 1];
       // pattern packing: kind, period (px), ratio, phase. The phase already

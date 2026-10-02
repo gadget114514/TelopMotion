@@ -2161,6 +2161,10 @@ SA.timeline = (() => {
         SA.store.setSelection([`cue:${cueId}/beat:${hit.beatId}`], 'beat');
         SA.motionDialog.open();
       });
+      add(t('studio.timeline.pagePreset'), () => {
+        SA.store.setSelection([`cue:${cueId}`], 'cue');
+        if (SA.pageDialog && SA.pageDialog.open) SA.pageDialog.open();
+      });
       if (hit.hasMotions) {
         add(t('studio.motion.clearHere'), () => SA.store.commands.setStyleProp({ cueId, beatId: hit.beatId }, 'motions', undefined));
       }
@@ -2179,6 +2183,10 @@ SA.timeline = (() => {
       add(t('studio.motion.addHere'), () => {
         SA.store.setSelection([`cue:${cueId}`], 'cue');
         SA.motionDialog.open();
+      });
+      add(t('studio.timeline.pagePreset'), () => {
+        SA.store.setSelection([`cue:${cueId}`], 'cue');
+        if (SA.pageDialog && SA.pageDialog.open) SA.pageDialog.open();
       });
     }
     el.body.appendChild(menu);

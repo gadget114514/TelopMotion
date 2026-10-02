@@ -451,8 +451,11 @@ test('the pinned profile options override the genre tables', () => {
   });
   assert.equal(applied, true);
   // a pinned accent is not a background: it lands on the ornament groups
-  assert.equal(style.ornShape.params.unit, 'em');
-  assert.equal(style.ornShape.params.layer, 'front');
+  // (a basic mark hugs its letter instead: a cell-sized shape behind it)
+  if (!(style.ornShape.params.unit === 'cell' && style.ornShape.params.width === 1)) {
+    assert.equal(style.ornShape.params.unit, 'em');
+    assert.equal(style.ornShape.params.layer, 'front');
+  }
   assert.notEqual(style.ornShape.params.vary, 'none');
   assert.ok(Array.isArray(style.ornEdge) && style.ornEdge.length > 0);
   assert.equal(style.bgShape, undefined);
@@ -464,7 +467,7 @@ test('the pinned profile options override the genre tables', () => {
   const placed = {};
   assert.equal(moods.applyGenreBackground(placed, null, axes, rng.rngFor(7, 'bg4'), palette, false, { chance: 1, placement: { bgUnderlay: 1 } }), true);
   assert.equal(placed.ornShape.params.layer, 'behind');
-  assert.equal(placed.ornShape.params.unit, 'em');
+  assert.ok(['em', 'cell'].includes(placed.ornShape.params.unit));
   // a pinned enclose square is the definition background: a cell square with
   // no geometry in the data (the shape draw is random, so scan for a square)
   let enclosed = null;
@@ -489,7 +492,7 @@ test('the same seed keeps its draw and only the destination splits', () => {
   const genre = { bg: { chance: 0.35, placement: { enclose: 0.5, accent: 0.3, underlay: 0.2 }, shapes: { square: 3, circle: 2, bar: 1, star: 1, '*': 0 } } };
   let backgrounds = 0;
   let ornaments = 0;
-  for (let seed = 1; seed <= 120; seed += 1) {
+  for (let seed = 1; seed <= 600; seed += 1) {
     const first = {};
     const second = {};
     const applied = moods.applyGenreBackground(first, genre, axes, rng.rngFor(seed, 'bg-split'), palette, false);
@@ -510,10 +513,104 @@ test('the same seed keeps its draw and only the destination splits', () => {
       backgrounds += 1;
     }
     if (ornOn) {
-      if (first.ornShape.type === 'square') assert.equal(first.ornShape.params.unit, 'em', `seed ${seed} ornament square must be an em accent`);
+      // a letter-sized mark is a cell shape of exactly one letter box
+      if (first.ornShape.type === 'square') assert.ok(first.ornShape.params.unit === 'em' || (first.ornShape.params.width >= 0.6 && first.ornShape.params.width <= 1.8), `seed ${seed} ornament square`);
       ornaments += 1;
     }
   }
   assert.ok(backgrounds > 5, `only ${backgrounds} backgrounds`);
   assert.ok(ornaments > 5, `only ${ornaments} ornaments`);
+});
+
+test('basic marks are letter-sized and centred, and the background edge uses the font edge vocabulary', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const axes = { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0.2 };
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const basic = new Set(['square', 'rounded', 'circle', 'diamond', 'star', 'heart']);
+  const edgeTypes = new Set();
+  let letterSized = 0;
+  let applied = 0;
+  const sizes = new Set();
+  for (let seed = 1; seed <= 200; seed += 1) {
+    const style = {};
+    if (!moods.applyGenreBackground(style, null, axes, rng.rngFor(seed, 'bg-basic'), palette, false, { chance: 1, edgeChance: 1 })) continue;
+    applied += 1;
+    const orn = style.ornShape;
+    if (orn && basic.has(orn.type)) {
+      assert.equal(orn.params.unit, 'cell', `seed ${seed} ${orn.type} unit`);
+      assert.ok(orn.params.width >= 0.6 && orn.params.width <= 1.8, `seed ${seed} size ${orn.params.width}`);
+      assert.equal(orn.params.height, orn.params.width);
+      sizes.add(orn.params.width);
+      assert.equal(orn.params.offset, undefined, `seed ${seed} ${orn.type} must stay centred`);
+      assert.equal(orn.params.layer, 'behind');
+      letterSized += 1;
+    }
+    for (const edge of style.ornEdge || style.bgEdge || []) edgeTypes.add(edge.type);
+  }
+  assert.ok(letterSized > 10, `only ${letterSized} letter-sized marks`);
+  assert.ok(sizes.size > 5, 'the mark size should vary between looks');
+  assert.ok(Math.min(...sizes) < 1 && Math.max(...sizes) > 1, 'marks should come both smaller and bigger than the letter');
+  assert.ok(edgeTypes.has('neonGlow') && edgeTypes.has('outline'), [...edgeTypes].join());
+  // unpinned, the background is the exception
+  let present = 0;
+  for (let seed = 1; seed <= 200; seed += 1) {
+    if (moods.applyGenreBackground({}, null, axes, rng.rngFor(seed, 'bg-rare'), palette, false)) present += 1;
+  }
+  assert.ok(present < 70, `${present}/200 looks carry a background`);
+});
+
+test('the theme scatter knobs drive offset, size and colour spread of the marks', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const genParams = require('../../renderer/js/lyrics/gen-params.js');
+  for (const key of ['bgOffsetScatter', 'bgSizeScatter', 'bgColorScatter']) {
+    assert.ok(genParams.PARAMS.some((param) => param.key === key), `${key} is not a theme parameter`);
+  }
+  const axes = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247', '#44aa88', '#cc3366'];
+  let checked = 0;
+  for (let seed = 1; seed <= 80; seed += 1) {
+    const flat = {};
+    const spread = {};
+    const base = { chance: 1, placement: { bgAccent: 1 }, offsetScatter: 0, sizeScatter: 0, colorScatter: 0 };
+    moods.applyGenreBackground(flat, null, axes, rng.rngFor(seed, 'sc'), palette, false, base);
+    moods.applyGenreBackground(spread, null, axes, rng.rngFor(seed, 'sc'), palette, false, { ...base, offsetScatter: 1, sizeScatter: 1, colorScatter: 1 });
+    if (!flat.ornShape) continue;
+    assert.equal(flat.ornShape.params.varyOffset, undefined);
+    assert.equal(flat.ornShape.params.varySize, undefined);
+    assert.ok(spread.ornShape.params.varyOffset > 0 && spread.ornShape.params.varySize > 0);
+    assert.notEqual(spread.ornShape.params.vary, 'none');
+    assert.ok(spread.ornShape.params.varyColors.length >= flat.ornShape.params.varyColors.length);
+    checked += 1;
+  }
+  assert.ok(checked > 10);
+});
+
+test('a weird look may run its background on its own enter / exit / hold clock', () => {
+  const rng = require('../../renderer/js/lyrics/rng.js');
+  const moods = require('../../renderer/js/lyrics/moods.js');
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  const calm = { speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const wild = { ...calm, weird: 1 };
+  let independent = 0;
+  for (let seed = 1; seed <= 60; seed += 1) {
+    const a = {};
+    const b = {};
+    moods.applyGenreBackground(a, null, calm, rng.rngFor(seed, 'ind'), palette, true, { chance: 1 });
+    moods.applyGenreBackground(b, null, wild, rng.rngFor(seed, 'ind'), palette, true, { chance: 1 });
+    const calmMotion = (a.bgMotion || a.ornMotion).params;
+    assert.equal(calmMotion.exit, 'withText');
+    assert.equal(calmMotion.hold, 'none');
+    const wildMotion = (b.bgMotion || b.ornMotion).params;
+    if (wildMotion.hold !== 'none') {
+      assert.notEqual(wildMotion.exit, 'withText');
+      independent += 1;
+    }
+    // a pinned zero keeps even the weird look on the text clock
+    const c = {};
+    moods.applyGenreBackground(c, null, wild, rng.rngFor(seed, 'ind'), palette, true, { chance: 1, independentChance: 0 });
+    assert.equal((c.bgMotion || c.ornMotion).params.hold, 'none');
+  }
+  assert.ok(independent > 20, `only ${independent} independent backgrounds at weird 1`);
 });

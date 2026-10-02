@@ -2361,6 +2361,13 @@
     }
   }
 
+  // The background edge draws from the same edge library as the text font: a
+  // plain / double / dashed outline, a drop shadow or a blurred neon glow.
+  function pickBgEdgeType(random) {
+    const roll = random();
+    return roll < 0.5 ? 'outline' : roll < 0.7 ? 'dropShadow' : 'neonGlow';
+  }
+
   // Picks one of the three placements from a weight map keyed by the profile's
   // keys (bgEnclose / bgAccent / bgUnderlay).
   function pickPlacement(weights, random) {
@@ -2370,6 +2377,13 @@
       underlay: weights && weights.bgUnderlay,
     }, random);
   }
+
+  // Without a pinned chance the text background is the exception, not the rule:
+  // the derived / genre presence is scaled down so most looks carry none.
+  const BG_AUTO_SCALE = 0.4;
+  // The basic marks hug their letter: same size as the letter box, centred on
+  // the letter, whatever the placement the draw picked.
+  const BG_LETTER_SHAPES = new Set(['square', 'rounded', 'circle', 'diamond', 'star', 'heart']);
 
   // The text background of one look. The optional `options` (the compose
   // profile) may pin the presence chance / placement weights / vary and edge
@@ -2385,7 +2399,7 @@
     // weird look grows a text background more often.
     let chance;
     if (opts.chance != null) chance = clamp01(opts.chance);
-    else if (config && config.chance != null) chance = Number(config.chance) + 0.5 * w;
+    else if (config && config.chance != null) chance = (Number(config.chance) + 0.5 * w) * BG_AUTO_SCALE;
     else chance = genParamsMod.derive(axes).textBgChance;
     if (!forced && random() >= Math.min(1, chance)) return false;
     // placement: pinned weights, then the genre's table, then the derived
@@ -2403,7 +2417,7 @@
     // plain by default: flat square / rounded / circle / diamond / bar / ring,
     // solid, snapping in fast. The fancy shapes (splatter, scratch, paper, cloud
     // ...) only come with a weird or fearful run.
-    const plain = w < 0.6 && fearOf(axes) < 0.5;
+    const plain = weirdOf(axes) < 0.6 && fearOf(axes) < 0.5;
     const shape = weightedFromTraits(plain ? BG_PLAIN_TRAITS : BG_SHAPE_TRAITS, shapeWeights, random, axes) || 'square';
     // a fearful look never draws the soft heart / circle shapes
     if (fearOf(axes) >= 0.5 && (shape === 'heart' || shape === 'circle' || shape === 'ring')) return false;
@@ -2447,6 +2461,28 @@
       params.varyRotation = round(random() * 25 * (1 + 2 * w), 1);
     }
     if (shape === 'bar' && adjusted !== 'underlay') params.offset = { x: 0, y: 0.3 };
+    // the scatter knobs of the theme (pinned value, else the derived default):
+    // centre offset / size of a mark (a background square never moves) and how
+    // many colours it draws from
+    const autoParams = genParamsMod.derive(axes);
+    const scatterOf = (pinned, key) => (pinned == null ? autoParams[key] : clamp01(pinned));
+    const offsetScatter = scatterOf(opts.offsetScatter, 'bgOffsetScatter');
+    const sizeScatter = scatterOf(opts.sizeScatter, 'bgSizeScatter');
+    const colorScatter = scatterOf(opts.colorScatter, 'bgColorScatter');
+    if (BG_LETTER_SHAPES.has(shape)) {
+      // a letter-sized mark behind its letter (the random draws above are kept,
+      // so the stream stays put): one letter box, no offset, no spin, no wash
+      params.unit = 'cell';
+      // the size scatter widens the look's base size: smaller or bigger than
+      // its letter, one size per look
+      const base = sizeScatter > 0 ? round(lerp(1 - 0.35 * sizeScatter, 1 + 0.7 * sizeScatter, random()), 2) : 1;
+      params.width = base;
+      params.height = base;
+      params.layer = 'behind';
+      params.opacity = 1;
+      delete params.offset;
+      delete params.varyRotation;
+    }
     // variation
     const varyTable = (config && config.vary) || null;
     let vary;
@@ -2455,6 +2491,9 @@
     } else {
       vary = pickWeightedEntry(varyTable, random) || (random() < 0.3 + 0.7 * w ? pick(random, ['alternate', 'charClass', 'cycle']) : 'none');
     }
+    if (offsetScatter > 0) params.varyOffset = round(offsetScatter * 0.6, 2);
+    if (sizeScatter > 0) params.varySize = round(sizeScatter * 0.8, 2);
+    if (colorScatter > 0 && vary === 'none') vary = 'random';
     params.vary = vary;
     const colorMode = (config && config.colors) || 'accent';
     const varyColors =
@@ -2463,6 +2502,13 @@
         : colorMode === 'mixed'
           ? [palette[3], palette[5], palette[2]].filter(Boolean)
           : [palette[3], palette[5] || palette[3]].filter(Boolean);
+    if (colorScatter > 0) {
+      // more scatter = more palette colours in the draw
+      const count = Math.min(palette.length, 2 + Math.round(colorScatter * 4));
+      for (let slot = 0; varyColors.length < count && slot < palette.length; slot += 1) {
+        if (slot !== 0 && palette[slot] && !varyColors.includes(palette[slot])) varyColors.push(palette[slot]);
+      }
+    }
     // A square drawn in the enclose placement is the text background by the
     // definition (a per-letter cell square); everything else the old table
     // could draw (accent squares, underlays, circles / stars / bars ...) is a
@@ -2507,25 +2553,30 @@
     const edgeTable = (config && config.edge) || null;
     let edgeType;
     if (opts.edgeChance != null) {
-      edgeType = random() < clamp01(opts.edgeChance) ? (random() < 0.6 ? 'outline' : 'dropShadow') : null;
+      edgeType = random() < clamp01(opts.edgeChance) ? pickBgEdgeType(random) : null;
     } else {
       edgeType = pickWeightedEntry(edgeTable, random);
-      if (!edgeType && random() < 0.4) edgeType = random() < 0.6 ? 'outline' : 'dropShadow';
+      if (!edgeType && random() < 0.4) edgeType = pickBgEdgeType(random);
     }
     if (edgeType && edgeType !== 'none') {
       const edgeParams = fx.paramDefaults('bgEdge', edgeType);
       if (edgeType === 'outline') {
+        // the same decoration vocabulary the text font edge draws: double /
+        // triple lines, dashes, and a soft (blurred) line
         const patternRoll = random();
         edgeParams.pattern =
           plain
             ? 'solid'
-            : patternRoll < 0.6
+            : patternRoll < 0.4
             ? 'solid'
-            : patternRoll < 0.85
-              ? 'dashed'
-              : patternRoll < 0.95
-                ? 'dotted'
-                : pick(random, ['dashDot', 'double', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'railroad']);
+            : patternRoll < 0.6
+              ? 'double'
+              : patternRoll < 0.75
+                ? 'dashed'
+                : patternRoll < 0.82
+                  ? 'dotted'
+                  : pick(random, ['dashDot', 'triple', 'stripes', 'checker', 'diamond', 'zigzag', 'wave', 'railroad']);
+        if (random() < 0.35) edgeParams.softness = round(lerp(0.5, 1, random()), 2);
       }
       style[isBackground ? 'bgEdge' : 'ornEdge'] = [{ type: edgeType, params: edgeParams, enabled: true }];
     }
@@ -2536,6 +2587,17 @@
     motionParams.lead = round(lerp(0.12, 0.02, axes.speed), 2);
     motionParams.duration = round(plain ? lerp(0.22, 0.12, axes.speed) : lerp(0.5, 0.2, axes.speed), 2);
     if (plain) motionParams.hold = 'none';
+    // independent clock: when the look is weird enough the background gets its
+    // own entrance timing, exit and hold instead of following the text
+    const independentChance = opts.independentChance != null ? clamp01(opts.independentChance) : genParamsMod.derive(axes).bgIndependentChance;
+    if (!plain && independentChance > 0 && random() < independentChance) {
+      motionParams.lead = round(lerp(-0.4, 0.5, random()), 2);
+      motionParams.duration = round(lerp(0.2, 0.9, random()), 2);
+      motionParams.exit = pick(random, ['fade', 'shrink', 'none']);
+      motionParams.exitDuration = round(lerp(0.15, 0.8, random()), 2);
+      motionParams.hold = pick(random, ['pulse', 'wobble', 'spin', 'beat', 'heartbeat', 'shiver', 'drift']);
+      motionParams.holdAmount = round(lerp(0.2, 0.8, random()), 2);
+    }
     style[isBackground ? 'bgMotion' : 'ornMotion'] = { type: motionType, params: motionParams, enabled: true };
     return true;
   }

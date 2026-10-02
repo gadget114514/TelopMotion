@@ -6,7 +6,7 @@ const path = require('node:path');
 
 const effectsDir = path.join(__dirname, '..', '..', 'renderer', 'js', 'lyrics', 'effects');
 const fx = require(path.join(effectsDir, 'registry.js'));
-for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody', 'staged-presets', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg']) {
+for (const name of ['animation', 'layout', 'enter', 'exit', 'hold', 'warp', 'animator', 'selector', 'camera', 'shape-layer', 'softbody', 'staged-presets', 'location', 'fill', 'edge', 'post', 'background', 'color', 'text-bg', 'page']) {
   require(path.join(effectsDir, `${name}.js`));
 }
 // every pack is listed by the Studio, so every pack must be labelled
@@ -14,7 +14,7 @@ const FONT_PACKS = { packs: 'all' };
 
 const STRINGS = require('../../renderer/js/studio/fx-strings.js');
 const LANGS = ['en', 'ja', 'es', 'fr', 'ru'];
-const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat'];
+const GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'background', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'repeat', 'page'];
 const labelGroup = (group) => fx.baseOf(group);
 
 function lookup(table, key) {

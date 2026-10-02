@@ -40,7 +40,7 @@ test('the engine draws the background at one cell and never scales it', () => {
   assert.ok(!source.includes('SA.textBg.backgroundScale'), 'the background is still scaled per beat');
   assert.ok(!source.includes('bg-scale'), 'the background still draws a random size');
   // the ornament safety cap stays, so a stored style cannot paint a slab
-  assert.ok(source.includes('cell: 1.25'), 'the ornament cap is gone');
+  assert.ok(source.includes('cell: 2.4'), 'the ornament cap is gone');
 });
 
 test('the filler clips draw in front of the background and behind the lyrics', () => {

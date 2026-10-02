@@ -1,0 +1,377 @@
+﻿Effect Name,Description,Category
+Fade In,Appears gradually by transitioning from transparent to opaque,Entrance
+Fade Out,Disappears gradually by becoming transparent,Exit
+Crossfade,Previous text fades out while the next text overlaps and fades in,Transition
+Pop In,Appears dynamically by scaling up rapidly from a small size,Entrance
+Pop Out,Disappears by popping and bursting outward while scaling up,Exit
+Bounce In,Appears and lands with a bouncing motion,Entrance
+Bounce Out,Bounces and then disappears off-screen,Exit
+Overshoot,Temporarily exceeds the target size before settling back,Easing
+Scale Up,Scales up from a small size to normal size,Entrance
+Scale Down,Shrinks down from a large size to appear,Entrance
+Zoom In,Appears by growing larger as if the camera is zooming in,Entrance
+Zoom Out,Disappears by shrinking smaller as if the camera is zooming out,Exit
+Slide In,Glides into view from off-screen,Entrance
+Slide Out,Glides out of view off-screen,Exit
+Wipe In,Text appears as a wipe mask crosses over it,Entrance
+Wipe Out,Text disappears as a wipe mask crosses over it,Exit
+Reveal,Reveals text by opening a mask or colored band,Entrance
+Blinds,Appears in stripes like opening Venetian blinds,Entrance
+Barn Door,Appears from the center outward like opening double doors,Entrance
+Iris In,Appears as a circular mask expands outward,Entrance
+Iris Out,Disappears as a circular mask shrinks inward,Exit
+Blur In,Appears by coming into sharp focus from a blurred state,Entrance
+Blur Out,Disappears by blurring out,Exit
+Focus In,Sharpens and clarifies as if coming into focus,Entrance
+Defocus,Blurs out by losing camera focus,Emphasis
+Drop In,Drops down from above and lands,Entrance
+Drop Out,Falls downward and disappears,Exit
+Rise Up,Rises upward from below into view,Entrance
+Slide Up from Bottom,Text lifts up and emerges from the bottom edge,Entrance
+Slide Down from Top,Text descends and emerges from the top edge,Entrance
+Flip In,Flips over like a rotating panel to appear,Entrance
+Flip Out,Flips over like a rotating panel to disappear,Exit
+Spin In,Appears while spinning and scaling up,Entrance
+Spin Out,Disappears while spinning and shrinking,Exit
+Roll In,Rolls onto the screen into view,Entrance
+Roll Out,Rolls off the screen to disappear,Exit
+Swing In,Swings into view like a pendulum,Entrance
+Whip In,Snaps rapidly into place like a whip pan,Entrance
+Whip Pan,Transitions with a rapid high-speed blur pan,Transition
+Curtain Open,Appears as curtains part to the left and right,Entrance
+Curtain Close,Disappears as curtains close together,Exit
+Accordion,Expands outward unfolding like an accordion bellows,Entrance
+Block In,Appears as square blocks assemble together,Entrance
+Pixel In,Appears as a mosaic becomes increasingly fine,Entrance
+Mosaic Out,Disappears as a mosaic becomes increasingly coarse,Exit
+Dissolve,Transitions by swapping random dot patterns,Transition
+Glow In,Appears with an expanding glowing light,Entrance
+Flash In,Appears accompanied by a bright white flash,Entrance
+Flash,Flashes white for a moment to grab attention,Emphasis
+Blink,Alternates repeatedly between visible and invisible,Emphasis
+Quick Blink,Blinks quickly in short intervals,Emphasis
+Pulse,Repeats scaling or pulsing brightness at regular intervals,Emphasis
+Heartbeat,Pulses in a two-beat rhythm like a heartbeat,Emphasis
+Bounce,Continuously bounces up and down,Emphasis
+Jump,Text leaps upward and lands,Emphasis
+Hop,Repeats small jumping motions,Emphasis
+Shake,Shakes vigorously back and forth horizontally or vertically,Emphasis
+Vibration,Vibrates with micro-movements at high speed,Emphasis
+Wiggle,Moves erratically with an irregular squiggly motion,Emphasis
+Wobble,Teeters and wobbles unsteadily like jelly,Emphasis
+Sway,Sways gently from side to side,Emphasis
+Rubber Band,Stretches and snaps back like an elastic band,Emphasis
+Squash and Stretch,Adds bounciness through exaggerated deformation of squashing and stretching,Emphasis
+Jelly,Wobbles and quivers like gelatin,Emphasis
+Tilt,Tilts diagonally to stand out,Emphasis
+Float Gently,Drifts slowly up and down in a floating motion,Continuous Motion
+Float,Continuously drifts and hovers in place,Continuous Motion
+Hover,Hovers subtly in a fixed position,Continuous Motion
+Sway Gently,Sways subtly as if rustled by a gentle breeze,Continuous Motion
+Breathe,Repeats subtle scaling as if breathing,Continuous Motion
+Swing,Swings back and forth like a pendulum,Continuous Motion
+Constant Spin,Continuously rotates at a constant speed,Continuous Motion
+Orbit,Revolves in an orbit around another element,Continuous Motion
+Wave,Ripples up and down in a wave-like pattern,Wave & Flow
+Sine Wave,Moves characters up and down along a sine wave,Wave & Flow
+Flag Wave,Distorts and billows like a fluttering flag,Wave & Flow
+Ripple,Distorts like ripples on the surface of water,Wave & Flow
+Snake,Text travels along a winding serpentine path,Wave & Flow
+Path Animation,Moves text along a defined custom curve,Motion Path
+Text on Path,Aligns text along a curved path,Layout
+Arch,Arranges text in an arched curve,Layout
+Circular Text,Arranges and rotates text around the perimeter of a circle,Layout
+Spiral,Arranges and moves text along a spiral shape,Layout
+Scroll,Continuously scrolls text vertically,Motion Path
+Horizontal Scroll,Scrolls text horizontally from right to left (news ticker style),Motion Path
+Crawl,Subtitle text crawling across the bottom of the screen,Motion Path
+End Credits,Long credits slowly scrolling from bottom to top,Motion Path
+News Ticker,Continuous news headline ticker streaming across the edge of the screen,Motion Path
+Marquee,Text scrolling within a bounded box or frame,Motion Path
+Rolling Counter,Flips through text vertically like rolling dials on a score display,Transition
+Cylinder Roll,Text alternates as if rotating around a 3D cylinder,Transition
+Slot Machine,Text spins and comes to a stop like reels on a slot machine,Transition
+Split-Flap,Flips through letters like an airport departure board display,Transition
+Count Up,Numbers increment from 0 up to a target value,Numbers & Counters
+Count Down,Numbers decrement downwards,Numbers & Counters
+Number Roll,Digits rotate to change their numeric values,Numbers & Counters
+Random Shuffle,Random characters swap rapidly before settling on the final text,Per-Character
+Decode,Characters are progressively deciphered like decrypting code,Per-Character
+Scramble,Text resolves from corrupted or scrambled symbols into legible text,Per-Character
+Typewriter,Appears letter by letter as if typed on a keyboard,Typing
+Typewriter with Cursor,Text is entered with a blinking cursor at the end,Typing
+Delayed Typing,Text appears with irregular keystroke intervals mimicking natural typing,Typing
+Backspace,Text is deleted character by character using backspaces,Typing
+Typeover,Text is overwritten and replaced as if being retyped,Typing
+Character by Character,Characters appear sequentially one by one,Per-Character
+Character Fade,Characters fade in sequentially with a staggered delay,Per-Character
+Character Slide,Characters slide in sequentially with a staggered delay,Per-Character
+Character Bounce,Characters bounce sequentially one after another,Per-Character
+Character Scale,Characters scale up sequentially with a staggered delay,Per-Character
+Character Rotate,Characters appear while rotating sequentially with a staggered delay,Per-Character
+Random Order Appear,Characters appear in a randomized order,Per-Character
+Center Out,Characters spread and appear outward starting from the center,Per-Character
+Outside In,Characters converge and appear from both outer ends towards the center,Per-Character
+Word by Word,Words appear sequentially one by one,Word & Line
+Line by Line,Lines appear sequentially one by one,Word & Line
+Line Slide,Lines slide in sequentially with a staggered delay,Word & Line
+Cascade,Elements trigger and appear in a cascading chain reaction,Word & Line
+Stagger,Core animation technique staggering start times across elements,Core Techniques
+Stepped Motion,Quantizes motion into discrete intervals for a choppy step-frame effect,Core Techniques
+Offset,Shifts start times or spatial positions across individual characters,Core Techniques
+Tracking Expand,Appears while letter spacing expands outward,Entrance
+Tracking In,Appears by tightening inward from wide letter spacing,Entrance
+Letter Spacing Animation,Letter spacing dynamically expands and contracts,Emphasis
+Kerning Shift,Dynamically animates spacing between specific character pairs,Emphasis
+Stretch,Stretches text horizontally or vertically,Distortion & Transform
+Skew,Distorts text by slanting it diagonally,Distortion & Transform
+Perspective,Adds depth and perspective illusion to text,3D
+3D Rotation,Rotates text in three-dimensional depth space,3D
+Y-Axis Rotation,Rotates text around its vertical Y-axis,3D
+X-Axis Rotation,Rotates text around its horizontal X-axis,3D
+Card Flip,Flips front-to-back like flipping a playing card,3D
+Extrusion,Gives text physical depth and 3D thickness,3D
+Extrude,Extrudes text deep into the background to create 3D geometry,3D
+Bevel,Adds a 3D beveled edge along the text contour,Texture & Styling
+Star Wars Crawl,Angled crawl text receding into the infinite distance,3D
+Camera Fly-Through,Camera flies and glides between and through the letters,3D
+Parallax,Creates depth using differential motion speeds across layers,3D
+Drop Shadow,Casts a shadow behind text to make it stand out from the background,Texture & Styling
+Long Shadow,Adds a dramatic flat shadow stretching diagonally away,Texture & Styling
+Inner Shadow,Casts shadows inside letters to make them appear recessed or carved,Texture & Styling
+Glow,Radiates a luminous halo of light around the text,Texture & Styling
+Neon,Emits vivid glowing light like a neon gas tube,Texture & Styling
+Neon Flicker-On,Flickers and buzzes intermittently before fully illuminating like neon,Texture & Styling
+Outline,Adds a stroke line along the contour of the characters,Texture & Styling
+Stroke / Border,Adds a thick colored border around the outside of the text,Texture & Styling
+Double Border,Adds a double-layered outline for maximum visibility and punch,Texture & Styling
+Gradient,Smoothly blends colors across the face of the letters,Texture & Styling
+Flowing Gradient,Gradient colors smoothly cycle and flow across the text,Continuous Motion
+Rainbow,Cycles sequentially through the colors of the rainbow,Continuous Motion
+Color Cycle,Continuously shifts hue over time,Continuous Motion
+Color Flash,Flashes an alternate color momentarily for emphasis,Emphasis
+Color Wipe,Sweeps a new color across the text from left to right,Emphasis
+Highlighter,Draws a fluorescent highlighter bar behind the text,Emphasis
+Marker Pen,Draws a realistic handwritten marker stroke across the text,Emphasis
+Underline Draw,An underline stroke animates and extends underneath the text,Emphasis
+Strikethrough Draw,A line strikes through the text to indicate deletion,Emphasis
+Box Enclosure,Encloses text inside an accent border box for emphasis,Emphasis
+Box Wipe,Background accent box expands outward to reveal the text,Entrance
+Banner Slide,A colored banner strip sweeps across to introduce the text,Entrance
+Stripes,Moving diagonal or horizontal stripes cross the text,Texture & Styling
+Shine,A bright light sheen sweeps across the face of the letters,Texture & Styling
+Glint,A momentary sharp sparkle reflects off the letter edges,Texture & Styling
+Sparkle,Twinkling starlight sparkles twinkle around the letters,Texture & Styling
+Glitter,Tiny shimmering light specks scatter across the text,Texture & Styling
+Particles,Formed by particles gathering together or dispersing,Particles
+Particle Burst,Text bursts violently outward into a shower of particles,Particles
+Particle Assembly,Scattered particles converge and assemble into legible letters,Particles
+Dust Out,Text dissolves into dust and sand blowing away in the wind,Particles
+Thanos Disintegration,Text disintegrates into crumbling ash and blows away,Particles
+Disintegrate,Text shatters and crumbles into fine drifting debris,Particles
+Shatter,Text breaks apart abruptly like shattering glass,Destruction & Shatter
+Shattering Debris,Fragments scatter and fly outward as the text breaks apart,Destruction & Shatter
+Explosion,Explodes violently with debris blasting across the screen,Destruction & Shatter
+Fracturing / Cracks,Surface cracks spread through the letters before fracturing,Destruction & Shatter
+Collapse / Tumble,Collapses and tumbles downward like building blocks falling,Destruction & Shatter
+Confetti,Celebratory confetti bursts and flutters around the text,Particles
+Snowfall,Snowflakes gently fall around and over the text,Particles
+Flickering Flames,Letters flicker and lap upwards like living fire,Texture & Styling
+Fire Burst,Flaming fire blazes across the letters,Texture & Styling
+Smoke Dissolve,Rises upwards and disperses like curling smoke,Texture & Styling
+Smoke Reveal,Emerges from behind a veil of thick smoke,Texture & Styling
+Mist Reveal,Clears into view as dense mist dissipates,Texture & Styling
+Water Distortion,Distorts with fluid wave ripples like submerged in water,Texture & Styling
+Underwater Refraction,Shimmers and wavers with underwater light caustics and refraction,Texture & Styling
+Heat Haze,Wavers and shimmers like thermal air distortion above hot asphalt,Texture & Styling
+Hologram,Semi-transparent futuristic hologram with flickering scanlines,Texture & Styling
+Scanlines,Cathode-ray scanlines sweep vertically across the text,Texture & Styling
+CRT Monitor,Displays with curved screen distortion and phosphor scanlines,Texture & Styling
+VHS Tape,Vintage video cassette noise with tracking artifacts and color bleed,Glitch & Noise
+Digital Glitch,Electronic display glitch with pixel displacement and tearing,Glitch & Noise
+RGB Split / Chromatic Displacement,"Offsets red, green, and blue color channels",Glitch & Noise
+Chromatic Aberration,Simulates optical lens fringing and color bleeding,Glitch & Noise
+Slice Glitch,Slices text into horizontal bands that shift horizontally,Glitch & Noise
+Block Noise,Digital compression artifact squares pop across the text,Glitch & Noise
+Film Noise,Overlays rough grainy noise like television static,Glitch & Noise
+TV Static,Full black-and-white static snow storm like off-air television,Glitch & Noise
+Datamosh,Visual compression melting and frame-bleeding artifacts,Glitch & Noise
+Jitter,Jitters and jitters with high-frequency micro-shakes,Glitch & Noise
+Strobe,Flashes rapidly with high-frequency frame cuts,Emphasis
+Film Burn,Warm light leak and emulsion burn effect like melted celluloid,Texture & Styling
+Film Grain,Adds vintage texture with organic celluloid film grain,Texture & Styling
+Light Leak,Warm ambient light bleed flares across the edges,Texture & Styling
+Vignette,Darkens edges to focus visual attention toward the center,Texture & Styling
+Posterize,Reduces color gradations for a stylized graphic poster look,Texture & Styling
+Monochrome,Strips away all color to render in clean black and white,Texture & Styling
+Sepia Tone,Applies a warm antique brown tone like vintage photography,Texture & Styling
+Halftone,Renders text using print dots and screen textures,Texture & Styling
+Pixel Art,Renders text in retro 8-bit chunky pixel aesthetic,Texture & Styling
+Pixelate,Text pixelates and dissolves into coarse mosaic blocks,Texture & Styling
+Wireframe,Renders 3D letters using geometric line contours only,3D
+Blueprint,Technical architectural drafting aesthetic with cyan grid lines,Texture & Styling
+Handwriting Animation,Strokes draw on dynamically as if being penned by hand,Drawing & Strokes
+Stroke Draw-On,Character outlines draw on in a continuous single pen stroke,Drawing & Strokes
+Trim Paths,Animates vector paths progressively from start to end,Drawing & Strokes
+Line Drawing,Racing vector lines trace the geometry of the text,Drawing & Strokes
+Brush Calligraphy,Draws on with dynamic thick-and-thin ink calligraphy brush strokes,Drawing & Strokes
+Script Writing,Flowing cursive script writes itself across the screen,Drawing & Strokes
+Pencil Sketch,Rough textured pencil lines sketch out the letters,Drawing & Strokes
+Doodle / Scribble,Playful rough marker scribble aesthetic,Drawing & Strokes
+Chalk on Blackboard,Textured chalk lettering written onto a blackboard,Drawing & Strokes
+Comic Book Style,Manga and comic styling with speed lines and speech balloons,Comic & Broadcast
+Action Lines,Adds manga-style speed lines and impact bursts for dynamic energy,Comic & Broadcast
+Focus Lines / Radial Lines,Radial speed lines converge to direct viewer focus,Comic & Broadcast
+Impact Boom / Comic Slam,Dramatic oversized sound effect text slams down with screen impact,Comic & Broadcast
+Fanfare Reveal / Dramatic Flash,Bursts into view accompanied by visual fanfare and screen shake,Comic & Broadcast
+Variety Show Telop,Bold multi-bordered text styled after Japanese television captions,Comic & Broadcast
+Pop Captions,Cheerful rounded typography with colorful borders,Comic & Broadcast
+Punchline / Tsukkomi Telop,Handwritten comic annotation captions delivering a sharp quip,Comic & Broadcast
+Breaking News Flash,Red alert news ticker and banner announcing urgent updates,Comic & Broadcast
+Superimpose,Overlays subtitle text clearly over video footage,Core Techniques
+Lower Third,Identification title bar displayed across the lower third of the screen,Core Techniques
+Title Sequence,Title text introduced with cinematic logo motion,Core Techniques
+Logo Animation,"Logo forms, unrolls, or resolves into view",Core Techniques
+Karaoke Fill,Text color progressively fills from left to right in sync with singing,Karaoke
+Karaoke Wipe,Color wipe advances continuously across the lyric syllable,Karaoke
+Karaoke Bounce,The currently sung character bounces rhythmically,Karaoke
+Karaoke Highlight,Illuminates the exact character or word being sung,Karaoke
+Bouncing Ball,A guide ball bounces across lyrics to lead the rhythm,Karaoke
+Line-by-Line Karaoke,Highlights and emphasizes only the active lyrical line,Karaoke
+Ruby Text Reveal,Pronunciation furigana guides sync above the main characters,Karaoke
+Word Highlight,Highlights each word sequentially to match vocal timing,Karaoke
+Lyric Motion,Synchronizes dynamic text animation to musical lyrics,Kinetic Typography
+Kinetic Typography,Animates text expressively to embody word meaning and musical cadence,Kinetic Typography
+Typography Motion,"Shifts font scale, position, and layout for dynamic design",Kinetic Typography
+Word Press,Stacks and layers text tightly to create punchy visual weight,Kinetic Typography
+Beat Sync,Text pulsates and snaps in tight sync with musical audio beats,Kinetic Typography
+Audio Reactive,Modulates text scale and motion based on audio volume amplitude,Kinetic Typography
+Audio Spectrum,Moves and reacts according to musical frequency spectrum bands,Kinetic Typography
+Equalizer Bars,Displays text flanked by animated audio equalizer volume bars,Kinetic Typography
+Word Smash,Giant words smash forcefully into the canvas,Kinetic Typography
+Smash Cut,Snaps instantaneously between consecutive words without transition,Kinetic Typography
+Text Stack,Stacks word upon word until filling the screen composition,Kinetic Typography
+Text Pattern,Tiles repeated characters across the canvas as a graphic wallpaper,Kinetic Typography
+Repeat / Multiply,Replicates and multiplies matching words across the layout,Kinetic Typography
+Echo,Trailing copies of text linger behind like optical echoes,Kinetic Typography
+Mirror,Clones and reflects text across a symmetry axis,Kinetic Typography
+Motion Trail,Leaves trailing streaks and residual afterimages along the motion path,Kinetic Typography
+Motion Blur,Adds realistic directional motion smear to fast-moving text,Core Techniques
+Ghost Afterimage,Faint translucent phantom copies follow behind the primary text,Texture & Styling
+Mask Reveal,Reveals text by sliding out from behind a geometric shape mask,Entrance
+Text Mask,Uses text silhouette as a stencil mask to reveal video footage inside,Masking
+Knockout Text,Cutout text stencil punches through backgrounds and footage,Masking
+Video in Text,Video footage plays exclusively inside the letterforms,Masking
+Cutout Silhouette,Negative cutout shapes show through to animated backgrounds beneath,Masking
+Inverse Mask,Inverts masking so everything except the text is filled,Masking
+Double Exposure,Blends video imagery seamlessly inside text using double exposure,Texture & Styling
+Blend Mode Composite,Overlays light and color using blend modes like Screen and Add,Texture & Styling
+Subtitle Black Bar,Clean white text set against a solid semi-transparent black subtitle bar,Core Techniques
+Subtitle Pop,Subtitles pop onto the screen with a subtle tactile bounce,Core Techniques
+Subtitle Slide,Subtitles slide smoothly into view from the lower edge,Core Techniques
+Underline Reveal,"An underline draws across first, followed by text rising up",Entrance
+Line Reveal,A line stroke draws across the screen and reveals text along its wake,Entrance
+Box Reveal,Text unfolds and emerges as an accent container box expands open,Entrance
+3D Cube Rotation,Rotates faces of a 3D cube to transition between text lines,3D
+Page Turn,Flips over like turning the page of a book,Transition
+Paper Fold,Unfolds or creases flat like folded stationery,Transition
+Origami,Folds geometrically through origami paper transformations,Transition
+Card Stack,Shuffles sequentially through a deck of stacked text cards,Transition
+Slideshow,Transitions sequentially through a series of text slides,Transition
+Punch In,Snaps into view with an aggressive instantaneous snap-zoom,Entrance
+Punch Out,Disappears with a sudden rapid scale burst,Exit
+Snap to Grid,Snaps magnetically into its target screen position,Entrance
+Snapback / Recoil,Snaps back into resting position through elastic recoil,Easing
+Ease In,Starts slowly and accelerates into full speed,Easing
+Ease Out,Starts quickly and decelerates smoothly to a stop,Easing
+Ease In-Out,Accelerates smoothly at start and decelerates smoothly at end,Easing
+Spring Physics,Oscillates and settles like a dampened mechanical spring,Easing
+Elastic Bounce,Oscillates through rubbery elastic recoil before resting,Easing
+Anticipation,Wind-up movement in the reverse direction before launching,Easing
+Follow-Through,Momentum carries subtle residual vibration after stopping,Easing
+Overlapping Action,Layers overlapping motions across elements for organic flow,Easing
+Lock-On,Crosshairs converge and lock onto the target text,Emphasis
+Target Scope,Reticle target frame appears and tracks the text,Emphasis
+Sci-Fi HUD,Futuristic head-up display instrumentation and telemetry accents,Texture & Styling
+Sci-Fi Interface,Futuristic holographic interface panels and telemetry graphics,Texture & Styling
+Terminal Console,Monospace green console font on a deep black terminal screen,Texture & Styling
+Matrix Rain,Cascades of glowing code rain down vertically,Texture & Styling
+Code Rain,Vertical stream of falling alphanumeric digital glyphs,Texture & Styling
+Loading State,Indicates progress with spinning rings or loading indicators,Texture & Styling
+Progress Bar,An animated bar fills up horizontally to display progress,Numbers & Counters
+Radial Gauge,A dial or circular meter fills up as numbers climb,Numbers & Counters
+Graph Sync,Synchronizes animated charts with numeric text callouts,Numbers & Counters
+Speech Bubble,Comic speech bubble inflates into view with text inside,Comic & Broadcast
+Chat Stream,Messages appear sequentially like in an instant messenger feed,Comic & Broadcast
+Messaging App Bubble,Speech balloons pop in simulating modern mobile chat applications,Comic & Broadcast
+Danmaku Comment Stream,Bullet comments stream horizontally across video like live stream feeds,Comic & Broadcast
+Comment Barrage,Dense waves of user comments flood the canvas simultaneously,Comic & Broadcast
+Sticker Badge,Slaps onto the surface like a vinyl decal or paper sticker,Comic & Broadcast
+Rubber Stamp,Stamps down hard onto the surface like an ink stamp,Entrance
+Hanko Seal / Red Stamp,Pressed firmly into place like a traditional Asian red ink seal,Entrance
+Washi Tape,Taped down onto the background with strips of masking tape,Texture & Styling
+Tag Label,Text displayed inside a retail tag or cutout badge container,Texture & Styling
+Color Bars,Background consists of parallel horizontal or vertical color bands,Texture & Styling
+Shape Layer Sync,Choreographs text in tight lockstep with animated geometric shapes,Core Techniques
+Line Slice / Offset,Splits characters along horizontal or vertical slice planes and offsets them,Distortion & Transform
+Split,Text splits down the middle and parts open,Distortion & Transform
+Slice Reveal,Slices text into offset strips that slide together to form words,Distortion & Transform
+Twist,Distorts by twisting along its axis like wringing a towel,Distortion & Transform
+Bend,Arches and flexes text along a curved plane,Distortion & Transform
+Bulge,Inflates and magnifies outward as if behind a magnifying bubble,Distortion & Transform
+Pinch,Pinches and pinches inward toward a focal center point,Distortion & Transform
+Spatial Warp,Warps and distorts text geometry as if bending space-time,Distortion & Transform
+Morphing,Smoothly morphs from one visual geometry into another,Distortion & Transform
+Text Morph,Character outlines interpolate fluidly from Text A to Text B,Distortion & Transform
+Shape Change,Characters transform seamlessly into geometric shapes,Distortion & Transform
+Icon Transition,Text morphs into a corresponding graphic icon,Distortion & Transform
+Disassemble & Reassemble,Breaks into individual component strokes and reassembles,Distortion & Transform
+Stroke Weight Animation,Font stroke thickness dynamically breathes and shifts,Distortion & Transform
+Weight Shift,"Font weight transitions smoothly between light, regular, and bold",Distortion & Transform
+Variable Font,Animates continuous design axes of modern variable OpenType fonts,Distortion & Transform
+Font Cycle,Rapidly cycles through distinct typeface styles,Distortion & Transform
+Case Toggle,Toggles back and forth between uppercase and lowercase glyphs,Per-Character
+Random Font Mix,Assigns a distinct random typeface to each letter,Per-Character
+Dynamic Font Scale,Varies individual letter scales rhythmically to create visual hierarchy,Per-Character
+Baseline Shift,Dances characters by jittering vertical baseline alignments,Per-Character
+Scattered Letters,Scatters characters randomly across the layout without alignment,Per-Character
+Character Scatter,Letters explode outward in all directions,Per-Character
+Character Convergence,Widely scattered letters pull together into orderly text,Per-Character
+Character Gravity Fall,Letters drop downwards individually under simulated gravity,Per-Character
+Gravity Physics,Stacks letters naturally atop one another under physical gravity,Physics Simulation
+Rigid Body Physics,"Simulates collisions, rebounds, and friction between letters",Physics Simulation
+Magnetic Attraction,Letters attract and pull towards one another like magnetic poles,Physics Simulation
+Wind Gust,Blows letters aside and flutters them like autumn leaves in a gust,Physics Simulation
+Blast Away,Blasts letters off-screen through sudden explosive shockwaves,Physics Simulation
+Hanging Pendulum,Letters swing back and forth suspended from overhead pivot points,Physics Simulation
+Spring Oscillation,Bounces and oscillates elastically as if hung on coil springs,Physics Simulation
+Rope Signboard,Hangs like a storefront signboard swinging gently on rope cords,Physics Simulation
+Cloth Simulation,"Waves, ripples, and drapes like soft fabric flowing in the wind",Physics Simulation
+Text Waterfall,Characters tumble and pour down like a rushing waterfall,Physics Simulation
+Slime Reveal,Drips and stretches down into view like viscous slime or syrup,Physics Simulation
+Ink Drop Diffusion,Spreads and diffuses outwards like ink drops soaking into paper,Physics Simulation
+Ink Bleed,Softens letter contours as ink bleeds into paper fibers,Texture & Styling
+Watercolor Bleed,Colors bleed and pool with artistic translucent watercolor washes,Texture & Styling
+Suminagashi Marbling,Traditional Japanese marbled ink patterns swirl through the text,Texture & Styling
+Dry Brush Distress,Characters show weathered dry-brush scratches and ink breaks,Texture & Styling
+Grunge Distress,"Distressed with dirt, scratches, and urban grit textures",Texture & Styling
+Vintage Aging,"Weathered with aged patina, scuffs, and antique paper decay",Texture & Styling
+Stone Carving,Chiseled texture giving the appearance of carved rock or granite,Texture & Styling
+Metallic Surface,Sleek metallic sheen with polished luster and reflections,Texture & Styling
+Liquid Chrome,High-contrast mirror reflections like polished liquid chrome,Texture & Styling
+Metallic Gold,Luxurious golden luster with rich highlights and warm reflections,Texture & Styling
+Frosted Glass,"Refraction, translucency, and reflections like tinted glass",Texture & Styling
+Frost & Ice,Frozen crystalline frost and icy cracks coating the letters,Texture & Styling
+Freeze Over,Surface freezes over progressively with growing frost crystals,Texture & Styling
+Thaw Reveal,Melting ice sheets drip away to reveal the letters beneath,Entrance
+Inflatable Balloon,Inflates and floats with glossy rounded balloon elasticity,Texture & Styling
+Puffy 3D / Gel,Soft rounded bubble lettering with puffy 3D bevels,Texture & Styling
+Claymation / Plasticine,Hand-molded modeling clay texture with stop-motion charm,Texture & Styling
+Papercraft Cutout,Layered cut paper aesthetic with tactile drop shadows,Texture & Styling
+Stitched Embroidery,Textured textile lettering woven with visible embroidery threads,Texture & Styling
+Knitted Wool,Cozy textured lettering rendered as if knitted from yarn,Texture & Styling
+Neon Signboard,Glowing neon glass tubes mounted inside a dark storefront sign,Texture & Styling
+Marquee Bulbs,Broadway-style marquee sign illuminated by glowing round light bulbs,Texture & Styling
+LED Electronic Board,Digital LED dot-matrix board displaying scrolling text,Texture & Styling
+Dot Matrix,Letters composed of individual glowing circular raster dots,Texture & Styling
+7-Segment Display,Digital clock numeric font illuminated with electronic segments,Texture & Styling

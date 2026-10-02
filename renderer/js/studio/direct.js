@@ -622,6 +622,10 @@
         }
         if (pinned.bgVaryChance != null) bgOptions.varyChance = params.bgVaryChance;
         if (pinned.bgEdgeChance != null) bgOptions.edgeChance = params.bgEdgeChance;
+        if (pinned.bgIndependentChance != null) bgOptions.independentChance = params.bgIndependentChance;
+        if (pinned.bgOffsetScatter != null) bgOptions.offsetScatter = params.bgOffsetScatter;
+        if (pinned.bgSizeScatter != null) bgOptions.sizeScatter = params.bgSizeScatter;
+        if (pinned.bgColorScatter != null) bgOptions.colorScatter = params.bgColorScatter;
         const genreDef = genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(genre) : null;
         if (SA.moods.applyGenreBackground(bgStyle, genreDef, axes, bgRandom, colors, false, bgOptions)) {
           for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {
@@ -2014,6 +2018,49 @@
     });
   }
 
+  // The pattern presets are fixed tables (one grey, 24 elements, size 1), so
+  // every gap showed the same grid. Each gap now rolls its own cheap variation
+  // from the gap key: the element count, size, speed and opacity, a colour (or
+  // two) from the palette, a knock-out (`hole`) and sometimes a flipped mode
+  // among the grid-like ones. Deterministic per seed + gap, and only drawn
+  // pattern layers change - a pinned gap keeps its spec as the user left it.
+  const GRID_LIKE = ['grid', 'checks', 'dots', 'polka', 'diamonds', 'hexes', 'triangles', 'randomFill'];
+  const HOLE_CHOICES = ['none', 'none', 'center', 'band', 'sides', 'corners', 'diagonal', 'thin', 'scatter'];
+
+  function varyPatterns(spec, random, palette) {
+    if (!spec || typeof spec !== 'object') return spec;
+    if (spec.type === 'combo' && Array.isArray(spec.params && spec.params.list)) {
+      spec.params.list.forEach((part) => varyPatterns(part, random, palette));
+      return spec;
+    }
+    if (spec.type !== 'pattern' || !spec.params) return spec;
+    const p = spec.params;
+    const pick = (list) => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
+    if (GRID_LIKE.includes(p.mode) && random() < 0.4) p.mode = pick(GRID_LIKE);
+    const base = Number(p.count) || 24;
+    p.count = Math.max(6, Math.min(96, Math.round(base * pick([0.35, 0.6, 1, 1.6, 2.4]))));
+    p.size = Math.round((Number(p.size) || 1) * pick([0.6, 0.85, 1, 1.3, 1.8]) * 100) / 100;
+    p.speed = Math.round((Number(p.speed) || 0.4) * pick([0.5, 1, 1.5, 2.2]) * 100) / 100;
+    p.opacity = Math.round(Math.max(0.2, Math.min(0.9, (Number(p.opacity) || 0.6) * pick([0.6, 0.85, 1, 1.2]))) * 100) / 100;
+    const colors = (palette || []).filter((hex) => typeof hex === 'string' && /^#[0-9a-f]{6}$/i.test(hex));
+    if (colors.length) {
+      p.color = pick(colors);
+      if (random() < 0.4) {
+        const other = colors.filter((hex) => hex.toLowerCase() !== String(p.color).toLowerCase());
+        if (other.length) {
+          p.accent = pick(other);
+          p.accentEvery = 2 + Math.floor(random() * 6);
+        }
+      }
+    }
+    const hole = pick(HOLE_CHOICES);
+    if (hole !== 'none') {
+      p.hole = hole;
+      p.holeSize = Math.round((0.25 + random() * 0.45) * 100) / 100;
+    }
+    return spec;
+  }
+
   // Filler clips materialised from the gaps between the cues.
   function fillerClips(projectDoc, ctx, total) {
     const fillerTrack = trackIdFor(projectDoc, 'filler');
@@ -2049,6 +2096,10 @@
         previousPresetId = preset.id;
       } else if (gap.spec && gap.spec.presetId) {
         previousPresetId = gap.spec.presetId;
+      }
+      if (!gap.pinned) {
+        const accents = accentsOf(((ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [])).accentHexes;
+        varyPatterns(spec, SA.rng.rngFor(ctx.seed, 'filler-vary', gap.key), accents);
       }
       // figures in the gaps: generated per gap so every gap has its own motif.
       // A preset's own motif / sync / moves / placement survive the generation.
@@ -2160,6 +2211,23 @@
       stroke: boldStroke ? 'bold' : undefined,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
+    // the same motif never plays on two cues in a row (the procedural motif's
+    // high draw chance would otherwise carry most of a song): redraw with the
+    // next seeds until another motif comes up
+    for (let attempt = 0; attempt < 6 && spec && spec.params && spec.params.motif === ctx.figurePrevMotif && !boldMotif; attempt += 1) {
+      spec = SA.figures.generate({
+        span: { start: cue.start, end: cue.end },
+        beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
+        axes,
+        seed: seed + index * 53 + 211 + attempt,
+        id: cue.id,
+        palette,
+        sync,
+        density,
+        stroke: boldStroke ? 'bold' : undefined,
+        cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
+      });
+    }
     // the figure must stay clear of the lyrics: the auto direction measures the
     // geometric overlap (a dimmed shape still sits over the text), swaps the
     // motif for one that lives around the text box when needed, and draws no
@@ -2202,7 +2270,8 @@
         // 1) a procedural figure that only just missed the clearance keeps its
         // family: another genome is grown before the fixed motifs take over, so
         // the figure track does not fall back to the same library every cue
-        for (let attempt = 0; attempt < 3; attempt += 1) {
+        // (not when the previous cue already played it)
+        for (let attempt = 0; attempt < 3 && ctx.figurePrevMotif !== 'proc'; attempt += 1) {
           if (consider(candidateFor('proc', attempt)) <= AUTO_FIGURE_CLEAR) break;
         }
         // 2) motifs that frame the text box first, then the bold cuts, then the

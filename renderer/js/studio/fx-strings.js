@@ -62,6 +62,13 @@
     background: {
       none: 'None', solid: 'Solid', plain: 'Plain colour', gradient: 'Gradient', noiseGradient: 'Noise gradient', card: 'Achievement card', cover: 'Song cover', image: 'Image', shapes: 'Shapes', pattern: 'Pattern',
     },
+    page: {
+      none: 'None', flushLeft: 'Flush left', center: 'Center', flushRight: 'Flush right', justify: 'Justify',
+      vertical: 'Vertical', grid: 'Grid', magazine: 'Magazine', fashion: 'Fashion', newspaper: 'Newspaper',
+      twoColumn: 'Two column', threeColumn: 'Three column', manuscript: 'Manuscript', xCard: 'X card',
+      chatBubble: 'Chat bubble', cafeSign: 'Cafe sign', cafeMenu: 'Cafe menu', boutique: 'Boutique',
+      score: 'Musical score', poster: 'Poster',
+    },
     param: {
       order: 'Order', each: 'Interval', ease: 'Ease', from: 'Start', unit: 'Unit', exitOrder: 'Exit order', overlap: 'Overlap',
       stiffness: 'Stiffness', damping: 'Damping', amount: 'Amount', decay: 'Decay', fps: 'FPS', period: 'Period', yoyo: 'Yoyo',
@@ -92,6 +99,9 @@
       textFit: 'Sizing', fillCoverage: 'Screen coverage', fillBleed: 'Allowed overflow', fillMaxWidth: 'Max line width',
       fillMaxHeight: 'Max block height', fillMinSize: 'Min size', fillMaxSize: 'Max size', fillConsistency: 'Size across pages',
       paletteIndex: 'Palette slot',
+      margin: 'Margin', gutter: 'Gutter', columns: 'Columns', rows: 'Rows', decor: 'Decorations',
+      decorLead: 'Decor lead', ruleStyle: 'Rule style', paper: 'Paper', dropCap: 'Drop cap',
+      vertical: 'Vertical', typing: 'Typing indicator', align: 'Alignment', seed: 'Seed',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -109,6 +119,8 @@
       proc: 'Generative',
       fixed: 'Fixed size', fitScreen: 'Fit to screen', page: 'Per page', cue: 'Whole cue',
       push: 'Push', sweep: 'Sweep', turn: 'Turn', zoom: 'Zoom', step: 'Step', travel: 'Travel', tilt: 'Tilt', slide: 'Slide', stagger: 'Stagger',
+      solid: 'Solid', double: 'Double', dotted: 'Dotted', auto: 'Auto', accent: 'Accent',
+      top: 'Top', bottom: 'Bottom',
     },
   };
 
@@ -167,6 +179,13 @@
     background: {
       none: 'なし', solid: '単色', plain: 'ベタ塗り', gradient: 'グラデーション', noiseGradient: 'ノイズグラデーション', card: '実績カード', cover: '楽曲カバー', image: '画像', shapes: '図形', pattern: 'パターン',
     },
+    page: {
+      none: 'なし', flushLeft: '左寄せ', center: '中央寄せ', flushRight: '右寄せ', justify: '両端揃え',
+      vertical: '縦組み', grid: 'マス目', magazine: '雑誌', fashion: 'ファッション誌', newspaper: '新聞',
+      twoColumn: '二段組', threeColumn: '三段組', manuscript: '原稿用紙', xCard: 'Xカード',
+      chatBubble: '吹き出し', cafeSign: 'カフェ看板', cafeMenu: 'カフェメニュー', boutique: 'ブティック',
+      score: '楽譜', poster: 'ポスター',
+    },
     param: {
       order: '順序', each: '間隔', ease: 'イージング', from: '開始位置', unit: '単位', exitOrder: '退場順序', overlap: '重なり',
       stiffness: '剛性', damping: '減衰', amount: '量', decay: '減衰量', fps: 'FPS', period: '周期', yoyo: '往復',
@@ -196,6 +215,9 @@
       fit: 'フィット',
       textFit: 'サイズ決定', fillCoverage: '画面占有率', fillBleed: 'はみ出し許容', fillMaxWidth: '最大行幅',
       fillMaxHeight: '最大ブロック高さ', fillMinSize: '最小サイズ', fillMaxSize: '最大サイズ', fillConsistency: 'ページ間のサイズ',
+      margin: '余白', gutter: 'カラム間隔', columns: '段数', rows: '行数', decor: '装飾',
+      decorLead: '装飾リード', ruleStyle: '罫線スタイル', paper: '用紙', dropCap: 'ドロップキャップ',
+      vertical: '縦書き', typing: '入力中表示', align: '配置', seed: 'シード',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -213,6 +235,8 @@
       proc: 'ジェネラティブ',
       fixed: '固定サイズ', fitScreen: '画面に合わせる', page: 'ページごと', cue: 'キュー全体で統一',
       push: '押し込み', sweep: 'スイープ', turn: '旋回', zoom: 'ズーム', step: 'ステップ', travel: 'トラベル', tilt: 'チルト', slide: 'スライド', stagger: 'スタッガー',
+      solid: '実線', double: '二重線', dotted: '点線', auto: '自動', accent: 'アクセント',
+      top: '上', bottom: '下',
     },
   };
 
@@ -275,6 +299,13 @@
       none: 'Ninguno', solid: 'Sólido', plain: 'Color plano', gradient: 'Degradado', noiseGradient: 'Degradado con ruido', card: 'Tarjeta de logros', shapes: 'Formas', pattern: 'Patrón',
       cover: 'Portada de la canción', image: 'Imagen',
     },
+    page: {
+      none: 'Ninguno', flushLeft: 'Alinear a la izquierda', center: 'Centrado', flushRight: 'Alinear a la derecha', justify: 'Justificado',
+      vertical: 'Vertical', grid: 'Cuadrícula', magazine: 'Revista', fashion: 'Moda', newspaper: 'Periódico',
+      twoColumn: 'Dos columnas', threeColumn: 'Tres columnas', manuscript: 'Manuscrito', xCard: 'Tarjeta X',
+      chatBubble: 'Burbuja de chat', cafeSign: 'Cartel de café', cafeMenu: 'Menú de café', boutique: 'Boutique',
+      score: 'Partitura musical', poster: 'Póster',
+    },
     param: {
       order: 'Orden', each: 'Intervalo', ease: 'Facilidad', from: 'Inicio', unit: 'Unidad', exitOrder: 'Orden de salida',
       overlap: 'Solapamiento', stiffness: 'Rigidez', damping: 'Amortiguación', amount: 'Cantidad', decay: 'Caída', fps: 'FPS',
@@ -307,6 +338,9 @@
       focusBadge: 'Enfocar logro', parallax: 'Paralaje', songId: 'Canción', zoomSpeed: 'Velocidad de zoom', fit: 'Ajuste',
       textFit: 'Tamaño', fillCoverage: 'Cobertura de pantalla', fillBleed: 'Desborde permitido', fillMaxWidth: 'Ancho máx. de línea',
       fillMaxHeight: 'Alto máx. del bloque', fillMinSize: 'Tamaño mín.', fillMaxSize: 'Tamaño máx.', fillConsistency: 'Tamaño entre páginas',
+      margin: 'Margen', gutter: 'Separación columnas', columns: 'Columnas', rows: 'Filas', decor: 'Decoraciones',
+      decorLead: 'Anticipación decor', ruleStyle: 'Estilo de línea', paper: 'Papel', dropCap: 'Letra capitular',
+      vertical: 'Vertical', typing: 'Indicador escritura', align: 'Alineación', seed: 'Semilla',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -325,6 +359,8 @@
       proc: 'Generativo',
       fixed: 'Tamaño fijo', fitScreen: 'Ajustar a pantalla', page: 'Por página', cue: 'Todo el cue',
       push: 'Empuje', sweep: 'Barrido', turn: 'Giro', zoom: 'Zoom', step: 'Paso', travel: 'Desplazamiento', tilt: 'Inclinación', slide: 'Deslizar', stagger: 'Escalonado',
+      solid: 'Sólido', double: 'Doble', dotted: 'Punteado', auto: 'Automático', accent: 'Acento',
+      top: 'Arriba', bottom: 'Abajo',
     },
   };
 
@@ -387,6 +423,13 @@
       none: 'Aucun', solid: 'Uni', plain: 'Couleur unie', gradient: 'Dégradé', noiseGradient: 'Dégradé bruité', card: 'Carte de succès', cover: 'Pochette du titre', shapes: 'Formes', pattern: 'Motif',
       image: 'Image',
     },
+    page: {
+      none: 'Aucun', flushLeft: 'Aligné à gauche', center: 'Centré', flushRight: 'Aligné à droite', justify: 'Justifié',
+      vertical: 'Vertical', grid: 'Grille', magazine: 'Magazine', fashion: 'Mode', newspaper: 'Journal',
+      twoColumn: 'Deux colonnes', threeColumn: 'Trois colonnes', manuscript: 'Manuscrit', xCard: 'Carte X',
+      chatBubble: 'Bulle de discussion', cafeSign: 'Enseigne de café', cafeMenu: 'Menu de café', boutique: 'Boutique',
+      score: 'Partition musicale', poster: 'Affiche',
+    },
     param: {
       order: 'Ordre', each: 'Intervalle', ease: 'Courbe', from: 'Début', unit: 'Unité', exitOrder: 'Ordre de sortie',
       overlap: 'Chevauchement', stiffness: 'Raideur', damping: 'Amortissement', amount: 'Quantité', decay: 'Décroissance', fps: 'FPS',
@@ -419,6 +462,9 @@
       focusBadge: 'Cibler le succès', parallax: 'Parallaxe', songId: 'Titre', zoomSpeed: 'Vitesse de zoom', fit: 'Ajustement',
       textFit: 'Dimensionnement', fillCoverage: 'Couverture de l\'écran', fillBleed: 'Débordement autorisé', fillMaxWidth: 'Largeur max. de ligne',
       fillMaxHeight: 'Hauteur max. du bloc', fillMinSize: 'Taille min.', fillMaxSize: 'Taille max.', fillConsistency: 'Taille entre pages',
+      margin: 'Marge', gutter: 'Gouttière', columns: 'Colonnes', rows: 'Lignes', decor: 'Décorations',
+      decorLead: 'Avance décor', ruleStyle: 'Style de filet', paper: 'Papier', dropCap: 'Lettrine',
+      vertical: 'Vertical', typing: 'Indicateur saisie', align: 'Alignement', seed: 'Graine',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -437,6 +483,8 @@
       proc: 'Génératif',
       fixed: 'Taille fixe', fitScreen: 'Ajuster à l\'écran', page: 'Par page', cue: 'Tout le cue',
       push: 'Poussée', sweep: 'Balayage', turn: 'Rotation', zoom: 'Zoom', step: 'Pas', travel: 'Traversée', tilt: 'Inclinaison', slide: 'Glissement', stagger: 'Décalage',
+      solid: 'Solide', double: 'Double', dotted: 'Pointillé', auto: 'Auto', accent: 'Accent',
+      top: 'Haut', bottom: 'Bas',
     },
   };
 
@@ -499,6 +547,13 @@
       none: 'Нет', solid: 'Сплошной', plain: 'Простой цвет', gradient: 'Градиент', noiseGradient: 'Шумный градиент', card: 'Карточка достижений', shapes: 'Фигуры', pattern: 'Узор',
       cover: 'Обложка трека', image: 'Изображение',
     },
+    page: {
+      none: 'Нет', flushLeft: 'По левому краю', center: 'По центру', flushRight: 'По правому краю', justify: 'По ширине',
+      vertical: 'Вертикально', grid: 'Сетка', magazine: 'Журнал', fashion: 'Мода', newspaper: 'Газета',
+      twoColumn: 'Две колонки', threeColumn: 'Три колонки', manuscript: 'Рукопись', xCard: 'Карточка X',
+      chatBubble: 'Облачко чата', cafeSign: 'Вывеска кафе', cafeMenu: 'Меню кафе', boutique: 'Бутик',
+      score: 'Ноты', poster: 'Плакат',
+    },
     param: {
       order: 'Порядок', each: 'Интервал', ease: 'Сглаживание', from: 'Начало', unit: 'Единица', exitOrder: 'Порядок выхода',
       overlap: 'Перекрытие', stiffness: 'Жёсткость', damping: 'Затухание', amount: 'Величина', decay: 'Затухание', fps: 'FPS',
@@ -530,6 +585,9 @@
       parallax: 'Параллакс', songId: 'Трек', zoomSpeed: 'Скорость зума', fit: 'Вписывание',
       textFit: 'Размер', fillCoverage: 'Заполнение экрана', fillBleed: 'Допустимый выход за край', fillMaxWidth: 'Макс. ширина строки',
       fillMaxHeight: 'Макс. высота блока', fillMinSize: 'Мин. размер', fillMaxSize: 'Макс. размер', fillConsistency: 'Размер между страницами',
+      margin: 'Поля', gutter: 'Межколонник', columns: 'Колонки', rows: 'Строки', decor: 'Декорации',
+      decorLead: 'Опережение декора', ruleStyle: 'Стиль линий', paper: 'Бумага', dropCap: 'Буквица',
+      vertical: 'Вертикально', typing: 'Индикатор набора', align: 'Выравнивание', seed: 'Сид',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',
@@ -548,6 +606,8 @@
       proc: 'Генеративный',
       fixed: 'Фиксированный', fitScreen: 'По экрану', page: 'По страницам', cue: 'Весь cue',
       push: 'Наезд', sweep: 'Развёртка', turn: 'Поворот', zoom: 'Масштаб', step: 'Шаг', travel: 'Проезд', tilt: 'Наклон', slide: 'Скольжение', stagger: 'Каскад',
+      solid: 'Сплошной', double: 'Двойной', dotted: 'Точечный', auto: 'Авто', accent: 'Акцент',
+      top: 'Сверху', bottom: 'Снизу',
     },
   };
 
@@ -1122,10 +1182,21 @@
       shape: 'Shape', drive: 'Drive', trimStart: 'Trim start', trimEnd: 'Trim end', trimOffset: 'Trim offset',
       feather: 'Feather', stroke: 'Stroke width', padding: 'Padding', repeat: 'Repeats', repeatScale: 'Repeat scale',
       repeatRotate: 'Repeat rotate', repeatOpacity: 'Repeat fade', cap: 'Cap',
+      enterAnim: 'Enter anim', exitAnim: 'Exit anim', holdAnim: 'Hold anim',
+      fillColor: 'Plate color', fillOpacity: 'Plate opacity', bgPattern: 'Plate pattern',
+      bgPatternSize: 'Pattern size', bgPatternOpacity: 'Pattern opacity', bgPatternFlow: 'Pattern flow',
+      matchText: 'Match text', spanFrom: 'Span from', spanTo: 'Span to',
     },
     values: {
       underline: 'Underline', strike: 'Strike', box: 'Box', brackets: 'Brackets', burst: 'Burst', cross: 'Cross',
-      butt: 'Butt', enter: 'Enter', exit: 'Exit', hold: 'Hold',
+      overline: 'Overline', topBottom: 'Top & bottom', sides: 'Sides', sidesSemicircle: 'Sides (semicircle)',
+      sidesSemiellipse: 'Sides (semi-ellipse)', capsule: 'Capsule', plate: 'Plate', ornament: 'Ornament',
+      double: 'Double', triple: 'Triple', dashed: 'Dashed', doubleDashed: 'Double dashed',
+      squareChain: 'Square chain', chain: 'Chain',
+      draw: 'Draw', pop: 'Pop', fade: 'Fade', slide: 'Slide', expand: 'Expand',
+      erase: 'Erase', shrink: 'Shrink', flow: 'Flow', pulse: 'Pulse', float: 'Float', shiver: 'Shiver',
+      butt: 'Butt', enter: 'Enter', exit: 'Exit', hold: 'Hold', auto: 'Auto',
+      word: 'Word', char: 'Character', span: 'Substring span',
     },
   };
   const ADD_SHAPE_JA = {
@@ -1134,10 +1205,21 @@
       shape: '形', drive: '動かす基準', trimStart: 'トリム開始', trimEnd: 'トリム終了', trimOffset: 'トリム位置',
       feather: 'ぼかし', stroke: '線幅', padding: '余白', repeat: 'リピート数', repeatScale: 'リピート倍率',
       repeatRotate: 'リピート回転', repeatOpacity: 'リピート減衰', cap: '線端',
+      enterAnim: '入場アニメ', exitAnim: '退場アニメ', holdAnim: 'ホールドアニメ',
+      fillColor: 'プレート背景色', fillOpacity: 'プレート不透明度', bgPattern: '背景模様',
+      bgPatternSize: '模様サイズ', bgPatternOpacity: '模様濃度', bgPatternFlow: '模様フロー',
+      matchText: '一致文字列', spanFrom: '開始文字番号', spanTo: '終了文字番号',
     },
     values: {
       underline: '下線', strike: '取り消し線', box: '枠', brackets: 'カギ括弧', burst: '集中線', cross: '十字',
-      butt: '切りっぱなし', enter: '登場', exit: '退場', hold: '保持',
+      overline: '上線', topBottom: '上下線', sides: '横（直線）', sidesSemicircle: '横（半円）',
+      sidesSemiellipse: '横（半楕円）', capsule: 'カプセル', plate: 'プレート', ornament: '飾り枠',
+      double: '二重', triple: '3重', dashed: 'ダッシュ', doubleDashed: '二重ダッシュ',
+      squareChain: '四角チェイン', chain: 'チェイン',
+      draw: '描く', pop: 'ポップ', fade: 'フェード', slide: 'スライド', expand: '拡大展開',
+      erase: '巻き取り消去', shrink: '縮小消去', flow: 'フロー', pulse: 'パルス', float: '浮遊', shiver: '震え',
+      butt: '切りっぱなし', enter: '登場', exit: '退場', hold: '保持', auto: '自動進行',
+      word: '単語ごと', char: '1文字ごと', span: '部分文字列',
     },
   };
   const ADD_SHAPE_ES = {
@@ -1146,10 +1228,21 @@
       shape: 'Forma', drive: 'Impulso', trimStart: 'Inicio del trazado', trimEnd: 'Fin del trazado', trimOffset: 'Desfase del trazado',
       feather: 'Suavizado', stroke: 'Grosor', padding: 'Margen', repeat: 'Repeticiones', repeatScale: 'Escala de repetición',
       repeatRotate: 'Rotación de repetición', repeatOpacity: 'Fundido de repetición', cap: 'Extremo',
+      enterAnim: 'Animación entrada', exitAnim: 'Animación salida', holdAnim: 'Animación espera',
+      fillColor: 'Color placa', fillOpacity: 'Opacidad placa', bgPattern: 'Patrón placa',
+      bgPatternSize: 'Tamaño patrón', bgPatternOpacity: 'Opacidad patrón', bgPatternFlow: 'Flujo patrón',
+      matchText: 'Texto a coincidir', spanFrom: 'Desde carácter', spanTo: 'Hasta carácter',
     },
     values: {
       underline: 'Subrayado', strike: 'Tachado', box: 'Marco', brackets: 'Corchetes', burst: 'Ráfaga', cross: 'Cruz',
-      butt: 'Recto', enter: 'Entrada', exit: 'Salida', hold: 'Mantener',
+      overline: 'Línea superior', topBottom: 'Arriba y abajo', sides: 'Lados', sidesSemicircle: 'Lados (semicírculo)',
+      sidesSemiellipse: 'Lados (semielipse)', capsule: 'Cápsula', plate: 'Placa', ornament: 'Ornamento',
+      double: 'Doble', triple: 'Triple', dashed: 'Guiones', doubleDashed: 'Guiones dobles',
+      squareChain: 'Cadena cuadrada', chain: 'Cadena',
+      draw: 'Trazar', pop: 'Pop', fade: 'Fundido', slide: 'Deslizar', expand: 'Expandir',
+      erase: 'Borrar', shrink: 'Encoger', flow: 'Flujo', pulse: 'Pulso', float: 'Flotar', shiver: 'Temblor',
+      butt: 'Recto', enter: 'Entrada', exit: 'Salida', hold: 'Mantener', auto: 'Automático',
+      word: 'Por palabra', char: 'Por carácter', span: 'Subcadena',
     },
   };
   const ADD_SHAPE_FR = {
@@ -1158,10 +1251,21 @@
       shape: 'Forme', drive: 'Déclencheur', trimStart: 'Début du tracé', trimEnd: 'Fin du tracé', trimOffset: 'Décalage du tracé',
       feather: 'Adoucissement', stroke: 'Épaisseur', padding: 'Marge', repeat: 'Répétitions', repeatScale: 'Échelle de répétition',
       repeatRotate: 'Rotation de répétition', repeatOpacity: 'Fondu de répétition', cap: 'Extrémité',
+      enterAnim: 'Animation entrée', exitAnim: 'Animation sortie', holdAnim: 'Animation maintien',
+      fillColor: 'Couleur plaque', fillOpacity: 'Opacité plaque', bgPattern: 'Motif plaque',
+      bgPatternSize: 'Taille motif', bgPatternOpacity: 'Opacité motif', bgPatternFlow: 'Flux motif',
+      matchText: 'Texte à trouver', spanFrom: 'Caractère début', spanTo: 'Caractère fin',
     },
     values: {
       underline: 'Souligné', strike: 'Barré', box: 'Cadre', brackets: 'Crochets', burst: 'Rayons', cross: 'Croix',
-      butt: 'Droit', enter: 'Entrée', exit: 'Sortie', hold: 'Maintien',
+      overline: 'Ligne supérieure', topBottom: 'Haut et bas', sides: 'Côtés', sidesSemicircle: 'Côtés (demi-cercle)',
+      sidesSemiellipse: 'Côtés (demi-ellipse)', capsule: 'Capsule', plate: 'Plaque', ornament: 'Ornement',
+      double: 'Double', triple: 'Triple', dashed: 'Pointillés', doubleDashed: 'Pointillés doubles',
+      squareChain: 'Chaîne carrée', chain: 'Chaîne',
+      draw: 'Dessiner', pop: 'Pop', fade: 'Fondu', slide: 'Glisser', expand: 'Agrandir',
+      erase: 'Effacer', shrink: 'Rétrécir', flow: 'Flux', pulse: 'Pulsation', float: 'Flotter', shiver: 'Frisson',
+      butt: 'Droit', enter: 'Entrée', exit: 'Sortie', hold: 'Maintien', auto: 'Automatique',
+      word: 'Par mot', char: 'Par caractère', span: 'Sous-chaîne',
     },
   };
   const ADD_SHAPE_RU = {
@@ -1170,10 +1274,21 @@
       shape: 'Фигура', drive: 'Привод', trimStart: 'Начало обводки', trimEnd: 'Конец обводки', trimOffset: 'Смещение обводки',
       feather: 'Смягчение', stroke: 'Толщина', padding: 'Отступ', repeat: 'Повторы', repeatScale: 'Масштаб повторов',
       repeatRotate: 'Поворот повторов', repeatOpacity: 'Затухание повторов', cap: 'Концы',
+      enterAnim: 'Анимация входа', exitAnim: 'Анимация выхода', holdAnim: 'Анимация удержания',
+      fillColor: 'Цвет плашки', fillOpacity: 'Прозрачность плашки', bgPattern: 'Узор плашки',
+      bgPatternSize: 'Размер узора', bgPatternOpacity: 'Плотность узора', bgPatternFlow: 'Поток узора',
+      matchText: 'Текст совпадения', spanFrom: 'С символа', spanTo: 'По символ',
     },
     values: {
       underline: 'Подчёркивание', strike: 'Зачёркивание', box: 'Рамка', brackets: 'Скобки', burst: 'Лучи', cross: 'Крест',
-      butt: 'Прямые', enter: 'Вход', exit: 'Выход', hold: 'Удержание',
+      overline: 'Надчёркивание', topBottom: 'Сверху и снизу', sides: 'Бока', sidesSemicircle: 'Бока (полукруг)',
+      sidesSemiellipse: 'Бока (полуэллипс)', capsule: 'Капсула', plate: 'Плашка', ornament: 'Орнамент',
+      double: 'Двойная', triple: 'Тройная', dashed: 'Пунктир', doubleDashed: 'Двойной пунктир',
+      squareChain: 'Квадратная цепь', chain: 'Цепь',
+      draw: 'Рисовать', pop: 'Всплывание', fade: 'Затухание', slide: 'Сдвиг', expand: 'Расширение',
+      erase: 'Стирание', shrink: 'Сжатие', flow: 'Поток', pulse: 'Пульс', float: 'Парение', shiver: 'Дрожь',
+      butt: 'Прямые', enter: 'Вход', exit: 'Выход', hold: 'Удержание', auto: 'Авто',
+      word: 'По словам', char: 'По символам', span: 'Подстрока',
     },
   };
 

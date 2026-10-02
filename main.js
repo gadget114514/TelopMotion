@@ -269,6 +269,8 @@ function registerIpc() {
     }
   });
 
+  ipcMain.handle('app:info', () => ok({ version: app.getVersion(), name: app.getName(), electron: process.versions.electron, chrome: process.versions.chrome }));
+
   ipcMain.handle('app:open-external', (_event, payload) => {
     const url = payload && payload.url;
     if (typeof url !== 'string' || !SUNO_URL_RE.test(url)) {
