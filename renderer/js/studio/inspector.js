@@ -1025,13 +1025,30 @@ SA.inspector = (() => {
     void typeRow;
   }
 
+  // The subtitle track the selected cue sits on (null for a non-subtitle selection).
+  function selectedSubtitleTrack() {
+    const project = SA.store.state.project;
+    if (!project) return null;
+    const selection = selectionInfo();
+    const cue = selection.cueId ? project.script.cues.find((entry) => entry.id === selection.cueId) : null;
+    const track = cue ? (project.tracks || []).find((entry) => entry.id === (cue.trackId || 'sub1')) : null;
+    return track && track.kind === 'subtitle' ? track : null;
+  }
+
   function renderStackGroup(container, group) {
     const style = resolvedStyle();
+    // a frame-wide graphic (post) the track's graphics row hides stays editable
+    // but greyed out: it is not drawn
+    const graphicsOff = group === 'post' && !!(selectedSubtitleTrack() || {}).graphicsHidden;
     const list = Array.isArray(style[group]) ? style[group] : [];
     const body = section(container, group, t(GROUP_LABELS[group]));
     list.forEach((instance, index) => {
       const box = document.createElement('div');
       box.className = 'insp-stack-item';
+      if (graphicsOff && SA.fx.isGraphicsPost && SA.fx.isGraphicsPost(instance)) {
+        box.classList.add('insp-track-off');
+        box.title = t('studio.inspector.graphicsTrackOff');
+      }
       const head = document.createElement('div');
       head.className = 'insp-stack-head';
       head.appendChild(

@@ -2530,3 +2530,8 @@ body {
   display: inline-block;
 }
 
+
+.insp-stack-item.insp-track-off {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
