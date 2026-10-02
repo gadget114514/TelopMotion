@@ -244,33 +244,34 @@ test('the shape batch centres the quad on the letter, so no cell offset is uploa
   assert.ok(!body.includes('cellMetricsFor'), 'the advance cell no longer drives the quad');
 });
 
-test('the background is exactly one cell and carries no size knob', () => {
-  assert.equal(textBg.backgroundScale, undefined, 'the background scale draw is gone');
-  assert.equal(textBg.BG_SCALE_MIN, undefined);
-  assert.equal(textBg.BG_SCALE_MAX, undefined);
-  // every letter, every beat, every seed: one cell, the letter's own cell
-  for (const params of [{}, { maxScale: 2.4 }, { maxScale: 1 }, { width: 3, height: 3, unit: 'cell' }]) {
-    const bg = textBg.evaluateBg({ type: 'square', params }, { type: 'follow', params: {} }, [entry(), entry()], null, null, 2, { seed: 4242, group: 'bgShape' });
-    for (const state of bg.states) {
-      assert.equal(state.sizeX, 1, `background width for ${JSON.stringify(params)}`);
-      assert.equal(state.sizeY, 1, `background height for ${JSON.stringify(params)}`);
-    }
+test('backgroundScale is the explicit scale or a deterministic 0.1..10 cell draw', () => {
+  assert.equal(textBg.BG_SCALE_MIN, 0.1);
+  assert.equal(textBg.BG_SCALE_MAX, 10);
+  assert.equal(textBg.backgroundScale({ scale: 1.7 }, 1, 'b1'), 1.7);
+  const first = textBg.backgroundScale({}, 4242, 'beat-1');
+  assert.equal(textBg.backgroundScale({}, 4242, 'beat-1'), first, 'the same seed and beat draw the same size');
+  assert.ok(first >= 0.1 && first <= 10, `derived scale ${first}`);
+  const scales = [];
+  for (let beat = 0; beat < 60; beat += 1) scales.push(textBg.backgroundScale({}, 4242, `b${beat}`));
+  assert.ok(Math.max(...scales) > 0.9, `max ${Math.max(...scales)}`);
+  assert.ok(Math.min(...scales) < 1.1, `min ${Math.min(...scales)}`);
+  // evaluateBg respects scale
+  const bg = textBg.evaluateBg({ type: 'square', params: { scale: 2.4 } }, { type: 'follow', params: {} }, [entry(), entry()], null, null, 2, { seed: 4242, group: 'bgShape' });
+  for (const state of bg.states) {
+    assert.equal(state.sizeX, 2.4);
+    assert.equal(state.sizeY, 2.4);
   }
-  // the cap cannot shrink the one-cell background either
-  const states = [{ sizeX: 1, sizeY: 1, motionScaleX: 1.2, motionScaleY: 1, params: { maxScale: 2.4 } }];
-  textBg.capBackground(states, 'cell', { w: 800, h: 200 }, { cell: 2.5, emExtra: 0.6, emPx: 96 });
-  assert.equal(states[0].sizeX, 1, 'the motion scale is not mistaken for a size');
 });
 
 test('capBackground still clamps a cell ornament including its motion scale', () => {
   const states = [{ sizeX: 2.4, sizeY: 2.4, motionScaleX: 1.2, motionScaleY: 1, params: {} }];
   textBg.capBackground(states, 'cell', { w: 800, h: 200 }, { cell: 1.25, emExtra: 0.6, emPx: 96 });
   assert.ok(Math.abs(states[0].sizeX * 1.2 - 1.25) < 1e-9, `the cap includes the motion scale (${states[0].sizeX * 1.2})`);
-  // a background-scale `maxScale` left in a stored style no longer overrides the cap
-  const legacy = [{ sizeX: 4, sizeY: 4, motionScaleX: 1, motionScaleY: 1, params: { maxScale: 2 } }];
-  textBg.capBackground(legacy, 'cell', { w: 800, h: 200 }, {});
-  assert.equal(legacy[0].sizeX, 1.25);
-  assert.equal(legacy[0].sizeY, 1.25);
+  // explicit scale honors the author value
+  const explicit = [{ sizeX: 4, sizeY: 4, motionScaleX: 1, motionScaleY: 1, params: { scale: 2 } }];
+  textBg.capBackground(explicit, 'cell', { w: 800, h: 200 }, { cell: 1.25 });
+  assert.equal(explicit[0].sizeX, 2);
+  assert.equal(explicit[0].sizeY, 2);
 });
 
 test('capBackground keeps cell / em sizes inside the engine caps', () => {
@@ -395,14 +396,14 @@ test('generated text backgrounds stay inside the caps', () => {
     const shape = style.bgShape;
     if (shape && shape.type && shape.type !== 'none') {
       assert.equal(shape.type, 'square', `seed ${seed} background type ${shape.type}`);
-      // the automatic direction stores no size of its own: the box is the cell
-      assert.equal(shape.params.maxScale, undefined, `seed ${seed} background maxScale ${shape.params.maxScale}`);
+      // the automatic direction stores scale
+      assert.ok(shape.params.scale >= 0.1 && shape.params.scale <= 10, `seed ${seed} background scale ${shape.params.scale}`);
       assert.equal(shape.params.width, undefined, `seed ${seed} background width ${shape.params.width}`);
       const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'bgShape' });
       assert.ok(bg, `seed ${seed} background does not evaluate`);
       for (const state of bg.states) {
-        assert.equal(state.sizeX, 1, `seed ${seed} background width`);
-        assert.equal(state.sizeY, 1, `seed ${seed} background height`);
+        assert.ok(state.sizeX >= 0.1 && state.sizeX <= 10, `seed ${seed} background width`);
+        assert.ok(state.sizeY >= 0.1 && state.sizeY <= 10, `seed ${seed} background height`);
         assert.equal(state.offsetX, 0);
         assert.equal(state.rotation, 0);
       }

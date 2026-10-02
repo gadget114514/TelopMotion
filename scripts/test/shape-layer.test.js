@@ -179,6 +179,8 @@ test('scale parameter is defined with random range and scales the text box bound
   assert.ok(Math.abs(scaled.u_params3[1] - 0.35) < 1e-6);
   assert.ok(Math.abs(scaled.u_params3[2] - 0.95) < 1e-6);
   assert.ok(Math.abs(scaled.u_params3[3] - 0.65) < 1e-6);
+  assert.equal(scaleParam.min, 0.1);
+  assert.equal(scaleParam.max, 10);
 });
 
 test('resolveGraphicParams randomizes scale for frame shapes', () => {
@@ -187,5 +189,8 @@ test('resolveGraphicParams randomizes scale for frame shapes', () => {
   assert.equal(boxResolved.scale, Math.round((0.9 + 0.5 * 0.25) * 100) / 100);
   assert.equal(boxResolved.padding, Math.round((0.06 + 0.5 * 0.18) * 100) / 100);
   assert.equal(boxResolved.stroke, Math.round((2.5 + 0.5 * 3.5) * 10) / 10);
+
+  const scaledResolved = direct.resolveGraphicParams({ shape: 'box' }, () => 0.5, 3);
+  assert.equal(scaledResolved.scale, Math.round(3 * (0.9 + 0.5 * 0.25) * 100) / 100);
 });
 

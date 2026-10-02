@@ -693,6 +693,10 @@
         if (pinned.bgOffsetScatter != null) bgOptions.offsetScatter = params.bgOffsetScatter;
         if (pinned.bgSizeScatter != null) bgOptions.sizeScatter = params.bgSizeScatter;
         if (pinned.bgColorScatter != null) bgOptions.colorScatter = params.bgColorScatter;
+        if (pinned.textBgScale != null) bgOptions.scale = params.textBgScale;
+        else if (pinned.bgScale != null) bgOptions.scale = params.bgScale;
+        else if (params.textBgScale != null) bgOptions.scale = params.textBgScale;
+        else if (params.bgScale != null) bgOptions.scale = params.bgScale;
         const genreDef = genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(genre) : null;
         if (SA.moods.applyGenreBackground(bgStyle, genreDef, axes, bgRandom, colors, false, bgOptions)) {
           for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {
@@ -752,13 +756,18 @@
 
   const FRAME_SHAPES = new Set(['box', 'brackets', 'topBottom', 'sides', 'sidesSemicircle', 'sidesSemiellipse', 'capsule', 'plate']);
 
-  function resolveGraphicParams(graphic, rng) {
+  function resolveGraphicParams(graphic, rng, graphicScale) {
     const params = { ...(graphic || {}) };
     if (FRAME_SHAPES.has(params.shape)) {
       const roll = typeof rng === 'function' ? rng : Math.random;
       params.padding = Math.round((0.06 + roll() * 0.18) * 100) / 100;
       params.stroke = Math.round((2.5 + roll() * 3.5) * 10) / 10;
-      params.scale = Math.round((0.9 + roll() * 0.25) * 100) / 100;
+      const baseScale = Number.isFinite(Number(graphicScale))
+        ? Number(graphicScale)
+        : Number.isFinite(Number(params.scale))
+          ? Number(params.scale)
+          : 1;
+      params.scale = Math.max(0.1, Math.min(10, Math.round(baseScale * (0.9 + roll() * 0.25) * 100) / 100));
     }
     return params;
   }
@@ -1489,12 +1498,13 @@
       }
     } else {
       let shapeEntry = Array.isArray(patch.post) ? patch.post.find((entry) => entry && entry.type === 'shapeLayer') : null;
+      const gScale = params.graphicScale;
       if (!shapeEntry) {
         const base = pick(gr, COMPOSE_GRAPHICS);
-        shapeEntry = { type: 'shapeLayer', params: resolveGraphicParams(base, gr), enabled: true };
+        shapeEntry = { type: 'shapeLayer', params: resolveGraphicParams(base, gr, gScale), enabled: true };
         patch.post = Array.isArray(patch.post) ? patch.post.concat([shapeEntry]) : [shapeEntry];
       } else if (shapeEntry.params) {
-        shapeEntry.params = resolveGraphicParams(shapeEntry.params, gr);
+        shapeEntry.params = resolveGraphicParams(shapeEntry.params, gr, gScale);
       }
     }
     varyBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx, patch, analysis, comp, energy);

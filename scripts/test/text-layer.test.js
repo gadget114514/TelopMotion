@@ -35,10 +35,9 @@ test('the engine commits the background layer before the glyph body', () => {
   assert.ok(index('SA.fx.postUniforms') > fresh, 'text posts must run on the glyph layer');
 });
 
-test('the engine draws the background at one cell and never scales it', () => {
+test('the engine applies background scaling and cap', () => {
   const source = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
-  assert.ok(!source.includes('SA.textBg.backgroundScale'), 'the background is still scaled per beat');
-  assert.ok(!source.includes('bg-scale'), 'the background still draws a random size');
+  assert.ok(source.includes('SA.textBg.backgroundScale'), 'the background scale is not wired');
   // the ornament safety cap stays, so a stored style cannot paint a slab
   assert.ok(source.includes('cell: 2.4'), 'the ornament cap is gone');
 });

@@ -231,3 +231,39 @@ test('display rounds for the UI but resolve keeps the full precision', () => {
   const resolved = genParams.resolve({ axes: BASE });
   assert.equal(typeof resolved.paletteSwitchChance, 'number');
 });
+
+test('graphicScale and textBgScale are defined, derived, and clamped', () => {
+  const gScaleDef = genParams.PARAMS.find((p) => p.key === 'graphicScale');
+  assert.ok(gScaleDef, 'graphicScale is defined in PARAMS');
+  assert.equal(gScaleDef.min, 0.1);
+  assert.equal(gScaleDef.max, 10);
+  assert.equal(gScaleDef.group, 'graphic');
+  assert.equal(gScaleDef.derive(), 1);
+
+  const bgScaleDef = genParams.PARAMS.find((p) => p.key === 'textBgScale');
+  assert.ok(bgScaleDef, 'textBgScale is defined in PARAMS');
+  assert.equal(bgScaleDef.min, 0.1);
+  assert.equal(bgScaleDef.max, 10);
+  assert.equal(bgScaleDef.group, 'textBg');
+  assert.equal(bgScaleDef.derive(), 1);
+
+  const resolved = genParams.resolve({
+    axes: BASE,
+    params: { graphicScale: 5.5, textBgScale: 8.2 },
+  });
+  assert.equal(resolved.graphicScale, 5.5);
+  assert.equal(resolved.textBgScale, 8.2);
+
+  const clamped = genParams.resolve({
+    axes: BASE,
+    params: { graphicScale: 50, textBgScale: 0.01 },
+  });
+  assert.equal(clamped.graphicScale, 10);
+  assert.equal(clamped.textBgScale, 0.1);
+
+  const aliased = genParams.resolve({
+    axes: BASE,
+    params: { bgScale: 3.5 },
+  });
+  assert.equal(aliased.textBgScale, 3.5);
+});

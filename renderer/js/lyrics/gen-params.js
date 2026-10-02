@@ -96,6 +96,7 @@
     { key: 'decoGlow', kind: 'weight', tab: 'font', group: 'deco', min: 0, max: 3, step: 0.05, derive: (a) => 0.9 * a.w * (1 - a.bright) },
     // a template without a graphic may gain a shape layer (compose mode)
     { key: 'graphicChance', kind: 'chance', tab: 'font', group: 'graphic', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 + 0.4 * a.w },
+    { key: 'graphicScale', kind: 'amount', tab: 'font', group: 'graphic', min: 0.1, max: 10, step: 0.05, derive: () => 1 },
     // text treatment: one cue-level font draw and the per-beat follow-ups
     { key: 'fontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.9 * a.t) },
     { key: 'beatFontChance', kind: 'chance', tab: 'font', group: 'font', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.7 * a.t) },
@@ -117,6 +118,7 @@
     // accent / underlay and every other shape are text ornaments. The keys
     // stay as they are for saved profile compatibility.
     { key: 'textBgChance', kind: 'chance', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, 0.4 * (0.08 + 0.22 * a.d + 0.5 * a.t)) },
+    { key: 'textBgScale', kind: 'amount', tab: 'font', group: 'textBg', min: 0.1, max: 10, step: 0.05, derive: () => 1 },
     { key: 'bgEnclose', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.55 },
     { key: 'bgAccent', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.25 },
     { key: 'bgUnderlay', kind: 'weight', tab: 'font', group: 'textBg', min: 0, max: 3, step: 0.05, derive: () => 0.2 },
@@ -200,7 +202,11 @@
     const manual = input.params || {};
     const out = {};
     for (const def of PARAMS) {
-      const fixed = clampTo(def, manual[def.key]);
+      let val = manual[def.key];
+      if (val == null && def.key === 'textBgScale' && manual.bgScale != null) {
+        val = manual.bgScale;
+      }
+      const fixed = clampTo(def, val);
       out[def.key] = fixed == null ? auto[def.key] : fixed;
     }
     return out;
@@ -209,7 +215,11 @@
   function isPinned(styleMode, key) {
     const params = styleMode && styleMode.params;
     if (!params || !BY_KEY.has(key)) return false;
-    return clampTo(BY_KEY.get(key), params[key]) != null;
+    let val = params[key];
+    if (val == null && key === 'textBgScale' && params.bgScale != null) {
+      val = params.bgScale;
+    }
+    return clampTo(BY_KEY.get(key), val) != null;
   }
 
   // One chance draw. A chance of 0 (or an unusable value) consumes no random,
@@ -393,6 +403,24 @@
     if (isPinned(styleMode, 'textBgChance') && Number(params.textBgChance) <= 0) {
       for (const group of ['bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion']) {
         delete out[group];
+      }
+    }
+
+    if (isPinned(styleMode, 'textBgScale') || isPinned(styleMode, 'bgScale')) {
+      const bgScaleVal = isPinned(styleMode, 'textBgScale') ? params.textBgScale : params.bgScale;
+      if (bgScaleVal != null && out.bgShape && out.bgShape.params) {
+        out.bgShape.params.scale = Math.max(0.1, Math.min(10, Number(bgScaleVal)));
+      }
+    }
+
+    if (isPinned(styleMode, 'graphicScale')) {
+      const gScaleVal = params.graphicScale;
+      if (gScaleVal != null && Array.isArray(out.post)) {
+        for (const post of out.post) {
+          if (post && post.type === 'shapeLayer' && post.params) {
+            post.params.scale = Math.max(0.1, Math.min(10, Number(gScaleVal)));
+          }
+        }
       }
     }
 

@@ -98,7 +98,7 @@
       { key: 'feather', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.06, section: 'shape' },
       { key: 'stroke', kind: 'number', min: 0.1, max: 200, step: 0.5, default: 4, random: [2, 7], section: 'look' },
       { key: 'padding', kind: 'number', min: -0.2, max: 0.6, step: 0.01, default: 0.06, random: [0.04, 0.25], section: 'look' },
-      { key: 'scale', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 1, random: [0.85, 1.25], section: 'look' },
+      { key: 'scale', kind: 'number', min: 0.1, max: 10, step: 0.05, default: 1, random: [0.85, 1.25], section: 'look' },
       { key: 'pattern', kind: 'select', options: PATTERNS, default: 'solid', section: 'look' },
       { key: 'patternSize', kind: 'number', min: 2, max: 200, step: 1, default: 16, section: 'look' },
       { key: 'patternRatio', kind: 'number', min: 0.05, max: 0.95, step: 0.01, default: 0.5, section: 'look' },
@@ -140,7 +140,7 @@
         feather: Math.max(0, Math.min(0.5, num(source.feather, 0.06))),
         stroke: Math.max(0.1, Math.min(200, num(source.stroke, 4))),
         padding: Math.max(-0.2, Math.min(0.6, num(source.padding, 0.06))),
-        scale: Math.max(0.1, Math.min(4, num(source.scale, 1))),
+        scale: Math.max(0.1, Math.min(10, num(source.scale, 1))),
         pattern: PATTERNS.includes(source.pattern) ? source.pattern : 'solid',
         patternSize: Math.max(2, Math.min(200, num(source.patternSize, 16))),
         patternRatio: Math.max(0.05, Math.min(0.95, num(source.patternRatio, 0.5))),
@@ -244,7 +244,7 @@
       }
       // scale grows or shrinks the shape about the text box centre; the box
       // itself (the frame the shape fits) and the stroke width stay as they are
-      const scale = Math.max(0.1, num(p.scale, 1));
+      const scale = Math.max(0.1, Math.min(10, num(p.scale, 1)));
       const cx = (box.x0 + box.x1) / 2;
       const cy = (box.y0 + box.y1) / 2;
       const color = context.shapeColor || [1, 0.82, 0.42, 1];

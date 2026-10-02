@@ -2438,10 +2438,17 @@
       params.height = params.width;
       params.layer = 'behind';
       if (shape === 'bar') params.height = round(lerp(0.3, 0.45, random()), 2);
-      // the definition background (the enclose square) draws no size of its own:
-      // the renderer paints one letter box per letter, so it always tracks the
-      // glyph. The draw above stays (it feeds the ornament path and keeps the
-      // random stream -- every seed's picture -- unchanged).
+      if (shape === 'square') {
+        // the definition background (the enclose square) takes a scale
+        // randomized around baseScale (0.1..10 cells). The same draw maps
+        // 0.9..1.1 onto the scale, so the random stream -- and every seed's
+        // picture -- does not move.
+        const rawScale = opts.scale != null ? opts.scale : (opts.textBgScale != null ? opts.textBgScale : opts.bgScale);
+        const baseScale = Number.isFinite(Number(rawScale)) ? Number(rawScale) : 1;
+        const bgScale = Math.max(0.1, Math.min(10, round(baseScale * (1 + ((cell - 1) * 1.5)), 2)));
+        params.scale = bgScale;
+        params.maxScale = bgScale;
+      }
     } else if (adjusted === 'accent') {
       params.unit = 'em';
       // an accent does not grow with the weird axis (it must not swallow text)
@@ -2533,7 +2540,7 @@
       const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
       style.bgShape = {
         type: 'square',
-        params: { color: null, skipSpaces: true, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
+        params: { color: null, skipSpaces: true, scale: params.scale, maxScale: params.maxScale, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
         enabled: true,
       };
     } else {
@@ -2820,6 +2827,8 @@
       if (profile.bgOffsetScatter != null) bgOptions.offsetScatter = profile.bgOffsetScatter;
       if (profile.bgSizeScatter != null) bgOptions.sizeScatter = profile.bgSizeScatter;
       if (profile.bgColorScatter != null) bgOptions.colorScatter = profile.bgColorScatter;
+      if (profile.textBgScale != null) bgOptions.scale = profile.textBgScale;
+      else if (profile.bgScale != null) bgOptions.scale = profile.bgScale;
     }
     applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg', bgOptions);
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);

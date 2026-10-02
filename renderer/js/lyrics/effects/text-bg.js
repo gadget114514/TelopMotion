@@ -32,6 +32,7 @@
 
   const COMMON_PARAMS = [
     { key: 'unit', kind: 'select', options: ['cell', 'em'], default: 'cell' },
+    { key: 'scale', kind: 'number', min: 0.1, max: 10, step: 0.05, default: 1, random: [0.85, 1.25], catalog: false },
     { key: 'width', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.05, random: [0.7, 1.15] },
     { key: 'height', kind: 'number', min: 0.05, max: 5, step: 0.01, default: 1.05, random: [0.7, 1.15] },
     { key: 'lockAspect', kind: 'bool', default: true },
@@ -99,12 +100,12 @@
   const BG_SHAPE_TYPES = ['none', 'square'];
   const ORN_SHAPE_TYPES = SHAPE_TYPES.filter((type) => type !== 'none');
   // The background keeps only the modifiers that do not move or resize it:
-  // colour variation (the background and the per-letter text colour),
-  // fill / stroke / trim / dash and letter following. Geometry
-  // (unit / width / height / offset / rotation / wobble / vary* geometry) is
-  // ignored by evaluateBg for the background group. The background has no size
-  // knob at all: it is exactly the letter's cell, so it tracks the font size.
+  // scale (randomized per beat or set in theme), colour variation (the background
+  // and the per-letter text colour), fill / stroke / trim / dash and letter following.
+  // Other geometry (unit / width / height / offset / rotation / wobble / vary* geometry)
+  // is ignored by evaluateBg for the background group.
   const BG_PARAM_KEYS = new Set([
+    'scale', 'maxScale',
     'rotateWithLetter', 'scaleWithLetter', 'opacity', 'skipSpaces', 'skipRate',
     'fgAutoContrast', 'fgColors', 'vary', 'varyColors', 'stroke', 'fill',
     'trimStart', 'trimEnd', 'trimOffset', 'dashOn', 'dashOff', 'dashOffset',
@@ -245,13 +246,25 @@
     return Math.exp(-t * t * 4);
   }
 
+  const BG_SCALE_MIN = 0.1;
+  const BG_SCALE_MAX = 10;
+
+  function backgroundScale(params, seed, beatId, baseScale) {
+    const p = params || {};
+    const explicit = Number(p.scale != null ? p.scale : p.maxScale);
+    if (Number.isFinite(explicit) && explicit > 0) {
+      return Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, explicit));
+    }
+    const base = Number.isFinite(Number(baseScale)) ? Number(baseScale) : 1;
+    const random = rng.rngFor(seed == null ? 12345 : seed, beatId == null ? '' : beatId, 'bg-scale');
+    const scale = base * (0.85 + random() * 0.3);
+    return Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, Math.round(scale * 100) / 100));
+  }
+
   // The engine-side safety cap every text background passes through: a cell
   // shape may span at most `limits.cell` letter boxes and an em shape at most the
-  // beat's text box width + 0.6 em, so a stored project cannot paint a giant
-  // slab over the frame. The states are clamped in place and returned. The
-  // definition background is one letter box wide and never reaches the cap; the
-  // limit stays as the guard for the ornaments, whose geometry the author
-  // controls.
+  // beat's text box width + 0.6 em. `params.scale` / `params.maxScale` wins.
+  // The states are clamped in place and returned.
   function capBackground(states, unit, box, limits) {
     const opts = limits || {};
     const cellMax = Number.isFinite(Number(opts.cell)) ? Number(opts.cell) : 1.25;
@@ -262,17 +275,19 @@
     const fallback = unit === 'em' ? 1.6 : cellMax;
     for (const state of states || []) {
       if (!state) continue;
+      const explicit = Number(state.params && (state.params.scale != null ? state.params.scale : state.params.maxScale));
+      const hasExplicit = Number.isFinite(explicit) && explicit > 0;
       const scaleX = Math.abs(Number(state.motionScaleX) || 1) || 1;
       const scaleY = Math.abs(Number(state.motionScaleY) || 1) || 1;
       if (unit === 'em') {
-        // the em limit is expressed in the beat's own font size
-        const maxX = emPx > 0 && width > 0 ? width / emPx + emExtra : fallback;
-        const maxY = emPx > 0 && height > 0 ? height / emPx + emExtra : fallback;
+        const maxX = hasExplicit ? Math.max(explicit, emPx > 0 && width > 0 ? width / emPx + emExtra : fallback) : (emPx > 0 && width > 0 ? width / emPx + emExtra : fallback);
+        const maxY = hasExplicit ? Math.max(explicit, emPx > 0 && height > 0 ? height / emPx + emExtra : fallback) : (emPx > 0 && height > 0 ? height / emPx + emExtra : fallback);
         if (state.sizeX * scaleX > maxX) state.sizeX = maxX / scaleX;
         if (state.sizeY * scaleY > maxY) state.sizeY = maxY / scaleY;
       } else {
-        if (state.sizeX * scaleX > cellMax) state.sizeX = cellMax / scaleX;
-        if (state.sizeY * scaleY > cellMax) state.sizeY = cellMax / scaleY;
+        const cap = hasExplicit ? Math.max(cellMax, explicit) : cellMax;
+        if (state.sizeX * scaleX > cap) state.sizeX = cap / scaleX;
+        if (state.sizeY * scaleY > cap) state.sizeY = cap / scaleY;
       }
     }
     return states;
@@ -423,8 +438,10 @@
     const typeIndex = isBg ? SHAPES.square : SHAPES[shapeInstance.type] == null ? 0 : SHAPES[shapeInstance.type];
     const baseOpacity = clamp01(shapeParams.opacity == null ? 1 : shapeParams.opacity);
     const lockAspect = shapeParams.lockAspect !== false;
-    const width = isBg ? 1 : Math.max(0.05, num(shapeParams.width, 1.15));
-    const height = isBg ? 1 : lockAspect ? width : Math.max(0.05, num(shapeParams.height, 1.15));
+    const baseScale = Number(shapeParams.scale != null ? shapeParams.scale : shapeParams.maxScale);
+    const shapeScale = Number.isFinite(baseScale) && baseScale > 0 ? Math.max(BG_SCALE_MIN, Math.min(BG_SCALE_MAX, baseScale)) : 1;
+    const width = isBg ? shapeScale : Math.max(0.05, num(shapeParams.width, 1.15)) * shapeScale;
+    const height = isBg ? shapeScale : lockAspect ? width : Math.max(0.05, num(shapeParams.height, 1.15)) * shapeScale;
     const rotation = isBg ? 0 : num(shapeParams.rotation, 0);
     const offset = isBg ? { x: 0, y: 0 } : shapeParams.offset || { x: 0, y: 0 };
     const mode = motionInstance.type || 'follow';
@@ -609,6 +626,9 @@
     BG_SHAPE_TYPES,
     ORN_SHAPE_TYPES,
     VARY_MODES,
+    BG_SCALE_MIN,
+    BG_SCALE_MAX,
+    backgroundScale,
     capBackground,
     cellMetrics,
     cellMetricsFor,

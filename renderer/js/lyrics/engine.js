@@ -1808,14 +1808,29 @@ SA.lyricsEngine = (() => {
         group: shapeKey,
       });
       if (!bg || !bg.states.length) return null;
+      const seed = (project.styleMode && project.styleMode.seed) || 12345;
+      const styleParams = (project.styleMode && project.styleMode.params) || {};
+      const themeScale = Number(styleParams.textBgScale != null ? styleParams.textBgScale : styleParams.bgScale);
+      const baseScale = Number.isFinite(themeScale) ? themeScale : 1;
+      if (isBg && SA.textBg.backgroundScale) {
+        const hasExplicit = shape.params && (shape.params.scale != null || shape.params.maxScale != null);
+        if (!hasExplicit) {
+          const scale = SA.textBg.backgroundScale(shape.params, seed, beat.id, baseScale);
+          if (scale !== 1) {
+            for (const entry of bg.states) {
+              entry.sizeX *= scale;
+              entry.sizeY *= scale;
+            }
+          }
+        }
+      }
       // the engine-side safety cap: a stored project cannot paint a slab that
-      // swallows the text (the definition background is one letter box and never
-      // reaches the cap; the ornaments are held at 2.4 letter boxes, em = text
-      // box width + 0.6 em).
+      // swallows the text (background cell up to 10+, ornaments held at 2.4 letter boxes).
       if (SA.textBg.capBackground) {
         const boxes = textBoxesPx(scene, result.letters);
         const box = boxes && boxes.box ? { w: boxes.box.x1 - boxes.box.x0, h: boxes.box.y1 - boxes.box.y0 } : null;
-        SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: 2.5, emExtra: 0.6, emPx: scene.size } : { cell: 2.4, emExtra: 0.6, emPx: scene.size });
+        const cellCap = Math.max(10, baseScale * 1.5);
+        SA.textBg.capBackground(bg.states, bg.unit, box, isBg ? { cell: cellCap, emExtra: 0.6, emPx: scene.size } : { cell: 2.4, emExtra: 0.6, emPx: scene.size });
       }
       const amountKey = BG_AMOUNT_KEY[shape.type];
       const params = shape.params || {};
