@@ -814,6 +814,32 @@ SA.store = (() => {
     return `${prefix}${index}`;
   }
 
+  function figureLayersPatch(fg, bg) {
+    const patch = {};
+    if (fg !== undefined) {
+      const on = !!fg;
+      patch.figureFgHidden = !on;
+      patch.figureFgEnabled = on;
+      patch.figureFg = { enabled: on };
+      patch.fg = { enabled: on };
+      patch.fgEnabled = on;
+    }
+    if (bg !== undefined) {
+      const on = !!bg;
+      patch.figureBgHidden = !on;
+      patch.figureBgEnabled = on;
+      patch.figureBg = { enabled: on };
+      patch.bg = { enabled: on };
+      patch.bgEnabled = on;
+    }
+    if (fg !== undefined || bg !== undefined) {
+      const fgOn = fg !== undefined ? !!fg : true;
+      const bgOn = bg !== undefined ? !!bg : true;
+      patch.enabled = fgOn || bgOn;
+    }
+    return patch;
+  }
+
   const commands = {
     setProp(path, propPath, value, options) {
       dispatch({
@@ -1692,6 +1718,21 @@ SA.store = (() => {
         },
       });
     },
+    setFigureLayerEnabled(trackId, layer, enabled) {
+      const track = trackById(trackId);
+      if (!track || (layer !== 'foreground' && layer !== 'background')) return;
+      const on = !!enabled;
+      const E = SA.lyricsEngine;
+      const view = state.view || null;
+      const fgOn = layer === 'foreground' ? on : (E && E.figureLayerOn ? E.figureLayerOn('foreground', track, view) : !track.figureFgHidden);
+      const bgOn = layer === 'background' ? on : (E && E.figureLayerOn ? E.figureLayerOn('background', track, view) : !track.figureBgHidden);
+      const patch = layer === 'foreground'
+        ? { figureFgHidden: !on, figureFgEnabled: on, figureFg: { enabled: on }, fg: { enabled: on }, fgEnabled: on }
+        : { figureBgHidden: !on, figureBgEnabled: on, figureBg: { enabled: on }, bg: { enabled: on }, bgEnabled: on };
+      patch.enabled = fgOn || bgOn;
+      commands.updateTrack(trackId, patch);
+    },
+    figureLayersPatch,
     // The background track's frame base colour: null removes it (transparent).
     setTrackColor(id, color) {
       if (!trackById(id)) return;
@@ -2368,6 +2409,7 @@ SA.store = (() => {
     touch,
     findCue,
     commands,
+    figureLayersPatch,
     clone,
   };
 })();

@@ -2086,9 +2086,20 @@ SA.lyricsEngine = (() => {
         drawBackgroundLayers();
         for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
         renderFillerClips(t, duration, stage, stageWeird, maskFor);
-        // the figure and text-animation tracks sit between the mid layer and the
-        // subtitles, so both draw before the lyric layers
-        for (const clip of activeClips(project, 'figure')) drawFigureClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+        const figureClips = activeClips(project, 'figure');
+        for (const clip of figureClips) {
+          const spec = clip.spec || {};
+          if (figureLayerOf(spec) === 'background') {
+            drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+          }
+        }
+        for (const clip of figureClips) {
+          const spec = clip.spec || {};
+          if (figureLayerOf(spec) !== 'background') {
+            if (spec.type === 'figure') drawFigureClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+            else drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+          }
+        }
         for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
       }
       // subtitle tracks whose text background was switched off keep their data

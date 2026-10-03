@@ -17,6 +17,10 @@ SA.timeline = (() => {
   const TICK_STEPS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
   // tracks whose clips are placed by hand with drag / double-click / Add cue
   const CREATABLE_CLIP_KINDS = ['figure', 'textAnim', 'filler'];
+  // kinds whose track header gets a foreground / background switch row each
+  const LAYER_SWITCH_KINDS = ['figure'];
+  const LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' };
+  const LAYER_SWITCH_FILLS = { foreground: 'rgba(200, 107, 255, 0.28)', background: 'rgba(255, 209, 102, 0.28)' };
 
   const el = {};
   let ctx = null;
@@ -417,6 +421,12 @@ SA.timeline = (() => {
           rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: track.kind, clips: packed[lane] || [], first: lane === 0, last: lane === laneCount - 1 });
           y += LAYER_H;
         }
+        if (LAYER_SWITCH_KINDS.includes(track.kind)) {
+          for (const layer of ['foreground', 'background']) {
+            rows.push({ type: 'layer-switch', y, h: LAYER_H, trackId: track.id, track, layer });
+            y += LAYER_H;
+          }
+        }
       }
     }
     rows.push({ type: 'credits', y, h: LAYER_H, trackId: null });
@@ -659,7 +669,7 @@ SA.timeline = (() => {
         ctx.stroke();
       }
       ctx.restore();
-      hitRegions.push({ type: opts.checkType || 'track-check', trackId: row.trackId, x: LABEL_W - 20, y, w: 20, h: height });
+      hitRegions.push({ type: opts.checkType || 'track-check', trackId: row.trackId, layer: opts.layer, x: LABEL_W - 20, y, w: 20, h: height });
     }
   }
 
@@ -865,6 +875,42 @@ SA.timeline = (() => {
         ctx.lineWidth = 1;
         ctx.stroke();
       }
+    }
+    ctx.restore();
+  }
+
+  function drawLayerSwitchRow(size, doc, row) {
+    const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+    const on = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn(row.layer, row.track, view) : (row.layer === 'foreground' ? !row.track.figureFgHidden : !row.track.figureBgHidden);
+    const hidden = trackHidden(row.track) || !on;
+    const label = t(row.layer === 'foreground' ? 'studio.track.layerFg' : 'studio.track.layerBg');
+    const color = LAYER_SWITCH_COLORS[row.layer];
+    drawTrackHeader(row, `${trackTitle(row.track)} ${label}`, {
+      color,
+      hidden,
+      removable: false,
+      checkType: 'track-layer-check',
+      layer: row.layer,
+    });
+    const y = row.y;
+    const height = LAYER_H - 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
+    ctx.clip();
+    for (const clip of clipsOnTrack(doc, row.trackId)) {
+      if (!SA.lyricsEngine || typeof SA.lyricsEngine.figureLayerOf !== 'function') continue;
+      if (SA.lyricsEngine.figureLayerOf(clip.spec) !== row.layer) continue;
+      const x = xOf(clip.start);
+      const width = Math.max(2, (clip.end - clip.start) * pxPerSecond);
+      if (x + width < LABEL_W || x > size.width) continue;
+      const dim = hidden || isClipDisabled(clip);
+      ctx.fillStyle = dim ? 'rgba(30, 34, 44, 0.6)' : LAYER_SWITCH_FILLS[row.layer];
+      rounded(x, y + 1.5, width, height, 4);
+      ctx.fill();
+      ctx.strokeStyle = dim ? '#3a4050' : color;
+      ctx.lineWidth = 1;
+      ctx.stroke();
     }
     ctx.restore();
   }
@@ -1385,6 +1431,7 @@ SA.timeline = (() => {
       else if (row.type === 'graphics-track') drawGraphicsTrack(size, doc, row);
       else if (row.type === 'layer-track') drawLayerTrack(size, row);
       else if (row.type === 'clip-track') drawClipTrack(size, row);
+      else if (row.type === 'layer-switch') drawLayerSwitchRow(size, doc, row);
       else if (row.type === 'credits') drawCredits(size, row);
       else if (row.type === 'lane' || row.type === 'lane-empty') drawLane(size, row);
     }
@@ -1514,8 +1561,29 @@ SA.timeline = (() => {
         // them (the auto direction places the song's background here)
         if (track.kind === 'background') SA.store.commands.updateTrack(hit.trackId, { hidden: !show });
       } else if (track) {
-        const nextHidden = !track.hidden;
-        SA.store.commands.updateTrack(hit.trackId, { hidden: nextHidden, enabled: !nextHidden });
+        const show = trackHidden(track);
+        if (show && LAYER_SWITCH_KINDS.includes(track.kind)) {
+          const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+          const fgOn = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('foreground', track, view) : !track.figureFgHidden;
+          const bgOn = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('background', track, view) : !track.figureBgHidden;
+          if (!fgOn && !bgOn) {
+            const patch = Object.assign({ hidden: false, enabled: true }, SA.store.figureLayersPatch(true, true));
+            SA.store.commands.updateTrack(hit.trackId, patch);
+          } else {
+            SA.store.commands.updateTrack(hit.trackId, { hidden: false, enabled: true });
+          }
+        } else {
+          SA.store.commands.updateTrack(hit.trackId, { hidden: !show, enabled: show });
+        }
+      }
+      drag = null;
+      draw();
+    } else if (hit.type === 'track-layer-check') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && LAYER_SWITCH_KINDS.includes(track.kind)) {
+        const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+        const currentOn = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn(hit.layer, track, view) : (hit.layer === 'foreground' ? !track.figureFgHidden : !track.figureBgHidden);
+        SA.store.commands.setFigureLayerEnabled(track.id, hit.layer, !currentOn);
       }
       drag = null;
       draw();
@@ -1605,7 +1673,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -2141,7 +2209,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-remove') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
@@ -2160,30 +2228,15 @@ SA.timeline = (() => {
       // the clip tracks that draw behind the lyrics can opt out of the text
       // mask (the subtitle background is always knocked out)
       if (track.kind === 'backdrop' || track.kind === 'figure' || track.kind === 'filler') {
-        add(track.figureFgHidden ? t('studio.track.showFigureFg') : t('studio.track.hideFigureFg'), () => {
-          const next = !!track.figureFgHidden;
-          const bgOn = SA.lyricsEngine && SA.lyricsEngine.figureBackgroundOn ? SA.lyricsEngine.figureBackgroundOn(track) : !track.figureBgHidden;
-          SA.store.commands.updateTrack(track.id, {
-            figureFgHidden: !next,
-            figureFgEnabled: next,
-            figureFg: { enabled: next },
-            fg: { enabled: next },
-            fgEnabled: next,
-            enabled: track.kind === 'figure' ? next : (next || bgOn),
-          });
-        });
-        add(track.figureBgHidden ? t('studio.track.showFigureBg') : t('studio.track.hideFigureBg'), () => {
-          const next = !!track.figureBgHidden;
-          const fgOn = SA.lyricsEngine && SA.lyricsEngine.figureForegroundOn ? SA.lyricsEngine.figureForegroundOn(track) : !track.figureFgHidden;
-          SA.store.commands.updateTrack(track.id, {
-            figureBgHidden: !next,
-            figureBgEnabled: next,
-            figureBg: { enabled: next },
-            bg: { enabled: next },
-            bgEnabled: next,
-            enabled: track.kind === 'backdrop' ? next : (fgOn || next),
-          });
-        });
+        const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+        const fgOn = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('foreground', track, view) : !track.figureFgHidden;
+        const bgOn = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('background', track, view) : !track.figureBgHidden;
+        add(fgOn ? t('studio.track.hideFigureFg') : t('studio.track.showFigureFg'), () =>
+          SA.store.commands.setFigureLayerEnabled(track.id, 'foreground', !fgOn)
+        );
+        add(bgOn ? t('studio.track.hideFigureBg') : t('studio.track.showFigureBg'), () =>
+          SA.store.commands.setFigureLayerEnabled(track.id, 'background', !bgOn)
+        );
         add(track.textMask === false ? t('studio.track.maskText') : t('studio.track.unmaskText'), () =>
           SA.store.commands.updateTrack(track.id, { textMask: track.textMask === false })
         );

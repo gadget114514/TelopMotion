@@ -252,9 +252,11 @@ test('project.migrate normalises figureFgHidden, figureBgHidden, and enabled fla
 
 test('timeline menu, inspector controls, and i18n keys wiring', () => {
   const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
-  assert.ok(timeline.includes("track.figureFgHidden ? t('studio.track.showFigureFg') : t('studio.track.hideFigureFg')"), 'timeline showFigureFg menu item missing');
-  assert.ok(timeline.includes("track.figureBgHidden ? t('studio.track.showFigureBg') : t('studio.track.hideFigureBg')"), 'timeline showFigureBg menu item missing');
+  assert.ok(timeline.includes("fgOn ? t('studio.track.hideFigureFg') : t('studio.track.showFigureFg')"), 'timeline showFigureFg menu item missing');
+  assert.ok(timeline.includes("bgOn ? t('studio.track.hideFigureBg') : t('studio.track.showFigureBg')"), 'timeline showFigureBg menu item missing');
   assert.ok(timeline.includes('clipLayerHidden(clip, row.track)'), 'timeline clipLayerHidden call missing');
+  assert.ok(timeline.includes('setFigureLayerEnabled'), 'timeline setFigureLayerEnabled call missing');
+  assert.ok(timeline.includes('figureLayerOn'), 'timeline figureLayerOn call missing');
 
   const inspector = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'inspector.js'), 'utf8');
   assert.ok(inspector.includes('figureFgVisible'), 'figureFgVisible missing from inspector');
@@ -262,9 +264,11 @@ test('timeline menu, inspector controls, and i18n keys wiring', () => {
   assert.ok(inspector.includes('figureLayerOff'), 'figureLayerOff missing from inspector');
   assert.ok(inspector.includes('figureFgHidden'), 'figureFgHidden missing from inspector');
   assert.ok(inspector.includes('figureBgHidden'), 'figureBgHidden missing from inspector');
+  assert.ok(inspector.includes('setFigureLayerEnabled'), 'inspector setFigureLayerEnabled missing');
+  assert.ok(inspector.includes('figureLayerOn'), 'inspector figureLayerOn missing');
 
   const i18n = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'i18n.js'), 'utf8');
-  for (const key of ['hideFigureFg', 'showFigureFg', 'hideFigureBg', 'showFigureBg', 'figureFgVisible', 'figureBgVisible', 'figureLayerOff']) {
+  for (const key of ['hideFigureFg', 'showFigureFg', 'hideFigureBg', 'showFigureBg', 'figureFgVisible', 'figureBgVisible', 'figureLayerOff', 'layerFg', 'layerBg']) {
     assert.ok(i18n.includes(key), `${key} missing from i18n`);
   }
 });
@@ -402,5 +406,213 @@ test('turning off fg and bg checkboxes sets enabled to false', () => {
   assert.equal(updatedBackdrop.figureBgEnabled, false);
   assert.equal(updatedBackdrop.figureBg.enabled, false);
   assert.equal(engine.figureBackgroundOn(updatedBackdrop), false);
+});
+
+test('setFigureLayerEnabled enabled truth table and order-independence', () => {
+  const store = globalThis.SA.store;
+  store.load(project.defaults({}));
+  const track = () => store.state.project.tracks.find((t) => t.kind === 'figure');
+  const id = track().id;
+
+  // 1. Initial state: both ON
+  assert.equal(engine.figureForegroundOn(track()), true);
+  assert.equal(engine.figureBackgroundOn(track()), true);
+  assert.notEqual(track().enabled, false);
+
+  // 2. FG OFF, BG still ON -> enabled: true
+  store.commands.setFigureLayerEnabled(id, 'foreground', false);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), false);
+  assert.equal(engine.figureBackgroundOn(track()), true);
+
+  // 3. BG OFF as well -> both OFF -> enabled: false
+  store.commands.setFigureLayerEnabled(id, 'background', false);
+  assert.equal(track().enabled, false);
+  assert.equal(engine.figureForegroundOn(track()), false);
+  assert.equal(engine.figureBackgroundOn(track()), false);
+
+  // 4. BG ON -> enabled: true
+  store.commands.setFigureLayerEnabled(id, 'background', true);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), false);
+  assert.equal(engine.figureBackgroundOn(track()), true);
+
+  // 5. FG ON -> both ON -> enabled: true
+  store.commands.setFigureLayerEnabled(id, 'foreground', true);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), true);
+  assert.equal(engine.figureBackgroundOn(track()), true);
+
+  // Reverse sequence: BG OFF -> FG OFF -> FG ON
+  store.commands.setFigureLayerEnabled(id, 'background', false);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), true);
+  assert.equal(engine.figureBackgroundOn(track()), false);
+
+  store.commands.setFigureLayerEnabled(id, 'foreground', false);
+  assert.equal(track().enabled, false);
+  assert.equal(engine.figureForegroundOn(track()), false);
+  assert.equal(engine.figureBackgroundOn(track()), false);
+
+  store.commands.setFigureLayerEnabled(id, 'foreground', true);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), true);
+  assert.equal(engine.figureBackgroundOn(track()), false);
+});
+
+test('setFigureLayerEnabled writes all 5 alias fields for foreground and background', () => {
+  const store = globalThis.SA.store;
+  store.load(project.defaults({}));
+  const track = () => store.state.project.tracks.find((t) => t.kind === 'figure');
+  const id = track().id;
+
+  store.commands.setFigureLayerEnabled(id, 'foreground', false);
+  const t1 = track();
+  assert.equal(t1.figureFgHidden, true);
+  assert.equal(t1.figureFgEnabled, false);
+  assert.deepEqual(t1.figureFg, { enabled: false });
+  assert.deepEqual(t1.fg, { enabled: false });
+  assert.equal(t1.fgEnabled, false);
+  assert.equal(engine.figureLayerOn('foreground', t1), false);
+
+  store.commands.setFigureLayerEnabled(id, 'foreground', true);
+  const t2 = track();
+  assert.equal(t2.figureFgHidden, false);
+  assert.equal(t2.figureFgEnabled, true);
+  assert.deepEqual(t2.figureFg, { enabled: true });
+  assert.deepEqual(t2.fg, { enabled: true });
+  assert.equal(t2.fgEnabled, true);
+  assert.equal(engine.figureLayerOn('foreground', t2), true);
+
+  store.commands.setFigureLayerEnabled(id, 'background', false);
+  const t3 = track();
+  assert.equal(t3.figureBgHidden, true);
+  assert.equal(t3.figureBgEnabled, false);
+  assert.deepEqual(t3.figureBg, { enabled: false });
+  assert.deepEqual(t3.bg, { enabled: false });
+  assert.equal(t3.bgEnabled, false);
+  assert.equal(engine.figureLayerOn('background', t3), false);
+
+  store.commands.setFigureLayerEnabled(id, 'background', true);
+  const t4 = track();
+  assert.equal(t4.figureBgHidden, false);
+  assert.equal(t4.figureBgEnabled, true);
+  assert.deepEqual(t4.figureBg, { enabled: true });
+  assert.deepEqual(t4.bg, { enabled: true });
+  assert.equal(t4.bgEnabled, true);
+  assert.equal(engine.figureLayerOn('background', t4), true);
+});
+
+test('setFigureLayerEnabled creates a single undo step', () => {
+  const store = globalThis.SA.store;
+  store.load(project.defaults({}));
+  const track = () => store.state.project.tracks.find((t) => t.kind === 'figure');
+  const id = track().id;
+
+  assert.equal(engine.figureForegroundOn(track()), true);
+  store.commands.setFigureLayerEnabled(id, 'foreground', false);
+  assert.equal(engine.figureForegroundOn(track()), false);
+
+  assert.equal(store.canUndo(), true);
+  store.undo();
+  assert.equal(engine.figureForegroundOn(track()), true);
+});
+
+test('timeline source wiring for layer-switch rows and track-layer-check', () => {
+  const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
+  assert.ok(timeline.includes("LAYER_SWITCH_KINDS = ['figure']"), 'LAYER_SWITCH_KINDS constant missing');
+  assert.ok(timeline.includes("LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' }"), 'LAYER_SWITCH_COLORS missing');
+  assert.ok(timeline.includes("type: 'layer-switch'"), 'layer-switch row missing from layoutRows');
+  assert.ok(timeline.includes('function drawLayerSwitchRow('), 'drawLayerSwitchRow missing');
+  assert.ok(timeline.includes("row.type === 'layer-switch'"), 'layer-switch row missing from draw dispatch');
+  assert.ok(timeline.includes("hit.type === 'track-layer-check'"), 'track-layer-check missing from pointerdown');
+  assert.ok(timeline.includes('track-layer-check') && timeline.includes("cursor = 'pointer'"), 'cursor pointer for track-layer-check missing');
+});
+
+test('figure track rendering delegates background clips to drawShapeClip and gates them with figureLayerFlags', () => {
+  const p = {
+    tracks: [
+      { id: 'f1', kind: 'figure', enabled: true },
+    ],
+    clips: [
+      { id: 'c1', trackId: 'f1', start: 0, end: 4, spec: { type: 'figure' } },
+      { id: 'c2', trackId: 'f1', start: 0, end: 4, spec: { type: 'split', params: { mode: 'halves' } } },
+    ],
+  };
+
+  const active = engine.activeClips(p, 'figure');
+  assert.equal(active.length, 2);
+
+  const baseCtx = {
+    time: 2,
+    frame: { width: 1920, height: 1080 },
+    clip: { key: 'c2', start: 0, end: 4 },
+    seed: 42,
+    colors: ['#ffffff', '#ff8a3d'],
+    beats: [{ start: 0, end: 4 }],
+  };
+
+  // Normal: both layers on
+  const flagsBoth = engine.figureLayerFlags(p.tracks[0]);
+  assert.deepEqual(flagsBoth, { foreground: true, background: true });
+  const splitNormal = fillerRender.drawList({ type: 'split', params: { mode: 'halves' } }, { ...baseCtx, layers: flagsBoth });
+  assert.ok(splitNormal.shapes.length > 0, 'split clip renders when bg is on');
+
+  // Background OFF: split clip renders empty
+  p.tracks[0].figureBgHidden = true;
+  const flagsBgOff = engine.figureLayerFlags(p.tracks[0]);
+  assert.deepEqual(flagsBgOff, { foreground: true, background: false });
+  const splitBgOff = fillerRender.drawList({ type: 'split', params: { mode: 'halves' } }, { ...baseCtx, layers: flagsBgOff });
+  assert.deepEqual(splitBgOff, { shapes: [], texts: [] }, 'split clip suppressed when bg is off');
+  assert.equal(engine.figureForegroundOn(p.tracks[0]), true, 'figure fg is still on');
+
+  // Foreground OFF: figure clip suppressed, split clip renders
+  p.tracks[0].figureBgHidden = false;
+  p.tracks[0].figureFgHidden = true;
+  const flagsFgOff = engine.figureLayerFlags(p.tracks[0]);
+  assert.deepEqual(flagsFgOff, { foreground: false, background: true });
+  assert.equal(engine.figureForegroundOn(p.tracks[0]), false, 'figure fg is off');
+  const splitFgOff = fillerRender.drawList({ type: 'split', params: { mode: 'halves' } }, { ...baseCtx, layers: flagsFgOff });
+  assert.ok(splitFgOff.shapes.length > 0, 'split clip still renders when fg is off and bg is on');
+
+  // Both OFF: track.enabled is false -> activeClips returns empty
+  p.tracks[0].enabled = false;
+  const activeNone = engine.activeClips(p, 'figure');
+  assert.equal(activeNone.length, 0, 'activeClips filters out track when enabled is false');
+});
+
+test('i18n completeness for studio.track.layerFg and layerBg across 5 languages', () => {
+  require(path.join(ROOT, 'renderer', 'js', 'i18n.js'));
+  const i18n = globalThis.SA.i18n;
+  for (const lang of ['en', 'ja', 'es', 'fr', 'ru']) {
+    i18n.set(lang);
+    const fg = i18n.t('studio.track.layerFg');
+    const bg = i18n.t('studio.track.layerBg');
+    assert.ok(fg && fg !== 'studio.track.layerFg', `missing layerFg in ${lang}`);
+    assert.ok(bg && bg !== 'studio.track.layerBg', `missing layerBg in ${lang}`);
+  }
+});
+
+test('track-check restores both layers to ON when both were OFF', () => {
+  const store = globalThis.SA.store;
+  store.load(project.defaults({}));
+  const track = () => store.state.project.tracks.find((t) => t.kind === 'figure');
+  const id = track().id;
+
+  // Turn both OFF
+  store.commands.setFigureLayerEnabled(id, 'foreground', false);
+  store.commands.setFigureLayerEnabled(id, 'background', false);
+  assert.equal(track().enabled, false);
+  assert.equal(engine.figureForegroundOn(track()), false);
+  assert.equal(engine.figureBackgroundOn(track()), false);
+
+  // Restore via figureLayersPatch(true, true)
+  const patch = Object.assign({ hidden: false, enabled: true }, store.figureLayersPatch(true, true));
+  store.commands.updateTrack(id, patch);
+
+  assert.equal(track().hidden, false);
+  assert.equal(track().enabled, true);
+  assert.equal(engine.figureForegroundOn(track()), true);
+  assert.equal(engine.figureBackgroundOn(track()), true);
 });
 

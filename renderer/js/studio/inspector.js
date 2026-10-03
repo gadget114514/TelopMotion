@@ -1389,45 +1389,17 @@ SA.inspector = (() => {
     const track = ((doc && doc.tracks) || []).find((entry) => entry.id === sel.trackId);
     if (!track) return;
     if (track.kind === 'figure' || track.kind === 'backdrop' || track.kind === 'filler') {
-      const isFgOn = (t) => {
-        if (!t) return true;
-        if (t.enabled === false && t.kind === 'figure') return false;
-        if (t.figureFg && t.figureFg.enabled !== undefined) return !!t.figureFg.enabled;
-        if (t.figureFgEnabled !== undefined) return !!t.figureFgEnabled;
-        if (t.fg && t.fg.enabled !== undefined) return !!t.fg.enabled;
-        if (t.fgEnabled !== undefined) return !!t.fgEnabled;
-        if (t.figureFgHidden !== undefined) return !t.figureFgHidden;
-        if (t.enabled !== undefined) return !!t.enabled;
-        return true;
-      };
-      const isBgOn = (t) => {
-        if (!t) return true;
-        if (t.enabled === false && t.kind === 'backdrop') return false;
-        if (t.figureBg && t.figureBg.enabled !== undefined) return !!t.figureBg.enabled;
-        if (t.figureBgEnabled !== undefined) return !!t.figureBgEnabled;
-        if (t.bg && t.bg.enabled !== undefined) return !!t.bg.enabled;
-        if (t.bgEnabled !== undefined) return !!t.bgEnabled;
-        if (t.figureBgHidden !== undefined) return !t.figureBgHidden;
-        if (t.enabled !== undefined) return !!t.enabled;
-        return true;
-      };
+      const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+      const isFg = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('foreground', track, view) : !track.figureFgHidden;
+      const isBg = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('background', track, view) : !track.figureBgHidden;
       const body = section(container, 'track', trackDisplayName(track) || t('studio.inspector.track'));
       const fgRow = document.createElement('label');
       fgRow.className = 'insp-inherit';
       const fgBox = document.createElement('input');
       fgBox.type = 'checkbox';
-      fgBox.checked = isFgOn(track);
+      fgBox.checked = isFg;
       fgBox.addEventListener('change', () => {
-        const enabled = fgBox.checked;
-        const bgEnabled = isBgOn(track);
-        SA.store.commands.updateTrack(track.id, {
-          figureFgHidden: !enabled,
-          figureFgEnabled: enabled,
-          figureFg: { enabled },
-          fg: { enabled },
-          fgEnabled: enabled,
-          enabled: track.kind === 'figure' ? enabled : (enabled || bgEnabled),
-        });
+        SA.store.commands.setFigureLayerEnabled(track.id, 'foreground', fgBox.checked);
       });
       const fgText = document.createElement('span');
       fgText.textContent = ` ${t('studio.inspector.figureFgVisible')}`;
@@ -1439,18 +1411,9 @@ SA.inspector = (() => {
       bgRow.className = 'insp-inherit';
       const bgBox = document.createElement('input');
       bgBox.type = 'checkbox';
-      bgBox.checked = isBgOn(track);
+      bgBox.checked = isBg;
       bgBox.addEventListener('change', () => {
-        const enabled = bgBox.checked;
-        const fgEnabled = isFgOn(track);
-        SA.store.commands.updateTrack(track.id, {
-          figureBgHidden: !enabled,
-          figureBgEnabled: enabled,
-          figureBg: { enabled },
-          bg: { enabled },
-          bgEnabled: enabled,
-          enabled: track.kind === 'backdrop' ? enabled : (fgEnabled || enabled),
-        });
+        SA.store.commands.setFigureLayerEnabled(track.id, 'background', bgBox.checked);
       });
       const bgText = document.createElement('span');
       bgText.textContent = ` ${t('studio.inspector.figureBgVisible')}`;
