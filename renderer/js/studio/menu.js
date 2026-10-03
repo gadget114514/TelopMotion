@@ -64,6 +64,7 @@ SA.menu = (() => {
         itemSeparator(),
         { key: 'studio.file.importLyrics', action: 'importLyrics' },
         { key: 'studio.file.importAudio', action: 'importAudio' },
+        { key: 'studio.file.importVideo', action: 'importVideo' },
         { key: 'studio.file.recent', items: recentItems },
       ],
     },

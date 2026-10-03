@@ -1731,8 +1731,17 @@ SA.store = (() => {
       const subtitle = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
       const id = nextTrackId(project, trackKind);
       const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景', figure: '図形', textAnim: 'テキスト' };
+      const lastSameKind = (project.tracks || []).reduce((at, track, i) => (track && track.kind === trackKind ? i : at), -1);
       const lastSubtitle = (project.tracks || []).reduce((at, track, i) => (track.kind === 'subtitle' ? i : at), -1);
-      const index = trackKind === 'subtitle' ? lastSubtitle + 1 : (project.tracks || []).length;
+      let index = (project.tracks || []).length;
+      if (lastSameKind >= 0) {
+        index = lastSameKind + 1;
+      } else if (trackKind === 'subtitle') {
+        index = lastSubtitle + 1;
+      } else {
+        const bgIndex = (project.tracks || []).findIndex((track) => track && track.kind === 'background');
+        if (bgIndex >= 0) index = bgIndex;
+      }
       dispatch({
         label: 'add track',
         areas: ['project'],

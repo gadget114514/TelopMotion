@@ -434,35 +434,46 @@
     toast('studio.media.layerAdded', { name: entry.name || '' });
   }
 
+  async function loadVideoBlob(blob, name, mimeType) {
+    const src = URL.createObjectURL(blob);
+    const meta = await new Promise((resolve) => {
+      const video = document.createElement('video');
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.addEventListener('loadedmetadata', () => resolve({ duration: video.duration, width: video.videoWidth, height: video.videoHeight }));
+      video.addEventListener('error', () => resolve(null));
+      video.src = src;
+      video.load();
+    });
+    const entry = {
+      id: `v${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`,
+      name: name || 'video',
+      mime: mimeType || 'video/mp4',
+      src,
+      duration: meta && meta.duration,
+      width: meta && meta.width,
+      height: meta && meta.height,
+    };
+    SA.store.commands.addMedia({ ...entry, kind: 'videos' });
+    const currentDoc = project();
+    if (!(currentDoc.layers || []).some((l) => l && l.type === 'video')) {
+      addVideoLayer(entry, 'background');
+    }
+    setMediaTab('video');
+    renderTimeline();
+    if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+    toast('studio.media.videoImported', { name: entry.name });
+    return entry;
+  }
+
   async function importVideoMedia() {
     try {
       const picked = await platform.readFile('.mp4,.webm,.mov,video/mp4,video/webm');
       if (!picked || !picked.bytes) return;
       const extension = String(picked.name || '').split('.').pop().toLowerCase();
       const mime = { mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime' }[extension] || picked.type || 'video/mp4';
-      const src = URL.createObjectURL(new Blob([picked.bytes], { type: mime }));
-      const meta = await new Promise((resolve) => {
-        const video = document.createElement('video');
-        video.muted = true;
-        video.playsInline = true;
-        video.preload = 'metadata';
-        video.addEventListener('loadedmetadata', () => resolve({ duration: video.duration, width: video.videoWidth, height: video.videoHeight }));
-        video.addEventListener('error', () => resolve(null));
-        video.src = src;
-        video.load();
-      });
-      const entry = {
-        id: `v${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`,
-        name: picked.name || 'video',
-        mime,
-        src,
-        duration: meta && meta.duration,
-        width: meta && meta.width,
-        height: meta && meta.height,
-      };
-      SA.store.commands.addMedia({ ...entry, kind: 'videos' });
-      setMediaTab('video');
-      toast('studio.media.videoImported', { name: entry.name });
+      await loadVideoBlob(new Blob([picked.bytes], { type: mime }), picked.name, mime);
     } catch {
       toast('studio.toast.error');
     }
@@ -872,7 +883,20 @@
     const result = await SA.preview.importAudio();
     if (result.canceled) toast('studio.toast.cancelled');
     else if (result.error) toast('studio.toast.error');
-    else toast('studio.toast.audioImported', { name: result.name });
+    else {
+      toast('studio.toast.audioImported', { name: result.name });
+      setMediaTab('audio');
+      refreshAudioVisual();
+      if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
+        SA.store.commands.addMedia({
+          id: 'audio',
+          kind: 'audio',
+          name: result.name,
+        });
+      }
+      if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+      renderTimeline();
+    }
   }
 
   function fitAudio() {
@@ -1514,11 +1538,53 @@
     el.mediaTabs.video.addEventListener('click', () => setMediaTab('video'));
     el.mediaTabs.audio.addEventListener('click', () => setMediaTab('audio'));
     el.videoImport.addEventListener('click', importVideoMedia);
-    el.audioImport.addEventListener('click', async () => {
-      await importAudio();
-      setMediaTab('audio');
-      refreshAudioVisual();
-    });
+    el.audioImport.addEventListener('click', importAudio);
+    if (el.mediaPanes && el.mediaPanes.audio) {
+      el.mediaPanes.audio.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+      });
+      el.mediaPanes.audio.addEventListener('drop', (event) => {
+        const transfer = event.dataTransfer;
+        if (!transfer || !transfer.files || !transfer.files.length) return;
+        const file = transfer.files[0];
+        const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(file.name);
+        if (isAudio) {
+          event.preventDefault();
+          const url = URL.createObjectURL(file);
+          SA.preview.setAudioSource(url, file.name);
+          if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
+            SA.store.commands.addMedia({
+              id: 'audio',
+              kind: 'audio',
+              name: file.name,
+              mime: file.type || 'audio/mpeg',
+            });
+          }
+          setMediaTab('audio');
+          refreshAudioVisual();
+          toast('studio.toast.audioImported', { name: file.name });
+          if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+          renderTimeline();
+        }
+      });
+    }
+    if (el.mediaPanes && el.mediaPanes.video) {
+      el.mediaPanes.video.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+      });
+      el.mediaPanes.video.addEventListener('drop', async (event) => {
+        const transfer = event.dataTransfer;
+        if (!transfer || !transfer.files || !transfer.files.length) return;
+        const file = transfer.files[0];
+        const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name);
+        if (isVideo) {
+          event.preventDefault();
+          await loadVideoBlob(file, file.name, file.type || 'video/mp4');
+        }
+      });
+    }
     setupSplitter(el.splitMedia, 'media');
     setupSplitter(el.splitInspector, 'inspector');
     setupSplitter(el.splitTimeline, 'timeline');
@@ -1625,6 +1691,7 @@
       redo: redoEdit,
       importLyrics,
       importAudio,
+      importVideo: importVideoMedia,
       distributeCues,
       randomStyle: () => runRandomize('project', {}),
       randomStyleCues: () => runRandomize('cues', {}),
@@ -1747,6 +1814,6 @@
     }
   }
 
-  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors };
+  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, importVideo: importVideoMedia, addVideoLayer };
   startup();
 })();

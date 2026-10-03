@@ -514,15 +514,41 @@ void main() {
         video.loop = loop;
         const target = videoTargetFor(layer, t, video);
         if (opts.playback === 'preview') {
-          if (config.play === false) {
-            if (!video.paused) video.pause();
+          if (config.play === false || opts.playing === false) {
+            if (!video.paused) {
+              try {
+                video.pause();
+              } catch {
+                /* ignore */
+              }
+            }
+            if (Math.abs(video.currentTime - target) > 0.05) {
+              try {
+                video.currentTime = target;
+              } catch {
+                /* ignore */
+              }
+            }
             continue;
+          }
+          const hasAudio = opts.hasAudio !== false && opts.hasAudio != null ? opts.hasAudio : false;
+          const shouldMute = config.muted === true || (config.muted == null && hasAudio);
+          if (video.muted !== shouldMute) {
+            video.muted = shouldMute;
+          }
+          const rate = (config.speed == null ? 1 : Number(config.speed) || 1) * (opts.speed || 1);
+          if (Math.abs(video.playbackRate - rate) > 1e-4) {
+            try {
+              video.playbackRate = rate;
+            } catch {
+              /* ignore */
+            }
           }
           if (video.paused) {
             const played = video.play();
             if (played && played.catch) played.catch(() => {});
           }
-          if (Math.abs(video.currentTime - target) > 0.3) {
+          if (Math.abs(video.currentTime - target) > 0.25) {
             try {
               video.currentTime = target;
             } catch {
@@ -668,6 +694,18 @@ void main() {
       return [...textures.values()].filter((record) => record.ready).length;
     }
 
+    function pauseVideos() {
+      for (const record of videos.values()) {
+        if (record && record.element && !record.element.paused) {
+          try {
+            record.element.pause();
+          } catch {
+            /* ignore */
+          }
+        }
+      }
+    }
+
     function dispose() {
       for (const record of textures.values()) {
         if (record.texture) gl.deleteTexture(record.texture);
@@ -693,7 +731,7 @@ void main() {
       if (program) gl.deleteProgram(program);
     }
 
-    return { draw, preload, prepare, textureFor, videoRecordFor, textureCount, dispose, fitRect };
+    return { draw, preload, prepare, pauseVideos, textureFor, videoRecordFor, textureCount, dispose, fitRect };
   }
 
   return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, videoTargetFor, CUSTOM_BLENDS, FILTERS };

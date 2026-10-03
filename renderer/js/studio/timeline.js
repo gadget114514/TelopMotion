@@ -355,7 +355,7 @@ SA.timeline = (() => {
     cueRects = new Map();
     let y = RULER_H;
     rows.push({ type: 'ruler', y, h: RULER_H });
-    if (SA.preview && SA.preview.getPeaks && SA.preview.getPeaks()) {
+    if (SA.preview && ((SA.preview.hasAudio && SA.preview.hasAudio()) || (SA.preview.getPeaks && SA.preview.getPeaks()))) {
       rows.push({ type: 'audio', y, h: AUDIO_H });
       y += AUDIO_H;
     }
@@ -542,7 +542,7 @@ SA.timeline = (() => {
   }
 
   function trackHidden(track) {
-    return !!(track && track.hidden);
+    return !!(track && (track.hidden || track.enabled === false));
   }
 
   // A track the timeline offers a remove button for. The two layer tracks
@@ -1002,6 +1002,14 @@ SA.timeline = (() => {
     return false;
   }
 
+  function clipLayerHidden(clip, track) {
+    if (!clip || !track || !SA.lyricsEngine || typeof SA.lyricsEngine.figureLayerOf !== 'function') return false;
+    const layer = SA.lyricsEngine.figureLayerOf(clip.spec);
+    if (!layer) return false;
+    const view = (SA.store && SA.store.state && SA.store.state.view) || null;
+    return !SA.lyricsEngine.figureLayerOn(layer, track, view);
+  }
+
   // One generic renderer for backdrop / filler / background clips.
   function drawClipTrack(size, row) {
     if (row.first) {
@@ -1019,7 +1027,7 @@ SA.timeline = (() => {
       const width = Math.max(3, (clip.end - clip.start) * pxPerSecond);
       if (x + width < 0 || x > size.width) continue;
       const selected = (SA.store.state.selection.paths || []).some((path) => path === `clip:${clip.id}`);
-      const disabled = isClipDisabled(clip);
+      const disabled = isClipDisabled(clip) || clipLayerHidden(clip, row.track);
       const fill = CLIP_COLORS[(clip.spec && clip.spec.type) || 'none'] || CLIP_COLORS.none;
       ctx.fillStyle = disabled || trackHidden(row.track) ? 'rgba(30, 34, 44, 0.6)' : fill[0];
       rounded(x, y + 1.5, width, height, 4);
@@ -1350,6 +1358,12 @@ SA.timeline = (() => {
       rulerCtx.moveTo(LABEL_W - 0.5, 0);
       rulerCtx.lineTo(LABEL_W - 0.5, fixedHeight);
       rulerCtx.stroke();
+      const audioRow = rows.find((row) => row.type === 'audio');
+      if (audioRow) {
+        rulerCtx.fillStyle = '#9aa5b8';
+        rulerCtx.font = '11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        rulerCtx.fillText('Audio', 12, audioRow.y + 19);
+      }
     }
     // scrollable part: every row is drawn with the shared absolute coordinates
     ctx.clearRect(0, 0, size.width, size.height);
@@ -1500,7 +1514,8 @@ SA.timeline = (() => {
         // them (the auto direction places the song's background here)
         if (track.kind === 'background') SA.store.commands.updateTrack(hit.trackId, { hidden: !show });
       } else if (track) {
-        SA.store.commands.updateTrack(hit.trackId, { hidden: !track.hidden });
+        const nextHidden = !track.hidden;
+        SA.store.commands.updateTrack(hit.trackId, { hidden: nextHidden, enabled: !nextHidden });
       }
       drag = null;
       draw();
@@ -2145,6 +2160,30 @@ SA.timeline = (() => {
       // the clip tracks that draw behind the lyrics can opt out of the text
       // mask (the subtitle background is always knocked out)
       if (track.kind === 'backdrop' || track.kind === 'figure' || track.kind === 'filler') {
+        add(track.figureFgHidden ? t('studio.track.showFigureFg') : t('studio.track.hideFigureFg'), () => {
+          const next = !!track.figureFgHidden;
+          const bgOn = SA.lyricsEngine && SA.lyricsEngine.figureBackgroundOn ? SA.lyricsEngine.figureBackgroundOn(track) : !track.figureBgHidden;
+          SA.store.commands.updateTrack(track.id, {
+            figureFgHidden: !next,
+            figureFgEnabled: next,
+            figureFg: { enabled: next },
+            fg: { enabled: next },
+            fgEnabled: next,
+            enabled: track.kind === 'figure' ? next : (next || bgOn),
+          });
+        });
+        add(track.figureBgHidden ? t('studio.track.showFigureBg') : t('studio.track.hideFigureBg'), () => {
+          const next = !!track.figureBgHidden;
+          const fgOn = SA.lyricsEngine && SA.lyricsEngine.figureForegroundOn ? SA.lyricsEngine.figureForegroundOn(track) : !track.figureFgHidden;
+          SA.store.commands.updateTrack(track.id, {
+            figureBgHidden: !next,
+            figureBgEnabled: next,
+            figureBg: { enabled: next },
+            bg: { enabled: next },
+            bgEnabled: next,
+            enabled: track.kind === 'backdrop' ? next : (fgOn || next),
+          });
+        });
         add(track.textMask === false ? t('studio.track.maskText') : t('studio.track.unmaskText'), () =>
           SA.store.commands.updateTrack(track.id, { textMask: track.textMask === false })
         );
@@ -2379,7 +2418,7 @@ SA.timeline = (() => {
     const id = SA.store.commands.addTrack(kind);
     if (!id) return;
     SA.store.setSelection([`track:${id}`], 'track');
-    const toasts = { figure: 'studio.toast.figureTrack', textAnim: 'studio.toast.textTrack', filler: 'studio.toast.fillerTrack' };
+    const toasts = { figure: 'studio.toast.figureTrack', textAnim: 'studio.toast.textTrack', filler: 'studio.toast.fillerTrack', backdrop: 'studio.toast.backdropTrack' };
     SA.studio.toast(toasts[kind] || 'studio.toast.textTrack');
     draw();
   }
@@ -2450,7 +2489,7 @@ SA.timeline = (() => {
       surface.addEventListener('contextmenu', showMenu);
       surface.addEventListener('dragover', (event) => {
         const types = event.dataTransfer ? event.dataTransfer.types || [] : [];
-        if (types.indexOf('text/x-sa-media') >= 0 || types.indexOf('text/plain') >= 0) {
+        if (types.indexOf('text/x-sa-media') >= 0 || types.indexOf('text/plain') >= 0 || types.indexOf('Files') >= 0) {
           event.preventDefault();
           event.dataTransfer.dropEffect = 'copy';
         }
@@ -2461,17 +2500,72 @@ SA.timeline = (() => {
         const id = transfer.getData('text/x-sa-media') || transfer.getData('text/plain');
         const doc = project();
         const entry = doc && doc.media && (doc.media.videos || []).find((video) => video.id === id);
-        if (!entry) return;
-        event.preventDefault();
-        const point = localPoint(event);
-        const firstCue = rows.find((row) => row.type === 'cue-track');
-        const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
-        const layer = SA.layersDialog.defaults(slot);
-        layer.type = 'video';
-        layer.src = entry.src;
-        layer.fit = 'cover';
-        SA.store.commands.addLayer(layer);
-        SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
+        if (entry) {
+          event.preventDefault();
+          const point = localPoint(event);
+          const firstCue = rows.find((row) => row.type === 'cue-track');
+          const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
+          const layer = SA.layersDialog.defaults(slot);
+          layer.type = 'video';
+          layer.src = entry.src;
+          layer.fit = 'cover';
+          SA.store.commands.addLayer(layer);
+          SA.studio.toast('studio.media.layerAdded', { name: entry.name || '' });
+          return;
+        }
+        if (transfer.files && transfer.files.length) {
+          const file = transfer.files[0];
+          const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(file.name);
+          const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name);
+          if (isAudio) {
+            event.preventDefault();
+            const url = URL.createObjectURL(file);
+            SA.preview.setAudioSource(url, file.name);
+            if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
+              SA.store.commands.addMedia({
+                id: 'audio',
+                kind: 'audio',
+                name: file.name,
+                mime: file.type || 'audio/mpeg',
+              });
+            }
+            if (SA.studio) {
+              if (SA.studio.setMediaTab) SA.studio.setMediaTab('audio');
+              if (SA.studio.refreshAudioVisual) SA.studio.refreshAudioVisual();
+              if (SA.studio.toast) SA.studio.toast('studio.toast.audioImported', { name: file.name });
+            }
+            draw();
+            return;
+          }
+          if (isVideo) {
+            event.preventDefault();
+            const url = URL.createObjectURL(file);
+            const point = localPoint(event);
+            const firstCue = rows.find((row) => row.type === 'cue-track');
+            const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
+            const entry = {
+              id: `v${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`,
+              name: file.name,
+              mime: file.type || 'video/mp4',
+              src: url,
+            };
+            if (SA.store && SA.store.commands) {
+              SA.store.commands.addMedia({ ...entry, kind: 'videos' });
+              const layer = SA.layersDialog.defaults(slot);
+              layer.type = 'video';
+              layer.src = url;
+              layer.fit = 'cover';
+              layer.video = { speed: 1, offset: 0, play: true, loop: true };
+              SA.store.commands.addLayer(layer);
+            }
+            if (SA.studio) {
+              if (SA.studio.setMediaTab) SA.studio.setMediaTab('video');
+              if (SA.studio.toast) SA.studio.toast('studio.media.videoImported', { name: file.name });
+            }
+            draw();
+            return;
+          }
+        }
       });
       surface.addEventListener('wheel', onWheel, { passive: false });
       surface.addEventListener('pointerleave', hideLabelTip);
@@ -2523,6 +2617,9 @@ SA.timeline = (() => {
     if (el.addFigureTrack) {
       el.addFigureTrack.addEventListener('click', () => addAnimationTrack('figure'));
     }
+    if (el.addBackdropTrack) {
+      el.addBackdropTrack.addEventListener('click', () => addAnimationTrack('backdrop'));
+    }
     if (el.addFillerTrack) {
       el.addFillerTrack.addEventListener('click', () => addAnimationTrack('filler'));
     }
@@ -2545,6 +2642,7 @@ SA.timeline = (() => {
     el.theme = document.getElementById('tl-theme');
     el.addTextTrack = document.getElementById('tl-add-text-track');
     el.addFigureTrack = document.getElementById('tl-add-figure-track');
+    el.addBackdropTrack = document.getElementById('tl-add-backdrop-track');
     el.addFillerTrack = document.getElementById('tl-add-filler-track');
     // hover tooltip for row labels the fixed label column had to truncate
     el.tip = document.createElement('div');

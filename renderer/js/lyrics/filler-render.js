@@ -1,6 +1,9 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./split'), require('./figures'));
-  else {
+  if (typeof module === 'object' && module.exports) {
+    const fillerRender = factory(require('./split'), require('./figures'));
+    if (root.SA) root.SA.fillerRender = root.SA.fillerRender || fillerRender;
+    module.exports = fillerRender;
+  } else {
     root.SA = root.SA || {};
     root.SA.fillerRender = factory(root.SA.split, root.SA.figures);
   }
@@ -949,11 +952,24 @@
     return list;
   }
 
+  const LAYER_OF = {
+    figures: 'foreground', shapes: 'foreground', waveform: 'foreground', spectrum: 'foreground',
+    countdown: 'foreground', progress: 'foreground',
+    instrumental: 'foreground', nextLinePreview: 'foreground', previousLineGhost: 'foreground',
+    split: 'background', pattern: 'background', particles: 'background', sineWave: 'background',
+  };
+
+  function layerOf(type) {
+    return LAYER_OF[type] || null;
+  }
+
   function drawList(spec, ctx) {
     const source = spec || { type: 'none', params: {} };
     const type = source.type || 'none';
     const params = source.params || {};
     if (type === 'none') return { shapes: [], texts: [] };
+    const layer = layerOf(type);
+    if (layer && ctx && ctx.layers && ctx.layers[layer] === false) return { shapes: [], texts: [] };
     if (type === 'countdown') return countdownShapes(params, ctx);
     if (type === 'waveform') return waveformShapes(params, ctx);
     if (type === 'spectrum') return spectrumShapes(params, ctx);
@@ -1161,5 +1177,6 @@
     fromLayers,
     validate,
     expandTokens,
+    layerOf,
   };
 });

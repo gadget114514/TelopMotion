@@ -90,6 +90,63 @@ SA.lyricsEngine = (() => {
     return true;
   }
 
+  function figureForegroundOn(track, view) {
+    if (view && (view.figureForeground === false || view.figureFgEnabled === false || (view.figureFg && view.figureFg.enabled === false))) return false;
+    if (track) {
+      if (track.enabled === false && (!track.kind || track.kind === 'figure')) return false;
+      if (track.figureFg && track.figureFg.enabled === false) return false;
+      if (track.figureFgEnabled === false) return false;
+      if (track.fg && track.fg.enabled === false) return false;
+      if (track.fgEnabled === false) return false;
+      if (track.figureFgHidden === true) return false;
+      if (track.figureFg && track.figureFg.enabled === true) return true;
+      if (track.figureFgEnabled === true) return true;
+      if (track.fg && track.fg.enabled === true) return true;
+      if (track.fgEnabled === true) return true;
+      if (track.figureFgHidden === false) return true;
+    }
+    return true;
+  }
+
+  function figureBackgroundOn(track, view) {
+    if (view && (view.figureBackground === false || view.figureBgEnabled === false || (view.figureBg && view.figureBg.enabled === false))) return false;
+    if (track) {
+      if (track.enabled === false && (!track.kind || track.kind === 'backdrop')) return false;
+      if (track.figureBg && track.figureBg.enabled === false) return false;
+      if (track.figureBgEnabled === false) return false;
+      if (track.bg && track.bg.enabled === false) return false;
+      if (track.bgEnabled === false) return false;
+      if (track.figureBgHidden === true) return false;
+      if (track.figureBg && track.figureBg.enabled === true) return true;
+      if (track.figureBgEnabled === true) return true;
+      if (track.bg && track.bg.enabled === true) return true;
+      if (track.bgEnabled === true) return true;
+      if (track.figureBgHidden === false) return true;
+    }
+    return true;
+  }
+
+  // clip の spec.type → 'foreground' | 'background' | null
+  // 分類表の唯一の定義は filler-render.js の LAYER_OF (§2)。engine は委譲するだけ。
+  function figureLayerOf(spec) {
+    const type = spec && spec.type;
+    if (type === 'figure') return 'foreground';
+    return SA.fillerRender && SA.fillerRender.layerOf ? SA.fillerRender.layerOf(type) : null;
+  }
+
+  function figureLayerOn(layer, track, view) {
+    if (layer === 'foreground') return figureForegroundOn(track, view);
+    if (layer === 'background') return figureBackgroundOn(track, view);
+    return true;
+  }
+
+  function figureLayerFlags(track, view) {
+    return {
+      foreground: figureForegroundOn(track, view),
+      background: figureBackgroundOn(track, view),
+    };
+  }
+
   // The track's text-mask switch: absent = on (the engine default). A figure /
   // backdrop / filler layer is knocked out under the glyphs unless the track
   // opted out; the subtitle background is always knocked out (it is the same
@@ -159,7 +216,7 @@ SA.lyricsEngine = (() => {
   // Clips of one track kind, hidden tracks excluded, in start order.
   function activeClips(project, kind) {
     const ids = new Set(
-      ((project && project.tracks) || []).filter((track) => track && track.kind === kind && !track.hidden).map((track) => track.id)
+      ((project && project.tracks) || []).filter((track) => track && track.kind === kind && !track.hidden && track.enabled !== false).map((track) => track.id)
     );
     if (!ids.size) return [];
     return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId) && !isClipDisabled(clip)).sort((a, b) => a.start - b.start);
@@ -1225,6 +1282,7 @@ SA.lyricsEngine = (() => {
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         color: fill,
         colors: fills,
+        layers: figureLayerFlags(clip ? trackById(state.project, clip.trackId) : null, state.view),
       });
       if (!list || (!(list.shapes && list.shapes.length) && !(list.texts && list.texts.length))) return;
       // beat pulse, drift and the enter / exit transition (wipe / scale /
@@ -1278,6 +1336,7 @@ SA.lyricsEngine = (() => {
     // the figure track between the mid layer and the subtitles.
     function drawFigureClip(clip, t, duration, stage, stageWeird, mask) {
       if (!shapesPass || !SA.figures || isClipDisabled(clip)) return;
+      if (!figureForegroundOn(trackById(state.project, clip.trackId), state.view)) return;
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
       const spec = (recolored ? recolored.spec : clip.spec) || {};
       if (spec.type !== 'figure') return;
@@ -1466,6 +1525,7 @@ SA.lyricsEngine = (() => {
           title: settings && SA.credits.titleText ? SA.credits.titleText(project, settings) : '',
           artist: settings && SA.credits.artistText ? SA.credits.artistText(project, settings) : '',
         },
+        layers: figureLayerFlags(clip ? trackById(project, clip.trackId) : null, state.view),
       };
     }
 
@@ -2382,6 +2442,12 @@ SA.lyricsEngine = (() => {
       return layerPass.prepare(state.project.layers || [], t, options);
     }
 
+    function pauseVideos() {
+      if (layerPass && typeof layerPass.pauseVideos === 'function') {
+        layerPass.pauseVideos();
+      }
+    }
+
     function dispose() {
       if (state.disposed) return;
       state.disposed = true;
@@ -2434,6 +2500,7 @@ SA.lyricsEngine = (() => {
       captureRGBA,
       preloadLayers,
       prepareLayers,
+      pauseVideos,
       debugError,
       dispose,
       clearColor: TRANSPARENT,
@@ -2488,5 +2555,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
 })();

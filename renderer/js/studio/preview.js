@@ -1,6 +1,7 @@
-window.SA = window.SA || {};
+const root = typeof window !== 'undefined' ? window : typeof globalThis !== 'undefined' ? globalThis : this;
+root.SA = root.SA || {};
 
-SA.preview = (() => {
+const preview = (() => {
   'use strict';
 
   const LS_SCALE = 'sa.studio.previewScale';
@@ -19,6 +20,8 @@ SA.preview = (() => {
   let fontRequest = 0;
   let fontsPromise = Promise.resolve();
   let rafId = null;
+  const requestFrame = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : (cb) => setTimeout(cb, 1000 / 60);
+  const cancelFrame = typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : (id) => clearTimeout(id);
   let playing = false;
   let playAnchor = 0;
   let playFrom = 0;
@@ -26,6 +29,7 @@ SA.preview = (() => {
   let loop = false;
   let audio = null;
   let audioUrl = null;
+  let audioName = null;
   let audioPeaks = null;
   let audioDuration = 0;
   let audioDecode = null;
@@ -44,10 +48,33 @@ SA.preview = (() => {
 
   function sceneDuration() {
     const doc = project();
-    if (!doc) return 0;
-    if (SA.duration && SA.duration.computeDuration) return SA.duration.computeDuration(doc);
-    const cues = doc.script ? doc.script.cues || [] : [];
-    return cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
+    let dur = 0;
+    if (doc) {
+      if (SA.duration && SA.duration.computeDuration) dur = SA.duration.computeDuration(doc);
+      else {
+        const cues = doc.script ? doc.script.cues || [] : [];
+        dur = cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
+      }
+      if (Array.isArray(doc.clips)) {
+        for (const clip of doc.clips) {
+          if (clip && Number.isFinite(clip.end) && clip.end > dur) dur = clip.end;
+        }
+      }
+      if (Array.isArray(doc.layers)) {
+        for (const layer of doc.layers) {
+          if (layer && Number.isFinite(layer.end) && layer.end > dur) dur = layer.end;
+        }
+      }
+      if (doc.media && Array.isArray(doc.media.videos)) {
+        for (const v of doc.media.videos) {
+          if (v && Number.isFinite(v.duration) && v.duration > dur) dur = v.duration;
+        }
+      }
+    }
+    const total = Math.max(dur, audioDuration || 0);
+    const maxDur = doc && doc.output && doc.output.maxDuration;
+    if (maxDur && maxDur > 0) return Math.min(maxDur, total);
+    return total;
   }
 
   function outputSize(doc) {
@@ -162,7 +189,14 @@ SA.preview = (() => {
     }
     if (audioAnalysis && typeof renderer.setAudio === 'function') renderer.setAudio(audioAnalysis);
     if (typeof renderer.preloadLayers === 'function') renderer.preloadLayers().catch(() => {});
-    if (typeof renderer.prepareLayers === 'function') renderer.prepareLayers(SA.store.state.playhead, { playback: 'preview' }).catch(() => {});
+    if (typeof renderer.prepareLayers === 'function') {
+      renderer.prepareLayers(SA.store.state.playhead, {
+        playback: 'preview',
+        playing,
+        speed,
+        hasAudio: hasAudio(),
+      }).catch(() => {});
+    }
     const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
     const info = renderer.renderFrame(SA.store.state.playhead);
     if (SA.overlay) {
@@ -351,7 +385,8 @@ SA.preview = (() => {
       }
     }
     updateTransport();
-    rafId = requestAnimationFrame(tick);
+    render();
+    rafId = requestFrame(tick);
   }
 
   function pause() {
@@ -359,9 +394,10 @@ SA.preview = (() => {
     SA.store.setPlayhead(clockNow());
     playing = false;
     SA.store.setPlaying(false);
-    if (rafId) cancelAnimationFrame(rafId);
+    if (rafId) cancelFrame(rafId);
     rafId = null;
     if (audio) audio.pause();
+    if (renderer && typeof renderer.pauseVideos === 'function') renderer.pauseVideos();
     updateTransport();
     render();
   }
@@ -383,6 +419,7 @@ SA.preview = (() => {
     }
     playFrom = next;
     playAnchor = performance.now();
+    updateTransport();
     render();
   }
 
@@ -408,13 +445,14 @@ SA.preview = (() => {
             /* ignore */
           }
         }
+        updateTransport();
         render();
-        rafId = requestAnimationFrame(tick);
+        rafId = requestFrame(tick);
         return;
       }
       playing = false;
       SA.store.setPlaying(false);
-      if (rafId) cancelAnimationFrame(rafId);
+      if (rafId) cancelFrame(rafId);
       rafId = null;
       if (audio) audio.pause();
       SA.store.setPlayhead(total);
@@ -423,7 +461,8 @@ SA.preview = (() => {
       return;
     }
     SA.store.setPlayhead(now);
-    rafId = requestAnimationFrame(tick);
+    updateTransport();
+    rafId = requestFrame(tick);
   }
 
   function cueTimes() {
@@ -453,21 +492,55 @@ SA.preview = (() => {
   // --- audio -------------------------------------------------------------------
 
   function setAudioSource(url, name) {
-    if (audioUrl) URL.revokeObjectURL(audioUrl);
+    if (audioUrl && audioUrl !== url) {
+      try {
+        URL.revokeObjectURL(audioUrl);
+      } catch {
+        /* synthetic */
+      }
+    }
     audioUrl = url || null;
+    audioName = name || null;
     audioPeaks = null;
     audioDuration = 0;
     audioDecode = null;
     if (audio) {
-      audio.pause();
+      try {
+        audio.pause();
+      } catch {
+        /* synthetic */
+      }
       audio = null;
     }
-    if (!url) return;
-    audio = new Audio();
-    audio.preload = 'auto';
-    audio.src = url;
+    if (!url) {
+      updateTransport();
+      if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+      return;
+    }
+    if (typeof Audio !== 'undefined') {
+      audio = new Audio();
+      audio.preload = 'auto';
+      audio.src = url;
+      if (Number.isFinite(audio.duration) && audio.duration > 0) {
+        audioDuration = audio.duration;
+      }
+      audio.addEventListener('loadedmetadata', () => {
+        if (Number.isFinite(audio.duration) && audio.duration > 0) {
+          if (!audioDuration || audioDuration === 0) {
+            audioDuration = audio.duration;
+          }
+          updateTransport();
+          if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+        }
+      });
+      audio.addEventListener('ended', () => {
+        if (!loop) {
+          pause();
+        }
+      });
+    }
     decodePeaks(url).catch(() => {});
-    if (playing) {
+    if (playing && audio) {
       try {
         audio.currentTime = SA.store.state.playhead;
         audio.playbackRate = speed;
@@ -477,7 +550,8 @@ SA.preview = (() => {
         /* ignore */
       }
     }
-    void name;
+    updateTransport();
+    if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
   }
 
   function decodePeaks(url) {
@@ -485,7 +559,7 @@ SA.preview = (() => {
     audioDecode = (async () => {
       const response = await fetch(url);
       const buffer = await response.arrayBuffer();
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const AudioContextClass = typeof window !== 'undefined' ? (window.AudioContext || window.webkitAudioContext) : null;
       if (!AudioContextClass) return null;
       const context = new AudioContextClass();
       try {
@@ -515,6 +589,8 @@ SA.preview = (() => {
           audioAnalysis = SA.audioAnalysis.analyze(channels, decoded.sampleRate, 30);
           if (renderer && typeof renderer.setAudio === 'function') renderer.setAudio(audioAnalysis);
         }
+        updateTransport();
+        if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
         return audioPeaks;
       } finally {
         if (context.close) context.close().catch(() => {});
@@ -551,7 +627,15 @@ SA.preview = (() => {
   }
 
   function hasAudio() {
-    return !!audio;
+    return !!audio || !!audioUrl || audioDuration > 0;
+  }
+
+  function hasVideo() {
+    const doc = project();
+    if (!doc) return false;
+    const hasLayer = (doc.layers || []).some((l) => l && l.enabled !== false && l.type === 'video');
+    const hasMedia = doc.media && Array.isArray(doc.media.videos) && doc.media.videos.length > 0;
+    return hasLayer || hasMedia;
   }
 
   // --- scale / speed / loop ----------------------------------------------------
@@ -618,9 +702,21 @@ SA.preview = (() => {
     lastVersion = { ...(SA.store.state.version || {}) };
     lastPlayhead = SA.store.state.playhead;
     SA.store.subscribe('preview', () => {
+      if (SA.store && SA.store.state) {
+        if (!SA.store.state.playing && playing) {
+          pause();
+        }
+      }
       const head = SA.store.state.playhead;
       if (head !== lastPlayhead) {
         lastPlayhead = head;
+        if (!playing && audio) {
+          try {
+            audio.currentTime = head;
+          } catch {
+            /* synthetic */
+          }
+        }
         render();
       }
     });
@@ -657,8 +753,17 @@ SA.preview = (() => {
     isPlaying: () => playing,
     duration: sceneDuration,
     hasAudio,
+    hasVideo,
     getAudioTime: () => (audio ? audio.currentTime : null),
     isAudioPlaying: () => (audio ? !audio.paused : false),
+    getAudioName: () => audioName,
+    getAudioUrl: () => audioUrl,
+    getAudioElement: () => audio,
+    setAudioDuration: (d) => {
+      audioDuration = Number(d) || 0;
+      updateTransport();
+      if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+    },
     getPeaks,
     getAudioBuffer,
     getAudioAnalysis: () => audioAnalysis,
@@ -674,3 +779,7 @@ SA.preview = (() => {
     outputSize,
   };
 })();
+
+root.SA.preview = preview;
+if (typeof module === 'object' && module.exports) module.exports = preview;
+

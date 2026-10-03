@@ -605,6 +605,26 @@
       // the text mask is a per-track boolean (absent = on), on every track kind
       // that may draw behind the lyrics
       if (track && track.textMask != null) track.textMask = !!track.textMask;
+      if (track && (track.kind === 'backdrop' || track.kind === 'filler' || track.kind === 'figure')) {
+        if (track.figureFgHidden != null) track.figureFgHidden = !!track.figureFgHidden;
+        if (track.figureBgHidden != null) track.figureBgHidden = !!track.figureBgHidden;
+        if (track.figureFgEnabled != null) track.figureFgEnabled = !!track.figureFgEnabled;
+        if (track.figureBgEnabled != null) track.figureBgEnabled = !!track.figureBgEnabled;
+        if (track.fgEnabled != null) track.fgEnabled = !!track.fgEnabled;
+        if (track.bgEnabled != null) track.bgEnabled = !!track.bgEnabled;
+        if (track.figureFg && typeof track.figureFg === 'object' && track.figureFg.enabled != null) {
+          track.figureFg.enabled = !!track.figureFg.enabled;
+        }
+        if (track.figureBg && typeof track.figureBg === 'object' && track.figureBg.enabled != null) {
+          track.figureBg.enabled = !!track.figureBg.enabled;
+        }
+        if (track.fg && typeof track.fg === 'object' && track.fg.enabled != null) {
+          track.fg.enabled = !!track.fg.enabled;
+        }
+        if (track.bg && typeof track.bg === 'object' && track.bg.enabled != null) {
+          track.bg.enabled = !!track.bg.enabled;
+        }
+      }
       // the background track owns the frame base colour; absent / junk = unset
       // (the canvas stays transparent)
       if (track && track.kind === 'background') {
