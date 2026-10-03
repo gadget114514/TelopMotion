@@ -542,6 +542,11 @@ function createWindow() {
             };
             const ready = await until(() => window.SA.store.state.project && window.SA.store.state.project.script && window.SA.store.state.project.script.cues.length);
             if (!ready) return 'project-not-ready';
+            if (window.SA.studio && typeof window.SA.studio.setLanguage === 'function') {
+              window.SA.studio.setLanguage('en');
+              const toastEl = document.getElementById('toast');
+              if (toastEl) toastEl.hidden = true;
+            }
             const doc = window.SA.store.state.project;
             const cue = doc.script.cues.find((entry) => (doc.beats[entry.id] || []).some((beat) => beat.text)) || doc.script.cues[0];
             await window.SA.preview.ensureFonts();

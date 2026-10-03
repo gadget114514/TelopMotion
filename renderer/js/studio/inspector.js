@@ -46,6 +46,15 @@ SA.inspector = (() => {
     return SA.store.state.project;
   }
 
+  function trackDisplayName(track) {
+    if (!track) return '';
+    if (track.kind === 'subtitle') {
+      const suffix = track.name && /^字幕/.test(track.name) ? track.name.replace(/^字幕/, '') : '';
+      return /^字幕/.test(track.name) ? (t('studio.track.subtitle') + (suffix ? ' ' + suffix : '')) : (track.name || track.id);
+    }
+    return track.name || track.id;
+  }
+
   function localTimeFor(cueId, beatId) {
     const doc = project();
     if (!doc) return 0;
@@ -397,7 +406,7 @@ SA.inspector = (() => {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'btn btn-mini is-active';
-      chip.textContent = track ? track.name || track.id : sel.trackId;
+      chip.textContent = track ? trackDisplayName(track) : sel.trackId;
       line.appendChild(chip);
       head.appendChild(line);
       container.appendChild(head);
@@ -508,7 +517,7 @@ SA.inspector = (() => {
         {},
         currentTrack,
         (value) => SA.store.commands.setCueTrack(sel.cueId, value),
-        subtitleTracks.map((track) => ({ value: track.id, label: track.name || track.id }))
+        subtitleTracks.map((track) => ({ value: track.id, label: trackDisplayName(track) }))
       );
       row(body, 'cue.trackId', t('studio.inspector.track'), trackSelect, { noKey: true, noReset: true });
     }
@@ -1402,7 +1411,7 @@ SA.inspector = (() => {
         if (t.enabled !== undefined) return !!t.enabled;
         return true;
       };
-      const body = section(container, 'track', track.name || t('studio.inspector.track'));
+      const body = section(container, 'track', trackDisplayName(track) || t('studio.inspector.track'));
       const fgRow = document.createElement('label');
       fgRow.className = 'insp-inherit';
       const fgBox = document.createElement('input');

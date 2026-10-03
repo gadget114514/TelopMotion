@@ -1774,6 +1774,10 @@
 
       let projectDoc = null;
       if (handoff && handoff.cues) {
+        if (handoff.lang && handoff.lang !== i18n.lang()) {
+          setLanguage(handoff.lang);
+          if (el.toast) el.toast.hidden = true;
+        }
         projectDoc = SA.project.create({ lang: handoff.lang || i18n.lang(), aspect: '16:9' });
         projectDoc.script.cues = handoff.cues.map((cue) => ({ ...cue }));
       } else {
