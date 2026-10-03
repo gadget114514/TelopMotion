@@ -12,7 +12,7 @@ A desktop app for **lyric videos**, with a Suno achievement card generator as a 
 - **Multi-track timeline**: Subtitle tracks, procedural Figure tracks, customizable Backdrop tracks (`+ Backdrop`), pattern fillers, video/image layers, and credits
 - **Granular disable switches**: non-destructively enable or disable individual cues, beats, clips, or subtitle text without losing data or styling (e.g. silence lyrics text while keeping text backgrounds or frame graphics)
 - **Simultaneous audio & video playback**: real-time synchronized playback of audio tracks and imported video layers (MP4/WebM) directly in the Studio preview, with frame-accurate scrubbing and WebCodecs export
-- **Page layout engine (紙面レイアウト)**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
+- **Page layout engine**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
 - **Searchable text effects catalog**: 376+ curated text effects searchable by name and description in English and Japanese, procedural shape decorations, scalable frame graphics (0.1×–10×), and dynamic font deformations
 - **Theme & directing controls**: AI-assisted automatic direction following song sections, theme dialogue controls for scale randomization, repeat scaling with weird threshold (`>= 0.6`), independent background clocks, and a classified 800-look runtime pool
 - **Achievement card (secondary)**: 32 achievements with locked/unlocked states and live progress bars, one-click cards in 16:9 (1920x1080) and 9:16 (1080x1920) as JPG or PNG, saved from the Studio's Output menu or the achievement page
@@ -63,7 +63,7 @@ The Studio timeline supports rich multi-track composition with independent layer
   4. Foreground layers
   5. Frame post-processing, bloom, and final compositing
 
-### Page layout engine (紙面レイアウト)
+### Page layout engine
 
 Beyond linear text and geometric formations, TelopMotion provides a **Page Layout** engine ([doc/page-layout.md](doc/page-layout.md)) for publication-style, editorial, and screen UI typography.
 
@@ -296,7 +296,7 @@ npm run fx800 -- list --part 3             # lists No.401–600
 npm run fx800 -- apply 642 --project <file> --cue 12 --out <file>   # reuse one demo
 ```
 
-### Random look (おまかせ)
+### Random look
 
 `npm run fx800 -- build` also classifies every demo and writes the runtime pool `renderer/data/fx800.looks.json`: each of the 800 looks carries its measured **motion magnitude** (the SA.motion evaluator samples nine frames of a two-second beat and takes the largest travel / scale / rotation / deform amplitude, bucketed as still / small / medium / large / extreme), a **five-axis profile** (speed, energy, softness, density, brightness) and **theme affinities** (the genre profiles). The styles are stored as deltas against the effect registry defaults, which keeps the whole pool at ~1.9 MB.
 
