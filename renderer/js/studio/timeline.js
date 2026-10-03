@@ -9,7 +9,7 @@ SA.timeline = (() => {
   const AUDIO_H = 30;
   const LANE_H = 22;
   const LAYER_H = 22;
-  const LABEL_W = 90;
+  const LABEL_W = 150;
   const KEY_SIZE = 5;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 800;

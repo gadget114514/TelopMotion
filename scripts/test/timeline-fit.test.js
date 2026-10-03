@@ -151,7 +151,7 @@ test('the track checkbox toggles visibility as one undo step', () => {
   assert.ok(typeof down === 'function', 'the timeline listens for pointerdown');
   // second row = the first subtitle track (foreground row is above it):
   // logical y 46..68, canvas y 33 (the ruler is fixed above the canvas)
-  const click = () => down({ button: 0, pointerId: 1, clientX: 80, clientY: 33, currentTarget: canvas, preventDefault() {} });
+  const click = () => down({ button: 0, pointerId: 1, clientX: 140, clientY: 33, currentTarget: canvas, preventDefault() {} });
   const sub = () => store.state.project.tracks.find((track) => track.id === 'sub1');
   assert.equal(!!sub().hidden, false);
   click();
@@ -183,15 +183,15 @@ test('dragging and double-clicking on the filler track create clips', () => {
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
 
   // a plain click only selects the track
-  down(event(120));
-  up(event(120));
+  down(event(200));
+  up(event(200));
   assert.equal(store.state.project.clips.filter((clip) => clip.trackId === filler.id).length, 0, 'a click adds nothing');
 
-  down(event(120));
-  move(event(300));
-  up(event(300));
+  down(event(200));
+  move(event(360));
+  up(event(360));
   // double-click adds a default-length clip at that time
-  dbl(event(400));
+  dbl(event(460));
   const clips = store.state.project.clips.filter((clip) => clip.trackId === filler.id);
   assert.equal(clips.length, 2, 'a drag and a double-click each added a clip');
   assert.ok(clips.every((clip) => clip.auto === undefined), 'hand filler clips are not auto');
@@ -217,13 +217,13 @@ test('the remove button on a track header deletes that track and its clips', () 
   const clientY = logicalY - 24;
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
   // put a clip on the track so the removal drops it too
-  down(event(120));
-  move(event(240));
-  up(event(240));
+  down(event(200));
+  move(event(300));
+  up(event(300));
   assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 1, 'the clip exists');
   // the remove button sits left of the visibility checkbox
-  down(event(90 - 29));
-  up(event(90 - 29));
+  down(event(150 - 29));
+  up(event(150 - 29));
   assert.equal(store.state.project.tracks.some((track) => track.id === id), false, 'the track is gone');
   assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 0, 'its clips are gone');
   assert.equal(store.undo(), true);
@@ -238,7 +238,7 @@ test('the last subtitle track keeps its remove button hidden', () => {
   // second row = the only subtitle track: its remove button is not drawn, so
   // the click (at the x where the button would sit, left of the checkbox)
   // selects the track instead of deleting it
-  down({ button: 0, pointerId: 1, clientX: 38, clientY: 33, currentTarget: canvas, preventDefault() {} });
+  down({ button: 0, pointerId: 1, clientX: 90, clientY: 33, currentTarget: canvas, preventDefault() {} });
   assert.equal(store.state.project.tracks.some((track) => track.kind === 'subtitle'), true, 'the track stays');
   assert.deepEqual(store.state.selection.paths, ['track:sub1'], 'the click selects the track');
 });
@@ -279,10 +279,10 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   };
   assert.equal(boxColor(), '#4dc8a0', 'the background clips keep the checkbox checked');
   // the checkbox hides the whole track: its clips and its layers
-  click(80, bgLayerCenter);
+  click(140, bgLayerCenter);
   assert.equal(bg().hidden, true, 'the checkbox sets the hidden flag');
   assert.equal(boxColor(), '#6b7386', 'a hidden track draws an unchecked box');
-  click(80, bgLayerCenter);
+  click(140, bgLayerCenter);
   assert.equal(!!bg().hidden, false, 'clicking again shows the track');
   assert.equal(boxColor(), '#4dc8a0', 'the checkbox reports the track visible again');
 });
@@ -306,9 +306,9 @@ test('dragging on a figure track creates a clip', () => {
   logicalY += 11;
   const clientY = logicalY - 24; // the canvas starts under the fixed ruler
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
-  down(event(120));
-  move(event(240));
-  up(event(240));
+  down(event(200));
+  move(event(300));
+  up(event(300));
   const clips = store.state.project.clips.filter((clip) => clip.trackId === id);
   assert.equal(clips.length, 1, 'one clip was created');
   assert.equal(clips[0].spec.type, 'figure');
@@ -321,7 +321,7 @@ test('hovering a truncated row label reveals its full text', () => {
   store.load(doc);
   timeline.init();
   const canvas = document.getElementById('timeline-canvas');
-  // metrics that actually truncate the 90 px fixed label column
+  // metrics that actually truncate the 150 px fixed label column
   const context = canvas.getContext('2d');
   context.measureText = (text) => ({ width: String(text).length * 7 });
   timeline.draw();
@@ -332,7 +332,7 @@ test('hovering a truncated row label reveals its full text', () => {
 
   const move = canvas.listeners.pointermove[0];
   // the subtitle cue row starts at y 46 (ruler 24 + foreground 22), height 26
-  const overLabel = { pointerId: 1, clientX: 40, clientY: 46 + 13 - 24, currentTarget: canvas, preventDefault() {} };
+  const overLabel = { pointerId: 1, clientX: 75, clientY: 46 + 13 - 24, currentTarget: canvas, preventDefault() {} };
   move(overLabel);
   assert.equal(tip.hidden, false, 'the truncated label shows its tooltip');
   assert.equal(tip.textContent, 'studio.track.subtitle 1とても長いテスト名', 'the full label text is shown');
