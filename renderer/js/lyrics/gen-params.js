@@ -148,7 +148,7 @@
     { key: 'locationChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.5 * a.t },
     { key: 'locationRange', kind: 'amount', tab: 'axis', group: 'motion', min: 0, max: 0.5, step: 0.01, derive: (a) => 0.25 * a.t },
     { key: 'floatChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => (a.t >= 0.6 ? 0.3 * a.t : 0) },
-    { key: 'repeatChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.35 * a.t },
+    { key: 'repeatChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a, axes) => (weird && typeof weird.repeatChance === 'function' ? weird.repeatChance(axes) : Math.min(1, a.w / 0.6)) },
     { key: 'clonesChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.5 * a.t },
     { key: 'holdChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.45 * a.t },
     { key: 'pulseChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: () => 0.1 },

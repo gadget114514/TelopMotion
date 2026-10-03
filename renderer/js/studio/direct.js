@@ -611,10 +611,20 @@
         if (fontId) own().text = { ...(own().text || {}), fontId };
       }
       // repeat (G2)
-      if (SA.random && SA.random.repeatPatch && cr() < p.repeatChance) {
+      const repeatRoll = cr();
+      const isGuaranteedRepeat = ctx.songHasRepeat && ctx.guaranteedRepeatCueId === cue.id;
+      const shouldRollRepeat = ctx.songHasRepeat && (isGuaranteedRepeat || repeatRoll < p.repeatChance);
+      if (SA.random && SA.random.repeatPatch && shouldRollRepeat) {
         const merged = { ...themeStyle, ...own() };
-        const repeat = SA.random.repeatPatch(cr, { ...cueContext, weird: w });
-        if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) own().repeat = repeat;
+        let repeat = SA.random.repeatPatch(cr, { ...cueContext, weird: w });
+        if (isGuaranteedRepeat && (!repeat || SA.random.repeatConflicts({ ...merged, repeat }))) {
+          const safeType = 'stackV';
+          repeat = SA.fx && typeof SA.fx.withDefaults === 'function' ? SA.fx.withDefaults({ type: safeType }, 'repeat') : { type: safeType, params: { copies: 2 }, enabled: true };
+        }
+        if (repeat && (isGuaranteedRepeat || !SA.random.repeatConflicts({ ...merged, repeat }))) {
+          own().repeat = repeat;
+          if (ctx.cueRepeat) ctx.cueRepeat[cue.id] = repeat;
+        }
       }
       // clones (G3)
       if (cr() < p.clonesChance) own().clones = clonesFor(cr, w);
@@ -665,11 +675,17 @@
           };
         }
         // repeat (G2)
+        const isGuaranteedRepeat = ctx.songHasRepeat && ctx.guaranteedRepeatCueId === cue.id;
         const repeatRandom = SA.rng.rngFor(seed + cueIndex * 131, cue.id, 'repeat');
-        if (SA.random && SA.random.repeatPatch && gp.roll(repeatRandom, params.repeatChance)) {
+        const shouldRollRepeat = ctx.songHasRepeat && (isGuaranteedRepeat || gp.roll(repeatRandom, params.repeatChance));
+        if (SA.random && SA.random.repeatPatch && shouldRollRepeat) {
           const merged = { ...themeStyle, ...own() };
-          const repeat = SA.random.repeatPatch(repeatRandom, { ...cueContext, weird: w });
-          if (repeat && !SA.random.repeatConflicts({ ...merged, repeat })) {
+          let repeat = SA.random.repeatPatch(repeatRandom, { ...cueContext, weird: w });
+          if (isGuaranteedRepeat && (!repeat || SA.random.repeatConflicts({ ...merged, repeat }))) {
+            const safeType = 'stackV';
+            repeat = SA.fx && typeof SA.fx.withDefaults === 'function' ? SA.fx.withDefaults({ type: safeType }, 'repeat') : { type: safeType, params: { copies: 2 }, enabled: true };
+          }
+          if (repeat && (isGuaranteedRepeat || !SA.random.repeatConflicts({ ...merged, repeat }))) {
             own().repeat = repeat;
             ctx.cueRepeat[cue.id] = repeat;
           }
@@ -1714,7 +1730,9 @@
     // the cue's repeat must not fight this beat's own composition
     const repeat = ctx.cueRepeat && ctx.cueRepeat[cue.id];
     if (repeat && SA.random && typeof SA.random.repeatConflicts === 'function' && SA.random.repeatConflicts({ ...patch, repeat })) {
-      patch.repeat = { type: 'none', params: {}, enabled: false };
+      if (!ctx.songHasRepeat || ctx.guaranteedRepeatCueId !== cue.id) {
+        patch.repeat = { type: 'none', params: {}, enabled: false };
+      }
     }
   }
 
@@ -2530,6 +2548,25 @@
       }
       if (rawSet || extra.length) projectDoc.style.paletteSet = { ...(rawSet || {}), max: setInfo.max, change: setInfo.change, invert: setInfo.invert, extra };
     }
+    // Song-level repeat handling:
+    // When weird is >= 0.6, song repeat probability is >= 1 (always appears).
+    // Below 0.6, probability decreases linearly towards 0 (weird / 0.6).
+    const rawW = Number(ctx.rawW) || 0;
+    const songRepeatChance = ctx.pinned && ctx.pinned.repeatChance != null
+      ? Math.min(1, Math.max(0, Number(ctx.params.repeatChance)))
+      : (SA.weird && typeof SA.weird.repeatChance === 'function' ? SA.weird.repeatChance(ctx.axes) : Math.min(1, rawW / 0.6));
+    const songRepeatRng = SA.rng.rngFor(seed, 'song-repeat');
+    ctx.songHasRepeat = songRepeatChance > 0 && songRepeatRng() < songRepeatChance;
+    ctx.guaranteedRepeatCueId = null;
+    if (ctx.songHasRepeat && projectDoc.script.cues && projectDoc.script.cues.length > 0) {
+      const chorusCues = projectDoc.script.cues.filter((cue) => {
+        const s = (ctx.sections || []).find((sec) => sec.cueIds && sec.cueIds.includes(cue.id));
+        return s && (s.chorus || (Number(s.energy) || 0) > 0.6);
+      });
+      const pool = chorusCues.length ? chorusCues : projectDoc.script.cues;
+      const picked = pool[Math.floor(songRepeatRng() * pool.length)];
+      ctx.guaranteedRepeatCueId = picked ? picked.id : null;
+    }
     // 2) per-cue motion inside the same theme ...
     ctx.cuePaletteColors = null;
     projectDoc.script.cues.forEach((cue, cueIndex) => {
@@ -2596,6 +2633,70 @@
         directBeat(projectDoc, cue, beat, beatIndex, cueIndex, ctx);
       });
     });
+    // Repeat occurrence guarantee:
+    // When songHasRepeat is true, ensure repeat appears at least once across the song.
+    // When songHasRepeat is false, ensure no repeat is active across the song.
+    if (ctx.songHasRepeat && projectDoc.script.cues && projectDoc.script.cues.length > 0) {
+      let hasSongRepeat = false;
+      for (const cue of projectDoc.script.cues) {
+        const cStyle = projectDoc.cueStyles && projectDoc.cueStyles[cue.id];
+        if (cStyle && cStyle.repeat && cStyle.repeat.type && cStyle.repeat.type !== 'none' && cStyle.repeat.enabled !== false) {
+          const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+          const allBeatsDisabled = beats.length > 0 && beats.every((b) => {
+            const bs = projectDoc.beatStyles && projectDoc.beatStyles[b.id];
+            return bs && bs.repeat && (bs.repeat.type === 'none' || bs.repeat.enabled === false);
+          });
+          if (!allBeatsDisabled) {
+            hasSongRepeat = true;
+            break;
+          }
+        }
+        for (const b of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          const bs = projectDoc.beatStyles && projectDoc.beatStyles[b.id];
+          if (bs && bs.repeat && bs.repeat.type && bs.repeat.type !== 'none' && bs.repeat.enabled !== false) {
+            hasSongRepeat = true;
+            break;
+          }
+        }
+        if (hasSongRepeat) break;
+      }
+
+      if (!hasSongRepeat) {
+        const pickedCue = (ctx.guaranteedRepeatCueId && projectDoc.script.cues.find((c) => c.id === ctx.guaranteedRepeatCueId))
+          || projectDoc.script.cues[0];
+        if (pickedCue) {
+          const cueContext = SA.moods && typeof SA.moods.contextForCue === 'function' ? SA.moods.contextForCue(projectDoc, pickedCue) : {};
+          const own = projectDoc.cueStyles[pickedCue.id] || (projectDoc.cueStyles[pickedCue.id] = {});
+          const merged = { ...(ctx.themeStyle || {}), ...own };
+          let rep = SA.random && typeof SA.random.repeatPatch === 'function' ? SA.random.repeatPatch(songRepeatRng, { ...cueContext, weird: rawW }) : null;
+          if (!rep || (SA.random && typeof SA.random.repeatConflicts === 'function' && SA.random.repeatConflicts({ ...merged, repeat: rep }))) {
+            const safeType = 'stackV';
+            rep = SA.fx && typeof SA.fx.withDefaults === 'function' ? SA.fx.withDefaults({ type: safeType }, 'repeat') : { type: safeType, params: { copies: 2 }, enabled: true };
+          }
+          own.repeat = rep;
+          if (!ctx.cueRepeat) ctx.cueRepeat = {};
+          ctx.cueRepeat[pickedCue.id] = rep;
+          for (const b of (projectDoc.beats && projectDoc.beats[pickedCue.id]) || []) {
+            const bs = projectDoc.beatStyles && projectDoc.beatStyles[b.id];
+            if (bs && bs.repeat && (bs.repeat.type === 'none' || bs.repeat.enabled === false)) {
+              delete bs.repeat;
+            }
+          }
+        }
+      }
+    } else if (projectDoc.script.cues) {
+      for (const cue of projectDoc.script.cues) {
+        if (projectDoc.cueStyles && projectDoc.cueStyles[cue.id] && projectDoc.cueStyles[cue.id].repeat) {
+          delete projectDoc.cueStyles[cue.id].repeat;
+        }
+        for (const b of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          const bs = projectDoc.beatStyles && projectDoc.beatStyles[b.id];
+          if (bs && bs.repeat) {
+            delete bs.repeat;
+          }
+        }
+      }
+    }
     // 2.4) beat colour: each beat draws from the theme's palette set at the
     // set's change chance and/or inverts its roles at the set's invert chance.
     // A beat flagged `colorLegacy` keeps the classic path instead: the cue

@@ -25,6 +25,7 @@
   const BG_REVEAL = 0.4;
   const PALETTE_MAX = 5;
   const STROKE_VARIETY_SPAN = 0.6;
+  const REPEAT_CHANCE_SPAN = 0.6;
 
   function clamp01(value) {
     const number = Number(value);
@@ -102,6 +103,15 @@
     return Math.min(1, raw(a.weird) / STROKE_VARIETY_SPAN);
   }
 
+  // How often the repeat arrangement (parallel repeated text) appears across
+  // cues. Weird drives it like strokeVariety: 0 keeps the classic draw and
+  // consumes no random, and the chance reaches 1 at weird 0.6 (the adjustment anchor);
+  // above that it stays 1.
+  function repeatChance(axes) {
+    const a = axes || {};
+    return Math.min(1, raw(a.weird) / REPEAT_CHANCE_SPAN);
+  }
+
   // The size ladder's level weights: a Gaussian curve over the ten levels, the
   // centre 0..1 (0 = the legible floor, 1 = the screen-filling end) and the
   // spread in level units. The result sums to 1, so the ladder's weighted pick
@@ -145,6 +155,7 @@
     BG_REVEAL,
     PALETTE_MAX,
     STROKE_VARIETY_SPAN,
+    REPEAT_CHANCE_SPAN,
     clamp01,
     raw,
     text,
@@ -156,6 +167,7 @@
     basePaletteChance,
     colorChange,
     strokeVariety,
+    repeatChance,
     paletteCount,
     sizeWeights,
   };

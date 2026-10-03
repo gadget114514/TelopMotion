@@ -97,3 +97,20 @@ test('stroke variety is a no-op at 0 and reaches 1 at weird 0.6', () => {
     previous = value;
   }
 });
+
+test('repeat chance is 0 at weird 0 and reaches 1 at weird 0.6', () => {
+  assert.equal(weird.repeatChance({ weird: 0 }), 0);
+  assert.equal(weird.repeatChance(undefined), 0);
+  assert.equal(weird.repeatChance({ weird: 0.3 }), 0.5);
+  assert.equal(weird.repeatChance({ weird: 0.6 }), 1);
+  assert.equal(weird.repeatChance({ weird: 1 }), 1);
+  assert.equal(weird.repeatChance({ weird: 2 }), 1);
+  assert.equal(weird.REPEAT_CHANCE_SPAN, 0.6);
+  let previous = -1;
+  for (let v = 0; v <= 1.0001; v += 0.05) {
+    const value = weird.repeatChance({ weird: Math.min(1, v) });
+    assert.ok(value >= previous, `repeatChance fell at ${v}`);
+    previous = value;
+  }
+});
+

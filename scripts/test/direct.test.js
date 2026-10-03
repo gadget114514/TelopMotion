@@ -1208,3 +1208,104 @@ test('SA.genParams.filterStyle filters preset styles according to styleMode', ()
   assert.ok(!filtered.bgShape, 'bgShape was not filtered');
 });
 
+test('repeat arrangement appears at least once across the song when weird is >= 0.6', () => {
+  for (let seed = 100; seed < 115; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, {
+      axes: { ...FIXTURE.axes, weird: 0.6 },
+      seed,
+      compose: true,
+      themeStyle: JSON.parse(JSON.stringify(FIXTURE.themeStyle)),
+    });
+    SA.direct.run(doc, ctx);
+    const hasRepeat = doc.script.cues.some((cue) => {
+      const cs = doc.cueStyles && doc.cueStyles[cue.id];
+      if (cs && cs.repeat && cs.repeat.type && cs.repeat.type !== 'none' && cs.repeat.enabled !== false) return true;
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      return beats.some((b) => {
+        const bs = doc.beatStyles && doc.beatStyles[b.id];
+        return bs && bs.repeat && bs.repeat.type && bs.repeat.type !== 'none' && bs.repeat.enabled !== false;
+      });
+    });
+    assert.ok(hasRepeat, `seed ${seed} did not produce repeat when weird is 0.6`);
+  }
+});
+
+test('repeat arrangement occurrence is 0 across the song when weird is 0', () => {
+  for (let seed = 100; seed < 110; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, {
+      axes: { ...FIXTURE.axes, weird: 0 },
+      seed,
+      compose: true,
+      themeStyle: JSON.parse(JSON.stringify(FIXTURE.themeStyle)),
+    });
+    SA.direct.run(doc, ctx);
+    const hasRepeat = doc.script.cues.some((cue) => {
+      const cs = doc.cueStyles && doc.cueStyles[cue.id];
+      if (cs && cs.repeat && cs.repeat.type && cs.repeat.type !== 'none' && cs.repeat.enabled !== false) return true;
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      return beats.some((b) => {
+        const bs = doc.beatStyles && doc.beatStyles[b.id];
+        return bs && bs.repeat && bs.repeat.type && bs.repeat.type !== 'none' && bs.repeat.enabled !== false;
+      });
+    });
+    assert.equal(hasRepeat, false, `weird 0 produced repeat at seed ${seed}`);
+  }
+});
+
+test('pinned repeatChance: 0 produces 0 repeat across the song even when weird is >= 0.6', () => {
+  for (let seed = 100; seed < 110; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, {
+      axes: { ...FIXTURE.axes, weird: 0.8 },
+      seed,
+      compose: true,
+      params: { repeatChance: 0 },
+      themeStyle: JSON.parse(JSON.stringify(FIXTURE.themeStyle)),
+    });
+    SA.direct.run(doc, ctx);
+    const hasRepeat = doc.script.cues.some((cue) => {
+      const cs = doc.cueStyles && doc.cueStyles[cue.id];
+      if (cs && cs.repeat && cs.repeat.type && cs.repeat.type !== 'none' && cs.repeat.enabled !== false) return true;
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      return beats.some((b) => {
+        const bs = doc.beatStyles && doc.beatStyles[b.id];
+        return bs && bs.repeat && bs.repeat.type && bs.repeat.type !== 'none' && bs.repeat.enabled !== false;
+      });
+    });
+    assert.equal(hasRepeat, false, `pinned repeatChance 0 produced repeat at seed ${seed}`);
+  }
+});
+
+test('repeat arrangement probability scales towards 0 when weird is < 0.6', () => {
+  const N = 30;
+  let count = 0;
+  for (let seed = 100; seed < 100 + N; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, {
+      axes: { ...FIXTURE.axes, weird: 0.3 },
+      seed,
+      compose: true,
+      themeStyle: JSON.parse(JSON.stringify(FIXTURE.themeStyle)),
+    });
+    SA.direct.run(doc, ctx);
+    const hasRepeat = doc.script.cues.some((cue) => {
+      const cs = doc.cueStyles && doc.cueStyles[cue.id];
+      if (cs && cs.repeat && cs.repeat.type && cs.repeat.type !== 'none' && cs.repeat.enabled !== false) return true;
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      return beats.some((b) => {
+        const bs = doc.beatStyles && doc.beatStyles[b.id];
+        return bs && bs.repeat && bs.repeat.type && bs.repeat.type !== 'none' && bs.repeat.enabled !== false;
+      });
+    });
+    if (hasRepeat) count += 1;
+  }
+  assert.ok(count > 0, 'weird 0.3 should produce some repeats');
+  assert.ok(count < N, 'weird 0.3 should not guarantee repeats on every run');
+  assert.ok(count >= 8 && count <= 22, `expected around 15 out of 30, got ${count}`);
+});
+
+
+
+

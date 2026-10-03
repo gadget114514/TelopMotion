@@ -198,6 +198,23 @@ test('strokeVariety derives from weird and a manual value wins', () => {
   assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 }, params: { strokeVariety: 1 } }).strokeVariety, 1);
 });
 
+test('repeatChance derives from weird and reaches 1 at weird 0.6', () => {
+  const def = genParams.PARAMS.find((param) => param.key === 'repeatChance');
+  assert.ok(def, 'repeatChance is not in the parameter table');
+  assert.equal(def.kind, 'chance');
+  assert.equal(def.group, 'motion');
+  assert.equal(def.tab, 'axis');
+  for (const weirdValue of [0, 0.3, 0.6, 1]) {
+    const axes = { ...BASE, weird: weirdValue };
+    assert.equal(genParams.derive(axes).repeatChance, weird.repeatChance(axes), `derive at ${weirdValue}`);
+  }
+  assert.equal(genParams.derive({ ...BASE, weird: 0.6 }).repeatChance, 1);
+  assert.equal(genParams.derive({ ...BASE, weird: 1 }).repeatChance, 1);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 } }).repeatChance, 0);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 }, params: { repeatChance: 0.8 } }).repeatChance, 0.8);
+});
+
+
 test('extremeStroke is the identity at variety 0 and clamps the extremes inside the range', () => {
   let calls = 0;
   const counting = () => {
