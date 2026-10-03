@@ -2,22 +2,27 @@
 
 A desktop app for **lyric videos**, with a Suno achievement card generator as a secondary mode. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. **Suno profile JSON is optional** — start a project without any data, or open *File → TelopMotion (static image)…* for the achievement showcase.
 
-![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green)
+![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-941%20passed-brightgreen)
 
 **[Web version → https://gadget114514.github.io/TelopMotion/](https://gadget114514.github.io/TelopMotion/)**
 
 ## Features
 
-- **Studio (main)**: turn lyrics into a video project — SRT / LRC / JSON import, text restructuring into beats (pages, recap, repeats), vector text rendering with WebGL2 shaders, motion and effect groups, a timeline with keyframes, an inspector with manual editing, and playback in sync with an audio track
+- **Studio (main)**: turn lyrics into a video project — SRT / LRC / JSON import, text restructuring into beats (pages, recap, repeats), vector text rendering with WebGL2 shaders, 12 motion and effect groups, 20 page layout presets, a multi-track timeline with keyframes, an inspector with manual editing, and synchronized audio and video playback
+- **Multi-track timeline**: Subtitle tracks, procedural Figure tracks, customizable Backdrop tracks (`+ Backdrop`), pattern fillers, video/image layers, and credits
+- **Granular disable switches**: non-destructively enable or disable individual cues, beats, clips, or subtitle text without losing data or styling (e.g. silence lyrics text while keeping text backgrounds or frame graphics)
+- **Simultaneous audio & video playback**: real-time synchronized playback of audio tracks and imported video layers (MP4/WebM) directly in the Studio preview, with frame-accurate scrubbing and WebCodecs export
+- **Page layout engine (紙面レイアウト)**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
+- **Searchable text effects catalog**: 376+ curated text effects searchable by name and description in English and Japanese, procedural shape decorations, scalable frame graphics (0.1×–10×), and dynamic font deformations
+- **Theme & directing controls**: AI-assisted automatic direction following song sections, theme dialogue controls for scale randomization, repeat scaling with weird threshold (`>= 0.6`), independent background clocks, and a classified 800-look runtime pool
 - **Achievement card (secondary)**: 32 achievements with locked/unlocked states and live progress bars, one-click cards in 16:9 (1920x1080) and 9:16 (1080x1920) as JPG or PNG, saved from the Studio's Output menu or the achievement page
-- Lyrics import formats: **SRT** (tags, `{fx:}`, spans), **LRC** (metadata, offset, multiple tags, instrumental markers, enhanced word tags) and **JSON** (arrays, `cues`, Whisper `segments`, seconds/ms/time strings)
-- Lyrics export in SRT (with optional `{fx:}` tags), LRC and JSON
-- Condensed panel layout tuned for 1920x1080 — all 32 badges visible without scrolling
-- Profile stats: songs, total plays, likes, comments, catalog length, followers
-- Sortable, searchable song list with inline audio preview and links to Suno
-- Five languages: English, Japanese, Spanish, French, Russian (auto-detected, switchable)
-- Local cache per profile — instant load on next launch, then refreshes in the background
-- All network access happens in the Electron main process, so there are no CORS issues and no proxy needed
+- **Lyrics import & export**: SRT (tags, `{fx:}`, spans), LRC (metadata, offset, multiple tags, instrumental markers, enhanced word tags), and JSON (arrays, `cues`, Whisper `segments`, seconds/ms/time strings)
+- **Condensed panel layout**: tuned for 1920x1080 — all 32 badges visible without scrolling
+- **Profile stats**: songs, total plays, likes, comments, catalog length, followers
+- **Sortable, searchable song list**: with inline audio preview and links to Suno
+- **Five languages**: English, Japanese, Spanish, French, Russian (auto-detected, switchable)
+- **Local cache per profile**: instant load on next launch, then refreshes in the background
+- **All network access happens in the Electron main process**: no CORS issues and no proxy needed
 
 ## Studio overview
 
@@ -28,36 +33,99 @@ The app opens directly in the Studio. Suno data is optional: click **Start witho
 The Studio turns lyrics into a video project:
 
 - **Media** (left): profile data (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
-- **Preview** (center): the rendered frame at output resolution; the overlay shows selection handles, guides and the `path` layout points
+- **Preview** (center): the rendered frame at output resolution; the overlay shows selection handles, guides and the `path` layout points, with simultaneous audio and video layer playback
 - **Preview quality** (*Settings → Quality*, auto/full/half/quarter): the scene is laid out at the size of the frame actually rendered, so a reduced quality draws the same picture smaller and faster instead of a differently-scaled one (the same rule covers video exports at 720p/1440p and the 2D fallback)
-- **Inspector** (right): cue/beat text and timing, text style, transform, overrides, every effect group with its parameters and motion (in/out easing, stagger, loop), colors, and ◆ keyframe buttons
-- **Timeline** (bottom): ruler, audio waveform, cue blocks with beat sub-blocks, element lanes with keyframes (drag, copy/paste, ease, delete), markers, snapping to seconds and frames
+- **Inspector** (right): cue/beat text and timing, enable/disable switches, delete buttons in headers, text style, transform, page layout dialog, motion presets search dialog, text background / frame graphics controls, every effect group with its parameters and motion (in/out easing, stagger, loop), colors, and ◆ keyframe buttons
+- **Timeline** (bottom): multi-track layout (subtitle, figure, backdrop, filler, background), ruler, audio waveform, cue blocks with beat sub-blocks, element lanes with keyframes (drag, copy/paste, ease, delete), markers, snapping to seconds and frames, independent FG/BG layer toggles, and track creation (`+ Track`, `+ Figure`, `+ Backdrop`)
 
 Text is laid out with `Intl.Segmenter`, converted to glyph outlines with opentype.js, triangulated with earcut, and drawn on WebGL2; every motion runs through the same tween system (`SA.tween`) so preview and export behave identically. The renderer is deterministic: all randomness comes from seeded generators, so the same project at the same time always looks the same.
 
-### Effect groups
+### Multi-track timeline & layer architecture
 
-Animation · Layout · Enter · Exit · Hold · Location · Fill · Edge · Post · Background · Color
+The Studio timeline supports rich multi-track composition with independent layer visibility:
 
-The decomposition of every effect into axes (glyph source, contour ops, deformation, representation, texture, visibility, driver, placement, timing, duplication, layering, scope), the full type-by-type mapping and the roadmap (physics soft body, scoped decorations, multi-line edges) live in [doc/textdecor2.md](doc/textdecor2.md).
+- **Subtitle tracks**: hold lyrics cues broken down into beats. Each track provides controls to mute the track, hide subtitle text, hide text backgrounds, or hide frame graphics. Disabling subtitle text silences the lyrics while keeping text backgrounds or decorative frame graphics active.
+- **Figure tracks**: generative procedural motifs and vector shapes that complement the lyrics. Figure tracks feature independent foreground (FG) and background (BG) layer toggles, allowing figure graphics to sit either in front of or behind text.
+- **Backdrop tracks**: dedicated visual layers for split-screen compositions, geometric patterns, and color planes. Add backdrop tracks with the `+ Backdrop` button in the timeline toolbar. Backdrop tracks feature independent FG/BG visibility and enable controls.
+- **Background & Filler tracks**: pattern fillers and generative gap clips that fill instrumental breaks and silence between cues.
+- **Layer render order** ([doc/text-layer-design.md](doc/text-layer-design.md)):
+  1. Background clips → Background layers (image/solid/video)
+  2. Backdrop clips → Filler clips → Figure / Text-animation clips
+  3. Subtitle track layers:
+     - Ornaments & Text backgrounds (cell squares / em ornaments)
+     - Glyph mask & blur
+     - Background knockout & commit
+     - Repeat copies & SDF
+     - Clones & representation strokes
+     - Inner/outer edges & fill
+     - Scoped decorations
+     - Text post-processing
+  4. Foreground layers
+  5. Frame post-processing, bloom, and final compositing
 
-Each group has its own easing (in/out), and Fill/Edge/Post have many types (gradients, chrome, fire, marble, holographic, outline, neon glow, bevel, extrude, drop shadow, glitch and dissolve families, bloom, film grain, vignette, and more).
+### Page layout engine (紙面レイアウト)
 
-**Dynamic font size and font deformation**: the text block can scale around its own centre, so the letters and the gaps between them grow together — `hold.fontSize` pulses between two sizes, `hold.fillScreen` grows the block until it fills the frame (with a cap), and `enter.megaZoomIn` / `exit.megaZoomOut` fly the camera through screen-filling type. Deformations run in the vertex shader through three slots (`jelly`, `wobbleWarp`, `twist`, `breathing`, `squashStretch`, `swirl`, and the block / letter `hold.warp` / `hold.letterWarp` primitives in the registry); a block-space deformation reserves one slot so a font-size move can never be hidden by a letter deformation.
+Beyond linear text and geometric formations, TelopMotion provides a **Page Layout** engine ([doc/page-layout.md](doc/page-layout.md)) for publication-style, editorial, and screen UI typography.
+
+Text is split into distinct functional roles (headline, deck, body, caption, byline, price) flowing through dedicated regions with automatic wrapping, font-scaling, and background decorations (rules, borders, paper washes, bubbles, grids, staves):
+
+| Category | Preset (`type`) | Roles | Decor | Description |
+|---|---|---|---|---|
+| **Generic** | `flushLeft` | body | none | Left-aligned, 75% width boundary |
+| | `center` | body | none | Centered, 80% width boundary |
+| | `flushRight` | body | none | Right-aligned, 75% width boundary |
+| | `justify` | body | none | Justified lines with balanced margins |
+| | `vertical` | body | none | Traditional vertical typography (Japanese / rotated Latin) |
+| | `grid` | body (cells) | none | Character-by-character grid arrangement |
+| **Editorial** | `magazine` | hero, deck, body, byline | Vertical rule, bold headline bar, accent page number | Feature magazine spread with deck and multi-column body |
+| | `fashion` | headline, body | Corner L-brackets, hairline vertical rule | Mode magazine layout with generous margins and tracking |
+| | `newspaper` | headline, columns, dateline | Double horizontal rules, column rules, drop cap | Classic newspaper article with multi-column text flow |
+| | `twoColumn` | columns (2 cols) | Hairline vertical divider | Two-column layout for narrative or spoken lyrics |
+| | `threeColumn` | columns (3 cols) | Hairline vertical dividers | Three-column spread (auto-fallback to 2 columns in portrait) |
+| | `manuscript` | title, cells (20×20) | Outer border, grid cell lines, center fish-tail mark | Traditional Japanese Genko Yoshi manuscript paper |
+| **Screen UI** | `xCard` | name, handle, body, time | Rounded card, border, avatar circle, X mark, action icons | Social media post card layout |
+| | `chatBubble` | bubble (per line) | Alternating left/right speech bubbles with tails | Messaging app dialogue bubbles |
+| **Shop** | `cafeSign` | headline, sub, est | Chalkboard ground, double border, coffee/star motifs | Chalkboard cafe or bakery sidewalk sign |
+| | `cafeMenu` | title, name/price | Dotted leaders, decorative borders | Cafe menu with automatic item and price separation |
+| | `boutique` | title, body, sign | Hairline rules, minimal logo circle, spacious margins | Elegant luxury boutique product description card |
+| **Music** | `score` | staves, notes | 5-line musical staff, barlines, note stems | Musical staff with lyrics positioned along pitch curves |
+| **Poster** | `poster` | hero, captions | Geometric color planes, hairline rules, crosshair crop marks | Graphic design poster with massive hero word and scattered captions |
+| **None** | `none` | — | — | Standard single-block layout |
+
+Configure page layouts via the **Page** section in the Inspector or the dedicated Page Layout Dialog (*Inspector → Page Layout…*).
+
+### Effect groups & searchable catalog
+
+TelopMotion organizes visual styling across 12 effect groups:
+
+Animation · Layout · Page · Enter · Exit · Hold · Location · Fill · Edge · Post · Background · Color
+
+- **Searchable effect catalog**: over 376 curated text effects ([doc/text-effects-en.csv](doc/text-effects-en.csv)) searchable by English or Japanese names and visual descriptions in the Motion Presets dialog (*Inspector → Search Presets*).
+- **Decomposition axes**: detailed in [doc/textdecor2.md](doc/textdecor2.md) (glyph source, contour ops, deformation, representation, texture, visibility, driver, placement, timing, duplication, layering, scope).
+- **Dynamic font size & vertex deformations**: letter blocks scale smoothly around their own center (`hold.fontSize`, `hold.fillScreen`, `enter.megaZoomIn`, `exit.megaZoomOut`). Three vertex shader deformation slots run `jelly`, `wobbleWarp`, `twist`, `breathing`, `squashStretch`, `swirl`, and `hold.warp` without clipping letter deformations.
+- **Text backgrounds & frame graphics**: scale smoothly from 0.1× to 10× with customizable per-beat randomization and base scales configurable in the Theme dialogue.
+- **Repeat arrangements**: deterministic repeat patterns with weird-factor scaling (`weird >= 0.6` guarantees repeat arrangements; see [doc/repeat-design.md](doc/repeat-design.md)).
+- **Scoped attributes & per-letter color**: apply effects to specific letter scopes (`first`, `last`, `alternate`, `nth`), per-letter text colors (`fgColors`), and vertical Japanese / 90°-rotated English columns.
+
+### Simultaneous audio & video playback
+
+- **Synchronized playback**: load audio (MP3, WAV, AAC, etc.) in the Media panel and add video layers (MP4, WebM) in Settings → Layers. When playing the timeline, video layers stay synchronized with the audio track in real time.
+- **Scrubbing & seeking**: scrubbing the playhead seeks both audio and video frame-accurately.
+- **Media panel analysis**: real-time waveform and spectrogram displays for loaded audio tracks.
+- **Audio-reactive bindings**: bind any numeric effect parameter to audio frequency bands (low, mid, high, or RMS) with custom gain and clamping (*Settings → Audio reactive…*).
 
 ### Text restructuring
 
-One SRT cue becomes **beats**: split into pages that fit the safe area (with language-aware line breaking for Japanese and English), a full-text recap, repeats for long holds, and emphasis moments. Beats can be edited by hand (drag dividers, split, merge, edit text, pin) and the rest gets restructured around them.
+One SRT cue becomes **beats**: split into pages that fit the safe area (with language-aware line breaking for Japanese and English), a full-text recap, repeats for long holds, and emphasis moments. Beats can be edited by hand (drag dividers, split, merge, edit text, pin, or disable) and the rest gets restructured around them.
 
 ### Export formats
 
-- **Achievement card**: 16:9 JPG/PNG and 9:16 JPG/PNG (Output menu)
-- **Lyrics**: SRT (with or without `{fx:}` tags), LRC and JSON (Output → Export lyrics)
-- **Project**: `.telopmotion.json`
 - **Video**: MP4 (H.264 + AAC; Opus fallback) and WebM (VP9 + Opus) via WebCodecs, with a streaming save target in Electron and the File System Access API on the web. Choose format, resolution (720p/1080p/1440p), fps (30/60), bitrate, audio, and quality in the export dialog (Ctrl+E); the progress bar shows the ETA and cancels cleanly
 - **Transparent export**: a store-only PNG-sequence `.zip` (guaranteed) for alpha output; VP9-alpha WebM is best-effort and depends on the platform
-- **Layers**: background and foreground layers (solid colours and images with alpha), each with opacity, blend (normal/add/multiply/screen), fit (cover/contain/stretch/actual), corner radius and transform (position/scale/rotation); edit them in Settings → Layers…, images are embedded as data URLs so they travel with the project, and layers render in the preview and in video exports identically; **video layers** (MP4/WebM) add speed/offset and playback in the preview, and exports seek them frame-accurately so the rendered frames match
-- **Audio reactive**: bind any numeric effect parameter to the music (low/mid/high bands or the overall level) with an amount, from Settings → Audio reactive…; the in-house FFT analysis runs when the audio is decoded and both the preview and the video export resolve the same data per frame, so what you see is what you export
+- **Layers**: background and foreground layers (solid colours, images with alpha, and video layers), each with opacity, blend mode (normal/add/multiply/screen), fit (cover/contain/stretch/actual), corner radius and transform (position/scale/rotation); edit them in Settings → Layers…
+- **Project**: `.telopmotion.json`
+- **Lyrics**: SRT (with or without `{fx:}` tags), LRC and JSON (Output → Export lyrics)
+- **Achievement card**: 16:9 JPG/PNG and 9:16 JPG/PNG (Output menu)
 
 ## Web version (GitHub Pages)
 
@@ -77,7 +145,6 @@ GitHub Pages must use the **GitHub Actions** source once (Settings → Pages →
 ## Font licenses
 
 The Studio ships with static OFL fonts in `renderer/fonts/` (Noto Sans Regular/Bold, Noto Serif Regular, Noto Sans JP Regular/Bold, Dela Gothic One, Bebas Neue). They are licensed under the SIL Open Font License 1.1; see `renderer/fonts/OFL.txt` and `renderer/fonts/SOURCES.md` for versions and source URLs. The vendored libraries (`opentype.js`, `earcut`, `mp4-muxer`, `webm-muxer`) keep their own licenses in `renderer/vendor/LICENSES.txt`.
-
 
 ## Requirements
 
@@ -140,33 +207,39 @@ Useful for bulk exports; the JSON can be imported into the app later.
 ## Project layout
 
 ```
+doc/                    Architecture & design docs: page-layout, text-layer, repeat, textdecor2, app-design
 main.js                 Electron main process: window, IPC, dialogs, cache, autosave, asset:read
 preload.js              contextBridge API exposed to the renderer
 lib/suno-core.js        Fetching, pagination, normalization (shared with the CLI)
 scripts/scrape.js       Command-line scraper
+scripts/demo30.js       DEMO 30: 30-second showcase reels for auditioning looks
+scripts/distinct-count.js Counts perceptually distinct effect signatures
 scripts/fx400.js        FX 400: deterministic catalog of representative effects + test project
 scripts/fx400mix.js     FX 400 MIX: 400 complete-look demos (headline effect + supporting kit)
 scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-effect projects
-scripts/looks-classify.js  Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
-scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js
+scripts/looks-classify.js Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
+scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (211 files)
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
+scripts/test/           Unit test suite (80+ test files, 940+ tests via node --test)
 demo/                   Generated demo projects, cue lists, indexes and preview sheets
 renderer/               UI: index.html (achievement card, secondary), studio.html (Studio, main), css/, js/
 renderer/js/            Shared: format, platform, suno, srt, lrc, lyrics-json, lyrics-file, script-gen, color, achievements
-renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, motion, scene, engine, looks, pattern-variants
-renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group
-renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes
-renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay
+renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, page-layout, page-scene, motion, scene, engine, looks, shape-ops, pattern-variants, text-effects-data
+renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group (animation, layout, page, enter, exit, hold, location, fill, edge, post, background, color, text-bg, vary, repeat)
+renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes, layers
+renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay, page-dialog, motion-dialog, theme-editor, direct
 renderer/data/          Generated runtime pool: fx800.looks.json (800 classified looks for Random look)
 renderer/fonts/         OFL fonts + SOURCES.md + OFL.txt
 renderer/vendor/        Vendored libraries + LICENSES.txt
 ```
 
-## Testing
+## Testing & tools
 
 ```bash
-npm run check                       # syntax check every script
-npm test                            # unit tests (node --test)
+npm run check                       # syntax check every script (211 files ok)
+npm test                            # unit test suite (940+ tests across 80+ test files)
+npm run demo30                      # build 30-second showcase reels (scripts/demo30.js)
+npm run distinct                    # count perceptually distinct effect signatures
 SA_SMOKE=1 npx electron .           # fetch @suno, render badges, check the 5 languages
 SA_SMOKE=1 SA_SMOKE_LYRICS=1 npx electron .   # fonts, vector text, holes, audio sync, WebGL fallback
 SA_SMOKE=1 SA_SMOKE_BEATS=1 npx electron .    # SRT restructuring: pages, repeats, recap, orphans
@@ -182,7 +255,7 @@ SA_SMOKE=1 SA_SMOKE_LAYERS=1 npx electron .   # image/solid/video layers, motion
 SA_SMOKE=1 SA_SMOKE_HOME=1 npx electron .     # Studio-first boot without data + lyrics import (SRT/LRC/JSON)
 SA_SMOKE=1 SA_SMOKE_SHOT=1 npx electron .     # regenerate snapshot/studio-overview.png (README)
 SA_SMOKE=1 SA_SMOKE_QUALITY=1 npx electron .  # full / half / quarter previews render the same frame
-SA_SMOKE=1 SA_SMOKE_AUDIO=1 npx electron .    # audio-reactive bindings and the Media audio tab
+SA_SMOKE=1 SA_SMOKE_AUDIO=1 npx electron .    # audio-reactive bindings, simultaneous audio/video playback
 SA_SMOKE=1 SA_SMOKE_FILLERS=1 npx electron .  # filler clips, credits modes, timeline and inspector
 ```
 
@@ -225,31 +298,26 @@ npm run fx800 -- apply 642 --project <file> --cue 12 --out <file>   # reuse one 
 
 ### Random look (おまかせ)
 
-`npm run fx800 -- build` also classifies every demo and writes the runtime pool
-`renderer/data/fx800.looks.json`: each of the 800 looks carries its measured
-**motion magnitude** (the SA.motion evaluator samples nine frames of a two-second
-beat and takes the largest travel / scale / rotation / deform amplitude, bucketed
-as still / small / medium / large / extreme), a **five-axis profile** (speed,
-energy, softness, density, brightness) and **theme affinities** (the genre
-profiles). The styles are stored as deltas against the effect registry defaults,
-which keeps the whole pool at ~1.9 MB.
+`npm run fx800 -- build` also classifies every demo and writes the runtime pool `renderer/data/fx800.looks.json`: each of the 800 looks carries its measured **motion magnitude** (the SA.motion evaluator samples nine frames of a two-second beat and takes the largest travel / scale / rotation / deform amplitude, bucketed as still / small / medium / large / extreme), a **five-axis profile** (speed, energy, softness, density, brightness) and **theme affinities** (the genre profiles). The styles are stored as deltas against the effect registry defaults, which keeps the whole pool at ~1.9 MB.
 
-The Studio's *Random look* button (Generate menu, timeline ✨, or the Re-roll
-button) loads the pool and:
+The Studio's *Random look* button (Generate menu, timeline ✨, or the Re-roll button) loads the pool and:
 
-1. draws one of the 800 by the song's theme and the five axes — a high `energy` /
-   `speed` target prefers big-motion looks, `softness` the texture, `density` the
-   busyness, `brightness` the tone; a themed draw weights looks that fit that genre
-2. applies that look to the whole song (entrance, exit, hold, fill, edge, post,
-   repeat, text background, background clip), so the demo's headline effect stays
-   the face of the song
-3. adjusts the fine parameters from the same axes — the palette is regenerated,
-   the text size / spacing follow the density and softness axes, and the demo's
-   typeface survives
+1. draws one of the 800 by the song's theme and the five axes — a high `energy` / `speed` target prefers big-motion looks, `softness` the texture, `density` the busyness, `brightness` the tone; a themed draw weights looks that fit that genre
+2. applies that look to the whole song (entrance, exit, hold, fill, edge, post, repeat, text background, background clip), so the demo's headline effect stays the face of the song
+3. adjusts the fine parameters from the same axes — the palette is regenerated, the text size / spacing follow the density and softness axes, and the demo's typeface survives
 
-Re-rolling excludes the look that is on screen and draws another one. If the pool
-cannot be loaded, the button falls back to the generator-only theme as before.
-`demo/fx800.md` lists the motion class of every demo.
+Re-rolling excludes the look that is on screen and draws another one. If the pool cannot be loaded, the button falls back to the generator-only theme as before. `demo/fx800.md` lists the motion class of every demo.
+
+## Documentation
+
+Comprehensive architecture, design, and effect documentation:
+
+- [doc/page-layout.md](doc/page-layout.md) — Page layout engine specification, 20 presets, region flow, and decor rendering
+- [doc/text-layer-design.md](doc/text-layer-design.md) — Layer rendering pipeline, background knockout, post-effects boundary, and layer separation
+- [doc/textdecor2.md](doc/textdecor2.md) — Full effect decomposition across 12 axes, type registry, and roadmap
+- [doc/text-effects-en.csv](doc/text-effects-en.csv) — Catalog of 376+ text effects with Japanese and English names, categories, and descriptions
+- [doc/repeat-design.md](doc/repeat-design.md) — Repeat arrangement design and distinct signature count
+- [doc/app-design.md](doc/app-design.md) — Overall Studio and lyric video engine architecture
 
 ## Notes
 
