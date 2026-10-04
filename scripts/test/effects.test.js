@@ -185,8 +185,9 @@ test('every post type resolves to uniforms with a target', () => {
 test('every background type resolves to uniforms', () => {
   // the unpacked types keep the original five shader codes so the older
   // effect catalogues stay byte-identical; `plain` is the flat-colour branch
-  // added on top of them
-  const CODE_RANGE = { plain: [13, 13] };
+  // added on top of them and `gradient` the directional ramp (eight
+  // directions, two to four stops)
+  const CODE_RANGE = { plain: [13, 13], gradient: [14, 14] };
   for (const descriptor of fx.list('background')) {
     const instance = fx.withDefaults({ type: descriptor.type, params: {} }, 'background');
     const uniforms = fx.backgroundUniforms(instance, { time: 1, theme: null });

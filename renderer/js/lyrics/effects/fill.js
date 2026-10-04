@@ -95,6 +95,8 @@
     params: [
       { key: 'grain', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
       { key: 'sparkle', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4 },
+      // deep / mid / hot stops; null keeps the built-in gold ramp
+      { key: 'colors', kind: 'gradient', default: null },
     ],
     cost: 1,
   });
@@ -128,6 +130,8 @@
     params: [
       { key: 'scale', kind: 'number', min: 0.5, max: 8, step: 0.1, default: 2 },
       { key: 'veins', kind: 'number', min: 1, max: 16, step: 1, default: 6 },
+      { key: 'veinWidth', kind: 'number', min: 0.01, max: 0.5, step: 0.01, default: 0.06 },
+      // stone / vein colours; null keeps the built-in grey ramp
       { key: 'colors', kind: 'gradient', default: null },
     ],
     cost: 2,
@@ -253,6 +257,16 @@
     return Number.isFinite(number) ? number : fallback;
   }
 
+  // The built-in ramps for the fills whose own params carry no colours. They
+  // are what the effect falls back to when a project has not set `colors`, so a
+  // flat palette (fill === fill2) still reads as marble / gold / fire instead of
+  // mixing one colour with itself.
+  const STONE = [[0.93, 0.93, 0.95, 1], [0.42, 0.44, 0.5, 1]];
+  const GOLD_DEEP = [0.36, 0.22, 0.05, 1];
+  const GOLD_MID = [0.86, 0.66, 0.22, 1];
+  const GOLD_HOT = [1, 0.94, 0.7, 1];
+  const FIRE = [[0.05, 0.01, 0.02, 1], [0.5, 0.05, 0.02, 1], [0.95, 0.45, 0.05, 1], [1, 0.9, 0.55, 1]];
+
   function fillUniforms(instance, ctx) {
     const params = (instance && instance.params) || {};
     const type = TYPES[(instance && instance.type) || 'solid'] || 1;
@@ -282,17 +296,44 @@
         colorB = [0.35, 0.4, 0.5, 1];
         colorC = [0.12, 0.13, 0.16, 1];
       }
-    } else if (type === 7) params4 = [num(params.grain, 0.5), num(params.sparkle, 0.4), 0, 0];
-    else if (type === 8) {
+    } else if (type === 7) {
+      // goldFoil: deep / mid / hot stops. `colors` overrides the built-in gold;
+      // without one the effect still reads as metal instead of the bare fill
+      params4 = [num(params.grain, 0.5), num(params.sparkle, 0.4), 0, 0];
+      if (Array.isArray(params.colors) && params.colors.length >= 2) {
+        colorA = toRgba(params.colors[0].color || params.colors[0], colorA, context);
+        colorB = toRgba(params.colors[1].color || params.colors[1], colorB, context);
+        colorC = toRgba(params.colors[2] ? params.colors[2].color || params.colors[2] : null, GOLD_HOT, context);
+      } else {
+        colorA = GOLD_DEEP;
+        colorB = GOLD_MID;
+        colorC = GOLD_HOT;
+      }
+    } else if (type === 8) {
       params4 = [num(params.scale, 1), 0, num(params.speed, 1), 0];
-      colorA = [0.05, 0.01, 0.02, 1];
-      colorB = [0.5, 0.05, 0.02, 1];
-      colorC = [0.95, 0.45, 0.05, 1];
-      colorD = [1, 0.9, 0.55, 1];
-    } else if (type === 9) params4 = [num(params.scale, 2), 0, num(params.speed, 0.4), 0];
-    else if (type === 10) params4 = [num(params.scale, 2), num(params.veins, 6), 0, 0];
-    else if (type === 11) params4 = [num(params.refraction, 0.4), num(params.blur, 0.2), 0, 0];
-    else if (type === 12) params4 = [num(params.scale, 1), num(params.pan && params.pan.x, 0), num(params.pan && params.pan.y, 0), 0];
+      const fireStops = Array.isArray(params.colors) ? params.colors : null;
+      colorA = fireStops ? toRgba(fireStops[0].color || fireStops[0], FIRE[0], context) : FIRE[0];
+      colorB = fireStops ? toRgba(fireStops[Math.min(1, fireStops.length - 1)].color || fireStops[Math.min(1, fireStops.length - 1)], FIRE[1], context) : FIRE[1];
+      colorC = FIRE[2];
+      colorD = FIRE[3];
+    } else if (type === 9) {
+      params4 = [num(params.scale, 2), 0, num(params.speed, 0.4), 0];
+      if (params.colorA) colorA = toRgba(params.colorA, colorA, context);
+      if (params.colorB) colorB = toRgba(params.colorB, colorB, context);
+    } else if (type === 10) {
+      // marble: `colors` overrides the stone ramp; without one a flat palette
+      // (fill === fill2) would mix a colour with itself and read as solid
+      params4 = [num(params.scale, 2), num(params.veins, 6), num(params.veinWidth, 0.06), 0];
+      const stone = Array.isArray(params.colors) && params.colors.length >= 2
+        ? [toRgba(params.colors[0].color || params.colors[0], STONE[0], context),
+           toRgba(params.colors[params.colors.length - 1].color || params.colors[params.colors.length - 1], STONE[1], context)]
+        : null;
+      colorA = stone ? stone[0] : colorA;
+      colorB = stone ? stone[1] : STONE[1];
+    } else if (type === 11) {
+      params4 = [num(params.refraction, 0.4), num(params.blur, 0.2), 0, 0];
+      if (params.tint) colorA = toRgba(params.tint, colorA, context);
+    } else if (type === 12) params4 = [num(params.scale, 1), num(params.pan && params.pan.x, 0), num(params.pan && params.pan.y, 0), 0];
     else if (type === 13) {
       params4 = [0, num(params.softness, 0.05), 0, 0];
       if (colors.fill) colorA = toRgba(colors.fill, null, context);

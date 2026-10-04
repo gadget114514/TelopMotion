@@ -864,6 +864,20 @@
     }
   }
 
+  // the figure track's own showcase: every motif and every motion axis, one cue
+  // each. Same shape as the effects showcase, a different generated asset.
+  async function figureShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/figure-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -1722,6 +1736,7 @@
       openProject,
       openRecent,
       showcase: showcaseProject,
+      figureShowcase: figureShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

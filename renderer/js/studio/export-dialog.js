@@ -114,7 +114,10 @@ SA.exportDialog = (() => {
           status: field('status'),
         }, abortFlag);
         if (result.canceled) field('status').textContent = t('export.canceled');
-        else field('status').textContent = t('export.done', { path: result.filePath || '' });
+        else {
+          field('status').textContent = t('export.done', { path: result.filePath || '' });
+          if (result.stats) showStats(dialog, t('export.stats', result.stats));
+        }
       } catch (error) {
         const code = (error && error.code) || 'error';
         field('status').textContent = t(`export.error.${code}`) === `export.error.${code}` ? t('export.errorGeneric') : t(`export.error.${code}`);
@@ -123,6 +126,19 @@ SA.exportDialog = (() => {
         button.disabled = false;
       }
     });
+  }
+
+  // the finished dialog keeps its stats on screen so the stage timings can be read
+  function showStats(dialog, text) {
+    let box = dialog.querySelector('[data-field="stats"]');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'field';
+      box.dataset.field = 'stats';
+      box.style.userSelect = 'text';
+      dialog.querySelector('.dialog-actions').before(box);
+    }
+    box.textContent = text;
   }
 
   async function run(settings, ui, signal) {

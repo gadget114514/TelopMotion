@@ -21,7 +21,8 @@
       const end = credits.modes.end || {};
       if (end.enabled && end.afterLastCue !== false) creditsExtra = Math.max(creditsExtra, cueEnd + (end.duration || 0));
     }
-    return Math.max(cueEnd, creditsExtra);
+    const songLength = Number(project && project.song && project.song.length);
+    return Math.max(cueEnd, creditsExtra, Number.isFinite(songLength) && songLength > 0 ? songLength : 0);
   }
 
   function computeDuration(project) {

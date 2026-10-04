@@ -880,6 +880,7 @@ SA.timeline = (() => {
   function layerTypeLabel(layer) {
     if (layer.type === 'solid') return t('layers.typeSolid');
     if (layer.type === 'video') return t('layers.typeVideo');
+    if (layer.type === 'scene3d') return t('layers.typeScene3d');
     return t('layers.typeImage');
   }
 

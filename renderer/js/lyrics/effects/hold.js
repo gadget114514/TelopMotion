@@ -231,6 +231,33 @@
     },
   });
 
+  // 円運動: every letter rides one shared circle around its layout place, a
+  // step apart (spread), so the whole line drifts round instead of pulsing in
+  // place. `tilt` flattens the circle (90° is a straight line, 0° a full
+  // circle) and `spin` turns each glyph with its own orbital phase.
+  fx.register({
+    group: 'hold',
+    type: 'orbit2D',
+    tags: ['basic'],
+    params: [
+      { key: 'radius', kind: 'number', min: 0, max: 0.3, step: 0.005, default: 0.04, random: [0.015, 0.09] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 3, step: 0.05, default: 0.5, random: [0.3, 1] },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.06 },
+      { key: 'tilt', kind: 'number', min: 0, max: 90, step: 1, default: 0, random: [0, 45] },
+      { key: 'spin', kind: 'bool', default: false },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const radius = (params.radius == null ? 0.04 : params.radius) * info.shortSide;
+      const speed = params.speed == null ? 0.5 : params.speed;
+      const spread = params.spread == null ? 0.06 : params.spread;
+      const flatten = Math.cos(((params.tilt == null ? 0 : params.tilt) * Math.PI) / 180);
+      const angle = TAU * (speed * h + info.i * spread);
+      state.x += radius * Math.cos(angle) * env;
+      state.y += radius * Math.sin(angle) * flatten * env;
+      if (params.spin) state.rot += (angle * 180) / Math.PI * env;
+    },
+  });
+
   fx.register({
     group: 'hold',
     type: 'pathFollow',
