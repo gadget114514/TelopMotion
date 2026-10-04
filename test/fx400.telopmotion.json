@@ -3,9 +3,14 @@
   "version": 4,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-04T07:05:31.454Z",
-    "updatedAt": "2026-10-04T07:05:31.454Z",
+    "createdAt": "2026-10-04T10:50:07.111Z",
+    "updatedAt": "2026-10-04T10:50:07.111Z",
     "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0
   },
   "output": {
     "aspect": "16:9",
