@@ -73,6 +73,14 @@ SA.songDialog = (() => {
     body.appendChild(field(t('song.name'), titleInput));
     body.appendChild(field(t('song.author'), authorInput));
     body.appendChild(field(t('song.bpm'), bpmInput));
+    const lengthInput = numberInput(song.length);
+    lengthInput.max = '36000';
+    lengthInput.step = '0.1';
+    body.appendChild(field(t('song.length'), lengthInput));
+    const lengthHint = document.createElement('div');
+    lengthHint.className = 'insp-inherit';
+    lengthHint.textContent = t('song.lengthHint');
+    body.appendChild(lengthHint);
     const hint = document.createElement('div');
     hint.className = 'insp-inherit';
     // with a tempo informed the hint can name the bar it cuts on; without one it
@@ -102,7 +110,7 @@ SA.songDialog = (() => {
     apply.className = 'btn btn-primary';
     apply.textContent = t('layers.apply');
     apply.addEventListener('click', () => {
-      SA.store.commands.setSong({ title: titleInput.value, author: authorInput.value, bpm: Number(bpmInput.value) || 0 });
+      SA.store.commands.setSong({ title: titleInput.value, author: authorInput.value, bpm: Number(bpmInput.value) || 0, length: Number(lengthInput.value) || 0 });
       close();
       if (SA.studio && SA.studio.toast) SA.studio.toast('song.applied');
     });

@@ -284,6 +284,12 @@ void main() {
     return { code: spec.code, params: [Math.max(2, num(merged.blockSize, 24)), clamp01(num(merged.rate, 0.3)), num(merged.rgbSplit, 2), 0] };
   }
 
+  // A scene3d layer has no source: its image comes from SA.three3d, rendered
+  // from the current time. Pure, so the tests can pin it.
+  function isSceneLayer(layer) {
+    return !!layer && layer.type === 'scene3d';
+  }
+
   function fitRect(fit, imageWidth, imageHeight, width, height) {
     if (!imageWidth || !imageHeight) return { x: 0, y: 0, w: width, h: height };
     if (fit === 'stretch') return { x: 0, y: 0, w: width, h: height };
@@ -332,6 +338,7 @@ void main() {
     const textures = new Map();
     const pending = new Map();
     const videos = new Map();
+    const scenes = new Map();
     const program = compile(gl);
     const uniforms = program ? locations(gl, program) : null;
     const vao = program ? createQuad(gl, program) : null;
@@ -465,6 +472,41 @@ void main() {
       return record;
     }
 
+    // Renders a scene3d layer through SA.three3d and uploads the canvas into a
+    // per-layer texture. Re-uploaded every frame because the scene is animated;
+    // null (missing three, failed render) skips the layer.
+    function sceneRecordFor(layer, width, height, time) {
+      if (typeof SA === 'undefined' || !SA.three3d || typeof SA.three3d.render !== 'function') return null;
+      const key = layer.id || layer;
+      let record = scenes.get(key);
+      if (!record) {
+        record = { texture: gl.createTexture(), width, height, ready: false };
+        scenes.set(key, record);
+      }
+      let image = null;
+      try {
+        image = SA.three3d.render(layer, { time, width, height });
+      } catch {
+        image = null;
+      }
+      if (!image) return null;
+      record.width = image.width || width;
+      record.height = image.height || height;
+      gl.bindTexture(gl.TEXTURE_2D, record.texture);
+      gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+      try {
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      } catch {
+        return null;
+      }
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      record.ready = true;
+      return record;
+    }
+
     function waitVideo(src) {
       const record = videoRecordFor(src);
       if (!record || !record.element) return Promise.resolve(null);
@@ -585,7 +627,7 @@ void main() {
     }
 
     async function preload(layers) {
-      const list = (layers || []).filter((layer) => layer && layer.enabled !== false && layer.type !== 'solid' && layer.src);
+      const list = (layers || []).filter((layer) => layer && layer.enabled !== false && layer.type !== 'solid' && layer.type !== 'scene3d' && layer.src);
       await Promise.all(list.map((layer) => (layer.type === 'video' ? waitVideo(layer.src) : loadTexture(layer.src))));
       return list.length;
     }
@@ -635,10 +677,14 @@ void main() {
         if (!motion.visible) continue;
         const opacity = (layer.opacity == null ? 1 : Math.max(0, Math.min(1, layer.opacity))) * motion.opacity;
         if (opacity <= 0) continue;
-        const isVideo = layer.type === 'video' && !!layer.src;
-        const isImage = !isVideo && layer.type !== 'solid' && !!layer.src;
+        const isScene = isSceneLayer(layer);
+        const isVideo = !isScene && layer.type === 'video' && !!layer.src;
+        const isImage = !isScene && !isVideo && layer.type !== 'solid' && !!layer.src;
         let record = null;
-        if (isVideo) {
+        if (isScene) {
+          record = sceneRecordFor(layer, width, height, t);
+          if (!record || !record.ready) continue;
+        } else if (isVideo) {
           record = videoRecordFor(layer.src);
           if (!record || record.error || !record.ready || !record.element || record.element.readyState < 2) continue;
           uploadVideo(record);
@@ -647,8 +693,8 @@ void main() {
           record = textureFor(layer.src);
           if (!record || !record.ready) continue;
         }
-        const fit = layer.fit || (isImage || isVideo ? 'cover' : 'stretch');
-        const rect = isImage || isVideo ? fitRect(fit, record.width, record.height, width, height) : { x: 0, y: 0, w: width, h: height };
+        const fit = layer.fit || (isScene ? 'stretch' : isImage || isVideo ? 'cover' : 'stretch');
+        const rect = isImage || isVideo || isScene ? fitRect(fit, record.width, record.height, width, height) : { x: 0, y: 0, w: width, h: height };
         const transform = layer.transform || {};
         const scale = (transform.scale == null ? 1 : transform.scale) * motion.scaleX;
         const centerX = rect.x + rect.w / 2 + (transform.x || 0) * width + motion.x;
@@ -663,14 +709,14 @@ void main() {
         gl.uniformMatrix2fv(uniforms.rot, false, new Float32Array([cos, sin, -sin, cos]));
         gl.uniform2f(uniforms.size, halfX * 2, halfY * 2);
         gl.uniform1f(uniforms.radius, Math.max(0, Math.min(0.5, layer.radius || 0)) * Math.min(halfX, halfY) * 2);
-        const color = parseColor(layer.color || (isImage ? '#ffffff' : '#000000'));
+        const color = parseColor(layer.color || (isImage || isVideo || isScene ? '#ffffff' : '#000000'));
         gl.uniform4f(uniforms.color, color[0], color[1], color[2], color[3]);
-        gl.uniform1f(uniforms.useTexture, isImage || isVideo ? 1 : 0);
+        gl.uniform1f(uniforms.useTexture, isImage || isVideo || isScene ? 1 : 0);
         gl.uniform1f(uniforms.opacity, opacity);
         const filter = filterState(layer.filter);
         gl.uniform1i(uniforms.filter, filter.code);
         gl.uniform4f(uniforms.filterParams, filter.params[0], filter.params[1], filter.params[2], filter.params[3]);
-        if (isImage || isVideo) gl.bindTexture(gl.TEXTURE_2D, record.texture);
+        if (isImage || isVideo || isScene) gl.bindTexture(gl.TEXTURE_2D, record.texture);
         else gl.bindTexture(gl.TEXTURE_2D, null);
         const code = blendCode(layer.blend);
         if (code > 0 && captureBackdrop(width, height)) {
@@ -712,6 +758,10 @@ void main() {
       }
       textures.clear();
       pending.clear();
+      for (const record of scenes.values()) {
+        if (record.texture) gl.deleteTexture(record.texture);
+      }
+      scenes.clear();
       for (const record of videos.values()) {
         if (record.texture) gl.deleteTexture(record.texture);
         if (record.element) {
@@ -734,5 +784,5 @@ void main() {
     return { draw, preload, prepare, pauseVideos, textureFor, videoRecordFor, textureCount, dispose, fitRect };
   }
 
-  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, videoTargetFor, CUSTOM_BLENDS, FILTERS };
+  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, videoTargetFor, isSceneLayer, CUSTOM_BLENDS, FILTERS };
 });

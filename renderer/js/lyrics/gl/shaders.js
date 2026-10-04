@@ -321,6 +321,11 @@ SA.glShaders = (() => {
     float r = clamp(ratio, 0.02, 0.98);
     float phase = fract(s / p - flow);
     float aa = max(fwidth(s / p), 0.002);
+    // the across coordinate moves by 1 / band width per pixel, so on a thin
+    // band its own ramp is wide enough to smear a two-line mask into a solid
+    // one. Clamping keeps the lanes separable and leaves the softness to the
+    // outline pass, which already anti-aliases the band itself.
+    float aaT = clamp(fwidth(t), 0.002, 0.05);
     if (kind <= 0) return 1.0;
     if (kind == 1) {                      // dashed
       return 1.0 - smoothstep(r - aa * 2.0, r + aa * 2.0, phase);
@@ -336,14 +341,14 @@ SA.glShaders = (() => {
       return max(dash, dot);
     }
     if (kind == 4) {                      // double
-      float a = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.28));
-      float b = 1.0 - smoothstep(0.14 - aa * 2.0, 0.14 + aa * 2.0, abs(t - 0.72));
+      float a = 1.0 - smoothstep(0.14 - aaT * 2.0, 0.14 + aaT * 2.0, abs(t - 0.28));
+      float b = 1.0 - smoothstep(0.14 - aaT * 2.0, 0.14 + aaT * 2.0, abs(t - 0.72));
       return max(a, b);
     }
     if (kind == 5) {                      // triple
-      float a = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.22));
-      float b = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.5));
-      float c = 1.0 - smoothstep(0.1 - aa * 2.0, 0.1 + aa * 2.0, abs(t - 0.78));
+      float a = 1.0 - smoothstep(0.1 - aaT * 2.0, 0.1 + aaT * 2.0, abs(t - 0.22));
+      float b = 1.0 - smoothstep(0.1 - aaT * 2.0, 0.1 + aaT * 2.0, abs(t - 0.5));
+      float c = 1.0 - smoothstep(0.1 - aaT * 2.0, 0.1 + aaT * 2.0, abs(t - 0.78));
       return max(max(a, b), c);
     }
     if (kind == 6) {                      // stripes (diagonal bars)
@@ -461,6 +466,7 @@ SA.glShaders = (() => {
   out float v_wipeSoft;
   out float v_flash;
   out float v_mask;
+  out vec3 v_dissolve;
   ${COMMON}
   vec4 stateAt(int row) {
     return texelFetch(u_state, ivec2(int(a_letter + 0.5), row), 0);
@@ -496,6 +502,8 @@ SA.glShaders = (() => {
     v_wipeSoft = s8.y;
     v_flash = s8.z;
     v_mask = s8.w;
+    // row 22.yzw: the per-glyph dissolve (see packStateRows)
+    v_dissolve = stateAt(22).yzw;
     v_local = a_pos;
     v_bbox = a_bbox;
     vec2 soft = latticeDisp(u_state, int(a_letter + 0.5), a_pos / max(a_bbox, vec2(1.0))) * a_bbox;
@@ -517,8 +525,23 @@ SA.glShaders = (() => {
   in float v_wipeSoft;
   in float v_flash;
   in float v_mask;
+  in vec3 v_dissolve;   // cell scale, progress, edge width
   layout(location = 0) out vec4 fragColor;
   layout(location = 1) out vec4 o_info;
+
+  // The dissolve grid: a cheap value noise over the glyph's own box, so the
+  // cells are the same size on every letter instead of following the frame.
+  float dissolveCell(vec2 p) {
+    vec2 cell = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
+    float b = fract(sin(dot(cell + vec2(1.0, 0.0), vec2(12.9898, 78.233))) * 43758.5453);
+    float c = fract(sin(dot(cell + vec2(0.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
+    float d = fract(sin(dot(cell + vec2(1.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+  }
+
   void main() {
     if (v_color.a <= 0.001) {
       fragColor = vec4(0.0);
@@ -546,6 +569,27 @@ SA.glShaders = (() => {
         return;
       }
     }
+    float glow = 0.0;
+    // a real dissolve: cells drop out of the glyph against the noise field and
+    // the rim of the hole glows. progress 1 = whole glyph, 0 = nothing.
+    if (v_dissolve.y < 0.999) {
+      float scale = max(v_dissolve.x, 1.0);
+      float n = dissolveCell(vec2(u, v) * scale + v_letter * 0.37);
+      float edge = max(v_dissolve.z, 0.01);
+      float level = n * 0.82 + 0.18 * dissolveCell(vec2(u, v) * scale * 2.7 + 4.1);
+      float t = clamp(v_dissolve.y, 0.0, 1.0);
+      if (level > t) {
+        vis = 0.0;
+      } else if (level > t - edge) {
+        glow = 1.0 - (t - level) / edge;
+        vis *= 1.0 - glow * 0.35;
+      }
+      if (vis <= 0.002) {
+        fragColor = vec4(0.0);
+        o_info = vec4(0.0);
+        return;
+      }
+    }
     if (v_mask < 0.999) {
       float m = v * 0.5 + 0.5;
       float aa = max(fwidth(m), 0.002);
@@ -558,6 +602,8 @@ SA.glShaders = (() => {
     }
     vec3 rgb = v_color.rgb;
     if (v_flash > 0.001) rgb = mix(rgb, vec3(v_color.a), clamp(v_flash, 0.0, 1.0));
+    // the dissolve rim burns brighter than the glyph body
+    rgb = mix(rgb, vec3(1.0, 0.92, 0.72), glow * 0.85);
     fragColor = vec4(rgb * vis, v_color.a * vis);
     float id = v_letter;
     float idHi = floor(id / 255.0);

@@ -146,12 +146,15 @@
     group: 'exit',
     type: 'dissolve',
     tags: ['dissolve'],
-    params: [{ key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 }],
-    cpu(state, p, params, rng) {
-      const threshold = rng() * 0.85;
+    params: [
+      { key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 },
+      { key: 'edge', kind: 'number', min: 0.01, max: 0.6, step: 0.01, default: 0.16 },
+    ],
+    cpu(state, p, params) {
+      // the text pass cuts the glyph against a noise field (state row 22.yzw):
+      // progress 1 means the glyph is gone, so it runs the entrance's way round
       const progress = clamp01(p);
-      if (progress > threshold) state.opacity = 0;
-      else state.opacity *= 1 - progress * 0.15;
+      state.dissolve = { scale: params.scale == null ? 10 : params.scale, progress: 1 - progress, edge: params.edge == null ? 0.16 : params.edge };
     },
   });
 

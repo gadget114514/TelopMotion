@@ -257,18 +257,30 @@ SA.videoExport = (() => {
     }
 
     const started = performance.now();
+    // per-stage wall time (ms), logged with opts.debug to find the slow stage
+    const stageMs = { prepare: 0, render: 0, capture: 0, encodeWait: 0 };
     try {
       for (let i = 0; i < total; i += 1) {
         if (signal.aborted) break;
         const time = range.from + i / fps;
+        let mark = performance.now();
+        const lap = (key) => {
+          const now = performance.now();
+          stageMs[key] += now - mark;
+          mark = now;
+        };
         if (opts.prepareFrame) await opts.prepareFrame(time);
+        lap('prepare');
         opts.renderFrame(time);
+        lap('render');
         const bitmap = opts.captureBitmap();
         const frame = new VideoFrame(bitmap, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
         bitmap.close();
+        lap('capture');
         videoEncoder.encode(frame, { keyFrame: i % (fps * 2) === 0 });
         frame.close();
         while (videoEncoder.encodeQueueSize > 6) await once(videoEncoder, 'dequeue');
+        lap('encodeWait');
         if (encoderError) throw encoderError;
         if (i % 5 === 0 || i === total - 1) {
           const elapsed = (performance.now() - started) / 1000;
@@ -279,7 +291,11 @@ SA.videoExport = (() => {
         if (opts.debug) console.log(`vexport: frame ${i + 1}/${total}`);
       }
       await videoEncoder.flush();
-      if (opts.debug) console.log('vexport: flushed');
+      const perFrame = Object.entries(stageMs).map(([key, ms]) => `${key} ${(ms / total).toFixed(1)}ms`).join(', ');
+      const seconds = (performance.now() - started) / 1000;
+      const stats = { sec: seconds.toFixed(1), fps: (total / Math.max(seconds, 1e-3)).toFixed(1) };
+      for (const [key, ms] of Object.entries(stageMs)) stats[key] = (ms / total).toFixed(1);
+      console.info(`vexport: ${total} frames in ${stats.sec}s; per frame: ${perFrame}`);
       videoEncoder.close();
 
       if (audioEncoder && opts.audioBuffer && !signal.aborted) {
@@ -314,15 +330,15 @@ SA.videoExport = (() => {
 
       if (stream) {
         await stream.close();
-        return { ok: true, format: codec.format, codec: codec.config.codec, audioCodec, filePath: stream.path, bytes: null };
+        return { ok: true, stats, format: codec.format, codec: codec.config.codec, audioCodec, filePath: stream.path, bytes: null };
       }
       const bytes = new Uint8Array(target.buffer);
       if (opts.save === false) {
-        return { ok: true, format: codec.format, codec: codec.config.codec, audioCodec, bytes: bytes.length, data: bytes };
+        return { ok: true, stats, format: codec.format, codec: codec.config.codec, audioCodec, bytes: bytes.length, data: bytes };
       }
       const saved = await SA.platform.saveFile({ bytes, name: `${baseName}${extension}`, mime: codec.format === 'webm' ? 'video/webm' : 'video/mp4' });
       if (!saved || saved.canceled) return { ok: false, canceled: true };
-      return { ok: true, format: codec.format, codec: codec.config.codec, audioCodec, filePath: saved.filePath, bytes: bytes.length };
+      return { ok: true, stats, format: codec.format, codec: codec.config.codec, audioCodec, filePath: saved.filePath, bytes: bytes.length };
     } finally {
       try {
         if (videoEncoder.state !== 'closed') videoEncoder.close();

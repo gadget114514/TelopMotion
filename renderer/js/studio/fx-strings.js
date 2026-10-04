@@ -1580,7 +1580,7 @@
   const ADD_ORBIT = {
     en: {
       types: { hold: { orbit2D: 'Circle orbit' }, background: { gradient: 'Gradient (8 directions)' } },
-      params: { veinWidth: 'Vein width' },
+      params: { veinWidth: 'Vein width', inner: 'Inner cut (double line)' },
       values: {
         toBottom: 'To bottom', toBottomLeft: 'To bottom left', toLeft: 'To left', toTopLeft: 'To top left',
         toTop: 'To top', toTopRight: 'To top right', toRight: 'To right', toBottomRight: 'To bottom right',
@@ -1588,6 +1588,7 @@
     },
     ja: {
       types: { hold: { orbit2D: '円運動' }, background: { gradient: 'グラデーション（8方向）' } },
+      params: { veinWidth: '脈の幅', inner: '内側を削る（二重線）' },
       values: {
         toBottom: '下へ', toBottomLeft: '左下へ', toLeft: '左へ', toTopLeft: '左上へ',
         toTop: '上へ', toTopRight: '右上へ', toRight: '右へ', toBottomRight: '右下へ',
@@ -1595,6 +1596,7 @@
     },
     es: {
       types: { hold: { orbit2D: 'Órbita circular' }, background: { gradient: 'Degradado (8 direcciones)' } },
+      params: { veinWidth: 'Ancho de la veta', inner: 'Recorte interior (línea doble)' },
       values: {
         toBottom: 'Hacia abajo', toBottomLeft: 'Hacia abajo a la izquierda', toLeft: 'Hacia la izquierda', toTopLeft: 'Hacia arriba a la izquierda',
         toTop: 'Hacia arriba', toTopRight: 'Hacia arriba a la derecha', toRight: 'Hacia la derecha', toBottomRight: 'Hacia abajo a la derecha',
@@ -1602,6 +1604,7 @@
     },
     fr: {
       types: { hold: { orbit2D: 'Orbite circulaire' }, background: { gradient: 'Dégradé (8 directions)' } },
+      params: { veinWidth: 'Épaisseur de la veine', inner: 'Découpe intérieure (double trait)' },
       values: {
         toBottom: 'Vers le bas', toBottomLeft: 'Vers le bas à gauche', toLeft: 'Vers la gauche', toTopLeft: 'Vers le haut à gauche',
         toTop: 'Vers le haut', toTopRight: 'Vers le haut à droite', toRight: 'Vers la droite', toBottomRight: 'Vers le bas à droite',
@@ -1609,6 +1612,7 @@
     },
     ru: {
       types: { hold: { orbit2D: 'Круговая орбита' }, background: { gradient: 'Градиент (8 направлений)' } },
+      params: { veinWidth: 'Ширина прожилки', inner: 'Внутренний вырез (двойная линия)' },
       values: {
         toBottom: 'Вниз', toBottomLeft: 'Вниз-влево', toLeft: 'Влево', toTopLeft: 'Вверх-влево',
         toTop: 'Вверх', toTopRight: 'Вверх-вправо', toRight: 'Вправо', toBottomRight: 'Вниз-вправо',

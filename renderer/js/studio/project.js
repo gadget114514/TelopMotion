@@ -74,7 +74,7 @@
       // Song. `title` / `author` name the piece (the credits read them when no
       // profile data is loaded, and the first filler shows them), `bpm` is the
       // tempo every beat grid follows (0 = follow the loaded audio instead).
-      song: { title: '', author: '', bpm: 0 },
+      song: { title: '', author: '', bpm: 0, length: 0 },
       output: {
         aspect: '16:9',
         fps: 30,
@@ -291,7 +291,20 @@
       title: String(song.title == null ? '' : song.title),
       author: String(song.author == null ? '' : song.author),
       bpm: bpmOf(project),
+      length: songLengthOf(project),
     };
+  }
+
+  // The song length in seconds the user wrote, or 0 to end with the last cue.
+  // A length past the last cue is filled with fillers.
+  function songLengthOf(project) {
+    const value = Number(project && project.song && project.song.length);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  function normalizeSongLength(value) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? Math.round(Math.min(36000, number) * 1000) / 1000 : 0;
   }
 
   // The informed tempo in BPM, or 0 when the project never chose one (the
@@ -317,6 +330,7 @@
       title: song.title == null ? '' : String(song.title),
       author: song.author == null ? '' : String(song.author),
       bpm: normalizeBpm(song.bpm),
+      length: normalizeSongLength(song.length),
     };
     return doc.song;
   }
@@ -634,6 +648,23 @@
     return null;
   }
 
+  // scene3d layers carry their scene parameters in `layer.scene`. Older exports
+  // (or hand-edited projects) may miss it, so the migrate pass fills the
+  // defaults the renderer expects. Pure, so the tests can pin it.
+  function normalizeLayers(project) {
+    for (const layer of project.layers || []) {
+      if (!layer || layer.type !== 'scene3d') continue;
+      const scene = isPlainObject(layer.scene) ? layer.scene : (layer.scene = {});
+      if (typeof scene.preset !== 'string') scene.preset = 'starfield';
+      const speed = Number(scene.speed);
+      scene.speed = Number.isFinite(speed) && speed > 0 ? speed : 1;
+      const density = Number(scene.density);
+      scene.density = Number.isFinite(density) && density > 0 ? density : 1;
+      if (scene.seed != null && !Number.isFinite(Number(scene.seed))) delete scene.seed;
+    }
+    return project;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -651,6 +682,7 @@
     if (version < 3) migrateToV3(merged);
     if (version < 4) migrateToV4(merged);
     ensureManagedTracks(merged);
+    normalizeLayers(merged);
     merged.version = VERSION;
     merged.format = FORMAT;
     // subtitle background visibility is a per-track boolean (absent = shown)
@@ -819,12 +851,15 @@
     create,
     migrate,
     ensureManagedTracks,
+    normalizeLayers,
     resolveStyle,
     resetLook,
     parsePath,
     mergeDeep,
     setDimensions,
     songOf,
+    songLengthOf,
+    normalizeSongLength,
     bpmOf,
     tempoOf,
     normalizeBpm,

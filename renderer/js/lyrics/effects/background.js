@@ -7,7 +7,34 @@
 })(typeof self !== 'undefined' ? self : this, function (fx, color) {
   'use strict';
 
-  const TYPES = { none: 1, solid: 1, plain: 13, gradient: 2, noiseGradient: 2, card: 3, cover: 4, image: 5, fractalNoise: 6, rays: 7, gradient4: 8, cellPattern: 9, particleField: 10, perspectiveGrid: 11, tunnel: 12 };
+  // 2 is the fbm-blended soft gradient (`noiseGradient`), 14 the directional
+  // linear ramp (`gradient`): eight directions, two to four stops.
+  const TYPES = { none: 1, solid: 1, plain: 13, gradient: 14, noiseGradient: 2, card: 3, cover: 4, image: 5, fractalNoise: 6, rays: 7, gradient4: 8, cellPattern: 9, particleField: 10, perspectiveGrid: 11, tunnel: 12 };
+
+  // The eight directions of the linear gradient, clockwise from straight down.
+  // The index is what travels to the shader (u_mode), so the order is part of
+  // the shader contract.
+  const GRADIENT_DIRECTIONS = ['toBottom', 'toBottomLeft', 'toLeft', 'toTopLeft', 'toTop', 'toTopRight', 'toRight', 'toBottomRight'];
+
+  // the gradient param accepts a stop array or a `{ stops: [...] }` value
+  function gradientStops(value) {
+    if (Array.isArray(value)) return value;
+    if (value && Array.isArray(value.stops)) return value.stops;
+    return null;
+  }
+
+  // two to four stops: the extras keep the palette default until the user adds
+  // a stop, and the count selects the ramp shape in the shader (u_mode2)
+  function packStops(stops, colors) {
+    const count = stops && stops.length >= 2 ? Math.min(4, stops.length) : 2;
+    const at = (index) => (stops && stops[index] != null ? stops[index].color || stops[index] : null);
+    const out = colors.slice();
+    for (let i = 0; i < count; i += 1) {
+      const value = at(i);
+      if (value != null) out[i] = value;
+    }
+    return { colors: out, ramp: count - 2, stops: Boolean(stops && stops.length >= 2) };
+  }
 
   fx.register({
     group: 'background',
@@ -40,7 +67,10 @@
     tags: ['basic'],
     params: [
       { key: 'colors', kind: 'gradient', default: null },
-      { key: 'scale', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 1 },
+      // the eight directions, clockwise from straight down (see GRADIENT_DIRECTIONS)
+      { key: 'direction', kind: 'select', options: GRADIENT_DIRECTIONS, default: 'toBottom' },
+      // the ramp length: 1 runs across the frame, above 1 flattens it out
+      { key: 'scale', kind: 'number', min: 0.25, max: 4, step: 0.05, default: 1.15 },
       { key: 'speed', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.1 },
       // the centre-bright lift; null keeps the built-in default (see shaders).
       // `catalog:false` keeps the pre-existing effect catalogues byte-identical
@@ -319,16 +349,23 @@
       // plain: the shader's flat branch only reads u_colorA
       colorA = toRgb(params.color, colorA, context);
     } else if (type === 2) {
-      const stops = Array.isArray(params.colors)
-        ? params.colors
-        : params.colors && Array.isArray(params.colors.stops)
-          ? params.colors.stops
-          : null;
-      if (stops && stops.length >= 2) {
-        colorA = toRgb(stops[0].color || stops[0], null, context);
-        colorB = toRgb(stops[1].color || stops[1], null, context);
-      }
+      // noiseGradient: the fbm blend, two to four stops
+      const base = [colorA, colorB, colorC, colorD];
+      const packed = packStops(gradientStops(params.colors), base);
+      [colorA, colorB, colorC, colorD] = packed.colors.map((value, index) => toRgb(value, base[index], context));
+      if (packed.stops) mode2 = packed.ramp;
       p4 = [num(params.scale, 3), num(params.speed, 0.3), glow, 0];
+    } else if (type === 14) {
+      // gradient: a straight ramp along one of eight directions, two to four
+      // stops. u_mode is the direction index, u_mode2 the stop count - 2,
+      // u_params = [ramp length, drift speed, centre lift, unused]
+      const base = [colorA, colorB, colorC, colorD];
+      const packed = packStops(gradientStops(params.colors), base);
+      [colorA, colorB, colorC, colorD] = packed.colors.map((value, index) => toRgb(value, base[index], context));
+      if (packed.stops) mode2 = packed.ramp;
+      const direction = GRADIENT_DIRECTIONS.indexOf(params.direction);
+      mode = direction < 0 ? 0 : direction;
+      p4 = [num(params.scale, 1.15), num(params.speed, 0.1), glow, 0];
     } else if (type === 3 || type === 4 || type === 5) {
       const zoom = num(params.zoom, 1.6);
       p4 = [zoom, num(context.focusX, 0), num(context.focusY, 0), num(params.dim, 0.35)];

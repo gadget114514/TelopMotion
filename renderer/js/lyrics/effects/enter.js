@@ -343,14 +343,12 @@
       { key: 'edgeWidth', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1 },
     ],
     cpu(state, p, params, rng) {
-      const threshold = rng() * 0.8;
       const progress = clamp01(p);
-      if (progress < threshold) {
-        state.opacity = 0;
-      } else {
-        state.opacity *= clamp01((progress - threshold) / 0.2);
-        state.scaleX *= 0.92 + 0.08 * clamp01((progress - threshold) / 0.2);
-        state.scaleY *= 0.92 + 0.08 * clamp01((progress - threshold) / 0.2);
+      // the noise field lives in the text pass; `edgeWidth` is the hot rim
+      state.dissolve = { scale: params.scale == null ? 12 : params.scale, progress, edge: params.edgeWidth == null ? 0.1 : params.edgeWidth };
+      if (progress > 0.001 && progress < 0.999) {
+        state.scaleX *= 0.92 + 0.08 * progress;
+        state.scaleY *= 0.92 + 0.08 * progress;
       }
     },
   });
@@ -381,12 +379,20 @@
     group: 'enter',
     type: 'dissolve',
     tags: ['dissolve'],
-    params: [{ key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 }],
-    cpu(state, p, params, rng) {
-      const threshold = rng() * 0.85;
+    params: [
+      { key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 },
+      { key: 'edge', kind: 'number', min: 0.01, max: 0.6, step: 0.01, default: 0.16 },
+    ],
+    cpu(state, p, params) {
+      // the text pass cuts the glyph against a noise field (state row 22.yzw),
+      // so the letters come apart cell by cell instead of one opacity ramp
       const progress = clamp01(p);
-      if (progress < threshold) state.opacity *= progress / Math.max(threshold, 0.0001);
-      else state.opacity *= 1 - (1 - progress) * 0.15;
+      state.dissolve = { scale: params.scale == null ? 10 : params.scale, progress, edge: params.edge == null ? 0.16 : params.edge };
+      // the cells arrive a touch under size and settle, so the reveal has weight
+      if (progress > 0.001 && progress < 0.999) {
+        state.scaleX *= 0.94 + 0.06 * progress;
+        state.scaleY *= 0.94 + 0.06 * progress;
+      }
     },
   });
 

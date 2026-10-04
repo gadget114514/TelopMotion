@@ -14,6 +14,7 @@
     "fx400": "node scripts/fx400.js",
     "fx800": "node scripts/fx800.js",
     "showcase": "node scripts/showcase.js",
+    "figure-showcase": "node scripts/figure-showcase.js",
     "demo30": "node scripts/demo30.js build",
     "distinct": "node scripts/distinct-count.js",
     "check": "node scripts/check.js",
@@ -64,6 +65,7 @@
     "electron-builder": "^26.15.3",
     "mp4-muxer": "^5.2.2",
     "opentype.js": "^2.0.0",
+    "three": "^0.186.1",
     "webm-muxer": "^5.1.4"
   }
 }

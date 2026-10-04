@@ -99,7 +99,7 @@ SA.store = (() => {
     const filler = (projectDoc.tracks || []).find((track) => track && track.kind === 'filler');
     if (!filler) return [];
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
-    const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const duration = Math.max(cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0), SA.project.songLengthOf(projectDoc));
     const settings = { ...SA.fillers.settingsFor(projectDoc), ...(options || {}) };
     return SA.fillers.gaps(cues, duration, settings).map((gap) => ({ ...gap, trackId: filler.id }));
   }
@@ -2094,9 +2094,10 @@ SA.store = (() => {
             title: next.title == null ? '' : String(next.title),
             author: next.author == null ? '' : String(next.author),
             bpm: SA.project.normalizeBpm(next.bpm),
+            length: SA.project.normalizeSongLength(next.length),
           };
-          if (SA.project.bpmOf(projectDoc) === before.bpm) return;
-          retimeBeats(projectDoc);
+          if (SA.project.bpmOf(projectDoc) === before.bpm && SA.project.songLengthOf(projectDoc) === before.length) return;
+          if (SA.project.bpmOf(projectDoc) !== before.bpm) retimeBeats(projectDoc);
           // the automatic direction divides its own gaps; those clips are the
           // ones the new tempo re-cuts (hand-made filler clips stay as they are)
           const auto = (projectDoc.clips || []).filter((clip) => clip.auto && SA.project.trackKindOf(projectDoc, clip.trackId) === 'filler');

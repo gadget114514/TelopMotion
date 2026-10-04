@@ -461,8 +461,11 @@ function collectCandidates() {
 }
 
 function paramsDifferStrongly(group, descriptor, instanceA, instanceB) {
-  const a = (instanceA && instanceA.params) || {};
-  const b = (instanceB && instanceB.params) || {};
+  // the stack groups (hold / edge / post / bgEdge) carry an array of instances,
+  // so compare the entry the generator actually wrote: the first one
+  const first = (value) => (Array.isArray(value) ? value[0] : value) || null;
+  const a = (first(instanceA) && first(instanceA).params) || {};
+  const b = (first(instanceB) && first(instanceB).params) || {};
   for (const param of descriptor.params || []) {
     const va = a[param.key];
     const vb = b[param.key];
@@ -859,8 +862,10 @@ module.exports = {
   TOTAL,
   SAMPLE_TEXT,
   GROUP_ORDER,
+  GROUP_LABELS,
   MOTION_GROUPS,
   THRESHOLD,
+  typeLabel,
   buildCatalog,
   buildCatalogEntries: buildCatalog,
   catalogSignature,

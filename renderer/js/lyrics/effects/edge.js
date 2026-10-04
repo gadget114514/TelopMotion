@@ -29,7 +29,12 @@
       { key: 'dashLength', kind: 'number', min: 2, max: 80, step: 1, default: 14 },
       { key: 'gapRatio', kind: 'number', min: 0.1, max: 0.9, step: 0.01, default: 0.45 },
       { key: 'flow', kind: 'number', min: -4, max: 4, step: 0.05, default: 0 },
-      { key: 'offset', kind: 'number', min: 0, max: 30, step: 0.5, default: 0 },
+      // the band's centre distance from the glyph edge; negative pulls the line
+      // inside the glyph, positive pushes it out
+      { key: 'offset', kind: 'number', min: -30, max: 30, step: 0.5, default: 0 },
+      // cuts the band out of everything inside this distance, so one outline
+      // can draw the outer line of a double rule and leave the gap
+      { key: 'inner', kind: 'number', min: 0, max: 30, step: 0.5, default: 0 },
     ],
     cost: 1,
   });
@@ -238,7 +243,7 @@
     let offset = [0, 0];
     if (type === 1) {
       params4 = [toNorm(num(params.width, 3)), num(params.dashLength, 14), toNorm(num(params.offset, 0)), num(params.softness, 0.35)];
-      params4b = [PATTERNS[params.pattern] || 0, num(params.gapRatio, 0.45), num(params.flow, 0), 0];
+      params4b = [PATTERNS[params.pattern] || 0, num(params.gapRatio, 0.45), num(params.flow, 0), toNorm(Math.max(0, num(params.inner, 0)))];
       edgeColor = toRgba(params.color, base, context);
     } else if (type === 2 || type === 3) {
       params4 = [0, toNorm(num(params.radius, 14)), num(params.intensity, 1), 0];

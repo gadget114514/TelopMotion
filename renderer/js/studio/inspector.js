@@ -1371,7 +1371,7 @@ SA.inspector = (() => {
       const label = document.createElement('span');
       label.className = 'ctrl-label';
       const slot = layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground');
-      const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
+      const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : layer.type === 'scene3d' ? t('layers.typeScene3d') : t('layers.typeImage');
       label.textContent = `${slot} · ${type}`;
       line.appendChild(label);
       const actions = document.createElement('span');
@@ -1507,7 +1507,7 @@ SA.inspector = (() => {
     const layer = (doc.layers || []).find((entry) => entry.id === id);
     if (!layer) return;
     const body = section(container, 'layer', t('layers.title'));
-    const typeName = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
+    const typeName = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : layer.type === 'scene3d' ? t('layers.typeScene3d') : t('layers.typeImage');
     const filterName = layer.filter && layer.filter.type && layer.filter.type !== 'none' ? layer.filter.type : t('layers.filterNone');
     const rows = [
       [t('layers.type'), typeName],

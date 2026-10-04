@@ -120,6 +120,13 @@ SA.glPasses = (() => {
         }
         data[at(LATTICE_FLAGS_ROW)] = 1;
       }
+      // row 22.yzw rides the per-glyph dissolve (cell scale, progress, edge
+      // width): only x was ever read from this row, so the dissolve needs no
+      // extra row. 0 progress leaves the glyph untouched.
+      const dissolve = state.dissolve || null;
+      data[at(LATTICE_FLAGS_ROW) + 1] = dissolve ? dissolve.scale || 0 : 0;
+      data[at(LATTICE_FLAGS_ROW) + 2] = dissolve ? dissolve.progress || 0 : 0;
+      data[at(LATTICE_FLAGS_ROW) + 3] = dissolve ? dissolve.edge || 0 : 0;
       const sand = state.sand || null;
       data[at(SAND_ROW)] = sand ? sand.wind || 0 : 0;
       data[at(SAND_ROW) + 1] = sand ? sand.gravity || 0 : 0;

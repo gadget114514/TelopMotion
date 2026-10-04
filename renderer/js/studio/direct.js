@@ -3010,7 +3010,7 @@
     // owns (auto) and leaves subtitle and hand-made clips alone.
     projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, fillerSettings(projectDoc, ctx));
     const cues = projectDoc.script.cues || [];
-    const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const total = Math.max(cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0), SA.project.songLengthOf(projectDoc));
     const managed = new Set(
       (projectDoc.tracks || []).filter((track) => AUTO_TRACK_KINDS.includes(track.kind)).map((track) => track.id)
     );
