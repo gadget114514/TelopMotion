@@ -553,870 +553,882 @@
         "id": "fx_039",
         "start": 190,
         "end": 193,
-        "text": "登場 / 粉砕再構築 / shatterRebuild"
+        "text": "登場 / 砂が集まる / sandGather"
       },
       {
         "id": "fx_040",
         "start": 193,
         "end": 196,
-        "text": "登場 / 前ビートからモーフ / morphFromPrevious"
+        "text": "登場 / 粉砕再構築 / shatterRebuild"
       },
       {
         "id": "fx_041",
         "start": 196,
         "end": 199,
-        "text": "登場 / ノイズディゾルブイン / noiseDissolveIn"
+        "text": "登場 / 前ビートからモーフ / morphFromPrevious"
       },
       {
         "id": "fx_042",
         "start": 199,
         "end": 202,
-        "text": "登場 / ディゾルブ / dissolve"
+        "text": "登場 / ノイズディゾルブイン / noiseDissolveIn"
       },
       {
         "id": "fx_043",
         "start": 202,
         "end": 205,
-        "text": "退場 / フェード / fade"
+        "text": "登場 / ディゾルブ / dissolve"
       },
       {
         "id": "fx_044",
         "start": 205,
         "end": 208,
-        "text": "退場 / スライド / slide"
+        "text": "退場 / フェード / fade"
       },
       {
         "id": "fx_045",
         "start": 208,
         "end": 211,
-        "text": "退場 / ズームアウト / zoomOut"
+        "text": "退場 / スライド / slide"
       },
       {
         "id": "fx_046",
         "start": 211,
         "end": 214,
-        "text": "退場 / ブラーアウト / blurOut"
+        "text": "退場 / ズームアウト / zoomOut"
       },
       {
         "id": "fx_047",
         "start": 214,
         "end": 217,
-        "text": "退場 / 爆発 / explode"
+        "text": "退場 / ブラーアウト / blurOut"
       },
       {
         "id": "fx_048",
         "start": 217,
         "end": 220,
-        "text": "退場 / 重力落下 / gravityFall"
+        "text": "退場 / 爆発 / explode"
       },
       {
         "id": "fx_049",
         "start": 220,
         "end": 223,
-        "text": "退場 / ディゾルブ / dissolve"
+        "text": "退場 / 重力落下 / gravityFall"
       },
       {
         "id": "fx_050",
         "start": 223,
         "end": 226,
-        "text": "退場 / ワイプ / wipe"
+        "text": "退場 / ディゾルブ / dissolve"
       },
       {
         "id": "fx_051",
         "start": 226,
         "end": 229,
-        "text": "退場 / タイプライター逆再生 / typewriterReverse"
+        "text": "退場 / ワイプ / wipe"
       },
       {
         "id": "fx_052",
         "start": 229,
         "end": 232,
-        "text": "退場 / 中心へ収縮 / shrinkToCenter"
+        "text": "退場 / タイプライター逆再生 / typewriterReverse"
       },
       {
         "id": "fx_053",
         "start": 232,
         "end": 235,
-        "text": "退場 / パーティクル拡散 / particlesDisperse"
+        "text": "退場 / 中心へ収縮 / shrinkToCenter"
       },
       {
         "id": "fx_054",
         "start": 235,
         "end": 238,
-        "text": "退場 / 溶解 / melt"
+        "text": "退場 / パーティクル拡散 / particlesDisperse"
       },
       {
         "id": "fx_055",
         "start": 238,
         "end": 241,
-        "text": "退場 / 燃え尽き / burnAway"
+        "text": "退場 / 砂になって崩れる / sandCrumble"
       },
       {
         "id": "fx_056",
         "start": 241,
         "end": 244,
-        "text": "退場 / ストローク消去 / strokeErase"
+        "text": "退場 / 溶解 / melt"
       },
       {
         "id": "fx_057",
         "start": 244,
         "end": 247,
-        "text": "退場 / 這い出し退場 / creepOut"
+        "text": "退場 / 燃え尽き / burnAway"
       },
       {
         "id": "fx_058",
         "start": 247,
         "end": 250,
-        "text": "保持 / 浮遊 / floatBob"
+        "text": "退場 / ストローク消去 / strokeErase"
       },
       {
         "id": "fx_059",
         "start": 250,
         "end": 253,
-        "text": "保持 / サイン波 / sineWave"
+        "text": "退場 / 這い出し退場 / creepOut"
       },
       {
         "id": "fx_060",
         "start": 253,
         "end": 256,
-        "text": "保持 / ジッター / jitter"
+        "text": "保持 / 浮遊 / floatBob"
       },
       {
         "id": "fx_061",
         "start": 256,
         "end": 259,
-        "text": "保持 / パルス / pulse"
+        "text": "保持 / サイン波 / sineWave"
       },
       {
         "id": "fx_062",
         "start": 259,
         "end": 262,
-        "text": "保持 / 透明度パルス / opacityPulse"
+        "text": "保持 / ジッター / jitter"
       },
       {
         "id": "fx_063",
         "start": 262,
         "end": 265,
-        "text": "保持 / ケン・バーンズ / kenBurns"
+        "text": "保持 / パルス / pulse"
       },
       {
         "id": "fx_064",
         "start": 265,
         "end": 268,
-        "text": "保持 / ドリフト / drift"
+        "text": "保持 / 透明度パルス / opacityPulse"
       },
       {
         "id": "fx_065",
         "start": 268,
         "end": 271,
-        "text": "保持 / マーキー / marquee"
+        "text": "保持 / ケン・バーンズ / kenBurns"
       },
       {
         "id": "fx_066",
         "start": 271,
         "end": 274,
-        "text": "保持 / ゼリー / jelly"
+        "text": "保持 / ドリフト / drift"
       },
       {
         "id": "fx_067",
         "start": 274,
         "end": 277,
-        "text": "保持 / うねりワープ / wobbleWarp"
+        "text": "保持 / マーキー / marquee"
       },
       {
         "id": "fx_068",
         "start": 277,
         "end": 280,
-        "text": "保持 / ツイスト / twist"
+        "text": "保持 / ゼリー / jelly"
       },
       {
         "id": "fx_069",
         "start": 280,
         "end": 283,
-        "text": "保持 / ブリージング / breathing"
+        "text": "保持 / うねりワープ / wobbleWarp"
       },
       {
         "id": "fx_070",
         "start": 283,
         "end": 286,
-        "text": "保持 / 3Dオービット / orbit3D"
+        "text": "保持 / ツイスト / twist"
       },
       {
         "id": "fx_071",
         "start": 286,
         "end": 289,
-        "text": "保持 / パス追従 / pathFollow"
+        "text": "保持 / ブリージング / breathing"
       },
       {
         "id": "fx_072",
         "start": 289,
         "end": 292,
-        "text": "保持 / 鼓動 / heartbeat"
+        "text": "保持 / 3Dオービット / orbit3D"
       },
       {
         "id": "fx_073",
         "start": 292,
         "end": 295,
-        "text": "保持 / 震え / shiver"
+        "text": "保持 / パス追従 / pathFollow"
       },
       {
         "id": "fx_074",
         "start": 295,
         "end": 298,
-        "text": "保持 / ディゾルブ / dissolve"
+        "text": "保持 / 鼓動 / heartbeat"
       },
       {
         "id": "fx_075",
         "start": 298,
         "end": 301,
-        "text": "位置 / 中央 / center"
+        "text": "保持 / 震え / shiver"
       },
       {
         "id": "fx_076",
         "start": 301,
         "end": 304,
-        "text": "位置 / 下三分の一 / lowerThird"
+        "text": "保持 / ディゾルブ / dissolve"
       },
       {
         "id": "fx_077",
         "start": 304,
         "end": 307,
-        "text": "位置 / 上三分の一 / upperThird"
+        "text": "位置 / 中央 / center"
       },
       {
         "id": "fx_078",
         "start": 307,
         "end": 310,
-        "text": "位置 / 左 / left"
+        "text": "位置 / 下三分の一 / lowerThird"
       },
       {
         "id": "fx_079",
         "start": 310,
         "end": 313,
-        "text": "位置 / 右 / right"
+        "text": "位置 / 上三分の一 / upperThird"
       },
       {
         "id": "fx_080",
         "start": 313,
         "end": 316,
-        "text": "位置 / カラオケ / karaoke"
+        "text": "位置 / 左 / left"
       },
       {
         "id": "fx_081",
         "start": 316,
         "end": 319,
-        "text": "位置 / 積み重ね / stacked"
+        "text": "位置 / 右 / right"
       },
       {
         "id": "fx_082",
         "start": 319,
         "end": 322,
-        "text": "位置 / ランダム（安全領域） / randomSafe"
+        "text": "位置 / カラオケ / karaoke"
       },
       {
         "id": "fx_083",
         "start": 322,
         "end": 325,
-        "text": "位置 / バッジ固定 / badgeAnchored"
+        "text": "位置 / 積み重ね / stacked"
       },
       {
         "id": "fx_084",
         "start": 325,
         "end": 328,
-        "text": "位置 / カスタム / custom"
+        "text": "位置 / ランダム（安全領域） / randomSafe"
       },
       {
         "id": "fx_085",
         "start": 328,
         "end": 331,
-        "text": "塗り / グラデーションスイープ / gradientSweep"
+        "text": "位置 / バッジ固定 / badgeAnchored"
       },
       {
         "id": "fx_086",
         "start": 331,
         "end": 334,
-        "text": "塗り / レインボーフロー / rainbowFlow"
+        "text": "位置 / カスタム / custom"
       },
       {
         "id": "fx_087",
         "start": 334,
         "end": 337,
-        "text": "塗り / ホログラフィック / holographic"
+        "text": "塗り / グラデーションスイープ / gradientSweep"
       },
       {
         "id": "fx_088",
         "start": 337,
         "end": 340,
-        "text": "塗り / クローム / chrome"
+        "text": "塗り / レインボーフロー / rainbowFlow"
       },
       {
         "id": "fx_089",
         "start": 340,
         "end": 343,
-        "text": "塗り / 金箔 / goldFoil"
+        "text": "塗り / ホログラフィック / holographic"
       },
       {
         "id": "fx_090",
         "start": 343,
         "end": 346,
-        "text": "塗り / 炎 / fire"
+        "text": "塗り / クローム / chrome"
       },
       {
         "id": "fx_091",
         "start": 346,
         "end": 349,
-        "text": "塗り / コースティクス / caustics"
+        "text": "塗り / 金箔 / goldFoil"
       },
       {
         "id": "fx_092",
         "start": 349,
         "end": 352,
-        "text": "塗り / 大理石 / marble"
+        "text": "塗り / 炎 / fire"
       },
       {
         "id": "fx_093",
         "start": 352,
         "end": 355,
-        "text": "塗り / ガラス / glass"
+        "text": "塗り / コースティクス / caustics"
       },
       {
         "id": "fx_094",
         "start": 355,
         "end": 358,
-        "text": "塗り / テクスチャ / textureFill"
+        "text": "塗り / 大理石 / marble"
       },
       {
         "id": "fx_095",
         "start": 358,
         "end": 361,
-        "text": "塗り / カラオケワイプ / karaokeWipe"
+        "text": "塗り / ガラス / glass"
       },
       {
         "id": "fx_096",
         "start": 361,
         "end": 364,
-        "text": "塗り / 墨 / ink"
+        "text": "塗り / テクスチャ / textureFill"
       },
       {
         "id": "fx_097",
         "start": 364,
         "end": 367,
-        "text": "縁取り / 縁取り / outline"
+        "text": "塗り / カラオケワイプ / karaokeWipe"
       },
       {
         "id": "fx_098",
         "start": 367,
         "end": 370,
-        "text": "縁取り / ネオン / neonGlow"
+        "text": "塗り / 墨 / ink"
       },
       {
         "id": "fx_099",
         "start": 370,
         "end": 373,
-        "text": "縁取り / 内側グロー / innerGlow"
+        "text": "縁取り / 縁取り / outline"
       },
       {
         "id": "fx_100",
         "start": 373,
         "end": 376,
-        "text": "縁取り / ベベル / bevel"
+        "text": "縁取り / ネオン / neonGlow"
       },
       {
         "id": "fx_101",
         "start": 376,
         "end": 379,
-        "text": "縁取り / 押し出し / extrude"
+        "text": "縁取り / 内側グロー / innerGlow"
       },
       {
         "id": "fx_102",
         "start": 379,
         "end": 382,
-        "text": "縁取り / ロングシャドウ / longShadow"
+        "text": "縁取り / ベベル / bevel"
       },
       {
         "id": "fx_103",
         "start": 382,
         "end": 385,
-        "text": "縁取り / ドロップシャドウ / dropShadow"
+        "text": "縁取り / 押し出し / extrude"
       },
       {
         "id": "fx_104",
         "start": 385,
         "end": 388,
-        "text": "縁取り / 滴り / drip"
+        "text": "縁取り / ロングシャドウ / longShadow"
       },
       {
         "id": "fx_105",
         "start": 388,
         "end": 391,
-        "text": "後処理 / グリッチブロック / glitchBlocks"
+        "text": "縁取り / ドロップシャドウ / dropShadow"
       },
       {
         "id": "fx_106",
         "start": 391,
         "end": 394,
-        "text": "後処理 / RGBシフト / rgbShift"
+        "text": "縁取り / 滴り / drip"
       },
       {
         "id": "fx_107",
         "start": 394,
         "end": 397,
-        "text": "後処理 / スキャンティア / scanTear"
+        "text": "後処理 / グリッチブロック / glitchBlocks"
       },
       {
         "id": "fx_108",
         "start": 397,
         "end": 400,
-        "text": "後処理 / VHSトラッキング / vhsTracking"
+        "text": "後処理 / RGBシフト / rgbShift"
       },
       {
         "id": "fx_109",
         "start": 400,
         "end": 403,
-        "text": "後処理 / データスミア / dataSmear"
+        "text": "後処理 / スキャンティア / scanTear"
       },
       {
         "id": "fx_110",
         "start": 403,
         "end": 406,
-        "text": "後処理 / デジタルノイズ / digitalNoise"
+        "text": "後処理 / VHSトラッキング / vhsTracking"
       },
       {
         "id": "fx_111",
         "start": 406,
         "end": 409,
-        "text": "後処理 / グリッチスライス / glitchSlice"
+        "text": "後処理 / データスミア / dataSmear"
       },
       {
         "id": "fx_112",
         "start": 409,
         "end": 412,
-        "text": "後処理 / ノイズディゾルブ / noiseDissolve"
+        "text": "後処理 / デジタルノイズ / digitalNoise"
       },
       {
         "id": "fx_113",
         "start": 412,
         "end": 415,
-        "text": "後処理 / 方向ディゾルブ / directionalDissolve"
+        "text": "後処理 / グリッチスライス / glitchSlice"
       },
       {
         "id": "fx_114",
         "start": 415,
         "end": 418,
-        "text": "後処理 / ピクセルディゾルブ / pixelDissolve"
+        "text": "後処理 / ノイズディゾルブ / noiseDissolve"
       },
       {
         "id": "fx_115",
         "start": 418,
         "end": 421,
-        "text": "後処理 / 燃焼ディゾルブ / burnDissolve"
+        "text": "後処理 / 方向ディゾルブ / directionalDissolve"
       },
       {
         "id": "fx_116",
         "start": 421,
         "end": 424,
-        "text": "後処理 / ハーフトーンディゾルブ / halftoneDissolve"
+        "text": "後処理 / ピクセルディゾルブ / pixelDissolve"
       },
       {
         "id": "fx_117",
         "start": 424,
         "end": 427,
-        "text": "後処理 / パーティクルディゾルブ / particleDissolve"
+        "text": "後処理 / 燃焼ディゾルブ / burnDissolve"
       },
       {
         "id": "fx_118",
         "start": 427,
         "end": 430,
-        "text": "後処理 / 衝撃波 / shockwave"
+        "text": "後処理 / ハーフトーンディゾルブ / halftoneDissolve"
       },
       {
         "id": "fx_119",
         "start": 430,
         "end": 433,
-        "text": "後処理 / ズームブラー / zoomBlur"
+        "text": "後処理 / パーティクルディゾルブ / particleDissolve"
       },
       {
         "id": "fx_120",
         "start": 433,
         "end": 436,
-        "text": "後処理 / モーションブラー / motionBlur"
+        "text": "後処理 / 衝撃波 / shockwave"
       },
       {
         "id": "fx_121",
         "start": 436,
         "end": 439,
-        "text": "後処理 / エコートレイル / echoTrail"
+        "text": "後処理 / ズームブラー / zoomBlur"
       },
       {
         "id": "fx_122",
         "start": 439,
         "end": 442,
-        "text": "後処理 / ゴッドレイ / godRays"
+        "text": "後処理 / モーションブラー / motionBlur"
       },
       {
         "id": "fx_123",
         "start": 442,
         "end": 445,
-        "text": "後処理 / ライトスイープ / lightSweep"
+        "text": "後処理 / エコートレイル / echoTrail"
       },
       {
         "id": "fx_124",
         "start": 445,
         "end": 448,
-        "text": "後処理 / 万華鏡 / kaleidoscope"
+        "text": "後処理 / ゴッドレイ / godRays"
       },
       {
         "id": "fx_125",
         "start": 448,
         "end": 451,
-        "text": "後処理 / ミラー / mirror"
+        "text": "後処理 / ライトスイープ / lightSweep"
       },
       {
         "id": "fx_126",
         "start": 451,
         "end": 454,
-        "text": "後処理 / ピクセルソート / pixelSort"
+        "text": "後処理 / 万華鏡 / kaleidoscope"
       },
       {
         "id": "fx_127",
         "start": 454,
         "end": 457,
-        "text": "後処理 / レンズ歪み / lensDistortion"
+        "text": "後処理 / ミラー / mirror"
       },
       {
         "id": "fx_128",
         "start": 457,
         "end": 460,
-        "text": "後処理 / カラーグレード / colorGrade"
+        "text": "後処理 / ピクセルソート / pixelSort"
       },
       {
         "id": "fx_129",
         "start": 460,
         "end": 463,
-        "text": "後処理 / 変位マップ / displacementMap"
+        "text": "後処理 / レンズ歪み / lensDistortion"
       },
       {
         "id": "fx_130",
         "start": 463,
         "end": 466,
-        "text": "後処理 / ブルーム / bloom"
+        "text": "後処理 / カラーグレード / colorGrade"
       },
       {
         "id": "fx_131",
         "start": 466,
         "end": 469,
-        "text": "後処理 / 色収差 / chromaticAberration"
+        "text": "後処理 / 変位マップ / displacementMap"
       },
       {
         "id": "fx_132",
         "start": 469,
         "end": 472,
-        "text": "後処理 / CRT / crt"
+        "text": "後処理 / ブルーム / bloom"
       },
       {
         "id": "fx_133",
         "start": 472,
         "end": 475,
-        "text": "後処理 / フィルムグレイン / filmGrain"
+        "text": "後処理 / 色収差 / chromaticAberration"
       },
       {
         "id": "fx_134",
         "start": 475,
         "end": 478,
-        "text": "後処理 / ハーフトーン / halftone"
+        "text": "後処理 / CRT / crt"
       },
       {
         "id": "fx_135",
         "start": 478,
         "end": 481,
-        "text": "後処理 / ピクセル化 / pixelate"
+        "text": "後処理 / フィルムグレイン / filmGrain"
       },
       {
         "id": "fx_136",
         "start": 481,
         "end": 484,
-        "text": "後処理 / 陽炎 / heatHaze"
+        "text": "後処理 / ハーフトーン / halftone"
       },
       {
         "id": "fx_137",
         "start": 484,
         "end": 487,
-        "text": "後処理 / ライトリーク / lightLeak"
+        "text": "後処理 / ピクセル化 / pixelate"
       },
       {
         "id": "fx_138",
         "start": 487,
         "end": 490,
-        "text": "後処理 / ビネット / vignette"
+        "text": "後処理 / 陽炎 / heatHaze"
       },
       {
         "id": "fx_139",
         "start": 490,
         "end": 493,
-        "text": "後処理 / スパークル / sparkles"
+        "text": "後処理 / ライトリーク / lightLeak"
       },
       {
         "id": "fx_140",
         "start": 493,
         "end": 496,
-        "text": "後処理 / レンズフレア / lensFlare"
+        "text": "後処理 / ビネット / vignette"
       },
       {
         "id": "fx_141",
         "start": 496,
         "end": 499,
-        "text": "背景 / 単色 / solid"
+        "text": "後処理 / スパークル / sparkles"
       },
       {
         "id": "fx_142",
         "start": 499,
         "end": 502,
-        "text": "背景 / ベタ塗り / plain"
+        "text": "後処理 / レンズフレア / lensFlare"
       },
       {
         "id": "fx_143",
         "start": 502,
         "end": 505,
-        "text": "背景 / グラデーション / gradient"
+        "text": "背景 / 単色 / solid"
       },
       {
         "id": "fx_144",
         "start": 505,
         "end": 508,
-        "text": "背景 / ノイズグラデーション / noiseGradient"
+        "text": "背景 / ベタ塗り / plain"
       },
       {
         "id": "fx_145",
         "start": 508,
         "end": 511,
-        "text": "背景 / 実績カード / card"
+        "text": "背景 / グラデーション / gradient"
       },
       {
         "id": "fx_146",
         "start": 511,
         "end": 514,
-        "text": "背景 / 楽曲カバー / cover"
+        "text": "背景 / ノイズグラデーション / noiseGradient"
       },
       {
         "id": "fx_147",
         "start": 514,
         "end": 517,
-        "text": "背景 / 画像 / image"
+        "text": "背景 / 実績カード / card"
       },
       {
         "id": "fx_148",
         "start": 517,
         "end": 520,
-        "text": "背景 / パターン / pattern"
+        "text": "背景 / 楽曲カバー / cover"
       },
       {
         "id": "fx_149",
         "start": 520,
         "end": 523,
-        "text": "背景 / 図形 / shapes"
+        "text": "背景 / 画像 / image"
       },
       {
         "id": "fx_150",
         "start": 523,
         "end": 526,
-        "text": "文字背景 / なし / none"
+        "text": "背景 / パターン / pattern"
       },
       {
         "id": "fx_151",
         "start": 526,
         "end": 529,
-        "text": "文字背景 / 四角 / square"
+        "text": "背景 / 図形 / shapes"
       },
       {
         "id": "fx_152",
         "start": 529,
         "end": 532,
-        "text": "文字背景の塗り / グラデーションスイープ / gradientSweep"
+        "text": "文字背景 / なし / none"
       },
       {
         "id": "fx_153",
         "start": 532,
         "end": 535,
-        "text": "文字背景の塗り / レインボーフロー / rainbowFlow"
+        "text": "文字背景 / 四角 / square"
       },
       {
         "id": "fx_154",
         "start": 535,
         "end": 538,
-        "text": "文字背景の塗り / ホログラフィック / holographic"
+        "text": "文字背景の塗り / グラデーションスイープ / gradientSweep"
       },
       {
         "id": "fx_155",
         "start": 538,
         "end": 541,
-        "text": "文字背景の塗り / クローム / chrome"
+        "text": "文字背景の塗り / レインボーフロー / rainbowFlow"
       },
       {
         "id": "fx_156",
         "start": 541,
         "end": 544,
-        "text": "文字背景の塗り / 金箔 / goldFoil"
+        "text": "文字背景の塗り / ホログラフィック / holographic"
       },
       {
         "id": "fx_157",
         "start": 544,
         "end": 547,
-        "text": "文字背景の塗り / 炎 / fire"
+        "text": "文字背景の塗り / クローム / chrome"
       },
       {
         "id": "fx_158",
         "start": 547,
         "end": 550,
-        "text": "文字背景の塗り / コースティクス / caustics"
+        "text": "文字背景の塗り / 金箔 / goldFoil"
       },
       {
         "id": "fx_159",
         "start": 550,
         "end": 553,
-        "text": "文字背景の塗り / 大理石 / marble"
+        "text": "文字背景の塗り / 炎 / fire"
       },
       {
         "id": "fx_160",
         "start": 553,
         "end": 556,
-        "text": "文字背景の塗り / ガラス / glass"
+        "text": "文字背景の塗り / コースティクス / caustics"
       },
       {
         "id": "fx_161",
         "start": 556,
         "end": 559,
-        "text": "文字背景の塗り / テクスチャ / textureFill"
+        "text": "文字背景の塗り / 大理石 / marble"
       },
       {
         "id": "fx_162",
         "start": 559,
         "end": 562,
-        "text": "文字背景の塗り / カラオケワイプ / karaokeWipe"
+        "text": "文字背景の塗り / ガラス / glass"
       },
       {
         "id": "fx_163",
         "start": 562,
         "end": 565,
-        "text": "文字背景の塗り / 墨 / ink"
+        "text": "文字背景の塗り / テクスチャ / textureFill"
       },
       {
         "id": "fx_164",
         "start": 565,
         "end": 568,
-        "text": "文字背景の縁取り / 縁取り / outline"
+        "text": "文字背景の塗り / カラオケワイプ / karaokeWipe"
       },
       {
         "id": "fx_165",
         "start": 568,
         "end": 571,
-        "text": "文字背景の縁取り / ネオン / neonGlow"
+        "text": "文字背景の塗り / 墨 / ink"
       },
       {
         "id": "fx_166",
         "start": 571,
         "end": 574,
-        "text": "文字背景の縁取り / 内側グロー / innerGlow"
+        "text": "文字背景の縁取り / 縁取り / outline"
       },
       {
         "id": "fx_167",
         "start": 574,
         "end": 577,
-        "text": "文字背景の縁取り / ベベル / bevel"
+        "text": "文字背景の縁取り / ネオン / neonGlow"
       },
       {
         "id": "fx_168",
         "start": 577,
         "end": 580,
-        "text": "文字背景の縁取り / 押し出し / extrude"
+        "text": "文字背景の縁取り / 内側グロー / innerGlow"
       },
       {
         "id": "fx_169",
         "start": 580,
         "end": 583,
-        "text": "文字背景の縁取り / ロングシャドウ / longShadow"
+        "text": "文字背景の縁取り / ベベル / bevel"
       },
       {
         "id": "fx_170",
         "start": 583,
         "end": 586,
-        "text": "文字背景の縁取り / ドロップシャドウ / dropShadow"
+        "text": "文字背景の縁取り / 押し出し / extrude"
       },
       {
         "id": "fx_171",
         "start": 586,
         "end": 589,
-        "text": "文字背景の縁取り / 滴り / drip"
+        "text": "文字背景の縁取り / ロングシャドウ / longShadow"
       },
       {
         "id": "fx_172",
         "start": 589,
         "end": 592,
-        "text": "文字背景の動き / 文字に追従 / follow"
+        "text": "文字背景の縁取り / ドロップシャドウ / dropShadow"
       },
       {
         "id": "fx_173",
         "start": 592,
         "end": 595,
-        "text": "文字背景の動き / フェード / fade"
+        "text": "文字背景の縁取り / 滴り / drip"
       },
       {
         "id": "fx_174",
         "start": 595,
         "end": 598,
-        "text": "文字背景の動き / ポップ / pop"
+        "text": "文字背景の動き / 文字に追従 / follow"
       },
       {
         "id": "fx_175",
         "start": 598,
         "end": 601,
-        "text": "文字背景の動き / スタンプ / stamp"
+        "text": "文字背景の動き / フェード / fade"
       },
       {
         "id": "fx_176",
         "start": 601,
         "end": 604,
-        "text": "文字背景の動き / ワイプ / wipe"
+        "text": "文字背景の動き / ポップ / pop"
       },
       {
         "id": "fx_177",
         "start": 604,
         "end": 607,
-        "text": "文字背景の動き / 回転 / spin"
+        "text": "文字背景の動き / スタンプ / stamp"
       },
       {
         "id": "fx_178",
         "start": 607,
         "end": 610,
-        "text": "文字背景の動き / 伸びる / grow"
+        "text": "文字背景の動き / ワイプ / wipe"
       },
       {
         "id": "fx_179",
         "start": 610,
         "end": 613,
-        "text": "文字背景の動き / なし / none"
+        "text": "文字背景の動き / 回転 / spin"
       },
       {
         "id": "fx_180",
         "start": 613,
         "end": 616,
-        "text": "文字背景の動き / ちらつき / flicker"
+        "text": "文字背景の動き / 伸びる / grow"
       },
       {
         "id": "fx_181",
         "start": 616,
         "end": 619,
-        "text": "文字背景の動き / にじみ / bleed"
+        "text": "文字背景の動き / なし / none"
       },
       {
         "id": "fx_182",
         "start": 619,
         "end": 622,
-        "text": "文字背景の動き / 浮かぶ / float"
+        "text": "文字背景の動き / ちらつき / flicker"
       },
       {
         "id": "fx_183",
         "start": 622,
         "end": 625,
+        "text": "文字背景の動き / にじみ / bleed"
+      },
+      {
+        "id": "fx_184",
+        "start": 625,
+        "end": 628,
+        "text": "文字背景の動き / 浮かぶ / float"
+      },
+      {
+        "id": "fx_185",
+        "start": 628,
+        "end": 631,
         "text": "文字背景の動き / 落下 / fall"
       }
     ],
@@ -2158,6 +2170,24 @@
     },
     "fx_039": {
       "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_040": {
+      "enter": {
         "type": "shatterRebuild",
         "enabled": true,
         "params": {
@@ -2172,7 +2202,7 @@
         }
       }
     },
-    "fx_040": {
+    "fx_041": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -2187,7 +2217,7 @@
         }
       }
     },
-    "fx_041": {
+    "fx_042": {
       "enter": {
         "type": "noiseDissolveIn",
         "enabled": true,
@@ -2204,7 +2234,7 @@
         }
       }
     },
-    "fx_042": {
+    "fx_043": {
       "enter": {
         "type": "dissolve",
         "enabled": true,
@@ -2219,7 +2249,7 @@
         }
       }
     },
-    "fx_043": {
+    "fx_044": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -2235,7 +2265,7 @@
         }
       }
     },
-    "fx_044": {
+    "fx_045": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -2251,7 +2281,7 @@
         }
       }
     },
-    "fx_045": {
+    "fx_046": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -2266,7 +2296,7 @@
         }
       }
     },
-    "fx_046": {
+    "fx_047": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -2281,7 +2311,7 @@
         }
       }
     },
-    "fx_047": {
+    "fx_048": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -2297,7 +2327,7 @@
         }
       }
     },
-    "fx_048": {
+    "fx_049": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -2313,7 +2343,7 @@
         }
       }
     },
-    "fx_049": {
+    "fx_050": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
@@ -2328,7 +2358,7 @@
         }
       }
     },
-    "fx_050": {
+    "fx_051": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -2343,7 +2373,7 @@
         }
       }
     },
-    "fx_051": {
+    "fx_052": {
       "exit": {
         "type": "typewriterReverse",
         "enabled": true,
@@ -2356,7 +2386,7 @@
         }
       }
     },
-    "fx_052": {
+    "fx_053": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -2369,7 +2399,7 @@
         }
       }
     },
-    "fx_053": {
+    "fx_054": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -2385,7 +2415,25 @@
         }
       }
     },
-    "fx_054": {
+    "fx_055": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_056": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -2400,7 +2448,7 @@
         }
       }
     },
-    "fx_055": {
+    "fx_057": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -2417,7 +2465,7 @@
         }
       }
     },
-    "fx_056": {
+    "fx_058": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -2432,7 +2480,7 @@
         }
       }
     },
-    "fx_057": {
+    "fx_059": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -2447,7 +2495,7 @@
         }
       }
     },
-    "fx_058": {
+    "fx_060": {
       "hold": [
         {
           "type": "floatBob",
@@ -2460,7 +2508,7 @@
         }
       ]
     },
-    "fx_059": {
+    "fx_061": {
       "hold": [
         {
           "type": "sineWave",
@@ -2474,7 +2522,7 @@
         }
       ]
     },
-    "fx_060": {
+    "fx_062": {
       "hold": [
         {
           "type": "jitter",
@@ -2487,7 +2535,7 @@
         }
       ]
     },
-    "fx_061": {
+    "fx_063": {
       "hold": [
         {
           "type": "pulse",
@@ -2500,7 +2548,7 @@
         }
       ]
     },
-    "fx_062": {
+    "fx_064": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -2514,7 +2562,7 @@
         }
       ]
     },
-    "fx_063": {
+    "fx_065": {
       "hold": [
         {
           "type": "kenBurns",
@@ -2530,7 +2578,7 @@
         }
       ]
     },
-    "fx_064": {
+    "fx_066": {
       "hold": [
         {
           "type": "drift",
@@ -2543,7 +2591,7 @@
         }
       ]
     },
-    "fx_065": {
+    "fx_067": {
       "hold": [
         {
           "type": "marquee",
@@ -2555,7 +2603,7 @@
         }
       ]
     },
-    "fx_066": {
+    "fx_068": {
       "hold": [
         {
           "type": "jelly",
@@ -2568,7 +2616,7 @@
         }
       ]
     },
-    "fx_067": {
+    "fx_069": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -2582,7 +2630,7 @@
         }
       ]
     },
-    "fx_068": {
+    "fx_070": {
       "hold": [
         {
           "type": "twist",
@@ -2594,7 +2642,7 @@
         }
       ]
     },
-    "fx_069": {
+    "fx_071": {
       "hold": [
         {
           "type": "breathing",
@@ -2606,7 +2654,7 @@
         }
       ]
     },
-    "fx_070": {
+    "fx_072": {
       "hold": [
         {
           "type": "orbit3D",
@@ -2619,7 +2667,7 @@
         }
       ]
     },
-    "fx_071": {
+    "fx_073": {
       "hold": [
         {
           "type": "pathFollow",
@@ -2645,7 +2693,7 @@
         }
       ]
     },
-    "fx_072": {
+    "fx_074": {
       "hold": [
         {
           "type": "heartbeat",
@@ -2658,7 +2706,7 @@
         }
       ]
     },
-    "fx_073": {
+    "fx_075": {
       "hold": [
         {
           "type": "shiver",
@@ -2671,7 +2719,7 @@
         }
       ]
     },
-    "fx_074": {
+    "fx_076": {
       "hold": [
         {
           "type": "dissolve",
@@ -2684,7 +2732,7 @@
         }
       ]
     },
-    "fx_075": {
+    "fx_077": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -2700,7 +2748,7 @@
         "motion": {}
       }
     },
-    "fx_076": {
+    "fx_078": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -2716,7 +2764,7 @@
         "motion": {}
       }
     },
-    "fx_077": {
+    "fx_079": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -2732,7 +2780,7 @@
         "motion": {}
       }
     },
-    "fx_078": {
+    "fx_080": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -2748,7 +2796,7 @@
         "motion": {}
       }
     },
-    "fx_079": {
+    "fx_081": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -2764,7 +2812,7 @@
         "motion": {}
       }
     },
-    "fx_080": {
+    "fx_082": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -2780,7 +2828,7 @@
         "motion": {}
       }
     },
-    "fx_081": {
+    "fx_083": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -2796,7 +2844,7 @@
         "motion": {}
       }
     },
-    "fx_082": {
+    "fx_084": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -2812,7 +2860,7 @@
         "motion": {}
       }
     },
-    "fx_083": {
+    "fx_085": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -2828,7 +2876,7 @@
         "motion": {}
       }
     },
-    "fx_084": {
+    "fx_086": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -2846,7 +2894,7 @@
         "motion": {}
       }
     },
-    "fx_085": {
+    "fx_087": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -2857,7 +2905,7 @@
         "motion": {}
       }
     },
-    "fx_086": {
+    "fx_088": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -2870,7 +2918,7 @@
         "motion": {}
       }
     },
-    "fx_087": {
+    "fx_089": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -2882,7 +2930,7 @@
         "motion": {}
       }
     },
-    "fx_088": {
+    "fx_090": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -2893,7 +2941,7 @@
         "motion": {}
       }
     },
-    "fx_089": {
+    "fx_091": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -2904,7 +2952,7 @@
         "motion": {}
       }
     },
-    "fx_090": {
+    "fx_092": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -2916,7 +2964,7 @@
         "motion": {}
       }
     },
-    "fx_091": {
+    "fx_093": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -2929,7 +2977,7 @@
         "motion": {}
       }
     },
-    "fx_092": {
+    "fx_094": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -2941,7 +2989,7 @@
         "motion": {}
       }
     },
-    "fx_093": {
+    "fx_095": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -2953,7 +3001,7 @@
         "motion": {}
       }
     },
-    "fx_094": {
+    "fx_096": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -2968,7 +3016,7 @@
         "motion": {}
       }
     },
-    "fx_095": {
+    "fx_097": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -2980,7 +3028,7 @@
         "motion": {}
       }
     },
-    "fx_096": {
+    "fx_098": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -2992,7 +3040,7 @@
         "motion": {}
       }
     },
-    "fx_097": {
+    "fx_099": {
       "edge": [
         {
           "type": "outline",
@@ -3011,7 +3059,7 @@
         }
       ]
     },
-    "fx_098": {
+    "fx_100": {
       "edge": [
         {
           "type": "neonGlow",
@@ -3026,7 +3074,7 @@
         }
       ]
     },
-    "fx_099": {
+    "fx_101": {
       "edge": [
         {
           "type": "innerGlow",
@@ -3040,7 +3088,7 @@
         }
       ]
     },
-    "fx_100": {
+    "fx_102": {
       "edge": [
         {
           "type": "bevel",
@@ -3055,7 +3103,7 @@
         }
       ]
     },
-    "fx_101": {
+    "fx_103": {
       "edge": [
         {
           "type": "extrude",
@@ -3070,7 +3118,7 @@
         }
       ]
     },
-    "fx_102": {
+    "fx_104": {
       "edge": [
         {
           "type": "longShadow",
@@ -3085,7 +3133,7 @@
         }
       ]
     },
-    "fx_103": {
+    "fx_105": {
       "edge": [
         {
           "type": "dropShadow",
@@ -3103,7 +3151,7 @@
         }
       ]
     },
-    "fx_104": {
+    "fx_106": {
       "edge": [
         {
           "type": "drip",
@@ -3118,7 +3166,7 @@
         }
       ]
     },
-    "fx_105": {
+    "fx_107": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -3136,7 +3184,7 @@
         }
       ]
     },
-    "fx_106": {
+    "fx_108": {
       "post": [
         {
           "type": "rgbShift",
@@ -3153,7 +3201,7 @@
         }
       ]
     },
-    "fx_107": {
+    "fx_109": {
       "post": [
         {
           "type": "scanTear",
@@ -3170,7 +3218,7 @@
         }
       ]
     },
-    "fx_108": {
+    "fx_110": {
       "post": [
         {
           "type": "vhsTracking",
@@ -3187,7 +3235,7 @@
         }
       ]
     },
-    "fx_109": {
+    "fx_111": {
       "post": [
         {
           "type": "dataSmear",
@@ -3204,7 +3252,7 @@
         }
       ]
     },
-    "fx_110": {
+    "fx_112": {
       "post": [
         {
           "type": "digitalNoise",
@@ -3220,7 +3268,7 @@
         }
       ]
     },
-    "fx_111": {
+    "fx_113": {
       "post": [
         {
           "type": "glitchSlice",
@@ -3237,7 +3285,7 @@
         }
       ]
     },
-    "fx_112": {
+    "fx_114": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -3254,7 +3302,7 @@
         }
       ]
     },
-    "fx_113": {
+    "fx_115": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -3271,7 +3319,7 @@
         }
       ]
     },
-    "fx_114": {
+    "fx_116": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -3286,7 +3334,7 @@
         }
       ]
     },
-    "fx_115": {
+    "fx_117": {
       "post": [
         {
           "type": "burnDissolve",
@@ -3303,7 +3351,7 @@
         }
       ]
     },
-    "fx_116": {
+    "fx_118": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -3319,7 +3367,7 @@
         }
       ]
     },
-    "fx_117": {
+    "fx_119": {
       "post": [
         {
           "type": "particleDissolve",
@@ -3335,7 +3383,7 @@
         }
       ]
     },
-    "fx_118": {
+    "fx_120": {
       "post": [
         {
           "type": "shockwave",
@@ -3356,7 +3404,7 @@
         }
       ]
     },
-    "fx_119": {
+    "fx_121": {
       "post": [
         {
           "type": "zoomBlur",
@@ -3375,7 +3423,7 @@
         }
       ]
     },
-    "fx_120": {
+    "fx_122": {
       "post": [
         {
           "type": "motionBlur",
@@ -3392,7 +3440,7 @@
         }
       ]
     },
-    "fx_121": {
+    "fx_123": {
       "post": [
         {
           "type": "echoTrail",
@@ -3410,7 +3458,7 @@
         }
       ]
     },
-    "fx_122": {
+    "fx_124": {
       "post": [
         {
           "type": "godRays",
@@ -3431,7 +3479,7 @@
         }
       ]
     },
-    "fx_123": {
+    "fx_125": {
       "post": [
         {
           "type": "lightSweep",
@@ -3449,7 +3497,7 @@
         }
       ]
     },
-    "fx_124": {
+    "fx_126": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -3465,7 +3513,7 @@
         }
       ]
     },
-    "fx_125": {
+    "fx_127": {
       "post": [
         {
           "type": "mirror",
@@ -3481,7 +3529,7 @@
         }
       ]
     },
-    "fx_126": {
+    "fx_128": {
       "post": [
         {
           "type": "pixelSort",
@@ -3498,7 +3546,7 @@
         }
       ]
     },
-    "fx_127": {
+    "fx_129": {
       "post": [
         {
           "type": "lensDistortion",
@@ -3515,7 +3563,7 @@
         }
       ]
     },
-    "fx_128": {
+    "fx_130": {
       "post": [
         {
           "type": "colorGrade",
@@ -3533,7 +3581,7 @@
         }
       ]
     },
-    "fx_129": {
+    "fx_131": {
       "post": [
         {
           "type": "displacementMap",
@@ -3549,7 +3597,7 @@
         }
       ]
     },
-    "fx_130": {
+    "fx_132": {
       "post": [
         {
           "type": "bloom",
@@ -3566,7 +3614,7 @@
         }
       ]
     },
-    "fx_131": {
+    "fx_133": {
       "post": [
         {
           "type": "chromaticAberration",
@@ -3583,7 +3631,7 @@
         }
       ]
     },
-    "fx_132": {
+    "fx_134": {
       "post": [
         {
           "type": "crt",
@@ -3600,7 +3648,7 @@
         }
       ]
     },
-    "fx_133": {
+    "fx_135": {
       "post": [
         {
           "type": "filmGrain",
@@ -3616,7 +3664,7 @@
         }
       ]
     },
-    "fx_134": {
+    "fx_136": {
       "post": [
         {
           "type": "halftone",
@@ -3632,7 +3680,7 @@
         }
       ]
     },
-    "fx_135": {
+    "fx_137": {
       "post": [
         {
           "type": "pixelate",
@@ -3647,7 +3695,7 @@
         }
       ]
     },
-    "fx_136": {
+    "fx_138": {
       "post": [
         {
           "type": "heatHaze",
@@ -3663,7 +3711,7 @@
         }
       ]
     },
-    "fx_137": {
+    "fx_139": {
       "post": [
         {
           "type": "lightLeak",
@@ -3681,7 +3729,7 @@
         }
       ]
     },
-    "fx_138": {
+    "fx_140": {
       "post": [
         {
           "type": "vignette",
@@ -3697,7 +3745,7 @@
         }
       ]
     },
-    "fx_139": {
+    "fx_141": {
       "post": [
         {
           "type": "sparkles",
@@ -3715,7 +3763,7 @@
         }
       ]
     },
-    "fx_140": {
+    "fx_142": {
       "post": [
         {
           "type": "lensFlare",
@@ -3734,7 +3782,7 @@
         }
       ]
     },
-    "fx_150": {
+    "fx_152": {
       "bgShape": {
         "type": "none",
         "enabled": true,
@@ -3760,7 +3808,7 @@
         "motion": {}
       }
     },
-    "fx_151": {
+    "fx_153": {
       "bgShape": {
         "type": "square",
         "enabled": true,
@@ -3786,7 +3834,7 @@
         "motion": {}
       }
     },
-    "fx_152": {
+    "fx_154": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3808,7 +3856,7 @@
         "motion": {}
       }
     },
-    "fx_153": {
+    "fx_155": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3832,7 +3880,7 @@
         "motion": {}
       }
     },
-    "fx_154": {
+    "fx_156": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3855,7 +3903,7 @@
         "motion": {}
       }
     },
-    "fx_155": {
+    "fx_157": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3877,7 +3925,7 @@
         "motion": {}
       }
     },
-    "fx_156": {
+    "fx_158": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3899,7 +3947,7 @@
         "motion": {}
       }
     },
-    "fx_157": {
+    "fx_159": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3922,7 +3970,7 @@
         "motion": {}
       }
     },
-    "fx_158": {
+    "fx_160": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3946,7 +3994,7 @@
         "motion": {}
       }
     },
-    "fx_159": {
+    "fx_161": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3969,7 +4017,7 @@
         "motion": {}
       }
     },
-    "fx_160": {
+    "fx_162": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -3992,7 +4040,7 @@
         "motion": {}
       }
     },
-    "fx_161": {
+    "fx_163": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4018,7 +4066,7 @@
         "motion": {}
       }
     },
-    "fx_162": {
+    "fx_164": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4041,7 +4089,7 @@
         "motion": {}
       }
     },
-    "fx_163": {
+    "fx_165": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4064,7 +4112,7 @@
         "motion": {}
       }
     },
-    "fx_164": {
+    "fx_166": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4094,7 +4142,7 @@
         }
       ]
     },
-    "fx_165": {
+    "fx_167": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4120,7 +4168,7 @@
         }
       ]
     },
-    "fx_166": {
+    "fx_168": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4145,7 +4193,7 @@
         }
       ]
     },
-    "fx_167": {
+    "fx_169": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4171,7 +4219,7 @@
         }
       ]
     },
-    "fx_168": {
+    "fx_170": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4197,7 +4245,7 @@
         }
       ]
     },
-    "fx_169": {
+    "fx_171": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4223,7 +4271,7 @@
         }
       ]
     },
-    "fx_170": {
+    "fx_172": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4252,7 +4300,7 @@
         }
       ]
     },
-    "fx_171": {
+    "fx_173": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4278,7 +4326,7 @@
         }
       ]
     },
-    "fx_172": {
+    "fx_174": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4305,7 +4353,7 @@
         "motion": {}
       }
     },
-    "fx_173": {
+    "fx_175": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4332,7 +4380,7 @@
         "motion": {}
       }
     },
-    "fx_174": {
+    "fx_176": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4360,7 +4408,7 @@
         "motion": {}
       }
     },
-    "fx_175": {
+    "fx_177": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4388,7 +4436,7 @@
         "motion": {}
       }
     },
-    "fx_176": {
+    "fx_178": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4416,7 +4464,7 @@
         "motion": {}
       }
     },
-    "fx_177": {
+    "fx_179": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4444,7 +4492,7 @@
         "motion": {}
       }
     },
-    "fx_178": {
+    "fx_180": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4472,7 +4520,7 @@
         "motion": {}
       }
     },
-    "fx_179": {
+    "fx_181": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4499,7 +4547,7 @@
         "motion": {}
       }
     },
-    "fx_180": {
+    "fx_182": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4527,7 +4575,7 @@
         "motion": {}
       }
     },
-    "fx_181": {
+    "fx_183": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4555,7 +4603,7 @@
         "motion": {}
       }
     },
-    "fx_182": {
+    "fx_184": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -4583,7 +4631,7 @@
         "motion": {}
       }
     },
-    "fx_183": {
+    "fx_185": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -5666,9 +5714,9 @@
         "index": 0,
         "start": 190,
         "end": 193,
-        "text": "登場 / 粉砕再構築 / shatterRebuild",
+        "text": "登場 / 砂が集まる / sandGather",
         "lines": [
-          "登場 / 粉砕再構築 / shatterRebuild"
+          "登場 / 砂が集まる / sandGather"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5682,10 +5730,9 @@
         "index": 0,
         "start": 193,
         "end": 196,
-        "text": "登場 / 前ビートから\nモーフ / morphFromPrevious",
+        "text": "登場 / 粉砕再構築 / shatterRebuild",
         "lines": [
-          "登場 / 前ビートから",
-          "モーフ / morphFromPrevious"
+          "登場 / 粉砕再構築 / shatterRebuild"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5699,10 +5746,10 @@
         "index": 0,
         "start": 196,
         "end": 199,
-        "text": "登場 / ノイズディゾルブイン\n/ noiseDissolveIn",
+        "text": "登場 / 前ビートから\nモーフ / morphFromPrevious",
         "lines": [
-          "登場 / ノイズディゾルブイン",
-          "/ noiseDissolveIn"
+          "登場 / 前ビートから",
+          "モーフ / morphFromPrevious"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5716,9 +5763,10 @@
         "index": 0,
         "start": 199,
         "end": 202,
-        "text": "登場 / ディゾルブ / dissolve",
+        "text": "登場 / ノイズディゾルブイン\n/ noiseDissolveIn",
         "lines": [
-          "登場 / ディゾルブ / dissolve"
+          "登場 / ノイズディゾルブイン",
+          "/ noiseDissolveIn"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5732,9 +5780,9 @@
         "index": 0,
         "start": 202,
         "end": 205,
-        "text": "退場 / フェード / fade",
+        "text": "登場 / ディゾルブ / dissolve",
         "lines": [
-          "退場 / フェード / fade"
+          "登場 / ディゾルブ / dissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5748,9 +5796,9 @@
         "index": 0,
         "start": 205,
         "end": 208,
-        "text": "退場 / スライド / slide",
+        "text": "退場 / フェード / fade",
         "lines": [
-          "退場 / スライド / slide"
+          "退場 / フェード / fade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5764,9 +5812,9 @@
         "index": 0,
         "start": 208,
         "end": 211,
-        "text": "退場 / ズームアウト / zoomOut",
+        "text": "退場 / スライド / slide",
         "lines": [
-          "退場 / ズームアウト / zoomOut"
+          "退場 / スライド / slide"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5780,9 +5828,9 @@
         "index": 0,
         "start": 211,
         "end": 214,
-        "text": "退場 / ブラーアウト / blurOut",
+        "text": "退場 / ズームアウト / zoomOut",
         "lines": [
-          "退場 / ブラーアウト / blurOut"
+          "退場 / ズームアウト / zoomOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5796,9 +5844,9 @@
         "index": 0,
         "start": 214,
         "end": 217,
-        "text": "退場 / 爆発 / explode",
+        "text": "退場 / ブラーアウト / blurOut",
         "lines": [
-          "退場 / 爆発 / explode"
+          "退場 / ブラーアウト / blurOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5812,9 +5860,9 @@
         "index": 0,
         "start": 217,
         "end": 220,
-        "text": "退場 / 重力落下 / gravityFall",
+        "text": "退場 / 爆発 / explode",
         "lines": [
-          "退場 / 重力落下 / gravityFall"
+          "退場 / 爆発 / explode"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5828,9 +5876,9 @@
         "index": 0,
         "start": 220,
         "end": 223,
-        "text": "退場 / ディゾルブ / dissolve",
+        "text": "退場 / 重力落下 / gravityFall",
         "lines": [
-          "退場 / ディゾルブ / dissolve"
+          "退場 / 重力落下 / gravityFall"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5844,9 +5892,9 @@
         "index": 0,
         "start": 223,
         "end": 226,
-        "text": "退場 / ワイプ / wipe",
+        "text": "退場 / ディゾルブ / dissolve",
         "lines": [
-          "退場 / ワイプ / wipe"
+          "退場 / ディゾルブ / dissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5860,10 +5908,9 @@
         "index": 0,
         "start": 226,
         "end": 229,
-        "text": "退場 / タイプライター\n逆再生 / typewriterReverse",
+        "text": "退場 / ワイプ / wipe",
         "lines": [
-          "退場 / タイプライター",
-          "逆再生 / typewriterReverse"
+          "退場 / ワイプ / wipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5877,9 +5924,10 @@
         "index": 0,
         "start": 229,
         "end": 232,
-        "text": "退場 / 中心へ収縮 / shrinkToCenter",
+        "text": "退場 / タイプライター\n逆再生 / typewriterReverse",
         "lines": [
-          "退場 / 中心へ収縮 / shrinkToCenter"
+          "退場 / タイプライター",
+          "逆再生 / typewriterReverse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5893,10 +5941,9 @@
         "index": 0,
         "start": 232,
         "end": 235,
-        "text": "退場 / パーティクル\n拡散 / particlesDisperse",
+        "text": "退場 / 中心へ収縮 / shrinkToCenter",
         "lines": [
-          "退場 / パーティクル",
-          "拡散 / particlesDisperse"
+          "退場 / 中心へ収縮 / shrinkToCenter"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5910,9 +5957,10 @@
         "index": 0,
         "start": 235,
         "end": 238,
-        "text": "退場 / 溶解 / melt",
+        "text": "退場 / パーティクル\n拡散 / particlesDisperse",
         "lines": [
-          "退場 / 溶解 / melt"
+          "退場 / パーティクル",
+          "拡散 / particlesDisperse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5926,9 +5974,10 @@
         "index": 0,
         "start": 238,
         "end": 241,
-        "text": "退場 / 燃え尽き / burnAway",
+        "text": "退場 / 砂になって\n崩れる / sandCrumble",
         "lines": [
-          "退場 / 燃え尽き / burnAway"
+          "退場 / 砂になって",
+          "崩れる / sandCrumble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5942,10 +5991,9 @@
         "index": 0,
         "start": 241,
         "end": 244,
-        "text": "退場 / ストローク\n消去 / strokeErase",
+        "text": "退場 / 溶解 / melt",
         "lines": [
-          "退場 / ストローク",
-          "消去 / strokeErase"
+          "退場 / 溶解 / melt"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5959,9 +6007,9 @@
         "index": 0,
         "start": 244,
         "end": 247,
-        "text": "退場 / 這い出し退場 / creepOut",
+        "text": "退場 / 燃え尽き / burnAway",
         "lines": [
-          "退場 / 這い出し退場 / creepOut"
+          "退場 / 燃え尽き / burnAway"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5975,9 +6023,10 @@
         "index": 0,
         "start": 247,
         "end": 250,
-        "text": "保持 / 浮遊 / floatBob",
+        "text": "退場 / ストローク\n消去 / strokeErase",
         "lines": [
-          "保持 / 浮遊 / floatBob"
+          "退場 / ストローク",
+          "消去 / strokeErase"
         ],
         "fontScale": 1,
         "pinned": false
@@ -5991,9 +6040,9 @@
         "index": 0,
         "start": 250,
         "end": 253,
-        "text": "保持 / サイン波 / sineWave",
+        "text": "退場 / 這い出し退場 / creepOut",
         "lines": [
-          "保持 / サイン波 / sineWave"
+          "退場 / 這い出し退場 / creepOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6007,9 +6056,9 @@
         "index": 0,
         "start": 253,
         "end": 256,
-        "text": "保持 / ジッター / jitter",
+        "text": "保持 / 浮遊 / floatBob",
         "lines": [
-          "保持 / ジッター / jitter"
+          "保持 / 浮遊 / floatBob"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6023,9 +6072,9 @@
         "index": 0,
         "start": 256,
         "end": 259,
-        "text": "保持 / パルス / pulse",
+        "text": "保持 / サイン波 / sineWave",
         "lines": [
-          "保持 / パルス / pulse"
+          "保持 / サイン波 / sineWave"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6039,9 +6088,9 @@
         "index": 0,
         "start": 259,
         "end": 262,
-        "text": "保持 / 透明度パルス / opacityPulse",
+        "text": "保持 / ジッター / jitter",
         "lines": [
-          "保持 / 透明度パルス / opacityPulse"
+          "保持 / ジッター / jitter"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6055,9 +6104,9 @@
         "index": 0,
         "start": 262,
         "end": 265,
-        "text": "保持 / ケン・バーンズ / kenBurns",
+        "text": "保持 / パルス / pulse",
         "lines": [
-          "保持 / ケン・バーンズ / kenBurns"
+          "保持 / パルス / pulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6071,9 +6120,9 @@
         "index": 0,
         "start": 265,
         "end": 268,
-        "text": "保持 / ドリフト / drift",
+        "text": "保持 / 透明度パルス / opacityPulse",
         "lines": [
-          "保持 / ドリフト / drift"
+          "保持 / 透明度パルス / opacityPulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6087,9 +6136,9 @@
         "index": 0,
         "start": 268,
         "end": 271,
-        "text": "保持 / マーキー / marquee",
+        "text": "保持 / ケン・バーンズ / kenBurns",
         "lines": [
-          "保持 / マーキー / marquee"
+          "保持 / ケン・バーンズ / kenBurns"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6103,9 +6152,9 @@
         "index": 0,
         "start": 271,
         "end": 274,
-        "text": "保持 / ゼリー / jelly",
+        "text": "保持 / ドリフト / drift",
         "lines": [
-          "保持 / ゼリー / jelly"
+          "保持 / ドリフト / drift"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6119,9 +6168,9 @@
         "index": 0,
         "start": 274,
         "end": 277,
-        "text": "保持 / うねりワープ / wobbleWarp",
+        "text": "保持 / マーキー / marquee",
         "lines": [
-          "保持 / うねりワープ / wobbleWarp"
+          "保持 / マーキー / marquee"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6135,9 +6184,9 @@
         "index": 0,
         "start": 277,
         "end": 280,
-        "text": "保持 / ツイスト / twist",
+        "text": "保持 / ゼリー / jelly",
         "lines": [
-          "保持 / ツイスト / twist"
+          "保持 / ゼリー / jelly"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6151,9 +6200,9 @@
         "index": 0,
         "start": 280,
         "end": 283,
-        "text": "保持 / ブリージング / breathing",
+        "text": "保持 / うねりワープ / wobbleWarp",
         "lines": [
-          "保持 / ブリージング / breathing"
+          "保持 / うねりワープ / wobbleWarp"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6167,9 +6216,9 @@
         "index": 0,
         "start": 283,
         "end": 286,
-        "text": "保持 / 3Dオービット / orbit3D",
+        "text": "保持 / ツイスト / twist",
         "lines": [
-          "保持 / 3Dオービット / orbit3D"
+          "保持 / ツイスト / twist"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6183,9 +6232,9 @@
         "index": 0,
         "start": 286,
         "end": 289,
-        "text": "保持 / パス追従 / pathFollow",
+        "text": "保持 / ブリージング / breathing",
         "lines": [
-          "保持 / パス追従 / pathFollow"
+          "保持 / ブリージング / breathing"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6199,9 +6248,9 @@
         "index": 0,
         "start": 289,
         "end": 292,
-        "text": "保持 / 鼓動 / heartbeat",
+        "text": "保持 / 3Dオービット / orbit3D",
         "lines": [
-          "保持 / 鼓動 / heartbeat"
+          "保持 / 3Dオービット / orbit3D"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6215,9 +6264,9 @@
         "index": 0,
         "start": 292,
         "end": 295,
-        "text": "保持 / 震え / shiver",
+        "text": "保持 / パス追従 / pathFollow",
         "lines": [
-          "保持 / 震え / shiver"
+          "保持 / パス追従 / pathFollow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6231,9 +6280,9 @@
         "index": 0,
         "start": 295,
         "end": 298,
-        "text": "保持 / ディゾルブ / dissolve",
+        "text": "保持 / 鼓動 / heartbeat",
         "lines": [
-          "保持 / ディゾルブ / dissolve"
+          "保持 / 鼓動 / heartbeat"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6247,9 +6296,9 @@
         "index": 0,
         "start": 298,
         "end": 301,
-        "text": "位置 / 中央 / center",
+        "text": "保持 / 震え / shiver",
         "lines": [
-          "位置 / 中央 / center"
+          "保持 / 震え / shiver"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6263,9 +6312,9 @@
         "index": 0,
         "start": 301,
         "end": 304,
-        "text": "位置 / 下三分の一 / lowerThird",
+        "text": "保持 / ディゾルブ / dissolve",
         "lines": [
-          "位置 / 下三分の一 / lowerThird"
+          "保持 / ディゾルブ / dissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6279,9 +6328,9 @@
         "index": 0,
         "start": 304,
         "end": 307,
-        "text": "位置 / 上三分の一 / upperThird",
+        "text": "位置 / 中央 / center",
         "lines": [
-          "位置 / 上三分の一 / upperThird"
+          "位置 / 中央 / center"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6295,9 +6344,9 @@
         "index": 0,
         "start": 307,
         "end": 310,
-        "text": "位置 / 左 / left",
+        "text": "位置 / 下三分の一 / lowerThird",
         "lines": [
-          "位置 / 左 / left"
+          "位置 / 下三分の一 / lowerThird"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6311,9 +6360,9 @@
         "index": 0,
         "start": 310,
         "end": 313,
-        "text": "位置 / 右 / right",
+        "text": "位置 / 上三分の一 / upperThird",
         "lines": [
-          "位置 / 右 / right"
+          "位置 / 上三分の一 / upperThird"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6327,9 +6376,9 @@
         "index": 0,
         "start": 313,
         "end": 316,
-        "text": "位置 / カラオケ / karaoke",
+        "text": "位置 / 左 / left",
         "lines": [
-          "位置 / カラオケ / karaoke"
+          "位置 / 左 / left"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6343,9 +6392,9 @@
         "index": 0,
         "start": 316,
         "end": 319,
-        "text": "位置 / 積み重ね / stacked",
+        "text": "位置 / 右 / right",
         "lines": [
-          "位置 / 積み重ね / stacked"
+          "位置 / 右 / right"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6359,10 +6408,9 @@
         "index": 0,
         "start": 319,
         "end": 322,
-        "text": "位置 / ランダム（安全\n領域） / randomSafe",
+        "text": "位置 / カラオケ / karaoke",
         "lines": [
-          "位置 / ランダム（安全",
-          "領域） / randomSafe"
+          "位置 / カラオケ / karaoke"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6376,9 +6424,9 @@
         "index": 0,
         "start": 322,
         "end": 325,
-        "text": "位置 / バッジ固定 / badgeAnchored",
+        "text": "位置 / 積み重ね / stacked",
         "lines": [
-          "位置 / バッジ固定 / badgeAnchored"
+          "位置 / 積み重ね / stacked"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6392,9 +6440,10 @@
         "index": 0,
         "start": 325,
         "end": 328,
-        "text": "位置 / カスタム / custom",
+        "text": "位置 / ランダム（安全\n領域） / randomSafe",
         "lines": [
-          "位置 / カスタム / custom"
+          "位置 / ランダム（安全",
+          "領域） / randomSafe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6408,10 +6457,9 @@
         "index": 0,
         "start": 328,
         "end": 331,
-        "text": "塗り / グラデーションスイープ\n/ gradientSweep",
+        "text": "位置 / バッジ固定 / badgeAnchored",
         "lines": [
-          "塗り / グラデーションスイープ",
-          "/ gradientSweep"
+          "位置 / バッジ固定 / badgeAnchored"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6425,10 +6473,9 @@
         "index": 0,
         "start": 331,
         "end": 334,
-        "text": "塗り / レインボーフロー\n/ rainbowFlow",
+        "text": "位置 / カスタム / custom",
         "lines": [
-          "塗り / レインボーフロー",
-          "/ rainbowFlow"
+          "位置 / カスタム / custom"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6442,10 +6489,10 @@
         "index": 0,
         "start": 334,
         "end": 337,
-        "text": "塗り / ホログラフィック\n/ holographic",
+        "text": "塗り / グラデーションスイープ\n/ gradientSweep",
         "lines": [
-          "塗り / ホログラフィック",
-          "/ holographic"
+          "塗り / グラデーションスイープ",
+          "/ gradientSweep"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6459,9 +6506,10 @@
         "index": 0,
         "start": 337,
         "end": 340,
-        "text": "塗り / クローム / chrome",
+        "text": "塗り / レインボーフロー\n/ rainbowFlow",
         "lines": [
-          "塗り / クローム / chrome"
+          "塗り / レインボーフロー",
+          "/ rainbowFlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6475,9 +6523,10 @@
         "index": 0,
         "start": 340,
         "end": 343,
-        "text": "塗り / 金箔 / goldFoil",
+        "text": "塗り / ホログラフィック\n/ holographic",
         "lines": [
-          "塗り / 金箔 / goldFoil"
+          "塗り / ホログラフィック",
+          "/ holographic"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6491,9 +6540,9 @@
         "index": 0,
         "start": 343,
         "end": 346,
-        "text": "塗り / 炎 / fire",
+        "text": "塗り / クローム / chrome",
         "lines": [
-          "塗り / 炎 / fire"
+          "塗り / クローム / chrome"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6507,9 +6556,9 @@
         "index": 0,
         "start": 346,
         "end": 349,
-        "text": "塗り / コースティクス / caustics",
+        "text": "塗り / 金箔 / goldFoil",
         "lines": [
-          "塗り / コースティクス / caustics"
+          "塗り / 金箔 / goldFoil"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6523,9 +6572,9 @@
         "index": 0,
         "start": 349,
         "end": 352,
-        "text": "塗り / 大理石 / marble",
+        "text": "塗り / 炎 / fire",
         "lines": [
-          "塗り / 大理石 / marble"
+          "塗り / 炎 / fire"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6539,9 +6588,9 @@
         "index": 0,
         "start": 352,
         "end": 355,
-        "text": "塗り / ガラス / glass",
+        "text": "塗り / コースティクス / caustics",
         "lines": [
-          "塗り / ガラス / glass"
+          "塗り / コースティクス / caustics"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6555,9 +6604,9 @@
         "index": 0,
         "start": 355,
         "end": 358,
-        "text": "塗り / テクスチャ / textureFill",
+        "text": "塗り / 大理石 / marble",
         "lines": [
-          "塗り / テクスチャ / textureFill"
+          "塗り / 大理石 / marble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6571,10 +6620,9 @@
         "index": 0,
         "start": 358,
         "end": 361,
-        "text": "塗り / カラオケワイプ\n/ karaokeWipe",
+        "text": "塗り / ガラス / glass",
         "lines": [
-          "塗り / カラオケワイプ",
-          "/ karaokeWipe"
+          "塗り / ガラス / glass"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6588,9 +6636,9 @@
         "index": 0,
         "start": 361,
         "end": 364,
-        "text": "塗り / 墨 / ink",
+        "text": "塗り / テクスチャ / textureFill",
         "lines": [
-          "塗り / 墨 / ink"
+          "塗り / テクスチャ / textureFill"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6604,9 +6652,10 @@
         "index": 0,
         "start": 364,
         "end": 367,
-        "text": "縁取り / 縁取り / outline",
+        "text": "塗り / カラオケワイプ\n/ karaokeWipe",
         "lines": [
-          "縁取り / 縁取り / outline"
+          "塗り / カラオケワイプ",
+          "/ karaokeWipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6620,9 +6669,9 @@
         "index": 0,
         "start": 367,
         "end": 370,
-        "text": "縁取り / ネオン / neonGlow",
+        "text": "塗り / 墨 / ink",
         "lines": [
-          "縁取り / ネオン / neonGlow"
+          "塗り / 墨 / ink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6636,9 +6685,9 @@
         "index": 0,
         "start": 370,
         "end": 373,
-        "text": "縁取り / 内側グロー / innerGlow",
+        "text": "縁取り / 縁取り / outline",
         "lines": [
-          "縁取り / 内側グロー / innerGlow"
+          "縁取り / 縁取り / outline"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6652,9 +6701,9 @@
         "index": 0,
         "start": 373,
         "end": 376,
-        "text": "縁取り / ベベル / bevel",
+        "text": "縁取り / ネオン / neonGlow",
         "lines": [
-          "縁取り / ベベル / bevel"
+          "縁取り / ネオン / neonGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6668,9 +6717,9 @@
         "index": 0,
         "start": 376,
         "end": 379,
-        "text": "縁取り / 押し出し / extrude",
+        "text": "縁取り / 内側グロー / innerGlow",
         "lines": [
-          "縁取り / 押し出し / extrude"
+          "縁取り / 内側グロー / innerGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6684,10 +6733,9 @@
         "index": 0,
         "start": 379,
         "end": 382,
-        "text": "縁取り / ロングシャドウ\n/ longShadow",
+        "text": "縁取り / ベベル / bevel",
         "lines": [
-          "縁取り / ロングシャドウ",
-          "/ longShadow"
+          "縁取り / ベベル / bevel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6701,10 +6749,9 @@
         "index": 0,
         "start": 382,
         "end": 385,
-        "text": "縁取り / ドロップシャドウ\n/ dropShadow",
+        "text": "縁取り / 押し出し / extrude",
         "lines": [
-          "縁取り / ドロップシャドウ",
-          "/ dropShadow"
+          "縁取り / 押し出し / extrude"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6718,9 +6765,10 @@
         "index": 0,
         "start": 385,
         "end": 388,
-        "text": "縁取り / 滴り / drip",
+        "text": "縁取り / ロングシャドウ\n/ longShadow",
         "lines": [
-          "縁取り / 滴り / drip"
+          "縁取り / ロングシャドウ",
+          "/ longShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6734,10 +6782,10 @@
         "index": 0,
         "start": 388,
         "end": 391,
-        "text": "後処理 / グリッチブロック\n/ glitchBlocks",
+        "text": "縁取り / ドロップシャドウ\n/ dropShadow",
         "lines": [
-          "後処理 / グリッチブロック",
-          "/ glitchBlocks"
+          "縁取り / ドロップシャドウ",
+          "/ dropShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6751,9 +6799,9 @@
         "index": 0,
         "start": 391,
         "end": 394,
-        "text": "後処理 / RGBシフト / rgbShift",
+        "text": "縁取り / 滴り / drip",
         "lines": [
-          "後処理 / RGBシフト / rgbShift"
+          "縁取り / 滴り / drip"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6767,9 +6815,10 @@
         "index": 0,
         "start": 394,
         "end": 397,
-        "text": "後処理 / スキャンティア / scanTear",
+        "text": "後処理 / グリッチブロック\n/ glitchBlocks",
         "lines": [
-          "後処理 / スキャンティア / scanTear"
+          "後処理 / グリッチブロック",
+          "/ glitchBlocks"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6783,10 +6832,9 @@
         "index": 0,
         "start": 397,
         "end": 400,
-        "text": "後処理 / VHSトラッキング\n/ vhsTracking",
+        "text": "後処理 / RGBシフト / rgbShift",
         "lines": [
-          "後処理 / VHSトラッキング",
-          "/ vhsTracking"
+          "後処理 / RGBシフト / rgbShift"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6800,9 +6848,9 @@
         "index": 0,
         "start": 400,
         "end": 403,
-        "text": "後処理 / データスミア / dataSmear",
+        "text": "後処理 / スキャンティア / scanTear",
         "lines": [
-          "後処理 / データスミア / dataSmear"
+          "後処理 / スキャンティア / scanTear"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6816,10 +6864,10 @@
         "index": 0,
         "start": 403,
         "end": 406,
-        "text": "後処理 / デジタルノイズ\n/ digitalNoise",
+        "text": "後処理 / VHSトラッキング\n/ vhsTracking",
         "lines": [
-          "後処理 / デジタルノイズ",
-          "/ digitalNoise"
+          "後処理 / VHSトラッキング",
+          "/ vhsTracking"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6833,10 +6881,9 @@
         "index": 0,
         "start": 406,
         "end": 409,
-        "text": "後処理 / グリッチスライス\n/ glitchSlice",
+        "text": "後処理 / データスミア / dataSmear",
         "lines": [
-          "後処理 / グリッチスライス",
-          "/ glitchSlice"
+          "後処理 / データスミア / dataSmear"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6850,10 +6897,10 @@
         "index": 0,
         "start": 409,
         "end": 412,
-        "text": "後処理 / ノイズディゾルブ\n/ noiseDissolve",
+        "text": "後処理 / デジタルノイズ\n/ digitalNoise",
         "lines": [
-          "後処理 / ノイズディゾルブ",
-          "/ noiseDissolve"
+          "後処理 / デジタルノイズ",
+          "/ digitalNoise"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6867,10 +6914,10 @@
         "index": 0,
         "start": 412,
         "end": 415,
-        "text": "後処理 / 方向ディゾルブ\n/ directionalDissolve",
+        "text": "後処理 / グリッチスライス\n/ glitchSlice",
         "lines": [
-          "後処理 / 方向ディゾルブ",
-          "/ directionalDissolve"
+          "後処理 / グリッチスライス",
+          "/ glitchSlice"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6884,10 +6931,10 @@
         "index": 0,
         "start": 415,
         "end": 418,
-        "text": "後処理 / ピクセルディゾルブ\n/ pixelDissolve",
+        "text": "後処理 / ノイズディゾルブ\n/ noiseDissolve",
         "lines": [
-          "後処理 / ピクセルディゾルブ",
-          "/ pixelDissolve"
+          "後処理 / ノイズディゾルブ",
+          "/ noiseDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6901,10 +6948,10 @@
         "index": 0,
         "start": 418,
         "end": 421,
-        "text": "後処理 / 燃焼ディゾルブ\n/ burnDissolve",
+        "text": "後処理 / 方向ディゾルブ\n/ directionalDissolve",
         "lines": [
-          "後処理 / 燃焼ディゾルブ",
-          "/ burnDissolve"
+          "後処理 / 方向ディゾルブ",
+          "/ directionalDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6918,10 +6965,10 @@
         "index": 0,
         "start": 421,
         "end": 424,
-        "text": "後処理 / ハーフトーンディゾルブ\n/ halftoneDissolve",
+        "text": "後処理 / ピクセルディゾルブ\n/ pixelDissolve",
         "lines": [
-          "後処理 / ハーフトーンディゾルブ",
-          "/ halftoneDissolve"
+          "後処理 / ピクセルディゾルブ",
+          "/ pixelDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6935,10 +6982,10 @@
         "index": 0,
         "start": 424,
         "end": 427,
-        "text": "後処理 / パーティクルディゾルブ\n/ particleDissolve",
+        "text": "後処理 / 燃焼ディゾルブ\n/ burnDissolve",
         "lines": [
-          "後処理 / パーティクルディゾルブ",
-          "/ particleDissolve"
+          "後処理 / 燃焼ディゾルブ",
+          "/ burnDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6952,9 +6999,10 @@
         "index": 0,
         "start": 427,
         "end": 430,
-        "text": "後処理 / 衝撃波 / shockwave",
+        "text": "後処理 / ハーフトーンディゾルブ\n/ halftoneDissolve",
         "lines": [
-          "後処理 / 衝撃波 / shockwave"
+          "後処理 / ハーフトーンディゾルブ",
+          "/ halftoneDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6968,9 +7016,10 @@
         "index": 0,
         "start": 430,
         "end": 433,
-        "text": "後処理 / ズームブラー / zoomBlur",
+        "text": "後処理 / パーティクルディゾルブ\n/ particleDissolve",
         "lines": [
-          "後処理 / ズームブラー / zoomBlur"
+          "後処理 / パーティクルディゾルブ",
+          "/ particleDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -6984,10 +7033,9 @@
         "index": 0,
         "start": 433,
         "end": 436,
-        "text": "後処理 / モーションブラー\n/ motionBlur",
+        "text": "後処理 / 衝撃波 / shockwave",
         "lines": [
-          "後処理 / モーションブラー",
-          "/ motionBlur"
+          "後処理 / 衝撃波 / shockwave"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7001,10 +7049,9 @@
         "index": 0,
         "start": 436,
         "end": 439,
-        "text": "後処理 / エコートレイル\n/ echoTrail",
+        "text": "後処理 / ズームブラー / zoomBlur",
         "lines": [
-          "後処理 / エコートレイル",
-          "/ echoTrail"
+          "後処理 / ズームブラー / zoomBlur"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7018,9 +7065,10 @@
         "index": 0,
         "start": 439,
         "end": 442,
-        "text": "後処理 / ゴッドレイ / godRays",
+        "text": "後処理 / モーションブラー\n/ motionBlur",
         "lines": [
-          "後処理 / ゴッドレイ / godRays"
+          "後処理 / モーションブラー",
+          "/ motionBlur"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7034,10 +7082,10 @@
         "index": 0,
         "start": 442,
         "end": 445,
-        "text": "後処理 / ライトスイープ\n/ lightSweep",
+        "text": "後処理 / エコートレイル\n/ echoTrail",
         "lines": [
-          "後処理 / ライトスイープ",
-          "/ lightSweep"
+          "後処理 / エコートレイル",
+          "/ echoTrail"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7051,9 +7099,9 @@
         "index": 0,
         "start": 445,
         "end": 448,
-        "text": "後処理 / 万華鏡 / kaleidoscope",
+        "text": "後処理 / ゴッドレイ / godRays",
         "lines": [
-          "後処理 / 万華鏡 / kaleidoscope"
+          "後処理 / ゴッドレイ / godRays"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7067,9 +7115,10 @@
         "index": 0,
         "start": 448,
         "end": 451,
-        "text": "後処理 / ミラー / mirror",
+        "text": "後処理 / ライトスイープ\n/ lightSweep",
         "lines": [
-          "後処理 / ミラー / mirror"
+          "後処理 / ライトスイープ",
+          "/ lightSweep"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7083,10 +7132,9 @@
         "index": 0,
         "start": 451,
         "end": 454,
-        "text": "後処理 / ピクセルソート\n/ pixelSort",
+        "text": "後処理 / 万華鏡 / kaleidoscope",
         "lines": [
-          "後処理 / ピクセルソート",
-          "/ pixelSort"
+          "後処理 / 万華鏡 / kaleidoscope"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7100,10 +7148,9 @@
         "index": 0,
         "start": 454,
         "end": 457,
-        "text": "後処理 / レンズ\n歪み / lensDistortion",
+        "text": "後処理 / ミラー / mirror",
         "lines": [
-          "後処理 / レンズ",
-          "歪み / lensDistortion"
+          "後処理 / ミラー / mirror"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7117,10 +7164,10 @@
         "index": 0,
         "start": 457,
         "end": 460,
-        "text": "後処理 / カラーグレード\n/ colorGrade",
+        "text": "後処理 / ピクセルソート\n/ pixelSort",
         "lines": [
-          "後処理 / カラーグレード",
-          "/ colorGrade"
+          "後処理 / ピクセルソート",
+          "/ pixelSort"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7134,10 +7181,10 @@
         "index": 0,
         "start": 460,
         "end": 463,
-        "text": "後処理 / 変位マップ\n/ displacementMap",
+        "text": "後処理 / レンズ\n歪み / lensDistortion",
         "lines": [
-          "後処理 / 変位マップ",
-          "/ displacementMap"
+          "後処理 / レンズ",
+          "歪み / lensDistortion"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7151,9 +7198,10 @@
         "index": 0,
         "start": 463,
         "end": 466,
-        "text": "後処理 / ブルーム / bloom",
+        "text": "後処理 / カラーグレード\n/ colorGrade",
         "lines": [
-          "後処理 / ブルーム / bloom"
+          "後処理 / カラーグレード",
+          "/ colorGrade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7167,10 +7215,10 @@
         "index": 0,
         "start": 466,
         "end": 469,
-        "text": "後処理 / 色収差\n/ chromaticAberration",
+        "text": "後処理 / 変位マップ\n/ displacementMap",
         "lines": [
-          "後処理 / 色収差",
-          "/ chromaticAberration"
+          "後処理 / 変位マップ",
+          "/ displacementMap"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7184,9 +7232,9 @@
         "index": 0,
         "start": 469,
         "end": 472,
-        "text": "後処理 / CRT / crt",
+        "text": "後処理 / ブルーム / bloom",
         "lines": [
-          "後処理 / CRT / crt"
+          "後処理 / ブルーム / bloom"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7200,10 +7248,10 @@
         "index": 0,
         "start": 472,
         "end": 475,
-        "text": "後処理 / フィルムグレイン\n/ filmGrain",
+        "text": "後処理 / 色収差\n/ chromaticAberration",
         "lines": [
-          "後処理 / フィルムグレイン",
-          "/ filmGrain"
+          "後処理 / 色収差",
+          "/ chromaticAberration"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7217,9 +7265,9 @@
         "index": 0,
         "start": 475,
         "end": 478,
-        "text": "後処理 / ハーフトーン / halftone",
+        "text": "後処理 / CRT / crt",
         "lines": [
-          "後処理 / ハーフトーン / halftone"
+          "後処理 / CRT / crt"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7233,9 +7281,10 @@
         "index": 0,
         "start": 478,
         "end": 481,
-        "text": "後処理 / ピクセル化 / pixelate",
+        "text": "後処理 / フィルムグレイン\n/ filmGrain",
         "lines": [
-          "後処理 / ピクセル化 / pixelate"
+          "後処理 / フィルムグレイン",
+          "/ filmGrain"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7249,9 +7298,9 @@
         "index": 0,
         "start": 481,
         "end": 484,
-        "text": "後処理 / 陽炎 / heatHaze",
+        "text": "後処理 / ハーフトーン / halftone",
         "lines": [
-          "後処理 / 陽炎 / heatHaze"
+          "後処理 / ハーフトーン / halftone"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7265,9 +7314,9 @@
         "index": 0,
         "start": 484,
         "end": 487,
-        "text": "後処理 / ライトリーク / lightLeak",
+        "text": "後処理 / ピクセル化 / pixelate",
         "lines": [
-          "後処理 / ライトリーク / lightLeak"
+          "後処理 / ピクセル化 / pixelate"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7281,9 +7330,9 @@
         "index": 0,
         "start": 487,
         "end": 490,
-        "text": "後処理 / ビネット / vignette",
+        "text": "後処理 / 陽炎 / heatHaze",
         "lines": [
-          "後処理 / ビネット / vignette"
+          "後処理 / 陽炎 / heatHaze"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7297,9 +7346,9 @@
         "index": 0,
         "start": 490,
         "end": 493,
-        "text": "後処理 / スパークル / sparkles",
+        "text": "後処理 / ライトリーク / lightLeak",
         "lines": [
-          "後処理 / スパークル / sparkles"
+          "後処理 / ライトリーク / lightLeak"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7313,9 +7362,9 @@
         "index": 0,
         "start": 493,
         "end": 496,
-        "text": "後処理 / レンズフレア / lensFlare",
+        "text": "後処理 / ビネット / vignette",
         "lines": [
-          "後処理 / レンズフレア / lensFlare"
+          "後処理 / ビネット / vignette"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7329,9 +7378,9 @@
         "index": 0,
         "start": 496,
         "end": 499,
-        "text": "背景 / 単色 / solid",
+        "text": "後処理 / スパークル / sparkles",
         "lines": [
-          "背景 / 単色 / solid"
+          "後処理 / スパークル / sparkles"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7345,9 +7394,9 @@
         "index": 0,
         "start": 499,
         "end": 502,
-        "text": "背景 / ベタ塗り / plain",
+        "text": "後処理 / レンズフレア / lensFlare",
         "lines": [
-          "背景 / ベタ塗り / plain"
+          "後処理 / レンズフレア / lensFlare"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7361,9 +7410,9 @@
         "index": 0,
         "start": 502,
         "end": 505,
-        "text": "背景 / グラデーション / gradient",
+        "text": "背景 / 単色 / solid",
         "lines": [
-          "背景 / グラデーション / gradient"
+          "背景 / 単色 / solid"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7377,10 +7426,9 @@
         "index": 0,
         "start": 505,
         "end": 508,
-        "text": "背景 / ノイズグラデーション\n/ noiseGradient",
+        "text": "背景 / ベタ塗り / plain",
         "lines": [
-          "背景 / ノイズグラデーション",
-          "/ noiseGradient"
+          "背景 / ベタ塗り / plain"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7394,9 +7442,9 @@
         "index": 0,
         "start": 508,
         "end": 511,
-        "text": "背景 / 実績カード / card",
+        "text": "背景 / グラデーション / gradient",
         "lines": [
-          "背景 / 実績カード / card"
+          "背景 / グラデーション / gradient"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7410,9 +7458,10 @@
         "index": 0,
         "start": 511,
         "end": 514,
-        "text": "背景 / 楽曲カバー / cover",
+        "text": "背景 / ノイズグラデーション\n/ noiseGradient",
         "lines": [
-          "背景 / 楽曲カバー / cover"
+          "背景 / ノイズグラデーション",
+          "/ noiseGradient"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7426,9 +7475,9 @@
         "index": 0,
         "start": 514,
         "end": 517,
-        "text": "背景 / 画像 / image",
+        "text": "背景 / 実績カード / card",
         "lines": [
-          "背景 / 画像 / image"
+          "背景 / 実績カード / card"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7442,9 +7491,9 @@
         "index": 0,
         "start": 517,
         "end": 520,
-        "text": "背景 / パターン / pattern",
+        "text": "背景 / 楽曲カバー / cover",
         "lines": [
-          "背景 / パターン / pattern"
+          "背景 / 楽曲カバー / cover"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7458,9 +7507,9 @@
         "index": 0,
         "start": 520,
         "end": 523,
-        "text": "背景 / 図形 / shapes",
+        "text": "背景 / 画像 / image",
         "lines": [
-          "背景 / 図形 / shapes"
+          "背景 / 画像 / image"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7474,9 +7523,9 @@
         "index": 0,
         "start": 523,
         "end": 526,
-        "text": "文字背景 / なし / none",
+        "text": "背景 / パターン / pattern",
         "lines": [
-          "文字背景 / なし / none"
+          "背景 / パターン / pattern"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7490,9 +7539,9 @@
         "index": 0,
         "start": 526,
         "end": 529,
-        "text": "文字背景 / 四角 / square",
+        "text": "背景 / 図形 / shapes",
         "lines": [
-          "文字背景 / 四角 / square"
+          "背景 / 図形 / shapes"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7506,12 +7555,11 @@
         "index": 0,
         "start": 529,
         "end": 532,
-        "text": "文字背景の塗り / \nグラデーションスイープ / gradientSweep",
+        "text": "文字背景 / なし / none",
         "lines": [
-          "文字背景の塗り / ",
-          "グラデーションスイープ / gradientSweep"
+          "文字背景 / なし / none"
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -7523,10 +7571,9 @@
         "index": 0,
         "start": 532,
         "end": 535,
-        "text": "文字背景の塗り / \nレインボーフロー / rainbowFlow",
+        "text": "文字背景 / 四角 / square",
         "lines": [
-          "文字背景の塗り / ",
-          "レインボーフロー / rainbowFlow"
+          "文字背景 / 四角 / square"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7540,12 +7587,12 @@
         "index": 0,
         "start": 535,
         "end": 538,
-        "text": "文字背景の塗り / \nホログラフィック / holographic",
+        "text": "文字背景の塗り / \nグラデーションスイープ / gradientSweep",
         "lines": [
           "文字背景の塗り / ",
-          "ホログラフィック / holographic"
+          "グラデーションスイープ / gradientSweep"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -7557,9 +7604,10 @@
         "index": 0,
         "start": 538,
         "end": 541,
-        "text": "文字背景の塗り / クローム / chrome",
+        "text": "文字背景の塗り / \nレインボーフロー / rainbowFlow",
         "lines": [
-          "文字背景の塗り / クローム / chrome"
+          "文字背景の塗り / ",
+          "レインボーフロー / rainbowFlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7573,9 +7621,10 @@
         "index": 0,
         "start": 541,
         "end": 544,
-        "text": "文字背景の塗り / 金箔 / goldFoil",
+        "text": "文字背景の塗り / \nホログラフィック / holographic",
         "lines": [
-          "文字背景の塗り / 金箔 / goldFoil"
+          "文字背景の塗り / ",
+          "ホログラフィック / holographic"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7589,9 +7638,9 @@
         "index": 0,
         "start": 544,
         "end": 547,
-        "text": "文字背景の塗り / 炎 / fire",
+        "text": "文字背景の塗り / クローム / chrome",
         "lines": [
-          "文字背景の塗り / 炎 / fire"
+          "文字背景の塗り / クローム / chrome"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7605,10 +7654,9 @@
         "index": 0,
         "start": 547,
         "end": 550,
-        "text": "文字背景の塗り / \nコースティクス / caustics",
+        "text": "文字背景の塗り / 金箔 / goldFoil",
         "lines": [
-          "文字背景の塗り / ",
-          "コースティクス / caustics"
+          "文字背景の塗り / 金箔 / goldFoil"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7622,9 +7670,9 @@
         "index": 0,
         "start": 550,
         "end": 553,
-        "text": "文字背景の塗り / 大理石 / marble",
+        "text": "文字背景の塗り / 炎 / fire",
         "lines": [
-          "文字背景の塗り / 大理石 / marble"
+          "文字背景の塗り / 炎 / fire"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7638,9 +7686,10 @@
         "index": 0,
         "start": 553,
         "end": 556,
-        "text": "文字背景の塗り / ガラス / glass",
+        "text": "文字背景の塗り / \nコースティクス / caustics",
         "lines": [
-          "文字背景の塗り / ガラス / glass"
+          "文字背景の塗り / ",
+          "コースティクス / caustics"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7654,10 +7703,9 @@
         "index": 0,
         "start": 556,
         "end": 559,
-        "text": "文字背景の塗り / \nテクスチャ / textureFill",
+        "text": "文字背景の塗り / 大理石 / marble",
         "lines": [
-          "文字背景の塗り / ",
-          "テクスチャ / textureFill"
+          "文字背景の塗り / 大理石 / marble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7671,10 +7719,9 @@
         "index": 0,
         "start": 559,
         "end": 562,
-        "text": "文字背景の塗り / \nカラオケワイプ / karaokeWipe",
+        "text": "文字背景の塗り / ガラス / glass",
         "lines": [
-          "文字背景の塗り / ",
-          "カラオケワイプ / karaokeWipe"
+          "文字背景の塗り / ガラス / glass"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7688,9 +7735,10 @@
         "index": 0,
         "start": 562,
         "end": 565,
-        "text": "文字背景の塗り / 墨 / ink",
+        "text": "文字背景の塗り / \nテクスチャ / textureFill",
         "lines": [
-          "文字背景の塗り / 墨 / ink"
+          "文字背景の塗り / ",
+          "テクスチャ / textureFill"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7704,10 +7752,10 @@
         "index": 0,
         "start": 565,
         "end": 568,
-        "text": "文字背景の縁取り / \n縁取り / outline",
+        "text": "文字背景の塗り / \nカラオケワイプ / karaokeWipe",
         "lines": [
-          "文字背景の縁取り / ",
-          "縁取り / outline"
+          "文字背景の塗り / ",
+          "カラオケワイプ / karaokeWipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7721,10 +7769,9 @@
         "index": 0,
         "start": 568,
         "end": 571,
-        "text": "文字背景の縁取り / \nネオン / neonGlow",
+        "text": "文字背景の塗り / 墨 / ink",
         "lines": [
-          "文字背景の縁取り / ",
-          "ネオン / neonGlow"
+          "文字背景の塗り / 墨 / ink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7738,10 +7785,10 @@
         "index": 0,
         "start": 571,
         "end": 574,
-        "text": "文字背景の縁取り / \n内側グロー / innerGlow",
+        "text": "文字背景の縁取り / \n縁取り / outline",
         "lines": [
           "文字背景の縁取り / ",
-          "内側グロー / innerGlow"
+          "縁取り / outline"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7755,9 +7802,10 @@
         "index": 0,
         "start": 574,
         "end": 577,
-        "text": "文字背景の縁取り / ベベル / bevel",
+        "text": "文字背景の縁取り / \nネオン / neonGlow",
         "lines": [
-          "文字背景の縁取り / ベベル / bevel"
+          "文字背景の縁取り / ",
+          "ネオン / neonGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7771,10 +7819,10 @@
         "index": 0,
         "start": 577,
         "end": 580,
-        "text": "文字背景の縁取り / \n押し出し / extrude",
+        "text": "文字背景の縁取り / \n内側グロー / innerGlow",
         "lines": [
           "文字背景の縁取り / ",
-          "押し出し / extrude"
+          "内側グロー / innerGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7788,10 +7836,9 @@
         "index": 0,
         "start": 580,
         "end": 583,
-        "text": "文字背景の縁取り / \nロングシャドウ / longShadow",
+        "text": "文字背景の縁取り / ベベル / bevel",
         "lines": [
-          "文字背景の縁取り / ",
-          "ロングシャドウ / longShadow"
+          "文字背景の縁取り / ベベル / bevel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7805,10 +7852,10 @@
         "index": 0,
         "start": 583,
         "end": 586,
-        "text": "文字背景の縁取り / \nドロップシャドウ / dropShadow",
+        "text": "文字背景の縁取り / \n押し出し / extrude",
         "lines": [
           "文字背景の縁取り / ",
-          "ドロップシャドウ / dropShadow"
+          "押し出し / extrude"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7822,9 +7869,10 @@
         "index": 0,
         "start": 586,
         "end": 589,
-        "text": "文字背景の縁取り / 滴り / drip",
+        "text": "文字背景の縁取り / \nロングシャドウ / longShadow",
         "lines": [
-          "文字背景の縁取り / 滴り / drip"
+          "文字背景の縁取り / ",
+          "ロングシャドウ / longShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7838,10 +7886,10 @@
         "index": 0,
         "start": 589,
         "end": 592,
-        "text": "文字背景の動き / \n文字に追従 / follow",
+        "text": "文字背景の縁取り / \nドロップシャドウ / dropShadow",
         "lines": [
-          "文字背景の動き / ",
-          "文字に追従 / follow"
+          "文字背景の縁取り / ",
+          "ドロップシャドウ / dropShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7855,9 +7903,9 @@
         "index": 0,
         "start": 592,
         "end": 595,
-        "text": "文字背景の動き / フェード / fade",
+        "text": "文字背景の縁取り / 滴り / drip",
         "lines": [
-          "文字背景の動き / フェード / fade"
+          "文字背景の縁取り / 滴り / drip"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7871,9 +7919,10 @@
         "index": 0,
         "start": 595,
         "end": 598,
-        "text": "文字背景の動き / ポップ / pop",
+        "text": "文字背景の動き / \n文字に追従 / follow",
         "lines": [
-          "文字背景の動き / ポップ / pop"
+          "文字背景の動き / ",
+          "文字に追従 / follow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7887,9 +7936,9 @@
         "index": 0,
         "start": 598,
         "end": 601,
-        "text": "文字背景の動き / スタンプ / stamp",
+        "text": "文字背景の動き / フェード / fade",
         "lines": [
-          "文字背景の動き / スタンプ / stamp"
+          "文字背景の動き / フェード / fade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7903,9 +7952,9 @@
         "index": 0,
         "start": 601,
         "end": 604,
-        "text": "文字背景の動き / ワイプ / wipe",
+        "text": "文字背景の動き / ポップ / pop",
         "lines": [
-          "文字背景の動き / ワイプ / wipe"
+          "文字背景の動き / ポップ / pop"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7919,9 +7968,9 @@
         "index": 0,
         "start": 604,
         "end": 607,
-        "text": "文字背景の動き / 回転 / spin",
+        "text": "文字背景の動き / スタンプ / stamp",
         "lines": [
-          "文字背景の動き / 回転 / spin"
+          "文字背景の動き / スタンプ / stamp"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7935,9 +7984,9 @@
         "index": 0,
         "start": 607,
         "end": 610,
-        "text": "文字背景の動き / 伸びる / grow",
+        "text": "文字背景の動き / ワイプ / wipe",
         "lines": [
-          "文字背景の動き / 伸びる / grow"
+          "文字背景の動き / ワイプ / wipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7951,9 +8000,9 @@
         "index": 0,
         "start": 610,
         "end": 613,
-        "text": "文字背景の動き / なし / none",
+        "text": "文字背景の動き / 回転 / spin",
         "lines": [
-          "文字背景の動き / なし / none"
+          "文字背景の動き / 回転 / spin"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7967,10 +8016,9 @@
         "index": 0,
         "start": 613,
         "end": 616,
-        "text": "文字背景の動き / \nちらつき / flicker",
+        "text": "文字背景の動き / 伸びる / grow",
         "lines": [
-          "文字背景の動き / ",
-          "ちらつき / flicker"
+          "文字背景の動き / 伸びる / grow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -7984,9 +8032,9 @@
         "index": 0,
         "start": 616,
         "end": 619,
-        "text": "文字背景の動き / にじみ / bleed",
+        "text": "文字背景の動き / なし / none",
         "lines": [
-          "文字背景の動き / にじみ / bleed"
+          "文字背景の動き / なし / none"
         ],
         "fontScale": 1,
         "pinned": false
@@ -8000,9 +8048,10 @@
         "index": 0,
         "start": 619,
         "end": 622,
-        "text": "文字背景の動き / 浮かぶ / float",
+        "text": "文字背景の動き / \nちらつき / flicker",
         "lines": [
-          "文字背景の動き / 浮かぶ / float"
+          "文字背景の動き / ",
+          "ちらつき / flicker"
         ],
         "fontScale": 1,
         "pinned": false
@@ -8016,6 +8065,38 @@
         "index": 0,
         "start": 622,
         "end": 625,
+        "text": "文字背景の動き / にじみ / bleed",
+        "lines": [
+          "文字背景の動き / にじみ / bleed"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_184": [
+      {
+        "id": "fx_184:single0",
+        "cueId": "fx_184",
+        "kind": "single",
+        "index": 0,
+        "start": 625,
+        "end": 628,
+        "text": "文字背景の動き / 浮かぶ / float",
+        "lines": [
+          "文字背景の動き / 浮かぶ / float"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_185": [
+      {
+        "id": "fx_185:single0",
+        "cueId": "fx_185",
+        "kind": "single",
+        "index": 0,
+        "start": 628,
+        "end": 631,
         "text": "文字背景の動き / 落下 / fall",
         "lines": [
           "文字背景の動き / 落下 / fall"
@@ -8050,47 +8131,47 @@
       "label": "登場 (enter)"
     },
     {
-      "t": 202,
+      "t": 205,
       "label": "退場 (exit)"
     },
     {
-      "t": 247,
+      "t": 253,
       "label": "保持 (hold)"
     },
     {
-      "t": 298,
+      "t": 304,
       "label": "位置 (location)"
     },
     {
-      "t": 328,
+      "t": 334,
       "label": "塗り (fill)"
     },
     {
-      "t": 364,
+      "t": 370,
       "label": "縁取り (edge)"
     },
     {
-      "t": 388,
+      "t": 394,
       "label": "後処理 (post)"
     },
     {
-      "t": 496,
+      "t": 502,
       "label": "背景 (background)"
     },
     {
-      "t": 523,
+      "t": 529,
       "label": "文字背景 (bgShape)"
     },
     {
-      "t": 529,
+      "t": 535,
       "label": "文字背景の塗り (bgFill)"
     },
     {
-      "t": 565,
+      "t": 571,
       "label": "文字背景の縁取り (bgEdge)"
     },
     {
-      "t": 589,
+      "t": 595,
       "label": "文字背景の動き (bgMotion)"
     }
   ],
@@ -8131,8 +8212,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 495.88,
-      "end": 499.12,
+      "start": 501.88,
+      "end": 505.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -8147,8 +8228,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 498.88,
-      "end": 502.12,
+      "start": 504.88,
+      "end": 508.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -8163,8 +8244,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 501.88,
-      "end": 505.12,
+      "start": 507.88,
+      "end": 511.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -8190,8 +8271,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 504.88,
-      "end": 508.12,
+      "start": 510.88,
+      "end": 514.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -8208,8 +8289,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 507.88,
-      "end": 511.12,
+      "start": 513.88,
+      "end": 517.12,
       "spec": {
         "type": "card",
         "params": {
@@ -8228,8 +8309,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 510.88,
-      "end": 514.12,
+      "start": 516.88,
+      "end": 520.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -8247,8 +8328,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 513.88,
-      "end": 517.12,
+      "start": 519.88,
+      "end": 523.12,
       "spec": {
         "type": "image",
         "params": {
@@ -8266,8 +8347,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 516.88,
-      "end": 520.12,
+      "start": 522.88,
+      "end": 526.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -8287,8 +8368,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 519.88,
-      "end": 523.12,
+      "start": 525.88,
+      "end": 529.12,
       "spec": {
         "type": "shapes",
         "params": {

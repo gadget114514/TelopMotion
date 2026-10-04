@@ -476,7 +476,8 @@ SA.glShaders = (() => {
     vec4 s6 = stateAt(6);   // deform slot 3
     vec4 s7 = stateAt(7);   // warpOrigin.xy, blockHalf.xy
     vec4 s8 = stateAt(8);   // wipeMode, wipeSoft, flash, maskFrac
-    if (s4.x > 0.5) {
+    // sand (4) keeps the mesh: it is eroded by the wipe while the grains fall
+    if (s4.x > 0.5 && s4.x < 3.5) {
       gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
       v_color = vec4(0.0);
       v_local = vec2(0.0);
@@ -768,12 +769,16 @@ SA.glShaders = (() => {
       color = mix(u_colorA, u_colorB, t);
     } else if (type == 4) {
       float t = v_uv.x * 0.5 + v_uv.y * 0.2 + u_time * max(u_params.z, 0.01) * 0.1;
-      color = vec4(hsv2rgb(vec3(fract(t), clamp(u_params.x, 0.0, 1.0), clamp(u_params.y, 0.05, 1.0))), 1.0);
+      float hue = fract(t + floor(local.x * max(u_params.w, 0.0)) * 0.08);
+      color = vec4(hsv2rgb(vec3(hue, clamp(u_params.x, 0.0, 1.0), clamp(u_params.y, 0.05, 1.0))), 1.0);
     } else if (type == 5) {
       vec2 n = sdfGradient();
       float angle = atan(n.y, n.x) / TAU + 0.5;
-      float t = fract(angle * 1.6 + v_uv.x * 0.3 + u_time * max(u_params.z, 0.01) * 0.05);
-      color = vec4(hsv2rgb(vec3(t, 0.55, 0.95)), 1.0);
+      // iridescence cycles the hue faster, fresnel biases it to the rim
+      float rim = pow(clamp(length(n) * 1.4, 0.0, 1.0), max(u_params.y, 0.0) * 3.0);
+      float t = fract(angle * (0.8 + 2.4 * clamp(u_params.x, 0.0, 1.0)) + v_uv.x * 0.3 + u_time * max(u_params.z, 0.01) * 0.05);
+      vec3 iri = hsv2rgb(vec3(t, 0.55, 0.95));
+      color = vec4(mix(hsv2rgb(vec3(t, 0.18, 0.85)), iri, rim), 1.0);
     } else if (type == 6) {
       vec2 n = sdfGradient();
       float h = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
@@ -785,9 +790,21 @@ SA.glShaders = (() => {
       env = mix(env, env * sharp, abs(n.x));
       color = vec4(env, u_colorA.a);
     } else if (type == 7) {
-      float grain = noise(v_uv * u_resolution * 0.35);
-      float sparkle = step(0.992, noise(v_uv * u_resolution * 0.9 + u_time * 0.5));
-      color = vec4(u_colorA.rgb * (0.72 + 0.6 * grain) + vec3(sparkle) * 0.6, u_colorA.a);
+      // gold leaf: a warm three-stop foil ramp over the glyph's own facet
+      // normal, brushed by u_params.x (grain) and dotted with u_params.y
+      // (sparkle) glints
+      float grainAmt = clamp(u_params.x, 0.0, 1.0);
+      float sparkleAmt = clamp(u_params.y, 0.0, 1.0);
+      vec2 n = sdfGradient();
+      float shade = clamp(n.y * 0.5 + 0.5, 0.0, 1.0);
+      vec3 foil = mix(u_colorA.rgb, u_colorB.rgb, smoothstep(0.12, 0.78, shade));
+      // a heavy brush keeps the blown highlight down, a clean sheet flares
+      foil = mix(foil, u_colorC.rgb, pow(shade, 5.0) * (1.0 - grainAmt * 0.5));
+      // the brush runs along the baseline, so the grain reads as rolled leaf
+      float brush = noise(vec2(v_uv.x * u_resolution.x * 0.02, v_uv.y * u_resolution.y * 0.55));
+      foil *= mix(1.0, 0.74 + 0.52 * brush, grainAmt);
+      float glint = step(1.0 - 0.004 * sparkleAmt, noise(v_uv * u_resolution * 0.04 + vec2(u_time * 0.7, -u_time * 0.45)));
+      color = vec4(foil + vec3(glint) * sparkleAmt, u_colorA.a);
     } else if (type == 8) {
       vec2 p = vec2(v_uv.x * 3.0, v_uv.y * 6.0 - u_time * max(u_params.z, 0.05) * 1.5);
       float n = fbm(p * max(u_params.x, 0.4), 4);
@@ -800,13 +817,24 @@ SA.glShaders = (() => {
       float rings = abs(sin(n * TAU * 2.0));
       color = mix(u_colorA, u_colorB, rings);
     } else if (type == 10) {
-      float n = fbm(v_uv * max(u_params.x, 1.0) * 4.0, 5);
-      float vein = abs(sin(n * 9.0 + u_params.y));
-      color = mix(u_colorA, u_colorB, smoothstep(0.0, 0.45, vein));
+      // marble: the noise field is domain-warped and then ridged, so the veins
+      // branch and taper instead of running as soft parallel bands
+      float scale = max(u_params.x, 0.5);
+      float veins = max(u_params.y, 1.0);
+      float sharp = clamp(u_params.z, 0.01, 0.5);
+      vec2 p = v_uv * vec2(scale * 3.4, scale * 1.1) + vec2(local.x * 0.004, 0.0);
+      float warp = fbm(p * 0.7, 3);
+      float turb = fbm(p + vec2(warp, fbm(p * 0.7 + 5.2, 3)) * 1.8, 5);
+      float band = abs(fract(turb * veins) - 0.5) * 2.0;
+      float vein = pow(clamp(1.0 - band, 0.0, 1.0), 1.0 / sharp);
+      vec3 base = mix(u_colorA.rgb, u_colorB.rgb, smoothstep(0.04, 0.55, vein));
+      color = vec4(mix(base, u_colorA.rgb * 0.4, vein), u_colorA.a);
     } else if (type == 11) {
       vec2 offset = sdfGradient() * max(u_params.x, 0.0) * 0.03;
       vec4 refracted = texture(u_text, v_uv + offset);
-      color = vec4(mix(refracted.rgb, u_colorA.rgb * max(refracted.a, 0.2), 0.4), max(refracted.a, mask * 0.8));
+      // the tint rides the blurred backdrop, the glyph body stays the palette
+      vec3 tint = mix(u_colorA.rgb, refracted.rgb, 0.35);
+      color = vec4(mix(refracted.rgb, tint, max(u_params.y, 0.0)), max(refracted.a, mask * 0.8));
     } else if (type == 12) {
       vec4 tex = texture(u_image, v_uv * max(u_params.x, 0.1) + u_params.yz);
       color = vec4(tex.rgb, max(tex.a, 0.0));
@@ -1042,6 +1070,12 @@ SA.glShaders = (() => {
 
   vec4 sampleText(vec2 uv) {
     return texture(u_text, clamp(uv, vec2(0.0), vec2(1.0)));
+  }
+
+  // like sampleText, but the area outside the layer is transparent
+  vec4 sampleTextOpen(vec2 uv) {
+    if (uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0);
+    return texture(u_text, uv);
   }
 
   // --- helpers for the dither / fade / scanline / stealth / geometry pack ------
@@ -1776,6 +1810,25 @@ SA.glShaders = (() => {
         a = max(a, rim);
       }
       color = vec4(rgb * a, a);
+    } else if (type == 52) {
+      // fisheye: a lens bulge (power > 0, barrel) or pinch (power < 0). The
+      // sample point moves out by (1 + k r^2) and is renormalised by (1 + k),
+      // so the lens radius keeps its size while the centre is magnified.
+      float k = u_params.x * amount;
+      vec2 center = u_params.yz;
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      float lens = max(u_params2.x, 0.05);
+      float split = u_params2.y;
+      vec2 q = (v_uv - center) * vec2(aspect, 1.0) / lens;
+      float r2 = dot(q, q);
+      float kr = k * (1.0 + split);
+      float kb = k * (1.0 - split);
+      vec2 toUv = lens / vec2(aspect, 1.0);
+      vec4 sr = sampleTextOpen(center + q * ((1.0 + kr * r2) / max(1.0 + kr, 0.2)) * toUv);
+      vec4 sg = sampleTextOpen(center + q * ((1.0 + k * r2) / max(1.0 + k, 0.2)) * toUv);
+      vec4 sb = sampleTextOpen(center + q * ((1.0 + kb * r2) / max(1.0 + kb, 0.2)) * toUv);
+      float a = max(sg.a, max(sr.a, sb.a));
+      color = vec4(min(vec3(sr.r, sg.g, sb.b), vec3(a)), a);
     }
     // The frame-wide graphics never paint over the subtitle: where the text
     // mask holds a glyph (plus its padding ring) the pre-post source wins.
@@ -2174,7 +2227,8 @@ SA.glShaders = (() => {
       float drift = u_time * max(u_params.y, 0.1) * 0.5;
       float n = fbm(v_uv * max(u_params.x, 1.0) * 3.0 + vec2(drift, drift * 0.6), 4);
       float n2 = fbm(v_uv * max(u_params.x, 1.0) * 1.1 - vec2(drift * 0.4, drift * 0.25), 3);
-      color = mix(u_colorA.rgb, u_colorB.rgb, clamp(n * 0.7 + n2 * 0.4, 0.0, 1.0));
+      // two to four stops, blended by the noise field
+      color = rampColor(clamp(n * 0.7 + n2 * 0.4, 0.0, 1.0), u_mode2);
       float t = u_time * 0.08;
       vec2 lightPos = vec2(0.5 + 0.24 * sin(t), 0.5 + 0.2 * cos(t * 0.8));
       // u_params.z is the centre-bright lift; -1 (unset) keeps the built-in one
@@ -2428,6 +2482,33 @@ SA.glShaders = (() => {
       color = mix(u_colorA.rgb, u_colorB.rgb, clamp(pattern, 0.0, 1.0));
       color += u_colorC.rgb * pow(clamp(pattern, 0.0, 1.0), 6.0) * 0.8;
       color *= fade;
+    } else if (u_type == 14) {
+      // gradient: a straight ramp along one of eight directions with two to
+      // four stops. u_mode is the direction (0 = down the screen, clockwise),
+      // u_mode2 the stop count - 2, u_params.x the ramp length (1 = across the
+      // frame), u_params.y the drift speed and u_params.z the centre lift.
+      vec2 dir = vec2(0.0, 1.0);
+      if (u_mode == 1) dir = vec2(-1.0, 1.0);
+      else if (u_mode == 2) dir = vec2(-1.0, 0.0);
+      else if (u_mode == 3) dir = vec2(-1.0, -1.0);
+      else if (u_mode == 4) dir = vec2(0.0, -1.0);
+      else if (u_mode == 5) dir = vec2(1.0, -1.0);
+      else if (u_mode == 6) dir = vec2(1.0, 0.0);
+      else dir = vec2(1.0, 1.0);
+      // uv space is not square, so the horizontal part of the axis is divided
+      // by the aspect: the diagonals then read as 45 degrees on screen
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      vec2 axis = normalize(vec2(dir.x / max(aspect, 0.001), dir.y) + vec2(0.0, 1e-6));
+      // the projection reaches +-0.5 on an axis and +-0.5 * (|x| + |y|) on a
+      // diagonal, so the span normalises both to -1..1
+      float span = 0.5 * (abs(axis.x) + abs(axis.y));
+      float t = dot(v_uv - 0.5, axis) / max(span, 0.001) * max(u_params.x, 0.05);
+      // the drift slides the ramp along its own axis and never leaves the stops
+      t += sin(u_time * max(u_params.y, 0.0) * 0.35) * 0.12;
+      color = rampColor(t * 0.5 + 0.5, u_mode2);
+      float lift = (u_params.z < 0.0 ? 0.22 : u_params.z) * smoothstep(0.9, 0.0, distance(v_uv, vec2(0.5)));
+      color = clamp(color * (1.0 + lift), 0.0, 1.0);
+      alpha = max(alpha, 1.0);
     } else if (u_type == 13) {
       // plain: the branch above already starts from a flat u_colorA, so this
       // only pins the intent. Pinned here so the flat look cannot drift if the
@@ -2554,6 +2635,29 @@ SA.glShaders = (() => {
       vec2 curl = vec2(sin(base.y * 0.02 + s4.w), cos(base.x * 0.02 + s4.w)) * a_extra.y * (1.0 - progress);
       p = base + curl;
       gl_PointSize = 2.0 + a_extra.y * 2.0;
+    } else if (u_repMode == 4) {
+      // sand: the grains peel off from the top down, in step with the mesh wipe
+      // (wipe cut = 2 * clamp(d / 0.72) - 1), then fall, drift and settle
+      vec4 sp = stateAt(23);   // wind, gravity, grain, pile
+      float d = 1.0 - clamp(s4.y, 0.0, 1.0);
+      float rel = clamp(a_pos.y / max(a_bbox.y, 1.0) * 0.5 + 0.5, 0.0, 1.0);
+      float tau = max(0.0, d - 0.72 * (rel + a_extra.x * 0.06));
+      if (tau <= 0.0) {
+        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+        return;
+      }
+      float fall = 0.5 * sp.y * tau * tau * u_resolution.y;
+      float drift = sp.x * tau * (0.25 + a_extra.x) * u_resolution.x * 0.25;
+      float flutter = sin(a_extra.x * 43.0 + tau * 14.0) * tau * 14.0;
+      p = a_pos + vec2(drift + flutter, fall);
+      if (sp.w > 0.5) {
+        float spanX = max(a_bbox.x * 1.4, 1.0);
+        float heap = max(0.0, 1.0 - (p.x * p.x) / (spanX * spanX));
+        float floorY = a_bbox.y * 1.1 - heap * a_bbox.y * 0.35 * (0.4 + 0.6 * a_extra.x);
+        p.y = min(p.y, floorY);
+      }
+      p *= vec2(s0.w, s1.x);
+      gl_PointSize = max(1.0, sp.z * a_extra.y * u_resolution.y / 1080.0);
     }
     vec2 world = applyTransform(p, s0, s1, s2, s3, s5, s6, s7, a_bbox);
     vec2 clip = (world / u_resolution) * 2.0 - 1.0;
@@ -2569,13 +2673,13 @@ SA.glShaders = (() => {
   in float v_wipe;
   in float v_flash;
   in vec4 v_extra;
-  uniform int u_repMode;      // 1 stroke, 2 pieces, 3 particles
+  uniform int u_repMode;      // 1 stroke, 2 pieces, 3 particles, 4 sand
   uniform vec4 u_strokeColor; // straight rgba
   out vec4 fragColor;
   void main() {
     vec4 color = v_color;
     if (v_flash > 0.001) color = vec4(mix(color.rgb, vec3(color.a), clamp(v_flash, 0.0, 1.0)), color.a);
-    if (u_repMode == 3) {
+    if (u_repMode == 3 || u_repMode == 4) {
       vec2 point = gl_PointCoord - vec2(0.5);
       if (dot(point, point) > 0.25) discard;
       fragColor = color;

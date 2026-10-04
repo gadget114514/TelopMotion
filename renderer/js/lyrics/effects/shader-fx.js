@@ -275,6 +275,36 @@
         };
       },
     },
+    {
+      type: 'fisheye',
+      code: 52,
+      tags: ['shader', 'distort'],
+      cost: 1,
+      target: 'frame',
+      params: [
+        { key: 'power', kind: 'number', min: -2, max: 4, step: 0.05, default: 1.2, random: [0.6, 2.4], section: 'fisheye' },
+        { key: 'center', kind: 'vec2', default: { x: 0.5, y: 0.5 }, section: 'fisheye' },
+        { key: 'lensRadius', kind: 'number', min: 0.1, max: 2, step: 0.01, default: 0.7, section: 'fisheye' },
+        { key: 'aberration', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.15, section: 'fisheye' },
+        { key: 'strength', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, section: 'fisheye' },
+      ],
+      uniforms(params, ctx) {
+        const p = params || {};
+        const context = ctx || {};
+        const envelope = context.envelope == null ? 1 : Math.max(0, context.envelope);
+        const center = p.center || { x: 0.5, y: 0.5 };
+        return {
+          u_params: [
+            num(p.power, 1.2),
+            num(center.x, 0.5),
+            num(center.y, 0.5),
+            envelope * clamp01(num(p.strength, 1)),
+          ],
+          u_params2: [Math.max(0.1, num(p.lensRadius, 0.7)), clamp01(num(p.aberration, 0.15)), 0, 0],
+          u_time: context.time || 0,
+        };
+      },
+    },
   ];
 
   for (const pack of POST_PACKS) {

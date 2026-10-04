@@ -2260,6 +2260,7 @@ SA.lyricsEngine = (() => {
           pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
           pipeline.representation(scene, result.letters, 'pieces', variant);
           pipeline.representation(scene, result.letters, 'particles', variant);
+          pipeline.representation(scene, result.letters, 'sand', variant);
         }
         const edgeContext = {
           colorSet: colorSet.arrays,

@@ -4,7 +4,8 @@ SA.glPasses = (() => {
   'use strict';
 
   let batches = new WeakMap();
-  const REP_CODES = { mesh: 0, stroke: 1, pieces: 2, particles: 3 };
+  const REP_CODES = { mesh: 0, stroke: 1, pieces: 2, particles: 3, sand: 4 };
+  const SAND_GRAINS = 160;
   const FALLBACK_DEFORM_CODES = {
     jelly: 1, wobbleWarp: 2, twist: 3, breathing: 4, melt: 5,
     stretch: 15, skew: 16, swirl: 17,
@@ -20,8 +21,10 @@ SA.glPasses = (() => {
   // rows 5-6 hold the second and third deformation slots, row 7 the block-warp
   // origin and half-size, row 8 the wipe / flash / mask fields. Rows 9-21 carry
   // the soft body lattice (25 vec2: xy is an even node, zw the next odd node)
-  // and row 22 the lattice / decor flags.
-  const STATE_ROWS = 23;
+  // and row 22 the lattice / decor flags. Row 23 carries the sand parameters
+  // (wind, gravity, grain size, pile flag).
+  const STATE_ROWS = 24;
+  const SAND_ROW = 23;
   const LATTICE_ROW0 = 9;
   const LATTICE_ROW1 = 21;
   const LATTICE_FLAGS_ROW = 22;
@@ -117,6 +120,11 @@ SA.glPasses = (() => {
         }
         data[at(LATTICE_FLAGS_ROW)] = 1;
       }
+      const sand = state.sand || null;
+      data[at(SAND_ROW)] = sand ? sand.wind || 0 : 0;
+      data[at(SAND_ROW) + 1] = sand ? sand.gravity || 0 : 0;
+      data[at(SAND_ROW) + 2] = sand ? sand.grain || 0 : 0;
+      data[at(SAND_ROW) + 3] = sand && sand.pile ? 1 : 0;
       data[at(4)] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
       data[at(4) + 1] = state.reprProgress == null ? 1 : state.reprProgress;
       data[at(4) + 2] = state.colorMix || 0;
@@ -387,6 +395,53 @@ SA.glPasses = (() => {
     return { vao, positionBuffer, indexBuffer: null, count: positions.length / 9 };
   }
 
+  // Sand: SAND_GRAINS interior points per letter in the mesh's letter-local
+  // space (centered on the bbox), so the grains sit exactly on the glyph.
+  // extra = (random, size factor), centroid is unused.
+  function buildSandBatch(gl, scene) {
+    const positions = [];
+    for (let i = 0; i < scene.letters.length; i += 1) {
+      const letter = scene.letters[i];
+      const mesh = SA.lyricsScene.meshOf(letter);
+      const scale = mesh.scale || 1;
+      const bb = mesh.bbox || { x0: 0, y0: 0, x1: 0, y1: 0 };
+      const cx = ((bb.x0 + bb.x1) / 2) * scale;
+      const cy = ((bb.y0 + bb.y1) / 2) * scale;
+      const halfW = Math.max(1, ((bb.x1 - bb.x0) / 2) * scale);
+      const halfH = Math.max(1, ((bb.y1 - bb.y0) / 2) * scale);
+      const fill = mesh.fill;
+      if (!fill || !fill.positions || !fill.positions.length) continue;
+      const scaled = { positions: new Float32Array(fill.positions.length), indices: fill.indices };
+      for (let j = 0; j < fill.positions.length; j += 1) scaled.positions[j] = fill.positions[j] * scale;
+      const random = SA.rng.rngFor(0x5a4d, letter.path, 'sand');
+      const samples = SA.geometry.sampleInterior(scaled, SAND_GRAINS, random);
+      for (let j = 0; j < SAND_GRAINS; j += 1) {
+        const rnd = ((i * 31 + j * 17) % 97) / 97;
+        const size = 0.55 + ((j * 53 + i * 7) % 11) / 11 * 0.9;
+        positions.push(samples[j * 2] - cx, samples[j * 2 + 1] - cy, i, halfW, halfH, rnd, size, 0, 0);
+      }
+    }
+    if (!positions.length) return null;
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, Float32Array.from(positions), gl.STATIC_DRAW);
+    const stride = 36;
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 1, gl.FLOAT, false, stride, 8);
+    gl.enableVertexAttribArray(2);
+    gl.vertexAttribPointer(2, 2, gl.FLOAT, false, stride, 12);
+    gl.enableVertexAttribArray(3);
+    gl.vertexAttribPointer(3, 2, gl.FLOAT, false, stride, 20);
+    gl.enableVertexAttribArray(4);
+    gl.vertexAttribPointer(4, 2, gl.FLOAT, false, stride, 28);
+    gl.bindVertexArray(null);
+    return { vao, positionBuffer, indexBuffer: null, count: positions.length / 9 };
+  }
+
   function sceneBatches(gl, scene, variant) {
     let variants = batches.get(scene);
     if (!variants) {
@@ -400,6 +455,7 @@ SA.glPasses = (() => {
       stroke: buildStrokeBatch(gl, scene),
       pieces: buildPiecesBatch(gl, scene),
       particles: buildParticlesBatch(gl, scene, variant && variant.sources),
+      sand: buildSandBatch(gl, scene),
       bg: buildBgBatch(gl, scene),
     };
     variants.set(key, built);
