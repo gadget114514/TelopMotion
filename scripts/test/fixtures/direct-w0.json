@@ -813,6 +813,7 @@
       "exit": {
         "type": "dissolve",
         "params": {
+          "edge": 0.16,
           "scale": 10
         },
         "enabled": true,

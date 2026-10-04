@@ -41,619 +41,1285 @@
         "id": "fig_001",
         "start": 0,
         "end": 3,
-        "text": "1. 軌道 / orbit"
+        "text": "1. 軌道 / orbit",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 1,
+          "namespace": "motif",
+          "value": "orbit"
+        }
       },
       {
         "id": "fig_002",
         "start": 3,
         "end": 6,
-        "text": "2. バースト / burst"
+        "text": "2. バースト / burst",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 2,
+          "namespace": "motif",
+          "value": "burst"
+        }
       },
       {
         "id": "fig_003",
         "start": 6,
         "end": 9,
-        "text": "3. バー / bars"
+        "text": "3. バー / bars",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 3,
+          "namespace": "motif",
+          "value": "bars"
+        }
       },
       {
         "id": "fig_004",
         "start": 9,
         "end": 12,
-        "text": "4. リング / rings"
+        "text": "4. リング / rings",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 4,
+          "namespace": "motif",
+          "value": "rings"
+        }
       },
       {
         "id": "fig_005",
         "start": 12,
         "end": 15,
-        "text": "5. 紙吹雪 / confetti"
+        "text": "5. 紙吹雪 / confetti",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 5,
+          "namespace": "motif",
+          "value": "confetti"
+        }
       },
       {
         "id": "fig_006",
         "start": 15,
         "end": 18,
-        "text": "6. 枠 / frame"
+        "text": "6. 枠 / frame",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 6,
+          "namespace": "motif",
+          "value": "frame"
+        }
       },
       {
         "id": "fig_007",
         "start": 18,
         "end": 21,
-        "text": "7. 下線スイープ / underlineSweep"
+        "text": "7. 下線スイープ / underlineSweep",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 7,
+          "namespace": "motif",
+          "value": "underlineSweep"
+        }
       },
       {
         "id": "fig_008",
         "start": 21,
         "end": 24,
-        "text": "8. ブラケット / bracketsPop"
+        "text": "8. ブラケット / bracketsPop",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 8,
+          "namespace": "motif",
+          "value": "bracketsPop"
+        }
       },
       {
         "id": "fig_009",
         "start": 24,
         "end": 27,
-        "text": "9. 多角形モーフ / polyMorph"
+        "text": "9. 多角形モーフ / polyMorph",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 9,
+          "namespace": "motif",
+          "value": "polyMorph"
+        }
       },
       {
         "id": "fig_010",
         "start": 27,
         "end": 30,
-        "text": "10. リボン / ribbon"
+        "text": "10. リボン / ribbon",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 10,
+          "namespace": "motif",
+          "value": "ribbon"
+        }
       },
       {
         "id": "fig_011",
         "start": 30,
         "end": 33,
-        "text": "11. ティッカー / ticker"
+        "text": "11. ティッカー / ticker",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 11,
+          "namespace": "motif",
+          "value": "ticker"
+        }
       },
       {
         "id": "fig_012",
         "start": 33,
         "end": 36,
-        "text": "12. ハーフトーン / halftone"
+        "text": "12. ハーフトーン / halftone",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 12,
+          "namespace": "motif",
+          "value": "halftone"
+        }
       },
       {
         "id": "fig_013",
         "start": 36,
         "end": 39,
-        "text": "13. ひび割れ / cracks"
+        "text": "13. ひび割れ / cracks",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 13,
+          "namespace": "motif",
+          "value": "cracks"
+        }
       },
       {
         "id": "fig_014",
         "start": 39,
         "end": 42,
-        "text": "14. スパイク / spikes"
+        "text": "14. スパイク / spikes",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 14,
+          "namespace": "motif",
+          "value": "spikes"
+        }
       },
       {
         "id": "fig_015",
         "start": 42,
         "end": 45,
-        "text": "15. 目 / eyes"
+        "text": "15. 目 / eyes",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 15,
+          "namespace": "motif",
+          "value": "eyes"
+        }
       },
       {
         "id": "fig_016",
         "start": 45,
         "end": 48,
-        "text": "16. 引っかき傷 / scratches"
+        "text": "16. 引っかき傷 / scratches",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 16,
+          "namespace": "motif",
+          "value": "scratches"
+        }
       },
       {
         "id": "fig_017",
         "start": 48,
         "end": 51,
-        "text": "17. 垂れ / drips"
+        "text": "17. 垂れ / drips",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 17,
+          "namespace": "motif",
+          "value": "drips"
+        }
       },
       {
         "id": "fig_018",
         "start": 51,
         "end": 54,
-        "text": "18. 格子 / lattice"
+        "text": "18. 格子 / lattice",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 18,
+          "namespace": "motif",
+          "value": "lattice"
+        }
       },
       {
         "id": "fig_019",
         "start": 54,
         "end": 57,
-        "text": "19. 波 / waves"
+        "text": "19. 波 / waves",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 19,
+          "namespace": "motif",
+          "value": "waves"
+        }
       },
       {
         "id": "fig_020",
         "start": 57,
         "end": 60,
-        "text": "20. 流れ星 / comets"
+        "text": "20. 流れ星 / comets",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 20,
+          "namespace": "motif",
+          "value": "comets"
+        }
       },
       {
         "id": "fig_021",
         "start": 60,
         "end": 63,
-        "text": "21. スラブワイプ / slabWipe"
+        "text": "21. スラブワイプ / slabWipe",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 21,
+          "namespace": "motif",
+          "value": "slabWipe"
+        }
       },
       {
         "id": "fig_022",
         "start": 63,
         "end": 66,
-        "text": "22. コーナーブロック / cornerBlocks"
+        "text": "22. コーナーブロック / cornerBlocks",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 22,
+          "namespace": "motif",
+          "value": "cornerBlocks"
+        }
       },
       {
         "id": "fig_023",
         "start": 66,
         "end": 69,
-        "text": "23. リング描画 / ringDraw"
+        "text": "23. リング描画 / ringDraw",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 23,
+          "namespace": "motif",
+          "value": "ringDraw"
+        }
       },
       {
         "id": "fig_024",
         "start": 69,
         "end": 72,
-        "text": "24. ストライプ / stripeRun"
+        "text": "24. ストライプ / stripeRun",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 24,
+          "namespace": "motif",
+          "value": "stripeRun"
+        }
       },
       {
         "id": "fig_025",
         "start": 72,
         "end": 75,
-        "text": "25. ドットグリッド / dotGrid"
+        "text": "25. ドットグリッド / dotGrid",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 25,
+          "namespace": "motif",
+          "value": "dotGrid"
+        }
       },
       {
         "id": "fig_026",
         "start": 75,
         "end": 78,
-        "text": "26. サイドバー / sideBars"
+        "text": "26. サイドバー / sideBars",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 26,
+          "namespace": "motif",
+          "value": "sideBars"
+        }
       },
       {
         "id": "fig_027",
         "start": 78,
         "end": 81,
-        "text": "27. ジェネラティブ / proc"
+        "text": "27. ジェネラティブ / proc",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 27,
+          "namespace": "motif",
+          "value": "proc"
+        }
       },
       {
         "id": "fig_028",
         "start": 81,
         "end": 84,
-        "text": "28. 太陽系 / solarSystem"
+        "text": "28. 太陽系 / solarSystem",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 28,
+          "namespace": "motif",
+          "value": "solarSystem"
+        }
       },
       {
         "id": "fig_029",
         "start": 84,
         "end": 87,
-        "text": "29. N体 / nbody"
+        "text": "29. N体 / nbody",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 29,
+          "namespace": "motif",
+          "value": "nbody"
+        }
       },
       {
         "id": "fig_030",
         "start": 87,
         "end": 90,
-        "text": "30. 振り子 / pendulum"
+        "text": "30. 振り子 / pendulum",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 30,
+          "namespace": "motif",
+          "value": "pendulum"
+        }
       },
       {
         "id": "fig_031",
         "start": 90,
         "end": 93,
-        "text": "31. 振り子ウェーブ / pendulumWave"
+        "text": "31. 振り子ウェーブ / pendulumWave",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 31,
+          "namespace": "motif",
+          "value": "pendulumWave"
+        }
       },
       {
         "id": "fig_032",
         "start": 93,
         "end": 96,
-        "text": "32. ニュートンのゆりかご / newtonCradle"
+        "text": "32. ニュートンのゆりかご / newtonCradle",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 32,
+          "namespace": "motif",
+          "value": "newtonCradle"
+        }
       },
       {
         "id": "fig_033",
         "start": 96,
         "end": 99,
-        "text": "33. 波の連鎖 / chain"
+        "text": "33. 波の連鎖 / chain",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 33,
+          "namespace": "motif",
+          "value": "chain"
+        }
       },
       {
         "id": "fig_034",
         "start": 99,
         "end": 102,
-        "text": "34. 重力井戸 / gravityWell"
+        "text": "34. 重力井戸 / gravityWell",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 34,
+          "namespace": "motif",
+          "value": "gravityWell"
+        }
       },
       {
         "id": "fig_035",
         "start": 102,
         "end": 105,
-        "text": "35. 多面体 / polyhedra"
+        "text": "35. 多面体 / polyhedra",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 35,
+          "namespace": "motif",
+          "value": "polyhedra"
+        }
       },
       {
         "id": "fig_036",
         "start": 105,
         "end": 108,
-        "text": "36. アトラクター / attractor"
+        "text": "36. アトラクター / attractor",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 36,
+          "namespace": "motif",
+          "value": "attractor"
+        }
       },
       {
         "id": "fig_037",
         "start": 108,
         "end": 111,
-        "text": "37. 結び目 / knot"
+        "text": "37. 結び目 / knot",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 37,
+          "namespace": "motif",
+          "value": "knot"
+        }
       },
       {
         "id": "fig_038",
         "start": 111,
         "end": 114,
-        "text": "38. 星空 / starfield"
+        "text": "38. 星空 / starfield",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 38,
+          "namespace": "motif",
+          "value": "starfield"
+        }
       },
       {
         "id": "fig_039",
         "start": 114,
         "end": 117,
-        "text": "39. k-d木 / kdTree"
+        "text": "39. k-d木 / kdTree",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 39,
+          "namespace": "motif",
+          "value": "kdTree"
+        }
       },
       {
         "id": "fig_040",
         "start": 117,
         "end": 120,
-        "text": "40. ボロノイ / voronoi"
+        "text": "40. ボロノイ / voronoi",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 40,
+          "namespace": "motif",
+          "value": "voronoi"
+        }
       },
       {
         "id": "fig_041",
         "start": 120,
         "end": 123,
-        "text": "41. ドロネー / delaunay"
+        "text": "41. ドロネー / delaunay",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 41,
+          "namespace": "motif",
+          "value": "delaunay"
+        }
       },
       {
         "id": "fig_042",
         "start": 123,
         "end": 126,
-        "text": "42. 近傍グラフ / proximity"
+        "text": "42. 近傍グラフ / proximity",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 42,
+          "namespace": "motif",
+          "value": "proximity"
+        }
       },
       {
         "id": "fig_043",
         "start": 126,
         "end": 129,
-        "text": "43. Lシステム / lsystem"
+        "text": "43. Lシステム / lsystem",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 43,
+          "namespace": "motif",
+          "value": "lsystem"
+        }
       },
       {
         "id": "fig_044",
         "start": 129,
         "end": 132,
-        "text": "44. 空間充填曲線 / spaceFilling"
+        "text": "44. 空間充填曲線 / spaceFilling",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 44,
+          "namespace": "motif",
+          "value": "spaceFilling"
+        }
       },
       {
         "id": "fig_045",
         "start": 132,
         "end": 135,
-        "text": "45. 円充填 / circlePack"
+        "text": "45. 円充填 / circlePack",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 45,
+          "namespace": "motif",
+          "value": "circlePack"
+        }
       },
       {
         "id": "fig_046",
         "start": 135,
         "end": 138,
-        "text": "46. ツリーマップ / treemap"
+        "text": "46. ツリーマップ / treemap",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 46,
+          "namespace": "motif",
+          "value": "treemap"
+        }
       },
       {
         "id": "fig_047",
         "start": 138,
         "end": 141,
-        "text": "47. 葉脈 / colonization"
+        "text": "47. 葉脈 / colonization",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 47,
+          "namespace": "motif",
+          "value": "colonization"
+        }
       },
       {
         "id": "fig_048",
         "start": 141,
         "end": 144,
-        "text": "48. 糸かけ / stringArt"
+        "text": "48. 糸かけ / stringArt",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 48,
+          "namespace": "motif",
+          "value": "stringArt"
+        }
       },
       {
         "id": "fig_049",
         "start": 144,
         "end": 147,
-        "text": "49. ワープノイズ / domainWarp"
+        "text": "49. ワープノイズ / domainWarp",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 49,
+          "namespace": "motif",
+          "value": "domainWarp"
+        }
       },
       {
         "id": "fig_050",
         "start": 147,
         "end": 150,
-        "text": "50. セル / voronoiCells"
+        "text": "50. セル / voronoiCells",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 50,
+          "namespace": "motif",
+          "value": "voronoiCells"
+        }
       },
       {
         "id": "fig_051",
         "start": 150,
         "end": 153,
-        "text": "51. 等高線 / contour"
+        "text": "51. 等高線 / contour",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 51,
+          "namespace": "motif",
+          "value": "contour"
+        }
       },
       {
         "id": "fig_052",
         "start": 153,
         "end": 156,
-        "text": "52. 万華鏡 / sdfKaleido"
+        "text": "52. 万華鏡 / sdfKaleido",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 52,
+          "namespace": "motif",
+          "value": "sdfKaleido"
+        }
       },
       {
         "id": "fig_053",
         "start": 156,
         "end": 159,
-        "text": "53. クラドニ図形 / chladni"
+        "text": "53. クラドニ図形 / chladni",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 53,
+          "namespace": "motif",
+          "value": "chladni"
+        }
       },
       {
         "id": "fig_054",
         "start": 159,
         "end": 162,
-        "text": "54. 準結晶 / quasicrystal"
+        "text": "54. 準結晶 / quasicrystal",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 54,
+          "namespace": "motif",
+          "value": "quasicrystal"
+        }
       },
       {
         "id": "fig_055",
         "start": 162,
         "end": 165,
-        "text": "55. フラクタル / fractal"
+        "text": "55. フラクタル / fractal",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 55,
+          "namespace": "motif",
+          "value": "fractal"
+        }
       },
       {
         "id": "fig_056",
         "start": 165,
         "end": 168,
-        "text": "56. モアレ / moire"
+        "text": "56. モアレ / moire",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 56,
+          "namespace": "motif",
+          "value": "moire"
+        }
       },
       {
         "id": "fig_057",
         "start": 168,
         "end": 171,
-        "text": "57. 双曲タイリング / hyperbolic"
+        "text": "57. 双曲タイリング / hyperbolic",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 57,
+          "namespace": "motif",
+          "value": "hyperbolic"
+        }
       },
       {
         "id": "fig_058",
         "start": 171,
         "end": 174,
-        "text": "58. トゥルーシェ / truchet"
+        "text": "58. トゥルーシェ / truchet",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 58,
+          "namespace": "motif",
+          "value": "truchet"
+        }
       },
       {
         "id": "fig_059",
         "start": 174,
         "end": 177,
-        "text": "59. ジャイロイド / gyroid"
+        "text": "59. ジャイロイド / gyroid",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 59,
+          "namespace": "motif",
+          "value": "gyroid"
+        }
       },
       {
         "id": "fig_060",
         "start": 177,
         "end": 180,
-        "text": "60. 複素関数 / complexColor"
+        "text": "60. 複素関数 / complexColor",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 60,
+          "namespace": "motif",
+          "value": "complexColor"
+        }
       },
       {
         "id": "fig_061",
         "start": 180,
         "end": 183,
-        "text": "61. 流線 / curl"
+        "text": "61. 流線 / curl",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 61,
+          "namespace": "motif",
+          "value": "curl"
+        }
       },
       {
         "id": "fig_062",
         "start": 183,
         "end": 186,
-        "text": "62. リサジュー光 / lissajousGlow"
+        "text": "62. リサジュー光 / lissajousGlow",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 62,
+          "namespace": "motif",
+          "value": "lissajousGlow"
+        }
       },
       {
         "id": "fig_063",
         "start": 186,
         "end": 189,
-        "text": "63. 波紋 / ripple"
+        "text": "63. 波紋 / ripple",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 63,
+          "namespace": "motif",
+          "value": "ripple"
+        }
       },
       {
         "id": "fig_064",
         "start": 189,
         "end": 192,
-        "text": "64. タイル図形 / cellTiling"
+        "text": "64. タイル図形 / cellTiling",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 64,
+          "namespace": "motif",
+          "value": "cellTiling"
+        }
       },
       {
         "id": "fig_065",
         "start": 192,
-        "end": 196,
-        "text": "65. ポップ / pop"
+        "end": 195,
+        "text": "65. 反応拡散 / reactionDiffusion",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 65,
+          "namespace": "motif",
+          "value": "reactionDiffusion"
+        }
       },
       {
         "id": "fig_066",
-        "start": 196,
-        "end": 200,
-        "text": "66. 描き出し / draw"
+        "start": 195,
+        "end": 198,
+        "text": "66. 波動方程式 / wave2d",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 66,
+          "namespace": "motif",
+          "value": "wave2d"
+        }
       },
       {
         "id": "fig_067",
-        "start": 200,
-        "end": 204,
-        "text": "67. ワイプ / wipe"
+        "start": 198,
+        "end": 201,
+        "text": "67. 流体 / fluid",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 67,
+          "namespace": "motif",
+          "value": "fluid"
+        }
       },
       {
         "id": "fig_068",
-        "start": 204,
-        "end": 208,
-        "text": "68. 散布イン / scatterIn"
+        "start": 201,
+        "end": 204,
+        "text": "68. セルオートマトン / cellular",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 68,
+          "namespace": "motif",
+          "value": "cellular"
+        }
       },
       {
         "id": "fig_069",
-        "start": 208,
-        "end": 212,
-        "text": "69. 回転 / spin"
+        "start": 204,
+        "end": 208,
+        "text": "69. ポップ / pop",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 69,
+          "namespace": "in",
+          "value": "pop"
+        }
       },
       {
         "id": "fig_070",
-        "start": 212,
-        "end": 216,
-        "text": "70. 脈動 / pulse"
+        "start": 208,
+        "end": 212,
+        "text": "70. 描き出し / draw",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 70,
+          "namespace": "in",
+          "value": "draw"
+        }
       },
       {
         "id": "fig_071",
-        "start": 216,
-        "end": 220,
-        "text": "71. 漂流 / drift"
+        "start": 212,
+        "end": 216,
+        "text": "71. ワイプ / wipe",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 71,
+          "namespace": "in",
+          "value": "wipe"
+        }
       },
       {
         "id": "fig_072",
-        "start": 220,
-        "end": 224,
-        "text": "72. 変形 / morph"
+        "start": 216,
+        "end": 220,
+        "text": "72. 散布イン / scatterIn",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 72,
+          "namespace": "in",
+          "value": "scatterIn"
+        }
       },
       {
         "id": "fig_073",
-        "start": 224,
-        "end": 228,
-        "text": "73. 縮小 / shrink"
+        "start": 220,
+        "end": 224,
+        "text": "73. 回転 / spin",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 73,
+          "namespace": "hold",
+          "value": "spin"
+        }
       },
       {
         "id": "fig_074",
-        "start": 228,
-        "end": 232,
-        "text": "74. フェード / fade"
+        "start": 224,
+        "end": 228,
+        "text": "74. 脈動 / pulse",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 74,
+          "namespace": "hold",
+          "value": "pulse"
+        }
       },
       {
         "id": "fig_075",
-        "start": 232,
-        "end": 236,
-        "text": "75. 破裂アウト / burstOut"
+        "start": 228,
+        "end": 232,
+        "text": "75. 漂流 / drift",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 75,
+          "namespace": "hold",
+          "value": "drift"
+        }
       },
       {
         "id": "fig_076",
-        "start": 236,
-        "end": 240,
-        "text": "76. ビート / beat"
+        "start": 232,
+        "end": 236,
+        "text": "76. 変形 / morph",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 76,
+          "namespace": "hold",
+          "value": "morph"
+        }
       },
       {
         "id": "fig_077",
-        "start": 240,
-        "end": 244,
-        "text": "77. 自由 / free"
+        "start": 236,
+        "end": 240,
+        "text": "77. 縮小 / shrink",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 77,
+          "namespace": "out",
+          "value": "shrink"
+        }
       },
       {
         "id": "fig_078",
-        "start": 244,
-        "end": 248,
-        "text": "78. テキスト / text"
+        "start": 240,
+        "end": 244,
+        "text": "78. フェード / fade",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 78,
+          "namespace": "out",
+          "value": "fade"
+        }
       },
       {
         "id": "fig_079",
-        "start": 248,
-        "end": 252,
-        "text": "79. 静止 / none"
+        "start": 244,
+        "end": 248,
+        "text": "79. 破裂アウト / burstOut",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 79,
+          "namespace": "out",
+          "value": "burstOut"
+        }
       },
       {
         "id": "fig_080",
-        "start": 252,
-        "end": 256,
-        "text": "80. 寄り / push"
+        "start": 248,
+        "end": 252,
+        "text": "80. ビート / beat",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 80,
+          "namespace": "sync",
+          "value": "beat"
+        }
       },
       {
         "id": "fig_081",
-        "start": 256,
-        "end": 260,
-        "text": "81. 引き / pull"
+        "start": 252,
+        "end": 256,
+        "text": "81. 自由 / free",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 81,
+          "namespace": "sync",
+          "value": "free"
+        }
       },
       {
         "id": "fig_082",
-        "start": 260,
-        "end": 264,
-        "text": "82. 横移動 / pan"
+        "start": 256,
+        "end": 260,
+        "text": "82. テキスト / text",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 82,
+          "namespace": "sync",
+          "value": "text"
+        }
       },
       {
         "id": "fig_083",
-        "start": 264,
-        "end": 268,
-        "text": "83. ロール / roll"
+        "start": 260,
+        "end": 264,
+        "text": "83. 静止 / none",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 83,
+          "namespace": "camera",
+          "value": "none"
+        }
       },
       {
         "id": "fig_084",
-        "start": 268,
-        "end": 272,
-        "text": "84. 振動 / shake"
+        "start": 264,
+        "end": 268,
+        "text": "84. 寄り / push",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 84,
+          "namespace": "camera",
+          "value": "push"
+        }
       },
       {
         "id": "fig_085",
-        "start": 272,
-        "end": 276,
-        "text": "85. 鞭 / whip"
+        "start": 268,
+        "end": 272,
+        "text": "85. 引き / pull",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 85,
+          "namespace": "camera",
+          "value": "pull"
+        }
       },
       {
         "id": "fig_086",
-        "start": 276,
-        "end": 280,
-        "text": "86. 周回 / orbit"
+        "start": 272,
+        "end": 276,
+        "text": "86. 横移動 / pan",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 86,
+          "namespace": "camera",
+          "value": "pan"
+        }
       },
       {
         "id": "fig_087",
-        "start": 280,
-        "end": 284,
-        "text": "87. 回転 / spin"
+        "start": 276,
+        "end": 280,
+        "text": "87. ロール / roll",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 87,
+          "namespace": "camera",
+          "value": "roll"
+        }
       },
       {
         "id": "fig_088",
-        "start": 284,
-        "end": 288,
-        "text": "88. 呼吸 / breathe"
+        "start": 280,
+        "end": 284,
+        "text": "88. 振動 / shake",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 88,
+          "namespace": "camera",
+          "value": "shake"
+        }
       },
       {
         "id": "fig_089",
-        "start": 288,
-        "end": 292,
-        "text": "89. 波 / wave"
+        "start": 284,
+        "end": 288,
+        "text": "89. 鞭 / whip",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 89,
+          "namespace": "camera",
+          "value": "whip"
+        }
       },
       {
         "id": "fig_090",
-        "start": 292,
-        "end": 296,
-        "text": "90. 流れ / flow"
+        "start": 288,
+        "end": 292,
+        "text": "90. 周回 / orbit",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 90,
+          "namespace": "camera",
+          "value": "orbit"
+        }
       },
       {
         "id": "fig_091",
-        "start": 296,
-        "end": 300,
-        "text": "91. 軌道 / orbit"
+        "start": 292,
+        "end": 296,
+        "text": "91. 回転 / spin",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 91,
+          "namespace": "proc",
+          "value": "spin"
+        }
       },
       {
         "id": "fig_092",
-        "start": 300,
-        "end": 304,
-        "text": "92. 静止 / still"
+        "start": 296,
+        "end": 300,
+        "text": "92. 呼吸 / breathe",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 92,
+          "namespace": "proc",
+          "value": "breathe"
+        }
       },
       {
         "id": "fig_093",
-        "start": 304,
-        "end": 308,
-        "text": "93. きらめき / twinkle"
+        "start": 300,
+        "end": 304,
+        "text": "93. 波 / wave",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 93,
+          "namespace": "proc",
+          "value": "wave"
+        }
       },
       {
         "id": "fig_094",
-        "start": 308,
-        "end": 312,
-        "text": "94. 転がる / tumble"
+        "start": 304,
+        "end": 308,
+        "text": "94. 流れ / flow",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 94,
+          "namespace": "proc",
+          "value": "flow"
+        }
       },
       {
         "id": "fig_095",
-        "start": 312,
-        "end": 316,
-        "text": "95. 移動 / travel"
+        "start": 308,
+        "end": 312,
+        "text": "95. 軌道 / orbit",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 95,
+          "namespace": "proc",
+          "value": "orbit"
+        }
       },
       {
         "id": "fig_096",
-        "start": 316,
-        "end": 320,
-        "text": "96. 連鎖 / cascade"
+        "start": 312,
+        "end": 316,
+        "text": "96. 静止 / still",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 96,
+          "namespace": "proc",
+          "value": "still"
+        }
       },
       {
         "id": "fig_097",
-        "start": 320,
-        "end": 324,
-        "text": "97. 跳ね返り / bounce"
+        "start": 316,
+        "end": 320,
+        "text": "97. きらめき / twinkle",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 97,
+          "namespace": "proc",
+          "value": "twinkle"
+        }
       },
       {
         "id": "fig_098",
-        "start": 324,
-        "end": 328,
-        "text": "98. 震え / shiver"
+        "start": 320,
+        "end": 324,
+        "text": "98. 転がる / tumble",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 98,
+          "namespace": "proc",
+          "value": "tumble"
+        }
       },
       {
         "id": "fig_099",
-        "start": 328,
-        "end": 332,
-        "text": "99. 楕円 / ellipse"
+        "start": 324,
+        "end": 328,
+        "text": "99. 移動 / travel",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 99,
+          "namespace": "proc",
+          "value": "travel"
+        }
       },
       {
         "id": "fig_100",
-        "start": 332,
-        "end": 336,
-        "text": "100. 揺れる / sway"
+        "start": 328,
+        "end": 332,
+        "text": "100. 連鎖 / cascade",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 100,
+          "namespace": "proc",
+          "value": "cascade"
+        }
       },
       {
         "id": "fig_101",
-        "start": 336,
-        "end": 340,
-        "text": "101. 波紋 / ripple"
+        "start": 332,
+        "end": 336,
+        "text": "101. 跳ね返り / bounce",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 101,
+          "namespace": "proc",
+          "value": "bounce"
+        }
       },
       {
         "id": "fig_102",
-        "start": 340,
-        "end": 344,
-        "text": "102. 落下 / fall"
+        "start": 336,
+        "end": 340,
+        "text": "102. 震え / shiver",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 102,
+          "namespace": "proc",
+          "value": "shiver"
+        }
       },
       {
         "id": "fig_103",
+        "start": 340,
+        "end": 344,
+        "text": "103. 楕円 / ellipse",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 103,
+          "namespace": "proc",
+          "value": "ellipse"
+        }
+      },
+      {
+        "id": "fig_104",
         "start": 344,
         "end": 348,
-        "text": "103. ズーム / zoom"
+        "text": "104. 揺れる / sway",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 104,
+          "namespace": "proc",
+          "value": "sway"
+        }
+      },
+      {
+        "id": "fig_105",
+        "start": 348,
+        "end": 352,
+        "text": "105. 波紋 / ripple",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 105,
+          "namespace": "proc",
+          "value": "ripple"
+        }
+      },
+      {
+        "id": "fig_106",
+        "start": 352,
+        "end": 356,
+        "text": "106. 落下 / fall",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 106,
+          "namespace": "proc",
+          "value": "fall"
+        }
+      },
+      {
+        "id": "fig_107",
+        "start": 356,
+        "end": 360,
+        "text": "107. ズーム / zoom",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 107,
+          "namespace": "proc",
+          "value": "zoom"
+        }
       }
     ],
     "sourceName": "figure-showcase.json"
@@ -1801,10 +2467,10 @@
         "kind": "single",
         "index": 0,
         "start": 192,
-        "end": 196,
-        "text": "65. ポップ / pop",
+        "end": 195,
+        "text": "65. 反応拡散 / reactionDiffusion",
         "lines": [
-          "65. ポップ / pop"
+          "65. 反応拡散 / reactionDiffusion"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1816,11 +2482,11 @@
         "cueId": "fig_066",
         "kind": "single",
         "index": 0,
-        "start": 196,
-        "end": 200,
-        "text": "66. 描き出し / draw",
+        "start": 195,
+        "end": 198,
+        "text": "66. 波動方程式 / wave2d",
         "lines": [
-          "66. 描き出し / draw"
+          "66. 波動方程式 / wave2d"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1832,11 +2498,11 @@
         "cueId": "fig_067",
         "kind": "single",
         "index": 0,
-        "start": 200,
-        "end": 204,
-        "text": "67. ワイプ / wipe",
+        "start": 198,
+        "end": 201,
+        "text": "67. 流体 / fluid",
         "lines": [
-          "67. ワイプ / wipe"
+          "67. 流体 / fluid"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1848,11 +2514,11 @@
         "cueId": "fig_068",
         "kind": "single",
         "index": 0,
-        "start": 204,
-        "end": 208,
-        "text": "68. 散布イン / scatterIn",
+        "start": 201,
+        "end": 204,
+        "text": "68. セルオートマトン / cellular",
         "lines": [
-          "68. 散布イン / scatterIn"
+          "68. セルオートマトン / cellular"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1864,11 +2530,11 @@
         "cueId": "fig_069",
         "kind": "single",
         "index": 0,
-        "start": 208,
-        "end": 212,
-        "text": "69. 回転 / spin",
+        "start": 204,
+        "end": 208,
+        "text": "69. ポップ / pop",
         "lines": [
-          "69. 回転 / spin"
+          "69. ポップ / pop"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1880,11 +2546,11 @@
         "cueId": "fig_070",
         "kind": "single",
         "index": 0,
-        "start": 212,
-        "end": 216,
-        "text": "70. 脈動 / pulse",
+        "start": 208,
+        "end": 212,
+        "text": "70. 描き出し / draw",
         "lines": [
-          "70. 脈動 / pulse"
+          "70. 描き出し / draw"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1896,11 +2562,11 @@
         "cueId": "fig_071",
         "kind": "single",
         "index": 0,
-        "start": 216,
-        "end": 220,
-        "text": "71. 漂流 / drift",
+        "start": 212,
+        "end": 216,
+        "text": "71. ワイプ / wipe",
         "lines": [
-          "71. 漂流 / drift"
+          "71. ワイプ / wipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1912,11 +2578,11 @@
         "cueId": "fig_072",
         "kind": "single",
         "index": 0,
-        "start": 220,
-        "end": 224,
-        "text": "72. 変形 / morph",
+        "start": 216,
+        "end": 220,
+        "text": "72. 散布イン / scatterIn",
         "lines": [
-          "72. 変形 / morph"
+          "72. 散布イン / scatterIn"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1928,11 +2594,11 @@
         "cueId": "fig_073",
         "kind": "single",
         "index": 0,
-        "start": 224,
-        "end": 228,
-        "text": "73. 縮小 / shrink",
+        "start": 220,
+        "end": 224,
+        "text": "73. 回転 / spin",
         "lines": [
-          "73. 縮小 / shrink"
+          "73. 回転 / spin"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1944,11 +2610,11 @@
         "cueId": "fig_074",
         "kind": "single",
         "index": 0,
-        "start": 228,
-        "end": 232,
-        "text": "74. フェード / fade",
+        "start": 224,
+        "end": 228,
+        "text": "74. 脈動 / pulse",
         "lines": [
-          "74. フェード / fade"
+          "74. 脈動 / pulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1960,11 +2626,11 @@
         "cueId": "fig_075",
         "kind": "single",
         "index": 0,
-        "start": 232,
-        "end": 236,
-        "text": "75. 破裂アウト / burstOut",
+        "start": 228,
+        "end": 232,
+        "text": "75. 漂流 / drift",
         "lines": [
-          "75. 破裂アウト / burstOut"
+          "75. 漂流 / drift"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1976,11 +2642,11 @@
         "cueId": "fig_076",
         "kind": "single",
         "index": 0,
-        "start": 236,
-        "end": 240,
-        "text": "76. ビート / beat",
+        "start": 232,
+        "end": 236,
+        "text": "76. 変形 / morph",
         "lines": [
-          "76. ビート / beat"
+          "76. 変形 / morph"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1992,11 +2658,11 @@
         "cueId": "fig_077",
         "kind": "single",
         "index": 0,
-        "start": 240,
-        "end": 244,
-        "text": "77. 自由 / free",
+        "start": 236,
+        "end": 240,
+        "text": "77. 縮小 / shrink",
         "lines": [
-          "77. 自由 / free"
+          "77. 縮小 / shrink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2008,11 +2674,11 @@
         "cueId": "fig_078",
         "kind": "single",
         "index": 0,
-        "start": 244,
-        "end": 248,
-        "text": "78. テキスト / text",
+        "start": 240,
+        "end": 244,
+        "text": "78. フェード / fade",
         "lines": [
-          "78. テキスト / text"
+          "78. フェード / fade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2024,11 +2690,11 @@
         "cueId": "fig_079",
         "kind": "single",
         "index": 0,
-        "start": 248,
-        "end": 252,
-        "text": "79. 静止 / none",
+        "start": 244,
+        "end": 248,
+        "text": "79. 破裂アウト / burstOut",
         "lines": [
-          "79. 静止 / none"
+          "79. 破裂アウト / burstOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2040,11 +2706,11 @@
         "cueId": "fig_080",
         "kind": "single",
         "index": 0,
-        "start": 252,
-        "end": 256,
-        "text": "80. 寄り / push",
+        "start": 248,
+        "end": 252,
+        "text": "80. ビート / beat",
         "lines": [
-          "80. 寄り / push"
+          "80. ビート / beat"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2056,11 +2722,11 @@
         "cueId": "fig_081",
         "kind": "single",
         "index": 0,
-        "start": 256,
-        "end": 260,
-        "text": "81. 引き / pull",
+        "start": 252,
+        "end": 256,
+        "text": "81. 自由 / free",
         "lines": [
-          "81. 引き / pull"
+          "81. 自由 / free"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2072,11 +2738,11 @@
         "cueId": "fig_082",
         "kind": "single",
         "index": 0,
-        "start": 260,
-        "end": 264,
-        "text": "82. 横移動 / pan",
+        "start": 256,
+        "end": 260,
+        "text": "82. テキスト / text",
         "lines": [
-          "82. 横移動 / pan"
+          "82. テキスト / text"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2088,11 +2754,11 @@
         "cueId": "fig_083",
         "kind": "single",
         "index": 0,
-        "start": 264,
-        "end": 268,
-        "text": "83. ロール / roll",
+        "start": 260,
+        "end": 264,
+        "text": "83. 静止 / none",
         "lines": [
-          "83. ロール / roll"
+          "83. 静止 / none"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2104,11 +2770,11 @@
         "cueId": "fig_084",
         "kind": "single",
         "index": 0,
-        "start": 268,
-        "end": 272,
-        "text": "84. 振動 / shake",
+        "start": 264,
+        "end": 268,
+        "text": "84. 寄り / push",
         "lines": [
-          "84. 振動 / shake"
+          "84. 寄り / push"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2120,11 +2786,11 @@
         "cueId": "fig_085",
         "kind": "single",
         "index": 0,
-        "start": 272,
-        "end": 276,
-        "text": "85. 鞭 / whip",
+        "start": 268,
+        "end": 272,
+        "text": "85. 引き / pull",
         "lines": [
-          "85. 鞭 / whip"
+          "85. 引き / pull"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2136,11 +2802,11 @@
         "cueId": "fig_086",
         "kind": "single",
         "index": 0,
-        "start": 276,
-        "end": 280,
-        "text": "86. 周回 / orbit",
+        "start": 272,
+        "end": 276,
+        "text": "86. 横移動 / pan",
         "lines": [
-          "86. 周回 / orbit"
+          "86. 横移動 / pan"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2152,11 +2818,11 @@
         "cueId": "fig_087",
         "kind": "single",
         "index": 0,
-        "start": 280,
-        "end": 284,
-        "text": "87. 回転 / spin",
+        "start": 276,
+        "end": 280,
+        "text": "87. ロール / roll",
         "lines": [
-          "87. 回転 / spin"
+          "87. ロール / roll"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2168,11 +2834,11 @@
         "cueId": "fig_088",
         "kind": "single",
         "index": 0,
-        "start": 284,
-        "end": 288,
-        "text": "88. 呼吸 / breathe",
+        "start": 280,
+        "end": 284,
+        "text": "88. 振動 / shake",
         "lines": [
-          "88. 呼吸 / breathe"
+          "88. 振動 / shake"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2184,11 +2850,11 @@
         "cueId": "fig_089",
         "kind": "single",
         "index": 0,
-        "start": 288,
-        "end": 292,
-        "text": "89. 波 / wave",
+        "start": 284,
+        "end": 288,
+        "text": "89. 鞭 / whip",
         "lines": [
-          "89. 波 / wave"
+          "89. 鞭 / whip"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2200,11 +2866,11 @@
         "cueId": "fig_090",
         "kind": "single",
         "index": 0,
-        "start": 292,
-        "end": 296,
-        "text": "90. 流れ / flow",
+        "start": 288,
+        "end": 292,
+        "text": "90. 周回 / orbit",
         "lines": [
-          "90. 流れ / flow"
+          "90. 周回 / orbit"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2216,11 +2882,11 @@
         "cueId": "fig_091",
         "kind": "single",
         "index": 0,
-        "start": 296,
-        "end": 300,
-        "text": "91. 軌道 / orbit",
+        "start": 292,
+        "end": 296,
+        "text": "91. 回転 / spin",
         "lines": [
-          "91. 軌道 / orbit"
+          "91. 回転 / spin"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2232,11 +2898,11 @@
         "cueId": "fig_092",
         "kind": "single",
         "index": 0,
-        "start": 300,
-        "end": 304,
-        "text": "92. 静止 / still",
+        "start": 296,
+        "end": 300,
+        "text": "92. 呼吸 / breathe",
         "lines": [
-          "92. 静止 / still"
+          "92. 呼吸 / breathe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2248,11 +2914,11 @@
         "cueId": "fig_093",
         "kind": "single",
         "index": 0,
-        "start": 304,
-        "end": 308,
-        "text": "93. きらめき / twinkle",
+        "start": 300,
+        "end": 304,
+        "text": "93. 波 / wave",
         "lines": [
-          "93. きらめき / twinkle"
+          "93. 波 / wave"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2264,11 +2930,11 @@
         "cueId": "fig_094",
         "kind": "single",
         "index": 0,
-        "start": 308,
-        "end": 312,
-        "text": "94. 転がる / tumble",
+        "start": 304,
+        "end": 308,
+        "text": "94. 流れ / flow",
         "lines": [
-          "94. 転がる / tumble"
+          "94. 流れ / flow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2280,11 +2946,11 @@
         "cueId": "fig_095",
         "kind": "single",
         "index": 0,
-        "start": 312,
-        "end": 316,
-        "text": "95. 移動 / travel",
+        "start": 308,
+        "end": 312,
+        "text": "95. 軌道 / orbit",
         "lines": [
-          "95. 移動 / travel"
+          "95. 軌道 / orbit"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2296,11 +2962,11 @@
         "cueId": "fig_096",
         "kind": "single",
         "index": 0,
-        "start": 316,
-        "end": 320,
-        "text": "96. 連鎖 / cascade",
+        "start": 312,
+        "end": 316,
+        "text": "96. 静止 / still",
         "lines": [
-          "96. 連鎖 / cascade"
+          "96. 静止 / still"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2312,11 +2978,11 @@
         "cueId": "fig_097",
         "kind": "single",
         "index": 0,
-        "start": 320,
-        "end": 324,
-        "text": "97. 跳ね返り / bounce",
+        "start": 316,
+        "end": 320,
+        "text": "97. きらめき / twinkle",
         "lines": [
-          "97. 跳ね返り / bounce"
+          "97. きらめき / twinkle"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2328,11 +2994,11 @@
         "cueId": "fig_098",
         "kind": "single",
         "index": 0,
-        "start": 324,
-        "end": 328,
-        "text": "98. 震え / shiver",
+        "start": 320,
+        "end": 324,
+        "text": "98. 転がる / tumble",
         "lines": [
-          "98. 震え / shiver"
+          "98. 転がる / tumble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2344,11 +3010,11 @@
         "cueId": "fig_099",
         "kind": "single",
         "index": 0,
-        "start": 328,
-        "end": 332,
-        "text": "99. 楕円 / ellipse",
+        "start": 324,
+        "end": 328,
+        "text": "99. 移動 / travel",
         "lines": [
-          "99. 楕円 / ellipse"
+          "99. 移動 / travel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2360,11 +3026,11 @@
         "cueId": "fig_100",
         "kind": "single",
         "index": 0,
-        "start": 332,
-        "end": 336,
-        "text": "100. 揺れる / sway",
+        "start": 328,
+        "end": 332,
+        "text": "100. 連鎖 / cascade",
         "lines": [
-          "100. 揺れる / sway"
+          "100. 連鎖 / cascade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2376,11 +3042,11 @@
         "cueId": "fig_101",
         "kind": "single",
         "index": 0,
-        "start": 336,
-        "end": 340,
-        "text": "101. 波紋 / ripple",
+        "start": 332,
+        "end": 336,
+        "text": "101. 跳ね返り / bounce",
         "lines": [
-          "101. 波紋 / ripple"
+          "101. 跳ね返り / bounce"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2392,11 +3058,11 @@
         "cueId": "fig_102",
         "kind": "single",
         "index": 0,
-        "start": 340,
-        "end": 344,
-        "text": "102. 落下 / fall",
+        "start": 336,
+        "end": 340,
+        "text": "102. 震え / shiver",
         "lines": [
-          "102. 落下 / fall"
+          "102. 震え / shiver"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2408,11 +3074,75 @@
         "cueId": "fig_103",
         "kind": "single",
         "index": 0,
+        "start": 340,
+        "end": 344,
+        "text": "103. 楕円 / ellipse",
+        "lines": [
+          "103. 楕円 / ellipse"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_104": [
+      {
+        "id": "fig_104:single0",
+        "cueId": "fig_104",
+        "kind": "single",
+        "index": 0,
         "start": 344,
         "end": 348,
-        "text": "103. ズーム / zoom",
+        "text": "104. 揺れる / sway",
         "lines": [
-          "103. ズーム / zoom"
+          "104. 揺れる / sway"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_105": [
+      {
+        "id": "fig_105:single0",
+        "cueId": "fig_105",
+        "kind": "single",
+        "index": 0,
+        "start": 348,
+        "end": 352,
+        "text": "105. 波紋 / ripple",
+        "lines": [
+          "105. 波紋 / ripple"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_106": [
+      {
+        "id": "fig_106:single0",
+        "cueId": "fig_106",
+        "kind": "single",
+        "index": 0,
+        "start": 352,
+        "end": 356,
+        "text": "106. 落下 / fall",
+        "lines": [
+          "106. 落下 / fall"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_107": [
+      {
+        "id": "fig_107:single0",
+        "cueId": "fig_107",
+        "kind": "single",
+        "index": 0,
+        "start": 356,
+        "end": 360,
+        "text": "107. ズーム / zoom",
+        "lines": [
+          "107. ズーム / zoom"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2452,27 +3182,27 @@
       "label": "数式フィールド (field)"
     },
     {
-      "t": 192,
+      "t": 204,
       "label": "登場 (in)"
     },
     {
-      "t": 208,
+      "t": 220,
       "label": "保持 (hold)"
     },
     {
-      "t": 224,
+      "t": 236,
       "label": "退場 (out)"
     },
     {
-      "t": 236,
+      "t": 248,
       "label": "同期 (sync)"
     },
     {
-      "t": 248,
+      "t": 260,
       "label": "2D カメラ (camera)"
     },
     {
-      "t": 280,
+      "t": 292,
       "label": "手続きモーション (proc motion)"
     }
   ],
@@ -2514,7 +3244,7 @@
       "id": "clip_fig_plate",
       "trackId": "bg",
       "start": 0,
-      "end": 348,
+      "end": 360,
       "spec": {
         "type": "solid",
         "params": {
@@ -7769,20 +8499,20 @@
       "id": "clip_fig_065",
       "trackId": "fig",
       "start": 192,
-      "end": 196,
+      "end": 195,
       "spec": {
         "type": "figure",
         "params": {
-          "motif": "burst",
+          "motif": "reactionDiffusion",
           "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
               "start": 192,
-              "end": 193.5,
+              "end": 193.125,
               "move": {
-                "in": "pop",
+                "in": "wipe",
                 "hold": "morph",
                 "out": "fade"
               },
@@ -7792,10 +8522,10 @@
               "tone": 5
             },
             {
-              "start": 193.5,
-              "end": 194.5,
+              "start": 193.125,
+              "end": 193.875,
               "move": {
-                "in": "pop",
+                "in": "scatterIn",
                 "hold": "morph",
                 "out": "burstOut"
               },
@@ -7805,10 +8535,10 @@
               "tone": 4
             },
             {
-              "start": 194.5,
-              "end": 195.5,
+              "start": 193.875,
+              "end": 194.625,
               "move": {
-                "in": "pop",
+                "in": "draw",
                 "hold": "morph",
                 "out": "fade"
               },
@@ -7818,10 +8548,10 @@
               "tone": 6
             },
             {
-              "start": 195.5,
-              "end": 196,
+              "start": 194.625,
+              "end": 195,
               "move": {
-                "in": "pop",
+                "in": "wipe",
                 "hold": "morph",
                 "out": "shrink"
               },
@@ -7830,6 +8560,14 @@
               "size": 1.1,
               "tone": 1
             }
+          ],
+          "rand": 1,
+          "seed": 14515393,
+          "simBeats": [
+            0,
+            1.125,
+            1.875,
+            2.625
           ],
           "camera": "pull"
         }
@@ -7849,21 +8587,21 @@
     {
       "id": "clip_fig_066",
       "trackId": "fig",
-      "start": 196,
-      "end": 200,
+      "start": 195,
+      "end": 198,
       "spec": {
         "type": "figure",
         "params": {
-          "motif": "burst",
+          "motif": "wave2d",
           "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 196,
-              "end": 197.5,
+              "start": 195,
+              "end": 196.125,
               "move": {
-                "in": "draw",
+                "in": "wipe",
                 "hold": "pulse",
                 "out": "shrink"
               },
@@ -7873,10 +8611,10 @@
               "tone": 4
             },
             {
-              "start": 197.5,
-              "end": 198.5,
+              "start": 196.125,
+              "end": 196.875,
               "move": {
-                "in": "draw",
+                "in": "scatterIn",
                 "hold": "pulse",
                 "out": "fade"
               },
@@ -7886,10 +8624,10 @@
               "tone": 0
             },
             {
-              "start": 198.5,
-              "end": 199.5,
+              "start": 196.875,
+              "end": 197.625,
               "move": {
-                "in": "draw",
+                "in": "wipe",
                 "hold": "morph",
                 "out": "burstOut"
               },
@@ -7899,10 +8637,10 @@
               "tone": 1
             },
             {
-              "start": 199.5,
-              "end": 200,
+              "start": 197.625,
+              "end": 198,
               "move": {
-                "in": "draw",
+                "in": "pop",
                 "hold": "morph",
                 "out": "shrink"
               },
@@ -7911,6 +8649,14 @@
               "size": 1.04,
               "tone": 3
             }
+          ],
+          "rand": 1,
+          "seed": 655915281,
+          "simBeats": [
+            0,
+            1.125,
+            1.875,
+            2.625
           ],
           "camera": "orbit"
         }
@@ -7930,21 +8676,21 @@
     {
       "id": "clip_fig_067",
       "trackId": "fig",
-      "start": 200,
-      "end": 204,
+      "start": 198,
+      "end": 201,
       "spec": {
         "type": "figure",
         "params": {
-          "motif": "burst",
+          "motif": "fluid",
           "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 200,
-              "end": 201.5,
+              "start": 198,
+              "end": 199.125,
               "move": {
-                "in": "wipe",
+                "in": "pop",
                 "hold": "drift",
                 "out": "shrink"
               },
@@ -7954,10 +8700,10 @@
               "tone": 7
             },
             {
-              "start": 201.5,
-              "end": 202.5,
+              "start": 199.125,
+              "end": 199.875,
               "move": {
-                "in": "wipe",
+                "in": "scatterIn",
                 "hold": "drift",
                 "out": "burstOut"
               },
@@ -7967,10 +8713,10 @@
               "tone": 0
             },
             {
-              "start": 202.5,
-              "end": 203.5,
+              "start": 199.875,
+              "end": 200.625,
               "move": {
-                "in": "wipe",
+                "in": "draw",
                 "hold": "pulse",
                 "out": "shrink"
               },
@@ -7980,8 +8726,8 @@
               "tone": 5
             },
             {
-              "start": 203.5,
-              "end": 204,
+              "start": 200.625,
+              "end": 201,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -7992,6 +8738,14 @@
               "size": 0.64,
               "tone": 4
             }
+          ],
+          "rand": 1,
+          "seed": 347553626,
+          "simBeats": [
+            0,
+            1.125,
+            1.875,
+            2.625
           ],
           "camera": "shake"
         }
@@ -8011,21 +8765,21 @@
     {
       "id": "clip_fig_068",
       "trackId": "fig",
-      "start": 204,
-      "end": 208,
+      "start": 201,
+      "end": 204,
       "spec": {
         "type": "figure",
         "params": {
-          "motif": "burst",
+          "motif": "cellular",
           "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 204,
-              "end": 205.5,
+              "start": 201,
+              "end": 202.125,
               "move": {
-                "in": "scatterIn",
+                "in": "wipe",
                 "hold": "pulse",
                 "out": "shrink"
               },
@@ -8035,10 +8789,10 @@
               "tone": 3
             },
             {
-              "start": 205.5,
-              "end": 206.5,
+              "start": 202.125,
+              "end": 202.875,
               "move": {
-                "in": "scatterIn",
+                "in": "pop",
                 "hold": "drift",
                 "out": "burstOut"
               },
@@ -8048,10 +8802,10 @@
               "tone": 4
             },
             {
-              "start": 206.5,
-              "end": 207.5,
+              "start": 202.875,
+              "end": 203.625,
               "move": {
-                "in": "scatterIn",
+                "in": "draw",
                 "hold": "drift",
                 "out": "shrink"
               },
@@ -8061,10 +8815,10 @@
               "tone": 3
             },
             {
-              "start": 207.5,
-              "end": 208,
+              "start": 203.625,
+              "end": 204,
               "move": {
-                "in": "scatterIn",
+                "in": "wipe",
                 "hold": "drift",
                 "out": "burstOut"
               },
@@ -8073,6 +8827,14 @@
               "size": 1.33,
               "tone": 4
             }
+          ],
+          "rand": 1,
+          "seed": 998075455,
+          "simBeats": [
+            0,
+            1.125,
+            1.875,
+            2.625
           ],
           "camera": "whip"
         }
@@ -8092,8 +8854,8 @@
     {
       "id": "clip_fig_069",
       "trackId": "fig",
-      "start": 208,
-      "end": 212,
+      "start": 204,
+      "end": 208,
       "spec": {
         "type": "figure",
         "params": {
@@ -8103,11 +8865,11 @@
           "colors": null,
           "beats": [
             {
-              "start": 208,
-              "end": 209.5,
+              "start": 204,
+              "end": 205.5,
               "move": {
-                "in": "scatterIn",
-                "hold": "spin",
+                "in": "pop",
+                "hold": "morph",
                 "out": "fade"
               },
               "variant": 1,
@@ -8116,11 +8878,11 @@
               "tone": 4
             },
             {
-              "start": 209.5,
-              "end": 210.5,
+              "start": 205.5,
+              "end": 206.5,
               "move": {
-                "in": "draw",
-                "hold": "spin",
+                "in": "pop",
+                "hold": "drift",
                 "out": "shrink"
               },
               "variant": 1,
@@ -8129,11 +8891,11 @@
               "tone": 5
             },
             {
-              "start": 210.5,
-              "end": 211.5,
+              "start": 206.5,
+              "end": 207.5,
               "move": {
-                "in": "wipe",
-                "hold": "spin",
+                "in": "pop",
+                "hold": "pulse",
                 "out": "fade"
               },
               "variant": 1,
@@ -8142,11 +8904,11 @@
               "tone": 0
             },
             {
-              "start": 211.5,
-              "end": 212,
+              "start": 207.5,
+              "end": 208,
               "move": {
-                "in": "scatterIn",
-                "hold": "spin",
+                "in": "pop",
+                "hold": "pulse",
                 "out": "shrink"
               },
               "variant": 0,
@@ -8172,8 +8934,8 @@
     {
       "id": "clip_fig_070",
       "trackId": "fig",
-      "start": 212,
-      "end": 216,
+      "start": 208,
+      "end": 212,
       "spec": {
         "type": "figure",
         "params": {
@@ -8183,11 +8945,11 @@
           "colors": null,
           "beats": [
             {
-              "start": 212,
-              "end": 213.5,
+              "start": 208,
+              "end": 209.5,
               "move": {
-                "in": "pop",
-                "hold": "pulse",
+                "in": "draw",
+                "hold": "morph",
                 "out": "fade"
               },
               "variant": 2,
@@ -8196,11 +8958,11 @@
               "tone": 5
             },
             {
-              "start": 213.5,
-              "end": 214.5,
+              "start": 209.5,
+              "end": 210.5,
               "move": {
-                "in": "wipe",
-                "hold": "pulse",
+                "in": "draw",
+                "hold": "morph",
                 "out": "shrink"
               },
               "variant": 1,
@@ -8209,10 +8971,10 @@
               "tone": 4
             },
             {
-              "start": 214.5,
-              "end": 215.5,
+              "start": 210.5,
+              "end": 211.5,
               "move": {
-                "in": "scatterIn",
+                "in": "draw",
                 "hold": "pulse",
                 "out": "fade"
               },
@@ -8222,11 +8984,11 @@
               "tone": 7
             },
             {
-              "start": 215.5,
-              "end": 216,
+              "start": 211.5,
+              "end": 212,
               "move": {
-                "in": "pop",
-                "hold": "pulse",
+                "in": "draw",
+                "hold": "drift",
                 "out": "shrink"
               },
               "variant": 2,
@@ -8252,8 +9014,8 @@
     {
       "id": "clip_fig_071",
       "trackId": "fig",
-      "start": 216,
-      "end": 220,
+      "start": 212,
+      "end": 216,
       "spec": {
         "type": "figure",
         "params": {
@@ -8263,11 +9025,11 @@
           "colors": null,
           "beats": [
             {
-              "start": 216,
-              "end": 217.5,
+              "start": 212,
+              "end": 213.5,
               "move": {
-                "in": "draw",
-                "hold": "drift",
+                "in": "wipe",
+                "hold": "morph",
                 "out": "burstOut"
               },
               "variant": 0,
@@ -8276,11 +9038,11 @@
               "tone": 5
             },
             {
-              "start": 217.5,
-              "end": 218.5,
+              "start": 213.5,
+              "end": 214.5,
               "move": {
-                "in": "pop",
-                "hold": "drift",
+                "in": "wipe",
+                "hold": "pulse",
                 "out": "shrink"
               },
               "variant": 2,
@@ -8289,10 +9051,10 @@
               "tone": 4
             },
             {
-              "start": 218.5,
-              "end": 219.5,
+              "start": 214.5,
+              "end": 215.5,
               "move": {
-                "in": "scatterIn",
+                "in": "wipe",
                 "hold": "drift",
                 "out": "burstOut"
               },
@@ -8302,10 +9064,10 @@
               "tone": 0
             },
             {
-              "start": 219.5,
-              "end": 220,
+              "start": 215.5,
+              "end": 216,
               "move": {
-                "in": "pop",
+                "in": "wipe",
                 "hold": "drift",
                 "out": "shrink"
               },
@@ -8333,8 +9095,8 @@
     {
       "id": "clip_fig_072",
       "trackId": "fig",
-      "start": 220,
-      "end": 224,
+      "start": 216,
+      "end": 220,
       "spec": {
         "type": "figure",
         "params": {
@@ -8344,10 +9106,10 @@
           "colors": null,
           "beats": [
             {
-              "start": 220,
-              "end": 221.5,
+              "start": 216,
+              "end": 217.5,
               "move": {
-                "in": "draw",
+                "in": "scatterIn",
                 "hold": "morph",
                 "out": "burstOut"
               },
@@ -8357,11 +9119,11 @@
               "tone": 5
             },
             {
-              "start": 221.5,
-              "end": 222.5,
+              "start": 217.5,
+              "end": 218.5,
               "move": {
-                "in": "pop",
-                "hold": "morph",
+                "in": "scatterIn",
+                "hold": "spin",
                 "out": "shrink"
               },
               "variant": 1,
@@ -8370,11 +9132,11 @@
               "tone": 0
             },
             {
-              "start": 222.5,
-              "end": 223.5,
+              "start": 218.5,
+              "end": 219.5,
               "move": {
-                "in": "draw",
-                "hold": "morph",
+                "in": "scatterIn",
+                "hold": "pulse",
                 "out": "burstOut"
               },
               "variant": 1,
@@ -8383,11 +9145,11 @@
               "tone": 2
             },
             {
-              "start": 223.5,
-              "end": 224,
+              "start": 219.5,
+              "end": 220,
               "move": {
-                "in": "pop",
-                "hold": "morph",
+                "in": "scatterIn",
+                "hold": "spin",
                 "out": "fade"
               },
               "variant": 1,
@@ -8413,8 +9175,8 @@
     {
       "id": "clip_fig_073",
       "trackId": "fig",
-      "start": 224,
-      "end": 228,
+      "start": 220,
+      "end": 224,
       "spec": {
         "type": "figure",
         "params": {
@@ -8424,12 +9186,12 @@
           "colors": null,
           "beats": [
             {
-              "start": 224,
-              "end": 225.5,
+              "start": 220,
+              "end": 221.5,
               "move": {
                 "in": "draw",
-                "hold": "morph",
-                "out": "shrink"
+                "hold": "spin",
+                "out": "fade"
               },
               "variant": 0,
               "accent": false,
@@ -8437,12 +9199,12 @@
               "tone": 7
             },
             {
-              "start": 225.5,
-              "end": 226.5,
+              "start": 221.5,
+              "end": 222.5,
               "move": {
                 "in": "wipe",
-                "hold": "drift",
-                "out": "shrink"
+                "hold": "spin",
+                "out": "burstOut"
               },
               "variant": 1,
               "accent": false,
@@ -8450,12 +9212,12 @@
               "tone": 7
             },
             {
-              "start": 226.5,
-              "end": 227.5,
+              "start": 222.5,
+              "end": 223.5,
               "move": {
                 "in": "draw",
                 "hold": "spin",
-                "out": "shrink"
+                "out": "fade"
               },
               "variant": 2,
               "accent": true,
@@ -8463,12 +9225,12 @@
               "tone": 4
             },
             {
-              "start": 227.5,
-              "end": 228,
+              "start": 223.5,
+              "end": 224,
               "move": {
                 "in": "pop",
                 "hold": "spin",
-                "out": "shrink"
+                "out": "burstOut"
               },
               "variant": 2,
               "accent": false,
@@ -8494,8 +9256,8 @@
     {
       "id": "clip_fig_074",
       "trackId": "fig",
-      "start": 228,
-      "end": 232,
+      "start": 224,
+      "end": 228,
       "spec": {
         "type": "figure",
         "params": {
@@ -8505,12 +9267,12 @@
           "colors": null,
           "beats": [
             {
-              "start": 228,
-              "end": 229.5,
+              "start": 224,
+              "end": 225.5,
               "move": {
                 "in": "draw",
-                "hold": "drift",
-                "out": "fade"
+                "hold": "pulse",
+                "out": "burstOut"
               },
               "variant": 0,
               "accent": false,
@@ -8518,11 +9280,11 @@
               "tone": 7
             },
             {
-              "start": 229.5,
-              "end": 230.5,
+              "start": 225.5,
+              "end": 226.5,
               "move": {
                 "in": "pop",
-                "hold": "morph",
+                "hold": "pulse",
                 "out": "fade"
               },
               "variant": 0,
@@ -8531,12 +9293,12 @@
               "tone": 7
             },
             {
-              "start": 230.5,
-              "end": 231.5,
+              "start": 226.5,
+              "end": 227.5,
               "move": {
                 "in": "wipe",
                 "hold": "pulse",
-                "out": "fade"
+                "out": "shrink"
               },
               "variant": 1,
               "accent": false,
@@ -8544,11 +9306,11 @@
               "tone": 5
             },
             {
-              "start": 231.5,
-              "end": 232,
+              "start": 227.5,
+              "end": 228,
               "move": {
                 "in": "pop",
-                "hold": "morph",
+                "hold": "pulse",
                 "out": "fade"
               },
               "variant": 0,
@@ -8574,8 +9336,8 @@
     {
       "id": "clip_fig_075",
       "trackId": "fig",
-      "start": 232,
-      "end": 236,
+      "start": 228,
+      "end": 232,
       "spec": {
         "type": "figure",
         "params": {
@@ -8585,12 +9347,12 @@
           "colors": null,
           "beats": [
             {
-              "start": 232,
-              "end": 233.5,
+              "start": 228,
+              "end": 229.5,
               "move": {
                 "in": "scatterIn",
-                "hold": "morph",
-                "out": "burstOut"
+                "hold": "drift",
+                "out": "fade"
               },
               "variant": 0,
               "accent": false,
@@ -8598,8 +9360,8 @@
               "tone": 1
             },
             {
-              "start": 233.5,
-              "end": 234.5,
+              "start": 229.5,
+              "end": 230.5,
               "move": {
                 "in": "draw",
                 "hold": "drift",
@@ -8611,12 +9373,12 @@
               "tone": 7
             },
             {
-              "start": 234.5,
-              "end": 235.5,
+              "start": 230.5,
+              "end": 231.5,
               "move": {
                 "in": "wipe",
-                "hold": "pulse",
-                "out": "burstOut"
+                "hold": "drift",
+                "out": "fade"
               },
               "variant": 1,
               "accent": false,
@@ -8624,12 +9386,12 @@
               "tone": 7
             },
             {
-              "start": 235.5,
-              "end": 236,
+              "start": 231.5,
+              "end": 232,
               "move": {
                 "in": "scatterIn",
-                "hold": "spin",
-                "out": "burstOut"
+                "hold": "drift",
+                "out": "shrink"
               },
               "variant": 1,
               "accent": true,
@@ -8654,22 +9416,22 @@
     {
       "id": "clip_fig_076",
       "trackId": "fig",
-      "start": 236,
-      "end": 240,
+      "start": 232,
+      "end": 236,
       "spec": {
         "type": "figure",
         "params": {
           "motif": "burst",
-          "sync": "beat",
+          "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 236,
-              "end": 237,
+              "start": 232,
+              "end": 233.5,
               "move": {
                 "in": "wipe",
-                "hold": "drift",
+                "hold": "morph",
                 "out": "fade"
               },
               "variant": 2,
@@ -8678,11 +9440,11 @@
               "tone": 0
             },
             {
-              "start": 237,
-              "end": 238,
+              "start": 233.5,
+              "end": 234.5,
               "move": {
                 "in": "pop",
-                "hold": "spin",
+                "hold": "morph",
                 "out": "shrink"
               },
               "variant": 2,
@@ -8691,8 +9453,8 @@
               "tone": 1
             },
             {
-              "start": 238,
-              "end": 239,
+              "start": 234.5,
+              "end": 235.5,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -8704,8 +9466,8 @@
               "tone": 4
             },
             {
-              "start": 239,
-              "end": 240,
+              "start": 235.5,
+              "end": 236,
               "move": {
                 "in": "pop",
                 "hold": "morph",
@@ -8735,8 +9497,8 @@
     {
       "id": "clip_fig_077",
       "trackId": "fig",
-      "start": 240,
-      "end": 244,
+      "start": 236,
+      "end": 240,
       "spec": {
         "type": "figure",
         "params": {
@@ -8746,8 +9508,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 240,
-              "end": 241.5,
+              "start": 236,
+              "end": 237.5,
               "move": {
                 "in": "pop",
                 "hold": "drift",
@@ -8759,12 +9521,12 @@
               "tone": 2
             },
             {
-              "start": 241.5,
-              "end": 242.5,
+              "start": 237.5,
+              "end": 238.5,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
-                "out": "fade"
+                "out": "shrink"
               },
               "variant": 0,
               "accent": true,
@@ -8772,8 +9534,8 @@
               "tone": 4
             },
             {
-              "start": 242.5,
-              "end": 243.5,
+              "start": 238.5,
+              "end": 239.5,
               "move": {
                 "in": "draw",
                 "hold": "drift",
@@ -8785,12 +9547,12 @@
               "tone": 7
             },
             {
-              "start": 243.5,
-              "end": 244,
+              "start": 239.5,
+              "end": 240,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
-                "out": "fade"
+                "out": "shrink"
               },
               "variant": 1,
               "accent": true,
@@ -8816,23 +9578,23 @@
     {
       "id": "clip_fig_078",
       "trackId": "fig",
-      "start": 244,
-      "end": 248,
+      "start": 240,
+      "end": 244,
       "spec": {
         "type": "figure",
         "params": {
           "motif": "burst",
-          "sync": "text",
+          "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 244,
-              "end": 245,
+              "start": 240,
+              "end": 241.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
-                "out": "burstOut"
+                "out": "fade"
               },
               "variant": 1,
               "accent": false,
@@ -8840,8 +9602,8 @@
               "tone": 0
             },
             {
-              "start": 245,
-              "end": 246,
+              "start": 241.5,
+              "end": 242.5,
               "move": {
                 "in": "wipe",
                 "hold": "pulse",
@@ -8853,12 +9615,12 @@
               "tone": 7
             },
             {
-              "start": 246,
-              "end": 247,
+              "start": 242.5,
+              "end": 243.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "morph",
-                "out": "shrink"
+                "out": "fade"
               },
               "variant": 2,
               "accent": false,
@@ -8866,12 +9628,12 @@
               "tone": 0
             },
             {
-              "start": 247,
-              "end": 248,
+              "start": 243.5,
+              "end": 244,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
-                "out": "burstOut"
+                "out": "fade"
               },
               "variant": 0,
               "accent": false,
@@ -8896,8 +9658,8 @@
     {
       "id": "clip_fig_079",
       "trackId": "fig",
-      "start": 248,
-      "end": 252,
+      "start": 244,
+      "end": 248,
       "spec": {
         "type": "figure",
         "params": {
@@ -8907,12 +9669,12 @@
           "colors": null,
           "beats": [
             {
-              "start": 248,
-              "end": 249.5,
+              "start": 244,
+              "end": 245.5,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
-                "out": "shrink"
+                "out": "burstOut"
               },
               "variant": 2,
               "accent": true,
@@ -8920,8 +9682,8 @@
               "tone": 4
             },
             {
-              "start": 249.5,
-              "end": 250.5,
+              "start": 245.5,
+              "end": 246.5,
               "move": {
                 "in": "draw",
                 "hold": "drift",
@@ -8933,12 +9695,12 @@
               "tone": 2
             },
             {
-              "start": 250.5,
-              "end": 251.5,
+              "start": 246.5,
+              "end": 247.5,
               "move": {
                 "in": "pop",
                 "hold": "morph",
-                "out": "fade"
+                "out": "burstOut"
               },
               "variant": 1,
               "accent": false,
@@ -8946,8 +9708,8 @@
               "tone": 1
             },
             {
-              "start": 251.5,
-              "end": 252,
+              "start": 247.5,
+              "end": 248,
               "move": {
                 "in": "scatterIn",
                 "hold": "spin",
@@ -8959,8 +9721,7 @@
               "tone": 7
             }
           ],
-          "camera": "none",
-          "seed": 3923
+          "camera": "roll"
         }
       },
       "opacity": 0.95,
@@ -8978,19 +9739,19 @@
     {
       "id": "clip_fig_080",
       "trackId": "fig",
-      "start": 252,
-      "end": 256,
+      "start": 248,
+      "end": 252,
       "spec": {
         "type": "figure",
         "params": {
           "motif": "burst",
-          "sync": "free",
+          "sync": "beat",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 252,
-              "end": 253.5,
+              "start": 248,
+              "end": 249,
               "move": {
                 "in": "draw",
                 "hold": "morph",
@@ -9002,8 +9763,8 @@
               "tone": 7
             },
             {
-              "start": 253.5,
-              "end": 254.5,
+              "start": 249,
+              "end": 250,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
@@ -9015,8 +9776,8 @@
               "tone": 4
             },
             {
-              "start": 254.5,
-              "end": 255.5,
+              "start": 250,
+              "end": 251,
               "move": {
                 "in": "draw",
                 "hold": "spin",
@@ -9028,8 +9789,8 @@
               "tone": 0
             },
             {
-              "start": 255.5,
-              "end": 256,
+              "start": 251,
+              "end": 252,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
@@ -9041,8 +9802,7 @@
               "tone": 0
             }
           ],
-          "camera": "push",
-          "seed": 3960
+          "camera": "pull"
         }
       },
       "opacity": 0.95,
@@ -9060,8 +9820,8 @@
     {
       "id": "clip_fig_081",
       "trackId": "fig",
-      "start": 256,
-      "end": 260,
+      "start": 252,
+      "end": 256,
       "spec": {
         "type": "figure",
         "params": {
@@ -9071,8 +9831,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 256,
-              "end": 257.5,
+              "start": 252,
+              "end": 253.5,
               "move": {
                 "in": "draw",
                 "hold": "spin",
@@ -9084,8 +9844,8 @@
               "tone": 5
             },
             {
-              "start": 257.5,
-              "end": 258.5,
+              "start": 253.5,
+              "end": 254.5,
               "move": {
                 "in": "pop",
                 "hold": "drift",
@@ -9097,8 +9857,8 @@
               "tone": 6
             },
             {
-              "start": 258.5,
-              "end": 259.5,
+              "start": 254.5,
+              "end": 255.5,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -9110,8 +9870,8 @@
               "tone": 6
             },
             {
-              "start": 259.5,
-              "end": 260,
+              "start": 255.5,
+              "end": 256,
               "move": {
                 "in": "pop",
                 "hold": "morph",
@@ -9122,9 +9882,7 @@
               "size": 0.81,
               "tone": 2
             }
-          ],
-          "camera": "pull",
-          "seed": 3997
+          ]
         }
       },
       "opacity": 0.95,
@@ -9142,19 +9900,19 @@
     {
       "id": "clip_fig_082",
       "trackId": "fig",
-      "start": 260,
-      "end": 264,
+      "start": 256,
+      "end": 260,
       "spec": {
         "type": "figure",
         "params": {
           "motif": "burst",
-          "sync": "free",
+          "sync": "text",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 260,
-              "end": 261.5,
+              "start": 256,
+              "end": 257,
               "move": {
                 "in": "pop",
                 "hold": "pulse",
@@ -9166,8 +9924,8 @@
               "tone": 3
             },
             {
-              "start": 261.5,
-              "end": 262.5,
+              "start": 257,
+              "end": 258,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
@@ -9179,8 +9937,8 @@
               "tone": 1
             },
             {
-              "start": 262.5,
-              "end": 263.5,
+              "start": 258,
+              "end": 259,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
@@ -9192,8 +9950,8 @@
               "tone": 5
             },
             {
-              "start": 263.5,
-              "end": 264,
+              "start": 259,
+              "end": 260,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
@@ -9205,8 +9963,7 @@
               "tone": 6
             }
           ],
-          "camera": "pan",
-          "seed": 4034
+          "camera": "roll"
         }
       },
       "opacity": 0.95,
@@ -9224,8 +9981,8 @@
     {
       "id": "clip_fig_083",
       "trackId": "fig",
-      "start": 264,
-      "end": 268,
+      "start": 260,
+      "end": 264,
       "spec": {
         "type": "figure",
         "params": {
@@ -9235,8 +9992,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 264,
-              "end": 265.5,
+              "start": 260,
+              "end": 261.5,
               "move": {
                 "in": "wipe",
                 "hold": "pulse",
@@ -9248,8 +10005,8 @@
               "tone": 7
             },
             {
-              "start": 265.5,
-              "end": 266.5,
+              "start": 261.5,
+              "end": 262.5,
               "move": {
                 "in": "draw",
                 "hold": "morph",
@@ -9261,8 +10018,8 @@
               "tone": 1
             },
             {
-              "start": 266.5,
-              "end": 267.5,
+              "start": 262.5,
+              "end": 263.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
@@ -9274,8 +10031,8 @@
               "tone": 7
             },
             {
-              "start": 267.5,
-              "end": 268,
+              "start": 263.5,
+              "end": 264,
               "move": {
                 "in": "draw",
                 "hold": "drift",
@@ -9287,7 +10044,7 @@
               "tone": 3
             }
           ],
-          "camera": "roll",
+          "camera": "none",
           "seed": 4071
         }
       },
@@ -9306,8 +10063,8 @@
     {
       "id": "clip_fig_084",
       "trackId": "fig",
-      "start": 268,
-      "end": 272,
+      "start": 264,
+      "end": 268,
       "spec": {
         "type": "figure",
         "params": {
@@ -9317,8 +10074,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 268,
-              "end": 269.5,
+              "start": 264,
+              "end": 265.5,
               "move": {
                 "in": "wipe",
                 "hold": "spin",
@@ -9330,8 +10087,8 @@
               "tone": 5
             },
             {
-              "start": 269.5,
-              "end": 270.5,
+              "start": 265.5,
+              "end": 266.5,
               "move": {
                 "in": "draw",
                 "hold": "spin",
@@ -9343,8 +10100,8 @@
               "tone": 6
             },
             {
-              "start": 270.5,
-              "end": 271.5,
+              "start": 266.5,
+              "end": 267.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "drift",
@@ -9356,8 +10113,8 @@
               "tone": 3
             },
             {
-              "start": 271.5,
-              "end": 272,
+              "start": 267.5,
+              "end": 268,
               "move": {
                 "in": "wipe",
                 "hold": "spin",
@@ -9369,7 +10126,7 @@
               "tone": 0
             }
           ],
-          "camera": "shake",
+          "camera": "push",
           "seed": 4108
         }
       },
@@ -9388,8 +10145,8 @@
     {
       "id": "clip_fig_085",
       "trackId": "fig",
-      "start": 272,
-      "end": 276,
+      "start": 268,
+      "end": 272,
       "spec": {
         "type": "figure",
         "params": {
@@ -9399,8 +10156,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 272,
-              "end": 273.5,
+              "start": 268,
+              "end": 269.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "morph",
@@ -9412,8 +10169,8 @@
               "tone": 1
             },
             {
-              "start": 273.5,
-              "end": 274.5,
+              "start": 269.5,
+              "end": 270.5,
               "move": {
                 "in": "pop",
                 "hold": "spin",
@@ -9425,8 +10182,8 @@
               "tone": 1
             },
             {
-              "start": 274.5,
-              "end": 275.5,
+              "start": 270.5,
+              "end": 271.5,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -9438,8 +10195,8 @@
               "tone": 2
             },
             {
-              "start": 275.5,
-              "end": 276,
+              "start": 271.5,
+              "end": 272,
               "move": {
                 "in": "pop",
                 "hold": "morph",
@@ -9451,7 +10208,7 @@
               "tone": 1
             }
           ],
-          "camera": "whip",
+          "camera": "pull",
           "seed": 4145
         }
       },
@@ -9470,8 +10227,8 @@
     {
       "id": "clip_fig_086",
       "trackId": "fig",
-      "start": 276,
-      "end": 280,
+      "start": 272,
+      "end": 276,
       "spec": {
         "type": "figure",
         "params": {
@@ -9481,8 +10238,8 @@
           "colors": null,
           "beats": [
             {
-              "start": 276,
-              "end": 277.5,
+              "start": 272,
+              "end": 273.5,
               "move": {
                 "in": "pop",
                 "hold": "pulse",
@@ -9494,8 +10251,8 @@
               "tone": 6
             },
             {
-              "start": 277.5,
-              "end": 278.5,
+              "start": 273.5,
+              "end": 274.5,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -9507,8 +10264,8 @@
               "tone": 4
             },
             {
-              "start": 278.5,
-              "end": 279.5,
+              "start": 274.5,
+              "end": 275.5,
               "move": {
                 "in": "draw",
                 "hold": "pulse",
@@ -9520,8 +10277,8 @@
               "tone": 4
             },
             {
-              "start": 279.5,
-              "end": 280,
+              "start": 275.5,
+              "end": 276,
               "move": {
                 "in": "wipe",
                 "hold": "spin",
@@ -9533,7 +10290,7 @@
               "tone": 7
             }
           ],
-          "camera": "orbit",
+          "camera": "pan",
           "seed": 4182
         }
       },
@@ -9552,19 +10309,19 @@
     {
       "id": "clip_fig_087",
       "trackId": "fig",
-      "start": 280,
-      "end": 284,
+      "start": 276,
+      "end": 280,
       "spec": {
         "type": "figure",
         "params": {
-          "motif": "proc",
+          "motif": "burst",
           "sync": "free",
           "density": 0.6,
           "colors": null,
           "beats": [
             {
-              "start": 280,
-              "end": 281.5,
+              "start": 276,
+              "end": 277.5,
               "move": {
                 "in": "draw",
                 "hold": "morph",
@@ -9576,8 +10333,8 @@
               "tone": 7
             },
             {
-              "start": 281.5,
-              "end": 282.5,
+              "start": 277.5,
+              "end": 278.5,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
@@ -9589,8 +10346,8 @@
               "tone": 3
             },
             {
-              "start": 282.5,
-              "end": 283.5,
+              "start": 278.5,
+              "end": 279.5,
               "move": {
                 "in": "draw",
                 "hold": "pulse",
@@ -9602,8 +10359,8 @@
               "tone": 7
             },
             {
-              "start": 283.5,
-              "end": 284,
+              "start": 279.5,
+              "end": 280,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
@@ -9613,6 +10370,334 @@
               "accent": true,
               "size": 1.01,
               "tone": 4
+            }
+          ],
+          "camera": "roll",
+          "seed": 4219
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_088",
+      "trackId": "fig",
+      "start": 280,
+      "end": 284,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 280,
+              "end": 281.5,
+              "move": {
+                "in": "wipe",
+                "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.8,
+              "tone": 1
+            },
+            {
+              "start": 281.5,
+              "end": 282.5,
+              "move": {
+                "in": "draw",
+                "hold": "spin",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.76,
+              "tone": 5
+            },
+            {
+              "start": 282.5,
+              "end": 283.5,
+              "move": {
+                "in": "wipe",
+                "hold": "spin",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.6,
+              "tone": 5
+            },
+            {
+              "start": 283.5,
+              "end": 284,
+              "move": {
+                "in": "draw",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.8,
+              "tone": 1
+            }
+          ],
+          "camera": "shake",
+          "seed": 4256
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_089",
+      "trackId": "fig",
+      "start": 284,
+      "end": 288,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 284,
+              "end": 285.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 1.11,
+              "tone": 3
+            },
+            {
+              "start": 285.5,
+              "end": 286.5,
+              "move": {
+                "in": "pop",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.85,
+              "tone": 4
+            },
+            {
+              "start": 286.5,
+              "end": 287.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.07,
+              "tone": 5
+            },
+            {
+              "start": 287.5,
+              "end": 288,
+              "move": {
+                "in": "draw",
+                "hold": "spin",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.75,
+              "tone": 6
+            }
+          ],
+          "camera": "whip",
+          "seed": 4293
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_090",
+      "trackId": "fig",
+      "start": 288,
+      "end": 292,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 288,
+              "end": 289.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.03,
+              "tone": 7
+            },
+            {
+              "start": 289.5,
+              "end": 290.5,
+              "move": {
+                "in": "wipe",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 1.09,
+              "tone": 3
+            },
+            {
+              "start": 290.5,
+              "end": 291.5,
+              "move": {
+                "in": "pop",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 1.12,
+              "tone": 1
+            },
+            {
+              "start": 291.5,
+              "end": 292,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.76,
+              "tone": 3
+            }
+          ],
+          "camera": "orbit",
+          "seed": 4330
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_091",
+      "trackId": "fig",
+      "start": 292,
+      "end": 296,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 292,
+              "end": 293.5,
+              "move": {
+                "in": "wipe",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 0.97,
+              "tone": 2
+            },
+            {
+              "start": 293.5,
+              "end": 294.5,
+              "move": {
+                "in": "pop",
+                "hold": "spin",
+                "out": "fade"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 1.3,
+              "tone": 3
+            },
+            {
+              "start": 294.5,
+              "end": 295.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.19,
+              "tone": 4
+            },
+            {
+              "start": 295.5,
+              "end": 296,
+              "move": {
+                "in": "wipe",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.3,
+              "tone": 7
             }
           ],
           "rand": 1,
@@ -9632,255 +10717,7 @@
       ]
     },
     {
-      "id": "clip_fig_088",
-      "trackId": "fig",
-      "start": 284,
-      "end": 288,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 284,
-              "end": 285.5,
-              "move": {
-                "in": "wipe",
-                "hold": "morph",
-                "out": "burstOut"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 0.8,
-              "tone": 1
-            },
-            {
-              "start": 285.5,
-              "end": 286.5,
-              "move": {
-                "in": "draw",
-                "hold": "spin",
-                "out": "fade"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 0.76,
-              "tone": 5
-            },
-            {
-              "start": 286.5,
-              "end": 287.5,
-              "move": {
-                "in": "wipe",
-                "hold": "spin",
-                "out": "burstOut"
-              },
-              "variant": 1,
-              "accent": false,
-              "size": 0.6,
-              "tone": 5
-            },
-            {
-              "start": 287.5,
-              "end": 288,
-              "move": {
-                "in": "draw",
-                "hold": "pulse",
-                "out": "shrink"
-              },
-              "variant": 1,
-              "accent": false,
-              "size": 0.8,
-              "tone": 1
-            }
-          ],
-          "rand": 1,
-          "seed": 101
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_089",
-      "trackId": "fig",
-      "start": 288,
-      "end": 292,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 288,
-              "end": 289.5,
-              "move": {
-                "in": "wipe",
-                "hold": "pulse",
-                "out": "burstOut"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 1.11,
-              "tone": 3
-            },
-            {
-              "start": 289.5,
-              "end": 290.5,
-              "move": {
-                "in": "pop",
-                "hold": "spin",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.85,
-              "tone": 4
-            },
-            {
-              "start": 290.5,
-              "end": 291.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "drift",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 1.07,
-              "tone": 5
-            },
-            {
-              "start": 291.5,
-              "end": 292,
-              "move": {
-                "in": "draw",
-                "hold": "spin",
-                "out": "fade"
-              },
-              "variant": 1,
-              "accent": false,
-              "size": 0.75,
-              "tone": 6
-            }
-          ],
-          "rand": 1,
-          "seed": 104,
-          "camera": "push"
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_090",
-      "trackId": "fig",
-      "start": 292,
-      "end": 296,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 292,
-              "end": 293.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "spin",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 1.03,
-              "tone": 7
-            },
-            {
-              "start": 293.5,
-              "end": 294.5,
-              "move": {
-                "in": "wipe",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 1,
-              "accent": false,
-              "size": 1.09,
-              "tone": 3
-            },
-            {
-              "start": 294.5,
-              "end": 295.5,
-              "move": {
-                "in": "pop",
-                "hold": "spin",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 1.12,
-              "tone": 1
-            },
-            {
-              "start": 295.5,
-              "end": 296,
-              "move": {
-                "in": "scatterIn",
-                "hold": "drift",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.76,
-              "tone": 3
-            }
-          ],
-          "rand": 1,
-          "seed": 117,
-          "camera": "pan"
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_091",
+      "id": "clip_fig_092",
       "trackId": "fig",
       "start": 296,
       "end": 300,
@@ -9897,88 +10734,6 @@
               "end": 297.5,
               "move": {
                 "in": "wipe",
-                "hold": "spin",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 0.97,
-              "tone": 2
-            },
-            {
-              "start": 297.5,
-              "end": 298.5,
-              "move": {
-                "in": "pop",
-                "hold": "spin",
-                "out": "fade"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 1.3,
-              "tone": 3
-            },
-            {
-              "start": 298.5,
-              "end": 299.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "morph",
-                "out": "shrink"
-              },
-              "variant": 0,
-              "accent": true,
-              "size": 1.19,
-              "tone": 4
-            },
-            {
-              "start": 299.5,
-              "end": 300,
-              "move": {
-                "in": "wipe",
-                "hold": "drift",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": true,
-              "size": 1.3,
-              "tone": 7
-            }
-          ],
-          "rand": 1,
-          "seed": 105
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_092",
-      "trackId": "fig",
-      "start": 300,
-      "end": 304,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 300,
-              "end": 301.5,
-              "move": {
-                "in": "wipe",
                 "hold": "morph",
                 "out": "shrink"
               },
@@ -9988,8 +10743,8 @@
               "tone": 1
             },
             {
-              "start": 301.5,
-              "end": 302.5,
+              "start": 297.5,
+              "end": 298.5,
               "move": {
                 "in": "pop",
                 "hold": "drift",
@@ -10001,8 +10756,8 @@
               "tone": 6
             },
             {
-              "start": 302.5,
-              "end": 303.5,
+              "start": 298.5,
+              "end": 299.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "pulse",
@@ -10014,8 +10769,8 @@
               "tone": 6
             },
             {
-              "start": 303.5,
-              "end": 304,
+              "start": 299.5,
+              "end": 300,
               "move": {
                 "in": "pop",
                 "hold": "morph",
@@ -10028,7 +10783,7 @@
             }
           ],
           "rand": 1,
-          "seed": 111,
+          "seed": 101,
           "camera": "pan"
         }
       },
@@ -10047,6 +10802,88 @@
     {
       "id": "clip_fig_093",
       "trackId": "fig",
+      "start": 300,
+      "end": 304,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 300,
+              "end": 301.5,
+              "move": {
+                "in": "pop",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.97,
+              "tone": 5
+            },
+            {
+              "start": 301.5,
+              "end": 302.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.93,
+              "tone": 3
+            },
+            {
+              "start": 302.5,
+              "end": 303.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.21,
+              "tone": 3
+            },
+            {
+              "start": 303.5,
+              "end": 304,
+              "move": {
+                "in": "pop",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.87,
+              "tone": 1
+            }
+          ],
+          "rand": 1,
+          "seed": 104
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_094",
+      "trackId": "fig",
       "start": 304,
       "end": 308,
       "spec": {
@@ -10061,53 +10898,301 @@
               "start": 304,
               "end": 305.5,
               "move": {
-                "in": "pop",
+                "in": "scatterIn",
                 "hold": "morph",
-                "out": "shrink"
+                "out": "burstOut"
               },
-              "variant": 0,
-              "accent": false,
-              "size": 0.97,
-              "tone": 5
+              "variant": 2,
+              "accent": true,
+              "size": 0.83,
+              "tone": 1
             },
             {
               "start": 305.5,
               "end": 306.5,
               "move": {
-                "in": "draw",
-                "hold": "drift",
+                "in": "pop",
+                "hold": "pulse",
                 "out": "fade"
               },
-              "variant": 1,
-              "accent": true,
-              "size": 0.93,
-              "tone": 3
+              "variant": 0,
+              "accent": false,
+              "size": 0.96,
+              "tone": 4
             },
             {
               "start": 306.5,
               "end": 307.5,
               "move": {
-                "in": "scatterIn",
-                "hold": "spin",
+                "in": "wipe",
+                "hold": "drift",
                 "out": "shrink"
               },
-              "variant": 0,
-              "accent": true,
-              "size": 1.21,
-              "tone": 3
+              "variant": 2,
+              "accent": false,
+              "size": 0.79,
+              "tone": 6
             },
             {
               "start": 307.5,
               "end": 308,
               "move": {
                 "in": "pop",
+                "hold": "pulse",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 0.68,
+              "tone": 4
+            }
+          ],
+          "rand": 1,
+          "seed": 117
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_095",
+      "trackId": "fig",
+      "start": 308,
+      "end": 312,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 308,
+              "end": 309.5,
+              "move": {
+                "in": "pop",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.96,
+              "tone": 2
+            },
+            {
+              "start": 309.5,
+              "end": 310.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.8,
+              "tone": 4
+            },
+            {
+              "start": 310.5,
+              "end": 311.5,
+              "move": {
+                "in": "pop",
                 "hold": "morph",
                 "out": "fade"
               },
               "variant": 1,
+              "accent": true,
+              "size": 0.99,
+              "tone": 6
+            },
+            {
+              "start": 311.5,
+              "end": 312,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 1.19,
+              "tone": 0
+            }
+          ],
+          "rand": 1,
+          "seed": 105,
+          "camera": "pull"
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_096",
+      "trackId": "fig",
+      "start": 312,
+      "end": 316,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 312,
+              "end": 313.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 2,
               "accent": false,
+              "size": 0.97,
+              "tone": 4
+            },
+            {
+              "start": 313.5,
+              "end": 314.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.12,
+              "tone": 4
+            },
+            {
+              "start": 314.5,
+              "end": 315.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.26,
+              "tone": 5
+            },
+            {
+              "start": 315.5,
+              "end": 316,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
               "size": 0.87,
+              "tone": 0
+            }
+          ],
+          "rand": 1,
+          "seed": 111,
+          "camera": "roll"
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_097",
+      "trackId": "fig",
+      "start": 316,
+      "end": 320,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 316,
+              "end": 317.5,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.4,
+              "tone": 4
+            },
+            {
+              "start": 317.5,
+              "end": 318.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.02,
+              "tone": 6
+            },
+            {
+              "start": 318.5,
+              "end": 319.5,
+              "move": {
+                "in": "wipe",
+                "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.64,
               "tone": 1
+            },
+            {
+              "start": 319.5,
+              "end": 320,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.92,
+              "tone": 7
             }
           ],
           "rand": 1,
@@ -10127,10 +11212,10 @@
       ]
     },
     {
-      "id": "clip_fig_094",
+      "id": "clip_fig_098",
       "trackId": "fig",
-      "start": 308,
-      "end": 312,
+      "start": 320,
+      "end": 324,
       "spec": {
         "type": "figure",
         "params": {
@@ -10140,56 +11225,56 @@
           "colors": null,
           "beats": [
             {
-              "start": 308,
-              "end": 309.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "morph",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 0.83,
-              "tone": 1
-            },
-            {
-              "start": 309.5,
-              "end": 310.5,
-              "move": {
-                "in": "pop",
-                "hold": "pulse",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.96,
-              "tone": 4
-            },
-            {
-              "start": 310.5,
-              "end": 311.5,
+              "start": 320,
+              "end": 321.5,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
                 "out": "shrink"
               },
-              "variant": 2,
+              "variant": 0,
               "accent": false,
-              "size": 0.79,
-              "tone": 6
+              "size": 0.69,
+              "tone": 5
             },
             {
-              "start": 311.5,
-              "end": 312,
+              "start": 321.5,
+              "end": 322.5,
               "move": {
-                "in": "pop",
+                "in": "scatterIn",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.67,
+              "tone": 7
+            },
+            {
+              "start": 322.5,
+              "end": 323.5,
+              "move": {
+                "in": "wipe",
                 "hold": "pulse",
-                "out": "burstOut"
+                "out": "shrink"
               },
               "variant": 2,
-              "accent": true,
-              "size": 0.68,
+              "accent": false,
+              "size": 0.88,
               "tone": 4
+            },
+            {
+              "start": 323.5,
+              "end": 324,
+              "move": {
+                "in": "pop",
+                "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 1.18,
+              "tone": 0
             }
           ],
           "rand": 1,
@@ -10209,10 +11294,10 @@
       ]
     },
     {
-      "id": "clip_fig_095",
+      "id": "clip_fig_099",
       "trackId": "fig",
-      "start": 312,
-      "end": 316,
+      "start": 324,
+      "end": 328,
       "spec": {
         "type": "figure",
         "params": {
@@ -10222,61 +11307,60 @@
           "colors": null,
           "beats": [
             {
-              "start": 312,
-              "end": 313.5,
-              "move": {
-                "in": "pop",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.96,
-              "tone": 2
-            },
-            {
-              "start": 313.5,
-              "end": 314.5,
+              "start": 324,
+              "end": 325.5,
               "move": {
                 "in": "scatterIn",
-                "hold": "morph",
-                "out": "shrink"
-              },
-              "variant": 1,
-              "accent": false,
-              "size": 0.8,
-              "tone": 4
-            },
-            {
-              "start": 314.5,
-              "end": 315.5,
-              "move": {
-                "in": "pop",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 0.99,
-              "tone": 6
-            },
-            {
-              "start": 315.5,
-              "end": 316,
-              "move": {
-                "in": "draw",
-                "hold": "morph",
+                "hold": "spin",
                 "out": "burstOut"
               },
               "variant": 2,
-              "accent": true,
-              "size": 1.19,
+              "accent": false,
+              "size": 0.7,
               "tone": 0
+            },
+            {
+              "start": 325.5,
+              "end": 326.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.04,
+              "tone": 4
+            },
+            {
+              "start": 326.5,
+              "end": 327.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.06,
+              "tone": 3
+            },
+            {
+              "start": 327.5,
+              "end": 328,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.77,
+              "tone": 6
             }
           ],
           "rand": 1,
-          "seed": 102,
-          "camera": "pull"
+          "seed": 102
         }
       },
       "opacity": 0.95,
@@ -10292,10 +11376,10 @@
       ]
     },
     {
-      "id": "clip_fig_096",
+      "id": "clip_fig_100",
       "trackId": "fig",
-      "start": 316,
-      "end": 320,
+      "start": 328,
+      "end": 332,
       "spec": {
         "type": "figure",
         "params": {
@@ -10305,61 +11389,61 @@
           "colors": null,
           "beats": [
             {
-              "start": 316,
-              "end": 317.5,
-              "move": {
-                "in": "draw",
-                "hold": "drift",
-                "out": "fade"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.97,
-              "tone": 4
-            },
-            {
-              "start": 317.5,
-              "end": 318.5,
+              "start": 328,
+              "end": 329.5,
               "move": {
                 "in": "wipe",
-                "hold": "pulse",
-                "out": "shrink"
+                "hold": "drift",
+                "out": "burstOut"
               },
               "variant": 0,
               "accent": false,
-              "size": 1.12,
-              "tone": 4
+              "size": 0.99,
+              "tone": 7
             },
             {
-              "start": 318.5,
-              "end": 319.5,
+              "start": 329.5,
+              "end": 330.5,
               "move": {
-                "in": "scatterIn",
+                "in": "draw",
                 "hold": "pulse",
                 "out": "fade"
               },
               "variant": 2,
-              "accent": false,
-              "size": 1.26,
-              "tone": 5
+              "accent": true,
+              "size": 0.8,
+              "tone": 6
             },
             {
-              "start": 319.5,
-              "end": 320,
+              "start": 330.5,
+              "end": 331.5,
               "move": {
-                "in": "pop",
-                "hold": "pulse",
-                "out": "shrink"
+                "in": "scatterIn",
+                "hold": "morph",
+                "out": "burstOut"
               },
-              "variant": 0,
+              "variant": 2,
               "accent": true,
-              "size": 0.87,
-              "tone": 0
+              "size": 0.89,
+              "tone": 2
+            },
+            {
+              "start": 331.5,
+              "end": 332,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.66,
+              "tone": 2
             }
           ],
           "rand": 1,
           "seed": 120,
-          "camera": "roll"
+          "camera": "orbit"
         }
       },
       "opacity": 0.95,
@@ -10375,10 +11459,10 @@
       ]
     },
     {
-      "id": "clip_fig_097",
+      "id": "clip_fig_101",
       "trackId": "fig",
-      "start": 320,
-      "end": 324,
+      "start": 332,
+      "end": 336,
       "spec": {
         "type": "figure",
         "params": {
@@ -10388,56 +11472,56 @@
           "colors": null,
           "beats": [
             {
-              "start": 320,
-              "end": 321.5,
+              "start": 332,
+              "end": 333.5,
               "move": {
                 "in": "pop",
-                "hold": "pulse",
-                "out": "shrink"
+                "hold": "morph",
+                "out": "fade"
               },
-              "variant": 0,
-              "accent": true,
-              "size": 1.4,
-              "tone": 4
+              "variant": 2,
+              "accent": false,
+              "size": 1.29,
+              "tone": 3
             },
             {
-              "start": 321.5,
-              "end": 322.5,
+              "start": 333.5,
+              "end": 334.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.02,
+              "tone": 2
+            },
+            {
+              "start": 334.5,
+              "end": 335.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "pulse",
                 "out": "fade"
               },
               "variant": 0,
-              "accent": false,
-              "size": 1.02,
-              "tone": 6
+              "accent": true,
+              "size": 1.25,
+              "tone": 7
             },
             {
-              "start": 322.5,
-              "end": 323.5,
+              "start": 335.5,
+              "end": 336,
               "move": {
                 "in": "wipe",
                 "hold": "morph",
-                "out": "burstOut"
+                "out": "shrink"
               },
               "variant": 2,
               "accent": false,
-              "size": 0.64,
-              "tone": 1
-            },
-            {
-              "start": 323.5,
-              "end": 324,
-              "move": {
-                "in": "draw",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.92,
-              "tone": 7
+              "size": 0.69,
+              "tone": 2
             }
           ],
           "rand": 1,
@@ -10457,254 +11541,7 @@
       ]
     },
     {
-      "id": "clip_fig_098",
-      "trackId": "fig",
-      "start": 324,
-      "end": 328,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 324,
-              "end": 325.5,
-              "move": {
-                "in": "wipe",
-                "hold": "drift",
-                "out": "shrink"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.69,
-              "tone": 5
-            },
-            {
-              "start": 325.5,
-              "end": 326.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.67,
-              "tone": 7
-            },
-            {
-              "start": 326.5,
-              "end": 327.5,
-              "move": {
-                "in": "wipe",
-                "hold": "pulse",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.88,
-              "tone": 4
-            },
-            {
-              "start": 327.5,
-              "end": 328,
-              "move": {
-                "in": "pop",
-                "hold": "morph",
-                "out": "burstOut"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 1.18,
-              "tone": 0
-            }
-          ],
-          "rand": 1,
-          "seed": 103
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_099",
-      "trackId": "fig",
-      "start": 328,
-      "end": 332,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 328,
-              "end": 329.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "spin",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.7,
-              "tone": 0
-            },
-            {
-              "start": 329.5,
-              "end": 330.5,
-              "move": {
-                "in": "wipe",
-                "hold": "pulse",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": true,
-              "size": 1.04,
-              "tone": 4
-            },
-            {
-              "start": 330.5,
-              "end": 331.5,
-              "move": {
-                "in": "draw",
-                "hold": "drift",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 1.06,
-              "tone": 3
-            },
-            {
-              "start": 331.5,
-              "end": 332,
-              "move": {
-                "in": "scatterIn",
-                "hold": "pulse",
-                "out": "fade"
-              },
-              "variant": 1,
-              "accent": true,
-              "size": 0.77,
-              "tone": 6
-            }
-          ],
-          "rand": 1,
-          "seed": 127
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_100",
-      "trackId": "fig",
-      "start": 332,
-      "end": 336,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 332,
-              "end": 333.5,
-              "move": {
-                "in": "wipe",
-                "hold": "drift",
-                "out": "burstOut"
-              },
-              "variant": 0,
-              "accent": false,
-              "size": 0.99,
-              "tone": 7
-            },
-            {
-              "start": 333.5,
-              "end": 334.5,
-              "move": {
-                "in": "draw",
-                "hold": "pulse",
-                "out": "fade"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 0.8,
-              "tone": 6
-            },
-            {
-              "start": 334.5,
-              "end": 335.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "morph",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": true,
-              "size": 0.89,
-              "tone": 2
-            },
-            {
-              "start": 335.5,
-              "end": 336,
-              "move": {
-                "in": "draw",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.66,
-              "tone": 2
-            }
-          ],
-          "rand": 1,
-          "seed": 112,
-          "camera": "orbit"
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_101",
+      "id": "clip_fig_102",
       "trackId": "fig",
       "start": 336,
       "end": 340,
@@ -10720,88 +11557,6 @@
               "start": 336,
               "end": 337.5,
               "move": {
-                "in": "pop",
-                "hold": "morph",
-                "out": "fade"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 1.29,
-              "tone": 3
-            },
-            {
-              "start": 337.5,
-              "end": 338.5,
-              "move": {
-                "in": "wipe",
-                "hold": "pulse",
-                "out": "burstOut"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 1.02,
-              "tone": 2
-            },
-            {
-              "start": 338.5,
-              "end": 339.5,
-              "move": {
-                "in": "scatterIn",
-                "hold": "pulse",
-                "out": "fade"
-              },
-              "variant": 0,
-              "accent": true,
-              "size": 1.25,
-              "tone": 7
-            },
-            {
-              "start": 339.5,
-              "end": 340,
-              "move": {
-                "in": "wipe",
-                "hold": "morph",
-                "out": "shrink"
-              },
-              "variant": 2,
-              "accent": false,
-              "size": 0.69,
-              "tone": 2
-            }
-          ],
-          "rand": 1,
-          "seed": 108
-        }
-      },
-      "opacity": 0.95,
-      "fadeIn": 0.25,
-      "fadeOut": 0.25,
-      "colors": [
-        "#6f8bff",
-        "#4dd6c1",
-        "#ffd166",
-        "#ff6f91",
-        "#c77dff",
-        "#8ce99a"
-      ]
-    },
-    {
-      "id": "clip_fig_102",
-      "trackId": "fig",
-      "start": 340,
-      "end": 344,
-      "spec": {
-        "type": "figure",
-        "params": {
-          "motif": "proc",
-          "sync": "free",
-          "density": 0.6,
-          "colors": null,
-          "beats": [
-            {
-              "start": 340,
-              "end": 341.5,
-              "move": {
                 "in": "draw",
                 "hold": "spin",
                 "out": "fade"
@@ -10812,8 +11567,8 @@
               "tone": 0
             },
             {
-              "start": 341.5,
-              "end": 342.5,
+              "start": 337.5,
+              "end": 338.5,
               "move": {
                 "in": "scatterIn",
                 "hold": "spin",
@@ -10825,8 +11580,8 @@
               "tone": 4
             },
             {
-              "start": 342.5,
-              "end": 343.5,
+              "start": 338.5,
+              "end": 339.5,
               "move": {
                 "in": "wipe",
                 "hold": "drift",
@@ -10838,8 +11593,8 @@
               "tone": 2
             },
             {
-              "start": 343.5,
-              "end": 344,
+              "start": 339.5,
+              "end": 340,
               "move": {
                 "in": "draw",
                 "hold": "pulse",
@@ -10852,7 +11607,7 @@
             }
           ],
           "rand": 1,
-          "seed": 126,
+          "seed": 103,
           "camera": "pan"
         }
       },
@@ -10871,6 +11626,89 @@
     {
       "id": "clip_fig_103",
       "trackId": "fig",
+      "start": 340,
+      "end": 344,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 340,
+              "end": 341.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.13,
+              "tone": 0
+            },
+            {
+              "start": 341.5,
+              "end": 342.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.95,
+              "tone": 3
+            },
+            {
+              "start": 342.5,
+              "end": 343.5,
+              "move": {
+                "in": "pop",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.7,
+              "tone": 1
+            },
+            {
+              "start": 343.5,
+              "end": 344,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 0.97,
+              "tone": 2
+            }
+          ],
+          "rand": 1,
+          "seed": 127,
+          "camera": "shake"
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_104",
+      "trackId": "fig",
       "start": 344,
       "end": 348,
       "spec": {
@@ -10885,14 +11723,14 @@
               "start": 344,
               "end": 345.5,
               "move": {
-                "in": "scatterIn",
-                "hold": "drift",
-                "out": "fade"
+                "in": "draw",
+                "hold": "morph",
+                "out": "shrink"
               },
-              "variant": 0,
+              "variant": 2,
               "accent": true,
-              "size": 1.13,
-              "tone": 0
+              "size": 1.32,
+              "tone": 2
             },
             {
               "start": 345.5,
@@ -10900,38 +11738,286 @@
               "move": {
                 "in": "wipe",
                 "hold": "pulse",
-                "out": "shrink"
+                "out": "fade"
               },
-              "variant": 2,
+              "variant": 1,
               "accent": false,
-              "size": 0.95,
-              "tone": 3
+              "size": 0.86,
+              "tone": 0
             },
             {
               "start": 346.5,
               "end": 347.5,
               "move": {
-                "in": "pop",
-                "hold": "drift",
-                "out": "fade"
+                "in": "draw",
+                "hold": "pulse",
+                "out": "shrink"
               },
               "variant": 2,
               "accent": false,
-              "size": 0.7,
-              "tone": 1
+              "size": 0.88,
+              "tone": 0
             },
             {
               "start": 347.5,
               "end": 348,
               "move": {
-                "in": "draw",
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.87,
+              "tone": 2
+            }
+          ],
+          "rand": 1,
+          "seed": 112
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_105",
+      "trackId": "fig",
+      "start": 348,
+      "end": 352,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 348,
+              "end": 349.5,
+              "move": {
+                "in": "pop",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 0.84,
+              "tone": 5
+            },
+            {
+              "start": 349.5,
+              "end": 350.5,
+              "move": {
+                "in": "wipe",
                 "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.73,
+              "tone": 2
+            },
+            {
+              "start": 350.5,
+              "end": 351.5,
+              "move": {
+                "in": "draw",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 0.75,
+              "tone": 3
+            },
+            {
+              "start": 351.5,
+              "end": 352,
+              "move": {
+                "in": "scatterIn",
+                "hold": "morph",
+                "out": "burstOut"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.09,
+              "tone": 4
+            }
+          ],
+          "rand": 1,
+          "seed": 108,
+          "camera": "shake"
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_106",
+      "trackId": "fig",
+      "start": 352,
+      "end": 356,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 352,
+              "end": 353.5,
+              "move": {
+                "in": "draw",
+                "hold": "spin",
+                "out": "shrink"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.85,
+              "tone": 6
+            },
+            {
+              "start": 353.5,
+              "end": 354.5,
+              "move": {
+                "in": "wipe",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 1.34,
+              "tone": 1
+            },
+            {
+              "start": 354.5,
+              "end": 355.5,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
                 "out": "shrink"
               },
               "variant": 2,
               "accent": true,
-              "size": 0.97,
+              "size": 1.04,
+              "tone": 3
+            },
+            {
+              "start": 355.5,
+              "end": 356,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.74,
+              "tone": 5
+            }
+          ],
+          "rand": 1,
+          "seed": 126,
+          "camera": "whip"
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_107",
+      "trackId": "fig",
+      "start": 356,
+      "end": 360,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "proc",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 356,
+              "end": 357.5,
+              "move": {
+                "in": "draw",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.6,
               "tone": 2
+            },
+            {
+              "start": 357.5,
+              "end": 358.5,
+              "move": {
+                "in": "wipe",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.75,
+              "tone": 3
+            },
+            {
+              "start": 358.5,
+              "end": 359.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.27,
+              "tone": 0
+            },
+            {
+              "start": 359.5,
+              "end": 360,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.13,
+              "tone": 3
             }
           ],
           "rand": 1,

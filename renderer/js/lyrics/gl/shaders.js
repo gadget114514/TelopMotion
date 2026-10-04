@@ -571,8 +571,9 @@ SA.glShaders = (() => {
     }
     float glow = 0.0;
     // a real dissolve: cells drop out of the glyph against the noise field and
-    // the rim of the hole glows. progress 1 = whole glyph, 0 = nothing.
-    if (v_dissolve.y < 0.999) {
+    // the rim of the hole glows. x > 0 is the "a dissolve is running" flag (the
+    // row is zero for every other letter), progress 1 = whole glyph, 0 = none.
+    if (v_dissolve.x > 0.0 && v_dissolve.y < 0.999) {
       float scale = max(v_dissolve.x, 1.0);
       float n = dissolveCell(vec2(u, v) * scale + v_letter * 0.37);
       float edge = max(v_dissolve.z, 0.01);

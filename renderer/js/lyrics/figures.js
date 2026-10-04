@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -45,6 +45,10 @@
   // They keep clear of the lyrics in the shader itself (a feathered window).
   const FIELD_MOTIFS = glFields && Array.isArray(glFields.IDS) ? glFields.IDS.slice() : [];
   MOTIFS.push(...FIELD_MOTIFS);
+  // the fields that carry a GPU simulation (gl/sim.js): the same registry, but the
+  // picture comes from a texture of state that is stepped forward, and where it is
+  // splatted is frozen here so a scrub lands on the same drop as a play
+  const SIM_MOTIFS = new Set(glSim && Array.isArray(glSim.SIMS) && glFields && typeof glFields.simOf === 'function' ? glSim.SIMS.filter((id) => glFields.simOf(id)) : []);
   const BEHIND_MOTIFS = new Set([...SCENE_MOTIFS, ...GEO_MOTIFS]);
   const SEEDED_MOTIFS = new Set([...BEHIND_MOTIFS, ...FIELD_MOTIFS]);
   // the 2D camera moves any figure clip can carry (`params.camera`)
@@ -318,6 +322,19 @@
     };
     if (motif === PROC || SEEDED_MOTIFS.has(motif)) params.rand = round(rnd, 2);
     if (motif === PROC || SEEDED_MOTIFS.has(motif)) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : chosenSeed;
+    // A simulation splats on the rhythm, so the times it reacts at are written down
+    // here, once. They are read from the whole clip rather than from the beats that
+    // happen to be under the playhead, which would change as it moves and break the
+    // agreement between playing and scrubbing.
+    if (SIM_MOTIFS.has(motif)) {
+      const from = Number(opts.span && opts.span.start != null ? opts.span.start : opts.span && opts.span.from) || 0;
+      const times = [];
+      for (const beat of beats) {
+        const at = Number(beat && beat.start);
+        if (Number.isFinite(at)) times.push(round(Math.max(0, at - from), 3));
+      }
+      params.simBeats = times.slice(0, 32);
+    }
     // the 2D camera: pinned by the caller, else drawn on its own stream (never at
     // randomness 0, and a fraction of the clips above it)
     const cameraRoll = rng.rngFor(seed, 'figure-camera', id);
@@ -1042,20 +1059,25 @@
     const t = Math.max(0, num(ctx && ctx.time, 0) - clipStart);
     const tb = textBox(ctx || {}, box);
     const cap = 0.42 + 0.16 * rand;
-    return {
-      shapes: [],
-      texts: [],
-      field: {
-        id: motif,
-        p: glFields.genome(motif, seed, rand),
-        seed,
-        time: t,
-        opacity: clamp01(progress) * cap * (info.beat && info.beat.accent === false ? 0.85 : 1),
-        colors: [0, 1, 2, 3, 4].map((index) => colorOf(params, ctx || {}, index)),
-        textBox: { x0: tb.x0, y0: tb.y0, x1: tb.x1, y1: tb.y1 },
-        camera: null,
-      },
+    const field = {
+      id: motif,
+      p: glFields.genome(motif, seed, rand),
+      seed,
+      time: t,
+      opacity: clamp01(progress) * cap * (info.beat && info.beat.accent === false ? 0.85 : 1),
+      colors: [0, 1, 2, 3, 4].map((index) => colorOf(params, ctx || {}, index)),
+      textBox: { x0: tb.x0, y0: tb.y0, x1: tb.x1, y1: tb.y1 },
+      camera: null,
     };
+    // A simulated field names the state it reads: one per clip, seed and
+    // randomness level, which is what the runner keeps its ping-pong pair under.
+    if (SIM_MOTIFS.has(motif)) {
+      field.sim = {
+        key: `${span.key || motif}|${seed}|${round(rand, 3)}`,
+        beats: Array.isArray(params.simBeats) ? params.simBeats : null,
+      };
+    }
+    return { shapes: [], texts: [], field };
   }
 
   // A geometry figure: drawn by figure-geo on the clip's own clock over the whole
@@ -2753,5 +2775,6 @@
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, CAMERAS_2D, procKey, procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, CAMERAS_2D, procKey,
+ procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

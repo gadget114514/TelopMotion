@@ -36,7 +36,7 @@ function projectWith(extra) {
 
 test('a new document has an empty song block and 0 BPM (follow the audio)', () => {
   const doc = projectModule.create({});
-  assert.deepEqual(doc.song, { title: '', author: '', bpm: 0 });
+  assert.deepEqual(doc.song, { title: '', author: '', bpm: 0, length: 0 });
   assert.equal(projectModule.bpmOf(doc), 0);
 });
 
@@ -45,7 +45,7 @@ test('migrate fills the song block in for a document saved without one', () => {
   delete old.song;
   const migrated = projectModule.migrate(JSON.parse(JSON.stringify(old)));
   assert.equal(migrated.ok, true);
-  assert.deepEqual(migrated.project.song, { title: '', author: '', bpm: 0 });
+  assert.deepEqual(migrated.project.song, { title: '', author: '', bpm: 0, length: 0 });
 });
 
 test('migrate keeps a typed song and drops a junk tempo', () => {
@@ -58,7 +58,7 @@ test('migrate keeps a typed song and drops a junk tempo', () => {
 
 test('songOf reads the name and the tempo, tempoOf falls back to the audio', () => {
   const doc = projectWith({ song: { title: 'Neon Rain', author: 'Aoi', bpm: 128 } });
-  assert.deepEqual(projectModule.songOf(doc), { title: 'Neon Rain', author: 'Aoi', bpm: 128 });
+  assert.deepEqual(projectModule.songOf(doc), { title: 'Neon Rain', author: 'Aoi', bpm: 128, length: 0 });
   assert.equal(projectModule.tempoOf(doc, 96), 128, 'the informed tempo wins over the audio one');
   assert.equal(projectModule.tempoOf(projectWith(), 96), 96, 'no informed tempo: the audio one');
   assert.equal(projectModule.tempoOf(projectWith(), 0), 120, 'neither: the engine default');

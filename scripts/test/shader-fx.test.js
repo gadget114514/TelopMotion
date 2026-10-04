@@ -25,9 +25,8 @@ const pack = require(path.join(effectsDir, 'shader-fx.js'));
 require(path.join(effectsDir, 'post.js'));
 const easing = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'easing.js'));
 
-const FAMILIES = ['dither', 'fade', 'scanline', 'stealth', 'geometry', 'dissolve'];
-// dissolve has no pack-level post branch: the GPU dissolves live in post.js
-const POST_FAMILIES = FAMILIES.filter((type) => type !== 'dissolve');
+const FAMILIES = ['dither', 'fade', 'scanline', 'stealth', 'geometry'];
+const POST_FAMILIES = FAMILIES;
 const PHASES = ['enter', 'exit', 'hold'];
 
 function loadPostFrag() {

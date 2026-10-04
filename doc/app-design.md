@@ -878,6 +878,7 @@ fade, slide, zoomOut, blurOut, explode (pieces fly outward from the block center
 | twist | angle | GPU vertex: rotation that increases with local y |
 | breathing | amount | GPU vertex: radial scaling from the letter center, sine |
 | orbit3D | tilt, speed | tiltX/tiltY on circular paths |
+| orbit2D | radius, speed, spread, tilt, spin | the letter rides a circle around its layout place, a step per letter; `tilt` flattens the circle, `spin` turns the glyph with it |
 | pathFollow | points, speed | the block moves along a spline |
 
 ### 7.6 Location

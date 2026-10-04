@@ -205,3 +205,85 @@ test('the Help menu offers the figure showcase in all five languages', () => {
     assert.notEqual(label, 'studio.help.figureShowcase', `${code} label is missing`);
   }
 });
+
+// every name the walk prints has to be nameable, or the cue degrades to a bare
+// id. This is the guard for the next motif / move / camera / proc motion: the
+// showcase follows the registries, so a new entry without a label fails here.
+test('every figure name the walk prints has a label in all five languages', () => {
+  const groups = {
+    motif: figures.MOTIFS,
+    in: figures.INS,
+    hold: figures.HOLDS,
+    out: figures.OUTS,
+    sync: figures.SYNCS,
+    camera: figures.CAMERAS_2D,
+    procMotion: figures.PROC_LISTS.motions,
+  };
+  const b = built();
+  // the namespaces the script asks for have to line up with the i18n table
+  assert.equal(showcase.LABEL_NAMESPACE.motif, 'motif');
+  assert.equal(showcase.LABEL_NAMESPACE.procMotion, 'proc');
+  const namespaces = new Set(b.entries.map((entry) => entry.namespace));
+  assert.deepEqual([...namespaces].sort(), ['camera', 'hold', 'in', 'motif', 'out', 'proc', 'sync']);
+
+  globalThis.window = globalThis;
+  globalThis.SA = globalThis.SA || {};
+  require(path.join(ROOT, 'renderer', 'js', 'i18n.js'));
+  const i18n = globalThis.SA.i18n;
+  let count = 0;
+  for (const code of ['en', 'ja', 'es', 'fr', 'ru']) {
+    i18n.set(code);
+    for (const [axis, values] of Object.entries(groups)) {
+      const namespace = axis === 'motif' ? 'motif' : showcase.LABEL_NAMESPACE[axis];
+      for (const value of values) {
+        count += 1;
+        const key = `studio.figure.${namespace}.${value}`;
+        const label = i18n.t(key);
+        assert.notEqual(label, key, `${code}: ${key} has no label`);
+        assert.ok(String(label).trim().length > 0, `${code}: ${key} is empty`);
+      }
+    }
+  }
+  assert.ok(count >= 110, `expected at least 110 names, found ${count}`);
+});
+
+// the script reads its labels from the Studio dictionary rather than carrying a
+// second table, and every cue records the namespace it needs to be re-labelled
+test('the cue labels come from the Studio dictionary', () => {
+  const b = built();
+  globalThis.window = globalThis;
+  globalThis.SA = globalThis.SA || {};
+  require(path.join(ROOT, 'renderer', 'js', 'i18n.js'));
+  const i18n = globalThis.SA.i18n;
+  for (const code of ['en', 'ja', 'es', 'fr', 'ru']) {
+    const t = showcase.dictionary(code);
+    // the dictionary must answer in the language it was asked for
+    i18n.set(code);
+    for (const entry of b.entries) {
+      const key = `studio.figure.${entry.namespace}.${entry.value}`;
+      assert.equal(showcase.nameOf(t, entry.namespace, entry.value), i18n.t(key), `${code} ${entry.value}`);
+      assert.notEqual(showcase.nameOf(t, entry.namespace, entry.value), entry.value, `${code}: ${entry.value} fell back to its id`);
+    }
+  }
+  // the baked label is the build language (Japanese), so it is that one the file
+  // carries; the app re-labels the rest when it opens the project
+  i18n.set(showcase.FIGURE_LANG);
+  const baked = showcase.dictionary(showcase.FIGURE_LANG);
+  for (const entry of b.entries) {
+    assert.equal(entry.label, showcase.nameOf(baked, entry.namespace, entry.value), `${showcase.FIGURE_LANG} ${entry.value}`);
+  }
+  // the baked cue text carries the namespace, so the Studio can re-label it
+  const cueById = new Map(b.project.script.cues.map((cue) => [cue.id, cue]));
+  for (const entry of b.entries) {
+    const cue = cueById.get(entry.cueId);
+    assert.equal(cue.meta.kind, 'figure-showcase');
+    assert.equal(cue.meta.namespace, entry.namespace);
+    assert.equal(cue.meta.value, entry.value);
+    assert.equal(cue.meta.index, entry.index);
+    assert.ok(cue.text.includes(entry.value), `${entry.cueId} must keep the id in its text`);
+  }
+  // and the app must do the re-labelling when it opens the asset
+  const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
+  assert.match(app, /localizeFigureShowcase/);
+  assert.match(app, /studio\.figure\.\$\{meta\.namespace\}\.\$\{meta\.value\}/);
+});

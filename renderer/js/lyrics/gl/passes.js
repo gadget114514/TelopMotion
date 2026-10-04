@@ -490,7 +490,7 @@ SA.glPasses = (() => {
       const location = program.uniforms[name];
       if (location == null || value == null) continue;
       if (typeof value === 'number') {
-        if (/^u_(type|repMode|count|octaves|mode|mode2|mode3)$/.test(name)) gl.uniform1i(location, Math.round(value));
+        if (/^u_(type|repMode|count|octaves|mode|mode2|mode3|kind)$/.test(name)) gl.uniform1i(location, Math.round(value));
         else gl.uniform1f(location, value);
       } else if (Array.isArray(value)) {
         if (value.length === 2) gl.uniform2f(location, value[0], value[1]);
@@ -683,6 +683,13 @@ SA.glPasses = (() => {
     // The program of each field is compiled the first time it is drawn; a field
     // whose shader does not build is skipped for the rest of the session.
     const fieldPrograms = new Map();
+    let simRunner = null;
+    function simTexture(field) {
+      // without float render targets (or the module) the sim is simply not drawn
+      if (opts.floatTargets === false || !SA.glSim) return null;
+      if (!simRunner) simRunner = SA.glSim.createRunner(gl, { floatTargets: true });
+      return simRunner.textureFor(field);
+    }
     function drawField(field, frame) {
       if (!field || !SA.glFields || !SA.color) return false;
       let entry = fieldPrograms.get(field.id);
@@ -692,11 +699,23 @@ SA.glPasses = (() => {
         fieldPrograms.set(field.id, entry);
       }
       if (!entry) return false;
+      // a simulated field is not a formula: its state has to be carried to this
+      // frame's step first, and the texture handed to the display shader
+      let simTex = null;
+      if (SA.glFields.simOf(field.id)) {
+        simTex = simTexture(field);
+        if (!simTex) return false;
+      }
       const rgb = (hex) => {
         const parsed = SA.color.parse(hex);
         return [parsed.r, parsed.g, parsed.b];
       };
       gl.useProgram(entry.program);
+      if (simTex && entry.uniforms.u_sim) {
+        gl.activeTexture(gl.TEXTURE5);
+        gl.bindTexture(gl.TEXTURE_2D, simTex.texture);
+        gl.uniform1i(entry.uniforms.u_sim, 5);
+      }
       applyUniforms(gl, entry, SA.glFields.uniformsOf(field, frame, rgb));
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       return true;
@@ -1231,6 +1250,13 @@ SA.glPasses = (() => {
       for (const program of Object.values(programs)) {
         if (program) gl.deleteProgram(program.program);
       }
+      for (const program of fieldPrograms.values()) {
+        if (program) gl.deleteProgram(program.program);
+      }
+      fieldPrograms.clear();
+      // the simulations hold their own ping-pong pairs and keyframes
+      if (simRunner) simRunner.dispose();
+      simRunner = null;
       disposeTargets();
       if (cardTexture) gl.deleteTexture(cardTexture);
       if (bgStateTexture) gl.deleteTexture(bgStateTexture);
@@ -1361,6 +1387,7 @@ SA.glPasses = (() => {
     sceneBatches,
     sceneBatch,
     clearBatches,
+    createProgramSafe,
     DEFORM_CODES,
     REP_CODES,
     // pure helpers, exposed for the unit tests (no GL context needed)

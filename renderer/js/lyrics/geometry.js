@@ -23,7 +23,11 @@
       try {
         mod = require('earcut');
       } catch {
-        mod = null;
+        try {
+          mod = require('../../vendor/earcut.min.js');
+        } catch {
+          mod = null;
+        }
       }
     }
     if (!mod && typeof self !== 'undefined') mod = self.earcut;

@@ -9,37 +9,35 @@
 
   // GPU simulations for the figure track.
   //
-  // Where the mathematical fields (fields.js) are closed forms of
-  // (position, time), these keep a texture of state that is stepped forward at a
-  // fixed rate, so a scrub needs a way back. Two rules make that work:
+  // Where the mathematical fields (fields.js) are closed forms of (position,
+  // time), these keep a texture of state that is stepped forward at a fixed
+  // rate, so a scrub needs a way back. Two rules make that work:
   //
   //   * a step is a pure function of (state, absolute step index). Nothing reads
   //     "how many steps have we taken", so the state at step 900 is the same
   //     whether it was reached by playing, by scrubbing or by exporting.
   //   * a keyframe of the whole state is kept once a second. A time is reached by
   //     restoring the keyframe at or before it and walking forward at most 30
-  //     steps, which is why the schedule (plan / rememberKey, below) is a pure
-  //     function too and can be checked without a GPU.
+  //     steps. The schedule (plan / touchKey below) is a pure function of the
+  //     steps we hold, so it is checkable without a GPU - which is the only way
+  //     to test that a scrub and a play agree.
   //
-  // Everything above the GL runner is pure: the genome, the embedding profile, the
-  // step schedule and where the audio splats land. The runner below owns the
+  // Everything above the GL runner is pure: the genome, the embedding profile,
+  // the step schedule and where the audio splats land. The runner below owns the
   // ping-pong targets, the keyframe textures and their LRU order.
 
   const tools = scene3d.tools;
 
   // --- timing -----------------------------------------------------------------
 
-  const DT = 1 / 30;          // the fixed step, in seconds
-  const KEY_STEPS = 30;       // a keyframe once a second
-  const MAX_KEYS = 60;        // at most a minute of keyframes per clip
-  const MAX_SEEK_STEPS = 45;  // walk forward from here rather than copy a keyframe
-  const RES = 256;            // the simulation grid
-  const MAX_KEY_BYTES = RES * RES * 4 * 2;
-
-  function clamp01(v) {
-    const x = Number(v);
-    return Number.isFinite(x) ? Math.max(0, Math.min(1, x)) : 0;
-  }
+  const DT = 1 / 30;           // the fixed step, in seconds
+  const KEY_STEPS = 30;        // a keyframe once a second
+  const MAX_KEYS = 60;         // at most a minute of keyframes per clip
+  const MAX_SEEK_STEPS = 45;   // walk forward from here rather than copy a keyframe
+  const CATCHUP_CAP = 120;     // steps one call may run when there is nothing to restore
+  const RES = 256;             // the simulation grid
+  const MAX_KEY_BYTES = RES * RES * 4 * 2; // RGBA16F
+  const MAX_SPLATS = 4;
 
   // The step a clip time lands on. Times before the clip start clamp to step 0.
   function stepOf(t) {
@@ -57,8 +55,8 @@
   //   current - the step the live state is at
   //   keys    - the steps we hold a keyframe of (0 is the seeded start)
   // Walking forward is only taken while the gap is short; past that, or when
-  // going backwards at all, we restore the nearest keyframe at or before the
-  // target. With a keyframe every KEY_STEPS steps the walk is at most KEY_STEPS.
+  // going backwards at all, the nearest keyframe at or before the target is
+  // restored. With a keyframe every KEY_STEPS steps the walk is at most KEY_STEPS.
   function plan(current, keys, target) {
     const from = Math.max(0, Math.floor(Number(current) || 0));
     const to = Math.max(0, Math.floor(Number(target) || 0));
@@ -76,16 +74,17 @@
   }
 
   // A keyframe store with an LRU order: `store` maps a step to the tick it was
-  // last touched on. Step 0 is pinned - it is the seeded start, and losing it
-  // would mean re-running the simulation from nothing to reach an early time.
+  // last touched on. Returns the step it had to drop, or -1. Step 0 is pinned -
+  // it is the seeded start, and losing it would mean running the simulation from
+  // nothing to reach an early time.
   function touchKey(store, step, tick) {
     const at = Math.max(0, Math.floor(step));
     if (store.has(at)) {
       store.set(at, tick);
-      return store;
+      return -1;
     }
+    let victim = -1;
     if (store.size >= MAX_KEYS) {
-      let victim = -1;
       let oldest = Infinity;
       store.forEach((seen, k) => {
         if (k > 0 && seen < oldest) {
@@ -93,19 +92,16 @@
           victim = k;
         }
       });
-      if (victim < 0) return store; // nothing but the pinned start: keep it
-      store.delete(victim);
+      if (victim >= 0) store.delete(victim);
     }
     store.set(at, tick);
-    return store;
+    return victim;
   }
 
   // --- audio splats -----------------------------------------------------------
   // Where a drop hits. A pure function of (seed, genome, the clip's beat times,
   // the step), so a beat lands in the same place whether the clip is played
   // through or scrubbed onto. `beats` are seconds from the start of the clip.
-
-  const MAX_SPLATS = 4;
 
   function beatSteps(beats) {
     if (!Array.isArray(beats)) return null;
@@ -117,16 +113,17 @@
     return out;
   }
 
-  // The splats applied on one step. `p` is the 12 number genome.
+  // The splats applied on one step. p[9] how many, p[10] how often (in steps),
+  // p[11] how hard.
   function splatsAt(p, seed, beats, step) {
-    const get = (i, fallback) => (Number.isFinite(p[i]) ? p[i] : fallback);
-    const rate = Math.max(1, Math.round(get(10, 12)));     // steps between splats
-    const strength = get(11, 0.6);
+    const get = (i, fallback) => (Number.isFinite(p && p[i]) ? p[i] : fallback);
+    const at = Math.max(0, Math.floor(Number(step) || 0));
+    const rate = Math.max(1, Math.round(get(10, 12)));
     const onBeat = beatSteps(beats);
-    if (step % rate !== 0 && !(onBeat && onBeat.has(step))) return null;
+    const isBeat = Boolean(onBeat && onBeat.has(at));
+    if (at % rate !== 0 && !isBeat) return null;
     const count = Math.max(1, Math.min(MAX_SPLATS, Math.round(get(9, 1))));
-    const random = rng.rngFor(seed, 'sim-splat', step);
-    const isBeat = Boolean(onBeat && onBeat.has(step));
+    const random = rng.rngFor(seed, 'sim-splat', at);
     const out = [];
     for (let i = 0; i < count; i += 1) {
       const u = random();
@@ -137,7 +134,7 @@
         x: isBeat ? 0.5 + (u - 0.5) * 0.5 : 0.08 + u * 0.84,
         y: isBeat ? 0.5 + (v - 0.5) * 0.5 : 0.08 + v * 0.84,
         radius: 0.02 + 0.09 * w,
-        strength: (isBeat ? 1.5 : 0.7) * strength * (0.5 + w),
+        strength: (isBeat ? 1.5 : 0.7) * get(11, 0.6) * (0.5 + w),
       });
     }
     return out;
@@ -149,12 +146,13 @@
 
   // The genome, the hand-placed embedding profile and the GLSL of each sim. The
   // 12 genome numbers are read in the step shader as u_p0..u_p2; u_p3 carries the
-  // embedding axes. `display` is the fragment shader of the field that turns the
-  // state texture into picture (it lives in fields.js, which owns the palette).
+  // four embedding axes. p[8] (u_p2.x) is always the variant the sim runs in.
+  // The picture is made by a field of the same name (fields.js), which owns the
+  // palette and samples the state texture.
 
-  // Shared step-shader preamble: the state texture, the absolute step and the
-  // splats for this step. Sampling is by texelFetch on a clamped coordinate so a
-  // neighbourhood never wraps or reads outside.
+  // Shared step-shader preamble: the state texture, the absolute step and this
+  // step's splats. Sampling is by texelFetch on a clamped coordinate, so a
+  // neighbourhood never wraps or reads outside the grid.
   const STEP_HEAD = `#version 300 es
 precision highp float;
 precision highp int;
@@ -173,41 +171,40 @@ uniform vec4 u_splat0;
 uniform vec4 u_splat1;
 uniform vec4 u_splat2;
 uniform vec4 u_splat3;
-ivec2 cl(ivec2 c) {
-  return clamp(c, ivec2(0), ivec2(u_res) - ivec2(1));
-}
+ivec2 cl(ivec2 c) { return clamp(c, ivec2(0), ivec2(u_res) - ivec2(1)); }
 vec4 at(ivec2 c) { return texelFetch(u_state, cl(c), 0); }
 float hash21(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
-// the 9 point Laplacian, normalised (the weights sum to zero)
+// the 9 point Laplacian, normalised (the nine weights sum to zero)
 vec4 lap9(vec4 c) {
   vec4 s = at(cl(ivec2(0, -1))) + at(cl(ivec2(0, 1))) + at(cl(ivec2(-1, 0))) + at(cl(ivec2(1, 0)));
   s += 0.25 * (at(cl(ivec2(-1, -1))) + at(cl(ivec2(1, -1))) + at(cl(ivec2(-1, 1))) + at(cl(ivec2(1, 1))));
   return s * 0.2 - c;
 }
-// the same, but bilinear from four neighbours (for the advection)
+// the same over four neighbours only
 vec4 lap4(vec4 c) {
   vec4 s = at(cl(ivec2(0, -1))) + at(cl(ivec2(0, 1))) + at(cl(ivec2(-1, 0))) + at(cl(ivec2(1, 0)));
   return s * 0.25 - c;
 }
 float splatAt(vec2 uv, vec4 sp) {
   if (sp.w <= 0.0) return 0.0;
-  float d = distance(uv, sp.xy);
-  return sp.w * smoothstep(sp.z, 0.0, d);
+  return sp.w * smoothstep(sp.z, 0.0, distance(uv, sp.xy));
 }
 float sumSplats(vec2 uv) {
   return splatAt(uv, u_splat0) + splatAt(uv, u_splat1) + splatAt(uv, u_splat2) + splatAt(uv, u_splat3);
 }
+// A half float can carry an inf or a NaN out of an unstable step, and one bad
+// texel would then spread over the grid, so it is replaced where it is written.
 vec4 sane(vec4 v, float lo, float hi) {
-  // half floats can carry an inf or a NaN out of an unstable step; a bad texel
-  // would then spread over the grid, so it is replaced at the source
-  bvec4 bad = bvec4(isnan(v.x), isnan(v.y), isnan(v.z), isnan(v.w));
-  bad = bvec4(bad.x || isinf(v.x), bad.y || isinf(v.y), bad.z || isinf(v.z), bad.w || isinf(v.w));
-  return mix(v, vec4(0.0), vec4(bad)) * 0.0 + select(v, clamp(v, lo, hi), bad);
+  vec4 c = clamp(v, vec4(lo), vec4(hi));
+  return vec4(isnan(v.x) || isinf(v.x) ? 0.0 : c.x,
+              isnan(v.y) || isinf(v.y) ? 0.0 : c.y,
+              isnan(v.z) || isinf(v.z) ? 0.0 : c.z,
+              isnan(v.w) || isinf(v.w) ? 1.0 : c.w);
 }
 `;
 
-  // The seeded start of each sim. `u_step` is unused here: the start of a clip is
-  // the same texture whatever time it is first asked for.
+  // The seeded start of each sim: the same texture whatever time it is first
+  // asked for, so a clip always begins the same way.
   const RESET_HEAD = `#version 300 es
 precision highp float;
 in vec2 v_uv;
@@ -237,10 +234,9 @@ void main() {
   float B = s.y;
   float feed = u_p0.x;
   float kill = u_p0.y;
-  float du = u_p0.z * lap.x - A * B * B + feed * (1.0 - A);
-  float dv = u_p0.w * lap.y + A * B * B - (feed + kill) * B;
-  A += du;
-  B += dv;
+  float rate = A * B * B;
+  A += u_p0.z * lap.x - rate + feed * (1.0 - A);
+  B += u_p0.w * lap.y + rate - (feed + kill) * B;
   float drop = sumSplats(v_uv);
   B += drop * 0.35;
   A -= drop * 0.12;
@@ -250,16 +246,14 @@ void main() {
   const RD_RESET = `
 void main() {
   vec2 uv = v_uv;
-  float n = vnoise(uv * 7.0 + u_seed * 13.0);
-  float spots = u_p0.z > 0.0 ? smoothstep(0.62, 0.78, n) : 0.0;
-  float A = 1.0 - spots;
-  float B = spots * 0.9;
-  // a few isolated seeds so the pattern has somewhere to break out from
-  vec2 c = vec2(hash21(vec2(1.0, u_seed)), hash21(vec2(2.0, u_seed)));
-  float d = distance(uv, c);
-  B += smoothstep(0.09, 0.0, d);
-  A -= smoothstep(0.09, 0.0, d);
-  fragColor = vec4(clamp(A, 0.0, 1.0), clamp(B, 0.0, 1.0), 0.0, 1.0);
+  float spots = smoothstep(0.58, 0.8, vnoise(uv * 7.0 + u_seed * 13.0)) * u_p1.x;
+  // a couple of isolated seeds, so the pattern has somewhere to break out from
+  for (int i = 0; i < 3; i += 1) {
+    float fi = float(i);
+    vec2 c = vec2(hash21(vec2(fi + 1.0, u_seed)), hash21(vec2(fi + 7.0, u_seed)));
+    spots += smoothstep(0.07, 0.0, distance(uv, c));
+  }
+  fragColor = vec4(clamp(1.0 - spots, 0.0, 1.0), clamp(spots * 0.9, 0.0, 1.0), 0.0, 1.0);
 }`;
 
   // -- wave equation: state = (height, height one step ago)
@@ -267,24 +261,19 @@ void main() {
 void main() {
   ivec2 c = ivec2(gl_FragCoord.xy);
   vec4 s = at(c);
-  vec4 lap = lap4(s);
-  float c2 = u_p0.x;
-  float damp = u_p0.y;
-  float next = 2.0 * s.x - s.y + c2 * lap.x;
-  next *= damp;
+  float next = 2.0 * s.x - s.y + u_p0.x * lap4(s).x;
+  next *= u_p0.y;
   next += sumSplats(v_uv) * u_p0.z;
   if (u_kind == 1) {
-    // a travelling wave from one side, for the variant that reads as a ripple
-    next += sin((v_uv.x * 18.0 - u_step * 0.35) * 3.14159265) * 0.02;
+    // a wave marching in from one side, for the variant that reads as a ripple
+    next += sin((v_uv.x * 16.0 - u_step * 0.06) * 3.14159265) * u_p0.w;
   }
   fragColor = sane(vec4(next, s.x, 0.0, 1.0), -8.0, 8.0);
 }`;
 
   const WAVE_RESET = `
 void main() {
-  vec2 uv = v_uv;
-  float n = vnoise(uv * 4.0 + u_seed * 7.0) - 0.5;
-  float h = n * u_p1.x;
+  float h = (vnoise(v_uv * 4.0 + u_seed * 7.0) - 0.5) * u_p1.x;
   fragColor = vec4(h, h, 0.0, 1.0);
 }`;
 
@@ -293,7 +282,6 @@ void main() {
 uniform sampler2D u_div;
 uniform sampler2D u_press;
 uniform int u_pass;
-uniform int u_iters;
 vec4 bilerp(sampler2D tex, vec2 uv) {
   vec2 st = uv * u_res - 0.5;
   vec2 i = floor(st);
@@ -306,78 +294,67 @@ vec4 bilerp(sampler2D tex, vec2 uv) {
   vec4 d = texture(tex, base + tx);
   return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
+float pressAt(sampler2D tex, vec2 uv, vec2 off) {
+  return texture(tex, uv + off / u_res).a;
+}
 void main() {
   ivec2 c = ivec2(gl_FragCoord.xy);
   if (u_pass == 0) {
-    // divergence of the velocity, into the scratch
-    float l = at(cl(ivec2(-1, 0))).x;
-    float r = at(cl(ivec2(1, 0))).x;
-    float d = at(cl(ivec2(0, -1))).y;
-    float u = at(cl(ivec2(0, 1))).y;
-    fragColor = vec4(0.5 * (r - l + u - d), 0.0, 0.0, 1.0);
+    // the divergence of the velocity, into its own buffer
+    float l = at(cl(c + ivec2(-1, 0))).x;
+    float r = at(cl(c + ivec2(1, 0))).x;
+    float d = at(cl(c + ivec2(0, -1))).y;
+    float u = at(cl(c + ivec2(0, 1))).y;
+    fragColor = vec4(0.5 * (r - l + u - d), 0.0, 0.0, 0.0);
     return;
   }
   if (u_pass == 1) {
-    // one Jacobi sweep of the pressure, seeded from the state's own pressure
-    float l = texture(u_press, v_uv + vec2(-1.0, 0.0) / u_res).a;
-    float r = texture(u_press, v_uv + vec2(1.0, 0.0) / u_res).a;
-    float d = texture(u_press, v_uv + vec2(0.0, -1.0) / u_res).a;
-    float u = texture(u_press, v_uv + vec2(0.0, 1.0) / u_res).a;
+    // one Jacobi sweep of the pressure; the seed buffer is zero, so the first
+    // sweep starts from p = 0
+    float l = pressAt(u_press, v_uv, vec2(-1.0, 0.0));
+    float r = pressAt(u_press, v_uv, vec2(1.0, 0.0));
+    float d = pressAt(u_press, v_uv, vec2(0.0, -1.0));
+    float u = pressAt(u_press, v_uv, vec2(0.0, 1.0));
     float div = texture(u_div, v_uv).r;
     fragColor = vec4(0.0, 0.0, 0.0, (l + r + d + u - div) * 0.25);
     return;
   }
-  // the real step: advect, push, project, advect the dye
+  // the step itself: advect, push, project, then carry the dye along
   vec4 s = at(c);
   vec2 vel = s.xy;
-  float dye = s.z;
-  float pressure = s.w;
-  vec2 back = v_uv - vel * u_p0.x;
-  vec4 adv = bilerp(u_state, clamp(back, vec2(0.0), vec2(1.0)));
+  vec2 back = clamp(v_uv - vel * u_p0.x, vec2(0.0), vec2(1.0));
+  vec4 adv = bilerp(u_state, back);
   vec2 v2 = adv.xy;
-  float dye2 = adv.z;
-  // the splats push the fluid out from under them
+  float dye = adv.z * (1.0 - u_p0.w);
   float sp = sumSplats(v_uv);
   v2 += (v_uv - 0.5) * sp * u_p0.z;
   v2 *= 1.0 - u_p0.y;
-  float pl = texture(u_press, v_uv + vec2(-1.0, 0.0) / u_res).a;
-  float pr = texture(u_press, v_uv + vec2(1.0, 0.0) / u_res).a;
-  float pd = texture(u_press, v_uv + vec2(0.0, -1.0) / u_res).a;
-  float pu = texture(u_press, v_uv + vec2(0.0, 1.0) / u_res).a;
-  v2 -= 0.5 * vec2(pr - pl, pu - pd);
-  // vorticity confinement puts the curl back that the grid damps out
+  v2 -= 0.5 * vec2(pressAt(u_press, v_uv, vec2(1.0, 0.0)) - pressAt(u_press, v_uv, vec2(-1.0, 0.0)),
+                   pressAt(u_press, v_uv, vec2(0.0, 1.0)) - pressAt(u_press, v_uv, vec2(0.0, -1.0)));
   if (u_kind == 1) {
-    float wl = abs(at(cl(ivec2(-1, 0))).y - at(cl(ivec2(1, 0))).y);
-    float wd = abs(at(cl(ivec2(0, -1))).x - at(cl(ivec2(0, 1))).x);
-    float w = at(cl(ivec2(1, 0))).y - at(cl(ivec2(-1, 0))).y - (at(cl(ivec2(0, 1))).x - at(cl(ivec2(0, -1))).x);
+    // vorticity confinement: put back the curl the grid damps away
+    float wl = abs(at(cl(c + ivec2(-1, 0))).y - at(cl(c + ivec2(1, 0))).y);
+    float wd = abs(at(cl(c + ivec2(0, -1))).x - at(cl(c + ivec2(0, 1))).x);
+    float w = (at(cl(c + ivec2(1, 0))).y - at(cl(c + ivec2(-1, 0))).y) - (at(cl(c + ivec2(0, 1))).x - at(cl(c + ivec2(0, -1))).x);
     vec2 n = vec2(wd - wl, wl - wd);
-    float len = length(n) + 1e-5;
-    v2 += (n / len) * w * u_p1.z;
+    v2 += (n / (length(n) + 1e-5)) * w * u_p1.y;
   }
-  v2 = clamp(v2, vec2(-1.5), vec2(1.5));
-  dye2 *= 1.0 - u_p0.w;
-  dye2 += sp * 0.25;
-  fragColor = sane(vec4(v2, clamp(dye2, 0.0, 4.0), pressure), -4.0, 4.0);
+  fragColor = sane(vec4(clamp(v2, vec2(-1.5), vec2(1.5)), clamp(dye + sp * 0.3, 0.0, 4.0), s.w), -4.0, 4.0);
 }`;
 
   const FLUID_RESET = `
 void main() {
-  vec2 uv = v_uv;
-  vec2 c = uv - 0.5;
-  float a = atan(c.y, c.x);
-  float r = length(c);
-  float sw = u_p0.w > 0.0 ? smoothstep(0.45, 0.0, r) * 0.6 : 0.0;
-  vec2 vel = vec2(-c.y, c.x) * sw;
-  fragColor = vec4(vel, u_p1.w, 0.0, 1.0);
+  vec2 c = v_uv - 0.5;
+  float spin = smoothstep(0.45, 0.0, length(c)) * u_p0.w;
+  fragColor = vec4(vec2(-c.y, c.x) * spin, u_p1.x, 0.0, 1.0);
 }`;
 
-  // -- cellular automata: state = (alive, age)
+  // -- cellular automata: state = (alive, age, neighbourhood sum)
   const CELL_STEP = `
 void main() {
   ivec2 c = ivec2(gl_FragCoord.xy);
   vec4 s = at(c);
   float n = 0.0;
-  float sum = 0.0;
   int lo = u_kind == 2 ? 0 : -1;
   int hi = u_kind == 2 ? 0 : 1;
   for (int j = -1; j <= 1; j += 1) {
@@ -385,47 +362,40 @@ void main() {
     for (int i = -1; i <= 1; i += 1) {
       if (i < lo || i > hi) continue;
       if (i == 0 && j == 0) continue;
-      vec4 o = at(cl(c + ivec2(i, j)));
-      n += step(0.5, o.x);
-      sum += o.x;
+      n += step(0.5, at(cl(c + ivec2(i, j))).x);
     }
   }
   float alive = s.x;
-  float born = 0.0;
+  float born;
   if (u_kind == 0) {
-    // Conway: B3 / S23, plus the sticky variant that leaves a fading trace
+    // Conway: B3 / S23
     born = alive > 0.5 ? (n > 1.5 && n < 3.5 ? 1.0 : 0.0) : (n > 2.5 && n < 3.5 ? 1.0 : 0.0);
   } else if (u_kind == 1) {
     // Lenia: a continuous neighbourhood window
     float win = smoothstep(u_p0.y, u_p0.y + 0.12, n) * (1.0 - smoothstep(u_p0.z, u_p0.z + 0.12, n));
-    born = clamp(win * (u_p1.x * 2.0), 0.0, 1.0);
+    born = clamp(win * u_p1.x * 2.0, 0.0, 1.0);
   } else {
-    // sand: a cell above empties down, piling up
+    // sand: a grain above an empty cell falls, and the pile spreads sideways
     if (alive < 0.5) {
-      float above = at(cl(c + ivec2(0, 1))).x;
-      born = step(0.5, above);
-    } else if (hash21(v_uv * 97.0 + u_step * 0.017) < u_p1.x * 0.5) {
-      float below = at(cl(c + ivec2(0, -1))).x;
-      born = below < 0.5 ? 0.5 : 1.0;
+      born = step(0.5, at(cl(c + ivec2(0, 1))).x);
+    } else if (hash21(v_uv * 97.0 + u_step * 0.017) < u_p1.x * 0.4) {
+      born = at(cl(c + ivec2(0, -1))).x < 0.5 ? 0.5 : 1.0;
     } else {
       born = 1.0;
     }
   }
-  float sp = sumSplats(v_uv);
-  born = max(born, step(0.02, sp));
   float age = alive > 0.5 ? min(s.y + 1.0, 64.0) : 0.0;
-  fragColor = sane(vec4(clamp(born, 0.0, 1.0), age, sum * 0.125, 1.0), 0.0, 64.0);
+  fragColor = sane(vec4(max(clamp(born, 0.0, 1.0), step(0.02, sumSplats(v_uv))), age, n * 0.125, 1.0), 0.0, 64.0);
 }`;
 
   const CELL_RESET = `
 void main() {
-  vec2 uv = v_uv;
-  float n = 0.0;
+  float n;
   if (u_kind == 2) {
-    // sand starts as a pile along the top edge
-    n = step(uv.y, 0.25 + vnoise(vec2(uv.x * 3.0, 0.0)) * 0.25);
+    // sand starts as a heap along the top edge
+    n = step(v_uv.y, 0.2 + vnoise(vec2(v_uv.x * 3.0, 0.0)) * 0.3);
   } else {
-    n = step(1.0 - u_p1.y, hash21(floor(uv * u_res * 0.5) + u_seed));
+    n = step(1.0 - u_p1.y, hash21(floor(v_uv * u_res * 0.5) + u_seed));
   }
   fragColor = vec4(n, n * 8.0, 0.0, 1.0);
 }`;
@@ -436,8 +406,10 @@ void main() {
       step: RD_STEP,
       reset: RD_RESET,
       genome(T) {
-        // p0 = (feed, kill, diffusion A, diffusion B)
-        return [T.range(0.0367, 0.01, 0.062), T.range(0.0649, 0.045, 0.075), T.range(1, 0.7, 1.4), T.range(0.5, 0.3, 0.8), T.range(1, 0, 1), T.range(1, 0, 1), 0, 0, T.range(1, 0.2, 1), T.int(2, 1, 4), T.range(14, 6, 30), T.range(0.7, 0.3, 1.3)];
+        // the four Gray-Scott feed / kill pairs: coral, worms, solitons, spots
+        const kind = T.int(0, 0, 3);
+        const FK = [[0.0367, 0.0649], [0.0545, 0.062], [0.029, 0.057], [0.014, 0.054]][kind];
+        return [T.range(FK[0], FK[0] * 0.7, FK[0] * 1.3), T.range(FK[1], FK[1] * 0.9, FK[1] * 1.1), T.range(1, 0.7, 1.4), T.range(0.5, 0.3, 0.8), T.range(1, 0.2, 1), T.range(1, 0.4, 1), 0, 0, kind, T.int(2, 1, 4), T.range(14, 6, 30), T.range(0.7, 0.3, 1.3)];
       },
     },
     wave2d: {
@@ -445,8 +417,8 @@ void main() {
       step: WAVE_STEP,
       reset: WAVE_RESET,
       genome(T) {
-        // p0 = (courant^2, damping, splat strength, travelling wave), p1 = (relief, splash rate, count, strength)
-        return [T.range(0.24, 0.1, 0.42), T.range(0.996, 0.985, 0.9995), T.range(0.6, 0.2, 1.4), T.int(0, 0, 1), T.range(0.5, 0.1, 1.2), T.range(0, 0, 1), T.range(1.1, 0.6, 2), 0, T.range(1.15, 0.9, 1.6), T.range(2, 1, 4), T.range(16, 6, 30), T.range(0.8, 0.3, 1.4)];
+        // p0 = (courant^2, damping, splat push, travelling wave), p1 = (relief)
+        return [T.range(0.24, 0.1, 0.4), T.range(0.996, 0.985, 0.9995), T.range(0.6, 0.2, 1.4), T.range(0, 0, 0.05), T.range(0.5, 0.1, 1.2), 0, 0, 0, T.int(0, 0, 1), T.int(2, 1, 4), T.range(16, 6, 30), T.range(0.8, 0.3, 1.4)];
       },
     },
     fluid: {
@@ -454,18 +426,21 @@ void main() {
       step: FLUID_STEP,
       reset: FLUID_RESET,
       genome(T) {
-        // p0 = (advect, viscosity, push, dye loss), p1 = (iterations, vorticity, colour, dye at the start)
-        return [T.range(1, 0.85, 1.15), T.range(0.02, 0.002, 0.08), T.range(0.9, 0.3, 2), T.range(0.012, 0.002, 0.04), T.int(10, 4, 16), T.range(6, 1, 14), T.range(0, 0, 1), T.range(0.7, 0.2, 1), T.range(1, 0, 1), T.range(2, 1, 4), T.range(18, 8, 34), T.range(0.9, 0.4, 1.5)];
+        // p0 = (advect, viscosity, push, dye loss, spin at the start),
+        // p1 = (iterations, vorticity, dye at the start)
+        return [T.range(1, 0.85, 1.15), T.range(0.02, 0.002, 0.08), T.range(0.9, 0.3, 2), T.range(0.012, 0.002, 0.04), T.range(0.6, 0, 1.2), T.int(10, 4, 16), T.range(6, 1, 14), T.range(0.7, 0.2, 1), T.int(1, 0, 1), T.int(2, 1, 4), T.range(18, 8, 34), T.range(0.9, 0.4, 1.5)];
       },
-      // how many scratch textures the step needs, and the passes over them
-      scratch: 2,
+      // the divergence and the two pressure buffers the projection ping-pongs
+      // between; none of them are part of the saved state
+      scratch: 3,
       passes(u, kind) {
         const iters = Math.max(1, Math.min(24, Math.round(u.u_p1[0])));
-        const list = [{ pass: 0, target: 'scratch0', inputs: ['state'] }];
+        const list = [{ pass: 0, target: 'div', press: null }];
+        // sweep i reads the buffer written by sweep i-1, starting from a zeroed one
         for (let i = 0; i < iters; i += 1) {
-          list.push({ pass: 1, target: i % 2 === 0 ? 'scratch1' : 'scratch0', inputs: ['state', 'div', 'press'], press: i % 2 === 0 ? 'scratch0' : 'scratch1' });
+          list.push({ pass: 1, target: i % 2 === 0 ? 'pressA' : 'pressB', press: i % 2 === 0 ? 'pressB' : 'pressA' });
         }
-        list.push({ pass: 2, target: 'alt', inputs: ['state'], press: iters % 2 === 0 ? 'scratch0' : 'scratch1' });
+        list.push({ pass: 2, target: 'alt', press: iters % 2 === 1 ? 'pressA' : 'pressB' });
         void kind;
         return list;
       },
@@ -475,17 +450,17 @@ void main() {
       step: CELL_STEP,
       reset: CELL_RESET,
       genome(T) {
-        // p0 = (rule, window lo, window hi, unused), p1 = (growth, fill, colour, unused)
-        return [T.int(0, 0, 2), T.range(2, 1, 3), T.range(4, 3, 5), 0, T.range(0.35, 0.1, 0.7), T.range(0.32, 0.08, 0.55), T.range(1, 0, 1), 0, T.range(1, 0, 1), T.range(2, 1, 4), T.range(14, 6, 30), T.range(0.8, 0.3, 1.4)];
+        // p0 = (unused, window lo, window hi), p1 = (growth, fill)
+        return [0, T.range(2, 1, 3), T.range(4, 3, 5), 0, T.range(0.35, 0.1, 0.7), T.range(0.32, 0.08, 0.55), 0, 0, T.int(0, 0, 2), T.int(2, 1, 4), T.range(14, 6, 30), T.range(0.8, 0.3, 1.4)];
       },
     },
   };
 
-  // The kind a sim runs in: an integer out of the first genome slot, used to pick
-  // a variant inside the step shader.
+  // The variant a sim runs in: an integer out of genome slot 8.
   function kindOf(id, p) {
-    const v = Number(p && p[0]);
-    return Number.isFinite(v) ? Math.round(v) : 0;
+    const v = Number(p && p[8]);
+    if (!Number.isFinite(v)) return 0;
+    return Math.max(0, Math.round(v));
   }
 
   function genome(id, seed, rand) {
@@ -507,7 +482,7 @@ void main() {
     if (!def) return { organic: 0.5, sharp: 0.5, dense: 0.5, motion: 0.5 };
     const base = def.profile;
     const g = Array.isArray(p) ? p : [];
-    const wobble = (i) => (Number.isFinite(g[i]) ? (((Math.abs(g[i]) * 7.31) % 1) - 0.5) : 0);
+    const wobble = (i) => (Number.isFinite(g[i]) ? ((Math.abs(g[i]) * 7.31) % 1) - 0.5 : 0);
     return {
       organic: Math.max(0, Math.min(1, base.organic + 0.12 * wobble(0))),
       sharp: Math.max(0, Math.min(1, base.sharp + 0.12 * wobble(1))),
@@ -529,32 +504,89 @@ void main() {
     return target;
   }
 
-  // Per clip: the live ping-pong pair, the keyframes and how far the clip has been
-  // carried. Dropped when its textures are, so the memory bound holds.
+  const INT_UNIFORMS = { u_kind: 1, u_count: 1, u_pass: 1 };
+
+  // One runner per pipeline. It holds the programs, the per-clip ping-pong pairs
+  // and the keyframes, and is thrown away with the pipeline (so a lost GL context
+  // starts every clip again from its seed).
   function createRunner(gl, options) {
     const opts = options || {};
     const floatTargets = opts.floatTargets !== false;
     const programs = new Map();
     const clips = new Map();
     let tick = 0;
-    const stats = { steps: 0, keys: 0, restores: 0, resets: 0 };
+    const stats = { steps: 0, keys: 0, restores: 0, seeds: 0, catchups: 0 };
 
-    function available() {
-      return typeof SA !== 'undefined' && SA.gl && SA.gl.createTarget && SA.glShaders && SA.glFields;
-    }
+    const ready = () => typeof SA !== 'undefined' && SA.gl && SA.gl.createTarget && SA.glPasses && SA.glShaders;
 
-    // one program per (sim, reset?) pair, compiled the first time it is needed
+    // One program per (sim, reset?) pair, compiled the first time it is needed. A
+    // shader that does not build is remembered as null and the sim stays off.
     function programFor(id, reset) {
       const key = `${id}:${reset ? 'reset' : 'step'}`;
       let entry = programs.get(key);
       if (entry !== undefined) return entry;
-      if (!available()) return (entry = null);
+      if (!ready()) return (entry = null);
       const def = SIM_DEFS[id];
-      const source = `${reset ? RESET_HEAD : STEP_HEAD}${def[reset ? 'reset' : 'step']}`;
-      entry = SA.glPasses.createProgramSafe(gl, SA.glShaders.QUAD_VERT, source);
-      if (!entry) entry = null;
-      programs.set(key, entry);
-      return entry;
+      entry = SA.glPasses.createProgramSafe(gl, SA.glShaders.QUAD_VERT, `${reset ? RESET_HEAD : STEP_HEAD}${def[reset ? 'reset' : 'step']}`);
+      programs.set(key, entry || null);
+      return entry || null;
+    }
+
+    function copyProgram() {
+      if (programs.has('__copy')) return programs.get('__copy');
+      const entry = ready() ? SA.glPasses.createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COPY_FRAG) : null;
+      programs.set('__copy', entry || null);
+      return entry || null;
+    }
+
+    function draw(program, uniforms, target) {
+      gl.useProgram(program.program);
+      if (uniforms) {
+        for (const name of Object.keys(uniforms)) {
+          const location = program.uniforms[name];
+          const value = uniforms[name];
+          if (location == null || value == null) continue;
+          if (typeof value === 'number') {
+            if (INT_UNIFORMS[name]) gl.uniform1i(location, Math.round(value));
+            else gl.uniform1f(location, value);
+          } else if (Array.isArray(value)) {
+            if (value.length === 2) gl.uniform2f(location, value[0], value[1]);
+            else if (value.length === 4) gl.uniform4f(location, value[0], value[1], value[2], value[3]);
+          }
+        }
+      }
+      if (target) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+        gl.viewport(0, 0, target.width, target.height);
+      }
+      gl.disable(gl.BLEND);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
+    // COPY_FRAG at scale 1 / angle 0 / offset 0 is a straight copy
+    function blit(texture, target) {
+      const program = copyProgram();
+      if (!program) return false;
+      const u = program.uniforms;
+      gl.useProgram(program.program);
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      if (u.u_texture) gl.uniform1i(u.u_texture, 0);
+      if (u.u_opacity) gl.uniform1f(u.u_opacity, 1);
+      if (u.u_offset) gl.uniform2f(u.u_offset, 0, 0);
+      if (u.u_scale) gl.uniform1f(u.u_scale, 1);
+      if (u.u_angle) gl.uniform1f(u.u_angle, 0);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
+      gl.viewport(0, 0, target.width, target.height);
+      gl.disable(gl.BLEND);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      return true;
+    }
+
+    function bindTex(unit, texture, name, program) {
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      if (program.uniforms[name]) gl.uniform1i(program.uniforms[name], unit);
     }
 
     function newClip(field) {
@@ -568,7 +600,7 @@ void main() {
         kind: kindOf(field.id, field.p),
         cur: makeStateTarget(gl),
         alt: makeStateTarget(gl),
-        scratch: def.scratch ? [makeStateTarget(gl), makeStateTarget(gl)] : null,
+        scratch: def.scratch ? Array.from({ length: def.scratch }, () => makeStateTarget(gl)) : null,
         keys: new Map(),
         step: -1,
         seeded: false,
@@ -590,79 +622,29 @@ void main() {
       const at = keyOf(clip.step);
       if (clip.keys.has(at)) return;
       const target = makeStateTarget(gl);
-      // copy the live state into the keyframe
-      const copy = SA.glFields.programForCopy ? SA.glFields.programForCopy(gl) : null;
-      if (copy) {
-        gl.useProgram(copy.program);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, clip.cur.texture);
-        if (copy.uniforms.u_texture) gl.uniform1i(copy.uniforms.u_texture, 0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
-        gl.viewport(0, 0, RES, RES);
-        gl.disable(gl.BLEND);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (!blit(clip.cur.texture, target)) {
+        SA.gl.deleteTarget(gl, target);
+        return;
       }
-      touchKey(clip.keys, at, tick);
+      const victim = touchKey(clip.keys, at, tick);
       tick += 1;
+      if (victim >= 0) {
+        const dropped = clip.keys.get(victim);
+        // touchKey already removed it from the map
+        if (dropped) SA.gl.deleteTarget(gl, dropped.target);
+      }
       clip.keys.set(at, { target, used: tick });
       stats.keys += 1;
-      // the LRU eviction may have dropped one; free its texture
-      for (const [step, entry] of clip.keys) {
-        if (entry.stale) {
-          SA.gl.deleteTarget(gl, entry.target);
-          clip.keys.delete(step);
-        }
-      }
     }
 
     function restoreKey(clip, at) {
       const entry = clip.keys.get(at);
       if (!entry) return false;
-      const program = SA.glFields.programForCopy(gl);
-      if (!program) return false;
-      gl.useProgram(program.program);
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, entry.target.texture);
-      if (program.uniforms.u_texture) gl.uniform1i(program.uniforms.u_texture, 0);
-      gl.bindFramebuffer(gl.FRAMEBUFFER, clip.cur.framebuffer);
-      gl.viewport(0, 0, RES, RES);
-      gl.disable(gl.BLEND);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-      entry.used = tick;
-      tick += 1;
+      if (!blit(entry.target.texture, clip.cur)) return false;
       clip.step = at;
       clip.seeded = true;
       stats.restores += 1;
       return true;
-    }
-
-    // draw one program over the whole grid
-    function run(program, uniforms, target) {
-      gl.useProgram(program.program);
-      if (uniforms) {
-        for (const [name, value] of Object.entries(uniforms)) {
-          const at = program.uniforms[name];
-          if (at == null || value == null) continue;
-          if (typeof value === 'number') {
-            if (name === 'u_kind' || name === 'u_count' || name === 'u_pass' || name === 'u_iters') gl.uniform1i(at, Math.round(value));
-            else gl.uniform1f(at, value);
-          } else if (Array.isArray(value) && value.length === 2) gl.uniform2f(at, value[0], value[1]);
-          else if (Array.isArray(value) && value.length === 4) gl.uniform4f(at, value[0], value[1], value[2], value[3]);
-        }
-      }
-      if (target) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, target.framebuffer);
-        gl.viewport(0, 0, RES, RES);
-      }
-      gl.disable(gl.BLEND);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    }
-
-    function bindTex(unit, texture, name, program) {
-      gl.activeTexture(gl.TEXTURE0 + unit);
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      const at = program.uniforms[name];
-      if (at) gl.uniform1i(at, unit);
     }
 
     function splatUniforms(clip, step) {
@@ -674,39 +656,41 @@ void main() {
       return { u_splat0: pick(0), u_splat1: pick(1), u_splat2: pick(2), u_splat3: pick(3), u_count: list.length };
     }
 
-    function stepOnce(clip) {
-      const def = SIM_DEFS[clip.id];
-      const next = clip.step + 1;
-      const stepProgram = programFor(clip.id, false);
-      if (!stepProgram) return false;
-      const base = {
+    function baseUniforms(clip, step) {
+      return {
         u_res: [RES, RES],
-        u_step: next,
+        u_step: step,
         u_seed: (clip.seed % 1000) * 0.137,
         u_p0: [clip.p[0], clip.p[1], clip.p[2], clip.p[3]],
         u_p1: [clip.p[4], clip.p[5], clip.p[6], clip.p[7]],
         u_p2: [clip.p[8], clip.p[9], clip.p[10], clip.p[11]],
         u_kind: clip.kind,
-        ...splatUniforms(clip, next),
       };
-      gl.useProgram(stepProgram.program);
-      bindTex(0, clip.cur.texture, 'u_state', stepProgram);
+    }
+
+    function stepOnce(clip) {
+      const def = SIM_DEFS[clip.id];
+      const program = programFor(clip.id, false);
+      if (!program) return false;
+      const next = clip.step + 1;
+      const base = { ...baseUniforms(clip, next), ...splatUniforms(clip, next) };
+      gl.useProgram(program.program);
+      bindTex(0, clip.cur.texture, 'u_state', program);
       if (def.scratch) {
-        const passes = def.passes(base, clip.kind);
-        for (const item of passes) {
-          const target = item.target === 'alt' ? clip.alt : clip.scratch[item.target === 'scratch0' ? 0 : 1];
-          const uniforms = { ...base, u_pass: item.pass };
-          if (item.pass === 0) bindTex(1, clip.cur.texture, 'u_div', stepProgram);
-          else if (item.pass === 1) {
-            bindTex(1, clip.scratch[0].texture, 'u_div', stepProgram);
-            bindTex(2, item.press === 'scratch0' ? clip.scratch[0].texture : clip.scratch[1].texture, 'u_press', stepProgram);
-          } else {
-            bindTex(2, item.press === 'scratch0' ? clip.scratch[0].texture : clip.scratch[1].texture, 'u_press', stepProgram);
+        const scratch = { div: clip.scratch[0], pressA: clip.scratch[1], pressB: clip.scratch[2] };
+        for (const item of def.passes(base, clip.kind)) {
+          const target = item.target === 'alt' ? clip.alt : scratch[item.target];
+          gl.useProgram(program.program);
+          if (item.pass === 1) {
+            bindTex(1, scratch.div.texture, 'u_div', program);
+            bindTex(2, scratch[item.press].texture, 'u_press', program);
+          } else if (item.pass === 2) {
+            bindTex(2, scratch[item.press].texture, 'u_press', program);
           }
-          run(stepProgram, uniforms, target);
+          draw(program, { ...base, u_pass: item.pass }, target);
         }
       } else {
-        run(stepProgram, base, clip.alt);
+        draw(program, base, clip.alt);
       }
       const swap = clip.cur;
       clip.cur = clip.alt;
@@ -721,50 +705,51 @@ void main() {
     function seedClip(clip) {
       const program = programFor(clip.id, true);
       if (!program) return false;
-      run(program, {
-        u_res: [RES, RES],
-        u_step: 0,
-        u_seed: (clip.seed % 1000) * 0.137,
-        u_p0: [clip.p[0], clip.p[1], clip.p[2], clip.p[3]],
-        u_p1: [clip.p[4], clip.p[5], clip.p[6], clip.p[7]],
-        u_p2: [clip.p[8], clip.p[9], clip.p[10], clip.p[11]],
-        u_kind: clip.kind,
-      }, clip.alt);
+      draw(program, { ...baseUniforms(clip, 0), u_count: 0, u_splat0: [0, 0, 0, 0], u_splat1: [0, 0, 0, 0], u_splat2: [0, 0, 0, 0], u_splat3: [0, 0, 0, 0] }, clip.alt);
       const swap = clip.cur;
       clip.cur = clip.alt;
       clip.alt = swap;
       clip.step = 0;
       clip.seeded = true;
-      stats.resets += 1;
+      stats.seeds += 1;
+      // the projection reads its first pressure from a zeroed buffer
+      if (clip.scratch) {
+        for (let i = 1; i < clip.scratch.length; i += 1) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, clip.scratch[i].framebuffer);
+          gl.viewport(0, 0, RES, RES);
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT);
+        }
+      }
       saveKey(clip);
       return true;
     }
 
-    // Bring the state of `field` to the step its time asks for, and return the
+    // Bring the state of `field` to the step its time asks for and return the
     // texture to sample. null when there is no usable float target or the shader
-    // does not build, which leaves the figure empty instead of wrong.
+    // does not build, which leaves the figure empty rather than wrong.
     function textureFor(field) {
-      if (!floatTargets || !available() || !field || !field.sim) return null;
-      const id = field.id;
-      if (!SIM_DEFS[id]) return null;
+      if (!floatTargets || !ready() || !field || !field.sim) return null;
+      const def = SIM_DEFS[field.id];
+      if (!def) return null;
       let clip = clips.get(field.sim.key);
       if (!clip) {
         clip = newClip(field);
         clips.set(field.sim.key, clip);
       }
-      const target = stepOf(field.time);
-      const schedule = plan(clip.step, Array.from(clip.keys.keys()), target);
-      if (schedule.action === 'reset' || !clip.seeded) {
+      const wanted = stepOf(field.time);
+      const schedule = plan(clip.step, Array.from(clip.keys.keys()), wanted);
+      if (!clip.seeded || schedule.action === 'reset') {
         if (!seedClip(clip)) return null;
+      } else if (schedule.action === 'restore') {
+        if (!restoreKey(clip, schedule.fromStep) && !seedClip(clip)) return null;
       }
-      if (schedule.action === 'restore') {
-        if (!restoreKey(clip, schedule.fromStep)) {
-          if (!seedClip(clip)) return null;
-          for (let i = 0; i < schedule.steps; i += 1) if (!stepOnce(clip)) return null;
-          return clip.cur;
-        }
-      }
-      for (let i = 0; i < schedule.steps; i += 1) {
+      // A cold clip asked for a late time has nothing to restore: run what fits in
+      // one call and let the next frame carry on. Export walks the steps in order
+      // and never lands here.
+      const steps = Math.min(schedule.steps, CATCHUP_CAP);
+      if (schedule.steps > CATCHUP_CAP) stats.catchups += 1;
+      for (let i = 0; i < steps; i += 1) {
         if (!stepOnce(clip)) return null;
       }
       return clip.cur;
@@ -780,12 +765,15 @@ void main() {
       textureFor,
       dispose,
       stats,
-      keys: () => clips.size,
-      bytes: () => {
+      clipCount: () => clips.size,
+      keyBytes: () => {
         let total = 0;
-        for (const clip of clips.values()) {
-          total += (2 + (clip.scratch ? clip.scratch.length : 0) + clip.keys.size) * MAX_KEY_BYTES;
-        }
+        for (const clip of clips.values()) total += clip.keys.size * MAX_KEY_BYTES;
+        return total;
+      },
+      liveBytes: () => {
+        let total = 0;
+        for (const clip of clips.values()) total += (2 + (clip.scratch ? clip.scratch.length : 0)) * MAX_KEY_BYTES;
         return total;
       },
     };
@@ -797,9 +785,11 @@ void main() {
     KEY_STEPS,
     MAX_KEYS,
     MAX_SEEK_STEPS,
+    CATCHUP_CAP,
     RES,
     SIM_DEFS,
     MAX_SPLATS,
+    MAX_KEY_BYTES,
     stepOf,
     keyOf,
     plan,

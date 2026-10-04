@@ -417,30 +417,6 @@
   function loop(value, speed, phase) {
     return clamp01(Math.sin(TAU * num(speed, 1) * value + phase) * 0.5 + 0.5);
   }
-
-  // dissolve: the plain enter / exit / hold dissolve (enter.js / exit.js /
-  // hold.js) is re-registered here so it joins the shader pack. Each letter
-  // burns through at its own noise threshold; `grain` blends that random
-  // threshold with the letter's position (a sweep along the line, so the
-  // dissolve reads as a front moving through the text), `edge` is the width of
-  // the glowing rim just before a letter drops out, and `drift` lets the
-  // fading letter rise like ash.
-  function dissolveCore(state, level, params, rng, info) {
-    const grain = clamp01(num(params.grain, 1));
-    const edge = clamp01(num(params.edge, 0.15));
-    const drift = num(params.drift, 0);
-    const count = info && Number(info.N) > 1 ? Number(info.N) : 1;
-    const along = count > 1 ? clamp01((info.i || 0) / (count - 1)) : 0.5;
-    const threshold = (rng() * grain + along * (1 - grain)) * (1 - edge) * 0.85 + edge * 0.15;
-    // level: 1 = fully present, 0 = gone
-    const k = clamp01(level);
-    const gone = clamp01((threshold - (1 - k) * (1 + edge)) / Math.max(edge, 0.0001) + 1);
-    const alpha = edge > 0 ? clamp01(gone) : (k > 1 - threshold ? 1 : 0);
-    state.opacity *= k >= 1 ? 1 : alpha;
-    if (edge > 0 && alpha > 0 && alpha < 1) state.flash = Math.max(state.flash || 0, Math.sin(alpha * Math.PI));
-    if (drift !== 0) state.y -= drift * (1 - k) * shortSideOf(info) * 0.05;
-  }
-
   const FAMILIES = [
     {
       name: 'dither',
@@ -491,19 +467,6 @@
       enter: (state, p, params, rng, info) => geometryCore(state, clamp01(p), params, info),
       hold: (state, h, env, params, rng, info) => geometryCore(state, loop(h, params.speed, 0) * clamp01(env), params, info),
       exit: (state, p, params, rng, info) => geometryCore(state, 1 - clamp01(p), params, info),
-    },
-    {
-      name: 'dissolve',
-      tags: ['shader', 'dissolve'],
-      params: [
-        { key: 'grain', kind: 'number', min: 0, max: 1, step: 0.01, default: 1, random: [0.5, 1] },
-        { key: 'edge', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.15, random: [0.05, 0.3] },
-        { key: 'drift', kind: 'number', min: -2, max: 2, step: 0.05, default: 0, random: [0, 1] },
-        { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 1, section: 'loop' },
-      ],
-      enter: (state, p, params, rng, info) => dissolveCore(state, clamp01(p), params, rng, info),
-      hold: (state, h, env, params, rng, info) => dissolveCore(state, 1 - (1 - loop(h, params.speed, 0)) * clamp01(env) * 0.6, params, rng, info),
-      exit: (state, p, params, rng, info) => dissolveCore(state, 1 - clamp01(p), params, rng, info),
     },
     {
       name: 'fade',

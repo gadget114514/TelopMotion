@@ -208,6 +208,7 @@ const DESCRIPTIONS = {
   'hold.none': '保持中の動きなし。',
   'hold.opacityPulse': '明滅（点滅）し続ける。',
   'hold.orbit3D': '3Dで回り込むように傾き続ける。',
+  'hold.orbit2D': '一文字ずつ角度をずらしながら円を描いて公転する。',
   'hold.pathFollow': 'パスに沿って移動し続ける。',
   'hold.pulse': 'BPMに合わせて拡大縮小し、鼓動のように脈打つ。',
   'hold.shiver': '一定間隔でブルッと震える。',

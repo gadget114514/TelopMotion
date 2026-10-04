@@ -685,3 +685,16 @@ weird 0.6 の自動演出を見ると文字が小さすぎた。可読下限（`
 - **粒子・ヒーロー**: `minScale`（粒子 0.55）に対する下限上げと、`full / floor` でヒーロー倍率を丸める処理はそのまま。**下限が上がると長いビートの帯が潰れることがある**（下限 > 上限 ならラダーは上1段に収束する。既存の「長すぎる行は縮む」挙動と同じ）。
 - **テスト**: `size-ladder.test.js` に2件（`sizeFloor` の導出と固定/weird 0 は従来の下限・weird 0.6 の run で全ビートが下限以上で曲全体のテーマサイズを超える／各ビートの `full` がそのビートの `widthFillSize`）、`gen-params.test.js` に1件（1 / 2.0 / 2.667 と単調性・固定とクランプ）、`textflow.test.js` に4件（文字数 − 1 の除算 / 1文字なら画面幅 / 折り返しても縮まない / 縦書きと最長行）。`direct.test.js` の compose テストは階層の判定を px 直の比較に替えた（`fitComposeSpans` が選出のあと粒子跨度を書き換えるので、完成後の文書から段の番号は復元できない。段そのものは `size-ladder.test.js` が担保）。`npm test` 864件中 863 パス（残 1 件は別セッションが進行中の `direct.test.js` の motif 数テスト）、`npm run check` 197ファイル。
 - **決めていないこと**: weird 1 の下限 2.67 倍は導出式そのままなので、スライダーでは 4 倍まで好きなだけ上げられる。上限の式は「1文字 = フレーム幅 / (文字数 − 1)」に固定（图の幅が `maxWidth` 0.94 を超えるので、シーン側の1回再レイアウトが 0.94 倍に寄せる）。
+
+## 追加: 図形モーション見本（figure showcase）
+
+図形トラックだけを見る見本プロジェクトを、`scripts/showcase.js` と同じ形（`npm run figure-showcase` → `renderer/data/figure-showcase.json` + `demo/figure-showcase.md`、Help から開く）で生成的につくるようにした。
+
+- **Motif 側**: `figures.MOTIFS` の 64 個をそのまま 1 キューずつ（3 秒）。モジュールが自分のグループを返すので（`MOTIFS` の固定群 / `BOLD_MOTIFS` / `PROC` / `SCENE_MOTIFS` / `GEO_MOTIFS` / `FIELD_MOTIFS`）、新しい Motif を足してもこのスクリプトは触らなくてよい。`rand: 1`（weird 1）で「その Motif が届く範囲」を見せる。
+- **モーション軸側**: `in` / `hold` / `out` / `sync` / 2D `camera` を参照 Motif `burst` に固定して、1 軸だけ変える。隣り合うキューで違うのは見ている軸だけ。4 拍グリッドを渡しているので `sync` の beat / free は実際に 1 拍ごとに区切れる。
+- **手続きモーション**: genome は seed からしか生まないので、`PROC_MOTIONS` 17 種それぞれについて「その動きを描く最初の seed」を小さい順に探す。層構成がまだ使われていないものを選ぶので、17 キューが 17 個のほぼ同じ絵にならない。
+- **壊れていた点（直した）**: 図形のサブビートは**絶対時刻**で持つ（`beatAt` が時計と比べる）。まず `span {0, 長さ}` で spec を作ってから後でクリップを時刻に置くと、`params.beats` がクリップの範囲外になり**何も描かれない**。タイムラインに載せてからその span で spec を生むよう、`plan()`（時刻なしの枠）→ `materialize()`（時刻を置く + spec 生成）に分けた。この症状では 103 クリップ中 2 本（`burst` など）しか出ない。
+- **見やすさ**: 全期間に 1 本の `solid` プレート（`#0d1220`）を置き、ラベルは `style.location` で y 0.9 に下げる（`scene` / `geo` は文字と重なる図形が落とされるため、中央に置くと図が欠ける）。図の色は全クリップ共通の 6 色。
+- **UI**: Help に「Figure showcase（motifs & motions）」を `studio.help.figureShowcase` として 5 言語で追加（`showcase` の直下、About の上）。`readAsset('data/figure-showcase.json')` → `loadFromObject`。
+- **テスト**: `figure-showcase.test.js` 11 件（migrate が通りキュー数 == 図形クリップ数、Motif が `figures.MOTIFS` と順序込みで一致、軸の値が各レジストリと一致、`in/hold/out/camera` の固定と camera の seed、17 モーションの seed が本当にその動きを描く、ラベルと span とプレート、マーカー数、全 103 クリップが span 内で有限値を描画、`--sections` 絞り込み、生成物がコミット物と一致、Help と 5 言語）。`npm test` / `npm run check` は他の作業中の変更分を除いて緑。
+- **決めていないこと**: `sync` の `beat` と `text` は `subBeats` が同じ拍で区切る実装なので、この見本では絵が同じになる（差が出るのは自動演出の可読性側）。Motif 名は `renderer/js/i18n.js` の `figure.motif` を写した表をこのスクリプトに持つ（ビルドスクリプトはブラウザバンドルに依存させないため）。i18n 側の `figure:` ブロックは **各言語の外の `DICT` 直下**に書かれていて、`figure.*` の参照が 1 度解決せず（最後の言語が上書きされる）、`cracks` / `spikes` / `eyes` / `scratches` / `drips` / `lattice` / `waves` / `comets` と太線 6 種には名前が無い。別途直すべき。

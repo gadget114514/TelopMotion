@@ -864,13 +864,30 @@
     }
   }
 
+  // The figure showcase is generated in Japanese, so its cue labels are
+  // re-written in the language on screen: every cue carries the i18n namespace
+  // and value its name lives under (`studio.figure.<namespace>.<value>`), which
+  // is the same table the Studio's own figure labels come from.
+  function localizeFigureShowcase(doc) {
+    const cues = (doc && doc.script && doc.script.cues) || [];
+    for (const cue of cues) {
+      const meta = cue && cue.meta;
+      if (!meta || meta.kind !== 'figure-showcase' || !meta.namespace || !meta.value) continue;
+      const key = `studio.figure.${meta.namespace}.${meta.value}`;
+      const label = i18n.t(key);
+      if (typeof label !== 'string' || label === key || !label.trim()) continue;
+      cue.text = `${meta.index}. ${label} / ${meta.value}`;
+    }
+    return doc;
+  }
+
   // the figure track's own showcase: every motif and every motion axis, one cue
   // each. Same shape as the effects showcase, a different generated asset.
   async function figureShowcaseProject() {
     try {
       const buffer = await SA.platform.readAsset('data/figure-showcase.json');
       const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
+      SA.io.loadFromObject(localizeFigureShowcase(JSON.parse(text)));
       welcomeDismissed = false;
       toast('studio.toast.opened');
     } catch {

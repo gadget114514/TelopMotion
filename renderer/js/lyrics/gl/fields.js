@@ -1,11 +1,12 @@
 (function (root, factory) {
-  const api = factory(typeof require === 'function' && typeof module === 'object' ? require('../rng') : root.SA.rng, typeof require === 'function' && typeof module === 'object' ? require('../scene3d') : root.SA.scene3d);
+  const node = typeof require === 'function' && typeof module === 'object';
+  const api = factory(node ? require('../rng') : root.SA.rng, node ? require('../scene3d') : root.SA.scene3d, node ? require('./sim') : root.SA.glSim);
   if (typeof module === 'object' && module.exports) module.exports = api;
   else {
     root.SA = root.SA || {};
     root.SA.glFields = api;
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, scene3d) {
+})(typeof self !== 'undefined' ? self : this, function (rng, scene3d, glSim) {
   'use strict';
 
   // Full-frame mathematical fields: one fragment shader per field, each a closed
@@ -46,6 +47,8 @@ uniform vec3 u_c3;
 uniform vec3 u_c4;
 uniform vec4 u_textBox;
 uniform vec4 u_cam;
+uniform sampler2D u_sim;
+uniform vec2 u_simHalf;
 const float PI = 3.14159265359;
 const float TAU = 6.28318530718;
 
@@ -83,6 +86,24 @@ vec2 cmul(vec2 a, vec2 b) { return vec2(a.x * b.x - a.y * b.y, a.x * b.y + a.y *
 vec2 cdiv(vec2 a, vec2 b) { float d = dot(b, b) + 1e-9; return vec2(a.x * b.x + a.y * b.y, a.y * b.x - a.x * b.y) / d; }
 vec2 cpow(vec2 z, int n) { vec2 r = vec2(1.0, 0.0); for (int i = 0; i < 12; i += 1) { if (i >= n) break; r = cmul(r, z); } return r; }
 vec4 premul(vec3 c, float a) { a = clamp(a, 0.0, 1.0); return vec4(c * a, a); }
+// The simulated fields (gl/sim.js) run on a square grid that is stretched over
+// the frame. u_simHalf is the half-extent of the frame in the centred space, so
+// this maps the frame onto the grid and reports whether it landed on it.
+bool simLookup(vec2 p, out vec2 uv) {
+  uv = p / max(u_simHalf, vec2(1e-4)) * 0.5 + 0.5;
+  return uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0;
+}
+// one texel of a simulation grid is four screen pixels across, so the cellular
+// fields read a small cross to take the staircase off the edges
+vec4 simState(vec2 uv) {
+  vec2 tx = 1.2 / vec2(textureSize(u_sim, 0));
+  vec4 s = texture(u_sim, uv) * 2.0;
+  s += texture(u_sim, uv + vec2(tx.x, 0.0));
+  s += texture(u_sim, uv - vec2(tx.x, 0.0));
+  s += texture(u_sim, uv + vec2(0.0, tx.y));
+  s += texture(u_sim, uv - vec2(0.0, tx.y));
+  return s / 6.0;
+}
 `;
 
   const TAIL = `
@@ -621,25 +642,140 @@ vec4 fieldColor(vec2 p, float t) {
         return [T.range(6, 3, 12), T.int(0, 0, 3), T.int(0, 0, 1), T.range(1.2, 0.4, 3), T.range(0.6, 0, 1), T.range(0.3, 0, 1), T.range(1, 0.2, 1), T.range(0, 0, 1), 0, 0, 0, 0];
       },
     },
+
+    // --- the simulated fields -------------------------------------------------
+    // These have no closed form: gl/sim.js keeps a texture of state and steps it,
+    // and the shaders below turn that texture into picture. They carry no genome
+    // of their own - `genome` below hands the sim's numbers straight through, so
+    // one seed drives both the simulation and how it is coloured. p[8] is the
+    // variant the sim runs in; p[4], p[5] and p[6] are its look.
+
+    reactionDiffusion: {
+      sim: 'reactionDiffusion',
+      profile: { organic: 0.75, sharp: 0.45, dense: 0.7, motion: 0.5 },
+      glsl: `
+vec4 fieldColor(vec2 p, float t) {
+  vec2 uv;
+  if (!simLookup(p, uv)) return premul(vec3(0.0), 0.0);
+  vec2 s = texture(u_sim, uv).rg;
+  float a = clamp(s.x, 0.0, 1.0);
+  float b = clamp(s.y, 0.0, 1.0);
+  int kind = int(u_p2.x);
+  float v = clamp((b - a) * 1.7 + 0.5, 0.0, 1.0);
+  vec3 c;
+  float alpha;
+  if (kind == 0) {
+    // coral: bands running along the front
+    float band = 1.0 - smoothstep(0.0, 0.16, abs(fract(v * u_p1.x) - 0.5) * 2.0 - 0.7);
+    c = ramp(v + u_p1.y);
+    alpha = clamp(band * 0.85 + b * 0.3, 0.0, 0.95);
+  } else if (kind == 1) {
+    // worms: the front alone, shaded by how far it has run
+    float e = abs(b - a);
+    c = ramp(0.15 + e * u_p1.x + u_p1.y);
+    alpha = clamp(smoothstep(0.02, 0.32, e) * 0.95, 0.0, 0.95);
+  } else if (kind == 2) {
+    // solitons: the thick blobs, read as dots
+    c = ramp(b * 0.6 + u_p1.y);
+    alpha = smoothstep(0.32, 0.85, b) * 0.9;
+  } else {
+    // spots: the outline of every cell, from the gradient of the front
+    vec2 tx = 1.0 / vec2(textureSize(u_sim, 0));
+    float gx = texture(u_sim, uv + vec2(tx.x, 0.0)).y - texture(u_sim, uv - vec2(tx.x, 0.0)).y;
+    float gy = texture(u_sim, uv + vec2(0.0, tx.y)).y - texture(u_sim, uv - vec2(0.0, tx.y)).y;
+    float g = length(vec2(gx, gy));
+    c = ramp(g * u_p1.x * 2.0 + u_p1.y);
+    alpha = smoothstep(0.015, 0.22, g) * 0.9;
+  }
+  return premul(c, alpha);
+}`,
+    },
+    wave2d: {
+      sim: 'wave2d',
+      profile: { organic: 0.6, sharp: 0.5, dense: 0.5, motion: 0.7 },
+      glsl: `
+vec4 fieldColor(vec2 p, float t) {
+  vec2 uv;
+  if (!simLookup(p, uv)) return premul(vec3(0.0), 0.0);
+  vec2 s = texture(u_sim, uv).rg;
+  float h = s.x;
+  float rise = s.x - s.y;
+  int kind = int(u_p2.x);
+  // the marching variant reads as a train of waves rather than as a surface
+  float v = kind == 1 ? 0.5 + 0.5 * sin(h * u_p1.x * 3.0 - t * 1.6) : 0.5 + 0.5 * h * u_p1.x;
+  vec3 c = ramp(v + u_p1.y);
+  float crest = smoothstep(0.5, 1.0, abs(h) * u_p1.x);
+  float edge = smoothstep(0.015, 0.22, abs(rise)) * 0.6;
+  return premul(c * (0.5 + 0.7 * abs(h) * u_p1.x), clamp(crest * 0.8 + edge + 0.1, 0.0, 0.95));
+}`,
+    },
+    fluid: {
+      sim: 'fluid',
+      profile: { organic: 0.85, sharp: 0.35, dense: 0.65, motion: 0.75 },
+      glsl: `
+vec4 fieldColor(vec2 p, float t) {
+  vec2 uv;
+  if (!simLookup(p, uv)) return premul(vec3(0.0), 0.0);
+  vec4 s = texture(u_sim, uv);
+  float dye = clamp(s.z, 0.0, 1.0);
+  float speed = length(s.xy);
+  int kind = int(u_p2.x);
+  // the vorticity variant colours by how fast the fluid is turning, so the curl
+  // reads even where no dye has been
+  vec3 c = kind == 1 ? ramp(speed * u_p1.x * 2.0 + u_p1.y) : ramp(dye * 0.6 + speed * u_p1.x * 0.5 + u_p1.y);
+  return premul(c * (0.45 + 0.8 * dye), clamp(dye * 1.15 + speed * 0.5, 0.0, 0.95));
+}`,
+    },
+    cellular: {
+      sim: 'cellular',
+      profile: { organic: 0.5, sharp: 0.75, dense: 0.85, motion: 0.6 },
+      glsl: `
+vec4 fieldColor(vec2 p, float t) {
+  vec2 uv;
+  if (!simLookup(p, uv)) return premul(vec3(0.0), 0.0);
+  vec4 s = simState(uv);
+  int kind = int(u_p2.x);
+  float alive = s.x;
+  // sand shades by how deep the heap is, Life by how long a cell has lived, Lenia
+  // by the neighbourhood around it
+  float v = kind == 2 ? s.y * 0.05 : (kind == 1 ? alive * 0.6 + s.z * 0.4 : s.y * 0.04);
+  vec3 c = ramp(v + u_p1.y);
+  float body = smoothstep(0.35, 0.65, alive);
+  vec3 solid = mix(c * 0.85, c * 1.25 + 0.05, v);
+  return premul(mix(vec3(0.02), solid, body), clamp(body * 0.92 + (1.0 - body) * alive * 0.45, 0.0, 0.95));
+}`,
+    },
   };
 
   const IDS = Object.keys(FIELDS);
 
   // The 16 numbers the shader reads: the field's own 12 genome numbers, then the
   // four embedding numbers (density, sharpness, motion, organic) from its profile.
+  // A simulated field has no genome of its own - the simulation owns the numbers,
+  // so one seed drives both the state and how it is coloured.
   function genome(id, seed, rand) {
     const field = FIELDS[id];
     if (!field) return null;
-    const T = tools(seed, `field-${id}`, rand);
-    const g = field.genome(T);
-    const prof = field.profile;
+    if (field.sim) {
+      const sim = glSim && typeof glSim.genome === 'function' ? glSim.genome(field.sim, seed, rand) : null;
+      if (sim) return sim;
+    }
+    if (typeof field.genome !== 'function') return null;
+    const raw = field.genome(tools(seed, `field-${id}`, rand));
     const p = new Array(16).fill(0);
-    for (let i = 0; i < 12; i += 1) p[i] = g[i] == null ? 0 : g[i];
+    for (let i = 0; i < 12; i += 1) p[i] = raw[i] == null ? 0 : raw[i];
+    const prof = field.profile;
     p[12] = prof.dense;
     p[13] = prof.sharp;
     p[14] = prof.motion;
     p[15] = prof.organic;
     return p;
+  }
+
+  // The simulation a field is drawn from, or null when it is a closed form.
+  function simOf(id) {
+    const field = FIELDS[id];
+    return field && field.sim ? field.sim : null;
   }
 
   // Fragment source of one field (cached by the caller).
@@ -673,6 +809,9 @@ vec4 fieldColor(vec2 p, float t) {
     const color = (i) => colors[i % Math.max(1, colors.length)] || [0.8, 0.8, 0.9];
     const cam = field.camera || { scale: 1, dx: 0, dy: 0, rotate: 0 };
     const box = field.textBox;
+    // the simulation grid is stretched over the whole frame, so the half-extent
+    // in the centred space is the frame's own
+    const shortSide = Math.max(1, Math.min(frame.width, frame.height));
     return {
       u_res: [frame.width, frame.height],
       u_time: field.time || 0,
@@ -689,8 +828,9 @@ vec4 fieldColor(vec2 p, float t) {
       u_c4: color(4),
       u_textBox: box ? [box.x0, box.y0, box.x1, box.y1] : [0, 0, 0, 0],
       u_cam: [cam.scale == null ? 1 : cam.scale, cam.dx || 0, cam.dy || 0, cam.rotate || 0],
+      u_simHalf: [frame.width / shortSide * 0.5, frame.height / shortSide * 0.5],
     };
   }
 
-  return { IDS, FIELDS, HEAD, TAIL, genome, fragment, profile, uniformsOf };
+  return { IDS, FIELDS, HEAD, TAIL, genome, simOf, fragment, profile, uniformsOf };
 });

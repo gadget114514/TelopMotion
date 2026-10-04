@@ -54,104 +54,20 @@ const MOTIF_SEED_BASE = 1000;
 // push or a whip to be obvious
 const REFERENCE_MOTIF = 'burst';
 
-// The motif names, matching `figure.motif` in renderer/js/i18n.js. Kept as a
-// table here because a build script must not depend on the browser bundle (the
-// fourteen bold / variety motifs have no i18n entry yet and fall back to the id).
-const MOTIF_LABELS = {
-  orbit: '軌道',
-  burst: 'バースト',
-  bars: 'バー',
-  rings: 'リング',
-  confetti: '紙吹雪',
-  frame: '枠',
-  underlineSweep: '下線スイープ',
-  bracketsPop: 'ブラケット',
-  polyMorph: '多角形モーフ',
-  ribbon: 'リボン',
-  ticker: 'ティッカー',
-  halftone: 'ハーフトーン',
-  cracks: 'ひび割れ',
-  spikes: 'スパイク',
-  eyes: '目',
-  scratches: '引っかき傷',
-  drips: '垂れ',
-  lattice: '格子',
-  waves: '波',
-  comets: '流れ星',
-  slabWipe: 'スラブワイプ',
-  cornerBlocks: 'コーナーブロック',
-  ringDraw: 'リング描画',
-  stripeRun: 'ストライプ',
-  dotGrid: 'ドットグリッド',
-  sideBars: 'サイドバー',
-  proc: 'ジェネラティブ',
-  solarSystem: '太陽系',
-  nbody: 'N体',
-  pendulum: '振り子',
-  pendulumWave: '振り子ウェーブ',
-  newtonCradle: 'ニュートンのゆりかご',
-  chain: '波の連鎖',
-  gravityWell: '重力井戸',
-  polyhedra: '多面体',
-  attractor: 'アトラクター',
-  knot: '結び目',
-  starfield: '星空',
-  kdTree: 'k-d木',
-  voronoi: 'ボロノイ',
-  delaunay: 'ドロネー',
-  proximity: '近傍グラフ',
-  lsystem: 'Lシステム',
-  spaceFilling: '空間充填曲線',
-  circlePack: '円充填',
-  treemap: 'ツリーマップ',
-  colonization: '葉脈',
-  stringArt: '糸かけ',
-  domainWarp: 'ワープノイズ',
-  voronoiCells: 'セル',
-  contour: '等高線',
-  sdfKaleido: '万華鏡',
-  chladni: 'クラドニ図形',
-  quasicrystal: '準結晶',
-  fractal: 'フラクタル',
-  moire: 'モアレ',
-  hyperbolic: '双曲タイリング',
-  truchet: 'トゥルーシェ',
-  gyroid: 'ジャイロイド',
-  complexColor: '複素関数',
-  curl: '流線',
-  lissajousGlow: 'リサジュー光',
-  ripple: '波紋',
-  cellTiling: 'タイル図形',
-};
-
-// The words for the move / camera / procedural-motion names. Written out in full
-// so the label never degrades into a bare id when the fx value table has no
-// entry for it.
-const AXIS_LABELS = {
-  in: { pop: 'ポップ', draw: '描き出し', wipe: 'ワイプ', scatterIn: '散布イン' },
-  hold: { spin: '回転', pulse: '脈動', drift: '漂流', morph: '変形' },
-  out: { shrink: '縮小', fade: 'フェード', burstOut: '破裂アウト' },
-  sync: { beat: 'ビート', free: '自由', text: 'テキスト' },
-  camera: { none: '静止', push: '寄り', pull: '引き', pan: '横移動', roll: 'ロール', shake: '振動', whip: '鞭', orbit: '周回' },
-  procMotion: {
-    spin: '回転',
-    breathe: '呼吸',
-    wave: '波',
-    flow: '流れ',
-    orbit: '軌道',
-    still: '静止',
-    twinkle: 'きらめき',
-    tumble: '転がる',
-    travel: '移動',
-    cascade: '連鎖',
-    bounce: '跳ね返り',
-    shiver: '震え',
-    ellipse: '楕円',
-    sway: '揺れる',
-    ripple: '波紋',
-    fall: '落下',
-    zoom: 'ズーム',
-  },
+// The names live in `studio.figure.*` in renderer/js/i18n.js, so the labels stay
+// in step with the Studio instead of drifting into a second table here. A name
+// with no entry falls back to its own id, and `figure-showcase.test.js` fails if
+// that ever happens.
+const FIGURE_LANG = 'ja';
+const LABEL_NAMESPACE = {
+  motif: 'motif',
+  in: 'in',
+  hold: 'hold',
+  out: 'out',
+  sync: 'sync',
+  camera: 'camera',
+  // the procedural layer motions are namespaced `proc` in i18n
+  procMotion: 'proc',
 };
 
 const AXIS_TITLES = {
@@ -192,13 +108,37 @@ function round(value, digits) {
   return Math.round(value * factor) / factor;
 }
 
-function motifLabel(motif) {
-  return MOTIF_LABELS[motif] || motif;
+// The Studio's dictionary, loaded the way the renderer loads it (i18n.js hangs
+// its table off `window`). Falls back to an empty table when it cannot be read,
+// so the ids still come through.
+function dictionary(language) {
+  const code = language || FIGURE_LANG;
+  const globalScope = globalThis;
+  globalScope.window = globalScope.window || globalScope;
+  globalScope.SA = globalScope.SA || {};
+  const file = requirePart('renderer/js/i18n.js');
+  if (typeof file === 'function') return file(code);
+  if (globalScope.SA.i18n && typeof globalScope.SA.i18n.set === 'function') {
+    globalScope.SA.i18n.set(code);
+    return (key) => globalScope.SA.i18n.t(key);
+  }
+  return () => null;
 }
 
-function axisLabel(axis, value) {
-  const table = AXIS_LABELS[axis];
-  return (table && table[value]) || value;
+// `studio.figure.<namespace>.<value>`, or the value itself when the dictionary
+// has no entry for it.
+function nameOf(t, namespace, value) {
+  const key = `studio.figure.${namespace}.${value}`;
+  const label = t(key);
+  return typeof label === 'string' && label !== key && label.trim() ? label : value;
+}
+
+function motifLabel(t, motif) {
+  return nameOf(t, LABEL_NAMESPACE.motif, motif);
+}
+
+function axisLabel(t, axis, value) {
+  return nameOf(t, LABEL_NAMESPACE[axis], value);
 }
 
 // The base family is the fixed list in MOTIFS; the bold six, the procedural
@@ -350,7 +290,9 @@ function cueId(index) {
 // The walk itself, without any timing: one slot per cue, in playing order. The
 // numbers are the cue ids and the index rows, so they stay put when the build is
 // filtered down to a few sections.
-function plan() {
+function plan(options) {
+  const opts = options || {};
+  const t = opts.t || dictionary(opts.lang);
   const procSeeds = procMotionSeeds();
   const slots = [];
   let seed = MOTIF_SEED_BASE;
@@ -366,7 +308,10 @@ function plan() {
         sectionLabel: section.label,
         kind: section.kind,
         axis: section.axis || null,
-        label: section.kind === 'motif' ? motifLabel(value) : axisLabel(section.axis, value),
+        // the i18n namespace this name lives under, so the Studio can re-label
+        // the cue in whatever language is on screen
+        namespace: section.kind === 'motif' ? LABEL_NAMESPACE.motif : LABEL_NAMESPACE[section.axis],
+        label: section.kind === 'motif' ? motifLabel(t, value) : axisLabel(t, section.axis, value),
         value,
         seconds: section.seconds,
         cueId: cueId(index),
@@ -405,6 +350,7 @@ function materialize(slots) {
       sectionLabel: slot.sectionLabel,
       kind: slot.kind,
       axis: slot.axis,
+      namespace: slot.namespace,
       label: slot.label,
       value: slot.value,
       seconds: slot.seconds,
@@ -419,13 +365,16 @@ function materialize(slots) {
 }
 
 function buildEntries(options) {
-  return materialize(plan());
+  return materialize(plan(options));
 }
 
 function buildShowcase(options) {
   const opts = options || {};
   const wanted = opts.sections && opts.sections.length ? new Set(opts.sections) : null;
-  const entries = materialize(wanted ? plan().filter((slot) => wanted.has(slot.section)) : plan());
+  // one dictionary read for the whole walk
+  const planOptions = { t: opts.t || dictionary(opts.lang) };
+  const slots = plan(planOptions);
+  const entries = materialize(wanted ? slots.filter((slot) => wanted.has(slot.section)) : slots);
   if (!entries.length) throw new Error('no section matched; nothing to build');
 
   const cues = [];
@@ -443,6 +392,9 @@ function buildShowcase(options) {
       start: entry.start,
       end: entry.end,
       text: `${entry.index}. ${entry.label} / ${entry.value}`,
+      // the Studio re-labels the cue from these when it opens the project, so
+      // the walk reads in whatever language is on screen
+      meta: { kind: 'figure-showcase', index: entry.index, namespace: entry.namespace, value: entry.value },
     });
     clips.push({
       id: `clip_${entry.cueId}`,
@@ -692,25 +644,29 @@ function main(argv) {
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
 module.exports = {
-  AXIS_LABELS,
   AXIS_SECONDS,
   AXIS_TITLES,
   AXIS_VALUES,
   FIGURE_COLORS,
+  FIGURE_LANG,
   LABEL_COLOR,
+  LABEL_NAMESPACE,
   MD_PATH,
-  MOTIF_LABELS,
   MOTIF_SECONDS,
   OUT_PATH,
   PLATE,
   PROC_SEED,
   REFERENCE_MOTIF,
   axisLabel,
+  dictionary,
   motifLabel,
   motifFamilies,
+  nameOf,
   sections,
   procMotionSeeds,
   figureSpec,
+  plan,
+  materialize,
   buildEntries,
   buildShowcase,
   indexMarkdown,

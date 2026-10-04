@@ -300,7 +300,7 @@ npm run fx800 -- apply 642 --project <file> --cue 12 --out <file>   # reuse one 
 
 ### Figure showcase (motifs and motions)
 
-The `figure` track has its own review project. `scripts/figure-showcase.js` walks **all 64 motifs in `figures.MOTIFS`** — one three-second cue each, grouped into the five families they are grown from (`base` 20, `bold` 6, `proc`, `scene` 11 from `scene3d.js`, `geo` 10 from `figure-geo.js`, `field` 16 shader fields from `gl/fields.js`) — and then pins each **motion axis a clip can carry** onto one reference motif (`burst`), so two neighbouring cues differ only in the axis under review:
+The `figure` track has its own review project. `scripts/figure-showcase.js` walks **every motif in `figures.MOTIFS`**, one three-second cue each, grouped into the families they are grown from (`base`, `bold`, `proc`, `scene` from `scene3d.js`, `geo` from `figure-geo.js`, `field` — shader and simulation fields from `gl/fields.js`) — and then pins each **motion axis a clip can carry** onto one reference motif (`burst`), so two neighbouring cues differ only in the axis under review:
 
 | Axis | Values |
 |---|---|
@@ -309,7 +309,7 @@ The `figure` track has its own review project. `scripts/figure-showcase.js` walk
 | 2D `camera` | 8 moves, applied to the whole clip |
 | procedural motion | 17 layer-motion rules (the genome only grows from a seed, so every rule gets the first seed that draws it) |
 
-103 cues in total, about six minutes. Open it from **Help → Figure showcase** (no file hunting) or *File → Open project…*; the queue of every section is in [demo/figure-showcase.md](demo/figure-showcase.md).
+107 cues in total, about six minutes. Open it from **Help → Figure showcase** (no file hunting) or *File → Open project…*; the queue of every section is in [demo/figure-showcase.md](demo/figure-showcase.md). The cue names come from `studio.figure.*` in all five languages, so the walk is labelled in whatever language the Studio is in.
 
 ```bash
 npm run figure-showcase -- build                          # writes renderer/data/figure-showcase.json and the index
