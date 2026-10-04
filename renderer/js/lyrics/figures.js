@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -33,8 +33,9 @@
   // ornate (proc, cracks, eyes, drips ...) only appears on a weird or fearful run.
   const PLAIN_MOTIFS = ['bars', 'rings', 'underlineSweep', 'bracketsPop', 'ticker', 'slabWipe', 'cornerBlocks', 'stripeRun', 'sideBars', 'dotGrid', 'ringDraw'];
   const PLAIN_INS = ['pop', 'wipe'];
-  const PLAIN_HOLDS = ['pulse', 'drift'];
+  const PLAIN_HOLDS = ['drift', 'pulse'];
   const PLAIN_OUTS = ['shrink', 'fade'];
+  const TEMPO_STEPS = [8, 4, 2, 1, 0.5]; // beats per switch, slow → fast
   function isPlainRun(axes) {
     const a = axes || {};
     return !(weird.bg(a.weird) >= 0.6) && !(clamp01(a.fear) >= 0.5);
@@ -115,6 +116,20 @@
       edges = options.beats.filter((beat) => beat.end > start + 0.05 && beat.start < end - 0.05).map((beat) => Math.max(start + 0.05, beat.start));
     }
     edges = [...new Set(edges)].filter((cut) => cut > start + 0.05 && cut < end - 0.05).sort((a, b) => a - b);
+    if (options.tempoGrid) {
+      const beat = Math.max(0.05, num(options.beatSeconds, 0.5));
+      const speed = clamp01((options.axes || {}).speed);
+      const step = beat * TEMPO_STEPS[Math.min(TEMPO_STEPS.length - 1, Math.floor(speed * TEMPO_STEPS.length))];
+      if (!edges.length) {
+        for (let t = start + step; t < end - 0.05; t += step) edges.push(t);
+      } else {
+        edges.sort((a, b) => a - b);
+        const kept = [];
+        let last = start;
+        for (const e of edges) if (e - last >= step - 1e-6) { kept.push(e); last = e; }
+        edges = kept;
+      }
+    }
     const bounds = [start, ...edges, end];
     const beats = [];
     for (let i = 0; i < bounds.length - 1; i += 1) {
@@ -135,27 +150,52 @@
     return value && list.includes(value) ? value : null;
   }
 
-  function assignMoves(beats, random, force, s, axes, beatRandom) {
+  // Which pool a random choice reads from at randomness `rnd`: the full one
+  // (probability rnd), the plain one, or the single plain default (rnd 0).
+  function randomTier(u, rnd) {
+    if (u < rnd) return 'full';
+    if (u < rnd + (1 - rnd) * Math.min(1, rnd * 2)) return 'plain';
+    return 'base';
+  }
+
+  function assignMoves(beats, random, force, s, axes, beatRandom, rndLevel) {
     let previousIn = null;
     let previousOut = null;
-    const plain = isPlainRun(axes);
+    const rnd = rndLevel == null ? weird.raw(axes && axes.weird) : rndLevel;
+    const tierStream = beatRandom || random;
     for (const beat of beats) {
-      const ins = (plain ? PLAIN_INS : INS).filter((name) => name !== previousIn);
-      const outs = (plain ? PLAIN_OUTS : OUTS).filter((name) => name !== previousOut);
+      const ins = INS.filter((name) => name !== previousIn);
+      const outs = OUTS.filter((name) => name !== previousOut);
       // the random draws always run, forced or not, so the variant / accent
       // sequence stays stable when a move is pinned. The seventh axis demotes
       // the cheap moves and the eighth prefers the fear-heavy ones (a no-op at
       // 0, where the plain pick returns).
-      const inPick = fxAxes.pickWeighted(random, 'figureIn', ins.length ? ins : plain ? PLAIN_INS : INS, axes, { smartness: s });
-      const holdPick = fxAxes.pickWeighted(random, 'figureHold', plain ? PLAIN_HOLDS : HOLDS, axes, { smartness: s });
-      const outPick = fxAxes.pickWeighted(random, 'figureOut', outs.length ? outs : plain ? PLAIN_OUTS : OUTS, axes, { smartness: s });
-      const variant = Math.floor(random() * 3);
-      const accent = random() < 0.5;
+      const fullIn = fxAxes.pickWeighted(random, 'figureIn', ins.length ? ins : INS, axes, { smartness: s });
+      const fullHold = fxAxes.pickWeighted(random, 'figureHold', HOLDS, axes, { smartness: s });
+      const fullOut = fxAxes.pickWeighted(random, 'figureOut', outs.length ? outs : OUTS, axes, { smartness: s });
+      const plainIns = PLAIN_INS.filter((name) => name !== previousIn);
+      const plainOuts = PLAIN_OUTS.filter((name) => name !== previousOut);
+      const plainIn = fxAxes.pickWeighted(random, 'figureIn', plainIns.length ? plainIns : PLAIN_INS, axes, { smartness: s });
+      const plainHold = fxAxes.pickWeighted(random, 'figureHold', PLAIN_HOLDS, axes, { smartness: s });
+      const plainOut = fxAxes.pickWeighted(random, 'figureOut', plainOuts.length ? plainOuts : PLAIN_OUTS, axes, { smartness: s });
+      const choose = (full, plainPick, base) => {
+        const tier = randomTier(tierStream(), rnd);
+        return tier === 'full' ? full : tier === 'plain' ? plainPick : base;
+      };
+      const inPick = choose(fullIn, plainIn, PLAIN_INS[0]);
+      const holdPick = choose(fullHold, plainHold, PLAIN_HOLDS[0]);
+      const outPick = choose(fullOut, plainOut, PLAIN_OUTS[0]);
+      const drawnVariant = Math.floor(random() * 3);
+      const drawnAccent = random() < 0.5;
+      const variant = tierStream() < rnd ? drawnVariant : 0;
+      const accent = tierStream() < rnd ? drawnAccent : true;
       // the sub-beat's own scale (0.6..1.4) and palette rotation, drawn from
       // their own stream so the move sequence above stays exactly as before
       const stream = beatRandom || random;
-      const size = round(0.6 + stream() * 0.8, 2);
-      const tone = Math.floor(stream() * 8);
+      const drawnSize = 0.6 + stream() * 0.8;
+      const drawnTone = Math.floor(stream() * 8);
+      const size = round(1 + (drawnSize - 1) * rnd, 2);
+      const tone = stream() < rnd ? drawnTone : 0;
       beat.size = size;
       beat.tone = tone;
       beat.move = {
@@ -174,7 +214,7 @@
   // The deterministic figure a clip carries: motif, sub-beats and moves. The
   // in / hold / out moves can be pinned ('auto' draws them at random) and the
   // optional scale / x / y / color land in the params so they survive a save.
-  function generate(options) {
+  function generateOne(options) {
     const opts = options || {};
     const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
     const id = opts.id == null ? 'figure' : String(opts.id);
@@ -185,23 +225,62 @@
     const s = smartness.smartOf(axes);
     const requested = MOTIFS.includes(opts.motif) ? opts.motif : null;
     const plainRun = isPlainRun(axes);
+    // The randomness level is the raw weird axis (weird 1 draws every parameter
+    // from its full range, weird 0 draws none: the plain figure). Every random
+    // still runs, so the draws stay put; the level only decides which one is used.
+    const rnd = opts.rand != null && Number.isFinite(Number(opts.rand)) ? clamp01(opts.rand) : weird.raw(axes.weird);
+    const gates = rng.rngFor(seed, 'figure-gate', id);
     // the frame motif is the heavy one: below weird 0.8 it never draws
     const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8);
     // the motif pool answers the smartness and fear axes (a no-op at 0)
     let motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
+    if (!requested) {
+      const tier = randomTier(gates(), rnd);
+      if (tier === 'base') motif = PLAIN_MOTIFS[0];
+      else if (tier === 'plain' && !PLAIN_MOTIFS.includes(motif)) motif = PLAIN_MOTIFS[Math.floor(gates() * PLAIN_MOTIFS.length)];
+    }
     // the procedural motif draws from its own stream, so every other draw below
     // is unchanged; the fear axis hands the pick back to the scary fixed motifs
     const procRandom = rng.rngFor(seed, 'figure-proc', id);
     const procRoll = procRandom();
     const procSeed = Math.floor(procRandom() * 1e9);
     const fear = Number.isFinite(Number(axes.fear)) ? clamp01(axes.fear) : 0;
-    if (!requested && !plainRun && procRoll < PROC_CHANCE * (1 - fear)) motif = PROC;
-    const sync = SYNCS.includes(opts.sync) ? opts.sync : pick(random, ['beat', 'beat', 'text', 'free']);
+    let chosenSeed = procSeed;
+    if (!requested && !plainRun && procRoll < PROC_CHANCE * rnd * (1 - fear)) motif = PROC;
+    // a caller that remembers the recent compositions can ask for one that does
+    // not repeat them (the redraw keeps the same stream, so it stays deterministic)
+    if (motif === PROC && Array.isArray(opts.avoid) && opts.avoid.length && !Number.isFinite(Number(opts.procSeed))) {
+      for (let attempt = 0; attempt < 16; attempt += 1) {
+        const key = procKey(chosenSeed, rnd);
+        if (!opts.avoid.some((other) => procTooSimilar(other, key))) break;
+        chosenSeed = Math.floor(procRandom() * 1e9);
+      }
+    }
+    const drawnSync = pick(random, ['beat', 'beat', 'text', 'free']);
+    const sync = SYNCS.includes(opts.sync) ? opts.sync : gates() < rnd ? drawnSync : 'beat';
     const force = { in: opts.in, hold: opts.hold, out: opts.out };
-    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes, rng.rngFor(seed, 'figure-beat', id));
+    const beats = assignMoves(subBeats({ ...opts, sync }, random), random, force, s, axes, rng.rngFor(seed, 'figure-beat', id), rnd);
+    // a continuation of a previous figure carries its per-beat look (moves,
+    // variant, accent, scale, tone) round and round, so nothing about it is
+    // re-drawn; pinned moves still win
+    if (Array.isArray(opts.beatStyle) && opts.beatStyle.length) {
+      beats.forEach((beat, i) => {
+        const style = opts.beatStyle[i % opts.beatStyle.length];
+        const move = style.move || {};
+        beat.move = {
+          in: forcedMove(force, 'in', INS) || move.in || beat.move.in,
+          hold: forcedMove(force, 'hold', HOLDS) || move.hold || beat.move.hold,
+          out: forcedMove(force, 'out', OUTS) || move.out || beat.move.out,
+        };
+        if (style.variant != null) beat.variant = style.variant;
+        if (style.accent != null) beat.accent = style.accent;
+        if (style.size != null) beat.size = style.size;
+        if (style.tone != null) beat.tone = style.tone;
+      });
+    }
     const palette = Array.isArray(opts.palette) ? opts.palette : [];
     const colors = palette.length >= 3 ? palette.slice(3, 8) : palette.slice();
-    const density = Math.max(0.15, Math.min(1, num(opts.density, 0.4 + 0.5 * clamp01(axes.energy))));
+    const density = Math.max(0.15, Math.min(1, num(opts.density, 0.4 + 0.5 * clamp01(axes.density))));
     const params = {
       motif,
       sync,
@@ -217,7 +296,8 @@
         tone: beat.tone,
       })),
     };
-    if (motif === PROC) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : procSeed;
+    if (motif === PROC) params.rand = round(rnd, 2);
+    if (motif === PROC) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : chosenSeed;
     if (opts.scale != null && Number.isFinite(Number(opts.scale))) params.scale = Number(opts.scale);
     if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
     if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
@@ -267,6 +347,342 @@
     return Number.isFinite(value) && value > 0 ? Math.min(SHAPE_COUNT_MAX, Math.round(value)) : null;
   }
 
+
+  // ---------------------------------------------------------------------------
+  // the position of a figure in "direction space"
+  //
+  // A figure is placed in a ~35 dimensional space whose axes are what a viewer
+  // sees, not how the figure was drawn: how many shapes, how big, how spread,
+  // where the mass sits, round / boxy / linear / shard, filled or outlined,
+  // ornamented, how many colours (and which), how it moves, and how it comes in,
+  // holds and leaves. The shape axes are measured from the figure itself (three
+  // frames of its own drawList on a neutral canvas), so every motif, fixed or
+  // procedural, lands in the same space without a hand-kept table. The moves sit
+  // at hand-placed coordinates (aggressiveness, directness). The distance of two
+  // figures is the weighted RMS gap of the axes, 0 for the same figure.
+
+  const EMBED_FRAME = { width: 1920, height: 1080 };
+  const EMBED_COLORS = ['#e63946', '#f4a261', '#2a9d8f', '#264653', '#9b5de5'];
+  // [aggressiveness, directness]: how hard a move lands, and how straight / radial
+  const MOVE_COORDS = {
+    in: { pop: [0.2, 0.2], draw: [0.45, 0.85], wipe: [0.7, 0.9], scatterIn: [0.95, 0.15] },
+    hold: { drift: [0.15, 0.75], pulse: [0.4, 0.15], spin: [0.75, 0.5], morph: [0.9, 0.3] },
+    out: { fade: [0.05, 0.3], shrink: [0.3, 0.2], burstOut: [0.95, 0.1] },
+  };
+  const EMBED_WEIGHTS = {
+    count: 1, size: 1.1, sizeSd: 0.8, spreadX: 0.9, spreadY: 0.9, cx: 0.7, cy: 0.7, occupancy: 0.9, cover: 0.9,
+    round: 1.2, boxy: 1.2, linear: 1.2, shard: 1, filled: 0.9, tilt: 0.7, weight: 0.9, deco: 0.9, balance: 0.7,
+    colors: 0.7, hueX: 0.9, hueY: 0.9, sat: 0.6, val: 0.6, alpha: 0.6, move: 1.2,
+    inA: 0.8, inD: 0.6, holdA: 0.8, holdD: 0.6, outA: 0.7, outD: 0.5, sync: 0.3, density: 0.5,
+  };
+  const EMBED_KEYS = Object.keys(EMBED_WEIGHTS);
+
+  function embedHsv(hex) {
+    const m = /^#?([0-9a-f]{6})/i.exec(String(hex || ''));
+    if (!m) return { h: 0, s: 0, v: 0.5 };
+    const n = parseInt(m[1], 16);
+    const r = ((n >> 16) & 255) / 255;
+    const g = ((n >> 8) & 255) / 255;
+    const b = (n & 255) / 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const d = max - min;
+    let h = 0;
+    if (d) h = max === r ? ((g - b) / d + 6) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+    return { h: (h / 6) * TAU, s: max ? d / max : 0, v: max };
+  }
+
+  function embedBox(shape) {
+    if (Array.isArray(shape.points) && shape.points.length) {
+      const xs = shape.points.map((point) => point.x);
+      const ys = shape.points.map((point) => point.y);
+      return { x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys), angle: 0 };
+    }
+    if (shape.kind === 'rect') return { x0: shape.x, x1: shape.x + shape.w, y0: shape.y, y1: shape.y + shape.h, angle: shape.angle || 0 };
+    if (shape.kind === 'capsule') {
+      const half = (shape.width || 0) / 2;
+      return { x0: Math.min(shape.x0, shape.x1) - half, x1: Math.max(shape.x0, shape.x1) + half, y0: Math.min(shape.y0, shape.y1) - half, y1: Math.max(shape.y0, shape.y1) + half, angle: (Math.atan2(shape.y1 - shape.y0, shape.x1 - shape.x0) * 180) / Math.PI };
+    }
+    const r = shape.r != null ? shape.r : shape.radius || 0;
+    return { x0: shape.x - r, x1: shape.x + r, y0: shape.y - r, y1: shape.y + r, angle: shape.rotation || 0 };
+  }
+
+  function embedFrame(spec, time) {
+    const list = drawList(spec, {
+      time,
+      frame: EMBED_FRAME,
+      clip: { key: 'embed', start: 0, end: 12 },
+      seed: 1,
+      colors: EMBED_COLORS,
+      beats: [{ start: 0, end: 12 }],
+    });
+    const shapes = list.shapes || [];
+    const n = Math.max(1, shapes.length);
+    const frame = { count: shapes.length, round: 0, boxy: 0, linear: 0, shard: 0, filled: 0, deco: 0, weight: 0, alpha: 0, tilt: 0, cx: 0.5, cy: 0.5, spreadX: 0, spreadY: 0, cover: 0, size: 0, sizeSd: 0, balance: 1, hx: 0, hy: 0, sat: 0, val: 0, colors: 0, cells: 0 };
+    let mass = 0;
+    let mx = 0;
+    let my = 0;
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    const sizes = [];
+    const cells = new Set();
+    const colors = new Set();
+    let left = 0;
+    let right = 0;
+    for (const shape of shapes) {
+      const b = embedBox(shape);
+      const w = Math.max(0, b.x1 - b.x0);
+      const h = Math.max(0, b.y1 - b.y0);
+      const size = Math.sqrt(Math.max(1, w * h));
+      const cxs = (b.x0 + b.x1) / 2;
+      const cys = (b.y0 + b.y1) / 2;
+      sizes.push(Math.log(size));
+      mass += size;
+      mx += cxs * size;
+      my += cys * size;
+      minX = Math.min(minX, b.x0);
+      maxX = Math.max(maxX, b.x1);
+      minY = Math.min(minY, b.y0);
+      maxY = Math.max(maxY, b.y1);
+      frame.cover += w * h;
+      cells.add(`${Math.floor((cxs / EMBED_FRAME.width) * 8)}:${Math.floor((cys / EMBED_FRAME.height) * 6)}`);
+      if (cxs < EMBED_FRAME.width / 2) left += size;
+      else right += size;
+      if (shape.kind === 'circle' || shape.kind === 'ring' || (shape.kind === 'polygon' && (shape.sides || 6) >= 5)) frame.round += 1;
+      else if (shape.kind === 'rect' || (shape.kind === 'polygon' && (shape.sides || 6) < 5)) frame.boxy += 1;
+      else if (shape.kind === 'capsule') frame.linear += 1;
+      else frame.shard += 1;
+      const outlined = shape.kind === 'ring' || (shape.kind === 'polygon' && !shape.color) || (shape.kind === 'rect' && !shape.color);
+      if (!outlined) frame.filled += 1;
+      if (shape.pattern || shape.dash || shape.trim || (shape.stroke > 0 && shape.color)) frame.deco += 1;
+      frame.weight += Math.log(1 + (shape.kind === 'ring' ? shape.thickness || 2 : shape.kind === 'capsule' ? shape.width || 2 : shape.stroke || 0));
+      frame.alpha += shape.opacity == null ? 1 : shape.opacity;
+      frame.tilt += Math.abs(Math.cos((b.angle * Math.PI) / 90)) * (w > h * 1.5 || h > w * 1.5 ? 1 : 0.3);
+      const color = shape.color || shape.strokeColor || '#888888';
+      colors.add(color);
+      const hsv = embedHsv(color);
+      frame.hx += Math.cos(hsv.h);
+      frame.hy += Math.sin(hsv.h);
+      frame.sat += hsv.s;
+      frame.val += hsv.v;
+    }
+    if (shapes.length) {
+      frame.cx = mx / mass / EMBED_FRAME.width;
+      frame.cy = my / mass / EMBED_FRAME.height;
+      frame.spreadX = (maxX - minX) / EMBED_FRAME.width;
+      frame.spreadY = (maxY - minY) / EMBED_FRAME.height;
+      const mean = sizes.reduce((a, c) => a + c, 0) / n;
+      frame.size = mean;
+      frame.sizeSd = Math.sqrt(sizes.reduce((a, c) => a + (c - mean) * (c - mean), 0) / n);
+      frame.balance = 1 - Math.abs(left - right) / Math.max(1e-6, left + right);
+    }
+    frame.round /= n;
+    frame.boxy /= n;
+    frame.linear /= n;
+    frame.shard /= n;
+    frame.filled /= n;
+    frame.deco /= n;
+    frame.weight /= n;
+    frame.alpha /= n;
+    frame.tilt /= n;
+    frame.hx /= n;
+    frame.hy /= n;
+    frame.sat /= n;
+    frame.val /= n;
+    frame.colors = colors.size;
+    frame.cells = cells.size;
+    frame.cover = frame.cover / (EMBED_FRAME.width * EMBED_FRAME.height);
+    return frame;
+  }
+
+  // the figure's position: one number per axis, each scaled into 0..1
+  function embedFigure(spec) {
+    const params = (spec && spec.params) || {};
+    const beats = Array.isArray(params.beats) ? params.beats : [];
+    // the position is the figure's own identity (motif, seed, moves, tuning),
+    // not its beat timing: it is measured on one canonical 6 s beat with the
+    // clip's dominant moves and neutral colours, so the same figure drawn for
+    // two cues of different lengths sits at the same point
+    const inMove = dominantMove(beats, 'in') || 'pop';
+    const holdMove = dominantMove(beats, 'hold') || 'drift';
+    const outMove = dominantMove(beats, 'out') || 'fade';
+    const probe = {
+      type: 'figure',
+      params: Object.assign({}, params, {
+        enabled: true,
+        colors: null,
+        color: undefined,
+        opacity: undefined,
+        beats: [{ start: 0, end: 6, move: { in: inMove, hold: holdMove, out: outMove }, variant: 0, accent: true, size: 1, tone: 0 }],
+      }),
+    };
+    const times = [2, 3.2, 3.6];
+    let frames;
+    try {
+      frames = times.map((time) => embedFrame(probe, time));
+    } catch (error) {
+      frames = [embedFrame({ type: 'figure', params: { motif: 'orbit', beats: [] } }, 6)];
+    }
+    const main = frames.length >= 3 ? [frames[0], frames[1]] : frames;
+    const avg = (key) => main.reduce((sum, frame) => sum + frame[key], 0) / main.length;
+    const move = frames.length >= 3
+      ? Math.min(1, (Math.abs(frames[1].cx - frames[2].cx) * 12 + Math.abs(frames[1].cy - frames[2].cy) * 12 + Math.abs(frames[1].size - frames[2].size) * 0.8 + Math.abs(frames[1].count - frames[2].count) / 40 + Math.abs(frames[1].spreadX - frames[2].spreadX) * 3) / 1.6)
+      : 0;
+    const coord = (group, name) => MOVE_COORDS[group][name] || [0.3, 0.3];
+    const inAt = coord('in', inMove);
+    const holdAt = coord('hold', holdMove);
+    const outAt = coord('out', outMove);
+    const clamp = (v) => Math.max(0, Math.min(1, v));
+    const out = {
+      count: clamp(Math.log(1 + avg('count')) / Math.log(481)),
+      size: clamp((avg('size') - Math.log(4)) / (Math.log(500) - Math.log(4))),
+      sizeSd: clamp(avg('sizeSd') / 1.5),
+      spreadX: clamp(avg('spreadX')),
+      spreadY: clamp(avg('spreadY')),
+      cx: clamp(avg('cx')),
+      cy: clamp(avg('cy')),
+      occupancy: clamp(avg('cells') / 48),
+      cover: clamp(Math.log(1 + avg('cover') * 20) / Math.log(21)),
+      round: avg('round'),
+      boxy: avg('boxy'),
+      linear: avg('linear'),
+      shard: avg('shard'),
+      filled: avg('filled'),
+      tilt: clamp(avg('tilt')),
+      weight: clamp(avg('weight') / Math.log(30)),
+      deco: avg('deco'),
+      balance: clamp(avg('balance')),
+      colors: clamp(avg('colors') / 5),
+      hueX: clamp(0.5 + avg('hx') / 2),
+      hueY: clamp(0.5 + avg('hy') / 2),
+      sat: clamp(avg('sat')),
+      val: clamp(avg('val')),
+      alpha: clamp(avg('alpha')),
+      move,
+      inA: inAt[0],
+      inD: inAt[1],
+      holdA: holdAt[0],
+      holdD: holdAt[1],
+      outA: outAt[0],
+      outD: outAt[1],
+      sync: params.sync === 'free' ? 1 : params.sync === 'text' ? 0.5 : 0,
+      density: clamp(num(params.density, 0.5)),
+    };
+    return EMBED_KEYS.map((key) => out[key]);
+  }
+
+  // the gap between two positions: weighted RMS, 0 (the same figure) .. ~1
+  function figureDistance(a, b) {
+    const left = Array.isArray(a) ? a : embedFigure(a);
+    const right = Array.isArray(b) ? b : embedFigure(b);
+    let sum = 0;
+    let weights = 0;
+    for (let i = 0; i < EMBED_KEYS.length; i += 1) {
+      const w = EMBED_WEIGHTS[EMBED_KEYS[i]];
+      const gap = (left[i] || 0) - (right[i] || 0);
+      sum += w * gap * gap;
+      weights += w;
+    }
+    return Math.sqrt(sum / weights);
+  }
+
+  // the move a clip leans on most, so a clone of it can force the same moves
+  function dominantMove(beats, key) {
+    const counts = new Map();
+    for (const beat of beats || []) {
+      const name = beat.move && beat.move[key];
+      if (name) counts.set(name, (counts.get(name) || 0) + 1);
+    }
+    let best = null;
+    let bestCount = 0;
+    for (const [name, count] of counts) if (count > bestCount) { best = name; bestCount = count; }
+    return best;
+  }
+
+  const DISTANCE_CANDIDATES = 24;
+  const NEAR_CANDIDATES = 8;
+
+  // The figure for a cue that follows `previous`. The energy sets how far the
+  // new figure stands from the previous one in direction space: 0 keeps the
+  // previous figure itself (distance 0), 1 takes the farthest of the candidates,
+  // in between the candidate at that rank of the distance order. Without a
+  // previous figure or an energy this is the plain generate.
+  function generate(options) {
+    const opts = options || {};
+    const energy = opts.energy != null && opts.energy !== '' && Number.isFinite(Number(opts.energy)) ? clamp01(opts.energy) : null;
+    const previous = opts.previous && opts.previous.params ? opts.previous : null;
+    // an explicitly requested motif is the caller's choice: no distance pick
+    if (!previous || energy == null || MOTIFS.includes(opts.motif)) return generateOne(opts);
+    const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 1;
+    const before = embedFigure(previous);
+    const pp = previous.params;
+    const pool = [];
+    // candidate 0: the previous figure again (same motif, seed, moves, tuning)
+    const clone = generateOne({
+      ...opts,
+      motif: pp.motif,
+      procSeed: pp.seed,
+      rand: pp.rand,
+      sync: pp.sync,
+      density: pp.density,
+      beatStyle: pp.beats,
+      stroke: pp.stroke != null ? pp.stroke : opts.stroke,
+      count: pp.count != null ? pp.count : opts.count,
+      radius: pp.radius != null ? pp.radius : opts.radius,
+      aspect: pp.aspect != null ? pp.aspect : opts.aspect,
+      spinRate: pp.spinRate != null ? pp.spinRate : opts.spinRate,
+      shapes: pp.shapes != null ? pp.shapes : opts.shapes,
+    });
+    // energy 0: the previous figure exactly, no small differences either
+    if (energy <= 0) return clone;
+    pool.push({ spec: clone, gap: figureDistance(before, embedFigure(clone)) });
+    // near candidates: the same composition with a growing change of moves and
+    // tuning, so the distance order has steps between "the same" and "another"
+    const near = rng.rngFor(seed, 'figure-near', opts.id == null ? 'figure' : String(opts.id));
+    const cloneOpts = {
+      ...opts,
+      motif: pp.motif,
+      procSeed: pp.seed,
+      rand: pp.rand,
+      sync: pp.sync,
+      density: pp.density,
+      shapes: pp.shapes != null ? pp.shapes : opts.shapes,
+      beatStyle: pp.beats,
+    };
+    const others = (list, name) => {
+      const rest = list.filter((item) => item !== name);
+      return rest[Math.floor(near() * rest.length)];
+    };
+    const tunable = (value, fallback, strength, lo, hi) => Math.max(lo, Math.min(hi, num(value, fallback) * (1 + (near() * 2 - 1) * 0.7 * strength)));
+    const keepIn = dominantMove(pp.beats, 'in') || 'pop';
+    const keepHold = dominantMove(pp.beats, 'hold') || 'drift';
+    const keepOut = dominantMove(pp.beats, 'out') || 'fade';
+    for (let j = 1; j <= NEAR_CANDIDATES; j += 1) {
+      const strength = j / NEAR_CANDIDATES;
+      const spec = generateOne({
+        ...cloneOpts,
+        in: strength > 0.6 ? others(INS, keepIn) : undefined,
+        hold: strength > 0.3 ? others(HOLDS, keepHold) : undefined,
+        out: strength > 0.8 ? others(OUTS, keepOut) : undefined,
+        radius: tunable(pp.radius, 1, strength, 0.3, 1.2),
+        aspect: tunable(pp.aspect, 1, strength, 0.5, 2),
+        spinRate: tunable(pp.spinRate, 1, strength, 0, 2),
+        count: pp.count != null || strength > 0.5 ? Math.round(tunable(pp.count, 8, strength, 3, 24)) : undefined,
+        stroke: strength > 0.5 ? pick(near, ['thin', 'med', 'bold']) : pp.stroke != null ? pp.stroke : opts.stroke,
+      });
+      pool.push({ spec, gap: figureDistance(before, embedFigure(spec)) });
+    }
+    for (let k = 1; k < DISTANCE_CANDIDATES; k += 1) {
+      const spec = generateOne({ ...opts, seed: seed + k * 7717 });
+      pool.push({ spec, gap: figureDistance(before, embedFigure(spec)) });
+    }
+    pool.sort((x, y) => x.gap - y.gap);
+    const pickAt = Math.round(energy * (pool.length - 1));
+    return pool[pickAt].spec;
+  }
+
   function blank(params) {
     return {
       type: 'figure',
@@ -282,7 +698,7 @@
 
   // Sub-beat at `time` with its local progress and the move windows. The bold
   // motifs open with a longer in window (0.45 s cap) so the snap reads.
-  function beatAt(beats, time, motif) {
+  function beatAt(beats, time, motif, adsrRaw) {
     if (!Array.isArray(beats) || !beats.length) return null;
     const bold = BOLD_MOTIFS.includes(motif);
     for (let i = 0; i < beats.length; i += 1) {
@@ -294,7 +710,17 @@
         const fast = PLAIN_MOTIFS.includes(motif) ? Math.min(window, 0.18) : window;
         const inProgress = fast > 0 ? clamp01(local / fast) : 1;
         const outProgress = fast > 0 ? clamp01((beat.end - time) / fast) : 1;
-        return { beat, index: i, local, duration, inProgress, outProgress };
+        const info = { beat, index: i, local, duration, inProgress, outProgress };
+        if (adsrRaw && adsrApi) {
+          const a = adsrApi.def(adsrRaw, duration);
+          if (a) {
+            const inWin = a.attack != null ? a.attack : fast;
+            const outWin = a.release != null ? a.release : fast;
+            info.adsr = a;
+            info.adsrLevel = adsrApi.level(a, local, 0, inWin, duration - outWin, outWin, null, null);
+          }
+        }
+        return info;
       }
     }
     return null;
@@ -349,19 +775,60 @@
   // offset, jitter, tilt, opacity...). The sub-beat only reshuffles the
   // placement, so a clip keeps its family while its beats still differ.
 
-  const PROC_LAYOUTS = ['radial', 'grid', 'scatter', 'spiral', 'curve', 'cluster', 'brick', 'edge', 'bands', 'burst'];
-  const PROC_KINDS = ['circle', 'ring', 'rect', 'capsule', 'polygon', 'polyline', 'cross', 'shard', 'dash'];
+  const PROC_LAYOUTS = ['radial', 'grid', 'scatter', 'spiral', 'curve', 'cluster', 'brick', 'edge', 'bands', 'burst', 'sierpinski', 'flow', 'lattice', 'ripple', 'rose', 'spirograph', 'poisson', 'hex', 'harmonograph', 'superformula', 'galaxy', 'truchet'];
+  const PROC_KINDS = ['circle', 'ring', 'rect', 'capsule', 'polygon', 'polyline', 'cross', 'shard', 'dash', 'blob', 'chevron', 'asterisk', 'frame'];
+  const PROC_WARPS = ['none', 'sine', 'swirl', 'bulge', 'noise'];
+  const PROC_ROLES = ['field', 'hero', 'dust', 'accent'];
   const PROC_SIZE_RULES = ['flat', 'ramp', 'radial', 'invRadial', 'random', 'alternate'];
   const PROC_COLOR_RULES = ['index', 'random', 'radius', 'angle', 'single', 'band'];
-  const PROC_MOTIONS = ['spin', 'breathe', 'wave', 'flow', 'orbit', 'still', 'twinkle'];
-  const PROC_SYMMETRIES = ['none', 'none', 'mirrorX', 'mirrorY', 'mirror4', 'fold', 'fold'];
+  const PROC_MOTIONS = ['spin', 'breathe', 'wave', 'flow', 'orbit', 'still', 'twinkle', 'tumble', 'travel', 'cascade', 'bounce', 'shiver', 'ellipse', 'sway', 'ripple', 'fall', 'zoom'];
+  const PROC_SIZE_DISTS = ['lognormal', 'pareto', 'bimodal', 'steps', 'uniform'];
+  const PROC_ALIGNS = ['none', 'tangent', 'radial', 'perp', 'grid'];
+  const PROC_OUTLINES = ['same', 'alt', 'contrast', 'dark', 'light'];
+  const PROC_PATTERN_CODES = [1, 2, 3, 4, 5, 9, 10, 12];
+  const PROC_SYMMETRIES = ['none', 'mirrorX', 'mirrorY', 'mirror4', 'fold'];
 
   function logRange(random, lo, hi) {
     return Math.exp(rng.range(random, Math.log(lo), Math.log(hi)));
   }
 
-  function procGenome(seed) {
+  // The plain layer: what the motif draws at randomness 0 (weird 0). One ring of
+  // equal circles, no symmetry, no warp, no decoration, no per-element spread.
+  const PROC_PLAIN_LAYER = {
+    layout: 'radial', kinds: ['circle'], symmetry: 'none', folds: 2, sizeRule: 'flat', colorRule: 'index', motion: 'still', motions: ['still'],
+    count: 12, size: 0.03, stretch: 1, spreadX: 0.3, spreadY: 0.3, offsetX: 0, offsetY: 0, jitter: 0, tilt: 0, tiltRandom: 0, opacity: 0.85,
+    sides: 6, filled: true, weight: 0.005, speed: 0.5, phase: 0, rings: 1, aspect: 1, twist: 2.39996, freqA: 2, freqB: 2, amp: 0.5, blobs: 3,
+    slope: 0, colorShift: 0, warp: { type: 'none', amp: 0.3, freq: 2, phase: 0 }, tone: { hue: 0, sat: 1, val: 1, ramp: 0 },
+    sizeDist: 'lognormal', sizeSpread: 0, weightSpread: 0, alphaSpread: 0, hueSpread: 0, valSpread: 0,
+    decoOutline: 0, decoDash: 0, decoTrim: 0, decoPattern: 0, outlineMode: 'same', alignMode: 'none', margin: 0,
+    extraMotion: 'still', extraMotionOn: false, role: 'field',
+  };
+  const PROC_INT_KEYS = new Set(['count', 'folds', 'sides', 'rings', 'freqA', 'freqB', 'blobs', 'colorShift']);
+
+  // numbers slide from the plain value to the drawn one with `rand`; every other
+  // kind of value (a name, a flag, a list) is the drawn one with probability
+  // `rand` and the plain one otherwise. rand 1 is the full draw, rand 0 the plain layer.
+  function procBlend(full, plain, rand, gate) {
+    const out = {};
+    for (const key of Object.keys(plain)) {
+      const a = plain[key];
+      const b = full[key];
+      if (typeof a === 'number' && typeof b === 'number') {
+        const v = a + (b - a) * rand;
+        out[key] = PROC_INT_KEYS.has(key) ? Math.round(v) : v;
+      } else if (a && typeof a === 'object' && !Array.isArray(a)) out[key] = procBlend(b, a, rand, gate);
+      else {
+        const roll = gate();
+        out[key] = roll < rand ? b : a;
+      }
+    }
+    return out;
+  }
+
+  function procGenome(seed, rand) {
+    const level = rand == null ? 1 : clamp01(rand);
     const random = rng.rngFor(seed, 'proc-genome');
+    const gate = rng.rngFor(seed, 'proc-gate');
     const layerCount = 1 + (random() < 0.55 ? 1 : 0) + (random() < 0.2 ? 1 : 0);
     const layers = [];
     for (let l = 0; l < layerCount; l += 1) {
@@ -376,8 +843,8 @@
         sizeRule: pick(random, PROC_SIZE_RULES),
         colorRule: pick(random, PROC_COLOR_RULES),
         motion: pick(random, PROC_MOTIONS),
-        count: Math.round(logRange(random, 5, 90)),
-        size: logRange(random, 0.006, 0.075),
+        count: Math.round(logRange(random, 7, 90)),
+        size: logRange(random, 0.017, 0.085),
         stretch: logRange(random, 0.4, 5),
         spreadX: rng.range(random, 0.12, 0.5),
         spreadY: rng.range(random, 0.12, 0.5),
@@ -386,10 +853,10 @@
         jitter: random() < 0.4 ? 0 : rng.range(random, 0.02, 0.6),
         tilt: random() < 0.4 ? 0 : rng.range(random, 0, 360),
         tiltRandom: random() < 0.5 ? 0 : rng.range(random, 0, 180),
-        opacity: rng.range(random, 0.35, 0.95),
+        opacity: rng.range(random, 0.5, 0.97),
         sides: 3 + Math.floor(random() * 7),
         filled: random() < 0.5,
-        weight: logRange(random, 0.0015, 0.012),
+        weight: logRange(random, 0.0025, 0.013),
         speed: rng.range(random, 0.25, 1.6) * (random() < 0.5 ? -1 : 1),
         phase: random() * TAU,
         rings: 1 + Math.floor(random() * 4),
@@ -401,9 +868,54 @@
         blobs: 2 + Math.floor(random() * 4),
         slope: rng.range(random, -0.6, 0.6),
         colorShift: Math.floor(random() * 5),
+        warp: { type: pick(random, PROC_WARPS), amp: rng.range(random, 0.12, 0.55), freq: rng.range(random, 0.8, 3.2), phase: random() * TAU },
+        tone: {
+          hue: random() < 0.45 ? 0 : rng.range(random, 12, 75) * (random() < 0.5 ? -1 : 1),
+          sat: random() < 0.4 ? 1 : rng.range(random, 0.45, 1.1),
+          val: random() < 0.4 ? 1 : rng.range(random, 0.55, 1.15),
+          ramp: random() < 0.65 ? 0 : rng.range(random, 0.2, 0.45) * (random() < 0.5 ? -1 : 1),
+        },
+        // per-element spread: the rules above set a layer's tendency, these set
+        // how far each element strays from it (some layers stay even, some wild)
+        sizeDist: pick(random, PROC_SIZE_DISTS),
+        sizeSpread: random() < 0.3 ? rng.range(random, 0.03, 0.12) : rng.range(random, 0.25, 0.95),
+        weightSpread: random() < 0.3 ? rng.range(random, 0.03, 0.1) : rng.range(random, 0.2, 0.8),
+        alphaSpread: random() < 0.4 ? 0 : rng.range(random, 0.1, 0.45),
+        hueSpread: random() < 0.45 ? 0 : rng.range(random, 8, 55),
+        valSpread: random() < 0.4 ? 0 : rng.range(random, 0.1, 0.4),
+        decoOutline: random() < 0.45 ? 0 : rng.range(random, 0.15, 1),
+        decoDash: random() < 0.6 ? 0 : rng.range(random, 0.15, 0.8),
+        decoTrim: random() < 0.7 ? 0 : rng.range(random, 0.2, 0.7),
+        decoPattern: random() < 0.6 ? 0 : rng.range(random, 0.2, 0.9),
+        outlineMode: pick(random, PROC_OUTLINES),
+        alignMode: pick(random, PROC_ALIGNS),
+        margin: random() < 0.4 ? 0 : rng.range(random, 0.02, 0.12),
+        extraMotion: pick(random, PROC_MOTIONS),
+        extraMotionOn: random() < 0.5,
       });
+      // the composition role pushes a layer to an extreme (a few huge shapes, a
+      // fine dust, a handful of accents) so the layers do not all read as
+      // "medium shapes, medium count"
+      let layer = layers[layers.length - 1];
+      layer.motions = layer.extraMotionOn && layer.extraMotion !== layer.motion && layer.motion !== 'still' && layer.extraMotion !== 'still' ? [layer.motion, layer.extraMotion] : [layer.motion];
+      const role = pick(random, PROC_ROLES);
+      layer.role = role;
+      if (role === 'hero') {
+        layer.count = 1 + Math.floor(random() * 4);
+        layer.size *= logRange(random, 4, 9);
+        layer.opacity *= 0.75;
+        layer.weight *= 2;
+      } else if (role === 'dust') {
+        layer.count = Math.min(150, Math.round(layer.count * 2.2));
+        layer.size *= 0.62;
+      } else if (role === 'accent') {
+        layer.count = 4 + Math.floor(random() * 9);
+        layer.size *= 1.8;
+      }
+      layers[layers.length - 1] = procBlend(layer, PROC_PLAIN_LAYER, level, gate);
     }
-    return layers;
+    // an extra layer is kept with probability `rand`; the first always draws
+    return layers.filter((_, i) => i === 0 || gate() < level);
   }
 
   // The free area around the text box (the same centred band `textBox` returns
@@ -525,6 +1037,109 @@
     return x - Math.floor(x);
   }
 
+  // Beats after the first mutate a layer a little (another element, symmetry,
+  // warp, colour rule), so a clip holds its family while each beat still
+  // differs. Every draw runs, applied or not, so the stream stays fixed.
+  function procMutate(layer, li, seed, info, rand) {
+    if (!info || !(info.index > 0)) return layer;
+    const level = rand == null ? 1 : clamp01(rand);
+    if (level <= 0) return layer;
+    const random = rng.rngFor(seed, 'proc-mut', li, info.index);
+    const rolls = [random() / level, random() / level, random() / level, random() / level, random() / level, random() / level];
+    const motion = pick(random, PROC_MOTIONS);
+    const kind = pick(random, PROC_KINDS);
+    const symmetry = pick(random, PROC_SYMMETRIES);
+    const warp = pick(random, PROC_WARPS);
+    const colorRule = pick(random, PROC_COLOR_RULES);
+    const sizeRule = pick(random, PROC_SIZE_RULES);
+    const amp = rng.range(random, 0.5, 1.8);
+    const phase = random() * TAU;
+    const next = { ...layer, kinds: layer.kinds.slice(), warp: { ...layer.warp }, tone: layer.tone };
+    if (rolls[0] < 0.35) next.kinds[0] = kind;
+    if (rolls[1] < 0.3) next.symmetry = symmetry;
+    if (rolls[2] < 0.45) {
+      next.warp.amp = Math.min(0.7, layer.warp.amp * (1 + (amp - 1) * level));
+      next.warp.phase = phase;
+      if (rolls[2] < 0.15) next.warp.type = warp;
+    }
+    if (rolls[3] < 0.3) {
+      next.colorRule = colorRule;
+      next.colorShift = layer.colorShift + 1;
+    }
+    if (rolls[4] < 0.25) next.sizeRule = sizeRule;
+    if (rolls[5] < 0.25) {
+      next.motion = motion;
+      next.motions = [motion];
+    }
+    return next;
+  }
+
+  // a unit-space point bent by the layer's warp (static shape + a slow drift)
+  function procWarp(layer, x, y, local) {
+    const w = layer.warp;
+    if (!w || w.type === 'none') return { x, y };
+    const phase = w.phase + local * 0.25 * (layer.speed || 1);
+    if (w.type === 'sine') return { x: x + w.amp * Math.sin(w.freq * y * Math.PI + phase), y: y + w.amp * Math.sin(w.freq * x * Math.PI + phase * 1.3) };
+    if (w.type === 'noise') return { x: x + w.amp * 0.5 * (Math.sin(3.1 * y + phase) + 0.5 * Math.sin(7.3 * x + phase * 2)), y: y + w.amp * 0.5 * (Math.sin(2.7 * x + phase * 1.7) + 0.5 * Math.sin(6.1 * y + phase)) };
+    const r = Math.hypot(x, y);
+    if (r < 1e-6) return { x, y };
+    if (w.type === 'swirl') {
+      const a = w.amp * 3.2 * (1 - Math.min(1, r)) * Math.sin(phase * 0.5 + 1);
+      return { x: x * Math.cos(a) - y * Math.sin(a), y: x * Math.sin(a) + y * Math.cos(a) };
+    }
+    const k = Math.pow(Math.min(1.5, r), 1 + w.amp * 1.6) / r; // bulge
+    return { x: x * k, y: y * k };
+  }
+
+  let colorApi;
+  function colorLib() {
+    if (colorApi !== undefined) return colorApi;
+    colorApi = null;
+    try {
+      if (typeof require === 'function') colorApi = require('../color');
+    } catch (error) {
+      colorApi = null;
+    }
+    if (!colorApi && typeof self !== 'undefined' && self.SA && self.SA.color) colorApi = self.SA.color;
+    return colorApi;
+  }
+
+  // the palette colour bent by the layer's tone (hue turn, saturation, value and
+  // a ramp along the element order); a colour that cannot be parsed stays as is
+  function procTone(hex, layer, t, jitter) {
+    const tone = layer.tone;
+    const api = colorLib();
+    if (!tone || !api || typeof hex !== 'string' || hex.charAt(0) !== '#') return hex;
+    const dh = jitter ? jitter.h * layer.hueSpread : 0;
+    const dv = jitter ? 1 + jitter.v * layer.valSpread : 1;
+    if (!tone.hue && tone.sat === 1 && tone.val === 1 && !tone.ramp && !dh && dv === 1) return hex;
+    try {
+      const hsv = api.rgbToHsv(api.parse(hex));
+      const out = api.hsvToRgb({ h: hsv.h + tone.hue + dh, s: Math.min(1, hsv.s * tone.sat), v: Math.min(1, hsv.v * tone.val * dv * (1 + tone.ramp * (t - 0.5) * 2)), a: 1 });
+      return api.toHex(out);
+    } catch (error) {
+      return hex;
+    }
+  }
+
+  // what a person remembers of a composition: the first layers' layout, main
+  // element, motion and role. Two seeds sharing two of these read as one picture.
+  function procKey(seed, rand) {
+    const layers = procGenome(seed, rand);
+    const first = layers[0];
+    return { layout: first.layout, kind: first.kinds[0], motion: first.motion, role: first.role, second: layers[1] ? layers[1].layout : '' };
+  }
+
+  function procTooSimilar(a, b) {
+    if (!a || !b) return false;
+    let shared = 0;
+    if (a.layout === b.layout) shared += 1;
+    if (a.kind === b.kind) shared += 1;
+    if (a.motion === b.motion) shared += 1;
+    if (a.role === b.role) shared += 1;
+    return shared >= 2 || (a.layout === b.layout && a.second === b.second);
+  }
+
   function procCopies(layer) {
     if (layer.symmetry === 'mirrorX' || layer.symmetry === 'mirrorY') return 2;
     if (layer.symmetry === 'mirror4') return 4;
@@ -601,6 +1216,137 @@
         const a = (arm / arms) * TAU + layer.phase;
         for (let i = 0; i < per; i += 1) push(Math.cos(a) * ((i + 1) / per), Math.sin(a) * ((i + 1) / per), (arm * per + i) / (arms * per));
       }
+    } else if (layout === 'rose') {
+      // rose curve r = cos(k * theta): petals that depend on the rational k
+      const k = (layer.freqA + 1) / (1 + (layer.freqB % 3));
+      for (let i = 0; i < n; i += 1) {
+        const th = (i / n) * TAU * (1 + (layer.freqB % 3));
+        const rad = Math.cos(k * th);
+        push(Math.cos(th) * rad, Math.sin(th) * rad, i / n);
+      }
+    } else if (layout === 'spirograph') {
+      // hypotrochoid: a gear rolling inside a ring, the pen offset from its centre
+      const small = 0.16 + 0.1 * layer.freqA;
+      const pen = small * (0.5 + 0.25 * layer.freqB);
+      const big = 1;
+      const extent = big - small + pen;
+      for (let i = 0; i < n; i += 1) {
+        const th = (i / n) * TAU * (3 + layer.freqB);
+        push(((big - small) * Math.cos(th) + pen * Math.cos(((big - small) / small) * th)) / extent, ((big - small) * Math.sin(th) - pen * Math.sin(((big - small) / small) * th)) / extent, i / n);
+      }
+    } else if (layout === 'poisson') {
+      // dart throwing: an even blue-noise scatter, nothing touching
+      const gap = 1.5 / Math.sqrt(Math.max(4, n));
+      const accepted = [];
+      for (let attempt = 0; attempt < n * 14 && accepted.length < n; attempt += 1) {
+        const x = random() * 2 - 1;
+        const y = random() * 2 - 1;
+        if (accepted.every((q) => (q.x - x) * (q.x - x) + (q.y - y) * (q.y - y) > gap * gap)) accepted.push({ x, y });
+      }
+      accepted.forEach((q, i) => push(q.x, q.y, i / Math.max(1, accepted.length)));
+    } else if (layout === 'hex') {
+      const cols = Math.max(2, Math.round(Math.sqrt(n * layer.aspect * 1.15)));
+      const rows = Math.max(2, Math.ceil(n / cols));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) push(((col + (row % 2 ? 0.5 : 0)) / cols) * 2 - 1 + 1 / cols / 2, ((row / (rows - 1)) * 2 - 1) * 0.88, (row * cols + col) / (rows * cols));
+      }
+    } else if (layout === 'harmonograph') {
+      // two damped pendulums: a Lissajous that decays into itself
+      const a = 2 + layer.freqA + (layer.freqB % 3) * 0.01;
+      const b = 2 + layer.freqB + 0.013 * layer.freqA;
+      for (let i = 0; i < n; i += 1) {
+        const t = (i / n) * 28;
+        const decay = Math.exp(-0.045 * t);
+        push(Math.sin(a * t * 0.55 + layer.phase) * decay, Math.sin(b * t * 0.55) * decay, i / n);
+      }
+    } else if (layout === 'superformula') {
+      // Gielis superformula outline sampled as a ring of points
+      const m = 2 + layer.freqA * 2;
+      const n1 = 0.3 + layer.amp * 1.6;
+      const n2 = 0.5 + layer.freqB * 0.9;
+      const n3 = 0.5 + layer.freqA * 0.7;
+      const raw = [];
+      let max = 0;
+      for (let i = 0; i < n; i += 1) {
+        const th = (i / n) * TAU;
+        const r = Math.pow(Math.pow(Math.abs(Math.cos((m * th) / 4)), n2) + Math.pow(Math.abs(Math.sin((m * th) / 4)), n3), -1 / n1);
+        const rr = Number.isFinite(r) ? Math.min(r, 6) : 1;
+        raw.push({ th, r: rr });
+        max = Math.max(max, rr);
+      }
+      raw.forEach((q, i) => push((Math.cos(q.th) * q.r) / max, (Math.sin(q.th) * q.r) / max, i / n));
+    } else if (layout === 'galaxy') {
+      const arms = 2 + (layer.freqA % 4);
+      for (let i = 0; i < n; i += 1) {
+        const arm = i % arms;
+        const r = Math.pow((i + 1) / n, 0.7);
+        const a = (arm / arms) * TAU + r * layer.twist * 2 + rng.gauss(random) * 0.12;
+        push(Math.cos(a) * r, Math.sin(a) * r, i / n);
+      }
+    } else if (layout === 'truchet') {
+      // one diagonal per cell, the lean picked at random
+      const cols = Math.max(2, Math.round(Math.sqrt(n * layer.aspect)));
+      const rows = Math.max(2, Math.ceil(n / cols));
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          push((col / (cols - 1)) * 2 - 1, (row / (rows - 1)) * 2 - 1, (row * cols + col) / (rows * cols));
+          points[points.length - 1].fixed = random() < 0.5 ? 45 : 135;
+        }
+      }
+    } else if (layout === 'sierpinski') {
+      // chaos game on a triangle: the same point set as a fractal, never a grid
+      const corner = (k) => ({ x: Math.cos(layer.phase + (k * TAU) / 3), y: Math.sin(layer.phase + (k * TAU) / 3) });
+      const cs = [corner(0), corner(1), corner(2)];
+      let px = 0;
+      let py = 0;
+      for (let i = 0; i < n + 8; i += 1) {
+        const c = cs[Math.floor(random() * 3)];
+        px = (px + c.x) / 2;
+        py = (py + c.y) / 2;
+        if (i >= 8) push(px * 1.9, py * 1.9, (i - 8) / n);
+      }
+    } else if (layout === 'flow') {
+      // streamlines of a sine flow field
+      const lines = Math.max(2, Math.round(n / 9));
+      const per = Math.max(2, Math.round(n / lines));
+      for (let line = 0; line < lines; line += 1) {
+        let x = random() * 2 - 1;
+        let y = random() * 2 - 1;
+        for (let i = 0; i < per; i += 1) {
+          push(x, y, (line * per + i) / (lines * per));
+          const a = Math.sin(x * layer.freqA * 1.3 + layer.phase) * Math.cos(y * layer.freqB * 1.1) * Math.PI;
+          x = Math.max(-1.2, Math.min(1.2, x + Math.cos(a) * 0.16));
+          y = Math.max(-1.2, Math.min(1.2, y + Math.sin(a) * 0.16));
+        }
+      }
+    } else if (layout === 'lattice') {
+      // a skewed, turned grid
+      const cols = Math.max(2, Math.round(Math.sqrt(n * layer.aspect)));
+      const rows = Math.max(2, Math.ceil(n / cols));
+      const turn = layer.phase * 0.5;
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          const gx = (col / (cols - 1)) * 2 - 1 + layer.slope * ((row / (rows - 1)) * 2 - 1);
+          const gy = (row / (rows - 1)) * 2 - 1;
+          push((gx * Math.cos(turn) - gy * Math.sin(turn)) * 0.8, (gx * Math.sin(turn) + gy * Math.cos(turn)) * 0.8, (row * cols + col) / (rows * cols));
+        }
+      }
+    } else if (layout === 'ripple') {
+      // rings whose spacing and count grow outward
+      const rings = 3 + layer.rings;
+      const weights = Array.from({ length: rings }, (_, i) => i + 1);
+      const total = weights.reduce((a, b) => a + b, 0);
+      let index = 0;
+      for (let ring = 0; ring < rings; ring += 1) {
+        const per = Math.max(3, Math.round((n * weights[ring]) / total));
+        const offset = random() * TAU;
+        const rad = Math.pow((ring + 1) / rings, 1.6);
+        for (let i = 0; i < per; i += 1) {
+          const a = offset + (i / per) * TAU;
+          push(Math.cos(a) * rad, Math.sin(a) * rad, index / n);
+          index += 1;
+        }
+      }
     } else {
       // scatter: a disc on even freqA, a rectangle otherwise
       for (let i = 0; i < n; i += 1) {
@@ -612,6 +1358,26 @@
           push(random() * 2 - 1, random() * 2 - 1, i / n);
         }
       }
+    }
+    // alignment: elements can lean along the path, the radius or the grid
+    if (layer.alignMode && layer.alignMode !== 'none') {
+      for (let i = 0; i < points.length; i += 1) {
+        const pt = points[i];
+        if (pt.fixed != null) {
+          pt.al = pt.fixed;
+          continue;
+        }
+        if (layer.alignMode === 'radial') pt.al = (pt.a * 180) / Math.PI;
+        else if (layer.alignMode === 'perp') pt.al = (pt.a * 180) / Math.PI + 90;
+        else if (layer.alignMode === 'grid') pt.al = Math.floor(hash01(i, layer.phase) * 4) * 45;
+        else {
+          const before = points[Math.max(0, i - 1)];
+          const after = points[Math.min(points.length - 1, i + 1)];
+          pt.al = before === after ? 0 : (Math.atan2(after.y - before.y, after.x - before.x) * 180) / Math.PI;
+        }
+      }
+    } else {
+      for (const pt of points) if (pt.fixed != null) pt.al = pt.fixed;
     }
     return points;
   }
@@ -634,7 +1400,32 @@
   }
 
   // one element -> plain shapes (e: x, y, s(size px), angle(deg), color, opacity, weight(px))
+  // outline / dash / arc trim / stroke pattern on top of a pushed shape; the
+  // shape pass takes all of them on every kind except convex
+  function procDecorate(shape, deco) {
+    if (!deco || shape.kind === 'convex') return;
+    const stroked = shape.kind === 'ring' || shape.kind === 'capsule' || shape.stroke > 0;
+    const filled = (shape.kind === 'circle' || shape.kind === 'rect' || shape.kind === 'polygon') && shape.color;
+    if (deco.outline && filled) {
+      shape.stroke = deco.outline.width;
+      shape.strokeColor = deco.outline.color;
+    }
+    const hasStroke = stroked || (deco.outline && filled);
+    if (!hasStroke) return;
+    if (deco.pattern) {
+      shape.pattern = deco.pattern.code;
+      shape.patternParams = [deco.pattern.period, deco.pattern.ratio, 0];
+    } else if (deco.dash) shape.dash = deco.dash;
+    if (deco.trim && shape.kind !== 'capsule') shape.trim = deco.trim;
+  }
+
   function procPush(shapes, layer, kind, e) {
+    const before = shapes.length;
+    procPushShape(shapes, layer, kind, e);
+    if (e.deco) for (let i = before; i < shapes.length; i += 1) procDecorate(shapes[i], e.deco);
+  }
+
+  function procPushShape(shapes, layer, kind, e) {
     const { x, y, s, angle, color, opacity, weight } = e;
     const rad = (angle * Math.PI) / 180;
     if (kind === 'circle') shapes.push({ kind: 'circle', x, y, r: s, color, opacity });
@@ -655,6 +1446,31 @@
         const a = rad + (k * Math.PI) / 2;
         shapes.push({ kind: 'capsule', x0: x - Math.cos(a) * s, y0: y - Math.sin(a) * s, x1: x + Math.cos(a) * s, y1: y + Math.sin(a) * s, width: Math.max(1, weight), color, opacity });
       }
+    } else if (kind === 'blob') {
+      const points = [];
+      const seedSalt = e.salt || 0;
+      for (let k = 0; k < 8; k += 1) {
+        const a = rad + (k / 8) * TAU;
+        const reach = s * (0.72 + 0.4 * hash01(seedSalt + k, layer.phase));
+        points.push({ x: x + Math.cos(a) * reach, y: y + Math.sin(a) * reach });
+      }
+      shapes.push({ kind: 'convex', points, color, opacity });
+    } else if (kind === 'chevron') {
+      const spread = ((25 + layer.sides * 6) * Math.PI) / 180;
+      for (const sign of [-1, 1]) {
+        const a = rad + Math.PI + sign * spread;
+        shapes.push({ kind: 'capsule', x0: x, y0: y, x1: x + Math.cos(a) * s * 1.3, y1: y + Math.sin(a) * s * 1.3, width: Math.max(1, weight * 1.3), color, opacity });
+      }
+    } else if (kind === 'asterisk') {
+      const lines = 2 + (layer.sides % 3);
+      for (let k = 0; k < lines; k += 1) {
+        const a = rad + (k * Math.PI) / lines;
+        shapes.push({ kind: 'capsule', x0: x - Math.cos(a) * s, y0: y - Math.sin(a) * s, x1: x + Math.cos(a) * s, y1: y + Math.sin(a) * s, width: Math.max(1, weight * 0.9), color, opacity });
+      }
+    } else if (kind === 'frame') {
+      const w = s * 2 * Math.min(2.5, layer.stretch);
+      const h = s * 2;
+      shapes.push({ kind: 'rect', x: x - w / 2, y: y - h / 2, w, h, radius: Math.min(w, h) * 0.08, angle, color: null, stroke: Math.max(1, weight * 1.2), strokeColor: color, opacity });
     } else if (kind === 'shard') {
       const corners = 3 + (layer.sides % 2);
       const points = [];
@@ -667,21 +1483,37 @@
     }
   }
 
+  function procSizeFactor(layer, u, g) {
+    const k = layer.sizeSpread;
+    let f;
+    if (layer.sizeDist === 'pareto') f = Math.pow(1 - Math.min(0.97, u), -k * 0.8);
+    else if (layer.sizeDist === 'bimodal') f = u < 0.7 ? 1 - 0.5 * k : 1 + 1.8 * k;
+    else if (layer.sizeDist === 'steps') f = Math.pow([0.5, 1, 2][Math.min(2, Math.floor(u * 3))], k * 1.5);
+    else if (layer.sizeDist === 'uniform') f = 1 + (u * 2 - 1) * k * 0.9;
+    else f = Math.exp(g * k);
+    return Math.max(0.3, Math.min(7, f));
+  }
+
   function procShapes(params, ctx, info, state, tuning, density) {
     const { box, opacity } = state;
     const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
-    const layers = procGenome(seed);
+    const rand = params.rand == null ? 1 : clamp01(params.rand);
+    const layers = procGenome(seed, rand);
     const tb = textBox(ctx, box);
     const bands = procBands(tb, box);
     const local = info.local;
     const shapes = [];
+    const api = colorLib();
     // a drawn element count spreads over the layers in proportion to their own
     // counts (symmetric copies included); a hand-set `count` still wins
     const limit = tuning.count == null ? shapeLimitOf(params) : null;
     const wanted = layers.reduce((sum, layer) => sum + layer.count * procCopies(layer), 0);
     const share = limit == null ? null : limit / Math.max(1, wanted);
-    layers.forEach((layer, li) => {
+    layers.forEach((baseLayer, li) => {
       if (shapes.length >= PROC_TOTAL_BUDGET) return;
+      const layer = procMutate(baseLayer, li, seed, info, rand);
+      const motions = layer.motions || [layer.motion];
+      const has = (name) => motions.indexOf(name) >= 0;
       const random = rng.rngFor(seed, 'proc-place', li, info.index, state.variant);
       const copies = procCopies(layer);
       // the first layer always draws; a later one only while the count has room
@@ -699,15 +1531,17 @@
         const stride = Math.ceil(points.length / cap);
         points = points.filter((_, i) => i % stride === 0);
       }
-      const spanX = box.width * layer.spreadX * state.scale;
-      const spanY = box.height * layer.spreadY * state.scale;
+      const zoom = has('zoom') ? 0.78 + 0.22 * Math.sin(local * layer.speed * 0.8 + layer.phase) : 1;
+      const spanX = box.width * layer.spreadX * state.scale * zoom;
+      const spanY = box.height * layer.spreadY * state.scale * zoom;
       const cx = box.cx + box.width * layer.offsetX;
       const cy = box.cy + box.height * layer.offsetY;
-      const turn = (state.rotation * Math.PI) / 180 + (layer.motion === 'spin' ? local * layer.speed * 0.8 : 0);
+      const turn = (state.rotation * Math.PI) / 180 + (has('spin') ? local * layer.speed * 0.8 : 0) + (has('sway') ? Math.sin(local * layer.speed * 0.9 + layer.phase) * 0.4 : 0);
       const cosT = Math.cos(turn);
       const sinT = Math.sin(turn);
       const sizeBase = box.short * layer.size * state.scale;
-      const weight = box.short * layer.weight;
+      const weightBase = box.short * layer.weight;
+      const margin = layer.margin * box.short;
       let counter = 0;
       for (const base of points) {
         // every random value of the element is drawn here, before any element
@@ -715,22 +1549,54 @@
         const jx = layer.jitter ? (random() * 2 - 1) * layer.jitter * 0.25 : 0;
         const jy = layer.jitter ? (random() * 2 - 1) * layer.jitter * 0.25 : 0;
         const tiltNoise = layer.tiltRandom ? (random() * 2 - 1) * layer.tiltRandom : 0;
-        const sizeNoise = Math.exp(rng.gauss(random) * 0.45);
         const kind = layer.kinds[Math.floor(random() * layer.kinds.length)];
         const colorRoll = random();
+        const sizeU = random();
+        const sizeG = rng.gauss(random);
+        const weightG = rng.gauss(random);
+        const alphaJ = random() * 2 - 1;
+        const hueJ = random() * 2 - 1;
+        const valJ = random() * 2 - 1;
+        const decoRolls = [random(), random(), random(), random(), random(), random(), random(), random()];
         for (const point of procMirror(layer, { ...base, x: base.x + jx, y: base.y + jy })) {
           const index = counter;
           counter += 1;
-          let ux = point.x;
-          let uy = point.y;
+          const warped = procWarp(layer, point.x, point.y, local);
+          let ux = warped.x;
+          let uy = warped.y;
           const phase = index * 0.7 + layer.phase;
-          if (layer.motion === 'wave') uy += Math.sin(local * layer.speed * 2.2 + ux * 3 + layer.phase) * 0.12;
-          else if (layer.motion === 'flow') ux = ((((ux + 1) / 2 + local * layer.speed * 0.12) % 1) + 1) % 1 * 2 - 1;
-          else if (layer.motion === 'orbit') {
-            const a = local * layer.speed * (0.4 + base.r * 0.6);
-            const ox = ux * Math.cos(a) - uy * Math.sin(a);
-            uy = ux * Math.sin(a) + uy * Math.cos(a);
-            ux = ox;
+          let spinExtra = 0;
+          let sizeMul = 1;
+          let alphaMul = 1;
+          for (const motion of motions) {
+            if (motion === 'wave') uy += Math.sin(local * layer.speed * 2.2 + ux * 3 + layer.phase) * 0.12;
+            else if (motion === 'flow') ux = ((((ux + 1) / 2 + local * layer.speed * 0.12) % 1) + 1) % 1 * 2 - 1;
+            else if (motion === 'fall') uy = ((((uy + 1) / 2 + local * layer.speed * 0.1) % 1) + 1) % 1 * 2 - 1;
+            else if (motion === 'orbit') {
+              const a = local * layer.speed * (0.4 + base.r * 0.6);
+              const ox = ux * Math.cos(a) - uy * Math.sin(a);
+              uy = ux * Math.sin(a) + uy * Math.cos(a);
+              ux = ox;
+            } else if (motion === 'ellipse') {
+              const a = local * layer.speed * 0.9 + phase;
+              ux += Math.cos(a) * 0.1;
+              uy += Math.sin(a) * 0.05;
+            } else if (motion === 'bounce') uy -= Math.abs(Math.sin(local * layer.speed * 2.4 + phase)) * 0.18;
+            else if (motion === 'shiver') {
+              const tick = Math.floor(local * 14);
+              ux += (hash01(tick + index * 3, 7) - 0.5) * 0.04;
+              uy += (hash01(tick + index * 3, 11) - 0.5) * 0.04;
+            } else if (motion === 'ripple') {
+              const k = 1 + 0.09 * Math.sin(Math.hypot(ux, uy) * 6 - local * layer.speed * 3);
+              ux *= k;
+              uy *= k;
+            } else if (motion === 'tumble') spinExtra += local * layer.speed * 120 * (0.4 + hash01(index, layer.phase));
+            else if (motion === 'travel') sizeMul *= 0.45 + 0.55 * (0.5 + 0.5 * Math.sin(TAU * (base.t * (1 + (layer.freqA % 3)) - local * layer.speed * 0.4)));
+            else if (motion === 'cascade') {
+              const sweep = Math.abs((((local * 0.18 * Math.abs(layer.speed)) % 2) + 2) % 2 - 1);
+              sizeMul *= Math.max(0, Math.min(1, (sweep * 1.6 - base.t) * 4));
+            } else if (motion === 'breathe') sizeMul *= 0.65 + 0.35 * Math.sin(local * layer.speed * 2 + phase);
+            else if (motion === 'twinkle') alphaMul *= 0.3 + 0.7 * Math.abs(Math.sin(local * layer.speed * 1.5 + phase));
           }
           let x = cx + (ux * cosT - uy * sinT) * spanX;
           let y = cy + (ux * sinT + uy * cosT) * spanY + state.drift;
@@ -738,39 +1604,61 @@
           if (layer.sizeRule === 'ramp') s = sizeBase * (0.3 + 1.4 * base.t);
           else if (layer.sizeRule === 'radial') s = sizeBase * (1.5 - Math.min(1.2, base.r));
           else if (layer.sizeRule === 'invRadial') s = sizeBase * (0.3 + Math.min(1.2, base.r));
-          else if (layer.sizeRule === 'random') s = sizeBase * sizeNoise;
           else if (layer.sizeRule === 'alternate') s = sizeBase * (index % 2 ? 0.45 : 1.3);
           else s = sizeBase;
-          let alpha = layer.opacity;
-          if (layer.motion === 'breathe') s *= 0.65 + 0.35 * Math.sin(local * layer.speed * 2 + phase);
-          else if (layer.motion === 'twinkle') alpha *= 0.3 + 0.7 * Math.abs(Math.sin(local * layer.speed * 1.5 + phase));
+          s = Math.min(box.short * 0.45, s * procSizeFactor(layer, sizeU, sizeG) * sizeMul);
+          const weight = Math.max(1, weightBase * Math.exp(weightG * layer.weightSpread));
+          const alpha = Math.max(0.3, Math.min(1, layer.opacity * (1 + alphaJ * layer.alphaSpread))) * Math.max(0.4, alphaMul);
           // the beat never draws empty: the first element is kept even if the
           // placement would skip it, so a clip cannot vanish between two frames
           const first = shapes.length === 0;
           if (first) s = Math.max(s, 1.2);
           else if (s < 0.8) continue;
-          // keep the lyrics clear: an element whose own box touches the text box
-          // moves into a free band around it (shrunk to fit) instead of being
-          // dropped, so the clearance gate keeps this composition rather than
-          // the motif
-          const tilt = layer.tilt + tiltNoise + (point.turn ? (point.turn * 180) / Math.PI : 0) + (point.flip ? 180 : 0);
-          const spin = layer.motion === 'spin' ? local * layer.speed * 40 : 0;
+          const align = point.al != null ? point.al + (point.turn ? (point.turn * 180) / Math.PI : 0) : 0;
+          const tilt = (point.al != null ? align : layer.tilt) + (point.al != null ? layer.tilt * 0.15 : 0) + tiltNoise * (point.al != null ? 0.25 : 1) + (point.turn && point.al == null ? (point.turn * 180) / Math.PI : 0) + (point.flip ? 180 : 0);
+          const spin = (has('spin') ? local * layer.speed * 40 : 0) + spinExtra;
           let half = procHalf(kind, layer, s, tilt + spin, weight);
+          // the frame margin keeps the element's centre inside an inset of the frame
+          if (margin > 0) {
+            x = clampRange(x, margin + half.x, box.width - margin - half.x);
+            y = clampRange(y, margin + half.y, box.height - margin - half.y);
+          }
+          // keep the lyrics clear: an element whose own box touches the text box
+          // moves out of it along its shortest exit (shrunk into a free band when
+          // no exit is left) instead of being dropped, so the clearance gate
+          // keeps this composition rather than the motif
           if (x + half.x > tb.x0 && x - half.x < tb.x1 && y + half.y > tb.y0 && y - half.y < tb.y1) {
-            let band = null;
-            let fit = 0;
-            for (const candidate of bands) {
-              const scale = Math.min(1, (candidate.w - 8) / (2 * half.x), (candidate.h - 8) / (2 * half.y));
-              if (scale > fit) {
-                fit = scale;
-                band = candidate;
+            // push the element out of the text box along its shortest exit (plus
+            // a hashed extra run), so the composition keeps its shape as a halo
+            // around the lyrics instead of collapsing into one band
+            const gap = Math.max(8, box.short * 0.03);
+            const extra = hash01(index + li * 131, layer.phase) * box.short * 0.1;
+            const exits = [
+              { axis: 'x', to: tb.x0 - gap - half.x - extra },
+              { axis: 'x', to: tb.x1 + gap + half.x + extra },
+              { axis: 'y', to: tb.y0 - gap - half.y - extra },
+              { axis: 'y', to: tb.y1 + gap + half.y + extra },
+            ].filter((exit) => (exit.axis === 'x' ? exit.to >= half.x + 2 && exit.to <= box.width - half.x - 2 : exit.to >= half.y + 2 && exit.to <= box.height - half.y - 2));
+            exits.sort((a, b) => Math.abs(a.to - (a.axis === 'x' ? x : y)) - Math.abs(b.to - (b.axis === 'x' ? x : y)));
+            if (exits.length) {
+              if (exits[0].axis === 'x') x = exits[0].to;
+              else y = exits[0].to;
+            } else {
+              let band = null;
+              let fit = 0;
+              for (const candidate of bands) {
+                const scale = Math.min(1, (candidate.w - 8) / (2 * half.x), (candidate.h - 8) / (2 * half.y));
+                if (scale > fit) {
+                  fit = scale;
+                  band = candidate;
+                }
               }
+              if (!band || fit < 0.15) continue; // nothing sane fits: drop the element
+              s *= fit;
+              half = { x: half.x * fit, y: half.y * fit };
+              x = clampRange(x, band.x + half.x + 4, band.x + band.w - half.x - 4);
+              y = clampRange(y, band.y + half.y + 4, band.y + band.h - half.y - 4);
             }
-            if (!band || fit < 0.15) continue; // nothing sane fits: drop the element
-            s *= fit;
-            half = { x: half.x * fit, y: half.y * fit };
-            x = clampRange(x, band.x + half.x + 4, band.x + band.w - half.x - 4);
-            y = clampRange(y, band.y + half.y + 4, band.y + band.h - half.y - 4);
           }
           let colorIndex;
           if (layer.colorRule === 'random') colorIndex = Math.floor(colorRoll * 8);
@@ -779,8 +1667,28 @@
           else if (layer.colorRule === 'single') colorIndex = layer.colorShift;
           else if (layer.colorRule === 'band') colorIndex = Math.floor(base.t * 4) + layer.colorShift;
           else colorIndex = index + layer.colorShift;
-          const angle = tilt + spin;
-          procPush(shapes, layer, kind, { x, y, s, angle, color: colorOf(params, ctx, colorIndex + li), opacity: opacity * alpha, weight });
+          const color = procTone(colorOf(params, ctx, colorIndex + li), layer, base.t, { h: hueJ, v: valJ });
+          // decoration: each element rolls its own outline / dash / pattern / arc
+          const deco = {};
+          if (decoRolls[0] < layer.decoOutline) {
+            let outlineColor = color;
+            if (layer.outlineMode === 'alt') outlineColor = procTone(colorOf(params, ctx, colorIndex + li + 2), layer, 1 - base.t);
+            else if (layer.outlineMode === 'dark') outlineColor = '#0b0d14';
+            else if (layer.outlineMode === 'light') outlineColor = '#f4f6ff';
+            else if (layer.outlineMode === 'contrast' && api && typeof color === 'string' && color.charAt(0) === '#') {
+              try {
+                const hsv = api.rgbToHsv(api.parse(color));
+                outlineColor = api.toHex(api.hsvToRgb({ h: hsv.h + 180, s: hsv.s, v: hsv.v > 0.55 ? hsv.v * 0.5 : Math.min(1, hsv.v + 0.5), a: 1 }));
+              } catch (error) {
+                outlineColor = color;
+              }
+            }
+            deco.outline = { width: Math.max(1, weight * (0.5 + decoRolls[5] * 1.8)), color: outlineColor };
+          }
+          if (decoRolls[1] < layer.decoPattern) deco.pattern = { code: PROC_PATTERN_CODES[Math.floor(decoRolls[6] * PROC_PATTERN_CODES.length)], period: Math.max(3, weight * (2 + decoRolls[7] * 6)), ratio: 0.3 + decoRolls[5] * 0.4 };
+          else if (decoRolls[2] < layer.decoDash) deco.dash = [0.03 + decoRolls[6] * 0.14, 0.03 + decoRolls[7] * 0.12, 0];
+          if (decoRolls[3] < layer.decoTrim) deco.trim = [0, 0.3 + decoRolls[4] * 0.6, decoRolls[7]];
+          procPush(shapes, layer, kind, { x, y, s, angle: tilt + spin, color, opacity: opacity * alpha, weight, salt: index + li * 977, deco: deco.outline || deco.dash || deco.pattern || deco.trim ? deco : null });
         }
       }
     });
@@ -1389,10 +2297,18 @@
     const tuning = tuningOf(params);
     const variant = num(beat.variant, 0);
     const spinHold = beat.move.hold === 'spin';
-    const rotation = spinHold ? info.local * 40 * (variant % 2 ? -1 : 1) * tuning.spinRate : variant * 5 * tuning.spinRate;
-    const pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
-    const drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
-    const scale = (0.2 + 0.8 * progress) * pulse;
+    let rotation = spinHold ? info.local * 40 * (variant % 2 ? -1 : 1) * tuning.spinRate : variant * 5 * tuning.spinRate;
+    let pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
+    let drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
+    if (info.adsrLevel != null) {
+      if (spinHold) rotation *= info.adsrLevel;
+      if (beat.move.hold === 'pulse') pulse = 1 + 0.08 * Math.sin(TAU * info.local * 2) * info.adsrLevel;
+      if (beat.move.hold === 'drift') drift *= info.adsrLevel;
+    }
+    let scale = (0.2 + 0.8 * progress) * pulse;
+    if (info.adsr && info.adsrLevel != null && info.adsrLevel > 0) {
+      scale *= 1 + info.adsr.punch * Math.max(0, info.adsrLevel - info.adsr.sustain);
+    }
     // the sub-beat's palette rotation: the same motif cycles its colours across
     // the beats instead of repeating one assignment (a legacy beat without a
     // tone keeps its historic colours)
@@ -1611,7 +2527,7 @@
       // effect without regenerating: override on a shallow copy, never in place
       beats = beats.map((beat) => ({ ...beat, move: { ...(beat.move || {}), ...force } }));
     }
-    const info = beatAt(beats, time, params.motif);
+    const info = beatAt(beats, time, params.motif, ctx && ctx.adsr);
     if (!info) return { shapes: [], texts: [] };
     const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
     const place = placementOf(params, ctx || {});
@@ -1619,5 +2535,5 @@
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, PROC, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, PROC, procKey, procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

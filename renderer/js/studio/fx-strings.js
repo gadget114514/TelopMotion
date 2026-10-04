@@ -1383,6 +1383,22 @@
     values: { pressure: 'Давление', muscle: 'Мышечная волна', tremor: 'Дрожь', shapeTarget: 'Целевая форма', ground: 'Земля', gradient: 'Градиент' },
   };
 
+  const ADD_DISSOLVE_EN = {
+    types: { enter: { dissolve: 'Dissolve' }, hold: { dissolve: 'Dissolve' } },
+  };
+  const ADD_DISSOLVE_JA = {
+    types: { enter: { dissolve: 'ディゾルブ' }, hold: { dissolve: 'ディゾルブ' } },
+  };
+  const ADD_DISSOLVE_ES = {
+    types: { enter: { dissolve: 'Disolución' }, hold: { dissolve: 'Disolución' } },
+  };
+  const ADD_DISSOLVE_FR = {
+    types: { enter: { dissolve: 'Dissolution' }, hold: { dissolve: 'Dissolution' } },
+  };
+  const ADD_DISSOLVE_RU = {
+    types: { enter: { dissolve: 'Растворение' }, hold: { dissolve: 'Растворение' } },
+  };
+
   function applyFxAdditions(target, additions) {    for (const [group, table] of Object.entries(additions.types || {})) {
       target[group] = { ...(target[group] || {}), ...table };
     }
@@ -1420,6 +1436,11 @@
   applyFxAdditions(es, ADD_SOFT_ES);
   applyFxAdditions(fr, ADD_SOFT_FR);
   applyFxAdditions(ru, ADD_SOFT_RU);
+  applyFxAdditions(en, ADD_DISSOLVE_EN);
+  applyFxAdditions(ja, ADD_DISSOLVE_JA);
+  applyFxAdditions(es, ADD_DISSOLVE_ES);
+  applyFxAdditions(fr, ADD_DISSOLVE_FR);
+  applyFxAdditions(ru, ADD_DISSOLVE_RU);
 
   // Partial decoration editor strings (inspector section). They ride along the
   // fx table so the five languages stay in one place.

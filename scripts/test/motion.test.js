@@ -360,3 +360,73 @@ test('stagger ranks support every documented order', () => {
   const stroke = motion.staggerRanks(letters, 'strokeLength', 0.5, () => 0.5).ranks;
   assert.ok(stroke[letters.length - 1] === 0 || stroke[letters.length - 1] > stroke[0], 'stroke length uses the outline');
 });
+
+test('adsrLevel shape matches attack, decay, sustain, release', () => {
+  const adsr = { peak: 1.5, sustain: 0.5, decay: 1, attack: 1, release: 1, punch: 0 };
+  const linearEase = (x) => x;
+  const level = (t) => motion.adsrLevel(adsr, t, 0, 1, 8, 1, linearEase, linearEase);
+  assert.equal(level(0), 0, 'before enter');
+  assert.equal(level(1), 1.5, 'at end of attack');
+  assert.equal(level(2.5), 0.5, 'at end of decay');
+  assert.equal(level(9), 0, 'at end of release');
+  assert.ok(Math.abs(level(8.5) - 0.25) < 0.01, 'midway through release');
+});
+
+test('adsrLevel is continuous when exitStart is within decay', () => {
+  const adsr = { peak: 2, sustain: 0.5, decay: 1, attack: 0.5, release: 0.5, punch: 0 };
+  const linearEase = (x) => x;
+  const level = (t) => motion.adsrLevel(adsr, t, 0, 0.5, 1.5, 1, linearEase, linearEase);
+  const before = level(1.5 - 0.00001);
+  const after = level(1.5 + 0.00001);
+  assert.ok(Math.abs(before - after) < 0.01, `discontinuity: ${before} vs ${after}`);
+});
+
+test('no ADSR regression: with and without animation', () => {
+  const baseScene = makeScene('ABC', { hold: [{ type: 'shake', params: {} }] });
+  const withAnimScene = makeScene('ABC', { animation: { type: 'stagger', params: {} }, hold: [{ type: 'shake', params: {} }] });
+  for (const t of [0.2, 2, 9.7]) {
+    const base = evaluate(baseScene, t);
+    const withAnim = evaluate(withAnimScene, t);
+    for (let i = 0; i < 3; i += 1) {
+      assert.equal(base.letters[i].x, withAnim.letters[i].x, `x mismatch at t=${t}, letter=${i}`);
+      assert.equal(base.letters[i].y, withAnim.letters[i].y, `y mismatch at t=${t}, letter=${i}`);
+    }
+  }
+  assert.equal(motion.adsrDef({}), null, 'adsrDef returns null for empty instance');
+});
+
+test('hold effects follow ADSR envelope when active', () => {
+  const scene = makeScene('A', {
+    hold: [{ type: 'floatBob', params: { amp: 0.05, speed: 0.5 } }],
+    animation: { type: 'simultaneous', motion: { adsr: { attack: 0.1, decay: 1, peak: 2, sustain: 0.2 } } },
+  });
+  const atPeak = evaluate(scene, 0.1);
+  const atSustain = evaluate(scene, 5);
+  assertFinite(atPeak, 'at peak');
+  assertFinite(atSustain, 'at sustain');
+  assert.ok(Number.isFinite(atSustain.letters[0].y), 'sustain y is finite');
+});
+
+test('punch scales letters by attack peak', () => {
+  const scene = makeScene('A', {
+    enter: { type: 'fade' },
+    animation: { type: 'simultaneous', motion: { adsr: { attack: 0.1, decay: 0.5, peak: 1.5, sustain: 1, punch: 0.4 } } },
+  });
+  const atPeak = evaluate(scene, 0.11);
+  const atSustain = evaluate(scene, 5);
+  assertFinite(atPeak, 'at peak');
+  assertFinite(atSustain, 'at sustain');
+  assert.ok(atPeak.letters[0].scaleX > atSustain.letters[0].scaleX, 'peak scale > sustain scale');
+  assert.ok(Math.abs(atSustain.letters[0].scaleX - 1) < 1e-6, 'sustain scale ≈ 1');
+});
+
+test('ADSR attack and release override enter and exit durations', () => {
+  const scene = makeScene('A', {
+    animation: { type: 'simultaneous', motion: { adsr: { attack: 0.2, release: 0.3 } } },
+    enter: { type: 'fade' },
+    exit: { type: 'fade' },
+  });
+  const result = evaluate(scene, 0.21);
+  assertFinite(result, 'at t=0.21');
+  assert.ok(result.letters[0].opacity > 0.9, 'opacity should be high at t=0.21 with 0.2s attack');
+});

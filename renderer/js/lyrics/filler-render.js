@@ -1,13 +1,13 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    const fillerRender = factory(require('./split'), require('./figures'));
+    const fillerRender = factory(require('./split'), require('./figures'), require('./adsr'));
     if (root.SA) root.SA.fillerRender = root.SA.fillerRender || fillerRender;
     module.exports = fillerRender;
   } else {
     root.SA = root.SA || {};
-    root.SA.fillerRender = factory(root.SA.split, root.SA.figures);
+    root.SA.fillerRender = factory(root.SA.split, root.SA.figures, root.SA.adsr);
   }
-})(typeof self !== 'undefined' ? self : this, function (split, figures) {
+})(typeof self !== 'undefined' ? self : this, function (split, figures, adsrApi) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -774,12 +774,27 @@
     // context (the clip's own from / to or start / end); pass every tuning
     // param through
     const source = params && params.beats && params.beats.length ? params : { ...(params || {}), beats: [] };
-    return figures.drawList({ type: 'figure', params: source }, ctx);
+    const list = figures.drawList({ type: 'figure', params: source }, ctx);
+    // an optional clip-level opacity lets a figure sit quiet behind the lyrics
+    const quiet = params && params.opacity != null ? clamp01(num(params.opacity, 1)) : 1;
+    if (quiet < 1 && list && Array.isArray(list.shapes)) {
+      for (const shape of list.shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * quiet;
+    }
+    return list;
   }
 
   // The painted colour planes (item 9). Only the painted regions are drawn: the
   // rest of the frame shows the background through, and at coverage 1 the whole
   // frame is covered.
+  function darkenHex(hex, amount) {
+    const match = /^#([0-9a-f]{6})/i.exec(String(hex || ''));
+    if (!match) return hex;
+    const value = parseInt(match[1], 16);
+    const mix = (channel) => Math.max(0, Math.min(255, Math.round(channel * (1 - amount))));
+    const out = (mix((value >> 16) & 255) << 16) | (mix((value >> 8) & 255) << 8) | mix(value & 255);
+    return `#${out.toString(16).padStart(6, '0')}`;
+  }
+
   function splitShapes(params, ctx) {
     if (!split || typeof split.regions !== 'function') return { shapes: [], texts: [] };
     const frame = ctx.frame || { width: 1920, height: 1080 };
@@ -809,11 +824,39 @@
     );
     const opacity = params.opacity == null ? 1 : num(params.opacity, 1);
     const shapes = [];
+    // `depth` (optional, 0 = flat) lifts each plane above the one under it: a
+    // soft drop shadow offset down-right and a slightly darker inset panel
+    const depth = clamp01(num(params.depth, 0));
+    const short = Math.min(frame.width, frame.height);
+    let layer = 0;
     for (const region of regions) {
       if (!region.painted) continue;
+      if (depth > 0 && layer > 0) {
+        const offset = short * 0.014 * depth;
+        shapes.push({
+          kind: 'convex',
+          points: region.points.map((point) => ({ x: point.x + offset, y: point.y + offset * 1.4 })),
+          color: '#000000',
+          opacity: opacity * 0.3 * depth,
+          plane: true,
+        });
+      }
       // `plane: true` marks the split planes: the engine keeps them whole when
       // it knocks the accent layer out under the subtitle glyphs
       shapes.push({ kind: 'convex', points: region.points, color: region.color, opacity, plane: true });
+      if (depth > 0 && region.points.length >= 3) {
+        const cx = region.points.reduce((sum, point) => sum + point.x, 0) / region.points.length;
+        const cy = region.points.reduce((sum, point) => sum + point.y, 0) / region.points.length;
+        const inset = 1 - 0.07 * depth;
+        shapes.push({
+          kind: 'convex',
+          points: region.points.map((point) => ({ x: cx + (point.x - cx) * inset, y: cy + (point.y - cy) * inset })),
+          color: darkenHex(region.color, 0.06 * depth),
+          opacity,
+          plane: true,
+        });
+      }
+      layer += 1;
     }
     return { shapes, texts: [] };
   }
@@ -836,6 +879,8 @@
     const enter = clamp01((time - start) / span);
     const leave = clamp01((end - time) / span);
     const env = Math.min(enter, leave);
+    const adsr = opts.adsr && adsrApi ? adsrApi.def(opts.adsr, duration) : null;
+    const adsrLevel = adsr ? adsrApi.clipLevel(opts.adsr, time, start, end, clip.fadeIn, clip.fadeOut) : null;
     const bpm = num(opts.bpm, 0) || 120;
     const beat = 60 / bpm;
     const beats = (time - start) / beat;
@@ -849,7 +894,7 @@
     const mode = motion.mode || 'pulse';
     const every = Math.max(1, num(motion.every, mode === 'accent' ? 4 : 8));
     const group = (((beats / every) % 1) + 1) % 1;
-    const amount = num(motion.pulse, 0);
+    let amount = num(motion.pulse, 0);
     const progress = clamp01((time - start) / duration);
     let pulse = 1;
     let sway = 0;
@@ -857,10 +902,14 @@
     let travelX = 0;
     let travelY = 0;
     let driftAmount = num(motion.drift, 0);
+    if (adsrLevel != null) {
+      amount *= adsrLevel;
+      driftAmount *= adsrLevel;
+    }
     if (mode === 'pulse') pulse = 1 + amount * Math.sin(TAU * beats);
     else if (mode === 'accent') pulse = 1 + amount * 1.6 * Math.exp(-group * every * 3.5);
     else if (mode === 'swell') pulse = 1 + amount * 1.2 * (0.5 - 0.5 * Math.cos(TAU * group));
-    else if (mode === 'sway') sway = num(motion.sway, 0.03) * Math.sin(TAU * group);
+    else if (mode === 'sway') sway = num(motion.sway, 0.03) * Math.sin(TAU * group) * (adsrLevel != null ? adsrLevel : 1);
     else if (mode === 'travel') {
       // a slow one-way pan; the clip is scaled past the frame so the moving
       // corner never shows the empty stage
@@ -873,7 +922,7 @@
     } else if (mode === 'zoom') {
       pulse = 1 + num(motion.zoom, 0.12) * progress;
     } else if (mode === 'tilt') {
-      tilt = num(motion.tilt, 0.02) * (2 * progress - 1);
+      tilt = num(motion.tilt, 0.02) * (2 * progress - 1) * (adsrLevel != null ? adsrLevel : 1);
     }
     // text kicks: every `kicks` time (a cue start or a rhythm cut) adds a short
     // decaying bounce on top of the mode, so the mid layer answers the lyrics.
@@ -888,7 +937,8 @@
         if (decay > kick) kick = decay;
       }
     }
-    const kickPulse = sync * kick;
+    let kickPulse = sync * kick;
+    if (adsrLevel != null) kickPulse *= adsrLevel;
     pulse += kickPulse;
     // drift is a share of the short side here (the legacy pulse drift stays
     // in its raw units so saved clips keep their look)
@@ -903,6 +953,9 @@
       (mode === 'drift' || mode === 'still' ? (2.2 * Math.abs(driftAmount)) / short : 0) +
       (mode === 'travel' ? 2.2 * Math.abs(num(motion.travel, 0.06)) : 0) +
       (mode === 'tilt' ? 1.8 * Math.abs(num(motion.tilt, 0.02)) : 0);
+    if (adsr && adsrLevel != null && adsrLevel > 0) {
+      pulse *= 1 + adsr.punch * Math.max(0, adsrLevel - adsr.sustain);
+    }
     const kind = motion.transition || 'scale';
     // a `cut` has no enter / exit transition: the clip is simply on. `slide`
     // carries the transition as an offset, so it keeps its full size.
@@ -1062,6 +1115,7 @@
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
       { key: 'amp', kind: 'number', min: 0, max: 0.4, step: 0.005, default: 0.05 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
+      { key: 'depth', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
     ],
     figures: [
       { key: 'enabled', kind: 'bool', default: true },
@@ -1080,6 +1134,7 @@
       { key: 'scale', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
       { key: 'x', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
       { key: 'y', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1, optional: true },
     ],
     nextLinePreview: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },

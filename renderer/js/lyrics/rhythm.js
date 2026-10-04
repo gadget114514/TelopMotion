@@ -40,19 +40,20 @@
   }
 
   function weightsFor(axes, charCount) {
+    const tempo = clamp01(axes.speed);
     const energy = clamp01(axes.energy);
     const w = clamp01(axes.weird);
     const weights = {
-      even: 1 + 2 * (1 - energy),
-      halves: 1 + 1.5 * energy,
+      even: 1 + 2 * (1 - tempo),
+      halves: 1 + 1.5 * tempo,
       push: 1 + 0.5 * w,
       pull: 1 + 0.5 * w,
       build: 1 + 2.2 * energy,
       fall: 1 + 0.8 * energy,
       synco: 0.8 + 2.2 * w,
-      hold2: 0.8 + 1.8 * (1 - energy),
+      hold2: 0.8 + 1.8 * (1 - tempo),
       triplet: 0.7 + 2 * w,
-      stutter: 0.4 + 2.2 * (0.5 * energy + 0.5 * w),
+      stutter: 0.4 + 2.2 * (0.5 * tempo + 0.5 * w),
     };
     // long lines want more cuts, short lines want to breathe
     if (charCount >= 24) {
@@ -155,5 +156,5 @@
     return result;
   }
 
-  return { PATTERNS, MIN_FRAGMENT, plan };
+  return { PATTERNS, MIN_FRAGMENT, plan, weightsFor };
 });

@@ -754,6 +754,40 @@ SA.inspector = (() => {
             : SA.controls.numberControl({ min: 0, step: 0.1, default: 2 }, loop[key] == null ? 2 : loop[key], (next) => writeProp(propPath, next));
       row(body, propPath, t(`studio.inspector.${key}`), control, { noKey: true, noReset: true });
     }
+    if (group === 'animation') {
+      const adsr = motion.adsr || {};
+      heading('studio.inspector.adsr');
+      const presetPath = `${group}.motion.adsr`;
+      row(body, presetPath, t('studio.inspector.adsrPreset'),
+        SA.controls.selectControl({}, '', (next) => {
+          if (!next) return;
+          writeProp(presetPath, next === 'off' ? null : { ...SA.adsr.PRESETS[next] });
+        }, [{ value: '', label: t('studio.inspector.selectPreset') }, ...['pluck', 'stab', 'pad', 'swell', 'off']
+          .map((value) => ({ value, label: t(`studio.inspector.adsr_${value}`) }))]),
+        { noKey: true, noReset: true });
+      const ADSR_FIELDS_LIST = [
+        { key: 'attack', kind: 'number', min: 0, step: 0.05, default: 0.5 },
+        { key: 'attackEase', kind: 'ease' },
+        { key: 'decay', kind: 'number', min: 0, step: 0.05, default: 0 },
+        { key: 'decayEase', kind: 'ease' },
+        { key: 'sustain', kind: 'number', min: 0, step: 0.05, default: 1 },
+        { key: 'release', kind: 'number', min: 0, step: 0.05, default: 0.4 },
+        { key: 'releaseEase', kind: 'ease' },
+        { key: 'peak', kind: 'number', min: 0, step: 0.05, default: 1 },
+        { key: 'punch', kind: 'number', min: 0, step: 0.05, default: 0 },
+      ];
+      for (const field of ADSR_FIELDS_LIST) {
+        const propPath = `${group}.motion.adsr.${field.key}`;
+        let control;
+        if (field.kind === 'ease') {
+          const easeDefault = field.key === 'decayEase' ? 'easeOutCubic' : 'linear';
+          control = SA.controls.easeControl(adsr[field.key] || easeDefault, (next) => writeProp(propPath, next));
+        } else {
+          control = SA.controls.numberControl({ min: field.min, step: field.step, default: field.default }, adsr[field.key] == null ? field.default : adsr[field.key], (next) => writeProp(propPath, next));
+        }
+        row(body, propPath, t(`studio.inspector.adsr_${field.key}`), control, { noKey: true, noReset: true });
+      }
+    }
     container.appendChild(details);
   }
 
@@ -1034,6 +1068,16 @@ SA.inspector = (() => {
       inherit.className = 'insp-inherit';
       inherit.textContent = t('studio.inspector.inheritedHint');
       body.appendChild(inherit);
+      // switching an inherited effect off pins the inherited instance with enabled: false
+      if (instance && instance.type && instance.type !== 'none') {
+        const enabledRow = document.createElement('label');
+        enabledRow.className = 'ctrl-bool-row';
+        enabledRow.textContent = t('studio.inspector.enabled');
+        enabledRow.appendChild(
+          SA.controls.boolControl(instance.enabled !== false, (value) => writeProp(group, { ...instance, enabled: value }, { coalesceKey: `${group}:type` }))
+        );
+        body.appendChild(enabledRow);
+      }
     }
     if (group === 'page') {
       const presetBtn = document.createElement('button');
@@ -1642,6 +1686,20 @@ SA.inspector = (() => {
       SA.store.commands.updateClip(clip.id, { fadeOut: value }, { coalesceKey: `clip:${clip.id}:fadeOut` });
     });
     body.appendChild(fieldRow(t('studio.inspector.fadeOut'), fadeOutControl));
+    const adsr = clip.adsr || {};
+    const adsrPresetControl = SA.controls.selectControl({}, '', (next) => {
+      if (!next) return;
+      SA.store.commands.updateClip(clip.id, { adsr: next === 'off' ? null : { ...SA.adsr.PRESETS[next] } }, { coalesceKey: `clip:${clip.id}:adsr` });
+    }, [{ value: '', label: t('studio.inspector.selectPreset') }, ...['pluck', 'stab', 'pad', 'swell', 'off']
+      .map((value) => ({ value, label: t(`studio.inspector.adsr_${value}`) }))]);
+    body.appendChild(fieldRow(t('studio.inspector.adsrPreset'), adsrPresetControl));
+    const ADSR_FIELDS = { attack: [0, 0.05, 0.5], decay: [0, 0.05, 0], sustain: [0, 0.05, 1], release: [0, 0.05, 0.4], peak: [0, 0.05, 1], punch: [0, 0.05, 0] };
+    for (const [key, [min, step, def]] of Object.entries(ADSR_FIELDS)) {
+      const control = SA.controls.numberControl({ min, step, default: def }, adsr[key] == null ? def : adsr[key], (value) => {
+        SA.store.commands.updateClip(clip.id, { adsr: { ...(clip.adsr || {}), [key]: value } }, { coalesceKey: `clip:${clip.id}:adsr` });
+      });
+      body.appendChild(fieldRow(t(`studio.inspector.adsr_${key}`), control));
+    }
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: clip.start }, clip.start, (value) => {
       SA.store.commands.trimClip(clip.id, 'start', value, { coalesceKey: `clip:${clip.id}:start` });
     });

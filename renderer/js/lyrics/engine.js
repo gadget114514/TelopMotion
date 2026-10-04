@@ -1166,6 +1166,10 @@ SA.lyricsEngine = (() => {
 
     function clipEnvelope(t, clip) {
       if (!clip || t < clip.start - 1e-4 || t > clip.end + 1e-4) return 0;
+      if (clip.adsr && SA.adsr) {
+        const adsrLevel = SA.adsr.clipLevel(clip.adsr, t, clip.start, clip.end, clip.fadeIn, clip.fadeOut);
+        if (adsrLevel != null) return Math.max(0, Math.min(1, adsrLevel));
+      }
       const fadeIn = Math.max(0, Number(clip.fadeIn) || 0);
       const fadeOut = Math.max(0, Number(clip.fadeOut) || 0);
       return Math.max(0, Math.min(1, fadeIn > 1e-4 ? (t - clip.start) / fadeIn : 1, fadeOut > 1e-4 ? (clip.end - t) / fadeOut : 1));
@@ -1283,18 +1287,20 @@ SA.lyricsEngine = (() => {
         color: fill,
         colors: fills,
         layers: figureLayerFlags(clip ? trackById(state.project, clip.trackId) : null, state.view),
+        adsr: clip && clip.adsr ? clip.adsr : null,
       });
       if (!list || (!(list.shapes && list.shapes.length) && !(list.texts && list.texts.length))) return;
       // beat pulse, drift and the enter / exit transition (wipe / scale /
       // rotate / iris) ride on top of the clip's own animation
-      if (params.animate) {
+      if (params.animate || (clip && clip.adsr && spec.type !== 'figures')) {
         SA.fillerRender.animate(list, {
-          motion: params.animate,
+          motion: params.animate || { mode: 'still', drift: 0, transition: 'cut' },
           t,
-          clip: { start: clip.start, end: clip.end },
+          clip: { start: clip.start, end: clip.end, fadeIn: clip.fadeIn, fadeOut: clip.fadeOut },
           bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
           frame: { width: state.width, height: state.height },
           kicks: kickTimesForClip(clip, spec),
+          adsr: spec.type !== 'figures' && clip ? clip.adsr : null,
         });
       }
       const shapes = list.shapes || [];
@@ -1526,6 +1532,7 @@ SA.lyricsEngine = (() => {
           artist: settings && SA.credits.artistText ? SA.credits.artistText(project, settings) : '',
         },
         layers: figureLayerFlags(clip ? trackById(project, clip.trackId) : null, state.view),
+        adsr: clip.adsr || null,
       };
     }
 

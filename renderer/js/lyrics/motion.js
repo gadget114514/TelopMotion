@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'), require('./adsr'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData, root.SA.adsr);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData, adsrApi) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -83,6 +83,20 @@
     }
     if (merged.loop && merged.loop.period != null) merged.loop.period = Math.max(0, resolveDuration(merged.loop.period, duration));
     return merged;
+  }
+
+  // ADSR envelope (animation.motion.adsr): attack = enter, decay = the settle
+  // from `peak` to `sustain` after it, sustain = hold level, release = exit.
+  function adsrDef(animationInstance, duration) {
+    const raw = animationInstance && animationInstance.motion && animationInstance.motion.adsr;
+    return adsrApi ? adsrApi.def(raw, duration) : null;
+  }
+
+  // Envelope level at beat-local time `local` for one letter. `enterEase` /
+  // `exitEase` are easing functions. The release starts from the level reached
+  // at exitStart, so a beat shorter than A+D+R never jumps.
+  function adsrLevel(adsr, local, enterStart, enterDur, exitStart, exitDur, enterEase, exitEase) {
+    return adsrApi ? adsrApi.level(adsr, local, enterStart, enterDur, exitStart, exitDur, enterEase, exitEase) : 0;
   }
 
   function staggerRanks(letters, order, from, random) {
@@ -405,6 +419,13 @@
     const enterDef = motionDef(enter, 'enter', duration);
     const exitDef = motionDef(exit, 'exit', duration);
     const locationDef = motionDef(location, 'location', duration);
+    const adsr = adsrDef(animation, duration);
+    const applyAdsrTiming = (enterD, exitD) => {
+      if (!adsr) return;
+      if (adsr.attack != null) enterD.in.duration = adsr.attack;
+      if (adsr.release != null) exitD.out.duration = adsr.release;
+    };
+    applyAdsrTiming(enterDef, exitDef);
     // a few effects (creepOut) define their own fixed timing
     const exitDescriptor = fx.get('exit', exitType);
     if (exitDescriptor && Number.isFinite(exitDescriptor.fixedDuration)) {
@@ -561,6 +582,9 @@
       const exitParamsLocal = (exitInstance && exitInstance.params) || {};
       const enterEntryLocal = enterInstance === enter ? enterEntry : fx.get('enter', (enterInstance && enterInstance.type) || 'fade');
       const exitEntryLocal = exitInstance === exit ? exitEntry : fx.get('exit', (exitInstance && exitInstance.type) || 'fade');
+      if (enterInstance !== enter || exitInstance !== exit) {
+        applyAdsrTiming(enterDefLocal, exitDefLocal);
+      }
       if (exitOverride && exitEntryLocal && Number.isFinite(exitEntryLocal.fixedDuration)) {
         exitDefLocal.out.duration = Math.max(0.001, exitEntryLocal.fixedDuration);
         exitDefLocal.out.delay = 0;
@@ -580,6 +604,10 @@
       const px = clamp01((local - exitStart) / exitDefLocal.out.duration);
       const enterEase = easing.get(enterDefLocal.in.ease || 'easeOutCubic');
       const exitEase = easing.get(exitDefLocal.out.ease || 'easeInCubic');
+
+      const adsrValue = adsr
+        ? adsrLevel(adsr, local, enterStart, enterDefLocal.in.duration, exitStart, exitDefLocal.out.duration, enterEase, exitEase)
+        : null;
 
       const layoutIn = clamp01((local - layoutDef.in.delay - offset) / layoutDef.in.duration);
       const layoutOut = clamp01((local - (duration - layoutDef.out.duration - layoutDef.out.delay - (offMax - offset))) / layoutDef.out.duration);
@@ -609,6 +637,7 @@
         px,
         timing: { enterStart, enterDur: enterDefLocal.in.duration, exitStart, exitDur: exitDefLocal.out.duration },
       };
+      if (adsrValue != null) state.adsr = adsrValue;
 
       const target = targetFormation[index] || { x: 0, y: 0, rot: 0, scale: 1 };
       const paramOverrides = {};
@@ -665,6 +694,12 @@
         });
       }
 
+      if (adsr && adsr.punch > 0) {
+        const boost = 1 + adsr.punch * Math.max(0, adsrValue - adsr.sustain);
+        state.scaleX *= boost;
+        state.scaleY *= boost;
+      }
+
       const holdInstances = holds.slice();
       for (const def of scopedDefs) if (def.group === 'hold' && def.mask[index]) holdInstances.push(def.instance);
       const holdEntryList = [];
@@ -673,7 +708,9 @@
         const holdEntry = fx.get('hold', holdInstance.type);
         if (!holdEntry || !holdEntry.cpu || holdInstance.enabled === false) continue;
         const holdDef = motionDef(holdInstance, 'hold', duration);
-        const env = clamp01((local - holdDef.in.delay - offset) / holdDef.in.duration) * (1 - clamp01((local - (duration - holdDef.out.duration - holdDef.out.delay)) / holdDef.out.duration));
+        const env = adsr
+          ? adsrValue
+          : clamp01((local - holdDef.in.delay - offset) / holdDef.in.duration) * (1 - clamp01((local - (duration - holdDef.out.duration - holdDef.out.delay)) / holdDef.out.duration));
         let h = holdLocal;
         const wrap = animationLoop || holdDef.loop;
         if (wrap && wrap.period > 0) {
@@ -749,6 +786,7 @@
         exitEntry: exitEntryLocal,
         enterStart,
         exitStart,
+        adsrLevel: adsrValue,
       };
     }
 
@@ -1075,6 +1113,8 @@
     MOTION_PRESETS,
     motionPresets,
     motionDef,
+    adsrDef,
+    adsrLevel,
     groupInstance,
     staggerRanks,
     applyOverrides,

@@ -186,6 +186,11 @@
       { key: 'swirl', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.2 },
       { key: 'blend', kind: 'number', min: 0.5, max: 4, step: 0.05, default: 1.4 },
       { key: 'jitter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.1 },
+      // optional (hand-edited / set by the generator): 'none' keeps the four
+      // palette slots as they are; the others derive the four colours from one
+      // base so they read as a family instead of a rainbow smear
+      { key: 'harmony', kind: 'select', options: ['none', 'tonal', 'analogous', 'accent'], default: 'none', optional: true },
+      { key: 'grain', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, optional: true },
     ],
     cost: 2,
   });
@@ -269,6 +274,20 @@
     return Number.isFinite(number) ? number : fallback;
   }
 
+  // Four colours from one base (rgba 0..1 array). The steps move away from the
+  // base's own lightness so a dark background gains lighter companions.
+  function harmonize4(base, scheme) {
+    const hsv = color.rgbToHsv({ r: base[0], g: base[1], b: base[2], a: 1 });
+    const up = hsv.v < 0.55 ? 1 : -1;
+    const make = (dh, ds, dv) => {
+      const rgb = color.hsvToRgb({ h: hsv.h + dh, s: Math.max(0, Math.min(1, hsv.s * ds)), v: Math.max(0.06, Math.min(0.95, hsv.v + up * dv)), a: 1 });
+      return [rgb.r, rgb.g, rgb.b, 1];
+    };
+    if (scheme === 'analogous') return [make(0, 1, 0), make(24, 1, 0.1), make(-24, 1.05, 0.06), make(44, 0.9, 0.2)];
+    if (scheme === 'accent') return [make(0, 1, 0), make(8, 1, 0.1), make(-8, 0.95, 0.18), make(150, 0.8, 0.28)];
+    return [make(0, 1, 0), make(0, 0.95, 0.1), make(0, 0.9, 0.2), make(0, 0.8, 0.3)];
+  }
+
   function backgroundUniforms(instance, ctx) {
     const params = (instance && instance.params) || {};
     const type = TYPES[(instance && instance.type) || 'none'] || 1;
@@ -332,6 +351,12 @@
     } else if (type === 8) {
       // gradient4
       p4 = [num(params.speed, 0.3), num(params.swirl, 0.2), num(params.blend, 1.4), num(params.jitter, 0.1)];
+      const harmony = params.harmony;
+      if (harmony === 'tonal' || harmony === 'analogous' || harmony === 'accent') {
+        [colorA, colorB, colorC, colorD] = harmonize4(colorA, harmony);
+        p43[1] = 1; // the slow warp flow and the soft vignette
+      }
+      p43[0] = Math.max(0, Math.min(1, num(params.grain, 0)));
     } else if (type === 9) {
       // cellPattern
       mode = { cells: 0, cracks: 1, plates: 2, sparkle: 3, bubbles: 4 }[params.kind] || 0;

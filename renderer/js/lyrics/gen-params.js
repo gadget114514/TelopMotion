@@ -154,7 +154,7 @@
     { key: 'pulseChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: () => 0.1 },
     { key: 'motionChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // figures / post
-    { key: 'figureDensity', kind: 'amount', tab: 'axis', group: 'figure', min: 0, max: 1, step: 0.05, derive: (a) => Math.max(0, Math.min(1, 0.25 + 0.6 * a.e + 0.2 * a.b)) },
+    { key: 'figureDensity', kind: 'amount', tab: 'axis', group: 'figure', min: 0, max: 1, step: 0.05, derive: (a) => Math.max(0, Math.min(1, 0.25 + 0.6 * a.d + 0.2 * a.b)) },
     // the element count of one figure clip: drawn per clip, log-uniform between
     // min and max (so sparse and busy clips come up alike), `figureCountBias`
     // leaning the draw toward the few (< 0) or the many (> 0) end

@@ -155,7 +155,8 @@ const preview = (() => {
     const frame = el.frame;
     if (!stage || !frame) return;
     const doc = project();
-    const aspect = doc && doc.output && doc.output.aspect === '9:16' ? 9 / 16 : 16 / 9;
+    const output = (doc && doc.output) || {};
+    const aspect = output.width > 0 && output.height > 0 ? output.width / output.height : output.aspect === '9:16' ? 9 / 16 : 16 / 9;
     const styles = getComputedStyle(stage);
     const padX = (parseFloat(styles.paddingLeft) || 0) + (parseFloat(styles.paddingRight) || 0);
     const padY = (parseFloat(styles.paddingTop) || 0) + (parseFloat(styles.paddingBottom) || 0);

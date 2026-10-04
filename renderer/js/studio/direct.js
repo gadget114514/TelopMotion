@@ -2031,13 +2031,15 @@
     const list = spec.params && Array.isArray(spec.params.list) ? spec.params.list : [];
     const plane = list.find((part) => part && part.type === 'split');
     const animate = (spec.params && spec.params.animate) || null;
+    const accent = list.find((part) => part && part.type !== 'split');
     const avoid = {
       layout: plane && plane.params ? plane.params.layout : null,
       motion: plane && plane.params ? plane.params.motion : null,
       mode: animate ? animate.mode : null,
       transition: animate ? animate.transition : null,
+      accent: accent ? accent.type : null,
     };
-    if (!avoid.layout && !avoid.motion && !avoid.mode && !avoid.transition) return null;
+    if (!avoid.layout && !avoid.motion && !avoid.mode && !avoid.transition && !avoid.accent) return null;
     return avoid;
   }
 
@@ -2060,6 +2062,7 @@
       motion: a.motion || b.motion,
       mode: a.mode || b.mode,
       transition: a.transition || b.transition,
+      accent: a.accent || b.accent,
     };
   }
 
@@ -2259,6 +2262,8 @@
             palette,
             shapeRange: SA.figures.shapeRangeOf(ctx.params) || undefined,
             cuts: ctx.rhythm ? Object.values(ctx.rhythm).flat() : beatCuts,
+            tempoGrid: true,
+            beatSeconds: 60 / (Number(ctx.bpm) > 0 ? Number(ctx.bpm) : 120),
           });
           return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params } };
         };
@@ -2302,7 +2307,8 @@
     const rawW = rawWFor(ctx, cue.id);
     const params = ctx.curve && ctx.params ? paramsFor(ctx, cue.id) : null;
     const energy = Number.isFinite(axes.energy) ? axes.energy : ctx.energy;
-    const density = params ? Math.max(0.15, params.figureDensity) : Math.max(0.15, Math.min(1, 0.25 + 0.6 * energy + 0.2 * w));
+    const densityAxis = Number.isFinite(axes.density) ? axes.density : 0.5;
+    const density = params ? Math.max(0.15, params.figureDensity) : Math.max(0.15, Math.min(1, 0.25 + 0.6 * densityAxis + 0.2 * w));
     if (density < 0.3 && w < 0.2 && index % 3 !== 0) return null;
     const beats = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
     const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cue.id]) || {};
@@ -2333,6 +2339,9 @@
     const boldStroke = ctx.compose && boldHit;
     // the theme's figure count range: every clip draws its own element count
     const shapeRange = SA.figures.shapeRangeOf(paramsFor(ctx, cue.id)) || undefined;
+    // the energy sets how far this figure stands from the previous cue's in
+    // direction space (0 keeps it, 1 takes the farthest candidate)
+    const prevSpec = ctx.figurePrevSpec || null;
     let spec = SA.figures.generate({
       span: { start: cue.start, end: cue.end },
       beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
@@ -2342,6 +2351,8 @@
       palette,
       sync,
       density,
+      previous: prevSpec,
+      energy: Number.isFinite(energy) ? energy : undefined,
       motif: boldMotif || undefined,
       stroke: boldStroke ? 'bold' : undefined,
       shapeRange,
@@ -2350,7 +2361,7 @@
     // the same motif never plays on two cues in a row (the procedural motif's
     // high draw chance would otherwise carry most of a song): redraw with the
     // next seeds until another motif comes up
-    for (let attempt = 0; attempt < 6 && spec && spec.params && spec.params.motif === ctx.figurePrevMotif && !boldMotif; attempt += 1) {
+    for (let attempt = 0; attempt < 6 && !prevSpec && spec && spec.params && spec.params.motif === ctx.figurePrevMotif && !boldMotif; attempt += 1) {
       spec = SA.figures.generate({
         span: { start: cue.start, end: cue.end },
         beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
@@ -2431,6 +2442,7 @@
       }
     }
     ctx.figurePrevMotif = spec && spec.params ? spec.params.motif : null;
+    ctx.figurePrevSpec = spec || null;
     return nextClip(projectDoc, 'clip_fig', {
       trackId: track,
       start: cue.start,

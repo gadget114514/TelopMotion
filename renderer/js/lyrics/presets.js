@@ -590,7 +590,7 @@
           { type: 'camera', params: { move: 'orbit', amount: 0.16, speed: 0.25 } },
           { type: 'filmGrain', params: { amount: 0.12, size: 1 } },
         ],
-        background: { type: 'gradient4', params: { speed: 0.18, swirl: 0.25, blend: 1.8, jitter: 0.25 } },
+        background: { type: 'gradient4', params: { speed: 0.18, swirl: 0.25, blend: 1.8, jitter: 0.25, harmony: 'analogous', grain: 0.3 } },
       },
     },
     {
@@ -707,7 +707,7 @@
           { type: 'crt', params: { scanlines: 0.28, curvature: 0.12, vignette: 0.4 } },
           { type: 'chromaticAberration', params: { amount: 0.5, radial: 0.2, angle: 0 } },
         ],
-        background: { type: 'gradient4', params: { speed: 0.35, swirl: 0.45, blend: 1.5, jitter: 0.5 } },
+        background: { type: 'gradient4', params: { speed: 0.35, swirl: 0.45, blend: 1.5, jitter: 0.5, harmony: 'tonal', grain: 0.3 } },
       },
     },
     {
@@ -828,7 +828,7 @@
           { type: 'bloom', params: { threshold: 0.62, intensity: 0.6, radius: 0.5 } },
           { type: 'sparkles', params: { count: 24, size: 2, shape: 'star', color: [1, 0.85, 0.95, 1] } },
         ],
-        background: { type: 'gradient4', params: { speed: 0.22, swirl: 0.3, blend: 1.6, jitter: 0.3 } },
+        background: { type: 'gradient4', params: { speed: 0.22, swirl: 0.3, blend: 1.6, jitter: 0.3, harmony: 'analogous', grain: 0.3 } },
       },
     },
     {
@@ -857,7 +857,7 @@
           { type: 'bloom', params: { threshold: 0.6, intensity: 0.7, radius: 0.55 } },
           { type: 'vignette', params: { amount: 0.4, softness: 0.65 } },
         ],
-        background: { type: 'gradient4', params: { speed: 0.3, swirl: 0.5, blend: 1.3, jitter: 0.4 } },
+        background: { type: 'gradient4', params: { speed: 0.3, swirl: 0.5, blend: 1.3, jitter: 0.4, harmony: 'tonal', grain: 0.3 } },
       },
     },
     {
@@ -1030,7 +1030,7 @@
           { type: 'camera', params: { move: 'pushIn', amount: 0.08, speed: 0.2 } },
           { type: 'vignette', params: { amount: 0.35, softness: 0.6 } },
         ],
-        background: { type: 'gradient4', params: { speed: 0.2, swirl: 0.25, blend: 1.2, jitter: 0.3 } },
+        background: { type: 'gradient4', params: { speed: 0.2, swirl: 0.25, blend: 1.2, jitter: 0.3, harmony: 'analogous', grain: 0.3 } },
       },
     },
   ];

@@ -2095,6 +2095,8 @@ SA.glShaders = (() => {
       // gradient4: four moving colour corners blended by inverse distance
       vec2 uv = cameraUv(v_uv, 1.0);
       float t = u_time * u_params.x;
+      // harmony on (u_params3.y): the corners hold still-ish and a slow warp flows the colour
+      if (u_params3.y > 0.5) uv += 0.07 * vec2(sin(uv.y * 3.1 + t * 0.7), cos(uv.x * 2.7 + t * 0.55));
       float blend = max(u_params.z, 0.5);
       float jitter = clamp(u_params.w, 0.0, 1.0);
       float swirl = u_params.y;
@@ -2120,6 +2122,8 @@ SA.glShaders = (() => {
         weight += w;
       }
       color = sum / max(weight, 0.0001);
+      if (u_params3.y > 0.5) color *= 1.0 - 0.22 * smoothstep(0.35, 0.95, length(v_uv - 0.5) * 1.6);
+      color += (hash22(gl_FragCoord.xy + fract(u_time) * 17.0).x - 0.5) * u_params3.x * 0.08;
     } else if (u_type == 9) {
       // cellPattern: voronoi cells with a rim
       vec2 uv = cameraUv(v_uv, 1.0);

@@ -42,7 +42,8 @@ test('weird 0 reproduces the classic sizeChange / colorChange / palette switch /
     assert.equal(derived.sizeChange, weird.sizeChange(axes), `sizeChange at energy ${energy}`);
     assert.equal(derived.colorChange, weird.colorChange(axes), `colorChange at energy ${energy}`);
     assert.equal(derived.paletteSwitchChance, 1 - weird.basePaletteChance(axes), `paletteSwitchChance at energy ${energy}`);
-    assert.ok(Math.abs(derived.figureDensity - (0.25 + 0.6 * energy)) < 1e-9, `figureDensity at energy ${energy}`);
+    // figureDensity now derives from density axis, not energy. BASE has density: 0.5
+    assert.ok(Math.abs(derived.figureDensity - (0.25 + 0.6 * BASE.density)) < 1e-9, `figureDensity at energy ${energy}`);
   }
   const derived = genParams.derive({ ...BASE, weird: 0 });
   // the new branches all collapse onto their classic counterpart at weird 0

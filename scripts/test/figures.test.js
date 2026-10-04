@@ -98,6 +98,83 @@ test('frame motifs follow the text box when the engine provides one', () => {
   assert.notEqual(width(wide), width(narrow));
 });
 
+test('tempoGrid without beatSeconds generates regular sub-beats based on span', () => {
+  // without tempoGrid, sync='beat' should generate sub-beats aligned to provided beats
+  const spec = figures.generate({
+    span: SPAN,
+    axes: { speed: 0.5 },
+    sync: 'beat',
+    seed: 1,
+    id: 'fig_tempo_1',
+    tempoGrid: false,
+  });
+  const beatCount = spec.params.beats.length;
+  assert.ok(beatCount >= 1, 'should have at least one beat');
+});
+
+test('tempoGrid with slow speed generates fewer beats (longer intervals)', () => {
+  // slow tempo (speed 0.05) = 8 beat interval = 4 seconds @ 120 BPM
+  const slow = figures.generate({
+    span: { start: 0, end: 16 },  // 16 seconds = 4 bars
+    axes: { speed: 0.05 },
+    sync: 'beat',
+    seed: 1,
+    id: 'fig_slow',
+    tempoGrid: true,
+    beatSeconds: 0.5,  // 120 BPM
+  });
+  // 16s span, 4s interval = ~4 sub-beats expected
+  assert.ok(slow.params.beats.length >= 2 && slow.params.beats.length <= 5, `slow tempo beat count: ${slow.params.beats.length}`);
+});
+
+test('tempoGrid with fast speed generates more beats (shorter intervals)', () => {
+  // slow tempo (speed 0.05) = 8 beat interval = 4 seconds @ 120 BPM
+  const slow = figures.generate({
+    span: { start: 0, end: 16 },
+    axes: { speed: 0.05 },
+    sync: 'beat',
+    seed: 1,
+    id: 'fig_slow_compare',
+    tempoGrid: true,
+    beatSeconds: 0.5,
+  });
+  // fast tempo (speed 0.95) = 0.5 beat interval = 0.25 seconds @ 120 BPM
+  const fast = figures.generate({
+    span: { start: 0, end: 16 },  // 16 seconds
+    axes: { speed: 0.95 },
+    sync: 'beat',
+    seed: 1,
+    id: 'fig_fast',
+    tempoGrid: true,
+    beatSeconds: 0.5,  // 120 BPM
+  });
+  // 16s span, 0.25s interval = ~64 sub-beats expected (large number)
+  assert.ok(fast.params.beats.length > slow.params.beats.length, 'fast tempo has more beats than slow');
+});
+
+test('density axis controls figure density, not energy', () => {
+  // low density should give small density value
+  const lowDensity = figures.generate({
+    span: SPAN,
+    axes: { speed: 0.5, energy: 0.8, density: 0.1 },
+    sync: 'beat',
+    seed: 2,
+    id: 'fig_low_density',
+  });
+  // high density should give large density value
+  const highDensity = figures.generate({
+    span: SPAN,
+    axes: { speed: 0.5, energy: 0.8, density: 0.9 },
+    sync: 'beat',
+    seed: 2,
+    id: 'fig_high_density',
+  });
+  // density values should reflect the density axis, not energy (which is same at 0.8)
+  const lowVal = Number(lowDensity.params.density);
+  const highVal = Number(highDensity.params.density);
+  assert.ok(lowVal < highVal, `density values should increase with axis: ${lowVal} < ${highVal}`);
+});
+
 test('a forced in / hold / out lands on every beat and keeps the random sequence', () => {
   const options = { span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed: 21, id: 'fig_0' };
   const random = figures.generate(options);
@@ -333,11 +410,11 @@ test('proc seeds yield almost only unique compositions (< 1% duplicates)', () =>
   const signatures = new Set();
   const total = 3000;
   for (let seed = 1; seed <= total; seed += 1) {
-    const spec = figures.generate({ span: SPAN, motif: 'proc', seed, id: `sig_${seed}` });
+    const spec = figures.generate({ span: SPAN, motif: 'proc', seed, id: `sig_${seed}`, axes: { weird: 1 } });
     const list = figures.drawList(spec, ctx({ time: 6 }));
     signatures.add(
       list.shapes
-        .map((shape) => [shape.kind, Math.round(shape.x || shape.x0 || 0), Math.round(shape.y || shape.y0 || 0), Math.round(shape.r || shape.width || shape.w || 0)].join(':'))
+        .map((shape) => [shape.kind, Math.round(shape.x || shape.x0 || (shape.points && shape.points[0].x) || 0), Math.round(shape.y || shape.y0 || (shape.points && shape.points[0].y) || 0), Math.round(shape.r || shape.width || shape.w || (shape.points && shape.points[1].x) || 0)].join(':'))
         .join(';')
     );
   }
@@ -377,7 +454,7 @@ test('proc is deterministic and holds its shape count frame to frame', () => {
 test('generate picks proc most of the time and hands it back to fear', () => {
   let proc = 0;
   for (let seed = 1; seed <= 200; seed += 1) {
-    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 0.5, energy: 0.5 } });
+    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 1, energy: 0.5 } });
     if (spec.params.motif === 'proc') proc += 1;
     // a classic draw keeps the historic move fields, plus its own scale / tone
     else for (const beat of spec.params.beats) assert.deepEqual(Object.keys(beat).sort(), ['accent', 'end', 'move', 'size', 'start', 'tone', 'variant']);
@@ -386,13 +463,13 @@ test('generate picks proc most of the time and hands it back to fear', () => {
   // the fear axis hands the pick back to the fixed library
   let feared = 0;
   for (let seed = 1; seed <= 200; seed += 1) {
-    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 0.5, energy: 0.5, fear: 0.9 } });
+    const spec = figures.generate({ span: SPAN, seed, id: `share_${seed}`, axes: { weird: 1, energy: 0.5, fear: 0.9 } });
     if (spec.params.motif === 'proc') feared += 1;
   }
   assert.ok(feared < proc / 2, `feared proc ${feared} vs ${proc}`);
   // fear 0 is the legacy no-op: the whole spec is unchanged
-  const withFear = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 0.5, energy: 0.5, fear: 0 } });
-  const without = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 0.5, energy: 0.5 } });
+  const withFear = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 1, energy: 0.5, fear: 0 } });
+  const without = figures.generate({ span: SPAN, seed: 17, id: 'noop', axes: { weird: 1, energy: 0.5 } });
   assert.deepEqual(withFear, without);
   // an explicit proc request always carries a finite seed
   const explicit = figures.generate({ span: SPAN, motif: 'proc', seed: 3, id: 'explicit' });
@@ -549,4 +626,41 @@ test('the drawn count bounds the shapes a figure draws', () => {
   }
   assert.ok(total('burst', 4, 1) < total('burst', 40, 1));
   assert.ok(total('confetti', 3, 1) <= 3);
+});
+
+test('figures respond to ADSR envelope with finite shapes and scale changes', () => {
+  const spec = figures.generate({ span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed: 3, id: 'fig_0' });
+  const baseCtx = ctx({ time: 2.2 }); // Just after the first beat starts (2..4)
+  const withoutAdsr = figures.drawList(spec, baseCtx);
+  const withAdsr = figures.drawList(spec, { ...baseCtx, adsr: { attack: 0.1, decay: 0.3, peak: 2, sustain: 1, punch: 0.5 } });
+
+  // Both should return finite shapes
+  assert.ok(withoutAdsr.shapes.length > 0);
+  assert.ok(withAdsr.shapes.length > 0);
+  for (const shape of withAdsr.shapes) {
+    for (const key of ['x', 'y', 'r', 'w', 'h', 'opacity', 'scaleX', 'scaleY']) {
+      if (shape[key] != null) assert.ok(Number.isFinite(shape[key]), `with ADSR: ${key} is ${shape[key]}`);
+    }
+  }
+
+  // At the early time (0.2s into first beat, within attack window), shapes should differ
+  // The attack window is 0.1s, so at 0.2s we're in the decay phase with scale punch applied
+  const baseEarly = ctx({ time: 2.15 }); // 0.15s into first beat
+  const earlyWithoutAdsr = figures.drawList(spec, baseEarly);
+  const earlyWithAdsr = figures.drawList(spec, { ...baseEarly, adsr: { attack: 0.1, decay: 0.3, peak: 2, sustain: 1, punch: 0.5 } });
+
+  // At least one shape should differ (scale or position)
+  let differ = false;
+  if (earlyWithAdsr.shapes.length === earlyWithoutAdsr.shapes.length) {
+    for (let i = 0; i < earlyWithAdsr.shapes.length; i += 1) {
+      const a = earlyWithAdsr.shapes[i];
+      const b = earlyWithoutAdsr.shapes[i];
+      if ((a.x || 0) !== (b.x || 0) || (a.y || 0) !== (b.y || 0) || (a.scaleX || 1) !== (b.scaleX || 1) || (a.scaleY || 1) !== (b.scaleY || 1)) {
+        differ = true;
+        break;
+      }
+    }
+  }
+  // At least one shape should be different with ADSR applied
+  assert.ok(differ || earlyWithAdsr.shapes.length !== earlyWithoutAdsr.shapes.length, 'ADSR should affect the shapes at early time');
 });

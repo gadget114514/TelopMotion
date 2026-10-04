@@ -91,3 +91,30 @@ test('a single span shorter than one bar gets no cuts', () => {
   assert.ok(plan.tiny.length <= 1);
   for (const cut of plan.tiny) assert.ok(cut < 1.2);
 });
+
+test('speed axis controls beat-division patterns, not energy', () => {
+  const slow = { speed: 0.1, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const fast = { speed: 0.9, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const slowWeights = rhythm.weightsFor(slow, 20);
+  const fastWeights = rhythm.weightsFor(fast, 20);
+  // slow should prefer even / hold2, fast should prefer halves / stutter
+  assert.ok(slowWeights.even > fastWeights.even, 'even weight decreases with speed');
+  assert.ok(slowWeights.hold2 > fastWeights.hold2, 'hold2 weight decreases with speed');
+  assert.ok(slowWeights.halves < fastWeights.halves, 'halves weight increases with speed');
+  assert.ok(slowWeights.stutter < fastWeights.stutter, 'stutter weight increases with speed');
+});
+
+test('energy axis controls build/fall, not beat divisions', () => {
+  const low = { speed: 0.5, energy: 0.1, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const high = { speed: 0.5, energy: 0.9, softness: 0.5, density: 0.5, brightness: 0.5, weird: 0 };
+  const lowWeights = rhythm.weightsFor(low, 20);
+  const highWeights = rhythm.weightsFor(high, 20);
+  // even, halves, hold2, stutter should stay the same (speed is same)
+  assert.ok(Math.abs(lowWeights.even - highWeights.even) < 1e-9, 'even weight unchanged with energy');
+  assert.ok(Math.abs(lowWeights.halves - highWeights.halves) < 1e-9, 'halves weight unchanged with energy');
+  assert.ok(Math.abs(lowWeights.hold2 - highWeights.hold2) < 1e-9, 'hold2 weight unchanged with energy');
+  assert.ok(Math.abs(lowWeights.stutter - highWeights.stutter) < 1e-9, 'stutter weight unchanged with energy');
+  // build and fall should change
+  assert.ok(lowWeights.build < highWeights.build, 'build weight increases with energy');
+  assert.ok(lowWeights.fall < highWeights.fall, 'fall weight increases with energy');
+});
