@@ -155,6 +155,12 @@
     { key: 'motionChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // figures / post
     { key: 'figureDensity', kind: 'amount', tab: 'axis', group: 'figure', min: 0, max: 1, step: 0.05, derive: (a) => Math.max(0, Math.min(1, 0.25 + 0.6 * a.e + 0.2 * a.b)) },
+    // the element count of one figure clip: drawn per clip, log-uniform between
+    // min and max (so sparse and busy clips come up alike), `figureCountBias`
+    // leaning the draw toward the few (< 0) or the many (> 0) end
+    { key: 'figureCountMin', kind: 'amount', tab: 'axis', group: 'figure', min: 1, max: 100, step: 1, derive: () => 3 },
+    { key: 'figureCountMax', kind: 'amount', tab: 'axis', group: 'figure', min: 1, max: 480, step: 1, derive: (a) => Math.round(40 + 60 * a.e + 40 * a.b) },
+    { key: 'figureCountBias', kind: 'amount', tab: 'axis', group: 'figure', min: -1, max: 1, step: 0.05, derive: (a) => a.d - 0.5 },
     { key: 'figureBoldChance', kind: 'chance', tab: 'axis', group: 'figure', min: 0, max: 1, step: 0.05, derive: (a) => Math.min(1, a.b) * (1 - 0.5 * a.s) },
     { key: 'postBlurChance', kind: 'chance', tab: 'axis', group: 'figure', min: 0, max: 1, step: 0.05, derive: (a) => Math.max(0, (a.w - 0.75) / 0.25) },
   ];

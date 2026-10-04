@@ -505,3 +505,48 @@ test('fillerRender includes disabled parameter for figures and figuresShapes res
   const shapesEnabled = fillerRender.drawList({ type: 'figures', params: { enabled: true, motif: 'orbit' } }, ctx());
   assert.ok(shapesEnabled.shapes.length > 0);
 });
+
+// the theme's figure count range (figureCountMin / Max / Bias)
+test('the drawn figure count spreads log-uniformly over the theme range', () => {
+  const range = { min: 3, max: 120, bias: 0 };
+  const counts = [];
+  for (let seed = 1; seed <= 2000; seed += 1) {
+    const spec = figures.generate({ span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed, id: 'fig_0', shapeRange: range });
+    counts.push(spec.params.shapes);
+  }
+  assert.ok(counts.every((n) => Number.isInteger(n) && n >= 3 && n <= 120));
+  // log-uniform: about half the clips land below the geometric middle (~19)
+  const few = counts.filter((n) => n < Math.sqrt(3 * 120)).length / counts.length;
+  assert.ok(few > 0.4 && few < 0.6, `few share ${few}`);
+  assert.ok(counts.some((n) => n <= 5) && counts.some((n) => n >= 90));
+  // the bias leans the draw
+  const mean = (bias) => {
+    let sum = 0;
+    for (let seed = 1; seed <= 500; seed += 1) sum += figures.generate({ span: SPAN, seed, id: 'fig_0', shapeRange: { min: 3, max: 120, bias } }).params.shapes;
+    return sum / 500;
+  };
+  assert.ok(mean(-1) < mean(0) && mean(0) < mean(1));
+  // the count rides its own stream: every other draw is unchanged
+  const plain = figures.generate({ span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed: 9, id: 'fig_0' });
+  const ranged = figures.generate({ span: SPAN, axes: { energy: 0.5, weird: 0.5 }, seed: 9, id: 'fig_0', shapeRange: range });
+  assert.equal(plain.params.shapes, undefined);
+  assert.deepEqual({ ...ranged.params, shapes: undefined }, { ...plain.params, shapes: undefined });
+});
+
+test('the drawn count bounds the shapes a figure draws', () => {
+  const total = (motif, shapes, seed) => {
+    const params = { ...figures.generate({ span: SPAN, axes: { weird: 1 }, seed, id: 'fig_0', motif }).params, shapes };
+    let max = 0;
+    for (let time = 2.5; time < 14; time += 0.7) max = Math.max(max, figures.drawList({ type: 'figure', params }, ctx({ time })).shapes.length);
+    return max;
+  };
+  for (let seed = 1; seed <= 40; seed += 1) {
+    const few = total('proc', 4, seed);
+    const many = total('proc', 300, seed);
+    // the first layer always draws one point with its symmetric copies (<= 8)
+    assert.ok(few <= 16, `proc seed ${seed}: ${few} shapes at count 4`);
+    assert.ok(many >= few, `proc seed ${seed}: ${many} < ${few}`);
+  }
+  assert.ok(total('burst', 4, 1) < total('burst', 40, 1));
+  assert.ok(total('confetti', 3, 1) <= 3);
+});

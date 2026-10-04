@@ -2162,6 +2162,7 @@ SA.store = (() => {
               x: params.x,
               y: params.y,
               color: params.color,
+              shapeRange: SA.figures.shapeRangeOf(mode.params) || undefined,
               cuts: params.cuts,
               enabled: params.enabled != null ? params.enabled : (target.disabled != null ? !target.disabled : undefined),
             });

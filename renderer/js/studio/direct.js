@@ -2257,6 +2257,7 @@
             y: params.y,
             color: params.color,
             palette,
+            shapeRange: SA.figures.shapeRangeOf(ctx.params) || undefined,
             cuts: ctx.rhythm ? Object.values(ctx.rhythm).flat() : beatCuts,
           });
           return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params } };
@@ -2330,6 +2331,8 @@
       }
     }
     const boldStroke = ctx.compose && boldHit;
+    // the theme's figure count range: every clip draws its own element count
+    const shapeRange = SA.figures.shapeRangeOf(paramsFor(ctx, cue.id)) || undefined;
     let spec = SA.figures.generate({
       span: { start: cue.start, end: cue.end },
       beats: beats.map((beat) => ({ start: beat.start, end: beat.end })),
@@ -2341,6 +2344,7 @@
       density,
       motif: boldMotif || undefined,
       stroke: boldStroke ? 'bold' : undefined,
+      shapeRange,
       cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
     });
     // the same motif never plays on two cues in a row (the procedural motif's
@@ -2357,6 +2361,7 @@
         sync,
         density,
         stroke: boldStroke ? 'bold' : undefined,
+        shapeRange,
         cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
       });
     }
@@ -2387,6 +2392,7 @@
           density,
           motif,
           stroke: boldStroke ? 'bold' : undefined,
+          shapeRange,
           cuts: ctx.rhythm && ctx.rhythm[cue.id] ? ctx.rhythm[cue.id] : null,
         });
         let best = null;

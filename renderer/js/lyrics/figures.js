@@ -229,7 +229,42 @@
     for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
       if (opts[key] != null && Number.isFinite(Number(opts[key]))) params[key] = Number(opts[key]);
     }
+    // the element count: an explicit `shapes` survives, otherwise one draw from
+    // the theme's range on its own stream (every draw above stays as it was)
+    const shapes = opts.shapes != null && Number.isFinite(Number(opts.shapes))
+      ? Math.max(1, Math.round(Number(opts.shapes)))
+      : opts.shapeRange ? drawShapeCount(rng.rngFor(seed, 'figure-count', id), opts.shapeRange) : null;
+    if (shapes != null) params.shapes = shapes;
     return { type: 'figure', params };
+  }
+
+  const SHAPE_COUNT_MAX = PROC_TOTAL_BUDGET;
+
+  // The theme's figure count range ({ min, max, bias }) from a resolved
+  // gen-params profile; null without one.
+  function shapeRangeOf(profile) {
+    if (!profile || profile.figureCountMax == null) return null;
+    return { min: profile.figureCountMin, max: profile.figureCountMax, bias: profile.figureCountBias };
+  }
+
+  // One element count from a range: log-uniform between min and max, so 3..90
+  // is as likely to land in 3..16 as in 16..90 and the few and the many come up
+  // evenly. `bias` (-1..1) bends the draw: -1 leans hard toward min, +1 toward
+  // max, 0 is the plain log-uniform draw.
+  function drawShapeCount(random, range) {
+    const r = range || {};
+    let lo = Math.max(1, Math.min(SHAPE_COUNT_MAX, num(r.min, 3)));
+    let hi = Math.max(1, Math.min(SHAPE_COUNT_MAX, num(r.max, 60)));
+    if (lo > hi) [lo, hi] = [hi, lo];
+    const bias = Math.max(-1, Math.min(1, num(r.bias, 0)));
+    const u = Math.pow(clamp01(random()), Math.pow(3, -bias));
+    return Math.max(1, Math.round(Math.exp(Math.log(lo) + (Math.log(hi) - Math.log(lo)) * u)));
+  }
+
+  // The drawn element count a clip carries; null = the motif's own count.
+  function shapeLimitOf(params) {
+    const value = Number(params && params.shapes);
+    return Number.isFinite(value) && value > 0 ? Math.min(SHAPE_COUNT_MAX, Math.round(value)) : null;
   }
 
   function blank(params) {
@@ -640,15 +675,26 @@
     const bands = procBands(tb, box);
     const local = info.local;
     const shapes = [];
+    // a drawn element count spreads over the layers in proportion to their own
+    // counts (symmetric copies included); a hand-set `count` still wins
+    const limit = tuning.count == null ? shapeLimitOf(params) : null;
+    const wanted = layers.reduce((sum, layer) => sum + layer.count * procCopies(layer), 0);
+    const share = limit == null ? null : limit / Math.max(1, wanted);
     layers.forEach((layer, li) => {
       if (shapes.length >= PROC_TOTAL_BUDGET) return;
       const random = rng.rngFor(seed, 'proc-place', li, info.index, state.variant);
       const copies = procCopies(layer);
+      // the first layer always draws; a later one only while the count has room
+      if (limit != null && li > 0 && shapes.length + copies > limit) return;
       const countScale = tuning.count == null ? 0.6 + density : tuning.count / 8;
-      const n = Math.max(3, Math.min(150, Math.round(layer.count * countScale)));
+      const n = share == null
+        ? Math.max(3, Math.min(150, Math.round(layer.count * countScale)))
+        : Math.max(1, Math.min(150, Math.round(layer.count * share)));
       let points = procPoints(layer, n, random);
-      // decimate evenly when symmetry would blow the per-layer budget
-      const cap = Math.max(3, Math.floor(PROC_LAYER_BUDGET / copies));
+      // decimate evenly when symmetry would blow the per-layer budget (or the
+      // layouts that round up, grid / brick / bands, overshoot the drawn count)
+      let cap = Math.max(3, Math.floor(PROC_LAYER_BUDGET / copies));
+      if (limit != null) cap = Math.max(1, Math.min(cap, Math.floor((limit - shapes.length) / copies)));
       if (points.length > cap) {
         const stride = Math.ceil(points.length / cap);
         points = points.filter((_, i) => i % stride === 0);
@@ -765,7 +811,15 @@
     const drift = state.drift;
     const scale = state.scale;
     const morph = state.morphPhase == null ? null : clamp01(state.morphPhase);
-    const countOf = (fallback) => (tuning.count == null ? fallback : tuning.count);
+    // a hand-set `count` wins; otherwise a drawn element count (params.shapes)
+    // replaces the density default, clamped to the motif's own sane range
+    // (`per` = shapes one count step draws)
+    const limit = shapeLimitOf(params);
+    const countOf = (fallback, lo, hi, per) => {
+      if (tuning.count != null) return tuning.count;
+      if (limit == null || lo == null) return fallback;
+      return Math.max(lo, Math.min(hi, Math.round(limit / (per || 1))));
+    };
     const stroke = box.short * 0.006 * tuning.stroke;
     const spinRate = state.spinRate == null ? 1 : state.spinRate;
 
@@ -780,7 +834,7 @@
       }
       shapes.push({ kind: 'circle', x: box.cx, y: box.cy, r: box.short * 0.03 * scale, color: colorOf(params, ctx, 0), opacity });
     } else if (motif === 'burst') {
-      const count = countOf(Math.max(4, Math.round(6 + density * 30)));
+      const count = countOf(Math.max(4, Math.round(6 + density * 30)), 3, 40);
       const reach = box.short * 0.22 * scale;
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.05;
@@ -788,7 +842,7 @@
       }
     } else if (motif === 'bars') {
       const bars = Math.max(5, Math.round(8 + density * 16));
-      const total = countOf(bars);
+      const total = countOf(bars, 3, 28);
       const width = box.width * 0.5;
       const morphLevel = morph == null ? 1 : 0.55 + 0.9 * Math.abs(Math.sin(Math.PI * morph));
       for (let i = 0; i < total; i += 1) {
@@ -806,7 +860,7 @@
         shapes.push({ kind: 'ring', x: box.cx, y: box.cy, r: phase * box.short * baseR * (0.7 + 0.3 * scale), thickness: box.short * 0.007 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * (1 - phase) * 0.9 });
       }
     } else if (motif === 'confetti') {
-      const count = countOf(Math.max(4, Math.round(6 + density * 30)));
+      const count = countOf(Math.max(4, Math.round(6 + density * 30)), 3, 60);
       const random = rng.rngFor(0x51ed, 'confetti', info.index, variant);
       for (let i = 0; i < count; i += 1) {
         const rx = random();
@@ -871,7 +925,7 @@
         shapes.push({ kind: 'capsule', x0: points[i].x, y0: points[i].y, x1: points[i + 1].x, y1: points[i + 1].y, width: box.short * 0.011 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
       }
     } else if (motif === 'ticker') {
-      const countTick = countOf(Math.max(4, Math.round(10 + density * 10)));
+      const countTick = countOf(Math.max(4, Math.round(10 + density * 10)), 3, 30);
       const width = box.width * 0.7;
       for (let i = 0; i < countTick; i += 1) {
         const u = (i / countTick + info.local * 0.15 * spinRate) % 1;
@@ -880,7 +934,7 @@
         shapes.push({ kind: 'rect', x, y: box.cy - h, w: box.short * 0.006, h: h * 2, color: colorOf(params, ctx, i), opacity: opacity * 0.7 });
       }
     } else if (motif === 'halftone') {
-      const cols = tuning.count == null ? Math.max(3, Math.round(4 + density * 6)) : Math.max(3, Math.min(12, Math.round(tuning.count / 2)));
+      const cols = tuning.count == null ? (limit == null ? Math.max(3, Math.round(4 + density * 6)) : Math.max(3, Math.min(12, Math.round(Math.sqrt(limit / 0.6))))) : Math.max(3, Math.min(12, Math.round(tuning.count / 2)));
       const rows = Math.max(3, Math.round(cols * 0.6));
       for (let row = 0; row < rows; row += 1) {
         for (let col = 0; col < cols; col += 1) {
@@ -891,7 +945,7 @@
       }
     } else if (motif === 'cracks') {
       const random = rng.rngFor(0x0c4a, 'cracks', info.index, variant);
-      const branches = countOf(4 + Math.round(density * 4));
+      const branches = countOf(4 + Math.round(density * 4), 2, 10, 2);
       const originX = box.cx + (random() * 2 - 1) * box.width * 0.08;
       const originY = box.cy + (random() * 2 - 1) * box.height * 0.08;
       const reach = box.short * (0.12 + 0.14 * (0.4 + 0.6 * progress));
@@ -908,7 +962,7 @@
         shapes.push({ kind: 'capsule', x0: mx, y0: my, x1: ex, y1: ey, width: w * 0.7, color: colorOf(params, ctx, i + 1), opacity: opacity * 0.8 });
       }
     } else if (motif === 'spikes') {
-      const count = countOf(Math.max(6, Math.round(9 + density * 12)));
+      const count = countOf(Math.max(6, Math.round(9 + density * 12)), 4, 30);
       const reach = box.short * 0.2 * scale;
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.04;
@@ -917,7 +971,7 @@
       }
     } else if (motif === 'eyes') {
       const random = rng.rngFor(0x0e75, 'eyes', info.index, variant);
-      const pairs = countOf(3 + Math.round(density * 3));
+      const pairs = countOf(3 + Math.round(density * 3), 1, 8, 2);
       for (let i = 0; i < pairs; i += 1) {
         const ex = box.cx + (random() * 2 - 1) * box.width * 0.22;
         const ey = box.cy + (random() * 2 - 1) * box.height * 0.16;
@@ -928,7 +982,7 @@
       }
     } else if (motif === 'scratches') {
       const random = rng.rngFor(0x5c7a, 'scratches', info.index, variant);
-      const count = countOf(5 + Math.round(density * 4));
+      const count = countOf(5 + Math.round(density * 4), 2, 16);
       const baseAngle = (-38 + variant * 19) * (Math.PI / 180);
       for (let i = 0; i < count; i += 1) {
         const x = box.cx + (random() * 2 - 1) * box.width * 0.3;
@@ -939,7 +993,7 @@
       }
     } else if (motif === 'drips') {
       const random = rng.rngFor(0x0d71, 'drips', info.index, variant);
-      const count = countOf(5 + Math.round(density * 5));
+      const count = countOf(5 + Math.round(density * 5), 2, 12, 2);
       for (let i = 0; i < count; i += 1) {
         const x = box.cx + (random() * 2 - 1) * box.width * 0.3;
         const top = box.cy - box.height * 0.18;
@@ -950,7 +1004,7 @@
         shapes.push({ kind: 'circle', x, y: top + length + w * 0.4, r: w * 0.9, color: colorOf(params, ctx, i), opacity: opacity * 0.9 });
       }
     } else if (motif === 'lattice') {
-      const cells = countOf(4);
+      const cells = countOf(4, 2, 8, 2);
       const spanX = box.width * 0.36 * scale;
       const spanY = box.height * 0.3 * scale;
       const step = (2 * spanX) / Math.max(1, cells);
@@ -964,7 +1018,7 @@
         shapes.push({ kind: 'capsule', x0: box.cx - spanX, y0: box.cy - sign * spanY, x1: box.cx + spanX, y1: box.cy + sign * spanY, width: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, 2), opacity: opacity * 0.8 });
       }
     } else if (motif === 'waves') {
-      const bands = countOf(3);
+      const bands = countOf(3, 1, 4, 16);
       const amp = box.short * (0.04 + 0.03 * density) * (0.4 + 0.6 * progress);
       for (let b = 0; b < bands; b += 1) {
         const phase = (b / Math.max(1, bands)) * TAU + info.local * 1.6 * spinRate;
@@ -979,7 +1033,7 @@
       }
     } else if (motif === 'comets') {
       const random = rng.rngFor(0x0c0e, 'comets', info.index, variant);
-      const count = countOf(4 + Math.round(density * 4));
+      const count = countOf(4 + Math.round(density * 4), 2, 10, 2);
       for (let i = 0; i < count; i += 1) {
         const lane = box.height * (0.15 + random() * 0.7);
         const speed = 0.25 + random() * 0.5;
@@ -1050,7 +1104,7 @@
       // parallel diagonal capsules running in from one side in the band above
       // or below the text box
       const tb = textBox(ctx, box);
-      const countStripes = countOf(Math.max(4, Math.round(5 + density * 3)));
+      const countStripes = countOf(Math.max(4, Math.round(5 + density * 3)), 3, 10);
       const below = variant % 2 === 0;
       const slope = Math.tan((12 * Math.PI) / 180);
       const room = Math.max(box.short * 0.1, (below ? box.height - tb.y1 : tb.y0) - box.short * 0.04);
@@ -1100,7 +1154,7 @@
       }
     } else if (motif === 'sideBars') {
       // three vertical bars per edge, stretching with the beat
-      const countBars = countOf(3);
+      const countBars = countOf(3, 1, 5, 2);
       const pulse = 0.6 + 0.4 * Math.abs(Math.sin(info.local * Math.PI * 2));
       for (let side = 0; side < 2; side += 1) {
         const x = box.width * (side === 0 ? 0.04 : 0.96);
@@ -1565,5 +1619,5 @@
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, PROC, INS, HOLDS, OUTS, SYNCS, STROKES, generate, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, PROC, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });
