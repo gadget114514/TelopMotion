@@ -501,12 +501,7 @@ SA.glPasses = (() => {
   }
 
   function createProgramSafe(gl, vert, frag, attribs) {
-    try {
-      return SA.gl.createProgram(gl, vert, frag, attribs);
-    } catch (error) {
-      if (typeof console !== 'undefined') console.warn(`[gl] ${error.message}`);
-      return null;
-    }
+    return SA.gl.createProgramSafe(gl, vert, frag, attribs);
   }
 
   // --- pipeline ----------------------------------------------------------------
@@ -1387,7 +1382,6 @@ SA.glPasses = (() => {
     sceneBatches,
     sceneBatch,
     clearBatches,
-    createProgramSafe,
     DEFORM_CODES,
     REP_CODES,
     // pure helpers, exposed for the unit tests (no GL context needed)

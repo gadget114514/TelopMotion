@@ -72,6 +72,17 @@ SA.gl = (() => {
     return { program, uniforms };
   }
 
+  // A program that does not build is worth skipping, not worth throwing over: the
+  // caller keeps going without it. gl/sim.js compiles its own programs this way.
+  function createProgramSafe(gl, vertexSource, fragmentSource, attributes) {
+    try {
+      return createProgram(gl, vertexSource, fragmentSource, attributes);
+    } catch (error) {
+      if (typeof console !== 'undefined') console.warn(`[gl] ${error.message}`);
+      return null;
+    }
+  }
+
   function createTexture(gl, options) {
     const opts = options || {};
     const texture = gl.createTexture();
@@ -108,5 +119,5 @@ SA.gl = (() => {
     return error;
   }
 
-  return { supportsWebGL2, createContext, createProgram, createTexture, createTarget, deleteTarget, checkError };
+  return { supportsWebGL2, createContext, createProgram, createProgramSafe, createTexture, createTarget, deleteTarget, checkError };
 })();

@@ -246,14 +246,16 @@ void main() {
   const RD_RESET = `
 void main() {
   vec2 uv = v_uv;
-  float spots = smoothstep(0.58, 0.8, vnoise(uv * 7.0 + u_seed * 13.0)) * u_p1.x;
-  // a couple of isolated seeds, so the pattern has somewhere to break out from
-  for (int i = 0; i < 3; i += 1) {
+  // Gray-Scott needs a nucleus: a few small, solid patches of B inside the A sea.
+  // A soft wide blob decays before the reaction can take hold, and the grid goes
+  // flat, so the patches are hard edged and small.
+  float spots = step(0.62, vnoise(uv * 9.0 + u_seed * 13.0)) * u_p1.x;
+  for (int i = 0; i < 6; i += 1) {
     float fi = float(i);
     vec2 c = vec2(hash21(vec2(fi + 1.0, u_seed)), hash21(vec2(fi + 7.0, u_seed)));
-    spots += smoothstep(0.07, 0.0, distance(uv, c));
+    spots = max(spots, smoothstep(0.04, 0.012, distance(uv, c)));
   }
-  fragColor = vec4(clamp(1.0 - spots, 0.0, 1.0), clamp(spots * 0.9, 0.0, 1.0), 0.0, 1.0);
+  fragColor = vec4(clamp(1.0 - spots, 0.0, 1.0), clamp(spots, 0.0, 1.0), 0.0, 1.0);
 }`;
 
   // -- wave equation: state = (height, height one step ago)
@@ -345,8 +347,11 @@ void main() {
   const FLUID_RESET = `
 void main() {
   vec2 c = v_uv - 0.5;
-  float spin = smoothstep(0.45, 0.0, length(c)) * u_p0.w;
-  fragColor = vec4(vec2(-c.y, c.x) * spin, u_p1.x, 0.0, 1.0);
+  // u_p1.x is the spin the grid starts with (genome slot 4) and u_p1.w the dye it
+  // starts with (slot 7)
+  float spin = smoothstep(0.45, 0.0, length(c)) * u_p1.x;
+  vec2 vel = vec2(-c.y, c.x) * spin;
+  fragColor = vec4(vec3(vel, u_p1.w), 1.0);
 }`;
 
   // -- cellular automata: state = (alive, age, neighbourhood sum)
@@ -406,10 +411,15 @@ void main() {
       step: RD_STEP,
       reset: RD_RESET,
       genome(T) {
-        // the four Gray-Scott feed / kill pairs: coral, worms, solitons, spots
+        // The four Gray-Scott feed / kill pairs: coral, worms, solitons, spots.
+        // The jitter is kept tight: the pattern only exists in a narrow band of the
+        // feed / kill plane, and a wide draw lands outside it and goes flat.
+        // The diffusion numbers stay under 0.7, because the nine point Laplacian
+        // reaches an eigenvalue of about 2.4 and an explicit step needs D * that
+        // under 2 or the clamp flattens the grid.
         const kind = T.int(0, 0, 3);
         const FK = [[0.0367, 0.0649], [0.0545, 0.062], [0.029, 0.057], [0.014, 0.054]][kind];
-        return [T.range(FK[0], FK[0] * 0.7, FK[0] * 1.3), T.range(FK[1], FK[1] * 0.9, FK[1] * 1.1), T.range(1, 0.7, 1.4), T.range(0.5, 0.3, 0.8), T.range(1, 0.2, 1), T.range(1, 0.4, 1), 0, 0, kind, T.int(2, 1, 4), T.range(14, 6, 30), T.range(0.7, 0.3, 1.3)];
+        return [T.range(FK[0], FK[0] * 0.88, FK[0] * 1.12), T.range(FK[1], FK[1] * 0.95, FK[1] * 1.05), T.range(0.5, 0.35, 0.7), T.range(0.25, 0.15, 0.4), T.range(1, 0.2, 1), T.range(1, 0.4, 1), 0, 0, kind, T.int(2, 1, 4), T.range(14, 6, 30), T.range(0.7, 0.3, 1.3)];
       },
     },
     wave2d: {
@@ -426,21 +436,34 @@ void main() {
       step: FLUID_STEP,
       reset: FLUID_RESET,
       genome(T) {
-        // p0 = (advect, viscosity, push, dye loss, spin at the start),
-        // p1 = (iterations, vorticity, dye at the start)
-        return [T.range(1, 0.85, 1.15), T.range(0.02, 0.002, 0.08), T.range(0.9, 0.3, 2), T.range(0.012, 0.002, 0.04), T.range(0.6, 0, 1.2), T.int(10, 4, 16), T.range(6, 1, 14), T.range(0.7, 0.2, 1), T.int(1, 0, 1), T.int(2, 1, 4), T.range(18, 8, 34), T.range(0.9, 0.4, 1.5)];
+        // p0 = (advect, viscosity, push, dye loss),
+        // p1 = (spin at the start, sweep count, vorticity, dye at the start)
+        // The dye has to outlive the clip, or the figure fades to nothing: the loss
+        // is a fraction per step, so 0.01 is about half in three seconds. The
+        // vorticity confinement is a nudge, not a force - at 1.0 it saturates the
+        // velocity and the advection smears the dye into a line.
+        return [T.range(1, 0.85, 1.15), T.range(0.08, 0.02, 0.2), T.range(0.9, 0.3, 2), T.range(0.006, 0.0005, 0.014), T.range(0.6, 0, 1.2), T.int(10, 4, 16), T.range(0.4, 0.05, 0.8), T.range(0.7, 0.3, 1), T.int(1, 0, 1), T.int(2, 1, 4), T.range(18, 8, 34), T.range(0.9, 0.4, 1.5)];
       },
       // the divergence and the two pressure buffers the projection ping-pongs
       // between; none of them are part of the saved state
       scratch: 3,
+      // Every pass names the buffers it reads as well as the one it writes. That
+      // is not decoration: a sampler left bound to the buffer the next pass writes
+      // is a feedback loop, and the driver rejects the draw rather than quietly
+      // rendering. `state` is the live pair, which no pass ever writes.
       passes(u, kind) {
-        const iters = Math.max(1, Math.min(24, Math.round(u.u_p1[0])));
-        const list = [{ pass: 0, target: 'div', press: null }];
-        // sweep i reads the buffer written by sweep i-1, starting from a zeroed one
+        // u_p1.y holds the sweep count (genome slot 5); u_p1.x is the spin the
+        // seeded start uses
+        const iters = Math.max(1, Math.min(24, Math.round(u.u_p1[1])));
+        // the divergence pass reads the velocity and writes the divergence; the two
+        // pressure buffers are only touched by the sweeps
+        const list = [{ pass: 0, target: 'div', div: 'state', press: 'state' }];
         for (let i = 0; i < iters; i += 1) {
-          list.push({ pass: 1, target: i % 2 === 0 ? 'pressA' : 'pressB', press: i % 2 === 0 ? 'pressB' : 'pressA' });
+          const write = i % 2 === 0 ? 'pressA' : 'pressB';
+          const read = i % 2 === 0 ? 'pressB' : 'pressA';
+          list.push({ pass: 1, target: write, div: 'div', press: read });
         }
-        list.push({ pass: 2, target: 'alt', press: iters % 2 === 1 ? 'pressA' : 'pressB' });
+        list.push({ pass: 2, target: 'alt', div: 'div', press: iters % 2 === 1 ? 'pressA' : 'pressB' });
         void kind;
         return list;
       },
@@ -517,7 +540,10 @@ void main() {
     let tick = 0;
     const stats = { steps: 0, keys: 0, restores: 0, seeds: 0, catchups: 0 };
 
-    const ready = () => typeof SA !== 'undefined' && SA.gl && SA.gl.createTarget && SA.glPasses && SA.glShaders;
+    // The helper lives in gl/context.js rather than in passes.js: passes.js is the
+    // one that drives this runner, and a module that needs the other would make a
+    // ring of the two.
+    const ready = () => typeof SA !== 'undefined' && SA.gl && SA.gl.createTarget && SA.gl.createProgramSafe && SA.glShaders && SA.glFields;
 
     // One program per (sim, reset?) pair, compiled the first time it is needed. A
     // shader that does not build is remembered as null and the sim stays off.
@@ -527,14 +553,14 @@ void main() {
       if (entry !== undefined) return entry;
       if (!ready()) return (entry = null);
       const def = SIM_DEFS[id];
-      entry = SA.glPasses.createProgramSafe(gl, SA.glShaders.QUAD_VERT, `${reset ? RESET_HEAD : STEP_HEAD}${def[reset ? 'reset' : 'step']}`);
+      entry = SA.gl.createProgramSafe(gl, SA.glShaders.QUAD_VERT, `${reset ? RESET_HEAD : STEP_HEAD}${def[reset ? 'reset' : 'step']}`);
       programs.set(key, entry || null);
       return entry || null;
     }
 
     function copyProgram() {
       if (programs.has('__copy')) return programs.get('__copy');
-      const entry = ready() ? SA.glPasses.createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COPY_FRAG) : null;
+      const entry = ready() ? SA.gl.createProgramSafe(gl, SA.glShaders.QUAD_VERT, SA.glShaders.COPY_FRAG) : null;
       programs.set('__copy', entry || null);
       return entry || null;
     }
@@ -675,21 +701,19 @@ void main() {
       const next = clip.step + 1;
       const base = { ...baseUniforms(clip, next), ...splatUniforms(clip, next) };
       gl.useProgram(program.program);
-      bindTex(0, clip.cur.texture, 'u_state', program);
       if (def.scratch) {
         const scratch = { div: clip.scratch[0], pressA: clip.scratch[1], pressB: clip.scratch[2] };
+        const pick = (name) => (name === 'state' ? clip.cur : name === 'alt' ? clip.alt : scratch[name]);
         for (const item of def.passes(base, clip.kind)) {
-          const target = item.target === 'alt' ? clip.alt : scratch[item.target];
-          gl.useProgram(program.program);
-          if (item.pass === 1) {
-            bindTex(1, scratch.div.texture, 'u_div', program);
-            bindTex(2, scratch[item.press].texture, 'u_press', program);
-          } else if (item.pass === 2) {
-            bindTex(2, scratch[item.press].texture, 'u_press', program);
-          }
-          draw(program, { ...base, u_pass: item.pass }, target);
+          // every pass rebinds all three samplers, so nothing is left pointing at
+          // the buffer this pass is about to write
+          bindTex(0, clip.cur.texture, 'u_state', program);
+          bindTex(1, pick(item.div).texture, 'u_div', program);
+          bindTex(2, pick(item.press).texture, 'u_press', program);
+          draw(program, { ...base, u_pass: item.pass }, pick(item.target));
         }
       } else {
+        bindTex(0, clip.cur.texture, 'u_state', program);
         draw(program, base, clip.alt);
       }
       const swap = clip.cur;
@@ -752,7 +776,9 @@ void main() {
       for (let i = 0; i < steps; i += 1) {
         if (!stepOnce(clip)) return null;
       }
-      return clip.cur;
+      // the step it ended on, so a caller (and the GL check) can tell a bounded
+      // catch-up from an arrival
+      return { ...clip.cur, step: clip.step };
     }
 
     function dispose() {
@@ -788,6 +814,10 @@ void main() {
     CATCHUP_CAP,
     RES,
     SIM_DEFS,
+    // the shader preambles, so a driver can be pointed at one sim without pulling
+    // the whole module apart (scripts/gl-check.js)
+    STEP_HEAD,
+    RESET_HEAD,
     MAX_SPLATS,
     MAX_KEY_BYTES,
     stepOf,

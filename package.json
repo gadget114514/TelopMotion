@@ -18,6 +18,7 @@
     "demo30": "node scripts/demo30.js build",
     "distinct": "node scripts/distinct-count.js",
     "check": "node scripts/check.js",
+    "glcheck": "electron scripts/gl-check.js --no-sandbox",
     "test": "node --test \"scripts/test/**/*.test.js\"",
     "vendor": "node scripts/vendor.js"
   },

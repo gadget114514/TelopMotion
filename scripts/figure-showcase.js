@@ -181,7 +181,7 @@ function motifFamilies() {
     {
       id: 'field',
       label: '数式フィールド (field)',
-      note: 'gl/fields.js の 16 個の shader フィールド。画面全体を塗る図形で、文字の部分だけ feathered な窓が開きます。',
+      note: 'gl/fields.js の 16 個の shader フィールドと、gl/sim.js の 4 個のシミュレーション（反応拡散・波動方程式・流体・セルオートマトン）。画面全体を塗る図形で、文字の部分だけ feathered な窓が開きます。',
       list: figures.FIELD_MOTIFS,
     },
   ];
