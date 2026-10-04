@@ -1545,6 +1545,82 @@
   applyFxAdditions(fr, ADD_SHADER_FR);
   applyFxAdditions(ru, ADD_SHADER_RU);
 
+  // sand crumble / gather (per-letter) and the fisheye post shader
+  const ADD_SAND = {
+    en: {
+      types: { post: { fisheye: 'Fisheye' }, enter: { sandGather: 'Sand gather' }, exit: { sandCrumble: 'Sand crumble' } },
+      params: { wind: 'Wind', pile: 'Pile up', power: 'Power', lensRadius: 'Lens radius', aberration: 'Aberration' },
+    },
+    ja: {
+      types: { post: { fisheye: '魚眼' }, enter: { sandGather: '砂が集まる' }, exit: { sandCrumble: '砂になって崩れる' } },
+      params: { wind: '風', pile: '積もらせる', power: '歪みの強さ', lensRadius: 'レンズ半径', aberration: '色収差' },
+    },
+    es: {
+      types: { post: { fisheye: 'Ojo de pez' }, enter: { sandGather: 'Arena que se junta' }, exit: { sandCrumble: 'Desmoronarse en arena' } },
+      params: { wind: 'Viento', pile: 'Acumular', power: 'Intensidad', lensRadius: 'Radio de lente', aberration: 'Aberración' },
+    },
+    fr: {
+      types: { post: { fisheye: 'Fisheye' }, enter: { sandGather: 'Sable qui s’assemble' }, exit: { sandCrumble: 'Effritement en sable' } },
+      params: { wind: 'Vent', pile: 'Accumuler', power: 'Puissance', lensRadius: 'Rayon de lentille', aberration: 'Aberration' },
+    },
+    ru: {
+      types: { post: { fisheye: 'Рыбий глаз' }, enter: { sandGather: 'Песок собирается' }, exit: { sandCrumble: 'Рассыпание в песок' } },
+      params: { wind: 'Ветер', pile: 'Насыпать', power: 'Сила', lensRadius: 'Радиус линзы', aberration: 'Аберрация' },
+    },
+  };
+  applyFxAdditions(en, ADD_SAND.en);
+  applyFxAdditions(ja, ADD_SAND.ja);
+  applyFxAdditions(es, ADD_SAND.es);
+  applyFxAdditions(fr, ADD_SAND.fr);
+  applyFxAdditions(ru, ADD_SAND.ru);
+
+  // hold.orbit2D (円運動) and the eight directions of the linear background
+  // gradient. `radius`, `spread`, `tilt`, `spin` and `direction` already have
+  // param labels; only the type and the select values are new.
+  const ADD_ORBIT = {
+    en: {
+      types: { hold: { orbit2D: 'Circle orbit' }, background: { gradient: 'Gradient (8 directions)' } },
+      params: { veinWidth: 'Vein width' },
+      values: {
+        toBottom: 'To bottom', toBottomLeft: 'To bottom left', toLeft: 'To left', toTopLeft: 'To top left',
+        toTop: 'To top', toTopRight: 'To top right', toRight: 'To right', toBottomRight: 'To bottom right',
+      },
+    },
+    ja: {
+      types: { hold: { orbit2D: '円運動' }, background: { gradient: 'グラデーション（8方向）' } },
+      values: {
+        toBottom: '下へ', toBottomLeft: '左下へ', toLeft: '左へ', toTopLeft: '左上へ',
+        toTop: '上へ', toTopRight: '右上へ', toRight: '右へ', toBottomRight: '右下へ',
+      },
+    },
+    es: {
+      types: { hold: { orbit2D: 'Órbita circular' }, background: { gradient: 'Degradado (8 direcciones)' } },
+      values: {
+        toBottom: 'Hacia abajo', toBottomLeft: 'Hacia abajo a la izquierda', toLeft: 'Hacia la izquierda', toTopLeft: 'Hacia arriba a la izquierda',
+        toTop: 'Hacia arriba', toTopRight: 'Hacia arriba a la derecha', toRight: 'Hacia la derecha', toBottomRight: 'Hacia abajo a la derecha',
+      },
+    },
+    fr: {
+      types: { hold: { orbit2D: 'Orbite circulaire' }, background: { gradient: 'Dégradé (8 directions)' } },
+      values: {
+        toBottom: 'Vers le bas', toBottomLeft: 'Vers le bas à gauche', toLeft: 'Vers la gauche', toTopLeft: 'Vers le haut à gauche',
+        toTop: 'Vers le haut', toTopRight: 'Vers le haut à droite', toRight: 'Vers la droite', toBottomRight: 'Vers le bas à droite',
+      },
+    },
+    ru: {
+      types: { hold: { orbit2D: 'Круговая орбита' }, background: { gradient: 'Градиент (8 направлений)' } },
+      values: {
+        toBottom: 'Вниз', toBottomLeft: 'Вниз-влево', toLeft: 'Влево', toTopLeft: 'Вверх-влево',
+        toTop: 'Вверх', toTopRight: 'Вверх-вправо', toRight: 'Вправо', toBottomRight: 'Вниз-вправо',
+      },
+    },
+  };
+  applyFxAdditions(en, ADD_ORBIT.en);
+  applyFxAdditions(ja, ADD_ORBIT.ja);
+  applyFxAdditions(es, ADD_ORBIT.es);
+  applyFxAdditions(fr, ADD_ORBIT.fr);
+  applyFxAdditions(ru, ADD_ORBIT.ru);
+
   // Partial decoration editor strings (inspector section). They ride along the
   // fx table so the five languages stay in one place.
   const SCOPED_UI = {

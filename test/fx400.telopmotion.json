@@ -3,8 +3,8 @@
   "version": 4,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-04T10:50:07.111Z",
-    "updatedAt": "2026-10-04T10:50:07.111Z",
+    "createdAt": "2026-10-04T12:32:07.474Z",
+    "updatedAt": "2026-10-04T12:32:07.474Z",
     "lang": "ja"
   },
   "song": {
@@ -4898,6 +4898,24 @@
     },
     "fx_078": {
       "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_079": {
+      "enter": {
         "type": "shatterRebuild",
         "enabled": true,
         "params": {
@@ -4912,7 +4930,7 @@
         }
       }
     },
-    "fx_079": {
+    "fx_080": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -4927,7 +4945,7 @@
         }
       }
     },
-    "fx_080": {
+    "fx_081": {
       "enter": {
         "type": "noiseDissolveIn",
         "enabled": true,
@@ -4944,7 +4962,7 @@
         }
       }
     },
-    "fx_081": {
+    "fx_082": {
       "enter": {
         "type": "dissolve",
         "enabled": true,
@@ -4959,7 +4977,7 @@
         }
       }
     },
-    "fx_082": {
+    "fx_083": {
       "enter": {
         "type": "fade",
         "enabled": true,
@@ -4975,7 +4993,7 @@
         }
       }
     },
-    "fx_083": {
+    "fx_084": {
       "enter": {
         "type": "typewriter",
         "enabled": true,
@@ -4994,7 +5012,7 @@
         }
       }
     },
-    "fx_084": {
+    "fx_085": {
       "enter": {
         "type": "slide",
         "enabled": true,
@@ -5010,7 +5028,7 @@
         }
       }
     },
-    "fx_085": {
+    "fx_086": {
       "enter": {
         "type": "dropBounce",
         "enabled": true,
@@ -5025,7 +5043,7 @@
         }
       }
     },
-    "fx_086": {
+    "fx_087": {
       "enter": {
         "type": "zoomIn",
         "enabled": true,
@@ -5040,7 +5058,7 @@
         }
       }
     },
-    "fx_087": {
+    "fx_088": {
       "enter": {
         "type": "blurIn",
         "enabled": true,
@@ -5055,7 +5073,7 @@
         }
       }
     },
-    "fx_088": {
+    "fx_089": {
       "enter": {
         "type": "flip3D",
         "enabled": true,
@@ -5071,7 +5089,7 @@
         }
       }
     },
-    "fx_089": {
+    "fx_090": {
       "enter": {
         "type": "rotateIn",
         "enabled": true,
@@ -5086,7 +5104,7 @@
         }
       }
     },
-    "fx_090": {
+    "fx_091": {
       "enter": {
         "type": "scatterIn",
         "enabled": true,
@@ -5101,7 +5119,7 @@
         }
       }
     },
-    "fx_091": {
+    "fx_092": {
       "enter": {
         "type": "waveRise",
         "enabled": true,
@@ -5116,7 +5134,7 @@
         }
       }
     },
-    "fx_092": {
+    "fx_093": {
       "enter": {
         "type": "elasticPop",
         "enabled": true,
@@ -5129,7 +5147,7 @@
         }
       }
     },
-    "fx_093": {
+    "fx_094": {
       "enter": {
         "type": "scramble",
         "enabled": true,
@@ -5145,7 +5163,7 @@
         }
       }
     },
-    "fx_094": {
+    "fx_095": {
       "enter": {
         "type": "glitchIn",
         "enabled": true,
@@ -5160,7 +5178,7 @@
         }
       }
     },
-    "fx_095": {
+    "fx_096": {
       "enter": {
         "type": "neonFlicker",
         "enabled": true,
@@ -5175,7 +5193,7 @@
         }
       }
     },
-    "fx_096": {
+    "fx_097": {
       "enter": {
         "type": "flickerIn",
         "enabled": true,
@@ -5190,7 +5208,7 @@
         }
       }
     },
-    "fx_097": {
+    "fx_098": {
       "enter": {
         "type": "strokeDrawOn",
         "enabled": true,
@@ -5206,7 +5224,7 @@
         }
       }
     },
-    "fx_098": {
+    "fx_099": {
       "enter": {
         "type": "particlesAssemble",
         "enabled": true,
@@ -5223,7 +5241,25 @@
         }
       }
     },
-    "fx_099": {
+    "fx_100": {
+      "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": 0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_101": {
       "enter": {
         "type": "shatterRebuild",
         "enabled": true,
@@ -5239,7 +5275,7 @@
         }
       }
     },
-    "fx_100": {
+    "fx_102": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -5254,7 +5290,7 @@
         }
       }
     },
-    "fx_101": {
+    "fx_103": {
       "enter": {
         "type": "noiseDissolveIn",
         "enabled": true,
@@ -5271,7 +5307,7 @@
         }
       }
     },
-    "fx_102": {
+    "fx_104": {
       "enter": {
         "type": "dissolve",
         "enabled": true,
@@ -5286,7 +5322,7 @@
         }
       }
     },
-    "fx_103": {
+    "fx_105": {
       "enter": {
         "type": "fade",
         "enabled": true,
@@ -5302,7 +5338,7 @@
         }
       }
     },
-    "fx_104": {
+    "fx_106": {
       "enter": {
         "type": "typewriter",
         "enabled": true,
@@ -5321,7 +5357,7 @@
         }
       }
     },
-    "fx_105": {
+    "fx_107": {
       "enter": {
         "type": "slide",
         "enabled": true,
@@ -5337,7 +5373,7 @@
         }
       }
     },
-    "fx_106": {
+    "fx_108": {
       "enter": {
         "type": "dropBounce",
         "enabled": true,
@@ -5352,7 +5388,7 @@
         }
       }
     },
-    "fx_107": {
+    "fx_109": {
       "enter": {
         "type": "zoomIn",
         "enabled": true,
@@ -5367,7 +5403,7 @@
         }
       }
     },
-    "fx_108": {
+    "fx_110": {
       "enter": {
         "type": "blurIn",
         "enabled": true,
@@ -5382,7 +5418,7 @@
         }
       }
     },
-    "fx_109": {
+    "fx_111": {
       "enter": {
         "type": "flip3D",
         "enabled": true,
@@ -5398,7 +5434,7 @@
         }
       }
     },
-    "fx_110": {
+    "fx_112": {
       "enter": {
         "type": "rotateIn",
         "enabled": true,
@@ -5413,7 +5449,7 @@
         }
       }
     },
-    "fx_111": {
+    "fx_113": {
       "enter": {
         "type": "scatterIn",
         "enabled": true,
@@ -5428,7 +5464,7 @@
         }
       }
     },
-    "fx_112": {
+    "fx_114": {
       "enter": {
         "type": "waveRise",
         "enabled": true,
@@ -5443,7 +5479,7 @@
         }
       }
     },
-    "fx_113": {
+    "fx_115": {
       "enter": {
         "type": "scramble",
         "enabled": true,
@@ -5459,7 +5495,7 @@
         }
       }
     },
-    "fx_114": {
+    "fx_116": {
       "enter": {
         "type": "glitchIn",
         "enabled": true,
@@ -5474,7 +5510,7 @@
         }
       }
     },
-    "fx_115": {
+    "fx_117": {
       "enter": {
         "type": "neonFlicker",
         "enabled": true,
@@ -5489,7 +5525,7 @@
         }
       }
     },
-    "fx_116": {
+    "fx_118": {
       "enter": {
         "type": "flickerIn",
         "enabled": true,
@@ -5504,7 +5540,7 @@
         }
       }
     },
-    "fx_117": {
+    "fx_119": {
       "enter": {
         "type": "strokeDrawOn",
         "enabled": true,
@@ -5520,7 +5556,7 @@
         }
       }
     },
-    "fx_118": {
+    "fx_120": {
       "enter": {
         "type": "particlesAssemble",
         "enabled": true,
@@ -5537,7 +5573,25 @@
         }
       }
     },
-    "fx_119": {
+    "fx_121": {
+      "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": 0.25,
+          "gravity": 9,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_122": {
       "enter": {
         "type": "shatterRebuild",
         "enabled": true,
@@ -5553,7 +5607,7 @@
         }
       }
     },
-    "fx_120": {
+    "fx_123": {
       "enter": {
         "type": "noiseDissolveIn",
         "enabled": true,
@@ -5570,7 +5624,7 @@
         }
       }
     },
-    "fx_121": {
+    "fx_124": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -5586,7 +5640,7 @@
         }
       }
     },
-    "fx_122": {
+    "fx_125": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -5602,7 +5656,7 @@
         }
       }
     },
-    "fx_123": {
+    "fx_126": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -5617,7 +5671,7 @@
         }
       }
     },
-    "fx_124": {
+    "fx_127": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -5632,7 +5686,7 @@
         }
       }
     },
-    "fx_125": {
+    "fx_128": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -5648,7 +5702,7 @@
         }
       }
     },
-    "fx_126": {
+    "fx_129": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -5664,7 +5718,7 @@
         }
       }
     },
-    "fx_127": {
+    "fx_130": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
@@ -5679,7 +5733,7 @@
         }
       }
     },
-    "fx_128": {
+    "fx_131": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -5694,7 +5748,7 @@
         }
       }
     },
-    "fx_129": {
+    "fx_132": {
       "exit": {
         "type": "typewriterReverse",
         "enabled": true,
@@ -5707,7 +5761,7 @@
         }
       }
     },
-    "fx_130": {
+    "fx_133": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5720,7 +5774,7 @@
         }
       }
     },
-    "fx_131": {
+    "fx_134": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5736,7 +5790,25 @@
         }
       }
     },
-    "fx_132": {
+    "fx_135": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_136": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5751,7 +5823,7 @@
         }
       }
     },
-    "fx_133": {
+    "fx_137": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5768,7 +5840,7 @@
         }
       }
     },
-    "fx_134": {
+    "fx_138": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5783,7 +5855,7 @@
         }
       }
     },
-    "fx_135": {
+    "fx_139": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -5798,7 +5870,7 @@
         }
       }
     },
-    "fx_136": {
+    "fx_140": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -5814,7 +5886,7 @@
         }
       }
     },
-    "fx_137": {
+    "fx_141": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -5830,7 +5902,7 @@
         }
       }
     },
-    "fx_138": {
+    "fx_142": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -5845,7 +5917,7 @@
         }
       }
     },
-    "fx_139": {
+    "fx_143": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -5860,7 +5932,7 @@
         }
       }
     },
-    "fx_140": {
+    "fx_144": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -5876,7 +5948,7 @@
         }
       }
     },
-    "fx_141": {
+    "fx_145": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -5892,7 +5964,7 @@
         }
       }
     },
-    "fx_142": {
+    "fx_146": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
@@ -5907,7 +5979,7 @@
         }
       }
     },
-    "fx_143": {
+    "fx_147": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -5922,7 +5994,7 @@
         }
       }
     },
-    "fx_144": {
+    "fx_148": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5935,7 +6007,7 @@
         }
       }
     },
-    "fx_145": {
+    "fx_149": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5951,7 +6023,25 @@
         }
       }
     },
-    "fx_146": {
+    "fx_150": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": 0.6,
+          "gravity": 3,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 0.2,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_151": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5966,7 +6056,7 @@
         }
       }
     },
-    "fx_147": {
+    "fx_152": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5983,7 +6073,7 @@
         }
       }
     },
-    "fx_148": {
+    "fx_153": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5998,7 +6088,7 @@
         }
       }
     },
-    "fx_149": {
+    "fx_154": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -6013,7 +6103,7 @@
         }
       }
     },
-    "fx_150": {
+    "fx_155": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -6029,7 +6119,7 @@
         }
       }
     },
-    "fx_151": {
+    "fx_156": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -6045,7 +6135,7 @@
         }
       }
     },
-    "fx_152": {
+    "fx_157": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -6060,7 +6150,7 @@
         }
       }
     },
-    "fx_153": {
+    "fx_158": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -6075,7 +6165,7 @@
         }
       }
     },
-    "fx_154": {
+    "fx_159": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -6091,7 +6181,7 @@
         }
       }
     },
-    "fx_155": {
+    "fx_160": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -6107,7 +6197,7 @@
         }
       }
     },
-    "fx_156": {
+    "fx_161": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
@@ -6122,7 +6212,7 @@
         }
       }
     },
-    "fx_157": {
+    "fx_162": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -6137,7 +6227,7 @@
         }
       }
     },
-    "fx_158": {
+    "fx_163": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -6150,7 +6240,7 @@
         }
       }
     },
-    "fx_159": {
+    "fx_164": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -6166,7 +6256,25 @@
         }
       }
     },
-    "fx_160": {
+    "fx_165": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": 0.25,
+          "gravity": 9,
+          "grain": 2.4,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "backIn"
+          }
+        }
+      }
+    },
+    "fx_166": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -6181,7 +6289,7 @@
         }
       }
     },
-    "fx_161": {
+    "fx_167": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -6198,7 +6306,7 @@
         }
       }
     },
-    "fx_162": {
+    "fx_168": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -6213,7 +6321,7 @@
         }
       }
     },
-    "fx_163": {
+    "fx_169": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -6228,7 +6336,7 @@
         }
       }
     },
-    "fx_164": {
+    "fx_170": {
       "hold": [
         {
           "type": "floatBob",
@@ -6241,7 +6349,7 @@
         }
       ]
     },
-    "fx_165": {
+    "fx_171": {
       "hold": [
         {
           "type": "sineWave",
@@ -6255,7 +6363,7 @@
         }
       ]
     },
-    "fx_166": {
+    "fx_172": {
       "hold": [
         {
           "type": "jitter",
@@ -6268,7 +6376,7 @@
         }
       ]
     },
-    "fx_167": {
+    "fx_173": {
       "hold": [
         {
           "type": "pulse",
@@ -6281,7 +6389,7 @@
         }
       ]
     },
-    "fx_168": {
+    "fx_174": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6295,7 +6403,7 @@
         }
       ]
     },
-    "fx_169": {
+    "fx_175": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6311,7 +6419,7 @@
         }
       ]
     },
-    "fx_170": {
+    "fx_176": {
       "hold": [
         {
           "type": "drift",
@@ -6324,7 +6432,7 @@
         }
       ]
     },
-    "fx_171": {
+    "fx_177": {
       "hold": [
         {
           "type": "marquee",
@@ -6336,7 +6444,7 @@
         }
       ]
     },
-    "fx_172": {
+    "fx_178": {
       "hold": [
         {
           "type": "jelly",
@@ -6349,7 +6457,7 @@
         }
       ]
     },
-    "fx_173": {
+    "fx_179": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6363,7 +6471,7 @@
         }
       ]
     },
-    "fx_174": {
+    "fx_180": {
       "hold": [
         {
           "type": "twist",
@@ -6375,7 +6483,7 @@
         }
       ]
     },
-    "fx_175": {
+    "fx_181": {
       "hold": [
         {
           "type": "breathing",
@@ -6387,7 +6495,7 @@
         }
       ]
     },
-    "fx_176": {
+    "fx_182": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6400,7 +6508,7 @@
         }
       ]
     },
-    "fx_177": {
+    "fx_183": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6426,7 +6534,7 @@
         }
       ]
     },
-    "fx_178": {
+    "fx_184": {
       "hold": [
         {
           "type": "heartbeat",
@@ -6439,7 +6547,7 @@
         }
       ]
     },
-    "fx_179": {
+    "fx_185": {
       "hold": [
         {
           "type": "shiver",
@@ -6452,7 +6560,7 @@
         }
       ]
     },
-    "fx_180": {
+    "fx_186": {
       "hold": [
         {
           "type": "dissolve",
@@ -6465,7 +6573,7 @@
         }
       ]
     },
-    "fx_181": {
+    "fx_187": {
       "hold": [
         {
           "type": "floatBob",
@@ -6478,7 +6586,7 @@
         }
       ]
     },
-    "fx_182": {
+    "fx_188": {
       "hold": [
         {
           "type": "sineWave",
@@ -6492,7 +6600,7 @@
         }
       ]
     },
-    "fx_183": {
+    "fx_189": {
       "hold": [
         {
           "type": "jitter",
@@ -6505,7 +6613,7 @@
         }
       ]
     },
-    "fx_184": {
+    "fx_190": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6519,7 +6627,7 @@
         }
       ]
     },
-    "fx_185": {
+    "fx_191": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6535,7 +6643,7 @@
         }
       ]
     },
-    "fx_186": {
+    "fx_192": {
       "hold": [
         {
           "type": "drift",
@@ -6548,7 +6656,7 @@
         }
       ]
     },
-    "fx_187": {
+    "fx_193": {
       "hold": [
         {
           "type": "marquee",
@@ -6560,7 +6668,7 @@
         }
       ]
     },
-    "fx_188": {
+    "fx_194": {
       "hold": [
         {
           "type": "jelly",
@@ -6573,7 +6681,7 @@
         }
       ]
     },
-    "fx_189": {
+    "fx_195": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6587,7 +6695,7 @@
         }
       ]
     },
-    "fx_190": {
+    "fx_196": {
       "hold": [
         {
           "type": "twist",
@@ -6599,7 +6707,7 @@
         }
       ]
     },
-    "fx_191": {
+    "fx_197": {
       "hold": [
         {
           "type": "breathing",
@@ -6611,7 +6719,7 @@
         }
       ]
     },
-    "fx_192": {
+    "fx_198": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6624,7 +6732,7 @@
         }
       ]
     },
-    "fx_193": {
+    "fx_199": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6650,7 +6758,7 @@
         }
       ]
     },
-    "fx_194": {
+    "fx_200": {
       "hold": [
         {
           "type": "shiver",
@@ -6663,7 +6771,7 @@
         }
       ]
     },
-    "fx_195": {
+    "fx_201": {
       "hold": [
         {
           "type": "dissolve",
@@ -6676,7 +6784,7 @@
         }
       ]
     },
-    "fx_196": {
+    "fx_202": {
       "hold": [
         {
           "type": "floatBob",
@@ -6689,7 +6797,7 @@
         }
       ]
     },
-    "fx_197": {
+    "fx_203": {
       "hold": [
         {
           "type": "sineWave",
@@ -6703,7 +6811,7 @@
         }
       ]
     },
-    "fx_198": {
+    "fx_204": {
       "hold": [
         {
           "type": "jitter",
@@ -6716,7 +6824,7 @@
         }
       ]
     },
-    "fx_199": {
+    "fx_205": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6730,7 +6838,7 @@
         }
       ]
     },
-    "fx_200": {
+    "fx_206": {
       "hold": [
         {
           "type": "drift",
@@ -6743,7 +6851,7 @@
         }
       ]
     },
-    "fx_201": {
+    "fx_207": {
       "hold": [
         {
           "type": "marquee",
@@ -6755,7 +6863,7 @@
         }
       ]
     },
-    "fx_202": {
+    "fx_208": {
       "hold": [
         {
           "type": "jelly",
@@ -6768,7 +6876,7 @@
         }
       ]
     },
-    "fx_203": {
+    "fx_209": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6782,7 +6890,7 @@
         }
       ]
     },
-    "fx_204": {
+    "fx_210": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6795,7 +6903,7 @@
         }
       ]
     },
-    "fx_205": {
+    "fx_211": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6821,7 +6929,7 @@
         }
       ]
     },
-    "fx_206": {
+    "fx_212": {
       "hold": [
         {
           "type": "shiver",
@@ -6834,7 +6942,7 @@
         }
       ]
     },
-    "fx_207": {
+    "fx_213": {
       "hold": [
         {
           "type": "dissolve",
@@ -6847,7 +6955,7 @@
         }
       ]
     },
-    "fx_208": {
+    "fx_214": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -6863,7 +6971,7 @@
         "motion": {}
       }
     },
-    "fx_209": {
+    "fx_215": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -6879,7 +6987,7 @@
         "motion": {}
       }
     },
-    "fx_210": {
+    "fx_216": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -6895,7 +7003,7 @@
         "motion": {}
       }
     },
-    "fx_211": {
+    "fx_217": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -6911,7 +7019,7 @@
         "motion": {}
       }
     },
-    "fx_212": {
+    "fx_218": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -6927,7 +7035,7 @@
         "motion": {}
       }
     },
-    "fx_213": {
+    "fx_219": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -6943,7 +7051,7 @@
         "motion": {}
       }
     },
-    "fx_214": {
+    "fx_220": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -6959,7 +7067,7 @@
         "motion": {}
       }
     },
-    "fx_215": {
+    "fx_221": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -6975,7 +7083,7 @@
         "motion": {}
       }
     },
-    "fx_216": {
+    "fx_222": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -6991,7 +7099,7 @@
         "motion": {}
       }
     },
-    "fx_217": {
+    "fx_223": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7009,7 +7117,7 @@
         "motion": {}
       }
     },
-    "fx_218": {
+    "fx_224": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -7025,7 +7133,7 @@
         "motion": {}
       }
     },
-    "fx_219": {
+    "fx_225": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -7041,7 +7149,7 @@
         "motion": {}
       }
     },
-    "fx_220": {
+    "fx_226": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -7057,7 +7165,7 @@
         "motion": {}
       }
     },
-    "fx_221": {
+    "fx_227": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -7073,7 +7181,7 @@
         "motion": {}
       }
     },
-    "fx_222": {
+    "fx_228": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -7089,7 +7197,7 @@
         "motion": {}
       }
     },
-    "fx_223": {
+    "fx_229": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -7105,7 +7213,7 @@
         "motion": {}
       }
     },
-    "fx_224": {
+    "fx_230": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -7121,7 +7229,7 @@
         "motion": {}
       }
     },
-    "fx_225": {
+    "fx_231": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -7137,7 +7245,7 @@
         "motion": {}
       }
     },
-    "fx_226": {
+    "fx_232": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -7153,7 +7261,7 @@
         "motion": {}
       }
     },
-    "fx_227": {
+    "fx_233": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7171,7 +7279,7 @@
         "motion": {}
       }
     },
-    "fx_228": {
+    "fx_234": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -7187,7 +7295,7 @@
         "motion": {}
       }
     },
-    "fx_229": {
+    "fx_235": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -7203,7 +7311,7 @@
         "motion": {}
       }
     },
-    "fx_230": {
+    "fx_236": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -7219,7 +7327,7 @@
         "motion": {}
       }
     },
-    "fx_231": {
+    "fx_237": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -7235,7 +7343,7 @@
         "motion": {}
       }
     },
-    "fx_232": {
+    "fx_238": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -7251,7 +7359,7 @@
         "motion": {}
       }
     },
-    "fx_233": {
+    "fx_239": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -7267,7 +7375,7 @@
         "motion": {}
       }
     },
-    "fx_234": {
+    "fx_240": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -7283,7 +7391,7 @@
         "motion": {}
       }
     },
-    "fx_235": {
+    "fx_241": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -7299,7 +7407,7 @@
         "motion": {}
       }
     },
-    "fx_236": {
+    "fx_242": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -7315,7 +7423,7 @@
         "motion": {}
       }
     },
-    "fx_237": {
+    "fx_243": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7333,7 +7441,7 @@
         "motion": {}
       }
     },
-    "fx_238": {
+    "fx_244": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7344,7 +7452,7 @@
         "motion": {}
       }
     },
-    "fx_239": {
+    "fx_245": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7357,7 +7465,7 @@
         "motion": {}
       }
     },
-    "fx_240": {
+    "fx_246": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7369,7 +7477,7 @@
         "motion": {}
       }
     },
-    "fx_241": {
+    "fx_247": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7380,7 +7488,7 @@
         "motion": {}
       }
     },
-    "fx_242": {
+    "fx_248": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7391,7 +7499,7 @@
         "motion": {}
       }
     },
-    "fx_243": {
+    "fx_249": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7403,7 +7511,7 @@
         "motion": {}
       }
     },
-    "fx_244": {
+    "fx_250": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7416,7 +7524,7 @@
         "motion": {}
       }
     },
-    "fx_245": {
+    "fx_251": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7428,7 +7536,7 @@
         "motion": {}
       }
     },
-    "fx_246": {
+    "fx_252": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7440,7 +7548,7 @@
         "motion": {}
       }
     },
-    "fx_247": {
+    "fx_253": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7455,7 +7563,7 @@
         "motion": {}
       }
     },
-    "fx_248": {
+    "fx_254": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7467,7 +7575,7 @@
         "motion": {}
       }
     },
-    "fx_249": {
+    "fx_255": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7479,7 +7587,7 @@
         "motion": {}
       }
     },
-    "fx_250": {
+    "fx_256": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7490,7 +7598,7 @@
         "motion": {}
       }
     },
-    "fx_251": {
+    "fx_257": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7503,7 +7611,7 @@
         "motion": {}
       }
     },
-    "fx_252": {
+    "fx_258": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7515,7 +7623,7 @@
         "motion": {}
       }
     },
-    "fx_253": {
+    "fx_259": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7535,7 +7643,7 @@
         "motion": {}
       }
     },
-    "fx_254": {
+    "fx_260": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7546,7 +7654,7 @@
         "motion": {}
       }
     },
-    "fx_255": {
+    "fx_261": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7558,7 +7666,7 @@
         "motion": {}
       }
     },
-    "fx_256": {
+    "fx_262": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7571,7 +7679,7 @@
         "motion": {}
       }
     },
-    "fx_257": {
+    "fx_263": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7592,7 +7700,7 @@
         "motion": {}
       }
     },
-    "fx_258": {
+    "fx_264": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7604,7 +7712,7 @@
         "motion": {}
       }
     },
-    "fx_259": {
+    "fx_265": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7619,7 +7727,7 @@
         "motion": {}
       }
     },
-    "fx_260": {
+    "fx_266": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7631,7 +7739,7 @@
         "motion": {}
       }
     },
-    "fx_261": {
+    "fx_267": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7643,7 +7751,7 @@
         "motion": {}
       }
     },
-    "fx_262": {
+    "fx_268": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7654,7 +7762,7 @@
         "motion": {}
       }
     },
-    "fx_263": {
+    "fx_269": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7667,7 +7775,7 @@
         "motion": {}
       }
     },
-    "fx_264": {
+    "fx_270": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7679,7 +7787,7 @@
         "motion": {}
       }
     },
-    "fx_265": {
+    "fx_271": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7690,7 +7798,7 @@
         "motion": {}
       }
     },
-    "fx_266": {
+    "fx_272": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7701,7 +7809,7 @@
         "motion": {}
       }
     },
-    "fx_267": {
+    "fx_273": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7722,7 +7830,7 @@
         "motion": {}
       }
     },
-    "fx_268": {
+    "fx_274": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7735,7 +7843,7 @@
         "motion": {}
       }
     },
-    "fx_269": {
+    "fx_275": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7747,7 +7855,7 @@
         "motion": {}
       }
     },
-    "fx_270": {
+    "fx_276": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7759,7 +7867,7 @@
         "motion": {}
       }
     },
-    "fx_271": {
+    "fx_277": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7771,7 +7879,7 @@
         "motion": {}
       }
     },
-    "fx_272": {
+    "fx_278": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7783,7 +7891,7 @@
         "motion": {}
       }
     },
-    "fx_273": {
+    "fx_279": {
       "edge": [
         {
           "type": "outline",
@@ -7802,7 +7910,7 @@
         }
       ]
     },
-    "fx_274": {
+    "fx_280": {
       "edge": [
         {
           "type": "neonGlow",
@@ -7817,7 +7925,7 @@
         }
       ]
     },
-    "fx_275": {
+    "fx_281": {
       "edge": [
         {
           "type": "innerGlow",
@@ -7831,7 +7939,7 @@
         }
       ]
     },
-    "fx_276": {
+    "fx_282": {
       "edge": [
         {
           "type": "bevel",
@@ -7846,7 +7954,7 @@
         }
       ]
     },
-    "fx_277": {
+    "fx_283": {
       "edge": [
         {
           "type": "extrude",
@@ -7861,7 +7969,7 @@
         }
       ]
     },
-    "fx_278": {
+    "fx_284": {
       "edge": [
         {
           "type": "longShadow",
@@ -7876,7 +7984,7 @@
         }
       ]
     },
-    "fx_279": {
+    "fx_285": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7894,7 +8002,7 @@
         }
       ]
     },
-    "fx_280": {
+    "fx_286": {
       "edge": [
         {
           "type": "drip",
@@ -7909,7 +8017,7 @@
         }
       ]
     },
-    "fx_281": {
+    "fx_287": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -7927,7 +8035,7 @@
         }
       ]
     },
-    "fx_282": {
+    "fx_288": {
       "post": [
         {
           "type": "rgbShift",
@@ -7944,7 +8052,7 @@
         }
       ]
     },
-    "fx_283": {
+    "fx_289": {
       "post": [
         {
           "type": "scanTear",
@@ -7961,7 +8069,7 @@
         }
       ]
     },
-    "fx_284": {
+    "fx_290": {
       "post": [
         {
           "type": "vhsTracking",
@@ -7978,7 +8086,7 @@
         }
       ]
     },
-    "fx_285": {
+    "fx_291": {
       "post": [
         {
           "type": "dataSmear",
@@ -7995,7 +8103,7 @@
         }
       ]
     },
-    "fx_286": {
+    "fx_292": {
       "post": [
         {
           "type": "digitalNoise",
@@ -8011,7 +8119,7 @@
         }
       ]
     },
-    "fx_287": {
+    "fx_293": {
       "post": [
         {
           "type": "glitchSlice",
@@ -8028,7 +8136,7 @@
         }
       ]
     },
-    "fx_288": {
+    "fx_294": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -8045,7 +8153,7 @@
         }
       ]
     },
-    "fx_289": {
+    "fx_295": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -8062,7 +8170,7 @@
         }
       ]
     },
-    "fx_290": {
+    "fx_296": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -8077,7 +8185,7 @@
         }
       ]
     },
-    "fx_291": {
+    "fx_297": {
       "post": [
         {
           "type": "burnDissolve",
@@ -8094,7 +8202,7 @@
         }
       ]
     },
-    "fx_292": {
+    "fx_298": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -8110,7 +8218,7 @@
         }
       ]
     },
-    "fx_293": {
+    "fx_299": {
       "post": [
         {
           "type": "particleDissolve",
@@ -8126,7 +8234,7 @@
         }
       ]
     },
-    "fx_294": {
+    "fx_300": {
       "post": [
         {
           "type": "shockwave",
@@ -8147,7 +8255,7 @@
         }
       ]
     },
-    "fx_295": {
+    "fx_301": {
       "post": [
         {
           "type": "zoomBlur",
@@ -8166,7 +8274,7 @@
         }
       ]
     },
-    "fx_296": {
+    "fx_302": {
       "post": [
         {
           "type": "motionBlur",
@@ -8183,7 +8291,7 @@
         }
       ]
     },
-    "fx_297": {
+    "fx_303": {
       "post": [
         {
           "type": "echoTrail",
@@ -8201,7 +8309,7 @@
         }
       ]
     },
-    "fx_298": {
+    "fx_304": {
       "post": [
         {
           "type": "godRays",
@@ -8222,7 +8330,7 @@
         }
       ]
     },
-    "fx_299": {
+    "fx_305": {
       "post": [
         {
           "type": "lightSweep",
@@ -8240,7 +8348,7 @@
         }
       ]
     },
-    "fx_300": {
+    "fx_306": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -8256,7 +8364,7 @@
         }
       ]
     },
-    "fx_301": {
+    "fx_307": {
       "post": [
         {
           "type": "mirror",
@@ -8272,7 +8380,7 @@
         }
       ]
     },
-    "fx_302": {
+    "fx_308": {
       "post": [
         {
           "type": "pixelSort",
@@ -8289,7 +8397,7 @@
         }
       ]
     },
-    "fx_303": {
+    "fx_309": {
       "post": [
         {
           "type": "lensDistortion",
@@ -8306,7 +8414,7 @@
         }
       ]
     },
-    "fx_304": {
+    "fx_310": {
       "post": [
         {
           "type": "colorGrade",
@@ -8324,7 +8432,7 @@
         }
       ]
     },
-    "fx_305": {
+    "fx_311": {
       "post": [
         {
           "type": "displacementMap",
@@ -8340,7 +8448,7 @@
         }
       ]
     },
-    "fx_306": {
+    "fx_312": {
       "post": [
         {
           "type": "bloom",
@@ -8357,7 +8465,7 @@
         }
       ]
     },
-    "fx_307": {
+    "fx_313": {
       "post": [
         {
           "type": "chromaticAberration",
@@ -8374,7 +8482,7 @@
         }
       ]
     },
-    "fx_308": {
+    "fx_314": {
       "post": [
         {
           "type": "crt",
@@ -8391,7 +8499,7 @@
         }
       ]
     },
-    "fx_309": {
+    "fx_315": {
       "post": [
         {
           "type": "filmGrain",
@@ -8407,7 +8515,7 @@
         }
       ]
     },
-    "fx_310": {
+    "fx_316": {
       "post": [
         {
           "type": "halftone",
@@ -8423,7 +8531,7 @@
         }
       ]
     },
-    "fx_311": {
+    "fx_317": {
       "post": [
         {
           "type": "pixelate",
@@ -8438,7 +8546,7 @@
         }
       ]
     },
-    "fx_312": {
+    "fx_318": {
       "post": [
         {
           "type": "heatHaze",
@@ -8454,7 +8562,7 @@
         }
       ]
     },
-    "fx_313": {
+    "fx_319": {
       "post": [
         {
           "type": "lightLeak",
@@ -8472,7 +8580,7 @@
         }
       ]
     },
-    "fx_314": {
+    "fx_320": {
       "post": [
         {
           "type": "vignette",
@@ -8488,7 +8596,7 @@
         }
       ]
     },
-    "fx_315": {
+    "fx_321": {
       "post": [
         {
           "type": "sparkles",
@@ -8506,7 +8614,7 @@
         }
       ]
     },
-    "fx_316": {
+    "fx_322": {
       "post": [
         {
           "type": "lensFlare",
@@ -17001,8 +17109,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 631.88,
-      "end": 634.12,
+      "start": 643.88,
+      "end": 646.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17017,8 +17125,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 633.88,
-      "end": 636.12,
+      "start": 645.88,
+      "end": 648.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17033,8 +17141,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 635.88,
-      "end": 638.12,
+      "start": 647.88,
+      "end": 650.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17060,8 +17168,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 637.88,
-      "end": 640.12,
+      "start": 649.88,
+      "end": 652.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17078,8 +17186,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 639.88,
-      "end": 642.12,
+      "start": 651.88,
+      "end": 654.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17098,8 +17206,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 641.88,
-      "end": 644.12,
+      "start": 653.88,
+      "end": 656.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17117,8 +17225,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 643.88,
-      "end": 646.12,
+      "start": 655.88,
+      "end": 658.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17136,8 +17244,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 645.88,
-      "end": 648.12,
+      "start": 657.88,
+      "end": 660.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17157,8 +17265,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 647.88,
-      "end": 650.12,
+      "start": 659.88,
+      "end": 662.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17178,8 +17286,8 @@
     {
       "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 649.88,
-      "end": 652.12,
+      "start": 661.88,
+      "end": 664.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17194,8 +17302,8 @@
     {
       "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 651.88,
-      "end": 654.12,
+      "start": 663.88,
+      "end": 666.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17210,8 +17318,8 @@
     {
       "id": "clip_bg_11",
       "trackId": "bg",
-      "start": 653.88,
-      "end": 656.12,
+      "start": 665.88,
+      "end": 668.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17228,8 +17336,8 @@
     {
       "id": "clip_bg_12",
       "trackId": "bg",
-      "start": 655.88,
-      "end": 658.12,
+      "start": 667.88,
+      "end": 670.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17255,8 +17363,8 @@
     {
       "id": "clip_bg_13",
       "trackId": "bg",
-      "start": 657.88,
-      "end": 660.12,
+      "start": 669.88,
+      "end": 672.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17275,8 +17383,8 @@
     {
       "id": "clip_bg_14",
       "trackId": "bg",
-      "start": 659.88,
-      "end": 662.12,
+      "start": 671.88,
+      "end": 674.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17294,8 +17402,8 @@
     {
       "id": "clip_bg_15",
       "trackId": "bg",
-      "start": 661.88,
-      "end": 664.12,
+      "start": 673.88,
+      "end": 676.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17313,8 +17421,8 @@
     {
       "id": "clip_bg_16",
       "trackId": "bg",
-      "start": 663.88,
-      "end": 666.12,
+      "start": 675.88,
+      "end": 678.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17334,8 +17442,8 @@
     {
       "id": "clip_bg_17",
       "trackId": "bg",
-      "start": 665.88,
-      "end": 668.12,
+      "start": 677.88,
+      "end": 680.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17344,130 +17452,6 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_18",
-      "trackId": "bg",
-      "start": 667.88,
-      "end": 670.12,
-      "spec": {
-        "type": "gradient",
-        "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 3.4,
-          "speed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_19",
-      "trackId": "bg",
-      "start": 669.88,
-      "end": 672.12,
-      "spec": {
-        "type": "noiseGradient",
-        "params": {
-          "colors": null,
-          "scale": 9.1,
-          "speed": 0.5
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_20",
-      "trackId": "bg",
-      "start": 671.88,
-      "end": 674.12,
-      "spec": {
-        "type": "card",
-        "params": {
-          "dim": 0.25,
-          "blur": 30,
-          "focusBadge": true,
-          "zoom": 1.6,
-          "parallax": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_21",
-      "trackId": "bg",
-      "start": 673.88,
-      "end": 676.12,
-      "spec": {
-        "type": "cover",
-        "params": {
-          "songId": "",
-          "blur": 30,
-          "dim": 0.75,
-          "zoomSpeed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_22",
-      "trackId": "bg",
-      "start": 675.88,
-      "end": 678.12,
-      "spec": {
-        "type": "image",
-        "params": {
-          "imageId": "",
-          "fit": "cover",
-          "blur": 10,
-          "dim": 0.25
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_23",
-      "trackId": "bg",
-      "start": 677.88,
-      "end": 680.12,
-      "spec": {
-        "type": "pattern",
-        "params": {
-          "mode": "rings",
-          "count": 24,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.55,
           "color": null
         }
       },

@@ -259,6 +259,39 @@
     },
   });
 
+  // The exit sandCrumble played backwards: grains rise and settle into the
+  // glyph, which is revealed from the bottom up.
+  fx.register({
+    group: 'enter',
+    type: 'sandGather',
+    tags: ['particles', 'dissolve'],
+    cost: 3,
+    params: [
+      { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.25, random: [-0.6, 0.6] },
+      { key: 'gravity', kind: 'number', min: 0, max: 12, step: 0.1, default: 5 },
+      { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+      { key: 'pile', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const k = 1 - clamp01(p);
+      if (k > 0.001 && k < 0.999) {
+        state.represent = 'sand';
+        state.reprProgress = 1 - k;
+        state.wipeMode = 2;
+        state.wipeSoft = 0.04;
+        state.visibleFrac = 1 - clamp01(k / 0.72);
+        state.sand = {
+          wind: params.wind == null ? 0.25 : params.wind,
+          gravity: params.gravity == null ? 5 : params.gravity,
+          grain: params.grain == null ? 2.4 : params.grain,
+          pile: params.pile !== false,
+        };
+      }
+      const head = clamp01(k > 0.88 ? (k - 0.88) / 0.12 : 0);
+      state.opacity *= 1 - head * head * (3 - 2 * head);
+    },
+  });
+
   fx.register({
     group: 'enter',
     type: 'shatterRebuild',

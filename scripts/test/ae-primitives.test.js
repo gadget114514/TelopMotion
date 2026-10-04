@@ -150,5 +150,5 @@ test('the deformation slots keep a block warp and drop the smallest amount', () 
   const twist = { deform: [letter('twist', 12), letter('bulge', 0.3)] };
   assert.deepEqual(slots(twist).map((entry) => entry.item.type), ['bulge', 'twist']);
   assert.equal(slots({ deform: [] }), null);
-  assert.equal(passes._test.STATE_ROWS, 23);
+  assert.equal(passes._test.STATE_ROWS, 24);
 });

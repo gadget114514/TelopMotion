@@ -3,7 +3,7 @@
   "version": 2,
   "seed": 400400,
   "total": 400,
-  "typeCount": 190,
+  "typeCount": 192,
   "sample": "今日はとてもいい天気ですね、散歩でもしましょうか",
   "verification": {
     "motion": [
@@ -43,13 +43,13 @@
     },
     {
       "group": "enter",
-      "types": 21,
-      "entries": 60
+      "types": 22,
+      "entries": 63
     },
     {
       "group": "exit",
-      "types": 15,
-      "entries": 43
+      "types": 16,
+      "entries": 46
     },
     {
       "group": "hold",
@@ -79,7 +79,7 @@
     {
       "group": "background",
       "types": 10,
-      "entries": 24
+      "entries": 18
     },
     {
       "group": "bgShape",
@@ -2809,6 +2809,53 @@
     },
     {
       "n": 78,
+      "id": "enter.sandGather.v1",
+      "group": "enter",
+      "type": "sandGather",
+      "variant": 1,
+      "label": "登場 / 砂が集まる（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "wind",
+          "from": 0.25,
+          "to": -0.6
+        },
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 3
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.608,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "sandGather",
+          "enabled": true,
+          "params": {
+            "wind": -0.6,
+            "gravity": 3,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 79,
       "id": "enter.shatterRebuild.v1",
       "group": "enter",
       "type": "shatterRebuild",
@@ -2837,7 +2884,7 @@
       }
     },
     {
-      "n": 79,
+      "n": 80,
       "id": "enter.morphFromPrevious.v1",
       "group": "enter",
       "type": "morphFromPrevious",
@@ -2871,7 +2918,7 @@
       }
     },
     {
-      "n": 80,
+      "n": 81,
       "id": "enter.noiseDissolveIn.v1",
       "group": "enter",
       "type": "noiseDissolveIn",
@@ -2917,7 +2964,7 @@
       }
     },
     {
-      "n": 81,
+      "n": 82,
       "id": "enter.dissolve.v1",
       "group": "enter",
       "type": "dissolve",
@@ -2951,7 +2998,7 @@
       }
     },
     {
-      "n": 82,
+      "n": 83,
       "id": "enter.fade.v2",
       "group": "enter",
       "type": "fade",
@@ -2986,7 +3033,7 @@
       }
     },
     {
-      "n": 83,
+      "n": 84,
       "id": "enter.typewriter.v2",
       "group": "enter",
       "type": "typewriter",
@@ -3029,7 +3076,7 @@
       }
     },
     {
-      "n": 84,
+      "n": 85,
       "id": "enter.slide.v2",
       "group": "enter",
       "type": "slide",
@@ -3069,7 +3116,7 @@
       }
     },
     {
-      "n": 85,
+      "n": 86,
       "id": "enter.dropBounce.v2",
       "group": "enter",
       "type": "dropBounce",
@@ -3108,7 +3155,7 @@
       }
     },
     {
-      "n": 86,
+      "n": 87,
       "id": "enter.zoomIn.v2",
       "group": "enter",
       "type": "zoomIn",
@@ -3142,7 +3189,7 @@
       }
     },
     {
-      "n": 87,
+      "n": 88,
       "id": "enter.blurIn.v2",
       "group": "enter",
       "type": "blurIn",
@@ -3176,7 +3223,7 @@
       }
     },
     {
-      "n": 88,
+      "n": 89,
       "id": "enter.flip3D.v2",
       "group": "enter",
       "type": "flip3D",
@@ -3221,7 +3268,7 @@
       }
     },
     {
-      "n": 89,
+      "n": 90,
       "id": "enter.rotateIn.v2",
       "group": "enter",
       "type": "rotateIn",
@@ -3255,7 +3302,7 @@
       }
     },
     {
-      "n": 90,
+      "n": 91,
       "id": "enter.scatterIn.v2",
       "group": "enter",
       "type": "scatterIn",
@@ -3294,7 +3341,7 @@
       }
     },
     {
-      "n": 91,
+      "n": 92,
       "id": "enter.waveRise.v2",
       "group": "enter",
       "type": "waveRise",
@@ -3328,7 +3375,7 @@
       }
     },
     {
-      "n": 92,
+      "n": 93,
       "id": "enter.elasticPop.v2",
       "group": "enter",
       "type": "elasticPop",
@@ -3360,7 +3407,7 @@
       }
     },
     {
-      "n": 93,
+      "n": 94,
       "id": "enter.scramble.v2",
       "group": "enter",
       "type": "scramble",
@@ -3405,7 +3452,7 @@
       }
     },
     {
-      "n": 94,
+      "n": 95,
       "id": "enter.glitchIn.v2",
       "group": "enter",
       "type": "glitchIn",
@@ -3439,7 +3486,7 @@
       }
     },
     {
-      "n": 95,
+      "n": 96,
       "id": "enter.neonFlicker.v2",
       "group": "enter",
       "type": "neonFlicker",
@@ -3478,7 +3525,7 @@
       }
     },
     {
-      "n": 96,
+      "n": 97,
       "id": "enter.flickerIn.v2",
       "group": "enter",
       "type": "flickerIn",
@@ -3512,7 +3559,7 @@
       }
     },
     {
-      "n": 97,
+      "n": 98,
       "id": "enter.strokeDrawOn.v2",
       "group": "enter",
       "type": "strokeDrawOn",
@@ -3552,7 +3599,7 @@
       }
     },
     {
-      "n": 98,
+      "n": 99,
       "id": "enter.particlesAssemble.v2",
       "group": "enter",
       "type": "particlesAssemble",
@@ -3593,7 +3640,54 @@
       }
     },
     {
-      "n": 99,
+      "n": 100,
+      "id": "enter.sandGather.v2",
+      "group": "enter",
+      "type": "sandGather",
+      "variant": 2,
+      "label": "登場 / 砂が集まる（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "wind",
+          "from": 0.25,
+          "to": 0.6
+        },
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 3
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.528,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "sandGather",
+          "enabled": true,
+          "params": {
+            "wind": 0.6,
+            "gravity": 3,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 101,
       "id": "enter.shatterRebuild.v2",
       "group": "enter",
       "type": "shatterRebuild",
@@ -3633,7 +3727,7 @@
       }
     },
     {
-      "n": 100,
+      "n": 102,
       "id": "enter.morphFromPrevious.v2",
       "group": "enter",
       "type": "morphFromPrevious",
@@ -3672,7 +3766,7 @@
       }
     },
     {
-      "n": 101,
+      "n": 103,
       "id": "enter.noiseDissolveIn.v2",
       "group": "enter",
       "type": "noiseDissolveIn",
@@ -3713,7 +3807,7 @@
       }
     },
     {
-      "n": 102,
+      "n": 104,
       "id": "enter.dissolve.v2",
       "group": "enter",
       "type": "dissolve",
@@ -3752,7 +3846,7 @@
       }
     },
     {
-      "n": 103,
+      "n": 105,
       "id": "enter.fade.v3",
       "group": "enter",
       "type": "fade",
@@ -3792,7 +3886,7 @@
       }
     },
     {
-      "n": 104,
+      "n": 106,
       "id": "enter.typewriter.v3",
       "group": "enter",
       "type": "typewriter",
@@ -3835,7 +3929,7 @@
       }
     },
     {
-      "n": 105,
+      "n": 107,
       "id": "enter.slide.v3",
       "group": "enter",
       "type": "slide",
@@ -3875,7 +3969,7 @@
       }
     },
     {
-      "n": 106,
+      "n": 108,
       "id": "enter.dropBounce.v3",
       "group": "enter",
       "type": "dropBounce",
@@ -3909,7 +4003,7 @@
       }
     },
     {
-      "n": 107,
+      "n": 109,
       "id": "enter.zoomIn.v3",
       "group": "enter",
       "type": "zoomIn",
@@ -3948,7 +4042,7 @@
       }
     },
     {
-      "n": 108,
+      "n": 110,
       "id": "enter.blurIn.v3",
       "group": "enter",
       "type": "blurIn",
@@ -3987,7 +4081,7 @@
       }
     },
     {
-      "n": 109,
+      "n": 111,
       "id": "enter.flip3D.v3",
       "group": "enter",
       "type": "flip3D",
@@ -4027,7 +4121,7 @@
       }
     },
     {
-      "n": 110,
+      "n": 112,
       "id": "enter.rotateIn.v3",
       "group": "enter",
       "type": "rotateIn",
@@ -4066,7 +4160,7 @@
       }
     },
     {
-      "n": 111,
+      "n": 113,
       "id": "enter.scatterIn.v3",
       "group": "enter",
       "type": "scatterIn",
@@ -4105,7 +4199,7 @@
       }
     },
     {
-      "n": 112,
+      "n": 114,
       "id": "enter.waveRise.v3",
       "group": "enter",
       "type": "waveRise",
@@ -4144,7 +4238,7 @@
       }
     },
     {
-      "n": 113,
+      "n": 115,
       "id": "enter.scramble.v3",
       "group": "enter",
       "type": "scramble",
@@ -4189,7 +4283,7 @@
       }
     },
     {
-      "n": 114,
+      "n": 116,
       "id": "enter.glitchIn.v3",
       "group": "enter",
       "type": "glitchIn",
@@ -4228,7 +4322,7 @@
       }
     },
     {
-      "n": 115,
+      "n": 117,
       "id": "enter.neonFlicker.v3",
       "group": "enter",
       "type": "neonFlicker",
@@ -4267,7 +4361,7 @@
       }
     },
     {
-      "n": 116,
+      "n": 118,
       "id": "enter.flickerIn.v3",
       "group": "enter",
       "type": "flickerIn",
@@ -4306,7 +4400,7 @@
       }
     },
     {
-      "n": 117,
+      "n": 119,
       "id": "enter.strokeDrawOn.v3",
       "group": "enter",
       "type": "strokeDrawOn",
@@ -4351,7 +4445,7 @@
       }
     },
     {
-      "n": 118,
+      "n": 120,
       "id": "enter.particlesAssemble.v3",
       "group": "enter",
       "type": "particlesAssemble",
@@ -4392,7 +4486,49 @@
       }
     },
     {
-      "n": 119,
+      "n": 121,
+      "id": "enter.sandGather.v3",
+      "group": "enter",
+      "type": "sandGather",
+      "variant": 3,
+      "label": "登場 / 砂が集まる（代表3）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 9
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.66,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "sandGather",
+          "enabled": true,
+          "params": {
+            "wind": 0.25,
+            "gravity": 9,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 122,
       "id": "enter.shatterRebuild.v3",
       "group": "enter",
       "type": "shatterRebuild",
@@ -4432,7 +4568,7 @@
       }
     },
     {
-      "n": 120,
+      "n": 123,
       "id": "enter.noiseDissolveIn.v3",
       "group": "enter",
       "type": "noiseDissolveIn",
@@ -4478,7 +4614,7 @@
       }
     },
     {
-      "n": 121,
+      "n": 124,
       "id": "exit.fade.v1",
       "group": "exit",
       "type": "fade",
@@ -4518,7 +4654,7 @@
       }
     },
     {
-      "n": 122,
+      "n": 125,
       "id": "exit.slide.v1",
       "group": "exit",
       "type": "slide",
@@ -4553,7 +4689,7 @@
       }
     },
     {
-      "n": 123,
+      "n": 126,
       "id": "exit.zoomOut.v1",
       "group": "exit",
       "type": "zoomOut",
@@ -4581,7 +4717,7 @@
       }
     },
     {
-      "n": 124,
+      "n": 127,
       "id": "exit.blurOut.v1",
       "group": "exit",
       "type": "blurOut",
@@ -4620,7 +4756,7 @@
       }
     },
     {
-      "n": 125,
+      "n": 128,
       "id": "exit.explode.v1",
       "group": "exit",
       "type": "explode",
@@ -4649,7 +4785,7 @@
       }
     },
     {
-      "n": 126,
+      "n": 129,
       "id": "exit.gravityFall.v1",
       "group": "exit",
       "type": "gravityFall",
@@ -4678,7 +4814,7 @@
       }
     },
     {
-      "n": 127,
+      "n": 130,
       "id": "exit.dissolve.v1",
       "group": "exit",
       "type": "dissolve",
@@ -4717,7 +4853,7 @@
       }
     },
     {
-      "n": 128,
+      "n": 131,
       "id": "exit.wipe.v1",
       "group": "exit",
       "type": "wipe",
@@ -4751,7 +4887,7 @@
       }
     },
     {
-      "n": 129,
+      "n": 132,
       "id": "exit.typewriterReverse.v1",
       "group": "exit",
       "type": "typewriterReverse",
@@ -4783,7 +4919,7 @@
       }
     },
     {
-      "n": 130,
+      "n": 133,
       "id": "exit.shrinkToCenter.v1",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -4815,7 +4951,7 @@
       }
     },
     {
-      "n": 131,
+      "n": 134,
       "id": "exit.particlesDisperse.v1",
       "group": "exit",
       "type": "particlesDisperse",
@@ -4844,7 +4980,54 @@
       }
     },
     {
-      "n": 132,
+      "n": 135,
+      "id": "exit.sandCrumble.v1",
+      "group": "exit",
+      "type": "sandCrumble",
+      "variant": 1,
+      "label": "退場 / 砂になって崩れる（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "wind",
+          "from": 0.25,
+          "to": -0.6
+        },
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 3
+        },
+        {
+          "key": "motion.out",
+          "from": "(既定)",
+          "to": "0.4s/cubicIn"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.536,
+      "notes": [],
+      "style": {
+        "exit": {
+          "type": "sandCrumble",
+          "enabled": true,
+          "params": {
+            "wind": -0.6,
+            "gravity": 3,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "out": {
+              "duration": 0.4,
+              "ease": "cubicIn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 136,
       "id": "exit.melt.v1",
       "group": "exit",
       "type": "melt",
@@ -4872,7 +5055,7 @@
       }
     },
     {
-      "n": 133,
+      "n": 137,
       "id": "exit.burnAway.v1",
       "group": "exit",
       "type": "burnAway",
@@ -4918,7 +5101,7 @@
       }
     },
     {
-      "n": 134,
+      "n": 138,
       "id": "exit.strokeErase.v1",
       "group": "exit",
       "type": "strokeErase",
@@ -4957,7 +5140,7 @@
       }
     },
     {
-      "n": 135,
+      "n": 139,
       "id": "exit.creepOut.v1",
       "group": "exit",
       "type": "creepOut",
@@ -4996,7 +5179,7 @@
       }
     },
     {
-      "n": 136,
+      "n": 140,
       "id": "exit.fade.v2",
       "group": "exit",
       "type": "fade",
@@ -5041,7 +5224,7 @@
       }
     },
     {
-      "n": 137,
+      "n": 141,
       "id": "exit.slide.v2",
       "group": "exit",
       "type": "slide",
@@ -5076,7 +5259,7 @@
       }
     },
     {
-      "n": 138,
+      "n": 142,
       "id": "exit.zoomOut.v2",
       "group": "exit",
       "type": "zoomOut",
@@ -5115,7 +5298,7 @@
       }
     },
     {
-      "n": 139,
+      "n": 143,
       "id": "exit.blurOut.v2",
       "group": "exit",
       "type": "blurOut",
@@ -5149,7 +5332,7 @@
       }
     },
     {
-      "n": 140,
+      "n": 144,
       "id": "exit.explode.v2",
       "group": "exit",
       "type": "explode",
@@ -5189,7 +5372,7 @@
       }
     },
     {
-      "n": 141,
+      "n": 145,
       "id": "exit.gravityFall.v2",
       "group": "exit",
       "type": "gravityFall",
@@ -5229,7 +5412,7 @@
       }
     },
     {
-      "n": 142,
+      "n": 146,
       "id": "exit.dissolve.v2",
       "group": "exit",
       "type": "dissolve",
@@ -5268,7 +5451,7 @@
       }
     },
     {
-      "n": 143,
+      "n": 147,
       "id": "exit.wipe.v2",
       "group": "exit",
       "type": "wipe",
@@ -5307,7 +5490,7 @@
       }
     },
     {
-      "n": 144,
+      "n": 148,
       "id": "exit.shrinkToCenter.v2",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -5339,7 +5522,7 @@
       }
     },
     {
-      "n": 145,
+      "n": 149,
       "id": "exit.particlesDisperse.v2",
       "group": "exit",
       "type": "particlesDisperse",
@@ -5379,7 +5562,54 @@
       }
     },
     {
-      "n": 146,
+      "n": 150,
+      "id": "exit.sandCrumble.v2",
+      "group": "exit",
+      "type": "sandCrumble",
+      "variant": 2,
+      "label": "退場 / 砂になって崩れる（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "wind",
+          "from": 0.25,
+          "to": 0.6
+        },
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 3
+        },
+        {
+          "key": "motion.out",
+          "from": "(既定)",
+          "to": "0.2s/cubicIn"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.476,
+      "notes": [],
+      "style": {
+        "exit": {
+          "type": "sandCrumble",
+          "enabled": true,
+          "params": {
+            "wind": 0.6,
+            "gravity": 3,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "out": {
+              "duration": 0.2,
+              "ease": "cubicIn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 151,
       "id": "exit.melt.v2",
       "group": "exit",
       "type": "melt",
@@ -5418,7 +5648,7 @@
       }
     },
     {
-      "n": 147,
+      "n": 152,
       "id": "exit.burnAway.v2",
       "group": "exit",
       "type": "burnAway",
@@ -5464,7 +5694,7 @@
       }
     },
     {
-      "n": 148,
+      "n": 153,
       "id": "exit.strokeErase.v2",
       "group": "exit",
       "type": "strokeErase",
@@ -5503,7 +5733,7 @@
       }
     },
     {
-      "n": 149,
+      "n": 154,
       "id": "exit.creepOut.v2",
       "group": "exit",
       "type": "creepOut",
@@ -5542,7 +5772,7 @@
       }
     },
     {
-      "n": 150,
+      "n": 155,
       "id": "exit.fade.v3",
       "group": "exit",
       "type": "fade",
@@ -5577,7 +5807,7 @@
       }
     },
     {
-      "n": 151,
+      "n": 156,
       "id": "exit.slide.v3",
       "group": "exit",
       "type": "slide",
@@ -5617,7 +5847,7 @@
       }
     },
     {
-      "n": 152,
+      "n": 157,
       "id": "exit.zoomOut.v3",
       "group": "exit",
       "type": "zoomOut",
@@ -5656,7 +5886,7 @@
       }
     },
     {
-      "n": 153,
+      "n": 158,
       "id": "exit.blurOut.v3",
       "group": "exit",
       "type": "blurOut",
@@ -5695,7 +5925,7 @@
       }
     },
     {
-      "n": 154,
+      "n": 159,
       "id": "exit.explode.v3",
       "group": "exit",
       "type": "explode",
@@ -5735,7 +5965,7 @@
       }
     },
     {
-      "n": 155,
+      "n": 160,
       "id": "exit.gravityFall.v3",
       "group": "exit",
       "type": "gravityFall",
@@ -5775,7 +6005,7 @@
       }
     },
     {
-      "n": 156,
+      "n": 161,
       "id": "exit.dissolve.v3",
       "group": "exit",
       "type": "dissolve",
@@ -5809,7 +6039,7 @@
       }
     },
     {
-      "n": 157,
+      "n": 162,
       "id": "exit.wipe.v3",
       "group": "exit",
       "type": "wipe",
@@ -5848,7 +6078,7 @@
       }
     },
     {
-      "n": 158,
+      "n": 163,
       "id": "exit.shrinkToCenter.v3",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -5880,7 +6110,7 @@
       }
     },
     {
-      "n": 159,
+      "n": 164,
       "id": "exit.particlesDisperse.v3",
       "group": "exit",
       "type": "particlesDisperse",
@@ -5920,7 +6150,49 @@
       }
     },
     {
-      "n": 160,
+      "n": 165,
+      "id": "exit.sandCrumble.v3",
+      "group": "exit",
+      "type": "sandCrumble",
+      "variant": 3,
+      "label": "退場 / 砂になって崩れる（代表3）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "gravity",
+          "from": 5,
+          "to": 9
+        },
+        {
+          "key": "motion.out",
+          "from": "(既定)",
+          "to": "1s/backIn"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.608,
+      "notes": [],
+      "style": {
+        "exit": {
+          "type": "sandCrumble",
+          "enabled": true,
+          "params": {
+            "wind": 0.25,
+            "gravity": 9,
+            "grain": 2.4,
+            "pile": true
+          },
+          "motion": {
+            "out": {
+              "duration": 1,
+              "ease": "backIn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 166,
       "id": "exit.melt.v3",
       "group": "exit",
       "type": "melt",
@@ -5959,7 +6231,7 @@
       }
     },
     {
-      "n": 161,
+      "n": 167,
       "id": "exit.burnAway.v3",
       "group": "exit",
       "type": "burnAway",
@@ -6000,7 +6272,7 @@
       }
     },
     {
-      "n": 162,
+      "n": 168,
       "id": "exit.strokeErase.v3",
       "group": "exit",
       "type": "strokeErase",
@@ -6034,7 +6306,7 @@
       }
     },
     {
-      "n": 163,
+      "n": 169,
       "id": "exit.creepOut.v3",
       "group": "exit",
       "type": "creepOut",
@@ -6068,7 +6340,7 @@
       }
     },
     {
-      "n": 164,
+      "n": 170,
       "id": "hold.floatBob.v1",
       "group": "hold",
       "type": "floatBob",
@@ -6094,7 +6366,7 @@
       }
     },
     {
-      "n": 165,
+      "n": 171,
       "id": "hold.sineWave.v1",
       "group": "hold",
       "type": "sineWave",
@@ -6121,7 +6393,7 @@
       }
     },
     {
-      "n": 166,
+      "n": 172,
       "id": "hold.jitter.v1",
       "group": "hold",
       "type": "jitter",
@@ -6147,7 +6419,7 @@
       }
     },
     {
-      "n": 167,
+      "n": 173,
       "id": "hold.pulse.v1",
       "group": "hold",
       "type": "pulse",
@@ -6179,7 +6451,7 @@
       }
     },
     {
-      "n": 168,
+      "n": 174,
       "id": "hold.opacityPulse.v1",
       "group": "hold",
       "type": "opacityPulse",
@@ -6206,7 +6478,7 @@
       }
     },
     {
-      "n": 169,
+      "n": 175,
       "id": "hold.kenBurns.v1",
       "group": "hold",
       "type": "kenBurns",
@@ -6241,7 +6513,7 @@
       }
     },
     {
-      "n": 170,
+      "n": 176,
       "id": "hold.drift.v1",
       "group": "hold",
       "type": "drift",
@@ -6267,7 +6539,7 @@
       }
     },
     {
-      "n": 171,
+      "n": 177,
       "id": "hold.marquee.v1",
       "group": "hold",
       "type": "marquee",
@@ -6298,7 +6570,7 @@
       }
     },
     {
-      "n": 172,
+      "n": 178,
       "id": "hold.jelly.v1",
       "group": "hold",
       "type": "jelly",
@@ -6335,7 +6607,7 @@
       }
     },
     {
-      "n": 173,
+      "n": 179,
       "id": "hold.wobbleWarp.v1",
       "group": "hold",
       "type": "wobbleWarp",
@@ -6373,7 +6645,7 @@
       }
     },
     {
-      "n": 174,
+      "n": 180,
       "id": "hold.twist.v1",
       "group": "hold",
       "type": "twist",
@@ -6398,7 +6670,7 @@
       }
     },
     {
-      "n": 175,
+      "n": 181,
       "id": "hold.breathing.v1",
       "group": "hold",
       "type": "breathing",
@@ -6429,7 +6701,7 @@
       }
     },
     {
-      "n": 176,
+      "n": 182,
       "id": "hold.orbit3D.v1",
       "group": "hold",
       "type": "orbit3D",
@@ -6455,7 +6727,7 @@
       }
     },
     {
-      "n": 177,
+      "n": 183,
       "id": "hold.pathFollow.v1",
       "group": "hold",
       "type": "pathFollow",
@@ -6500,7 +6772,7 @@
       }
     },
     {
-      "n": 178,
+      "n": 184,
       "id": "hold.heartbeat.v1",
       "group": "hold",
       "type": "heartbeat",
@@ -6532,7 +6804,7 @@
       }
     },
     {
-      "n": 179,
+      "n": 185,
       "id": "hold.shiver.v1",
       "group": "hold",
       "type": "shiver",
@@ -6564,7 +6836,7 @@
       }
     },
     {
-      "n": 180,
+      "n": 186,
       "id": "hold.dissolve.v1",
       "group": "hold",
       "type": "dissolve",
@@ -6601,7 +6873,7 @@
       }
     },
     {
-      "n": 181,
+      "n": 187,
       "id": "hold.floatBob.v2",
       "group": "hold",
       "type": "floatBob",
@@ -6633,7 +6905,7 @@
       }
     },
     {
-      "n": 182,
+      "n": 188,
       "id": "hold.sineWave.v2",
       "group": "hold",
       "type": "sineWave",
@@ -6666,7 +6938,7 @@
       }
     },
     {
-      "n": 183,
+      "n": 189,
       "id": "hold.jitter.v2",
       "group": "hold",
       "type": "jitter",
@@ -6698,7 +6970,7 @@
       }
     },
     {
-      "n": 184,
+      "n": 190,
       "id": "hold.opacityPulse.v2",
       "group": "hold",
       "type": "opacityPulse",
@@ -6731,7 +7003,7 @@
       }
     },
     {
-      "n": 185,
+      "n": 191,
       "id": "hold.kenBurns.v2",
       "group": "hold",
       "type": "kenBurns",
@@ -6766,7 +7038,7 @@
       }
     },
     {
-      "n": 186,
+      "n": 192,
       "id": "hold.drift.v2",
       "group": "hold",
       "type": "drift",
@@ -6798,7 +7070,7 @@
       }
     },
     {
-      "n": 187,
+      "n": 193,
       "id": "hold.marquee.v2",
       "group": "hold",
       "type": "marquee",
@@ -6823,7 +7095,7 @@
       }
     },
     {
-      "n": 188,
+      "n": 194,
       "id": "hold.jelly.v2",
       "group": "hold",
       "type": "jelly",
@@ -6855,7 +7127,7 @@
       }
     },
     {
-      "n": 189,
+      "n": 195,
       "id": "hold.wobbleWarp.v2",
       "group": "hold",
       "type": "wobbleWarp",
@@ -6888,7 +7160,7 @@
       }
     },
     {
-      "n": 190,
+      "n": 196,
       "id": "hold.twist.v2",
       "group": "hold",
       "type": "twist",
@@ -6919,7 +7191,7 @@
       }
     },
     {
-      "n": 191,
+      "n": 197,
       "id": "hold.breathing.v2",
       "group": "hold",
       "type": "breathing",
@@ -6944,7 +7216,7 @@
       }
     },
     {
-      "n": 192,
+      "n": 198,
       "id": "hold.orbit3D.v2",
       "group": "hold",
       "type": "orbit3D",
@@ -6981,7 +7253,7 @@
       }
     },
     {
-      "n": 193,
+      "n": 199,
       "id": "hold.pathFollow.v2",
       "group": "hold",
       "type": "pathFollow",
@@ -7020,7 +7292,7 @@
       }
     },
     {
-      "n": 194,
+      "n": 200,
       "id": "hold.shiver.v2",
       "group": "hold",
       "type": "shiver",
@@ -7057,7 +7329,7 @@
       }
     },
     {
-      "n": 195,
+      "n": 201,
       "id": "hold.dissolve.v2",
       "group": "hold",
       "type": "dissolve",
@@ -7089,7 +7361,7 @@
       }
     },
     {
-      "n": 196,
+      "n": 202,
       "id": "hold.floatBob.v3",
       "group": "hold",
       "type": "floatBob",
@@ -7121,7 +7393,7 @@
       }
     },
     {
-      "n": 197,
+      "n": 203,
       "id": "hold.sineWave.v3",
       "group": "hold",
       "type": "sineWave",
@@ -7154,7 +7426,7 @@
       }
     },
     {
-      "n": 198,
+      "n": 204,
       "id": "hold.jitter.v3",
       "group": "hold",
       "type": "jitter",
@@ -7186,7 +7458,7 @@
       }
     },
     {
-      "n": 199,
+      "n": 205,
       "id": "hold.opacityPulse.v3",
       "group": "hold",
       "type": "opacityPulse",
@@ -7219,7 +7491,7 @@
       }
     },
     {
-      "n": 200,
+      "n": 206,
       "id": "hold.drift.v3",
       "group": "hold",
       "type": "drift",
@@ -7251,7 +7523,7 @@
       }
     },
     {
-      "n": 201,
+      "n": 207,
       "id": "hold.marquee.v3",
       "group": "hold",
       "type": "marquee",
@@ -7282,7 +7554,7 @@
       }
     },
     {
-      "n": 202,
+      "n": 208,
       "id": "hold.jelly.v3",
       "group": "hold",
       "type": "jelly",
@@ -7319,7 +7591,7 @@
       }
     },
     {
-      "n": 203,
+      "n": 209,
       "id": "hold.wobbleWarp.v3",
       "group": "hold",
       "type": "wobbleWarp",
@@ -7357,7 +7629,7 @@
       }
     },
     {
-      "n": 204,
+      "n": 210,
       "id": "hold.orbit3D.v3",
       "group": "hold",
       "type": "orbit3D",
@@ -7394,7 +7666,7 @@
       }
     },
     {
-      "n": 205,
+      "n": 211,
       "id": "hold.pathFollow.v3",
       "group": "hold",
       "type": "pathFollow",
@@ -7439,7 +7711,7 @@
       }
     },
     {
-      "n": 206,
+      "n": 212,
       "id": "hold.shiver.v3",
       "group": "hold",
       "type": "shiver",
@@ -7476,7 +7748,7 @@
       }
     },
     {
-      "n": 207,
+      "n": 213,
       "id": "hold.dissolve.v3",
       "group": "hold",
       "type": "dissolve",
@@ -7513,7 +7785,7 @@
       }
     },
     {
-      "n": 208,
+      "n": 214,
       "id": "location.center.v1",
       "group": "location",
       "type": "center",
@@ -7548,7 +7820,7 @@
       }
     },
     {
-      "n": 209,
+      "n": 215,
       "id": "location.lowerThird.v1",
       "group": "location",
       "type": "lowerThird",
@@ -7577,7 +7849,7 @@
       }
     },
     {
-      "n": 210,
+      "n": 216,
       "id": "location.upperThird.v1",
       "group": "location",
       "type": "upperThird",
@@ -7606,7 +7878,7 @@
       }
     },
     {
-      "n": 211,
+      "n": 217,
       "id": "location.left.v1",
       "group": "location",
       "type": "left",
@@ -7641,7 +7913,7 @@
       }
     },
     {
-      "n": 212,
+      "n": 218,
       "id": "location.right.v1",
       "group": "location",
       "type": "right",
@@ -7676,7 +7948,7 @@
       }
     },
     {
-      "n": 213,
+      "n": 219,
       "id": "location.karaoke.v1",
       "group": "location",
       "type": "karaoke",
@@ -7711,7 +7983,7 @@
       }
     },
     {
-      "n": 214,
+      "n": 220,
       "id": "location.stacked.v1",
       "group": "location",
       "type": "stacked",
@@ -7740,7 +8012,7 @@
       }
     },
     {
-      "n": 215,
+      "n": 221,
       "id": "location.randomSafe.v1",
       "group": "location",
       "type": "randomSafe",
@@ -7769,7 +8041,7 @@
       }
     },
     {
-      "n": 216,
+      "n": 222,
       "id": "location.badgeAnchored.v1",
       "group": "location",
       "type": "badgeAnchored",
@@ -7806,7 +8078,7 @@
       }
     },
     {
-      "n": 217,
+      "n": 223,
       "id": "location.custom.v1",
       "group": "location",
       "type": "custom",
@@ -7843,7 +8115,7 @@
       }
     },
     {
-      "n": 218,
+      "n": 224,
       "id": "location.center.v2",
       "group": "location",
       "type": "center",
@@ -7878,7 +8150,7 @@
       }
     },
     {
-      "n": 219,
+      "n": 225,
       "id": "location.lowerThird.v2",
       "group": "location",
       "type": "lowerThird",
@@ -7913,7 +8185,7 @@
       }
     },
     {
-      "n": 220,
+      "n": 226,
       "id": "location.upperThird.v2",
       "group": "location",
       "type": "upperThird",
@@ -7948,7 +8220,7 @@
       }
     },
     {
-      "n": 221,
+      "n": 227,
       "id": "location.left.v2",
       "group": "location",
       "type": "left",
@@ -7983,7 +8255,7 @@
       }
     },
     {
-      "n": 222,
+      "n": 228,
       "id": "location.right.v2",
       "group": "location",
       "type": "right",
@@ -8018,7 +8290,7 @@
       }
     },
     {
-      "n": 223,
+      "n": 229,
       "id": "location.karaoke.v2",
       "group": "location",
       "type": "karaoke",
@@ -8053,7 +8325,7 @@
       }
     },
     {
-      "n": 224,
+      "n": 230,
       "id": "location.stacked.v2",
       "group": "location",
       "type": "stacked",
@@ -8088,7 +8360,7 @@
       }
     },
     {
-      "n": 225,
+      "n": 231,
       "id": "location.randomSafe.v2",
       "group": "location",
       "type": "randomSafe",
@@ -8123,7 +8395,7 @@
       }
     },
     {
-      "n": 226,
+      "n": 232,
       "id": "location.badgeAnchored.v2",
       "group": "location",
       "type": "badgeAnchored",
@@ -8160,7 +8432,7 @@
       }
     },
     {
-      "n": 227,
+      "n": 233,
       "id": "location.custom.v2",
       "group": "location",
       "type": "custom",
@@ -8197,7 +8469,7 @@
       }
     },
     {
-      "n": 228,
+      "n": 234,
       "id": "location.center.v3",
       "group": "location",
       "type": "center",
@@ -8232,7 +8504,7 @@
       }
     },
     {
-      "n": 229,
+      "n": 235,
       "id": "location.lowerThird.v3",
       "group": "location",
       "type": "lowerThird",
@@ -8267,7 +8539,7 @@
       }
     },
     {
-      "n": 230,
+      "n": 236,
       "id": "location.upperThird.v3",
       "group": "location",
       "type": "upperThird",
@@ -8302,7 +8574,7 @@
       }
     },
     {
-      "n": 231,
+      "n": 237,
       "id": "location.left.v3",
       "group": "location",
       "type": "left",
@@ -8342,7 +8614,7 @@
       }
     },
     {
-      "n": 232,
+      "n": 238,
       "id": "location.right.v3",
       "group": "location",
       "type": "right",
@@ -8382,7 +8654,7 @@
       }
     },
     {
-      "n": 233,
+      "n": 239,
       "id": "location.karaoke.v3",
       "group": "location",
       "type": "karaoke",
@@ -8422,7 +8694,7 @@
       }
     },
     {
-      "n": 234,
+      "n": 240,
       "id": "location.stacked.v3",
       "group": "location",
       "type": "stacked",
@@ -8457,7 +8729,7 @@
       }
     },
     {
-      "n": 235,
+      "n": 241,
       "id": "location.randomSafe.v3",
       "group": "location",
       "type": "randomSafe",
@@ -8492,7 +8764,7 @@
       }
     },
     {
-      "n": 236,
+      "n": 242,
       "id": "location.badgeAnchored.v3",
       "group": "location",
       "type": "badgeAnchored",
@@ -8529,7 +8801,7 @@
       }
     },
     {
-      "n": 237,
+      "n": 243,
       "id": "location.custom.v3",
       "group": "location",
       "type": "custom",
@@ -8566,7 +8838,7 @@
       }
     },
     {
-      "n": 238,
+      "n": 244,
       "id": "fill.gradientSweep.v1",
       "group": "fill",
       "type": "gradientSweep",
@@ -8596,7 +8868,7 @@
       }
     },
     {
-      "n": 239,
+      "n": 245,
       "id": "fill.rainbowFlow.v1",
       "group": "fill",
       "type": "rainbowFlow",
@@ -8628,7 +8900,7 @@
       }
     },
     {
-      "n": 240,
+      "n": 246,
       "id": "fill.holographic.v1",
       "group": "fill",
       "type": "holographic",
@@ -8664,7 +8936,7 @@
       }
     },
     {
-      "n": 241,
+      "n": 247,
       "id": "fill.chrome.v1",
       "group": "fill",
       "type": "chrome",
@@ -8694,7 +8966,7 @@
       }
     },
     {
-      "n": 242,
+      "n": 248,
       "id": "fill.goldFoil.v1",
       "group": "fill",
       "type": "goldFoil",
@@ -8724,7 +8996,7 @@
       }
     },
     {
-      "n": 243,
+      "n": 249,
       "id": "fill.fire.v1",
       "group": "fill",
       "type": "fire",
@@ -8760,7 +9032,7 @@
       }
     },
     {
-      "n": 244,
+      "n": 250,
       "id": "fill.caustics.v1",
       "group": "fill",
       "type": "caustics",
@@ -8792,7 +9064,7 @@
       }
     },
     {
-      "n": 245,
+      "n": 251,
       "id": "fill.marble.v1",
       "group": "fill",
       "type": "marble",
@@ -8828,7 +9100,7 @@
       }
     },
     {
-      "n": 246,
+      "n": 252,
       "id": "fill.glass.v1",
       "group": "fill",
       "type": "glass",
@@ -8859,7 +9131,7 @@
       }
     },
     {
-      "n": 247,
+      "n": 253,
       "id": "fill.textureFill.v1",
       "group": "fill",
       "type": "textureFill",
@@ -8895,7 +9167,7 @@
       }
     },
     {
-      "n": 248,
+      "n": 254,
       "id": "fill.karaokeWipe.v1",
       "group": "fill",
       "type": "karaokeWipe",
@@ -8926,7 +9198,7 @@
       }
     },
     {
-      "n": 249,
+      "n": 255,
       "id": "fill.ink.v1",
       "group": "fill",
       "type": "ink",
@@ -8962,7 +9234,7 @@
       }
     },
     {
-      "n": 250,
+      "n": 256,
       "id": "fill.gradientSweep.v2",
       "group": "fill",
       "type": "gradientSweep",
@@ -8992,7 +9264,7 @@
       }
     },
     {
-      "n": 251,
+      "n": 257,
       "id": "fill.rainbowFlow.v2",
       "group": "fill",
       "type": "rainbowFlow",
@@ -9024,7 +9296,7 @@
       }
     },
     {
-      "n": 252,
+      "n": 258,
       "id": "fill.holographic.v2",
       "group": "fill",
       "type": "holographic",
@@ -9060,7 +9332,7 @@
       }
     },
     {
-      "n": 253,
+      "n": 259,
       "id": "fill.chrome.v2",
       "group": "fill",
       "type": "chrome",
@@ -9113,7 +9385,7 @@
       }
     },
     {
-      "n": 254,
+      "n": 260,
       "id": "fill.goldFoil.v2",
       "group": "fill",
       "type": "goldFoil",
@@ -9143,7 +9415,7 @@
       }
     },
     {
-      "n": 255,
+      "n": 261,
       "id": "fill.fire.v2",
       "group": "fill",
       "type": "fire",
@@ -9179,7 +9451,7 @@
       }
     },
     {
-      "n": 256,
+      "n": 262,
       "id": "fill.caustics.v2",
       "group": "fill",
       "type": "caustics",
@@ -9216,7 +9488,7 @@
       }
     },
     {
-      "n": 257,
+      "n": 263,
       "id": "fill.marble.v2",
       "group": "fill",
       "type": "marble",
@@ -9275,7 +9547,7 @@
       }
     },
     {
-      "n": 258,
+      "n": 264,
       "id": "fill.glass.v2",
       "group": "fill",
       "type": "glass",
@@ -9311,7 +9583,7 @@
       }
     },
     {
-      "n": 259,
+      "n": 265,
       "id": "fill.textureFill.v2",
       "group": "fill",
       "type": "textureFill",
@@ -9347,7 +9619,7 @@
       }
     },
     {
-      "n": 260,
+      "n": 266,
       "id": "fill.karaokeWipe.v2",
       "group": "fill",
       "type": "karaokeWipe",
@@ -9383,7 +9655,7 @@
       }
     },
     {
-      "n": 261,
+      "n": 267,
       "id": "fill.ink.v2",
       "group": "fill",
       "type": "ink",
@@ -9419,7 +9691,7 @@
       }
     },
     {
-      "n": 262,
+      "n": 268,
       "id": "fill.gradientSweep.v3",
       "group": "fill",
       "type": "gradientSweep",
@@ -9454,7 +9726,7 @@
       }
     },
     {
-      "n": 263,
+      "n": 269,
       "id": "fill.rainbowFlow.v3",
       "group": "fill",
       "type": "rainbowFlow",
@@ -9491,7 +9763,7 @@
       }
     },
     {
-      "n": 264,
+      "n": 270,
       "id": "fill.holographic.v3",
       "group": "fill",
       "type": "holographic",
@@ -9527,7 +9799,7 @@
       }
     },
     {
-      "n": 265,
+      "n": 271,
       "id": "fill.chrome.v3",
       "group": "fill",
       "type": "chrome",
@@ -9557,7 +9829,7 @@
       }
     },
     {
-      "n": 266,
+      "n": 272,
       "id": "fill.goldFoil.v3",
       "group": "fill",
       "type": "goldFoil",
@@ -9592,7 +9864,7 @@
       }
     },
     {
-      "n": 267,
+      "n": 273,
       "id": "fill.fire.v3",
       "group": "fill",
       "type": "fire",
@@ -9651,7 +9923,7 @@
       }
     },
     {
-      "n": 268,
+      "n": 274,
       "id": "fill.caustics.v3",
       "group": "fill",
       "type": "caustics",
@@ -9688,7 +9960,7 @@
       }
     },
     {
-      "n": 269,
+      "n": 275,
       "id": "fill.marble.v3",
       "group": "fill",
       "type": "marble",
@@ -9724,7 +9996,7 @@
       }
     },
     {
-      "n": 270,
+      "n": 276,
       "id": "fill.glass.v3",
       "group": "fill",
       "type": "glass",
@@ -9760,7 +10032,7 @@
       }
     },
     {
-      "n": 271,
+      "n": 277,
       "id": "fill.karaokeWipe.v3",
       "group": "fill",
       "type": "karaokeWipe",
@@ -9796,7 +10068,7 @@
       }
     },
     {
-      "n": 272,
+      "n": 278,
       "id": "fill.ink.v3",
       "group": "fill",
       "type": "ink",
@@ -9832,7 +10104,7 @@
       }
     },
     {
-      "n": 273,
+      "n": 279,
       "id": "edge.outline.v1",
       "group": "edge",
       "type": "outline",
@@ -9870,7 +10142,7 @@
       }
     },
     {
-      "n": 274,
+      "n": 280,
       "id": "edge.neonGlow.v1",
       "group": "edge",
       "type": "neonGlow",
@@ -9909,7 +10181,7 @@
       }
     },
     {
-      "n": 275,
+      "n": 281,
       "id": "edge.innerGlow.v1",
       "group": "edge",
       "type": "innerGlow",
@@ -9947,7 +10219,7 @@
       }
     },
     {
-      "n": 276,
+      "n": 282,
       "id": "edge.bevel.v1",
       "group": "edge",
       "type": "bevel",
@@ -9986,7 +10258,7 @@
       }
     },
     {
-      "n": 277,
+      "n": 283,
       "id": "edge.extrude.v1",
       "group": "edge",
       "type": "extrude",
@@ -10025,7 +10297,7 @@
       }
     },
     {
-      "n": 278,
+      "n": 284,
       "id": "edge.longShadow.v1",
       "group": "edge",
       "type": "longShadow",
@@ -10064,7 +10336,7 @@
       }
     },
     {
-      "n": 279,
+      "n": 285,
       "id": "edge.dropShadow.v1",
       "group": "edge",
       "type": "dropShadow",
@@ -10111,7 +10383,7 @@
       }
     },
     {
-      "n": 280,
+      "n": 286,
       "id": "edge.drip.v1",
       "group": "edge",
       "type": "drip",
@@ -10150,7 +10422,7 @@
       }
     },
     {
-      "n": 281,
+      "n": 287,
       "id": "post.glitchBlocks.v1",
       "group": "post",
       "type": "glitchBlocks",
@@ -10192,7 +10464,7 @@
       }
     },
     {
-      "n": 282,
+      "n": 288,
       "id": "post.rgbShift.v1",
       "group": "post",
       "type": "rgbShift",
@@ -10233,7 +10505,7 @@
       }
     },
     {
-      "n": 283,
+      "n": 289,
       "id": "post.scanTear.v1",
       "group": "post",
       "type": "scanTear",
@@ -10274,7 +10546,7 @@
       }
     },
     {
-      "n": 284,
+      "n": 290,
       "id": "post.vhsTracking.v1",
       "group": "post",
       "type": "vhsTracking",
@@ -10315,7 +10587,7 @@
       }
     },
     {
-      "n": 285,
+      "n": 291,
       "id": "post.dataSmear.v1",
       "group": "post",
       "type": "dataSmear",
@@ -10356,7 +10628,7 @@
       }
     },
     {
-      "n": 286,
+      "n": 292,
       "id": "post.digitalNoise.v1",
       "group": "post",
       "type": "digitalNoise",
@@ -10391,7 +10663,7 @@
       }
     },
     {
-      "n": 287,
+      "n": 293,
       "id": "post.glitchSlice.v1",
       "group": "post",
       "type": "glitchSlice",
@@ -10432,7 +10704,7 @@
       }
     },
     {
-      "n": 288,
+      "n": 294,
       "id": "post.noiseDissolve.v1",
       "group": "post",
       "type": "noiseDissolve",
@@ -10473,7 +10745,7 @@
       }
     },
     {
-      "n": 289,
+      "n": 295,
       "id": "post.directionalDissolve.v1",
       "group": "post",
       "type": "directionalDissolve",
@@ -10514,7 +10786,7 @@
       }
     },
     {
-      "n": 290,
+      "n": 296,
       "id": "post.pixelDissolve.v1",
       "group": "post",
       "type": "pixelDissolve",
@@ -10548,7 +10820,7 @@
       }
     },
     {
-      "n": 291,
+      "n": 297,
       "id": "post.burnDissolve.v1",
       "group": "post",
       "type": "burnDissolve",
@@ -10589,7 +10861,7 @@
       }
     },
     {
-      "n": 292,
+      "n": 298,
       "id": "post.halftoneDissolve.v1",
       "group": "post",
       "type": "halftoneDissolve",
@@ -10624,7 +10896,7 @@
       }
     },
     {
-      "n": 293,
+      "n": 299,
       "id": "post.particleDissolve.v1",
       "group": "post",
       "type": "particleDissolve",
@@ -10659,7 +10931,7 @@
       }
     },
     {
-      "n": 294,
+      "n": 300,
       "id": "post.shockwave.v1",
       "group": "post",
       "type": "shockwave",
@@ -10709,7 +10981,7 @@
       }
     },
     {
-      "n": 295,
+      "n": 301,
       "id": "post.zoomBlur.v1",
       "group": "post",
       "type": "zoomBlur",
@@ -10747,7 +11019,7 @@
       }
     },
     {
-      "n": 296,
+      "n": 302,
       "id": "post.motionBlur.v1",
       "group": "post",
       "type": "motionBlur",
@@ -10788,7 +11060,7 @@
       }
     },
     {
-      "n": 297,
+      "n": 303,
       "id": "post.echoTrail.v1",
       "group": "post",
       "type": "echoTrail",
@@ -10835,7 +11107,7 @@
       }
     },
     {
-      "n": 298,
+      "n": 304,
       "id": "post.godRays.v1",
       "group": "post",
       "type": "godRays",
@@ -10880,7 +11152,7 @@
       }
     },
     {
-      "n": 299,
+      "n": 305,
       "id": "post.lightSweep.v1",
       "group": "post",
       "type": "lightSweep",
@@ -10922,7 +11194,7 @@
       }
     },
     {
-      "n": 300,
+      "n": 306,
       "id": "post.kaleidoscope.v1",
       "group": "post",
       "type": "kaleidoscope",
@@ -10962,7 +11234,7 @@
       }
     },
     {
-      "n": 301,
+      "n": 307,
       "id": "post.mirror.v1",
       "group": "post",
       "type": "mirror",
@@ -11002,7 +11274,7 @@
       }
     },
     {
-      "n": 302,
+      "n": 308,
       "id": "post.pixelSort.v1",
       "group": "post",
       "type": "pixelSort",
@@ -11043,7 +11315,7 @@
       }
     },
     {
-      "n": 303,
+      "n": 309,
       "id": "post.lensDistortion.v1",
       "group": "post",
       "type": "lensDistortion",
@@ -11084,7 +11356,7 @@
       }
     },
     {
-      "n": 304,
+      "n": 310,
       "id": "post.colorGrade.v1",
       "group": "post",
       "type": "colorGrade",
@@ -11126,7 +11398,7 @@
       }
     },
     {
-      "n": 305,
+      "n": 311,
       "id": "post.displacementMap.v1",
       "group": "post",
       "type": "displacementMap",
@@ -11161,7 +11433,7 @@
       }
     },
     {
-      "n": 306,
+      "n": 312,
       "id": "post.bloom.v1",
       "group": "post",
       "type": "bloom",
@@ -11202,7 +11474,7 @@
       }
     },
     {
-      "n": 307,
+      "n": 313,
       "id": "post.chromaticAberration.v1",
       "group": "post",
       "type": "chromaticAberration",
@@ -11243,7 +11515,7 @@
       }
     },
     {
-      "n": 308,
+      "n": 314,
       "id": "post.crt.v1",
       "group": "post",
       "type": "crt",
@@ -11284,7 +11556,7 @@
       }
     },
     {
-      "n": 309,
+      "n": 315,
       "id": "post.filmGrain.v1",
       "group": "post",
       "type": "filmGrain",
@@ -11319,7 +11591,7 @@
       }
     },
     {
-      "n": 310,
+      "n": 316,
       "id": "post.halftone.v1",
       "group": "post",
       "type": "halftone",
@@ -11354,7 +11626,7 @@
       }
     },
     {
-      "n": 311,
+      "n": 317,
       "id": "post.pixelate.v1",
       "group": "post",
       "type": "pixelate",
@@ -11388,7 +11660,7 @@
       }
     },
     {
-      "n": 312,
+      "n": 318,
       "id": "post.heatHaze.v1",
       "group": "post",
       "type": "heatHaze",
@@ -11428,7 +11700,7 @@
       }
     },
     {
-      "n": 313,
+      "n": 319,
       "id": "post.lightLeak.v1",
       "group": "post",
       "type": "lightLeak",
@@ -11470,7 +11742,7 @@
       }
     },
     {
-      "n": 314,
+      "n": 320,
       "id": "post.vignette.v1",
       "group": "post",
       "type": "vignette",
@@ -11505,7 +11777,7 @@
       }
     },
     {
-      "n": 315,
+      "n": 321,
       "id": "post.sparkles.v1",
       "group": "post",
       "type": "sparkles",
@@ -11547,7 +11819,7 @@
       }
     },
     {
-      "n": 316,
+      "n": 322,
       "id": "post.lensFlare.v1",
       "group": "post",
       "type": "lensFlare",
@@ -11585,7 +11857,7 @@
       }
     },
     {
-      "n": 317,
+      "n": 323,
       "id": "background.solid.v1",
       "group": "background",
       "type": "solid",
@@ -11610,7 +11882,7 @@
       }
     },
     {
-      "n": 318,
+      "n": 324,
       "id": "background.plain.v1",
       "group": "background",
       "type": "plain",
@@ -11635,7 +11907,7 @@
       }
     },
     {
-      "n": 319,
+      "n": 325,
       "id": "background.gradient.v1",
       "group": "background",
       "type": "gradient",
@@ -11680,7 +11952,7 @@
       }
     },
     {
-      "n": 320,
+      "n": 326,
       "id": "background.noiseGradient.v1",
       "group": "background",
       "type": "noiseGradient",
@@ -11712,7 +11984,7 @@
       }
     },
     {
-      "n": 321,
+      "n": 327,
       "id": "background.card.v1",
       "group": "background",
       "type": "card",
@@ -11748,7 +12020,7 @@
       }
     },
     {
-      "n": 322,
+      "n": 328,
       "id": "background.cover.v1",
       "group": "background",
       "type": "cover",
@@ -11778,7 +12050,7 @@
       }
     },
     {
-      "n": 323,
+      "n": 329,
       "id": "background.image.v1",
       "group": "background",
       "type": "image",
@@ -11808,7 +12080,7 @@
       }
     },
     {
-      "n": 324,
+      "n": 330,
       "id": "background.pattern.v1",
       "group": "background",
       "type": "pattern",
@@ -11838,7 +12110,7 @@
       }
     },
     {
-      "n": 325,
+      "n": 331,
       "id": "background.shapes.v1",
       "group": "background",
       "type": "shapes",
@@ -11868,7 +12140,7 @@
       }
     },
     {
-      "n": 326,
+      "n": 332,
       "id": "background.solid.v2",
       "group": "background",
       "type": "solid",
@@ -11893,7 +12165,7 @@
       }
     },
     {
-      "n": 327,
+      "n": 333,
       "id": "background.plain.v2",
       "group": "background",
       "type": "plain",
@@ -11918,7 +12190,7 @@
       }
     },
     {
-      "n": 328,
+      "n": 334,
       "id": "background.gradient.v2",
       "group": "background",
       "type": "gradient",
@@ -11945,7 +12217,7 @@
       }
     },
     {
-      "n": 329,
+      "n": 335,
       "id": "background.noiseGradient.v2",
       "group": "background",
       "type": "noiseGradient",
@@ -12000,7 +12272,7 @@
       }
     },
     {
-      "n": 330,
+      "n": 336,
       "id": "background.card.v2",
       "group": "background",
       "type": "card",
@@ -12036,7 +12308,7 @@
       }
     },
     {
-      "n": 331,
+      "n": 337,
       "id": "background.cover.v2",
       "group": "background",
       "type": "cover",
@@ -12071,7 +12343,7 @@
       }
     },
     {
-      "n": 332,
+      "n": 338,
       "id": "background.image.v2",
       "group": "background",
       "type": "image",
@@ -12106,7 +12378,7 @@
       }
     },
     {
-      "n": 333,
+      "n": 339,
       "id": "background.pattern.v2",
       "group": "background",
       "type": "pattern",
@@ -12136,7 +12408,7 @@
       }
     },
     {
-      "n": 334,
+      "n": 340,
       "id": "background.shapes.v2",
       "group": "background",
       "type": "shapes",
@@ -12161,224 +12433,6 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
-        }
-      }
-    },
-    {
-      "n": 335,
-      "id": "background.gradient.v3",
-      "group": "background",
-      "type": "gradient",
-      "variant": 3,
-      "label": "背景 / グラデーション（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "colors",
-          "from": null,
-          "to": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        {
-          "key": "scale",
-          "from": 1,
-          "to": 3.4
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "gradient",
-        "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 3.4,
-          "speed": 0.1
-        }
-      }
-    },
-    {
-      "n": 336,
-      "id": "background.noiseGradient.v3",
-      "group": "background",
-      "type": "noiseGradient",
-      "variant": 3,
-      "label": "背景 / ノイズグラデーション（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "scale",
-          "from": 3,
-          "to": 9.1
-        },
-        {
-          "key": "speed",
-          "from": 0.2,
-          "to": 0.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "noiseGradient",
-        "params": {
-          "colors": null,
-          "scale": 9.1,
-          "speed": 0.5
-        }
-      }
-    },
-    {
-      "n": 337,
-      "id": "background.card.v3",
-      "group": "background",
-      "type": "card",
-      "variant": 3,
-      "label": "背景 / 実績カード（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "dim",
-          "from": 0.35,
-          "to": 0.25
-        },
-        {
-          "key": "blur",
-          "from": 0,
-          "to": 30
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "カードテーマ未設定時は既定色"
-      ],
-      "clip": {
-        "type": "card",
-        "params": {
-          "dim": 0.25,
-          "blur": 30,
-          "focusBadge": true,
-          "zoom": 1.6,
-          "parallax": 0.1
-        }
-      }
-    },
-    {
-      "n": 338,
-      "id": "background.cover.v3",
-      "group": "background",
-      "type": "cover",
-      "variant": 3,
-      "label": "背景 / 楽曲カバー（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "blur",
-          "from": 0,
-          "to": 30
-        },
-        {
-          "key": "dim",
-          "from": 0.4,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "カバー元がない場合は単色"
-      ],
-      "clip": {
-        "type": "cover",
-        "params": {
-          "songId": "",
-          "blur": 30,
-          "dim": 0.75,
-          "zoomSpeed": 0.1
-        }
-      }
-    },
-    {
-      "n": 339,
-      "id": "background.image.v3",
-      "group": "background",
-      "type": "image",
-      "variant": 3,
-      "label": "背景 / 画像（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "blur",
-          "from": 0,
-          "to": 10
-        },
-        {
-          "key": "dim",
-          "from": 0.3,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "画像未設定でも手続きパターンで表示"
-      ],
-      "clip": {
-        "type": "image",
-        "params": {
-          "imageId": "",
-          "fit": "cover",
-          "blur": 10,
-          "dim": 0.25
-        }
-      }
-    },
-    {
-      "n": 340,
-      "id": "background.pattern.v3",
-      "group": "background",
-      "type": "pattern",
-      "variant": 3,
-      "label": "背景 / パターン（代表3）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "mode",
-          "from": "grid",
-          "to": "rings"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "pattern",
-        "params": {
-          "mode": "rings",
-          "count": 24,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.55,
           "color": null
         }
       }

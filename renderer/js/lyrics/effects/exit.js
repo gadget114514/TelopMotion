@@ -212,6 +212,41 @@
     },
   });
 
+  // Sand: the glyph erodes from the top (state wipe) while the grains of the
+  // 'sand' representation peel off, fall and drift (see REP_VERT, mode 4). The
+  // erosion line and the grain release time share the 0.72 cut-off, so the
+  // last 28% of the exit is spent on the grains falling.
+  fx.register({
+    group: 'exit',
+    type: 'sandCrumble',
+    tags: ['particles', 'dissolve'],
+    cost: 3,
+    params: [
+      { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.25, random: [-0.6, 0.6] },
+      { key: 'gravity', kind: 'number', min: 0, max: 12, step: 0.1, default: 5 },
+      { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+      { key: 'pile', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const k = clamp01(p);
+      if (k > 0.001 && k < 0.999) {
+        state.represent = 'sand';
+        state.reprProgress = 1 - k;
+        state.wipeMode = 2;
+        state.wipeSoft = 0.04;
+        state.visibleFrac = 1 - clamp01(k / 0.72);
+        state.sand = {
+          wind: params.wind == null ? 0.25 : params.wind,
+          gravity: params.gravity == null ? 5 : params.gravity,
+          grain: params.grain == null ? 2.4 : params.grain,
+          pile: params.pile !== false,
+        };
+      }
+      const tail = clamp01((k - 0.88) / 0.12);
+      state.opacity *= 1 - tail * tail * (3 - 2 * tail);
+    },
+  });
+
   fx.register({
     group: 'exit',
     type: 'melt',
