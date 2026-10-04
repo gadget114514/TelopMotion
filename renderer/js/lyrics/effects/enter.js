@@ -333,5 +333,18 @@
     },
   });
 
+  fx.register({
+    group: 'enter',
+    type: 'dissolve',
+    tags: ['dissolve'],
+    params: [{ key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 }],
+    cpu(state, p, params, rng) {
+      const threshold = rng() * 0.85;
+      const progress = clamp01(p);
+      if (progress < threshold) state.opacity *= progress / Math.max(threshold, 0.0001);
+      else state.opacity *= 1 - (1 - progress) * 0.15;
+    },
+  });
+
   return fx;
 });

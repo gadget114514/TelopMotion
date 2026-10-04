@@ -428,5 +428,28 @@
     },
   });
 
+  fx.register({
+    group: 'hold',
+    type: 'dissolve',
+    tags: ['dissolve'],
+    params: [
+      { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.1, default: 1.5 },
+      { key: 'intensity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.3, random: [0.1, 0.5] },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const intensity = params.intensity == null ? 0.3 : params.intensity;
+      const speed = params.speed == null ? 1.5 : params.speed;
+      const threshold = rng() * 0.85;
+      const cycle = (h * speed) % 1.0;
+      let alpha = 1.0;
+      if (cycle < threshold) {
+        alpha = cycle / Math.max(threshold, 0.0001);
+      } else {
+        alpha = 1 - (1 - cycle) * 0.15;
+      }
+      state.opacity *= 1 - (1 - alpha) * intensity * env;
+    },
+  });
+
   return fx;
 });
