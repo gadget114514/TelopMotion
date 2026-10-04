@@ -77,7 +77,9 @@ test('every page cue stays a single beat', () => {
 test('the catalogue contributes one variant-1 entry per type', () => {
   const b = built();
   const types = new Set(b.catalog.effects.filter((entry) => entry.variant === 1).map((entry) => `${entry.group}.${entry.type}`));
-  assert.equal(b.effects.length, types.size);
+  // the `repeat` group is not part of the fx400 catalogue; the showcase adds one
+  // entry per repeat type of its own
+  assert.equal(b.effects.filter(({ entry }) => entry.group !== 'repeat').length, types.size);
   assert.deepEqual(new Set(b.effects.map(({ entry }) => entry.variant)), new Set([1]));
 });
 
