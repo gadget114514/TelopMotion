@@ -520,7 +520,7 @@ test('setFigureLayerEnabled creates a single undo step', () => {
 
 test('timeline source wiring for layer-switch rows and track-layer-check', () => {
   const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
-  assert.ok(timeline.includes("LAYER_SWITCH_KINDS = ['figure']"), 'LAYER_SWITCH_KINDS constant missing');
+  assert.ok(timeline.includes("LAYER_SWITCH_KINDS = ['figure', 'filler']"), 'LAYER_SWITCH_KINDS constant missing');
   assert.ok(timeline.includes("LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' }"), 'LAYER_SWITCH_COLORS missing');
   assert.ok(timeline.includes("type: 'layer-switch'"), 'layer-switch row missing from layoutRows');
   assert.ok(timeline.includes('function drawLayerSwitchRow('), 'drawLayerSwitchRow missing');

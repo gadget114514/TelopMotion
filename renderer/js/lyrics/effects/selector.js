@@ -230,14 +230,15 @@
   }
 
   // The landed weight of one unit for a reveal (0 = start state, 1 = landed).
-  // A square band lands a unit by covering it, so it slides by one band width.
-  // The other shapes only grade the units inside the band: parked over the
-  // string they would freeze it half revealed, so the band sweeps all the way
-  // across and a unit lands once the band has passed it, the shape giving the
-  // soft leading edge. `progress` runs 0 -> 1 into the landed state.
+  // A hard square band lands a unit by covering it, so it slides by one band
+  // width. The other shapes (and a square with eased edges) only grade the
+  // units inside the band: parked over the string they would freeze it half
+  // revealed, so the band sweeps all the way across and a unit lands once the
+  // band has passed it, the shape giving the soft leading edge. `progress`
+  // runs 0 -> 1 into the landed state.
   function revealWeight(info, progress, sel) {
     const p = clamp01(progress);
-    if (sel.shape === 'square') {
+    if (sel.shape === 'square' && sel.easeHigh <= 0 && sel.easeLow <= 0) {
       return selectAt(info, 0, { ...sel, sweep: 'once', offset: sel.offset + 1 - p }, 0);
     }
     if (!sel.amount) return 0;
@@ -253,7 +254,7 @@
     if (u <= 0) weight = 0;
     else if (u >= 1) weight = 1;
     else if (sel.shape === 'round') weight = Math.sin((Math.PI / 2) * u);
-    else if (sel.shape === 'smooth') weight = smoothstep(0, 1, u);
+    else if (sel.shape === 'smooth' || sel.shape === 'square') weight = smoothstep(0, 1, u);
     else weight = u;
     return weight * clamp(sel.amount, -1, 1);
   }

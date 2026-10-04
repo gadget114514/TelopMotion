@@ -21,7 +21,7 @@ SA.timeline = (() => {
   // tracks whose clips are placed by hand with drag / double-click / Add cue
   const CREATABLE_CLIP_KINDS = ['figure', 'textAnim', 'filler'];
   // kinds whose track header gets a foreground / background switch row each
-  const LAYER_SWITCH_KINDS = ['figure'];
+  const LAYER_SWITCH_KINDS = ['figure', 'filler'];
   const LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' };
   const LAYER_SWITCH_FILLS = { foreground: 'rgba(200, 107, 255, 0.28)', background: 'rgba(255, 209, 102, 0.28)' };
 
@@ -44,6 +44,9 @@ SA.timeline = (() => {
   let menu = null;
   let editing = null;
   let expanded = new Set();
+  // tracks whose child rows (text background, graphics, keyframes, figure
+  // layers, background clips) are folded away under the header
+  let collapsed = new Set();
   let selectedKeys = new Set();
   let clipboard = [];
   let lastVersion = {};
@@ -383,6 +386,8 @@ SA.timeline = (() => {
         // lanes under the layer lanes so they can be selected and edited
         if (track.kind === 'background') {
           const clips = clipsOnTrack(doc, track.id);
+          if (clips.length) rows[rows.length - laneCount].collapsible = true;
+          if (collapsed.has(track.id)) continue;
           const clipPacked = packRows(clips, (clip) => clip.start, (clip) => clip.end);
           for (let lane = 0; lane < clipPacked.length; lane += 1) {
             rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1, depth: 1 });
@@ -393,9 +398,10 @@ SA.timeline = (() => {
       }
       if (track.kind === 'subtitle') {
         const cues = cueList().filter((cue) => (cue.trackId || 'sub1') === track.id);
-        rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: false });
+        rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: false, collapsible: true });
         y += ROW_H;
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
+        if (collapsed.has(track.id)) continue;
         // the track's two switch rows sit directly under its cues: the text
         // background (the shapes behind the glyphs) ...
         rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
@@ -404,14 +410,17 @@ SA.timeline = (() => {
         // SA.fx.isGraphicsPost)
         rows.push({ type: 'graphics-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
         y += LAYER_H;
+        // ... and the keyframe header, whose own twisty opens the lanes
+        rows.push({ type: 'keys-header', y, h: LAYER_H, trackId: track.id, track, depth: 1 });
+        y += LAYER_H;
         if (!expanded.has(track.id)) continue;
         const entries = laneEntriesForCues(doc, cues);
         for (const entry of entries) {
-          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, cueId: entry.cueId, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, entry.cueId), depth: 1 });
+          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, cueId: entry.cueId, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, entry.cueId), depth: 2 });
           y += LANE_H;
         }
         if (!entries.length) {
-          rows.push({ type: 'lane-empty', y, h: LANE_H, trackId: track.id, depth: 1 });
+          rows.push({ type: 'lane-empty', y, h: LANE_H, trackId: track.id, depth: 2 });
           y += LANE_H;
         }
         continue;
@@ -425,6 +434,8 @@ SA.timeline = (() => {
           y += LAYER_H;
         }
         if (LAYER_SWITCH_KINDS.includes(track.kind)) {
+          rows[rows.length - laneCount].collapsible = true;
+          if (collapsed.has(track.id)) continue;
           for (const layer of ['foreground', 'background']) {
             rows.push({ type: 'layer-switch', y, h: LAYER_H, trackId: track.id, track, layer, depth: 1 });
             y += LAYER_H;
@@ -434,11 +445,23 @@ SA.timeline = (() => {
     }
     rows.push({ type: 'credits', y, h: LAYER_H, trackId: null });
     y += LAYER_H;
-    // the last child row of a track ends its tree guide (an "L" instead of a "T")
+    // per indent level of a child row: does a sibling follow at that level?
+    // (the guide runs on through the row, or ends in an "L" on the last child)
     rows.forEach((row, index) => {
       if (!row.depth) return;
-      const next = rows[index + 1];
-      row.lastChild = !next || !next.depth || next.trackId !== row.trackId;
+      row.guides = [];
+      for (let level = 1; level <= row.depth; level += 1) {
+        let continues = false;
+        for (let j = index + 1; j < rows.length; j += 1) {
+          const next = rows[j];
+          if (next.trackId !== row.trackId || (next.depth || 0) < level) break;
+          if (next.depth === level) {
+            continues = true;
+            break;
+          }
+        }
+        row.guides[level] = continues;
+      }
     });
     return y + 6;
   }
@@ -578,16 +601,25 @@ SA.timeline = (() => {
   // the indented label.
   function drawTreeGuide(row) {
     if (!row.depth) return;
-    const x = 12.5;
     const mid = row.y + row.h / 2;
     ctx.save();
     ctx.strokeStyle = '#3a4458';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(x, row.y);
-    ctx.lineTo(x, row.lastChild ? mid : row.y + row.h);
-    ctx.moveTo(x, mid + 0.5);
-    ctx.lineTo(x + CHILD_INDENT - 6, mid + 0.5);
+    for (let level = 1; level <= row.depth; level += 1) {
+      const x = 12.5 + (level - 1) * CHILD_INDENT;
+      const continues = row.guides && row.guides[level];
+      if (level < row.depth) {
+        if (!continues) continue;
+        ctx.moveTo(x, row.y);
+        ctx.lineTo(x, row.y + row.h);
+        continue;
+      }
+      ctx.moveTo(x, row.y);
+      ctx.lineTo(x, continues ? row.y + row.h : mid);
+      ctx.moveTo(x, mid + 0.5);
+      ctx.lineTo(x + CHILD_INDENT - 6, mid + 0.5);
+    }
     ctx.stroke();
     ctx.restore();
   }
@@ -611,7 +643,8 @@ SA.timeline = (() => {
     ctx.stroke();
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    const labelX = (opts.twisty ? 20 : 8) + (row.depth ? CHILD_INDENT : 0);
+    const indent = (row.depth || 0) * CHILD_INDENT;
+    const labelX = (opts.twisty ? 20 : 8) + indent;
     drawTreeGuide(row);
     let textX = labelX;
     if (opts.swatch) {
@@ -658,7 +691,7 @@ SA.timeline = (() => {
       hitRegions.push({ type: 'track-remove', trackId: row.trackId, x: removeX, y, w: removeSize, h: height });
     }
     if (opts.twisty) {
-      const twistyX = 7;
+      const twistyX = 7 + indent;
       const twistyY = y + height / 2 - 2;
       ctx.save();
       ctx.fillStyle = opts.expanded ? '#ff8a3d' : '#8d96ab';
@@ -675,7 +708,7 @@ SA.timeline = (() => {
       ctx.closePath();
       ctx.fill();
       ctx.restore();
-      hitRegions.push({ type: 'track-twisty', trackId: row.trackId, x: 2, y, w: 16, h: height });
+      hitRegions.push({ type: opts.twistyType || 'track-twisty', trackId: row.trackId, x: 2 + indent, y, w: 16, h: height });
     }
     if (opts.toggle !== false) {
       // a real checkbox: checked means "this track is drawn"
@@ -707,7 +740,8 @@ SA.timeline = (() => {
     const height = ROW_H - 4;
     drawTrackHeader(row, trackTitle(row.track), {
       twisty: true,
-      expanded: expanded.has(row.trackId),
+      twistyType: 'track-collapse',
+      expanded: !collapsed.has(row.trackId),
       hidden: trackHidden(row.track),
       color: trackHidden(row.track) ? '#5a6175' : '#8d96ab',
     });
@@ -842,6 +876,18 @@ SA.timeline = (() => {
     return t('layers.typeImage');
   }
 
+  // The subtitle track's keyframe header: its twisty opens the per-property
+  // keyframe lanes under it.
+  function drawKeysHeader(row) {
+    drawTrackHeader(row, t('studio.track.keyframes'), {
+      twisty: true,
+      expanded: expanded.has(row.trackId),
+      toggle: false,
+      removable: false,
+      color: '#6f7a94',
+    });
+  }
+
   // The subtitle track's text-background row: the beats whose look draws a
   // shape behind the glyphs. Its checkbox is the track's `bgHidden` flag, the
   // off switch of the text background; the style data is never touched.
@@ -961,6 +1007,9 @@ SA.timeline = (() => {
         color: foreground ? '#4dc8a0' : '#4d8fc8',
         hidden: trackHidden(row.track) || !(anyEnabled || !!baseColor || clips.length > 0),
         swatch: baseColor,
+        twisty: !!row.collapsible,
+        twistyType: 'track-collapse',
+        expanded: !collapsed.has(row.trackId),
       });
     }
     const y = row.y;
@@ -1092,7 +1141,13 @@ SA.timeline = (() => {
   function drawClipTrack(size, row) {
     if (row.first) {
       const colors = { background: '#4d8fc8', backdrop: '#ff8a3d', filler: '#4dc8a0', figure: '#c86bff', textAnim: '#e8c85a' };
-      drawTrackHeader(row, trackTitle(row.track), { color: colors[row.kind] || '#8d96ab', hidden: trackHidden(row.track) });
+      drawTrackHeader(row, trackTitle(row.track), {
+        color: colors[row.kind] || '#8d96ab',
+        hidden: trackHidden(row.track),
+        twisty: !!row.collapsible,
+        twistyType: 'track-collapse',
+        expanded: !collapsed.has(row.trackId),
+      });
     } else {
       drawTreeGuide(row);
     }
@@ -1227,8 +1282,8 @@ SA.timeline = (() => {
       ctx.font = '10px "Segoe UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
       const emptyText = t('studio.timeline.noKeys');
-      const emptyLabel = fitLabel(emptyText, LABEL_W - 16 - CHILD_INDENT);
-      ctx.fillText(emptyLabel, 8 + CHILD_INDENT, row.y + row.h / 2);
+      const emptyLabel = fitLabel(emptyText, LABEL_W - 16 - row.depth * CHILD_INDENT);
+      ctx.fillText(emptyLabel, 8 + row.depth * CHILD_INDENT, row.y + row.h / 2);
       drawTreeGuide(row);
       labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: emptyText, clipped: emptyLabel !== emptyText });
       return;
@@ -1257,8 +1312,8 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const fullLane = `${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`;
-    const laneText = fitLabel(fullLane, LABEL_W - 16 - CHILD_INDENT);
-    ctx.fillText(laneText, 8 + CHILD_INDENT, row.y + row.h / 2);
+    const laneText = fitLabel(fullLane, LABEL_W - 16 - row.depth * CHILD_INDENT);
+    ctx.fillText(laneText, 8 + row.depth * CHILD_INDENT, row.y + row.h / 2);
     drawTreeGuide(row);
     labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: fullLane, clipped: laneText !== fullLane });
     ctx.restore();
@@ -1465,6 +1520,7 @@ SA.timeline = (() => {
       if (row.type === 'cue-track') drawCueTrack(size, doc, row);
       else if (row.type === 'bg-track') drawBackgroundTrack(size, doc, row);
       else if (row.type === 'graphics-track') drawGraphicsTrack(size, doc, row);
+      else if (row.type === 'keys-header') drawKeysHeader(row);
       else if (row.type === 'layer-track') drawLayerTrack(size, row);
       else if (row.type === 'clip-track') drawClipTrack(size, row);
       else if (row.type === 'layer-switch') drawLayerSwitchRow(size, doc, row);
@@ -1578,6 +1634,11 @@ SA.timeline = (() => {
     } else if (hit.type === 'track-twisty') {
       if (expanded.has(hit.trackId)) expanded.delete(hit.trackId);
       else expanded.add(hit.trackId);
+      drag = null;
+      draw();
+    } else if (hit.type === 'track-collapse') {
+      if (collapsed.has(hit.trackId)) collapsed.delete(hit.trackId);
+      else collapsed.add(hit.trackId);
       drag = null;
       draw();
     } else if (hit.type === 'track-header') {
@@ -1709,7 +1770,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -2245,7 +2306,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
