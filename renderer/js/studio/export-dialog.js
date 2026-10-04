@@ -16,6 +16,27 @@ SA.exportDialog = (() => {
     return 1;
   }
 
+  // the exported frame size: the project's output size scaled, rounded to even
+  // pixels (the encoders need even dimensions)
+  function exportSize(output, resolution) {
+    const scale = resolutionScale(resolution);
+    return {
+      width: Math.max(16, Math.round((output.width * scale) / 2) * 2),
+      height: Math.max(16, Math.round((output.height * scale) / 2) * 2),
+    };
+  }
+
+  // each choice is shown as the width x height it actually produces, so a
+  // vertical project reads 1080x1920 rather than an ambiguous "1080p"
+  function resolutionOptions(output) {
+    return ['1080p', '720p', '1440p']
+      .map((value) => {
+        const size = exportSize(output, value);
+        return `<option value="${value}">${size.width} × ${size.height}</option>`;
+      })
+      .join('');
+  }
+
   function open() {
     const doc = SA.store.state.project;
     if (!doc) return;
@@ -36,9 +57,7 @@ SA.exportDialog = (() => {
       </div>
       <div class="field"><span>${t('export.resolution')}</span>
         <select data-field="resolution">
-          <option value="1080p">1080p</option>
-          <option value="720p">720p</option>
-          <option value="1440p">1440p</option>
+          ${resolutionOptions(doc.output)}
         </select>
       </div>
       <div class="field"><span>${t('export.fps')}</span>
@@ -108,9 +127,7 @@ SA.exportDialog = (() => {
 
   async function run(settings, ui, signal) {
     const doc = SA.store.state.project;
-    const scale = resolutionScale(settings.resolution);
-    const width = Math.max(16, Math.round((doc.output.width * scale) / 2) * 2);
-    const height = Math.max(16, Math.round((doc.output.height * scale) / 2) * 2);
+    const { width, height } = exportSize(doc.output, settings.resolution);
     const natural = SA.duration ? SA.duration.computeDuration(doc) : SA.preview.duration();
     const audioLength = SA.preview.getAudioDuration();
     const duration = doc.output && doc.output.maxDuration ? natural : Math.max(natural, audioLength || 0);
