@@ -1374,9 +1374,13 @@ SA.lyricsEngine = (() => {
         color: '#c86bff',
         bpm: tempoBpm(features),
       });
-      if (!list || !(list.shapes || []).length) return;
+      if (!list) return;
+      const hasField = Boolean(list.field) && typeof pipeline.drawField === 'function';
+      if (!(list.shapes || []).length && !hasField) return;
       pipeline.beginLayer();
-      drawPrimitives(list.shapes);
+      // a mathematical field fills the layer first; the shapes (if any) go on top
+      if (hasField) pipeline.drawField(list.field, { width: state.width, height: state.height });
+      drawPrimitives(list.shapes || []);
       if ((list.texts || []).length) drawTexts(list.texts);
       if (mask) pipeline.maskLayer();
       pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));

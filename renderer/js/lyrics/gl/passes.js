@@ -611,6 +611,29 @@ SA.glPasses = (() => {
       return { texture: cardTexture };
     }
 
+    // A full-frame mathematical field (gl/fields.js) drawn into the bound layer.
+    // The program of each field is compiled the first time it is drawn; a field
+    // whose shader does not build is skipped for the rest of the session.
+    const fieldPrograms = new Map();
+    function drawField(field, frame) {
+      if (!field || !SA.glFields || !SA.color) return false;
+      let entry = fieldPrograms.get(field.id);
+      if (entry === undefined) {
+        const source = SA.glFields.fragment(field.id);
+        entry = source ? createProgramSafe(gl, SA.glShaders.QUAD_VERT, source) : null;
+        fieldPrograms.set(field.id, entry);
+      }
+      if (!entry) return false;
+      const rgb = (hex) => {
+        const parsed = SA.color.parse(hex);
+        return [parsed.r, parsed.g, parsed.b];
+      };
+      gl.useProgram(entry.program);
+      applyUniforms(gl, entry, SA.glFields.uniformsOf(field, frame, rgb));
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      return true;
+    }
+
     function beginLayer() {
       gl.bindFramebuffer(gl.FRAMEBUFFER, targets.layer.framebuffer);
       gl.viewport(0, 0, width, height);
@@ -1158,6 +1181,7 @@ SA.glPasses = (() => {
       drawBackground,
       uploadCard,
       beginLayer,
+      drawField,
       text,
       textBackground,
       buildTextMask,

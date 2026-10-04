@@ -1119,7 +1119,7 @@
     ],
     figures: [
       { key: 'enabled', kind: 'bool', default: true },
-      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets', 'slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars', 'proc'], default: 'orbit' },
+      { key: 'motif', kind: 'select', options: ['orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop', 'polyMorph', 'ribbon', 'ticker', 'halftone', 'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets', 'slabWipe', 'cornerBlocks', 'ringDraw', 'stripeRun', 'dotGrid', 'sideBars', 'proc', 'solarSystem', 'nbody', 'pendulum', 'pendulumWave', 'newtonCradle', 'chain', 'gravityWell', 'polyhedra', 'attractor', 'knot', 'starfield', 'kdTree', 'voronoi', 'delaunay', 'proximity', 'lsystem', 'spaceFilling', 'circlePack', 'treemap', 'colonization', 'stringArt', 'domainWarp', 'voronoiCells', 'contour', 'sdfKaleido', 'chladni', 'quasicrystal', 'fractal', 'moire', 'hyperbolic', 'truchet', 'gyroid', 'complexColor', 'curl', 'lissajousGlow', 'ripple', 'cellTiling'], default: 'orbit' },
       { key: 'sync', kind: 'select', options: ['beat', 'free', 'text'], default: 'beat' },
       { key: 'density', kind: 'number', min: 0.15, max: 1, step: 0.05, default: 0.5 },
       { key: 'count', kind: 'int', min: 3, max: 24, step: 1, default: 8 },
@@ -1127,6 +1127,7 @@
       { key: 'aspect', kind: 'number', min: 0.5, max: 2, step: 0.05, default: 1 },
       { key: 'spinRate', kind: 'number', min: 0, max: 2, step: 0.05, default: 1 },
       { key: 'stroke', kind: 'select', options: ['thin', 'med', 'bold'], default: 'med' },
+      { key: 'camera', kind: 'select', options: ['none', 'push', 'pull', 'pan', 'roll', 'shake', 'whip', 'orbit'], default: 'none' },
       { key: 'in', kind: 'select', options: ['auto', 'pop', 'draw', 'wipe', 'scatterIn'], default: 'auto' },
       { key: 'hold', kind: 'select', options: ['auto', 'spin', 'pulse', 'drift', 'morph'], default: 'auto' },
       { key: 'out', kind: 'select', options: ['auto', 'shrink', 'fade', 'burstOut'], default: 'auto' },

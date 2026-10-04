@@ -55,7 +55,9 @@ function main() {
   for (let i = 0; i < count; i += 1) {
     const seed = (first + i) * 7919 + 13;
     const palette = PALETTES[i % PALETTES.length];
-    const spec = figures.generate({ span: SPAN, motif: 'proc', seed, id: `sheet_${seed}`, axes: { weird: 1, energy: 0.6 } });
+    const MOTIF = process.env.MOTIF || 'proc';
+    const motif = MOTIF === 'scenes' ? figures.SCENE_MOTIFS[i % figures.SCENE_MOTIFS.length] : MOTIF === 'geos' ? figures.GEO_MOTIFS[i % figures.GEO_MOTIFS.length] : MOTIF;
+    const spec = figures.generate({ span: SPAN, motif, seed, id: `sheet_${seed}`, axes: { weird: 1, energy: 0.6 } });
     spec.params.colors = palette;
     const shapes = figures.drawList(spec, {
       time,
@@ -68,7 +70,7 @@ function main() {
     }).shapes;
     tiles.push(`<div class="tile"><svg viewBox="0 0 ${FRAME.width} ${FRAME.height}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#10131c"/><rect x="520" y="440" width="880" height="200" fill="none" stroke="#333a4d" stroke-dasharray="12 10" stroke-width="4"/>${shapes.map(svgOf).join('')}</svg><span>${i + first}</span></div>`);
   }
-  fs.writeFileSync(out, `<!doctype html><meta charset="utf-8"><title>proc sheet</title><style>body{margin:0;background:#05060a;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:4px}.tile{position:relative}svg{width:100%;display:block}span{position:absolute;left:4px;top:2px;color:#8a93ad;font:11px monospace}</style>${tiles.join('')}`);
+  fs.writeFileSync(out, `<!doctype html><meta charset="utf-8"><title>proc sheet</title><style>body{margin:0;background:#05060a;display:grid;grid-template-columns:repeat(${process.env.COLS || 6},1fr);gap:4px;padding:4px}.tile{position:relative}svg{width:100%;display:block}span{position:absolute;left:4px;top:2px;color:#8a93ad;font:11px monospace}</style>${tiles.join('')}`);
   console.log(out);
 }
 
