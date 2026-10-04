@@ -123,6 +123,27 @@ function fixture() {
   });
 }
 
+// Track headers start folded, so every track contributes just its own row: the
+// subtitle track its cue row (26), the others one clip / layer row (22).
+const FOLDED_ROW_H = (track) => (track.kind === 'subtitle' ? 26 : 22);
+
+// The y a track's own row starts at, in canvas coordinates (the fixed ruler is
+// 24 tall).
+function trackRowTop(trackId) {
+  let y = 24;
+  for (const track of store.state.project.tracks) {
+    if (track.id === trackId) return y;
+    y += FOLDED_ROW_H(track);
+  }
+  throw new Error(`no such track: ${trackId}`);
+}
+
+// The pointer y that lands on the middle of a track's own row: the scrolling
+// canvas starts below the fixed ruler, so the client y is 24 lower.
+function trackRowClientY(trackId) {
+  return trackRowTop(trackId) + 11 - 24;
+}
+
 test('fitToCues fits the whole cue list, even below MIN_ZOOM', () => {
   store.load(fixture());
   timeline.init();
@@ -173,13 +194,7 @@ test('dragging and double-clicking on the filler track create clips', () => {
   const up = canvas.listeners.pointerup[0];
   const dbl = canvas.listeners.dblclick[0];
   const filler = store.state.project.tracks.find((track) => track.kind === 'filler');
-  const index = store.state.project.tracks.indexOf(filler);
-  let logicalY = 24;
-  store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 92 : track.kind === 'figure' ? 66 : 22; // subtitle 92 (cues + text bg + graphics + keyframes), figure 66 (clips + fg + bg), others 22
-  });
-  logicalY += 11;
-  const clientY = logicalY - 24;
+  const clientY = trackRowClientY(filler.id);
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
 
   // a plain click only selects the track
@@ -207,14 +222,7 @@ test('the remove button on a track header deletes that track and its clips', () 
   const down = canvas.listeners.pointerdown[0];
   const move = canvas.listeners.pointermove[0];
   const up = canvas.listeners.pointerup[0];
-  const fig = store.state.project.tracks.find((track) => track.id === id);
-  const index = store.state.project.tracks.indexOf(fig);
-  let logicalY = 24;
-  store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 92 : track.kind === 'figure' ? 66 : 22; // subtitle 92 (cues + text bg + graphics + keyframes), figure 66 (clips + fg + bg), others 22
-  });
-  logicalY += 11;
-  const clientY = logicalY - 24;
+  const clientY = trackRowClientY(id);
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
   // put a clip on the track so the removal drops it too
   down(event(200));
@@ -252,15 +260,16 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   const down = canvas.listeners.pointerdown[0];
   const up = canvas.listeners.pointerup[0];
   const bg = () => store.state.project.tracks.find((track) => track.kind === 'background');
-  // rows: ruler 24, fg 22, sub1 26, sub1 background 22, sub1 graphics 22, sub1 keyframes 22,
-  // fig 66 (clips + fg + bg), mid 22, filler 22 (clips) + fg 22 + bg 22, bg layer 22, then the background clip lane
-  const bgLayerCenter = 24 + 22 + 26 + 22 + 22 + 22 + 66 + 22 + 22 + 22 + 22 + 11;
+  // the background track starts folded: the twisty in its header opens the
+  // background clip lane under the layer row
+  const bgLayerCenter = trackRowTop('bg') + 11;
   const clipLaneCenter = bgLayerCenter + 22;
   const click = (x, y) => {
     const event = { button: 0, pointerId: 1, clientX: x, clientY: y - 24, currentTarget: canvas, preventDefault() {} };
     down(event);
     up(event);
   };
+  click(10, bgLayerCenter); // the twisty
   // the background clip is visible on its own lane and can be selected
   click(210, clipLaneCenter);
   assert.deepEqual(store.state.selection.paths, ['clip:bgclip'], 'the background clip is selectable');
@@ -296,15 +305,8 @@ test('dragging on a figure track creates a clip', () => {
   const down = canvas.listeners.pointerdown[0];
   const move = canvas.listeners.pointermove[0];
   const up = canvas.listeners.pointerup[0];
-  const fig = store.state.project.tracks.find((track) => track.id === id);
-  const index = store.state.project.tracks.indexOf(fig);
-  // rows: ruler 24, foreground 22, sub1 26, sub1 background 22, sub1 graphics 22, mid 22, filler 22, bg 22, figure 22
-  let logicalY = 24;
-  store.state.project.tracks.forEach((track, i) => {
-    if (i < index) logicalY += track.kind === 'subtitle' ? 92 : track.kind === 'figure' ? 66 : 22; // subtitle 92 (cues + text bg + graphics + keyframes), figure 66 (clips + fg + bg), others 22
-  });
-  logicalY += 11;
-  const clientY = logicalY - 24; // the canvas starts under the fixed ruler
+  // the canvas starts under the fixed ruler
+  const clientY = trackRowClientY(id);
   const event = (x) => ({ button: 0, pointerId: 1, clientX: x, clientY, currentTarget: canvas, preventDefault() {} });
   down(event(200));
   move(event(300));

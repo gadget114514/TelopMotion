@@ -44,9 +44,10 @@ SA.timeline = (() => {
   let menu = null;
   let editing = null;
   let expanded = new Set();
-  // tracks whose child rows (text background, graphics, keyframes, figure
-  // layers, background clips) are folded away under the header
-  let collapsed = new Set();
+  // tracks the user has unfolded: every other track keeps its child rows
+  // (text background, graphics, keyframes, figure layers, background clips)
+  // folded away under the header, so the labels column starts compact
+  let unfolded = new Set();
   let selectedKeys = new Set();
   let clipboard = [];
   let lastVersion = {};
@@ -54,6 +55,12 @@ SA.timeline = (() => {
 
   function t(key, vars) {
     return SA.i18n.t(key, vars);
+  }
+
+  // A track's child rows are folded until its twisty opens them: only the ones
+  // the user unfolded show again.
+  function trackFolded(trackId) {
+    return !unfolded.has(trackId);
   }
 
   function project() {
@@ -387,7 +394,7 @@ SA.timeline = (() => {
         if (track.kind === 'background') {
           const clips = clipsOnTrack(doc, track.id);
           if (clips.length) rows[rows.length - laneCount].collapsible = true;
-          if (collapsed.has(track.id)) continue;
+          if (trackFolded(track.id)) continue;
           const clipPacked = packRows(clips, (clip) => clip.start, (clip) => clip.end);
           for (let lane = 0; lane < clipPacked.length; lane += 1) {
             rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1, depth: 1 });
@@ -401,7 +408,7 @@ SA.timeline = (() => {
         rows.push({ type: 'cue-track', y, h: ROW_H, trackId: track.id, track, cues, first: true, last: false, collapsible: true });
         y += ROW_H;
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
-        if (collapsed.has(track.id)) continue;
+        if (trackFolded(track.id)) continue;
         // the track's two switch rows sit directly under its cues: the text
         // background (the shapes behind the glyphs) ...
         rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
@@ -435,7 +442,7 @@ SA.timeline = (() => {
         }
         if (LAYER_SWITCH_KINDS.includes(track.kind)) {
           rows[rows.length - laneCount].collapsible = true;
-          if (collapsed.has(track.id)) continue;
+          if (trackFolded(track.id)) continue;
           for (const layer of ['foreground', 'background']) {
             rows.push({ type: 'layer-switch', y, h: LAYER_H, trackId: track.id, track, layer, depth: 1 });
             y += LAYER_H;
@@ -741,7 +748,7 @@ SA.timeline = (() => {
     drawTrackHeader(row, trackTitle(row.track), {
       twisty: true,
       twistyType: 'track-collapse',
-      expanded: !collapsed.has(row.trackId),
+      expanded: !trackFolded(row.trackId),
       hidden: trackHidden(row.track),
       color: trackHidden(row.track) ? '#5a6175' : '#8d96ab',
     });
@@ -1009,7 +1016,7 @@ SA.timeline = (() => {
         swatch: baseColor,
         twisty: !!row.collapsible,
         twistyType: 'track-collapse',
-        expanded: !collapsed.has(row.trackId),
+        expanded: !trackFolded(row.trackId),
       });
     }
     const y = row.y;
@@ -1146,7 +1153,7 @@ SA.timeline = (() => {
         hidden: trackHidden(row.track),
         twisty: !!row.collapsible,
         twistyType: 'track-collapse',
-        expanded: !collapsed.has(row.trackId),
+        expanded: !trackFolded(row.trackId),
       });
     } else {
       drawTreeGuide(row);
@@ -1637,8 +1644,8 @@ SA.timeline = (() => {
       drag = null;
       draw();
     } else if (hit.type === 'track-collapse') {
-      if (collapsed.has(hit.trackId)) collapsed.delete(hit.trackId);
-      else collapsed.add(hit.trackId);
+      if (unfolded.has(hit.trackId)) unfolded.delete(hit.trackId);
+      else unfolded.add(hit.trackId);
       drag = null;
       draw();
     } else if (hit.type === 'track-header') {
