@@ -884,6 +884,20 @@
     return doc;
   }
 
+  // Four of the motifs are GPU simulations, and those sit behind Settings ->
+  // "Allow stateful effects" (off by default, because a stateful figure needs the
+  // frames before it). Showing them is the whole point of this walk, so the gate
+  // is opened for the session only - the stored preference is left alone, and the
+  // menu tick plus a toast say why the setting is on.
+  function openStatefulGateForShowcase() {
+    if (!SA.figures || typeof SA.figures.isStatefulAllowed !== 'function') return false;
+    if (SA.figures.isStatefulAllowed()) return false;
+    statefulEnabled = true;
+    applyStateful();
+    if (SA.menu && typeof SA.menu.refresh === 'function') SA.menu.refresh();
+    return true;
+  }
+
   // the figure track's own showcase: every motif and every motion axis, one cue
   // each. Same shape as the effects showcase, a different generated asset.
   async function figureShowcaseProject() {
@@ -891,8 +905,10 @@
       const buffer = await SA.platform.readAsset('data/figure-showcase.json');
       const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
       SA.io.loadFromObject(localizeFigureShowcase(JSON.parse(text)));
+      const opened = openStatefulGateForShowcase();
       welcomeDismissed = false;
       toast('studio.toast.opened');
+      if (opened) toast('studio.toast.statefulOn');
     } catch {
       toast('studio.toast.invalidProject');
     }

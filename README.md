@@ -309,7 +309,7 @@ The `figure` track has its own review project. `scripts/figure-showcase.js` walk
 | 2D `camera` | 8 moves, applied to the whole clip |
 | procedural motion | 17 layer-motion rules (the genome only grows from a seed, so every rule gets the first seed that draws it) |
 
-107 cues in total, about six minutes. Open it from **Help → Figure showcase** (no file hunting) or *File → Open project…*; the queue of every section is in [demo/figure-showcase.md](demo/figure-showcase.md). The cue names come from `studio.figure.*` in all five languages, so the walk is labelled in whatever language the Studio is in.
+107 cues in total, about six minutes. Open it from **Help → Figure showcase** (no file hunting) or *File → Open project…*; the queue of every section is in [demo/figure-showcase.md](demo/figure-showcase.md). The cue names come from `studio.figure.*` in all five languages, so the walk is labelled in whatever language the Studio is in. The four GPU-simulation motifs sit behind *Settings → Allow stateful effects* (off by default); opening the showcase turns that gate on for the session only, so they are actually visible.
 
 ```bash
 npm run figure-showcase -- build                          # writes renderer/data/figure-showcase.json and the index

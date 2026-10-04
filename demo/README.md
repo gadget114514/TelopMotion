@@ -58,6 +58,11 @@ Motif のグループとキュー数:
 
 Motif は `figures.MOTIFS` をそのまま辿るので、 Motif を追加したら `npm run figure-showcase -- build` を実行するだけで済みます。
 
+シミュレーションの Motif（`reactionDiffusion` / `wave2d` / `fluid` / `cellular`）は
+*Settings → 状態をもつ演出を使う* のゲートに掛かっています。既定ではオフですが、
+Studio からこの見本を開くとゲートがそのセッションだけオンになります
+（保存された設定は変わりません）。
+
 キュー名は `renderer/js/i18n.js` の `studio.figure.*` から読み込みます。
 Motif の名前と各軸の名前は 5 言語ぶん用意してあり、プロジェクトを開いた
 ときの表示言語でキュー名を書きます（json に焼き込まれているのは日本語）。

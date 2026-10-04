@@ -135,6 +135,11 @@ test('every section opens a marker and is listed once', () => {
   }
 });
 
+// Every clip has to draw something, but the four simulation motifs sit behind
+// Settings -> "Allow stateful effects", which is off by default (a stateful
+// figure needs the frames before it). So the walk is checked twice: with the
+// gate as it ships, and with it on, which is what the Studio turns on when the
+// showcase is opened.
 test('every showcase clip draws finite shapes through its span', () => {
   const b = built();
   const FRAME = { width: 1920, height: 1080 };
@@ -142,7 +147,8 @@ test('every showcase clip draws finite shapes through its span', () => {
   // across its span: every sample must stay finite, and at least one of them
   // must actually draw (the point of the walk)
   const FRACTIONS = [0.15, 0.3, 0.5, 0.7, 0.85, 0.95];
-  for (const clip of figureClips(b.project)) {
+  const sim = new Set(figures.SIM_MOTIFS || []);
+  const sample = (clip) => {
     const textBox = { x0: 420, y0: 880, x1: 1500, y1: 980 };
     let drew = 0;
     for (const fraction of FRACTIONS) {
@@ -169,7 +175,53 @@ test('every showcase clip draws finite shapes through its span', () => {
         }
       }
     }
-    assert.ok(drew > 0, `${clip.id} (${clip.spec.params.motif}) never drew anything`);
+    return drew;
+  };
+
+  // the gate as it ships: only the stateful motifs stay blank
+  assert.equal(figures.isStatefulAllowed(), false, 'the stateful gate starts closed');
+  for (const clip of figureClips(b.project)) {
+    const drew = sample(clip);
+    const stateful = sim.has(clip.spec.params.motif);
+    if (stateful) assert.equal(drew, 0, `${clip.id} (${clip.spec.params.motif}) drew while the gate is closed`);
+    else assert.ok(drew > 0, `${clip.id} (${clip.spec.params.motif}) never drew anything`);
+  }
+
+  // and with the gate open, which is how the Studio opens this showcase
+  figures.setStatefulAllowed(true);
+  try {
+    for (const clip of figureClips(b.project)) {
+      assert.ok(sample(clip) > 0, `${clip.id} (${clip.spec.params.motif}) never drew anything`);
+    }
+  } finally {
+    figures.setStatefulAllowed(false);
+  }
+});
+
+test('the stateful motifs are in the walk and the Studio opens the gate for it', () => {
+  const b = built();
+  // every simulation motif the registry knows has a cue
+  const used = new Set(b.entries.filter((entry) => entry.kind === 'motif').map((entry) => entry.value));
+  for (const motif of figures.SIM_MOTIFS || []) {
+    assert.ok(used.has(motif), `${motif} has no cue`);
+  }
+  // and opening the showcase turns the gate on for the session (the stored
+  // preference is left alone)
+  const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
+  assert.match(app, /function openStatefulGateForShowcase\(\)/);
+  // it flips the module-level preference the renderer already reads, then the
+  // menu tick and a toast explain it - and it never writes localStorage
+  const gate = app.slice(app.indexOf('function openStatefulGateForShowcase()'));
+  const body = gate.slice(0, gate.indexOf('\n  }'));
+  assert.match(body, /statefulEnabled = true/);
+  assert.match(body, /applyStateful\(\)/);
+  assert.match(body, /SA\.menu\.refresh/);
+  assert.doesNotMatch(body, /localStorage/);
+  assert.match(app, /if \(opened\) toast\('studio\.toast\.statefulOn'\)/);
+  for (const code of ['en', 'ja', 'es', 'fr', 'ru']) {
+    globalThis.SA.i18n.set(code);
+    const key = 'studio.toast.statefulOn';
+    assert.notEqual(globalThis.SA.i18n.t(key), key, `${code}: no toast`);
   }
 });
 

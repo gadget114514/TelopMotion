@@ -482,6 +482,11 @@ function indexMarkdown(built) {
   lines.push(`- 1 Motif = 1 キュー（${MOTIF_SECONDS} 秒）、モーション軸 = 1 キュー（${AXIS_SECONDS} 秒）`);
   lines.push(`- 図形は図形トラック（\`fig\`）のクリップです。キューは下部のラベルだけを持ちます`);
   lines.push(`- モーション軸のセクションは参照 Motif \`${REFERENCE_MOTIF}\` を使い、隣り合うキューで違うのは見ている軸だけです`);
+  // `figures.SIM_MOTIFS` is a Set, not a list
+  const stateful = [...(figures.SIM_MOTIFS || [])];
+  if (stateful.length) {
+    lines.push(`- シミュレーションの Motif（${stateful.map((name) => `\`${name}\``).join(' / ')}）は *Settings → 状態をもつ演出を使う* のゲートに掛かっています。既定ではオフですが、Studio からこの見本を開くとゲートがそのセッションだけオンになります（保存された設定は変わりません）`);
+  }
   lines.push('- 開くには Studio の *Help → 図形見本*、または *File → Open project…* を使います');
   lines.push('');
   const rows = new Map();
