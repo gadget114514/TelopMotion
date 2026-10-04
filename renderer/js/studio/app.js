@@ -852,6 +852,18 @@
     }
   }
 
+  async function showcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -1709,6 +1721,7 @@
       newProject,
       openProject,
       openRecent,
+      showcase: showcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

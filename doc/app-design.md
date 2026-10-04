@@ -1859,12 +1859,16 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
   - The Noto Sans JP files are about 4–5 MB each; that's acceptable because they load only when needed.
   - Record the source URLs and versions in `renderer/fonts/SOURCES.md`.
 
-### 11.5 i18n
+### 11.5 Showcase (`scripts/showcase.js`, `npm run showcase`)
+- Regenerates `renderer/data/showcase.json`: one 3-second cue per representative effect (the fx400 catalogue's variant 1 of every type) and one 4-second cue per page-layout preset (`none` excluded), with a marker opening each section. Each page cue carries a sample text built for the roles its preset reads. Deterministic, so it only rewrites when the catalogues change.
+- Help → Showcase reads the file with `SA.platform.readAsset('data/showcase.json')` and loads it through `SA.io.loadFromObject`; the file ships with `renderer/**/*`.
+
+### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.
 - The smoke test that checks for missing translations is extended to `studio.html`: every `[data-i18n]` and every generated control label must resolve (not come back as the raw key) in all 5 languages.
 - **Japanese UI text should be natural Japanese**, not a literal translation.
 
-### 11.6 README
+### 11.7 README
 Add sections:
 - Web version (URL, JSON import only, how to get JSON)
 - Studio overview with a screenshot

@@ -1,0 +1,8354 @@
+{
+  "format": "telopmotion",
+  "version": 4,
+  "meta": {
+    "title": "TelopMotion 効果・紙面レイアウト見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "pg_01",
+        "start": 0,
+        "end": 4,
+        "text": "左揃え flushLeft\n本文は左端をそろえて配置します。\n行頭がそろうと読みやすくなります。\n日本語でも自然に組めます。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_02",
+        "start": 4,
+        "end": 8,
+        "text": "中央揃え center\n全体を中央に配置するレイアウトです。\n短い詩やタイトルに向いています。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_03",
+        "start": 8,
+        "end": 12,
+        "text": "右揃え flushRight\n右端をそろえる配置です。\n余白を生かした構成になります。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_04",
+        "start": 12,
+        "end": 16,
+        "text": "両端揃え justify\n行の左右の端をそろえて、\n紙面のように整った本文を組みます。\n文字の間隔を自動で調整します。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_05",
+        "start": 16,
+        "end": 20,
+        "text": "縦書き vertical\n日本語の伝統的な組み方です。\n右から左へと読み進めます。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_06",
+        "start": 20,
+        "end": 24,
+        "text": "GRID 格子\n文字を格子状に並べる\nレイアウト。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_07",
+        "start": 24,
+        "end": 28,
+        "text": "Magazine 雑誌\n特集のリード文をここに置きます\n本文の段落がここから始まります。\n詳しい説明が続きます。\n二つ目の段落です。\n最後に署名を置きます。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_08",
+        "start": 28,
+        "end": 32,
+        "text": "FASHION ファッション\n余白を広く取ったミニマルなレイアウト。\n細い文字と広い行間が特徴です。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_09",
+        "start": 32,
+        "end": 36,
+        "text": "新聞 newspaper\nHeadline Title Here\nSubheading or deck line\nFirst body paragraph goes here.\nSecond paragraph continues with details.\nFinal conclusion line.",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_10",
+        "start": 36,
+        "end": 40,
+        "text": "2段組み twoColumn\n本文を二つの段に分けて配置します。\n新聞や雑誌のような組み方です。\n左右に分かれて読み進めます。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_11",
+        "start": 40,
+        "end": 44,
+        "text": "3段組み threeColumn\n本文を三つの段に分けて配置します。\n短い行を並べて紙面らしく見せます。\n各段が独立して流れます。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_12",
+        "start": 44,
+        "end": 48,
+        "text": "夏目漱石吾輩は猫である名前はまだ無いどこで生れたか頓と見当がつかぬ",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_13",
+        "start": 48,
+        "end": 52,
+        "text": "TelopMotion\nXのカード風レイアウトです。\n本文と時刻をカードに収めます。\n3:00 PM",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_14",
+        "start": 52,
+        "end": 56,
+        "text": "Hey what is up?\nNot much, working on TelopMotion!\nNice!",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_15",
+        "start": 56,
+        "end": 60,
+        "text": "CAFE SIGN\n黒板にチョークで書いたような\nカフェの看板レイアウトです。",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_16",
+        "start": 60,
+        "end": 64,
+        "text": "MENU / cafeMenu\nCaramel Macchiato | ¥650\nCafe Latte | ¥580\nGreen Tea Latte | ¥560",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_17",
+        "start": 64,
+        "end": 68,
+        "text": "BOUTIQUE\n上質な余白と細い罫線。\nブランドの世界観を伝えます。\n— atelier —",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_18",
+        "start": 68,
+        "end": 72,
+        "text": "DO RE MI FA SO LA TI DO",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "pg_19",
+        "start": 72,
+        "end": 76,
+        "text": "POSTER\nGraphic Design\nTypography Showcase\nTokyo Japan",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "page"
+        }
+      },
+      {
+        "id": "fx_001",
+        "start": 76,
+        "end": 79,
+        "text": "アニメーション / スタッガー / stagger"
+      },
+      {
+        "id": "fx_002",
+        "start": 79,
+        "end": 82,
+        "text": "アニメーション / 同時 / simultaneous"
+      },
+      {
+        "id": "fx_003",
+        "start": 82,
+        "end": 85,
+        "text": "アニメーション / エコー / echo"
+      },
+      {
+        "id": "fx_004",
+        "start": 85,
+        "end": 88,
+        "text": "アニメーション / カスケード / cascade"
+      },
+      {
+        "id": "fx_005",
+        "start": 88,
+        "end": 91,
+        "text": "アニメーション / スプリング / spring"
+      },
+      {
+        "id": "fx_006",
+        "start": 91,
+        "end": 94,
+        "text": "アニメーション / フォロースルー / followThrough"
+      },
+      {
+        "id": "fx_007",
+        "start": 94,
+        "end": 97,
+        "text": "アニメーション / ストップモーション / stopMotion"
+      },
+      {
+        "id": "fx_008",
+        "start": 97,
+        "end": 100,
+        "text": "アニメーション / タイムワープ / timeWarp"
+      },
+      {
+        "id": "fx_009",
+        "start": 100,
+        "end": 103,
+        "text": "アニメーション / ループ / loop"
+      },
+      {
+        "id": "fx_010",
+        "start": 103,
+        "end": 106,
+        "text": "配置 / 行 / row"
+      },
+      {
+        "id": "fx_011",
+        "start": 106,
+        "end": 109,
+        "text": "配置 / 縦組み / vertical"
+      },
+      {
+        "id": "fx_012",
+        "start": 109,
+        "end": 112,
+        "text": "配置 / 円 / circle"
+      },
+      {
+        "id": "fx_013",
+        "start": 112,
+        "end": 115,
+        "text": "配置 / 円弧 / arc"
+      },
+      {
+        "id": "fx_014",
+        "start": 115,
+        "end": 118,
+        "text": "配置 / 渦巻き / spiral"
+      },
+      {
+        "id": "fx_015",
+        "start": 118,
+        "end": 121,
+        "text": "配置 / 波 / wave"
+      },
+      {
+        "id": "fx_016",
+        "start": 121,
+        "end": 124,
+        "text": "配置 / 斜め / diagonal"
+      },
+      {
+        "id": "fx_017",
+        "start": 124,
+        "end": 127,
+        "text": "配置 / 階段 / staircase"
+      },
+      {
+        "id": "fx_018",
+        "start": 127,
+        "end": 130,
+        "text": "配置 / グリッド / grid"
+      },
+      {
+        "id": "fx_019",
+        "start": 130,
+        "end": 133,
+        "text": "配置 / 積み重ね語 / stackedWords"
+      },
+      {
+        "id": "fx_020",
+        "start": 133,
+        "end": 136,
+        "text": "配置 / 散布 / scatter"
+      },
+      {
+        "id": "fx_021",
+        "start": 136,
+        "end": 139,
+        "text": "配置 / パス / path"
+      },
+      {
+        "id": "fx_022",
+        "start": 139,
+        "end": 142,
+        "text": "登場 / フェード / fade"
+      },
+      {
+        "id": "fx_023",
+        "start": 142,
+        "end": 145,
+        "text": "登場 / タイプライター / typewriter"
+      },
+      {
+        "id": "fx_024",
+        "start": 145,
+        "end": 148,
+        "text": "登場 / スライド / slide"
+      },
+      {
+        "id": "fx_025",
+        "start": 148,
+        "end": 151,
+        "text": "登場 / 落下バウンド / dropBounce"
+      },
+      {
+        "id": "fx_026",
+        "start": 151,
+        "end": 154,
+        "text": "登場 / ズームイン / zoomIn"
+      },
+      {
+        "id": "fx_027",
+        "start": 154,
+        "end": 157,
+        "text": "登場 / ブラーイン / blurIn"
+      },
+      {
+        "id": "fx_028",
+        "start": 157,
+        "end": 160,
+        "text": "登場 / 3Dフリップ / flip3D"
+      },
+      {
+        "id": "fx_029",
+        "start": 160,
+        "end": 163,
+        "text": "登場 / 回転イン / rotateIn"
+      },
+      {
+        "id": "fx_030",
+        "start": 163,
+        "end": 166,
+        "text": "登場 / 散布イン / scatterIn"
+      },
+      {
+        "id": "fx_031",
+        "start": 166,
+        "end": 169,
+        "text": "登場 / 波立ち / waveRise"
+      },
+      {
+        "id": "fx_032",
+        "start": 169,
+        "end": 172,
+        "text": "登場 / エラスティックポップ / elasticPop"
+      },
+      {
+        "id": "fx_033",
+        "start": 172,
+        "end": 175,
+        "text": "登場 / スクランブル / scramble"
+      },
+      {
+        "id": "fx_034",
+        "start": 175,
+        "end": 178,
+        "text": "登場 / グリッチイン / glitchIn"
+      },
+      {
+        "id": "fx_035",
+        "start": 178,
+        "end": 181,
+        "text": "登場 / ネオンフリッカー / neonFlicker"
+      },
+      {
+        "id": "fx_036",
+        "start": 181,
+        "end": 184,
+        "text": "登場 / ちらつき登場 / flickerIn"
+      },
+      {
+        "id": "fx_037",
+        "start": 184,
+        "end": 187,
+        "text": "登場 / ストローク描画 / strokeDrawOn"
+      },
+      {
+        "id": "fx_038",
+        "start": 187,
+        "end": 190,
+        "text": "登場 / パーティクル集合 / particlesAssemble"
+      },
+      {
+        "id": "fx_039",
+        "start": 190,
+        "end": 193,
+        "text": "登場 / 粉砕再構築 / shatterRebuild"
+      },
+      {
+        "id": "fx_040",
+        "start": 193,
+        "end": 196,
+        "text": "登場 / 前ビートからモーフ / morphFromPrevious"
+      },
+      {
+        "id": "fx_041",
+        "start": 196,
+        "end": 199,
+        "text": "登場 / ノイズディゾルブイン / noiseDissolveIn"
+      },
+      {
+        "id": "fx_042",
+        "start": 199,
+        "end": 202,
+        "text": "登場 / ディゾルブ / dissolve"
+      },
+      {
+        "id": "fx_043",
+        "start": 202,
+        "end": 205,
+        "text": "退場 / フェード / fade"
+      },
+      {
+        "id": "fx_044",
+        "start": 205,
+        "end": 208,
+        "text": "退場 / スライド / slide"
+      },
+      {
+        "id": "fx_045",
+        "start": 208,
+        "end": 211,
+        "text": "退場 / ズームアウト / zoomOut"
+      },
+      {
+        "id": "fx_046",
+        "start": 211,
+        "end": 214,
+        "text": "退場 / ブラーアウト / blurOut"
+      },
+      {
+        "id": "fx_047",
+        "start": 214,
+        "end": 217,
+        "text": "退場 / 爆発 / explode"
+      },
+      {
+        "id": "fx_048",
+        "start": 217,
+        "end": 220,
+        "text": "退場 / 重力落下 / gravityFall"
+      },
+      {
+        "id": "fx_049",
+        "start": 220,
+        "end": 223,
+        "text": "退場 / ディゾルブ / dissolve"
+      },
+      {
+        "id": "fx_050",
+        "start": 223,
+        "end": 226,
+        "text": "退場 / ワイプ / wipe"
+      },
+      {
+        "id": "fx_051",
+        "start": 226,
+        "end": 229,
+        "text": "退場 / タイプライター逆再生 / typewriterReverse"
+      },
+      {
+        "id": "fx_052",
+        "start": 229,
+        "end": 232,
+        "text": "退場 / 中心へ収縮 / shrinkToCenter"
+      },
+      {
+        "id": "fx_053",
+        "start": 232,
+        "end": 235,
+        "text": "退場 / パーティクル拡散 / particlesDisperse"
+      },
+      {
+        "id": "fx_054",
+        "start": 235,
+        "end": 238,
+        "text": "退場 / 溶解 / melt"
+      },
+      {
+        "id": "fx_055",
+        "start": 238,
+        "end": 241,
+        "text": "退場 / 燃え尽き / burnAway"
+      },
+      {
+        "id": "fx_056",
+        "start": 241,
+        "end": 244,
+        "text": "退場 / ストローク消去 / strokeErase"
+      },
+      {
+        "id": "fx_057",
+        "start": 244,
+        "end": 247,
+        "text": "退場 / 這い出し退場 / creepOut"
+      },
+      {
+        "id": "fx_058",
+        "start": 247,
+        "end": 250,
+        "text": "保持 / 浮遊 / floatBob"
+      },
+      {
+        "id": "fx_059",
+        "start": 250,
+        "end": 253,
+        "text": "保持 / サイン波 / sineWave"
+      },
+      {
+        "id": "fx_060",
+        "start": 253,
+        "end": 256,
+        "text": "保持 / ジッター / jitter"
+      },
+      {
+        "id": "fx_061",
+        "start": 256,
+        "end": 259,
+        "text": "保持 / パルス / pulse"
+      },
+      {
+        "id": "fx_062",
+        "start": 259,
+        "end": 262,
+        "text": "保持 / 透明度パルス / opacityPulse"
+      },
+      {
+        "id": "fx_063",
+        "start": 262,
+        "end": 265,
+        "text": "保持 / ケン・バーンズ / kenBurns"
+      },
+      {
+        "id": "fx_064",
+        "start": 265,
+        "end": 268,
+        "text": "保持 / ドリフト / drift"
+      },
+      {
+        "id": "fx_065",
+        "start": 268,
+        "end": 271,
+        "text": "保持 / マーキー / marquee"
+      },
+      {
+        "id": "fx_066",
+        "start": 271,
+        "end": 274,
+        "text": "保持 / ゼリー / jelly"
+      },
+      {
+        "id": "fx_067",
+        "start": 274,
+        "end": 277,
+        "text": "保持 / うねりワープ / wobbleWarp"
+      },
+      {
+        "id": "fx_068",
+        "start": 277,
+        "end": 280,
+        "text": "保持 / ツイスト / twist"
+      },
+      {
+        "id": "fx_069",
+        "start": 280,
+        "end": 283,
+        "text": "保持 / ブリージング / breathing"
+      },
+      {
+        "id": "fx_070",
+        "start": 283,
+        "end": 286,
+        "text": "保持 / 3Dオービット / orbit3D"
+      },
+      {
+        "id": "fx_071",
+        "start": 286,
+        "end": 289,
+        "text": "保持 / パス追従 / pathFollow"
+      },
+      {
+        "id": "fx_072",
+        "start": 289,
+        "end": 292,
+        "text": "保持 / 鼓動 / heartbeat"
+      },
+      {
+        "id": "fx_073",
+        "start": 292,
+        "end": 295,
+        "text": "保持 / 震え / shiver"
+      },
+      {
+        "id": "fx_074",
+        "start": 295,
+        "end": 298,
+        "text": "保持 / ディゾルブ / dissolve"
+      },
+      {
+        "id": "fx_075",
+        "start": 298,
+        "end": 301,
+        "text": "位置 / 中央 / center"
+      },
+      {
+        "id": "fx_076",
+        "start": 301,
+        "end": 304,
+        "text": "位置 / 下三分の一 / lowerThird"
+      },
+      {
+        "id": "fx_077",
+        "start": 304,
+        "end": 307,
+        "text": "位置 / 上三分の一 / upperThird"
+      },
+      {
+        "id": "fx_078",
+        "start": 307,
+        "end": 310,
+        "text": "位置 / 左 / left"
+      },
+      {
+        "id": "fx_079",
+        "start": 310,
+        "end": 313,
+        "text": "位置 / 右 / right"
+      },
+      {
+        "id": "fx_080",
+        "start": 313,
+        "end": 316,
+        "text": "位置 / カラオケ / karaoke"
+      },
+      {
+        "id": "fx_081",
+        "start": 316,
+        "end": 319,
+        "text": "位置 / 積み重ね / stacked"
+      },
+      {
+        "id": "fx_082",
+        "start": 319,
+        "end": 322,
+        "text": "位置 / ランダム（安全領域） / randomSafe"
+      },
+      {
+        "id": "fx_083",
+        "start": 322,
+        "end": 325,
+        "text": "位置 / バッジ固定 / badgeAnchored"
+      },
+      {
+        "id": "fx_084",
+        "start": 325,
+        "end": 328,
+        "text": "位置 / カスタム / custom"
+      },
+      {
+        "id": "fx_085",
+        "start": 328,
+        "end": 331,
+        "text": "塗り / グラデーションスイープ / gradientSweep"
+      },
+      {
+        "id": "fx_086",
+        "start": 331,
+        "end": 334,
+        "text": "塗り / レインボーフロー / rainbowFlow"
+      },
+      {
+        "id": "fx_087",
+        "start": 334,
+        "end": 337,
+        "text": "塗り / ホログラフィック / holographic"
+      },
+      {
+        "id": "fx_088",
+        "start": 337,
+        "end": 340,
+        "text": "塗り / クローム / chrome"
+      },
+      {
+        "id": "fx_089",
+        "start": 340,
+        "end": 343,
+        "text": "塗り / 金箔 / goldFoil"
+      },
+      {
+        "id": "fx_090",
+        "start": 343,
+        "end": 346,
+        "text": "塗り / 炎 / fire"
+      },
+      {
+        "id": "fx_091",
+        "start": 346,
+        "end": 349,
+        "text": "塗り / コースティクス / caustics"
+      },
+      {
+        "id": "fx_092",
+        "start": 349,
+        "end": 352,
+        "text": "塗り / 大理石 / marble"
+      },
+      {
+        "id": "fx_093",
+        "start": 352,
+        "end": 355,
+        "text": "塗り / ガラス / glass"
+      },
+      {
+        "id": "fx_094",
+        "start": 355,
+        "end": 358,
+        "text": "塗り / テクスチャ / textureFill"
+      },
+      {
+        "id": "fx_095",
+        "start": 358,
+        "end": 361,
+        "text": "塗り / カラオケワイプ / karaokeWipe"
+      },
+      {
+        "id": "fx_096",
+        "start": 361,
+        "end": 364,
+        "text": "塗り / 墨 / ink"
+      },
+      {
+        "id": "fx_097",
+        "start": 364,
+        "end": 367,
+        "text": "縁取り / 縁取り / outline"
+      },
+      {
+        "id": "fx_098",
+        "start": 367,
+        "end": 370,
+        "text": "縁取り / ネオン / neonGlow"
+      },
+      {
+        "id": "fx_099",
+        "start": 370,
+        "end": 373,
+        "text": "縁取り / 内側グロー / innerGlow"
+      },
+      {
+        "id": "fx_100",
+        "start": 373,
+        "end": 376,
+        "text": "縁取り / ベベル / bevel"
+      },
+      {
+        "id": "fx_101",
+        "start": 376,
+        "end": 379,
+        "text": "縁取り / 押し出し / extrude"
+      },
+      {
+        "id": "fx_102",
+        "start": 379,
+        "end": 382,
+        "text": "縁取り / ロングシャドウ / longShadow"
+      },
+      {
+        "id": "fx_103",
+        "start": 382,
+        "end": 385,
+        "text": "縁取り / ドロップシャドウ / dropShadow"
+      },
+      {
+        "id": "fx_104",
+        "start": 385,
+        "end": 388,
+        "text": "縁取り / 滴り / drip"
+      },
+      {
+        "id": "fx_105",
+        "start": 388,
+        "end": 391,
+        "text": "後処理 / グリッチブロック / glitchBlocks"
+      },
+      {
+        "id": "fx_106",
+        "start": 391,
+        "end": 394,
+        "text": "後処理 / RGBシフト / rgbShift"
+      },
+      {
+        "id": "fx_107",
+        "start": 394,
+        "end": 397,
+        "text": "後処理 / スキャンティア / scanTear"
+      },
+      {
+        "id": "fx_108",
+        "start": 397,
+        "end": 400,
+        "text": "後処理 / VHSトラッキング / vhsTracking"
+      },
+      {
+        "id": "fx_109",
+        "start": 400,
+        "end": 403,
+        "text": "後処理 / データスミア / dataSmear"
+      },
+      {
+        "id": "fx_110",
+        "start": 403,
+        "end": 406,
+        "text": "後処理 / デジタルノイズ / digitalNoise"
+      },
+      {
+        "id": "fx_111",
+        "start": 406,
+        "end": 409,
+        "text": "後処理 / グリッチスライス / glitchSlice"
+      },
+      {
+        "id": "fx_112",
+        "start": 409,
+        "end": 412,
+        "text": "後処理 / ノイズディゾルブ / noiseDissolve"
+      },
+      {
+        "id": "fx_113",
+        "start": 412,
+        "end": 415,
+        "text": "後処理 / 方向ディゾルブ / directionalDissolve"
+      },
+      {
+        "id": "fx_114",
+        "start": 415,
+        "end": 418,
+        "text": "後処理 / ピクセルディゾルブ / pixelDissolve"
+      },
+      {
+        "id": "fx_115",
+        "start": 418,
+        "end": 421,
+        "text": "後処理 / 燃焼ディゾルブ / burnDissolve"
+      },
+      {
+        "id": "fx_116",
+        "start": 421,
+        "end": 424,
+        "text": "後処理 / ハーフトーンディゾルブ / halftoneDissolve"
+      },
+      {
+        "id": "fx_117",
+        "start": 424,
+        "end": 427,
+        "text": "後処理 / パーティクルディゾルブ / particleDissolve"
+      },
+      {
+        "id": "fx_118",
+        "start": 427,
+        "end": 430,
+        "text": "後処理 / 衝撃波 / shockwave"
+      },
+      {
+        "id": "fx_119",
+        "start": 430,
+        "end": 433,
+        "text": "後処理 / ズームブラー / zoomBlur"
+      },
+      {
+        "id": "fx_120",
+        "start": 433,
+        "end": 436,
+        "text": "後処理 / モーションブラー / motionBlur"
+      },
+      {
+        "id": "fx_121",
+        "start": 436,
+        "end": 439,
+        "text": "後処理 / エコートレイル / echoTrail"
+      },
+      {
+        "id": "fx_122",
+        "start": 439,
+        "end": 442,
+        "text": "後処理 / ゴッドレイ / godRays"
+      },
+      {
+        "id": "fx_123",
+        "start": 442,
+        "end": 445,
+        "text": "後処理 / ライトスイープ / lightSweep"
+      },
+      {
+        "id": "fx_124",
+        "start": 445,
+        "end": 448,
+        "text": "後処理 / 万華鏡 / kaleidoscope"
+      },
+      {
+        "id": "fx_125",
+        "start": 448,
+        "end": 451,
+        "text": "後処理 / ミラー / mirror"
+      },
+      {
+        "id": "fx_126",
+        "start": 451,
+        "end": 454,
+        "text": "後処理 / ピクセルソート / pixelSort"
+      },
+      {
+        "id": "fx_127",
+        "start": 454,
+        "end": 457,
+        "text": "後処理 / レンズ歪み / lensDistortion"
+      },
+      {
+        "id": "fx_128",
+        "start": 457,
+        "end": 460,
+        "text": "後処理 / カラーグレード / colorGrade"
+      },
+      {
+        "id": "fx_129",
+        "start": 460,
+        "end": 463,
+        "text": "後処理 / 変位マップ / displacementMap"
+      },
+      {
+        "id": "fx_130",
+        "start": 463,
+        "end": 466,
+        "text": "後処理 / ブルーム / bloom"
+      },
+      {
+        "id": "fx_131",
+        "start": 466,
+        "end": 469,
+        "text": "後処理 / 色収差 / chromaticAberration"
+      },
+      {
+        "id": "fx_132",
+        "start": 469,
+        "end": 472,
+        "text": "後処理 / CRT / crt"
+      },
+      {
+        "id": "fx_133",
+        "start": 472,
+        "end": 475,
+        "text": "後処理 / フィルムグレイン / filmGrain"
+      },
+      {
+        "id": "fx_134",
+        "start": 475,
+        "end": 478,
+        "text": "後処理 / ハーフトーン / halftone"
+      },
+      {
+        "id": "fx_135",
+        "start": 478,
+        "end": 481,
+        "text": "後処理 / ピクセル化 / pixelate"
+      },
+      {
+        "id": "fx_136",
+        "start": 481,
+        "end": 484,
+        "text": "後処理 / 陽炎 / heatHaze"
+      },
+      {
+        "id": "fx_137",
+        "start": 484,
+        "end": 487,
+        "text": "後処理 / ライトリーク / lightLeak"
+      },
+      {
+        "id": "fx_138",
+        "start": 487,
+        "end": 490,
+        "text": "後処理 / ビネット / vignette"
+      },
+      {
+        "id": "fx_139",
+        "start": 490,
+        "end": 493,
+        "text": "後処理 / スパークル / sparkles"
+      },
+      {
+        "id": "fx_140",
+        "start": 493,
+        "end": 496,
+        "text": "後処理 / レンズフレア / lensFlare"
+      },
+      {
+        "id": "fx_141",
+        "start": 496,
+        "end": 499,
+        "text": "背景 / 単色 / solid"
+      },
+      {
+        "id": "fx_142",
+        "start": 499,
+        "end": 502,
+        "text": "背景 / ベタ塗り / plain"
+      },
+      {
+        "id": "fx_143",
+        "start": 502,
+        "end": 505,
+        "text": "背景 / グラデーション / gradient"
+      },
+      {
+        "id": "fx_144",
+        "start": 505,
+        "end": 508,
+        "text": "背景 / ノイズグラデーション / noiseGradient"
+      },
+      {
+        "id": "fx_145",
+        "start": 508,
+        "end": 511,
+        "text": "背景 / 実績カード / card"
+      },
+      {
+        "id": "fx_146",
+        "start": 511,
+        "end": 514,
+        "text": "背景 / 楽曲カバー / cover"
+      },
+      {
+        "id": "fx_147",
+        "start": 514,
+        "end": 517,
+        "text": "背景 / 画像 / image"
+      },
+      {
+        "id": "fx_148",
+        "start": 517,
+        "end": 520,
+        "text": "背景 / パターン / pattern"
+      },
+      {
+        "id": "fx_149",
+        "start": 520,
+        "end": 523,
+        "text": "背景 / 図形 / shapes"
+      },
+      {
+        "id": "fx_150",
+        "start": 523,
+        "end": 526,
+        "text": "文字背景 / なし / none"
+      },
+      {
+        "id": "fx_151",
+        "start": 526,
+        "end": 529,
+        "text": "文字背景 / 四角 / square"
+      },
+      {
+        "id": "fx_152",
+        "start": 529,
+        "end": 532,
+        "text": "文字背景の塗り / グラデーションスイープ / gradientSweep"
+      },
+      {
+        "id": "fx_153",
+        "start": 532,
+        "end": 535,
+        "text": "文字背景の塗り / レインボーフロー / rainbowFlow"
+      },
+      {
+        "id": "fx_154",
+        "start": 535,
+        "end": 538,
+        "text": "文字背景の塗り / ホログラフィック / holographic"
+      },
+      {
+        "id": "fx_155",
+        "start": 538,
+        "end": 541,
+        "text": "文字背景の塗り / クローム / chrome"
+      },
+      {
+        "id": "fx_156",
+        "start": 541,
+        "end": 544,
+        "text": "文字背景の塗り / 金箔 / goldFoil"
+      },
+      {
+        "id": "fx_157",
+        "start": 544,
+        "end": 547,
+        "text": "文字背景の塗り / 炎 / fire"
+      },
+      {
+        "id": "fx_158",
+        "start": 547,
+        "end": 550,
+        "text": "文字背景の塗り / コースティクス / caustics"
+      },
+      {
+        "id": "fx_159",
+        "start": 550,
+        "end": 553,
+        "text": "文字背景の塗り / 大理石 / marble"
+      },
+      {
+        "id": "fx_160",
+        "start": 553,
+        "end": 556,
+        "text": "文字背景の塗り / ガラス / glass"
+      },
+      {
+        "id": "fx_161",
+        "start": 556,
+        "end": 559,
+        "text": "文字背景の塗り / テクスチャ / textureFill"
+      },
+      {
+        "id": "fx_162",
+        "start": 559,
+        "end": 562,
+        "text": "文字背景の塗り / カラオケワイプ / karaokeWipe"
+      },
+      {
+        "id": "fx_163",
+        "start": 562,
+        "end": 565,
+        "text": "文字背景の塗り / 墨 / ink"
+      },
+      {
+        "id": "fx_164",
+        "start": 565,
+        "end": 568,
+        "text": "文字背景の縁取り / 縁取り / outline"
+      },
+      {
+        "id": "fx_165",
+        "start": 568,
+        "end": 571,
+        "text": "文字背景の縁取り / ネオン / neonGlow"
+      },
+      {
+        "id": "fx_166",
+        "start": 571,
+        "end": 574,
+        "text": "文字背景の縁取り / 内側グロー / innerGlow"
+      },
+      {
+        "id": "fx_167",
+        "start": 574,
+        "end": 577,
+        "text": "文字背景の縁取り / ベベル / bevel"
+      },
+      {
+        "id": "fx_168",
+        "start": 577,
+        "end": 580,
+        "text": "文字背景の縁取り / 押し出し / extrude"
+      },
+      {
+        "id": "fx_169",
+        "start": 580,
+        "end": 583,
+        "text": "文字背景の縁取り / ロングシャドウ / longShadow"
+      },
+      {
+        "id": "fx_170",
+        "start": 583,
+        "end": 586,
+        "text": "文字背景の縁取り / ドロップシャドウ / dropShadow"
+      },
+      {
+        "id": "fx_171",
+        "start": 586,
+        "end": 589,
+        "text": "文字背景の縁取り / 滴り / drip"
+      },
+      {
+        "id": "fx_172",
+        "start": 589,
+        "end": 592,
+        "text": "文字背景の動き / 文字に追従 / follow"
+      },
+      {
+        "id": "fx_173",
+        "start": 592,
+        "end": 595,
+        "text": "文字背景の動き / フェード / fade"
+      },
+      {
+        "id": "fx_174",
+        "start": 595,
+        "end": 598,
+        "text": "文字背景の動き / ポップ / pop"
+      },
+      {
+        "id": "fx_175",
+        "start": 598,
+        "end": 601,
+        "text": "文字背景の動き / スタンプ / stamp"
+      },
+      {
+        "id": "fx_176",
+        "start": 601,
+        "end": 604,
+        "text": "文字背景の動き / ワイプ / wipe"
+      },
+      {
+        "id": "fx_177",
+        "start": 604,
+        "end": 607,
+        "text": "文字背景の動き / 回転 / spin"
+      },
+      {
+        "id": "fx_178",
+        "start": 607,
+        "end": 610,
+        "text": "文字背景の動き / 伸びる / grow"
+      },
+      {
+        "id": "fx_179",
+        "start": 610,
+        "end": 613,
+        "text": "文字背景の動き / なし / none"
+      },
+      {
+        "id": "fx_180",
+        "start": 613,
+        "end": 616,
+        "text": "文字背景の動き / ちらつき / flicker"
+      },
+      {
+        "id": "fx_181",
+        "start": 616,
+        "end": 619,
+        "text": "文字背景の動き / にじみ / bleed"
+      },
+      {
+        "id": "fx_182",
+        "start": 619,
+        "end": 622,
+        "text": "文字背景の動き / 浮かぶ / float"
+      },
+      {
+        "id": "fx_183",
+        "start": 622,
+        "end": 625,
+        "text": "文字背景の動き / 落下 / fall"
+      }
+    ],
+    "sourceName": "showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "pg_01": {
+      "page": {
+        "type": "flushLeft",
+        "params": {}
+      }
+    },
+    "pg_02": {
+      "page": {
+        "type": "center",
+        "params": {}
+      }
+    },
+    "pg_03": {
+      "page": {
+        "type": "flushRight",
+        "params": {}
+      }
+    },
+    "pg_04": {
+      "page": {
+        "type": "justify",
+        "params": {}
+      }
+    },
+    "pg_05": {
+      "page": {
+        "type": "vertical",
+        "params": {}
+      }
+    },
+    "pg_06": {
+      "page": {
+        "type": "grid",
+        "params": {}
+      }
+    },
+    "pg_07": {
+      "page": {
+        "type": "magazine",
+        "params": {}
+      }
+    },
+    "pg_08": {
+      "page": {
+        "type": "fashion",
+        "params": {}
+      }
+    },
+    "pg_09": {
+      "page": {
+        "type": "newspaper",
+        "params": {}
+      }
+    },
+    "pg_10": {
+      "page": {
+        "type": "twoColumn",
+        "params": {}
+      }
+    },
+    "pg_11": {
+      "page": {
+        "type": "threeColumn",
+        "params": {}
+      }
+    },
+    "pg_12": {
+      "page": {
+        "type": "manuscript",
+        "params": {}
+      }
+    },
+    "pg_13": {
+      "page": {
+        "type": "xCard",
+        "params": {}
+      }
+    },
+    "pg_14": {
+      "page": {
+        "type": "chatBubble",
+        "params": {}
+      }
+    },
+    "pg_15": {
+      "page": {
+        "type": "cafeSign",
+        "params": {}
+      }
+    },
+    "pg_16": {
+      "page": {
+        "type": "cafeMenu",
+        "params": {}
+      }
+    },
+    "pg_17": {
+      "page": {
+        "type": "boutique",
+        "params": {}
+      }
+    },
+    "pg_18": {
+      "page": {
+        "type": "score",
+        "params": {}
+      }
+    },
+    "pg_19": {
+      "page": {
+        "type": "poster",
+        "params": {}
+      }
+    },
+    "fx_001": {
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "order": "rtl",
+          "each": 0.035,
+          "ease": "linear",
+          "from": 0.5,
+          "unit": "letter",
+          "exitOrder": "same"
+        },
+        "motion": {}
+      }
+    },
+    "fx_002": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      }
+    },
+    "fx_003": {
+      "animation": {
+        "type": "echo",
+        "enabled": true,
+        "params": {
+          "count": 3,
+          "offset": 0.06,
+          "scale": 0.94,
+          "opacity": 0.35,
+          "delay": 0.1
+        },
+        "motion": {}
+      }
+    },
+    "fx_004": {
+      "animation": {
+        "type": "cascade",
+        "enabled": true,
+        "params": {
+          "overlap": 0.8
+        },
+        "motion": {
+          "stagger": {
+            "unit": "word"
+          }
+        }
+      }
+    },
+    "fx_005": {
+      "animation": {
+        "type": "spring",
+        "enabled": true,
+        "params": {
+          "stiffness": 170,
+          "damping": 26
+        },
+        "motion": {}
+      }
+    },
+    "fx_006": {
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "offscreenEdges",
+          "curve": 0.5,
+          "curveDir": "left"
+        },
+        "motion": {
+          "in": {
+            "duration": 0.9,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "animation": {
+        "type": "followThrough",
+        "enabled": true,
+        "params": {
+          "amount": 0.6,
+          "decay": 3
+        },
+        "motion": {}
+      }
+    },
+    "fx_007": {
+      "animation": {
+        "type": "stopMotion",
+        "enabled": true,
+        "params": {
+          "fps": 18
+        },
+        "motion": {}
+      }
+    },
+    "fx_008": {
+      "animation": {
+        "type": "timeWarp",
+        "enabled": true,
+        "params": {
+          "ease": "cubicOut"
+        },
+        "motion": {}
+      }
+    },
+    "fx_009": {
+      "hold": [
+        {
+          "type": "floatBob",
+          "params": {
+            "amp": 0.05,
+            "speed": 1
+          }
+        }
+      ],
+      "animation": {
+        "type": "loop",
+        "enabled": true,
+        "params": {
+          "period": 0.5,
+          "yoyo": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_010": {
+      "layout": {
+        "type": "row",
+        "enabled": true,
+        "params": {
+          "from": "offscreenEdges",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none"
+        },
+        "motion": {}
+      }
+    },
+    "fx_011": {
+      "layout": {
+        "type": "vertical",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "columnGap": 1.2
+        },
+        "motion": {}
+      }
+    },
+    "fx_012": {
+      "layout": {
+        "type": "circle",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "radius": 0.28,
+          "startAngle": -90,
+          "clockwise": true,
+          "faceOut": true
+        },
+        "motion": {}
+      }
+    },
+    "fx_013": {
+      "layout": {
+        "type": "arc",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "radius": 0.6,
+          "sweep": 120,
+          "bulge": "up"
+        },
+        "motion": {}
+      }
+    },
+    "fx_014": {
+      "layout": {
+        "type": "spiral",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "r0": 0.05,
+          "r1": 0.35,
+          "turns": 2.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_015": {
+      "layout": {
+        "type": "wave",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "amp": 0.06,
+          "wavelength": 0.5,
+          "phase": 0
+        },
+        "motion": {}
+      }
+    },
+    "fx_016": {
+      "layout": {
+        "type": "diagonal",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "angle": -20,
+          "followAngle": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_017": {
+      "layout": {
+        "type": "staircase",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "step": 0.35
+        },
+        "motion": {}
+      }
+    },
+    "fx_018": {
+      "layout": {
+        "type": "grid",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "motion": {}
+      }
+    },
+    "fx_019": {
+      "layout": {
+        "type": "stackedWords",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "fillWidth": 0.8
+        },
+        "motion": {}
+      }
+    },
+    "fx_020": {
+      "layout": {
+        "type": "scatter",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "spread": 0.35,
+          "safeArea": 0.08
+        },
+        "motion": {}
+      }
+    },
+    "fx_021": {
+      "layout": {
+        "type": "path",
+        "enabled": true,
+        "params": {
+          "from": "none",
+          "fromFormation": "row",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "none",
+          "points": [
+            {
+              "x": 0.1,
+              "y": 0.7
+            },
+            {
+              "x": 0.4,
+              "y": 0.3
+            },
+            {
+              "x": 0.9,
+              "y": 0.6
+            }
+          ],
+          "smooth": true
+        },
+        "motion": {}
+      }
+    },
+    "fx_022": {
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {
+          "softness": 0.75,
+          "glow": 0.5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_023": {
+      "enter": {
+        "type": "typewriter",
+        "enabled": true,
+        "params": {
+          "cursor": false,
+          "cursorColor": null,
+          "cursorShape": "block",
+          "blink": 0.5,
+          "cursorAfter": "blink"
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_024": {
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "up",
+          "distance": 0.25
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_025": {
+      "enter": {
+        "type": "dropBounce",
+        "enabled": true,
+        "params": {
+          "height": 0.5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_026": {
+      "enter": {
+        "type": "zoomIn",
+        "enabled": true,
+        "params": {
+          "from": 0
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_027": {
+      "enter": {
+        "type": "blurIn",
+        "enabled": true,
+        "params": {
+          "radius": 20
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_028": {
+      "enter": {
+        "type": "flip3D",
+        "enabled": true,
+        "params": {
+          "axis": "x",
+          "angle": 45
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_029": {
+      "enter": {
+        "type": "rotateIn",
+        "enabled": true,
+        "params": {
+          "angle": 180
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_030": {
+      "enter": {
+        "type": "scatterIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_031": {
+      "enter": {
+        "type": "waveRise",
+        "enabled": true,
+        "params": {
+          "amp": 0.3
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_032": {
+      "enter": {
+        "type": "elasticPop",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_033": {
+      "enter": {
+        "type": "scramble",
+        "enabled": true,
+        "params": {
+          "charset": "latin",
+          "rate": 1.1
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_034": {
+      "enter": {
+        "type": "glitchIn",
+        "enabled": true,
+        "params": {
+          "intensity": 0.8
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_035": {
+      "enter": {
+        "type": "neonFlicker",
+        "enabled": true,
+        "params": {
+          "flickers": 5
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_036": {
+      "enter": {
+        "type": "flickerIn",
+        "enabled": true,
+        "params": {
+          "flickers": 4
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_037": {
+      "enter": {
+        "type": "strokeDrawOn",
+        "enabled": true,
+        "params": {
+          "width": 15,
+          "fillDelay": 0.25
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_038": {
+      "enter": {
+        "type": "particlesAssemble",
+        "enabled": true,
+        "params": {
+          "count": 16,
+          "spread": 0.5,
+          "turbulence": 0.3
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_039": {
+      "enter": {
+        "type": "shatterRebuild",
+        "enabled": true,
+        "params": {
+          "spread": 0.4,
+          "spin": 120
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_040": {
+      "enter": {
+        "type": "morphFromPrevious",
+        "enabled": true,
+        "params": {
+          "points": 1024
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_041": {
+      "enter": {
+        "type": "noiseDissolveIn",
+        "enabled": true,
+        "params": {
+          "scale": 17,
+          "edgeColor": "#ff8a3d",
+          "edgeWidth": 0.1
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_042": {
+      "enter": {
+        "type": "dissolve",
+        "enabled": true,
+        "params": {
+          "scale": 10
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_043": {
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {
+          "softness": 0.75,
+          "glow": 0
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_044": {
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "up",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_045": {
+      "exit": {
+        "type": "zoomOut",
+        "enabled": true,
+        "params": {
+          "to": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_046": {
+      "exit": {
+        "type": "blurOut",
+        "enabled": true,
+        "params": {
+          "radius": 24
+        },
+        "motion": {
+          "out": {
+            "duration": 0.2,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_047": {
+      "exit": {
+        "type": "explode",
+        "enabled": true,
+        "params": {
+          "spread": 0.6,
+          "spin": 220
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_048": {
+      "exit": {
+        "type": "gravityFall",
+        "enabled": true,
+        "params": {
+          "gravity": 2.4,
+          "spin": 160
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_049": {
+      "exit": {
+        "type": "dissolve",
+        "enabled": true,
+        "params": {
+          "scale": 17
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_050": {
+      "exit": {
+        "type": "wipe",
+        "enabled": true,
+        "params": {
+          "dir": "left"
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_051": {
+      "exit": {
+        "type": "typewriterReverse",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.6,
+            "ease": "bounceIn"
+          }
+        }
+      }
+    },
+    "fx_052": {
+      "exit": {
+        "type": "shrinkToCenter",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_053": {
+      "exit": {
+        "type": "particlesDisperse",
+        "enabled": true,
+        "params": {
+          "count": 16,
+          "drift": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_054": {
+      "exit": {
+        "type": "melt",
+        "enabled": true,
+        "params": {
+          "drip": 0.7
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_055": {
+      "exit": {
+        "type": "burnAway",
+        "enabled": true,
+        "params": {
+          "scale": 10,
+          "emberColor": "#ff8a3d",
+          "charColor": "#ff8a3d"
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_056": {
+      "exit": {
+        "type": "strokeErase",
+        "enabled": true,
+        "params": {
+          "width": 5.5
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_057": {
+      "exit": {
+        "type": "creepOut",
+        "enabled": true,
+        "params": {
+          "shift": 0.38
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "backIn"
+          }
+        }
+      }
+    },
+    "fx_058": {
+      "hold": [
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_059": {
+      "hold": [
+        {
+          "type": "sineWave",
+          "enabled": true,
+          "params": {
+            "amp": 0.03,
+            "freq": 0.004,
+            "speed": 0.6
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_060": {
+      "hold": [
+        {
+          "type": "jitter",
+          "enabled": true,
+          "params": {
+            "amp": 0.008,
+            "rate": 12
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_061": {
+      "hold": [
+        {
+          "type": "pulse",
+          "enabled": true,
+          "params": {
+            "amount": 0.06,
+            "bpm": 190
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_062": {
+      "hold": [
+        {
+          "type": "opacityPulse",
+          "enabled": true,
+          "params": {
+            "min": 0.35,
+            "period": 1.6,
+            "speed": 0.8
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_063": {
+      "hold": [
+        {
+          "type": "kenBurns",
+          "enabled": true,
+          "params": {
+            "zoom": 0.35,
+            "pan": {
+              "x": 0.05,
+              "y": 0
+            }
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_064": {
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.05,
+            "vy": 0
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_065": {
+      "hold": [
+        {
+          "type": "marquee",
+          "enabled": true,
+          "params": {
+            "speed": 0.76
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_066": {
+      "hold": [
+        {
+          "type": "jelly",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "freq": 1.9
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_067": {
+      "hold": [
+        {
+          "type": "wobbleWarp",
+          "enabled": true,
+          "params": {
+            "amount": 0.15,
+            "scale": 2.4,
+            "speed": 0.8
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_068": {
+      "hold": [
+        {
+          "type": "twist",
+          "enabled": true,
+          "params": {
+            "angle": 12
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_069": {
+      "hold": [
+        {
+          "type": "breathing",
+          "enabled": true,
+          "params": {
+            "amount": 0.08
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_070": {
+      "hold": [
+        {
+          "type": "orbit3D",
+          "enabled": true,
+          "params": {
+            "tilt": 14,
+            "speed": 0.5
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_071": {
+      "hold": [
+        {
+          "type": "pathFollow",
+          "enabled": true,
+          "params": {
+            "points": [
+              {
+                "x": 0.2,
+                "y": 0.5
+              },
+              {
+                "x": 0.5,
+                "y": 0.42
+              },
+              {
+                "x": 0.8,
+                "y": 0.5
+              }
+            ],
+            "speed": 0.38
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_072": {
+      "hold": [
+        {
+          "type": "heartbeat",
+          "enabled": true,
+          "params": {
+            "amount": 0.08,
+            "bpm": "72"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_073": {
+      "hold": [
+        {
+          "type": "shiver",
+          "enabled": true,
+          "params": {
+            "amount": 1,
+            "interval": 3
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_074": {
+      "hold": [
+        {
+          "type": "dissolve",
+          "enabled": true,
+          "params": {
+            "speed": 1.1,
+            "intensity": 0.5
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_075": {
+      "location": {
+        "type": "center",
+        "enabled": true,
+        "params": {
+          "offsetX": -0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_076": {
+      "location": {
+        "type": "lowerThird",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_077": {
+      "location": {
+        "type": "upperThird",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_078": {
+      "location": {
+        "type": "left",
+        "enabled": true,
+        "params": {
+          "offsetX": -0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_079": {
+      "location": {
+        "type": "right",
+        "enabled": true,
+        "params": {
+          "offsetX": -0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_080": {
+      "location": {
+        "type": "karaoke",
+        "enabled": true,
+        "params": {
+          "offsetX": 0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_081": {
+      "location": {
+        "type": "stacked",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_082": {
+      "location": {
+        "type": "randomSafe",
+        "enabled": true,
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_083": {
+      "location": {
+        "type": "badgeAnchored",
+        "enabled": true,
+        "params": {
+          "offsetX": -0.5,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_084": {
+      "location": {
+        "type": "custom",
+        "enabled": true,
+        "params": {
+          "x": -0.25,
+          "y": 0.5,
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_085": {
+      "fill": {
+        "type": "gradientSweep",
+        "enabled": true,
+        "params": {
+          "angle": 0,
+          "speed": 0.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_086": {
+      "fill": {
+        "type": "rainbowFlow",
+        "enabled": true,
+        "params": {
+          "saturation": 0.25,
+          "lightness": 0.6,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_087": {
+      "fill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.25,
+          "fresnel": 0.75,
+          "speed": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_088": {
+      "fill": {
+        "type": "chrome",
+        "enabled": true,
+        "params": {
+          "envColors": null,
+          "sharpness": 0.25
+        },
+        "motion": {}
+      }
+    },
+    "fx_089": {
+      "fill": {
+        "type": "goldFoil",
+        "enabled": true,
+        "params": {
+          "grain": 0.5,
+          "sparkle": 0.25
+        },
+        "motion": {}
+      }
+    },
+    "fx_090": {
+      "fill": {
+        "type": "fire",
+        "enabled": true,
+        "params": {
+          "scale": 0.5,
+          "speed": 1.05,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_091": {
+      "fill": {
+        "type": "caustics",
+        "enabled": true,
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": null,
+          "colorB": "#ff8a3d"
+        },
+        "motion": {}
+      }
+    },
+    "fx_092": {
+      "fill": {
+        "type": "marble",
+        "enabled": true,
+        "params": {
+          "scale": 2.4,
+          "veins": 5,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_093": {
+      "fill": {
+        "type": "glass",
+        "enabled": true,
+        "params": {
+          "refraction": 0.75,
+          "blur": 0.2,
+          "tint": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_094": {
+      "fill": {
+        "type": "textureFill",
+        "enabled": true,
+        "params": {
+          "imageId": "",
+          "scale": 2.1,
+          "pan": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_095": {
+      "fill": {
+        "type": "karaokeWipe",
+        "enabled": true,
+        "params": {
+          "colorBefore": null,
+          "colorAfter": "#ff8a3d",
+          "softness": 0.05
+        },
+        "motion": {}
+      }
+    },
+    "fx_096": {
+      "fill": {
+        "type": "ink",
+        "enabled": true,
+        "params": {
+          "scale": 3.3,
+          "threshold": 0.75,
+          "softness": 0.08
+        },
+        "motion": {}
+      }
+    },
+    "fx_097": {
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 3,
+            "color": null,
+            "softness": 0.35,
+            "pattern": "random",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_098": {
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#4dc8ff",
+            "radius": 18,
+            "intensity": 0.5,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_099": {
+      "edge": [
+        {
+          "type": "innerGlow",
+          "enabled": true,
+          "params": {
+            "color": "#4dc8ff",
+            "radius": 14,
+            "intensity": 0.75
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_100": {
+      "edge": [
+        {
+          "type": "bevel",
+          "enabled": true,
+          "params": {
+            "depth": 0.25,
+            "lightAngle": -60,
+            "highlight": "#4dc8ff",
+            "shadow": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_101": {
+      "edge": [
+        {
+          "type": "extrude",
+          "enabled": true,
+          "params": {
+            "depth": 30,
+            "angle": 135,
+            "colorNear": null,
+            "colorFar": "#ff8a3d"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_102": {
+      "edge": [
+        {
+          "type": "longShadow",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "angle": -90,
+            "color": "#4dc8ff",
+            "fade": 0.7
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_103": {
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 30,
+            "color": "#4dc8ff",
+            "opacity": 0.25
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_104": {
+      "edge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "width": 0.33,
+            "grow": 0.5,
+            "color": "#4dc8ff"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_105": {
+      "post": [
+        {
+          "type": "glitchBlocks",
+          "enabled": true,
+          "params": {
+            "blockSize": 97,
+            "rate": 6,
+            "intensity": 0.25,
+            "rgbSplit": true,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_106": {
+      "post": [
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 22.5,
+            "angle": 0,
+            "jitter": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_107": {
+      "post": [
+        {
+          "type": "scanTear",
+          "enabled": true,
+          "params": {
+            "lines": 150.5,
+            "amount": 0.4,
+            "speed": 3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_108": {
+      "post": [
+        {
+          "type": "vhsTracking",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "noise": 0.2,
+            "rollSpeed": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_109": {
+      "post": [
+        {
+          "type": "dataSmear",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "direction": 0,
+            "threshold": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_110": {
+      "post": [
+        {
+          "type": "digitalNoise",
+          "enabled": true,
+          "params": {
+            "density": 0.75,
+            "blockSize": 12,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_111": {
+      "post": [
+        {
+          "type": "glitchSlice",
+          "enabled": true,
+          "params": {
+            "slices": 48.5,
+            "offset": 0.4,
+            "rate": 8.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_112": {
+      "post": [
+        {
+          "type": "noiseDissolve",
+          "enabled": true,
+          "params": {
+            "scale": 10,
+            "edgeWidth": 0.125,
+            "edgeColor": "#4dc8ff",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_113": {
+      "post": [
+        {
+          "type": "directionalDissolve",
+          "enabled": true,
+          "params": {
+            "angle": 90,
+            "softness": 0.1,
+            "noiseMix": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_114": {
+      "post": [
+        {
+          "type": "pixelDissolve",
+          "enabled": true,
+          "params": {
+            "cellSize": 48.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_115": {
+      "post": [
+        {
+          "type": "burnDissolve",
+          "enabled": true,
+          "params": {
+            "scale": 16.75,
+            "emberColor": "#4dc8ff",
+            "charColor": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_116": {
+      "post": [
+        {
+          "type": "halftoneDissolve",
+          "enabled": true,
+          "params": {
+            "dotSize": 30.5,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_117": {
+      "post": [
+        {
+          "type": "particleDissolve",
+          "enabled": true,
+          "params": {
+            "count": 97,
+            "drift": 0.4,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_118": {
+      "post": [
+        {
+          "type": "shockwave",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "radius": 0.75,
+            "width": 0.376,
+            "strength": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_119": {
+      "post": [
+        {
+          "type": "zoomBlur",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "strength": 1.125,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_120": {
+      "post": [
+        {
+          "type": "motionBlur",
+          "enabled": true,
+          "params": {
+            "samples": 13,
+            "shutter": 0.5,
+            "angle": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_121": {
+      "post": [
+        {
+          "type": "echoTrail",
+          "enabled": true,
+          "params": {
+            "copies": 7,
+            "spacing": 0.108,
+            "decay": 0.6,
+            "tint": "#4dc8ff",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_122": {
+      "post": [
+        {
+          "type": "godRays",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.4
+            },
+            "decay": 0.875,
+            "density": 0.6,
+            "weight": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_123": {
+      "post": [
+        {
+          "type": "lightSweep",
+          "enabled": true,
+          "params": {
+            "angle": -30,
+            "width": 0.133,
+            "speed": 0.6,
+            "color": "#4dc8ff",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_124": {
+      "post": [
+        {
+          "type": "kaleidoscope",
+          "enabled": true,
+          "params": {
+            "segments": 13,
+            "rotation": 90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_125": {
+      "post": [
+        {
+          "type": "mirror",
+          "enabled": true,
+          "params": {
+            "axis": "y",
+            "offset": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_126": {
+      "post": [
+        {
+          "type": "pixelSort",
+          "enabled": true,
+          "params": {
+            "threshold": 0.75,
+            "length": 24,
+            "direction": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_127": {
+      "post": [
+        {
+          "type": "lensDistortion",
+          "enabled": true,
+          "params": {
+            "k1": 0.5,
+            "k2": 0,
+            "chroma": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_128": {
+      "post": [
+        {
+          "type": "colorGrade",
+          "enabled": true,
+          "params": {
+            "lift": 0,
+            "saturation": 0.5,
+            "posterize": 0,
+            "duotone": "#4dc8ff",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_129": {
+      "post": [
+        {
+          "type": "displacementMap",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "scroll": 0.2,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_130": {
+      "post": [
+        {
+          "type": "bloom",
+          "enabled": true,
+          "params": {
+            "threshold": 0.75,
+            "intensity": 0.7,
+            "radius": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_131": {
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "radial": 0,
+            "angle": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_132": {
+      "post": [
+        {
+          "type": "crt",
+          "enabled": true,
+          "params": {
+            "scanlines": 0.75,
+            "curvature": 0.1,
+            "vignette": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_133": {
+      "post": [
+        {
+          "type": "filmGrain",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "size": 1,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_134": {
+      "post": [
+        {
+          "type": "halftone",
+          "enabled": true,
+          "params": {
+            "dotSize": 30.5,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_135": {
+      "post": [
+        {
+          "type": "pixelate",
+          "enabled": true,
+          "params": {
+            "size": 48.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_136": {
+      "post": [
+        {
+          "type": "heatHaze",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "speed": 1.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_137": {
+      "post": [
+        {
+          "type": "lightLeak",
+          "enabled": true,
+          "params": {
+            "color": "#4dc8ff",
+            "x": 0.85,
+            "y": 0.25,
+            "intensity": 0.6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_138": {
+      "post": [
+        {
+          "type": "vignette",
+          "enabled": true,
+          "params": {
+            "amount": 0.75,
+            "softness": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_139": {
+      "post": [
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 19,
+            "size": 2,
+            "shape": "heart",
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_140": {
+      "post": [
+        {
+          "type": "lensFlare",
+          "enabled": true,
+          "params": {
+            "position": {
+              "x": 0.4,
+              "y": 0.35
+            },
+            "color": "#4dc8ff",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_150": {
+      "bgShape": {
+        "type": "none",
+        "enabled": true,
+        "params": {
+          "rotateWithLetter": true,
+          "scaleWithLetter": true,
+          "opacity": 1,
+          "skipSpaces": true,
+          "skipRate": 0,
+          "fgAutoContrast": false,
+          "fgColors": [],
+          "vary": "alternate",
+          "varyColors": [],
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
+        },
+        "motion": {}
+      }
+    },
+    "fx_151": {
+      "bgShape": {
+        "type": "square",
+        "enabled": true,
+        "params": {
+          "rotateWithLetter": true,
+          "scaleWithLetter": true,
+          "opacity": 1,
+          "skipSpaces": true,
+          "skipRate": 0,
+          "fgAutoContrast": false,
+          "fgColors": [],
+          "vary": "alternate",
+          "varyColors": [],
+          "stroke": 0,
+          "fill": 1,
+          "trimStart": 0,
+          "trimEnd": 1,
+          "trimOffset": 0,
+          "dashOn": 0,
+          "dashOff": 0,
+          "dashOffset": 0
+        },
+        "motion": {}
+      }
+    },
+    "fx_152": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "gradientSweep",
+        "enabled": true,
+        "params": {
+          "angle": 0,
+          "speed": 0.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_153": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "rainbowFlow",
+        "enabled": true,
+        "params": {
+          "saturation": 0.25,
+          "lightness": 0.6,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "motion": {}
+      }
+    },
+    "fx_154": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "holographic",
+        "enabled": true,
+        "params": {
+          "iridescence": 0.25,
+          "fresnel": 0.75,
+          "speed": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_155": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "chrome",
+        "enabled": true,
+        "params": {
+          "envColors": null,
+          "sharpness": 0.25
+        },
+        "motion": {}
+      }
+    },
+    "fx_156": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "goldFoil",
+        "enabled": true,
+        "params": {
+          "grain": 0.5,
+          "sparkle": 0.25
+        },
+        "motion": {}
+      }
+    },
+    "fx_157": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "fire",
+        "enabled": true,
+        "params": {
+          "scale": 0.5,
+          "speed": 1.05,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_158": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "caustics",
+        "enabled": true,
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": null,
+          "colorB": "#ff8a3d"
+        },
+        "motion": {}
+      }
+    },
+    "fx_159": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "marble",
+        "enabled": true,
+        "params": {
+          "scale": 2.4,
+          "veins": 5,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_160": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "glass",
+        "enabled": true,
+        "params": {
+          "refraction": 0.75,
+          "blur": 0.2,
+          "tint": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_161": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "textureFill",
+        "enabled": true,
+        "params": {
+          "imageId": "",
+          "scale": 2.1,
+          "pan": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {}
+      }
+    },
+    "fx_162": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "karaokeWipe",
+        "enabled": true,
+        "params": {
+          "colorBefore": null,
+          "colorAfter": "#ff8a3d",
+          "softness": 0.05
+        },
+        "motion": {}
+      }
+    },
+    "fx_163": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgFill": {
+        "type": "ink",
+        "enabled": true,
+        "params": {
+          "scale": 3.3,
+          "threshold": 0.75,
+          "softness": 0.08
+        },
+        "motion": {}
+      }
+    },
+    "fx_164": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 3,
+            "color": null,
+            "softness": 0.35,
+            "pattern": "random",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_165": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#4dc8ff",
+            "radius": 18,
+            "intensity": 0.5,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_166": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "innerGlow",
+          "enabled": true,
+          "params": {
+            "color": "#4dc8ff",
+            "radius": 14,
+            "intensity": 0.75
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_167": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "bevel",
+          "enabled": true,
+          "params": {
+            "depth": 0.25,
+            "lightAngle": -60,
+            "highlight": "#4dc8ff",
+            "shadow": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_168": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "extrude",
+          "enabled": true,
+          "params": {
+            "depth": 30,
+            "angle": 135,
+            "colorNear": null,
+            "colorFar": "#ff8a3d"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_169": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "longShadow",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "angle": -90,
+            "color": "#4dc8ff",
+            "fade": 0.7
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_170": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 30,
+            "color": "#4dc8ff",
+            "opacity": 0.25
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_171": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 40,
+            "width": 0.33,
+            "grow": 0.5,
+            "color": "#4dc8ff"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_172": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "follow",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_173": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "fade",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_174": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "pop",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "overshoot": 0.15
+        },
+        "motion": {}
+      }
+    },
+    "fx_175": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "stamp",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "from": 1.8
+        },
+        "motion": {}
+      }
+    },
+    "fx_176": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "wipe",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "dir": "left"
+        },
+        "motion": {}
+      }
+    },
+    "fx_177": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "spin",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "turns": 0.25
+        },
+        "motion": {}
+      }
+    },
+    "fx_178": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "grow",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "axis": "x"
+        },
+        "motion": {}
+      }
+    },
+    "fx_179": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "none",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_180": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "flicker",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "flickers": 4
+        },
+        "motion": {}
+      }
+    },
+    "fx_181": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "bleed",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "roughness": 0.5
+        },
+        "motion": {}
+      }
+    },
+    "fx_182": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "float",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "rise": 0.3
+        },
+        "motion": {}
+      }
+    },
+    "fx_183": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgMotion": {
+        "type": "fall",
+        "enabled": true,
+        "params": {
+          "lead": 0.08,
+          "duration": 0.35,
+          "ease": "easeOutCubic",
+          "exit": "fade",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "from": 0.6
+        },
+        "motion": {}
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "pg_01": [
+      {
+        "id": "pg_01:single0",
+        "cueId": "pg_01",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "左揃え flushLeft\n本文は左端をそろえて配置します。\n行頭がそろうと読みやすくなります。\n日本語でも自然に組めます。",
+        "lines": [
+          "左揃え flushLeft",
+          "本文は左端をそろえて配置します。",
+          "行頭がそろうと読みやすくなります。",
+          "日本語でも自然に組めます。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_02": [
+      {
+        "id": "pg_02:single0",
+        "cueId": "pg_02",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "中央揃え center\n全体を中央に配置するレイアウトです。\n短い詩やタイトルに向いています。",
+        "lines": [
+          "中央揃え center",
+          "全体を中央に配置するレイアウトです。",
+          "短い詩やタイトルに向いています。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_03": [
+      {
+        "id": "pg_03:single0",
+        "cueId": "pg_03",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "右揃え flushRight\n右端をそろえる配置です。\n余白を生かした構成になります。",
+        "lines": [
+          "右揃え flushRight",
+          "右端をそろえる配置です。",
+          "余白を生かした構成になります。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_04": [
+      {
+        "id": "pg_04:single0",
+        "cueId": "pg_04",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "両端揃え justify\n行の左右の端をそろえて、\n紙面のように整った本文を組みます。\n文字の間隔を自動で調整します。",
+        "lines": [
+          "両端揃え justify",
+          "行の左右の端をそろえて、",
+          "紙面のように整った本文を組みます。",
+          "文字の間隔を自動で調整します。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_05": [
+      {
+        "id": "pg_05:single0",
+        "cueId": "pg_05",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "縦書き vertical\n日本語の伝統的な組み方です。\n右から左へと読み進めます。",
+        "lines": [
+          "縦書き vertical",
+          "日本語の伝統的な組み方です。",
+          "右から左へと読み進めます。"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "pg_06": [
+      {
+        "id": "pg_06:single0",
+        "cueId": "pg_06",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "GRID 格子\n文字を格子状に並べる\nレイアウト。",
+        "lines": [
+          "GRID 格子",
+          "文字を格子状に並べる",
+          "レイアウト。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_07": [
+      {
+        "id": "pg_07:single0",
+        "cueId": "pg_07",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "Magazine 雑誌\n特集のリード文をここに置きます\n本文の段落がここから始まります。\n詳しい説明が続きます。\n二つ目の段落です。\n最後に署名を置きます。",
+        "lines": [
+          "Magazine 雑誌",
+          "特集のリード文をここに置きます",
+          "本文の段落がここから始まります。",
+          "詳しい説明が続きます。",
+          "二つ目の段落です。",
+          "最後に署名を置きます。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_08": [
+      {
+        "id": "pg_08:single0",
+        "cueId": "pg_08",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "FASHION ファッション\n余白を広く取った\nミニマルなレイアウト。\n細い文字と広い行間が特徴です。",
+        "lines": [
+          "FASHION ファッション",
+          "余白を広く取った",
+          "ミニマルなレイアウト。",
+          "細い文字と広い行間が特徴です。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_09": [
+      {
+        "id": "pg_09:single0",
+        "cueId": "pg_09",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "新聞 newspaper\nHeadline Title Here\nSubheading or deck line\nFirst body paragraph goes here.\nSecond paragraph\ncontinues with details.\nFinal conclusion line.",
+        "lines": [
+          "新聞 newspaper",
+          "Headline Title Here",
+          "Subheading or deck line",
+          "First body paragraph goes here.",
+          "Second paragraph",
+          "continues with details.",
+          "Final conclusion line."
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_10": [
+      {
+        "id": "pg_10:single0",
+        "cueId": "pg_10",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "2段組み twoColumn\n本文を二つの段に分けて配置します。\n新聞や雑誌のような組み方です。\n左右に分かれて読み進めます。",
+        "lines": [
+          "2段組み twoColumn",
+          "本文を二つの段に分けて配置します。",
+          "新聞や雑誌のような組み方です。",
+          "左右に分かれて読み進めます。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_11": [
+      {
+        "id": "pg_11:single0",
+        "cueId": "pg_11",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "3段組み threeColumn\n本文を三つの段に分けて配置します。\n短い行を並べて紙面らしく見せます。\n各段が独立して流れます。",
+        "lines": [
+          "3段組み threeColumn",
+          "本文を三つの段に分けて配置します。",
+          "短い行を並べて紙面らしく見せます。",
+          "各段が独立して流れます。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_12": [
+      {
+        "id": "pg_12:single0",
+        "cueId": "pg_12",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "夏目漱石吾輩は猫である名前はまだ\n無いどこで生れたか頓と見当がつかぬ",
+        "lines": [
+          "夏目漱石吾輩は猫である名前はまだ",
+          "無いどこで生れたか頓と見当がつかぬ"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_13": [
+      {
+        "id": "pg_13:single0",
+        "cueId": "pg_13",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "TelopMotion\nXのカード風レイアウトです。\n本文と時刻をカードに収めます。\n3:00 PM",
+        "lines": [
+          "TelopMotion",
+          "Xのカード風レイアウトです。",
+          "本文と時刻をカードに収めます。",
+          "3:00 PM"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_14": [
+      {
+        "id": "pg_14:single0",
+        "cueId": "pg_14",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "Hey what is up?\nNot much, working\non TelopMotion!\nNice!",
+        "lines": [
+          "Hey what is up?",
+          "Not much, working",
+          "on TelopMotion!",
+          "Nice!"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_15": [
+      {
+        "id": "pg_15:single0",
+        "cueId": "pg_15",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "CAFE SIGN\n黒板にチョークで書いたような\nカフェの看板レイアウトです。",
+        "lines": [
+          "CAFE SIGN",
+          "黒板にチョークで書いたような",
+          "カフェの看板レイアウトです。"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_16": [
+      {
+        "id": "pg_16:single0",
+        "cueId": "pg_16",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 64,
+        "text": "MENU / cafeMenu\nCaramel Macchiato | ¥650\nCafe Latte | ¥580\nGreen Tea Latte | ¥560",
+        "lines": [
+          "MENU / cafeMenu",
+          "Caramel Macchiato | ¥650",
+          "Cafe Latte | ¥580",
+          "Green Tea Latte | ¥560"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_17": [
+      {
+        "id": "pg_17:single0",
+        "cueId": "pg_17",
+        "kind": "single",
+        "index": 0,
+        "start": 64,
+        "end": 68,
+        "text": "BOUTIQUE\n上質な余白と細い罫線。\nブランドの世界観を伝えます。\n— atelier —",
+        "lines": [
+          "BOUTIQUE",
+          "上質な余白と細い罫線。",
+          "ブランドの世界観を伝えます。",
+          "— atelier —"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_18": [
+      {
+        "id": "pg_18:single0",
+        "cueId": "pg_18",
+        "kind": "single",
+        "index": 0,
+        "start": 68,
+        "end": 72,
+        "text": "DO RE MI FA SO LA TI DO",
+        "lines": [
+          "DO RE MI FA SO LA TI DO"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "pg_19": [
+      {
+        "id": "pg_19:single0",
+        "cueId": "pg_19",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 76,
+        "text": "POSTER\nGraphic Design\nTypography Showcase\nTokyo Japan",
+        "lines": [
+          "POSTER",
+          "Graphic Design",
+          "Typography Showcase",
+          "Tokyo Japan"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_001": [
+      {
+        "id": "fx_001:single0",
+        "cueId": "fx_001",
+        "kind": "single",
+        "index": 0,
+        "start": 76,
+        "end": 79,
+        "text": "アニメーション / \nスタッガー / stagger",
+        "lines": [
+          "アニメーション / ",
+          "スタッガー / stagger"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_002": [
+      {
+        "id": "fx_002:single0",
+        "cueId": "fx_002",
+        "kind": "single",
+        "index": 0,
+        "start": 79,
+        "end": 82,
+        "text": "アニメーション / \n同時 / simultaneous",
+        "lines": [
+          "アニメーション / ",
+          "同時 / simultaneous"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_003": [
+      {
+        "id": "fx_003:single0",
+        "cueId": "fx_003",
+        "kind": "single",
+        "index": 0,
+        "start": 82,
+        "end": 85,
+        "text": "アニメーション / エコー / echo",
+        "lines": [
+          "アニメーション / エコー / echo"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_004": [
+      {
+        "id": "fx_004:single0",
+        "cueId": "fx_004",
+        "kind": "single",
+        "index": 0,
+        "start": 85,
+        "end": 88,
+        "text": "アニメーション / \nカスケード / cascade",
+        "lines": [
+          "アニメーション / ",
+          "カスケード / cascade"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_005": [
+      {
+        "id": "fx_005:single0",
+        "cueId": "fx_005",
+        "kind": "single",
+        "index": 0,
+        "start": 88,
+        "end": 91,
+        "text": "アニメーション / \nスプリング / spring",
+        "lines": [
+          "アニメーション / ",
+          "スプリング / spring"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_006": [
+      {
+        "id": "fx_006:single0",
+        "cueId": "fx_006",
+        "kind": "single",
+        "index": 0,
+        "start": 91,
+        "end": 94,
+        "text": "アニメーション / \nフォロースルー / followThrough",
+        "lines": [
+          "アニメーション / ",
+          "フォロースルー / followThrough"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_007": [
+      {
+        "id": "fx_007:single0",
+        "cueId": "fx_007",
+        "kind": "single",
+        "index": 0,
+        "start": 94,
+        "end": 97,
+        "text": "アニメーション / \nストップモーション / stopMotion",
+        "lines": [
+          "アニメーション / ",
+          "ストップモーション / stopMotion"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_008": [
+      {
+        "id": "fx_008:single0",
+        "cueId": "fx_008",
+        "kind": "single",
+        "index": 0,
+        "start": 97,
+        "end": 100,
+        "text": "アニメーション / \nタイムワープ / timeWarp",
+        "lines": [
+          "アニメーション / ",
+          "タイムワープ / timeWarp"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_009": [
+      {
+        "id": "fx_009:single0",
+        "cueId": "fx_009",
+        "kind": "single",
+        "index": 0,
+        "start": 100,
+        "end": 103,
+        "text": "アニメーション / ループ / loop",
+        "lines": [
+          "アニメーション / ループ / loop"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_010": [
+      {
+        "id": "fx_010:single0",
+        "cueId": "fx_010",
+        "kind": "single",
+        "index": 0,
+        "start": 103,
+        "end": 106,
+        "text": "配置 / 行 / row",
+        "lines": [
+          "配置 / 行 / row"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_011": [
+      {
+        "id": "fx_011:single0",
+        "cueId": "fx_011",
+        "kind": "single",
+        "index": 0,
+        "start": 106,
+        "end": 109,
+        "text": "配置 / 縦組み / vertical",
+        "lines": [
+          "配置 / 縦組み / vertical"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_012": [
+      {
+        "id": "fx_012:single0",
+        "cueId": "fx_012",
+        "kind": "single",
+        "index": 0,
+        "start": 109,
+        "end": 112,
+        "text": "配置 / 円 / circle",
+        "lines": [
+          "配置 / 円 / circle"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_013": [
+      {
+        "id": "fx_013:single0",
+        "cueId": "fx_013",
+        "kind": "single",
+        "index": 0,
+        "start": 112,
+        "end": 115,
+        "text": "配置 / 円弧 / arc",
+        "lines": [
+          "配置 / 円弧 / arc"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_014": [
+      {
+        "id": "fx_014:single0",
+        "cueId": "fx_014",
+        "kind": "single",
+        "index": 0,
+        "start": 115,
+        "end": 118,
+        "text": "配置 / 渦巻き / spiral",
+        "lines": [
+          "配置 / 渦巻き / spiral"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_015": [
+      {
+        "id": "fx_015:single0",
+        "cueId": "fx_015",
+        "kind": "single",
+        "index": 0,
+        "start": 118,
+        "end": 121,
+        "text": "配置 / 波 / wave",
+        "lines": [
+          "配置 / 波 / wave"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_016": [
+      {
+        "id": "fx_016:single0",
+        "cueId": "fx_016",
+        "kind": "single",
+        "index": 0,
+        "start": 121,
+        "end": 124,
+        "text": "配置 / 斜め / diagonal",
+        "lines": [
+          "配置 / 斜め / diagonal"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_017": [
+      {
+        "id": "fx_017:single0",
+        "cueId": "fx_017",
+        "kind": "single",
+        "index": 0,
+        "start": 124,
+        "end": 127,
+        "text": "配置 / 階段 / staircase",
+        "lines": [
+          "配置 / 階段 / staircase"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_018": [
+      {
+        "id": "fx_018:single0",
+        "cueId": "fx_018",
+        "kind": "single",
+        "index": 0,
+        "start": 127,
+        "end": 130,
+        "text": "配置 / グリッド / grid",
+        "lines": [
+          "配置 / グリッド / grid"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_019": [
+      {
+        "id": "fx_019:single0",
+        "cueId": "fx_019",
+        "kind": "single",
+        "index": 0,
+        "start": 130,
+        "end": 133,
+        "text": "配置 / 積み重ね語 / stackedWords",
+        "lines": [
+          "配置 / 積み重ね語 / stackedWords"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_020": [
+      {
+        "id": "fx_020:single0",
+        "cueId": "fx_020",
+        "kind": "single",
+        "index": 0,
+        "start": 133,
+        "end": 136,
+        "text": "配置 / 散布 / scatter",
+        "lines": [
+          "配置 / 散布 / scatter"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_021": [
+      {
+        "id": "fx_021:single0",
+        "cueId": "fx_021",
+        "kind": "single",
+        "index": 0,
+        "start": 136,
+        "end": 139,
+        "text": "配置 / パス / path",
+        "lines": [
+          "配置 / パス / path"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_022": [
+      {
+        "id": "fx_022:single0",
+        "cueId": "fx_022",
+        "kind": "single",
+        "index": 0,
+        "start": 139,
+        "end": 142,
+        "text": "登場 / フェード / fade",
+        "lines": [
+          "登場 / フェード / fade"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_023": [
+      {
+        "id": "fx_023:single0",
+        "cueId": "fx_023",
+        "kind": "single",
+        "index": 0,
+        "start": 142,
+        "end": 145,
+        "text": "登場 / タイプライター / typewriter",
+        "lines": [
+          "登場 / タイプライター / typewriter"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_024": [
+      {
+        "id": "fx_024:single0",
+        "cueId": "fx_024",
+        "kind": "single",
+        "index": 0,
+        "start": 145,
+        "end": 148,
+        "text": "登場 / スライド / slide",
+        "lines": [
+          "登場 / スライド / slide"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_025": [
+      {
+        "id": "fx_025:single0",
+        "cueId": "fx_025",
+        "kind": "single",
+        "index": 0,
+        "start": 148,
+        "end": 151,
+        "text": "登場 / 落下バウンド / dropBounce",
+        "lines": [
+          "登場 / 落下バウンド / dropBounce"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_026": [
+      {
+        "id": "fx_026:single0",
+        "cueId": "fx_026",
+        "kind": "single",
+        "index": 0,
+        "start": 151,
+        "end": 154,
+        "text": "登場 / ズームイン / zoomIn",
+        "lines": [
+          "登場 / ズームイン / zoomIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_027": [
+      {
+        "id": "fx_027:single0",
+        "cueId": "fx_027",
+        "kind": "single",
+        "index": 0,
+        "start": 154,
+        "end": 157,
+        "text": "登場 / ブラーイン / blurIn",
+        "lines": [
+          "登場 / ブラーイン / blurIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_028": [
+      {
+        "id": "fx_028:single0",
+        "cueId": "fx_028",
+        "kind": "single",
+        "index": 0,
+        "start": 157,
+        "end": 160,
+        "text": "登場 / 3Dフリップ / flip3D",
+        "lines": [
+          "登場 / 3Dフリップ / flip3D"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_029": [
+      {
+        "id": "fx_029:single0",
+        "cueId": "fx_029",
+        "kind": "single",
+        "index": 0,
+        "start": 160,
+        "end": 163,
+        "text": "登場 / 回転イン / rotateIn",
+        "lines": [
+          "登場 / 回転イン / rotateIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_030": [
+      {
+        "id": "fx_030:single0",
+        "cueId": "fx_030",
+        "kind": "single",
+        "index": 0,
+        "start": 163,
+        "end": 166,
+        "text": "登場 / 散布イン / scatterIn",
+        "lines": [
+          "登場 / 散布イン / scatterIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_031": [
+      {
+        "id": "fx_031:single0",
+        "cueId": "fx_031",
+        "kind": "single",
+        "index": 0,
+        "start": 166,
+        "end": 169,
+        "text": "登場 / 波立ち / waveRise",
+        "lines": [
+          "登場 / 波立ち / waveRise"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_032": [
+      {
+        "id": "fx_032:single0",
+        "cueId": "fx_032",
+        "kind": "single",
+        "index": 0,
+        "start": 169,
+        "end": 172,
+        "text": "登場 / エラスティックポップ\n/ elasticPop",
+        "lines": [
+          "登場 / エラスティックポップ",
+          "/ elasticPop"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_033": [
+      {
+        "id": "fx_033:single0",
+        "cueId": "fx_033",
+        "kind": "single",
+        "index": 0,
+        "start": 172,
+        "end": 175,
+        "text": "登場 / スクランブル / scramble",
+        "lines": [
+          "登場 / スクランブル / scramble"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_034": [
+      {
+        "id": "fx_034:single0",
+        "cueId": "fx_034",
+        "kind": "single",
+        "index": 0,
+        "start": 175,
+        "end": 178,
+        "text": "登場 / グリッチイン / glitchIn",
+        "lines": [
+          "登場 / グリッチイン / glitchIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_035": [
+      {
+        "id": "fx_035:single0",
+        "cueId": "fx_035",
+        "kind": "single",
+        "index": 0,
+        "start": 178,
+        "end": 181,
+        "text": "登場 / ネオンフリッカー\n/ neonFlicker",
+        "lines": [
+          "登場 / ネオンフリッカー",
+          "/ neonFlicker"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_036": [
+      {
+        "id": "fx_036:single0",
+        "cueId": "fx_036",
+        "kind": "single",
+        "index": 0,
+        "start": 181,
+        "end": 184,
+        "text": "登場 / ちらつき登場 / flickerIn",
+        "lines": [
+          "登場 / ちらつき登場 / flickerIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_037": [
+      {
+        "id": "fx_037:single0",
+        "cueId": "fx_037",
+        "kind": "single",
+        "index": 0,
+        "start": 184,
+        "end": 187,
+        "text": "登場 / ストローク\n描画 / strokeDrawOn",
+        "lines": [
+          "登場 / ストローク",
+          "描画 / strokeDrawOn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_038": [
+      {
+        "id": "fx_038:single0",
+        "cueId": "fx_038",
+        "kind": "single",
+        "index": 0,
+        "start": 187,
+        "end": 190,
+        "text": "登場 / パーティクル\n集合 / particlesAssemble",
+        "lines": [
+          "登場 / パーティクル",
+          "集合 / particlesAssemble"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_039": [
+      {
+        "id": "fx_039:single0",
+        "cueId": "fx_039",
+        "kind": "single",
+        "index": 0,
+        "start": 190,
+        "end": 193,
+        "text": "登場 / 粉砕再構築 / shatterRebuild",
+        "lines": [
+          "登場 / 粉砕再構築 / shatterRebuild"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_040": [
+      {
+        "id": "fx_040:single0",
+        "cueId": "fx_040",
+        "kind": "single",
+        "index": 0,
+        "start": 193,
+        "end": 196,
+        "text": "登場 / 前ビートから\nモーフ / morphFromPrevious",
+        "lines": [
+          "登場 / 前ビートから",
+          "モーフ / morphFromPrevious"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_041": [
+      {
+        "id": "fx_041:single0",
+        "cueId": "fx_041",
+        "kind": "single",
+        "index": 0,
+        "start": 196,
+        "end": 199,
+        "text": "登場 / ノイズディゾルブイン\n/ noiseDissolveIn",
+        "lines": [
+          "登場 / ノイズディゾルブイン",
+          "/ noiseDissolveIn"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_042": [
+      {
+        "id": "fx_042:single0",
+        "cueId": "fx_042",
+        "kind": "single",
+        "index": 0,
+        "start": 199,
+        "end": 202,
+        "text": "登場 / ディゾルブ / dissolve",
+        "lines": [
+          "登場 / ディゾルブ / dissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_043": [
+      {
+        "id": "fx_043:single0",
+        "cueId": "fx_043",
+        "kind": "single",
+        "index": 0,
+        "start": 202,
+        "end": 205,
+        "text": "退場 / フェード / fade",
+        "lines": [
+          "退場 / フェード / fade"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_044": [
+      {
+        "id": "fx_044:single0",
+        "cueId": "fx_044",
+        "kind": "single",
+        "index": 0,
+        "start": 205,
+        "end": 208,
+        "text": "退場 / スライド / slide",
+        "lines": [
+          "退場 / スライド / slide"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_045": [
+      {
+        "id": "fx_045:single0",
+        "cueId": "fx_045",
+        "kind": "single",
+        "index": 0,
+        "start": 208,
+        "end": 211,
+        "text": "退場 / ズームアウト / zoomOut",
+        "lines": [
+          "退場 / ズームアウト / zoomOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_046": [
+      {
+        "id": "fx_046:single0",
+        "cueId": "fx_046",
+        "kind": "single",
+        "index": 0,
+        "start": 211,
+        "end": 214,
+        "text": "退場 / ブラーアウト / blurOut",
+        "lines": [
+          "退場 / ブラーアウト / blurOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_047": [
+      {
+        "id": "fx_047:single0",
+        "cueId": "fx_047",
+        "kind": "single",
+        "index": 0,
+        "start": 214,
+        "end": 217,
+        "text": "退場 / 爆発 / explode",
+        "lines": [
+          "退場 / 爆発 / explode"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_048": [
+      {
+        "id": "fx_048:single0",
+        "cueId": "fx_048",
+        "kind": "single",
+        "index": 0,
+        "start": 217,
+        "end": 220,
+        "text": "退場 / 重力落下 / gravityFall",
+        "lines": [
+          "退場 / 重力落下 / gravityFall"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_049": [
+      {
+        "id": "fx_049:single0",
+        "cueId": "fx_049",
+        "kind": "single",
+        "index": 0,
+        "start": 220,
+        "end": 223,
+        "text": "退場 / ディゾルブ / dissolve",
+        "lines": [
+          "退場 / ディゾルブ / dissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_050": [
+      {
+        "id": "fx_050:single0",
+        "cueId": "fx_050",
+        "kind": "single",
+        "index": 0,
+        "start": 223,
+        "end": 226,
+        "text": "退場 / ワイプ / wipe",
+        "lines": [
+          "退場 / ワイプ / wipe"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_051": [
+      {
+        "id": "fx_051:single0",
+        "cueId": "fx_051",
+        "kind": "single",
+        "index": 0,
+        "start": 226,
+        "end": 229,
+        "text": "退場 / タイプライター\n逆再生 / typewriterReverse",
+        "lines": [
+          "退場 / タイプライター",
+          "逆再生 / typewriterReverse"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_052": [
+      {
+        "id": "fx_052:single0",
+        "cueId": "fx_052",
+        "kind": "single",
+        "index": 0,
+        "start": 229,
+        "end": 232,
+        "text": "退場 / 中心へ収縮 / shrinkToCenter",
+        "lines": [
+          "退場 / 中心へ収縮 / shrinkToCenter"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_053": [
+      {
+        "id": "fx_053:single0",
+        "cueId": "fx_053",
+        "kind": "single",
+        "index": 0,
+        "start": 232,
+        "end": 235,
+        "text": "退場 / パーティクル\n拡散 / particlesDisperse",
+        "lines": [
+          "退場 / パーティクル",
+          "拡散 / particlesDisperse"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_054": [
+      {
+        "id": "fx_054:single0",
+        "cueId": "fx_054",
+        "kind": "single",
+        "index": 0,
+        "start": 235,
+        "end": 238,
+        "text": "退場 / 溶解 / melt",
+        "lines": [
+          "退場 / 溶解 / melt"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_055": [
+      {
+        "id": "fx_055:single0",
+        "cueId": "fx_055",
+        "kind": "single",
+        "index": 0,
+        "start": 238,
+        "end": 241,
+        "text": "退場 / 燃え尽き / burnAway",
+        "lines": [
+          "退場 / 燃え尽き / burnAway"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_056": [
+      {
+        "id": "fx_056:single0",
+        "cueId": "fx_056",
+        "kind": "single",
+        "index": 0,
+        "start": 241,
+        "end": 244,
+        "text": "退場 / ストローク\n消去 / strokeErase",
+        "lines": [
+          "退場 / ストローク",
+          "消去 / strokeErase"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_057": [
+      {
+        "id": "fx_057:single0",
+        "cueId": "fx_057",
+        "kind": "single",
+        "index": 0,
+        "start": 244,
+        "end": 247,
+        "text": "退場 / 這い出し退場 / creepOut",
+        "lines": [
+          "退場 / 這い出し退場 / creepOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_058": [
+      {
+        "id": "fx_058:single0",
+        "cueId": "fx_058",
+        "kind": "single",
+        "index": 0,
+        "start": 247,
+        "end": 250,
+        "text": "保持 / 浮遊 / floatBob",
+        "lines": [
+          "保持 / 浮遊 / floatBob"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_059": [
+      {
+        "id": "fx_059:single0",
+        "cueId": "fx_059",
+        "kind": "single",
+        "index": 0,
+        "start": 250,
+        "end": 253,
+        "text": "保持 / サイン波 / sineWave",
+        "lines": [
+          "保持 / サイン波 / sineWave"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_060": [
+      {
+        "id": "fx_060:single0",
+        "cueId": "fx_060",
+        "kind": "single",
+        "index": 0,
+        "start": 253,
+        "end": 256,
+        "text": "保持 / ジッター / jitter",
+        "lines": [
+          "保持 / ジッター / jitter"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_061": [
+      {
+        "id": "fx_061:single0",
+        "cueId": "fx_061",
+        "kind": "single",
+        "index": 0,
+        "start": 256,
+        "end": 259,
+        "text": "保持 / パルス / pulse",
+        "lines": [
+          "保持 / パルス / pulse"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_062": [
+      {
+        "id": "fx_062:single0",
+        "cueId": "fx_062",
+        "kind": "single",
+        "index": 0,
+        "start": 259,
+        "end": 262,
+        "text": "保持 / 透明度パルス / opacityPulse",
+        "lines": [
+          "保持 / 透明度パルス / opacityPulse"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_063": [
+      {
+        "id": "fx_063:single0",
+        "cueId": "fx_063",
+        "kind": "single",
+        "index": 0,
+        "start": 262,
+        "end": 265,
+        "text": "保持 / ケン・バーンズ / kenBurns",
+        "lines": [
+          "保持 / ケン・バーンズ / kenBurns"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_064": [
+      {
+        "id": "fx_064:single0",
+        "cueId": "fx_064",
+        "kind": "single",
+        "index": 0,
+        "start": 265,
+        "end": 268,
+        "text": "保持 / ドリフト / drift",
+        "lines": [
+          "保持 / ドリフト / drift"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_065": [
+      {
+        "id": "fx_065:single0",
+        "cueId": "fx_065",
+        "kind": "single",
+        "index": 0,
+        "start": 268,
+        "end": 271,
+        "text": "保持 / マーキー / marquee",
+        "lines": [
+          "保持 / マーキー / marquee"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_066": [
+      {
+        "id": "fx_066:single0",
+        "cueId": "fx_066",
+        "kind": "single",
+        "index": 0,
+        "start": 271,
+        "end": 274,
+        "text": "保持 / ゼリー / jelly",
+        "lines": [
+          "保持 / ゼリー / jelly"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_067": [
+      {
+        "id": "fx_067:single0",
+        "cueId": "fx_067",
+        "kind": "single",
+        "index": 0,
+        "start": 274,
+        "end": 277,
+        "text": "保持 / うねりワープ / wobbleWarp",
+        "lines": [
+          "保持 / うねりワープ / wobbleWarp"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_068": [
+      {
+        "id": "fx_068:single0",
+        "cueId": "fx_068",
+        "kind": "single",
+        "index": 0,
+        "start": 277,
+        "end": 280,
+        "text": "保持 / ツイスト / twist",
+        "lines": [
+          "保持 / ツイスト / twist"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_069": [
+      {
+        "id": "fx_069:single0",
+        "cueId": "fx_069",
+        "kind": "single",
+        "index": 0,
+        "start": 280,
+        "end": 283,
+        "text": "保持 / ブリージング / breathing",
+        "lines": [
+          "保持 / ブリージング / breathing"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_070": [
+      {
+        "id": "fx_070:single0",
+        "cueId": "fx_070",
+        "kind": "single",
+        "index": 0,
+        "start": 283,
+        "end": 286,
+        "text": "保持 / 3Dオービット / orbit3D",
+        "lines": [
+          "保持 / 3Dオービット / orbit3D"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_071": [
+      {
+        "id": "fx_071:single0",
+        "cueId": "fx_071",
+        "kind": "single",
+        "index": 0,
+        "start": 286,
+        "end": 289,
+        "text": "保持 / パス追従 / pathFollow",
+        "lines": [
+          "保持 / パス追従 / pathFollow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_072": [
+      {
+        "id": "fx_072:single0",
+        "cueId": "fx_072",
+        "kind": "single",
+        "index": 0,
+        "start": 289,
+        "end": 292,
+        "text": "保持 / 鼓動 / heartbeat",
+        "lines": [
+          "保持 / 鼓動 / heartbeat"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_073": [
+      {
+        "id": "fx_073:single0",
+        "cueId": "fx_073",
+        "kind": "single",
+        "index": 0,
+        "start": 292,
+        "end": 295,
+        "text": "保持 / 震え / shiver",
+        "lines": [
+          "保持 / 震え / shiver"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_074": [
+      {
+        "id": "fx_074:single0",
+        "cueId": "fx_074",
+        "kind": "single",
+        "index": 0,
+        "start": 295,
+        "end": 298,
+        "text": "保持 / ディゾルブ / dissolve",
+        "lines": [
+          "保持 / ディゾルブ / dissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_075": [
+      {
+        "id": "fx_075:single0",
+        "cueId": "fx_075",
+        "kind": "single",
+        "index": 0,
+        "start": 298,
+        "end": 301,
+        "text": "位置 / 中央 / center",
+        "lines": [
+          "位置 / 中央 / center"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_076": [
+      {
+        "id": "fx_076:single0",
+        "cueId": "fx_076",
+        "kind": "single",
+        "index": 0,
+        "start": 301,
+        "end": 304,
+        "text": "位置 / 下三分の一 / lowerThird",
+        "lines": [
+          "位置 / 下三分の一 / lowerThird"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_077": [
+      {
+        "id": "fx_077:single0",
+        "cueId": "fx_077",
+        "kind": "single",
+        "index": 0,
+        "start": 304,
+        "end": 307,
+        "text": "位置 / 上三分の一 / upperThird",
+        "lines": [
+          "位置 / 上三分の一 / upperThird"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_078": [
+      {
+        "id": "fx_078:single0",
+        "cueId": "fx_078",
+        "kind": "single",
+        "index": 0,
+        "start": 307,
+        "end": 310,
+        "text": "位置 / 左 / left",
+        "lines": [
+          "位置 / 左 / left"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_079": [
+      {
+        "id": "fx_079:single0",
+        "cueId": "fx_079",
+        "kind": "single",
+        "index": 0,
+        "start": 310,
+        "end": 313,
+        "text": "位置 / 右 / right",
+        "lines": [
+          "位置 / 右 / right"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_080": [
+      {
+        "id": "fx_080:single0",
+        "cueId": "fx_080",
+        "kind": "single",
+        "index": 0,
+        "start": 313,
+        "end": 316,
+        "text": "位置 / カラオケ / karaoke",
+        "lines": [
+          "位置 / カラオケ / karaoke"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_081": [
+      {
+        "id": "fx_081:single0",
+        "cueId": "fx_081",
+        "kind": "single",
+        "index": 0,
+        "start": 316,
+        "end": 319,
+        "text": "位置 / 積み重ね / stacked",
+        "lines": [
+          "位置 / 積み重ね / stacked"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_082": [
+      {
+        "id": "fx_082:single0",
+        "cueId": "fx_082",
+        "kind": "single",
+        "index": 0,
+        "start": 319,
+        "end": 322,
+        "text": "位置 / ランダム（安全\n領域） / randomSafe",
+        "lines": [
+          "位置 / ランダム（安全",
+          "領域） / randomSafe"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_083": [
+      {
+        "id": "fx_083:single0",
+        "cueId": "fx_083",
+        "kind": "single",
+        "index": 0,
+        "start": 322,
+        "end": 325,
+        "text": "位置 / バッジ固定 / badgeAnchored",
+        "lines": [
+          "位置 / バッジ固定 / badgeAnchored"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_084": [
+      {
+        "id": "fx_084:single0",
+        "cueId": "fx_084",
+        "kind": "single",
+        "index": 0,
+        "start": 325,
+        "end": 328,
+        "text": "位置 / カスタム / custom",
+        "lines": [
+          "位置 / カスタム / custom"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_085": [
+      {
+        "id": "fx_085:single0",
+        "cueId": "fx_085",
+        "kind": "single",
+        "index": 0,
+        "start": 328,
+        "end": 331,
+        "text": "塗り / グラデーションスイープ\n/ gradientSweep",
+        "lines": [
+          "塗り / グラデーションスイープ",
+          "/ gradientSweep"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_086": [
+      {
+        "id": "fx_086:single0",
+        "cueId": "fx_086",
+        "kind": "single",
+        "index": 0,
+        "start": 331,
+        "end": 334,
+        "text": "塗り / レインボーフロー\n/ rainbowFlow",
+        "lines": [
+          "塗り / レインボーフロー",
+          "/ rainbowFlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_087": [
+      {
+        "id": "fx_087:single0",
+        "cueId": "fx_087",
+        "kind": "single",
+        "index": 0,
+        "start": 334,
+        "end": 337,
+        "text": "塗り / ホログラフィック\n/ holographic",
+        "lines": [
+          "塗り / ホログラフィック",
+          "/ holographic"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_088": [
+      {
+        "id": "fx_088:single0",
+        "cueId": "fx_088",
+        "kind": "single",
+        "index": 0,
+        "start": 337,
+        "end": 340,
+        "text": "塗り / クローム / chrome",
+        "lines": [
+          "塗り / クローム / chrome"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_089": [
+      {
+        "id": "fx_089:single0",
+        "cueId": "fx_089",
+        "kind": "single",
+        "index": 0,
+        "start": 340,
+        "end": 343,
+        "text": "塗り / 金箔 / goldFoil",
+        "lines": [
+          "塗り / 金箔 / goldFoil"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_090": [
+      {
+        "id": "fx_090:single0",
+        "cueId": "fx_090",
+        "kind": "single",
+        "index": 0,
+        "start": 343,
+        "end": 346,
+        "text": "塗り / 炎 / fire",
+        "lines": [
+          "塗り / 炎 / fire"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_091": [
+      {
+        "id": "fx_091:single0",
+        "cueId": "fx_091",
+        "kind": "single",
+        "index": 0,
+        "start": 346,
+        "end": 349,
+        "text": "塗り / コースティクス / caustics",
+        "lines": [
+          "塗り / コースティクス / caustics"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_092": [
+      {
+        "id": "fx_092:single0",
+        "cueId": "fx_092",
+        "kind": "single",
+        "index": 0,
+        "start": 349,
+        "end": 352,
+        "text": "塗り / 大理石 / marble",
+        "lines": [
+          "塗り / 大理石 / marble"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_093": [
+      {
+        "id": "fx_093:single0",
+        "cueId": "fx_093",
+        "kind": "single",
+        "index": 0,
+        "start": 352,
+        "end": 355,
+        "text": "塗り / ガラス / glass",
+        "lines": [
+          "塗り / ガラス / glass"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_094": [
+      {
+        "id": "fx_094:single0",
+        "cueId": "fx_094",
+        "kind": "single",
+        "index": 0,
+        "start": 355,
+        "end": 358,
+        "text": "塗り / テクスチャ / textureFill",
+        "lines": [
+          "塗り / テクスチャ / textureFill"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_095": [
+      {
+        "id": "fx_095:single0",
+        "cueId": "fx_095",
+        "kind": "single",
+        "index": 0,
+        "start": 358,
+        "end": 361,
+        "text": "塗り / カラオケワイプ\n/ karaokeWipe",
+        "lines": [
+          "塗り / カラオケワイプ",
+          "/ karaokeWipe"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_096": [
+      {
+        "id": "fx_096:single0",
+        "cueId": "fx_096",
+        "kind": "single",
+        "index": 0,
+        "start": 361,
+        "end": 364,
+        "text": "塗り / 墨 / ink",
+        "lines": [
+          "塗り / 墨 / ink"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_097": [
+      {
+        "id": "fx_097:single0",
+        "cueId": "fx_097",
+        "kind": "single",
+        "index": 0,
+        "start": 364,
+        "end": 367,
+        "text": "縁取り / 縁取り / outline",
+        "lines": [
+          "縁取り / 縁取り / outline"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_098": [
+      {
+        "id": "fx_098:single0",
+        "cueId": "fx_098",
+        "kind": "single",
+        "index": 0,
+        "start": 367,
+        "end": 370,
+        "text": "縁取り / ネオン / neonGlow",
+        "lines": [
+          "縁取り / ネオン / neonGlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_099": [
+      {
+        "id": "fx_099:single0",
+        "cueId": "fx_099",
+        "kind": "single",
+        "index": 0,
+        "start": 370,
+        "end": 373,
+        "text": "縁取り / 内側グロー / innerGlow",
+        "lines": [
+          "縁取り / 内側グロー / innerGlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_100": [
+      {
+        "id": "fx_100:single0",
+        "cueId": "fx_100",
+        "kind": "single",
+        "index": 0,
+        "start": 373,
+        "end": 376,
+        "text": "縁取り / ベベル / bevel",
+        "lines": [
+          "縁取り / ベベル / bevel"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_101": [
+      {
+        "id": "fx_101:single0",
+        "cueId": "fx_101",
+        "kind": "single",
+        "index": 0,
+        "start": 376,
+        "end": 379,
+        "text": "縁取り / 押し出し / extrude",
+        "lines": [
+          "縁取り / 押し出し / extrude"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_102": [
+      {
+        "id": "fx_102:single0",
+        "cueId": "fx_102",
+        "kind": "single",
+        "index": 0,
+        "start": 379,
+        "end": 382,
+        "text": "縁取り / ロングシャドウ\n/ longShadow",
+        "lines": [
+          "縁取り / ロングシャドウ",
+          "/ longShadow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_103": [
+      {
+        "id": "fx_103:single0",
+        "cueId": "fx_103",
+        "kind": "single",
+        "index": 0,
+        "start": 382,
+        "end": 385,
+        "text": "縁取り / ドロップシャドウ\n/ dropShadow",
+        "lines": [
+          "縁取り / ドロップシャドウ",
+          "/ dropShadow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_104": [
+      {
+        "id": "fx_104:single0",
+        "cueId": "fx_104",
+        "kind": "single",
+        "index": 0,
+        "start": 385,
+        "end": 388,
+        "text": "縁取り / 滴り / drip",
+        "lines": [
+          "縁取り / 滴り / drip"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_105": [
+      {
+        "id": "fx_105:single0",
+        "cueId": "fx_105",
+        "kind": "single",
+        "index": 0,
+        "start": 388,
+        "end": 391,
+        "text": "後処理 / グリッチブロック\n/ glitchBlocks",
+        "lines": [
+          "後処理 / グリッチブロック",
+          "/ glitchBlocks"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_106": [
+      {
+        "id": "fx_106:single0",
+        "cueId": "fx_106",
+        "kind": "single",
+        "index": 0,
+        "start": 391,
+        "end": 394,
+        "text": "後処理 / RGBシフト / rgbShift",
+        "lines": [
+          "後処理 / RGBシフト / rgbShift"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_107": [
+      {
+        "id": "fx_107:single0",
+        "cueId": "fx_107",
+        "kind": "single",
+        "index": 0,
+        "start": 394,
+        "end": 397,
+        "text": "後処理 / スキャンティア / scanTear",
+        "lines": [
+          "後処理 / スキャンティア / scanTear"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_108": [
+      {
+        "id": "fx_108:single0",
+        "cueId": "fx_108",
+        "kind": "single",
+        "index": 0,
+        "start": 397,
+        "end": 400,
+        "text": "後処理 / VHSトラッキング\n/ vhsTracking",
+        "lines": [
+          "後処理 / VHSトラッキング",
+          "/ vhsTracking"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_109": [
+      {
+        "id": "fx_109:single0",
+        "cueId": "fx_109",
+        "kind": "single",
+        "index": 0,
+        "start": 400,
+        "end": 403,
+        "text": "後処理 / データスミア / dataSmear",
+        "lines": [
+          "後処理 / データスミア / dataSmear"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_110": [
+      {
+        "id": "fx_110:single0",
+        "cueId": "fx_110",
+        "kind": "single",
+        "index": 0,
+        "start": 403,
+        "end": 406,
+        "text": "後処理 / デジタルノイズ\n/ digitalNoise",
+        "lines": [
+          "後処理 / デジタルノイズ",
+          "/ digitalNoise"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_111": [
+      {
+        "id": "fx_111:single0",
+        "cueId": "fx_111",
+        "kind": "single",
+        "index": 0,
+        "start": 406,
+        "end": 409,
+        "text": "後処理 / グリッチスライス\n/ glitchSlice",
+        "lines": [
+          "後処理 / グリッチスライス",
+          "/ glitchSlice"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_112": [
+      {
+        "id": "fx_112:single0",
+        "cueId": "fx_112",
+        "kind": "single",
+        "index": 0,
+        "start": 409,
+        "end": 412,
+        "text": "後処理 / ノイズディゾルブ\n/ noiseDissolve",
+        "lines": [
+          "後処理 / ノイズディゾルブ",
+          "/ noiseDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_113": [
+      {
+        "id": "fx_113:single0",
+        "cueId": "fx_113",
+        "kind": "single",
+        "index": 0,
+        "start": 412,
+        "end": 415,
+        "text": "後処理 / 方向ディゾルブ\n/ directionalDissolve",
+        "lines": [
+          "後処理 / 方向ディゾルブ",
+          "/ directionalDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_114": [
+      {
+        "id": "fx_114:single0",
+        "cueId": "fx_114",
+        "kind": "single",
+        "index": 0,
+        "start": 415,
+        "end": 418,
+        "text": "後処理 / ピクセルディゾルブ\n/ pixelDissolve",
+        "lines": [
+          "後処理 / ピクセルディゾルブ",
+          "/ pixelDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_115": [
+      {
+        "id": "fx_115:single0",
+        "cueId": "fx_115",
+        "kind": "single",
+        "index": 0,
+        "start": 418,
+        "end": 421,
+        "text": "後処理 / 燃焼ディゾルブ\n/ burnDissolve",
+        "lines": [
+          "後処理 / 燃焼ディゾルブ",
+          "/ burnDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_116": [
+      {
+        "id": "fx_116:single0",
+        "cueId": "fx_116",
+        "kind": "single",
+        "index": 0,
+        "start": 421,
+        "end": 424,
+        "text": "後処理 / ハーフトーンディゾルブ\n/ halftoneDissolve",
+        "lines": [
+          "後処理 / ハーフトーンディゾルブ",
+          "/ halftoneDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_117": [
+      {
+        "id": "fx_117:single0",
+        "cueId": "fx_117",
+        "kind": "single",
+        "index": 0,
+        "start": 424,
+        "end": 427,
+        "text": "後処理 / パーティクルディゾルブ\n/ particleDissolve",
+        "lines": [
+          "後処理 / パーティクルディゾルブ",
+          "/ particleDissolve"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_118": [
+      {
+        "id": "fx_118:single0",
+        "cueId": "fx_118",
+        "kind": "single",
+        "index": 0,
+        "start": 427,
+        "end": 430,
+        "text": "後処理 / 衝撃波 / shockwave",
+        "lines": [
+          "後処理 / 衝撃波 / shockwave"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_119": [
+      {
+        "id": "fx_119:single0",
+        "cueId": "fx_119",
+        "kind": "single",
+        "index": 0,
+        "start": 430,
+        "end": 433,
+        "text": "後処理 / ズームブラー / zoomBlur",
+        "lines": [
+          "後処理 / ズームブラー / zoomBlur"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_120": [
+      {
+        "id": "fx_120:single0",
+        "cueId": "fx_120",
+        "kind": "single",
+        "index": 0,
+        "start": 433,
+        "end": 436,
+        "text": "後処理 / モーションブラー\n/ motionBlur",
+        "lines": [
+          "後処理 / モーションブラー",
+          "/ motionBlur"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_121": [
+      {
+        "id": "fx_121:single0",
+        "cueId": "fx_121",
+        "kind": "single",
+        "index": 0,
+        "start": 436,
+        "end": 439,
+        "text": "後処理 / エコートレイル\n/ echoTrail",
+        "lines": [
+          "後処理 / エコートレイル",
+          "/ echoTrail"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_122": [
+      {
+        "id": "fx_122:single0",
+        "cueId": "fx_122",
+        "kind": "single",
+        "index": 0,
+        "start": 439,
+        "end": 442,
+        "text": "後処理 / ゴッドレイ / godRays",
+        "lines": [
+          "後処理 / ゴッドレイ / godRays"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_123": [
+      {
+        "id": "fx_123:single0",
+        "cueId": "fx_123",
+        "kind": "single",
+        "index": 0,
+        "start": 442,
+        "end": 445,
+        "text": "後処理 / ライトスイープ\n/ lightSweep",
+        "lines": [
+          "後処理 / ライトスイープ",
+          "/ lightSweep"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_124": [
+      {
+        "id": "fx_124:single0",
+        "cueId": "fx_124",
+        "kind": "single",
+        "index": 0,
+        "start": 445,
+        "end": 448,
+        "text": "後処理 / 万華鏡 / kaleidoscope",
+        "lines": [
+          "後処理 / 万華鏡 / kaleidoscope"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_125": [
+      {
+        "id": "fx_125:single0",
+        "cueId": "fx_125",
+        "kind": "single",
+        "index": 0,
+        "start": 448,
+        "end": 451,
+        "text": "後処理 / ミラー / mirror",
+        "lines": [
+          "後処理 / ミラー / mirror"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_126": [
+      {
+        "id": "fx_126:single0",
+        "cueId": "fx_126",
+        "kind": "single",
+        "index": 0,
+        "start": 451,
+        "end": 454,
+        "text": "後処理 / ピクセルソート\n/ pixelSort",
+        "lines": [
+          "後処理 / ピクセルソート",
+          "/ pixelSort"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_127": [
+      {
+        "id": "fx_127:single0",
+        "cueId": "fx_127",
+        "kind": "single",
+        "index": 0,
+        "start": 454,
+        "end": 457,
+        "text": "後処理 / レンズ\n歪み / lensDistortion",
+        "lines": [
+          "後処理 / レンズ",
+          "歪み / lensDistortion"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_128": [
+      {
+        "id": "fx_128:single0",
+        "cueId": "fx_128",
+        "kind": "single",
+        "index": 0,
+        "start": 457,
+        "end": 460,
+        "text": "後処理 / カラーグレード\n/ colorGrade",
+        "lines": [
+          "後処理 / カラーグレード",
+          "/ colorGrade"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_129": [
+      {
+        "id": "fx_129:single0",
+        "cueId": "fx_129",
+        "kind": "single",
+        "index": 0,
+        "start": 460,
+        "end": 463,
+        "text": "後処理 / 変位マップ\n/ displacementMap",
+        "lines": [
+          "後処理 / 変位マップ",
+          "/ displacementMap"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_130": [
+      {
+        "id": "fx_130:single0",
+        "cueId": "fx_130",
+        "kind": "single",
+        "index": 0,
+        "start": 463,
+        "end": 466,
+        "text": "後処理 / ブルーム / bloom",
+        "lines": [
+          "後処理 / ブルーム / bloom"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_131": [
+      {
+        "id": "fx_131:single0",
+        "cueId": "fx_131",
+        "kind": "single",
+        "index": 0,
+        "start": 466,
+        "end": 469,
+        "text": "後処理 / 色収差\n/ chromaticAberration",
+        "lines": [
+          "後処理 / 色収差",
+          "/ chromaticAberration"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_132": [
+      {
+        "id": "fx_132:single0",
+        "cueId": "fx_132",
+        "kind": "single",
+        "index": 0,
+        "start": 469,
+        "end": 472,
+        "text": "後処理 / CRT / crt",
+        "lines": [
+          "後処理 / CRT / crt"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_133": [
+      {
+        "id": "fx_133:single0",
+        "cueId": "fx_133",
+        "kind": "single",
+        "index": 0,
+        "start": 472,
+        "end": 475,
+        "text": "後処理 / フィルムグレイン\n/ filmGrain",
+        "lines": [
+          "後処理 / フィルムグレイン",
+          "/ filmGrain"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_134": [
+      {
+        "id": "fx_134:single0",
+        "cueId": "fx_134",
+        "kind": "single",
+        "index": 0,
+        "start": 475,
+        "end": 478,
+        "text": "後処理 / ハーフトーン / halftone",
+        "lines": [
+          "後処理 / ハーフトーン / halftone"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_135": [
+      {
+        "id": "fx_135:single0",
+        "cueId": "fx_135",
+        "kind": "single",
+        "index": 0,
+        "start": 478,
+        "end": 481,
+        "text": "後処理 / ピクセル化 / pixelate",
+        "lines": [
+          "後処理 / ピクセル化 / pixelate"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_136": [
+      {
+        "id": "fx_136:single0",
+        "cueId": "fx_136",
+        "kind": "single",
+        "index": 0,
+        "start": 481,
+        "end": 484,
+        "text": "後処理 / 陽炎 / heatHaze",
+        "lines": [
+          "後処理 / 陽炎 / heatHaze"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_137": [
+      {
+        "id": "fx_137:single0",
+        "cueId": "fx_137",
+        "kind": "single",
+        "index": 0,
+        "start": 484,
+        "end": 487,
+        "text": "後処理 / ライトリーク / lightLeak",
+        "lines": [
+          "後処理 / ライトリーク / lightLeak"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_138": [
+      {
+        "id": "fx_138:single0",
+        "cueId": "fx_138",
+        "kind": "single",
+        "index": 0,
+        "start": 487,
+        "end": 490,
+        "text": "後処理 / ビネット / vignette",
+        "lines": [
+          "後処理 / ビネット / vignette"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_139": [
+      {
+        "id": "fx_139:single0",
+        "cueId": "fx_139",
+        "kind": "single",
+        "index": 0,
+        "start": 490,
+        "end": 493,
+        "text": "後処理 / スパークル / sparkles",
+        "lines": [
+          "後処理 / スパークル / sparkles"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_140": [
+      {
+        "id": "fx_140:single0",
+        "cueId": "fx_140",
+        "kind": "single",
+        "index": 0,
+        "start": 493,
+        "end": 496,
+        "text": "後処理 / レンズフレア / lensFlare",
+        "lines": [
+          "後処理 / レンズフレア / lensFlare"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_141": [
+      {
+        "id": "fx_141:single0",
+        "cueId": "fx_141",
+        "kind": "single",
+        "index": 0,
+        "start": 496,
+        "end": 499,
+        "text": "背景 / 単色 / solid",
+        "lines": [
+          "背景 / 単色 / solid"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_142": [
+      {
+        "id": "fx_142:single0",
+        "cueId": "fx_142",
+        "kind": "single",
+        "index": 0,
+        "start": 499,
+        "end": 502,
+        "text": "背景 / ベタ塗り / plain",
+        "lines": [
+          "背景 / ベタ塗り / plain"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_143": [
+      {
+        "id": "fx_143:single0",
+        "cueId": "fx_143",
+        "kind": "single",
+        "index": 0,
+        "start": 502,
+        "end": 505,
+        "text": "背景 / グラデーション / gradient",
+        "lines": [
+          "背景 / グラデーション / gradient"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_144": [
+      {
+        "id": "fx_144:single0",
+        "cueId": "fx_144",
+        "kind": "single",
+        "index": 0,
+        "start": 505,
+        "end": 508,
+        "text": "背景 / ノイズグラデーション\n/ noiseGradient",
+        "lines": [
+          "背景 / ノイズグラデーション",
+          "/ noiseGradient"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_145": [
+      {
+        "id": "fx_145:single0",
+        "cueId": "fx_145",
+        "kind": "single",
+        "index": 0,
+        "start": 508,
+        "end": 511,
+        "text": "背景 / 実績カード / card",
+        "lines": [
+          "背景 / 実績カード / card"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_146": [
+      {
+        "id": "fx_146:single0",
+        "cueId": "fx_146",
+        "kind": "single",
+        "index": 0,
+        "start": 511,
+        "end": 514,
+        "text": "背景 / 楽曲カバー / cover",
+        "lines": [
+          "背景 / 楽曲カバー / cover"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_147": [
+      {
+        "id": "fx_147:single0",
+        "cueId": "fx_147",
+        "kind": "single",
+        "index": 0,
+        "start": 514,
+        "end": 517,
+        "text": "背景 / 画像 / image",
+        "lines": [
+          "背景 / 画像 / image"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_148": [
+      {
+        "id": "fx_148:single0",
+        "cueId": "fx_148",
+        "kind": "single",
+        "index": 0,
+        "start": 517,
+        "end": 520,
+        "text": "背景 / パターン / pattern",
+        "lines": [
+          "背景 / パターン / pattern"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_149": [
+      {
+        "id": "fx_149:single0",
+        "cueId": "fx_149",
+        "kind": "single",
+        "index": 0,
+        "start": 520,
+        "end": 523,
+        "text": "背景 / 図形 / shapes",
+        "lines": [
+          "背景 / 図形 / shapes"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_150": [
+      {
+        "id": "fx_150:single0",
+        "cueId": "fx_150",
+        "kind": "single",
+        "index": 0,
+        "start": 523,
+        "end": 526,
+        "text": "文字背景 / なし / none",
+        "lines": [
+          "文字背景 / なし / none"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_151": [
+      {
+        "id": "fx_151:single0",
+        "cueId": "fx_151",
+        "kind": "single",
+        "index": 0,
+        "start": 526,
+        "end": 529,
+        "text": "文字背景 / 四角 / square",
+        "lines": [
+          "文字背景 / 四角 / square"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_152": [
+      {
+        "id": "fx_152:single0",
+        "cueId": "fx_152",
+        "kind": "single",
+        "index": 0,
+        "start": 529,
+        "end": 532,
+        "text": "文字背景の塗り / \nグラデーションスイープ / gradientSweep",
+        "lines": [
+          "文字背景の塗り / ",
+          "グラデーションスイープ / gradientSweep"
+        ],
+        "fontScale": 0.8999999999999999,
+        "pinned": false
+      }
+    ],
+    "fx_153": [
+      {
+        "id": "fx_153:single0",
+        "cueId": "fx_153",
+        "kind": "single",
+        "index": 0,
+        "start": 532,
+        "end": 535,
+        "text": "文字背景の塗り / \nレインボーフロー / rainbowFlow",
+        "lines": [
+          "文字背景の塗り / ",
+          "レインボーフロー / rainbowFlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_154": [
+      {
+        "id": "fx_154:single0",
+        "cueId": "fx_154",
+        "kind": "single",
+        "index": 0,
+        "start": 535,
+        "end": 538,
+        "text": "文字背景の塗り / \nホログラフィック / holographic",
+        "lines": [
+          "文字背景の塗り / ",
+          "ホログラフィック / holographic"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_155": [
+      {
+        "id": "fx_155:single0",
+        "cueId": "fx_155",
+        "kind": "single",
+        "index": 0,
+        "start": 538,
+        "end": 541,
+        "text": "文字背景の塗り / クローム / chrome",
+        "lines": [
+          "文字背景の塗り / クローム / chrome"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_156": [
+      {
+        "id": "fx_156:single0",
+        "cueId": "fx_156",
+        "kind": "single",
+        "index": 0,
+        "start": 541,
+        "end": 544,
+        "text": "文字背景の塗り / 金箔 / goldFoil",
+        "lines": [
+          "文字背景の塗り / 金箔 / goldFoil"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_157": [
+      {
+        "id": "fx_157:single0",
+        "cueId": "fx_157",
+        "kind": "single",
+        "index": 0,
+        "start": 544,
+        "end": 547,
+        "text": "文字背景の塗り / 炎 / fire",
+        "lines": [
+          "文字背景の塗り / 炎 / fire"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_158": [
+      {
+        "id": "fx_158:single0",
+        "cueId": "fx_158",
+        "kind": "single",
+        "index": 0,
+        "start": 547,
+        "end": 550,
+        "text": "文字背景の塗り / \nコースティクス / caustics",
+        "lines": [
+          "文字背景の塗り / ",
+          "コースティクス / caustics"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_159": [
+      {
+        "id": "fx_159:single0",
+        "cueId": "fx_159",
+        "kind": "single",
+        "index": 0,
+        "start": 550,
+        "end": 553,
+        "text": "文字背景の塗り / 大理石 / marble",
+        "lines": [
+          "文字背景の塗り / 大理石 / marble"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_160": [
+      {
+        "id": "fx_160:single0",
+        "cueId": "fx_160",
+        "kind": "single",
+        "index": 0,
+        "start": 553,
+        "end": 556,
+        "text": "文字背景の塗り / ガラス / glass",
+        "lines": [
+          "文字背景の塗り / ガラス / glass"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_161": [
+      {
+        "id": "fx_161:single0",
+        "cueId": "fx_161",
+        "kind": "single",
+        "index": 0,
+        "start": 556,
+        "end": 559,
+        "text": "文字背景の塗り / \nテクスチャ / textureFill",
+        "lines": [
+          "文字背景の塗り / ",
+          "テクスチャ / textureFill"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_162": [
+      {
+        "id": "fx_162:single0",
+        "cueId": "fx_162",
+        "kind": "single",
+        "index": 0,
+        "start": 559,
+        "end": 562,
+        "text": "文字背景の塗り / \nカラオケワイプ / karaokeWipe",
+        "lines": [
+          "文字背景の塗り / ",
+          "カラオケワイプ / karaokeWipe"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_163": [
+      {
+        "id": "fx_163:single0",
+        "cueId": "fx_163",
+        "kind": "single",
+        "index": 0,
+        "start": 562,
+        "end": 565,
+        "text": "文字背景の塗り / 墨 / ink",
+        "lines": [
+          "文字背景の塗り / 墨 / ink"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_164": [
+      {
+        "id": "fx_164:single0",
+        "cueId": "fx_164",
+        "kind": "single",
+        "index": 0,
+        "start": 565,
+        "end": 568,
+        "text": "文字背景の縁取り / \n縁取り / outline",
+        "lines": [
+          "文字背景の縁取り / ",
+          "縁取り / outline"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_165": [
+      {
+        "id": "fx_165:single0",
+        "cueId": "fx_165",
+        "kind": "single",
+        "index": 0,
+        "start": 568,
+        "end": 571,
+        "text": "文字背景の縁取り / \nネオン / neonGlow",
+        "lines": [
+          "文字背景の縁取り / ",
+          "ネオン / neonGlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_166": [
+      {
+        "id": "fx_166:single0",
+        "cueId": "fx_166",
+        "kind": "single",
+        "index": 0,
+        "start": 571,
+        "end": 574,
+        "text": "文字背景の縁取り / \n内側グロー / innerGlow",
+        "lines": [
+          "文字背景の縁取り / ",
+          "内側グロー / innerGlow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_167": [
+      {
+        "id": "fx_167:single0",
+        "cueId": "fx_167",
+        "kind": "single",
+        "index": 0,
+        "start": 574,
+        "end": 577,
+        "text": "文字背景の縁取り / ベベル / bevel",
+        "lines": [
+          "文字背景の縁取り / ベベル / bevel"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_168": [
+      {
+        "id": "fx_168:single0",
+        "cueId": "fx_168",
+        "kind": "single",
+        "index": 0,
+        "start": 577,
+        "end": 580,
+        "text": "文字背景の縁取り / \n押し出し / extrude",
+        "lines": [
+          "文字背景の縁取り / ",
+          "押し出し / extrude"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_169": [
+      {
+        "id": "fx_169:single0",
+        "cueId": "fx_169",
+        "kind": "single",
+        "index": 0,
+        "start": 580,
+        "end": 583,
+        "text": "文字背景の縁取り / \nロングシャドウ / longShadow",
+        "lines": [
+          "文字背景の縁取り / ",
+          "ロングシャドウ / longShadow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_170": [
+      {
+        "id": "fx_170:single0",
+        "cueId": "fx_170",
+        "kind": "single",
+        "index": 0,
+        "start": 583,
+        "end": 586,
+        "text": "文字背景の縁取り / \nドロップシャドウ / dropShadow",
+        "lines": [
+          "文字背景の縁取り / ",
+          "ドロップシャドウ / dropShadow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_171": [
+      {
+        "id": "fx_171:single0",
+        "cueId": "fx_171",
+        "kind": "single",
+        "index": 0,
+        "start": 586,
+        "end": 589,
+        "text": "文字背景の縁取り / 滴り / drip",
+        "lines": [
+          "文字背景の縁取り / 滴り / drip"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_172": [
+      {
+        "id": "fx_172:single0",
+        "cueId": "fx_172",
+        "kind": "single",
+        "index": 0,
+        "start": 589,
+        "end": 592,
+        "text": "文字背景の動き / \n文字に追従 / follow",
+        "lines": [
+          "文字背景の動き / ",
+          "文字に追従 / follow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_173": [
+      {
+        "id": "fx_173:single0",
+        "cueId": "fx_173",
+        "kind": "single",
+        "index": 0,
+        "start": 592,
+        "end": 595,
+        "text": "文字背景の動き / フェード / fade",
+        "lines": [
+          "文字背景の動き / フェード / fade"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_174": [
+      {
+        "id": "fx_174:single0",
+        "cueId": "fx_174",
+        "kind": "single",
+        "index": 0,
+        "start": 595,
+        "end": 598,
+        "text": "文字背景の動き / ポップ / pop",
+        "lines": [
+          "文字背景の動き / ポップ / pop"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_175": [
+      {
+        "id": "fx_175:single0",
+        "cueId": "fx_175",
+        "kind": "single",
+        "index": 0,
+        "start": 598,
+        "end": 601,
+        "text": "文字背景の動き / スタンプ / stamp",
+        "lines": [
+          "文字背景の動き / スタンプ / stamp"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_176": [
+      {
+        "id": "fx_176:single0",
+        "cueId": "fx_176",
+        "kind": "single",
+        "index": 0,
+        "start": 601,
+        "end": 604,
+        "text": "文字背景の動き / ワイプ / wipe",
+        "lines": [
+          "文字背景の動き / ワイプ / wipe"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_177": [
+      {
+        "id": "fx_177:single0",
+        "cueId": "fx_177",
+        "kind": "single",
+        "index": 0,
+        "start": 604,
+        "end": 607,
+        "text": "文字背景の動き / 回転 / spin",
+        "lines": [
+          "文字背景の動き / 回転 / spin"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_178": [
+      {
+        "id": "fx_178:single0",
+        "cueId": "fx_178",
+        "kind": "single",
+        "index": 0,
+        "start": 607,
+        "end": 610,
+        "text": "文字背景の動き / 伸びる / grow",
+        "lines": [
+          "文字背景の動き / 伸びる / grow"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_179": [
+      {
+        "id": "fx_179:single0",
+        "cueId": "fx_179",
+        "kind": "single",
+        "index": 0,
+        "start": 610,
+        "end": 613,
+        "text": "文字背景の動き / なし / none",
+        "lines": [
+          "文字背景の動き / なし / none"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_180": [
+      {
+        "id": "fx_180:single0",
+        "cueId": "fx_180",
+        "kind": "single",
+        "index": 0,
+        "start": 613,
+        "end": 616,
+        "text": "文字背景の動き / \nちらつき / flicker",
+        "lines": [
+          "文字背景の動き / ",
+          "ちらつき / flicker"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_181": [
+      {
+        "id": "fx_181:single0",
+        "cueId": "fx_181",
+        "kind": "single",
+        "index": 0,
+        "start": 616,
+        "end": 619,
+        "text": "文字背景の動き / にじみ / bleed",
+        "lines": [
+          "文字背景の動き / にじみ / bleed"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_182": [
+      {
+        "id": "fx_182:single0",
+        "cueId": "fx_182",
+        "kind": "single",
+        "index": 0,
+        "start": 619,
+        "end": 622,
+        "text": "文字背景の動き / 浮かぶ / float",
+        "lines": [
+          "文字背景の動き / 浮かぶ / float"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_183": [
+      {
+        "id": "fx_183:single0",
+        "cueId": "fx_183",
+        "kind": "single",
+        "index": 0,
+        "start": 622,
+        "end": 625,
+        "text": "文字背景の動き / 落下 / fall",
+        "lines": [
+          "文字背景の動き / 落下 / fall"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "紙面レイアウト (page)"
+    },
+    {
+      "t": 76,
+      "label": "アニメーション (animation)"
+    },
+    {
+      "t": 103,
+      "label": "配置 (layout)"
+    },
+    {
+      "t": 139,
+      "label": "登場 (enter)"
+    },
+    {
+      "t": 202,
+      "label": "退場 (exit)"
+    },
+    {
+      "t": 247,
+      "label": "保持 (hold)"
+    },
+    {
+      "t": 298,
+      "label": "位置 (location)"
+    },
+    {
+      "t": 328,
+      "label": "塗り (fill)"
+    },
+    {
+      "t": 364,
+      "label": "縁取り (edge)"
+    },
+    {
+      "t": 388,
+      "label": "後処理 (post)"
+    },
+    {
+      "t": 496,
+      "label": "背景 (background)"
+    },
+    {
+      "t": 523,
+      "label": "文字背景 (bgShape)"
+    },
+    {
+      "t": 529,
+      "label": "文字背景の塗り (bgFill)"
+    },
+    {
+      "t": 565,
+      "label": "文字背景の縁取り (bgEdge)"
+    },
+    {
+      "t": 589,
+      "label": "文字背景の動き (bgMotion)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_bg_0",
+      "trackId": "bg",
+      "start": 495.88,
+      "end": 499.12,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_1",
+      "trackId": "bg",
+      "start": 498.88,
+      "end": 502.12,
+      "spec": {
+        "type": "plain",
+        "params": {
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_2",
+      "trackId": "bg",
+      "start": 501.88,
+      "end": 505.12,
+      "spec": {
+        "type": "gradient",
+        "params": {
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ],
+          "scale": 1,
+          "speed": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_3",
+      "trackId": "bg",
+      "start": 504.88,
+      "end": 508.12,
+      "spec": {
+        "type": "noiseGradient",
+        "params": {
+          "colors": null,
+          "scale": 3.4,
+          "speed": 0.5
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_4",
+      "trackId": "bg",
+      "start": 507.88,
+      "end": 511.12,
+      "spec": {
+        "type": "card",
+        "params": {
+          "dim": 0.25,
+          "blur": 10,
+          "focusBadge": true,
+          "zoom": 1.6,
+          "parallax": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_5",
+      "trackId": "bg",
+      "start": 510.88,
+      "end": 514.12,
+      "spec": {
+        "type": "cover",
+        "params": {
+          "songId": "",
+          "blur": 0,
+          "dim": 0.75,
+          "zoomSpeed": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_6",
+      "trackId": "bg",
+      "start": 513.88,
+      "end": 517.12,
+      "spec": {
+        "type": "image",
+        "params": {
+          "imageId": "",
+          "fit": "cover",
+          "blur": 0,
+          "dim": 0.25
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_7",
+      "trackId": "bg",
+      "start": 516.88,
+      "end": 520.12,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "dots",
+          "count": 24,
+          "size": 1,
+          "speed": 0.4,
+          "opacity": 0.55,
+          "color": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    },
+    {
+      "id": "clip_bg_8",
+      "trackId": "bg",
+      "start": 519.88,
+      "end": 523.12,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "kind": "particles",
+          "set": "circles",
+          "count": 10,
+          "speed": 0.8,
+          "opacity": 0.45,
+          "color": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.12,
+      "fadeOut": 0.12,
+      "colors": null
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

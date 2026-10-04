@@ -13,6 +13,7 @@
     "scrape": "node scripts/scrape.js",
     "fx400": "node scripts/fx400.js",
     "fx800": "node scripts/fx800.js",
+    "showcase": "node scripts/showcase.js",
     "demo30": "node scripts/demo30.js build",
     "distinct": "node scripts/distinct-count.js",
     "check": "node scripts/check.js",

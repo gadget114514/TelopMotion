@@ -172,7 +172,10 @@ SA.menu = (() => {
     {
       id: 'help',
       labelKey: 'studio.menu.help',
-      items: () => [{ key: 'studio.about.item', action: 'about' }],
+      items: () => [
+        { key: 'studio.help.showcase', action: 'showcase' },
+        { key: 'studio.about.item', action: 'about' },
+      ],
     },
   ];
 
