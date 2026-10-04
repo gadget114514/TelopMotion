@@ -930,8 +930,8 @@ SA.lyricsEngine = (() => {
       const key = `${aspect}|${lang}|${project.meta ? project.meta.updatedAt : ''}`;
       if (state.cardCache && state.cardCache.key === key) return state.cardCache.target;
       try {
-        const width = aspect === '9:16' ? 1080 : 1920;
-        const height = aspect === '9:16' ? 1920 : 1080;
+        const width = aspect === '9:16' ? 1080 : aspect === '19.5:9' ? 1080 : aspect === '3:2' ? 1620 : aspect === '16:10' ? 1728 : 1920;
+        const height = aspect === '9:16' ? 1920 : aspect === '19.5:9' ? 2340 : 1080;
         const canvas = new OffscreenCanvas(width, height);
         const ctx = canvas.getContext('2d');
         SA.card.draw(ctx, {

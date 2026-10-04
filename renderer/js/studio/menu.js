@@ -147,7 +147,10 @@ SA.menu = (() => {
       labelKey: 'studio.menu.view',
       items: () => [
         { key: 'studio.view.aspect169', action: 'setAspect', args: ['16:9'], checked: () => handlers.getAspect && handlers.getAspect() === '16:9' },
+        { key: 'studio.view.aspect32', action: 'setAspect', args: ['3:2'], checked: () => handlers.getAspect && handlers.getAspect() === '3:2' },
+        { key: 'studio.view.aspect1610', action: 'setAspect', args: ['16:10'], checked: () => handlers.getAspect && handlers.getAspect() === '16:10' },
         { key: 'studio.view.aspect916', action: 'setAspect', args: ['9:16'], checked: () => handlers.getAspect && handlers.getAspect() === '9:16' },
+        { key: 'studio.view.aspectiphone', action: 'setAspect', args: ['19.5:9'], checked: () => handlers.getAspect && handlers.getAspect() === '19.5:9' },
         itemSeparator(),
         { key: 'studio.view.panels', items: () => [
           { key: 'studio.view.panelMedia', action: 'togglePanel', args: ['media'], checked: () => handlers.isPanelVisible && handlers.isPanelVisible('media') },

@@ -1553,6 +1553,16 @@
       }
       return params;
     }
+    if (type === 'figures') {
+      // a quiet figure layer: calm motif, thin strokes, free-running, low opacity
+      params.motif = pick(random, BACKDROP_FIGURE_MOTIFS);
+      params.sync = 'free';
+      params.stroke = 'thin';
+      params.density = round(lerp(0.3, 0.7, density), 2);
+      params.count = Math.round(lerp(6, 16, density));
+      params.opacity = 0.35;
+      return params;
+    }
     if (CLIP_MODES[type]) {
       const modes = CLIP_MODES[type];
       params[type === 'particles' ? 'flow' : 'mode'] = pick(random, modes);
@@ -1672,6 +1682,10 @@
     4: ['quads', 'mondrian'],
   };
   const PLANE_EXTRAS = ['shards', 'radial'];
+  // The accent texture kinds of the plane backdrop: the classic five plus the
+  // figure motif library (calm motifs only; the bold wipes would fight the text)
+  const PLANE_ACCENT_TYPES = ['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'figures'];
+  const BACKDROP_FIGURE_MOTIFS = ['rings', 'lattice', 'waves', 'halftone', 'dotGrid', 'orbit', 'confetti', 'stripeRun', 'ringDraw', 'proc'];
 
   function planeWeightOf(planes, count) {
     if (!planes) return 0;
@@ -1757,6 +1771,12 @@
       } else {
         s = clamp01(base.s * 0.9);
       }
+      // each plane drifts a few degrees and a little in saturation so the set
+      // reads as one graded family rather than lightness clones
+      if (i > 0) {
+        h += (i % 2 ? 1 : -1) * 6 * i;
+        s = clamp01(s * (1 + 0.08 * i));
+      }
       out.push(color.toHex({ ...color.hsvToRgb({ h: (h + 360) % 360, s, v, a: 1 }), a: 1 }));
     }
     const target = weirdMod.backdropContrast(rawW);
@@ -1826,10 +1846,13 @@
     }
     // the accent texture above the planes, drawn from the plane family and
     // capped quiet so the lyrics stay in front
-    const type = pick(random, BACKDROP_TYPES);
+    // the accent never repeats the neighbouring clip's kind (figures join the pool)
+    const type = pick(random, avoidFilter(PLANE_ACCENT_TYPES, avoid && avoid.accent));
     const params = sampleClipParams(type, axes, random, opts.index);
     const cap = count === 1 ? 0.25 : 0.45;
     params.opacity = Math.round(Math.min(Number(params.opacity) || 0.6, cap) * 100) / 100;
+    // the planes rise above one another once the profile is weird enough
+    if (count > 1 && w > 0) plane.params.depth = round(0.35 + 0.4 * w, 2);
     const accent = { type, params };
     return {
       spec: { type: 'combo', params: { list: [plane, accent], animate: backdropMotion(random, w, axes, avoid) } },
@@ -1953,6 +1976,11 @@
         if (type) {
           const params = sampleParams(random, 'background', type, axes, [colors[3], colors[5] || colors[3]]);
           if (typeof params.speed === 'number') params.speed = clampParam('background', type, 'speed', params.speed * (1 + w));
+          // the four corners are one colour family, never a rainbow smear
+          if (type === 'gradient4') {
+            params.harmony = pick(random, ['tonal', 'analogous', 'analogous', 'accent']);
+            params.grain = round(0.25 + 0.35 * random(), 2);
+          }
           return { spec: { type, params }, colors: colors.slice() };
         }
       }
@@ -2692,7 +2720,10 @@
   function frameForContext(context) {
     const aspect = (context && context.aspect) || '16:9';
     if (aspect === '9:16') return { width: 1080, height: 1920 };
+    if (aspect === '19.5:9') return { width: 1080, height: 2340 };
     if (aspect === '1:1') return { width: 1080, height: 1080 };
+    if (aspect === '3:2') return { width: 1620, height: 1080 };
+    if (aspect === '16:10') return { width: 1728, height: 1080 };
     return { width: 1920, height: 1080 };
   }
 

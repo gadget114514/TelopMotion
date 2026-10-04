@@ -122,10 +122,7 @@
       dataset: (context && context.dataset) || null,
       output: context && context.aspect ? { aspect: context.aspect } : {},
     });
-    if (project.output.aspect === '9:16') {
-      project.output.width = 1080;
-      project.output.height = 1920;
-    }
+    if (ASPECT_SIZES[project.output.aspect]) Object.assign(project.output, ASPECT_SIZES[project.output.aspect]);
     return project;
   }
 
@@ -737,8 +734,18 @@
     return project;
   }
 
+  // the output size of each aspect; every format keeps a 1080 short side, so
+  // the text sizes tuned for 1080 read the same in all of them
+  const ASPECT_SIZES = {
+    '16:9': { width: 1920, height: 1080 },
+    '3:2': { width: 1620, height: 1080 },
+    '16:10': { width: 1728, height: 1080 },
+    '9:16': { width: 1080, height: 1920 },
+    '19.5:9': { width: 1080, height: 2340 },
+  };
+
   function setDimensions(project, aspect) {
-    const next = aspect === '9:16' ? { width: 1080, height: 1920 } : { width: 1920, height: 1080 };
+    const next = ASPECT_SIZES[aspect] || ASPECT_SIZES['16:9'];
     project.output = { ...project.output, aspect, ...next };
   }
 

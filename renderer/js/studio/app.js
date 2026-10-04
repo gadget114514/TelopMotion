@@ -1533,7 +1533,12 @@
     el.tpLoop.addEventListener('click', () => SA.preview.setLoop(!SA.preview.isLoop()));
     el.tpSpeed.addEventListener('change', () => SA.preview.setSpeed(Number(el.tpSpeed.value)));
     el.tpTime.addEventListener('click', editTime);
-    el.tpAspect.addEventListener('click', () => setAspect(project() && project().output.aspect === '16:9' ? '9:16' : '16:9'));
+    // the badge cycles 16:9 -> 3:2 -> 9:16
+    el.tpAspect.addEventListener('click', () => {
+      const order = ['16:9', '3:2', '16:10', '9:16', '19.5:9'];
+      const current = order.indexOf(project() ? project().output.aspect : '16:9');
+      setAspect(order[(current + 1) % order.length]);
+    });
     el.mediaTabs.info.addEventListener('click', () => setMediaTab('info'));
     el.mediaTabs.video.addEventListener('click', () => setMediaTab('video'));
     el.mediaTabs.audio.addEventListener('click', () => setMediaTab('audio'));
