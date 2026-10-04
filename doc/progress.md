@@ -699,12 +699,12 @@ weird 0.6 の自動演出を見ると文字が小さすぎた。可読下限（`
 
 ## 追加: 図形の名前を見本の言語対応にする
 
-- **名前の所在**: 最初は Motif 名の表を `scripts/figure-showcase.js` に置いていた。`renderer/js/i18n.js` の `studio.figure.motif` を写したものだったが、**あの `figure:` ブロックは壊れていなかった**（インデントが 0 なだけで実際には `studio:` の内側で、`studio.figure.motif.orbit` は正しく解決する。最初の報告は誤り）。本当の問題は名前の無 variously さと表の二重化だったので、そちらを直した。
-- **i18n を足した分**: `studio.figure.motif` に無名だった 14 個（`cracks` / `spikes` / `eyes` / `scratches` / `drips` / `lattice` / `waves` / `comets` と太線 6 種）を 5 言語で追加。軸の名前は `studio.figure` の `in` / `hold` / `out` / `camera` / `proc` に 5 言語で新規（`sync` は既存）。_sim フィールド（`reactionDiffusion` / `wave2d` / `fluid` / `cellular`）も同時に足した。**Motif と軸の全 117 名前が 5 言語で引ける**。
+- **名前の所在**: 最初は Motif 名の表を `scripts/figure-showcase.js` に置いていた。`renderer/js/i18n.js` の `studio.figure.motif` を写したものだったが、**あの `figure:` ブロックは壊れていなかった**（インデントが 0 なだけで実際には `studio:` の内側で、`studio.figure.motif.orbit` は正しく解決する。最初の報告は誤り）。本当の問題は名前の無JYAHさと表の二重化だったので、そちらを直した。
+- **i18n を足した分**: `studio.figure.motif` に名前の無かった 14 個（`cracks` / `spikes` / `eyes` / `scratches` / `drips` / `lattice` / `waves` / `comets` と太線 6 種）を 5 言語で追加。軸の名前は `studio.figure` の `in` / `hold` / `out` / `camera` / `proc` に 5 言語で新規（`sync` は既存）。シミュレーションのフィールド（`reactionDiffusion` / `wave2d` / `fluid` / `cellular`）も同時に足した。**Motif と軸の全名前が 5 言語で引ける**。
 - **スクリプト側**: ローカルの表をやめて `studio.figure.<namespace>.<value>` を読む（`dictionary(code)` / `nameOf`）。引けなかったら value に戻るだけ。
-- **言語対応**: ファイルに焼き込むのは日本語だけ。每个キューが `meta = { kind, index, namespace, value }` を持つので、`app.js` の `localizeFigureShowcase` が開くときの表示言語でキュー名を書く（`i18n.t('studio.figure.…')`）。
-- **テスト**: `figure-showcase.test.js` 13 件。追加は 2 件で、ひとつ는「Motif と軸の全名前が 5 言語で引ける」こと（次の Motif は自動で落ちさせるガード）、もうひとつはキュー名が i18n 由来で `meta` を持つこと。`npm test` 1072 件パス、`npm run check` 235 ファイル。
-- **Motif の増減**: `FIELD_MOTIFS` に 4 つ足って `figures.MOTIFS` は 68 になったので、見本は 107 キュー / 360 秒に再生成（スクリプトはRegistrar なので自動で追従）。`demo/README.md`・README・`doc/app-design.md` の数字も更新。
+- **言語対応**: ファイルに焼き込むのは日本語だけ。各キューが `meta = { kind, index, namespace, value }` を持つので、`app.js` の `localizeFigureShowcase` が開くときの表示言語でキュー名を書く（`i18n.t('studio.figure.…')`）。
+- **テスト**: `figure-showcase.test.js` 13 件。追加は 2 件で、ひとつは「Motif と軸の全名前が 5 言語で引ける」こと（次の Motif は自動で落ちさせるガード）、もうひとつはキュー名が i18n 由来で `meta` を持つこと。`npm test` 1072 件パス、`npm run check` 235 ファイル。
+- **Motif の増減**: `FIELD_MOTIFS` に 4 つ足って `figures.MOTIFS` は 68 になったので、見本は 107 キュー / 360 秒に再生成（スクリプトはレジストリを追うので自動で追従）。`demo/README.md`・README・`doc/app-design.md` の数字も更新。
 - **決めていないこと**: `sync` の `beat` と `text` は `subBeats` が同じ拍で区切る実装なので、この見本では絵が同じになる（差が出るのは自動演出の可読性側）。
 
 ## 修正: `song.length` と文字背景の回転に対する古いテスト
