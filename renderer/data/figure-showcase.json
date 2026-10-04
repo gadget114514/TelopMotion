@@ -10,7 +10,8 @@
   "song": {
     "title": "",
     "author": "",
-    "bpm": 0
+    "bpm": 0,
+    "length": 0
   },
   "output": {
     "aspect": "16:9",

@@ -228,6 +228,8 @@
       { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.25, random: [-0.6, 0.6] },
       { key: 'gravity', kind: 'number', min: 0, max: 12, step: 0.1, default: 5 },
       { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, random: [0, 0.6] },
+      { key: 'strength', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.15, random: [0, 0.5] },
       { key: 'pile', kind: 'bool', default: true },
     ],
     cpu(state, p, params) {
@@ -242,6 +244,8 @@
           wind: params.wind == null ? 0.25 : params.wind,
           gravity: params.gravity == null ? 5 : params.gravity,
           grain: params.grain == null ? 2.4 : params.grain,
+          spread: params.spread == null ? 0.2 : params.spread,
+          strength: params.strength == null ? 0.15 : params.strength,
           pile: params.pile !== false,
         };
       }

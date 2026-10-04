@@ -218,6 +218,7 @@ scripts/distinct-count.js Counts perceptually distinct effect signatures
 scripts/fx400.js        FX 400: deterministic catalog of representative effects + test project
 scripts/fx400mix.js     FX 400 MIX: 400 complete-look demos (headline effect + supporting kit)
 scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-effect projects
+scripts/figure-showcase.js Figure showcase: every figure motif + motion axis in one project
 scripts/looks-classify.js Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
 scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (223 files)
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
@@ -295,6 +296,26 @@ npm run fx800 -- build                     # writes the catalog, index, four pro
 npm run fx800 -- show 642                  # prints demo 642 (name, part, recipe)
 npm run fx800 -- list --part 3             # lists No.401–600
 npm run fx800 -- apply 642 --project <file> --cue 12 --out <file>   # reuse one demo
+```
+
+### Figure showcase (motifs and motions)
+
+The `figure` track has its own review project. `scripts/figure-showcase.js` walks **all 64 motifs in `figures.MOTIFS`** — one three-second cue each, grouped into the five families they are grown from (`base` 20, `bold` 6, `proc`, `scene` 11 from `scene3d.js`, `geo` 10 from `figure-geo.js`, `field` 16 shader fields from `gl/fields.js`) — and then pins each **motion axis a clip can carry** onto one reference motif (`burst`), so two neighbouring cues differ only in the axis under review:
+
+| Axis | Values |
+|---|---|
+| `in` / `hold` / `out` | 4 / 4 / 3 moves |
+| `sync` | `beat`, `free`, `text` |
+| 2D `camera` | 8 moves, applied to the whole clip |
+| procedural motion | 17 layer-motion rules (the genome only grows from a seed, so every rule gets the first seed that draws it) |
+
+103 cues in total, about six minutes. Open it from **Help → Figure showcase** (no file hunting) or *File → Open project…*; the queue of every section is in [demo/figure-showcase.md](demo/figure-showcase.md).
+
+```bash
+npm run figure-showcase -- build                          # writes renderer/data/figure-showcase.json and the index
+node scripts/figure-showcase.js list                      # prints the sections and every cue
+node scripts/figure-showcase.js list --section camera
+npm run figure-showcase -- build --sections base,field    # rebuild only some motif families
 ```
 
 ### Random look

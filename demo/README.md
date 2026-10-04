@@ -37,6 +37,36 @@ node scripts/fx400mix.js build
 node scripts/fx400mix.js show 42
 ```
 
+## 図形モーション見本 (figure showcase)
+
+`renderer/data/figure-showcase.json` は図形トラック専用の見本です。
+`figures.MOTIFS` の 64 個の Motif と、図形クリップが持つモーション軸
+（登場 / 保持 / 退場 / 同期 / 2D カメラ / 手続きモーション）を 1 キューずつ
+並べます。Motif は 3 秒、モーション軸は 4 秒で、全体は約 6 分。
+
+Motif のグループとキュー数:
+
+| Motif のグループ | キュー数 |
+|---|---:|
+| 基本図形 (`base`) | 20 |
+| 太線リズム (`bold`) | 6 |
+| 手続き型 (`proc`) | 1 |
+| 疑似 3D (`scene`) | 11 |
+| 幾何・データ構造 (`geo`) | 10 |
+| 数式フィールド (`field`) | 16 |
+| モーション軸（6 軸） | 39 |
+
+図形は図形トラック（`fig`）のクリップとして入っているので、タイムラインには
+キューと下部ラベルしか見えません。一覧は `figure-showcase.md`、
+プロジェクトは Studio の *Help → 図形見本* から開けます。
+
+```bash
+npm run figure-showcase -- build                          # json と一覧を再生成
+node scripts/figure-showcase.js list                      # セクションとキューを一覧
+node scripts/figure-showcase.js list --section camera
+npm run figure-showcase -- build --sections base,field    # Motif グループを絞る
+```
+
 ## 30 秒ショーケース（demo30）
 
 `demo30-A`〜`demo30-D` の 4 本。1 本 30 秒で、ムード（ホラー・ラブ…）と

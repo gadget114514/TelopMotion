@@ -2685,6 +2685,7 @@ SA.glShaders = (() => {
       // sand: the grains peel off from the top down, in step with the mesh wipe
       // (wipe cut = 2 * clamp(d / 0.72) - 1), then fall, drift and settle
       vec4 sp = stateAt(23);   // wind, gravity, grain, pile
+      vec4 sp2 = stateAt(24);  // spread, strength
       float d = 1.0 - clamp(s4.y, 0.0, 1.0);
       float rel = clamp(a_pos.y / max(a_bbox.y, 1.0) * 0.5 + 0.5, 0.0, 1.0);
       float tau = max(0.0, d - 0.72 * (rel + a_extra.x * 0.06));
@@ -2696,6 +2697,15 @@ SA.glShaders = (() => {
       float drift = sp.x * tau * (0.25 + a_extra.x) * u_resolution.x * 0.25;
       float flutter = sin(a_extra.x * 43.0 + tau * 14.0) * tau * 14.0;
       p = a_pos + vec2(drift + flutter, fall);
+      // spread: each grain gets its own sideways velocity (a fan of grains)
+      float side = fract(a_extra.x * 91.7 + 0.31) * 2.0 - 1.0;
+      p.x += side * sp2.x * tau * u_resolution.y * 0.35;
+      // strength: the force that knocked the letter apart. Grains leave the
+      // glyph centre (biased upwards) with an initial speed that drag bleeds off.
+      vec2 away = a_pos / max(a_bbox, vec2(1.0));
+      vec2 kick = normalize(away * 0.7 + vec2(0.0, -0.6) + vec2(side, fract(a_extra.x * 17.3) - 0.5) * 0.3 + 1e-4);
+      float burst = (1.0 - exp(-7.0 * tau)) / 7.0;
+      p += kick * sp2.y * burst * u_resolution.y * 0.9 * (0.5 + 0.5 * fract(a_extra.x * 53.1));
       if (sp.w > 0.5) {
         float spanX = max(a_bbox.x * 1.4, 1.0);
         float heap = max(0.0, 1.0 - (p.x * p.x) / (spanX * spanX));

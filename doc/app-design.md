@@ -1863,6 +1863,14 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
 - Regenerates `renderer/data/showcase.json`: one 3-second cue per representative effect (the fx400 catalogue's variant 1 of every type) and one 4-second cue per page-layout preset (`none` excluded), with a marker opening each section. Each page cue carries a sample text built for the roles its preset reads. Deterministic, so it only rewrites when the catalogues change.
 - Help → Showcase reads the file with `SA.platform.readAsset('data/showcase.json')` and loads it through `SA.io.loadFromObject`; the file ships with `renderer/**/*`.
 
+### 11.5b Figure showcase (`scripts/figure-showcase.js`, `npm run figure-showcase`)
+- The figure track's own review project: `renderer/data/figure-showcase.json`, one queue per figure motif (3s) and one per figure motion axis (4s), 103 queues in total.
+- The motif half follows `figures.MOTIFS` in order, grouped into the families the module grows them from (`base`, `bold`, `proc`, `scene3d`, `figure-geo`, `gl/fields`) so a new motif is picked up without editing the script.
+- The axis half pins `in` / `hold` / `out` / `sync` / 2D `camera` / the procedural layer motion onto the reference motif `burst`, so only the reviewed axis changes between neighbouring cues. A figure's sub-beats are **absolute** times (`beatAt` compares them against the clock), so a spec must be generated for the span its clip actually sits on — a spec built for a relative span draws nothing.
+- The procedural genome only grows from a seed, so the 17 layer motions each get the first seed (searched in order) that draws them and whose layer composition has not been used yet.
+- One `solid` plate clip covers the whole walk so a figure is never judged against the preview backdrop; the label sits under it (`style.location` at y 0.9) so a `scene` / `geo` figure is not carved in half.
+- Help → Figure showcase (`studio.help.figureShowcase`, 5 languages) reads it with `SA.platform.readAsset('data/figure-showcase.json')`. `demo/figure-showcase.md` is the numbered index and is regenerated with the project.
+
 ### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.
 - The smoke test that checks for missing translations is extended to `studio.html`: every `[data-i18n]` and every generated control label must resolve (not come back as the raw key) in all 5 languages.
