@@ -150,7 +150,7 @@ test('the lattice is packed into the state texture rows', () => {
   require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'));
   const passes = global.window.SA.glPasses || global.SA.glPasses;
   const rows = passes._test.STATE_ROWS;
-  assert.equal(rows, 24);
+  assert.equal(rows, 25);
   const data = new Float32Array(rows * 4);
   const lattice = new Float32Array(50);
   for (let i = 0; i < lattice.length; i += 1) lattice[i] = 0.25;

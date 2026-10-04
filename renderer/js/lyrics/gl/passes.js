@@ -23,8 +23,9 @@ SA.glPasses = (() => {
   // the soft body lattice (25 vec2: xy is an even node, zw the next odd node)
   // and row 22 the lattice / decor flags. Row 23 carries the sand parameters
   // (wind, gravity, grain size, pile flag).
-  const STATE_ROWS = 24;
+  const STATE_ROWS = 25;
   const SAND_ROW = 23;
+  const SAND_ROW2 = 24; // spread, strength
   const LATTICE_ROW0 = 9;
   const LATTICE_ROW1 = 21;
   const LATTICE_FLAGS_ROW = 22;
@@ -132,6 +133,10 @@ SA.glPasses = (() => {
       data[at(SAND_ROW) + 1] = sand ? sand.gravity || 0 : 0;
       data[at(SAND_ROW) + 2] = sand ? sand.grain || 0 : 0;
       data[at(SAND_ROW) + 3] = sand && sand.pile ? 1 : 0;
+      data[at(SAND_ROW2)] = sand ? sand.spread || 0 : 0;
+      data[at(SAND_ROW2) + 1] = sand ? sand.strength || 0 : 0;
+      data[at(SAND_ROW2) + 2] = 0;
+      data[at(SAND_ROW2) + 3] = 0;
       data[at(4)] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
       data[at(4) + 1] = state.reprProgress == null ? 1 : state.reprProgress;
       data[at(4) + 2] = state.colorMix || 0;
