@@ -9,7 +9,10 @@ SA.timeline = (() => {
   const AUDIO_H = 30;
   const LANE_H = 22;
   const LAYER_H = 22;
-  const LABEL_W = 150;
+  const LABEL_W = 180;
+  // child rows (a track's attribute rows) are indented by this much so the
+  // label column reads as a tree under the parent track's header
+  const CHILD_INDENT = 18;
   const KEY_SIZE = 5;
   const MIN_ZOOM = 10;
   const MAX_ZOOM = 800;
@@ -382,7 +385,7 @@ SA.timeline = (() => {
           const clips = clipsOnTrack(doc, track.id);
           const clipPacked = packRows(clips, (clip) => clip.start, (clip) => clip.end);
           for (let lane = 0; lane < clipPacked.length; lane += 1) {
-            rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1 });
+            rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1, depth: 1 });
             y += LAYER_H;
           }
         }
@@ -395,20 +398,20 @@ SA.timeline = (() => {
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
         // the track's two switch rows sit directly under its cues: the text
         // background (the shapes behind the glyphs) ...
-        rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues });
+        rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
         y += LAYER_H;
         // ... and the graphics: the frame-wide posts its look carries (see
         // SA.fx.isGraphicsPost)
-        rows.push({ type: 'graphics-track', y, h: LAYER_H, trackId: track.id, track, cues });
+        rows.push({ type: 'graphics-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
         y += LAYER_H;
         if (!expanded.has(track.id)) continue;
         const entries = laneEntriesForCues(doc, cues);
         for (const entry of entries) {
-          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, cueId: entry.cueId, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, entry.cueId) });
+          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, cueId: entry.cueId, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path, entry.cueId), depth: 1 });
           y += LANE_H;
         }
         if (!entries.length) {
-          rows.push({ type: 'lane-empty', y, h: LANE_H, trackId: track.id });
+          rows.push({ type: 'lane-empty', y, h: LANE_H, trackId: track.id, depth: 1 });
           y += LANE_H;
         }
         continue;
@@ -423,7 +426,7 @@ SA.timeline = (() => {
         }
         if (LAYER_SWITCH_KINDS.includes(track.kind)) {
           for (const layer of ['foreground', 'background']) {
-            rows.push({ type: 'layer-switch', y, h: LAYER_H, trackId: track.id, track, layer });
+            rows.push({ type: 'layer-switch', y, h: LAYER_H, trackId: track.id, track, layer, depth: 1 });
             y += LAYER_H;
           }
         }
@@ -431,6 +434,12 @@ SA.timeline = (() => {
     }
     rows.push({ type: 'credits', y, h: LAYER_H, trackId: null });
     y += LAYER_H;
+    // the last child row of a track ends its tree guide (an "L" instead of a "T")
+    rows.forEach((row, index) => {
+      if (!row.depth) return;
+      const next = rows[index + 1];
+      row.lastChild = !next || !next.depth || next.trackId !== row.trackId;
+    });
     return y + 6;
   }
 
@@ -564,6 +573,25 @@ SA.timeline = (() => {
     return ['backdrop', 'filler', 'figure', 'textAnim'].includes(track.kind);
   }
 
+  // The tree guide in the label column of a child row: a vertical line from the
+  // parent header down (stopping halfway on the last child) and a tick toward
+  // the indented label.
+  function drawTreeGuide(row) {
+    if (!row.depth) return;
+    const x = 12.5;
+    const mid = row.y + row.h / 2;
+    ctx.save();
+    ctx.strokeStyle = '#3a4458';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, row.y);
+    ctx.lineTo(x, row.lastChild ? mid : row.y + row.h);
+    ctx.moveTo(x, mid + 0.5);
+    ctx.lineTo(x + CHILD_INDENT - 6, mid + 0.5);
+    ctx.stroke();
+    ctx.restore();
+  }
+
   // Thin per-track header: name, visibility checkbox, a remove button and (for
   // subtitle tracks) the keyframe twisty.
   function drawTrackHeader(row, title, options) {
@@ -583,7 +611,8 @@ SA.timeline = (() => {
     ctx.stroke();
     ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    const labelX = opts.twisty ? 20 : 8;
+    const labelX = (opts.twisty ? 20 : 8) + (row.depth ? CHILD_INDENT : 0);
+    drawTreeGuide(row);
     let textX = labelX;
     if (opts.swatch) {
       const swatchY = y + height / 2 - 4.5;
@@ -600,7 +629,7 @@ SA.timeline = (() => {
     const removeSize = 14;
     const removeX = LABEL_W - 20 - removeSize - 2;
     const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0);
-    const fullTitle = String(title == null ? '' : title);
+    const fullTitle = String(opts.tooltip || (title == null ? '' : title));
     const titleText = fitLabel(title, LABEL_W - textX - reserve);
     ctx.fillText(titleText, textX, y + height / 2);
     labelRegions.push({
@@ -818,7 +847,8 @@ SA.timeline = (() => {
   // off switch of the text background; the style data is never touched.
   function drawBackgroundTrack(size, doc, row) {
     const hidden = trackHidden(row.track) || !!(row.track && row.track.bgHidden);
-    drawTrackHeader(row, `${trackTitle(row.track)} ${t('studio.track.textBackground')}`, {
+    drawTrackHeader(row, t('studio.track.textBackground'), {
+      tooltip: `${trackTitle(row.track)} ${t('studio.track.textBackground')}`,
       color: '#ffd166',
       hidden,
       removable: false,
@@ -851,7 +881,8 @@ SA.timeline = (() => {
   // `graphicsHidden` flag; the style data is never touched.
   function drawGraphicsTrack(size, doc, row) {
     const hidden = trackHidden(row.track) || !!(row.track && row.track.graphicsHidden);
-    drawTrackHeader(row, `${trackTitle(row.track)} ${t('studio.track.graphics')}`, {
+    drawTrackHeader(row, t('studio.track.graphics'), {
+      tooltip: `${trackTitle(row.track)} ${t('studio.track.graphics')}`,
       color: '#c8a0ff',
       hidden,
       removable: false,
@@ -885,7 +916,8 @@ SA.timeline = (() => {
     const hidden = trackHidden(row.track) || !on;
     const label = t(row.layer === 'foreground' ? 'studio.track.layerFg' : 'studio.track.layerBg');
     const color = LAYER_SWITCH_COLORS[row.layer];
-    drawTrackHeader(row, `${trackTitle(row.track)} ${label}`, {
+    drawTrackHeader(row, label, {
+      tooltip: `${trackTitle(row.track)} ${label}`,
       color,
       hidden,
       removable: false,
@@ -1061,6 +1093,8 @@ SA.timeline = (() => {
     if (row.first) {
       const colors = { background: '#4d8fc8', backdrop: '#ff8a3d', filler: '#4dc8a0', figure: '#c86bff', textAnim: '#e8c85a' };
       drawTrackHeader(row, trackTitle(row.track), { color: colors[row.kind] || '#8d96ab', hidden: trackHidden(row.track) });
+    } else {
+      drawTreeGuide(row);
     }
     const y = row.y;
     const height = LAYER_H - 3;
@@ -1193,8 +1227,9 @@ SA.timeline = (() => {
       ctx.font = '10px "Segoe UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
       const emptyText = t('studio.timeline.noKeys');
-      const emptyLabel = fitLabel(emptyText, LABEL_W - 16);
-      ctx.fillText(emptyLabel, 8, row.y + row.h / 2);
+      const emptyLabel = fitLabel(emptyText, LABEL_W - 16 - CHILD_INDENT);
+      ctx.fillText(emptyLabel, 8 + CHILD_INDENT, row.y + row.h / 2);
+      drawTreeGuide(row);
       labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: emptyText, clipped: emptyLabel !== emptyText });
       return;
     }
@@ -1222,8 +1257,9 @@ SA.timeline = (() => {
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
     const fullLane = `${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`;
-    const laneText = fitLabel(fullLane, LABEL_W - 16);
-    ctx.fillText(laneText, 8, row.y + row.h / 2);
+    const laneText = fitLabel(fullLane, LABEL_W - 16 - CHILD_INDENT);
+    ctx.fillText(laneText, 8 + CHILD_INDENT, row.y + row.h / 2);
+    drawTreeGuide(row);
     labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: fullLane, clipped: laneText !== fullLane });
     ctx.restore();
     ctx.save();

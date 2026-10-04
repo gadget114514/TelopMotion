@@ -151,7 +151,7 @@ test('the track checkbox toggles visibility as one undo step', () => {
   assert.ok(typeof down === 'function', 'the timeline listens for pointerdown');
   // second row = the first subtitle track (foreground row is above it):
   // logical y 46..68, canvas y 33 (the ruler is fixed above the canvas)
-  const click = () => down({ button: 0, pointerId: 1, clientX: 140, clientY: 33, currentTarget: canvas, preventDefault() {} });
+  const click = () => down({ button: 0, pointerId: 1, clientX: 170, clientY: 33, currentTarget: canvas, preventDefault() {} });
   const sub = () => store.state.project.tracks.find((track) => track.id === 'sub1');
   assert.equal(!!sub().hidden, false);
   click();
@@ -222,8 +222,8 @@ test('the remove button on a track header deletes that track and its clips', () 
   up(event(300));
   assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 1, 'the clip exists');
   // the remove button sits left of the visibility checkbox
-  down(event(150 - 29));
-  up(event(150 - 29));
+  down(event(180 - 29));
+  up(event(180 - 29));
   assert.equal(store.state.project.tracks.some((track) => track.id === id), false, 'the track is gone');
   assert.equal(store.state.project.clips.filter((clip) => clip.trackId === id).length, 0, 'its clips are gone');
   assert.equal(store.undo(), true);
@@ -279,10 +279,10 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   };
   assert.equal(boxColor(), '#4dc8a0', 'the background clips keep the checkbox checked');
   // the checkbox hides the whole track: its clips and its layers
-  click(140, bgLayerCenter);
+  click(170, bgLayerCenter);
   assert.equal(bg().hidden, true, 'the checkbox sets the hidden flag');
   assert.equal(boxColor(), '#6b7386', 'a hidden track draws an unchecked box');
-  click(140, bgLayerCenter);
+  click(170, bgLayerCenter);
   assert.equal(!!bg().hidden, false, 'clicking again shows the track');
   assert.equal(boxColor(), '#4dc8a0', 'the checkbox reports the track visible again');
 });
@@ -321,7 +321,7 @@ test('hovering a truncated row label reveals its full text', () => {
   store.load(doc);
   timeline.init();
   const canvas = document.getElementById('timeline-canvas');
-  // metrics that actually truncate the 150 px fixed label column
+  // metrics that actually truncate the 180 px fixed label column
   const context = canvas.getContext('2d');
   context.measureText = (text) => ({ width: String(text).length * 7 });
   timeline.draw();
