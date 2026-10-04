@@ -1160,6 +1160,10 @@
       areas: ['script', 'style', 'fillers'],
       do: (projectDoc) => SA.direct.run(projectDoc, ctx),
     });
+    // Generate also re-rolls the colours: a new palette inside the project's
+    // axes, with every literal colour moved onto it
+    await step('studio.busy.colors', 0.9);
+    store.commands.rerollPalette('project');
     lastRandom = { scope: '__auto', seed, intensity: 2, locks: SA.direct.AUTO_DIRECT_LOCKS, lookN: look ? look.n : null };
     if (look) toast('studio.toast.autoDirectedLook', { seed, theme: themeName, look: `${look.n} ${look.name}` });
     else toast('studio.toast.autoDirected', { seed, theme: themeName });

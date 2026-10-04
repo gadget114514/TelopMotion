@@ -1044,6 +1044,37 @@ SA.glShaders = (() => {
     return texture(u_text, clamp(uv, vec2(0.0), vec2(1.0)));
   }
 
+  // --- helpers for the dither / fade / scanline / stealth / geometry pack ------
+  // Rec.709 luminance weights. The post chain works on premultiplied colour, so
+  // anything that reasons about brightness undoes the alpha first and puts it
+  // back afterwards.
+  const vec3 LUMA = vec3(0.2126, 0.7152, 0.0722);
+
+  vec3 unpremultiply(vec4 c) {
+    return c.a > 0.0001 ? clamp(c.rgb / c.a, 0.0, 1.0) : vec3(0.0);
+  }
+
+  // Classic Bayer ordered-dither threshold in 0..1. Built recursively:
+  // M(2x, 2y) = 4*M(x, y) and the three odd quadrants take the offsets
+  // 2 (right), 3 (bottom) and 1 (right+bottom). The depth argument is the
+  // matrix order, so 1 = 2x2, 2 = 4x4, 3 = 8x8.
+  float bayerThreshold(vec2 cell, float steps) {
+    vec2 v = floor(cell);
+    float result = 0.0;
+    float weight = 1.0;
+    float levels = 1.0;
+    for (int i = 0; i < 3; i += 1) {
+      if (float(i) >= steps) break;
+      float bx = mod(v.x, 2.0);
+      float by = mod(v.y, 2.0);
+      result += weight * mod(2.0 * bx + 3.0 * by, 4.0);
+      v = floor(v * 0.5);
+      weight *= 4.0;
+      levels *= 4.0;
+    }
+    return (result + 0.5) / max(levels, 4.0);
+  }
+
   void main() {
     vec4 src = texture(u_text, v_uv);
     vec4 color = src;
@@ -1614,6 +1645,137 @@ SA.glShaders = (() => {
       }
       float shapeAlpha = clamp(alpha * repeatFade, 0.0, 1.0);
       color = vec4(mix(color.rgb, u_colorA.rgb, shapeAlpha), max(color.a, shapeAlpha));
+    } else if (type == 47) {
+      // dither: ordered / hashed dithering into a limited palette
+      float cell = max(u_params.y, 1.0);
+      vec2 grid = floor(v_uv * u_resolution / cell);
+      int pattern = int(u_params.z + 0.5);
+      float threshold;
+      if (pattern == 0) threshold = bayerThreshold(grid, 1.0);
+      else if (pattern == 1) threshold = bayerThreshold(grid, 2.0);
+      else if (pattern == 2) threshold = bayerThreshold(grid, 3.0);
+      else if (pattern == 3) threshold = hash12(grid);
+      else threshold = mix(bayerThreshold(grid, 2.0), hash12(grid.yx * 1.7 + 11.0), 0.5);
+      float span = max(floor(u_params.x) - 1.0, 1.0);
+      int mode = int(u_params2.x + 0.5);
+      vec3 base = unpremultiply(src);
+      vec3 dithered;
+      if (mode == 2) {
+        // duotone: the palette is a two-colour ramp stepped by luminance
+        float lum = dot(base, LUMA);
+        dithered = mix(u_colorA.rgb, u_colorB.rgb, clamp(floor(lum * span + threshold) / span, 0.0, 1.0));
+      } else if (mode == 1) {
+        // luma: only the brightness is quantised, the hue survives
+        float lum = dot(base, LUMA);
+        float q = clamp(floor(lum * span + threshold) / span, 0.0, 1.0);
+        dithered = lum > 0.0005 ? clamp(base * (q / lum), 0.0, 1.0) : vec3(0.0);
+      } else {
+        dithered = clamp(floor(base * span + threshold) / span, 0.0, 1.0);
+      }
+      color = vec4(mix(src.rgb, dithered * src.a, clamp(amount, 0.0, 1.0)), src.a);
+    } else if (type == 48) {
+      // fade: a shader-level fade / colour dip over the whole layer. k is the
+      // amount of the effect, so k = 0 always leaves the layer untouched.
+      int mode = int(u_params.x + 0.5);
+      float soft = clamp(u_params.y, 0.0, 1.0);
+      float k = clamp(amount, 0.0, 1.0);
+      float level;
+      if (mode == 2) level = 1.0 - abs(k * 2.0 - 1.0);
+      else if (mode == 1) level = 1.0 - (1.0 - k) * (1.0 - k);
+      else level = k;
+      float shaped = mix(level, level * level * (3.0 - 2.0 * level), soft);
+      vec3 target = mode == 2 ? u_colorB.rgb
+        : mode == 3 ? vec3(0.0)
+        : mode == 4 ? vec3(1.0)
+        : u_colorA.rgb;
+      float s = 1.0 - clamp(shaped, 0.0, 1.0);
+      // the alpha is left alone: the layer fades its own content towards the
+      // target colour instead of painting a backdrop over the frame
+      color = vec4(mix(target * src.a, src.rgb, s), src.a);
+    } else if (type == 49) {
+      // scanline: cathode-ray lines plus a rolling bar (no screen curvature)
+      float lines = max(u_params.x, 2.0);
+      float depth = clamp(u_params.y, 0.0, 1.0) * clamp(amount, 0.0, 1.0);
+      float speed = u_params.z;
+      float rollHeight = max(u_params2.x, 0.0);
+      float flicker = clamp(u_params2.y, 0.0, 1.0);
+      float duty = clamp(u_params2.w, 0.05, 1.0);
+      vec2 uv = rotateUv(v_uv, u_params2.z);
+      float wave = 0.5 + 0.5 * sin((uv.y * lines - u_time * speed) * TAU);
+      float gap = 1.0 - smoothstep(duty - 0.08, duty + 0.08, wave);
+      float flick = 1.0 - flicker * 0.4 * hash12(vec2(floor(u_time * 24.0), 7.0));
+      vec3 rgb = unpremultiply(src) * (1.0 - depth * gap * 0.85);
+      rgb = mix(rgb, u_colorA.rgb, depth * gap * 0.4);
+      if (rollHeight > 0.0 && depth > 0.0) {
+        float roll = fract(u_time * speed * 0.3);
+        float d = abs(uv.y - roll);
+        d = min(d, 1.0 - d);
+        rgb += u_colorA.rgb * exp(-d * d / max(rollHeight * rollHeight, 0.0004)) * depth * 1.6;
+      }
+      color = vec4(rgb * flick * src.a, src.a);
+    } else if (type == 50) {
+      // stealth: the picture cloaks into RGB ghosts behind a glow rim
+      float cloak = clamp(amount, 0.0, 1.0);
+      float splitPx = max(u_params.x, 0.0) * cloak;
+      float glow = max(u_params.y, 0.0);
+      float hide = clamp(u_params2.x, 0.0, 1.0);
+      float shimmer = clamp(u_params2.y, 0.0, 1.0);
+      vec2 dir = vec2(cos(u_params.z), sin(u_params.z));
+      vec2 off = dir * splitPx / max(u_resolution.y, 1.0);
+      vec3 ghost = vec3(sampleText(v_uv + off).r, src.g, sampleText(v_uv - off).b);
+      // the rim is the alpha gradient of the source: its edge
+      vec2 texel = 1.0 / max(u_resolution, vec2(1.0));
+      float gx = sampleText(v_uv + vec2(texel.x, 0.0)).a - sampleText(v_uv - vec2(texel.x, 0.0)).a;
+      float gy = sampleText(v_uv + vec2(0.0, texel.y)).a - sampleText(v_uv - vec2(0.0, texel.y)).a;
+      float rim = clamp(length(vec2(gx, gy)) * 5.0, 0.0, 1.0);
+      float flick = 1.0 - shimmer * 0.35 * hash12(vec2(floor(u_time * 20.0), 3.0));
+      // the body desaturates as it cloaks, so only the chroma split and the rim
+      // are left, then the fill itself sinks away
+      vec3 body = mix(ghost, vec3(dot(ghost, LUMA)), 1.0 - cloak) * flick;
+      vec3 rgb = mix(unpremultiply(src), body, cloak) + u_colorA.rgb * rim * glow * cloak;
+      float a = src.a * mix(1.0, rim, cloak * hide);
+      color = vec4(rgb * a, a);
+    } else if (type == 51) {
+      // geometry: an SDF shape cuts the picture out and outlines its edge
+      int shape = int(u_params.x + 0.5);
+      float halfSize = max(u_params2.w, 0.01);
+      float sides = max(floor(u_params2.x), 3.0);
+      float corner = max(u_params3.x, 0.0);
+      float strokeWidth = max(u_params3.w, 0.0);
+      float k = clamp(amount, 0.0, 1.0);
+      float aspect = u_resolution.x / max(u_resolution.y, 1.0);
+      // work in y-units (half a frame height = 1) so the shape stays round
+      vec2 q = (rotateUv(v_uv, u_params.y) - u_params2.yz) * u_resolution.y * 0.5;
+      vec2 hb = halfSize * u_resolution.y * 0.5 * vec2(aspect, 1.0);
+      float d = 1e6;
+      if (shape == 0) d = max(q.x - hb.x, q.y - hb.y);
+      else if (shape == 1) {
+        vec2 p = abs(q) - hb + corner * u_resolution.y * 0.5;
+        d = length(max(p, 0.0)) + min(max(p.x, p.y), 0.0);
+      } else if (shape == 2) d = length(q) - hb.y;
+      else if (shape >= 3 && shape <= 6) {
+        // regular polygon: r = cos(pi/n) / cos(mod(a, segment) - segment/2)
+        float a = atan(q.y, q.x) + u_time * u_params4.x + u_params4.y;
+        float segment = TAU / sides;
+        float r = hb.y * cos(PI / sides) / max(cos(mod(a, segment) - segment * 0.5), 0.05);
+        d = length(q) - r;
+      } else d = abs(q.y) - max(hb.y * 0.06, 1.0);
+      float aa = max(fwidth(d), 0.5);
+      float featherPx = max(u_params.z * u_resolution.y * 0.5, aa * 0.5);
+      float inside = 1.0 - smoothstep(-featherPx, featherPx, d);
+      // outside the shape the layer is cut away (alpha 0), inside it the source
+      // survives with fillOpacity of colour A mixed into it. k opens the cut:
+      // at 0 the layer passes through untouched.
+      vec3 base = unpremultiply(src);
+      vec3 rgb = mix(base, u_colorA.rgb, clamp(u_params3.y, 0.0, 1.0) * inside * k);
+      float a = src.a * mix(1.0, inside, k);
+      if (strokeWidth > 0.0 && u_params3.z > 0.0) {
+        // the outline straddles the boundary, inside and out
+        float rim = exp(-abs(d) / max(strokeWidth * u_resolution.y * 0.002, 0.5)) * clamp(u_params3.z, 0.0, 1.0) * k;
+        rgb = mix(rgb, u_colorB.rgb, rim);
+        a = max(a, rim);
+      }
+      color = vec4(rgb * a, a);
     }
     // The frame-wide graphics never paint over the subtitle: where the text
     // mask holds a glyph (plus its padding ring) the pre-post source wins.

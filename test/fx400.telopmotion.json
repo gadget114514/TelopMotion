@@ -3,8 +3,8 @@
   "version": 4,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-04T06:05:32.614Z",
-    "updatedAt": "2026-10-04T06:05:32.614Z",
+    "createdAt": "2026-10-04T07:05:31.454Z",
+    "updatedAt": "2026-10-04T07:05:31.454Z",
     "lang": "ja"
   },
   "output": {
@@ -4631,7 +4631,10 @@
       "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0.5
+        },
         "motion": {
           "in": {
             "duration": 0.25,
@@ -4955,7 +4958,10 @@
       "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0,
+          "glow": 0
+        },
         "motion": {
           "in": {
             "duration": 1.2,
@@ -5279,7 +5285,10 @@
       "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0,
+          "glow": 0.5
+        },
         "motion": {
           "in": {
             "duration": 0.7,
@@ -5560,10 +5569,13 @@
       "exit": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0
+        },
         "motion": {
           "out": {
-            "duration": 0.2,
+            "duration": 0.4,
             "ease": "cubicIn"
           }
         }
@@ -5785,11 +5797,14 @@
       "exit": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0.5
+        },
         "motion": {
           "out": {
-            "duration": 1,
-            "ease": "backIn"
+            "duration": 0.2,
+            "ease": "cubicIn"
           }
         }
       }
@@ -5997,11 +6012,14 @@
       "exit": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0,
+          "glow": 0
+        },
         "motion": {
           "out": {
-            "duration": 0.6,
-            "ease": "bounceIn"
+            "duration": 1,
+            "ease": "backIn"
           }
         }
       }

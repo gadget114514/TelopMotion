@@ -2200,19 +2200,32 @@
       "apply": "style",
       "changes": [
         {
+          "key": "glow",
+          "from": 0,
+          "to": 0.5
+        },
+        {
+          "key": "softness",
+          "from": 0,
+          "to": 0.75
+        },
+        {
           "key": "motion.in",
           "from": "(既定)",
           "to": "0.25s/cubicOut"
         }
       ],
       "verified": "motion",
-      "score": 0.325,
+      "score": 0.335,
       "notes": [],
       "style": {
         "enter": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0.75,
+            "glow": 0.5
+          },
           "motion": {
             "in": {
               "duration": 0.25,
@@ -2959,7 +2972,10 @@
         "enter": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0,
+            "glow": 0
+          },
           "motion": {
             "in": {
               "duration": 1.2,
@@ -3745,6 +3761,11 @@
       "apply": "style",
       "changes": [
         {
+          "key": "glow",
+          "from": 0,
+          "to": 0.5
+        },
+        {
           "key": "motion.in",
           "from": "(既定)",
           "to": "0.7s/elasticOut"
@@ -3757,7 +3778,10 @@
         "enter": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0,
+            "glow": 0.5
+          },
           "motion": {
             "in": {
               "duration": 0.7,
@@ -4463,22 +4487,30 @@
       "apply": "style",
       "changes": [
         {
+          "key": "softness",
+          "from": 0,
+          "to": 0.75
+        },
+        {
           "key": "motion.out",
           "from": "(既定)",
-          "to": "0.2s/cubicIn"
+          "to": "0.4s/cubicIn"
         }
       ],
       "verified": "motion",
-      "score": 0.291,
+      "score": 0.154,
       "notes": [],
       "style": {
         "exit": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0.75,
+            "glow": 0
+          },
           "motion": {
             "out": {
-              "duration": 0.2,
+              "duration": 0.4,
               "ease": "cubicIn"
             }
           }
@@ -4973,23 +5005,36 @@
       "apply": "style",
       "changes": [
         {
+          "key": "glow",
+          "from": 0,
+          "to": 0.5
+        },
+        {
+          "key": "softness",
+          "from": 0,
+          "to": 0.75
+        },
+        {
           "key": "motion.out",
           "from": "(既定)",
-          "to": "1s/backIn"
+          "to": "0.2s/cubicIn"
         }
       ],
       "verified": "motion",
-      "score": 0.271,
+      "score": 0.3,
       "notes": [],
       "style": {
         "exit": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0.75,
+            "glow": 0.5
+          },
           "motion": {
             "out": {
-              "duration": 1,
-              "ease": "backIn"
+              "duration": 0.2,
+              "ease": "cubicIn"
             }
           }
         }
@@ -5508,21 +5553,24 @@
         {
           "key": "motion.out",
           "from": "(既定)",
-          "to": "0.6s/bounceIn"
+          "to": "1s/backIn"
         }
       ],
       "verified": "motion",
-      "score": 0.392,
+      "score": 0.271,
       "notes": [],
       "style": {
         "exit": {
           "type": "fade",
           "enabled": true,
-          "params": {},
+          "params": {
+            "softness": 0,
+            "glow": 0
+          },
           "motion": {
             "out": {
-              "duration": 0.6,
-              "ease": "bounceIn"
+              "duration": 1,
+              "ease": "backIn"
             }
           }
         }

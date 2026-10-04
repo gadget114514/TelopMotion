@@ -11,14 +11,25 @@
     return value <= 0 ? 0 : value >= 1 ? 1 : value;
   }
 
+  // The plain opacity fade. `softness` bends the ramp towards smoothstep and
+  // `glow` flashes the glyph as it appears, which is the per-letter half of the
+  // fade shader in shader-fx.js (post.fade).
   fx.register({
     group: 'enter',
     type: 'fade',
     tags: ['basic'],
-    params: [],
+    params: [
+      { key: 'softness', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+      { key: 'glow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, random: [0, 0.5] },
+    ],
     cost: 0,
-    cpu(state, p) {
-      state.opacity *= clamp01(p);
+    cpu(state, p, params) {
+      const soft = params && Number(params.softness) > 0 ? Math.min(1, Number(params.softness)) : 0;
+      const glow = params && Number(params.glow) > 0 ? Math.min(1, Number(params.glow)) : 0;
+      const k = clamp01(p);
+      const level = soft > 0 ? k + (k * k * (3 - 2 * k) - k) * soft : k;
+      state.opacity *= level;
+      if (glow > 0) state.flash = Math.max(state.flash || 0, glow * (1 - Math.abs(level * 2 - 1)));
     },
   });
 

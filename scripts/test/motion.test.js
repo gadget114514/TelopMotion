@@ -10,6 +10,7 @@ require('../../renderer/js/lyrics/effects/layout.js');
 require('../../renderer/js/lyrics/effects/enter.js');
 require('../../renderer/js/lyrics/effects/exit.js');
 require('../../renderer/js/lyrics/effects/hold.js');
+require('../../renderer/js/lyrics/effects/shader-fx.js');
 require('../../renderer/js/lyrics/effects/location.js');
 const motion = require('../../renderer/js/lyrics/motion.js');
 

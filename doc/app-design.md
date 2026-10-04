@@ -968,6 +968,18 @@ Default is `text`. Effects with a † are shown in the UI as "featured".
 | sparkles | count, size, color | Point sprites placed near letter edges using the SDF. |
 | lensFlare | position, color | |
 
+**The shader pack (`renderer/js/lyrics/effects/shader-fx.js`).** Five families, each registered twice: as a `post` type with its own `u_type` branch in `POST_FRAG`, and as a per-letter effect in `enter` / `hold` / `exit` so it can be picked in the motion gallery and driven by any ADSR phase and any easing curve.
+
+| family | u_type | post params | post target | per-letter behaviour |
+|---|---|---|---|---|
+| dither | 47 | pattern (bayer2/4/8, noise, cross), mode (rgb/luma/duotone), levels, cellSize, colorA, colorB, strength | frame | the letter's alpha is posterised into `levels` steps with an alternating threshold, so a staggered line of letters reads as an ordered dither matrix. |
+| fade | 48 | mode (toColor/fromColor/through/toBlack/toWhite), softness, color, dipColor, strength | frame | a plain opacity fade (the pre-existing `enter.fade` / `exit.fade`, extended in place) plus `softness` (bends the ramp towards smoothstep) and `glow` (a flash at the midpoint). |
+| scanline | 49 | count, depth, duty, speed, angle, rollHeight, flicker, tint, strength | frame | a bright band sweeps the block and a letter lights up when the band crosses the scan line it sits on (`i % lines`). |
+| stealth | 50 | split, angle, glow, cloak, shimmer, tint, strength | frame | the chroma split becomes a positional jitter and the glow rim becomes a flash, as the glyph sinks into its own glow. |
+| geometry | 51 | shape (rect/roundedRect/circle/triangle/polygon/hexagon/diamond/band), sides, center, size, angle, spin, radius, feather, fillOpacity, strokeOpacity, strokeWidth, color, colorB, strength | text | an SDF cuts the layer and outlines the boundary; per letter the same shape list drives the state texture's trim (`wipeMode` + `visibleFrac`), so each form reveals along its own axis. |
+
+Every post branch reads `u_params.w` as the amount (`envelope × progress × strength`) and is a pass-through at 0. The shared helpers `LUMA`, `unpremultiply()` and `bayerThreshold()` live next to `rotateUv()` in `POST_FRAG`; the post chain works on premultiplied colour, so anything that reasons about brightness undoes the alpha first.
+
 **Shared shader library:** all noise is written in-house in `gl/shaders.js`:
 - `hash12`, `hash22`
 - value/gradient `noise`, `fbm`, `curl`

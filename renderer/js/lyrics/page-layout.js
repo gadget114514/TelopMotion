@@ -1317,7 +1317,7 @@
 
         // Captions: remaining lines distributed in grid cells
         const restLines = lines.slice(1);
-        const captionCount = Math.min(4, Math.max(1, restLines.length));
+        const captionCount = Math.min(4, restLines.length);
         const gridCols = 4;
         const gridRows = 3;
         const cellW = (W - 2 * m) / gridCols;
@@ -1346,7 +1346,7 @@
           }
           occupied.add(`${col},${row}`);
 
-          const capLine = restLines[i] || { text: `CAPTION ${i + 1}`, srcStart: 0 };
+          const capLine = restLines[i];
           const capRot = rng() > 0.75 ? 90 : 0;
           regions.push({
             id: `caption_${i}`,
