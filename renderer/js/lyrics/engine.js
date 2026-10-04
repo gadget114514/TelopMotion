@@ -1425,7 +1425,7 @@ SA.lyricsEngine = (() => {
       pipeline.beginLayer();
       pipeline.text(scene, result.letters, null, null);
       const colorSet = SA.fx.resolveColorSet
-        ? SA.fx.resolveColorSet(scene.style.color, {
+        ? SA.fx.resolveColorSet(heroColorSet(scene.style.color, scene), {
             palettes: state.project.palettes || [],
             palette: scene.style.palette || null,
             categoryColors: state.project.categoryColors || {},
@@ -1734,6 +1734,16 @@ SA.lyricsEngine = (() => {
         : null;
       const rgba = resolved && resolved.arrays && resolved.arrays.fill;
       return rgba && rgba.length >= 4 ? [rgba[0], rgba[1], rgba[2], rgba[3] == null ? 1 : rgba[3]] : [1, 0.82, 0.42, 1];
+    }
+
+    // The hero span of a composition mixes to fill2 (colorMix). A later colour
+    // edit can drop fill2 while the span keeps its paletteIndex: fill2 then
+    // follows the span, the colour the 2D fallback paints it in.
+    function heroColorSet(colorSet, scene) {
+      if (colorSet && colorSet.fill2) return colorSet;
+      const letter = ((scene && scene.letters) || []).find((entry) => entry && entry.span && entry.span.paletteIndex != null);
+      if (!letter) return colorSet;
+      return { ...(colorSet || {}), fill2: { kind: 'palette', index: letter.span.paletteIndex } };
     }
 
     function bgVariationFor(scene, shape, style, beat, group) {
@@ -2181,7 +2191,7 @@ SA.lyricsEngine = (() => {
           pipeline.beginLayer();
         }
         const colorSet = SA.fx.resolveColorSet
-          ? SA.fx.resolveColorSet(style.color, {
+          ? SA.fx.resolveColorSet(heroColorSet(style.color, scene), {
               palettes: project.palettes || [],
               palette: style.palette || null,
               categoryColors: project.categoryColors || {},

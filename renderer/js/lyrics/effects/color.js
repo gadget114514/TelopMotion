@@ -42,9 +42,15 @@
       if (!rgba) return fallback;
       return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
     };
-    const fill = resolve(set.fill || (context.defaultFill ? { kind: 'solid', value: context.defaultFill } : null), [1, 1, 1, 1]);
-    const fill2 = resolve(set.fill2, fill.rgba);
-    const stroke = resolve(set.stroke, [1, 1, 1, 1]);
+    // a fallback is a resolved entry too: a bare rgba would lose its `.rgba`
+    // and `arrays` would silently read white
+    const solidOf = (rgba) => ({ kind: 'solid', stops: [rgba], positions: [0], rgba, rgba2: rgba });
+    const white = { r: 1, g: 1, b: 1, a: 1 };
+    const fill = resolve(set.fill || (context.defaultFill ? { kind: 'solid', value: context.defaultFill } : null), solidOf(white));
+    // without its own fill2 the second colour is the fill's end colour (the
+    // last gradient stop, or the solid fill itself), never a stray white
+    const fill2 = resolve(set.fill2, solidOf(fill.rgba2 || fill.rgba));
+    const stroke = resolve(set.stroke, solidOf(white));
     const glow = resolve(set.glow, null);
     return {
       fill,

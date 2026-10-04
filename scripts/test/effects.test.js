@@ -227,6 +227,19 @@ test('resolveColorSet turns ColorValues into rgba arrays', () => {
   assert.deepEqual(palette.arrays.fill, [0, 1, 0, 1]);
 });
 
+test('resolveColorSet: a missing fill2 follows the fill instead of turning white', () => {
+  const colors = ['#000000', '#111111', '#0f1c50', '#0e2f4a'];
+  const only = fx.resolveColorSet({ fill: { kind: 'palette', index: 2 } }, { palette: { colors } });
+  assert.deepEqual(only.arrays.fill2, only.arrays.fill);
+  assert.notDeepEqual(only.arrays.fill2, [1, 1, 1, 1]);
+  const both = fx.resolveColorSet({ fill: { kind: 'palette', index: 2 }, fill2: { kind: 'palette', index: 3 } }, { palette: { colors } });
+  assert.notDeepEqual(both.arrays.fill2, both.arrays.fill);
+  // nothing at all still reads white
+  const none = fx.resolveColorSet({}, {});
+  assert.deepEqual(none.arrays.fill, [1, 1, 1, 1]);
+  assert.deepEqual(none.arrays.stroke, [1, 1, 1, 1]);
+});
+
 test('withDefaults fills params and motion for every group', () => {
   const enter = fx.withDefaults({ type: 'slide' }, 'enter');
   assert.equal(enter.params.dir, 'up');
