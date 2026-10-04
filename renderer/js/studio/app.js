@@ -10,6 +10,9 @@
   const el = {};
   let layout = { mediaW: 260, inspectorW: 340, timelineH: 240, consoleW: 360, panels: { media: true, inspector: true, timeline: true }, preset: 'standard' };
   let autosaveEnabled = true;
+  // stateful figures (simulations): off by default, remembered across sessions
+  const LS_STATEFUL = 'sa.stateful';
+  let statefulEnabled = false;
   let welcomeDismissed = false;
   let toastTimer = null;
   let evaluationCache = { dataset: null, evaluation: null };
@@ -1572,6 +1575,22 @@
     SA.menu.refresh();
   }
 
+  function applyStateful() {
+    if (SA.figures && typeof SA.figures.setStatefulAllowed === 'function') SA.figures.setStatefulAllowed(statefulEnabled);
+  }
+
+  function toggleStateful() {
+    statefulEnabled = !statefulEnabled;
+    try {
+      localStorage.setItem(LS_STATEFUL, statefulEnabled ? '1' : '0');
+    } catch (error) {
+      // the preference just stays for this session
+    }
+    applyStateful();
+    if (SA.preview) SA.preview.render();
+    SA.menu.refresh();
+  }
+
   function toggleAutosave() {
     autosaveEnabled = !autosaveEnabled;
     if (autosaveEnabled) SA.io.startAutosave(project, 30);
@@ -1802,6 +1821,8 @@
       isConsoleOpen: () => SA.debugConsole.isOpen(),
       isAutoKeyOn: () => !!store.state.view.autoKey,
       toggleAutosave,
+      toggleStateful,
+      isStatefulEnabled: () => statefulEnabled,
       isAutosaveEnabled: () => autosaveEnabled,
       getAspect: () => (project() ? project().output.aspect : '16:9'),
       isPanelVisible: (name) => !!layout.panels[name],
@@ -1820,6 +1841,12 @@
       loadLayout();
       applyLayout();
       i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
+      try {
+        statefulEnabled = localStorage.getItem(LS_STATEFUL) === '1';
+      } catch (error) {
+        statefulEnabled = false;
+      }
+      applyStateful();
       applyStaticText();
       boot.set(16, 'studio.boot.interface', 34, 3000);
       bindEvents();

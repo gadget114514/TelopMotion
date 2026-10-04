@@ -141,6 +141,7 @@ SA.menu = (() => {
         { key: 'studio.settings.audio', action: 'audio' },
         { key: 'studio.settings.fonts', action: 'fonts' },
         { key: 'studio.settings.autosave', action: 'toggleAutosave', checked: () => !!(handlers.isAutosaveEnabled && handlers.isAutosaveEnabled()) },
+        { key: 'studio.settings.stateful', action: 'toggleStateful', checked: () => !!(handlers.isStatefulEnabled && handlers.isStatefulEnabled()) },
       ],
     },
     {

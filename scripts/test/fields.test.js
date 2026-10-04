@@ -12,6 +12,8 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..', '..');
 const fields = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'fields.js'));
 const figures = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'figures.js'));
+// the simulations are drawn only while the stateful setting is on
+figures.setStatefulAllowed(true);
 
 const COLORS = ['#ff4d6d', '#ffd166', '#06d6a0', '#118ab2', '#c77dff'];
 const BEATS = [{ start: 2, end: 8 }, { start: 8, end: 14 }];

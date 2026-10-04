@@ -49,6 +49,18 @@
   // picture comes from a texture of state that is stepped forward, and where it is
   // splatted is frozen here so a scrub lands on the same drop as a play
   const SIM_MOTIFS = new Set(glSim && Array.isArray(glSim.SIMS) && glFields && typeof glFields.simOf === 'function' ? glSim.SIMS.filter((id) => glFields.simOf(id)) : []);
+  // The stateful figures (the GPU simulations) are off unless the setting turns
+  // them on: a stateful figure depends on the frames before it, which a scrub or
+  // a re-export has to rebuild. While it is off they are never drawn at random,
+  // never offered in the inspector (filler-render), and a clip that already
+  // carries one draws nothing (the clip itself is kept untouched).
+  let statefulAllowed = false;
+  function setStatefulAllowed(on) {
+    statefulAllowed = Boolean(on);
+  }
+  function isStatefulAllowed() {
+    return statefulAllowed;
+  }
   const BEHIND_MOTIFS = new Set([...SCENE_MOTIFS, ...GEO_MOTIFS]);
   const SEEDED_MOTIFS = new Set([...BEHIND_MOTIFS, ...FIELD_MOTIFS]);
   // the 2D camera moves any figure clip can carry (`params.camera`)
@@ -255,7 +267,7 @@
     const rnd = opts.rand != null && Number.isFinite(Number(opts.rand)) ? clamp01(opts.rand) : weird.raw(axes.weird);
     const gates = rng.rngFor(seed, 'figure-gate', id);
     // the frame motif is the heavy one: below weird 0.8 it never draws
-    const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8);
+    const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8).filter((name) => statefulAllowed || !SIM_MOTIFS.has(name));
     // the motif pool answers the smartness and fear axes (a no-op at 0)
     let motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
     if (!requested) {
@@ -1052,6 +1064,7 @@
   // is capped so the lyrics stay readable, and the shader cuts a feathered window
   // out of the text box.
   function fieldResult(motif, params, ctx, info, progress, box) {
+    if (SIM_MOTIFS.has(motif) && !statefulAllowed) return { shapes: [], texts: [] };
     const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
     const rand = params.rand == null ? 1 : clamp01(params.rand);
     const span = (ctx && ctx.clip) || {};
@@ -2775,6 +2788,6 @@
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, CAMERAS_2D, procKey,
+  return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, setStatefulAllowed, isStatefulAllowed, CAMERAS_2D, procKey,
  procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

@@ -1202,6 +1202,10 @@
 
   function paramsOf(type) {
     return (PARAMS[type] || []).map((param) => {
+      // the stateful figures (simulations) are only offered while the setting allows them
+      if (type === 'figures' && param.key === 'motif' && figures && figures.SIM_MOTIFS && typeof figures.isStatefulAllowed === 'function' && !figures.isStatefulAllowed()) {
+        return { ...param, options: param.options.filter((name) => !figures.SIM_MOTIFS.has(name)) };
+      }
       // a text-animation clip can define how the string appears: the select
       // offers every registered enter / hold / exit effect plus `auto`, and
       // the saved themes for the theme slot
