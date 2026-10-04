@@ -229,6 +229,35 @@
     return clamp01(shapeWeight(t, sel, clamp01(overlap))) * clamp(sel.amount, -1, 1);
   }
 
+  // The landed weight of one unit for a reveal (0 = start state, 1 = landed).
+  // A square band lands a unit by covering it, so it slides by one band width.
+  // The other shapes only grade the units inside the band: parked over the
+  // string they would freeze it half revealed, so the band sweeps all the way
+  // across and a unit lands once the band has passed it, the shape giving the
+  // soft leading edge. `progress` runs 0 -> 1 into the landed state.
+  function revealWeight(info, progress, sel) {
+    const p = clamp01(progress);
+    if (sel.shape === 'square') {
+      return selectAt(info, 0, { ...sel, sweep: 'once', offset: sel.offset + 1 - p }, 0);
+    }
+    if (!sel.amount) return 0;
+    const base = bandFor({ ...sel, sweep: 'once', offset: 0 }, 0, 0);
+    const width = Math.max(1e-6, base.b - base.a);
+    // from the band just after the string (nothing passed) to just before it
+    const offset = (1 - base.a) + (-base.b - (1 - base.a)) * p;
+    const span = unitSpan(info, sel);
+    let center = (span.a + span.b) / 2;
+    if (sel.shape === 'rampDown') center = 1 - center;
+    const u = (center - (base.a + offset)) / width;
+    let weight;
+    if (u <= 0) weight = 0;
+    else if (u >= 1) weight = 1;
+    else if (sel.shape === 'round') weight = Math.sin((Math.PI / 2) * u);
+    else if (sel.shape === 'smooth') weight = smoothstep(0, 1, u);
+    else weight = u;
+    return weight * clamp(sel.amount, -1, 1);
+  }
+
   // --- property application ---------------------------------------------------
 
   // spreads the letters apart around the block centre (a title's tracking):
@@ -312,10 +341,10 @@
       cpu(state, p, params, rng, info) {
         const sel = { ...normalizeSelector(params), info };
         // the band slides over the string as the beat progresses: the units it
-        // still covers are in their start state, the rest have landed
+        // has not reached are in their start state, the rest have landed. The
+        // exit plays the same sweep backwards.
         const progress = clamp01(p);
-        const sweep = { ...sel, sweep: 'once', offset: sel.offset + (mode === 'in' ? 1 - progress : progress) };
-        const t = 1 - selectAt(info, 0, sweep, 0);
+        const t = 1 - revealWeight(info, mode === 'in' ? progress : 1 - progress, sel);
         applyProps(state, t, normalizeProps(params), info);
       },
     });
@@ -323,6 +352,93 @@
 
   registerReveal('enter', 'in');
   registerReveal('exit', 'out');
+
+  // --- substring timing ---------------------------------------------------------
+  // The enter / exit splits the beat into two groups: the letters of the given
+  // substrings (`matchText`, several separated by , 、 or /) and the rest. Each
+  // group runs the same transform over its own window of the phase, `lag`
+  // apart, so a keyword can land after the line around it, or linger on screen
+  // after the rest has left. `animate` leaves one group out: it stays in place
+  // through the whole phase.
+  const LEADS = ['match', 'rest'];
+  const ANIMATE = ['both', 'match', 'rest'];
+
+  const SUBSTRING_PARAMS = [
+    { key: 'matchText', kind: 'text', default: '', section: 'selector' },
+    { key: 'lead', kind: 'select', options: LEADS, default: 'rest', section: 'selector' },
+    { key: 'lag', kind: 'number', min: 0, max: 0.95, step: 0.01, default: 0.5, section: 'selector' },
+    { key: 'animate', kind: 'select', options: ANIMATE, default: 'both', section: 'selector' },
+  ];
+
+  function substringsOf(text) {
+    return String(text == null ? '' : text)
+      .split(/[,、，/]/)
+      .map((value) => value.trim())
+      .filter((value) => value.length);
+  }
+
+  function scopeApi() {
+    if (typeof module === 'object' && module.exports) return require('../scope');
+    return typeof self !== 'undefined' && self.SA ? self.SA.scope : null;
+  }
+
+  // the keyword mask over the beat's letters (null when nothing matches)
+  function substringMask(info, matchText) {
+    const words = substringsOf(matchText);
+    const api = scopeApi();
+    if (!words.length || !api || !info || !info.scene) return null;
+    const mask = api.scopeMask(info.scene, { kind: 'keyword', match: words });
+    return mask && mask.some((flag) => flag) ? mask : null;
+  }
+
+  // the progress of one letter's group inside the phase, or null when the
+  // group stays in place. `p` runs 0 -> 1 through the phase; the leading group
+  // takes [0, 1 - lag], the other one [lag, 1].
+  function substringProgress(info, p, params) {
+    const progress = clamp01(p);
+    const mask = substringMask(info, params.matchText);
+    // nothing to split: every letter runs the whole phase
+    if (!mask) return progress;
+    const inMatch = !!mask[info.i];
+    const animate = ANIMATE.includes(params.animate) ? params.animate : 'both';
+    if ((animate === 'match' && !inMatch) || (animate === 'rest' && inMatch)) return null;
+    if (animate !== 'both') return progress;
+    const lag = clamp(num(params.lag, 0.5), 0, 0.95);
+    const lead = LEADS.includes(params.lead) ? params.lead : 'rest';
+    const leading = (lead === 'match') === inMatch;
+    const window = 1 - lag;
+    return clamp01(leading ? progress / window : (progress - lag) / window);
+  }
+
+  for (const [group, mode] of [['enter', 'in'], ['exit', 'out']]) {
+    fx.register({
+      group,
+      type: 'substringReveal',
+      tags: ['pro', 'selector', 'text'],
+      pack: 'pro',
+      cost: 1,
+      params: [...SUBSTRING_PARAMS, ...PROP_PARAMS],
+      // a fade with a short rise; the keyword lands last on the way in and
+      // leaves last on the way out
+      defaults: { params: { opacity: 0, dy: mode === 'in' ? 0.4 : -0.4 } },
+      normalize(params) {
+        return {
+          ...normalizeProps(params),
+          matchText: String(params.matchText == null ? '' : params.matchText),
+          lead: LEADS.includes(params.lead) ? params.lead : 'rest',
+          lag: clamp(num(params.lag, 0.5), 0, 0.95),
+          animate: ANIMATE.includes(params.animate) ? params.animate : 'both',
+        };
+      },
+      cpu(state, p, params, rng, info) {
+        const progress = substringProgress(info, p, params);
+        if (progress == null) return;
+        // the weight of the off-screen state: 1 before the enter, 1 after the exit
+        const t = mode === 'in' ? 1 - progress : progress;
+        applyProps(state, t, normalizeProps(params), info);
+      },
+    });
+  }
 
   const TRACKING_PARAMS = [
     { key: 'amount', kind: 'number', min: -2, max: 3, step: 0.02, default: 0.5, random: [0.2, 1.1], section: 'spacing' },
@@ -393,9 +509,13 @@
     SELECTOR_PARAMS,
     PROP_PARAMS,
     TRACKING_PARAMS,
+    SUBSTRING_PARAMS,
+    substringsOf,
+    substringProgress,
     normalizeSelector,
     normalizeProps,
     selectAt,
+    revealWeight,
     shapeWeight,
     unitAt,
     unitPosition,

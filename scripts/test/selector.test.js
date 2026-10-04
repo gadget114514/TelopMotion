@@ -136,6 +136,39 @@ test('rangeReveal is the identity at the end of the beat and the offset at the s
   assert.ok(Math.abs(exitState(1, 2).opacity - 0) < 1e-6, 'and ends hidden everywhere');
 });
 
+test('rangeReveal lands every shape at the end (revealSweep never froze half revealed)', () => {
+  const enter = fx.get('enter', 'rangeReveal').cpu;
+  const exit = fx.get('exit', 'rangeReveal').cpu;
+  const fresh = () => ({ x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, skewX: 0, tiltX: 0, tiltY: 0 });
+  for (const shape of selector.SHAPES) {
+    // the revealSweep preset: a letter ramp with eases, opacity 0 and blur
+    const params = { selBasedOn: 'letter', selShape: shape, opacity: 0, blur: 12, dy: 0.8, selEaseHigh: 70, selEaseLow: 20 };
+    for (const N of [1, 2, 5]) {
+      for (let i = 0; i < N; i += 1) {
+        const landed = fresh();
+        enter(landed, 1, params, () => 0.5, info(i, N));
+        assert.ok(Math.abs(landed.opacity - 1) < 1e-6 && !(landed.blur > 1e-6), `${shape} ${i}/${N} lands`);
+        const hidden = fresh();
+        enter(hidden, 0, params, () => 0.5, info(i, N));
+        assert.ok(hidden.opacity < 1e-6, `${shape} ${i}/${N} starts hidden`);
+        const leaving = fresh();
+        exit(leaving, 0, params, () => 0.5, info(i, N));
+        assert.ok(Math.abs(leaving.opacity - 1) < 1e-6, `${shape} ${i}/${N} exit starts landed`);
+        const gone = fresh();
+        exit(gone, 1, params, () => 0.5, info(i, N));
+        assert.ok(gone.opacity < 1e-6, `${shape} ${i}/${N} exit ends hidden`);
+      }
+    }
+    // in between the sweep grades the string
+    const middle = [0, 1, 2, 3, 4].map((i) => {
+      const state = fresh();
+      enter(state, 0.5, params, () => 0.5, info(i, 5));
+      return state.opacity;
+    });
+    assert.ok(middle.some((value) => value > 0 && value < 1) || new Set(middle).size > 1, `${shape} sweeps (${middle})`);
+  }
+});
+
 test('tracking spreads the outer letters and leaves the centre alone', () => {
   const enter = fx.get('enter', 'tracking').cpu;
   const at = (p, index, N) => {

@@ -1097,80 +1097,90 @@
 
   const ADD_SEL_EN = {
     types: {
-      enter: { rangeReveal: 'Range reveal', tracking: 'Tracking (in)', revealSweep: 'Sweep reveal', revealSoft: 'Soft reveal', revealRandom: 'Random reveal', trackIn: 'Tracking in' },
-      exit: { rangeReveal: 'Range reveal out', tracking: 'Tracking (out)', trackOut: 'Tracking out' },
+      enter: { substringReveal: 'Substring reveal', rangeReveal: 'Range reveal', tracking: 'Tracking (in)', revealSweep: 'Sweep reveal', revealSoft: 'Soft reveal', revealRandom: 'Random reveal', trackIn: 'Tracking in' },
+      exit: { substringReveal: 'Substring reveal out', rangeReveal: 'Range reveal out', tracking: 'Tracking (out)', trackOut: 'Tracking out' },
       hold: { rangeSelector: 'Range selector', tracking: 'Tracking (keep)', highlightSweep: 'Highlight sweep', waveLoop: 'Wave loop', beatHighlight: 'Beat highlight', trackBreath: 'Tracking breath', trackBeat: 'Tracking beat' },
     },
     params: {
+      lag: 'Group lag',
       selBasedOn: 'Based on', selShape: 'Shape', selStart: 'Range start', selEnd: 'Range end', selWidth: 'Band width',
       selOffset: 'Offset', selSweep: 'Sweep', selSpeed: 'Sweep speed', selRandom: 'Randomize order', selSeed: 'Random seed',
       selEaseHigh: 'Ease high', selEaseLow: 'Ease low', selAmount: 'Amount', colorMix: 'Highlight mix', trackAxis: 'Tracking axis', tracking: 'Tracking',
     },
     values: {
+      both: 'Both', match: 'Matched text', rest: 'The rest',
       square: 'Square', rampUp: 'Ramp up', rampDown: 'Ramp down', round: 'Round', smooth: 'Smooth',
       once: 'Once', loop: 'Loop', pingpong: 'Ping-pong', beat: 'Beat', pulse: 'Pulse', breathe: 'Breathe',
     },
   };
   const ADD_SEL_JA = {
     types: {
-      enter: { rangeReveal: 'レンジリビール', tracking: 'トラッキング（登場）', revealSweep: 'スイープ登場', revealSoft: 'ソフト登場', revealRandom: 'ランダム登場', trackIn: 'トラッキングイン' },
-      exit: { rangeReveal: 'レンジリビール（退場）', tracking: 'トラッキング（退場）', trackOut: 'トラッキングアウト' },
+      enter: { substringReveal: '部分文字列登場', rangeReveal: 'レンジリビール', tracking: 'トラッキング（登場）', revealSweep: 'スイープ登場', revealSoft: 'ソフト登場', revealRandom: 'ランダム登場', trackIn: 'トラッキングイン' },
+      exit: { substringReveal: '部分文字列退場', rangeReveal: 'レンジリビール（退場）', tracking: 'トラッキング（退場）', trackOut: 'トラッキングアウト' },
       hold: { rangeSelector: 'レンジセレクター', tracking: 'トラッキング（保持）', highlightSweep: 'ハイライトスイープ', waveLoop: 'ウェーブループ', beatHighlight: 'ビートハイライト', trackBreath: 'トラッキング呼吸', trackBeat: 'トラッキングビート' },
     },
     params: {
+      lag: 'グループの時間差',
       selBasedOn: '基準', selShape: '形', selStart: '範囲の開始', selEnd: '範囲の終了', selWidth: '帯の幅',
       selOffset: 'オフセット', selSweep: 'スイープ', selSpeed: 'スイープ速度', selRandom: '順序をランダム', selSeed: 'ランダムシード',
       selEaseHigh: 'イーズ（上端）', selEaseLow: 'イーズ（下端）', selAmount: '強さ', colorMix: 'ハイライトの混色', trackAxis: 'トラッキング軸', tracking: 'トラッキング',
     },
     values: {
+      both: '両方', match: '一致した文字', rest: 'それ以外',
       square: '矩形', rampUp: '上り', rampDown: '下り', round: '円弧', smooth: 'スムーズ',
       once: '1回', loop: 'ループ', pingpong: '往復', beat: 'ビート', pulse: 'パルス', breathe: '呼吸',
     },
   };
   const ADD_SEL_ES = {
     types: {
-      enter: { rangeReveal: 'Revelado por rango', tracking: 'Espaciado (entrada)', revealSweep: 'Revelado en barrido', revealSoft: 'Revelado suave', revealRandom: 'Revelado aleatorio', trackIn: 'Espaciado de entrada' },
-      exit: { rangeReveal: 'Revelado por rango (salida)', tracking: 'Espaciado (salida)', trackOut: 'Espaciado de salida' },
+      enter: { substringReveal: 'Revelado por subcadena', rangeReveal: 'Revelado por rango', tracking: 'Espaciado (entrada)', revealSweep: 'Revelado en barrido', revealSoft: 'Revelado suave', revealRandom: 'Revelado aleatorio', trackIn: 'Espaciado de entrada' },
+      exit: { substringReveal: 'Revelado por subcadena (salida)', rangeReveal: 'Revelado por rango (salida)', tracking: 'Espaciado (salida)', trackOut: 'Espaciado de salida' },
       hold: { rangeSelector: 'Selector de rango', tracking: 'Espaciado (mantener)', highlightSweep: 'Barrido de acento', waveLoop: 'Bucle de onda', beatHighlight: 'Acento al ritmo', trackBreath: 'Espaciado respirando', trackBeat: 'Espaciado al ritmo' },
     },
     params: {
+      lag: 'Retraso entre grupos',
       selBasedOn: 'Basado en', selShape: 'Forma', selStart: 'Inicio del rango', selEnd: 'Fin del rango', selWidth: 'Ancho de banda',
       selOffset: 'Desplazamiento', selSweep: 'Barrido', selSpeed: 'Velocidad', selRandom: 'Orden aleatorio', selSeed: 'Semilla',
       selEaseHigh: 'Suavizado alto', selEaseLow: 'Suavizado bajo', selAmount: 'Intensidad', colorMix: 'Mezcla de acento', trackAxis: 'Eje de espaciado', tracking: 'Espaciado',
     },
     values: {
+      both: 'Ambos', match: 'Texto coincidente', rest: 'El resto',
       square: 'Cuadrado', rampUp: 'Subida', rampDown: 'Bajada', round: 'Redondo', smooth: 'Suave',
       once: 'Una vez', loop: 'Bucle', pingpong: 'Vaivén', beat: 'Pulso', pulse: 'Pulso', breathe: 'Respirar',
     },
   };
   const ADD_SEL_FR = {
     types: {
-      enter: { rangeReveal: 'Révélation par plage', tracking: 'Interlettrage (entrée)', revealSweep: 'Révélation en balayage', revealSoft: 'Révélation douce', revealRandom: 'Révélation aléatoire', trackIn: 'Interlettrage d’entrée' },
-      exit: { rangeReveal: 'Révélation par plage (sortie)', tracking: 'Interlettrage (sortie)', trackOut: 'Interlettrage de sortie' },
+      enter: { substringReveal: 'Révélation par sous-chaîne', rangeReveal: 'Révélation par plage', tracking: 'Interlettrage (entrée)', revealSweep: 'Révélation en balayage', revealSoft: 'Révélation douce', revealRandom: 'Révélation aléatoire', trackIn: 'Interlettrage d’entrée' },
+      exit: { substringReveal: 'Révélation par sous-chaîne (sortie)', rangeReveal: 'Révélation par plage (sortie)', tracking: 'Interlettrage (sortie)', trackOut: 'Interlettrage de sortie' },
       hold: { rangeSelector: 'Sélecteur de plage', tracking: 'Interlettrage (maintien)', highlightSweep: 'Balayage d’accent', waveLoop: 'Boucle d’onde', beatHighlight: 'Accent rythmique', trackBreath: 'Interlettrage respirant', trackBeat: 'Interlettrage rythmé' },
     },
     params: {
+      lag: 'Décalage des groupes',
       selBasedOn: 'Basé sur', selShape: 'Forme', selStart: 'Début de plage', selEnd: 'Fin de plage', selWidth: 'Largeur de bande',
       selOffset: 'Décalage', selSweep: 'Balayage', selSpeed: 'Vitesse', selRandom: 'Ordre aléatoire', selSeed: 'Graine',
       selEaseHigh: 'Adoucissement haut', selEaseLow: 'Adoucissement bas', selAmount: 'Intensité', colorMix: 'Mélange d’accent', trackAxis: 'Axe d’interlettrage', tracking: 'Interlettrage',
     },
     values: {
+      both: 'Les deux', match: 'Texte trouvé', rest: 'Le reste',
       square: 'Carré', rampUp: 'Montée', rampDown: 'Descente', round: 'Arrondi', smooth: 'Doux',
       once: 'Une fois', loop: 'Boucle', pingpong: 'Va-et-vient', beat: 'Temps', pulse: 'Pulsation', breathe: 'Respiration',
     },
   };
   const ADD_SEL_RU = {
     types: {
-      enter: { rangeReveal: 'Раскрытие диапазоном', tracking: 'Трекинг (вход)', revealSweep: 'Раскрытие развёрткой', revealSoft: 'Мягкое раскрытие', revealRandom: 'Случайное раскрытие', trackIn: 'Трекинг входа' },
-      exit: { rangeReveal: 'Раскрытие диапазоном (выход)', tracking: 'Трекинг (выход)', trackOut: 'Трекинг выхода' },
+      enter: { substringReveal: 'Раскрытие подстроки', rangeReveal: 'Раскрытие диапазоном', tracking: 'Трекинг (вход)', revealSweep: 'Раскрытие развёрткой', revealSoft: 'Мягкое раскрытие', revealRandom: 'Случайное раскрытие', trackIn: 'Трекинг входа' },
+      exit: { substringReveal: 'Раскрытие подстроки (выход)', rangeReveal: 'Раскрытие диапазоном (выход)', tracking: 'Трекинг (выход)', trackOut: 'Трекинг выхода' },
       hold: { rangeSelector: 'Селектор диапазона', tracking: 'Трекинг (удержание)', highlightSweep: 'Развёртка акцента', waveLoop: 'Волновой цикл', beatHighlight: 'Акцент в бит', trackBreath: 'Трекинг-дыхание', trackBeat: 'Трекинг в бит' },
     },
     params: {
+      lag: 'Задержка групп',
       selBasedOn: 'Основа', selShape: 'Форма', selStart: 'Начало диапазона', selEnd: 'Конец диапазона', selWidth: 'Ширина полосы',
       selOffset: 'Смещение', selSweep: 'Развёртка', selSpeed: 'Скорость', selRandom: 'Случайный порядок', selSeed: 'Сид',
       selEaseHigh: 'Сглаживание сверху', selEaseLow: 'Сглаживание снизу', selAmount: 'Сила', colorMix: 'Смешение акцента', trackAxis: 'Ось трекинга', tracking: 'Трекинг',
     },
     values: {
+      both: 'Обе', match: 'Совпадение', rest: 'Остальное',
       square: 'Квадрат', rampUp: 'Подъём', rampDown: 'Спад', round: 'Круг', smooth: 'Плавно',
       once: 'Один раз', loop: 'Цикл', pingpong: 'Туда-обратно', beat: 'Бит', pulse: 'Пульс', breathe: 'Дыхание',
     },

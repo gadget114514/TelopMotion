@@ -186,3 +186,41 @@ test('a scoped hold is appended for the covered letters only', () => {
   assert.ok(scoped.letters[2].x > plain.letters[2].x + 50, `letter 2 did not drift (${scoped.letters[2].x})`);
   assert.ok(scoped.letters[3].x > plain.letters[3].x + 50, `letter 3 did not drift (${scoped.letters[3].x})`);
 });
+
+test('substringReveal times the matched substring apart from the rest', () => {
+  // enter 0..1s, exit 9..10s; the rest leads, the keyword follows half a phase later
+  const style = {
+    animation: { type: 'simultaneous' },
+    enter: { type: 'substringReveal', params: { matchText: 'CD', lag: 0.5 }, motion: { in: { duration: 1, ease: 'linear' } } },
+    exit: { type: 'substringReveal', params: { matchText: 'CD', lag: 0.5 }, motion: { out: { duration: 1, ease: 'linear' } } },
+  };
+  const beat = { id: 'c1:single0', cueId: 'c1', kind: 'single', start: 0, end: 10, text: 'ABCDE' };
+  const at = (t, params) => {
+    const scene = makeScene('ABCDE', params ? { ...style, enter: { ...style.enter, params: { ...style.enter.params, ...params } } } : style);
+    return motion.evaluateBeat(scene, t, { frame: FRAME, seed: 42, beat }).letters;
+  };
+  // halfway through the enter the rest has landed, the keyword has not started
+  const mid = at(0.5);
+  assert.ok(mid[0].opacity > 0.99 && mid[4].opacity > 0.99, `rest not landed (${mid[0].opacity})`);
+  assert.ok(mid[2].opacity < 0.01 && mid[3].opacity < 0.01, `keyword already in (${mid[2].opacity})`);
+  // on the way out the rest leaves first and the keyword lingers
+  const out = at(9.5);
+  assert.ok(out[0].opacity < 0.01, `rest still visible (${out[0].opacity})`);
+  assert.ok(out[2].opacity > 0.99, `keyword already gone (${out[2].opacity})`);
+  // the keyword can lead instead
+  const lead = at(0.5, { lead: 'match' });
+  assert.ok(lead[2].opacity > 0.99 && lead[0].opacity < 0.01);
+  // animate: match keeps the rest in place from the start
+  const only = at(0.1, { animate: 'match' });
+  assert.equal(only[0].opacity, 1);
+  assert.ok(only[2].opacity < 0.2);
+  // no match: every letter runs the whole phase together
+  const none = at(0.5, { matchText: 'XYZ' });
+  assert.ok(Math.abs(none[0].opacity - none[2].opacity) < 1e-9 && none[0].opacity > 0.3 && none[0].opacity < 0.7);
+});
+
+test('substringReveal splits several substrings on , 、 and /', () => {
+  const selector = require(path.join(FX_DIR, 'selector.js'));
+  assert.deepEqual(selector.substringsOf('愛, 夢、光 /空'), ['愛', '夢', '光', '空']);
+  assert.deepEqual(selector.substringsOf(''), []);
+});
