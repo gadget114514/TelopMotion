@@ -180,6 +180,33 @@ test('w=0 does not use the rhythm plan', () => {
   for (const cuts of Object.values(weird.rhythm)) assert.ok(Array.isArray(cuts));
 });
 
+test('the informed song tempo drives the run instead of the measured one', () => {
+  const plain = JSON.parse(JSON.stringify(FIXTURE.input));
+  assert.equal(prepare(plain, FIXTURE).bpm, 120, 'no tempo informed and no audio: the engine default');
+  // an explicit tempo on the run beats the measured one
+  const audio = prepare(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE, {
+    analysis: { sampleRate: 30, frameCount: 30, frames: [{ rms: 1, bands: [0, 0, 0, 0] }] },
+  });
+  assert.ok(audio.bpm > 0);
+  const informed = JSON.parse(JSON.stringify(FIXTURE.input));
+  informed.song = { title: 'Neon Rain', author: 'Aoi', bpm: 150 };
+  const ctx = prepare(informed, FIXTURE);
+  assert.equal(ctx.bpm, 150);
+  // the run cuts its beats on the bar grid of that tempo and stores the tempo,
+  // not the bar length it would have to be recomputed from
+  runOn(informed, ctx);
+  assert.equal(informed.textFlow.bpm, 150);
+  assert.equal(informed.textFlow.targetChunkDuration, undefined);
+  assert.equal(informed.textFlow.chunkScale, 1);
+  const beats = Object.values(informed.beats).flat();
+  assert.ok(beats.length > 0);
+  // the filler gaps came back divided on the same grid
+  const fillerIds = new Set(informed.tracks.filter((track) => track.kind === 'filler').map((track) => track.id));
+  const clips = informed.clips.filter((clip) => fillerIds.has(clip.trackId));
+  assert.ok(clips.length > 0);
+  assert.equal(clips.filter((clip) => clip.spec.params && clip.spec.params.list && clip.spec.params.list.some((part) => part.type === 'credits')).length <= 1, true, 'the title shows once at most');
+});
+
 test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   const doc = JSON.parse(JSON.stringify(FIXTURE.input));
   runOn(doc, FIXTURE);
@@ -189,7 +216,10 @@ test('w=0 reproduces the pre-extraction snapshot exactly', () => {
   // second documented exception is the size ladder: the snapshot's sizes came
   // from the old per-beat jitter and the ladder now pins the base size at weird
   // 0, so `beatStyles[*].text.size` is stripped from both sides before the
-  // comparison.
+  // comparison. The third is `textFlow`: the run stores the tempo (120 BPM) and
+  // the weird-derived chunk scale (1) instead of the 2 s bar length it baked in,
+  // which is the same grid - the informed BPM owns it now, so a tempo change
+  // re-times the beats instead of leaving them where they were cut.
   const stripSizes = (styles) => {
     if (!styles) return styles;
     for (const style of Object.values(styles)) {

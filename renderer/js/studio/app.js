@@ -33,6 +33,7 @@
     el.cues = document.getElementById('media-cues');
     el.aspect = document.getElementById('media-aspect');
     el.duration = document.getElementById('media-duration');
+    el.bpm = document.getElementById('media-bpm');
     el.mediaTabs = {
       info: document.getElementById('media-tab-info'),
       video: document.getElementById('media-tab-video'),
@@ -97,6 +98,19 @@
     const minutes = Math.floor(value / 60);
     const rest = value % 60;
     return `${minutes}:${rest.toFixed(2).padStart(5, '0')}`;
+  }
+
+  // The tempo the beats follow: the one informed in Settings → Song, else the
+  // one measured from the loaded audio, else nothing yet.
+  function tempoLabel() {
+    const doc = project();
+    const own = SA.project.bpmOf(doc);
+    if (own > 0) return String(Math.round(own * 10) / 10);
+    const analysis = SA.preview && SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
+    const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
+    const detected = Number(features && features.bpm);
+    if (Number.isFinite(detected) && detected > 0) return `${Math.round(detected * 10) / 10} ${t('song.auto')}`;
+    return '—';
   }
 
   function loadLayout() {
@@ -285,6 +299,7 @@
     el.cues.textContent = doc ? doc.script.cues.length : 0;
     el.aspect.textContent = doc ? doc.output.aspect : '16:9';
     el.duration.textContent = formatClock(duration());
+    el.bpm.textContent = tempoLabel();
     renderVideoList();
     if (!el.mediaPanes.audio.hidden) renderMediaAudio();
   }
@@ -1715,6 +1730,7 @@
       fonts: () => SA.fontsDialog.open(),
       about: aboutDialog,
       credits: () => SA.creditsDialog.open(),
+      song: () => SA.songDialog.open(),
       exportSrt,
       exportSrtBeats,
       exportLyrics,

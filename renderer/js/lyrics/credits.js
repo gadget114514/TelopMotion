@@ -40,19 +40,31 @@
 
   function titleText(project, settings) {
     const config = settings.title;
-    if (config.source === 'custom') return String(config.text || '');
+    // a custom text that is still empty falls back to the informed title, so the
+    // field in Settings → Song is never silently ignored
+    if (config.source === 'custom') return String(config.text || '') || informed(project, 'title');
     const songs = (project && project.dataset && project.dataset.songs) || [];
     const song = songs.find((entry) => entry.id === config.songId) || songs[0] || null;
-    return song ? song.title || '' : '';
+    const title = song ? song.title || '' : '';
+    // no profile data (a project built from lyrics alone): the title typed in
+    // Settings → Song names the piece, and the first filler shows it
+    return title || informed(project, 'title');
   }
 
   function artistText(project, settings) {
     const config = settings.artist;
-    if (config.source === 'custom') return String(config.text || '');
+    if (config.source === 'custom') return String(config.text || '') || informed(project, 'author');
     const profile = (project && project.dataset && project.dataset.profile) || {};
     const name = profile.displayName || profile.handle || '';
-    if (config.showHandle && profile.handle) return `${name} @${profile.handle}`;
-    return name;
+    const handle = config.showHandle && profile.handle ? ` @${profile.handle}` : '';
+    const artist = name ? `${name}${handle}` : '';
+    // the author typed in Settings → Song stands in for a missing profile
+    return artist || informed(project, 'author');
+  }
+
+  // The name the project informed the app with (Settings → Song).
+  function informed(project, field) {
+    return String((project && project.song && project.song[field]) || '');
   }
 
   function expandTemplate(project, settings, context) {

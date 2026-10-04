@@ -30,6 +30,13 @@
     maxChunkDuration: 1,
     minChunkDuration: 0.2,
     targetChunkDuration: 0,
+    // The song tempo (BPM). 0 = no tempo known, so the chunk grid stays off
+    // unless `targetChunkDuration` is set by hand. A tempo cuts the cue on the
+    // bar grid; `chunkScale` shortens the bar for a denser song (the automatic
+    // direction derives it from the weird axis) instead of storing a duration,
+    // so changing the BPM re-times the beats of the whole project.
+    bpm: 0,
+    chunkScale: 1,
     longHold: { mode: 'hold', threshold: 6, interval: 4, repeatEffect: 'same' },
     recap: {
       mode: 'off',
@@ -56,6 +63,9 @@
     maxSize: 0.32,
   };
   const FILL_REF_SIZE = 100; // line widths scale with the size, so measure once at 100
+
+  // The meter every bar-grid cut assumes.
+  const BEATS_PER_BAR = 4;
 
   function fillOptions(style, frame, aspect) {
     const s = style || {};
@@ -667,6 +677,21 @@
     const merged = mergeDeep(DEFAULTS, settings || {});
     const maxLines = merged.maxLines && merged.maxLines[aspect] != null ? merged.maxLines[aspect] : merged.maxLines && merged.maxLines['16:9'];
     return { ...merged, maxLines: Math.max(1, maxLines || 2) };
+  }
+
+  // One bar of the tempo grid in seconds, or 0 when no tempo is known. The bar
+  // is what the grid cuts on (4/4, the meter the engine assumes everywhere), and
+  // `chunkScale` shortens or stretches it so a dense song gets more, shorter
+  // beats without storing a second duration. `targetChunkDuration` is the hand
+  // override and always wins when it is set.
+  function gridSecondsOf(settings) {
+    const explicit = Number(settings && settings.targetChunkDuration);
+    if (Number.isFinite(explicit) && explicit > 0) return explicit;
+    const bpm = Number(settings && settings.bpm);
+    if (!Number.isFinite(bpm) || bpm <= 0) return 0;
+    const scale = Number(settings.chunkScale);
+    const factor = Number.isFinite(scale) && scale > 0 ? scale : 1;
+    return Math.round(((60 / bpm) * BEATS_PER_BAR * factor) * 1000) / 1000;
   }
 
   function timePages(entries, budget, minDuration) {
@@ -1283,9 +1308,11 @@
     // Each timed page is split into line / phrase chunks. A chunk whose reading
     // estimate or share would reach maxChunkDuration is divided further (line
     // -> phrase -> word) so every chunk stays on screen for less than a second.
-    if (chunkMode && basePages.length) {
+    // A known tempo cuts the cue on the musical grid instead, whether or not a
+    // chunk level was chosen (that is what the informed BPM asks for).
+    const targetDuration = gridSecondsOf(settings);
+    if ((chunkMode || targetDuration > 0) && basePages.length) {
       const expanded = [];
-      const targetDuration = Number(settings.targetChunkDuration) || 0;
       if (targetDuration > 0) {
         // one beat per musical bar: beats are cut on the bar grid when the cue
         // crosses a bar line, with TinySegmenter words for Japanese. A planned
@@ -1597,6 +1624,13 @@
       textStyle = resolved && resolved.text;
     }
     const settings = mergeDeep(DEFAULTS, project.textFlow || {}, cue.textFlow || {});
+    // The tempo the cue is cut on. The informed song tempo (Settings → Song)
+    // has the first word, so a field the user filled in re-times every beat of
+    // the project; a tempo stored by a run is the fallback. A tempo also
+    // overrides the duration an older run stored as its grid.
+    const informed = Number(project && project.song && project.song.bpm);
+    settings.bpm = Number.isFinite(informed) && informed > 0 ? informed : Number(settings.bpm) || 0;
+    if (settings.bpm > 0) settings.targetChunkDuration = 0;
     const resolvedOptions = {
       style: textStyle || { size: 96, lineHeight: 1.2, maxWidth: 0.9 },
       frame: { width: (project.output && project.output.width) || 1920, height: (project.output && project.output.height) || 1080 },
@@ -1677,6 +1711,8 @@
     DEFAULTS,
     FILL_DEFAULTS,
     FILL_REF_SIZE,
+    BEATS_PER_BAR,
+    gridSecondsOf,
     detectLang,
     parseEscapes,
     readingTime,

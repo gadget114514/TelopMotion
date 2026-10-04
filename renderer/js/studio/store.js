@@ -65,6 +65,65 @@ SA.store = (() => {
     return (project.beats && project.beats[cueId]) || [];
   }
 
+  // The informed tempo changed. Everything that was cut for the old grid goes:
+  // the rhythm plan an automatic run stored per cue (its cuts are absolute
+  // times), and the bar length an older run stored as a duration. The beats are
+  // then re-flowed, so the whole project lands on the new bar grid.
+  function retimeBeats(projectDoc) {
+    for (const cue of (projectDoc.script && projectDoc.script.cues) || []) {
+      if (!cue.textFlow) continue;
+      const flow = { ...cue.textFlow };
+      let touched = false;
+      if (flow.chunkPlan) {
+        delete flow.chunkPlan;
+        touched = true;
+      }
+      if (flow.targetChunkDuration) {
+        delete flow.targetChunkDuration;
+        touched = true;
+      }
+      if (touched) cue.textFlow = flow;
+    }
+    const flow = { ...(projectDoc.textFlow || {}) };
+    if (flow.targetChunkDuration) {
+      delete flow.targetChunkDuration;
+      projectDoc.textFlow = flow;
+    }
+    restructureProject(projectDoc);
+  }
+
+  // The filler gaps of the project, cut on its bar grid when a tempo is
+  // informed, each carrying the id of the track its clip goes onto.
+  function fillerGaps(projectDoc, options) {
+    if (!SA.fillers) return [];
+    const filler = (projectDoc.tracks || []).find((track) => track && track.kind === 'filler');
+    if (!filler) return [];
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const settings = { ...SA.fillers.settingsFor(projectDoc), ...(options || {}) };
+    return SA.fillers.gaps(cues, duration, settings).map((gap) => ({ ...gap, trackId: filler.id }));
+  }
+
+  // One clip for one filler gap. `auto` marks the clips the automatic direction
+  // owns, so a later run replaces them instead of stacking a second set on top.
+  function fillerClip(projectDoc, gap, auto) {
+    // a whole gap fades in and out; the bars of a divided one cut hard on the
+    // bar line instead of dipping at every beat
+    const divided = (Number(gap.parts) || 1) > 1;
+    return {
+      id: SA.project.nextClipId(projectDoc, 'clip_filler'),
+      ...(auto ? { auto: true } : {}),
+      trackId: gap.trackId,
+      start: gap.from,
+      end: gap.to,
+      spec: clone(gap.spec || { type: 'none', params: {} }),
+      opacity: 1,
+      fadeIn: divided ? 0 : 0.3,
+      fadeOut: divided ? 0 : 0.3,
+      colors: null,
+    };
+  }
+
   function findBeat(project, cueId, beatId) {
     return beatList(project, cueId).find((beat) => beat.id === beatId) || null;
   }
@@ -2002,33 +2061,48 @@ SA.store = (() => {
     regenerateFillers() {
       const project = state.project;
       if (!project || typeof SA === 'undefined' || !SA.fillers) return;
-      const cues = (project.script && project.script.cues) || [];
-      const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
       // An explicit regeneration always materialises the gaps, even when the
       // document's `enabled` flag is off (that flag only governs the automatic
-      // generation inside an auto-direct run).
-      const gaps = SA.fillers.gaps(cues, duration, { ...SA.fillers.settingsFor(project), enabled: true });
+      // generation inside an auto-direct run). With a tempo informed the gaps
+      // come back divided bar by bar.
+      const gaps = fillerGaps(project, { enabled: true });
       dispatch({
         label: 'regenerate fillers',
         areas: ['project'],
         do(projectDoc) {
-          const tracks = projectDoc.tracks || [];
-          const filler = tracks.find((track) => track.kind === 'filler');
+          const filler = (projectDoc.tracks || []).find((track) => track && track.kind === 'filler');
           if (!filler) return;
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== filler.id);
-          for (const gap of gaps) {
-            projectDoc.clips.push({
-              id: SA.project.nextClipId(projectDoc, 'clip_filler'),
-              trackId: filler.id,
-              start: gap.from,
-              end: gap.to,
-              spec: clone(gap.spec || { type: 'none', params: {} }),
-              opacity: 1,
-              fadeIn: 0.3,
-              fadeOut: 0.3,
-              colors: null,
-            });
-          }
+          for (const gap of gaps) projectDoc.clips.push(fillerClip(projectDoc, gap));
+        },
+      });
+    },
+    // What the song is: the title and the author it is credited under, and the
+    // tempo every beat grid follows. The name shows in the first filler (and in
+    // the credits element / end card); the tempo cuts the cues into beats and
+    // divides the filler gaps bar by bar.
+    setSong(patch, options) {
+      const opts = options || {};
+      dispatch({
+        label: opts.label || 'song',
+        areas: ['project', 'script'],
+        coalesceKey: opts.coalesceKey,
+        do(projectDoc) {
+          const before = SA.project.songOf(projectDoc);
+          const next = { ...(projectDoc.song || {}), ...(patch || {}) };
+          projectDoc.song = {
+            title: next.title == null ? '' : String(next.title),
+            author: next.author == null ? '' : String(next.author),
+            bpm: SA.project.normalizeBpm(next.bpm),
+          };
+          if (SA.project.bpmOf(projectDoc) === before.bpm) return;
+          retimeBeats(projectDoc);
+          // the automatic direction divides its own gaps; those clips are the
+          // ones the new tempo re-cuts (hand-made filler clips stay as they are)
+          const auto = (projectDoc.clips || []).filter((clip) => clip.auto && SA.project.trackKindOf(projectDoc, clip.trackId) === 'filler');
+          if (!auto.length) return;
+          projectDoc.clips = (projectDoc.clips || []).filter((clip) => !auto.includes(clip));
+          for (const gap of fillerGaps(projectDoc)) projectDoc.clips.push(fillerClip(projectDoc, gap, true));
         },
       });
     },

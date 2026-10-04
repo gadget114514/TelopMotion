@@ -2,7 +2,7 @@
 
 A desktop app for **lyric videos**, with a Suno achievement card generator as a secondary mode. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. **Suno profile JSON is optional** — start a project without any data, or open *File → TelopMotion (static image)…* for the achievement showcase.
 
-![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-941%20passed-brightgreen)
+![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-1025%20passed-brightgreen)
 
 **[Web version → https://gadget114514.github.io/TelopMotion/](https://gadget114514.github.io/TelopMotion/)**
 
@@ -10,6 +10,7 @@ A desktop app for **lyric videos**, with a Suno achievement card generator as a 
 
 - **Studio (main)**: turn lyrics into a video project — SRT / LRC / JSON import, text restructuring into beats (pages, recap, repeats), vector text rendering with WebGL2 shaders, 12 motion and effect groups, 20 page layout presets, a multi-track timeline with keyframes, an inspector with manual editing, and synchronized audio and video playback
 - **Multi-track timeline**: Subtitle tracks, procedural Figure tracks, customizable Backdrop tracks (`+ Backdrop`), pattern fillers, video/image layers, and credits
+- **Song settings** (*Settings → Song*): name the piece and inform the tempo — the title and the author are shown in the first filler (the intro gap) and in the credits, and the BPM cuts every cue into beats on the bar grid (4/4) and divides the filler gaps bar by bar (0 follows the loaded audio)
 - **Granular disable switches**: non-destructively enable or disable individual cues, beats, clips, or subtitle text without losing data or styling (e.g. silence lyrics text while keeping text backgrounds or frame graphics)
 - **Simultaneous audio & video playback**: real-time synchronized playback of audio tracks and imported video layers (MP4/WebM) directly in the Studio preview, with frame-accurate scrubbing and WebCodecs export
 - **Page layout engine**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
@@ -32,7 +33,7 @@ The app opens directly in the Studio. Suno data is optional: click **Start witho
 
 The Studio turns lyrics into a video project:
 
-- **Media** (left): profile data (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
+- **Media** (left): profile data and the tempo the beats follow (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
 - **Preview** (center): the rendered frame at output resolution; the overlay shows selection handles, guides and the `path` layout points, with simultaneous audio and video layer playback
 - **Preview quality** (*Settings → Quality*, auto/full/half/quarter): the scene is laid out at the size of the frame actually rendered, so a reduced quality draws the same picture smaller and faster instead of a differently-scaled one (the same rule covers video exports at 720p/1440p and the 2D fallback)
 - **Inspector** (right): cue/beat text and timing, enable/disable switches, delete buttons in headers, text style, transform, page layout dialog, motion presets search dialog, text background / frame graphics controls, every effect group with its parameters and motion (in/out easing, stagger, loop), colors, and ◆ keyframe buttons
@@ -47,7 +48,7 @@ The Studio timeline supports rich multi-track composition with independent layer
 - **Subtitle tracks**: hold lyrics cues broken down into beats. Each track provides controls to mute the track, hide subtitle text, hide text backgrounds, or hide frame graphics. Disabling subtitle text silences the lyrics while keeping text backgrounds or decorative frame graphics active.
 - **Figure tracks**: generative procedural motifs and vector shapes that complement the lyrics. Figure tracks feature independent foreground (FG) and background (BG) layer toggles, allowing figure graphics to sit either in front of or behind text.
 - **Backdrop tracks**: dedicated visual layers for split-screen compositions, geometric patterns, and color planes. Add backdrop tracks with the `+ Backdrop` button in the timeline toolbar. Backdrop tracks feature independent FG/BG visibility and enable controls.
-- **Background & Filler tracks**: pattern fillers and generative gap clips that fill instrumental breaks and silence between cues.
+- **Background & Filler tracks**: pattern fillers and generative gap clips that fill instrumental breaks and silence between cues. With a tempo informed (*Settings → Song*) a gap is divided bar by bar, so the track carries one clip per bar; the credits layer stays on the first bar, so the song is named once and the later bars keep moving.
 - **Layer render order** ([doc/text-layer-design.md](doc/text-layer-design.md)):
   1. Background clips → Background layers (image/solid/video)
   2. Backdrop clips → Filler clips → Figure / Text-animation clips
@@ -116,7 +117,7 @@ Animation · Layout · Page · Enter · Exit · Hold · Location · Fill · Edge
 
 ### Text restructuring
 
-One SRT cue becomes **beats**: split into pages that fit the safe area (with language-aware line breaking for Japanese and English), a full-text recap, repeats for long holds, and emphasis moments. Beats can be edited by hand (drag dividers, split, merge, edit text, pin, or disable) and the rest gets restructured around them.
+One SRT cue becomes **beats**: split into pages that fit the safe area (with language-aware line breaking for Japanese and English), a full-text recap, repeats for long holds, and emphasis moments. With a tempo informed (*Settings → Song*) the beats are cut on the musical bar grid (one beat per bar, 4/4), so the words are shared between them by reading weight and land on the beat; changing the tempo re-flows every cue. Beats can be edited by hand (drag dividers, split, merge, edit text, pin, or disable) and the rest gets restructured around them.
 
 ### Export formats
 
@@ -218,16 +219,16 @@ scripts/fx400.js        FX 400: deterministic catalog of representative effects 
 scripts/fx400mix.js     FX 400 MIX: 400 complete-look demos (headline effect + supporting kit)
 scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-effect projects
 scripts/looks-classify.js Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
-scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (211 files)
+scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (223 files)
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
-scripts/test/           Unit test suite (80+ test files, 940+ tests via node --test)
+scripts/test/           Unit test suite (91 test files, 1025 tests via node --test)
 demo/                   Generated demo projects, cue lists, indexes and preview sheets
 renderer/               UI: index.html (achievement card, secondary), studio.html (Studio, main), css/, js/
 renderer/js/            Shared: format, platform, suno, srt, lrc, lyrics-json, lyrics-file, script-gen, color, achievements
 renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, page-layout, page-scene, motion, scene, engine, looks, shape-ops, pattern-variants, text-effects-data
 renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group (animation, layout, page, enter, exit, hold, location, fill, edge, post, background, color, text-bg, vary, repeat)
 renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes, layers
-renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay, page-dialog, motion-dialog, theme-editor, direct
+renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay, page-dialog, motion-dialog, song-dialog, theme-editor, direct
 renderer/data/          Generated runtime pool: fx800.looks.json (800 classified looks for Random look)
 renderer/fonts/         OFL fonts + SOURCES.md + OFL.txt
 renderer/vendor/        Vendored libraries + LICENSES.txt
@@ -236,8 +237,8 @@ renderer/vendor/        Vendored libraries + LICENSES.txt
 ## Testing & tools
 
 ```bash
-npm run check                       # syntax check every script (211 files ok)
-npm test                            # unit test suite (940+ tests across 80+ test files)
+npm run check                       # syntax check every script (223 files ok)
+npm test                            # unit test suite (1025 tests across 91 test files)
 npm run demo30                      # build 30-second showcase reels (scripts/demo30.js)
 npm run distinct                    # count perceptually distinct effect signatures
 SA_SMOKE=1 npx electron .           # fetch @suno, render badges, check the 5 languages

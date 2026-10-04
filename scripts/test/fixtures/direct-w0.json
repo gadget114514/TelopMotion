@@ -1314,7 +1314,8 @@
   },
   "textFlow": {
     "chunk": "phrase",
-    "targetChunkDuration": 2
+    "bpm": 120,
+    "chunkScale": 1
   },
   "fillers": {
     "enabled": true,
