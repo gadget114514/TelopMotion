@@ -37,6 +37,9 @@ SA.inspector = (() => {
 
   const el = {};
   let lastSelection = '';
+  // cue-level reroll / vary / recolor read this: when on, the beats' own
+  // style bags are cleared first so the cue style shows through.
+  let cueForce = false;
 
   function t(key, vars) {
     return SA.i18n.t(key, vars);
@@ -523,11 +526,31 @@ SA.inspector = (() => {
     }
     const actions = document.createElement('div');
     actions.className = 'layer-order';
-    const rerollCue = document.createElement('button');
-    rerollCue.type = 'button';
-    rerollCue.className = 'btn btn-mini';
-    rerollCue.textContent = t('studio.inspector.rerollCue');
-    rerollCue.addEventListener('click', () => SA.store.commands.rerollCue(sel.cueId));
+    const cueButton = (key, run) => {
+      const node = document.createElement('button');
+      node.type = 'button';
+      node.className = 'btn btn-mini';
+      node.textContent = t(key);
+      node.addEventListener('click', run);
+      actions.appendChild(node);
+    };
+    cueButton('studio.inspector.rerollCue', () => SA.store.commands.rerollCue(sel.cueId, { force: cueForce }));
+    cueButton('studio.inspector.varyCue', () => SA.store.commands.varyCue(sel.cueId, { force: cueForce }));
+    cueButton('studio.inspector.recolorCue', () => {
+      const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId }, { force: cueForce });
+      if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+    });
+    const forceLabel = document.createElement('label');
+    forceLabel.className = 'btn btn-mini';
+    const forceBox = document.createElement('input');
+    forceBox.type = 'checkbox';
+    forceBox.checked = cueForce;
+    forceBox.addEventListener('change', () => {
+      cueForce = forceBox.checked;
+    });
+    forceLabel.appendChild(forceBox);
+    forceLabel.appendChild(document.createTextNode(` ${t('studio.inspector.force')}`));
+    actions.appendChild(forceLabel);
     const addBeat = document.createElement('button');
     addBeat.type = 'button';
     addBeat.className = 'btn btn-mini';
@@ -538,7 +561,6 @@ SA.inspector = (() => {
     removeCue.className = 'btn btn-mini';
     removeCue.textContent = t('studio.beat.deleteCue');
     removeCue.addEventListener('click', () => SA.store.commands.deleteCue(sel.cueId));
-    actions.appendChild(rerollCue);
     actions.appendChild(addBeat);
     actions.appendChild(removeCue);
     body.appendChild(actions);
@@ -574,7 +596,8 @@ SA.inspector = (() => {
     if (beatIndex > 0) button('studio.beat.prevBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex - 1].id}`));
     if (beatIndex >= 0 && beatIndex < beatList.length - 1) button('studio.beat.nextBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex + 1].id}`));
     button('studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id));
-    button('studio.inspector.rerollBeatColors', () => {
+    button('studio.inspector.varyBeat', () => SA.store.commands.varyBeat(sel.cueId, beat.id));
+    button('studio.inspector.recolorBeat', () => {
       const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
       if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
     });
@@ -1721,6 +1744,11 @@ SA.inspector = (() => {
     reroll.className = 'btn btn-mini';
     reroll.textContent = t('studio.inspector.reroll');
     reroll.addEventListener('click', () => SA.store.commands.rerollClip(clip.id));
+    const vary = document.createElement('button');
+    vary.type = 'button';
+    vary.className = 'btn btn-mini';
+    vary.textContent = t('studio.inspector.varyClip');
+    vary.addEventListener('click', () => SA.store.commands.varyClip(clip.id));
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'btn btn-mini';
@@ -1736,6 +1764,7 @@ SA.inspector = (() => {
     });
     actions.appendChild(split);
     actions.appendChild(reroll);
+    actions.appendChild(vary);
     actions.appendChild(rerollColors);
     actions.appendChild(remove);
     body.appendChild(actions);
@@ -1904,6 +1933,26 @@ SA.inspector = (() => {
       remove.addEventListener('click', () => {
         commit(layers.filter((entry, at) => at !== index), null, index);
       });
+      // clip beats: per-layer reroll / vary / recolor (split planes are
+      // structural, text layers keep their text — those only take recolor)
+      const layerBeatBtn = (text, key, run) => {
+        const node = document.createElement('button');
+        node.type = 'button';
+        node.className = 'btn btn-mini';
+        node.textContent = text;
+        node.title = t(key);
+        node.addEventListener('click', run);
+        summary.appendChild(node);
+      };
+      const structuralLayer = layer.type === 'split';
+      const textLayer = layer.type === 'textAnim' || layer.type === 'credits';
+      if (!structuralLayer && !textLayer) {
+        layerBeatBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, index));
+      }
+      if (!structuralLayer) {
+        layerBeatBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, index));
+      }
+      layerBeatBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, index));
       summary.appendChild(position);
       summary.appendChild(typeSelect);
       summary.appendChild(up);
@@ -2061,6 +2110,36 @@ SA.inspector = (() => {
         });
         body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
       }
+      // the clip beats: one row per sub-beat with reroll / vary / recolor
+      const subBeats = Array.isArray(params.beats) ? params.beats : [];
+      if (subBeats.length) {
+        const beatsTitle = document.createElement('div');
+        beatsTitle.className = 'insp-section-title';
+        beatsTitle.textContent = `${t('studio.inspector.beat')} · ${subBeats.length}`;
+        body.appendChild(beatsTitle);
+        subBeats.forEach((sub, subIndex) => {
+          const beatRow = document.createElement('div');
+          beatRow.className = 'insp-actions';
+          const label = document.createElement('span');
+          label.className = 'insp-inherit';
+          const move = (sub && sub.move) || {};
+          label.textContent = `#${subIndex + 1} ${Number(sub.start).toFixed(2)}–${Number(sub.end).toFixed(2)}s ${move.in || ''}/${move.hold || ''}/${move.out || ''}`;
+          beatRow.appendChild(label);
+          const subBtn = (text, key, run) => {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'btn btn-mini';
+            node.textContent = text;
+            node.title = t(key);
+            node.addEventListener('click', run);
+            beatRow.appendChild(node);
+          };
+          subBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollFigureBeat(clip.id, subIndex));
+          subBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyFigureBeat(clip.id, subIndex));
+          subBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorFigureBeat(clip.id, subIndex));
+          body.appendChild(beatRow);
+        });
+      }
       appendClipCommon(body, doc, clip);
       return;
     }
@@ -2116,6 +2195,42 @@ SA.inspector = (() => {
         );
       });
       body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+    }
+
+    // combo beats: one row per layer with reroll / vary / recolor (split
+    // planes are structural and only take recolor)
+    if (SA.fillerRender && typeof SA.fillerRender.layersOf === 'function') {
+      const comboLayers = SA.fillerRender.layersOf(spec);
+      if (Array.isArray(comboLayers) && comboLayers.length > 1) {
+        const layersTitle = document.createElement('div');
+        layersTitle.className = 'insp-section-title';
+        layersTitle.textContent = `${t('studio.inspector.beat')} · ${comboLayers.length}`;
+        body.appendChild(layersTitle);
+        comboLayers.forEach((comboLayer, layerIndex) => {
+          const layerRow = document.createElement('div');
+          layerRow.className = 'insp-actions';
+          const layerLabel = document.createElement('span');
+          layerLabel.className = 'insp-inherit';
+          layerLabel.textContent = `#${layerIndex + 1} ${(comboLayer && comboLayer.type) || '?'}`;
+          layerRow.appendChild(layerLabel);
+          const comboBtn = (text, key, run) => {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'btn btn-mini';
+            node.textContent = text;
+            node.title = t(key);
+            node.addEventListener('click', run);
+            layerRow.appendChild(node);
+          };
+          const planeLayer = !comboLayer || comboLayer.type === 'split';
+          if (!planeLayer) {
+            comboBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, layerIndex));
+            comboBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, layerIndex));
+          }
+          comboBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, layerIndex));
+          body.appendChild(layerRow);
+        });
+      }
     }
 
     appendClipCommon(body, doc, clip);

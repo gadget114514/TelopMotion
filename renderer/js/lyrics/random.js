@@ -293,6 +293,10 @@
 
   // cue / element rolls only touch one or two groups, staying inside the mood
   const REROLL_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post'];
+  // vary keeps every type and only re-samples params / motion ("same style,
+  // new seed"). Layout / location join the re-roll set here because their
+  // parameters (radius, offset, …) are part of the look too.
+  const VARY_GROUPS = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post', 'repeat'];
 
   function chooseRerollGroups(random, locks) {
     const pool = REROLL_GROUPS.filter((group) => !locks.has(group));
@@ -467,6 +471,80 @@
     return Array.from(String(text || '')).filter((char) => !/\s/.test(char)).length;
   }
 
+  // Type-preserving re-sample ("same style, new seed"): every group keeps its
+  // current type and only params / motion are re-drawn. Paths that resolve to
+  // no instance for a group are left alone. Returns patches in the same shape
+  // as randomize() with scope 'elements', so callers can write them back the
+  // same way.
+  function vary(options) {
+    const opts = options || {};
+    const project = opts.project;
+    if (!project) return { patches: [], seed: 0 };
+    const seed = Number.isFinite(Number(opts.seed)) ? Number(opts.seed) : 12345;
+    const locks = expandLocks(opts.locks);
+    const styleAxes = project.styleMode ? project.styleMode.axes : null;
+    let axisIntensity = styleAxes
+      ? 1 + Math.max(0, Math.min(1, Number(styleAxes.energy) || 0)) * 1.2 + Math.max(0, Math.min(1, Number(styleAxes.speed) || 0)) * 0.6
+      : 1;
+    if (weirdOfProject(project) >= 0.5) axisIntensity = Math.min(3, axisIntensity + 1);
+    const intensity = opts.intensity == null ? axisIntensity : opts.intensity;
+    const colors = opts.colors || [];
+    const styleParams = project.styleMode ? project.styleMode.params || {} : {};
+    const resolvedStyleParams = moods.resolveParams ? moods.resolveParams(styleAxes, styleParams) : null;
+    const strokeVariety = moods.strokeVarietyOf ? moods.strokeVarietyOf(styleAxes, resolvedStyleParams) : 0;
+    const paths = opts.paths || (opts.path ? [opts.path] : []);
+    const groups = (Array.isArray(opts.groups) && opts.groups.length ? opts.groups : VARY_GROUPS).filter((group) => !locks.has(group));
+    const patches = [];
+    for (const path of paths) {
+      const base = resolveStyle(project, path);
+      const cueId = String(path).split('/')[0].replace('cue:', '');
+      const cue = (project.script && project.script.cues || []).find((entry) => entry.id === cueId);
+      if (!cue) continue;
+      const context = { ...contextForPath(project, path), strokeVariety };
+      const style = {};
+      for (const group of groups) {
+        if (locks.has(group)) continue;
+        const current = base && base[group];
+        if (!current) continue;
+        if (STACK_GROUPS.includes(group)) {
+          if (!Array.isArray(current) || !current.length) continue;
+          const stack = [];
+          current.forEach((entry, index) => {
+            if (!entry || !entry.type || entry.type === 'none') return;
+            const descriptor = fx.get(group, entry.type);
+            if (!descriptor) return;
+            stack.push(instanceFor(group, descriptor, entry, rng.rngFor(seed, path, group, String(index)), intensity, colors, context));
+          });
+          if (stack.length) style[group] = stack;
+          continue;
+        }
+        if (!current.type || current.type === 'none') continue;
+        const descriptor = fx.get(group, current.type);
+        if (!descriptor) continue;
+        style[group] = instanceFor(group, descriptor, current, rng.rngFor(seed, path, group), intensity, colors, context);
+      }
+      if (!Object.keys(style).length) continue;
+      const merged = mergeDeep(base || {}, style);
+      if (repeatConflicts(merged)) continue;
+      const axes = project.styleMode && project.styleMode.axes;
+      if (moods.legibilityActive(axes)) {
+        const before = mergeDeep(base || {}, style);
+        const repaired = moods.repairLegibility(before, axes, context, before.palette);
+        if (repaired && repaired !== before) {
+          const next = { ...style };
+          for (const key of Object.keys(repaired)) {
+            if (JSON.stringify(repaired[key]) !== JSON.stringify(before[key])) next[key] = repaired[key];
+          }
+          if (!Object.keys(next).length) continue;
+          patches.push({ scope: 'element', path, style: next });
+          continue;
+        }
+      }
+      patches.push({ scope: 'element', path, style });
+    }
+    return { patches, seed };
+  }
+
   function apply(project, options) {
     const result = randomize({ ...options, project });
     const byScope = result.patches;
@@ -498,7 +576,10 @@
   return {
     GROUPS,
     EASE_POOL,
+    REROLL_GROUPS,
+    VARY_GROUPS,
     randomize,
+    vary,
     apply,
     countLetters,
     sampleParam,

@@ -2928,6 +2928,7 @@
     paletteColors,
     rerollClipSpec,
     rerollClipColors,
+    sampleClipParams,
     normalizeAxes,
     randomAxes,
     randomGenre,

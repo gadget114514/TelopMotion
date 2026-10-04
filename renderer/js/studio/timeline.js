@@ -2304,6 +2304,7 @@ SA.timeline = (() => {
       add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
       add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
       add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));
+      add(t('studio.inspector.varyClip'), () => SA.store.commands.varyClip(clip.id));
       add(t('studio.generate.rerollColors'), () =>
         SA.store.commands.rerollColors({ kinds: [hit.kind], clipIds: [clip.id], perClip: true })
       );
@@ -2385,6 +2386,9 @@ SA.timeline = (() => {
       add(t('studio.beat.splitAtPlayhead'), () => SA.store.commands.splitBeat(cueId, hit.beatId, SA.store.state.playhead));
       add(t('studio.beat.mergeNext'), () => SA.store.commands.mergeBeats(cueId, hit.beatId));
       add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));
+      add(t('studio.inspector.rerollBeat'), () => SA.store.commands.rerollBeat(cueId, hit.beatId));
+      add(t('studio.inspector.varyBeat'), () => SA.store.commands.varyBeat(cueId, hit.beatId));
+      add(t('studio.inspector.recolorBeat'), () => SA.store.commands.rerollPalette({ cueId, beatId: hit.beatId }));
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
       addRecapItem(add, cueId);
