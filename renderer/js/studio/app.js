@@ -1512,7 +1512,7 @@
   // Help > About: the app version (package.json via the main process) and the
   // data file format version (project.js VERSION) the saved files carry.
   async function aboutDialog() {
-    let appVersion = '-';
+    let appVersion = '1.0.20261006';
     let runtime = '';
     try {
       const reply = window.sunoApi && window.sunoApi.appInfo ? await window.sunoApi.appInfo() : null;
@@ -1530,6 +1530,7 @@
       <h3>${t('studio.about.title')}</h3>
       <div class="field"><span>${t('studio.about.app')}</span><strong>${appVersion}</strong></div>
       <div class="field"><span>${t('studio.about.data')}</span><strong>${dataVersion}</strong></div>
+      <div class="dialog-hint">developed by 2nek and SIs</div>
       ${runtime ? `<div class="field"><span></span><small>${runtime}</small></div>` : ''}
       <div class="dialog-actions">
         <button type="button" class="btn btn-primary" data-action="ok">${t('studio.about.ok')}</button>
