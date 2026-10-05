@@ -2886,6 +2886,33 @@ SA.timeline = (() => {
     return { ...SA.layersDialog.defaults(firstCue && point.y < firstCue.y ? 'foreground' : 'background'), color: '#ffffff' };
   }
 
+  // Toolbar "Add sheet": pick image files (multi-select) and stack one sheet
+  // per image at the playhead, so a cutout set lands in one gesture.
+  async function addSheetsFromPicker() {
+    const files = (await SA.platform.readFiles('.png,.jpg,.jpeg,.webp,.gif,.bmp,image/png,image/jpeg,image/webp')) || [];
+    if (!files.length) return;
+    const start = snapFrame(SA.store.state.playhead);
+    let lastId = null;
+    for (const file of files) {
+      if (!file || !file.bytes) continue;
+      const extension = String(file.name || '').split('.').pop().toLowerCase();
+      const mime = (SA.layersDialog.MIME && SA.layersDialog.MIME[extension]) || 'image/png';
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(new Blob([file.bytes], { type: mime }));
+      });
+      if (!dataUrl) continue;
+      const layer = { ...SA.layersDialog.defaults('background'), type: 'image', src: dataUrl, fit: 'cover', color: '#ffffff', start };
+      SA.store.commands.addLayer(layer);
+      lastId = layer.id;
+      if (SA.studio && SA.studio.toast) SA.studio.toast('studio.media.layerAdded', { name: file.name });
+    }
+    if (lastId) SA.store.setSelection([`layer:${lastId}`], 'layer');
+    draw();
+  }
+
   function addAnimationTrack(kind) {
     const id = SA.store.commands.addTrack(kind);
     if (!id) return;
@@ -3125,6 +3152,9 @@ SA.timeline = (() => {
     if (el.addVideoTrack) {
       el.addVideoTrack.addEventListener('click', () => addAnimationTrack('video'));
     }
+    if (el.addSheet) {
+      el.addSheet.addEventListener('click', () => addSheetsFromPicker());
+    }
     document.addEventListener('click', (event) => {
       if (menu && !menu.contains(event.target)) hideMenu();
     });
@@ -3147,6 +3177,7 @@ SA.timeline = (() => {
     el.addBackdropTrack = document.getElementById('tl-add-backdrop-track');
     el.addFillerTrack = document.getElementById('tl-add-filler-track');
     el.addVideoTrack = document.getElementById('tl-add-video-track');
+    el.addSheet = document.getElementById('tl-add-sheet');
     // hover tooltip for row labels the fixed label column had to truncate
     el.tip = document.createElement('div');
     el.tip.className = 'timeline-tip';
