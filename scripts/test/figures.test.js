@@ -808,3 +808,27 @@ test('generate saves the new params without moving the old draws', () => {
     assert.deepEqual(strip(pinned.params), strip(plain.params));
   }
 });
+
+test('the Inspector descriptor exposes the new figure params and they reach the draw', () => {
+  const fillerRender = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'filler-render.js'));
+  const params = fillerRender.paramsOf('figures');
+  const byKey = new Map(params.map((param) => [param.key, param]));
+  assert.deepEqual(byKey.get('stroke').options, ['hair', 'thin', 'med', 'bold', 'heavy']);
+  assert.deepEqual(byKey.get('lineStyle').options, ['auto', ...figures.LINE_STYLES]);
+  assert.deepEqual(byKey.get('lineCap').options, figures.LINE_CAPS);
+  assert.equal(byKey.get('lineCap').default, 'round');
+  assert.equal(byKey.get('weightVar').kind, 'number');
+  for (const key of ['inEase', 'outEase', 'holdEase', 'cameraEase']) assert.equal(byKey.get(key).kind, 'ease', key);
+  for (const key of ['inDur', 'outDur']) assert.equal(byKey.get(key).kind, 'number', key);
+  // an Inspector edit flows through to the picture
+  const ctx = { frame: FRAME, clip: { key: 'gap_1', from: 30, to: 40 }, seed: 3, colors: ['#ff0000', '#00ff00'], time: 35, duration: 40 };
+  const solid = fillerRender.drawList({ type: 'figures', params: { motif: 'burst', lineStyle: 'solid' } }, ctx);
+  const dashed = fillerRender.drawList({ type: 'figures', params: { motif: 'burst', lineStyle: 'dashed' } }, ctx);
+  assert.ok(solid.shapes.length > 0 && dashed.shapes.length > 0);
+  assert.ok(!solid.shapes.some((shape) => shape.pattern != null), 'solid stays plain');
+  assert.ok(dashed.shapes.some((shape) => shape.pattern === 1), 'dashed reaches the shape pass');
+  const hair = fillerRender.drawList({ type: 'figures', params: { motif: 'burst', stroke: 'hair' } }, ctx);
+  const heavy = fillerRender.drawList({ type: 'figures', params: { motif: 'burst', stroke: 'heavy' } }, ctx);
+  const width = (list) => list.shapes.reduce((sum, shape) => sum + (shape.width || 0), 0);
+  assert.ok(width(heavy) > width(hair) * 2, 'the stroke select reaches the geometry');
+});
