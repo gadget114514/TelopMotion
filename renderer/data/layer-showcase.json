@@ -1,0 +1,1131 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion レイヤー見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "lk_001",
+        "start": 0,
+        "end": 5,
+        "text": "1. transform.x（X -0.35 → 0.35）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 1,
+          "section": "move",
+          "value": "transform.x",
+          "detail": "X -0.35 → 0.35"
+        }
+      },
+      {
+        "id": "lk_002",
+        "start": 5,
+        "end": 10,
+        "text": "2. transform.y（Y 0.30 → -0.30）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 2,
+          "section": "move",
+          "value": "transform.y",
+          "detail": "Y 0.30 → -0.30"
+        }
+      },
+      {
+        "id": "lk_003",
+        "start": 10,
+        "end": 15,
+        "text": "3. transform.rotate（0° → 360°）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 3,
+          "section": "spin",
+          "value": "transform.rotate",
+          "detail": "0° → 360°"
+        }
+      },
+      {
+        "id": "lk_004",
+        "start": 15,
+        "end": 20,
+        "text": "4. transform.scale（0.15 → 0.55）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 4,
+          "section": "spin",
+          "value": "transform.scale",
+          "detail": "0.15 → 0.55"
+        }
+      },
+      {
+        "id": "lk_005",
+        "start": 20,
+        "end": 25,
+        "text": "5. transform.scaleX/scaleY（X 0.5 → 1.6 / Y 1.6 → 0.5）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 5,
+          "section": "spin",
+          "value": "transform.scaleX/scaleY",
+          "detail": "X 0.5 → 1.6 / Y 1.6 → 0.5"
+        }
+      },
+      {
+        "id": "lk_006",
+        "start": 25,
+        "end": 30,
+        "text": "6. transform.anchorX/anchorY（中央 (0.5, 0.5) で一回転）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 6,
+          "section": "anchor",
+          "value": "transform.anchorX/anchorY",
+          "detail": "中央 (0.5, 0.5) で一回転"
+        }
+      },
+      {
+        "id": "lk_007",
+        "start": 30,
+        "end": 35,
+        "text": "7. transform.anchorX/anchorY（左上 (0, 0) で一回転）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 7,
+          "section": "anchor",
+          "value": "transform.anchorX/anchorY",
+          "detail": "左上 (0, 0) で一回転"
+        }
+      },
+      {
+        "id": "lk_008",
+        "start": 35,
+        "end": 40,
+        "text": "8. opacity（1 → 0）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 8,
+          "section": "fade",
+          "value": "opacity",
+          "detail": "1 → 0"
+        }
+      },
+      {
+        "id": "lk_009",
+        "start": 40,
+        "end": 45,
+        "text": "9. crop.l（左 0 → 0.55）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 9,
+          "section": "crop",
+          "value": "crop.l",
+          "detail": "左 0 → 0.55"
+        }
+      },
+      {
+        "id": "lk_010",
+        "start": 45,
+        "end": 50,
+        "text": "10. crop.l/t/r/b（四辺 0 → 0.30）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 10,
+          "section": "crop",
+          "value": "crop.l/t/r/b",
+          "detail": "四辺 0 → 0.30"
+        }
+      },
+      {
+        "id": "lk_011",
+        "start": 50,
+        "end": 55,
+        "text": "11. x + rotate + scale（X・回転・拡大＋in/outフェード）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 11,
+          "section": "combo",
+          "value": "x + rotate + scale",
+          "detail": "X・回転・拡大＋in/outフェード"
+        }
+      }
+    ],
+    "sourceName": "layer-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 56,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {},
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "lk_001": [
+      {
+        "id": "lk_001:single0",
+        "cueId": "lk_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 5,
+        "text": "1. transform.x（X -0.35 → 0.35）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "1. transform.x（X -0.35 → 0.35）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_002": [
+      {
+        "id": "lk_002:single0",
+        "cueId": "lk_002",
+        "kind": "single",
+        "index": 0,
+        "start": 5,
+        "end": 10,
+        "text": "2. transform.y（Y 0.30 → -0.30）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "2. transform.y（Y 0.30 → -0.30）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_003": [
+      {
+        "id": "lk_003:single0",
+        "cueId": "lk_003",
+        "kind": "single",
+        "index": 0,
+        "start": 10,
+        "end": 15,
+        "text": "3. transform.rotate（0° → 360°）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "3. transform.rotate（0° → 360°）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_004": [
+      {
+        "id": "lk_004:single0",
+        "cueId": "lk_004",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 20,
+        "text": "4. transform.scale（0.15 → 0.55）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "4. transform.scale（0.15 → 0.55）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_005": [
+      {
+        "id": "lk_005:page1",
+        "cueId": "lk_005",
+        "kind": "page",
+        "index": 1,
+        "start": 20,
+        "end": 22.174479166666668,
+        "text": "5. transform.scaleX/scaleY（X 0.",
+        "lines": [
+          "5. transform.scaleX/scaleY（X 0."
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "lk_005:page2",
+        "cueId": "lk_005",
+        "kind": "page",
+        "index": 2,
+        "start": 22.174479166666668,
+        "end": 25,
+        "text": "5 → 1.6 / Y 1.6 → 0.5）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "5 → 1.6 / Y 1.6 → 0.5）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "lk_006": [
+      {
+        "id": "lk_006:page1",
+        "cueId": "lk_006",
+        "kind": "page",
+        "index": 1,
+        "start": 25,
+        "end": 27.604456824512535,
+        "text": "6. transform.anchorX/anchorY（中央 (0.",
+        "lines": [
+          "6. transform.anchorX/anchorY（中央 (0."
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "lk_006:page2",
+        "cueId": "lk_006",
+        "kind": "page",
+        "index": 2,
+        "start": 27.604456824512535,
+        "end": 30,
+        "text": "5, 0.5) で一回転）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "5, 0.5) で一回転）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "lk_007": [
+      {
+        "id": "lk_007:single0",
+        "cueId": "lk_007",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 35,
+        "text": "7. transform.anchorX/anchorY（左上 (0, 0\n) で一回転）切り絵キーフレーム見本 Sample",
+        "lines": [
+          "7. transform.anchorX/anchorY（左上 (0, 0",
+          ") で一回転）切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8199999999999998,
+        "pinned": false
+      }
+    ],
+    "lk_008": [
+      {
+        "id": "lk_008:single0",
+        "cueId": "lk_008",
+        "kind": "single",
+        "index": 0,
+        "start": 35,
+        "end": 40,
+        "text": "8. opacity（1 → 0）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "8. opacity（1 → 0）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_009": [
+      {
+        "id": "lk_009:single0",
+        "cueId": "lk_009",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 45,
+        "text": "9. crop.l（左 0 → 0.55）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "9. crop.l（左 0 → 0.55）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_010": [
+      {
+        "id": "lk_010:single0",
+        "cueId": "lk_010",
+        "kind": "single",
+        "index": 0,
+        "start": 45,
+        "end": 50,
+        "text": "10. crop.l/t/r/b（四辺 0 → 0.30）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "10. crop.l/t/r/b（四辺 0 → 0.30）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lk_011": [
+      {
+        "id": "lk_011:single0",
+        "cueId": "lk_011",
+        "kind": "single",
+        "index": 0,
+        "start": 50,
+        "end": 55,
+        "text": "11. x + rotate + scale（X・回転・拡大＋in/\noutフェード）切り絵キーフレーム見本 Sample",
+        "lines": [
+          "11. x + rotate + scale（X・回転・拡大＋in/",
+          "outフェード）切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {
+    "layer:layer_lk_001": {
+      "transform.x": [
+        {
+          "t": 0,
+          "value": -0.35,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.35,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_002": {
+      "transform.y": [
+        {
+          "t": 0,
+          "value": 0.3,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": -0.3,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_003": {
+      "transform.rotate": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 360,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_004": {
+      "transform.scale": [
+        {
+          "t": 0,
+          "value": 0.15,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.55,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_005": {
+      "transform.scaleX": [
+        {
+          "t": 0,
+          "value": 0.5,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 1.6,
+          "ease": "linear"
+        }
+      ],
+      "transform.scaleY": [
+        {
+          "t": 0,
+          "value": 1.6,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.5,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_006": {
+      "transform.rotate": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 360,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_007": {
+      "transform.rotate": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 360,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_008": {
+      "opacity": [
+        {
+          "t": 0,
+          "value": 1,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_009": {
+      "crop.l": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.55,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_010": {
+      "crop.l": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.3,
+          "ease": "linear"
+        }
+      ],
+      "crop.t": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.3,
+          "ease": "linear"
+        }
+      ],
+      "crop.r": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.3,
+          "ease": "linear"
+        }
+      ],
+      "crop.b": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.3,
+          "ease": "linear"
+        }
+      ]
+    },
+    "layer:layer_lk_011": {
+      "transform.x": [
+        {
+          "t": 0,
+          "value": -0.3,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.3,
+          "ease": "linear"
+        }
+      ],
+      "transform.rotate": [
+        {
+          "t": 0,
+          "value": 0,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 360,
+          "ease": "linear"
+        }
+      ],
+      "transform.scale": [
+        {
+          "t": 0,
+          "value": 0.25,
+          "ease": "linear"
+        },
+        {
+          "t": 5,
+          "value": 0.45,
+          "ease": "linear"
+        }
+      ]
+    }
+  },
+  "markers": [
+    {
+      "t": 0,
+      "label": "移動 (move)"
+    },
+    {
+      "t": 10,
+      "label": "回転・拡大 (spin)"
+    },
+    {
+      "t": 25,
+      "label": "中心点 (anchor)"
+    },
+    {
+      "t": 35,
+      "label": "透明度 (fade)"
+    },
+    {
+      "t": 40,
+      "label": "切り抜き (crop)"
+    },
+    {
+      "t": 50,
+      "label": "仕上げ (combo)"
+    }
+  ],
+  "layers": [
+    {
+      "id": "lk_plate",
+      "name": "plate",
+      "slot": "background",
+      "type": "solid",
+      "color": "#141a2b",
+      "opacity": 1,
+      "blend": "normal",
+      "fit": "stretch",
+      "radius": 0,
+      "enabled": true,
+      "start": 0,
+      "end": 55,
+      "transform": {
+        "x": 0,
+        "y": 0,
+        "scale": 1,
+        "rotate": 0
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_001",
+      "name": "star",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAC0klEQVR4nO3VUW5TMRCG0S6CJ7bAvtgvKyoCFBFamt4k9v3HnnMkP8ee+aL78gIAAAAAAAAAAABZrz++v/466XvQlACJEiAxl/hESIQAiRIgMW/jEyGnEiBRAiTmo/hEyCkESJQAifksPhEylQCJORqfCJlCgEQJkJh74xMhQwmQKAES82h8ImQIARIlQGKejU+EPEWAxIyKT4Q8RIBECZCY0fGJkLsIkCgBEjMrPhFyiACJEiAxs+MTITcJkCgBEnNWfCLkvwRIzNnxiZB/CJAoARKTik+EG0tHJdaw9KKchn+A9HAcMf6WHozTNLxr6SE5jeO7SA/LaRzftfTgnKbhXUsP0Wkc30V6mKPOl6/fbp70/cR3Q3qoM8PbKcR0J9OlBzwzvJVDTHdxqvSwz4hvpQjTPUSkh35GfCtEmO4gLr2A2fFVjTC991LSy5gdX7UI0/suKb2ULgGm91zazvFViDC932UIUHhxO8aXiDC9x6UJUHwlCFB4cQIUX5wAxRcnQPGVIEDhxXUPMD1/FoxQfJvqEmB6ztxQPULxNbBrgOm5coeKEYqvkWqfYp/eZp5d+MgIR9wlPU/uMGLhoyIceZf0XDlo5NIfDXHGHdJz5aAZyz8a4szfTs+Vg2ZGkDzpuXJAOhIRNpcORIDNpQMRYGPpOETYXDoMATaXDkOAjaWjEGFz6SAE2Fw6CAE2lw5CgI2lYxBhc+kQBNhcOoD07xNUZflV7sHJqi282n2YrOKyK96JSSovufLdGGCFBa9wRx600lJXuisHrbbQ1e7LDasuc9V788bqC1z9/u3tsLwd3tDWTkvb6S0t7LiwHd+0rZ2XtPPbtrH7gnZ/39I6LabTW5fRbSHd3lte10V0fXc5nZfQ+e0lGP4f5hBi6H+ZRYBhv2cmJzHoj5nNCQz3c2Y0kcEeY04TGOp9zAsAAAAAAAAAAAAAAAAAAAAAlvcTsH0zDsXLxAsAAAAASUVORK5CYII=",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 0,
+      "end": 5,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_002",
+      "name": "ball",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAADTElEQVR4nO2SSW4cQRDE6qF+iX/qqz8iAwIk2GqPZumFmRkkwHtVBtcSERERERERERERERERERERERERERERERERERGRIbz9+Pm2R/r90oS9oRmmPM3V0RljOHRoBhkKHZQhBkLHY4yh0KEYYih0GIYYDB2DEYZCB1BFeoc46MGrSu8SAT1ydel9RkOP20V6p3HQg3aV3m0E9IjdpfdrDT3eFOkdW0KPNk16z1bQY02V3rUF9EjTpfctDT1OivTOJTn80L9+f2+BEIywCJdFZ4xG+BU0PEPMjrBMeOEh0h1glIwvMEK6A4TS8RnhbFrEZ4QzaRWfEc7DAGtL93EqLeMzwjkYYA/pTk6hdXxG2JvdB6HDCwxwVIQG2FO6m0MYE58R9sQAe0v3s4tDjkAHFx5g6wgNcIZ0Ry9jgDOkO3qJww5AB2eAPSM0wFnSPT3FoZ+ngzPAfhEe/nk6OuMzwBIWiMAAH8AAZ0p39RCnHcD4Skj3dRcDnC3d111OPYDx4dJ9fcvpBzDAEtKd3eSSAxgfLt3ZTS47gvEZ4P+49BDGZ4BfufwYxmeAf4MdxfAMkD7KrhDpdzeU7m0DfZCnY6Tf11y6tw30QdQA8aOoAWqIdG8b6IOoAeJHUQPUEOneNtAHUQPEj6IGqCHSvW2gD6IGiB9FDVBDpHvbQB9EDRA/igYHuIwwRrqzm9CHUQPEj6MGqMOlO7sJfRg1QPw4GhzgMsLx0n3dhT6QGiB+JA0OcBnhWOmuHoY+lBogfiw1QB0m3dVT0MfS4PiWAY6T7ukl6KNpcHzLAMdId/Qy9OE0PMBlhO2l+9kNfUAND3AZYVvpbg6DPqSGB7iMsJ10L6dAH1WD41sG2Ea6k1Ohj6vB8S0DLC/dxyXQR9bg+D6gj63B8X1AH12D41sGWEa6AxT6+OnS+5eAHiFVevdS0GOkSe9dEnqUFOmdS0OPM1163xbQI02V3rUV9FjTpPdsCT3aFOkdW0OP1116vxHQI3aV3m0c9KBdpHcaDT1udel9IqBHriq9Sxz04FWkd4iHDsDwJC5C+t5yAzoMw5N36FAMTz6h4zE6eYcOyvDkH+jQDE4+MTopiaGJiIiIiIiIiIiIiIiIiIiIiMhj/AH9kDl0RRLYywAAAABJRU5ErkJggg==",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 5,
+      "end": 10,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_003",
+      "name": "paper",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAACc0lEQVR4nO3SsZHVUBBFQQWBRQrEQtAkQQ4Y+HhgUYW3/NVK5z1Nd9VNYOYcBwAAAAAAAAAAAAAAAAAAAAAAAPCCr9+//bbXV/9ta/Xznrb6n9uoH/X01f9dVv2Yaav/vZT6GVNX/z1XP8AGh1gf3QZHWB/bhkdYH9oGB1gf2QZHWB/XhkdYH9YGB1gf1YZHWB/UBgd45aE+ff4yeiL8D8LbM8S6mw8jvD1DrLv5EOITYUp8e0dY93Oa+PaOsO7nNPHtHWHdz2kCFGBKfP0EKEABVqr4fvz89ahVEdb9nHZ3gHUoq4YowBsCrONYOUIBXhxgHcXqEQrwwgDrGHaIUIACFGDh6gDrCOoJ8A0CFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZgSoABTAhRgSoACTAlQgCkBCjAlQAGmBCjAlAAFmBKgAFMCFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZi6OsDJEb5yIwEKUICFOwKcGOGr9xHgxQFOivA9txHgDQFOiPC9dxHgTQE+NcSz9xBgEKGdi0+ACzzvCROgCLeMT4ACFOBZZw8gwi4+AYowjU+AIkzje0SAhwjFV/vIowjx+vAEKMQ0vMcFeFwcoYnvTfVBbXiAhwi3Wd3JZerD2vAADxEuv7qPW9RHtsHxHQJcdnUXt6qPbYPj+6s+ug2O71/1A6au/vtS6mdMW/3vZdWPefrq/26jftTTVv9za/Xzdl39NwAAAAAAAAAAAAAAAAAAAAAAANjLHyCGkZhsI/jZAAAAAElFTkSuQmCC",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 10,
+      "end": 15,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_004",
+      "name": "star",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAC0klEQVR4nO3VUW5TMRCG0S6CJ7bAvtgvKyoCFBFamt4k9v3HnnMkP8ee+aL78gIAAAAAAAAAAABZrz++v/466XvQlACJEiAxl/hESIQAiRIgMW/jEyGnEiBRAiTmo/hEyCkESJQAifksPhEylQCJORqfCJlCgEQJkJh74xMhQwmQKAES82h8ImQIARIlQGKejU+EPEWAxIyKT4Q8RIBECZCY0fGJkLsIkCgBEjMrPhFyiACJEiAxs+MTITcJkCgBEnNWfCLkvwRIzNnxiZB/CJAoARKTik+EG0tHJdaw9KKchn+A9HAcMf6WHozTNLxr6SE5jeO7SA/LaRzftfTgnKbhXUsP0Wkc30V6mKPOl6/fbp70/cR3Q3qoM8PbKcR0J9OlBzwzvJVDTHdxqvSwz4hvpQjTPUSkh35GfCtEmO4gLr2A2fFVjTC991LSy5gdX7UI0/suKb2ULgGm91zazvFViDC932UIUHhxO8aXiDC9x6UJUHwlCFB4cQIUX5wAxRcnQPGVIEDhxXUPMD1/FoxQfJvqEmB6ztxQPULxNbBrgOm5coeKEYqvkWqfYp/eZp5d+MgIR9wlPU/uMGLhoyIceZf0XDlo5NIfDXHGHdJz5aAZyz8a4szfTs+Vg2ZGkDzpuXJAOhIRNpcORIDNpQMRYGPpOETYXDoMATaXDkOAjaWjEGFz6SAE2Fw6CAE2lw5CgI2lYxBhc+kQBNhcOoD07xNUZflV7sHJqi282n2YrOKyK96JSSovufLdGGCFBa9wRx600lJXuisHrbbQ1e7LDasuc9V788bqC1z9/u3tsLwd3tDWTkvb6S0t7LiwHd+0rZ2XtPPbtrH7gnZ/39I6LabTW5fRbSHd3lte10V0fXc5nZfQ+e0lGP4f5hBi6H+ZRYBhv2cmJzHoj5nNCQz3c2Y0kcEeY04TGOp9zAsAAAAAAAAAAAAAAAAAAAAAlvcTsH0zDsXLxAsAAAAASUVORK5CYII=",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 15,
+      "end": 20,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_005",
+      "name": "ball",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAADTElEQVR4nO2SSW4cQRDE6qF+iX/qqz8iAwIk2GqPZumFmRkkwHtVBtcSERERERERERERERERERERERERERERERERERGRIbz9+Pm2R/r90oS9oRmmPM3V0RljOHRoBhkKHZQhBkLHY4yh0KEYYih0GIYYDB2DEYZCB1BFeoc46MGrSu8SAT1ydel9RkOP20V6p3HQg3aV3m0E9IjdpfdrDT3eFOkdW0KPNk16z1bQY02V3rUF9EjTpfctDT1OivTOJTn80L9+f2+BEIywCJdFZ4xG+BU0PEPMjrBMeOEh0h1glIwvMEK6A4TS8RnhbFrEZ4QzaRWfEc7DAGtL93EqLeMzwjkYYA/pTk6hdXxG2JvdB6HDCwxwVIQG2FO6m0MYE58R9sQAe0v3s4tDjkAHFx5g6wgNcIZ0Ry9jgDOkO3qJww5AB2eAPSM0wFnSPT3FoZ+ngzPAfhEe/nk6OuMzwBIWiMAAH8AAZ0p39RCnHcD4Skj3dRcDnC3d111OPYDx4dJ9fcvpBzDAEtKd3eSSAxgfLt3ZTS47gvEZ4P+49BDGZ4BfufwYxmeAf4MdxfAMkD7KrhDpdzeU7m0DfZCnY6Tf11y6tw30QdQA8aOoAWqIdG8b6IOoAeJHUQPUEOneNtAHUQPEj6IGqCHSvW2gD6IGiB9FDVBDpHvbQB9EDRA/igYHuIwwRrqzm9CHUQPEj6MGqMOlO7sJfRg1QPw4GhzgMsLx0n3dhT6QGiB+JA0OcBnhWOmuHoY+lBogfiw1QB0m3dVT0MfS4PiWAY6T7ukl6KNpcHzLAMdId/Qy9OE0PMBlhO2l+9kNfUAND3AZYVvpbg6DPqSGB7iMsJ10L6dAH1WD41sG2Ea6k1Ohj6vB8S0DLC/dxyXQR9bg+D6gj63B8X1AH12D41sGWEa6AxT6+OnS+5eAHiFVevdS0GOkSe9dEnqUFOmdS0OPM1163xbQI02V3rUV9FjTpPdsCT3aFOkdW0OP1116vxHQI3aV3m0c9KBdpHcaDT1udel9IqBHriq9Sxz04FWkd4iHDsDwJC5C+t5yAzoMw5N36FAMTz6h4zE6eYcOyvDkH+jQDE4+MTopiaGJiIiIiIiIiIiIiIiIiIiIiMhj/AH9kDl0RRLYywAAAABJRU5ErkJggg==",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 20,
+      "end": 25,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_006",
+      "name": "paper",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAACc0lEQVR4nO3SsZHVUBBFQQWBRQrEQtAkQQ4Y+HhgUYW3/NVK5z1Nd9VNYOYcBwAAAAAAAAAAAAAAAAAAAAAAAPCCr9+//bbXV/9ta/Xznrb6n9uoH/X01f9dVv2Yaav/vZT6GVNX/z1XP8AGh1gf3QZHWB/bhkdYH9oGB1gf2QZHWB/XhkdYH9YGB1gf1YZHWB/UBgd45aE+ff4yeiL8D8LbM8S6mw8jvD1DrLv5EOITYUp8e0dY93Oa+PaOsO7nNPHtHWHdz2kCFGBKfP0EKEABVqr4fvz89ahVEdb9nHZ3gHUoq4YowBsCrONYOUIBXhxgHcXqEQrwwgDrGHaIUIACFGDh6gDrCOoJ8A0CFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZgSoABTAhRgSoACTAlQgCkBCjAlQAGmBCjAlAAFmBKgAFMCFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZi6OsDJEb5yIwEKUICFOwKcGOGr9xHgxQFOivA9txHgDQFOiPC9dxHgTQE+NcSz9xBgEKGdi0+ACzzvCROgCLeMT4ACFOBZZw8gwi4+AYowjU+AIkzje0SAhwjFV/vIowjx+vAEKMQ0vMcFeFwcoYnvTfVBbXiAhwi3Wd3JZerD2vAADxEuv7qPW9RHtsHxHQJcdnUXt6qPbYPj+6s+ug2O71/1A6au/vtS6mdMW/3vZdWPefrq/26jftTTVv9za/Xzdl39NwAAAAAAAAAAAAAAAAAAAAAAANjLHyCGkZhsI/jZAAAAAElFTkSuQmCC",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 25,
+      "end": 30,
+      "transform": {
+        "scale": 0.3,
+        "anchorX": 0.5,
+        "anchorY": 0.5
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_007",
+      "name": "paper",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAACc0lEQVR4nO3SsZHVUBBFQQWBRQrEQtAkQQ4Y+HhgUYW3/NVK5z1Nd9VNYOYcBwAAAAAAAAAAAAAAAAAAAAAAAPCCr9+//bbXV/9ta/Xznrb6n9uoH/X01f9dVv2Yaav/vZT6GVNX/z1XP8AGh1gf3QZHWB/bhkdYH9oGB1gf2QZHWB/XhkdYH9YGB1gf1YZHWB/UBgd45aE+ff4yeiL8D8LbM8S6mw8jvD1DrLv5EOITYUp8e0dY93Oa+PaOsO7nNPHtHWHdz2kCFGBKfP0EKEABVqr4fvz89ahVEdb9nHZ3gHUoq4YowBsCrONYOUIBXhxgHcXqEQrwwgDrGHaIUIACFGDh6gDrCOoJ8A0CFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZgSoABTAhRgSoACTAlQgCkBCjAlQAGmBCjAlAAFmBKgAFMCFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZi6OsDJEb5yIwEKUICFOwKcGOGr9xHgxQFOivA9txHgDQFOiPC9dxHgTQE+NcSz9xBgEKGdi0+ACzzvCROgCLeMT4ACFOBZZw8gwi4+AYowjU+AIkzje0SAhwjFV/vIowjx+vAEKMQ0vMcFeFwcoYnvTfVBbXiAhwi3Wd3JZerD2vAADxEuv7qPW9RHtsHxHQJcdnUXt6qPbYPj+6s+ug2O71/1A6au/vtS6mdMW/3vZdWPefrq/26jftTTVv9za/Xzdl39NwAAAAAAAAAAAAAAAAAAAAAAANjLHyCGkZhsI/jZAAAAAElFTkSuQmCC",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 30,
+      "end": 35,
+      "transform": {
+        "scale": 0.3,
+        "anchorX": 0,
+        "anchorY": 0
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_008",
+      "name": "star",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAC0klEQVR4nO3VUW5TMRCG0S6CJ7bAvtgvKyoCFBFamt4k9v3HnnMkP8ee+aL78gIAAAAAAAAAAABZrz++v/466XvQlACJEiAxl/hESIQAiRIgMW/jEyGnEiBRAiTmo/hEyCkESJQAifksPhEylQCJORqfCJlCgEQJkJh74xMhQwmQKAES82h8ImQIARIlQGKejU+EPEWAxIyKT4Q8RIBECZCY0fGJkLsIkCgBEjMrPhFyiACJEiAxs+MTITcJkCgBEnNWfCLkvwRIzNnxiZB/CJAoARKTik+EG0tHJdaw9KKchn+A9HAcMf6WHozTNLxr6SE5jeO7SA/LaRzftfTgnKbhXUsP0Wkc30V6mKPOl6/fbp70/cR3Q3qoM8PbKcR0J9OlBzwzvJVDTHdxqvSwz4hvpQjTPUSkh35GfCtEmO4gLr2A2fFVjTC991LSy5gdX7UI0/suKb2ULgGm91zazvFViDC932UIUHhxO8aXiDC9x6UJUHwlCFB4cQIUX5wAxRcnQPGVIEDhxXUPMD1/FoxQfJvqEmB6ztxQPULxNbBrgOm5coeKEYqvkWqfYp/eZp5d+MgIR9wlPU/uMGLhoyIceZf0XDlo5NIfDXHGHdJz5aAZyz8a4szfTs+Vg2ZGkDzpuXJAOhIRNpcORIDNpQMRYGPpOETYXDoMATaXDkOAjaWjEGFz6SAE2Fw6CAE2lw5CgI2lYxBhc+kQBNhcOoD07xNUZflV7sHJqi282n2YrOKyK96JSSovufLdGGCFBa9wRx600lJXuisHrbbQ1e7LDasuc9V788bqC1z9/u3tsLwd3tDWTkvb6S0t7LiwHd+0rZ2XtPPbtrH7gnZ/39I6LabTW5fRbSHd3lte10V0fXc5nZfQ+e0lGP4f5hBi6H+ZRYBhv2cmJzHoj5nNCQz3c2Y0kcEeY04TGOp9zAsAAAAAAAAAAAAAAAAAAAAAlvcTsH0zDsXLxAsAAAAASUVORK5CYII=",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 35,
+      "end": 40,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_009",
+      "name": "ball",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAADTElEQVR4nO2SSW4cQRDE6qF+iX/qqz8iAwIk2GqPZumFmRkkwHtVBtcSERERERERERERERERERERERERERERERERERGRIbz9+Pm2R/r90oS9oRmmPM3V0RljOHRoBhkKHZQhBkLHY4yh0KEYYih0GIYYDB2DEYZCB1BFeoc46MGrSu8SAT1ydel9RkOP20V6p3HQg3aV3m0E9IjdpfdrDT3eFOkdW0KPNk16z1bQY02V3rUF9EjTpfctDT1OivTOJTn80L9+f2+BEIywCJdFZ4xG+BU0PEPMjrBMeOEh0h1glIwvMEK6A4TS8RnhbFrEZ4QzaRWfEc7DAGtL93EqLeMzwjkYYA/pTk6hdXxG2JvdB6HDCwxwVIQG2FO6m0MYE58R9sQAe0v3s4tDjkAHFx5g6wgNcIZ0Ry9jgDOkO3qJww5AB2eAPSM0wFnSPT3FoZ+ngzPAfhEe/nk6OuMzwBIWiMAAH8AAZ0p39RCnHcD4Skj3dRcDnC3d111OPYDx4dJ9fcvpBzDAEtKd3eSSAxgfLt3ZTS47gvEZ4P+49BDGZ4BfufwYxmeAf4MdxfAMkD7KrhDpdzeU7m0DfZCnY6Tf11y6tw30QdQA8aOoAWqIdG8b6IOoAeJHUQPUEOneNtAHUQPEj6IGqCHSvW2gD6IGiB9FDVBDpHvbQB9EDRA/igYHuIwwRrqzm9CHUQPEj6MGqMOlO7sJfRg1QPw4GhzgMsLx0n3dhT6QGiB+JA0OcBnhWOmuHoY+lBogfiw1QB0m3dVT0MfS4PiWAY6T7ukl6KNpcHzLAMdId/Qy9OE0PMBlhO2l+9kNfUAND3AZYVvpbg6DPqSGB7iMsJ10L6dAH1WD41sG2Ea6k1Ohj6vB8S0DLC/dxyXQR9bg+D6gj63B8X1AH12D41sGWEa6AxT6+OnS+5eAHiFVevdS0GOkSe9dEnqUFOmdS0OPM1163xbQI02V3rUV9FjTpPdsCT3aFOkdW0OP1116vxHQI3aV3m0c9KBdpHcaDT1udel9IqBHriq9Sxz04FWkd4iHDsDwJC5C+t5yAzoMw5N36FAMTz6h4zE6eYcOyvDkH+jQDE4+MTopiaGJiIiIiIiIiIiIiIiIiIiIiMhj/AH9kDl0RRLYywAAAABJRU5ErkJggg==",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 40,
+      "end": 45,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_010",
+      "name": "paper",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAACc0lEQVR4nO3SsZHVUBBFQQWBRQrEQtAkQQ4Y+HhgUYW3/NVK5z1Nd9VNYOYcBwAAAAAAAAAAAAAAAAAAAAAAAPCCr9+//bbXV/9ta/Xznrb6n9uoH/X01f9dVv2Yaav/vZT6GVNX/z1XP8AGh1gf3QZHWB/bhkdYH9oGB1gf2QZHWB/XhkdYH9YGB1gf1YZHWB/UBgd45aE+ff4yeiL8D8LbM8S6mw8jvD1DrLv5EOITYUp8e0dY93Oa+PaOsO7nNPHtHWHdz2kCFGBKfP0EKEABVqr4fvz89ahVEdb9nHZ3gHUoq4YowBsCrONYOUIBXhxgHcXqEQrwwgDrGHaIUIACFGDh6gDrCOoJ8A0CFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZgSoABTAhRgSoACTAlQgCkBCjAlQAGmBCjAlAAFmBKgAFMCFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZi6OsDJEb5yIwEKUICFOwKcGOGr9xHgxQFOivA9txHgDQFOiPC9dxHgTQE+NcSz9xBgEKGdi0+ACzzvCROgCLeMT4ACFOBZZw8gwi4+AYowjU+AIkzje0SAhwjFV/vIowjx+vAEKMQ0vMcFeFwcoYnvTfVBbXiAhwi3Wd3JZerD2vAADxEuv7qPW9RHtsHxHQJcdnUXt6qPbYPj+6s+ug2O71/1A6au/vtS6mdMW/3vZdWPefrq/26jftTTVv9za/Xzdl39NwAAAAAAAAAAAAAAAAAAAAAAANjLHyCGkZhsI/jZAAAAAElFTkSuQmCC",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 45,
+      "end": 50,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      }
+    },
+    {
+      "id": "layer_lk_011",
+      "name": "star",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAC0klEQVR4nO3VUW5TMRCG0S6CJ7bAvtgvKyoCFBFamt4k9v3HnnMkP8ee+aL78gIAAAAAAAAAAABZrz++v/466XvQlACJEiAxl/hESIQAiRIgMW/jEyGnEiBRAiTmo/hEyCkESJQAifksPhEylQCJORqfCJlCgEQJkJh74xMhQwmQKAES82h8ImQIARIlQGKejU+EPEWAxIyKT4Q8RIBECZCY0fGJkLsIkCgBEjMrPhFyiACJEiAxs+MTITcJkCgBEnNWfCLkvwRIzNnxiZB/CJAoARKTik+EG0tHJdaw9KKchn+A9HAcMf6WHozTNLxr6SE5jeO7SA/LaRzftfTgnKbhXUsP0Wkc30V6mKPOl6/fbp70/cR3Q3qoM8PbKcR0J9OlBzwzvJVDTHdxqvSwz4hvpQjTPUSkh35GfCtEmO4gLr2A2fFVjTC991LSy5gdX7UI0/suKb2ULgGm91zazvFViDC932UIUHhxO8aXiDC9x6UJUHwlCFB4cQIUX5wAxRcnQPGVIEDhxXUPMD1/FoxQfJvqEmB6ztxQPULxNbBrgOm5coeKEYqvkWqfYp/eZp5d+MgIR9wlPU/uMGLhoyIceZf0XDlo5NIfDXHGHdJz5aAZyz8a4szfTs+Vg2ZGkDzpuXJAOhIRNpcORIDNpQMRYGPpOETYXDoMATaXDkOAjaWjEGFz6SAE2Fw6CAE2lw5CgI2lYxBhc+kQBNhcOoD07xNUZflV7sHJqi282n2YrOKyK96JSSovufLdGGCFBa9wRx600lJXuisHrbbQ1e7LDasuc9V788bqC1z9/u3tsLwd3tDWTkvb6S0t7LiwHd+0rZ2XtPPbtrH7gnZ/39I6LabTW5fRbSHd3lte10V0fXc5nZfQ+e0lGP4f5hBi6H+ZRYBhv2cmJzHoj5nNCQz3c2Y0kcEeY04TGOp9zAsAAAAAAAAAAAAAAAAAAAAAlvcTsH0zDsXLxAsAAAAASUVORK5CYII=",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 50,
+      "end": 55,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      },
+      "motion": {
+        "in": {
+          "type": "fade",
+          "duration": 0.5,
+          "delay": 0,
+          "ease": "easeOutCubic",
+          "params": {}
+        },
+        "out": {
+          "type": "fade",
+          "duration": 0.5,
+          "delay": 0,
+          "ease": "easeInCubic",
+          "params": {}
+        }
+      }
+    }
+  ],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

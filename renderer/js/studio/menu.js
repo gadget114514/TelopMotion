@@ -180,6 +180,7 @@ SA.menu = (() => {
         { key: 'studio.help.figureShowcase', action: 'figureShowcase' },
         { key: 'studio.help.backdropShowcase', action: 'backdropShowcase' },
         { key: 'studio.help.fontShowcase', action: 'fontShowcase' },
+        { key: 'studio.help.layerShowcase', action: 'layerShowcase' },
         { key: 'studio.about.item', action: 'about' },
       ],
     },

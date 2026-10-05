@@ -1035,6 +1035,21 @@
     }
   }
 
+  // the layer keyframes' own showcase: one cue per animated prop on image
+  // layers (cutout pictures embedded as data URLs, so the JSON opens
+  // anywhere). The prop ids are language-independent, so no re-labelling is
+  // needed (same shape as the backdrop showcase).
+  async function layerShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/layer-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
   // the ease curves' own showcase: one cue per named curve and parametric
   // recipe on the same slide entrance, plus one cue per lyric slot that
   // accepts an ease. The ease ids are language-independent, so no
@@ -1966,6 +1981,7 @@
       figureShowcase: figureShowcaseProject,
       backdropShowcase: backdropShowcaseProject,
       fontShowcase: fontShowcaseProject,
+      layerShowcase: layerShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,
