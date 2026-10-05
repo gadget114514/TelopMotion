@@ -142,6 +142,17 @@
     { key: 'planes2', kind: 'weight', tab: 'palette', group: 'planes', min: 0, max: 2, step: 0.01, derive: (a) => 1.2 * a.b },
     { key: 'planes3', kind: 'weight', tab: 'palette', group: 'planes', min: 0, max: 2, step: 0.01, derive: (a) => 0.8 * Math.min(1, a.w / 0.5) },
     { key: 'planes4', kind: 'weight', tab: 'palette', group: 'planes', min: 0, max: 2, step: 0.01, derive: (a) => Math.max(0, (a.w - 0.75) / 0.25) },
+    // partial decorations (style.scoped): one substring of a beat may stretch,
+    // track, wave, wear a colour or land late while the rest of the line holds
+    // still. `scopedChance` 0 at weird 0 keeps the classic generator exact, and
+    // the weight group picks the family (the scope is drawn separately).
+    { key: 'scopedChance', kind: 'chance', tab: 'axis', group: 'scoped', min: 0, max: 1, step: 0.05, derive: (a) => 0.35 * a.t },
+    { key: 'scopedSecondChance', kind: 'chance', tab: 'axis', group: 'scoped', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t * a.e },
+    { key: 'scopedStretch', kind: 'weight', tab: 'axis', group: 'scoped', min: 0, max: 3, step: 0.05, derive: () => 1 },
+    { key: 'scopedTracking', kind: 'weight', tab: 'axis', group: 'scoped', min: 0, max: 3, step: 0.05, derive: (a) => 0.6 + 0.6 * a.e },
+    { key: 'scopedWave', kind: 'weight', tab: 'axis', group: 'scoped', min: 0, max: 3, step: 0.05, derive: (a) => 0.4 + 0.8 * a.soft },
+    { key: 'scopedDeco', kind: 'weight', tab: 'axis', group: 'scoped', min: 0, max: 3, step: 0.05, derive: () => 1 },
+    { key: 'scopedEnter', kind: 'weight', tab: 'axis', group: 'scoped', min: 0, max: 3, step: 0.05, derive: () => 0.8 },
     // motion: tilt / location / repeat / clones / hold
     { key: 'tiltChance', kind: 'chance', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => 0.4 * a.t },
     { key: 'tiltRange', kind: 'amount', tab: 'axis', group: 'motion', min: 0, max: 1, step: 0.05, derive: (a) => a.t },
@@ -177,6 +188,9 @@
   const DECO_KEYS = keysOf('deco');
   const PLANE_KEYS = keysOf('planes');
   const TEXT_BG_KEYS = keysOf('textBg');
+  // The partial-decoration families: the order fixes the draw order of the
+  // weighted pick, so it stays stable across runs.
+  const SCOPED_KEYS = keysOf('scoped');
 
   // The display form of a value: three decimals (the UI only).
   function display(value) {
@@ -477,6 +491,7 @@
     DECO_KEYS,
     PLANE_KEYS,
     TEXT_BG_KEYS,
+    SCOPED_KEYS,
     EXTREME_K,
     keysOf,
     axisView,

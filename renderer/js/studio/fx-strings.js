@@ -1097,15 +1097,16 @@
 
   const ADD_SEL_EN = {
     types: {
-      enter: { substringReveal: 'Substring reveal', rangeReveal: 'Range reveal', tracking: 'Tracking (in)', revealSweep: 'Sweep reveal', revealSoft: 'Soft reveal', revealRandom: 'Random reveal', trackIn: 'Tracking in' },
-      exit: { substringReveal: 'Substring reveal out', rangeReveal: 'Range reveal out', tracking: 'Tracking (out)', trackOut: 'Tracking out' },
-      hold: { rangeSelector: 'Range selector', tracking: 'Tracking (keep)', highlightSweep: 'Highlight sweep', waveLoop: 'Wave loop', beatHighlight: 'Beat highlight', trackBreath: 'Tracking breath', trackBeat: 'Tracking beat' },
+      enter: { substringReveal: 'Substring reveal', rangeReveal: 'Range reveal', tracking: 'Tracking (in)', stretch: 'Stretch (in)', revealSweep: 'Sweep reveal', revealSoft: 'Soft reveal', revealRandom: 'Random reveal', trackIn: 'Tracking in', stretchPopIn: 'Stretch pop in' },
+      exit: { substringReveal: 'Substring reveal out', rangeReveal: 'Range reveal out', tracking: 'Tracking (out)', stretch: 'Stretch (out)', trackOut: 'Tracking out' },
+      hold: { rangeSelector: 'Range selector', tracking: 'Tracking (keep)', stretch: 'Stretch (keep)', highlightSweep: 'Highlight sweep', waveLoop: 'Wave loop', beatHighlight: 'Beat highlight', trackBreath: 'Tracking breath', trackBeat: 'Tracking beat', stretchBreathX: 'Stretch breath (x)', stretchBeatY: 'Stretch beat (y)' },
     },
     params: {
       lag: 'Group lag',
       selBasedOn: 'Based on', selShape: 'Shape', selStart: 'Range start', selEnd: 'Range end', selWidth: 'Band width',
       selOffset: 'Offset', selSweep: 'Sweep', selSpeed: 'Sweep speed', selRandom: 'Randomize order', selSeed: 'Random seed',
       selEaseHigh: 'Ease high', selEaseLow: 'Ease low', selAmount: 'Amount', colorMix: 'Highlight mix', trackAxis: 'Tracking axis', tracking: 'Tracking',
+      stretchAxis: 'Stretch axis', stretch: 'Stretch',
     },
     values: {
       both: 'Both', match: 'Matched text', rest: 'The rest',
@@ -1115,15 +1116,16 @@
   };
   const ADD_SEL_JA = {
     types: {
-      enter: { substringReveal: '部分文字列登場', rangeReveal: 'レンジリビール', tracking: 'トラッキング（登場）', revealSweep: 'スイープ登場', revealSoft: 'ソフト登場', revealRandom: 'ランダム登場', trackIn: 'トラッキングイン' },
-      exit: { substringReveal: '部分文字列退場', rangeReveal: 'レンジリビール（退場）', tracking: 'トラッキング（退場）', trackOut: 'トラッキングアウト' },
-      hold: { rangeSelector: 'レンジセレクター', tracking: 'トラッキング（保持）', highlightSweep: 'ハイライトスイープ', waveLoop: 'ウェーブループ', beatHighlight: 'ビートハイライト', trackBreath: 'トラッキング呼吸', trackBeat: 'トラッキングビート' },
+      enter: { substringReveal: '部分文字列登場', rangeReveal: 'レンジリビール', tracking: 'トラッキング（登場）', stretch: 'ストレッチ（登場）', revealSweep: 'スイープ登場', revealSoft: 'ソフト登場', revealRandom: 'ランダム登場', trackIn: 'トラッキングイン', stretchPopIn: 'ストレッチポップイン' },
+      exit: { substringReveal: '部分文字列退場', rangeReveal: 'レンジリビール（退場）', tracking: 'トラッキング（退場）', stretch: 'ストレッチ（退場）', trackOut: 'トラッキングアウト' },
+      hold: { rangeSelector: 'レンジセレクター', tracking: 'トラッキング（保持）', stretch: 'ストレッチ（保持）', highlightSweep: 'ハイライトスイープ', waveLoop: 'ウェーブループ', beatHighlight: 'ビートハイライト', trackBreath: 'トラッキング呼吸', trackBeat: 'トラッキングビート', stretchBreathX: '横ストレッチ呼吸', stretchBeatY: '縦ストレッチビート' },
     },
     params: {
       lag: 'グループの時間差',
       selBasedOn: '基準', selShape: '形', selStart: '範囲の開始', selEnd: '範囲の終了', selWidth: '帯の幅',
       selOffset: 'オフセット', selSweep: 'スイープ', selSpeed: 'スイープ速度', selRandom: '順序をランダム', selSeed: 'ランダムシード',
       selEaseHigh: 'イーズ（上端）', selEaseLow: 'イーズ（下端）', selAmount: '強さ', colorMix: 'ハイライトの混色', trackAxis: 'トラッキング軸', tracking: 'トラッキング',
+      stretchAxis: 'ストレッチ軸', stretch: 'ストレッチ',
     },
     values: {
       both: '両方', match: '一致した文字', rest: 'それ以外',
@@ -1133,15 +1135,16 @@
   };
   const ADD_SEL_ES = {
     types: {
-      enter: { substringReveal: 'Revelado por subcadena', rangeReveal: 'Revelado por rango', tracking: 'Espaciado (entrada)', revealSweep: 'Revelado en barrido', revealSoft: 'Revelado suave', revealRandom: 'Revelado aleatorio', trackIn: 'Espaciado de entrada' },
-      exit: { substringReveal: 'Revelado por subcadena (salida)', rangeReveal: 'Revelado por rango (salida)', tracking: 'Espaciado (salida)', trackOut: 'Espaciado de salida' },
-      hold: { rangeSelector: 'Selector de rango', tracking: 'Espaciado (mantener)', highlightSweep: 'Barrido de acento', waveLoop: 'Bucle de onda', beatHighlight: 'Acento al ritmo', trackBreath: 'Espaciado respirando', trackBeat: 'Espaciado al ritmo' },
+      enter: { stretch: 'Étirement (entrée)', substringReveal: 'Revelado por subcadena', rangeReveal: 'Revelado por rango', tracking: 'Espaciado (entrada)', stretch: 'Estirado (entrada)', revealSweep: 'Revelado en barrido', revealSoft: 'Revelado suave', revealRandom: 'Revelado aleatorio', trackIn: 'Espaciado de entrada', stretchPopIn: 'Estirado al entrar' },
+      exit: { stretch: 'Étirement (sortie)', substringReveal: 'Revelado por subcadena (salida)', rangeReveal: 'Revelado por rango (salida)', tracking: 'Espaciado (salida)', stretch: 'Estirado (salida)', trackOut: 'Espaciado de salida' },
+      hold: { rangeSelector: 'Selector de rango', tracking: 'Espaciado (mantener)', stretch: 'Estirado (mantener)', highlightSweep: 'Barrido de acento', waveLoop: 'Bucle de onda', beatHighlight: 'Acento al ritmo', trackBreath: 'Espaciado respirando', trackBeat: 'Espaciado al ritmo', stretchBreathX: 'Estirado horizontal', stretchBeatY: 'Estirado vertical' },
     },
     params: {
       lag: 'Retraso entre grupos',
       selBasedOn: 'Basado en', selShape: 'Forma', selStart: 'Inicio del rango', selEnd: 'Fin del rango', selWidth: 'Ancho de banda',
       selOffset: 'Desplazamiento', selSweep: 'Barrido', selSpeed: 'Velocidad', selRandom: 'Orden aleatorio', selSeed: 'Semilla',
       selEaseHigh: 'Suavizado alto', selEaseLow: 'Suavizado bajo', selAmount: 'Intensidad', colorMix: 'Mezcla de acento', trackAxis: 'Eje de espaciado', tracking: 'Espaciado',
+      stretchAxis: 'Eje de estirado', stretch: 'Estirado',
     },
     values: {
       both: 'Ambos', match: 'Texto coincidente', rest: 'El resto',
@@ -1151,15 +1154,15 @@
   };
   const ADD_SEL_FR = {
     types: {
-      enter: { substringReveal: 'Révélation par sous-chaîne', rangeReveal: 'Révélation par plage', tracking: 'Interlettrage (entrée)', revealSweep: 'Révélation en balayage', revealSoft: 'Révélation douce', revealRandom: 'Révélation aléatoire', trackIn: 'Interlettrage d’entrée' },
-      exit: { substringReveal: 'Révélation par sous-chaîne (sortie)', rangeReveal: 'Révélation par plage (sortie)', tracking: 'Interlettrage (sortie)', trackOut: 'Interlettrage de sortie' },
-      hold: { rangeSelector: 'Sélecteur de plage', tracking: 'Interlettrage (maintien)', highlightSweep: 'Balayage d’accent', waveLoop: 'Boucle d’onde', beatHighlight: 'Accent rythmique', trackBreath: 'Interlettrage respirant', trackBeat: 'Interlettrage rythmé' },
+      enter: { stretch: 'Étirement (entrée)', substringReveal: 'Révélation par sous-chaîne', rangeReveal: 'Révélation par plage', tracking: 'Interlettrage (entrée)', revealSweep: 'Révélation en balayage', revealSoft: 'Révélation douce', revealRandom: 'Révélation aléatoire', trackIn: 'Interlettrage d’entrée', stretchPopIn: 'Étirement entrant' },
+      exit: { stretch: 'Étirement (sortie)', substringReveal: 'Révélation par sous-chaîne (sortie)', rangeReveal: 'Révélation par plage (sortie)', tracking: 'Interlettrage (sortie)', trackOut: 'Interlettrage de sortie' },
+      hold: { stretch: 'Étirement (maintien)', rangeSelector: 'Sélecteur de plage', tracking: 'Interlettrage (maintien)', highlightSweep: 'Balayage d’accent', waveLoop: 'Boucle d’onde', beatHighlight: 'Accent rythmique', trackBreath: 'Interlettrage respirant', trackBeat: 'Interlettrage rythmé', stretchBreathX: 'Étirement horizontal', stretchBeatY: 'Étirement vertical' },
     },
     params: {
       lag: 'Décalage des groupes',
       selBasedOn: 'Basé sur', selShape: 'Forme', selStart: 'Début de plage', selEnd: 'Fin de plage', selWidth: 'Largeur de bande',
       selOffset: 'Décalage', selSweep: 'Balayage', selSpeed: 'Vitesse', selRandom: 'Ordre aléatoire', selSeed: 'Graine',
-      selEaseHigh: 'Adoucissement haut', selEaseLow: 'Adoucissement bas', selAmount: 'Intensité', colorMix: 'Mélange d’accent', trackAxis: 'Axe d’interlettrage', tracking: 'Interlettrage',
+      selEaseHigh: 'Adoucissement haut', selEaseLow: 'Adoucissement bas', selAmount: 'Intensité', colorMix: 'Mélange d’accent', trackAxis: 'Axe d’interlettrage', tracking: 'Interlettrage', stretchAxis: 'Axe d’étirement', stretch: 'Étirement',
     },
     values: {
       both: 'Les deux', match: 'Texte trouvé', rest: 'Le reste',
@@ -1169,15 +1172,15 @@
   };
   const ADD_SEL_RU = {
     types: {
-      enter: { substringReveal: 'Раскрытие подстроки', rangeReveal: 'Раскрытие диапазоном', tracking: 'Трекинг (вход)', revealSweep: 'Раскрытие развёрткой', revealSoft: 'Мягкое раскрытие', revealRandom: 'Случайное раскрытие', trackIn: 'Трекинг входа' },
-      exit: { substringReveal: 'Раскрытие подстроки (выход)', rangeReveal: 'Раскрытие диапазоном (выход)', tracking: 'Трекинг (выход)', trackOut: 'Трекинг выхода' },
-      hold: { rangeSelector: 'Селектор диапазона', tracking: 'Трекинг (удержание)', highlightSweep: 'Развёртка акцента', waveLoop: 'Волновой цикл', beatHighlight: 'Акцент в бит', trackBreath: 'Трекинг-дыхание', trackBeat: 'Трекинг в бит' },
+      enter: { stretch: 'Растяжка (вход)', substringReveal: 'Раскрытие подстроки', rangeReveal: 'Раскрытие диапазоном', tracking: 'Трекинг (вход)', revealSweep: 'Раскрытие развёрткой', revealSoft: 'Мягкое раскрытие', revealRandom: 'Случайное раскрытие', trackIn: 'Трекинг входа', stretchPopIn: 'Растяжка на входе' },
+      exit: { stretch: 'Растяжка (выход)', substringReveal: 'Раскрытие подстроки (выход)', rangeReveal: 'Раскрытие диапазоном (выход)', tracking: 'Трекинг (выход)', trackOut: 'Трекинг выхода' },
+      hold: { stretch: 'Растяжка (удержание)', rangeSelector: 'Селектор диапазона', tracking: 'Трекинг (удержание)', highlightSweep: 'Развёртка акцента', waveLoop: 'Волновой цикл', beatHighlight: 'Акцент в бит', trackBreath: 'Трекинг-дыхание', trackBeat: 'Трекинг в бит', stretchBreathX: 'Растяжка по горизонтали', stretchBeatY: 'Растяжка по вертикали' },
     },
     params: {
       lag: 'Задержка групп',
       selBasedOn: 'Основа', selShape: 'Форма', selStart: 'Начало диапазона', selEnd: 'Конец диапазона', selWidth: 'Ширина полосы',
       selOffset: 'Смещение', selSweep: 'Развёртка', selSpeed: 'Скорость', selRandom: 'Случайный порядок', selSeed: 'Сид',
-      selEaseHigh: 'Сглаживание сверху', selEaseLow: 'Сглаживание снизу', selAmount: 'Сила', colorMix: 'Смешение акцента', trackAxis: 'Ось трекинга', tracking: 'Трекинг',
+      selEaseHigh: 'Сглаживание сверху', selEaseLow: 'Сглаживание снизу', selAmount: 'Сила', colorMix: 'Смешение акцента', trackAxis: 'Ось трекинга', tracking: 'Трекинг', stretchAxis: 'Ось растяжки', stretch: 'Растяжка',
     },
     values: {
       both: 'Обе', match: 'Совпадение', rest: 'Остальное',
@@ -1450,6 +1453,8 @@
       scopeWord: 'Words', scopeKeyword: 'Keyword', scopeSpan: 'Composition span', scopeFrom: 'From', scopeTo: 'To',
       scopeWords: 'Word indices', scopeMatch: 'Match text', scopeSpanIndex: 'Span #', addScoped: 'Add a partial decoration',
       scopeNth: 'Every Nth', scopeUnit: 'Unit', scopeEvery: 'Every', scopeOffset: 'Offset', scopeSkipSpaces: 'Skip spaces',
+      scopeSlice: 'Substring', scopeAnchor: 'Anchor', scopeAnchorText: 'Whole text', scopeAnchorLine: 'Each line',
+      scopeFromStart: 'From the start', scopeFromEnd: 'From the end', scopeLength: 'Length', scopedLocal: 'Treat the substring as its own string',
       addAlternatingColors: 'Alternate colours',
     },
     ja: {
@@ -1457,6 +1462,8 @@
       scopeWord: '単語', scopeKeyword: 'キーワード', scopeSpan: 'コンポジション span', scopeFrom: '開始', scopeTo: '終了',
       scopeWords: '単語番号', scopeMatch: '一致文字列', scopeSpanIndex: 'span 番号', addScoped: '部分演出を追加',
       scopeNth: 'n 個ごと', scopeUnit: '単位', scopeEvery: '周期', scopeOffset: '開始位置', scopeSkipSpaces: '空白を飛ばす',
+      scopeSlice: '部分文字列', scopeAnchor: '基準', scopeAnchorText: '文全体', scopeAnchorLine: '各行',
+      scopeFromStart: '先頭から', scopeFromEnd: '末尾から', scopeLength: '文字数', scopedLocal: '部分文字列を独立した文字列として扱う',
       addAlternatingColors: '色を交互に',
     },
     es: {
@@ -1464,6 +1471,8 @@
       scopeWord: 'Palabras', scopeKeyword: 'Palabra clave', scopeSpan: 'Span de composición', scopeFrom: 'Desde', scopeTo: 'Hasta',
       scopeWords: 'Índices de palabras', scopeMatch: 'Texto a coincidir', scopeSpanIndex: 'Span n.º', addScoped: 'Añadir decoración parcial',
       scopeNth: 'Cada N', scopeUnit: 'Unidad', scopeEvery: 'Cada', scopeOffset: 'Desplazamiento', scopeSkipSpaces: 'Omitir espacios',
+      scopeSlice: 'Subcadena', scopeAnchor: 'Ancla', scopeAnchorText: 'Todo el texto', scopeAnchorLine: 'Cada línea',
+      scopeFromStart: 'Desde el inicio', scopeFromEnd: 'Desde el final', scopeLength: 'Longitud', scopedLocal: 'Tratar la subcadena como texto propio',
       addAlternatingColors: 'Colores alternos',
     },
     fr: {
@@ -1471,6 +1480,8 @@
       scopeWord: 'Mots', scopeKeyword: 'Mot-clé', scopeSpan: 'Span de composition', scopeFrom: 'De', scopeTo: 'À',
       scopeWords: 'Indices des mots', scopeMatch: 'Texte à trouver', scopeSpanIndex: 'N° de span', addScoped: 'Ajouter une décoration partielle',
       scopeNth: 'Chaque N', scopeUnit: 'Unité', scopeEvery: 'Chaque', scopeOffset: 'Décalage', scopeSkipSpaces: 'Ignorer les espaces',
+      scopeSlice: 'Sous-chaîne', scopeAnchor: 'Ancre', scopeAnchorText: 'Tout le texte', scopeAnchorLine: 'Chaque ligne',
+      scopeFromStart: 'Depuis le début', scopeFromEnd: 'Depuis la fin', scopeLength: 'Longueur', scopedLocal: 'Traiter la sous-chaîne comme son propre texte',
       addAlternatingColors: 'Couleurs alternées',
     },
     ru: {
@@ -1478,6 +1489,8 @@
       scopeWord: 'Слова', scopeKeyword: 'Ключевое слово', scopeSpan: 'Span композиции', scopeFrom: 'От', scopeTo: 'До',
       scopeWords: 'Индексы слов', scopeMatch: 'Текст совпадения', scopeSpanIndex: 'Span №', addScoped: 'Добавить частичное украшение',
       scopeNth: 'Каждые N', scopeUnit: 'Единица', scopeEvery: 'Шаг', scopeOffset: 'Смещение', scopeSkipSpaces: 'Пропускать пробелы',
+      scopeSlice: 'Подстрока', scopeAnchor: 'Привязка', scopeAnchorText: 'Весь текст', scopeAnchorLine: 'Каждая строка',
+      scopeFromStart: 'С начала', scopeFromEnd: 'С конца', scopeLength: 'Длина', scopedLocal: 'Считать подстроку отдельным текстом',
       addAlternatingColors: 'Чередование цветов',
     },
   };

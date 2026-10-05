@@ -39,6 +39,10 @@ const SA = {
   audioAnalysis: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'audio-analysis.js')),
   genres: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'genres.js')),
   random: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'random.js')),
+  // the partial decorations count their letters through scope.js (the scope
+  // masks), so the automatic direction needs it the same way the renderer does
+  scope: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'scope.js')),
+  keywords: require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'keywords.js')),
   direct: require(path.join(ROOT, 'renderer', 'js', 'studio', 'direct.js')),
 };
 globalThis.SA = SA;
@@ -1304,6 +1308,177 @@ test('repeat arrangement probability scales towards 0 when weird is < 0.6', () =
   assert.ok(count > 0, 'weird 0.3 should produce some repeats');
   assert.ok(count < N, 'weird 0.3 should not guarantee repeats on every run');
   assert.ok(count >= 8 && count <= 22, `expected around 15 out of 30, got ${count}`);
+});
+
+// ---------------------------------------------------------------------------
+// partial decorations (style.scoped) drawn by the automatic direction
+//
+// A beat may spend one substring on its own stretch / tracking / wave / colour
+// / late entrance. The chance is 0 at weird 0, so the classic byte-identical
+// fixture above still holds.
+
+function scopedOf(doc) {
+  const out = [];
+  for (const cue of doc.script.cues) {
+    for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+      const list = (doc.beatStyles[beat.id] || {}).scoped;
+      if (Array.isArray(list) && list.length) out.push({ beat, list });
+    }
+  }
+  return out;
+}
+
+// every scoped entry Generate writes must be a real partial: a scope that covers
+// at least one visible letter and never all of them, and a motion entry that is
+// `local` (a `text` span is a static attribute, so `local` would be meaningless)
+function checkScopedEntries(found, seed) {
+  for (const { beat, list } of found) {
+    assert.ok(list.length >= 1 && list.length <= 2, `seed ${seed} ${beat.id}: ${list.length} entries`);
+    const text = beat.text || '';
+    const chars = SA.scope.codePointsOf(text);
+    const visible = chars.filter((char) => !SA.scope.isSkippable(char)).length;
+    const groups = list.map((entry) => entry.group);
+    assert.equal(new Set(groups).size, groups.length, `seed ${seed} ${beat.id}: two entries share a group (${groups.join(',')})`);
+    for (const entry of list) {
+      assert.ok(entry.group && entry.type && entry.params && entry.enabled !== false, `seed ${seed} ${beat.id}: incomplete entry`);
+      assert.ok(entry.scope && entry.scope.kind, `seed ${seed} ${beat.id}: no scope`);
+      if (entry.group === 'enter' || entry.group === 'exit' || entry.group === 'hold') {
+        assert.equal(entry.local, true, `seed ${seed} ${beat.id}: ${entry.type} is not local`);
+      }
+      const mask = SA.scope.maskForText(text, entry.scope, null);
+      let covered = 0;
+      for (let i = 0; i < chars.length; i += 1) {
+        if (mask[i] && !SA.scope.isSkippable(chars[i])) covered += 1;
+      }
+      assert.ok(covered > 0, `seed ${seed} ${beat.id}: the scope covers nothing`);
+      assert.ok(covered < visible, `seed ${seed} ${beat.id}: the scope covers the whole text`);
+    }
+  }
+}
+
+test('a partial effect appears on some beats at weird 1 and never at weird 0', () => {
+  for (const compose of [true, false]) {
+    const found = [];
+    for (const seed of [4242, 777, 31337]) {
+      const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+      const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed, compose });
+      SA.direct.run(doc, ctx);
+      const scoped = scopedOf(doc);
+      assert.ok(scoped.length >= 1, `compose ${compose} seed ${seed}: no beat drew a partial effect`);
+      found.push(...scoped);
+    }
+    checkScopedEntries(found, 'compose ' + compose);
+  }
+  // weird 0 (the fixture run) never writes one
+  const doc = runOn(JSON.parse(JSON.stringify(FIXTURE.input)), FIXTURE);
+  assert.equal(scopedOf(doc).length, 0, 'weird 0 drew a partial effect');
+  for (const [beatId, style] of Object.entries(doc.beatStyles)) {
+    assert.equal(style.scoped, undefined, `${beatId} carries a scoped row`);
+  }
+});
+
+test('every partial family appears with the chances pinned open', () => {
+  const params = { ...NO_VARIATION, scopedChance: 1, scopedSecondChance: 1, scopedStretch: 1, scopedTracking: 1, scopedWave: 1, scopedDeco: 1, scopedEnter: 1 };
+  const families = new Set();
+  for (const compose of [true, false]) {
+    for (const seed of [4242, 777, 31337, 99, 5150]) {
+      const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+      const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed, compose, params });
+      SA.direct.run(doc, ctx);
+      const found = scopedOf(doc);
+      checkScopedEntries(found, `${compose}/${seed}`);
+      // two entries may share a group when both are holds (they stack), so the
+      // duplicate check above only rules out the two that would overwrite
+      for (const { list } of found) for (const entry of list) families.add(entry.type);
+    }
+  }
+  for (const type of ['stretch', 'tracking', 'sineWave', 'letterRipple', 'squashStretch']) {
+    assert.ok(families.has(type), `no beat drew ${type} (${[...families].join(',')})`);
+  }
+  // the deco and entrance families are drawable too (an accent colour needs a
+  // palette with one, which the fixture has)
+  assert.ok([...families].some((type) => ['span', 'outline', 'neonGlow'].includes(type) || /^(stripes|checker|diamondGrid|hatch|gradient|solid|noiseGradient)$/.test(type)), `no deco (${[...families].join(',')})`);
+  assert.ok([...families].some((type) => ['popIn', 'spinIn', 'focusIn', 'riseIn', 'stretchPopIn'].includes(type)), `no late entrance (${[...families].join(',')})`);
+});
+
+test('a partial stretch carries the documented params and follows the writing axis', () => {
+  const params = { ...NO_VARIATION, scopedChance: 1, scopedSecondChance: 0, scopedStretch: 1, scopedTracking: 0, scopedWave: 0, scopedDeco: 0, scopedEnter: 0 };
+  const found = [];
+  const verticalBeats = new Map();
+  // a vertical run still picks horizontal templates most of the time, so the
+  // sweep has to run far enough to meet one that writes vertically
+  for (let seed = 1; seed <= 12 && found.length < 3; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed, compose: true, direction: 'vertical', params });
+    SA.direct.run(doc, ctx);
+    for (const cue of doc.script.cues) {
+      for (const beat of (doc.beats && doc.beats[cue.id]) || []) {
+        const text = (doc.beatStyles[beat.id] || {}).text || {};
+        verticalBeats.set(beat.id, text.direction === 'vertical');
+      }
+    }
+    found.push(...scopedOf(doc));
+  }
+  assert.ok(found.length >= 3, `only ${found.length} stretches found`);
+  let verticalSeen = 0;
+  for (const { beat, list } of found) {
+    for (const entry of list) {
+      assert.equal(entry.type, 'stretch');
+      assert.equal(entry.group, 'hold');
+      assert.equal(entry.local, true);
+      assert.ok(['x', 'y', 'both'].includes(entry.params.stretchAxis), entry.params.stretchAxis);
+      assert.ok(['pulse', 'breathe', 'beat', 'hold'].includes(entry.params.mode), entry.params.mode);
+      assert.ok(entry.params.amount > -0.6 && entry.params.amount <= 2, `amount ${entry.params.amount}`);
+      assert.ok(entry.params.freq >= 0.05 && entry.params.freq <= 4, `freq ${entry.params.freq}`);
+      const vertical = verticalBeats.get(beat.id) === true;
+      if (vertical) {
+        verticalSeen += 1;
+        assert.notEqual(entry.params.stretchAxis, 'x', `${beat.id} writes vertically but stretched across`);
+      } else {
+        assert.notEqual(entry.params.stretchAxis, 'y', `${beat.id} stretched down`);
+      }
+    }
+  }
+  assert.ok(verticalSeen >= 1, 'no vertical beat drew a stretch, so the axis swap went unchecked');
+});
+
+test('a smart run drops the metronome partial families', () => {
+  const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+  const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1, smartness: 0.9 }, seed: 4242, compose: true });
+  SA.direct.run(doc, ctx);
+  for (const { list } of scopedOf(doc)) {
+    for (const entry of list) {
+      if (entry.group === 'hold') {
+        assert.ok(!['beat'].includes(entry.params.mode), `a smart run drew mode ${entry.params.mode} (${entry.type})`);
+      }
+    }
+  }
+});
+
+test('a partial effect never lands on a keyword the keyword pop already owns', () => {
+  // the non-compose path at weird >= 0.5 runs the keyword emphasis (motion.js),
+  // so the substring must avoid those words
+  const words = SA.keywords.listFor({}).words;
+  assert.ok(Array.isArray(words) && words.length, 'the keyword pool is empty');
+  let checked = 0;
+  for (let seed = 1; seed <= 40 && checked < 6; seed += 1) {
+    const doc = JSON.parse(JSON.stringify(FIXTURE.input));
+    const ctx = prepare(doc, FIXTURE, { axes: { ...FIXTURE.axes, weird: 1 }, seed });
+    SA.direct.run(doc, ctx);
+    for (const { beat, list } of scopedOf(doc)) {
+      for (const entry of list) {
+        const mask = SA.scope.maskForText(beat.text || '', entry.scope, null);
+        const chars = SA.scope.codePointsOf(beat.text || '');
+        let covered = '';
+        for (let i = 0; i < chars.length; i += 1) {
+          if (mask[i] && !SA.scope.isSkippable(chars[i])) covered += chars[i];
+        }
+        assert.ok(!words.includes(covered), `seed ${seed} ${beat.id}: the substring "${covered}" is a keyword`);
+        checked += 1;
+      }
+    }
+  }
+  assert.ok(checked >= 6, `only ${checked} substrings checked`);
 });
 
 

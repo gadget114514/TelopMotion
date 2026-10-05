@@ -21,6 +21,10 @@ function info(i, N, units) {
 
 const BASE = { selStart: 0, selEnd: 1, selAmount: 1 };
 
+function freshState() {
+  return { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, colorMix: 0, skewX: 0, tiltX: 0, tiltY: 0 };
+}
+
 test('the square band covers the range it is given', () => {
   const sel = selector.normalizeSelector({ ...BASE, selStart: 0, selEnd: 0.5, selShape: 'square' });
   const weights = [0, 1, 2, 3].map((i) => selector.selectAt(info(i, 4), 0, sel, 0));
@@ -195,7 +199,61 @@ test('tracking spreads the outer letters and leaves the centre alone', () => {
   assert.ok(Math.abs(b.y) > 0, 'the hold tracking opens the lines');
 });
 
-test('the hold selector applies the properties with the band weight only', () => {  const cpu = fx.get('hold', 'rangeSelector').cpu;
+test('stretch squashes a letter about the block centre and reports the growth', () => {
+  const hold = fx.get('hold', 'stretch');
+  const run = (params, letterX, letterY) => {
+    const state = { x: letterX, y: letterY, rot: 0, scaleX: 1, scaleY: 1, opacity: 1 };
+    const args = [{ i: 0, N: 3, letter: { size: 100 }, blockCenter: { x: 0, y: 0 }, letterX, letterY, shortSide: 1080 }];
+    hold.cpu(state, 0.25, 1, params, () => 0.5, ...args);
+    return state;
+  };
+  // `mode: hold` sits at the full amount, so the value is checkable by hand
+  const wide = run({ amount: 0.5, stretchAxis: 'x', mode: 'hold' }, 200, 0);
+  assert.ok(Math.abs(wide.scaleX - 1.5) < 1e-6, `scaleX ${wide.scaleX}`);
+  assert.equal(wide.scaleY, 1, 'the other axis is untouched');
+  assert.ok(Math.abs(wide.x - 300) < 1e-6, `the letter moves with it (${wide.x})`);
+  const tall = run({ amount: 0.5, stretchAxis: 'y', mode: 'hold' }, 0, 200);
+  assert.ok(Math.abs(tall.scaleY - 1.5) < 1e-6);
+  assert.equal(tall.scaleX, 1);
+  assert.ok(Math.abs(tall.y - 300) < 1e-6);
+  const both = run({ amount: -0.5, stretchAxis: 'both', mode: 'hold' }, 200, 200);
+  assert.ok(Math.abs(both.scaleX - 0.5) < 1e-6 && Math.abs(both.scaleY - 0.5) < 1e-6, 'a negative amount squashes');
+  assert.ok(Math.abs(both.x - 100) < 1e-6 && Math.abs(both.y - 100) < 1e-6, 'and pulls the letters inward');
+  // breathe stays between 1 and 1 + amount
+  for (const t of [0, 0.1, 0.25, 0.4]) {
+    const state = freshState();
+    hold.cpu(state, t, 1, { amount: 0.4, stretchAxis: 'x', mode: 'breathe', freq: 1 }, () => 0.5, { i: 0, N: 3, letter: { size: 100 }, blockCenter: { x: 0, y: 0 }, letterX: 0, letterY: 0, shortSide: 1080 });
+    assert.ok(state.scaleX >= 1 && state.scaleX <= 1.4 + 1e-9, `breathe stays in range (${state.scaleX})`);
+  }
+  // the enter / exit forms come back to rest
+  const enter = fx.get('enter', 'stretch').cpu;
+  // the state already sits at `letterX` (the engine has placed the letter), so
+  // only the offset is applied here
+  const at = (p) => {
+    const state = freshState();
+    state.x = 100;
+    enter(state, p, { amount: 0.8, stretchAxis: 'x' }, () => 0.5, { blockCenter: { x: 0, y: 0 }, letterX: 100, letterY: 0 });
+    return state;
+  };
+  const land = at(1);
+  assert.ok(Math.abs(land.scaleX - 1) < 1e-6 && land.x === 100, `the entrance lands (${land.scaleX}, ${land.x})`);
+  const start = at(0);
+  assert.ok(Math.abs(start.scaleX - 1.8) < 1e-6 && Math.abs(start.x - 180) < 1e-6, `and starts stretched (${start.scaleX}, ${start.x})`);
+  // the spread hook reports the same growth on the stretched axis only
+  const spread = (params) => hold.spread(0, 1, params, { shortSide: 1080, audioFeatures: { bpm: 120 } });
+  assert.deepEqual(spread({ amount: 0.5, stretchAxis: 'x', mode: 'hold' }), { x: 0.5, y: 0 });
+  assert.deepEqual(spread({ amount: 0.5, stretchAxis: 'y', mode: 'hold' }), { x: 0, y: 0.5 });
+  assert.deepEqual(spread({ amount: 0.5, stretchAxis: 'both', mode: 'hold' }), { x: 0.5, y: 0.5 });
+  assert.deepEqual(spread({ amount: 0, mode: 'hold' }), { x: 0, y: 0 }, 'no amount spreads nothing');
+  // tracking grew a spread hook too, on the axis it tracks
+  const tracking = fx.get('hold', 'tracking');
+  assert.deepEqual(tracking.spread(0, 1, { amount: 0.4, trackAxis: 'x', mode: 'hold' }, {}), { x: 0.4, y: 0 });
+  assert.deepEqual(tracking.spread(0, 1, { amount: 0.4, trackAxis: 'y', mode: 'hold' }, {}), { x: 0, y: 0.4 });
+  assert.deepEqual(tracking.spread(0, 0, { amount: 0.4, mode: 'hold' }, {}), { x: 0, y: 0 }, 'a closed envelope spreads nothing');
+});
+
+test('the hold selector applies the properties with the band weight only', () => {
+  const cpu = fx.get('hold', 'rangeSelector').cpu;
   const run = (params, index, N) => {
     const state = { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, blur: 0, flash: 0, colorMix: 0, skewX: 0, tiltX: 0, tiltY: 0 };
     cpu(state, 0, 1, params, () => 0.5, info(index, N));

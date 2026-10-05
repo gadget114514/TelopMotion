@@ -7,15 +7,15 @@ const project = require('../../renderer/js/studio/project');
 const color = require('../../renderer/js/color');
 const roles = require('../../renderer/js/lyrics/palette-roles');
 
-test('defaults produce a valid version 4 project with tracks', () => {
+test('defaults produce a valid version 5 project with tracks', () => {
   const doc = project.defaults();
   assert.strictEqual(doc.format, 'telopmotion');
-  assert.strictEqual(doc.version, 4);
+  assert.strictEqual(doc.version, 5);
   assert.strictEqual(doc.output.aspect, '16:9');
   assert.strictEqual(doc.output.width, 1920);
   assert.ok(Array.isArray(doc.script.cues));
   assert.deepStrictEqual(doc.overrides, {});
-  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']);
+  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'filler', 'backdrop', 'background']);
   assert.deepStrictEqual(doc.clips, []);
   assert.strictEqual(doc.fillers.enabled, true, 'a new document fills its gaps');
 });
@@ -39,7 +39,7 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
   const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
   assert.strictEqual(result.ok, true);
-  assert.strictEqual(result.project.version, 4);
+  assert.strictEqual(result.project.version, 5);
   assert.deepStrictEqual(result.project.custom, { hello: 'world' });
   assert.strictEqual(result.project.meta.title, 'Song');
   assert.strictEqual(result.project.output.aspect, '16:9');
@@ -185,7 +185,7 @@ test('migrate adds the managed rows a saved document may predate', () => {
     script: { cues: [{ id: 'c1', start: 3, end: 6, text: 'a' }] },
   };
   const doc = project.migrate(raw).project;
-  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']);
+  assert.deepStrictEqual(doc.tracks.map((track) => track.kind), ['foreground', 'subtitle', 'figure', 'filler', 'backdrop', 'background']);
   // the clips the migration drew are system clips: a run replaces them instead
   // of stacking a second set on the same row
   for (const clip of doc.clips.filter((entry) => entry.trackId === 'filler')) assert.strictEqual(clip.auto, true);
@@ -251,6 +251,50 @@ test('migrate adds the figure track to older projects', () => {
   assert.ok(result.ok);
   assert.deepStrictEqual(
     result.project.tracks.map((track) => track.kind),
-    ['foreground', 'subtitle', 'figure', 'backdrop', 'filler', 'background']
+    ['foreground', 'subtitle', 'figure', 'filler', 'backdrop', 'background']
   );
+});
+
+test('migrate to v5 re-sorts the old default rows into the old draw order', () => {
+  const raw = {
+    format: 'telopmotion',
+    version: 4,
+    tracks: [
+      { id: 'fg', kind: 'foreground', name: '前景' },
+      { id: 'sub1', kind: 'subtitle', name: '字幕1' },
+      { id: 'fig', kind: 'figure', name: '図形' },
+      { id: 'mid', kind: 'backdrop', name: '後景' },
+      { id: 'filler', kind: 'filler', name: 'フィラー' },
+      { id: 'bg', kind: 'background', name: '背景' },
+    ],
+  };
+  const doc = project.migrate(raw).project;
+  assert.strictEqual(doc.version, 5);
+  assert.deepStrictEqual(doc.tracks.map((track) => track.id), ['fg', 'sub1', 'fig', 'filler', 'mid', 'bg']);
+});
+
+test('migrate to v5 only re-sorts within each video-separated section', () => {
+  const raw = {
+    format: 'telopmotion',
+    version: 4,
+    tracks: [
+      { id: 'fg', kind: 'foreground', name: '前景' },
+      { id: 'mid', kind: 'backdrop', name: '後景' },
+      { id: 'sub1', kind: 'subtitle', name: '字幕1' },
+      { id: 'v1', kind: 'video', name: 'ビデオ1' },
+      { id: 'bg2', kind: 'background', name: '背景2' },
+      { id: 'fig', kind: 'figure', name: '図形' },
+      { id: 'sub2', kind: 'subtitle', name: '字幕2' },
+    ],
+  };
+  const doc = project.migrate(raw).project;
+  // the section above the video sorts to the old draw order, the one below
+  // it too, and the fixed ends land at the very top / bottom
+  assert.deepStrictEqual(doc.tracks.map((track) => track.id), ['fg', 'sub1', 'mid', 'v1', 'sub2', 'fig', 'filler', 'bg2']);
+  const ids = doc.tracks.map((track) => track.id);
+  assert.strictEqual(ids[0], 'fg', 'the foreground ends up first');
+  assert.strictEqual(ids[ids.length - 1], 'bg2', 'the background ends up last');
+  assert.ok(ids.indexOf('sub1') < ids.indexOf('mid'), 'the upper section follows the old draw order');
+  assert.ok(ids.indexOf('sub2') < ids.indexOf('fig'), 'the lower section follows the old draw order');
+  assert.ok(ids.indexOf('v1') > ids.indexOf('mid') && ids.indexOf('v1') < ids.indexOf('sub2'), 'the video track stays between the sections');
 });

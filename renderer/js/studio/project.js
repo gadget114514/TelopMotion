@@ -9,13 +9,13 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 4;
+  const VERSION = 5;
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
     { id: 'fig', kind: 'figure', name: '図形' },
-    { id: 'mid', kind: 'backdrop', name: '後景' },
     { id: 'filler', kind: 'filler', name: 'フィラー' },
+    { id: 'mid', kind: 'backdrop', name: '後景' },
     { id: 'bg', kind: 'background', name: '背景' },
   ];
   const BACKDROP_FILLER_TYPES = new Set(['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'sineWave', 'progress']);
@@ -26,11 +26,11 @@
   // gap is silently left unfilled.
   //
   // `after` is the kind the new track follows, so the row lands in the same
-  // place as in DEFAULT_TRACKS: the figure track above the mid layer, the
-  // filler track above the background.
+  // place as in DEFAULT_TRACKS: the figure track above the filler row, the
+  // filler track above the backdrop.
   const MANAGED_TRACKS = [
     { kind: 'figure', after: 'subtitle', track: { id: 'fig', kind: 'figure', name: '図形' } },
-    { kind: 'filler', after: 'backdrop', track: { id: 'filler', kind: 'filler', name: 'フィラー' } },
+    { kind: 'filler', after: 'figure', track: { id: 'filler', kind: 'filler', name: 'フィラー' } },
   ];
 
   function ensureManagedTracks(project) {
@@ -563,6 +563,49 @@
     return project;
   }
 
+  // Version 5: the layer order is the track order (upper = front) for every
+  // kind, not the fixed kind stack. Old documents are re-sorted inside each
+  // video-separated section into the old front-to-back draw order
+  // (foreground, subtitle, textAnim, figure, filler, backdrop, background),
+  // so the picture does not change; the foreground ends up first and the
+  // background last. Video tracks stay where they are and only bound the
+  // sections.
+  function migrateToV5(project) {
+    const tracks = Array.isArray(project.tracks) ? project.tracks : [];
+    if (!tracks.length) return project;
+    const rank = { foreground: 0, subtitle: 1, textAnim: 2, figure: 3, filler: 4, backdrop: 5, background: 6 };
+    const groups = [];
+    let current = [];
+    for (const track of tracks) {
+      if (track && track.kind === 'video') {
+        groups.push(current);
+        groups.push(track);
+        current = [];
+      } else {
+        current.push(track);
+      }
+    }
+    groups.push(current);
+    for (const group of groups) {
+      if (!Array.isArray(group)) continue;
+      group.sort((a, b) => {
+        const ra = a && rank[a.kind] != null ? rank[a.kind] : 99;
+        const rb = b && rank[b.kind] != null ? rank[b.kind] : 99;
+        return ra - rb;
+      });
+    }
+    const ordered = [];
+    for (const group of groups) {
+      if (Array.isArray(group)) ordered.push(...group);
+      else ordered.push(group);
+    }
+    const foreground = ordered.filter((track) => track && track.kind === 'foreground');
+    const background = ordered.filter((track) => track && track.kind === 'background');
+    const middle = ordered.filter((track) => !(track && (track.kind === 'foreground' || track.kind === 'background')));
+    project.tracks = [...foreground, ...middle, ...background];
+    return project;
+  }
+
   function normalizeTrackColor(value) {
     if (!value) return null;
     if (typeof value === 'string') {
@@ -591,6 +634,7 @@
     if (version < 2) migrateToV2(merged);
     if (version < 3) migrateToV3(merged);
     if (version < 4) migrateToV4(merged);
+    if (version < 5) migrateToV5(merged);
     ensureManagedTracks(merged);
     merged.version = VERSION;
     merged.format = FORMAT;

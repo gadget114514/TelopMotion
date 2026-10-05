@@ -42,24 +42,31 @@ test('the engine applies background scaling and cap', () => {
   assert.ok(source.includes('cell: 2.4'), 'the ornament cap is gone');
 });
 
-test('the filler clips draw in front of the background and behind the lyrics', () => {
+test('clip and subtitle tracks draw back to front in track order (upper = front)', () => {
   const source = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
-  const start = source.indexOf('for (const clip of activeClips(project, \'background\'))');
-  const end = source.indexOf('const trackOrder = subtitleTracks.map');
-  assert.ok(start >= 0 && end > start, 'the back-to-front block is missing');
-  const block = source.slice(start, end);
-  const index = (needle) => block.indexOf(needle);
-  assert.ok(index("activeClips(project, 'background')") >= 0, 'the background clips do not draw');
-  // a gap filler is scenery over the background, never behind it: the whole
-  // point of filling a gap is that it is visible on top of the backdrop
-  assert.ok(index('renderFillerClips(') > index('drawBackgroundLayers();'), 'the fillers draw behind the background');
-  assert.ok(index('renderFillerClips(') > index("activeClips(project, 'backdrop')"), 'the fillers draw behind the backdrop');
-  assert.ok(index("activeClips(project, 'figure')") > index('renderFillerClips('), 'the figure track draws behind the fillers');
-  // and the lyrics still knock out of both
-  assert.ok(end > index('renderFillerClips('), 'the lyric tracks draw before the fillers');
-  // the timeline draws the tracks in array order, top row first, so the filler
-  // row has to come before the background row to agree with the renderer
+  // the layer order is the track order: one ordered pass draws every clip /
+  // subtitle track back to front (bottom track first, top track last)
+  assert.ok(source.includes('orderedTrackIdsFor'), 'the ordered track pass is missing');
+  assert.ok(source.includes('drawTrackClips'), 'the per-track clip pass is missing');
+  assert.ok(source.includes('upper = front'), 'the upper=front rule is not documented');
+  // the fixed kind order is gone: no single back-to-front block draws
+  // background -> backdrop -> filler -> figure in code order
+  assert.equal(source.includes('const drawClipTracks = (segment)'), false, 'the fixed kind-order block must be gone');
+  // and the lyrics draw inside the same ordered pass, not after all clips
+  const orderAt = source.indexOf('orderedTrackIdsFor(segment)');
+  assert.ok(orderAt >= 0, 'the ordered segment pass is missing');
+  const tail = source.slice(orderAt, orderAt + 2000);
+  assert.ok(tail.includes('drawActiveBeat'), 'the lyrics must draw inside the ordered pass');
+  assert.ok(tail.includes('drawTrackClips'), 'the clips must draw inside the ordered pass');
+  // the timeline lists tracks top to bottom and the fixed ends stay put:
+  // foreground first (front), background last (back), every movable track
+  // between them
   const project = require(path.join(ROOT, 'renderer', 'js', 'studio', 'project.js'));
   const kinds = project.defaults().tracks.map((track) => track.kind);
-  assert.ok(kinds.indexOf('filler') < kinds.indexOf('background'), 'the filler track sits behind the background track');
+  assert.equal(kinds[0], 'foreground', 'the foreground stays on top');
+  assert.equal(kinds[kinds.length - 1], 'background', 'the background stays at the bottom');
+  for (const kind of ['subtitle', 'figure', 'backdrop', 'filler']) {
+    assert.ok(kinds.indexOf(kind) > kinds.indexOf('foreground'), `${kind} sits below the foreground`);
+    assert.ok(kinds.indexOf(kind) < kinds.indexOf('background'), `${kind} sits above the background`);
+  }
 });

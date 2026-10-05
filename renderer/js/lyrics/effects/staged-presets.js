@@ -78,6 +78,12 @@
     { group: 'exit', primitive: 'tracking', type: 'trackOut', params: { amount: 1.1, trackAxis: 'x' }, motion: { out: { duration: 0.7, ease: 'expoIn' } } },
     { group: 'hold', primitive: 'tracking', type: 'trackBreath', params: { amount: 0.06, mode: 'breathe', freq: 0.2, trackAxis: 'x' } },
     { group: 'hold', primitive: 'tracking', type: 'trackBeat', params: { amount: 0.08, mode: 'beat', trackAxis: 'x' } },
+    // the substring stretches: the glyphs and their gaps grow together, which is
+    // what a `local` scoped stretch looks like (the whole-block form is the same
+    // primitive without a scope)
+    { group: 'hold', primitive: 'stretch', type: 'stretchBreathX', params: { amount: 0.22, stretchAxis: 'x', mode: 'breathe', freq: 0.3 } },
+    { group: 'hold', primitive: 'stretch', type: 'stretchBeatY', params: { amount: 0.18, stretchAxis: 'y', mode: 'beat' } },
+    { group: 'enter', primitive: 'stretch', type: 'stretchPopIn', params: { amount: 0.9, stretchAxis: 'both' }, motion: { in: { duration: 0.5, ease: 'backOut' } } },
 
     // --- letter-wise attributes (style.scoped) --------------------------------
     // These are the scoped groups, so each preset pins the scope that makes the

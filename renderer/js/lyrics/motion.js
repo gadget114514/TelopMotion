@@ -400,7 +400,11 @@
         if (!instance) continue;
         const mask = scope && scope.scopeMask ? scope.scopeMask(scene, raw.scope) : null;
         if (!mask) continue;
-        scopedDefs.push({ group: raw.group, instance, mask, scope: raw.scope || null });
+        // `local: true` treats the substring as a string of its own: the entry
+        // gets its own per-run info below, so its effects measure around the
+        // substring instead of the whole beat (and the block deformations it
+        // pushes move around the substring's centre).
+        scopedDefs.push({ group: raw.group, instance, mask, scope: raw.scope || null, local: raw.local === true });
       }
     }
     const scopedAt = (index, group) => scopedDefs.find((entry) => entry.group === group && entry.mask[index]) || null;
@@ -552,6 +556,101 @@
       }
       for (const c of kwCenters) { c.x /= c.n; c.y /= c.n; }
     }
+
+    // --- local substring geometry (B) -------------------------------------------
+    // A `local` scoped entry sees its substring as a string of its own, so the
+    // run carries its own ranks, centre, bbox and half size. The walk unit is a
+    // *run*: the contiguous flagged letters of one line. A `slice` on a line
+    // anchor, and an `nth` at every N, both split into several runs - and an
+    // `nth` at every 2 becomes one run per letter, so each letter squashes on
+    // its own (the same look the whole-beat `nth` gives).
+    //
+    // The geometry is scene-level (the formation points only move with the
+    // layout, not per frame), so it is built once per def and reused.
+    const runCache = new Map();
+    function runsOf(def) {
+      if (runCache.has(def)) return runCache.get(def);
+      const runs = [];
+      const runOf = new Int32Array(N).fill(-1);
+      let current = null;
+      for (let i = 0; i < N; i += 1) {
+        if (!def.mask[i]) {
+          current = null;
+          continue;
+        }
+        const lineIdx = letters[i].lineIdx == null ? 0 : letters[i].lineIdx;
+        if (!current || current.lineIdx !== lineIdx) {
+          current = { lineIdx, members: [], rank: new Map() };
+          runs.push(current);
+        }
+        runOf[i] = runs.length - 1;
+        current.rank.set(i, current.members.length);
+        current.members.push(i);
+      }
+      for (const run of runs) {
+        let cx = 0;
+        let cy = 0;
+        let x1 = Infinity;
+        let x2 = -Infinity;
+        for (const index of run.members) {
+          const point = targetFormation[index] || { x: 0, y: 0, scale: 1 };
+          cx += point.x;
+          cy += point.y;
+          const letter = letters[index];
+          const scale = point.scale == null ? 1 : point.scale;
+          const w = Math.max(1, num(letter.advance, 0)) * scale;
+          const h = Math.max(1, num(letter.size, 0)) * 0.5;
+          x1 = Math.min(x1, point.x - w / 2);
+          x2 = Math.max(x2, point.x + w / 2);
+        }
+        run.count = run.members.length;
+        run.center = { x: cx / run.count, y: cy / run.count };
+        run.half = { x: Math.max(1, (x2 - x1) / 2), y: Math.max(1, num(letters[run.members[0]].size, 24) * 0.5) };
+        run.bbox = { x1: -run.half.x, y1: -run.half.y, x2: run.half.x, y2: run.half.y };
+      }
+      const value = { runs, runOf };
+      runCache.set(def, value);
+      return value;
+    }
+
+    // The info of one letter of a local run: same letters, same scene, but the
+    // substring stands in for the beat. Every selector effect reads only `i`,
+    // `N`, `units`, `blockCenter`, `blockBBox` and `blockHalf`, so they behave
+    // as if the substring were a string on its own (tracking spreads from the
+    // substring centre, a sine wave takes its phase over the substring, a
+    // range selector sweeps the substring).
+    function localInfo(def, index, info) {
+      if (!def || !def.local) return info;
+      const geometry = runsOf(def);
+      const r = geometry.runOf[index];
+      if (r < 0) return info;
+      const run = geometry.runs[r];
+      // the run's own words, renumbered from zero inside the run
+      const words = new Map();
+      for (const member of run.members) {
+        const letter = letters[member];
+        const key = `${letter.lineIdx == null ? 0 : letter.lineIdx}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
+        if (!words.has(key)) words.set(key, words.size);
+      }
+      const letter = letters[index];
+      const wordKey = `${letter.lineIdx == null ? 0 : letter.lineIdx}:${letter.wordIdx == null ? 0 : letter.wordIdx}`;
+      const rank = run.rank.get(index) || 0;
+      return {
+        ...info,
+        i: rank,
+        N: run.count,
+        units: {
+          letter: { rank, count: run.count },
+          word: { rank: words.get(wordKey) || 0, count: Math.max(1, words.size) },
+          line: { rank: 0, count: 1 },
+        },
+        blockCenter: { x: anchorX + run.center.x, y: anchorY + run.center.y },
+        blockBBox: run.bbox,
+        blockHalf: run.half,
+        run,
+      };
+    }
+
     const states = [];
     const envelopes = { layoutIn: 0, layoutOut: 0, enter: 0, exit: 0, hold: 0 };
     const enterEntry = fx.get('enter', enterType);
@@ -674,7 +773,7 @@
       }
 
       if (enterEntryLocal && enterEntryLocal.cpu) {
-        enterEntryLocal.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, {
+        enterEntryLocal.cpu(state, enterEase(pe), enterParamsResolved, letterRandom.enter, localInfo(enterOverride, index, {
           i: index,
           N,
           analysis,
@@ -691,7 +790,7 @@
           letterX: state.x,
           letterY: state.y,
           beatDuration: duration,
-        });
+        }));
       }
 
       if (adsr && adsr.punch > 0) {
@@ -700,11 +799,14 @@
         state.scaleY *= boost;
       }
 
-      const holdInstances = holds.slice();
-      for (const def of scopedDefs) if (def.group === 'hold' && def.mask[index]) holdInstances.push(def.instance);
+      // The hold stack keeps the scoped def next to its instance: a `local` one
+      // substitutes the substring's own info for the beat's (B).
+      const holdInstances = holds.map((instance) => ({ instance, def: null }));
+      for (const def of scopedDefs) if (def.group === 'hold' && def.mask[index]) holdInstances.push({ instance: def.instance, def });
       const holdEntryList = [];
       for (let holdIndex = 0; holdIndex < holdInstances.length; holdIndex += 1) {
-        const holdInstance = holdInstances[holdIndex];
+        const holdInstance = holdInstances[holdIndex].instance;
+        const holdScoped = holdInstances[holdIndex].def;
         const holdEntry = fx.get('hold', holdInstance.type);
         if (!holdEntry || !holdEntry.cpu || holdInstance.enabled === false) continue;
         const holdDef = motionDef(holdInstance, 'hold', duration);
@@ -721,10 +823,17 @@
             h = half ? period - h : h;
           }
         }
-        holdEntryList.push({ instance: holdInstance, entry: holdEntry, env, h, rng: letterRandom.hold, params: { ...(holdInstance.params || {}), ...(paramOverrides.hold || {}) } });
+        holdEntryList.push({ instance: holdInstance, def: holdScoped, entry: holdEntry, env, h, rng: letterRandom.hold, params: { ...(holdInstance.params || {}), ...(paramOverrides.hold || {}) } });
       }
+      // A `local` block deformation (a warp, a fontSize, a squash) must scale
+      // around the substring's own centre, not the block's: the warp origin
+      // below reads this. When the beat's own block deformation and a local one
+      // both touch the same letter, the local one wins - the substring is the
+      // more specific centre, and Generate avoids the pair anyway (E3).
+      let localRun = null;
       for (const hold of holdEntryList) {
-        hold.entry.cpu(state, hold.h, hold.env, hold.params, hold.rng, {
+        const deformBefore = state.deform.length;
+        hold.entry.cpu(state, hold.h, hold.env, hold.params, hold.rng, localInfo(hold.def, index, {
           i: index,
           N,
           analysis,
@@ -742,11 +851,16 @@
           letterY: state.y,
           beatDuration: duration,
           env: hold.env,
-        });
+        }));
+        if (!localRun && hold.def && hold.def.local && state.deform.length > deformBefore) {
+          const geometry = runsOf(hold.def);
+          const r = geometry.runOf[index];
+          if (r >= 0) localRun = geometry.runs[r];
+        }
       }
 
       if (exitEntryLocal && exitEntryLocal.cpu && px > 0) {
-        exitEntryLocal.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, {
+        exitEntryLocal.cpu(state, exitEase(px), exitParamsResolved, letterRandom.exit, localInfo(exitOverride, index, {
           i: index,
           N,
           analysis,
@@ -763,7 +877,7 @@
           letterX: state.x,
           letterY: state.y,
           beatDuration: duration,
-        });
+        }));
       }
 
       return {
@@ -778,6 +892,8 @@
         layoutOut,
         holdEnv: holdEntryList.length ? holdEntryList[0].env : 0,
         holdList: holdEntryList,
+        // the run a `local` block deformation of this letter belongs to (B3)
+        localRun,
         base,
         keyframeDeltas,
         enterParams: enterParamsResolved,
@@ -906,6 +1022,85 @@
       return { dx: result.dx, dy: result.dy, rot: result.rot, lattice: result.lattice, active: result.active, halfW, halfH };
     }
 
+    // --- reflow (C) -------------------------------------------------------------
+    // A substring that grows sideways would overlap the rest of its line, so the
+    // letters outside it step aside by the grown half-width. A descriptor opts
+    // in with a `spread(h, env, params, info)` hook that reports the growth
+    // (`{ x, y }`, 0 = unchanged, 0.5 = half again as wide); `tracking` and
+    // `stretch` implement it. The push is symmetric about the run's centre,
+    // because the effect itself spreads the run about its centre.
+    //
+    // The timing is the run's *first* letter's (the hold stack is per letter,
+    // so the whole run has to agree on one value) and it reuses the same
+    // formulas as `rigidAt`: the ADSR level is read on the beat's own enter /
+    // exit timing, which is what a local hold sees unless a scoped enter
+    // replaces it (then the two ends differ by a frame at most).
+    const vertical = (style.text && style.text.direction) === 'vertical' || scene.direction === 'vertical';
+    let reflow = null;
+    {
+      const beatLocal = Math.max(0, t - beat.start);
+      const enterEase = easing.get(enterDef.in.ease || 'easeOutCubic');
+      const exitEase = easing.get(exitDef.out.ease || 'easeInCubic');
+      for (const def of scopedDefs) {
+        if (def.group !== 'hold' || !def.local) continue;
+        const entry = fx.get('hold', def.instance.type);
+        if (!entry || typeof entry.spread !== 'function') continue;
+        const holdDef = motionDef(def.instance, 'hold', duration);
+        const geometry = runsOf(def);
+        for (const run of geometry.runs) {
+          const first = run.members[0];
+          const offset = offsets[first];
+          const env = adsr
+            ? adsrLevel(adsr, beatLocal, enterDef.in.delay + offset, enterDef.in.duration, duration - exitDef.out.duration - exitDef.out.delay, exitDef.out.duration, enterEase, exitEase)
+            : clamp01((beatLocal - holdDef.in.delay - offset) / holdDef.in.duration) * (1 - clamp01((beatLocal - (duration - holdDef.out.duration - holdDef.out.delay)) / holdDef.out.duration));
+          const holdLocal = Math.max(0, beatLocal - (enterDef.in.delay + enterDef.in.duration + offset));
+          let h = holdLocal;
+          const wrap = animationLoop || holdDef.loop;
+          if (wrap && wrap.period > 0) {
+            h = h % wrap.period;
+            if (wrap.yoyo) h = Math.floor(holdLocal / wrap.period) % 2 === 1 ? wrap.period - h : h;
+          }
+          const info = localInfo(def, first, {
+            i: 0,
+            N,
+            analysis,
+            audioFeatures,
+            local: beatLocal,
+            letter: letters[first],
+            frame,
+            shortSide,
+            blockBBox,
+            blockHalf,
+            units: unitsFor(first, letters[first]),
+            scene,
+            blockCenter: { x: anchorX, y: anchorY },
+            letterX: anchorX + run.center.x,
+            letterY: anchorY + run.center.y,
+            beatDuration: duration,
+            env,
+          });
+          const growth = entry.spread(h, env, def.instance.params || {}, info);
+          if (!growth || (!growth.x && !growth.y)) continue;
+          const dx = num(growth.x, 0) * run.half.x;
+          const dy = num(growth.y, 0) * run.half.y;
+          if (!dx && !dy) continue;
+          if (!reflow) reflow = new Float32Array(N * 2);
+          const at = vertical ? run.center.y : run.center.x;
+          for (let index = 0; index < N; index += 1) {
+            if (geometry.runOf[index] >= 0) continue; // the run spreads itself
+            const letter = letters[index];
+            if ((letter.lineIdx == null ? 0 : letter.lineIdx) !== run.lineIdx) continue;
+            const point = targetFormation[index] || { x: 0, y: 0 };
+            const value = vertical ? point.y : point.x;
+            if (Math.abs(value - at) < 0.5) continue; // level with the run: no clear side
+            const side = value > at ? 1 : -1;
+            reflow[index * 2] += side * dx;
+            reflow[index * 2 + 1] += side * dy;
+          }
+        }
+      }
+    }
+
     for (let index = 0; index < N; index += 1) {
       const letter = letters[index];
       const rigid = rigidAt(index, t - beat.start);
@@ -915,6 +1110,11 @@
       const px = rigid.px;
       const base = rigid.base;
       const keyframeDeltas = rigid.keyframeDeltas;
+      // the reflow the local runs pushed onto this letter (C)
+      if (reflow) {
+        state.x += reflow[index * 2];
+        state.y += reflow[index * 2 + 1];
+      }
       const soft = evaluatePhysics(index, letter, rigid);
       if (soft) {
         state.x += soft.dx;
@@ -1012,9 +1212,16 @@
       // to this letter's position: the prefix sum `position - centre` is what
       // turns `f * (p + origin) - origin + position` into a scale about the
       // centre (an inverted sign would pull the letters inward instead).
-      if (state.deform.length && blockBBox) {
-        state.warpOrigin = { x: state.x - anchorX, y: state.y - anchorY };
-        state.blockHalf = blockHalf;
+      if (state.deform.length && (blockBBox || rigid.localRun)) {
+        if (rigid.localRun) {
+          // a local deformation scales about the substring's centre and half
+          // size, so `stretch` on three letters squeezes those three only
+          state.warpOrigin = { x: state.x - (anchorX + rigid.localRun.center.x), y: state.y - (anchorY + rigid.localRun.center.y) };
+          state.blockHalf = rigid.localRun.half;
+        } else {
+          state.warpOrigin = { x: state.x - anchorX, y: state.y - anchorY };
+          state.blockHalf = blockHalf;
+        }
       }
 
       state.opacity = clamp01(state.opacity);

@@ -9,7 +9,8 @@ A desktop app for **lyric videos**, with a Suno achievement card generator as a 
 ## Features
 
 - **Studio (main)**: turn lyrics into a video project — SRT / LRC / JSON import, text restructuring into beats (pages, recap, repeats), vector text rendering with WebGL2 shaders, 12 motion and effect groups, 20 page layout presets, a multi-track timeline with keyframes, an inspector with manual editing, and synchronized audio and video playback
-- **Multi-track timeline**: Subtitle tracks, procedural Figure tracks, customizable Backdrop tracks (`+ Backdrop`), pattern fillers, video/image layers, and credits
+- **Multi-track timeline**: Subtitle tracks, procedural Figure tracks, customizable Backdrop tracks (`+ Backdrop`), Video tracks (`+ Video`), pattern fillers, video/image layers, and credits
+- **Video tracks & chroma key**: a video track sits anywhere in the track list, so the tracks below it draw behind its video and the chroma key (key colour, similarity, smoothness, spill reduction) cuts the key colour out to reveal them through the keyed area
 - **Granular disable switches**: non-destructively enable or disable individual cues, beats, clips, or subtitle text without losing data or styling (e.g. silence lyrics text while keeping text backgrounds or frame graphics)
 - **Simultaneous audio & video playback**: real-time synchronized playback of audio tracks and imported video layers (MP4/WebM) directly in the Studio preview, with frame-accurate scrubbing and WebCodecs export
 - **Page layout engine**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
@@ -62,6 +63,8 @@ The Studio timeline supports rich multi-track composition with independent layer
      - Text post-processing
   4. Foreground layers
   5. Frame post-processing, bloom, and final compositing
+
+  A **Video track** splits that order: it is drawn where it sits in the track list, so everything above it draws in front and everything below it draws behind its video. With a chroma key the key colour is cut out of the video, and the tracks behind show through there.
 
 ### Page layout engine
 

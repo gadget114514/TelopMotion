@@ -352,7 +352,9 @@ Layout is special: the `in` progress moves letters from the start formation to t
   overrides: { [elementPath]: { [propPath]: value } },
   keyframes: { [elementPath]: { [propPath]: [{ t /*s, cue-relative*/, value, ease }] } },
   markers: [{ t, label }],
-  layers: Layer[],           // background and foreground media, §7.11; the lyrics layer sits between them
+  layers: Layer[],           // background and foreground media, §7.11; the lyrics layer sits between them; a video track's layers carry `slot: 'video'` + `trackId`
+  // a `kind: 'video'` track in `tracks` is a draw position, not a slot: it is
+  // drawn where it sits in this array and may carry `chroma: {...}` (§7.11)
   fillers: FillerSettings,   // §7.14 what plays in gaps with no cue
   credits: CreditSettings    // §7.15 song title / artist elements
 }
@@ -998,6 +1000,18 @@ This controls the **card camera and treatment per cue**. The media underneath co
 4. foreground layers (an image or video with alpha, e.g. a PNG frame, logo, light-leak overlay, dust texture)
 5. `frame`-target post effects
 
+**Video tracks split that stack.** A `kind: 'video'` track is not a slot in the stack above: it sits at a position in `project.tracks` and is drawn exactly there. `engine.drawSegments(tracks)` walks the track list from its last entry (the backmost row in the timeline) to its first, and emits a group of ordinary tracks followed by a video segment whenever it crosses a video track, so the tracks listed below a video track draw first and the video covers them. Inside a group the layer order is the track order (upper = front): each `tracks` segment carries its tracks back to front in `order`, and every kind — background, backdrop, filler, figure, textAnim, subtitle, foreground — draws where its track sits. The foreground track stays fixed at the top of the list and the background track at the bottom. A list with no video track is one group with every track in it. Several video tracks give several segments; two adjacent ones draw back to back.
+
+The layers on a video track are `slot: 'video'` with `trackId`, so several video tracks can hold different media. Removing a video track removes its layers with it; the frame base colour and the background clips stay on the `background` track, which is why the clip moves exclude it.
+
+**Chroma key (per video track, `track.chroma`):**
+- `enabled` — off unless set. `color` — the key colour, defaulting to the broadcast green `#00b140` the background track also offers.
+- `similarity` (0–1) — how far a pixel's chroma may sit from the key colour and still be cut out. Measured as the distance in the CbCr plane, so brightness does not matter: a dark and a bright version of the same green key the same.
+- `smoothness` (0–0.5) — the width of the band the cut-out fades across, i.e. the soft edge instead of a hard, aliasing cut.
+- `spill` (0–1) — how far past the cut-out the key colour's cast is neutralised toward luma, which removes the green fringe on the subject's edges.
+- The key is applied in the layer fragment shader (`u_chroma`, `u_chromaKey`, `u_chromaParams`), so it works in preview and in export through the same pass, and the alpha it removes lets the tracks behind show through. `SA.glLayers.chromaState` / `chromaAlpha` are the CPU mirror, kept for the tests.
+- A clip track that draws in front of a visible subtitle track skips the text mask (`maskFor` in `renderFrameExtended`), since the mask would cut glyph holes a video already covers.
+
 **Frame base (the background track's colour):**
 - The background track owns the frame base colour: the stage behind the clips and the layers. It is a saved track property (`track.color`, a ColorValue or a hex string), so the track's checkbox toggles it together with its clips and layers.
 - Unset = transparent. The chroma key green is just a preset of that colour (`#00b140`), never an implicit engine default; the canvas keeps its alpha and the stage shows through between the clips. The studio preview paints a grey checkerboard behind the canvas (CSS only), so a transparent base reads as transparency; exports never include it.
@@ -1027,10 +1041,12 @@ This controls the **card camera and treatment per cue**. The media underneath co
 - **Preview** shows a checkerboard behind transparent areas (View → Transparency grid).
 
 **UI:**
-- Media panel: a **Video** tab (import .mp4/.webm/.mov if the browser can decode it), with thumbnails from a frame at 1 s.
-- Drag media onto the timeline's **Background** or **Foreground** track, or use the right-click menu "Set as background/foreground".
+- Media panel: a **Video** tab (import .mp4/.webm/.mov if the browser can decode it), with thumbnails from a frame at 1 s. Each entry adds itself as a background layer, a foreground layer, or onto a video track.
+- Drag media onto the timeline's **Background**, **Foreground**, or **Video** track, or use the right-click menu "Set as background/foreground".
 - Timeline: **Foreground layers** rows above the cue track, and **Background layers** rows below it. Clips can be dragged, trimmed and reordered, with lock and eye toggles.
+- Timeline toolbar: **+ Video** adds a video track. Its header shows `· CK` while the key is on, and its right-click menu toggles the key and moves the track up / down past any other kind — that move is what decides what draws behind the video.
 - Inspector: select a layer (in the timeline or by clicking the preview with Alt) → Layer sections: Source, Time (start/end/trim/speed/loop), Fit and Transform, Opacity and Blend, Filters, Motion in/out.
+- Inspector: select a video track → its Chroma key section (on/off, key colour, similarity, smoothness, spill) plus an Add video… picker over the imported media.
 
 ### 7.12 Color group
 Not its own shader, but a group in the inspector. It edits `StyleSet.color` (ColorSet §4.5) and holds the "category color" and "palette" switches.

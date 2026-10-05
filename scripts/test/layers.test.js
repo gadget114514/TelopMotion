@@ -142,6 +142,7 @@ test('create() builds a usable pass against a stub GL context', () => {
     uniform2f() {},
     uniform1f() {},
     uniform1i() {},
+    uniform3f() {},
     uniform4f() {},
     uniformMatrix2fv() {},
     activeTexture() {},

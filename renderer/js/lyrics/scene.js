@@ -404,6 +404,8 @@ SA.lyricsScene = (() => {
             src: source.src,
             raster: source.raster,
             size: source.size == null ? size : source.size,
+            // the beat text's code-point offset, which the `range` scope addresses
+            textOffset: source.textOffset,
             advance: source.advance,
             advanceWithSpacing: source.advanceWithSpacing,
             vertRotate: !!source.vertRotate,

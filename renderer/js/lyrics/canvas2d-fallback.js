@@ -81,7 +81,20 @@ SA.canvas2dFallback = (() => {
       // rendered, so reduced preview qualities do not draw output-size text.
       const output = project.output || null;
       const sceneScale = output && output.width ? state.width / output.width : 1;
-      for (const beat of SA.lyricsEngine.activeBeats(project, t)) {
+      // Layer order = track order (upper = front): draw back to front, so the
+      // bottom track paints first and the top track last.
+      const trackIndexOf = new Map(((project && project.tracks) || []).map((track, index) => [track && track.id, index]));
+      const cueTrackOf = (beat) => {
+        const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
+        return (cue && cue.trackId) || 'sub1';
+      };
+      const orderedBeats = SA.lyricsEngine.activeBeats(project, t).slice().sort((a, b) => {
+        const ai = trackIndexOf.has(cueTrackOf(a)) ? trackIndexOf.get(cueTrackOf(a)) : Infinity;
+        const bi = trackIndexOf.has(cueTrackOf(b)) ? trackIndexOf.get(cueTrackOf(b)) : Infinity;
+        if (bi !== ai) return bi - ai;
+        return (a.start || 0) - (b.start || 0);
+      });
+      for (const beat of orderedBeats) {
         const style = SA.project && SA.project.resolveStyle ? SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`) : {};
         const direction = style && style.layout && style.layout.type === 'vertical' ? 'vertical' : undefined;
         const scene = SA.lyricsScene.buildScene(project, beat, fonts, { direction, scale: sceneScale });

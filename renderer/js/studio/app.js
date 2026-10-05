@@ -74,6 +74,7 @@
     el.splitConsole = document.getElementById('split-console');
     el.autoDirect = document.getElementById('tl-auto-direct');
     el.rerollColors = document.getElementById('tl-reroll-colors');
+    el.vary = document.getElementById('tl-vary');
   }
 
   function project() {
@@ -413,8 +414,14 @@
         SA.store.commands.removeMedia('videos', entry.id);
         renderVideoList();
       });
+      const track = document.createElement('button');
+      track.type = 'button';
+      track.className = 'btn btn-mini';
+      track.textContent = t('studio.track.video');
+      track.addEventListener('click', () => addVideoLayer(entry, 'video'));
       actions.appendChild(bg);
       actions.appendChild(fg);
+      actions.appendChild(track);
       actions.appendChild(remove);
       item.appendChild(actions);
       el.videoList.appendChild(item);
@@ -425,6 +432,15 @@
   function addVideoLayer(entry, slot) {
     if (!entry) return;
     const layer = SA.layersDialog.defaults(slot);
+    if (slot === 'video') {
+      // the selected video track, else the first one, else a new one
+      const doc = SA.store.state.project;
+      const selected = (SA.store.state.selection.paths || []).map((path) => /^track:(.+)$/.exec(path)).filter(Boolean).map((match) => match[1]);
+      const tracks = ((doc && doc.tracks) || []).filter((entry) => entry && entry.kind === 'video');
+      const target = tracks.find((entry) => selected.includes(entry.id)) || tracks[0];
+      layer.trackId = target ? target.id : SA.store.commands.addTrack('video');
+      if (!layer.trackId) return;
+    }
     layer.type = 'video';
     layer.src = entry.src;
     layer.fit = 'cover';
@@ -1602,6 +1618,7 @@
       });
     }
     if (el.rerollColors) el.rerollColors.addEventListener('click', () => rerollColors());
+    if (el.vary) el.vary.addEventListener('click', () => store.commands.varyAll());
     window.addEventListener('resize', () => applyLayout());
     document.addEventListener('keydown', (event) => {
       const target = event.target;

@@ -38,7 +38,24 @@ uniform float u_time;
 uniform int u_blendMode;
 uniform int u_filter;
 uniform vec4 u_filterParams;
+uniform int u_chroma;
+uniform vec3 u_chromaKey;
+uniform vec4 u_chromaParams;
 out vec4 outColor;
+
+// chroma key: distance in the CbCr plane (brightness does not matter), the
+// edge softened by the smoothness band and the key colour's spill desaturated
+vec2 chromaCbCr(vec3 c) {
+  return vec2(-0.168736 * c.r - 0.331264 * c.g + 0.5 * c.b, 0.5 * c.r - 0.418688 * c.g - 0.081312 * c.b);
+}
+
+vec4 chromaKey(vec4 texel) {
+  float base = distance(chromaCbCr(texel.rgb), chromaCbCr(u_chromaKey)) - u_chromaParams.x;
+  float mask = smoothstep(0.0, max(u_chromaParams.y, 1e-4), base);
+  float spillVal = pow(clamp(base / max(u_chromaParams.z, 1e-4), 0.0, 1.0), 1.5);
+  float luma = dot(texel.rgb, vec3(0.2126, 0.7152, 0.0722));
+  return vec4(mix(vec3(luma), texel.rgb, spillVal), texel.a * mask);
+}
 
 float layerHash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -109,6 +126,7 @@ vec4 filterSample(vec2 uv) {
 
 void main() {
   vec4 texel = u_useTexture > 0.5 ? filterSample(v_uv) : vec4(1.0);
+  if (u_chroma == 1 && u_useTexture > 0.5) texel = chromaKey(texel);
   float alpha = texel.a * u_color.a * u_opacity;
   vec2 q = abs((v_uv - 0.5) * u_size) - (u_size * 0.5 - vec2(u_radius));
   float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - u_radius;
@@ -284,6 +302,37 @@ void main() {
     return { code: spec.code, params: [Math.max(2, num(merged.blockSize, 24)), clamp01(num(merged.rate, 0.3)), num(merged.rgbSplit, 2), 0] };
   }
 
+  // A video track's chroma key. Off unless `enabled` is set; the defaults key
+  // the broadcast green (#00b140) the background track also offers.
+  const CHROMA_DEFAULTS = { enabled: false, color: '#00b140', similarity: 0.2, smoothness: 0.08, spill: 0.1 };
+
+  function chromaState(chroma) {
+    const source = chroma || {};
+    if (!source.enabled) return { on: false, color: [0, 0, 0], params: [0, 0, 0, 0] };
+    const color = parseColor(source.color || CHROMA_DEFAULTS.color);
+    return {
+      on: true,
+      color: [color[0], color[1], color[2]],
+      params: [
+        Math.max(0, num(source.similarity, CHROMA_DEFAULTS.similarity)),
+        Math.max(0, num(source.smoothness, CHROMA_DEFAULTS.smoothness)),
+        Math.max(0, num(source.spill, CHROMA_DEFAULTS.spill)),
+        0,
+      ],
+    };
+  }
+
+  // CPU mirror of the shader's chromaKey(): the alpha factor a pixel keeps.
+  function chromaAlpha(rgb, chroma) {
+    const state = chromaState(chroma);
+    if (!state.on) return 1;
+    const cbcr = (c) => [-0.168736 * c[0] - 0.331264 * c[1] + 0.5 * c[2], 0.5 * c[0] - 0.418688 * c[1] - 0.081312 * c[2]];
+    const a = cbcr(rgb);
+    const b = cbcr(state.color);
+    const x = clamp01((Math.hypot(a[0] - b[0], a[1] - b[1]) - state.params[0]) / Math.max(state.params[1], 1e-4));
+    return x * x * (3 - 2 * x);
+  }
+
   function fitRect(fit, imageWidth, imageHeight, width, height) {
     if (!imageWidth || !imageHeight) return { x: 0, y: 0, w: width, h: height };
     if (fit === 'stretch') return { x: 0, y: 0, w: width, h: height };
@@ -383,6 +432,9 @@ void main() {
         blendMode: context.getUniformLocation(next, 'u_blendMode'),
         filter: context.getUniformLocation(next, 'u_filter'),
         filterParams: context.getUniformLocation(next, 'u_filterParams'),
+        chroma: context.getUniformLocation(next, 'u_chroma'),
+        chromaKey: context.getUniformLocation(next, 'u_chromaKey'),
+        chromaParams: context.getUniformLocation(next, 'u_chromaParams'),
       };
     }
 
@@ -670,6 +722,10 @@ void main() {
         const filter = filterState(layer.filter);
         gl.uniform1i(uniforms.filter, filter.code);
         gl.uniform4f(uniforms.filterParams, filter.params[0], filter.params[1], filter.params[2], filter.params[3]);
+        const chroma = chromaState(layer.chroma);
+        gl.uniform1i(uniforms.chroma, chroma.on ? 1 : 0);
+        gl.uniform3f(uniforms.chromaKey, chroma.color[0], chroma.color[1], chroma.color[2]);
+        gl.uniform4f(uniforms.chromaParams, chroma.params[0], chroma.params[1], chroma.params[2], chroma.params[3]);
         if (isImage || isVideo) gl.bindTexture(gl.TEXTURE_2D, record.texture);
         else gl.bindTexture(gl.TEXTURE_2D, null);
         const code = blendCode(layer.blend);
@@ -734,5 +790,5 @@ void main() {
     return { draw, preload, prepare, pauseVideos, textureFor, videoRecordFor, textureCount, dispose, fitRect };
   }
 
-  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, videoTargetFor, CUSTOM_BLENDS, FILTERS };
+  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, chromaState, chromaAlpha, videoTargetFor, CUSTOM_BLENDS, FILTERS, CHROMA_DEFAULTS };
 });
