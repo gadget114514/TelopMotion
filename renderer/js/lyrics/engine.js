@@ -1772,7 +1772,12 @@ SA.lyricsEngine = (() => {
       const scoped = scopedBgEntries(style);
       // the scoped entries are part of the result, so they are part of the key
       const scopedKey = scoped.length ? JSON.stringify(scoped.map((entry) => [entry.group, entry.type, entry.params || {}, entry.scope || null])) : '';
-      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}|${scopedKey}`;
+      // the per-beat variation slot: 0 keeps the legacy stream byte-for-byte,
+      // a vary press steps it and reshuffles the letters without touching the
+      // seed or the style
+      const variant = beat && Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0;
+      const seedKey = variant ? [seed, beat.id, variant] : [seed, beat.id];
+      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}|${scopedKey}|v${variant}`;
       if (scene.__bgVary && scene.__bgVary.key === key) return scene.__bgVary.value;
       const palette = (style.palette && style.palette.colors) || [];
       const letters = scene.letters.map((letter) => ({
@@ -1781,7 +1786,7 @@ SA.lyricsEngine = (() => {
         wordIdx: letter.wordIdx,
         path: letter.path,
       }));
-      const value = applyScopedBg(SA.vary.letterVariation(shape.params, letters, palette, [seed, beat.id]), scene, style);
+      const value = applyScopedBg(SA.vary.letterVariation(shape.params, letters, palette, seedKey), scene, style);
       scene.__bgVary = { key, value };
       return value;
     }
