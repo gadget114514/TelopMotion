@@ -210,6 +210,10 @@ SA.timeline = (() => {
   function originFor(path, cueId) {
     const doc = project();
     if (!doc) return 0;
+    if (String(path).startsWith('layer:')) {
+      const layer = (doc.layers || []).find((entry) => entry && entry.id === String(path).slice('layer:'.length));
+      return layer ? layer.start || 0 : 0;
+    }
     const beatId = (String(path).split('/beat:')[1] || '').split('/')[0];
     if (beatId && doc.beats[cueId]) {
       const beat = doc.beats[cueId].find((entry) => entry.id === beatId);
@@ -372,6 +376,32 @@ SA.timeline = (() => {
     return entries;
   }
 
+  // Keyframe lanes for image layers, in the canonical prop order so the
+  // timeline reads the same as the inspector.
+  const LAYER_LANE_ORDER = [
+    'transform.x', 'transform.y', 'transform.rotate', 'transform.scale',
+    'transform.scaleX', 'transform.scaleY', 'transform.anchorX', 'transform.anchorY',
+    'opacity', 'crop.l', 'crop.t', 'crop.r', 'crop.b',
+  ];
+
+  function laneEntriesForLayers(doc, layers) {
+    const entries = [];
+    for (const layer of layers || []) {
+      if (!layer || layer.id == null) continue;
+      const path = `layer:${layer.id}`;
+      const props = doc && doc.keyframes && doc.keyframes[path];
+      if (!props) continue;
+      for (const propPath of LAYER_LANE_ORDER) {
+        if (props[propPath] && props[propPath].length) entries.push({ layerId: layer.id, path, propPath });
+      }
+      for (const propPath of Object.keys(props)) {
+        if (LAYER_LANE_ORDER.includes(propPath)) continue;
+        if (props[propPath] && props[propPath].length) entries.push({ layerId: layer.id, path, propPath });
+      }
+    }
+    return entries;
+  }
+
   // One row per track, top to bottom. Tracks only grow extra rows when their own
   // clips overlap.
   function layoutRows() {
@@ -396,13 +426,18 @@ SA.timeline = (() => {
           rows.push({ type: 'layer-track', y, h: LAYER_H, trackId: track.id, track, slot, layers: packed[lane] || [], first: lane === 0, last: lane === laneCount - 1 });
           y += LAYER_H;
         }
+        const keyEntries = laneEntriesForLayers(doc, layers);
+        const clips = track.kind === 'background' ? clipsOnTrack(doc, track.id) : [];
+        if (keyEntries.length || clips.length) rows[rows.length - laneCount].collapsible = true;
+        if (trackFolded(track.id)) continue;
+        for (const entry of keyEntries) {
+          rows.push({ type: 'lane', y, h: LANE_H, trackId: track.id, layerId: entry.layerId, cueId: null, path: entry.path, propPath: entry.propPath, origin: originFor(entry.path), depth: 1 });
+          y += LANE_H;
+        }
         // the background track also owns the background clips (the auto
         // direction places the song's background here): show them as clip
         // lanes under the layer lanes so they can be selected and edited
-        if (track.kind === 'background') {
-          const clips = clipsOnTrack(doc, track.id);
-          if (clips.length) rows[rows.length - laneCount].collapsible = true;
-          if (trackFolded(track.id)) continue;
+        if (track.kind === 'background' && clips.length) {
           const clipPacked = packRows(clips, (clip) => clip.start, (clip) => clip.end);
           for (let lane = 0; lane < clipPacked.length; lane += 1) {
             rows.push({ type: 'clip-track', y, h: LAYER_H, trackId: track.id, track, kind: 'background', clips: clipPacked[lane] || [], first: false, last: lane === clipPacked.length - 1, depth: 1 });
@@ -1372,9 +1407,48 @@ SA.timeline = (() => {
   }
 
   function laneLabel(path) {
+    if (String(path).startsWith('layer:')) {
+      const doc = project();
+      const id = String(path).slice('layer:'.length);
+      const layer = ((doc && doc.layers) || []).find((entry) => entry && entry.id === id);
+      if (!layer) return path;
+      if (layer.name) return layer.name;
+      if (layer.src) {
+        const base = String(layer.src).split('?')[0].split('#')[0].split('/').pop().split('\\').pop();
+        if (base) return base.length > 32 ? `${base.slice(0, 31)}…` : base;
+      }
+      return layer.id;
+    }
     const parts = String(path).split('/');
     const tail = parts.slice(1).map((part) => part.replace(':', ' ')).join(' · ');
     return tail || path;
+  }
+
+  // Layer lanes use the layers.* i18n keys (the generic fx.param.* lookup
+  // would render tails like `anchorX` or `l` raw).
+  const LAYER_PROP_LABEL_KEYS = {
+    'transform.x': 'layers.x',
+    'transform.y': 'layers.y',
+    'transform.rotate': 'layers.rotate',
+    'transform.scale': 'layers.scale',
+    'transform.scaleX': 'layers.scaleX',
+    'transform.scaleY': 'layers.scaleY',
+    'transform.anchorX': 'layers.anchorX',
+    'transform.anchorY': 'layers.anchorY',
+    opacity: 'layers.opacity',
+    'crop.l': 'layers.cropLeft',
+    'crop.t': 'layers.cropTop',
+    'crop.r': 'layers.cropRight',
+    'crop.b': 'layers.cropBottom',
+  };
+
+  function lanePropLabel(propPath) {
+    const key = LAYER_PROP_LABEL_KEYS[propPath];
+    if (key) {
+      const translated = t(key);
+      if (translated !== key) return translated;
+    }
+    return SA.controls ? SA.controls.labelFor(String(propPath).split('.').pop()) : propPath;
   }
 
   function drawLane(size, row) {
@@ -1392,8 +1466,19 @@ SA.timeline = (() => {
       labelRegions.push({ x: 0, y: row.y, w: LABEL_W - 1, h: row.h, text: emptyText, clipped: emptyLabel !== emptyText });
       return;
     }
-    const cue = cueList().find((entry) => entry.id === row.cueId);
-    if (!cue) return;
+    const cue = row.layerId ? null : cueList().find((entry) => entry.id === row.cueId);
+    let spanStart;
+    let spanEnd;
+    if (row.layerId) {
+      const layer = (doc.layers || []).find((entry) => entry && entry.id === row.layerId);
+      if (!layer) return;
+      spanStart = layer.start || 0;
+      spanEnd = layer.end == null ? duration() : layer.end;
+    } else {
+      if (!cue) return;
+      spanStart = cue.start;
+      spanEnd = cue.end;
+    }
     const track = ((doc.keyframes[row.path] || {})[row.propPath] || []).slice();
     ctx.fillStyle = row.y % 2 === 0 ? '#0f121a' : '#0d1017';
     ctx.fillRect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
@@ -1402,8 +1487,8 @@ SA.timeline = (() => {
     ctx.moveTo(0, row.y + row.h - 0.5);
     ctx.lineTo(size.width, row.y + row.h - 0.5);
     ctx.stroke();
-    const start = xOf(cue.start);
-    const end = xOf(cue.end);
+    const start = xOf(spanStart);
+    const end = xOf(spanEnd);
     ctx.save();
     ctx.beginPath();
     ctx.rect(LABEL_W, row.y, Math.max(0, size.width - LABEL_W), row.h);
@@ -1415,7 +1500,7 @@ SA.timeline = (() => {
     ctx.fillStyle = '#6f7a94';
     ctx.font = '10px "Segoe UI", Arial, sans-serif';
     ctx.textBaseline = 'middle';
-    const fullLane = `${laneLabel(row.path)} · ${SA.controls ? SA.controls.labelFor(row.propPath.split('.').pop()) : row.propPath}`;
+    const fullLane = `${laneLabel(row.path)} · ${lanePropLabel(row.propPath)}`;
     const laneText = fitLabel(fullLane, LABEL_W - 16 - row.depth * CHILD_INDENT);
     ctx.fillText(laneText, 8 + row.depth * CHILD_INDENT, row.y + row.h / 2);
     drawTreeGuide(row);
@@ -1861,11 +1946,11 @@ SA.timeline = (() => {
       if (cue) drag = { type: 'cue-move', cueId: hit.cueId, start: timeAt(point.x), original: { ...cue } };
     } else if (hit.type === 'key') {
       selectedKeys.add(`${hit.path}|${hit.propPath}|${hit.index}`);
-      SA.store.setSelection([hit.path], hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
+      SA.store.setSelection([hit.path], String(hit.path).startsWith('layer:') ? 'layer' : hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
       drag = { type: 'key', path: hit.path, propPath: hit.propPath, index: hit.index, origin: hit.origin, key: { ...hit.key } };
       draw();
     } else if (hit.type === 'lane') {
-      SA.store.setSelection([hit.path], hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
+      SA.store.setSelection([hit.path], String(hit.path).startsWith('layer:') ? 'layer' : hit.path.includes('/letter:') ? 'letter' : hit.path.includes('/word:') ? 'word' : hit.path.includes('/line:') ? 'line' : 'beat');
     } else {
       SA.store.setSelection([], null);
     }

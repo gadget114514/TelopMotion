@@ -38,6 +38,7 @@ uniform float u_time;
 uniform int u_blendMode;
 uniform int u_filter;
 uniform vec4 u_filterParams;
+uniform vec4 u_uvRect;
 uniform int u_chroma;
 uniform vec3 u_chromaKey;
 uniform vec4 u_chromaParams;
@@ -125,7 +126,8 @@ vec4 filterSample(vec2 uv) {
 }
 
 void main() {
-  vec4 texel = u_useTexture > 0.5 ? filterSample(v_uv) : vec4(1.0);
+  vec2 uv = mix(u_uvRect.xy, u_uvRect.zw, v_uv);
+  vec4 texel = u_useTexture > 0.5 ? filterSample(uv) : vec4(1.0);
   if (u_chroma == 1 && u_useTexture > 0.5) texel = chromaKey(texel);
   float alpha = texel.a * u_color.a * u_opacity;
   vec2 q = abs((v_uv - 0.5) * u_size) - (u_size * 0.5 - vec2(u_radius));
@@ -280,6 +282,138 @@ void main() {
     }
     state.opacity = clamp01(state.opacity);
     return state;
+  }
+
+  // Keyframable layer props. Each propPath matches the layer's field path so
+  // the inspector can read / write them uniformly.
+  const LAYER_KEY_PROPS = [
+    'transform.x', 'transform.y', 'transform.rotate', 'transform.scale',
+    'transform.scaleX', 'transform.scaleY', 'transform.anchorX', 'transform.anchorY',
+    'opacity', 'crop.l', 'crop.t', 'crop.r', 'crop.b',
+  ];
+
+  function easeApplyLocal(name, p) {
+    if (name == null || name === 'linear') return p;
+    if (name === 'hold') return p < 1 ? 0 : 1;
+    if (typeof SA !== 'undefined' && SA.easing && typeof SA.easing.get === 'function') {
+      try {
+        const fn = SA.easing.get(name);
+        if (typeof fn === 'function') return fn(p);
+      } catch {
+        /* fall through */
+      }
+    }
+    return p * p * (3 - 2 * p);
+  }
+
+  // Interpolate one numeric track at a layer-local time. Delegates to
+  // SA.tween.segment when available (preview / export) so the ease semantics
+  // (start.ease per segment) match the text keyframes; the local fallback is
+  // for node tests where SA.tween is absent.
+  function sampleTrack(keys, local) {
+    if (!Array.isArray(keys) || !keys.length) return undefined;
+    if (typeof SA !== 'undefined' && SA.tween && typeof SA.tween.segment === 'function') {
+      return SA.tween.segment({ kind: 'number', keys }, local);
+    }
+    if (local <= keys[0].t) return keys[0].value;
+    const last = keys[keys.length - 1];
+    if (local >= last.t) return last.value;
+    for (let i = 0; i < keys.length - 1; i += 1) {
+      const start = keys[i];
+      const end = keys[i + 1];
+      if (local >= start.t && local <= end.t) {
+        if (start.ease === 'hold') return start.value;
+        const span = end.t - start.t;
+        const p = span <= 0 ? 1 : (local - start.t) / span;
+        const a = Number(start.value);
+        const b = Number(end.value);
+        if (!Number.isFinite(a) || !Number.isFinite(b)) return start.value;
+        return a + (b - a) * easeApplyLocal(start.ease, Math.max(0, Math.min(1, p)));
+      }
+    }
+    return last.value;
+  }
+
+  // Absolute-value override: a keyed prop replaces the layer's static field
+  // (unlike the text keyframes, which are deltas). Pure; returns `layer`
+  // itself when there is nothing to apply so callers can skip copies.
+  function resolveLayerAt(layer, keyframes, t) {
+    const tracks = keyframes && layer && layer.id != null ? keyframes[`layer:${layer.id}`] : null;
+    if (!tracks) return layer;
+    let touched = false;
+    const local = (t == null ? 0 : Number(t) || 0) - num(layer.start, 0);
+    const next = { ...layer, transform: { ...(layer.transform || {}) }, crop: { ...(layer.crop || {}) } };
+    for (const prop of LAYER_KEY_PROPS) {
+      const keys = tracks[prop];
+      if (!Array.isArray(keys) || !keys.length) continue;
+      const value = num(sampleTrack(keys, local), null);
+      if (value == null) continue;
+      const dot = prop.indexOf('.');
+      if (dot < 0) next[prop] = value;
+      else next[prop.slice(0, dot)][prop.slice(dot + 1)] = value;
+      touched = true;
+    }
+    return touched ? next : layer;
+  }
+
+  function clampCropEdge(value) {
+    const parsed = num(value, 0);
+    if (!Number.isFinite(parsed)) return 0;
+    return Math.max(0, Math.min(0.95, parsed));
+  }
+
+  // Pure geometry for one layer: crop shrinks the fitted rect, the anchor
+  // (0..1 of the cropped rect) is the fixed point of scale + rotation, and
+  // uvRect maps the cropped sub-image. With anchor=0.5, crop=0, scaleX/Y=1
+  // this matches the pre-keyframe calculation exactly.
+  function layerGeometry(layer, motion, rect, width, height) {
+    const transform = (layer && layer.transform) || {};
+    const state = motion || {};
+    let l = clampCropEdge(layer && layer.crop && layer.crop.l);
+    let tt = clampCropEdge(layer && layer.crop && layer.crop.t);
+    let r = clampCropEdge(layer && layer.crop && layer.crop.r);
+    let b = clampCropEdge(layer && layer.crop && layer.crop.b);
+    if (l + r > 0.95 && l + r > 0) {
+      const factor = 0.95 / (l + r);
+      l *= factor;
+      r *= factor;
+    }
+    if (tt + b > 0.95 && tt + b > 0) {
+      const factor = 0.95 / (tt + b);
+      tt *= factor;
+      b *= factor;
+    }
+    const base = rect || { x: 0, y: 0, w: width, h: height };
+    const w0 = Math.max(0, base.w * (1 - l - r));
+    const h0 = Math.max(0, base.h * (1 - tt - b));
+    const tx = num(transform.x, 0);
+    const ty = num(transform.y, 0);
+    const c0x = base.x + base.w * l + w0 / 2 + tx * width + num(state.x, 0);
+    const c0y = base.y + base.h * tt + h0 / 2 + ty * height + num(state.y, 0);
+    const scaleBase = transform.scale == null ? 1 : num(transform.scale, 1);
+    const sx = scaleBase * num(transform.scaleX, 1) * num(state.scaleX, 1);
+    const sy = scaleBase * num(transform.scaleY, 1) * num(state.scaleY, 1);
+    const ax = Math.max(0, Math.min(1, num(transform.anchorX, 0.5)));
+    const ay = Math.max(0, Math.min(1, num(transform.anchorY, 0.5)));
+    const px = c0x + (ax - 0.5) * w0;
+    const py = c0y + (ay - 0.5) * h0;
+    const dx = c0x - px;
+    const dy = c0y - py;
+    const angle = (((transform.rotate == null ? 0 : num(transform.rotate, 0)) + num(state.rot, 0)) * Math.PI) / 180;
+    const cos = Math.cos(angle);
+    const sin = Math.sin(angle);
+    const centerX = px + cos * dx * sx - sin * dy * sy;
+    const centerY = py + sin * dx * sx + cos * dy * sy;
+    return {
+      centerX,
+      centerY,
+      halfX: (w0 * sx) / 2,
+      halfY: (h0 * sy) / 2,
+      angle,
+      cos,
+      sin,
+      uvRect: [l, tt, 1 - r, 1 - b],
+    };
   }
 
   function blendCode(blend) {
@@ -439,6 +573,7 @@ void main() {
         blendMode: context.getUniformLocation(next, 'u_blendMode'),
         filter: context.getUniformLocation(next, 'u_filter'),
         filterParams: context.getUniformLocation(next, 'u_filterParams'),
+        uvRect: context.getUniformLocation(next, 'u_uvRect'),
         chroma: context.getUniformLocation(next, 'u_chroma'),
         chromaKey: context.getUniformLocation(next, 'u_chromaKey'),
         chromaParams: context.getUniformLocation(next, 'u_chromaParams'),
@@ -709,11 +844,12 @@ void main() {
       return true;
     }
 
-    function draw(layers, viewport, time) {
+    function draw(layers, viewport, time, options) {
       if (!program || !layers || !layers.length) return 0;
       const width = (viewport && viewport.width) || gl.drawingBufferWidth;
       const height = (viewport && viewport.height) || gl.drawingBufferHeight;
       const t = time == null ? 0 : Number(time) || 0;
+      const keyframes = options && options.keyframes;
       gl.useProgram(program);
       gl.bindVertexArray(vao);
       gl.uniform2f(uniforms.resolution, width, height);
@@ -723,7 +859,8 @@ void main() {
       gl.uniform1i(uniforms.tex, 0);
       gl.uniform1i(uniforms.backdrop, 1);
       let drawn = 0;
-      for (const layer of layers) {
+      for (const raw of layers) {
+        const layer = keyframes ? resolveLayerAt(raw, keyframes, t) : raw;
         if (!layer || layer.enabled === false) continue;
         const motion = evaluateLayerMotion(layer, t, { width, height });
         if (!motion.visible) continue;
@@ -747,19 +884,18 @@ void main() {
         }
         const fit = layer.fit || (isScene ? 'stretch' : isImage || isVideo ? 'cover' : 'stretch');
         const rect = isImage || isVideo || isScene ? fitRect(fit, record.width, record.height, width, height) : { x: 0, y: 0, w: width, h: height };
-        const transform = layer.transform || {};
-        const scale = (transform.scale == null ? 1 : transform.scale) * motion.scaleX;
-        const centerX = rect.x + rect.w / 2 + (transform.x || 0) * width + motion.x;
-        const centerY = rect.y + rect.h / 2 + (transform.y || 0) * height + motion.y;
-        const halfX = (rect.w * scale) / 2;
-        const halfY = (rect.h * (transform.scale == null ? 1 : transform.scale) * motion.scaleY) / 2;
-        const angle = (((transform.rotate || 0) + motion.rot) * Math.PI) / 180;
-        const cos = Math.cos(angle);
-        const sin = Math.sin(angle);
+        const geo = layerGeometry(layer, motion, rect, width, height);
+        const centerX = geo.centerX;
+        const centerY = geo.centerY;
+        const halfX = geo.halfX;
+        const halfY = geo.halfY;
+        const cos = geo.cos;
+        const sin = geo.sin;
         gl.uniform2f(uniforms.center, centerX, centerY);
         gl.uniform2f(uniforms.half, halfX, halfY);
         gl.uniformMatrix2fv(uniforms.rot, false, new Float32Array([cos, sin, -sin, cos]));
         gl.uniform2f(uniforms.size, halfX * 2, halfY * 2);
+        if (uniforms.uvRect) gl.uniform4f(uniforms.uvRect, geo.uvRect[0], geo.uvRect[1], geo.uvRect[2], geo.uvRect[3]);
         gl.uniform1f(uniforms.radius, Math.max(0, Math.min(0.5, layer.radius || 0)) * Math.min(halfX, halfY) * 2);
         const color = parseColor(layer.color || (isImage || isVideo || isScene ? '#ffffff' : '#000000'));
         gl.uniform4f(uniforms.color, color[0], color[1], color[2], color[3]);
@@ -840,5 +976,5 @@ void main() {
     return { draw, preload, prepare, pauseVideos, textureFor, videoRecordFor, textureCount, dispose, fitRect };
   }
 
-  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, chromaState, chromaAlpha, videoTargetFor, isSceneLayer, CUSTOM_BLENDS, FILTERS, CHROMA_DEFAULTS };
+  return { create, fitRect, parseColor, evaluateLayerMotion, blendCode, filterState, chromaState, chromaAlpha, videoTargetFor, isSceneLayer, resolveLayerAt, layerGeometry, sampleTrack, LAYER_KEY_PROPS, CUSTOM_BLENDS, FILTERS, CHROMA_DEFAULTS };
 });

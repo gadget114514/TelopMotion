@@ -2084,9 +2084,15 @@ SA.store = (() => {
       const before = clone(state.project.layers || []);
       dispatch({
         label: 'layers',
-        areas: ['layers'],
+        areas: ['layers', 'keyframes'],
         do(project) {
           project.layers = clone(layers || []);
+          if (project.keyframes) {
+            const alive = new Set((project.layers || []).map((entry) => entry && entry.id).filter((id) => id != null).map((id) => `layer:${id}`));
+            for (const key of Object.keys(project.keyframes)) {
+              if (key.startsWith('layer:') && !alive.has(key)) delete project.keyframes[key];
+            }
+          }
         },
         undo(project) {
           project.layers = clone(before);
@@ -2123,9 +2129,10 @@ SA.store = (() => {
       if (!(state.project.layers || []).some((entry) => entry.id === id)) return;
       dispatch({
         label: 'remove layer',
-        areas: ['layers'],
+        areas: ['layers', 'keyframes'],
         do(project) {
           project.layers = (project.layers || []).filter((entry) => entry.id !== id);
+          if (project.keyframes) delete project.keyframes[`layer:${id}`];
         },
       });
     },

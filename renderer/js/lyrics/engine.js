@@ -2116,12 +2116,12 @@ SA.lyricsEngine = (() => {
       let foregroundDrawn = false;
       const drawBackgroundLayers = () => {
         if (!layerPass || layersDrawn || !backgroundLayers.length) return;
-        layerPass.draw(backgroundLayers, { width: state.width, height: state.height }, t);
+        layerPass.draw(backgroundLayers, { width: state.width, height: state.height }, t, { keyframes: project.keyframes });
         layersDrawn = true;
       };
       const drawForegroundLayers = () => {
         if (!layerPass || foregroundDrawn || !foregroundLayers.length) return;
-        layerPass.draw(foregroundLayers, { width: state.width, height: state.height }, t);
+        layerPass.draw(foregroundLayers, { width: state.width, height: state.height }, t, { keyframes: project.keyframes });
         foregroundDrawn = true;
       };
       pipeline.beginScene(backgroundBaseColor(project));
@@ -2202,7 +2202,7 @@ SA.lyricsEngine = (() => {
         if (!layerPass || !track || track.hidden || track.enabled === false) return;
         const chroma = track.chroma && track.chroma.enabled ? track.chroma : null;
         const list = layers.filter((layer) => layer.slot === 'video' && layer.trackId === track.id).map((layer) => (chroma ? { ...layer, chroma } : layer));
-        if (list.length) layerPass.draw(list, { width: state.width, height: state.height }, t);
+        if (list.length) layerPass.draw(list, { width: state.width, height: state.height }, t, { keyframes: project.keyframes });
       };
       const drawTrackClips = (track, singleIds) => {
         const kind = track ? track.kind : null;

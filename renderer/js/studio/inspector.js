@@ -188,7 +188,104 @@ SA.inspector = (() => {
     return undefined;
   }
 
+  // --- layer keyframes -------------------------------------------------------
+  // Image layers animate by absolute keyframes on `layer:<id>` paths, evaluated
+  // at a time local to the layer (`playhead - layer.start`).
+
+  const LAYER_PROP_DEFAULTS = {
+    'transform.x': 0,
+    'transform.y': 0,
+    'transform.rotate': 0,
+    'transform.scale': 1,
+    'transform.scaleX': 1,
+    'transform.scaleY': 1,
+    'transform.anchorX': 0.5,
+    'transform.anchorY': 0.5,
+    opacity: 1,
+    'crop.l': 0,
+    'crop.t': 0,
+    'crop.r': 0,
+    'crop.b': 0,
+  };
+
+  function layerKeyContext() {
+    const sel = selectionInfo();
+    if (!sel.raw.startsWith('layer:')) return null;
+    const id = sel.raw.slice('layer:'.length);
+    const layer = (project().layers || []).find((entry) => entry && entry.id === id);
+    if (!layer) return null;
+    return { layer, path: sel.raw, local: SA.store.state.playhead - (layer.start || 0) };
+  }
+
+  // The value at the playhead: the keyframe evaluation when SA.glLayers is
+  // available, otherwise the static field, otherwise the default.
+  function layerValueAt(ctx, prop) {
+    const doc = project();
+    let source = ctx.layer;
+    if (SA.glLayers && typeof SA.glLayers.resolveLayerAt === 'function') {
+      try {
+        source = SA.glLayers.resolveLayerAt(ctx.layer, doc && doc.keyframes, SA.store.state.playhead) || ctx.layer;
+      } catch {
+        source = ctx.layer;
+      }
+    }
+    const dot = prop.indexOf('.');
+    const raw = dot < 0 ? source[prop] : ((source[prop.slice(0, dot)] || {})[prop.slice(dot + 1)]);
+    if (raw == null) return LAYER_PROP_DEFAULTS[prop];
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : LAYER_PROP_DEFAULTS[prop];
+  }
+
+  // Key-aware write: a prop that already has a track gets a keyframe at the
+  // local playhead (preserving the existing key's ease); otherwise the static
+  // layer field is updated (transform / crop merged, never replaced wholesale).
+  function setLayerProp(ctx, prop, value) {
+    const doc = project();
+    const tracks = doc.keyframes && doc.keyframes[ctx.path];
+    const keys = tracks && tracks[prop];
+    if (Array.isArray(keys) && keys.length) {
+      const existing = keys.find((key) => Math.abs(key.t - ctx.local) < 1e-4);
+      SA.store.commands.setKeyframe(ctx.path, prop, ctx.local, value, (existing && existing.ease) || 'linear', {
+        coalesceKey: `${ctx.path}|${prop}`,
+      });
+      return;
+    }
+    const dot = prop.indexOf('.');
+    if (dot < 0) {
+      SA.store.commands.setLayer(ctx.layer.id, { [prop]: value }, { coalesceKey: `layer:${ctx.layer.id}:${prop}` });
+      return;
+    }
+    const head = prop.slice(0, dot);
+    const tail = prop.slice(dot + 1);
+    SA.store.commands.setLayer(
+      ctx.layer.id,
+      { [head]: { ...((ctx.layer[head] || {})), [tail]: value } },
+      { coalesceKey: `layer:${ctx.layer.id}:${prop}` }
+    );
+  }
+
   function appendKeyButton(node, propPath, title) {
+    const layerCtx = layerKeyContext();
+    if (layerCtx && LAYER_PROP_DEFAULTS[propPath] !== undefined) {
+      const tracks = project().keyframes && project().keyframes[layerCtx.path];
+      const track = tracks && tracks[propPath];
+      const hasKey = Array.isArray(track) && track.some((key) => Math.abs(key.t - layerCtx.local) < 1e-3);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `btn btn-key${hasKey ? ' is-on' : ''}`;
+      button.textContent = hasKey ? '◆' : '◇';
+      button.title = hasKey ? t('studio.inspector.removeKey') : t('studio.inspector.addKey');
+      button.addEventListener('click', () => {
+        if (hasKey) {
+          SA.store.commands.deleteKeyframeAt(layerCtx.path, propPath, layerCtx.local);
+        } else {
+          SA.store.commands.setKeyframe(layerCtx.path, propPath, layerCtx.local, layerValueAt(layerCtx, propPath), 'linear');
+        }
+      });
+      node.appendChild(button);
+      if (title) button.title = title;
+      return;
+    }
     const sel = selectionInfo();
     if (!sel.cueId) return;
     const local = localTimeFor(sel.cueId, sel.beatId);
@@ -1710,6 +1807,67 @@ SA.inspector = (() => {
     actions.appendChild(toggle);
     actions.appendChild(remove);
     body.appendChild(actions);
+    appendLayerKeyframeRows(body, id);
+  }
+
+  function appendLayerSubhead(body, text) {
+    const head = document.createElement('div');
+    head.className = 'layer-section-title';
+    head.textContent = text;
+    body.appendChild(head);
+  }
+
+  // Editable transform / anchor / crop rows for the selected layer. Values
+  // show the keyframe evaluation at the playhead; a prop with any track is
+  // marked is-keyed, and edits write keyframes when a track exists.
+  function appendLayerKeyframeRows(body, id) {
+    const ctx = layerKeyContext();
+    if (!ctx || ctx.layer.id !== id) return;
+    const tracks = (project().keyframes && project().keyframes[ctx.path]) || {};
+    const hasTrack = (prop) => Array.isArray(tracks[prop]) && tracks[prop].length > 0;
+    const addRow = (prop, label, param) => {
+      const control = numberField(layerValueAt(ctx, prop), { ...(param || {}), default: LAYER_PROP_DEFAULTS[prop] }, (next) => {
+        setLayerProp(ctx, prop, next);
+      });
+      const node = fieldRow(label, control);
+      if (hasTrack(prop)) node.classList.add('is-keyed');
+      appendKeyButton(node, prop);
+      body.appendChild(node);
+    };
+    appendLayerSubhead(body, t('layers.transformHeading'));
+    addRow('transform.x', t('layers.x'), { step: 0.01 });
+    addRow('transform.y', t('layers.y'), { step: 0.01 });
+    addRow('transform.rotate', t('layers.rotate'), { step: 1 });
+    addRow('transform.scale', t('layers.scale'), { step: 0.05, min: 0 });
+    addRow('transform.scaleX', t('layers.scaleX'), { step: 0.05 });
+    addRow('transform.scaleY', t('layers.scaleY'), { step: 0.05 });
+    addRow('opacity', t('layers.opacity'), { step: 0.05, min: 0, max: 1 });
+    appendLayerSubhead(body, t('layers.anchor'));
+    addRow('transform.anchorX', t('layers.anchorX'), { step: 0.05, min: 0, max: 1 });
+    addRow('transform.anchorY', t('layers.anchorY'), { step: 0.05, min: 0, max: 1 });
+    const presets = document.createElement('div');
+    presets.className = 'layer-order';
+    for (const [labelKey, ax, ay] of [
+      ['layers.anchorCenter', 0.5, 0.5],
+      ['layers.anchorTopLeft', 0, 0],
+      ['layers.anchorBottom', 0.5, 1],
+    ]) {
+      const preset = document.createElement('button');
+      preset.type = 'button';
+      preset.className = 'btn btn-mini';
+      preset.textContent = t(labelKey);
+      preset.addEventListener('click', () => {
+        setLayerProp(ctx, 'transform.anchorX', ax);
+        setLayerProp(ctx, 'transform.anchorY', ay);
+      });
+      presets.appendChild(preset);
+    }
+    body.appendChild(presets);
+    appendLayerSubhead(body, t('layers.crop'));
+    addRow('crop.l', t('layers.cropLeft'), { step: 0.01, min: 0, max: 0.95 });
+    addRow('crop.t', t('layers.cropTop'), { step: 0.01, min: 0, max: 0.95 });
+    addRow('crop.r', t('layers.cropRight'), { step: 0.01, min: 0, max: 0.95 });
+    addRow('crop.b', t('layers.cropBottom'), { step: 0.01, min: 0, max: 0.95 });
   }
 
   function fieldRow(labelText, control) {

@@ -49,7 +49,7 @@ function makeGl(calls) {
     bindAttribLocation() {},
     linkProgram() {},
     getProgramParameter: () => true,
-    getUniformLocation: () => ({}),
+    getUniformLocation: (program, name) => name,
     getAttribLocation: () => 0,
     createVertexArray: () => ({}),
     bindVertexArray() {},
@@ -59,12 +59,30 @@ function makeGl(calls) {
     enableVertexAttribArray() {},
     vertexAttribPointer() {},
     useProgram() {},
-    uniform2f() {},
-    uniform1f() {},
-    uniform1i() {},
-    uniform3f() {},
-    uniform4f() {},
-    uniformMatrix2fv() {},
+    uniform2f(location, a, b) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([a, b]);
+    },
+    uniform1f(location, a) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([a]);
+    },
+    uniform1i(location, a) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([a]);
+    },
+    uniform3f(location, a, b, c) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([a, b, c]);
+    },
+    uniform4f(location, a, b, c, d) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([a, b, c, d]);
+    },
+    uniformMatrix2fv(location) {
+      calls.uniforms = calls.uniforms || {};
+      (calls.uniforms[location] = calls.uniforms[location] || []).push([]);
+    },
     activeTexture() {},
     bindTexture() {},
     texImage2D() {
@@ -230,5 +248,121 @@ test('a scene3d layer is skipped when three is unavailable', () => {
   const drawn = pass.draw([{ id: 's', type: 'scene3d', scene: { preset: 'grid' } }], { width: 320, height: 180 }, 0);
   assert.equal(drawn, 0);
   assert.equal(calls.draws, 0);
+  pass.dispose();
+});
+
+test('resolveLayerAt returns the layer itself when there is nothing to apply', () => {
+  const layer = { id: 'a', transform: { x: 0.1 } };
+  assert.equal(layers.resolveLayerAt(layer, null, 1), layer);
+  assert.equal(layers.resolveLayerAt(layer, {}, 1), layer);
+  assert.equal(layers.resolveLayerAt(layer, { 'layer:other': { 'transform.x': [{ t: 0, value: 5 }] } }, 1), layer);
+  assert.equal(layers.resolveLayerAt(layer, { 'layer:a': {} }, 1), layer);
+});
+
+test('resolveLayerAt interpolates numbers, clamps out of range and offsets by start', () => {
+  const keys = [
+    { t: 0, value: 0, ease: 'linear' },
+    { t: 2, value: 1, ease: 'linear' },
+  ];
+  const keyframes = { 'layer:a': { 'transform.x': keys } };
+  const layer = { id: 'a', start: 0, transform: { x: 9, y: 0.25 } };
+  const mid = layers.resolveLayerAt(layer, keyframes, 1);
+  assert.ok(Math.abs(mid.transform.x - 0.5) < 1e-9, `midpoint: ${mid.transform.x}`);
+  assert.equal(mid.transform.y, 0.25, 'unkeyed props keep the static value');
+  assert.equal(layer.transform.x, 9, 'the input layer is not mutated');
+  assert.equal(layers.resolveLayerAt(layer, keyframes, -5).transform.x, 0, 'before the first key clamps');
+  assert.equal(layers.resolveLayerAt(layer, keyframes, 99).transform.x, 1, 'after the last key clamps');
+  const shifted = { id: 'a', start: 2, transform: {} };
+  assert.ok(Math.abs(layers.resolveLayerAt(shifted, keyframes, 3).transform.x - 0.5) < 1e-9, 'local time is relative to layer.start');
+});
+
+test('resolveLayerAt overrides opacity and crop absolutely and honours hold', () => {
+  const keyframes = {
+    'layer:a': {
+      opacity: [
+        { t: 0, value: 1, ease: 'linear' },
+        { t: 1, value: 0, ease: 'linear' },
+      ],
+      'crop.l': [{ t: 0, value: 0.25, ease: 'linear' }],
+      'transform.y': [
+        { t: 0, value: 0, ease: 'hold' },
+        { t: 1, value: 1, ease: 'linear' },
+      ],
+    },
+  };
+  const layer = { id: 'a', opacity: 1, transform: { y: 9 }, crop: { l: 0 } };
+  const half = layers.resolveLayerAt(layer, keyframes, 0.5);
+  assert.ok(Math.abs(half.opacity - 0.5) < 1e-9);
+  assert.equal(half['crop'].l, 0.25);
+  assert.equal(half.transform.y, 0, 'hold keeps the segment start value');
+});
+
+test('layerGeometry matches the legacy calculation with default anchor and no crop', () => {
+  const width = 320;
+  const height = 180;
+  const rect = { x: 0, y: 0, w: width, h: height };
+  const layer = { id: 'g', transform: { x: 0.1, y: -0.2, scale: 2, rotate: 30 } };
+  const motion = layers.evaluateLayerMotion(layer, 0, { width, height });
+  const geo = layers.layerGeometry(layer, motion, rect, width, height);
+  const scale = 2 * motion.scaleX;
+  const cx = rect.x + rect.w / 2 + 0.1 * width + motion.x;
+  const cy = rect.y + rect.h / 2 + -0.2 * height + motion.y;
+  assert.ok(Math.abs(geo.centerX - cx) < 1e-9);
+  assert.ok(Math.abs(geo.centerY - cy) < 1e-9);
+  assert.ok(Math.abs(geo.halfX - (rect.w * scale) / 2) < 1e-9);
+  assert.ok(Math.abs(geo.halfY - (rect.h * 2 * motion.scaleY) / 2) < 1e-9);
+  assert.deepEqual(geo.uvRect, [0, 0, 1, 1]);
+});
+
+test('layerGeometry keeps the anchor fixed and applies crop to rect and uv', () => {
+  const width = 200;
+  const height = 100;
+  const rect = { x: 10, y: 20, w: width, h: height };
+  const motion = { x: 0, y: 0, rot: 0, scaleX: 1, scaleY: 1 };
+  const anchored = { id: 'a', transform: { rotate: 90, anchorX: 0, anchorY: 0 } };
+  const geo = layers.layerGeometry(anchored, motion, rect, width, height);
+  const c0x = rect.x + width / 2;
+  const c0y = rect.y + height / 2;
+  const px = c0x - width / 2;
+  const py = c0y - height / 2;
+  // the anchor's world position never moves: center - R(half) == P
+  const rad = (90 * Math.PI) / 180;
+  const anchorWorldX = geo.centerX - (Math.cos(rad) * geo.halfX - Math.sin(rad) * geo.halfY);
+  const anchorWorldY = geo.centerY - (Math.sin(rad) * geo.halfX + Math.cos(rad) * geo.halfY);
+  assert.ok(Math.abs(anchorWorldX - px) < 1e-9, `${anchorWorldX} vs ${px}`);
+  assert.ok(Math.abs(anchorWorldY - py) < 1e-9, `${anchorWorldY} vs ${py}`);
+  const cropped = { id: 'c', transform: {}, crop: { l: 0.5, t: 0, r: 0, b: 0 } };
+  const slim = layers.layerGeometry(cropped, motion, rect, width, height);
+  assert.ok(Math.abs(slim.halfX - 50) < 1e-9, `half width: ${slim.halfX}`);
+  assert.ok(Math.abs(slim.centerX - (rect.x + 150)) < 1e-9, `center shifts right: ${slim.centerX}`);
+  assert.deepEqual(slim.uvRect, [0.5, 0, 1, 1]);
+});
+
+test('draw() with keyframes evaluates center, opacity and uvRect from the keys', () => {
+  const calls = { draws: 0, textures: 0, programs: 0, backdrops: 0 };
+  const gl = makeGl(calls);
+  const pass = layers.create(gl);
+  const keyframes = {
+    'layer:k': {
+      'transform.x': [
+        { t: 0, value: 0, ease: 'linear' },
+        { t: 2, value: 0.5, ease: 'linear' },
+      ],
+      opacity: [
+        { t: 0, value: 1, ease: 'linear' },
+        { t: 2, value: 0, ease: 'linear' },
+      ],
+      'crop.l': [{ t: 0, value: 0.25, ease: 'linear' }],
+    },
+  };
+  const drawn = pass.draw([{ id: 'k', type: 'solid', color: '#ffffff' }], { width: 320, height: 180 }, 1, { keyframes });
+  assert.equal(drawn, 1);
+  const center = calls.uniforms['u_center'][0];
+  // crop.l=0.25 shrinks the rect (w0=240, left edge at x=80) and the keyed
+  // transform.x=0.25 adds 80: 80 + 120 + 80 = 280.
+  assert.ok(Math.abs(center[0] - 280) < 1e-9, `center.x: ${center[0]}`);
+  assert.ok(Math.abs(center[1] - 90) < 1e-9);
+  assert.ok(Math.abs(calls.uniforms['u_opacity'][0][0] - 0.5) < 1e-9);
+  assert.deepEqual(calls.uniforms['u_uvRect'][0], [0.25, 0, 1, 1]);
   pass.dispose();
 });

@@ -496,9 +496,33 @@ SA.layersDialog = (() => {
       editor.appendChild(field(t('layers.scale'), numberInput(layer.transform.scale, (value) => change((next) => {
         next.transform.scale = value || 1;
       }), { step: 0.05, fallback: 1 })));
+      editor.appendChild(field(t('layers.scaleX'), numberInput(layer.transform.scaleX == null ? 1 : layer.transform.scaleX, (value) => change((next) => {
+        next.transform.scaleX = value || 1;
+      }), { step: 0.05, fallback: 1 })));
+      editor.appendChild(field(t('layers.scaleY'), numberInput(layer.transform.scaleY == null ? 1 : layer.transform.scaleY, (value) => change((next) => {
+        next.transform.scaleY = value || 1;
+      }), { step: 0.05, fallback: 1 })));
       editor.appendChild(field(t('layers.rotate'), numberInput(layer.transform.rotate, (value) => change((next) => {
         next.transform.rotate = value;
       }), { step: 1, fallback: 0 })));
+      editor.appendChild(field(t('layers.anchorX'), numberInput(layer.transform.anchorX == null ? 0.5 : layer.transform.anchorX, (value) => change((next) => {
+        next.transform.anchorX = Math.max(0, Math.min(1, value));
+      }), { min: 0, max: 1, step: 0.05, fallback: 0.5 })));
+      editor.appendChild(field(t('layers.anchorY'), numberInput(layer.transform.anchorY == null ? 0.5 : layer.transform.anchorY, (value) => change((next) => {
+        next.transform.anchorY = Math.max(0, Math.min(1, value));
+      }), { min: 0, max: 1, step: 0.05, fallback: 0.5 })));
+      editor.appendChild(field(t('layers.cropLeft'), numberInput(layer.crop && layer.crop.l, (value) => change((next) => {
+        next.crop = { ...(next.crop || {}), l: Math.max(0, Math.min(0.95, value || 0)) };
+      }), { min: 0, max: 0.95, step: 0.01, fallback: 0 })));
+      editor.appendChild(field(t('layers.cropTop'), numberInput(layer.crop && layer.crop.t, (value) => change((next) => {
+        next.crop = { ...(next.crop || {}), t: Math.max(0, Math.min(0.95, value || 0)) };
+      }), { min: 0, max: 0.95, step: 0.01, fallback: 0 })));
+      editor.appendChild(field(t('layers.cropRight'), numberInput(layer.crop && layer.crop.r, (value) => change((next) => {
+        next.crop = { ...(next.crop || {}), r: Math.max(0, Math.min(0.95, value || 0)) };
+      }), { min: 0, max: 0.95, step: 0.01, fallback: 0 })));
+      editor.appendChild(field(t('layers.cropBottom'), numberInput(layer.crop && layer.crop.b, (value) => change((next) => {
+        next.crop = { ...(next.crop || {}), b: Math.max(0, Math.min(0.95, value || 0)) };
+      }), { min: 0, max: 0.95, step: 0.01, fallback: 0 })));
       editor.appendChild(motionSection(layer, 'in', 'enter', t('layers.motionIn')));
       editor.appendChild(motionSection(layer, 'out', 'exit', t('layers.motionOut')));
       const filterBox = document.createElement('div');
