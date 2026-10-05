@@ -91,6 +91,35 @@ body {
   font-size: 13px;
 }
 
+.boot-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 1.4em;
+}
+
+.boot-detail {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #5d6785;
+  font-size: 12px;
+}
+
+.boot-detail[hidden] {
+  display: none;
+}
+
+.boot-percent {
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
 .boot-credit {
   color: var(--muted);
   font-size: 12px;

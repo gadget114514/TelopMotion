@@ -292,8 +292,23 @@ const preview = (() => {
     return [...ids];
   }
 
-  function ensureFonts() {
-    fontsPromise = loadFonts();
+  function fontsProgress() {
+    const boot = (typeof SA !== 'undefined' && SA.boot) || null;
+    if (boot && typeof boot.detail === 'function') return boot;
+    return null;
+  }
+
+  function paintFontsStep() {
+    // let the boot overlay paint the detail line before the next
+    // (potentially blocking) opentype parse
+    if (typeof requestAnimationFrame === 'function') {
+      return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+    }
+    return new Promise((resolve) => setTimeout(resolve, 0));
+  }
+
+  function ensureFonts(onProgress) {
+    fontsPromise = loadFonts(onProgress);
     return fontsPromise;
   }
 
@@ -314,9 +329,25 @@ const preview = (() => {
     return missing;
   }
 
-  async function loadFonts() {
+  async function loadFonts(onProgress) {
     const doc = project();
     if (!doc) return;
+    const report = typeof onProgress === 'function' ? onProgress : null;
+    const boot = fontsProgress();
+    const notify = (done, total, name) => {
+      if (report) {
+        try {
+          report({ done, total, name });
+        } catch {
+          /* progress must never break loading */
+        }
+        return;
+      }
+      // no explicit listener (preview.init, later edits): only the detail
+      // line moves. The percent stays with the current step (after boot it
+      // is a no-op anyway), so an early load never jumps the bar.
+      if (boot) boot.detail(total > 0 ? `${name || ''} ${Math.min(total, done + 1)}/${total}`.trim() : name || '');
+    };
     SA.lyricsFont.setFontSet(doc.fontSet);
     const missing = await registerProjectFonts(doc);
     const missingKey = missing.join(', ');
@@ -341,7 +372,14 @@ const preview = (() => {
           list.push(entry);
         }
       };
-      for (const id of fontIds) push(await SA.lyricsFont.load(id).catch(() => null));
+      for (let i = 0; i < fontIds.length; i += 1) {
+        notify(i, fontIds.length, fontIds[i]);
+        await paintFontsStep();
+        push(await SA.lyricsFont.load(fontIds[i]).catch(() => null));
+        if (request !== fontRequest) return;
+      }
+      notify(fontIds.length, fontIds.length + 1, 'fallback');
+      await paintFontsStep();
       const fallback = await SA.lyricsFont.ensure(text, textStyle.fontId || fontIds[0], { weight: textStyle.weight || 400 });
       for (const entry of fallback) push(entry);
       if (request !== fontRequest) return;
@@ -349,6 +387,7 @@ const preview = (() => {
       SA.lyricsFont.setActive(list);
       const doc2 = project();
       if (doc2 && SA.textflow) {
+        notify(fontIds.length + 1, fontIds.length + 1, 'layout');
         SA.textflow.apply(doc2);
         SA.store.touch(['script']);
       }

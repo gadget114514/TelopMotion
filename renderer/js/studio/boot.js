@@ -17,6 +17,8 @@ SA.boot = (() => {
   let status = null;
   let bar = null;
   let fill = null;
+  let detailEl = null;
+  let percentEl = null;
   let value = 0;
   let shown = 0; // what the bar draws once the current jump lands
   let creep = null;
@@ -34,14 +36,34 @@ SA.boot = (() => {
     status = document.getElementById('boot-status');
     bar = document.getElementById('boot-bar');
     fill = document.getElementById('boot-fill');
+    // detail / percent are optional: older markup and unit tests only have
+    // the status + bar, so every use below guards for a missing node
+    detailEl = document.getElementById('boot-detail');
+    percentEl = document.getElementById('boot-percent');
     started = now();
+    renderPercent();
     return true;
   }
 
-  function statusText(key) {
+  function renderPercent() {
+    if (percentEl) percentEl.textContent = `${value}%`;
+  }
+
+  // one-line technical detail under the status (file name, "2/7", ...).
+  // Raw text on purpose: it names files and components, so it needs no
+  // translation. Cleared by detail('') / finish(). Ignored after finish().
+  function detail(text) {
+    if (finished || !nodes()) return;
+    if (!detailEl) return;
+    const line = text == null ? '' : String(text);
+    detailEl.textContent = line;
+    detailEl.hidden = !line;
+  }
+
+  function statusText(key, vars) {
     if (status) {
       status.dataset.i18n = key;
-      if (SA.i18n && SA.i18n.t) status.textContent = SA.i18n.t(key);
+      if (SA.i18n && SA.i18n.t) status.textContent = SA.i18n.t(key, vars);
     }
   }
 
@@ -75,15 +97,17 @@ SA.boot = (() => {
   // percent never goes backwards and is clamped to 0-100, so the bar can be
   // driven from independent startup steps without tracking order. `toward`
   // (the next step's percent) makes the bar creep on over `over` ms while the
-  // step runs, so a long step never looks frozen.
-  function set(percent, statusKey, toward, over) {
+  // step runs, so a long step never looks frozen. `vars` interpolates the
+  // status message (SA.i18n.t(key, vars)).
+  function set(percent, statusKey, toward, over, vars) {
     if (finished || !nodes()) return;
     const number = Number(percent);
     if (Number.isFinite(number)) value = Math.max(value, Math.max(0, Math.min(100, Math.round(number))));
     const next = Number(toward);
     draw(value, Number.isFinite(next) ? Math.min(100, next) : value, Number(over) > 0 ? Number(over) : CREEP);
     if (bar) bar.setAttribute('aria-valuenow', String(value));
-    if (statusKey) statusText(statusKey);
+    renderPercent();
+    if (statusKey) statusText(statusKey, vars);
   }
 
   function finish() {
@@ -94,7 +118,9 @@ SA.boot = (() => {
     value = 100;
     draw(100, 100, 0);
     if (bar) bar.setAttribute('aria-valuenow', '100');
+    renderPercent();
     statusText('studio.boot.ready');
+    detail('');
     const wait = Math.max(0, MIN_VISIBLE - (now() - started));
     setTimeout(() => {
       if (!root) return;
@@ -112,5 +138,5 @@ SA.boot = (() => {
     root.classList.toggle('is-busy', !!on);
   }
 
-  return { set, finish, busy, progress: () => value };
+  return { set, finish, busy, detail, progress: () => value };
 })();
