@@ -91,6 +91,12 @@ body {
   font-size: 13px;
 }
 
+.boot-credit {
+  color: var(--muted);
+  font-size: 12px;
+  opacity: 0.8;
+}
+
 .boot-bar {
   height: 6px;
   border-radius: 999px;
