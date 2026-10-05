@@ -41,312 +41,686 @@
         "id": "bd_001",
         "start": 0,
         "end": 4,
-        "text": "1. shapes\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "1. shapes · burst ×12\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 1,
           "section": "accent",
-          "value": "shapes"
+          "value": "shapes",
+          "variant": 1,
+          "detail": "burst ×12"
         }
       },
       {
         "id": "bd_002",
         "start": 4,
         "end": 8,
-        "text": "2. pattern\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "2. shapes · circles ×24\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 2,
           "section": "accent",
-          "value": "pattern"
+          "value": "shapes",
+          "variant": 2,
+          "detail": "circles ×24"
         }
       },
       {
         "id": "bd_003",
         "start": 8,
         "end": 12,
-        "text": "3. particles\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "3. shapes · grid ×8\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 3,
           "section": "accent",
-          "value": "particles"
+          "value": "shapes",
+          "variant": 3,
+          "detail": "grid ×8"
         }
       },
       {
         "id": "bd_004",
         "start": 12,
         "end": 16,
-        "text": "4. spectrum\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "4. pattern · stripes · 24\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 4,
           "section": "accent",
-          "value": "spectrum"
+          "value": "pattern",
+          "variant": 1,
+          "detail": "stripes · 24"
         }
       },
       {
         "id": "bd_005",
         "start": 16,
         "end": 20,
-        "text": "5. waveform\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "5. pattern · dots · 48\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 5,
           "section": "accent",
-          "value": "waveform"
+          "value": "pattern",
+          "variant": 2,
+          "detail": "dots · 48"
         }
       },
       {
         "id": "bd_006",
         "start": 20,
         "end": 24,
-        "text": "6. figures\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "6. pattern · grid · 12\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 6,
           "section": "accent",
-          "value": "figures"
+          "value": "pattern",
+          "variant": 3,
+          "detail": "grid · 12"
         }
       },
       {
         "id": "bd_007",
         "start": 24,
         "end": 28,
-        "text": "7. halves\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "7. particles · rise · 24\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 7,
-          "section": "split",
-          "value": "halves"
+          "section": "accent",
+          "value": "particles",
+          "variant": 1,
+          "detail": "rise · 24"
         }
       },
       {
         "id": "bd_008",
         "start": 28,
         "end": 32,
-        "text": "8. diagonal\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "8. particles · fall · 48\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 8,
-          "section": "split",
-          "value": "diagonal"
+          "section": "accent",
+          "value": "particles",
+          "variant": 2,
+          "detail": "fall · 48"
         }
       },
       {
         "id": "bd_009",
         "start": 32,
         "end": 36,
-        "text": "9. thirds\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "9. particles · vortex · 16\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 9,
-          "section": "split",
-          "value": "thirds"
+          "section": "accent",
+          "value": "particles",
+          "variant": 3,
+          "detail": "vortex · 16"
         }
       },
       {
         "id": "bd_010",
         "start": 36,
         "end": 40,
-        "text": "10. bands\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "10. spectrum · bars · 48\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 10,
-          "section": "split",
-          "value": "bands"
+          "section": "accent",
+          "value": "spectrum",
+          "variant": 1,
+          "detail": "bars · 48"
         }
       },
       {
         "id": "bd_011",
         "start": 40,
         "end": 44,
-        "text": "11. quads\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "11. spectrum · radial · 64\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 11,
-          "section": "split",
-          "value": "quads"
+          "section": "accent",
+          "value": "spectrum",
+          "variant": 2,
+          "detail": "radial · 64"
         }
       },
       {
         "id": "bd_012",
         "start": 44,
         "end": 48,
-        "text": "12. grid\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "12. spectrum · blob · 24\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 12,
-          "section": "split",
-          "value": "grid"
+          "section": "accent",
+          "value": "spectrum",
+          "variant": 3,
+          "detail": "blob · 24"
         }
       },
       {
         "id": "bd_013",
         "start": 48,
         "end": 52,
-        "text": "13. chevron\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "13. waveform · line\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 13,
-          "section": "split",
-          "value": "chevron"
+          "section": "accent",
+          "value": "waveform",
+          "variant": 1,
+          "detail": "line"
         }
       },
       {
         "id": "bd_014",
         "start": 52,
         "end": 56,
-        "text": "14. radial\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "14. waveform · mirror\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 14,
-          "section": "split",
-          "value": "radial"
+          "section": "accent",
+          "value": "waveform",
+          "variant": 2,
+          "detail": "mirror"
         }
       },
       {
         "id": "bd_015",
         "start": 56,
         "end": 60,
-        "text": "15. mondrian\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "15. waveform · circle\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 15,
-          "section": "split",
-          "value": "mondrian"
+          "section": "accent",
+          "value": "waveform",
+          "variant": 3,
+          "detail": "circle"
         }
       },
       {
         "id": "bd_016",
         "start": 60,
         "end": 64,
-        "text": "16. frame\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "16. figures · orbit\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 16,
-          "section": "split",
-          "value": "frame"
+          "section": "accent",
+          "value": "figures",
+          "variant": 1,
+          "detail": "orbit"
         }
       },
       {
         "id": "bd_017",
         "start": 64,
         "end": 68,
-        "text": "17. shards\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "17. figures · rings · 14\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 17,
-          "section": "split",
-          "value": "shards"
+          "section": "accent",
+          "value": "figures",
+          "variant": 2,
+          "detail": "rings · 14"
         }
       },
       {
         "id": "bd_018",
         "start": 68,
         "end": 72,
-        "text": "18. accent\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "18. figures · waves · 6\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 18,
-          "section": "motion",
-          "value": "accent"
+          "section": "accent",
+          "value": "figures",
+          "variant": 3,
+          "detail": "waves · 6"
         }
       },
       {
         "id": "bd_019",
         "start": 72,
         "end": 76,
-        "text": "19. swell\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "19. halves · 2面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 19,
-          "section": "motion",
-          "value": "swell"
+          "section": "split",
+          "value": "halves",
+          "variant": 1,
+          "detail": "2面 · 85%"
         }
       },
       {
         "id": "bd_020",
         "start": 76,
         "end": 80,
-        "text": "20. sway\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "20. halves · 4面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 20,
-          "section": "motion",
-          "value": "sway"
+          "section": "split",
+          "value": "halves",
+          "variant": 2,
+          "detail": "4面 · 50%"
         }
       },
       {
         "id": "bd_021",
         "start": 80,
         "end": 84,
-        "text": "21. drift\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "21. diagonal · 2面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 21,
-          "section": "motion",
-          "value": "drift"
+          "section": "split",
+          "value": "diagonal",
+          "variant": 1,
+          "detail": "2面 · 85%"
         }
       },
       {
         "id": "bd_022",
         "start": 84,
         "end": 88,
-        "text": "22. still\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "22. diagonal · 4面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 22,
-          "section": "motion",
-          "value": "still"
+          "section": "split",
+          "value": "diagonal",
+          "variant": 2,
+          "detail": "4面 · 50%"
         }
       },
       {
         "id": "bd_023",
         "start": 88,
         "end": 92,
-        "text": "23. pulse\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "23. thirds · 3面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 23,
-          "section": "motion",
-          "value": "pulse"
+          "section": "split",
+          "value": "thirds",
+          "variant": 1,
+          "detail": "3面 · 85%"
         }
       },
       {
         "id": "bd_024",
         "start": 92,
         "end": 96,
-        "text": "24. travel\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "24. thirds · 5面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 24,
-          "section": "motion",
-          "value": "travel"
+          "section": "split",
+          "value": "thirds",
+          "variant": 2,
+          "detail": "5面 · 50%"
         }
       },
       {
         "id": "bd_025",
         "start": 96,
         "end": 100,
-        "text": "25. zoom\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "25. bands · 3面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 25,
-          "section": "motion",
-          "value": "zoom"
+          "section": "split",
+          "value": "bands",
+          "variant": 1,
+          "detail": "3面 · 85%"
         }
       },
       {
         "id": "bd_026",
         "start": 100,
         "end": 104,
-        "text": "26. tilt\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "text": "26. bands · 5面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
         "meta": {
           "kind": "backdrop-showcase",
           "index": 26,
+          "section": "split",
+          "value": "bands",
+          "variant": 2,
+          "detail": "5面 · 50%"
+        }
+      },
+      {
+        "id": "bd_027",
+        "start": 104,
+        "end": 108,
+        "text": "27. quads · 4面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 27,
+          "section": "split",
+          "value": "quads",
+          "variant": 1,
+          "detail": "4面 · 85%"
+        }
+      },
+      {
+        "id": "bd_028",
+        "start": 108,
+        "end": 112,
+        "text": "28. quads · 6面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 28,
+          "section": "split",
+          "value": "quads",
+          "variant": 2,
+          "detail": "6面 · 50%"
+        }
+      },
+      {
+        "id": "bd_029",
+        "start": 112,
+        "end": 116,
+        "text": "29. grid · 4面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 29,
+          "section": "split",
+          "value": "grid",
+          "variant": 1,
+          "detail": "4面 · 85%"
+        }
+      },
+      {
+        "id": "bd_030",
+        "start": 116,
+        "end": 120,
+        "text": "30. grid · 6面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 30,
+          "section": "split",
+          "value": "grid",
+          "variant": 2,
+          "detail": "6面 · 50%"
+        }
+      },
+      {
+        "id": "bd_031",
+        "start": 120,
+        "end": 124,
+        "text": "31. chevron · 3面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 31,
+          "section": "split",
+          "value": "chevron",
+          "variant": 1,
+          "detail": "3面 · 85%"
+        }
+      },
+      {
+        "id": "bd_032",
+        "start": 124,
+        "end": 128,
+        "text": "32. chevron · 5面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 32,
+          "section": "split",
+          "value": "chevron",
+          "variant": 2,
+          "detail": "5面 · 50%"
+        }
+      },
+      {
+        "id": "bd_033",
+        "start": 128,
+        "end": 132,
+        "text": "33. radial · 4面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 33,
+          "section": "split",
+          "value": "radial",
+          "variant": 1,
+          "detail": "4面 · 85%"
+        }
+      },
+      {
+        "id": "bd_034",
+        "start": 132,
+        "end": 136,
+        "text": "34. radial · 6面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 34,
+          "section": "split",
+          "value": "radial",
+          "variant": 2,
+          "detail": "6面 · 50%"
+        }
+      },
+      {
+        "id": "bd_035",
+        "start": 136,
+        "end": 140,
+        "text": "35. mondrian · 4面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 35,
+          "section": "split",
+          "value": "mondrian",
+          "variant": 1,
+          "detail": "4面 · 85%"
+        }
+      },
+      {
+        "id": "bd_036",
+        "start": 140,
+        "end": 144,
+        "text": "36. mondrian · 6面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 36,
+          "section": "split",
+          "value": "mondrian",
+          "variant": 2,
+          "detail": "6面 · 50%"
+        }
+      },
+      {
+        "id": "bd_037",
+        "start": 144,
+        "end": 148,
+        "text": "37. frame · 2面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 37,
+          "section": "split",
+          "value": "frame",
+          "variant": 1,
+          "detail": "2面 · 85%"
+        }
+      },
+      {
+        "id": "bd_038",
+        "start": 148,
+        "end": 152,
+        "text": "38. frame · 4面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 38,
+          "section": "split",
+          "value": "frame",
+          "variant": 2,
+          "detail": "4面 · 50%"
+        }
+      },
+      {
+        "id": "bd_039",
+        "start": 152,
+        "end": 156,
+        "text": "39. shards · 4面 · 85%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 39,
+          "section": "split",
+          "value": "shards",
+          "variant": 1,
+          "detail": "4面 · 85%"
+        }
+      },
+      {
+        "id": "bd_040",
+        "start": 156,
+        "end": 160,
+        "text": "40. shards · 6面 · 50%\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 40,
+          "section": "split",
+          "value": "shards",
+          "variant": 2,
+          "detail": "6面 · 50%"
+        }
+      },
+      {
+        "id": "bd_041",
+        "start": 160,
+        "end": 164,
+        "text": "41. accent\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 41,
           "section": "motion",
-          "value": "tilt"
+          "value": "accent",
+          "variant": 1,
+          "detail": "accent"
+        }
+      },
+      {
+        "id": "bd_042",
+        "start": 164,
+        "end": 168,
+        "text": "42. swell\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 42,
+          "section": "motion",
+          "value": "swell",
+          "variant": 1,
+          "detail": "swell"
+        }
+      },
+      {
+        "id": "bd_043",
+        "start": 168,
+        "end": 172,
+        "text": "43. sway\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 43,
+          "section": "motion",
+          "value": "sway",
+          "variant": 1,
+          "detail": "sway"
+        }
+      },
+      {
+        "id": "bd_044",
+        "start": 172,
+        "end": 176,
+        "text": "44. drift\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 44,
+          "section": "motion",
+          "value": "drift",
+          "variant": 1,
+          "detail": "drift"
+        }
+      },
+      {
+        "id": "bd_045",
+        "start": 176,
+        "end": 180,
+        "text": "45. still\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 45,
+          "section": "motion",
+          "value": "still",
+          "variant": 1,
+          "detail": "still"
+        }
+      },
+      {
+        "id": "bd_046",
+        "start": 180,
+        "end": 184,
+        "text": "46. pulse\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 46,
+          "section": "motion",
+          "value": "pulse",
+          "variant": 1,
+          "detail": "pulse"
+        }
+      },
+      {
+        "id": "bd_047",
+        "start": 184,
+        "end": 188,
+        "text": "47. travel\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 47,
+          "section": "motion",
+          "value": "travel",
+          "variant": 1,
+          "detail": "travel"
+        }
+      },
+      {
+        "id": "bd_048",
+        "start": 188,
+        "end": 192,
+        "text": "48. zoom\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 48,
+          "section": "motion",
+          "value": "zoom",
+          "variant": 1,
+          "detail": "zoom"
+        }
+      },
+      {
+        "id": "bd_049",
+        "start": 192,
+        "end": 196,
+        "text": "49. tilt\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 49,
+          "section": "motion",
+          "value": "tilt",
+          "variant": 1,
+          "detail": "tilt"
         }
       }
     ],
@@ -463,10 +837,10 @@
         "index": 0,
         "start": 0,
         "end": 4,
-        "text": "1. shapesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "1. shapes · burst ×12あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "1. shapesあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "1. shapes · burst ×12あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -480,10 +854,10 @@
         "index": 0,
         "start": 4,
         "end": 8,
-        "text": "2. patternあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "2. shapes · circles ×24あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "2. patternあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "2. shapes · circles ×24あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -497,10 +871,10 @@
         "index": 0,
         "start": 8,
         "end": 12,
-        "text": "3. particlesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "3. shapes · grid ×8あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "3. particlesあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "3. shapes · grid ×8あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -514,10 +888,10 @@
         "index": 0,
         "start": 12,
         "end": 16,
-        "text": "4. spectrumあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "4. pattern · stripes · 24あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "4. spectrumあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "4. pattern · stripes · 24あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -531,10 +905,10 @@
         "index": 0,
         "start": 16,
         "end": 20,
-        "text": "5. waveformあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "5. pattern · dots · 48あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "5. waveformあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "5. pattern · dots · 48あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -548,10 +922,10 @@
         "index": 0,
         "start": 20,
         "end": 24,
-        "text": "6. figuresあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "6. pattern · grid · 12あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "6. figuresあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "6. pattern · grid · 12あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -565,10 +939,10 @@
         "index": 0,
         "start": 24,
         "end": 28,
-        "text": "7. halvesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "7. particles · rise · 24あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "7. halvesあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "7. particles · rise · 24あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -582,10 +956,10 @@
         "index": 0,
         "start": 28,
         "end": 32,
-        "text": "8. diagonalあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "8. particles · fall · 48あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "8. diagonalあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "8. particles · fall · 48あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -599,12 +973,12 @@
         "index": 0,
         "start": 32,
         "end": 36,
-        "text": "9. thirdsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "9. particles · vortex · 16あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "9. thirdsあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "9. particles · vortex · 16あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.98,
         "pinned": false
       }
     ],
@@ -616,10 +990,10 @@
         "index": 0,
         "start": 36,
         "end": 40,
-        "text": "10. bandsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "10. spectrum · bars · 48あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "10. bandsあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "10. spectrum · bars · 48あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -633,12 +1007,12 @@
         "index": 0,
         "start": 40,
         "end": 44,
-        "text": "11. quadsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "11. spectrum · radial · 64あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "11. quadsあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "11. spectrum · radial · 64あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.98,
         "pinned": false
       }
     ],
@@ -650,10 +1024,10 @@
         "index": 0,
         "start": 44,
         "end": 48,
-        "text": "12. gridあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "text": "12. spectrum · blob · 24あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "12. gridあいうえお カキクケコ 愛永",
-          "漢字 Aiueo 0123"
+          "12. spectrum · blob · 24あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -667,10 +1041,10 @@
         "index": 0,
         "start": 48,
         "end": 52,
-        "text": "13. chevronあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "13. waveform · lineあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "13. chevronあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "13. waveform · lineあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -684,10 +1058,10 @@
         "index": 0,
         "start": 52,
         "end": 56,
-        "text": "14. radialあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "14. waveform · mirrorあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "14. radialあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "14. waveform · mirrorあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -701,10 +1075,10 @@
         "index": 0,
         "start": 56,
         "end": 60,
-        "text": "15. mondrianあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "15. waveform · circleあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "15. mondrianあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "15. waveform · circleあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -718,10 +1092,10 @@
         "index": 0,
         "start": 60,
         "end": 64,
-        "text": "16. frameあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "16. figures · orbitあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "16. frameあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "16. figures · orbitあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -735,10 +1109,10 @@
         "index": 0,
         "start": 64,
         "end": 68,
-        "text": "17. shardsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "17. figures · rings · 14あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "17. shardsあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "17. figures · rings · 14あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -752,10 +1126,10 @@
         "index": 0,
         "start": 68,
         "end": 72,
-        "text": "18. accentあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "18. figures · waves · 6あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "18. accentあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "18. figures · waves · 6あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -769,10 +1143,10 @@
         "index": 0,
         "start": 72,
         "end": 76,
-        "text": "19. swellあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "19. halves · 2面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "19. swellあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "19. halves · 2面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -786,10 +1160,10 @@
         "index": 0,
         "start": 76,
         "end": 80,
-        "text": "20. swayあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "text": "20. halves · 4面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "20. swayあいうえお カキクケコ 愛永",
-          "漢字 Aiueo 0123"
+          "20. halves · 4面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -803,10 +1177,10 @@
         "index": 0,
         "start": 80,
         "end": 84,
-        "text": "21. driftあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "21. diagonal · 2面 · 85%あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "21. driftあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "21. diagonal · 2面 · 85%あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -820,10 +1194,10 @@
         "index": 0,
         "start": 84,
         "end": 88,
-        "text": "22. stillあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "22. diagonal · 4面 · 50%あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "22. stillあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "22. diagonal · 4面 · 50%あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -837,10 +1211,10 @@
         "index": 0,
         "start": 88,
         "end": 92,
-        "text": "23. pulseあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "23. thirds · 3面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "23. pulseあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "23. thirds · 3面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -854,10 +1228,10 @@
         "index": 0,
         "start": 92,
         "end": 96,
-        "text": "24. travelあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "text": "24. thirds · 5面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "24. travelあいうえお カキクケコ",
-          "愛永漢字 Aiueo 0123"
+          "24. thirds · 5面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -871,10 +1245,10 @@
         "index": 0,
         "start": 96,
         "end": 100,
-        "text": "25. zoomあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "text": "25. bands · 3面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "25. zoomあいうえお カキクケコ 愛永",
-          "漢字 Aiueo 0123"
+          "25. bands · 3面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -888,9 +1262,400 @@
         "index": 0,
         "start": 100,
         "end": 104,
-        "text": "26. tiltあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "text": "26. bands · 5面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
         "lines": [
-          "26. tiltあいうえお カキクケコ 愛永",
+          "26. bands · 5面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_027": [
+      {
+        "id": "bd_027:single0",
+        "cueId": "bd_027",
+        "kind": "single",
+        "index": 0,
+        "start": 104,
+        "end": 108,
+        "text": "27. quads · 4面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "27. quads · 4面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_028": [
+      {
+        "id": "bd_028:single0",
+        "cueId": "bd_028",
+        "kind": "single",
+        "index": 0,
+        "start": 108,
+        "end": 112,
+        "text": "28. quads · 6面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "28. quads · 6面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_029": [
+      {
+        "id": "bd_029:single0",
+        "cueId": "bd_029",
+        "kind": "single",
+        "index": 0,
+        "start": 112,
+        "end": 116,
+        "text": "29. grid · 4面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "29. grid · 4面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_030": [
+      {
+        "id": "bd_030:single0",
+        "cueId": "bd_030",
+        "kind": "single",
+        "index": 0,
+        "start": 116,
+        "end": 120,
+        "text": "30. grid · 6面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "30. grid · 6面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_031": [
+      {
+        "id": "bd_031:single0",
+        "cueId": "bd_031",
+        "kind": "single",
+        "index": 0,
+        "start": 120,
+        "end": 124,
+        "text": "31. chevron · 3面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "31. chevron · 3面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_032": [
+      {
+        "id": "bd_032:single0",
+        "cueId": "bd_032",
+        "kind": "single",
+        "index": 0,
+        "start": 124,
+        "end": 128,
+        "text": "32. chevron · 5面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "32. chevron · 5面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_033": [
+      {
+        "id": "bd_033:single0",
+        "cueId": "bd_033",
+        "kind": "single",
+        "index": 0,
+        "start": 128,
+        "end": 132,
+        "text": "33. radial · 4面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "33. radial · 4面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_034": [
+      {
+        "id": "bd_034:single0",
+        "cueId": "bd_034",
+        "kind": "single",
+        "index": 0,
+        "start": 132,
+        "end": 136,
+        "text": "34. radial · 6面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "34. radial · 6面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_035": [
+      {
+        "id": "bd_035:single0",
+        "cueId": "bd_035",
+        "kind": "single",
+        "index": 0,
+        "start": 136,
+        "end": 140,
+        "text": "35. mondrian · 4面 · 85%あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "35. mondrian · 4面 · 85%あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_036": [
+      {
+        "id": "bd_036:single0",
+        "cueId": "bd_036",
+        "kind": "single",
+        "index": 0,
+        "start": 140,
+        "end": 144,
+        "text": "36. mondrian · 6面 · 50%あいうえ\nお カキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "36. mondrian · 6面 · 50%あいうえ",
+          "お カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_037": [
+      {
+        "id": "bd_037:single0",
+        "cueId": "bd_037",
+        "kind": "single",
+        "index": 0,
+        "start": 144,
+        "end": 148,
+        "text": "37. frame · 2面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "37. frame · 2面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_038": [
+      {
+        "id": "bd_038:single0",
+        "cueId": "bd_038",
+        "kind": "single",
+        "index": 0,
+        "start": 148,
+        "end": 152,
+        "text": "38. frame · 4面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "38. frame · 4面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_039": [
+      {
+        "id": "bd_039:single0",
+        "cueId": "bd_039",
+        "kind": "single",
+        "index": 0,
+        "start": 152,
+        "end": 156,
+        "text": "39. shards · 4面 · 85%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "39. shards · 4面 · 85%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_040": [
+      {
+        "id": "bd_040:single0",
+        "cueId": "bd_040",
+        "kind": "single",
+        "index": 0,
+        "start": 156,
+        "end": 160,
+        "text": "40. shards · 6面 · 50%あいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "40. shards · 6面 · 50%あいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_041": [
+      {
+        "id": "bd_041:single0",
+        "cueId": "bd_041",
+        "kind": "single",
+        "index": 0,
+        "start": 160,
+        "end": 164,
+        "text": "41. accentあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "41. accentあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_042": [
+      {
+        "id": "bd_042:single0",
+        "cueId": "bd_042",
+        "kind": "single",
+        "index": 0,
+        "start": 164,
+        "end": 168,
+        "text": "42. swellあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "42. swellあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_043": [
+      {
+        "id": "bd_043:single0",
+        "cueId": "bd_043",
+        "kind": "single",
+        "index": 0,
+        "start": 168,
+        "end": 172,
+        "text": "43. swayあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "43. swayあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_044": [
+      {
+        "id": "bd_044:single0",
+        "cueId": "bd_044",
+        "kind": "single",
+        "index": 0,
+        "start": 172,
+        "end": 176,
+        "text": "44. driftあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "44. driftあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_045": [
+      {
+        "id": "bd_045:single0",
+        "cueId": "bd_045",
+        "kind": "single",
+        "index": 0,
+        "start": 176,
+        "end": 180,
+        "text": "45. stillあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "45. stillあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_046": [
+      {
+        "id": "bd_046:single0",
+        "cueId": "bd_046",
+        "kind": "single",
+        "index": 0,
+        "start": 180,
+        "end": 184,
+        "text": "46. pulseあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "46. pulseあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_047": [
+      {
+        "id": "bd_047:single0",
+        "cueId": "bd_047",
+        "kind": "single",
+        "index": 0,
+        "start": 184,
+        "end": 188,
+        "text": "47. travelあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "47. travelあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_048": [
+      {
+        "id": "bd_048:single0",
+        "cueId": "bd_048",
+        "kind": "single",
+        "index": 0,
+        "start": 188,
+        "end": 192,
+        "text": "48. zoomあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "48. zoomあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_049": [
+      {
+        "id": "bd_049:single0",
+        "cueId": "bd_049",
+        "kind": "single",
+        "index": 0,
+        "start": 192,
+        "end": 196,
+        "text": "49. tiltあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "49. tiltあいうえお カキクケコ 愛永",
           "漢字 Aiueo 0123"
         ],
         "fontScale": 1,
@@ -911,11 +1676,11 @@
       "label": "アクセント (accent)"
     },
     {
-      "t": 24,
+      "t": 72,
       "label": "分割プレーン (split)"
     },
     {
-      "t": 68,
+      "t": 160,
       "label": "クリップモーション (motion)"
     }
   ],
@@ -957,7 +1722,7 @@
       "id": "clip_bd_plate",
       "trackId": "bg",
       "start": 0,
-      "end": 104,
+      "end": 196,
       "spec": {
         "type": "solid",
         "params": {
@@ -998,6 +1763,52 @@
       "start": 4,
       "end": 8,
       "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "circles",
+          "count": 24,
+          "speed": 0.5,
+          "opacity": 0.5
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_003",
+      "trackId": "mid",
+      "start": 8,
+      "end": 12,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "grid",
+          "count": 8,
+          "speed": 1.2,
+          "opacity": 0.6
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_004",
+      "trackId": "mid",
+      "start": 12,
+      "end": 16,
+      "spec": {
         "type": "pattern",
         "params": {
           "mode": "stripes",
@@ -1017,10 +1828,58 @@
       ]
     },
     {
-      "id": "clip_bd_003",
+      "id": "clip_bd_005",
       "trackId": "mid",
-      "start": 8,
-      "end": 12,
+      "start": 16,
+      "end": 20,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "dots",
+          "count": 48,
+          "size": 0.7,
+          "speed": 0.6,
+          "opacity": 0.55
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_006",
+      "trackId": "mid",
+      "start": 20,
+      "end": 24,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "grid",
+          "count": 12,
+          "size": 1.8,
+          "speed": 0.25,
+          "opacity": 0.6
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_007",
+      "trackId": "mid",
+      "start": 24,
+      "end": 28,
       "spec": {
         "type": "particles",
         "params": {
@@ -1039,10 +1898,54 @@
       ]
     },
     {
-      "id": "clip_bd_004",
+      "id": "clip_bd_008",
       "trackId": "mid",
-      "start": 12,
-      "end": 16,
+      "start": 28,
+      "end": 32,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "fall",
+          "count": 48,
+          "size": 1.4
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_009",
+      "trackId": "mid",
+      "start": 32,
+      "end": 36,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "vortex",
+          "count": 16,
+          "size": 3.2
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_010",
+      "trackId": "mid",
+      "start": 36,
+      "end": 40,
       "spec": {
         "type": "spectrum",
         "params": {
@@ -1061,10 +1964,54 @@
       ]
     },
     {
-      "id": "clip_bd_005",
+      "id": "clip_bd_011",
       "trackId": "mid",
-      "start": 16,
-      "end": 20,
+      "start": 40,
+      "end": 44,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "radial",
+          "bars": 64,
+          "falloff": 0.7
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_012",
+      "trackId": "mid",
+      "start": 44,
+      "end": 48,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "blob",
+          "bars": 24,
+          "falloff": 1.4
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_013",
+      "trackId": "mid",
+      "start": 48,
+      "end": 52,
       "spec": {
         "type": "waveform",
         "params": {
@@ -1083,10 +2030,54 @@
       ]
     },
     {
-      "id": "clip_bd_006",
+      "id": "clip_bd_014",
       "trackId": "mid",
-      "start": 20,
-      "end": 24,
+      "start": 52,
+      "end": 56,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "mirror",
+          "thickness": 1.5,
+          "amp": 1.8
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_015",
+      "trackId": "mid",
+      "start": 56,
+      "end": 60,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "circle",
+          "thickness": 3.5,
+          "amp": 0.6
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_016",
+      "trackId": "mid",
+      "start": 60,
+      "end": 64,
       "spec": {
         "type": "figures",
         "params": {
@@ -1107,10 +2098,58 @@
       ]
     },
     {
-      "id": "clip_bd_007",
+      "id": "clip_bd_017",
       "trackId": "mid",
-      "start": 24,
-      "end": 28,
+      "start": 64,
+      "end": 68,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "rings",
+          "sync": "free",
+          "density": 0.7,
+          "count": 14,
+          "opacity": 0.3
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_018",
+      "trackId": "mid",
+      "start": 68,
+      "end": 72,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "waves",
+          "sync": "free",
+          "density": 0.3,
+          "count": 6,
+          "opacity": 0.4
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_019",
+      "trackId": "mid",
+      "start": 72,
+      "end": 76,
       "spec": {
         "type": "split",
         "params": {
@@ -1139,10 +2178,42 @@
       ]
     },
     {
-      "id": "clip_bd_008",
+      "id": "clip_bd_020",
       "trackId": "mid",
-      "start": 28,
-      "end": 32,
+      "start": 76,
+      "end": 80,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_021",
+      "trackId": "mid",
+      "start": 80,
+      "end": 84,
       "spec": {
         "type": "split",
         "params": {
@@ -1171,10 +2242,42 @@
       ]
     },
     {
-      "id": "clip_bd_009",
+      "id": "clip_bd_022",
       "trackId": "mid",
-      "start": 32,
-      "end": 36,
+      "start": 84,
+      "end": 88,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "diagonal",
+          "parts": 4,
+          "angle": 12,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_023",
+      "trackId": "mid",
+      "start": 88,
+      "end": 92,
       "spec": {
         "type": "split",
         "params": {
@@ -1203,10 +2306,42 @@
       ]
     },
     {
-      "id": "clip_bd_010",
+      "id": "clip_bd_024",
       "trackId": "mid",
-      "start": 36,
-      "end": 40,
+      "start": 92,
+      "end": 96,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "thirds",
+          "parts": 5,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_025",
+      "trackId": "mid",
+      "start": 96,
+      "end": 100,
       "spec": {
         "type": "split",
         "params": {
@@ -1235,10 +2370,42 @@
       ]
     },
     {
-      "id": "clip_bd_011",
+      "id": "clip_bd_026",
       "trackId": "mid",
-      "start": 40,
-      "end": 44,
+      "start": 100,
+      "end": 104,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "bands",
+          "parts": 5,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_027",
+      "trackId": "mid",
+      "start": 104,
+      "end": 108,
       "spec": {
         "type": "split",
         "params": {
@@ -1267,10 +2434,42 @@
       ]
     },
     {
-      "id": "clip_bd_012",
+      "id": "clip_bd_028",
       "trackId": "mid",
-      "start": 44,
-      "end": 48,
+      "start": 108,
+      "end": 112,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "quads",
+          "parts": 6,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_029",
+      "trackId": "mid",
+      "start": 112,
+      "end": 116,
       "spec": {
         "type": "split",
         "params": {
@@ -1299,10 +2498,42 @@
       ]
     },
     {
-      "id": "clip_bd_013",
+      "id": "clip_bd_030",
       "trackId": "mid",
-      "start": 48,
-      "end": 52,
+      "start": 116,
+      "end": 120,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "grid",
+          "parts": 6,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_031",
+      "trackId": "mid",
+      "start": 120,
+      "end": 124,
       "spec": {
         "type": "split",
         "params": {
@@ -1331,10 +2562,42 @@
       ]
     },
     {
-      "id": "clip_bd_014",
+      "id": "clip_bd_032",
       "trackId": "mid",
-      "start": 52,
-      "end": 56,
+      "start": 124,
+      "end": 128,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "chevron",
+          "parts": 5,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_033",
+      "trackId": "mid",
+      "start": 128,
+      "end": 132,
       "spec": {
         "type": "split",
         "params": {
@@ -1363,10 +2626,42 @@
       ]
     },
     {
-      "id": "clip_bd_015",
+      "id": "clip_bd_034",
       "trackId": "mid",
-      "start": 56,
-      "end": 60,
+      "start": 132,
+      "end": 136,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "radial",
+          "parts": 6,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_035",
+      "trackId": "mid",
+      "start": 136,
+      "end": 140,
       "spec": {
         "type": "split",
         "params": {
@@ -1395,10 +2690,42 @@
       ]
     },
     {
-      "id": "clip_bd_016",
+      "id": "clip_bd_036",
       "trackId": "mid",
-      "start": 60,
-      "end": 64,
+      "start": 140,
+      "end": 144,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "mondrian",
+          "parts": 6,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_037",
+      "trackId": "mid",
+      "start": 144,
+      "end": 148,
       "spec": {
         "type": "split",
         "params": {
@@ -1427,10 +2754,42 @@
       ]
     },
     {
-      "id": "clip_bd_017",
+      "id": "clip_bd_038",
       "trackId": "mid",
-      "start": 64,
-      "end": 68,
+      "start": 148,
+      "end": 152,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "frame",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_039",
+      "trackId": "mid",
+      "start": 152,
+      "end": 156,
       "spec": {
         "type": "split",
         "params": {
@@ -1459,10 +2818,42 @@
       ]
     },
     {
-      "id": "clip_bd_018",
+      "id": "clip_bd_040",
       "trackId": "mid",
-      "start": 68,
-      "end": 72,
+      "start": 156,
+      "end": 160,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "shards",
+          "parts": 6,
+          "angle": 0,
+          "coverage": 0.5,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_041",
+      "trackId": "mid",
+      "start": 160,
+      "end": 164,
       "spec": {
         "type": "combo",
         "params": {
@@ -1516,10 +2907,10 @@
       ]
     },
     {
-      "id": "clip_bd_019",
+      "id": "clip_bd_042",
       "trackId": "mid",
-      "start": 72,
-      "end": 76,
+      "start": 164,
+      "end": 168,
       "spec": {
         "type": "combo",
         "params": {
@@ -1573,10 +2964,10 @@
       ]
     },
     {
-      "id": "clip_bd_020",
+      "id": "clip_bd_043",
       "trackId": "mid",
-      "start": 76,
-      "end": 80,
+      "start": 168,
+      "end": 172,
       "spec": {
         "type": "combo",
         "params": {
@@ -1631,10 +3022,10 @@
       ]
     },
     {
-      "id": "clip_bd_021",
+      "id": "clip_bd_044",
       "trackId": "mid",
-      "start": 80,
-      "end": 84,
+      "start": 172,
+      "end": 176,
       "spec": {
         "type": "combo",
         "params": {
@@ -1687,10 +3078,10 @@
       ]
     },
     {
-      "id": "clip_bd_022",
+      "id": "clip_bd_045",
       "trackId": "mid",
-      "start": 84,
-      "end": 88,
+      "start": 176,
+      "end": 180,
       "spec": {
         "type": "combo",
         "params": {
@@ -1742,10 +3133,10 @@
       ]
     },
     {
-      "id": "clip_bd_023",
+      "id": "clip_bd_046",
       "trackId": "mid",
-      "start": 88,
-      "end": 92,
+      "start": 180,
+      "end": 184,
       "spec": {
         "type": "combo",
         "params": {
@@ -1798,10 +3189,10 @@
       ]
     },
     {
-      "id": "clip_bd_024",
+      "id": "clip_bd_047",
       "trackId": "mid",
-      "start": 92,
-      "end": 96,
+      "start": 184,
+      "end": 188,
       "spec": {
         "type": "combo",
         "params": {
@@ -1856,10 +3247,10 @@
       ]
     },
     {
-      "id": "clip_bd_025",
+      "id": "clip_bd_048",
       "trackId": "mid",
-      "start": 96,
-      "end": 100,
+      "start": 188,
+      "end": 192,
       "spec": {
         "type": "combo",
         "params": {
@@ -1913,10 +3304,10 @@
       ]
     },
     {
-      "id": "clip_bd_026",
+      "id": "clip_bd_049",
       "trackId": "mid",
-      "start": 100,
-      "end": 104,
+      "start": 192,
+      "end": 196,
       "spec": {
         "type": "combo",
         "params": {

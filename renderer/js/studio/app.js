@@ -1035,6 +1035,22 @@
     }
   }
 
+  // the ease curves' own showcase: one cue per named curve and parametric
+  // recipe on the same slide entrance, plus one cue per lyric slot that
+  // accepts an ease. The ease ids are language-independent, so no
+  // re-labelling is needed (same shape as the font showcase).
+  async function easeShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/ease-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -1923,6 +1939,7 @@
       openProject,
       openRecent,
       showcase: showcaseProject,
+      easeShowcase: easeShowcaseProject,
       figureShowcase: figureShowcaseProject,
       backdropShowcase: backdropShowcaseProject,
       fontShowcase: fontShowcaseProject,

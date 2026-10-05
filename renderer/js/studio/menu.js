@@ -175,6 +175,7 @@ SA.menu = (() => {
       labelKey: 'studio.menu.help',
       items: () => [
         { key: 'studio.help.showcase', action: 'showcase' },
+        { key: 'studio.help.easeShowcase', action: 'easeShowcase' },
         { key: 'studio.help.figureShowcase', action: 'figureShowcase' },
         { key: 'studio.help.backdropShowcase', action: 'backdropShowcase' },
         { key: 'studio.help.fontShowcase', action: 'fontShowcase' },

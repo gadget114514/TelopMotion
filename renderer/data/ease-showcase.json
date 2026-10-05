@@ -1,0 +1,3002 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion イージング見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "ez_001",
+        "start": 0,
+        "end": 3,
+        "text": "1. linear\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "basic",
+          "value": "linear"
+        }
+      },
+      {
+        "id": "ez_002",
+        "start": 3,
+        "end": 6,
+        "text": "2. hold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "basic",
+          "value": "hold"
+        }
+      },
+      {
+        "id": "ez_003",
+        "start": 6,
+        "end": 9,
+        "text": "3. quadIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quad",
+          "value": "quadIn"
+        }
+      },
+      {
+        "id": "ez_004",
+        "start": 9,
+        "end": 12,
+        "text": "4. quadOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quad",
+          "value": "quadOut"
+        }
+      },
+      {
+        "id": "ez_005",
+        "start": 12,
+        "end": 15,
+        "text": "5. quadInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quad",
+          "value": "quadInOut"
+        }
+      },
+      {
+        "id": "ez_006",
+        "start": 15,
+        "end": 18,
+        "text": "6. cubicIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "cubic",
+          "value": "cubicIn"
+        }
+      },
+      {
+        "id": "ez_007",
+        "start": 18,
+        "end": 21,
+        "text": "7. cubicOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "cubic",
+          "value": "cubicOut"
+        }
+      },
+      {
+        "id": "ez_008",
+        "start": 21,
+        "end": 24,
+        "text": "8. cubicInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "cubic",
+          "value": "cubicInOut"
+        }
+      },
+      {
+        "id": "ez_009",
+        "start": 24,
+        "end": 27,
+        "text": "9. quartIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quart",
+          "value": "quartIn"
+        }
+      },
+      {
+        "id": "ez_010",
+        "start": 27,
+        "end": 30,
+        "text": "10. quartOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quart",
+          "value": "quartOut"
+        }
+      },
+      {
+        "id": "ez_011",
+        "start": 30,
+        "end": 33,
+        "text": "11. quartInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quart",
+          "value": "quartInOut"
+        }
+      },
+      {
+        "id": "ez_012",
+        "start": 33,
+        "end": 36,
+        "text": "12. quintIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quint",
+          "value": "quintIn"
+        }
+      },
+      {
+        "id": "ez_013",
+        "start": 36,
+        "end": 39,
+        "text": "13. quintOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quint",
+          "value": "quintOut"
+        }
+      },
+      {
+        "id": "ez_014",
+        "start": 39,
+        "end": 42,
+        "text": "14. quintInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "quint",
+          "value": "quintInOut"
+        }
+      },
+      {
+        "id": "ez_015",
+        "start": 42,
+        "end": 45,
+        "text": "15. sineIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "sine",
+          "value": "sineIn"
+        }
+      },
+      {
+        "id": "ez_016",
+        "start": 45,
+        "end": 48,
+        "text": "16. sineOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "sine",
+          "value": "sineOut"
+        }
+      },
+      {
+        "id": "ez_017",
+        "start": 48,
+        "end": 51,
+        "text": "17. sineInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "sine",
+          "value": "sineInOut"
+        }
+      },
+      {
+        "id": "ez_018",
+        "start": 51,
+        "end": 54,
+        "text": "18. expoIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "expo",
+          "value": "expoIn"
+        }
+      },
+      {
+        "id": "ez_019",
+        "start": 54,
+        "end": 57,
+        "text": "19. expoOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "expo",
+          "value": "expoOut"
+        }
+      },
+      {
+        "id": "ez_020",
+        "start": 57,
+        "end": 60,
+        "text": "20. expoInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "expo",
+          "value": "expoInOut"
+        }
+      },
+      {
+        "id": "ez_021",
+        "start": 60,
+        "end": 63,
+        "text": "21. circIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "circ",
+          "value": "circIn"
+        }
+      },
+      {
+        "id": "ez_022",
+        "start": 63,
+        "end": 66,
+        "text": "22. circOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "circ",
+          "value": "circOut"
+        }
+      },
+      {
+        "id": "ez_023",
+        "start": 66,
+        "end": 69,
+        "text": "23. circInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "circ",
+          "value": "circInOut"
+        }
+      },
+      {
+        "id": "ez_024",
+        "start": 69,
+        "end": 72,
+        "text": "24. backIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "back",
+          "value": "backIn"
+        }
+      },
+      {
+        "id": "ez_025",
+        "start": 72,
+        "end": 75,
+        "text": "25. backOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "back",
+          "value": "backOut"
+        }
+      },
+      {
+        "id": "ez_026",
+        "start": 75,
+        "end": 78,
+        "text": "26. backInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "back",
+          "value": "backInOut"
+        }
+      },
+      {
+        "id": "ez_027",
+        "start": 78,
+        "end": 81,
+        "text": "27. elasticIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "elastic",
+          "value": "elasticIn"
+        }
+      },
+      {
+        "id": "ez_028",
+        "start": 81,
+        "end": 84,
+        "text": "28. elasticOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "elastic",
+          "value": "elasticOut"
+        }
+      },
+      {
+        "id": "ez_029",
+        "start": 84,
+        "end": 87,
+        "text": "29. elasticInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "elastic",
+          "value": "elasticInOut"
+        }
+      },
+      {
+        "id": "ez_030",
+        "start": 87,
+        "end": 90,
+        "text": "30. bounceIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "bounce",
+          "value": "bounceIn"
+        }
+      },
+      {
+        "id": "ez_031",
+        "start": 90,
+        "end": 93,
+        "text": "31. bounceOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "bounce",
+          "value": "bounceOut"
+        }
+      },
+      {
+        "id": "ez_032",
+        "start": 93,
+        "end": 96,
+        "text": "32. bounceInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "bounce",
+          "value": "bounceInOut"
+        }
+      },
+      {
+        "id": "ez_033",
+        "start": 96,
+        "end": 99,
+        "text": "33. smoothstep\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "smooth",
+          "value": "smoothstep"
+        }
+      },
+      {
+        "id": "ez_034",
+        "start": 99,
+        "end": 102,
+        "text": "34. smootherstep\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "smooth",
+          "value": "smootherstep"
+        }
+      },
+      {
+        "id": "ez_035",
+        "start": 102,
+        "end": 105,
+        "text": "35. cubic-bezier(0.25, 0.1, 0.25, 1)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "cubic-bezier(0.25, 0.1, 0.25, 1)"
+        }
+      },
+      {
+        "id": "ez_036",
+        "start": 105,
+        "end": 108,
+        "text": "36. cubic-bezier(0.68, -0.55, 0.27, 1.55)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "cubic-bezier(0.68, -0.55, 0.27, 1.55)"
+        }
+      },
+      {
+        "id": "ez_037",
+        "start": 108,
+        "end": 111,
+        "text": "37. spring(170, 26, 1)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "spring(170, 26, 1)"
+        }
+      },
+      {
+        "id": "ez_038",
+        "start": 111,
+        "end": 114,
+        "text": "38. spring(100, 10, 1)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "spring(100, 10, 1)"
+        }
+      },
+      {
+        "id": "ez_039",
+        "start": 114,
+        "end": 117,
+        "text": "39. steps(4, end)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "steps(4, end)"
+        }
+      },
+      {
+        "id": "ez_040",
+        "start": 117,
+        "end": 120,
+        "text": "40. steps(5, start)\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "parametric",
+          "value": "steps(5, start)"
+        }
+      },
+      {
+        "id": "ez_041",
+        "start": 120,
+        "end": 124,
+        "text": "41. enter.motion.in.ease = bounceOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "in",
+          "slot": "enter.motion.in.ease",
+          "ease": "bounceOut"
+        }
+      },
+      {
+        "id": "ez_042",
+        "start": 124,
+        "end": 128,
+        "text": "42. exit.motion.out.ease = backIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "out",
+          "slot": "exit.motion.out.ease",
+          "ease": "backIn"
+        }
+      },
+      {
+        "id": "ez_043",
+        "start": 128,
+        "end": 132,
+        "text": "43. animation stagger.ease = cubicInOut\nスタッガー あいうえお かきくけこ さしすせそ",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "stagger",
+          "slot": "animation stagger.ease",
+          "ease": "cubicInOut"
+        }
+      },
+      {
+        "id": "ez_044",
+        "start": 132,
+        "end": 136,
+        "text": "44. motion.loop.ease = sineInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "loop",
+          "slot": "motion.loop.ease",
+          "ease": "sineInOut"
+        }
+      },
+      {
+        "id": "ez_045",
+        "start": 136,
+        "end": 140,
+        "text": "45. layout.motion.in.ease = backOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "layout",
+          "slot": "layout.motion.in.ease",
+          "ease": "backOut"
+        }
+      },
+      {
+        "id": "ez_046",
+        "start": 140,
+        "end": 144,
+        "text": "46. layout sequence[].ease = elasticOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "sequence",
+          "slot": "layout sequence[].ease",
+          "ease": "elasticOut"
+        }
+      },
+      {
+        "id": "ez_047",
+        "start": 144,
+        "end": 148,
+        "text": "47. animation timeWarp.ease = sineInOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "timeWarp",
+          "slot": "animation timeWarp.ease",
+          "ease": "sineInOut"
+        }
+      },
+      {
+        "id": "ez_048",
+        "start": 148,
+        "end": 152,
+        "text": "48. animation adsr.ease = bounceOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "adsr",
+          "slot": "animation adsr.ease",
+          "ease": "bounceOut"
+        }
+      },
+      {
+        "id": "ez_049",
+        "start": 152,
+        "end": 156,
+        "text": "49. keyframes[].ease = bounceOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "ease-showcase",
+          "section": "usecase",
+          "value": "keyframes",
+          "slot": "keyframes[].ease",
+          "ease": "bounceOut"
+        }
+      }
+    ],
+    "sourceName": "ease-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "ez_001": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_002": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "hold"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_003": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quadIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_004": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quadOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_005": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quadInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_006": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_007": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_008": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "cubicInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_009": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quartIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_010": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quartOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_011": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quartInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_012": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quintIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_013": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quintOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_014": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "quintInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_015": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "sineIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_016": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "sineOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_017": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "sineInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_018": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "expoIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_019": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "expoOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_020": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "expoInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_021": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "circIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_022": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "circOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_023": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "circInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_024": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "backIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_025": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "backOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_026": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "backInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_027": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "elasticIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_028": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "elasticOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_029": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "elasticInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_030": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "bounceIn"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_031": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "bounceOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_032": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "bounceInOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_033": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "smoothstep"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_034": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "smootherstep"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_035": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "cubic-bezier(0.25, 0.1, 0.25, 1)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_036": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "cubic-bezier(0.68, -0.55, 0.27, 1.55)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_037": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "spring(170, 26, 1)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_038": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "spring(100, 10, 1)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_039": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "steps(4, end)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_040": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "steps(5, start)"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_041": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.4,
+            "ease": "bounceOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_042": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "params": {
+          "dir": "down",
+          "distance": 0.35
+        },
+        "motion": {
+          "out": {
+            "duration": 1.2,
+            "ease": "backIn"
+          }
+        }
+      }
+    },
+    "ez_043": {
+      "animation": {
+        "type": "stagger",
+        "params": {
+          "order": "ltr",
+          "each": 0.09,
+          "ease": "cubicInOut",
+          "unit": "letter",
+          "from": 0.5
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_044": {
+      "animation": {
+        "type": "loop",
+        "params": {
+          "period": 1.5,
+          "yoyo": true
+        },
+        "motion": {
+          "loop": {
+            "period": 1.5,
+            "yoyo": true,
+            "ease": "sineInOut"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "floatBob",
+          "params": {
+            "amp": 0.04,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_045": {
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "scatter"
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_046": {
+      "layout": {
+        "type": "row",
+        "params": {
+          "sequence": [
+            {
+              "at": 0.4,
+              "type": "circle",
+              "params": {},
+              "duration": 1,
+              "ease": "elasticOut"
+            }
+          ]
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_047": {
+      "animation": {
+        "type": "timeWarp",
+        "params": {
+          "ease": "sineInOut"
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_048": {
+      "animation": {
+        "type": "stagger",
+        "params": {
+          "order": "ltr",
+          "each": 0.035,
+          "ease": "linear",
+          "unit": "letter",
+          "from": 0.5
+        },
+        "motion": {
+          "adsr": {
+            "attack": 0.8,
+            "decay": 0.3,
+            "sustain": 0.6,
+            "release": 0.6,
+            "peak": 1.2,
+            "punch": 0.2,
+            "attackEase": "bounceOut",
+            "decayEase": "sineInOut",
+            "releaseEase": "backIn"
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "ez_049": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "ez_001": [
+      {
+        "id": "ez_001:single0",
+        "cueId": "ez_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 2.9999999999999996,
+        "text": "1. linear\nあいうえお Aiueo 0123",
+        "lines": [
+          "1. linear",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_002": [
+      {
+        "id": "ez_002:single0",
+        "cueId": "ez_002",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "2. hold\nあいうえお Aiueo 0123",
+        "lines": [
+          "2. hold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_003": [
+      {
+        "id": "ez_003:single0",
+        "cueId": "ez_003",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 9,
+        "text": "3. quadIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "3. quadIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_004": [
+      {
+        "id": "ez_004:single0",
+        "cueId": "ez_004",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "4. quadOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "4. quadOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_005": [
+      {
+        "id": "ez_005:single0",
+        "cueId": "ez_005",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 15,
+        "text": "5. quadInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "5. quadInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_006": [
+      {
+        "id": "ez_006:single0",
+        "cueId": "ez_006",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 18,
+        "text": "6. cubicIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "6. cubicIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_007": [
+      {
+        "id": "ez_007:single0",
+        "cueId": "ez_007",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "7. cubicOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "7. cubicOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_008": [
+      {
+        "id": "ez_008:single0",
+        "cueId": "ez_008",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "8. cubicInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "8. cubicInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_009": [
+      {
+        "id": "ez_009:single0",
+        "cueId": "ez_009",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 27,
+        "text": "9. quartIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "9. quartIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_010": [
+      {
+        "id": "ez_010:single0",
+        "cueId": "ez_010",
+        "kind": "single",
+        "index": 0,
+        "start": 27,
+        "end": 30,
+        "text": "10. quartOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "10. quartOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_011": [
+      {
+        "id": "ez_011:single0",
+        "cueId": "ez_011",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 33,
+        "text": "11. quartInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "11. quartInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_012": [
+      {
+        "id": "ez_012:single0",
+        "cueId": "ez_012",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "12. quintIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "12. quintIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_013": [
+      {
+        "id": "ez_013:single0",
+        "cueId": "ez_013",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 39,
+        "text": "13. quintOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "13. quintOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_014": [
+      {
+        "id": "ez_014:single0",
+        "cueId": "ez_014",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "14. quintInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "14. quintInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_015": [
+      {
+        "id": "ez_015:single0",
+        "cueId": "ez_015",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 45,
+        "text": "15. sineIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "15. sineIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_016": [
+      {
+        "id": "ez_016:single0",
+        "cueId": "ez_016",
+        "kind": "single",
+        "index": 0,
+        "start": 45,
+        "end": 48,
+        "text": "16. sineOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "16. sineOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_017": [
+      {
+        "id": "ez_017:single0",
+        "cueId": "ez_017",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 51,
+        "text": "17. sineInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "17. sineInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_018": [
+      {
+        "id": "ez_018:single0",
+        "cueId": "ez_018",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "18. expoIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "18. expoIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_019": [
+      {
+        "id": "ez_019:single0",
+        "cueId": "ez_019",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "19. expoOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "19. expoOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_020": [
+      {
+        "id": "ez_020:single0",
+        "cueId": "ez_020",
+        "kind": "single",
+        "index": 0,
+        "start": 57,
+        "end": 60,
+        "text": "20. expoInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "20. expoInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_021": [
+      {
+        "id": "ez_021:single0",
+        "cueId": "ez_021",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "21. circIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "21. circIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_022": [
+      {
+        "id": "ez_022:single0",
+        "cueId": "ez_022",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "22. circOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "22. circOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_023": [
+      {
+        "id": "ez_023:single0",
+        "cueId": "ez_023",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 69,
+        "text": "23. circInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "23. circInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_024": [
+      {
+        "id": "ez_024:single0",
+        "cueId": "ez_024",
+        "kind": "single",
+        "index": 0,
+        "start": 69,
+        "end": 72,
+        "text": "24. backIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "24. backIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_025": [
+      {
+        "id": "ez_025:single0",
+        "cueId": "ez_025",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 75,
+        "text": "25. backOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "25. backOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_026": [
+      {
+        "id": "ez_026:single0",
+        "cueId": "ez_026",
+        "kind": "single",
+        "index": 0,
+        "start": 75,
+        "end": 78,
+        "text": "26. backInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "26. backInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_027": [
+      {
+        "id": "ez_027:single0",
+        "cueId": "ez_027",
+        "kind": "single",
+        "index": 0,
+        "start": 78,
+        "end": 81,
+        "text": "27. elasticIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "27. elasticIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_028": [
+      {
+        "id": "ez_028:single0",
+        "cueId": "ez_028",
+        "kind": "single",
+        "index": 0,
+        "start": 81,
+        "end": 84,
+        "text": "28. elasticOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "28. elasticOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_029": [
+      {
+        "id": "ez_029:single0",
+        "cueId": "ez_029",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 87,
+        "text": "29. elasticInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "29. elasticInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_030": [
+      {
+        "id": "ez_030:single0",
+        "cueId": "ez_030",
+        "kind": "single",
+        "index": 0,
+        "start": 87,
+        "end": 90,
+        "text": "30. bounceIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "30. bounceIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_031": [
+      {
+        "id": "ez_031:single0",
+        "cueId": "ez_031",
+        "kind": "single",
+        "index": 0,
+        "start": 90,
+        "end": 93,
+        "text": "31. bounceOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "31. bounceOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_032": [
+      {
+        "id": "ez_032:single0",
+        "cueId": "ez_032",
+        "kind": "single",
+        "index": 0,
+        "start": 93,
+        "end": 96,
+        "text": "32. bounceInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "32. bounceInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_033": [
+      {
+        "id": "ez_033:single0",
+        "cueId": "ez_033",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 99,
+        "text": "33. smoothstep\nあいうえお Aiueo 0123",
+        "lines": [
+          "33. smoothstep",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_034": [
+      {
+        "id": "ez_034:single0",
+        "cueId": "ez_034",
+        "kind": "single",
+        "index": 0,
+        "start": 99,
+        "end": 102,
+        "text": "34. smootherstep\nあいうえお Aiueo 0123",
+        "lines": [
+          "34. smootherstep",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_035": [
+      {
+        "id": "ez_035:single0",
+        "cueId": "ez_035",
+        "kind": "single",
+        "index": 0,
+        "start": 102,
+        "end": 105,
+        "text": "35. cubic-bezier(0.25, 0.1, 0.25\n, 1)あいうえお Aiueo 0123",
+        "lines": [
+          "35. cubic-bezier(0.25, 0.1, 0.25",
+          ", 1)あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_036": [
+      {
+        "id": "ez_036:single0",
+        "cueId": "ez_036",
+        "kind": "single",
+        "index": 0,
+        "start": 105,
+        "end": 108,
+        "text": "36. cubic-bezier(0.68, -0.55, 0.\n27, 1.55)あいうえお Aiueo 0123",
+        "lines": [
+          "36. cubic-bezier(0.68, -0.55, 0.",
+          "27, 1.55)あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_037": [
+      {
+        "id": "ez_037:single0",
+        "cueId": "ez_037",
+        "kind": "single",
+        "index": 0,
+        "start": 108,
+        "end": 111,
+        "text": "37. spring(170, 26, 1)\nあいうえお Aiueo 0123",
+        "lines": [
+          "37. spring(170, 26, 1)",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_038": [
+      {
+        "id": "ez_038:single0",
+        "cueId": "ez_038",
+        "kind": "single",
+        "index": 0,
+        "start": 111,
+        "end": 114,
+        "text": "38. spring(100, 10, 1)\nあいうえお Aiueo 0123",
+        "lines": [
+          "38. spring(100, 10, 1)",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_039": [
+      {
+        "id": "ez_039:single0",
+        "cueId": "ez_039",
+        "kind": "single",
+        "index": 0,
+        "start": 114,
+        "end": 117,
+        "text": "39. steps(4, end)\nあいうえお Aiueo 0123",
+        "lines": [
+          "39. steps(4, end)",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_040": [
+      {
+        "id": "ez_040:single0",
+        "cueId": "ez_040",
+        "kind": "single",
+        "index": 0,
+        "start": 117,
+        "end": 120,
+        "text": "40. steps(5, start)\nあいうえお Aiueo 0123",
+        "lines": [
+          "40. steps(5, start)",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_041": [
+      {
+        "id": "ez_041:single0",
+        "cueId": "ez_041",
+        "kind": "single",
+        "index": 0,
+        "start": 120,
+        "end": 124,
+        "text": "41. enter.motion.in.ease = \nbounceOutあいうえお Aiueo 0123",
+        "lines": [
+          "41. enter.motion.in.ease = ",
+          "bounceOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_042": [
+      {
+        "id": "ez_042:single0",
+        "cueId": "ez_042",
+        "kind": "single",
+        "index": 0,
+        "start": 124,
+        "end": 128,
+        "text": "42. exit.motion.out.ease = \nbackInあいうえお Aiueo 0123",
+        "lines": [
+          "42. exit.motion.out.ease = ",
+          "backInあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_043": [
+      {
+        "id": "ez_043:single0",
+        "cueId": "ez_043",
+        "kind": "single",
+        "index": 0,
+        "start": 128,
+        "end": 132,
+        "text": "43. animation stagger.ease = cubicInOut\nスタッガー あいうえお かきくけこ さしすせそ",
+        "lines": [
+          "43. animation stagger.ease = cubicInOut",
+          "スタッガー あいうえお かきくけこ さしすせそ"
+        ],
+        "fontScale": 0.8199999999999998,
+        "pinned": false
+      }
+    ],
+    "ez_044": [
+      {
+        "id": "ez_044:single0",
+        "cueId": "ez_044",
+        "kind": "single",
+        "index": 0,
+        "start": 132,
+        "end": 136,
+        "text": "44. motion.loop.ease = sineInOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "44. motion.loop.ease = sineInOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_045": [
+      {
+        "id": "ez_045:single0",
+        "cueId": "ez_045",
+        "kind": "single",
+        "index": 0,
+        "start": 136,
+        "end": 140,
+        "text": "45. layout.motion.in.ease = \nbackOutあいうえお Aiueo 0123",
+        "lines": [
+          "45. layout.motion.in.ease = ",
+          "backOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_046": [
+      {
+        "id": "ez_046:single0",
+        "cueId": "ez_046",
+        "kind": "single",
+        "index": 0,
+        "start": 140,
+        "end": 144,
+        "text": "46. layout sequence[].ease = \nelasticOutあいうえお Aiueo 0123",
+        "lines": [
+          "46. layout sequence[].ease = ",
+          "elasticOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_047": [
+      {
+        "id": "ez_047:single0",
+        "cueId": "ez_047",
+        "kind": "single",
+        "index": 0,
+        "start": 144,
+        "end": 148,
+        "text": "47. animation timeWarp.ease = \nsineInOutあいうえお Aiueo 0123",
+        "lines": [
+          "47. animation timeWarp.ease = ",
+          "sineInOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_048": [
+      {
+        "id": "ez_048:single0",
+        "cueId": "ez_048",
+        "kind": "single",
+        "index": 0,
+        "start": 148,
+        "end": 152,
+        "text": "48. animation adsr.ease = \nbounceOutあいうえお Aiueo 0123",
+        "lines": [
+          "48. animation adsr.ease = ",
+          "bounceOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "ez_049": [
+      {
+        "id": "ez_049:single0",
+        "cueId": "ez_049",
+        "kind": "single",
+        "index": 0,
+        "start": 152,
+        "end": 156,
+        "text": "49. keyframes[].ease = bounceOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "49. keyframes[].ease = bounceOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {
+    "cue:ez_049": {
+      "transform.y": [
+        {
+          "t": 0,
+          "value": -60,
+          "ease": "bounceOut"
+        },
+        {
+          "t": 3,
+          "value": 60,
+          "ease": "linear"
+        }
+      ]
+    }
+  },
+  "markers": [
+    {
+      "t": 0,
+      "label": "基本 (basic)"
+    },
+    {
+      "t": 6,
+      "label": "二次 (quad)"
+    },
+    {
+      "t": 15,
+      "label": "三次 (cubic)"
+    },
+    {
+      "t": 24,
+      "label": "四次 (quart)"
+    },
+    {
+      "t": 33,
+      "label": "五次 (quint)"
+    },
+    {
+      "t": 42,
+      "label": "サイン (sine)"
+    },
+    {
+      "t": 51,
+      "label": "指数 (expo)"
+    },
+    {
+      "t": 60,
+      "label": "円 (circ)"
+    },
+    {
+      "t": 69,
+      "label": "バック (back)"
+    },
+    {
+      "t": 78,
+      "label": "エラスティック (elastic)"
+    },
+    {
+      "t": 87,
+      "label": "バウンス (bounce)"
+    },
+    {
+      "t": 96,
+      "label": "なめらか (smooth)"
+    },
+    {
+      "t": 102,
+      "label": "パラメトリック (parametric)"
+    },
+    {
+      "t": 120,
+      "label": "使いどころ (use cases)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

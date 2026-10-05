@@ -17,6 +17,7 @@
     "figure-showcase": "node scripts/figure-showcase.js",
     "font-showcase": "node scripts/font-showcase.js",
     "backdrop-showcase": "node scripts/backdrop-showcase.js",
+    "ease-showcase": "node scripts/ease-showcase.js",
     "demo30": "node scripts/demo30.js build",
     "distinct": "node scripts/distinct-count.js",
     "check": "node scripts/check.js",

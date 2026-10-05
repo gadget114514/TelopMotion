@@ -38,23 +38,46 @@ test('the generated showcase migrates and keeps every cue and clip', () => {
   assert.equal(migrated.ok, true, migrated.error);
   assert.equal(migrated.project.script.cues.length, b.entries.length);
   assert.equal(backdropClips(migrated.project).length, b.entries.length);
-  assert.equal(b.entries.length, showcase.ACCENT_TYPES.length + showcase.SPLIT_LAYOUTS.length + showcase.MOTIONS.length);
-  assert.equal(b.entries.length, 26);
+  assert.equal(b.entries.filter((entry) => entry.section === 'accent').length, showcase.ACCENT_TYPES.length * 3);
+  assert.equal(b.entries.filter((entry) => entry.section === 'split').length, showcase.SPLIT_LAYOUTS.length * 2);
+  assert.equal(b.entries.filter((entry) => entry.section === 'motion').length, showcase.MOTIONS.length);
+  assert.equal(b.entries.length, showcase.ACCENT_TYPES.length * 3 + showcase.SPLIT_LAYOUTS.length * 2 + showcase.MOTIONS.length);
+  assert.equal(b.entries.length, 49);
 });
 
-test('every accent type gets its own single-layer cue', () => {
+test('every accent type gets three configuration variants', () => {
   const b = built();
-  const used = b.entries.filter((entry) => entry.section === 'accent').map((entry) => entry.value);
-  assert.deepEqual(used, showcase.ACCENT_TYPES);
+  for (const type of showcase.ACCENT_TYPES) {
+    const rows = b.entries.filter((entry) => entry.section === 'accent' && entry.value === type);
+    assert.equal(rows.length, 3, `${type} has ${rows.length} variants`);
+    assert.deepEqual(rows.map((entry) => entry.variant), [1, 2, 3]);
+    // the variants really differ: mode/set/flow plus the width/height build
+    const params = rows.map((entry) => JSON.stringify(entry.spec.params));
+    assert.equal(new Set(params).size, 3, `${type} variants are identical`);
+    for (const entry of rows) {
+      assert.equal(entry.spec.type, type);
+      assert.ok(entry.detail && entry.detail !== type, `${type} variant ${entry.variant} has no detail label`);
+    }
+  }
+  assert.deepEqual(
+    showcase.ACCENT_TYPES.map((type) => showcase.accentVariants(type).length),
+    showcase.ACCENT_TYPES.map(() => 3)
+  );
 });
 
-test('every split layout gets its own cue', () => {
+test('every split layout gets two builds: full-width and narrower/finer', () => {
   const b = built();
-  const used = b.entries.filter((entry) => entry.section === 'split').map((entry) => entry.value);
-  assert.deepEqual(used, showcase.SPLIT_LAYOUTS);
-  for (const entry of b.entries.filter((entry) => entry.section === 'split')) {
-    assert.equal(entry.spec.type, 'split');
-    assert.equal(entry.spec.params.layout, entry.value);
+  for (const layout of showcase.SPLIT_LAYOUTS) {
+    const rows = b.entries.filter((entry) => entry.section === 'split' && entry.value === layout);
+    assert.equal(rows.length, 2, `${layout} has ${rows.length} builds`);
+    assert.deepEqual(rows.map((entry) => entry.variant), [1, 2]);
+    for (const entry of rows) {
+      assert.equal(entry.spec.type, 'split');
+      assert.equal(entry.spec.params.layout, layout);
+    }
+    // the second build is finer (more parts) over less of the frame
+    assert.ok(rows[1].spec.params.parts >= rows[0].spec.params.parts, `${layout} second build is not finer`);
+    assert.ok(rows[1].spec.params.coverage < rows[0].spec.params.coverage, `${layout} second build is not narrower`);
   }
 });
 
@@ -81,9 +104,13 @@ test('every cue carries a label, a clip span and the shared plate', () => {
     assert.ok(cue, `cue ${entry.cueId} missing`);
     assert.equal(cue.end - cue.start, showcase.BACKDROP_SECONDS, `${entry.cueId} span`);
     assert.ok(String(cue.text).includes(entry.value), `${entry.cueId} label must name ${entry.value}`);
+    if (entry.detail && entry.detail !== entry.value) {
+      assert.ok(String(cue.text).includes(entry.detail), `${entry.cueId} label must name its build ${entry.detail}`);
+    }
     assert.equal(cue.meta.kind, 'backdrop-showcase');
     assert.equal(cue.meta.section, entry.section);
     assert.equal(cue.meta.value, entry.value);
+    assert.equal(cue.meta.variant, entry.variant);
     const clip = clips[index];
     assert.equal(clip.start, cue.start, `${entry.cueId} clip start`);
     assert.equal(clip.end, cue.end, `${entry.cueId} clip end`);
@@ -130,7 +157,7 @@ test('every showcase clip draws shapes through its span', () => {
 
 test('the --sections filter keeps only the named sections', () => {
   const b = showcase.buildShowcase({ sections: ['split'] });
-  assert.equal(b.entries.length, showcase.SPLIT_LAYOUTS.length);
+  assert.equal(b.entries.length, showcase.SPLIT_LAYOUTS.length * 2);
   for (const entry of b.entries) assert.equal(entry.section, 'split');
   assert.equal(b.markers.length, 1);
 });

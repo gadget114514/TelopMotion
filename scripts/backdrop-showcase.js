@@ -8,14 +8,16 @@
 //     writes renderer/data/backdrop-showcase.json and demo/backdrop-showcase.md
 //   node scripts/backdrop-showcase.js list [--section split]
 //
-// The walk has three sections. `accent` is the texture layer alone (one cue per
-// single-layer type: shapes / pattern / particles / spectrum / waveform /
-// figures). `split` is the painted colour planes alone (one cue per split
-// layout). `motion` pins one reference combo (halves planes + burst shapes) and
-// varies only the clip-level motion (`animate.mode`), so neighbouring cues
-// differ only in the motion under review. One cue is four seconds, the lyric
-// text is the same sample everywhere, and one dark plate sits behind the whole
-// walk so the layers read against the same ground.
+// The walk has three sections. `accent` is the texture layer alone (three
+// configuration variants per single-layer type: shapes / pattern / particles /
+// spectrum / waveform / figures, each with a different mode and a different
+// width/height build). `split` is the painted colour planes alone (two builds
+// per split layout: the full-width default and a narrower, finer split).
+// `motion` pins one reference combo (halves planes + burst shapes) and varies
+// only the clip-level motion (`animate.mode`), so neighbouring cues differ
+// only in the motion under review. One cue is four seconds, the lyric text is
+// the same sample everywhere, and one dark plate sits behind the whole walk so
+// the layers read against the same ground.
 //
 // The output is generated, never hand edited: re-run this after the
 // filler-render split layouts, the accent types or BACKDROP_MOTIONS change.
@@ -56,8 +58,8 @@ const SPLIT_LAYOUTS = ['halves', 'diagonal', 'thirds', 'bands', 'quads', 'grid',
 const MOTIONS = ['accent', 'swell', 'sway', 'drift', 'still', 'pulse', 'travel', 'zoom', 'tilt'];
 
 const SECTIONS = [
-  { id: 'accent', label: 'アクセント (accent)', note: '後景の質感レイヤーだけを1層で出しています。分割プレーンはありません。' },
-  { id: 'split', label: '分割プレーン (split)', note: '色の面だけを出しています。質感レイヤーはありません。動きは breathe に固定しています。' },
+  { id: 'accent', label: 'アクセント (accent)', note: '後景の質感レイヤーだけを1層で出しています。分割プレーンはありません。1種類につき3構成（モードと幅・高さ違い）を見せます。' },
+  { id: 'split', label: '分割プレーン (split)', note: '色の面だけを出しています。質感レイヤーはありません。動きは breathe に固定し、1配置につき2構成（標準の全幅と、細かく狭い分割）を見せます。' },
   { id: 'motion', label: 'クリップモーション (motion)', note: '参照コンボ（halves + burst）を固定し、クリップ全体のモーション（animate.mode）だけを変えています。' },
 ];
 
@@ -70,23 +72,56 @@ function round(value, digits) {
   return Math.round(value * factor) / factor;
 }
 
-function accentSpec(type) {
+// Three configuration variants per accent type: a different mode/set/flow and
+// a different width/height build (count / size / thickness / amplitude), so
+// one type reads as three different pictures.
+function accentVariants(type) {
   switch (type) {
     case 'shapes':
-      return { type: 'shapes', params: { set: 'burst', count: 12, speed: 0.8, opacity: 0.6 } };
+      return [
+        { label: 'burst ×12', params: { set: 'burst', count: 12, speed: 0.8, opacity: 0.6 } },
+        { label: 'circles ×24', params: { set: 'circles', count: 24, speed: 0.5, opacity: 0.5 } },
+        { label: 'grid ×8', params: { set: 'grid', count: 8, speed: 1.2, opacity: 0.6 } },
+      ];
     case 'pattern':
-      return { type: 'pattern', params: { mode: 'stripes', count: 24, size: 1, speed: 0.4, opacity: 0.6 } };
+      return [
+        { label: 'stripes · 24', params: { mode: 'stripes', count: 24, size: 1, speed: 0.4, opacity: 0.6 } },
+        { label: 'dots · 48', params: { mode: 'dots', count: 48, size: 0.7, speed: 0.6, opacity: 0.55 } },
+        { label: 'grid · 12', params: { mode: 'grid', count: 12, size: 1.8, speed: 0.25, opacity: 0.6 } },
+      ];
     case 'particles':
-      return { type: 'particles', params: { flow: 'rise', count: 24, size: 2.4 } };
+      return [
+        { label: 'rise · 24', params: { flow: 'rise', count: 24, size: 2.4 } },
+        { label: 'fall · 48', params: { flow: 'fall', count: 48, size: 1.4 } },
+        { label: 'vortex · 16', params: { flow: 'vortex', count: 16, size: 3.2 } },
+      ];
     case 'spectrum':
-      return { type: 'spectrum', params: { mode: 'bars', bars: 48, falloff: 1 } };
+      return [
+        { label: 'bars · 48', params: { mode: 'bars', bars: 48, falloff: 1 } },
+        { label: 'radial · 64', params: { mode: 'radial', bars: 64, falloff: 0.7 } },
+        { label: 'blob · 24', params: { mode: 'blob', bars: 24, falloff: 1.4 } },
+      ];
     case 'waveform':
-      return { type: 'waveform', params: { mode: 'line', thickness: 2.5, amp: 1 } };
+      return [
+        { label: 'line', params: { mode: 'line', thickness: 2.5, amp: 1 } },
+        { label: 'mirror', params: { mode: 'mirror', thickness: 1.5, amp: 1.8 } },
+        { label: 'circle', params: { mode: 'circle', thickness: 3.5, amp: 0.6 } },
+      ];
     case 'figures':
-      return { type: 'figures', params: { motif: 'orbit', sync: 'free', density: 0.5, count: 8, opacity: 0.35 } };
+      return [
+        { label: 'orbit', params: { motif: 'orbit', sync: 'free', density: 0.5, count: 8, opacity: 0.35 } },
+        { label: 'rings · 14', params: { motif: 'rings', sync: 'free', density: 0.7, count: 14, opacity: 0.3 } },
+        { label: 'waves · 6', params: { motif: 'waves', sync: 'free', density: 0.3, count: 6, opacity: 0.4 } },
+      ];
     default:
       throw new Error(`unknown accent type ${type}`);
   }
+}
+
+function accentSpec(type, variant) {
+  const variants = accentVariants(type);
+  const picked = variants[(variant == null ? 1 : variant) - 1] || variants[0];
+  return { type, params: clone(picked.params) };
 }
 
 function partsForLayout(layout) {
@@ -95,14 +130,14 @@ function partsForLayout(layout) {
   return 4;
 }
 
-function splitSpec(layout) {
+function splitSpec(layout, parts, coverage) {
   return {
     type: 'split',
     params: {
       layout,
-      parts: partsForLayout(layout),
+      parts: parts == null ? partsForLayout(layout) : parts,
       angle: layout === 'diagonal' ? 12 : 0,
-      coverage: 0.85,
+      coverage: coverage == null ? 0.85 : coverage,
       scheme: 'tonal',
       motion: 'breathe',
       speed: 0.4,
@@ -110,6 +145,17 @@ function splitSpec(layout) {
       colors: PLANE_COLORS.slice(),
     },
   };
+}
+
+// Two builds per layout: the full-width default and a narrower, finer split
+// (more parts over less of the frame), so the same layout reads wide and tall.
+function splitVariants(layout) {
+  const base = partsForLayout(layout);
+  const fine = Math.min(8, base + 2);
+  return [
+    { label: `${base}面 · 85%`, spec: splitSpec(layout, base, 0.85) },
+    { label: `${fine}面 · 50%`, spec: splitSpec(layout, fine, 0.5) },
+  ];
 }
 
 function referencePlane() {
@@ -149,20 +195,31 @@ function cueId(index) {
   return `bd_${String(index + 1).padStart(3, '0')}`;
 }
 
-function cueText(index, value) {
-  return `${index}. ${value}\n${SAMPLE_JA} ${SAMPLE_LATIN}`;
+function cueText(index, value, detail) {
+  const head = detail && detail !== value ? `${index}. ${value} · ${detail}` : `${index}. ${value}`;
+  return `${head}\n${SAMPLE_JA} ${SAMPLE_LATIN}`;
 }
 
 // The walk itself, without any timing: one slot per cue, in playing order.
+// Accent types and split layouts carry several configuration variants each;
+// motions carry one cue on the shared reference combo.
 function plan() {
   const slots = [];
-  const push = (section, value, spec) => {
+  const push = (section, value, variant, detail, spec) => {
     const index = slots.length;
-    slots.push({ index: index + 1, section, value, seconds: BACKDROP_SECONDS, cueId: cueId(index), spec });
+    slots.push({ index: index + 1, section, value, variant, detail, seconds: BACKDROP_SECONDS, cueId: cueId(index), spec });
   };
-  for (const type of ACCENT_TYPES) push('accent', type, accentSpec(type));
-  for (const layout of SPLIT_LAYOUTS) push('split', layout, splitSpec(layout));
-  for (const mode of MOTIONS) push('motion', mode, comboSpec(mode));
+  for (const type of ACCENT_TYPES) {
+    accentVariants(type).forEach((entry, at) => {
+      push('accent', type, at + 1, entry.label, { type, params: clone(entry.params) });
+    });
+  }
+  for (const layout of SPLIT_LAYOUTS) {
+    splitVariants(layout).forEach((entry, at) => {
+      push('split', layout, at + 1, entry.label, clone(entry.spec));
+    });
+  }
+  for (const mode of MOTIONS) push('motion', mode, 1, mode, comboSpec(mode));
   return slots;
 }
 
@@ -192,10 +249,10 @@ function buildShowcase(options) {
       id,
       start,
       end,
-      text: cueText(slot.index, slot.value),
+      text: cueText(slot.index, slot.value, slot.detail),
       // the ids are language-independent, so the Studio needs no re-labelling
       // (same shape as the font showcase's `{ kind, index }`)
-      meta: { kind: 'backdrop-showcase', index: slot.index, section: slot.section, value: slot.value },
+      meta: { kind: 'backdrop-showcase', index: slot.index, section: slot.section, value: slot.value, variant: slot.variant, detail: slot.detail },
     });
     clips.push({
       id: `clip_${id}`,
@@ -208,7 +265,7 @@ function buildShowcase(options) {
       fadeOut: 0.25,
       colors: BACKDROP_COLORS.slice(),
     });
-    entries.push({ index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label, cueId: id, start, end, value: slot.value, spec: clone(slot.spec) });
+    entries.push({ index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label, cueId: id, start, end, value: slot.value, variant: slot.variant, detail: slot.detail, spec: clone(slot.spec) });
     t = end;
   });
   const total = round(t);
@@ -282,7 +339,7 @@ function indexMarkdown(built) {
   lines.push('');
   lines.push(`歌詞の後ろに敷く後景（\`mid\` トラック）を 1 キューずつ並べた見本プロジェクトです。どのキューも同じサンプル文を表示し、違うのは後景だけです。`);
   lines.push('');
-  lines.push(`- 1 層・1 配置・1 モーション = 1 キュー（${BACKDROP_SECONDS} 秒）`);
+  lines.push(`- 質感・配置は1項目につき複数構成（モードと幅・高さ違い）＝複数キュー（${BACKDROP_SECONDS} 秒/キュー）、モーションは1動き＝1キュー`);
   lines.push('- 後景は後景トラック（`mid`）のクリップです。キューは中央のサンプル文だけを持ちます');
   lines.push('- モーションのセクションは参照コンボ（halves + burst）を使い、隣り合うキューで違うのはクリップの動きだけです');
   lines.push('- 開くには Studio の *Help → 後景見本*、または *File → Open project…* を使います');
@@ -323,10 +380,10 @@ function indexMarkdown(built) {
     lines.push('');
     if (section.note) lines.push(section.note);
     lines.push('');
-    lines.push('| # | キュー | 時間 | 値 |');
-    lines.push('|---:|---|---|---|');
+    lines.push('| # | キュー | 時間 | 値 | 構成 |');
+    lines.push('|---:|---|---|---|---|');
     for (const entry of sectionRows) {
-      lines.push(`| ${entry.index} | \`${entry.cueId}\` | ${formatRange(entry)} | \`${entry.value}\` |`);
+      lines.push(`| ${entry.index} | \`${entry.cueId}\` | ${formatRange(entry)} | \`${entry.value}\` | ${entry.detail} |`);
     }
     lines.push('');
   }
@@ -392,7 +449,7 @@ function listText(options) {
     order += 1;
     lines.push(`${order}. ${section.label} — ${rows.length} cues`);
     for (const entry of rows) {
-      lines.push(`   ${String(entry.index).padStart(3, ' ')}. ${formatRange(entry)}  ${entry.value}`);
+      lines.push(`   ${String(entry.index).padStart(3, ' ')}. ${formatRange(entry)}  ${entry.value} · ${entry.detail}`);
     }
     lines.push('');
   }
@@ -458,11 +515,13 @@ module.exports = {
   SECTIONS,
   SPLIT_LAYOUTS,
   accentSpec,
+  accentVariants,
   animateFor,
   comboSpec,
   cueText,
   plan,
   splitSpec,
+  splitVariants,
   buildShowcase,
   indexMarkdown,
   listText,
