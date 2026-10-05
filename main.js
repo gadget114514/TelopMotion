@@ -484,6 +484,8 @@ function createWindow() {
             // Palette dialog: edit a role live, add / remove a colour, then
             // cancel and confirm the scope is restored.
             const paletteRoot = document.getElementById('dialog-root');
+            const songRoot = paletteRoot;
+            const songState = {};
             const paletteAt = () => JSON.stringify(window.SA.project.resolveStyle(window.SA.store.state.project, '').palette || null);
             const paletteBefore = paletteAt();
             window.SA.paletteDialog.open('project');
@@ -512,7 +514,30 @@ function createWindow() {
             window.SA.paletteDialog.close(false);
             paletteState.restored = paletteAt() === paletteBefore;
             paletteState.closed = paletteRoot.hidden;
-            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, editMenu, after, undone, redone, dirtyAfterRedo, cleanAfterUndo, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length, paletteDialog: paletteState });
+            // Song dialog: Settings -> Song names the piece (the first filler
+            // shows it) and informs the tempo the beats are cut on.
+            document.querySelector('[data-menu="settings"]').click();
+            const songItem = [...document.querySelectorAll('.dropdown .menu-item')].find((node) => /Song|楽曲|Canci|Chanson|Песня/.test(node.textContent));
+            const songMenu = { found: !!songItem };
+            if (songItem) songItem.click();
+            const songInputs = songRoot.querySelectorAll('.dialog input');
+            songState.open = songInputs.length >= 3;
+            songState.fields = songInputs.length;
+            if (songInputs.length >= 3) {
+              songInputs[0].value = 'Neon Rain';
+              songInputs[1].value = 'Aoi';
+              songInputs[2].value = '150';
+              const applySong = songRoot.querySelector('.dialog-actions .btn-primary');
+              if (applySong) applySong.click();
+            }
+            const songDoc = window.SA.store.state.project;
+            songState.song = JSON.stringify(songDoc.song);
+            songState.introCredits = window.SA.credits
+              ? window.SA.credits.expandTemplate(songDoc, window.SA.credits.settingsFor(songDoc), {}).join(' / ')
+              : '';
+            songState.tempo = window.SA.project.tempoOf(songDoc, 0);
+            songState.closed = songRoot.hidden;
+            return JSON.stringify({ before, dropdownOpen, items, dropdownClosed, editMenu, after, undone, redone, dirtyAfterRedo, cleanAfterUndo, cueCount, fxLabels, langMissing: [...new Set(missing)].slice(0, 60), langMissingCount: missing.length, paletteDialog: paletteState, songMenu, songDialog: songState });
           })()`);
           console.log('SMOKE_STUDIO=' + studio);
           await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));

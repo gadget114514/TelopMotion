@@ -41,6 +41,7 @@
         <div class="meta-row"><span data-i18n="studio.panel.cues"></span><strong id="media-cues">0</strong></div>
         <div class="meta-row"><span data-i18n="studio.panel.aspect"></span><strong id="media-aspect">16:9</strong></div>
         <div class="meta-row"><span data-i18n="studio.panel.duration"></span><strong id="media-duration">0:00</strong></div>
+        <div class="meta-row"><span data-i18n="studio.panel.bpm"></span><strong id="media-bpm">—</strong></div>
       </div>
       <div id="media-pane-video" class="media-pane" hidden>
         <div class="media-actions">
@@ -148,6 +149,7 @@
 <script src="vendor/mp4-muxer.js"></script>
 <script src="vendor/webm-muxer.js"></script>
 <script src="vendor/tiny-segmenter.js"></script>
+<script type="module" src="vendor/three-loader.js"></script>
 <script src="js/format.js"></script>
 <script src="js/platform.js"></script>
 <script src="js/srt.js"></script>
@@ -172,6 +174,11 @@
 <script src="js/lyrics/duration.js"></script>
 <script src="js/lyrics/fillers.js"></script>
 <script src="js/lyrics/split.js"></script>
+<script src="js/lyrics/scene3d.js"></script>
+<script src="js/lyrics/three/scene3d.js"></script>
+<script src="js/lyrics/gl/sim.js"></script>
+<script src="js/lyrics/gl/fields.js"></script>
+<script src="js/lyrics/figure-geo.js"></script>
 <script src="js/lyrics/figures.js"></script>
 <script src="js/lyrics/filler-render.js"></script>
 <script src="js/lyrics/filler-presets.js"></script>
@@ -205,6 +212,7 @@
 <script src="js/lyrics/effects/selector.js"></script>
 <script src="js/lyrics/effects/camera.js"></script>
 <script src="js/lyrics/effects/shape-layer.js"></script>
+<script src="js/lyrics/effects/shader-fx.js"></script>
 <script src="js/lyrics/effects/staged-presets.js"></script>
 <script src="js/lyrics/effects/page.js"></script>
 <script src="js/lyrics/keywords.js"></script>
@@ -248,6 +256,7 @@
 <script src="js/studio/audio-dialog.js"></script>
 <script src="js/studio/fonts-dialog.js"></script>
 <script src="js/studio/credits-dialog.js"></script>
+<script src="js/studio/song-dialog.js"></script>
 <script src="js/studio/controls.js"></script>
 <script src="js/studio/inspector.js"></script>
 <script src="js/studio/motion-dialog.js"></script>

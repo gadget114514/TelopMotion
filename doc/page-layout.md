@@ -38,7 +38,7 @@ style.page ──► page-layout.compose()   (純粋計算: DOM/フォント非�
 ### 2) `renderer/js/lyrics/page-scene.js` (UMD, 組版・合成)
 - `build({ compose, layoutText, fonts, textStyle, source, composeLayout, size, lang, frame, style, rng })`
 - 各 region に対してフォント・サイズ・行間・字間を適用し `layoutText` を呼び出し。
-- 高さが region を超える場合はフォントスケールで自動 fit（最小 0.6倍）。
+- 高さが region を超える場合はフォントスケールで自動 fit（最小 0.2倍）。
 - 特殊 flow の後処理:
   - `justify`: 最終行および1文字行を除き、行末を揃える均等割り付け。
   - `cells`: マス目中心への文字吸着（原稿用紙など）。
@@ -133,4 +133,4 @@ style.page ──► page-layout.compose()   (純粋計算: DOM/フォント非�
 2. **禁則処理の範囲**:
    - 行頭の句読点（、。）や閉じ括弧を前行末にぶら下げる簡易的な禁則処理は `lyricsFont.layoutText` の折り返し機構に準拠します。追い出し・追い込みの高度な段落最適化は行われません。
 3. **長文時の縮小 fit**:
-   - region の高さに対してテキストが溢れる場合、`page-scene.js` が自動でフォントサイズを縮小（最小 0.6倍）して収めますが、それでも溢れる極端な長文は後続の `frame-guard` により安全域内にクリップまたは収容されます。
+   - region の高さに対してテキストが溢れる場合、`page-scene.js` が自動でフォントサイズを縮小（最小 0.2倍）して収めますが、それでも溢れる極端な長文は後続の `frame-guard` により安全域内にクリップまたは収容されます。

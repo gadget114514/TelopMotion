@@ -151,7 +151,10 @@
           const kW = region.rect.w / Math.max(1e-6, boxW);
           const kH = region.rect.h / Math.max(1e-6, boxH);
           const k = Math.min(1, kW, kH);
-          if (k < 0.99 && k >= 0.5) {
+          // Shrink down to a fifth before giving up: a region that is far too
+          // small would otherwise overflow into its neighbours, which reads as
+          // overlapping text rather than as text that is too big.
+          if (k < 0.99 && k >= 0.2) {
             rSize = rSize * k;
             rLayout = layoutText(rText, Object.assign({}, rStyle, { size: rSize }), fonts, {
               size: rSize,

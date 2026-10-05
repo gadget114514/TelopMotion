@@ -288,7 +288,7 @@
 | focusOut*animator[pro] | G 進行 p | イージング | preset → animator |
 | trackOut*tracking[pro] | G 進行 p | イージング | preset → tracking |
 
-### hold（62）
+### hold（64）
 
 | type | 主軸 | 駆動 | 備考 |
 |---|---|---|---|
@@ -307,6 +307,7 @@
 | twist | C-letter | ループ | deform code 3 |
 | breathing | C-letter | ループ | deform code 4 |
 | orbit3D | C 剛体 | ループ | tilt |
+| orbit2D | H 配置 | ループ | 円運動。文字ごとに位相をずらす / tilt で円を潰す |
 | pathFollow | H 配置 | ループ |  |
 | heartbeat | C 剛体 | ビート | 2 連打 |
 | shiver | C 剛体 | 乱数 |  |

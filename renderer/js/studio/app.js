@@ -10,6 +10,9 @@
   const el = {};
   let layout = { mediaW: 260, inspectorW: 340, timelineH: 240, consoleW: 360, panels: { media: true, inspector: true, timeline: true }, preset: 'standard' };
   let autosaveEnabled = true;
+  // stateful figures (simulations): off by default, remembered across sessions
+  const LS_STATEFUL = 'sa.stateful';
+  let statefulEnabled = false;
   let welcomeDismissed = false;
   let toastTimer = null;
   let evaluationCache = { dataset: null, evaluation: null };
@@ -33,6 +36,7 @@
     el.cues = document.getElementById('media-cues');
     el.aspect = document.getElementById('media-aspect');
     el.duration = document.getElementById('media-duration');
+    el.bpm = document.getElementById('media-bpm');
     el.mediaTabs = {
       info: document.getElementById('media-tab-info'),
       video: document.getElementById('media-tab-video'),
@@ -98,6 +102,19 @@
     const minutes = Math.floor(value / 60);
     const rest = value % 60;
     return `${minutes}:${rest.toFixed(2).padStart(5, '0')}`;
+  }
+
+  // The tempo the beats follow: the one informed in Settings → Song, else the
+  // one measured from the loaded audio, else nothing yet.
+  function tempoLabel() {
+    const doc = project();
+    const own = SA.project.bpmOf(doc);
+    if (own > 0) return String(Math.round(own * 10) / 10);
+    const analysis = SA.preview && SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
+    const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
+    const detected = Number(features && features.bpm);
+    if (Number.isFinite(detected) && detected > 0) return `${Math.round(detected * 10) / 10} ${t('song.auto')}`;
+    return '—';
   }
 
   function loadLayout() {
@@ -286,6 +303,7 @@
     el.cues.textContent = doc ? doc.script.cues.length : 0;
     el.aspect.textContent = doc ? doc.output.aspect : '16:9';
     el.duration.textContent = formatClock(duration());
+    el.bpm.textContent = tempoLabel();
     renderVideoList();
     if (!el.mediaPanes.audio.hidden) renderMediaAudio();
   }
@@ -853,6 +871,65 @@
     }
   }
 
+  async function showcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // The figure showcase is generated in Japanese, so its cue labels are
+  // re-written in the language on screen: every cue carries the i18n namespace
+  // and value its name lives under (`studio.figure.<namespace>.<value>`), which
+  // is the same table the Studio's own figure labels come from.
+  function localizeFigureShowcase(doc) {
+    const cues = (doc && doc.script && doc.script.cues) || [];
+    for (const cue of cues) {
+      const meta = cue && cue.meta;
+      if (!meta || meta.kind !== 'figure-showcase' || !meta.namespace || !meta.value) continue;
+      const key = `studio.figure.${meta.namespace}.${meta.value}`;
+      const label = i18n.t(key);
+      if (typeof label !== 'string' || label === key || !label.trim()) continue;
+      cue.text = `${meta.index}. ${label} / ${meta.value}`;
+    }
+    return doc;
+  }
+
+  // Four of the motifs are GPU simulations, and those sit behind Settings ->
+  // "Allow stateful effects" (off by default, because a stateful figure needs the
+  // frames before it). Showing them is the whole point of this walk, so the gate
+  // is opened for the session only - the stored preference is left alone, and the
+  // menu tick plus a toast say why the setting is on.
+  function openStatefulGateForShowcase() {
+    if (!SA.figures || typeof SA.figures.isStatefulAllowed !== 'function') return false;
+    if (SA.figures.isStatefulAllowed()) return false;
+    statefulEnabled = true;
+    applyStateful();
+    if (SA.menu && typeof SA.menu.refresh === 'function') SA.menu.refresh();
+    return true;
+  }
+
+  // the figure track's own showcase: every motif and every motion axis, one cue
+  // each. Same shape as the effects showcase, a different generated asset.
+  async function figureShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/figure-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(localizeFigureShowcase(JSON.parse(text)));
+      const opened = openStatefulGateForShowcase();
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+      if (opened) toast('studio.toast.statefulOn');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -1161,6 +1238,10 @@
       areas: ['script', 'style', 'fillers'],
       do: (projectDoc) => SA.direct.run(projectDoc, ctx),
     });
+    // Generate also re-rolls the colours: a new palette inside the project's
+    // axes, with every literal colour moved onto it
+    await step('studio.busy.colors', 0.9);
+    store.commands.rerollPalette('project');
     lastRandom = { scope: '__auto', seed, intensity: 2, locks: SA.direct.AUTO_DIRECT_LOCKS, lookN: look ? look.n : null };
     if (look) toast('studio.toast.autoDirectedLook', { seed, theme: themeName, look: `${look.n} ${look.name}` });
     else toast('studio.toast.autoDirected', { seed, theme: themeName });
@@ -1526,6 +1607,22 @@
     SA.menu.refresh();
   }
 
+  function applyStateful() {
+    if (SA.figures && typeof SA.figures.setStatefulAllowed === 'function') SA.figures.setStatefulAllowed(statefulEnabled);
+  }
+
+  function toggleStateful() {
+    statefulEnabled = !statefulEnabled;
+    try {
+      localStorage.setItem(LS_STATEFUL, statefulEnabled ? '1' : '0');
+    } catch (error) {
+      // the preference just stays for this session
+    }
+    applyStateful();
+    if (SA.preview) SA.preview.render();
+    SA.menu.refresh();
+  }
+
   function toggleAutosave() {
     autosaveEnabled = !autosaveEnabled;
     if (autosaveEnabled) SA.io.startAutosave(project, 30);
@@ -1707,6 +1804,8 @@
       newProject,
       openProject,
       openRecent,
+      showcase: showcaseProject,
+      figureShowcase: figureShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,
@@ -1732,6 +1831,7 @@
       fonts: () => SA.fontsDialog.open(),
       about: aboutDialog,
       credits: () => SA.creditsDialog.open(),
+      song: () => SA.songDialog.open(),
       exportSrt,
       exportSrtBeats,
       exportLyrics,
@@ -1754,6 +1854,8 @@
       isConsoleOpen: () => SA.debugConsole.isOpen(),
       isAutoKeyOn: () => !!store.state.view.autoKey,
       toggleAutosave,
+      toggleStateful,
+      isStatefulEnabled: () => statefulEnabled,
       isAutosaveEnabled: () => autosaveEnabled,
       getAspect: () => (project() ? project().output.aspect : '16:9'),
       isPanelVisible: (name) => !!layout.panels[name],
@@ -1772,6 +1874,12 @@
       loadLayout();
       applyLayout();
       i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
+      try {
+        statefulEnabled = localStorage.getItem(LS_STATEFUL) === '1';
+      } catch (error) {
+        statefulEnabled = false;
+      }
+      applyStateful();
       applyStaticText();
       boot.set(16, 'studio.boot.interface', 34, 3000);
       bindEvents();

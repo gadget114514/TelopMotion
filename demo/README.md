@@ -37,6 +37,47 @@ node scripts/fx400mix.js build
 node scripts/fx400mix.js show 42
 ```
 
+## 図形モーション見本 (figure showcase)
+
+`renderer/data/figure-showcase.json` は図形トラック専用の見本です。
+`figures.MOTIFS` の Motif と、図形クリップが持つモーション軸
+（登場 / 保持 / 退場 / 同期 / 2D カメラ / 手続きモーション）を 1 キューずつ
+並べます。Motif は 3 秒、モーション軸は 4 秒で、全体は約 6 分。
+
+Motif のグループとキュー数:
+
+| Motif のグループ | キュー数 |
+|---|---:|
+| 基本図形 (`base`) | 20 |
+| 太線リズム (`bold`) | 6 |
+| 手続き型 (`proc`) | 1 |
+| 疑似 3D (`scene`) | 11 |
+| 幾何・データ構造 (`geo`) | 10 |
+| 数式フィールド (`field`) | 20 |
+| モーション軸（6 軸） | 39 |
+
+Motif は `figures.MOTIFS` をそのまま辿るので、 Motif を追加したら `npm run figure-showcase -- build` を実行するだけで済みます。
+
+シミュレーションの Motif（`reactionDiffusion` / `wave2d` / `fluid` / `cellular`）は
+*Settings → 状態をもつ演出を使う* のゲートに掛かっています。既定ではオフですが、
+Studio からこの見本を開くとゲートがそのセッションだけオンになります
+（保存された設定は変わりません）。
+
+キュー名は `renderer/js/i18n.js` の `studio.figure.*` から読み込みます。
+Motif の名前と各軸の名前は 5 言語ぶん用意してあり、プロジェクトを開いた
+ときの表示言語でキュー名を書きます（json に焼き込まれているのは日本語）。
+
+図形は図形トラック（`fig`）のクリップとして入っているので、タイムラインには
+キューと下部ラベルしか見えません。一覧は `figure-showcase.md`、
+プロジェクトは Studio の *Help → 図形見本* から開けます。
+
+```bash
+npm run figure-showcase -- build                          # json と一覧を再生成
+node scripts/figure-showcase.js list                      # セクションとキューを一覧
+node scripts/figure-showcase.js list --section camera
+npm run figure-showcase -- build --sections base,field    # Motif グループを絞る
+```
+
 ## 30 秒ショーケース（demo30）
 
 `demo30-A`〜`demo30-D` の 4 本。1 本 30 秒で、ムード（ホラー・ラブ…）と

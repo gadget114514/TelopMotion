@@ -25,6 +25,8 @@ globalThis.SA.genParams = require('../../renderer/js/lyrics/gen-params.js');
 globalThis.SA.paletteRoles = require('../../renderer/js/lyrics/palette-roles.js');
 globalThis.SA.rng = require('../../renderer/js/lyrics/rng.js');
 globalThis.SA.fillers = require('../../renderer/js/lyrics/fillers.js');
+globalThis.SA.credits = require('../../renderer/js/lyrics/credits.js');
+globalThis.SA.textflow = require('../../renderer/js/lyrics/textflow.js');
 globalThis.SA.random = require('../../renderer/js/lyrics/random.js');
 globalThis.SA.figures = require('../../renderer/js/lyrics/figures.js');
 globalThis.SA.keywords = require('../../renderer/js/lyrics/keywords.js');
@@ -755,6 +757,87 @@ test('setBeatColorLegacy switches between the classic and the palette-set modes'
   assert.equal(store.state.project.beatStyles['c1:page0'].colorScheme, classic.scheme);
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
+});
+
+// --- the song (Settings -> Song) ---------------------------------------------
+
+// a project with a leading silence (the intro gap the first filler fills) and a
+// long one in the middle
+function songFixture(extra) {
+  return projectModule.defaults({
+    script: {
+      cues: [
+        { id: 'c1', start: 3, end: 7, text: 'hello', trackId: 'sub1' },
+        { id: 'c2', start: 19, end: 23, text: 'world', trackId: 'sub1' },
+      ],
+    },
+    ...(extra || {}),
+  });
+}
+
+test('setSong writes the title and the author, and the first filler shows them', () => {
+  store.load(songFixture());
+  store.commands.setSong({ title: 'Neon Rain', author: 'Aoi', bpm: 0 });
+  const doc = store.state.project;
+  // `length` (0 = end with the last cue) came with the song-length field
+  assert.deepEqual(doc.song, { title: 'Neon Rain', author: 'Aoi', bpm: 0, length: 0 });
+  const settings = globalThis.SA.fillers.settingsFor(doc);
+  const intro = globalThis.SA.fillers.gaps(doc.script.cues, 23, settings).find((gap) => gap.kind === 'intro');
+  assert.equal(intro.spec.params.list[0].type, 'credits', 'the first filler names the song');
+  assert.deepEqual(globalThis.SA.credits.expandTemplate(doc, globalThis.SA.credits.settingsFor(doc), {}), ['Neon Rain', 'Aoi']);
+  store.undo();
+  assert.deepEqual(store.state.project.song, { title: '', author: '', bpm: 0, length: 0 });
+});
+
+test('setSong re-times the beats and re-cuts the automatic filler clips on the bar grid', () => {
+  const doc = songFixture();
+  // the long gap the automatic direction filled, whole
+  doc.clips.push({ id: 'clip_filler_0', trackId: 'filler', start: 7.15, end: 18.85, auto: true, spec: { type: 'figures', params: {} }, opacity: 1, fadeIn: 0.3, fadeOut: 0.3, colors: null });
+  // and one the user drew by hand, which the tempo must not touch
+  doc.clips.push({ id: 'hand', trackId: 'filler', start: 7.15, end: 18.85, spec: { type: 'countdown', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null });
+  doc.script.cues[0].text = 'one two three four five six seven eight nine ten eleven twelve';
+  store.load(doc);
+  const before = snapshot();
+  const beatsBefore = (store.state.project.beats.c1 || []).length;
+  store.commands.setSong({ bpm: 120 });
+  const after = store.state.project;
+  assert.equal(after.song.bpm, 120);
+  // the cue is cut into one beat per bar now
+  const beats = after.beats.c1;
+  assert.ok(beats.length > beatsBefore, `${beats.length} beats > ${beatsBefore}`);
+  assert.ok(beats.slice(1).every((beat) => Math.abs(beat.start % 2) < 1e-6), 'the inner beats land on the bar grid');
+  // the automatic filler gap came back bar by bar, the hand-made clip stayed
+  const auto = after.clips.filter((clip) => clip.trackId === 'filler' && clip.auto);
+  const interlude = auto.filter((clip) => clip.start > 6).sort((a, b) => a.start - b.start);
+  assert.ok(interlude.length > 1, `the long gap is divided (${interlude.length} clips)`);
+  for (let i = 1; i < interlude.length; i += 1) assert.equal(interlude[i].start, interlude[i - 1].end, 'the bars tile the gap');
+  assert.ok(interlude.every((clip) => Math.abs(clip.start % 2) < 1e-6 || Math.abs((clip.start - 7.25) % 2) < 1e-6), 'the bars follow the grid');
+  assert.ok(interlude.every((clip) => clip.fadeIn === 0 && clip.fadeOut === 0), 'the bars cut hard, they do not dip at every beat');
+  // the intro names the song on its first bar only
+  const intro = auto.filter((clip) => clip.start < 3).sort((a, b) => a.start - b.start);
+  const creditsOf = (clip) => (clip.spec.params.list || []).some((part) => part && part.type === 'credits');
+  assert.ok(creditsOf(intro[0]), 'the first filler shows the title');
+  for (const clip of intro.slice(1)) assert.ok(!creditsOf(clip), 'the later bars do not repeat it');
+  assert.equal(after.clips.filter((clip) => clip.id === 'hand').length, 1, 'a hand-made clip is never replaced');
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
+test('setSong drops the rhythm plan an older run cut for the old tempo', () => {
+  const doc = fixture();
+  doc.script.cues[0].textFlow = { chunk: 'phrase', chunkPlan: [1, 2, 3] };
+  doc.textFlow = { chunk: 'phrase', targetChunkDuration: 2 };
+  store.load(doc);
+  store.commands.setSong({ bpm: 140 });
+  assert.equal(store.state.project.script.cues[0].textFlow.chunkPlan, undefined);
+  assert.equal(store.state.project.textFlow.targetChunkDuration, undefined);
+  assert.equal(store.state.project.textFlow.chunk, 'phrase', 'the rest of the flow survives');
+});
+
+test('setSong keeps a junk tempo out of the project', () => {
+  store.load(fixture());
+  store.commands.setSong({ bpm: 'fast' });
+  assert.equal(store.state.project.song.bpm, 0);
 });
 
 test('resetTheme leaves a plain subtitle and unpins the hand edits', () => {

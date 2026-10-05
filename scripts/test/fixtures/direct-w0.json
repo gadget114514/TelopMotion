@@ -813,6 +813,7 @@
       "exit": {
         "type": "dissolve",
         "params": {
+          "edge": 0.16,
           "scale": 10
         },
         "enabled": true,
@@ -1314,7 +1315,8 @@
   },
   "textFlow": {
     "chunk": "phrase",
-    "targetChunkDuration": 2
+    "bpm": 120,
+    "chunkScale": 1
   },
   "fillers": {
     "enabled": true,

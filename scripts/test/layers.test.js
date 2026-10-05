@@ -5,6 +5,89 @@ const assert = require('node:assert/strict');
 
 const layers = require('../../renderer/js/lyrics/gl/layers.js');
 
+// A stub GL context: enough for create()/draw() to run without a GPU.
+function makeGl(calls) {
+  return {
+    VERTEX_SHADER: 1,
+    FRAGMENT_SHADER: 2,
+    COMPILE_STATUS: 3,
+    LINK_STATUS: 4,
+    ARRAY_BUFFER: 5,
+    STATIC_DRAW: 6,
+    FLOAT: 7,
+    TEXTURE_2D: 8,
+    RGBA: 9,
+    UNSIGNED_BYTE: 10,
+    TEXTURE_MIN_FILTER: 11,
+    TEXTURE_MAG_FILTER: 12,
+    TEXTURE_WRAP_S: 13,
+    TEXTURE_WRAP_T: 14,
+    LINEAR: 15,
+    CLAMP_TO_EDGE: 16,
+    UNPACK_PREMULTIPLY_ALPHA_WEBGL: 17,
+    TEXTURE0: 18,
+    TEXTURE1: 19,
+    TRIANGLES: 19,
+    BLEND: 20,
+    SRC_ALPHA: 21,
+    ONE_MINUS_SRC_ALPHA: 22,
+    ONE: 23,
+    DST_COLOR: 24,
+    ZERO: 25,
+    ONE_MINUS_SRC_COLOR: 26,
+    drawingBufferWidth: 320,
+    drawingBufferHeight: 180,
+    createShader: () => ({}),
+    shaderSource() {},
+    compileShader() {},
+    getShaderParameter: () => true,
+    createProgram: () => {
+      calls.programs += 1;
+      return {};
+    },
+    attachShader() {},
+    bindAttribLocation() {},
+    linkProgram() {},
+    getProgramParameter: () => true,
+    getUniformLocation: () => ({}),
+    getAttribLocation: () => 0,
+    createVertexArray: () => ({}),
+    bindVertexArray() {},
+    createBuffer: () => ({}),
+    bindBuffer() {},
+    bufferData() {},
+    enableVertexAttribArray() {},
+    vertexAttribPointer() {},
+    useProgram() {},
+    uniform2f() {},
+    uniform1f() {},
+    uniform1i() {},
+    uniform3f() {},
+    uniform4f() {},
+    uniformMatrix2fv() {},
+    activeTexture() {},
+    bindTexture() {},
+    texImage2D() {
+      calls.textures += 1;
+    },
+    copyTexImage2D() {
+      calls.backdrops += 1;
+    },
+    texParameteri() {},
+    pixelStorei() {},
+    createTexture: () => ({}),
+    deleteTexture() {},
+    deleteVertexArray() {},
+    deleteProgram() {},
+    enable() {},
+    disable() {},
+    blendFuncSeparate() {},
+    drawArrays() {
+      calls.draws += 1;
+    },
+  };
+}
+
 test('fitRect covers, contains, stretches and keeps actual size', () => {
   const cover = layers.fitRect('cover', 100, 50, 200, 200);
   assert.equal(cover.w, 400);
@@ -87,85 +170,7 @@ test('videoTargetFor wraps loops and clamps when not looping', () => {
 
 test('create() builds a usable pass against a stub GL context', () => {
   const calls = { draws: 0, textures: 0, programs: 0, backdrops: 0 };
-  const gl = {
-    VERTEX_SHADER: 1,
-    FRAGMENT_SHADER: 2,
-    COMPILE_STATUS: 3,
-    LINK_STATUS: 4,
-    ARRAY_BUFFER: 5,
-    STATIC_DRAW: 6,
-    FLOAT: 7,
-    TEXTURE_2D: 8,
-    RGBA: 9,
-    UNSIGNED_BYTE: 10,
-    TEXTURE_MIN_FILTER: 11,
-    TEXTURE_MAG_FILTER: 12,
-    TEXTURE_WRAP_S: 13,
-    TEXTURE_WRAP_T: 14,
-    LINEAR: 15,
-    CLAMP_TO_EDGE: 16,
-    UNPACK_PREMULTIPLY_ALPHA_WEBGL: 17,
-    TEXTURE0: 18,
-    TEXTURE1: 19,
-    TRIANGLES: 19,
-    BLEND: 20,
-    SRC_ALPHA: 21,
-    ONE_MINUS_SRC_ALPHA: 22,
-    ONE: 23,
-    DST_COLOR: 24,
-    ZERO: 25,
-    ONE_MINUS_SRC_COLOR: 26,
-    drawingBufferWidth: 320,
-    drawingBufferHeight: 180,
-    createShader: () => ({}),
-    shaderSource() {},
-    compileShader() {},
-    getShaderParameter: () => true,
-    createProgram: () => {
-      calls.programs += 1;
-      return {};
-    },
-    attachShader() {},
-    bindAttribLocation() {},
-    linkProgram() {},
-    getProgramParameter: () => true,
-    getUniformLocation: () => ({}),
-    getAttribLocation: () => 0,
-    createVertexArray: () => ({}),
-    bindVertexArray() {},
-    createBuffer: () => ({}),
-    bindBuffer() {},
-    bufferData() {},
-    enableVertexAttribArray() {},
-    vertexAttribPointer() {},
-    useProgram() {},
-    uniform2f() {},
-    uniform1f() {},
-    uniform1i() {},
-    uniform3f() {},
-    uniform4f() {},
-    uniformMatrix2fv() {},
-    activeTexture() {},
-    bindTexture() {},
-    texImage2D() {
-      calls.textures += 1;
-    },
-    copyTexImage2D() {
-      calls.backdrops += 1;
-    },
-    texParameteri() {},
-    pixelStorei() {},
-    createTexture: () => ({}),
-    deleteTexture() {},
-    deleteVertexArray() {},
-    deleteProgram() {},
-    enable() {},
-    disable() {},
-    blendFuncSeparate() {},
-    drawArrays() {
-      calls.draws += 1;
-    },
-  };
+  const gl = makeGl(calls);
   const pass = layers.create(gl);
   const drawn = pass.draw(
     [
@@ -181,5 +186,49 @@ test('create() builds a usable pass against a stub GL context', () => {
   assert.equal(calls.draws, 3);
   assert.equal(calls.backdrops, 1, 'custom blend captures the backdrop once');
   assert.equal(pass.textureCount(), 0);
+  pass.dispose();
+});
+
+test('isSceneLayer only recognises a scene3d layer', () => {
+  assert.equal(layers.isSceneLayer({ type: 'scene3d' }), true);
+  assert.equal(layers.isSceneLayer({ type: 'video' }), false);
+  assert.equal(layers.isSceneLayer(null), false);
+});
+
+test('a scene3d layer renders through SA.three3d, uploads the frame and skips preload', async () => {
+  const calls = { draws: 0, textures: 0, programs: 0, backdrops: 0 };
+  const gl = makeGl(calls);
+  const seen = [];
+  globalThis.SA = {
+    three3d: {
+      render(layer, options) {
+        seen.push({ layer, options });
+        return { width: 320, height: 180 };
+      },
+    },
+  };
+  try {
+    const pass = layers.create(gl);
+    const drawn = pass.draw([{ id: 's', type: 'scene3d', scene: { preset: 'grid' } }], { width: 320, height: 180 }, 1.5);
+    assert.equal(drawn, 1, 'the scene3d layer is drawn');
+    assert.equal(calls.textures, 1, 'the rendered canvas is uploaded');
+    assert.equal(calls.draws, 1);
+    assert.equal(seen.length, 1);
+    assert.equal(seen[0].options.time, 1.5);
+    assert.equal(seen[0].options.width, 320);
+    assert.equal(await pass.preload([{ id: 's', type: 'scene3d' }]), 0, 'preload has nothing to fetch');
+    pass.dispose();
+  } finally {
+    delete globalThis.SA;
+  }
+});
+
+test('a scene3d layer is skipped when three is unavailable', () => {
+  const calls = { draws: 0, textures: 0, programs: 0, backdrops: 0 };
+  const gl = makeGl(calls);
+  const pass = layers.create(gl);
+  const drawn = pass.draw([{ id: 's', type: 'scene3d', scene: { preset: 'grid' } }], { width: 320, height: 180 }, 0);
+  assert.equal(drawn, 0);
+  assert.equal(calls.draws, 0);
   pass.dispose();
 });

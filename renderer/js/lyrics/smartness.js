@@ -103,6 +103,15 @@
       rings: 0.45, halftone: 0.55, bars: 0.6, ticker: 0.65, underlineSweep: 0.8, frame: 0.8,
       // the procedural motif: its compositions are grown, not authored
       proc: 0.7,
+      // pseudo-3D scenes
+      solarSystem: 0.65, nbody: 0.7, pendulum: 0.65, pendulumWave: 0.7, newtonCradle: 0.55, chain: 0.6, gravityWell: 0.7, polyhedra: 0.6, attractor: 0.75, knot: 0.65, starfield: 0.5,
+      // geometry / data-structure figures
+      kdTree: 0.75, voronoi: 0.8, delaunay: 0.8, proximity: 0.7, lsystem: 0.7, spaceFilling: 0.75, circlePack: 0.7, treemap: 0.8, colonization: 0.75, stringArt: 0.7,
+      // mathematical fields
+      domainWarp: 0.6, voronoiCells: 0.75, contour: 0.8, sdfKaleido: 0.7, chladni: 0.85, quasicrystal: 0.7, fractal: 0.55, moire: 0.65, hyperbolic: 0.85, truchet: 0.8, gyroid: 0.75, complexColor: 0.6, curl: 0.75, lissajousGlow: 0.8, ripple: 0.7, cellTiling: 0.7,
+      // the GPU simulations: state on the GPU, so they read as the more "alive"
+      // half of the fields
+      reactionDiffusion: 0.7, wave2d: 0.7, fluid: 0.65, cellular: 0.75,
       // fear / variety pack
       spikes: 0.2, scratches: 0.25, cracks: 0.3, comets: 0.3, drips: 0.35, waves: 0.5,
       eyes: 0.5, lattice: 0.55,

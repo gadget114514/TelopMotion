@@ -1402,6 +1402,102 @@
     types: { enter: { dissolve: 'Растворение' }, hold: { dissolve: 'Растворение' } },
   };
 
+  const ADD_SHADER_EN = {
+    types: {
+      post: { dither: 'Dither', fade: 'Fade (shader)', scanline: 'Scanlines', stealth: 'Stealth cloak', geometry: 'Geometry' },
+      enter: { dither: 'Dither in', scanline: 'Scanline in', stealth: 'Stealth cloak in', geometry: 'Geometry in' },
+      hold: { dither: 'Dither', scanline: 'Scanline', stealth: 'Stealth cloak', geometry: 'Geometry', fade: 'Fade' },
+      exit: { dither: 'Dither out', scanline: 'Scanline out', stealth: 'Stealth cloak out', geometry: 'Geometry out' },
+    },
+    params: {
+      levels: 'Levels', sides: 'Sides', split: 'Split', cloak: 'Cloak', shimmer: 'Shimmer',
+      flicker: 'Flicker', rollHeight: 'Roll bar', strokeOpacity: 'Stroke opacity', strokeWidth: 'Stroke width',
+      dipColor: 'Dip color', grain: 'Grain', edge: 'Edge', drift: 'Drift',
+    },
+    values: {
+      bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Noise', cross: 'Cross',
+      rgb: 'RGB', luma: 'Luminance', duotone: 'Duotone',
+      toColor: 'To colour', fromColor: 'From colour', through: 'Dip through', toBlack: 'To black', toWhite: 'To white',
+      rect: 'Rectangle', roundedRect: 'Rounded rectangle', polygon: 'Polygon', hexagon: 'Hexagon', band: 'Band',
+    },
+  };
+  const ADD_SHADER_JA = {
+    types: {
+      post: { dither: 'ディザ', fade: 'フェード（シェーダ）', scanline: '走査線', stealth: 'ステルス・クローク', geometry: 'ジオメトリ' },
+      enter: { dither: 'ディザイン', scanline: '走査線イン', stealth: 'ステルス・クロークイン', geometry: 'ジオメトリイン' },
+      hold: { dither: 'ディザ', scanline: '走査線', stealth: 'ステルス・クローク', geometry: 'ジオメトリ', fade: 'フェード' },
+      exit: { dither: 'ディザアウト', scanline: '走査線アウト', stealth: 'ステルス・クロークアウト', geometry: 'ジオメトリアウト' },
+    },
+    params: {
+      levels: '階調数', sides: '辺数', split: '分離量', cloak: 'クローク', shimmer: 'シマー',
+      flicker: 'ちらつき', rollHeight: 'ロールバー', strokeOpacity: '線の不透明度', strokeWidth: '線の太さ',
+      dipColor: '遷移色', grain: '粒度', edge: '縁の幅', drift: '漂い',
+    },
+    values: {
+      bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'ノイズ', cross: 'クロス',
+      rgb: 'RGB', luma: '輝度', duotone: 'デュオトーン',
+      toColor: '色へ', fromColor: '色から', through: '色を介して', toBlack: '黒へ', toWhite: '白へ',
+      rect: '長方形', roundedRect: '角丸長方形', polygon: '多角形', hexagon: '六角形', band: '帯',
+    },
+  };
+  const ADD_SHADER_ES = {
+    types: {
+      post: { dither: 'Tramado', fade: 'Fundido (sombreador)', scanline: 'Líneas de barrido', stealth: 'Ocultación furtiva', geometry: 'Geometría' },
+      enter: { dither: 'Tramado de entrada', scanline: 'Barrido de entrada', stealth: 'Ocultación de entrada', geometry: 'Geometría de entrada' },
+      hold: { dither: 'Tramado', scanline: 'Barrido', stealth: 'Ocultación furtiva', geometry: 'Geometría', fade: 'Fundido' },
+      exit: { dither: 'Tramado de salida', scanline: 'Barrido de salida', stealth: 'Ocultación de salida', geometry: 'Geometría de salida' },
+    },
+    params: {
+      levels: 'Niveles', sides: 'Lados', split: 'Separación', cloak: 'Ocultación', shimmer: 'Brillo tenue',
+      flicker: 'Parpadeo', rollHeight: 'Barra de rodadura', strokeOpacity: 'Opacidad del trazo', strokeWidth: 'Grosor del trazo',
+      dipColor: 'Color de transición', grain: 'Grano', edge: 'Borde', drift: 'Deriva',
+    },
+    values: {
+      bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Ruido', cross: 'Cruzado',
+      rgb: 'RGB', luma: 'Luminancia', duotone: 'Duatono',
+      toColor: 'A color', fromColor: 'Desde color', through: 'A través de', toBlack: 'A negro', toWhite: 'A blanco',
+      rect: 'Rectángulo', roundedRect: 'Rectángulo redondeado', polygon: 'Polígono', hexagon: 'Hexágono', band: 'Banda',
+    },
+  };
+  const ADD_SHADER_FR = {
+    types: {
+      post: { dither: 'Tramage', fade: 'Fondu (shader)', scanline: 'Lignes de balayage', stealth: 'Dissimulation furtive', geometry: 'Géométrie' },
+      enter: { dither: 'Tramage entrant', scanline: 'Balayage entrant', stealth: 'Dissimulation entrante', geometry: 'Géométrie entrante' },
+      hold: { dither: 'Tramage', scanline: 'Balayage', stealth: 'Dissimulation furtive', geometry: 'Géométrie', fade: 'Fondu' },
+      exit: { dither: 'Tramage sortant', scanline: 'Balayage sortant', stealth: 'Dissimulation sortante', geometry: 'Géométrie sortante' },
+    },
+    params: {
+      levels: 'Niveaux', sides: 'Côtés', split: 'Séparation', cloak: 'Dissimulation', shimmer: 'Scintillement',
+      flicker: 'Papillotement', rollHeight: 'Barre de défilement', strokeOpacity: 'Opacité du trait', strokeWidth: 'Épaisseur du trait',
+      dipColor: 'Couleur de transition', grain: 'Grain', edge: 'Bord', drift: 'Dérive',
+    },
+    values: {
+      bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Bruit', cross: 'Croisé',
+      rgb: 'RVB', luma: 'Luminance', duotone: 'Bichromie',
+      toColor: 'Vers la couleur', fromColor: 'Depuis la couleur', through: 'À travers', toBlack: 'Vers le noir', toWhite: 'Vers le blanc',
+      rect: 'Rectangle', roundedRect: 'Rectangle arrondi', polygon: 'Polygone', hexagon: 'Hexagone', band: 'Bande',
+    },
+  };
+  const ADD_SHADER_RU = {
+    types: {
+      post: { dither: 'Дизеринг', fade: 'Затухание (шейдер)', scanline: 'Строки развёртки', stealth: 'Скрытность', geometry: 'Геометрия' },
+      enter: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия' },
+      hold: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия', fade: 'Затухание' },
+      exit: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия' },
+    },
+    params: {
+      levels: 'Уровни', sides: 'Стороны', split: 'Разделение', cloak: 'Маскировка', shimmer: 'Мерцание',
+      flicker: 'Дрожание', rollHeight: 'Полоса прокрутки', strokeOpacity: 'Непрозрачность обводки', strokeWidth: 'Толщина обводки',
+      dipColor: 'Цвет перехода', grain: 'Зерно', edge: 'Край', drift: 'Дрейф',
+    },
+    values: {
+      bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Шум', cross: 'Крест',
+      rgb: 'RGB', luma: 'Яркость', duotone: 'Дуотон',
+      toColor: 'К цвету', fromColor: 'От цвета', through: 'Через цвет', toBlack: 'К чёрному', toWhite: 'К белому',
+      rect: 'Прямоугольник', roundedRect: 'Скруглённый прямоугольник', polygon: 'Многоугольник', hexagon: 'Шестиугольник', band: 'Полоса',
+    },
+  };
+
   function applyFxAdditions(target, additions) {    for (const [group, table] of Object.entries(additions.types || {})) {
       target[group] = { ...(target[group] || {}), ...table };
     }
@@ -1444,6 +1540,93 @@
   applyFxAdditions(es, ADD_DISSOLVE_ES);
   applyFxAdditions(fr, ADD_DISSOLVE_FR);
   applyFxAdditions(ru, ADD_DISSOLVE_RU);
+  // the shader pack (dither / fade / scanline / stealth / geometry), registered
+  // as `post` types and as per-letter motions in enter / hold / exit
+  applyFxAdditions(en, ADD_SHADER_EN);
+  applyFxAdditions(ja, ADD_SHADER_JA);
+  applyFxAdditions(es, ADD_SHADER_ES);
+  applyFxAdditions(fr, ADD_SHADER_FR);
+  applyFxAdditions(ru, ADD_SHADER_RU);
+
+  // sand crumble / gather (per-letter) and the fisheye post shader
+  const ADD_SAND = {
+    en: {
+      types: { post: { fisheye: 'Fisheye' }, enter: { sandGather: 'Sand gather' }, exit: { sandCrumble: 'Sand crumble' } },
+      params: { wind: 'Wind', pile: 'Pile up', power: 'Power', lensRadius: 'Lens radius', aberration: 'Aberration' },
+    },
+    ja: {
+      types: { post: { fisheye: '魚眼' }, enter: { sandGather: '砂が集まる' }, exit: { sandCrumble: '砂になって崩れる' } },
+      params: { wind: '風', pile: '積もらせる', power: '歪みの強さ', lensRadius: 'レンズ半径', aberration: '色収差' },
+    },
+    es: {
+      types: { post: { fisheye: 'Ojo de pez' }, enter: { sandGather: 'Arena que se junta' }, exit: { sandCrumble: 'Desmoronarse en arena' } },
+      params: { wind: 'Viento', pile: 'Acumular', power: 'Intensidad', lensRadius: 'Radio de lente', aberration: 'Aberración' },
+    },
+    fr: {
+      types: { post: { fisheye: 'Fisheye' }, enter: { sandGather: 'Sable qui s’assemble' }, exit: { sandCrumble: 'Effritement en sable' } },
+      params: { wind: 'Vent', pile: 'Accumuler', power: 'Puissance', lensRadius: 'Rayon de lentille', aberration: 'Aberration' },
+    },
+    ru: {
+      types: { post: { fisheye: 'Рыбий глаз' }, enter: { sandGather: 'Песок собирается' }, exit: { sandCrumble: 'Рассыпание в песок' } },
+      params: { wind: 'Ветер', pile: 'Насыпать', power: 'Сила', lensRadius: 'Радиус линзы', aberration: 'Аберрация' },
+    },
+  };
+  applyFxAdditions(en, ADD_SAND.en);
+  applyFxAdditions(ja, ADD_SAND.ja);
+  applyFxAdditions(es, ADD_SAND.es);
+  applyFxAdditions(fr, ADD_SAND.fr);
+  applyFxAdditions(ru, ADD_SAND.ru);
+
+  // hold.orbit2D (円運動) and the eight directions of the linear background
+  // gradient. `radius`, `spread`, `tilt`, `spin` and `direction` already have
+  // param labels; only the type and the select values are new.
+  const ADD_ORBIT = {
+    en: {
+      types: { hold: { orbit2D: 'Circle orbit' }, background: { gradient: 'Gradient (8 directions)' } },
+      params: { veinWidth: 'Vein width', inner: 'Inner cut (double line)' },
+      values: {
+        toBottom: 'To bottom', toBottomLeft: 'To bottom left', toLeft: 'To left', toTopLeft: 'To top left',
+        toTop: 'To top', toTopRight: 'To top right', toRight: 'To right', toBottomRight: 'To bottom right',
+      },
+    },
+    ja: {
+      types: { hold: { orbit2D: '円運動' }, background: { gradient: 'グラデーション（8方向）' } },
+      params: { veinWidth: '脈の幅', inner: '内側を削る（二重線）' },
+      values: {
+        toBottom: '下へ', toBottomLeft: '左下へ', toLeft: '左へ', toTopLeft: '左上へ',
+        toTop: '上へ', toTopRight: '右上へ', toRight: '右へ', toBottomRight: '右下へ',
+      },
+    },
+    es: {
+      types: { hold: { orbit2D: 'Órbita circular' }, background: { gradient: 'Degradado (8 direcciones)' } },
+      params: { veinWidth: 'Ancho de la veta', inner: 'Recorte interior (línea doble)' },
+      values: {
+        toBottom: 'Hacia abajo', toBottomLeft: 'Hacia abajo a la izquierda', toLeft: 'Hacia la izquierda', toTopLeft: 'Hacia arriba a la izquierda',
+        toTop: 'Hacia arriba', toTopRight: 'Hacia arriba a la derecha', toRight: 'Hacia la derecha', toBottomRight: 'Hacia abajo a la derecha',
+      },
+    },
+    fr: {
+      types: { hold: { orbit2D: 'Orbite circulaire' }, background: { gradient: 'Dégradé (8 directions)' } },
+      params: { veinWidth: 'Épaisseur de la veine', inner: 'Découpe intérieure (double trait)' },
+      values: {
+        toBottom: 'Vers le bas', toBottomLeft: 'Vers le bas à gauche', toLeft: 'Vers la gauche', toTopLeft: 'Vers le haut à gauche',
+        toTop: 'Vers le haut', toTopRight: 'Vers le haut à droite', toRight: 'Vers la droite', toBottomRight: 'Vers le bas à droite',
+      },
+    },
+    ru: {
+      types: { hold: { orbit2D: 'Круговая орбита' }, background: { gradient: 'Градиент (8 направлений)' } },
+      params: { veinWidth: 'Ширина прожилки', inner: 'Внутренний вырез (двойная линия)' },
+      values: {
+        toBottom: 'Вниз', toBottomLeft: 'Вниз-влево', toLeft: 'Влево', toTopLeft: 'Вверх-влево',
+        toTop: 'Вверх', toTopRight: 'Вверх-вправо', toRight: 'Вправо', toBottomRight: 'Вниз-вправо',
+      },
+    },
+  };
+  applyFxAdditions(en, ADD_ORBIT.en);
+  applyFxAdditions(ja, ADD_ORBIT.ja);
+  applyFxAdditions(es, ADD_ORBIT.es);
+  applyFxAdditions(fr, ADD_ORBIT.fr);
+  applyFxAdditions(ru, ADD_ORBIT.ru);
 
   // Partial decoration editor strings (inspector section). They ride along the
   // fx table so the five languages stay in one place.

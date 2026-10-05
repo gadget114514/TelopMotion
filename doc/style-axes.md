@@ -5,10 +5,7 @@
 現状コード（`renderer/js/lyrics/moods.js` の `AXES`、`rhythm.js`、`figures.js`、`smartness.js`、`fx-axes.js`）での実際の効き方と突き合わせて、
 **各軸が「1つの次元だけを持つ」**ように整理し直す。この段階は整理案であり、実装は合意後。
 
-**作業の順番**
-1. このプランを `doc/style-axes.md` としてそのまま保存する。
-2. 詳細な実装計画（ファイルと関数ごとの変更内容、係数の値、追加するテストのケース）に展開し、`doc/style-axes-impl.md` として別ファイルに保存する。
-3. セッションのモデルを Haiku（`claude-haiku-4-5-20251001`）に切り替え、`doc/style-axes-impl.md` に沿って実装を始める。
+実装レベルの詳細は [style-axes-impl.md](style-axes-impl.md) を参照。
 
 ## 整理の原則（AI案）
 各軸に担当する次元を1つずつ割り当て、2軸が同じ見た目の変化を引き起こさないようにする。
@@ -67,3 +64,32 @@
 - `scripts/test/` の既存テスト（figures-distance, figures-randomness, backdrop-variety, proc-variety など）を `node --test scripts/test` で実行する。
 - 軸を1本ずつ 0→1 に動かしたときに変わるものが、その軸の次元だけになっているかを確かめるテストを足す。例：speed だけを動かすと rhythm の分割と filler 内の sub-beat の数が変わり、energy だけを動かすとどちらも変わらない。
 - Studio でプリセット（ballad / rock / electro）を生成し、プレビューで見た目を確認する。
+
+
+---
+
+# 軸同士の競合（Weird と他の軸）
+
+## 今のコードでの扱い（`moods.js` の `allowed`、L444-475）
+| 種類 | 例 | Weird はどう効くか |
+|---|---|---|
+| 必須の条件（越えられない） | `needsCard` / `needsBadge`、Smartness の `smartness.ok`、Fear の `hardExclude`（gap が大きすぎると重み 0）、legibility（文字と重ならないこと） | 効かない。Weird がいくら高くても除外されたものは出ない |
+| 緩められる条件（ソフト） | `minEnergy`（`axes.energy < minEnergy - 0.4*w` で緩む）、`maxLetters*(1+w)`、縦横レイアウトの越境（w ≥ 0.7） | **w に比例して条件の幅を広げる** |
+| 重み | texture / force の一致度、novelty、`breaks(random, w)`（確率 w で「定石」を外す） | 重みを平らにし、外れた候補が当たる確率を上げる |
+
+→ 今でも暗黙に **「必須の条件 ＞ Weird ＞ ソフトな条件」** の順になっている。
+
+## ルールとして明文化する（AI案）
+**他の軸は「中心」を決め、Weird は「中心のまわりのばらつき」を決める。Weird は中心を動かさず、必須の条件も越えない。**
+
+1. **必須の条件**（Weird は越えない）：文字の可読性、物理的に置けるか（カードやバッジがあるか）、Smartness の除外、Fear の除外、ユーザーが固定（pin）したもの。
+2. **ソフトな条件**（Weird が幅を広げる）：Energy・Tempo・Density・Softness・Brightness のしきい値。幅は `しきい値 ± k·w` に揃える（今の `0.4*w` を k の標準値にする）。
+3. **重み**（Weird が平らにする）：候補が絞られても、残った候補の中でのばらつきは Weird が決める。
+
+**候補が少なすぎるとき**：Smartness や Fear で候補が 2 個未満になったら、Weird は除外を解かない。そのかわり、残った候補のパラメータ（速さ、量、色の揺れ）のばらつきに回す。「何を選ぶか」ではなく「どう動かすか」でランダムさを出す。
+
+## 今回の変更への当てはめ（実装の詳細は style-axes-impl.md）
+- **Tempo の filler の刻み**：`TEMPO_STEPS` の段を、確率 `0.3*w` で ±1 段ずらす（rhythm.js の double/half speed と同じやり方）。乱数は `figure-beat` とは別のストリーム `rng.rngFor(seed, 'figure-tempo', id)` を使い、w = 0 のときは乱数を消費しない（今の出力が変わらないように）。
+- **Density の figure 密度**：`density ± 0.3*w` の範囲で揺らす（`breaks` と同じく、w = 0 では乱数を消費しない）。
+- **Smartness ＞ Weird**：Weird からパルスを足さない。Smartness が許したときだけパルスが候補に入る（今の動作どおり）。
+- テスト：w = 0 で出力が変わらないこと。w = 1 でも Smartness の除外対象と Fear の hardExclude 対象が一度も出ないこと（seed を 50 通り回す）。

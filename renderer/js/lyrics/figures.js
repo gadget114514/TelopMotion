@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -29,6 +29,42 @@
   // values). `generate` draws it most of the time, so clips rarely look alike.
   const PROC = 'proc';
   MOTIFS.push(PROC);
+  // the pseudo-3D scenes (scene3d.js): planets, n-body, pendulums, a gravity well,
+  // polyhedra, attractors, knots, a starfield. Like `proc` they grow from a seed
+  // and the randomness level, and only come up on a weird run.
+  const SCENE_MOTIFS = scene3d && Array.isArray(scene3d.SCENES) ? scene3d.SCENES.slice() : [];
+  MOTIFS.push(...SCENE_MOTIFS);
+  // the geometry / data-structure figures (figure-geo.js): k-d tree, Voronoi,
+  // Delaunay, proximity graphs, L-systems, space-filling curves, circle packing,
+  // treemap, space colonisation, string art
+  const GEO_MOTIFS = figureGeo && Array.isArray(figureGeo.GEOS) ? figureGeo.GEOS.slice() : [];
+  MOTIFS.push(...GEO_MOTIFS);
+  // figures that pass behind the lyrics: what touches the text box is dropped
+  // the full-frame mathematical fields (gl/fields.js): a fragment shader per
+  // field, drawn by the engine; the figure returns the field spec, not shapes.
+  // They keep clear of the lyrics in the shader itself (a feathered window).
+  const FIELD_MOTIFS = glFields && Array.isArray(glFields.IDS) ? glFields.IDS.slice() : [];
+  MOTIFS.push(...FIELD_MOTIFS);
+  // the fields that carry a GPU simulation (gl/sim.js): the same registry, but the
+  // picture comes from a texture of state that is stepped forward, and where it is
+  // splatted is frozen here so a scrub lands on the same drop as a play
+  const SIM_MOTIFS = new Set(glSim && Array.isArray(glSim.SIMS) && glFields && typeof glFields.simOf === 'function' ? glSim.SIMS.filter((id) => glFields.simOf(id)) : []);
+  // The stateful figures (the GPU simulations) are off unless the setting turns
+  // them on: a stateful figure depends on the frames before it, which a scrub or
+  // a re-export has to rebuild. While it is off they are never drawn at random,
+  // never offered in the inspector (filler-render), and a clip that already
+  // carries one draws nothing (the clip itself is kept untouched).
+  let statefulAllowed = false;
+  function setStatefulAllowed(on) {
+    statefulAllowed = Boolean(on);
+  }
+  function isStatefulAllowed() {
+    return statefulAllowed;
+  }
+  const BEHIND_MOTIFS = new Set([...SCENE_MOTIFS, ...GEO_MOTIFS]);
+  const SEEDED_MOTIFS = new Set([...BEHIND_MOTIFS, ...FIELD_MOTIFS]);
+  // the 2D camera moves any figure clip can carry (`params.camera`)
+  const CAMERAS_2D = ['none', 'push', 'pull', 'pan', 'roll', 'shake', 'whip', 'orbit'];
   // the plain default: flat bars / rings / frames that snap in fast. Anything
   // ornate (proc, cracks, eyes, drips ...) only appears on a weird or fearful run.
   const PLAIN_MOTIFS = ['bars', 'rings', 'underlineSweep', 'bracketsPop', 'ticker', 'slabWipe', 'cornerBlocks', 'stripeRun', 'sideBars', 'dotGrid', 'ringDraw'];
@@ -231,7 +267,7 @@
     const rnd = opts.rand != null && Number.isFinite(Number(opts.rand)) ? clamp01(opts.rand) : weird.raw(axes.weird);
     const gates = rng.rngFor(seed, 'figure-gate', id);
     // the frame motif is the heavy one: below weird 0.8 it never draws
-    const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8);
+    const motifPool = (plainRun ? PLAIN_MOTIFS : (w >= 0.6 ? MOTIFS : MOTIFS.filter((name) => name !== 'halftone')).filter((name) => name !== PROC)).filter((name) => name !== 'frame' || weird.raw(axes.weird) >= 0.8).filter((name) => statefulAllowed || !SIM_MOTIFS.has(name));
     // the motif pool answers the smartness and fear axes (a no-op at 0)
     let motif = requested || fxAxes.pickWeighted(random, 'figureMotif', motifPool, axes, { smartness: s });
     if (!requested) {
@@ -296,8 +332,28 @@
         tone: beat.tone,
       })),
     };
-    if (motif === PROC) params.rand = round(rnd, 2);
-    if (motif === PROC) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : chosenSeed;
+    if (motif === PROC || SEEDED_MOTIFS.has(motif)) params.rand = round(rnd, 2);
+    if (motif === PROC || SEEDED_MOTIFS.has(motif)) params.seed = Number.isFinite(Number(opts.procSeed)) ? Number(opts.procSeed) : chosenSeed;
+    // A simulation splats on the rhythm, so the times it reacts at are written down
+    // here, once. They are read from the whole clip rather than from the beats that
+    // happen to be under the playhead, which would change as it moves and break the
+    // agreement between playing and scrubbing.
+    if (SIM_MOTIFS.has(motif)) {
+      const from = Number(opts.span && opts.span.start != null ? opts.span.start : opts.span && opts.span.from) || 0;
+      const times = [];
+      for (const beat of beats) {
+        const at = Number(beat && beat.start);
+        if (Number.isFinite(at)) times.push(round(Math.max(0, at - from), 3));
+      }
+      params.simBeats = times.slice(0, 32);
+    }
+    // the 2D camera: pinned by the caller, else drawn on its own stream (never at
+    // randomness 0, and a fraction of the clips above it)
+    const cameraRoll = rng.rngFor(seed, 'figure-camera', id);
+    const cameraGate = cameraRoll();
+    const cameraPick = CAMERAS_2D[1 + Math.floor(cameraRoll() * (CAMERAS_2D.length - 1))];
+    const camera = CAMERAS_2D.includes(opts.camera) ? opts.camera : cameraGate < rnd * 0.55 ? cameraPick : 'none';
+    if (camera !== 'none') params.camera = camera;
     if (opts.scale != null && Number.isFinite(Number(opts.scale))) params.scale = Number(opts.scale);
     if (opts.x != null && Number.isFinite(Number(opts.x))) params.x = Number(opts.x);
     if (opts.y != null && Number.isFinite(Number(opts.y))) params.y = Number(opts.y);
@@ -407,6 +463,50 @@
     return { x0: shape.x - r, x1: shape.x + r, y0: shape.y - r, y1: shape.y + r, angle: shape.rotation || 0 };
   }
 
+  // A field has no shapes to measure: it sits at its hand-placed profile (nudged
+  // by its genome), turned into the same axes the shape frames fill in.
+  function fieldFrame(field, time) {
+    const pr = glFields.profile(field.id, field.p);
+    const hsvs = (field.colors || []).map(embedHsv);
+    const n = Math.max(1, hsvs.length);
+    let hx = 0;
+    let hy = 0;
+    let sat = 0;
+    let val = 0;
+    for (const hsv of hsvs) {
+      hx += Math.cos(hsv.h) / n;
+      hy += Math.sin(hsv.h) / n;
+      sat += hsv.s / n;
+      val += hsv.v / n;
+    }
+    return {
+      count: 40 + pr.dense * 420 + (time > 3.4 ? pr.motion * 70 : 0),
+      round: pr.organic * 0.8,
+      boxy: (1 - pr.organic) * (1 - pr.sharp) * 0.8,
+      linear: pr.sharp * 0.7,
+      shard: (1 - pr.organic) * pr.sharp * 0.4,
+      filled: 1 - pr.sharp * 0.6,
+      deco: pr.dense * 0.5,
+      weight: Math.log(1 + (1 - pr.dense) * 10),
+      alpha: field.opacity,
+      tilt: 0.3,
+      cx: 0.5,
+      cy: 0.5,
+      spreadX: 1,
+      spreadY: 1,
+      cover: 0.9,
+      size: Math.log(8 + (1 - pr.dense) * 300),
+      sizeSd: 0.3 + 0.7 * pr.organic,
+      balance: 1,
+      hx,
+      hy,
+      sat,
+      val,
+      colors: n,
+      cells: 46,
+    };
+  }
+
   function embedFrame(spec, time) {
     const list = drawList(spec, {
       time,
@@ -416,6 +516,7 @@
       colors: EMBED_COLORS,
       beats: [{ start: 0, end: 12 }],
     });
+    if (list.field && glFields) return fieldFrame(list.field, time);
     const shapes = list.shapes || [];
     const n = Math.max(1, shapes.length);
     const frame = { count: shapes.length, round: 0, boxy: 0, linear: 0, shard: 0, filled: 0, deco: 0, weight: 0, alpha: 0, tilt: 0, cx: 0.5, cy: 0.5, spreadX: 0, spreadY: 0, cover: 0, size: 0, sizeSd: 0, balance: 1, hx: 0, hy: 0, sat: 0, val: 0, colors: 0, cells: 0 };
@@ -634,6 +735,7 @@
       aspect: pp.aspect != null ? pp.aspect : opts.aspect,
       spinRate: pp.spinRate != null ? pp.spinRate : opts.spinRate,
       shapes: pp.shapes != null ? pp.shapes : opts.shapes,
+      camera: pp.camera != null ? pp.camera : 'none',
     });
     // energy 0: the previous figure exactly, no small differences either
     if (energy <= 0) return clone;
@@ -649,11 +751,15 @@
       sync: pp.sync,
       density: pp.density,
       shapes: pp.shapes != null ? pp.shapes : opts.shapes,
+      camera: pp.camera != null ? pp.camera : 'none',
       beatStyle: pp.beats,
     };
-    const others = (list, name) => {
+    // another move, through the same smartness / fear filter the draw uses
+    const nearAxes = opts.axes || {};
+    const nearSmart = smartness.smartOf(nearAxes);
+    const others = (group, list, name) => {
       const rest = list.filter((item) => item !== name);
-      return rest[Math.floor(near() * rest.length)];
+      return fxAxes.pickWeighted(near, group, rest.length ? rest : list, nearAxes, { smartness: nearSmart });
     };
     const tunable = (value, fallback, strength, lo, hi) => Math.max(lo, Math.min(hi, num(value, fallback) * (1 + (near() * 2 - 1) * 0.7 * strength)));
     const keepIn = dominantMove(pp.beats, 'in') || 'pop';
@@ -663,9 +769,9 @@
       const strength = j / NEAR_CANDIDATES;
       const spec = generateOne({
         ...cloneOpts,
-        in: strength > 0.6 ? others(INS, keepIn) : undefined,
-        hold: strength > 0.3 ? others(HOLDS, keepHold) : undefined,
-        out: strength > 0.8 ? others(OUTS, keepOut) : undefined,
+        in: strength > 0.6 ? others('figureIn', INS, keepIn) : undefined,
+        hold: strength > 0.3 ? others('figureHold', HOLDS, keepHold) : undefined,
+        out: strength > 0.8 ? others('figureOut', OUTS, keepOut) : undefined,
         radius: tunable(pp.radius, 1, strength, 0.3, 1.2),
         aspect: tunable(pp.aspect, 1, strength, 0.5, 2),
         spinRate: tunable(pp.spinRate, 1, strength, 0, 2),
@@ -916,6 +1022,137 @@
     }
     // an extra layer is kept with probability `rand`; the first always draws
     return layers.filter((_, i) => i === 0 || gate() < level);
+  }
+
+  // A pseudo-3D scene: rendered by scene3d on the clip's own clock (so a planet or
+  // a pendulum keeps going across the sub-beats), then moved into the largest
+  // free area beside the lyrics and scaled to fit it. The fit uses a fixed
+  // reference square, never the shapes' own extent, so a swinging pendulum does
+  // not make the whole scene breathe. Anything still touching the text box is
+  // dropped: the scene reads as passing behind the lyrics.
+  function sceneShapes(motif, params, ctx, info, state) {
+    const { box } = state;
+    const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
+    const rand = params.rand == null ? 1 : clamp01(params.rand);
+    const span = (ctx && ctx.clip) || {};
+    const clipStart = num(span.start != null ? span.start : span.from, 0);
+    const t = Math.max(0, num(ctx && ctx.time, 0) - clipStart);
+    const shapes = scene3d.render(motif, {
+      seed,
+      rand,
+      t,
+      frame: { width: box.width, height: box.height, cx: box.cx, cy: box.cy, short: box.short },
+      grow: 1,
+      opacity: state.opacity,
+      color: (index) => colorOf(params, ctx, index),
+      variant: state.variant,
+    });
+    const tb = textBox(ctx, box);
+    // the scene's place: centred and at its own size at randomness 0, shifted and
+    // enlarged by the genome above it
+    const place = rng.rngFor(seed, 'scene-place', motif);
+    const ox = (place() * 2 - 1) * 0.28 * rand;
+    const oy = (place() * 2 - 1) * 0.24 * rand;
+    const grow = 1 + place() * 0.5 * rand;
+    transformShapes(shapes, { originX: box.cx, originY: box.cy, scale: grow * state.scale, dx: ox * box.width, dy: oy * box.height, rotate: 0 });
+    return shapes;
+  }
+
+  // A mathematical field: no shapes, a spec the engine draws as a full-frame
+  // fragment shader. The genome (16 numbers) is drawn from the clip seed at the
+  // clip's randomness level; the field runs on the clip's own clock; its opacity
+  // is capped so the lyrics stay readable, and the shader cuts a feathered window
+  // out of the text box.
+  function fieldResult(motif, params, ctx, info, progress, box) {
+    if (SIM_MOTIFS.has(motif) && !statefulAllowed) return { shapes: [], texts: [] };
+    const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
+    const rand = params.rand == null ? 1 : clamp01(params.rand);
+    const span = (ctx && ctx.clip) || {};
+    const clipStart = num(span.start != null ? span.start : span.from, 0);
+    const t = Math.max(0, num(ctx && ctx.time, 0) - clipStart);
+    const tb = textBox(ctx || {}, box);
+    const cap = 0.42 + 0.16 * rand;
+    const field = {
+      id: motif,
+      p: glFields.genome(motif, seed, rand),
+      seed,
+      time: t,
+      opacity: clamp01(progress) * cap * (info.beat && info.beat.accent === false ? 0.85 : 1),
+      colors: [0, 1, 2, 3, 4].map((index) => colorOf(params, ctx || {}, index)),
+      textBox: { x0: tb.x0, y0: tb.y0, x1: tb.x1, y1: tb.y1 },
+      camera: null,
+    };
+    // A simulated field names the state it reads: one per clip, seed and
+    // randomness level, which is what the runner keeps its ping-pong pair under.
+    if (SIM_MOTIFS.has(motif)) {
+      field.sim = {
+        key: `${span.key || motif}|${seed}|${round(rand, 3)}`,
+        beats: Array.isArray(params.simBeats) ? params.simBeats : null,
+      };
+    }
+    return { shapes: [], texts: [], field };
+  }
+
+  // A geometry figure: drawn by figure-geo on the clip's own clock over the whole
+  // frame, entering by growing out of the centre. Like the scenes it passes
+  // behind the lyrics (the clear runs at the end of drawList).
+  function geoShapes(motif, params, ctx, info, state) {
+    const { box } = state;
+    const seed = Number.isFinite(Number(params.seed)) ? Number(params.seed) : 1;
+    const rand = params.rand == null ? 1 : clamp01(params.rand);
+    const span = (ctx && ctx.clip) || {};
+    const clipStart = num(span.start != null ? span.start : span.from, 0);
+    const t = Math.max(0, num(ctx && ctx.time, 0) - clipStart);
+    const shapes = figureGeo.render(motif, {
+      seed,
+      rand,
+      t,
+      frame: { width: box.width, height: box.height, cx: box.cx, cy: box.cy, short: box.short },
+      opacity: state.opacity,
+      color: (index) => colorOf(params, ctx, index),
+    });
+    if (state.scale !== 1) transformShapes(shapes, { originX: box.cx, originY: box.cy, scale: state.scale, dx: 0, dy: 0, rotate: 0 });
+    return shapes;
+  }
+
+  // The scenes pass behind the lyrics: whatever still touches the text box after
+  // the moves and the accent are applied is dropped (a scene is never moved, so
+  // its structure stays intact).
+  function sceneClearShapes(shapes, tb) {
+    const pad = 6;
+    return shapes.filter((shape) => {
+      const b = procShapeBox(shape);
+      return b && !(b.x1 > tb.x0 - pad && b.x0 < tb.x1 + pad && b.y1 > tb.y0 - pad && b.y0 < tb.y1 + pad);
+    });
+  }
+
+  // The 2D camera of a clip at time `tClip` of `duration`: a scale / shift / turn
+  // about the frame centre that is applied to the finished shapes.
+  function cameraMove(kind, seed, tClip, duration, box) {
+    const u = clamp01(tClip / Math.max(0.5, duration));
+    const ease = u * u * (3 - 2 * u);
+    const dir = rng.rngFor(seed, 'camera-dir')() < 0.5 ? -1 : 1;
+    if (kind === 'push') return { scale: 1 + 0.35 * ease, dx: 0, dy: 0, rotate: 0 };
+    if (kind === 'pull') return { scale: 1.35 - 0.35 * ease, dx: 0, dy: 0, rotate: 0 };
+    if (kind === 'pan') return { scale: 1.12, dx: dir * (0.5 - ease) * 0.16 * box.width, dy: 0, rotate: 0 };
+    if (kind === 'roll') return { scale: 1.1, dx: 0, dy: 0, rotate: dir * (ease - 0.5) * 0.4 };
+    if (kind === 'shake') {
+      return {
+        scale: 1,
+        dx: (Math.sin(tClip * 31.7) + 0.6 * Math.sin(tClip * 53.1 + 1)) * 0.004 * box.width,
+        dy: (Math.sin(tClip * 27.3 + 2) + 0.6 * Math.sin(tClip * 47.9)) * 0.006 * box.height,
+        rotate: Math.sin(tClip * 19.3) * 0.006,
+      };
+    }
+    if (kind === 'whip') {
+      const step = Math.floor(tClip / 2.2);
+      const into = Math.min(1, (tClip - step * 2.2) / 0.35);
+      const e = into * into * (3 - 2 * into);
+      const side = ((step + 1) % 2 ? 1 : -1) * dir;
+      return { scale: 1.08, dx: side * (1 - e) * 0.12 * box.width, dy: 0, rotate: side * (1 - e) * 0.08 };
+    }
+    if (kind === 'orbit') return { scale: 1.05 + 0.16 * Math.sin(Math.PI * u), dx: 0, dy: 0, rotate: dir * u * 0.5 };
+    return null;
   }
 
   // The free area around the text box (the same centred band `textBox` returns
@@ -1732,6 +1969,8 @@
     const spinRate = state.spinRate == null ? 1 : state.spinRate;
 
     if (motif === PROC) return procShapes(params, ctx, info, state, tuning, density);
+    if (SCENE_MOTIFS.includes(motif)) return sceneShapes(motif, params, ctx, info, state);
+    if (GEO_MOTIFS.includes(motif)) return geoShapes(motif, params, ctx, info, state);
 
     if (motif === 'orbit') {
       const radius = box.short * (0.14 + 0.1 * density) * scale;
@@ -2294,6 +2533,7 @@
     const leave = 1 - easeIn(1 - textProgress(info));
     const progress = Math.min(enter, leave);
     const { box, opacity } = base(ctx, progress);
+    if (FIELD_MOTIFS.includes(motif)) return fieldResult(motif, params, ctx, info, progress, box);
     const tuning = tuningOf(params);
     const variant = num(beat.variant, 0);
     const spinHold = beat.move.hold === 'spin';
@@ -2532,8 +2772,22 @@
     const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
     const place = placementOf(params, ctx || {});
     if (place) transformShapes(result.shapes, place);
+    if (result.field) result.field.opacity *= clamp01(num(params.opacity, 1));
+    if (params.camera && CAMERAS_2D.includes(params.camera) && params.camera !== 'none') {
+      const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
+      const clipSpan = (ctx && ctx.clip) || {};
+      const start = num(clipSpan.start != null ? clipSpan.start : clipSpan.from, beats.length ? num(beats[0].start, 0) : 0);
+      const end = num(clipSpan.end != null ? clipSpan.end : clipSpan.to, beats.length ? num(beats[beats.length - 1].end, start + 4) : start + 4);
+      const move = cameraMove(params.camera, num(params.seed, 1) + String(params.motif || '').length, Math.max(0, time - start), end - start, { width: frame.width, height: frame.height });
+      if (move) transformShapes(result.shapes, { originX: frame.width / 2, originY: frame.height / 2, scale: move.scale, dx: move.dx, dy: move.dy, rotate: move.rotate });
+      if (move && result.field) result.field.camera = { scale: move.scale, dx: move.dx, dy: move.dy, rotate: move.rotate };
+    }
+    // a scene passes behind the lyrics: what still touches the text box after the
+    // moves, the placement and the camera are applied is dropped
+    if (BEHIND_MOTIFS.has(params.motif)) result.shapes = sceneClearShapes(result.shapes, textBox(ctx || {}, frameBox(ctx || {})));
     return result;
   }
 
-  return { MOTIFS, BOLD_MOTIFS, PROC, procKey, procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+  return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, setStatefulAllowed, isStatefulAllowed, CAMERAS_2D, procKey,
+ procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

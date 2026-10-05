@@ -134,12 +134,14 @@ SA.menu = (() => {
           { key: 'studio.settings.qualityQuarter', action: 'setScale', args: ['quarter'], checked: () => handlers.getScaleMode && handlers.getScaleMode() === 'quarter' },
         ] },
         itemSeparator(),
+        { key: 'studio.settings.song', action: 'song', enabled: () => !!SA.store.state.project },
         { key: 'studio.settings.themes', action: 'themes' },
         { key: 'studio.settings.editTheme', action: 'editTheme' },
         { key: 'studio.settings.layers', action: 'layers' },
         { key: 'studio.settings.audio', action: 'audio' },
         { key: 'studio.settings.fonts', action: 'fonts' },
         { key: 'studio.settings.autosave', action: 'toggleAutosave', checked: () => !!(handlers.isAutosaveEnabled && handlers.isAutosaveEnabled()) },
+        { key: 'studio.settings.stateful', action: 'toggleStateful', checked: () => !!(handlers.isStatefulEnabled && handlers.isStatefulEnabled()) },
       ],
     },
     {
@@ -171,7 +173,11 @@ SA.menu = (() => {
     {
       id: 'help',
       labelKey: 'studio.menu.help',
-      items: () => [{ key: 'studio.about.item', action: 'about' }],
+      items: () => [
+        { key: 'studio.help.showcase', action: 'showcase' },
+        { key: 'studio.help.figureShowcase', action: 'figureShowcase' },
+        { key: 'studio.about.item', action: 'about' },
+      ],
     },
   ];
 

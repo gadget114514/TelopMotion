@@ -1468,7 +1468,7 @@ SA.inspector = (() => {
       const label = document.createElement('span');
       label.className = 'ctrl-label';
       const slot = SA.layersDialog.slotLabel(layer);
-      const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
+      const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : layer.type === 'scene3d' ? t('layers.typeScene3d') : t('layers.typeImage');
       label.textContent = `${slot} · ${type}`;
       line.appendChild(label);
       const actions = document.createElement('span');
@@ -1651,7 +1651,7 @@ SA.inspector = (() => {
     const layer = (doc.layers || []).find((entry) => entry.id === id);
     if (!layer) return;
     const body = section(container, 'layer', t('layers.title'));
-    const typeName = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
+    const typeName = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : layer.type === 'scene3d' ? t('layers.typeScene3d') : t('layers.typeImage');
     const filterName = layer.filter && layer.filter.type && layer.filter.type !== 'none' ? layer.filter.type : t('layers.filterNone');
     const rows = [
       [t('layers.type'), typeName],
@@ -1865,6 +1865,11 @@ SA.inspector = (() => {
     reroll.className = 'btn btn-mini';
     reroll.textContent = t('studio.inspector.reroll');
     reroll.addEventListener('click', () => SA.store.commands.rerollClip(clip.id));
+    const vary = document.createElement('button');
+    vary.type = 'button';
+    vary.className = 'btn btn-mini';
+    vary.textContent = t('studio.inspector.varyClip');
+    vary.addEventListener('click', () => SA.store.commands.varyClip(clip.id));
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'btn btn-mini';
@@ -1880,6 +1885,7 @@ SA.inspector = (() => {
     });
     actions.appendChild(split);
     actions.appendChild(reroll);
+    actions.appendChild(vary);
     actions.appendChild(rerollColors);
     actions.appendChild(remove);
     body.appendChild(actions);
@@ -2048,6 +2054,26 @@ SA.inspector = (() => {
       remove.addEventListener('click', () => {
         commit(layers.filter((entry, at) => at !== index), null, index);
       });
+      // clip beats: per-layer reroll / vary / recolor (split planes are
+      // structural, text layers keep their text — those only take recolor)
+      const layerBeatBtn = (text, key, run) => {
+        const node = document.createElement('button');
+        node.type = 'button';
+        node.className = 'btn btn-mini';
+        node.textContent = text;
+        node.title = t(key);
+        node.addEventListener('click', run);
+        summary.appendChild(node);
+      };
+      const structuralLayer = layer.type === 'split';
+      const textLayer = layer.type === 'textAnim' || layer.type === 'credits';
+      if (!structuralLayer && !textLayer) {
+        layerBeatBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, index));
+      }
+      if (!structuralLayer) {
+        layerBeatBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, index));
+      }
+      layerBeatBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, index));
       summary.appendChild(position);
       summary.appendChild(typeSelect);
       summary.appendChild(up);
@@ -2205,6 +2231,36 @@ SA.inspector = (() => {
         });
         body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
       }
+      // the clip beats: one row per sub-beat with reroll / vary / recolor
+      const subBeats = Array.isArray(params.beats) ? params.beats : [];
+      if (subBeats.length) {
+        const beatsTitle = document.createElement('div');
+        beatsTitle.className = 'insp-section-title';
+        beatsTitle.textContent = `${t('studio.inspector.beat')} · ${subBeats.length}`;
+        body.appendChild(beatsTitle);
+        subBeats.forEach((sub, subIndex) => {
+          const beatRow = document.createElement('div');
+          beatRow.className = 'insp-actions';
+          const label = document.createElement('span');
+          label.className = 'insp-inherit';
+          const move = (sub && sub.move) || {};
+          label.textContent = `#${subIndex + 1} ${Number(sub.start).toFixed(2)}–${Number(sub.end).toFixed(2)}s ${move.in || ''}/${move.hold || ''}/${move.out || ''}`;
+          beatRow.appendChild(label);
+          const subBtn = (text, key, run) => {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'btn btn-mini';
+            node.textContent = text;
+            node.title = t(key);
+            node.addEventListener('click', run);
+            beatRow.appendChild(node);
+          };
+          subBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollFigureBeat(clip.id, subIndex));
+          subBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyFigureBeat(clip.id, subIndex));
+          subBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorFigureBeat(clip.id, subIndex));
+          body.appendChild(beatRow);
+        });
+      }
       appendClipCommon(body, doc, clip);
       return;
     }
@@ -2260,6 +2316,42 @@ SA.inspector = (() => {
         );
       });
       body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+    }
+
+    // combo beats: one row per layer with reroll / vary / recolor (split
+    // planes are structural and only take recolor)
+    if (SA.fillerRender && typeof SA.fillerRender.layersOf === 'function') {
+      const comboLayers = SA.fillerRender.layersOf(spec);
+      if (Array.isArray(comboLayers) && comboLayers.length > 1) {
+        const layersTitle = document.createElement('div');
+        layersTitle.className = 'insp-section-title';
+        layersTitle.textContent = `${t('studio.inspector.beat')} · ${comboLayers.length}`;
+        body.appendChild(layersTitle);
+        comboLayers.forEach((comboLayer, layerIndex) => {
+          const layerRow = document.createElement('div');
+          layerRow.className = 'insp-actions';
+          const layerLabel = document.createElement('span');
+          layerLabel.className = 'insp-inherit';
+          layerLabel.textContent = `#${layerIndex + 1} ${(comboLayer && comboLayer.type) || '?'}`;
+          layerRow.appendChild(layerLabel);
+          const comboBtn = (text, key, run) => {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'btn btn-mini';
+            node.textContent = text;
+            node.title = t(key);
+            node.addEventListener('click', run);
+            layerRow.appendChild(node);
+          };
+          const planeLayer = !comboLayer || comboLayer.type === 'split';
+          if (!planeLayer) {
+            comboBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, layerIndex));
+            comboBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, layerIndex));
+          }
+          comboBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, layerIndex));
+          body.appendChild(layerRow);
+        });
+      }
     }
 
     appendClipCommon(body, doc, clip);

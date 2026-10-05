@@ -302,7 +302,11 @@
     const s = SA.moods.smartOf(axes);
     const analysis = opts.analysis || null;
     const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
-    const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 120;
+    // The tempo the whole run follows: the informed song tempo (Settings → Song)
+    // wins over the one measured from the audio, and a run without either falls
+    // back to the 120 BPM the engine assumes.
+    const detected = features && Number(features.bpm) > 0 ? Number(features.bpm) : 0;
+    const bpm = SA.project.tempoOf(doc, opts.bpm || detected);
     const output = (doc && doc.output) || {};
     const portrait = (output.aspect || '16:9') === '9:16';
     const frameW = Number(output.width) || (portrait ? 1080 : 1920);
@@ -2552,7 +2556,9 @@
     return spec;
   }
 
-  // Filler clips materialised from the gaps between the cues.
+  // Filler clips materialised from the gaps between the cues. An informed tempo
+  // hands the gaps over divided bar by bar, so every bar is its own clip (and
+  // its own draw): the salts below use the clip key, not the gap key.
   function fillerClips(projectDoc, ctx, total) {
     const fillerTrack = trackIdFor(projectDoc, 'filler');
     if (!fillerTrack || !SA.fillers) return;
@@ -2563,11 +2569,12 @@
     // the previous gap's preset must not show up again in the next one
     let previousPresetId = null;
     gaps.forEach((gap, gapIndex) => {
+      const clipKey = gap.clipKey || gap.key;
       let spec = JSON.parse(JSON.stringify(gap.spec || { type: 'none', params: {} }));
       if (!gap.pinned && (gap.kind === 'interlude' || gap.long) && pool.length) {
         const candidates = pool.filter((preset) => preset.id !== previousPresetId);
         const list = candidates.length ? candidates : pool;
-        const random = SA.rng.rngFor(ctx.seed, 'filler-gap', gap.key);
+        const random = SA.rng.rngFor(ctx.seed, 'filler-gap', clipKey);
         const fearOn = SA.moods.fearOf(ctx.axes) > 0;
         const weights = list.map((preset) => presetWeight(preset, s, ctx.axes));
         const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
@@ -2590,7 +2597,7 @@
       }
       if (!gap.pinned) {
         const accents = accentsOf(((ctx.themeStyle && ctx.themeStyle.palette && ctx.themeStyle.palette.colors) || [])).accentHexes;
-        varyPatterns(spec, SA.rng.rngFor(ctx.seed, 'filler-vary', gap.key), accents);
+        varyPatterns(spec, SA.rng.rngFor(ctx.seed, 'filler-vary', clipKey), accents);
       }
       // figures in the gaps: generated per gap so every gap has its own motif.
       // A preset's own motif / sync / moves / placement survive the generation.
@@ -2619,24 +2626,24 @@
             shapeRange: SA.figures.shapeRangeOf(ctx.params) || undefined,
             cuts: ctx.rhythm ? Object.values(ctx.rhythm).flat() : beatCuts,
             tempoGrid: true,
-            beatSeconds: 60 / (Number(ctx.bpm) > 0 ? Number(ctx.bpm) : 120),
+            beatSeconds: 60 / (SA.project.tempoOf(projectDoc, ctx.bpm)),
           });
           return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params } };
         };
         if (asFigures(spec)) {
-          spec = regenerate(spec, 0, gap.key);
+          spec = regenerate(spec, 0, clipKey);
         } else if (spec.type === 'combo' && Array.isArray(spec.params && spec.params.list)) {
-          spec.params.list = spec.params.list.map((part) => (asFigures(part) ? regenerate(part, 1, `${gap.key}:combo`) : part));
+          spec.params.list = spec.params.list.map((part) => (asFigures(part) ? regenerate(part, 1, `${clipKey}:combo`) : part));
           // a combo the draw left without a figure animation gets one of its
-          // own, generated for this gap (the credits element is left as it is)
+          // own, generated for this clip (the credits element is left as it is)
           if (!carriesFigures(spec)) {
             const list = spec.params.list;
-            spec = { type: 'combo', params: { list: [...list, regenerate(null, 2, `${gap.key}:figures`)] } };
+            spec = { type: 'combo', params: { list: [...list, regenerate(null, 2, `${clipKey}:figures`)] } };
           }
         } else {
           // a plain pattern / split / particles field rides the filler alone:
           // the figure animation is what makes the gap part of the song
-          spec = withFigureLayer(spec, regenerate(null, 2, `${gap.key}:figures`));
+          spec = withFigureLayer(spec, regenerate(null, 2, `${clipKey}:figures`));
         }
       }
       projectDoc.clips.push(nextClip(projectDoc, 'clip_filler', {
@@ -2645,8 +2652,10 @@
         end: gap.to,
         spec,
         opacity: 1,
-        fadeIn: 0.3,
-        fadeOut: 0.3,
+        // a whole gap fades in and out; the bars of a divided one cut hard on
+        // the bar line instead of dipping at every beat
+        fadeIn: gap.parts > 1 ? 0 : 0.3,
+        fadeOut: gap.parts > 1 ? 0 : 0.3,
         colors: null,
       }));
     });
@@ -2830,14 +2839,19 @@
     // filler rows existed has nowhere to put those clips, so the run adds the
     // missing ones first (the same guarantee `project.migrate` gives).
     if (SA.project && typeof SA.project.ensureManagedTracks === 'function') SA.project.ensureManagedTracks(projectDoc);
-    // 0) one beat per musical bar: the bar length comes from the audio BPM
-    // when a track is loaded (4/4 assumed), otherwise from a 120 BPM default
-    const barDuration = Math.round((60 / ctx.bpm) * 4 * 1000) / 1000;
+    // 0) one beat per musical bar: the bar length comes from the informed tempo
+    // (Settings → Song), else from the audio BPM when a track is loaded (4/4
+    // assumed), otherwise from a 120 BPM default. The run stores the tempo and a
+    // scale rather than a ready-made duration, so a later BPM change re-times the
+    // beats instead of leaving them on the grid they were cut for.
+    const chunkScale = Math.round((1 - 0.5 * w) * 1000) / 1000;
     // G1: a weird song cuts its phrases into shorter chunks
-    const chunkDuration = Math.round(barDuration * (1 - 0.5 * w) * 1000) / 1000;
-    projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
+    projectDoc.textFlow = { ...(projectDoc.textFlow || {}), chunk: 'phrase', bpm: ctx.bpm, chunkScale };
+    // an older run stored the bar length as a duration; the tempo now owns it
+    if (projectDoc.textFlow.targetChunkDuration) delete projectDoc.textFlow.targetChunkDuration;
     projectDoc.script.cues.forEach((cue, cueIndex) => {
-      cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', targetChunkDuration: chunkDuration };
+      cue.textFlow = { ...(cue.textFlow || {}), chunk: 'phrase', chunkScale };
+      if (cue.textFlow.targetChunkDuration) delete cue.textFlow.targetChunkDuration;
       const cuts = ctx.rhythm && ctx.rhythm[cue.id];
       if (cuts && cuts.length) cue.textFlow.chunkPlan = cuts.slice();
       else if (cue.textFlow.chunkPlan) delete cue.textFlow.chunkPlan;
@@ -3352,7 +3366,7 @@
     // owns (auto) and leaves subtitle and hand-made clips alone.
     projectDoc.fillers = SA.project.mergeDeep(projectDoc.fillers || {}, fillerSettings(projectDoc, ctx));
     const cues = projectDoc.script.cues || [];
-    const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const total = Math.max(cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0), SA.project.songLengthOf(projectDoc));
     const managed = new Set(
       (projectDoc.tracks || []).filter((track) => AUTO_TRACK_KINDS.includes(track.kind)).map((track) => track.id)
     );

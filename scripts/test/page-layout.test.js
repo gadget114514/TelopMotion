@@ -266,3 +266,12 @@ test('exhaustive test: all PRESETS compose without error on multiple aspect rati
 
 
 
+
+test('poster preset draws no placeholder caption for a one-line page', () => {
+  for (const seed of [1, 2, 3, 100, 999]) {
+    const res = pageLayout.compose('poster', { seed }, { frame: { w: 1920, h: 1080 }, text: 'ONLY ONE LINE' });
+    assert.ok(res.regions.length >= 1);
+    for (const r of res.regions) assert.ok(!/^CAPTION/i.test(r.text), `seed ${seed}: no placeholder text`);
+    assert.equal(res.regions.filter((r) => r.role === 'caption').length, 0);
+  }
+});

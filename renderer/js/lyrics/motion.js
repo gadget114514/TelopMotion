@@ -1300,6 +1300,24 @@
     { id: 'explode', group: 'exit', phase: 'exit', type: 'explode', from: 'end', delay: -0.6, duration: 0.6, ease: 'easeInCubic', params: {} },
     { id: 'melt', group: 'exit', phase: 'exit', type: 'melt', from: 'end', delay: -0.8, duration: 0.8, ease: 'linear', params: {} },
     { id: 'burn', group: 'exit', phase: 'exit', type: 'burnAway', from: 'end', delay: -0.7, duration: 0.7, ease: 'linear', params: {} },
+    // The shader pack (renderer/js/lyrics/effects/shader-fx.js). Each family is
+    // available in all three phases, so every one of them can be picked here and
+    // then reshaped with any ADSR phase and any easing curve.
+    { id: 'ditherIn', group: 'entrance', phase: 'enter', type: 'dither', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: { levels: 4, jitter: 0.3 } },
+    { id: 'scanIn', group: 'entrance', phase: 'enter', type: 'scanline', from: 'start', delay: 0, duration: 0.7, ease: 'linear', params: { lines: 8, bandWidth: 0.3, depth: 0.85 } },
+    { id: 'stealthIn', group: 'entrance', phase: 'enter', type: 'stealth', from: 'start', delay: 0, duration: 0.7, ease: 'easeOutCubic', params: { split: 6, glow: 0.7 } },
+    { id: 'geometryIn', group: 'entrance', phase: 'enter', type: 'geometry', from: 'start', delay: 0, duration: 0.7, ease: 'easeOutCubic', params: { shape: 'circle', feather: 0.05 } },
+    { id: 'fadeGlow', group: 'entrance', phase: 'enter', type: 'fade', from: 'start', delay: 0, duration: 0.6, ease: 'easeInOutCubic', params: { softness: 0.6, glow: 0.4 } },
+    { id: 'ditherLoop', group: 'emphasis', phase: 'hold', type: 'dither', from: 'start', delay: 0.3, duration: 1.2, ease: 'linear', params: { levels: 3, jitter: 0.4, speed: 3 } },
+    { id: 'scanLoop', group: 'emphasis', phase: 'hold', type: 'scanline', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: { lines: 10, bandWidth: 0.25, depth: 0.8, speed: 1.2 } },
+    { id: 'stealthLoop', group: 'emphasis', phase: 'hold', type: 'stealth', from: 'start', delay: 0.3, duration: 1.6, ease: 'linear', params: { split: 8, glow: 0.6, speed: 1.5 } },
+    { id: 'geometryLoop', group: 'emphasis', phase: 'hold', type: 'geometry', from: 'start', delay: 0.3, duration: 1.6, ease: 'linear', params: { shape: 'hexagon', feather: 0.08, spin: 30 } },
+    { id: 'fadeBreathe', group: 'emphasis', phase: 'hold', type: 'fade', from: 'start', delay: 0.3, duration: 1.6, ease: 'linear', params: { softness: 0.8, glow: 0.2 } },
+    { id: 'ditherOut', group: 'exit', phase: 'exit', type: 'dither', from: 'end', delay: -0.6, duration: 0.6, ease: 'linear', params: { levels: 4, jitter: 0.3 } },
+    { id: 'scanOut', group: 'exit', phase: 'exit', type: 'scanline', from: 'end', delay: -0.7, duration: 0.7, ease: 'linear', params: { lines: 8, bandWidth: 0.3, depth: 0.85 } },
+    { id: 'stealthOut', group: 'exit', phase: 'exit', type: 'stealth', from: 'end', delay: -0.7, duration: 0.7, ease: 'easeInCubic', params: { split: 6, glow: 0.8 } },
+    { id: 'geometryOut', group: 'exit', phase: 'exit', type: 'geometry', from: 'end', delay: -0.7, duration: 0.7, ease: 'easeInCubic', params: { shape: 'circle', feather: 0.05 } },
+    { id: 'fadeGlowOut', group: 'exit', phase: 'exit', type: 'fade', from: 'end', delay: -0.6, duration: 0.6, ease: 'easeInOutCubic', params: { softness: 0.6, glow: 0.4 } },
   ];
 
   function motionPresets() {

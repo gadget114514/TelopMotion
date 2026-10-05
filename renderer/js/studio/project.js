@@ -70,6 +70,11 @@
       format: FORMAT,
       version: VERSION,
       meta: { title: 'Untitled', createdAt: null, updatedAt: null, lang: 'en' },
+      // The song's own identity and tempo: what the user types in Settings →
+      // Song. `title` / `author` name the piece (the credits read them when no
+      // profile data is loaded, and the first filler shows them), `bpm` is the
+      // tempo every beat grid follows (0 = follow the loaded audio instead).
+      song: { title: '', author: '', bpm: 0, length: 0 },
       output: {
         aspect: '16:9',
         fps: 30,
@@ -260,6 +265,74 @@
 
   function clipsForTrack(project, trackId) {
     return ((project && project.clips) || []).filter((clip) => clip && clip.trackId === trackId);
+  }
+
+  // --- the song block ---------------------------------------------------------
+  // `song` is what the user types in Settings → Song (title, author, tempo).
+  // It is read from every layer that needs the song's identity or its tempo, so
+  // a helper each of them shares keeps the shape in one place.
+
+  // A tempo is written in beats per minute; the range keeps a typo from asking
+  // for bars shorter than a frame.
+  const MIN_BPM = 20;
+  const MAX_BPM = 400;
+
+  // A tempo written by hand, clamped into the usable range. Anything that is
+  // not a number is no tempo at all (0 = follow the loaded audio instead).
+  function normalizeBpm(value) {
+    const number = Number(value);
+    if (!Number.isFinite(number) || number <= 0) return 0;
+    return Math.round(Math.min(MAX_BPM, Math.max(MIN_BPM, number)) * 1000) / 1000;
+  }
+
+  function songOf(project) {
+    const song = (project && project.song) || {};
+    return {
+      title: String(song.title == null ? '' : song.title),
+      author: String(song.author == null ? '' : song.author),
+      bpm: bpmOf(project),
+      length: songLengthOf(project),
+    };
+  }
+
+  // The song length in seconds the user wrote, or 0 to end with the last cue.
+  // A length past the last cue is filled with fillers.
+  function songLengthOf(project) {
+    const value = Number(project && project.song && project.song.length);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  function normalizeSongLength(value) {
+    const number = Number(value);
+    return Number.isFinite(number) && number > 0 ? Math.round(Math.min(36000, number) * 1000) / 1000 : 0;
+  }
+
+  // The informed tempo in BPM, or 0 when the project never chose one (the
+  // caller then falls back to the tempo of the loaded audio).
+  function bpmOf(project) {
+    const value = Number(project && project.song && project.song.bpm);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  // A tempo usable as a grid straight away: the informed BPM, else the caller's
+  // fallback (the detected audio tempo), else the 120 BPM the engine assumes.
+  function tempoOf(project, fallback) {
+    const own = bpmOf(project);
+    if (own > 0) return own;
+    const value = Number(fallback);
+    return Number.isFinite(value) && value > 0 ? value : 120;
+  }
+
+  function normalizeSong(project) {
+    const doc = project || {};
+    const song = isPlainObject(doc.song) ? doc.song : {};
+    doc.song = {
+      title: song.title == null ? '' : String(song.title),
+      author: song.author == null ? '' : String(song.author),
+      bpm: normalizeBpm(song.bpm),
+      length: normalizeSongLength(song.length),
+    };
+    return doc.song;
   }
 
   // Version 1 kept one opaque `style.background` per beat and derived fillers
@@ -618,6 +691,23 @@
     return null;
   }
 
+  // scene3d layers carry their scene parameters in `layer.scene`. Older exports
+  // (or hand-edited projects) may miss it, so the migrate pass fills the
+  // defaults the renderer expects. Pure, so the tests can pin it.
+  function normalizeLayers(project) {
+    for (const layer of project.layers || []) {
+      if (!layer || layer.type !== 'scene3d') continue;
+      const scene = isPlainObject(layer.scene) ? layer.scene : (layer.scene = {});
+      if (typeof scene.preset !== 'string') scene.preset = 'starfield';
+      const speed = Number(scene.speed);
+      scene.speed = Number.isFinite(speed) && speed > 0 ? speed : 1;
+      const density = Number(scene.density);
+      scene.density = Number.isFinite(density) && density > 0 ? density : 1;
+      if (scene.seed != null && !Number.isFinite(Number(scene.seed))) delete scene.seed;
+    }
+    return project;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -636,6 +726,7 @@
     if (version < 4) migrateToV4(merged);
     if (version < 5) migrateToV5(merged);
     ensureManagedTracks(merged);
+    normalizeLayers(merged);
     merged.version = VERSION;
     merged.format = FORMAT;
     // subtitle background visibility is a per-track boolean (absent = shown)
@@ -676,6 +767,7 @@
     }
     if (!merged.meta.createdAt) merged.meta.createdAt = new Date().toISOString();
     merged.meta.updatedAt = project.meta && project.meta.updatedAt ? project.meta.updatedAt : merged.meta.createdAt;
+    normalizeSong(merged);
     return { ok: true, project: merged };
   }
 
@@ -803,11 +895,19 @@
     create,
     migrate,
     ensureManagedTracks,
+    normalizeLayers,
     resolveStyle,
     resetLook,
     parsePath,
     mergeDeep,
     setDimensions,
+    songOf,
+    songLengthOf,
+    normalizeSongLength,
+    bpmOf,
+    tempoOf,
+    normalizeBpm,
+    normalizeSong,
     trackKindOf,
     subtitleTracks,
     clipOf,

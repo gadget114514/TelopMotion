@@ -11,13 +11,24 @@
     return value <= 0 ? 0 : value >= 1 ? 1 : value;
   }
 
+  // The plain opacity fade on the way out. `softness` bends the ramp towards
+  // smoothstep and `glow` flashes the glyph as it goes, which is the
+  // per-letter half of the fade shader in shader-fx.js (post.fade).
   fx.register({
     group: 'exit',
     type: 'fade',
     tags: ['basic'],
-    params: [],
-    cpu(state, p) {
-      state.opacity *= 1 - clamp01(p);
+    params: [
+      { key: 'softness', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+      { key: 'glow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, random: [0, 0.5] },
+    ],
+    cpu(state, p, params) {
+      const soft = params && Number(params.softness) > 0 ? Math.min(1, Number(params.softness)) : 0;
+      const glow = params && Number(params.glow) > 0 ? Math.min(1, Number(params.glow)) : 0;
+      const k = clamp01(p);
+      const level = soft > 0 ? 1 - (k + (k * k * (3 - 2 * k) - k) * soft) : 1 - k;
+      state.opacity *= clamp01(level);
+      if (glow > 0) state.flash = Math.max(state.flash || 0, glow * (1 - Math.abs(level * 2 - 1)));
     },
   });
 
@@ -135,12 +146,15 @@
     group: 'exit',
     type: 'dissolve',
     tags: ['dissolve'],
-    params: [{ key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 }],
-    cpu(state, p, params, rng) {
-      const threshold = rng() * 0.85;
+    params: [
+      { key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 },
+      { key: 'edge', kind: 'number', min: 0.01, max: 0.6, step: 0.01, default: 0.16 },
+    ],
+    cpu(state, p, params) {
+      // the text pass cuts the glyph against a noise field (state row 22.yzw):
+      // progress 1 means the glyph is gone, so it runs the entrance's way round
       const progress = clamp01(p);
-      if (progress > threshold) state.opacity = 0;
-      else state.opacity *= 1 - progress * 0.15;
+      state.dissolve = { scale: params.scale == null ? 10 : params.scale, progress: 1 - progress, edge: params.edge == null ? 0.16 : params.edge };
     },
   });
 
@@ -198,6 +212,45 @@
       state.y += (rng() * 2 - 1) * drift * k - drift * 0.4 * k;
       state.rot += (rng() * 2 - 1) * 60 * k;
       state.opacity *= 1 - k;
+    },
+  });
+
+  // Sand: the glyph erodes from the top (state wipe) while the grains of the
+  // 'sand' representation peel off, fall and drift (see REP_VERT, mode 4). The
+  // erosion line and the grain release time share the 0.72 cut-off, so the
+  // last 28% of the exit is spent on the grains falling.
+  fx.register({
+    group: 'exit',
+    type: 'sandCrumble',
+    tags: ['particles', 'dissolve'],
+    cost: 3,
+    params: [
+      { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.25, random: [-0.6, 0.6] },
+      { key: 'gravity', kind: 'number', min: 0, max: 12, step: 0.1, default: 5 },
+      { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, random: [0, 0.6] },
+      { key: 'strength', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.15, random: [0, 0.5] },
+      { key: 'pile', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const k = clamp01(p);
+      if (k > 0.001 && k < 0.999) {
+        state.represent = 'sand';
+        state.reprProgress = 1 - k;
+        state.wipeMode = 2;
+        state.wipeSoft = 0.04;
+        state.visibleFrac = 1 - clamp01(k / 0.72);
+        state.sand = {
+          wind: params.wind == null ? 0.25 : params.wind,
+          gravity: params.gravity == null ? 5 : params.gravity,
+          grain: params.grain == null ? 2.4 : params.grain,
+          spread: params.spread == null ? 0.2 : params.spread,
+          strength: params.strength == null ? 0.15 : params.strength,
+          pile: params.pile !== false,
+        };
+      }
+      const tail = clamp01((k - 0.88) / 0.12);
+      state.opacity *= 1 - tail * tail * (3 - 2 * tail);
     },
   });
 

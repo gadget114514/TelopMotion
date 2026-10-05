@@ -1,4 +1,6 @@
-# 詳細実装計画（→ `doc/style-axes-impl.md` として保存）
+# 詳細実装計画
+
+整理案と軸の定義は [style-axes.md](style-axes.md) を参照。Weird と他の軸の競合ルールに従う追加変更（Tempo の刻みを ±1 段ずらす、Density を ±0.3·w 揺らす）も Phase 1 に含める（style-axes.md の「今回の変更への当てはめ」）。
 
 ## 調査で分かった前提
 - 歌詞の rhythm plan（`direct.js:458-471` → `SA.rhythm.plan`）は **weird > 0 のときだけ**作られる。weird 0 では cuts は null。
@@ -72,7 +74,7 @@ if (options.tempoGrid) {
   - weird 0、energy 0.5 固定で speed を 0.1 / 0.9 にしたとき、`weightsFor` の even と hold2 が下がり、halves と stutter が上がる。
   - speed 固定で energy を 0.1 / 0.9 にしたとき、even・halves・hold2・stutter が変わらない（build と fall だけが変わる）。
 - `scripts/test/figures.test.js` に追加：
-  - `generate({ span:{0,16}, axes:{speed:0.05}, tempoGrid:true, beatSeconds:0.5, sync:'beat', seed:1, id:'f' })` の beats が 2 個（8拍 = 4秒刻み → 4区間になるので、正しい期待値は実装のときに計算して固定する）。speed 0.95 では細かく（0.25秒刻み）なり、beats の数が単調に増えることを確かめる。
+  - `generate({ span:{0,16}, axes:{speed:0.05}, tempoGrid:true, beatSeconds:0.5, sync:'beat', seed:1, id:'f' })` の beats が 4 個（8拍 = 4秒刻み）。speed 0.95 では 0.25 秒刻みで 64 個。speed を 0.05 / 0.3 / 0.5 / 0.7 / 0.95 と上げると beats の数が 4 / 8 / 16 / 32 / 64 と増えることを確かめる。
   - `tempoGrid` なしの場合は今の出力と同じになる（beats が1個）。
 - 全体：`npm test`（`node --test "scripts/test/**/*.test.js"`）。figures-distance / figures-randomness / backdrop-variety / proc-variety / direct / moods が通ること。出力の値を固定したスナップショット系のテストが落ちたら、理由を確認してから更新する。
 - アプリで確認：Studio で ballad（speed 0.15）と rock（speed 0.9）を生成し、filler の figure の切り替え回数が違うことをプレビューで見る。テーマダイアログの軸 hover に追記した文が出ることも確認する。

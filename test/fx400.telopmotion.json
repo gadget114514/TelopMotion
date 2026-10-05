@@ -3,9 +3,15 @@
   "version": 4,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-04T06:05:32.614Z",
-    "updatedAt": "2026-10-04T06:05:32.614Z",
+    "createdAt": "2026-10-04T13:34:55.111Z",
+    "updatedAt": "2026-10-04T13:34:55.111Z",
     "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
   },
   "output": {
     "aspect": "16:9",
@@ -4631,7 +4637,10 @@
       "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0.5
+        },
         "motion": {
           "in": {
             "duration": 0.25,
@@ -4890,6 +4899,26 @@
     },
     "fx_078": {
       "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 5,
+          "grain": 2.4,
+          "spread": 0,
+          "strength": 0.15,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_079": {
+      "enter": {
         "type": "shatterRebuild",
         "enabled": true,
         "params": {
@@ -4904,7 +4933,7 @@
         }
       }
     },
-    "fx_079": {
+    "fx_080": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -4919,43 +4948,47 @@
         }
       }
     },
-    "fx_080": {
+    "fx_081": {
       "enter": {
         "type": "noiseDissolveIn",
         "enabled": true,
         "params": {
-          "scale": 17,
+          "scale": 48,
           "edgeColor": "#ff8a3d",
           "edgeWidth": 0.1
         },
         "motion": {
           "in": {
-            "duration": 0.55,
-            "ease": "cubicOut"
-          }
-        }
-      }
-    },
-    "fx_081": {
-      "enter": {
-        "type": "dissolve",
-        "enabled": true,
-        "params": {
-          "scale": 10
-        },
-        "motion": {
-          "in": {
-            "duration": 1.2,
-            "ease": "backOut"
+            "duration": 0.7,
+            "ease": "elasticOut"
           }
         }
       }
     },
     "fx_082": {
       "enter": {
+        "type": "dissolve",
+        "enabled": true,
+        "params": {
+          "scale": 17,
+          "edge": 0.16
+        },
+        "motion": {
+          "in": {
+            "duration": 0.7,
+            "ease": "elasticOut"
+          }
+        }
+      }
+    },
+    "fx_083": {
+      "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0,
+          "glow": 0
+        },
         "motion": {
           "in": {
             "duration": 1.2,
@@ -4964,7 +4997,7 @@
         }
       }
     },
-    "fx_083": {
+    "fx_084": {
       "enter": {
         "type": "typewriter",
         "enabled": true,
@@ -4983,7 +5016,7 @@
         }
       }
     },
-    "fx_084": {
+    "fx_085": {
       "enter": {
         "type": "slide",
         "enabled": true,
@@ -4999,7 +5032,7 @@
         }
       }
     },
-    "fx_085": {
+    "fx_086": {
       "enter": {
         "type": "dropBounce",
         "enabled": true,
@@ -5014,7 +5047,7 @@
         }
       }
     },
-    "fx_086": {
+    "fx_087": {
       "enter": {
         "type": "zoomIn",
         "enabled": true,
@@ -5029,7 +5062,7 @@
         }
       }
     },
-    "fx_087": {
+    "fx_088": {
       "enter": {
         "type": "blurIn",
         "enabled": true,
@@ -5044,7 +5077,7 @@
         }
       }
     },
-    "fx_088": {
+    "fx_089": {
       "enter": {
         "type": "flip3D",
         "enabled": true,
@@ -5060,7 +5093,7 @@
         }
       }
     },
-    "fx_089": {
+    "fx_090": {
       "enter": {
         "type": "rotateIn",
         "enabled": true,
@@ -5075,7 +5108,7 @@
         }
       }
     },
-    "fx_090": {
+    "fx_091": {
       "enter": {
         "type": "scatterIn",
         "enabled": true,
@@ -5090,7 +5123,7 @@
         }
       }
     },
-    "fx_091": {
+    "fx_092": {
       "enter": {
         "type": "waveRise",
         "enabled": true,
@@ -5105,7 +5138,7 @@
         }
       }
     },
-    "fx_092": {
+    "fx_093": {
       "enter": {
         "type": "elasticPop",
         "enabled": true,
@@ -5118,7 +5151,7 @@
         }
       }
     },
-    "fx_093": {
+    "fx_094": {
       "enter": {
         "type": "scramble",
         "enabled": true,
@@ -5134,7 +5167,7 @@
         }
       }
     },
-    "fx_094": {
+    "fx_095": {
       "enter": {
         "type": "glitchIn",
         "enabled": true,
@@ -5149,7 +5182,7 @@
         }
       }
     },
-    "fx_095": {
+    "fx_096": {
       "enter": {
         "type": "neonFlicker",
         "enabled": true,
@@ -5164,7 +5197,7 @@
         }
       }
     },
-    "fx_096": {
+    "fx_097": {
       "enter": {
         "type": "flickerIn",
         "enabled": true,
@@ -5179,7 +5212,7 @@
         }
       }
     },
-    "fx_097": {
+    "fx_098": {
       "enter": {
         "type": "strokeDrawOn",
         "enabled": true,
@@ -5195,7 +5228,7 @@
         }
       }
     },
-    "fx_098": {
+    "fx_099": {
       "enter": {
         "type": "particlesAssemble",
         "enabled": true,
@@ -5212,7 +5245,27 @@
         }
       }
     },
-    "fx_099": {
+    "fx_100": {
+      "enter": {
+        "type": "sandGather",
+        "enabled": true,
+        "params": {
+          "wind": 0.6,
+          "gravity": 5,
+          "grain": 2.4,
+          "spread": 0,
+          "strength": 0.15,
+          "pile": true
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_101": {
       "enter": {
         "type": "shatterRebuild",
         "enabled": true,
@@ -5228,7 +5281,7 @@
         }
       }
     },
-    "fx_100": {
+    "fx_102": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -5243,43 +5296,14 @@
         }
       }
     },
-    "fx_101": {
-      "enter": {
-        "type": "noiseDissolveIn",
-        "enabled": true,
-        "params": {
-          "scale": 48,
-          "edgeColor": null,
-          "edgeWidth": 0.1
-        },
-        "motion": {
-          "in": {
-            "duration": 1.2,
-            "ease": "backOut"
-          }
-        }
-      }
-    },
-    "fx_102": {
-      "enter": {
-        "type": "dissolve",
-        "enabled": true,
-        "params": {
-          "scale": 17
-        },
-        "motion": {
-          "in": {
-            "duration": 0.7,
-            "ease": "elasticOut"
-          }
-        }
-      }
-    },
     "fx_103": {
       "enter": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0,
+          "glow": 0.5
+        },
         "motion": {
           "in": {
             "duration": 0.7,
@@ -5524,52 +5548,22 @@
       }
     },
     "fx_119": {
-      "enter": {
-        "type": "shatterRebuild",
-        "enabled": true,
-        "params": {
-          "spread": 0.7,
-          "spin": 120
-        },
-        "motion": {
-          "in": {
-            "duration": 1.2,
-            "ease": "backOut"
-          }
-        }
-      }
-    },
-    "fx_120": {
-      "enter": {
-        "type": "noiseDissolveIn",
-        "enabled": true,
-        "params": {
-          "scale": 48,
-          "edgeColor": "#ff8a3d",
-          "edgeWidth": 0.1
-        },
-        "motion": {
-          "in": {
-            "duration": 0.7,
-            "ease": "elasticOut"
-          }
-        }
-      }
-    },
-    "fx_121": {
       "exit": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0
+        },
         "motion": {
           "out": {
-            "duration": 0.2,
+            "duration": 0.4,
             "ease": "cubicIn"
           }
         }
       }
     },
-    "fx_122": {
+    "fx_120": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -5585,7 +5579,7 @@
         }
       }
     },
-    "fx_123": {
+    "fx_121": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -5600,7 +5594,7 @@
         }
       }
     },
-    "fx_124": {
+    "fx_122": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -5615,7 +5609,7 @@
         }
       }
     },
-    "fx_125": {
+    "fx_123": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -5631,7 +5625,7 @@
         }
       }
     },
-    "fx_126": {
+    "fx_124": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -5647,22 +5641,23 @@
         }
       }
     },
-    "fx_127": {
+    "fx_125": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
         "params": {
-          "scale": 17
+          "scale": 17,
+          "edge": 0.16
         },
         "motion": {
           "out": {
-            "duration": 0.4,
-            "ease": "cubicIn"
+            "duration": 0.6,
+            "ease": "bounceIn"
           }
         }
       }
     },
-    "fx_128": {
+    "fx_126": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -5677,7 +5672,7 @@
         }
       }
     },
-    "fx_129": {
+    "fx_127": {
       "exit": {
         "type": "typewriterReverse",
         "enabled": true,
@@ -5690,7 +5685,7 @@
         }
       }
     },
-    "fx_130": {
+    "fx_128": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5703,7 +5698,7 @@
         }
       }
     },
-    "fx_131": {
+    "fx_129": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5719,7 +5714,27 @@
         }
       }
     },
-    "fx_132": {
+    "fx_130": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": -0.6,
+          "gravity": 5,
+          "grain": 2.4,
+          "spread": 0,
+          "strength": 0.15,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_131": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5734,7 +5749,7 @@
         }
       }
     },
-    "fx_133": {
+    "fx_132": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5751,7 +5766,7 @@
         }
       }
     },
-    "fx_134": {
+    "fx_133": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5766,7 +5781,7 @@
         }
       }
     },
-    "fx_135": {
+    "fx_134": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -5781,20 +5796,23 @@
         }
       }
     },
-    "fx_136": {
+    "fx_135": {
       "exit": {
         "type": "fade",
         "enabled": true,
-        "params": {},
+        "params": {
+          "softness": 0.75,
+          "glow": 0.5
+        },
         "motion": {
           "out": {
-            "duration": 1,
-            "ease": "backIn"
+            "duration": 0.2,
+            "ease": "cubicIn"
           }
         }
       }
     },
-    "fx_137": {
+    "fx_136": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -5810,7 +5828,7 @@
         }
       }
     },
-    "fx_138": {
+    "fx_137": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -5825,7 +5843,7 @@
         }
       }
     },
-    "fx_139": {
+    "fx_138": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -5840,7 +5858,7 @@
         }
       }
     },
-    "fx_140": {
+    "fx_139": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -5856,7 +5874,7 @@
         }
       }
     },
-    "fx_141": {
+    "fx_140": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -5872,22 +5890,7 @@
         }
       }
     },
-    "fx_142": {
-      "exit": {
-        "type": "dissolve",
-        "enabled": true,
-        "params": {
-          "scale": 48
-        },
-        "motion": {
-          "out": {
-            "duration": 0.2,
-            "ease": "cubicIn"
-          }
-        }
-      }
-    },
-    "fx_143": {
+    "fx_141": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -5902,7 +5905,7 @@
         }
       }
     },
-    "fx_144": {
+    "fx_142": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5915,7 +5918,7 @@
         }
       }
     },
-    "fx_145": {
+    "fx_143": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5931,7 +5934,27 @@
         }
       }
     },
-    "fx_146": {
+    "fx_144": {
+      "exit": {
+        "type": "sandCrumble",
+        "enabled": true,
+        "params": {
+          "wind": 0.6,
+          "gravity": 5,
+          "grain": 2.4,
+          "spread": 0,
+          "strength": 0.15,
+          "pile": true
+        },
+        "motion": {
+          "out": {
+            "duration": 0.2,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_145": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5946,7 +5969,7 @@
         }
       }
     },
-    "fx_147": {
+    "fx_146": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5963,7 +5986,7 @@
         }
       }
     },
-    "fx_148": {
+    "fx_147": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5978,7 +6001,7 @@
         }
       }
     },
-    "fx_149": {
+    "fx_148": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -5993,219 +6016,7 @@
         }
       }
     },
-    "fx_150": {
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.6,
-            "ease": "bounceIn"
-          }
-        }
-      }
-    },
-    "fx_151": {
-      "exit": {
-        "type": "slide",
-        "enabled": true,
-        "params": {
-          "dir": "left",
-          "distance": 0.3
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_152": {
-      "exit": {
-        "type": "zoomOut",
-        "enabled": true,
-        "params": {
-          "to": 0.8
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_153": {
-      "exit": {
-        "type": "blurOut",
-        "enabled": true,
-        "params": {
-          "radius": 6
-        },
-        "motion": {
-          "out": {
-            "duration": 0.6,
-            "ease": "bounceIn"
-          }
-        }
-      }
-    },
-    "fx_154": {
-      "exit": {
-        "type": "explode",
-        "enabled": true,
-        "params": {
-          "spread": 1.2,
-          "spin": 220
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_155": {
-      "exit": {
-        "type": "gravityFall",
-        "enabled": true,
-        "params": {
-          "gravity": 4.6,
-          "spin": 160
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_156": {
-      "exit": {
-        "type": "dissolve",
-        "enabled": true,
-        "params": {
-          "scale": 10
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_157": {
-      "exit": {
-        "type": "wipe",
-        "enabled": true,
-        "params": {
-          "dir": "up"
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_158": {
-      "exit": {
-        "type": "shrinkToCenter",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_159": {
-      "exit": {
-        "type": "particlesDisperse",
-        "enabled": true,
-        "params": {
-          "count": 49,
-          "drift": 0.3
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_160": {
-      "exit": {
-        "type": "melt",
-        "enabled": true,
-        "params": {
-          "drip": 1.5
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_161": {
-      "exit": {
-        "type": "burnAway",
-        "enabled": true,
-        "params": {
-          "scale": 10,
-          "emberColor": null,
-          "charColor": "#4dc8ff"
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_162": {
-      "exit": {
-        "type": "strokeErase",
-        "enabled": true,
-        "params": {
-          "width": 4
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_163": {
-      "exit": {
-        "type": "creepOut",
-        "enabled": true,
-        "params": {
-          "shift": 0.15
-        },
-        "motion": {
-          "out": {
-            "duration": 1,
-            "ease": "backIn"
-          }
-        }
-      }
-    },
-    "fx_164": {
+    "fx_149": {
       "hold": [
         {
           "type": "floatBob",
@@ -6218,7 +6029,7 @@
         }
       ]
     },
-    "fx_165": {
+    "fx_150": {
       "hold": [
         {
           "type": "sineWave",
@@ -6232,7 +6043,7 @@
         }
       ]
     },
-    "fx_166": {
+    "fx_151": {
       "hold": [
         {
           "type": "jitter",
@@ -6245,7 +6056,7 @@
         }
       ]
     },
-    "fx_167": {
+    "fx_152": {
       "hold": [
         {
           "type": "pulse",
@@ -6258,7 +6069,7 @@
         }
       ]
     },
-    "fx_168": {
+    "fx_153": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6272,7 +6083,7 @@
         }
       ]
     },
-    "fx_169": {
+    "fx_154": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6288,7 +6099,7 @@
         }
       ]
     },
-    "fx_170": {
+    "fx_155": {
       "hold": [
         {
           "type": "drift",
@@ -6301,7 +6112,7 @@
         }
       ]
     },
-    "fx_171": {
+    "fx_156": {
       "hold": [
         {
           "type": "marquee",
@@ -6313,7 +6124,7 @@
         }
       ]
     },
-    "fx_172": {
+    "fx_157": {
       "hold": [
         {
           "type": "jelly",
@@ -6326,7 +6137,7 @@
         }
       ]
     },
-    "fx_173": {
+    "fx_158": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6340,7 +6151,7 @@
         }
       ]
     },
-    "fx_174": {
+    "fx_159": {
       "hold": [
         {
           "type": "twist",
@@ -6352,7 +6163,7 @@
         }
       ]
     },
-    "fx_175": {
+    "fx_160": {
       "hold": [
         {
           "type": "breathing",
@@ -6364,7 +6175,7 @@
         }
       ]
     },
-    "fx_176": {
+    "fx_161": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6377,7 +6188,23 @@
         }
       ]
     },
-    "fx_177": {
+    "fx_162": {
+      "hold": [
+        {
+          "type": "orbit2D",
+          "enabled": true,
+          "params": {
+            "radius": 0.04,
+            "speed": 0.5,
+            "spread": 0.06,
+            "tilt": 0,
+            "spin": false
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_163": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6403,7 +6230,7 @@
         }
       ]
     },
-    "fx_178": {
+    "fx_164": {
       "hold": [
         {
           "type": "heartbeat",
@@ -6416,7 +6243,7 @@
         }
       ]
     },
-    "fx_179": {
+    "fx_165": {
       "hold": [
         {
           "type": "shiver",
@@ -6429,7 +6256,7 @@
         }
       ]
     },
-    "fx_180": {
+    "fx_166": {
       "hold": [
         {
           "type": "dissolve",
@@ -6442,7 +6269,7 @@
         }
       ]
     },
-    "fx_181": {
+    "fx_167": {
       "hold": [
         {
           "type": "floatBob",
@@ -6455,7 +6282,7 @@
         }
       ]
     },
-    "fx_182": {
+    "fx_168": {
       "hold": [
         {
           "type": "sineWave",
@@ -6469,7 +6296,7 @@
         }
       ]
     },
-    "fx_183": {
+    "fx_169": {
       "hold": [
         {
           "type": "jitter",
@@ -6482,7 +6309,7 @@
         }
       ]
     },
-    "fx_184": {
+    "fx_170": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6496,7 +6323,7 @@
         }
       ]
     },
-    "fx_185": {
+    "fx_171": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6512,7 +6339,7 @@
         }
       ]
     },
-    "fx_186": {
+    "fx_172": {
       "hold": [
         {
           "type": "drift",
@@ -6525,7 +6352,7 @@
         }
       ]
     },
-    "fx_187": {
+    "fx_173": {
       "hold": [
         {
           "type": "marquee",
@@ -6537,7 +6364,7 @@
         }
       ]
     },
-    "fx_188": {
+    "fx_174": {
       "hold": [
         {
           "type": "jelly",
@@ -6550,7 +6377,7 @@
         }
       ]
     },
-    "fx_189": {
+    "fx_175": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6564,7 +6391,7 @@
         }
       ]
     },
-    "fx_190": {
+    "fx_176": {
       "hold": [
         {
           "type": "twist",
@@ -6576,7 +6403,7 @@
         }
       ]
     },
-    "fx_191": {
+    "fx_177": {
       "hold": [
         {
           "type": "breathing",
@@ -6588,7 +6415,7 @@
         }
       ]
     },
-    "fx_192": {
+    "fx_178": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6601,7 +6428,23 @@
         }
       ]
     },
-    "fx_193": {
+    "fx_179": {
+      "hold": [
+        {
+          "type": "orbit2D",
+          "enabled": true,
+          "params": {
+            "radius": 0.015,
+            "speed": 0.5,
+            "spread": 0.06,
+            "tilt": 0,
+            "spin": false
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_180": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6627,7 +6470,7 @@
         }
       ]
     },
-    "fx_194": {
+    "fx_181": {
       "hold": [
         {
           "type": "shiver",
@@ -6640,7 +6483,7 @@
         }
       ]
     },
-    "fx_195": {
+    "fx_182": {
       "hold": [
         {
           "type": "dissolve",
@@ -6653,178 +6496,7 @@
         }
       ]
     },
-    "fx_196": {
-      "hold": [
-        {
-          "type": "floatBob",
-          "enabled": true,
-          "params": {
-            "amp": 0.02,
-            "speed": 0.3
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_197": {
-      "hold": [
-        {
-          "type": "sineWave",
-          "enabled": true,
-          "params": {
-            "amp": 0.06,
-            "freq": 0.004,
-            "speed": 0.6
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_198": {
-      "hold": [
-        {
-          "type": "jitter",
-          "enabled": true,
-          "params": {
-            "amp": 0.008,
-            "rate": 8
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_199": {
-      "hold": [
-        {
-          "type": "opacityPulse",
-          "enabled": true,
-          "params": {
-            "min": 0.6,
-            "period": 1.6,
-            "speed": 0.8
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_200": {
-      "hold": [
-        {
-          "type": "drift",
-          "enabled": true,
-          "params": {
-            "vx": 0.2,
-            "vy": 0
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_201": {
-      "hold": [
-        {
-          "type": "marquee",
-          "enabled": true,
-          "params": {
-            "speed": 0.29
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_202": {
-      "hold": [
-        {
-          "type": "jelly",
-          "enabled": true,
-          "params": {
-            "amount": 0.05,
-            "freq": 4.6
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_203": {
-      "hold": [
-        {
-          "type": "wobbleWarp",
-          "enabled": true,
-          "params": {
-            "amount": 0.02,
-            "scale": 6.1,
-            "speed": 0.8
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_204": {
-      "hold": [
-        {
-          "type": "orbit3D",
-          "enabled": true,
-          "params": {
-            "tilt": 5,
-            "speed": 2.25
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_205": {
-      "hold": [
-        {
-          "type": "pathFollow",
-          "enabled": true,
-          "params": {
-            "points": [
-              {
-                "x": 0.2,
-                "y": 0.5
-              },
-              {
-                "x": 0.5,
-                "y": 0.42
-              },
-              {
-                "x": 0.8,
-                "y": 0.5
-              }
-            ],
-            "speed": 0.14
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_206": {
-      "hold": [
-        {
-          "type": "shiver",
-          "enabled": true,
-          "params": {
-            "amount": 0.4,
-            "interval": 5
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_207": {
-      "hold": [
-        {
-          "type": "dissolve",
-          "enabled": true,
-          "params": {
-            "speed": 3,
-            "intensity": 0.1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_208": {
+    "fx_183": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -6840,7 +6512,7 @@
         "motion": {}
       }
     },
-    "fx_209": {
+    "fx_184": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -6856,7 +6528,7 @@
         "motion": {}
       }
     },
-    "fx_210": {
+    "fx_185": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -6872,7 +6544,7 @@
         "motion": {}
       }
     },
-    "fx_211": {
+    "fx_186": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -6888,7 +6560,7 @@
         "motion": {}
       }
     },
-    "fx_212": {
+    "fx_187": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -6904,7 +6576,7 @@
         "motion": {}
       }
     },
-    "fx_213": {
+    "fx_188": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -6920,7 +6592,7 @@
         "motion": {}
       }
     },
-    "fx_214": {
+    "fx_189": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -6936,7 +6608,7 @@
         "motion": {}
       }
     },
-    "fx_215": {
+    "fx_190": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -6952,7 +6624,7 @@
         "motion": {}
       }
     },
-    "fx_216": {
+    "fx_191": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -6968,7 +6640,7 @@
         "motion": {}
       }
     },
-    "fx_217": {
+    "fx_192": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -6986,7 +6658,7 @@
         "motion": {}
       }
     },
-    "fx_218": {
+    "fx_193": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -7002,7 +6674,7 @@
         "motion": {}
       }
     },
-    "fx_219": {
+    "fx_194": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -7018,7 +6690,7 @@
         "motion": {}
       }
     },
-    "fx_220": {
+    "fx_195": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -7034,7 +6706,7 @@
         "motion": {}
       }
     },
-    "fx_221": {
+    "fx_196": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -7050,7 +6722,7 @@
         "motion": {}
       }
     },
-    "fx_222": {
+    "fx_197": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -7066,7 +6738,7 @@
         "motion": {}
       }
     },
-    "fx_223": {
+    "fx_198": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -7082,7 +6754,7 @@
         "motion": {}
       }
     },
-    "fx_224": {
+    "fx_199": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -7098,7 +6770,7 @@
         "motion": {}
       }
     },
-    "fx_225": {
+    "fx_200": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -7114,7 +6786,7 @@
         "motion": {}
       }
     },
-    "fx_226": {
+    "fx_201": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -7130,7 +6802,7 @@
         "motion": {}
       }
     },
-    "fx_227": {
+    "fx_202": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7148,169 +6820,7 @@
         "motion": {}
       }
     },
-    "fx_228": {
-      "location": {
-        "type": "center",
-        "enabled": true,
-        "params": {
-          "offsetX": 0,
-          "offsetY": -0.5,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_229": {
-      "location": {
-        "type": "lowerThird",
-        "enabled": true,
-        "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_230": {
-      "location": {
-        "type": "upperThird",
-        "enabled": true,
-        "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_231": {
-      "location": {
-        "type": "left",
-        "enabled": true,
-        "params": {
-          "offsetX": -0.5,
-          "offsetY": -0.5,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_232": {
-      "location": {
-        "type": "right",
-        "enabled": true,
-        "params": {
-          "offsetX": -0.5,
-          "offsetY": -0.5,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_233": {
-      "location": {
-        "type": "karaoke",
-        "enabled": true,
-        "params": {
-          "offsetX": -0.5,
-          "offsetY": -0.5,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_234": {
-      "location": {
-        "type": "stacked",
-        "enabled": true,
-        "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_235": {
-      "location": {
-        "type": "randomSafe",
-        "enabled": true,
-        "params": {
-          "offsetX": 0.5,
-          "offsetY": 0,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_236": {
-      "location": {
-        "type": "badgeAnchored",
-        "enabled": true,
-        "params": {
-          "offsetX": 0,
-          "offsetY": -0.5,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_237": {
-      "location": {
-        "type": "custom",
-        "enabled": true,
-        "params": {
-          "x": 0.5,
-          "y": -0.25,
-          "offsetX": 0,
-          "offsetY": 0,
-          "safeArea": 0.08,
-          "drift": {
-            "x": 0,
-            "y": 0
-          }
-        },
-        "motion": {}
-      }
-    },
-    "fx_238": {
+    "fx_203": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7321,7 +6831,7 @@
         "motion": {}
       }
     },
-    "fx_239": {
+    "fx_204": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7334,7 +6844,7 @@
         "motion": {}
       }
     },
-    "fx_240": {
+    "fx_205": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7346,7 +6856,7 @@
         "motion": {}
       }
     },
-    "fx_241": {
+    "fx_206": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7357,18 +6867,19 @@
         "motion": {}
       }
     },
-    "fx_242": {
+    "fx_207": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
         "params": {
           "grain": 0.5,
-          "sparkle": 0.25
+          "sparkle": 0.25,
+          "colors": null
         },
         "motion": {}
       }
     },
-    "fx_243": {
+    "fx_208": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7380,7 +6891,7 @@
         "motion": {}
       }
     },
-    "fx_244": {
+    "fx_209": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7393,19 +6904,20 @@
         "motion": {}
       }
     },
-    "fx_245": {
+    "fx_210": {
       "fill": {
         "type": "marble",
         "enabled": true,
         "params": {
           "scale": 2.4,
           "veins": 5,
+          "veinWidth": 0.06,
           "colors": null
         },
         "motion": {}
       }
     },
-    "fx_246": {
+    "fx_211": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7417,7 +6929,7 @@
         "motion": {}
       }
     },
-    "fx_247": {
+    "fx_212": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7432,7 +6944,7 @@
         "motion": {}
       }
     },
-    "fx_248": {
+    "fx_213": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7444,7 +6956,7 @@
         "motion": {}
       }
     },
-    "fx_249": {
+    "fx_214": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7456,7 +6968,7 @@
         "motion": {}
       }
     },
-    "fx_250": {
+    "fx_215": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7467,7 +6979,7 @@
         "motion": {}
       }
     },
-    "fx_251": {
+    "fx_216": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7480,7 +6992,7 @@
         "motion": {}
       }
     },
-    "fx_252": {
+    "fx_217": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7492,7 +7004,7 @@
         "motion": {}
       }
     },
-    "fx_253": {
+    "fx_218": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7512,49 +7024,13 @@
         "motion": {}
       }
     },
-    "fx_254": {
+    "fx_219": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
         "params": {
           "grain": 0.5,
-          "sparkle": 0.75
-        },
-        "motion": {}
-      }
-    },
-    "fx_255": {
-      "fill": {
-        "type": "fire",
-        "enabled": true,
-        "params": {
-          "scale": 2,
-          "speed": 1.05,
-          "colors": null
-        },
-        "motion": {}
-      }
-    },
-    "fx_256": {
-      "fill": {
-        "type": "caustics",
-        "enabled": true,
-        "params": {
-          "scale": 2,
-          "speed": 0.4,
-          "colorA": "#ff8a3d",
-          "colorB": "#ff8a3d"
-        },
-        "motion": {}
-      }
-    },
-    "fx_257": {
-      "fill": {
-        "type": "marble",
-        "enabled": true,
-        "params": {
-          "scale": 2.4,
-          "veins": 5,
+          "sparkle": 0.25,
           "colors": [
             {
               "pos": 0,
@@ -7569,7 +7045,54 @@
         "motion": {}
       }
     },
-    "fx_258": {
+    "fx_220": {
+      "fill": {
+        "type": "fire",
+        "enabled": true,
+        "params": {
+          "scale": 2,
+          "speed": 1.05,
+          "colors": null
+        },
+        "motion": {}
+      }
+    },
+    "fx_221": {
+      "fill": {
+        "type": "caustics",
+        "enabled": true,
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": "#ff8a3d",
+          "colorB": "#ff8a3d"
+        },
+        "motion": {}
+      }
+    },
+    "fx_222": {
+      "fill": {
+        "type": "marble",
+        "enabled": true,
+        "params": {
+          "scale": 2.4,
+          "veins": 5,
+          "veinWidth": 0.06,
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
+        },
+        "motion": {}
+      }
+    },
+    "fx_223": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7581,7 +7104,7 @@
         "motion": {}
       }
     },
-    "fx_259": {
+    "fx_224": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7596,7 +7119,7 @@
         "motion": {}
       }
     },
-    "fx_260": {
+    "fx_225": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7608,7 +7131,7 @@
         "motion": {}
       }
     },
-    "fx_261": {
+    "fx_226": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7620,147 +7143,7 @@
         "motion": {}
       }
     },
-    "fx_262": {
-      "fill": {
-        "type": "gradientSweep",
-        "enabled": true,
-        "params": {
-          "angle": -90,
-          "speed": 1.5
-        },
-        "motion": {}
-      }
-    },
-    "fx_263": {
-      "fill": {
-        "type": "rainbowFlow",
-        "enabled": true,
-        "params": {
-          "saturation": 0.25,
-          "lightness": 0.33,
-          "speed": 0.5,
-          "perLetter": false
-        },
-        "motion": {}
-      }
-    },
-    "fx_264": {
-      "fill": {
-        "type": "holographic",
-        "enabled": true,
-        "params": {
-          "iridescence": 0.25,
-          "fresnel": 0.4,
-          "speed": 0.5
-        },
-        "motion": {}
-      }
-    },
-    "fx_265": {
-      "fill": {
-        "type": "chrome",
-        "enabled": true,
-        "params": {
-          "envColors": null,
-          "sharpness": 0.75
-        },
-        "motion": {}
-      }
-    },
-    "fx_266": {
-      "fill": {
-        "type": "goldFoil",
-        "enabled": true,
-        "params": {
-          "grain": 0.25,
-          "sparkle": 0.75
-        },
-        "motion": {}
-      }
-    },
-    "fx_267": {
-      "fill": {
-        "type": "fire",
-        "enabled": true,
-        "params": {
-          "scale": 0.5,
-          "speed": 1.05,
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        "motion": {}
-      }
-    },
-    "fx_268": {
-      "fill": {
-        "type": "caustics",
-        "enabled": true,
-        "params": {
-          "scale": 2,
-          "speed": 0.4,
-          "colorA": "#4dc8ff",
-          "colorB": "#ff8a3d"
-        },
-        "motion": {}
-      }
-    },
-    "fx_269": {
-      "fill": {
-        "type": "marble",
-        "enabled": true,
-        "params": {
-          "scale": 6.1,
-          "veins": 5,
-          "colors": null
-        },
-        "motion": {}
-      }
-    },
-    "fx_270": {
-      "fill": {
-        "type": "glass",
-        "enabled": true,
-        "params": {
-          "refraction": 0.75,
-          "blur": 0.2,
-          "tint": "#4dc8ff"
-        },
-        "motion": {}
-      }
-    },
-    "fx_271": {
-      "fill": {
-        "type": "karaokeWipe",
-        "enabled": true,
-        "params": {
-          "colorBefore": "#4dc8ff",
-          "colorAfter": "#ff8a3d",
-          "softness": 0.05
-        },
-        "motion": {}
-      }
-    },
-    "fx_272": {
-      "fill": {
-        "type": "ink",
-        "enabled": true,
-        "params": {
-          "scale": 3.3,
-          "threshold": 0.35,
-          "softness": 0.11
-        },
-        "motion": {}
-      }
-    },
-    "fx_273": {
+    "fx_227": {
       "edge": [
         {
           "type": "outline",
@@ -7769,23 +7152,24 @@
             "width": 3,
             "color": null,
             "softness": 0.35,
-            "pattern": "random",
+            "pattern": "dashed",
             "dashLength": 14,
             "gapRatio": 0.45,
             "flow": 0,
-            "offset": 0
+            "offset": 0,
+            "inner": 0
           },
           "motion": {}
         }
       ]
     },
-    "fx_274": {
+    "fx_228": {
       "edge": [
         {
           "type": "neonGlow",
           "enabled": true,
           "params": {
-            "color": "#4dc8ff",
+            "color": null,
             "radius": 18,
             "intensity": 0.5,
             "bloom": true
@@ -7794,66 +7178,66 @@
         }
       ]
     },
-    "fx_275": {
+    "fx_229": {
       "edge": [
         {
           "type": "innerGlow",
           "enabled": true,
           "params": {
-            "color": "#4dc8ff",
-            "radius": 14,
-            "intensity": 0.75
+            "color": null,
+            "radius": 60.5,
+            "intensity": 0.9
           },
           "motion": {}
         }
       ]
     },
-    "fx_276": {
+    "fx_230": {
       "edge": [
         {
           "type": "bevel",
           "enabled": true,
           "params": {
-            "depth": 0.25,
+            "depth": 0.6,
             "lightAngle": -60,
-            "highlight": "#4dc8ff",
+            "highlight": "#ff8a3d",
             "shadow": null
           },
           "motion": {}
         }
       ]
     },
-    "fx_277": {
+    "fx_231": {
       "edge": [
         {
           "type": "extrude",
           "enabled": true,
           "params": {
-            "depth": 30,
+            "depth": 6,
             "angle": 135,
             "colorNear": null,
-            "colorFar": "#ff8a3d"
+            "colorFar": null
           },
           "motion": {}
         }
       ]
     },
-    "fx_278": {
+    "fx_232": {
       "edge": [
         {
           "type": "longShadow",
           "enabled": true,
           "params": {
-            "length": 40,
-            "angle": -90,
-            "color": "#4dc8ff",
+            "length": 30,
+            "angle": 135,
+            "color": null,
             "fade": 0.7
           },
           "motion": {}
         }
       ]
     },
-    "fx_279": {
+    "fx_233": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7863,24 +7247,802 @@
               "x": 6,
               "y": 8
             },
-            "blur": 30,
+            "blur": 10,
+            "color": "#ff8a3d",
+            "opacity": 0.6
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_234": {
+      "edge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 121,
+            "width": 0.35,
+            "grow": 0.5,
+            "color": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_235": {
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 3,
+            "color": null,
+            "softness": 0.35,
+            "pattern": "dotted",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0,
+            "inner": 0
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_236": {
+      "edge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": "#ff8a3d",
+            "radius": 18,
+            "intensity": 0.5,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_237": {
+      "edge": [
+        {
+          "type": "innerGlow",
+          "enabled": true,
+          "params": {
+            "color": "#ff8a3d",
+            "radius": 60.5,
+            "intensity": 0.9
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_238": {
+      "edge": [
+        {
+          "type": "bevel",
+          "enabled": true,
+          "params": {
+            "depth": 0.6,
+            "lightAngle": -60,
+            "highlight": "#4dc8ff",
+            "shadow": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_239": {
+      "edge": [
+        {
+          "type": "extrude",
+          "enabled": true,
+          "params": {
+            "depth": 30,
+            "angle": 135,
+            "colorNear": null,
+            "colorFar": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_240": {
+      "edge": [
+        {
+          "type": "longShadow",
+          "enabled": true,
+          "params": {
+            "length": 30,
+            "angle": 135,
+            "color": "#ff8a3d",
+            "fade": 0.7
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_241": {
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
             "color": "#4dc8ff",
-            "opacity": 0.25
+            "opacity": 0.6
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_242": {
+      "edge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 121,
+            "width": 0.35,
+            "grow": 0.5,
+            "color": "#ff8a3d"
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_243": {
+      "post": [
+        {
+          "type": "glitchBlocks",
+          "enabled": true,
+          "params": {
+            "blockSize": 35,
+            "rate": 8.25,
+            "intensity": 0.5,
+            "rgbSplit": true,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_244": {
+      "post": [
+        {
+          "type": "rgbShift",
+          "enabled": true,
+          "params": {
+            "amount": 7.5,
+            "angle": -90,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_245": {
+      "post": [
+        {
+          "type": "scanTear",
+          "enabled": true,
+          "params": {
+            "lines": 51.5,
+            "amount": 0.25,
+            "speed": 1,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_246": {
+      "post": [
+        {
+          "type": "vhsTracking",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "noise": 0.75,
+            "rollSpeed": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_247": {
+      "post": [
+        {
+          "type": "dataSmear",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "direction": -90,
+            "threshold": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_248": {
+      "post": [
+        {
+          "type": "digitalNoise",
+          "enabled": true,
+          "params": {
+            "density": 0.25,
+            "blockSize": 48.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_249": {
+      "post": [
+        {
+          "type": "glitchSlice",
+          "enabled": true,
+          "params": {
+            "slices": 17.5,
+            "offset": 0.75,
+            "rate": 6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_250": {
+      "post": [
+        {
+          "type": "noiseDissolve",
+          "enabled": true,
+          "params": {
+            "scale": 48.25,
+            "edgeWidth": 0.1,
+            "edgeColor": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_251": {
+      "post": [
+        {
+          "type": "directionalDissolve",
+          "enabled": true,
+          "params": {
+            "angle": 0,
+            "softness": 0.75,
+            "noiseMix": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_252": {
+      "post": [
+        {
+          "type": "pixelDissolve",
+          "enabled": true,
+          "params": {
+            "cellSize": 17.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_253": {
+      "post": [
+        {
+          "type": "burnDissolve",
+          "enabled": true,
+          "params": {
+            "scale": 10,
+            "emberColor": null,
+            "charColor": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_254": {
+      "post": [
+        {
+          "type": "halftoneDissolve",
+          "enabled": true,
+          "params": {
+            "dotSize": 11.5,
+            "angle": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_255": {
+      "post": [
+        {
+          "type": "particleDissolve",
+          "enabled": true,
+          "params": {
+            "count": 35,
+            "drift": 0.75,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_256": {
+      "post": [
+        {
+          "type": "shockwave",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "radius": 0.25,
+            "width": 0.129,
+            "strength": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_257": {
+      "post": [
+        {
+          "type": "zoomBlur",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "strength": 0.375,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_258": {
+      "post": [
+        {
+          "type": "motionBlur",
+          "enabled": true,
+          "params": {
+            "samples": 7,
+            "shutter": 0.5,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_259": {
+      "post": [
+        {
+          "type": "echoTrail",
+          "enabled": true,
+          "params": {
+            "copies": 4,
+            "spacing": 0.108,
+            "decay": 0.6,
+            "tint": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_260": {
+      "post": [
+        {
+          "type": "godRays",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.4
+            },
+            "decay": 0.625,
+            "density": 0.325,
+            "weight": 1,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_261": {
+      "post": [
+        {
+          "type": "lightSweep",
+          "enabled": true,
+          "params": {
+            "angle": 90,
+            "width": 0.12,
+            "speed": 0.6,
+            "color": null,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_262": {
+      "post": [
+        {
+          "type": "kaleidoscope",
+          "enabled": true,
+          "params": {
+            "segments": 13,
+            "rotation": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_263": {
+      "post": [
+        {
+          "type": "mirror",
+          "enabled": true,
+          "params": {
+            "axis": "y",
+            "offset": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_264": {
+      "post": [
+        {
+          "type": "pixelSort",
+          "enabled": true,
+          "params": {
+            "threshold": 0.25,
+            "length": 16.75,
+            "direction": 90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_265": {
+      "post": [
+        {
+          "type": "lensDistortion",
+          "enabled": true,
+          "params": {
+            "k1": -0.5,
+            "k2": -0.5,
+            "chroma": 0.2,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_266": {
+      "post": [
+        {
+          "type": "colorGrade",
+          "enabled": true,
+          "params": {
+            "lift": 0,
+            "saturation": 1,
+            "posterize": 0,
+            "duotone": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_267": {
+      "post": [
+        {
+          "type": "displacementMap",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "scroll": 1.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_268": {
+      "post": [
+        {
+          "type": "bloom",
+          "enabled": true,
+          "params": {
+            "threshold": 0.25,
+            "intensity": 0.5,
+            "radius": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_269": {
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "radial": 0,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_270": {
+      "post": [
+        {
+          "type": "crt",
+          "enabled": true,
+          "params": {
+            "scanlines": 0.25,
+            "curvature": 0.75,
+            "vignette": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_271": {
+      "post": [
+        {
+          "type": "filmGrain",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "size": 3.125,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_272": {
+      "post": [
+        {
+          "type": "halftone",
+          "enabled": true,
+          "params": {
+            "dotSize": 11.5,
+            "angle": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_273": {
+      "post": [
+        {
+          "type": "pixelate",
+          "enabled": true,
+          "params": {
+            "size": 17.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_274": {
+      "post": [
+        {
+          "type": "heatHaze",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "speed": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_275": {
+      "post": [
+        {
+          "type": "lightLeak",
+          "enabled": true,
+          "params": {
+            "color": null,
+            "x": 0.25,
+            "y": 0.2,
+            "intensity": 0.6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_276": {
+      "post": [
+        {
+          "type": "vignette",
+          "enabled": true,
+          "params": {
+            "amount": 0.5,
+            "softness": 0.25,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_277": {
+      "post": [
+        {
+          "type": "sparkles",
+          "enabled": true,
+          "params": {
+            "count": 24,
+            "size": 2,
+            "shape": "dot",
+            "color": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_278": {
+      "post": [
+        {
+          "type": "lensFlare",
+          "enabled": true,
+          "params": {
+            "position": {
+              "x": 0.4,
+              "y": 0.35
+            },
+            "color": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_279": {
+      "post": [
+        {
+          "type": "glitchBlocks",
+          "enabled": true,
+          "params": {
+            "blockSize": 97,
+            "rate": 8.25,
+            "intensity": 0.5,
+            "rgbSplit": true,
+            "enabled": true,
+            "in": 1,
+            "out": 1
           },
           "motion": {}
         }
       ]
     },
     "fx_280": {
-      "edge": [
+      "post": [
         {
-          "type": "drip",
+          "type": "rgbShift",
           "enabled": true,
           "params": {
-            "length": 40,
-            "width": 0.33,
-            "grow": 0.5,
-            "color": "#4dc8ff"
+            "amount": 22.5,
+            "angle": -90,
+            "jitter": 0.3,
+            "enabled": true,
+            "in": 1,
+            "out": 1
           },
           "motion": {}
         }
@@ -7889,13 +8051,12 @@
     "fx_281": {
       "post": [
         {
-          "type": "glitchBlocks",
+          "type": "scanTear",
           "enabled": true,
           "params": {
-            "blockSize": 97,
-            "rate": 6,
-            "intensity": 0.25,
-            "rgbSplit": true,
+            "lines": 150.5,
+            "amount": 0.25,
+            "speed": 1,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7907,12 +8068,12 @@
     "fx_282": {
       "post": [
         {
-          "type": "rgbShift",
+          "type": "vhsTracking",
           "enabled": true,
           "params": {
-            "amount": 22.5,
-            "angle": 0,
-            "jitter": 0.25,
+            "amount": 0.75,
+            "noise": 0.75,
+            "rollSpeed": 0.3,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7924,12 +8085,12 @@
     "fx_283": {
       "post": [
         {
-          "type": "scanTear",
+          "type": "dataSmear",
           "enabled": true,
           "params": {
-            "lines": 150.5,
-            "amount": 0.4,
-            "speed": 3,
+            "amount": 0.75,
+            "direction": -90,
+            "threshold": 0.3,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7941,12 +8102,11 @@
     "fx_284": {
       "post": [
         {
-          "type": "vhsTracking",
+          "type": "digitalNoise",
           "enabled": true,
           "params": {
-            "amount": 0.75,
-            "noise": 0.2,
-            "rollSpeed": 0.5,
+            "density": 0.75,
+            "blockSize": 48.5,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7958,12 +8118,12 @@
     "fx_285": {
       "post": [
         {
-          "type": "dataSmear",
+          "type": "glitchSlice",
           "enabled": true,
           "params": {
-            "amount": 0.75,
-            "direction": 0,
-            "threshold": 0.25,
+            "slices": 48.5,
+            "offset": 0.75,
+            "rate": 6,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7975,11 +8135,12 @@
     "fx_286": {
       "post": [
         {
-          "type": "digitalNoise",
+          "type": "noiseDissolve",
           "enabled": true,
           "params": {
-            "density": 0.75,
-            "blockSize": 12,
+            "scale": 48.25,
+            "edgeWidth": 0.1,
+            "edgeColor": "#ff8a3d",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -7991,12 +8152,12 @@
     "fx_287": {
       "post": [
         {
-          "type": "glitchSlice",
+          "type": "directionalDissolve",
           "enabled": true,
           "params": {
-            "slices": 48.5,
-            "offset": 0.4,
-            "rate": 8.25,
+            "angle": -90,
+            "softness": 0.75,
+            "noiseMix": 0.3,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8006,40 +8167,6 @@
       ]
     },
     "fx_288": {
-      "post": [
-        {
-          "type": "noiseDissolve",
-          "enabled": true,
-          "params": {
-            "scale": 10,
-            "edgeWidth": 0.125,
-            "edgeColor": "#4dc8ff",
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_289": {
-      "post": [
-        {
-          "type": "directionalDissolve",
-          "enabled": true,
-          "params": {
-            "angle": 90,
-            "softness": 0.1,
-            "noiseMix": 0.25,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_290": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -8054,15 +8181,47 @@
         }
       ]
     },
-    "fx_291": {
+    "fx_289": {
       "post": [
         {
           "type": "burnDissolve",
           "enabled": true,
           "params": {
-            "scale": 16.75,
-            "emberColor": "#4dc8ff",
-            "charColor": null,
+            "scale": 10,
+            "emberColor": "#ff8a3d",
+            "charColor": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_290": {
+      "post": [
+        {
+          "type": "halftoneDissolve",
+          "enabled": true,
+          "params": {
+            "dotSize": 30.5,
+            "angle": -90,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_291": {
+      "post": [
+        {
+          "type": "particleDissolve",
+          "enabled": true,
+          "params": {
+            "count": 97,
+            "drift": 0.75,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8074,38 +8233,6 @@
     "fx_292": {
       "post": [
         {
-          "type": "halftoneDissolve",
-          "enabled": true,
-          "params": {
-            "dotSize": 30.5,
-            "angle": 0,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_293": {
-      "post": [
-        {
-          "type": "particleDissolve",
-          "enabled": true,
-          "params": {
-            "count": 97,
-            "drift": 0.4,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_294": {
-      "post": [
-        {
           "type": "shockwave",
           "enabled": true,
           "params": {
@@ -8114,7 +8241,7 @@
               "y": 0.5
             },
             "radius": 0.75,
-            "width": 0.376,
+            "width": 0.129,
             "strength": 0.5,
             "enabled": true,
             "in": 1,
@@ -8124,7 +8251,7 @@
         }
       ]
     },
-    "fx_295": {
+    "fx_293": {
       "post": [
         {
           "type": "zoomBlur",
@@ -8143,7 +8270,7 @@
         }
       ]
     },
-    "fx_296": {
+    "fx_294": {
       "post": [
         {
           "type": "motionBlur",
@@ -8151,7 +8278,46 @@
           "params": {
             "samples": 13,
             "shutter": 0.5,
-            "angle": -90,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_295": {
+      "post": [
+        {
+          "type": "echoTrail",
+          "enabled": true,
+          "params": {
+            "copies": 4,
+            "spacing": 0.108,
+            "decay": 0.6,
+            "tint": "#ff8a3d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_296": {
+      "post": [
+        {
+          "type": "godRays",
+          "enabled": true,
+          "params": {
+            "center": {
+              "x": 0.5,
+              "y": 0.4
+            },
+            "decay": 0.875,
+            "density": 0.325,
+            "weight": 1,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8163,13 +8329,13 @@
     "fx_297": {
       "post": [
         {
-          "type": "echoTrail",
+          "type": "lightSweep",
           "enabled": true,
           "params": {
-            "copies": 7,
-            "spacing": 0.108,
-            "decay": 0.6,
-            "tint": "#4dc8ff",
+            "angle": 90,
+            "width": 0.12,
+            "speed": 0.6,
+            "color": "#ff8a3d",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8181,16 +8347,11 @@
     "fx_298": {
       "post": [
         {
-          "type": "godRays",
+          "type": "kaleidoscope",
           "enabled": true,
           "params": {
-            "center": {
-              "x": 0.5,
-              "y": 0.4
-            },
-            "decay": 0.875,
-            "density": 0.6,
-            "weight": 0.5,
+            "segments": 6,
+            "rotation": -90,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8202,13 +8363,11 @@
     "fx_299": {
       "post": [
         {
-          "type": "lightSweep",
+          "type": "mirror",
           "enabled": true,
           "params": {
-            "angle": -30,
-            "width": 0.133,
-            "speed": 0.6,
-            "color": "#4dc8ff",
+            "axis": "x",
+            "offset": -0.5,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8220,11 +8379,12 @@
     "fx_300": {
       "post": [
         {
-          "type": "kaleidoscope",
+          "type": "pixelSort",
           "enabled": true,
           "params": {
-            "segments": 13,
-            "rotation": 90,
+            "threshold": 0.75,
+            "length": 16.75,
+            "direction": 90,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8236,11 +8396,12 @@
     "fx_301": {
       "post": [
         {
-          "type": "mirror",
+          "type": "lensDistortion",
           "enabled": true,
           "params": {
-            "axis": "y",
-            "offset": 0.5,
+            "k1": 0.5,
+            "k2": -0.5,
+            "chroma": 0.2,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8252,12 +8413,13 @@
     "fx_302": {
       "post": [
         {
-          "type": "pixelSort",
+          "type": "colorGrade",
           "enabled": true,
           "params": {
-            "threshold": 0.75,
-            "length": 24,
-            "direction": -90,
+            "lift": 0,
+            "saturation": 1,
+            "posterize": 0,
+            "duotone": "#4dc8ff",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8269,12 +8431,11 @@
     "fx_303": {
       "post": [
         {
-          "type": "lensDistortion",
+          "type": "displacementMap",
           "enabled": true,
           "params": {
-            "k1": 0.5,
-            "k2": 0,
-            "chroma": 0.25,
+            "amount": 0.75,
+            "scroll": 1.5,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8286,13 +8447,12 @@
     "fx_304": {
       "post": [
         {
-          "type": "colorGrade",
+          "type": "bloom",
           "enabled": true,
           "params": {
-            "lift": 0,
-            "saturation": 0.5,
-            "posterize": 0,
-            "duotone": "#4dc8ff",
+            "threshold": 0.75,
+            "intensity": 0.5,
+            "radius": 0.5,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8304,11 +8464,12 @@
     "fx_305": {
       "post": [
         {
-          "type": "displacementMap",
+          "type": "chromaticAberration",
           "enabled": true,
           "params": {
             "amount": 0.75,
-            "scroll": 0.2,
+            "radial": 0,
+            "angle": 0,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8320,12 +8481,12 @@
     "fx_306": {
       "post": [
         {
-          "type": "bloom",
+          "type": "crt",
           "enabled": true,
           "params": {
-            "threshold": 0.75,
-            "intensity": 0.7,
-            "radius": 0.25,
+            "scanlines": 0.75,
+            "curvature": 0.75,
+            "vignette": 0.3,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8337,12 +8498,11 @@
     "fx_307": {
       "post": [
         {
-          "type": "chromaticAberration",
+          "type": "filmGrain",
           "enabled": true,
           "params": {
             "amount": 0.75,
-            "radial": 0,
-            "angle": -90,
+            "size": 3.125,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8354,12 +8514,11 @@
     "fx_308": {
       "post": [
         {
-          "type": "crt",
+          "type": "halftone",
           "enabled": true,
           "params": {
-            "scanlines": 0.75,
-            "curvature": 0.1,
-            "vignette": 0.25,
+            "dotSize": 30.5,
+            "angle": -90,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8369,38 +8528,6 @@
       ]
     },
     "fx_309": {
-      "post": [
-        {
-          "type": "filmGrain",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "size": 1,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_310": {
-      "post": [
-        {
-          "type": "halftone",
-          "enabled": true,
-          "params": {
-            "dotSize": 30.5,
-            "angle": 0,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_311": {
       "post": [
         {
           "type": "pixelate",
@@ -8415,14 +8542,48 @@
         }
       ]
     },
-    "fx_312": {
+    "fx_310": {
       "post": [
         {
           "type": "heatHaze",
           "enabled": true,
           "params": {
             "amount": 0.75,
-            "speed": 1.5,
+            "speed": 0.5,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_311": {
+      "post": [
+        {
+          "type": "lightLeak",
+          "enabled": true,
+          "params": {
+            "color": "#ff8a3d",
+            "x": 0.25,
+            "y": 0.2,
+            "intensity": 0.6,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_312": {
+      "post": [
+        {
+          "type": "vignette",
+          "enabled": true,
+          "params": {
+            "amount": 0.25,
+            "softness": 0.25,
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8434,13 +8595,13 @@
     "fx_313": {
       "post": [
         {
-          "type": "lightLeak",
+          "type": "sparkles",
           "enabled": true,
           "params": {
-            "color": "#4dc8ff",
-            "x": 0.85,
-            "y": 0.25,
-            "intensity": 0.6,
+            "count": 24,
+            "size": 2,
+            "shape": "star",
+            "color": "#ff8a3d",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -8450,40 +8611,6 @@
       ]
     },
     "fx_314": {
-      "post": [
-        {
-          "type": "vignette",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "softness": 0.5,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_315": {
-      "post": [
-        {
-          "type": "sparkles",
-          "enabled": true,
-          "params": {
-            "count": 19,
-            "size": 2,
-            "shape": "heart",
-            "color": null,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_316": {
       "post": [
         {
           "type": "lensFlare",
@@ -8502,7 +8629,7 @@
         }
       ]
     },
-    "fx_341": {
+    "fx_333": {
       "bgShape": {
         "type": "none",
         "enabled": true,
@@ -8528,7 +8655,7 @@
         "motion": {}
       }
     },
-    "fx_342": {
+    "fx_334": {
       "bgShape": {
         "type": "square",
         "enabled": true,
@@ -8554,7 +8681,7 @@
         "motion": {}
       }
     },
-    "fx_343": {
+    "fx_335": {
       "bgShape": {
         "type": "none",
         "enabled": true,
@@ -8580,7 +8707,7 @@
         "motion": {}
       }
     },
-    "fx_344": {
+    "fx_336": {
       "bgShape": {
         "type": "square",
         "enabled": true,
@@ -8606,7 +8733,7 @@
         "motion": {}
       }
     },
-    "fx_345": {
+    "fx_337": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8628,7 +8755,7 @@
         "motion": {}
       }
     },
-    "fx_346": {
+    "fx_338": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8652,7 +8779,7 @@
         "motion": {}
       }
     },
-    "fx_347": {
+    "fx_339": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8675,7 +8802,7 @@
         "motion": {}
       }
     },
-    "fx_348": {
+    "fx_340": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8697,7 +8824,7 @@
         "motion": {}
       }
     },
-    "fx_349": {
+    "fx_341": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8714,12 +8841,13 @@
         "enabled": true,
         "params": {
           "grain": 0.5,
-          "sparkle": 0.25
+          "sparkle": 0.25,
+          "colors": null
         },
         "motion": {}
       }
     },
-    "fx_350": {
+    "fx_342": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8742,7 +8870,7 @@
         "motion": {}
       }
     },
-    "fx_351": {
+    "fx_343": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8766,7 +8894,7 @@
         "motion": {}
       }
     },
-    "fx_352": {
+    "fx_344": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8784,12 +8912,13 @@
         "params": {
           "scale": 2.4,
           "veins": 5,
+          "veinWidth": 0.06,
           "colors": null
         },
         "motion": {}
       }
     },
-    "fx_353": {
+    "fx_345": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8812,7 +8941,7 @@
         "motion": {}
       }
     },
-    "fx_354": {
+    "fx_346": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8838,7 +8967,7 @@
         "motion": {}
       }
     },
-    "fx_355": {
+    "fx_347": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8861,7 +8990,7 @@
         "motion": {}
       }
     },
-    "fx_356": {
+    "fx_348": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8884,7 +9013,7 @@
         "motion": {}
       }
     },
-    "fx_357": {
+    "fx_349": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8906,7 +9035,7 @@
         "motion": {}
       }
     },
-    "fx_358": {
+    "fx_350": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8930,7 +9059,7 @@
         "motion": {}
       }
     },
-    "fx_359": {
+    "fx_351": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8953,7 +9082,7 @@
         "motion": {}
       }
     },
-    "fx_360": {
+    "fx_352": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -8984,7 +9113,7 @@
         "motion": {}
       }
     },
-    "fx_361": {
+    "fx_353": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9001,12 +9130,22 @@
         "enabled": true,
         "params": {
           "grain": 0.5,
-          "sparkle": 0.75
+          "sparkle": 0.25,
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
         },
         "motion": {}
       }
     },
-    "fx_362": {
+    "fx_354": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9029,7 +9168,7 @@
         "motion": {}
       }
     },
-    "fx_363": {
+    "fx_355": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9053,7 +9192,7 @@
         "motion": {}
       }
     },
-    "fx_364": {
+    "fx_356": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9071,6 +9210,7 @@
         "params": {
           "scale": 2.4,
           "veins": 5,
+          "veinWidth": 0.06,
           "colors": [
             {
               "pos": 0,
@@ -9085,7 +9225,7 @@
         "motion": {}
       }
     },
-    "fx_365": {
+    "fx_357": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9108,7 +9248,7 @@
         "motion": {}
       }
     },
-    "fx_366": {
+    "fx_358": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9134,7 +9274,7 @@
         "motion": {}
       }
     },
-    "fx_367": {
+    "fx_359": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9157,7 +9297,7 @@
         "motion": {}
       }
     },
-    "fx_368": {
+    "fx_360": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9179,6 +9319,221 @@
         },
         "motion": {}
       }
+    },
+    "fx_361": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 3,
+            "color": null,
+            "softness": 0.35,
+            "pattern": "dashed",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0,
+            "inner": 0
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_362": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "neonGlow",
+          "enabled": true,
+          "params": {
+            "color": null,
+            "radius": 18,
+            "intensity": 0.5,
+            "bloom": true
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_363": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "innerGlow",
+          "enabled": true,
+          "params": {
+            "color": null,
+            "radius": 60.5,
+            "intensity": 0.9
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_364": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "bevel",
+          "enabled": true,
+          "params": {
+            "depth": 0.6,
+            "lightAngle": -60,
+            "highlight": "#ff8a3d",
+            "shadow": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_365": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "extrude",
+          "enabled": true,
+          "params": {
+            "depth": 6,
+            "angle": 135,
+            "colorNear": null,
+            "colorFar": null
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_366": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "longShadow",
+          "enabled": true,
+          "params": {
+            "length": 30,
+            "angle": 135,
+            "color": null,
+            "fade": 0.7
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_367": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": "#ff8a3d",
+            "opacity": 0.6
+          },
+          "motion": {}
+        }
+      ]
+    },
+    "fx_368": {
+      "bgShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.15,
+          "height": 1.15,
+          "opacity": 0.9,
+          "skipSpaces": true
+        },
+        "enabled": true
+      },
+      "bgEdge": [
+        {
+          "type": "drip",
+          "enabled": true,
+          "params": {
+            "length": 121,
+            "width": 0.35,
+            "grow": 0.5,
+            "color": null
+          },
+          "motion": {}
+        }
+      ]
     },
     "fx_369": {
       "bgShape": {
@@ -9200,11 +9555,12 @@
             "width": 3,
             "color": null,
             "softness": 0.35,
-            "pattern": "random",
+            "pattern": "dotted",
             "dashLength": 14,
             "gapRatio": 0.45,
             "flow": 0,
-            "offset": 0
+            "offset": 0,
+            "inner": 0
           },
           "motion": {}
         }
@@ -9227,7 +9583,7 @@
           "type": "neonGlow",
           "enabled": true,
           "params": {
-            "color": "#4dc8ff",
+            "color": "#ff8a3d",
             "radius": 18,
             "intensity": 0.5,
             "bloom": true
@@ -9253,9 +9609,9 @@
           "type": "innerGlow",
           "enabled": true,
           "params": {
-            "color": "#4dc8ff",
-            "radius": 14,
-            "intensity": 0.75
+            "color": "#ff8a3d",
+            "radius": 60.5,
+            "intensity": 0.9
           },
           "motion": {}
         }
@@ -9278,7 +9634,7 @@
           "type": "bevel",
           "enabled": true,
           "params": {
-            "depth": 0.25,
+            "depth": 0.6,
             "lightAngle": -60,
             "highlight": "#4dc8ff",
             "shadow": null
@@ -9307,7 +9663,7 @@
             "depth": 30,
             "angle": 135,
             "colorNear": null,
-            "colorFar": "#ff8a3d"
+            "colorFar": null
           },
           "motion": {}
         }
@@ -9330,9 +9686,9 @@
           "type": "longShadow",
           "enabled": true,
           "params": {
-            "length": 40,
-            "angle": -90,
-            "color": "#4dc8ff",
+            "length": 30,
+            "angle": 135,
+            "color": "#ff8a3d",
             "fade": 0.7
           },
           "motion": {}
@@ -9360,9 +9716,9 @@
               "x": 6,
               "y": 8
             },
-            "blur": 30,
+            "blur": 10,
             "color": "#4dc8ff",
-            "opacity": 0.25
+            "opacity": 0.6
           },
           "motion": {}
         }
@@ -9385,10 +9741,10 @@
           "type": "drip",
           "enabled": true,
           "params": {
-            "length": 40,
-            "width": 0.33,
+            "length": 121,
+            "width": 0.35,
             "grow": 0.5,
-            "color": "#4dc8ff"
+            "color": "#ff8a3d"
           },
           "motion": {}
         }
@@ -16978,8 +17334,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 631.88,
-      "end": 634.12,
+      "start": 627.88,
+      "end": 630.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -16994,8 +17350,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 633.88,
-      "end": 636.12,
+      "start": 629.88,
+      "end": 632.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17010,22 +17366,14 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 635.88,
-      "end": 638.12,
+      "start": 631.88,
+      "end": 634.12,
       "spec": {
         "type": "gradient",
         "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 1,
+          "colors": null,
+          "direction": "toBottomLeft",
+          "scale": 1.15,
           "speed": 0.1
         }
       },
@@ -17037,8 +17385,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 637.88,
-      "end": 640.12,
+      "start": 633.88,
+      "end": 636.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17055,8 +17403,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 639.88,
-      "end": 642.12,
+      "start": 635.88,
+      "end": 638.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17075,8 +17423,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 641.88,
-      "end": 644.12,
+      "start": 637.88,
+      "end": 640.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17094,8 +17442,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 643.88,
-      "end": 646.12,
+      "start": 639.88,
+      "end": 642.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17113,8 +17461,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 645.88,
-      "end": 648.12,
+      "start": 641.88,
+      "end": 644.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17134,8 +17482,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 647.88,
-      "end": 650.12,
+      "start": 643.88,
+      "end": 646.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17155,8 +17503,8 @@
     {
       "id": "clip_bg_9",
       "trackId": "bg",
-      "start": 649.88,
-      "end": 652.12,
+      "start": 645.88,
+      "end": 648.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17171,8 +17519,8 @@
     {
       "id": "clip_bg_10",
       "trackId": "bg",
-      "start": 651.88,
-      "end": 654.12,
+      "start": 647.88,
+      "end": 650.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17187,13 +17535,14 @@
     {
       "id": "clip_bg_11",
       "trackId": "bg",
-      "start": 653.88,
-      "end": 656.12,
+      "start": 649.88,
+      "end": 652.12,
       "spec": {
         "type": "gradient",
         "params": {
           "colors": null,
-          "scale": 3.4,
+          "direction": "toLeft",
+          "scale": 1.15,
           "speed": 0.1
         }
       },
@@ -17205,8 +17554,8 @@
     {
       "id": "clip_bg_12",
       "trackId": "bg",
-      "start": 655.88,
-      "end": 658.12,
+      "start": 651.88,
+      "end": 654.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17232,8 +17581,8 @@
     {
       "id": "clip_bg_13",
       "trackId": "bg",
-      "start": 657.88,
-      "end": 660.12,
+      "start": 653.88,
+      "end": 656.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17252,8 +17601,8 @@
     {
       "id": "clip_bg_14",
       "trackId": "bg",
-      "start": 659.88,
-      "end": 662.12,
+      "start": 655.88,
+      "end": 658.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17271,8 +17620,8 @@
     {
       "id": "clip_bg_15",
       "trackId": "bg",
-      "start": 661.88,
-      "end": 664.12,
+      "start": 657.88,
+      "end": 660.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17290,8 +17639,8 @@
     {
       "id": "clip_bg_16",
       "trackId": "bg",
-      "start": 663.88,
-      "end": 666.12,
+      "start": 659.88,
+      "end": 662.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17311,8 +17660,8 @@
     {
       "id": "clip_bg_17",
       "trackId": "bg",
-      "start": 665.88,
-      "end": 668.12,
+      "start": 661.88,
+      "end": 664.12,
       "spec": {
         "type": "shapes",
         "params": {
@@ -17321,130 +17670,6 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_18",
-      "trackId": "bg",
-      "start": 667.88,
-      "end": 670.12,
-      "spec": {
-        "type": "gradient",
-        "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 3.4,
-          "speed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_19",
-      "trackId": "bg",
-      "start": 669.88,
-      "end": 672.12,
-      "spec": {
-        "type": "noiseGradient",
-        "params": {
-          "colors": null,
-          "scale": 9.1,
-          "speed": 0.5
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_20",
-      "trackId": "bg",
-      "start": 671.88,
-      "end": 674.12,
-      "spec": {
-        "type": "card",
-        "params": {
-          "dim": 0.25,
-          "blur": 30,
-          "focusBadge": true,
-          "zoom": 1.6,
-          "parallax": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_21",
-      "trackId": "bg",
-      "start": 673.88,
-      "end": 676.12,
-      "spec": {
-        "type": "cover",
-        "params": {
-          "songId": "",
-          "blur": 30,
-          "dim": 0.75,
-          "zoomSpeed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_22",
-      "trackId": "bg",
-      "start": 675.88,
-      "end": 678.12,
-      "spec": {
-        "type": "image",
-        "params": {
-          "imageId": "",
-          "fit": "cover",
-          "blur": 10,
-          "dim": 0.25
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_23",
-      "trackId": "bg",
-      "start": 677.88,
-      "end": 680.12,
-      "spec": {
-        "type": "pattern",
-        "params": {
-          "mode": "rings",
-          "count": 24,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.55,
           "color": null
         }
       },

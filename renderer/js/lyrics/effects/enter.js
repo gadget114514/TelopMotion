@@ -11,14 +11,25 @@
     return value <= 0 ? 0 : value >= 1 ? 1 : value;
   }
 
+  // The plain opacity fade. `softness` bends the ramp towards smoothstep and
+  // `glow` flashes the glyph as it appears, which is the per-letter half of the
+  // fade shader in shader-fx.js (post.fade).
   fx.register({
     group: 'enter',
     type: 'fade',
     tags: ['basic'],
-    params: [],
+    params: [
+      { key: 'softness', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+      { key: 'glow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0, random: [0, 0.5] },
+    ],
     cost: 0,
-    cpu(state, p) {
-      state.opacity *= clamp01(p);
+    cpu(state, p, params) {
+      const soft = params && Number(params.softness) > 0 ? Math.min(1, Number(params.softness)) : 0;
+      const glow = params && Number(params.glow) > 0 ? Math.min(1, Number(params.glow)) : 0;
+      const k = clamp01(p);
+      const level = soft > 0 ? k + (k * k * (3 - 2 * k) - k) * soft : k;
+      state.opacity *= level;
+      if (glow > 0) state.flash = Math.max(state.flash || 0, glow * (1 - Math.abs(level * 2 - 1)));
     },
   });
 
@@ -248,6 +259,43 @@
     },
   });
 
+  // The exit sandCrumble played backwards: grains rise and settle into the
+  // glyph, which is revealed from the bottom up.
+  fx.register({
+    group: 'enter',
+    type: 'sandGather',
+    tags: ['particles', 'dissolve'],
+    cost: 3,
+    params: [
+      { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.25, random: [-0.6, 0.6] },
+      { key: 'gravity', kind: 'number', min: 0, max: 12, step: 0.1, default: 5 },
+      { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, random: [0, 0.6] },
+      { key: 'strength', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.15, random: [0, 0.5] },
+      { key: 'pile', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params) {
+      const k = 1 - clamp01(p);
+      if (k > 0.001 && k < 0.999) {
+        state.represent = 'sand';
+        state.reprProgress = 1 - k;
+        state.wipeMode = 2;
+        state.wipeSoft = 0.04;
+        state.visibleFrac = 1 - clamp01(k / 0.72);
+        state.sand = {
+          wind: params.wind == null ? 0.25 : params.wind,
+          gravity: params.gravity == null ? 5 : params.gravity,
+          grain: params.grain == null ? 2.4 : params.grain,
+          spread: params.spread == null ? 0.2 : params.spread,
+          strength: params.strength == null ? 0.15 : params.strength,
+          pile: params.pile !== false,
+        };
+      }
+      const head = clamp01(k > 0.88 ? (k - 0.88) / 0.12 : 0);
+      state.opacity *= 1 - head * head * (3 - 2 * head);
+    },
+  });
+
   fx.register({
     group: 'enter',
     type: 'shatterRebuild',
@@ -299,14 +347,12 @@
       { key: 'edgeWidth', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1 },
     ],
     cpu(state, p, params, rng) {
-      const threshold = rng() * 0.8;
       const progress = clamp01(p);
-      if (progress < threshold) {
-        state.opacity = 0;
-      } else {
-        state.opacity *= clamp01((progress - threshold) / 0.2);
-        state.scaleX *= 0.92 + 0.08 * clamp01((progress - threshold) / 0.2);
-        state.scaleY *= 0.92 + 0.08 * clamp01((progress - threshold) / 0.2);
+      // the noise field lives in the text pass; `edgeWidth` is the hot rim
+      state.dissolve = { scale: params.scale == null ? 12 : params.scale, progress, edge: params.edgeWidth == null ? 0.1 : params.edgeWidth };
+      if (progress > 0.001 && progress < 0.999) {
+        state.scaleX *= 0.92 + 0.08 * progress;
+        state.scaleY *= 0.92 + 0.08 * progress;
       }
     },
   });
@@ -337,12 +383,20 @@
     group: 'enter',
     type: 'dissolve',
     tags: ['dissolve'],
-    params: [{ key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 }],
-    cpu(state, p, params, rng) {
-      const threshold = rng() * 0.85;
+    params: [
+      { key: 'scale', kind: 'number', min: 1, max: 64, step: 1, default: 10 },
+      { key: 'edge', kind: 'number', min: 0.01, max: 0.6, step: 0.01, default: 0.16 },
+    ],
+    cpu(state, p, params) {
+      // the text pass cuts the glyph against a noise field (state row 22.yzw),
+      // so the letters come apart cell by cell instead of one opacity ramp
       const progress = clamp01(p);
-      if (progress < threshold) state.opacity *= progress / Math.max(threshold, 0.0001);
-      else state.opacity *= 1 - (1 - progress) * 0.15;
+      state.dissolve = { scale: params.scale == null ? 10 : params.scale, progress, edge: params.edge == null ? 0.16 : params.edge };
+      // the cells arrive a touch under size and settle, so the reveal has weight
+      if (progress > 0.001 && progress < 0.999) {
+        state.scaleX *= 0.94 + 0.06 * progress;
+        state.scaleY *= 0.94 + 0.06 * progress;
+      }
     },
   });
 

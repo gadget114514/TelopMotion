@@ -65,6 +65,65 @@ SA.store = (() => {
     return (project.beats && project.beats[cueId]) || [];
   }
 
+  // The informed tempo changed. Everything that was cut for the old grid goes:
+  // the rhythm plan an automatic run stored per cue (its cuts are absolute
+  // times), and the bar length an older run stored as a duration. The beats are
+  // then re-flowed, so the whole project lands on the new bar grid.
+  function retimeBeats(projectDoc) {
+    for (const cue of (projectDoc.script && projectDoc.script.cues) || []) {
+      if (!cue.textFlow) continue;
+      const flow = { ...cue.textFlow };
+      let touched = false;
+      if (flow.chunkPlan) {
+        delete flow.chunkPlan;
+        touched = true;
+      }
+      if (flow.targetChunkDuration) {
+        delete flow.targetChunkDuration;
+        touched = true;
+      }
+      if (touched) cue.textFlow = flow;
+    }
+    const flow = { ...(projectDoc.textFlow || {}) };
+    if (flow.targetChunkDuration) {
+      delete flow.targetChunkDuration;
+      projectDoc.textFlow = flow;
+    }
+    restructureProject(projectDoc);
+  }
+
+  // The filler gaps of the project, cut on its bar grid when a tempo is
+  // informed, each carrying the id of the track its clip goes onto.
+  function fillerGaps(projectDoc, options) {
+    if (!SA.fillers) return [];
+    const filler = (projectDoc.tracks || []).find((track) => track && track.kind === 'filler');
+    if (!filler) return [];
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    const duration = Math.max(cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0), SA.project.songLengthOf(projectDoc));
+    const settings = { ...SA.fillers.settingsFor(projectDoc), ...(options || {}) };
+    return SA.fillers.gaps(cues, duration, settings).map((gap) => ({ ...gap, trackId: filler.id }));
+  }
+
+  // One clip for one filler gap. `auto` marks the clips the automatic direction
+  // owns, so a later run replaces them instead of stacking a second set on top.
+  function fillerClip(projectDoc, gap, auto) {
+    // a whole gap fades in and out; the bars of a divided one cut hard on the
+    // bar line instead of dipping at every beat
+    const divided = (Number(gap.parts) || 1) > 1;
+    return {
+      id: SA.project.nextClipId(projectDoc, 'clip_filler'),
+      ...(auto ? { auto: true } : {}),
+      trackId: gap.trackId,
+      start: gap.from,
+      end: gap.to,
+      spec: clone(gap.spec || { type: 'none', params: {} }),
+      opacity: 1,
+      fadeIn: divided ? 0 : 0.3,
+      fadeOut: divided ? 0 : 0.3,
+      colors: null,
+    };
+  }
+
   function findBeat(project, cueId, beatId) {
     return beatList(project, cueId).find((beat) => beat.id === beatId) || null;
   }
@@ -838,6 +897,161 @@ SA.store = (() => {
       patch.enabled = fgOn || bgOn;
     }
     return patch;
+  }
+
+  // force helpers for cue-level operations: drop the beats' own style bags so
+  // the cue style shows through. Beats timing / text / pinned flags are kept;
+  // only style is cleared. Callers run them inside their own dispatch, so one
+  // undo restores everything.
+  function clearBeatStylesForCue(projectDoc, cueId) {
+    const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+    for (const beat of beats) {
+      if (projectDoc.beatStyles && projectDoc.beatStyles[beat.id]) delete projectDoc.beatStyles[beat.id];
+    }
+    if (projectDoc.overrides) {
+      const prefix = `cue:${cueId}/beat:`;
+      for (const key of Object.keys(projectDoc.overrides)) {
+        if (key.startsWith(prefix)) delete projectDoc.overrides[key];
+      }
+    }
+  }
+
+  // recolor force: only the colour keys go, the beats' effect types survive.
+  const BEAT_COLOR_KEYS = ['palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'colorLegacy'];
+  function clearBeatColorsForCue(projectDoc, cueId) {
+    const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+    for (const beat of beats) {
+      const bag = projectDoc.beatStyles && projectDoc.beatStyles[beat.id];
+      if (!bag) continue;
+      for (const key of BEAT_COLOR_KEYS) delete bag[key];
+      if (!Object.keys(bag).length) delete projectDoc.beatStyles[beat.id];
+    }
+  }
+
+  // User-content keys a clip vary must never wipe (layer text, nested lists,
+  // stored palettes, explicit colours stay exactly as the user left them).
+  const CLIP_VARY_KEEP = new Set(['color', 'text', 'colors', 'list', 'presetId']);
+  function varyLayerParams(type, oldParams, axes, random) {
+    const fresh = SA.moods.sampleClipParams(type, axes, random);
+    const params = { ...(oldParams || {}) };
+    for (const [key, value] of Object.entries(fresh || {})) {
+      if (CLIP_VARY_KEEP.has(key)) continue;
+      params[key] = value;
+    }
+    return params;
+  }
+
+  // Same spec type, fresh params. Combo specs keep every layer type and vary
+  // each layer; anything else varies its own params. Split planes are
+  // structural and pass through untouched.
+  function varyClipSpec(spec, axes, random) {
+    if (!spec || typeof spec !== 'object') return spec;
+    if (spec.type === 'split') return spec;
+    if (spec.type === 'combo' && spec.params && Array.isArray(spec.params.list)) {
+      return {
+        ...spec,
+        params: {
+          ...spec.params,
+          list: spec.params.list.map((layer) => {
+            if (!layer || typeof layer !== 'object' || layer.type === 'split') return layer;
+            return { ...layer, params: varyLayerParams(layer.type, layer.params, axes, random) };
+          }),
+        },
+      };
+    }
+    return { ...spec, params: varyLayerParams(spec.type, spec.params, axes, random) };
+  }
+
+  // One figure sub-beat (spec.params.beats[index]) re-draw.
+  function figureSubBeatOp(clipId, index, op) {
+    if (typeof SA === 'undefined' || !SA.figures || !SA.rng) return;
+    const clip = findClip(clipId);
+    if (!clip) return;
+    dispatch({
+      label: `${op} figure beat`,
+      areas: ['project'],
+      do(projectDoc) {
+        const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+        const beats = target && target.spec && target.spec.params && target.spec.params.beats;
+        if (!Array.isArray(beats) || !beats[index]) return;
+        const seed = Math.floor(Math.random() * 900000) + 1000;
+        const random = SA.rng.rngFor(seed, 'clip-beat', clipId, String(index), op);
+        const pick = (list) => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
+        const sub = { ...beats[index], move: { ...(beats[index].move || {}) } };
+        if (op === 'reroll') {
+          const prev = index > 0 && beats[index - 1] ? beats[index - 1].move || {} : null;
+          const ins = SA.figures.INS.filter((name) => !prev || name !== prev.in);
+          const outs = SA.figures.OUTS.filter((name) => !prev || name !== prev.out);
+          sub.move = { in: pick(ins.length ? ins : SA.figures.INS), hold: pick(SA.figures.HOLDS), out: pick(outs.length ? outs : SA.figures.OUTS) };
+        }
+        if (op === 'reroll' || op === 'vary') {
+          sub.variant = Math.floor(random() * 3);
+          sub.accent = random() < 0.5;
+          sub.size = Math.round((0.6 + random() * 0.8) * 100) / 100;
+        }
+        sub.tone = Math.floor(random() * 8);
+        const next = beats.slice();
+        next[index] = sub;
+        target.spec = { ...target.spec, params: { ...target.spec.params, beats: next } };
+      },
+    });
+  }
+
+  // One combo-layer re-draw. Layers come back through fromLayers so the combo
+  // envelope (animate, names) is rebuilt exactly like the filler editor does.
+  function clipLayerOp(clipId, layerIndex, op) {
+    if (typeof SA === 'undefined' || !SA.moods || !SA.fillerRender) return;
+    const clip = findClip(clipId);
+    if (!clip) return;
+    const mode = modeAxes();
+    if (op === 'recolor') {
+      const from = paletteColorsAt(state.project, '');
+      const palette = drawPalette(from);
+      if (!palette) return;
+      const kind = SA.project.trackKindOf(state.project, clip.trackId);
+      dispatch({
+        label: 'recolor clip layer',
+        areas: ['project', 'style'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          if (!target) return;
+          const layers = SA.fillerRender.layersOf(target.spec).map((layer) => JSON.parse(JSON.stringify(layer)));
+          if (!layers[layerIndex]) return;
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          const result = SA.moods.rerollClipColors(kind, { spec: layers[layerIndex] }, {
+            palette, from, axes: mode.axes, seed,
+          });
+          if (!result || !result.spec) return;
+          layers[layerIndex] = result.spec;
+          target.spec = SA.fillerRender.fromLayers(layers, { name: target.spec && target.spec.name });
+        },
+      });
+      return;
+    }
+    dispatch({
+      label: `${op} clip layer`,
+      areas: ['project'],
+      do(projectDoc) {
+        const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+        if (!target) return;
+        const layers = SA.fillerRender.layersOf(target.spec).map((layer) => JSON.parse(JSON.stringify(layer)));
+        const layer = layers[layerIndex];
+        if (!layer) return;
+        if (layer.type === 'split') return;
+        const seed = Math.floor(Math.random() * 900000) + 1000;
+        const random = SA.rng && typeof SA.rng.rngFor === 'function' ? SA.rng.rngFor(seed, 'clip-layer', clipId, String(layerIndex), op) : Math.random;
+        if (op === 'reroll') {
+          const pool = SA.fillerRender.types().filter((type) => !['combo', 'credits', 'cardPeek', 'none', 'split'].includes(type));
+          if (!pool.length) return;
+          const type = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
+          const base = SA.fillerRender.defaults ? SA.fillerRender.defaults(type) : { type, params: {} };
+          layers[layerIndex] = { ...base, type, params: varyLayerParams(type, (base && base.params) || {}, mode.axes, random) };
+        } else {
+          layers[layerIndex] = { ...layer, params: varyLayerParams(layer.type, layer.params, mode.axes, random) };
+        }
+        target.spec = SA.fillerRender.fromLayers(layers, { name: target.spec && target.spec.name });
+      },
+    });
   }
 
   const commands = {
@@ -2062,46 +2276,67 @@ SA.store = (() => {
     regenerateFillers() {
       const project = state.project;
       if (!project || typeof SA === 'undefined' || !SA.fillers) return;
-      const cues = (project.script && project.script.cues) || [];
-      const duration = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
       // An explicit regeneration always materialises the gaps, even when the
       // document's `enabled` flag is off (that flag only governs the automatic
-      // generation inside an auto-direct run).
-      const gaps = SA.fillers.gaps(cues, duration, { ...SA.fillers.settingsFor(project), enabled: true });
+      // generation inside an auto-direct run). With a tempo informed the gaps
+      // come back divided bar by bar.
+      const gaps = fillerGaps(project, { enabled: true });
       dispatch({
         label: 'regenerate fillers',
         areas: ['project'],
         do(projectDoc) {
-          const tracks = projectDoc.tracks || [];
-          const filler = tracks.find((track) => track.kind === 'filler');
+          const filler = (projectDoc.tracks || []).find((track) => track && track.kind === 'filler');
           if (!filler) return;
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== filler.id);
-          for (const gap of gaps) {
-            projectDoc.clips.push({
-              id: SA.project.nextClipId(projectDoc, 'clip_filler'),
-              trackId: filler.id,
-              start: gap.from,
-              end: gap.to,
-              spec: clone(gap.spec || { type: 'none', params: {} }),
-              opacity: 1,
-              fadeIn: 0.3,
-              fadeOut: 0.3,
-              colors: null,
-            });
-          }
+          for (const gap of gaps) projectDoc.clips.push(fillerClip(projectDoc, gap));
         },
       });
     },
-    rerollCue(cueId) {
+    // What the song is: the title and the author it is credited under, and the
+    // tempo every beat grid follows. The name shows in the first filler (and in
+    // the credits element / end card); the tempo cuts the cues into beats and
+    // divides the filler gaps bar by bar.
+    setSong(patch, options) {
+      const opts = options || {};
+      dispatch({
+        label: opts.label || 'song',
+        areas: ['project', 'script'],
+        coalesceKey: opts.coalesceKey,
+        do(projectDoc) {
+          const before = SA.project.songOf(projectDoc);
+          const next = { ...(projectDoc.song || {}), ...(patch || {}) };
+          projectDoc.song = {
+            title: next.title == null ? '' : String(next.title),
+            author: next.author == null ? '' : String(next.author),
+            bpm: SA.project.normalizeBpm(next.bpm),
+            length: SA.project.normalizeSongLength(next.length),
+          };
+          if (SA.project.bpmOf(projectDoc) === before.bpm && SA.project.songLengthOf(projectDoc) === before.length) return;
+          if (SA.project.bpmOf(projectDoc) !== before.bpm) retimeBeats(projectDoc);
+          // the automatic direction divides its own gaps; those clips are the
+          // ones the new tempo re-cuts (hand-made filler clips stay as they are)
+          const auto = (projectDoc.clips || []).filter((clip) => clip.auto && SA.project.trackKindOf(projectDoc, clip.trackId) === 'filler');
+          if (!auto.length) return;
+          projectDoc.clips = (projectDoc.clips || []).filter((clip) => !auto.includes(clip));
+          for (const gap of fillerGaps(projectDoc)) projectDoc.clips.push(fillerClip(projectDoc, gap, true));
+        },
+      });
+    },
+    // Cue re-roll: new enter/exit types into cueStyles. With {force:true} the
+    // beats' own style bags are cleared first (clearBeatStylesForCue), so the
+    // cue style shows through on every beat.
+    rerollCue(cueId, opts) {
       const cue = findCue(cueId);
       if (!cue || typeof SA === 'undefined' || !SA.moods) return;
       const mode = modeAxes();
+      const force = !!(opts && opts.force);
       dispatch({
         label: 'reroll cue',
         areas: ['style'],
         do(projectDoc) {
           const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
+          if (force) clearBeatStylesForCue(projectDoc, cueId);
           const seed = Math.floor(Math.random() * 900000) + 1000;
           const change = mode.params.sizeChange;
           const context = SA.moods.contextForCue(projectDoc, target);
@@ -2187,24 +2422,10 @@ SA.store = (() => {
         },
       });
     },
-    // A lighter touch than reroll: step the per-beat variation slot. The seed
-    // and the style stay exactly as they are — only the letter-by-letter
-    // arrangement (vary.js) is re-drawn. One undo reverts the whole pass.
-    varyCue(cueId) {
-      const cue = findCue(cueId);
-      if (!cue) return;
-      dispatch({
-        label: 'vary cue',
-        areas: ['script'],
-        do(projectDoc) {
-          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
-          for (const beat of beats) {
-            beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
-          }
-        },
-      });
-    },
     // The same variation step across every cue of the song, as one undo.
+    // (the only vary command on the variation slot; the engine re-derives
+    // the background arrangement from it. varyBeat / varyCue below re-draw
+    // the style bags instead.)
     varyAll() {
       dispatch({
         label: 'vary all',
@@ -2218,18 +2439,95 @@ SA.store = (() => {
         },
       });
     },
-    // The same variation step for one beat only: the neighbours keep theirs.
+    // Vary the beat: every effect type stays, only params / motion are
+    // re-drawn ("same style, new seed"). The composed picture (compose mode)
+    // is kept on purpose, so the look does not change its face; only the
+    // size ladder follows. One undo reverts the whole draw.
     varyBeat(cueId, beatId) {
       const cue = findCue(cueId);
-      if (!cue) return;
+      if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
+      const mode = modeAxes();
       dispatch({
         label: 'vary beat',
-        areas: ['script'],
+        areas: ['style'],
         do(projectDoc) {
           const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
           const beat = beats.find((entry) => entry.id === beatId);
           if (!beat) return;
-          beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
+          const path = `cue:${cueId}/beat:${beatId}`;
+          const resolved = SA.project.resolveStyle(projectDoc, path);
+          const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+          const colors = palette.length ? [palette[2], palette[3], palette[5] || palette[3]].filter(Boolean) : [];
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          const result = SA.random.vary({
+            project: projectDoc,
+            paths: [path],
+            seed,
+            colors,
+          });
+          const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          for (const patch of result.patches || []) {
+            for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
+          }
+          const composeMode = !!(projectDoc.styleMode && projectDoc.styleMode.compose);
+          const change = mode.params.sizeChange;
+          const ladderActive = !composeMode || change > 0 || !(mode.rawW > 0);
+          if (ladderActive && SA.direct && typeof SA.direct.resizeBeats === 'function') {
+            SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000, { params: mode.params, curve: mode.curve });
+          }
+        },
+      });
+    },
+    // Vary the cue: the cue container keeps its types and only params /
+    // motion are re-drawn. Without force every beat under the cue is varied
+    // the same way (each with its own seed); with {force:true} the beats'
+    // own style bags are cleared first, so the varied cue style shows through
+    // on every beat. One undo reverts the whole draw.
+    varyCue(cueId, opts) {
+      const cue = findCue(cueId);
+      if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
+      const mode = modeAxes();
+      const force = !!(opts && opts.force);
+      dispatch({
+        label: 'vary cue',
+        areas: ['style'],
+        do(projectDoc) {
+          const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
+          if (!target) return;
+          if (force) clearBeatStylesForCue(projectDoc, cueId);
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          const cuePath = `cue:${cueId}`;
+          const resolved = SA.project.resolveStyle(projectDoc, cuePath);
+          const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+          const colors = palette.length ? [palette[2], palette[3], palette[5] || palette[3]].filter(Boolean) : [];
+          const cueResult = SA.random.vary({
+            project: projectDoc,
+            paths: [cuePath],
+            seed,
+            colors,
+          });
+          const cueBag = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
+          for (const patch of cueResult.patches || []) {
+            for (const [group, instance] of Object.entries(patch.style || {})) cueBag[group] = clone(instance);
+          }
+          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          if (!force) {
+            beats.forEach((beat, index) => {
+              const result = SA.random.vary({
+                project: projectDoc,
+                paths: [`cue:${cueId}/beat:${beat.id}`],
+                seed: seed + index + 1,
+                colors,
+              });
+              const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
+              for (const patch of result.patches || []) {
+                for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
+              }
+            });
+          }
+          if (SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
+            SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
+          }
         },
       });
     },
@@ -2289,8 +2587,85 @@ SA.store = (() => {
         },
       });
     },
+    // Vary a timeline clip: the spec keeps its type and only params are
+    // re-drawn ("same style, new seed"). Colours are kept (recolor owns them).
+    // Figure keeps its motif and draws fresh sub-beats / moves; combo specs
+    // keep every layer type and re-draw each layer's params. One undo reverts.
+    varyClip(clipId) {
+      const clip = findClip(clipId);
+      if (!clip || typeof SA === 'undefined' || !SA.moods) return;
+      const mode = modeAxes();
+      const kind = SA.project.trackKindOf(state.project, clip.trackId);
+      dispatch({
+        label: 'vary clip',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          if (!target || !target.spec) return;
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          if (kind === 'figure' && SA.figures && typeof SA.figures.generate === 'function') {
+            const beats = [];
+            for (const cue of projectDoc.script.cues || []) {
+              for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+                if (beat.end > target.start && beat.start < target.end) beats.push({ start: beat.start, end: beat.end });
+              }
+            }
+            const params = (target.spec && target.spec.params) || {};
+            const palette = Array.isArray(target.colors) && target.colors.length ? target.colors : (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+            target.spec = SA.figures.generate({
+              span: { start: target.start, end: target.end },
+              beats,
+              axes: mode.axes,
+              seed,
+              id: target.id,
+              motif: params.motif,
+              palette,
+              density: params.density,
+              scale: params.scale,
+              x: params.x,
+              y: params.y,
+              color: params.color,
+              shapeRange: SA.figures.shapeRangeOf(mode.params) || undefined,
+              cuts: params.cuts,
+              enabled: params.enabled != null ? params.enabled : (target.disabled != null ? !target.disabled : undefined),
+            });
+            return;
+          }
+          if (typeof SA.moods.sampleClipParams !== 'function' || !SA.rng) return;
+          const random = SA.rng.rngFor(seed, 'clip-vary', target.id);
+          target.spec = varyClipSpec(target.spec, mode.axes, random);
+        },
+      });
+    },
+    // Figure sub-beat ops ("clip beats"): reroll draws fresh moves + tuning,
+    // vary keeps the moves and re-draws size / tone / variant / accent,
+    // recolor re-draws the palette rotation (tone) only. One undo reverts.
+    rerollFigureBeat(clipId, index) {
+      figureSubBeatOp(clipId, index, 'reroll');
+    },
+    varyFigureBeat(clipId, index) {
+      figureSubBeatOp(clipId, index, 'vary');
+    },
+    recolorFigureBeat(clipId, index) {
+      figureSubBeatOp(clipId, index, 'recolor');
+    },
+    // Combo-layer ops ("clip beats" for filler / backdrop combos): reroll
+    // draws a fresh layer type, vary keeps the type and re-draws params,
+    // recolor moves the layer onto a fresh palette. Split planes are
+    // structural: they only take recolor. One undo reverts each.
+    rerollClipLayer(clipId, layerIndex) {
+      clipLayerOp(clipId, layerIndex, 'reroll');
+    },
+    varyClipLayer(clipId, layerIndex) {
+      clipLayerOp(clipId, layerIndex, 'vary');
+    },
+    recolorClipLayer(clipId, layerIndex) {
+      clipLayerOp(clipId, layerIndex, 'recolor');
+    },
     // a palette for the project, a cue ({ cueId }) or a beat ({ cueId, beatId });
-    // the literal colours of that scope move with it
+    // the literal colours of that scope move with it. With {force:true} on a
+    // cue scope the beats' own colour keys are cleared first, so the cue
+    // palette shows through on every beat.
     setPalette(scope, palette, options) {
       const target = paletteScope(scope);
       if (!target || !palette || !Array.isArray(palette.colors) || !palette.colors.length || typeof SA === 'undefined' || !SA.moods) return;
@@ -2300,6 +2675,7 @@ SA.store = (() => {
         areas: ['style', 'project'],
         coalesceKey: opts.coalesceKey,
         do(projectDoc) {
+          if (opts.force && target.kind === 'cue') clearBeatColorsForCue(projectDoc, target.cueId);
           applyPalette(projectDoc, target, palette);
         },
       });
@@ -2371,12 +2747,12 @@ SA.store = (() => {
     },
     // a new palette inside the project's axes and genre, the furthest of a few
     // candidates from the current one so the change is always visible
-    rerollPalette(scope) {
+    rerollPalette(scope, opts) {
       const target = paletteScope(scope);
       if (!target || !state.project || typeof SA === 'undefined' || !SA.moods) return null;
       const palette = drawPalette(paletteColorsAt(state.project, target.path));
       if (!palette) return null;
-      commands.setPalette(scope, palette, { label: 'reroll palette' });
+      commands.setPalette(scope, palette, { label: 'reroll palette', force: !!(opts && opts.force) });
       return palette;
     },
     // back to the parent's palette: the scope's colours move back onto it

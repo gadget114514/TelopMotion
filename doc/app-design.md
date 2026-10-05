@@ -880,6 +880,7 @@ fade, slide, zoomOut, blurOut, explode (pieces fly outward from the block center
 | twist | angle | GPU vertex: rotation that increases with local y |
 | breathing | amount | GPU vertex: radial scaling from the letter center, sine |
 | orbit3D | tilt, speed | tiltX/tiltY on circular paths |
+| orbit2D | radius, speed, spread, tilt, spin | the letter rides a circle around its layout place, a step per letter; `tilt` flattens the circle, `spin` turns the glyph with it |
 | pathFollow | points, speed | the block moves along a spline |
 
 ### 7.6 Location
@@ -969,6 +970,18 @@ Default is `text`. Effects with a † are shown in the UI as "featured".
 | vignette | amount, softness | |
 | sparkles | count, size, color | Point sprites placed near letter edges using the SDF. |
 | lensFlare | position, color | |
+
+**The shader pack (`renderer/js/lyrics/effects/shader-fx.js`).** Five families, each registered twice: as a `post` type with its own `u_type` branch in `POST_FRAG`, and as a per-letter effect in `enter` / `hold` / `exit` so it can be picked in the motion gallery and driven by any ADSR phase and any easing curve.
+
+| family | u_type | post params | post target | per-letter behaviour |
+|---|---|---|---|---|
+| dither | 47 | pattern (bayer2/4/8, noise, cross), mode (rgb/luma/duotone), levels, cellSize, colorA, colorB, strength | frame | the letter's alpha is posterised into `levels` steps with an alternating threshold, so a staggered line of letters reads as an ordered dither matrix. |
+| fade | 48 | mode (toColor/fromColor/through/toBlack/toWhite), softness, color, dipColor, strength | frame | a plain opacity fade (the pre-existing `enter.fade` / `exit.fade`, extended in place) plus `softness` (bends the ramp towards smoothstep) and `glow` (a flash at the midpoint). |
+| scanline | 49 | count, depth, duty, speed, angle, rollHeight, flicker, tint, strength | frame | a bright band sweeps the block and a letter lights up when the band crosses the scan line it sits on (`i % lines`). |
+| stealth | 50 | split, angle, glow, cloak, shimmer, tint, strength | frame | the chroma split becomes a positional jitter and the glow rim becomes a flash, as the glyph sinks into its own glow. |
+| geometry | 51 | shape (rect/roundedRect/circle/triangle/polygon/hexagon/diamond/band), sides, center, size, angle, spin, radius, feather, fillOpacity, strokeOpacity, strokeWidth, color, colorB, strength | text | an SDF cuts the layer and outlines the boundary; per letter the same shape list drives the state texture's trim (`wipeMode` + `visibleFrac`), so each form reveals along its own axis. |
+
+Every post branch reads `u_params.w` as the amount (`envelope × progress × strength`) and is a pass-through at 0. The shared helpers `LUMA`, `unpremultiply()` and `bayerThreshold()` live next to `rotateUv()` in `POST_FRAG`; the post chain works on premultiplied colour, so anything that reasons about brightness undoes the alpha first.
 
 **Shared shader library:** all noise is written in-house in `gl/shaders.js`:
 - `hash12`, `hash22`
@@ -1863,12 +1876,26 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
   - The Noto Sans JP files are about 4–5 MB each; that's acceptable because they load only when needed.
   - Record the source URLs and versions in `renderer/fonts/SOURCES.md`.
 
-### 11.5 i18n
+### 11.5 Showcase (`scripts/showcase.js`, `npm run showcase`)
+- Regenerates `renderer/data/showcase.json`: one 3-second cue per representative effect (the fx400 catalogue's variant 1 of every type) and one 4-second cue per page-layout preset (`none` excluded), with a marker opening each section. Each page cue carries a sample text built for the roles its preset reads. Deterministic, so it only rewrites when the catalogues change.
+- Help → Showcase reads the file with `SA.platform.readAsset('data/showcase.json')` and loads it through `SA.io.loadFromObject`; the file ships with `renderer/**/*`.
+
+### 11.5b Figure showcase (`scripts/figure-showcase.js`, `npm run figure-showcase`)
+- The figure track's own review project: `renderer/data/figure-showcase.json`, one queue per figure motif (3s) and one per figure motion axis (4s).
+- The motif half follows `figures.MOTIFS` in order, grouped into the families the module grows them from (`base`, `bold`, `proc`, `scene3d`, `figure-geo`, `gl/fields`) so a new motif is picked up without editing the script.
+- The axis half pins `in` / `hold` / `out` / `sync` / 2D `camera` / the procedural layer motion onto the reference motif `burst`, so only the reviewed axis changes between neighbouring cues. A figure's sub-beats are **absolute** times (`beatAt` compares them against the clock), so a spec must be generated for the span its clip actually sits on — a spec built for a relative span draws nothing. The plan is split into `plan()` (timing-free slots) and `materialize()` (place, then generate) for this reason.
+- The procedural genome only grows from a seed, so the 17 layer motions each get the first seed (searched in order) that draws them and whose layer composition has not been used yet.
+- Cue names are read from `studio.figure.*` in `renderer/js/i18n.js` (motif / in / hold / out / sync / camera / proc), **not** from a table in the script. Each cue carries `meta = { kind: 'figure-showcase', index, namespace, value }`, and `app.js`'s `localizeFigureShowcase` rewrites the cue text in the language on screen when the asset is opened — the file itself bakes the build language (Japanese). A test asserts every name has a label in all five languages, so the next motif cannot slip through unlabelled.
+- One `solid` plate clip covers the whole walk so a figure is never judged against the preview backdrop; the label sits under it (`style.location` at y 0.9) so a `scene` / `geo` figure is not carved in half.
+- Help → Figure showcase (`studio.help.figureShowcase`, 5 languages) reads it with `SA.platform.readAsset('data/figure-showcase.json')`. `demo/figure-showcase.md` is the numbered index and is regenerated with the project.
+- The GPU-simulation motifs (`figures.SIM_MOTIFS`, a **Set**) draw nothing while *Settings → Allow stateful effects* is off, because a stateful figure needs the frames before it. The walk's job is to show them, so `app.js`'s `openStatefulGateForShowcase()` flips `statefulEnabled` + `applyStateful()` for the session, refreshes the menu tick and shows `studio.toast.statefulOn` — **without** writing `localStorage`, so the stored preference is untouched. The generator notes the gate in the markdown index (read `SIM_MOTIFS` as an iterable, not with `Array.isArray`).
+
+### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.
 - The smoke test that checks for missing translations is extended to `studio.html`: every `[data-i18n]` and every generated control label must resolve (not come back as the raw key) in all 5 languages.
 - **Japanese UI text should be natural Japanese**, not a literal translation.
 
-### 11.6 README
+### 11.7 README
 Add sections:
 - Web version (URL, JSON import only, how to get JSON)
 - Studio overview with a screenshot

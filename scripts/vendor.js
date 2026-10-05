@@ -14,6 +14,10 @@ const VENDORS = [
   { name: 'earcut', source: 'node_modules/earcut/dist/earcut.min.js', target: 'earcut.min.js', license: 'node_modules/earcut/LICENSE' },
   { name: 'mp4-muxer', source: 'node_modules/mp4-muxer/build/mp4-muxer.js', target: 'mp4-muxer.js', license: 'node_modules/mp4-muxer/LICENSE' },
   { name: 'webm-muxer', source: 'node_modules/webm-muxer/build/webm-muxer.js', target: 'webm-muxer.js', license: 'node_modules/webm-muxer/LICENSE' },
+  // three is ESM-only: the build and its core chunk are vendored beside the
+  // small module loader (three-loader.js) that publishes window.SA.THREE.
+  { name: 'three', source: 'node_modules/three/build/three.module.js', target: 'three.module.js', license: 'node_modules/three/LICENSE' },
+  { name: 'three (core)', source: 'node_modules/three/build/three.core.js', target: 'three.core.js', license: 'node_modules/three/LICENSE' },
 ];
 
 function main() {

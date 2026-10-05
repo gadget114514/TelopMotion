@@ -686,3 +686,33 @@ weird 0.6 の自動演出を見ると文字が小さすぎた。可読下限（`
 - **粒子・ヒーロー**: `minScale`（粒子 0.55）に対する下限上げと、`full / floor` でヒーロー倍率を丸める処理はそのまま。**下限が上がると長いビートの帯が潰れることがある**（下限 > 上限 ならラダーは上1段に収束する。既存の「長すぎる行は縮む」挙動と同じ）。
 - **テスト**: `size-ladder.test.js` に2件（`sizeFloor` の導出と固定/weird 0 は従来の下限・weird 0.6 の run で全ビートが下限以上で曲全体のテーマサイズを超える／各ビートの `full` がそのビートの `widthFillSize`）、`gen-params.test.js` に1件（1 / 2.0 / 2.667 と単調性・固定とクランプ）、`textflow.test.js` に4件（文字数 − 1 の除算 / 1文字なら画面幅 / 折り返しても縮まない / 縦書きと最長行）。`direct.test.js` の compose テストは階層の判定を px 直の比較に替えた（`fitComposeSpans` が選出のあと粒子跨度を書き換えるので、完成後の文書から段の番号は復元できない。段そのものは `size-ladder.test.js` が担保）。`npm test` 864件中 863 パス（残 1 件は別セッションが進行中の `direct.test.js` の motif 数テスト）、`npm run check` 197ファイル。
 - **決めていないこと**: weird 1 の下限 2.67 倍は導出式そのままなので、スライダーでは 4 倍まで好きなだけ上げられる。上限の式は「1文字 = フレーム幅 / (文字数 − 1)」に固定（图の幅が `maxWidth` 0.94 を超えるので、シーン側の1回再レイアウトが 0.94 倍に寄せる）。
+
+## 追加: 図形モーション見本（figure showcase）
+
+図形トラックだけを見る見本プロジェクトを、`scripts/showcase.js` と同じ形（`npm run figure-showcase` → `renderer/data/figure-showcase.json` + `demo/figure-showcase.md`、Help から開く）で生成的につくるようにした。
+
+- **Motif 側**: `figures.MOTIFS` の Motif をそのまま 1 キューずつ（3 秒）。モジュールが自分のグループを返すので（`MOTIFS` の固定群 / `BOLD_MOTIFS` / `PROC` / `SCENE_MOTIFS` / `GEO_MOTIFS` / `FIELD_MOTIFS`）、新しい Motif を足してもこのスクリプトは触らなくてよい。`rand: 1`（weird 1）で「その Motif が届く範囲」を見せる。
+- **モーション軸側**: `in` / `hold` / `out` / `sync` / 2D `camera` を参照 Motif `burst` に固定して、1 軸だけ変える。隣り合うキューで違うのは見ている軸だけ。4 拍グリッドを渡しているので `sync` の beat / free は実際に 1 拍ごとに区切れる。
+- **手続きモーション**: genome は seed からしか生まないので、`PROC_MOTIONS` 17 種それぞれについて「その動きを描く最初の seed」を小さい順に探す。層構成がまだ使われていないものを選ぶので、17 キューが 17 個のほぼ同じ絵にならない。
+- **壊れていた点（直した）**: 図形のサブビートは**絶対時刻**で持つ（`beatAt` が時計と比べる）。まず `span {0, 長さ}` で spec を作ってから後でクリップを時刻に置くと、`params.beats` がクリップの範囲外になり**何も描かれない**。タイムラインに載せてからその span で spec を生むよう、`plan()`（時刻なしの枠）→ `materialize()`（時刻を置く + spec 生成）に分けた。この症状では 103 クリップ中 2 本（`burst` など）しか出ない。
+- **見やすさ**: 全期間に 1 本の `solid` プレート（`#0d1220`）を置き、ラベルは `style.location` で y 0.9 に下げる（`scene` / `geo` は文字と重なる図形が落とされるため、中央に置くと図が欠ける）。図の色は全クリップ共通の 6 色。
+- **UI**: Help に「Figure showcase（motifs & motions）」を `studio.help.figureShowcase` として 5 言語で追加（`showcase` の直下、About の上）。`readAsset('data/figure-showcase.json')` → `loadFromObject`。
+
+## 追加: 図形の名前を見本の言語対応にする
+
+- **名前の所在**: 最初は Motif 名の表を `scripts/figure-showcase.js` に置いていた。`renderer/js/i18n.js` の `studio.figure.motif` を写したものだったが、**あの `figure:` ブロックは壊れていなかった**（インデントが 0 なだけで実際には `studio:` の内側で、`studio.figure.motif.orbit` は正しく解決する。最初の報告は誤り）。本当の問題は名前の無さと表の二重化だったので、そちらを直した。
+- **i18n を足した分**: `studio.figure.motif` に名前の無かった 14 個（`cracks` / `spikes` / `eyes` / `scratches` / `drips` / `lattice` / `waves` / `comets` と太線 6 種）を 5 言語で追加。軸の名前は `studio.figure` の `in` / `hold` / `out` / `camera` / `proc` に 5 言語で新規（`sync` は既存）。シミュレーションのフィールド（`reactionDiffusion` / `wave2d` / `fluid` / `cellular`）も同時に足した。**Motif と軸の全名前が 5 言語で引ける**。
+- **スクリプト側**: ローカルの表をやめて `studio.figure.<namespace>.<value>` を読む（`dictionary(code)` / `nameOf`）。引けなかったら value に戻るだけ。
+- **言語対応**: ファイルに焼き込むのは日本語だけ。各キューが `meta = { kind, index, namespace, value }` を持つので、`app.js` の `localizeFigureShowcase` が開くときの表示言語でキュー名を書く（`i18n.t('studio.figure.…')`）。
+- **テスト**: `figure-showcase.test.js` 13 件。追加は 2 件で、ひとつは「Motif と軸の全名前が 5 言語で引ける」こと（次の Motif は自動で落ちさせるガード）、もうひとつはキュー名が i18n 由来で `meta` を持つこと。`npm test` 1072 件パス、`npm run check` 235 ファイル。
+- **Motif の増減**: `FIELD_MOTIFS` に 4 つ足って `figures.MOTIFS` は 68 になったので、見本は 107 キュー / 360 秒に再生成（スクリプトはレジストリを追うので自動で追従）。`demo/README.md`・README・`doc/app-design.md` の数字も更新。
+- **決めていないこと**: `sync` の `beat` と `text` は `subBeats` が同じ拍で区切る実装なので、この見本では絵が同じになる（差が出るのは自動演出の可読性側）。
+
+## 修正: `song.length` と文字背景の回転に対する古いテスト
+
+並行作業（WIP three.js）で赤になっていた 2 件を直した。どちらも実装ではなくテストの側が古かった。
+
+- **`store.test.js` / `song.test.js`**: `project.song` に `length`（ユーザーが書く長さ。`song-dialog.js` の入力欄と `duration.js` が使う）が加わったので、`deepEqual` の期待値に `length: 0` を足した。実装は正しい。
+- **`text-bg.test.js`「generated text backgrounds stay inside the caps」**: 2 つ原因があった。
+  1. ループが 100 シードだった。自動演出が文字背景（`bgShape`）を出すのは「`square` の図を `enclose` に置く」分岐だけで、weird 0.7 では 100 シード中 0 件・2000 シードで 11 件（最初の 1 件が seed 440）。文字背景の定義を変えたあとしばらく経っていたので、100 シードという前提が崩れていた。900 シードに広げて下限の検査は残した（caps の検査自体は 1 件でも回れば意味がある）。
+  2. `state.rotation === 0` の断言。`moods.js` の独立クロックは意図的に `hold` に `wobble` / `spin` を引くので（回転する文字背景は演出として仕様）、回転は仕様どおり。サイズの上限（0.1–10）と「データは自由な形状を持たない」はそのまま検査し、`offsetX` / `rotation` の断言は「文字に貼り付く」場合（モーションが `follow` / `none`）に限定した。

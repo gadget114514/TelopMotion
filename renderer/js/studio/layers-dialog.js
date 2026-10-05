@@ -41,6 +41,7 @@ SA.layersDialog = (() => {
       start: 0,
       end: null,
       video: { speed: 1, offset: 0, play: true, loop: true },
+      scene: { preset: 'starfield', speed: 1, density: 1, color: '' },
       transform: { x: 0, y: 0, scale: 1, rotate: 0 },
       motion: {
         in: { type: 'fade', duration: 0.5, delay: 0, ease: 'easeOutCubic', params: {} },
@@ -192,6 +193,7 @@ SA.layersDialog = (() => {
     function layerTypeName(layer) {
       if (layer.type === 'solid') return t('layers.typeSolid');
       if (layer.type === 'video') return t('layers.typeVideo');
+      if (layer.type === 'scene3d') return t('layers.typeScene3d');
       return t('layers.typeImage');
     }
 
@@ -283,6 +285,7 @@ SA.layersDialog = (() => {
           { value: 'solid', label: t('layers.typeSolid') },
           { value: 'image', label: t('layers.typeImage') },
           { value: 'video', label: t('layers.typeVideo') },
+          { value: 'scene3d', label: t('layers.typeScene3d') },
         ], (value) => change((next) => {
           next.type = value;
         })))
@@ -306,6 +309,45 @@ SA.layersDialog = (() => {
           });
         });
         editor.appendChild(field(t('layers.color'), swatch));
+      } else if (layer.type === 'scene3d') {
+        layer.scene = layer.scene || { preset: 'starfield', speed: 1, density: 1, color: '' };
+        editor.appendChild(
+          field(t('layers.scene3dPreset'), selectInput(layer.scene.preset || 'starfield', [
+            { value: 'starfield', label: t('layers.scene3dStarfield') },
+            { value: 'grid', label: t('layers.scene3dGrid') },
+            { value: 'floating', label: t('layers.scene3dFloating') },
+          ], (value) => change((next) => {
+            next.scene = { ...(next.scene || {}), preset: value };
+          })))
+        );
+        editor.appendChild(
+          field(t('layers.speed'), numberInput(layer.scene.speed, (value) => change((next) => {
+            next.scene = { ...(next.scene || {}), speed: value > 0 ? value : 1 };
+          }), { min: 0.05, step: 0.05, fallback: 1 }))
+        );
+        editor.appendChild(
+          field(t('layers.scene3dDensity'), numberInput(layer.scene.density, (value) => change((next) => {
+            next.scene = { ...(next.scene || {}), density: Math.max(0.2, Math.min(3, value || 1)) };
+          }), { min: 0.2, max: 3, step: 0.1, fallback: 1 }))
+        );
+        const accent = document.createElement('button');
+        accent.type = 'button';
+        accent.className = 'ctrl-swatch';
+        accent.style.background = layer.scene.color || '#9fb8ff';
+        accent.addEventListener('click', () => {
+          SA.colors.openPicker({
+            value: layer.scene.color || '#9fb8ff',
+            anchor: accent,
+            onChange(value) {
+              const hex = typeof value === 'string' ? value : value && value.value;
+              change((next) => {
+                next.scene = { ...(next.scene || {}), color: hex || '' };
+              });
+              accent.style.background = hex || '#9fb8ff';
+            },
+          });
+        });
+        editor.appendChild(field(t('layers.scene3dColor'), accent));
       } else {
         const wrap = document.createElement('div');
         wrap.className = 'layer-source';

@@ -126,7 +126,11 @@ SA.canvas2dFallback = (() => {
           ctx.rotate(((letterState.rot || 0) * Math.PI) / 180);
           ctx.scale(letterState.scaleX == null ? 1 : letterState.scaleX, letterState.scaleY == null ? 1 : letterState.scaleY);
           ctx.translate(-centerX, -centerY);
-          ctx.globalAlpha = Math.max(0, Math.min(1, color.a * (letterState.opacity == null ? 1 : letterState.opacity)));
+          // the GPU pass cuts the glyph against a noise field; without WebGL the
+          // best a 2D canvas can do is fade the whole letter in step
+          const dissolve = letterState.dissolve || null;
+          const dissolveLeft = dissolve ? Math.max(0, Math.min(1, dissolve.progress)) : 1;
+          ctx.globalAlpha = Math.max(0, Math.min(1, color.a * (letterState.opacity == null ? 1 : letterState.opacity) * dissolveLeft));
           if (letterState.visibleFrac != null && letterState.visibleFrac < 0.999) {
             const halfW = Math.max(1, ((mesh.bbox.x1 - mesh.bbox.x0) / 2) * (mesh.scale || 1));
             const threshold = (letterState.visibleFrac * 2 - 1) * halfW;

@@ -450,6 +450,15 @@ SA.lyricsEngine = (() => {
       return beats;
     }
 
+    // The tempo a beat-driven animation follows. The informed song tempo (Settings
+    // → Song) has the first word, the tempo measured from the loaded audio the
+    // second; with neither the caller keeps its own "no beat" behaviour.
+    function tempoBpm(features) {
+      const own = SA.project && typeof SA.project.bpmOf === 'function' ? SA.project.bpmOf(state.project) : 0;
+      if (own > 0) return own;
+      return features && Number(features.bpm) > 0 ? Number(features.bpm) : 0;
+    }
+
     // Kick times for a shape clip: every beat whose window overlaps it plus the
     // rhythm cuts its split part carries. Memoised per clip (and per project
     // object) so it is not rebuilt every frame.
@@ -1289,7 +1298,7 @@ SA.lyricsEngine = (() => {
           frame: { width: state.width, height: state.height },
           progress: driveProgress,
           time: t,
-          bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+          bpm: tempoBpm(features),
         });
         if (!primitives.length) return;
         pipeline.beginLayer();
@@ -1315,7 +1324,7 @@ SA.lyricsEngine = (() => {
         prevText: '',
         analysis: state.analysis,
         progress,
-        bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+        bpm: tempoBpm(features),
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         color: fill,
         colors: fills,
@@ -1330,7 +1339,7 @@ SA.lyricsEngine = (() => {
           motion: params.animate || { mode: 'still', drift: 0, transition: 'cut' },
           t,
           clip: { start: clip.start, end: clip.end, fadeIn: clip.fadeIn, fadeOut: clip.fadeOut },
-          bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+          bpm: tempoBpm(features),
           frame: { width: state.width, height: state.height },
           kicks: kickTimesForClip(clip, spec),
           adsr: spec.type !== 'figures' && clip ? clip.adsr : null,
@@ -1396,11 +1405,15 @@ SA.lyricsEngine = (() => {
         textBox: boxes ? boxes.box : null,
         colors: clipShapeColor(spec, recolored ? recolored.colors : clip.colors, style),
         color: '#c86bff',
-        bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+        bpm: tempoBpm(features),
       });
-      if (!list || !(list.shapes || []).length) return;
+      if (!list) return;
+      const hasField = Boolean(list.field) && typeof pipeline.drawField === 'function';
+      if (!(list.shapes || []).length && !hasField) return;
       pipeline.beginLayer();
-      drawPrimitives(list.shapes);
+      // a mathematical field fills the layer first; the shapes (if any) go on top
+      if (hasField) pipeline.drawField(list.field, { width: state.width, height: state.height });
+      drawPrimitives(list.shapes || []);
       if ((list.texts || []).length) drawTexts(list.texts);
       if (mask) pipeline.maskLayer();
       pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
@@ -1556,7 +1569,7 @@ SA.lyricsEngine = (() => {
         progress: Math.min(1, Math.max(0, (t - clip.start) / clipDuration)),
         seed: (project.styleMode && project.styleMode.seed) || 12345,
         color: '#eef2ff',
-        bpm: features && Number(features.bpm) > 0 ? Number(features.bpm) : 0,
+        bpm: tempoBpm(features),
         beats: activeBeats(project, t).map((beat) => ({ start: beat.start, end: beat.end })),
         textBox: boxes ? boxes.box : null,
         colors: Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null,
@@ -1921,7 +1934,7 @@ SA.lyricsEngine = (() => {
       const local = Math.max(0, t - beat.start);
       const analysis = state.analysis;
       const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
-      const bpm = features && Number(features.bpm) > 0 ? Number(features.bpm) : 0;
+      const bpm = tempoBpm(features);
       const motion = SA.fx.withDefaults(style[motionKey], motionKey);
       const bg = SA.textBg.evaluateBg(shape, motion, entries, variation, null, local, {
         seed: (project.styleMode && project.styleMode.seed) || 12345,
@@ -2340,6 +2353,7 @@ SA.lyricsEngine = (() => {
           pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
           pipeline.representation(scene, result.letters, 'pieces', variant);
           pipeline.representation(scene, result.letters, 'particles', variant);
+          pipeline.representation(scene, result.letters, 'sand', variant);
         }
         const edgeContext = {
           colorSet: colorSet.arrays,

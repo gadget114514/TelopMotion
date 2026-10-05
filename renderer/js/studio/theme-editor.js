@@ -801,8 +801,7 @@ SA.themeEditor = (() => {
     // footer actions
     const actions = document.createElement('div');
     actions.className = 'dialog-actions';
-    actions.appendChild(smallButton(t('studio.themeEditor.generate'), () => runGenerate(), true));
-    actions.appendChild(smallButton(t('studio.themes.apply'), () => applyDraft()));
+    actions.appendChild(smallButton(t('studio.themes.apply'), () => applyDraft(), true));
     actions.appendChild(smallButton(t('studio.themeEditor.save'), () => saveDraft()));
     actions.appendChild(smallButton(t('studio.themeEditor.reset'), () => resetDraft()));
     actions.appendChild(smallButton(t('studio.themes.close'), () => {
@@ -815,22 +814,6 @@ SA.themeEditor = (() => {
   }
 
   // --- actions -----------------------------------------------------------------
-
-  function runGenerate() {
-    if (!SA.studio || typeof SA.studio.autoDirect !== 'function') return;
-    const profile = profileOf();
-    root.hidden = true;
-    SA.studio.autoDirect({
-      genre: draft.genre || '__random',
-      seed: draft.seed,
-      weird: draft.axes.weird,
-      smartness: draft.axes.smartness,
-      fear: draft.axes.fear,
-      params: profile.params,
-      typeWeights: profile.typeWeights,
-      usePalettes: profile.usePalettes,
-    });
-  }
 
   function applyDraft() {
     const doc = project();

@@ -759,22 +759,31 @@
         const vertical = p.vertical !== false;
         const cols = Math.max(5, Math.min(30, Math.round(Number(p.cols) || (ctx.aspect > 1 ? 20 : 12))));
         const rows = Math.max(5, Math.min(30, Math.round(Number(p.rows) || (ctx.aspect > 1 ? 20 : 16))));
-        const cellW = gridW / cols;
-        const cellH = gridH / rows;
-        const minDim = Math.min(cellW, cellH);
+        // 原稿用紙 cells are square: on a 16:9 frame a 20x20 grid would otherwise
+        // come out 87 x 45 px and read as a spreadsheet. The grid takes the
+        // smaller pitch and is centred in the leftover space.
+        const cell = Math.min(gridW / cols, gridH / rows);
+        const cellW = cell;
+        const cellH = cell;
+        const gridX = m + (gridW - cellW * cols) / 2;
+        const gridY = m + (gridH - cellH * rows) / 2;
+        const gridBoxW = cellW * cols;
+        const gridBoxH = cellH * rows;
+        const minDim = cell;
 
         const regions = [
           {
             id: 'manuscriptGrid',
             role: 'body',
-            rect: { x: m, y: m, w: gridW, h: gridH },
+            rect: { x: gridX, y: gridY, w: gridBoxW, h: gridBoxH },
             text: ctx.text || '',
             srcStart: 0,
             flow: 'cells',
             cells: { cols, rows, pitchX: cellW, pitchY: cellH, cellW, cellH, vertical },
             style: {
               vertical,
-              sizeScale: Math.max(0.3, Math.min(1.5, (minDim * 0.75) / (ctx.size || 48))),
+              // one glyph per cell, capped so a small grid never overflows its cell
+              sizeScale: Math.max(0.15, Math.min(1.2, (minDim * 0.78) / (ctx.size || 48))),
               align: 'center',
             },
           },
@@ -783,17 +792,17 @@
         const decor = [];
         if (p.decor) {
           // Paper background
-          decor.push({ kind: 'rect', role: 'paper', x: m, y: m, w: gridW, h: gridH, radius: 2 });
+          decor.push({ kind: 'rect', role: 'paper', x: gridX, y: gridY, w: gridBoxW, h: gridBoxH, radius: 2 });
           // Outer border
-          decor.push({ kind: 'rect', role: 'rule', x: m, y: m, w: gridW, h: gridH, stroke: 1.5 });
+          decor.push({ kind: 'rect', role: 'rule', x: gridX, y: gridY, w: gridBoxW, h: gridBoxH, stroke: 1.5 });
           // Grid cells with center fishTail ornament
           decor.push({
             kind: 'cells',
             role: 'rule',
-            x: m,
-            y: m,
-            w: gridW,
-            h: gridH,
+            x: gridX,
+            y: gridY,
+            w: gridBoxW,
+            h: gridBoxH,
             cols,
             rows,
             cellW,
@@ -1029,16 +1038,21 @@
 
         const titleLine = lines[0] ? lines[0] : { text: 'MENU', srcStart: 0 };
         const itemLines = lines.slice(1);
+        // every box below is derived from the menu height: the constants used to
+        // be written for a ~24 px body and the text is laid out at the project's
+        // own size (96 px), so fixed pixels overlapped the rows
+        const titleH = menuH * 0.12;
+        const rowTop = menuH * 0.18;
 
         const regions = [
           {
             id: 'title',
             role: 'headline',
-            rect: { x: menuX + 36, y: menuY + 24, w: menuW - 72, h: 48 },
+            rect: { x: menuX + 36, y: menuY + titleH * 0.2, w: menuW - 72, h: titleH },
             text: titleLine.text,
             srcStart: titleLine.srcStart,
             flow: 'flow',
-            style: { sizeScale: 1.4, weight: 'bold', align: 'center' },
+            style: { sizeScale: 0.62, weight: 'bold', align: 'center' },
           },
         ];
 
@@ -1047,15 +1061,15 @@
           // Outer border
           decor.push({ kind: 'rect', role: 'rule', x: menuX, y: menuY, w: menuW, h: menuH, stroke: 1.5 });
           // Title bottom divider
-          decor.push({ kind: 'line', role: 'rule', x0: menuX + 36, y0: menuY + 76, x1: menuX + menuW - 36, y1: menuY + 76, lineWidth: 1.5 });
+          decor.push({ kind: 'line', role: 'rule', x0: menuX + 36, y0: menuY + titleH * 1.35, x1: menuX + menuW - 36, y1: menuY + titleH * 1.35, lineWidth: 1.5 });
         }
 
         if (itemLines.length > 0) {
-          const rowH = Math.min(46, (menuH - 120) / itemLines.length);
+          const rowH = Math.min(menuH * 0.11, (menuH * 0.78) / itemLines.length);
           for (let i = 0; i < itemLines.length; i++) {
             const lineObj = itemLines[i];
             const parsed = splitMenuLine(lineObj.text);
-            const rowY = menuY + 92 + i * rowH;
+            const rowY = menuY + rowTop + i * rowH;
             const nameW = (menuW - 72) * 0.65;
             const priceW = (menuW - 72) * 0.28;
 
@@ -1066,7 +1080,7 @@
               text: parsed.name,
               srcStart: lineObj.srcStart,
               flow: 'flow',
-              style: { sizeScale: 0.95, align: 'left' },
+              style: { sizeScale: 0.55, align: 'left' },
             });
 
             if (parsed.price) {
@@ -1077,7 +1091,7 @@
                 text: parsed.price,
                 srcStart: null, // converted text
                 flow: 'flow',
-                style: { sizeScale: 0.95, align: 'right' },
+                style: { sizeScale: 0.55, align: 'right' },
               });
 
               if (p.decor) {
@@ -1317,7 +1331,7 @@
 
         // Captions: remaining lines distributed in grid cells
         const restLines = lines.slice(1);
-        const captionCount = Math.min(4, Math.max(1, restLines.length));
+        const captionCount = Math.min(4, restLines.length);
         const gridCols = 4;
         const gridRows = 3;
         const cellW = (W - 2 * m) / gridCols;
@@ -1346,7 +1360,7 @@
           }
           occupied.add(`${col},${row}`);
 
-          const capLine = restLines[i] || { text: `CAPTION ${i + 1}`, srcStart: 0 };
+          const capLine = restLines[i];
           const capRot = rng() > 0.75 ? 90 : 0;
           regions.push({
             id: `caption_${i}`,
