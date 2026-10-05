@@ -29,6 +29,10 @@
 フレーム全体は奥から手前に次の順で描く（`engine.js:1897-1908` のクリップ列 → `engine.js:1922-2094` の字幕 → `engine.js:2111-2119` の前景・フレーム後処理）。
 
 1. background clip → background layers → backdrop clip → filler → figure / textAnim（`engine.js:1901-1908`）
+
+> **ビデオトラックは上の列を分割する。** `kind: 'video'` のトラックは `project.tracks` の並びのその位置に描かれる。`engine.drawSegments(tracks)` はトラックの末尾（タイムラインでは最下段の行）から先頭へ走査し、ビデオトラックを通るたびに「通常トラック群 → ビデオ」のセグメントを吐く。従ってビデオより下に並ぶトラックは先に描かれ、ビデオがその上を覆う。ビデオトラックが無ければ全トラックが 1 群（＝従来の順序）になる。複数のビデオトラックは複数のセグメント、隣接する 2 本は続けて描かれる。
+>
+> クロマキーは `track.chroma`（`enabled` / `color` / `similarity` / `smoothness` / `spill`）で、`gl/layers.js` のレイヤー用フラグメントシェーダ内で CbCr 平面の距離として計算する。抜いた箇所のアルファは 0 なので、後ろの字幕・図形・後景がそのまま透ける。CPU 側の実装は `SA.glLayers.chromaState` / `chromaAlpha`（テスト用）。なお可視な字幕より手前に来るクリップはテキストマスクを受けない（`maskFor`）：動画が既に覆っている字をくり抜く穴になるだけなので。
 2. 字幕トラック（下のトラックから順に）。1 ビートごとに:
    1. `beginLayer`（`engine.js:1932`）
    2. **装飾 → バックグラウンド**（`engine.js:1929`, `engine.js:1933` → `drawBackgroundPass` `engine.js:1677`）。どちらも字の裏。`pipeline.textBackground`（`passes.js:887`）でセル/装飾を描き、`pipeline.fill` / `pipeline.edge` で背景レイヤーに色を乗せる。

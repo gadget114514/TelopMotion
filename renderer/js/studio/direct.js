@@ -17,7 +17,10 @@
   // stay with the song so the lyrics keep their place and palette (a very weird
   // song lets the cue look move layout and location too).
   const CUE_LOOK_GROUPS = ['animation', 'enter', 'exit', 'hold', 'fill', 'edge', 'post', 'repeat', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
-  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  // `scoped` is in the beat list too: a re-run replaces the partial decorations
+  // wholesale (mergeDeep swaps arrays), so a beat never keeps a stale substring
+  // effect from an earlier seed.
+  const AUTO_DIRECT_BEAT_GROUPS = ['layout', 'location', 'edge', 'background', 'animation', 'enter', 'exit', 'hold', 'post', 'color', 'palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'text', 'transform', 'repeat', 'fill', 'scoped', 'bgShape', 'bgFill', 'bgEdge', 'bgMotion', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
   const AUTO_DIRECT_LOCKS = ['layout', 'fill', 'background', 'edge', 'location', 'bg', 'orn'];
   // the tracks a run owns (only clips carrying `auto` are replaced)
   const AUTO_TRACK_KINDS = ['background', 'backdrop', 'filler', 'figure'];
@@ -1418,6 +1421,312 @@
     return { type: entry, params: fallback, enabled: true };
   }
 
+  // --- partial decorations (E) -------------------------------------------------
+  // A beat may spend one substring on its own effect: the hero word stretches,
+  // the last two letters get a colour, the head of the line lands late. The
+  // entry is a `style.scoped` row, so the whole beat still reads as one string:
+  // only the substring moves.
+
+  // The visible letters of a beat's text (the spaces and the punctuation marks
+  // never take a flag, so they are not letters a scope can address).
+  function visibleLettersOf(text) {
+    if (!SA.scope || typeof SA.scope.isSkippable !== 'function') return 0;
+    let count = 0;
+    for (const char of Array.from(String(text == null ? '' : text))) {
+      if (!SA.scope.isSkippable(char)) count += 1;
+    }
+    return count;
+  }
+
+  // How many visible letters a scope actually covers over the beat text, and how
+  // many there are in total. `maskForText` is the layout-time twin of the scene
+  // mask, so this is the same count the engine will make.
+  function scopeCoverage(text, scope, compose) {
+    if (!SA.scope || typeof SA.scope.maskForText !== 'function') return { covered: 0, visible: 0 };
+    const mask = SA.scope.maskForText(text, scope, compose);
+    const chars = SA.scope.codePointsOf(text);
+    let covered = 0;
+    let visible = 0;
+    for (let i = 0; i < chars.length; i += 1) {
+      if (SA.scope.isSkippable(chars[i])) continue;
+      visible += 1;
+      if (mask[i]) covered += 1;
+    }
+    return { covered, visible };
+  }
+
+  // The keyword pop (motion.js, non-compose) already emphasises the preset
+  // words, so a substring that lands exactly on one would double up.
+  function hitsKeyword(text, scope, compose, words) {
+    if (!words || !words.length) return false;
+    const mask = SA.scope.maskForText(text, scope, compose);
+    const chars = SA.scope.codePointsOf(text);
+    // the covered text as one string, without the spaces and the punctuation
+    const covered = [];
+    for (let i = 0; i < chars.length; i += 1) {
+      if (!mask[i] || SA.scope.isSkippable(chars[i])) continue;
+      covered.push(chars[i]);
+    }
+    if (!covered.length) return false;
+    const text2 = covered.join('');
+    return words.some((word) => String(word) && text2 === String(word));
+  }
+
+  // The substring a beat may spend on its own effect, or null when the beat is
+  // too short / too plain to have a *partial* target. The pool runs from the
+  // composition's hero word (weight 3 - it is the strongest substring there is)
+  // down to the generic slices, so a composed beat mostly animates its hero and
+  // a plain beat mostly animates an edge.
+  //
+  // A candidate that covers nothing, or every visible letter (which is not
+  // partial at all), is thrown away and drawn again - up to four times, after
+  // which the beat simply gets no partial effect.
+  function pickScope(random, ctx, options) {
+    const opts = options || {};
+    const text = opts.text == null ? '' : String(opts.text);
+    const compose = opts.compose || null;
+    const visible = visibleLettersOf(text);
+    if (visible < 2) return null;
+    const lines = (text.match(/\r\n|\r|\n/g) || []).length;
+    const hero = opts.analysis && opts.analysis.hero ? opts.analysis.hero : null;
+    const heroUsable = !!hero && hero.to - hero.from > 0 && hero.to - hero.from < visible;
+    // a keyword substring is left to the keyword pop
+    const avoid = opts.avoidKeywords || [];
+    const candidates = [];
+    if (heroUsable) candidates.push({ key: 'hero', weight: 3 });
+    candidates.push({ key: 'head', weight: 1 });
+    candidates.push({ key: 'tail', weight: 1 });
+    if (lines > 0) {
+      candidates.push({ key: 'lineHead', weight: 1 });
+      candidates.push({ key: 'lineTail', weight: 1 });
+    }
+    candidates.push({ key: 'offset', weight: 1 });
+    candidates.push({ key: 'nth', weight: 0.7 });
+    const weights = {};
+    const keys = [];
+    for (const candidate of candidates) {
+      keys.push(candidate.key);
+      weights[candidate.key] = candidate.weight;
+    }
+    const cap = Math.max(1, Math.floor(visible / 2));
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const key = SA.genParams.pickWeighted(random, weights, keys);
+      if (!key) return null;
+      let scope = null;
+      if (key === 'hero') scope = { kind: 'range', from: hero.from, to: hero.to };
+      else if (key === 'head') scope = { kind: 'slice', anchor: 'text', from: 'start', offset: 0, length: 1 + Math.floor(random() * Math.min(3, cap)) };
+      else if (key === 'tail') scope = { kind: 'slice', anchor: 'text', from: 'end', offset: 0, length: 1 + Math.floor(random() * Math.min(3, cap)) };
+      else if (key === 'lineHead') scope = { kind: 'slice', anchor: 'line', from: 'start', offset: 0, length: 1 + Math.floor(random() * Math.min(2, cap)) };
+      else if (key === 'lineTail') scope = { kind: 'slice', anchor: 'line', from: 'end', offset: 0, length: 1 + Math.floor(random() * Math.min(2, cap)) };
+      else if (key === 'offset') {
+        scope = {
+          kind: 'slice',
+          anchor: 'text',
+          from: random() < 0.5 ? 'start' : 'end',
+          offset: 1 + Math.floor(random() * 3),
+          length: 1 + Math.floor(random() * Math.min(3, cap)),
+        };
+      } else scope = { kind: 'nth', unit: 'letter', every: 2 + Math.floor(random() * 2), offset: Math.floor(random() * 2) };
+      const { covered } = scopeCoverage(text, scope, compose);
+      // 0 letters is nothing, and the whole visible text is not partial
+      if (!(covered > 0) || covered >= visible) continue;
+      if (avoid.length && hitsKeyword(text, scope, compose, avoid)) continue;
+      return scope;
+    }
+    return null;
+  }
+
+  // The scoped entry itself. `family` is one of the profile's `scoped*` weight
+  // keys; `options` carries the beat's own values (energy, tempo, the vertical
+  // flag and the base hold, whose block deformations a local effect must not
+  // fight over the warp centre).
+  function pickScopedEffect(random, ctx, family, options) {
+    const opts = options || {};
+    const axes = opts.axes || {};
+    const energy = Math.max(0, Math.min(1, Number(opts.energy == null ? 0.5 : opts.energy)));
+    const bpm = Number(opts.bpm) > 0 ? Number(opts.bpm) : 120;
+    const vertical = !!opts.vertical;
+    const axis = () => (vertical ? 'y' : 'x');
+    // a smart look drops the metronome grammar (the same filter `smartHold` uses)
+    const smart = SA.moods && typeof SA.moods.smartOf === 'function' ? SA.moods.smartOf(axes) : Number(axes.smartness) || 0;
+    const calm = smart > 0.5;
+    const round2 = (value) => Math.round(value * 100) / 100;
+    if (family === 'scopedStretch') {
+      const stretchAxis = vertical ? pick(random, ['y', 'both']) : pick(random, ['x', 'both']);
+      const magnitude = 0.15 + 0.45 * energy;
+      const shrink = random() < 0.3;
+      const amount = round2((shrink ? -magnitude * 0.3 : magnitude) * (1 + random() * 0.2));
+      const modes = calm ? ['breathe'] : ['breathe', 'pulse', 'beat'];
+      return {
+        group: 'hold',
+        type: 'stretch',
+        params: {
+          amount,
+          stretchAxis,
+          mode: pick(random, modes),
+          freq: round2((bpm / 60) * (random() < 0.5 ? 0.25 : 0.5)),
+        },
+        enabled: true,
+        local: true,
+      };
+    }
+    if (family === 'scopedTracking') {
+      const modes = calm ? ['breathe'] : ['breathe', 'beat'];
+      return {
+        group: 'hold',
+        type: 'tracking',
+        params: {
+          amount: round2(0.3 + random() * 0.9),
+          mode: pick(random, modes),
+          freq: round2(0.2 + random() * 0.6),
+          trackAxis: axis(),
+        },
+        enabled: true,
+        local: true,
+      };
+    }
+    if (family === 'scopedWave') {
+      const pool = [];
+      // a block deformation on the base hold already owns the warp centre, so
+      // the substring only gets the effects that read the centre themselves
+      if (!opts.blockDeform) pool.push('sineWave');
+      pool.push('letterRipple', 'squashStretch');
+      if (SA.fxAxes && SA.fxAxes.fearOf(axes) > 0.5) pool.push('shiver');
+      const type = pick(random, pool);
+      if (type === 'sineWave') {
+        return {
+          group: 'hold',
+          type,
+          params: { amp: round2(0.01 + random() * 0.03), freq: 0.004, speed: round2(0.4 + random() * 0.8) },
+          enabled: true,
+          local: true,
+        };
+      }
+      if (type === 'squashStretch') {
+        return {
+          group: 'hold',
+          type,
+          params: { amount: round2(0.1 + random() * 0.2), speed: round2(0.5 + random() * 0.6), phase: round2(0.2 + random() * 0.2) },
+          enabled: true,
+          local: true,
+        };
+      }
+      if (type === 'letterRipple') {
+        return {
+          group: 'hold',
+          type,
+          params: { style: 'ripple', amount: round2(0.15 + random() * 0.2), freq: round2(1.5 + random()), animate: 'travel', speed: round2(0.4 + random() * 0.8) },
+          enabled: true,
+          local: true,
+        };
+      }
+      return {
+        group: 'hold',
+        type: 'shiver',
+        params: { amount: round2(0.4 + random() * 0.4), interval: round2(2 + random() * 3) },
+        enabled: true,
+        local: true,
+      };
+    }
+    if (family === 'scopedDeco') {
+      const accents = (ctx && ctx.accentHexes) || [];
+      const accent = accents.length ? accents[Math.floor(random() * accents.length)] : '#ff8a3d';
+      const kind = pick(random, ['text', 'fill', 'edge']);
+      if (kind === 'text') {
+        // a static span: the layout re-packs the line around it, so the wider
+        // glyphs push their neighbours instead of overlapping them
+        return {
+          group: 'text',
+          type: 'span',
+          params: { paletteIndex: -1, weight: 700, scale: round2(1.1 + random() * 0.25), color: accent },
+          enabled: true,
+        };
+      }
+      if (kind === 'fill') {
+        const fill = fillEffectFor(random, ctx, opts.cueId);
+        return fill ? { group: 'fill', type: fill.type, params: fill.params, enabled: true } : null;
+      }
+      return random() < 0.55
+        ? { group: 'edge', type: 'outline', params: { width: round2(2 + random() * 3), color: accent }, enabled: true }
+        : { group: 'edge', type: 'neonGlow', params: { color: accent, radius: round2(8 + random() * 12) }, enabled: true };
+    }
+    // scopedEnter: the substring lands a beat later than the rest of the line
+    const base = Number(opts.baseEnterDur) > 0 ? Number(opts.baseEnterDur) : 0.5;
+    const type = pick(random, ['popIn', 'spinIn', 'focusIn', 'riseIn', 'stretchPopIn']);
+    return {
+      group: 'enter',
+      type,
+      params: {},
+      motion: { in: { delay: round2(base * 0.6), duration: round2(0.3 + random() * 0.2) } },
+      enabled: true,
+      local: true,
+    };
+  }
+
+  // Whether a beat writes vertically: its own template's direction, else the
+  // run's default. A vertical line stretches down the column, so the substring
+  // effects swap their axes (the scope itself is direction-agnostic).
+  function verticalOf(patch, ctx) {
+    const own = patch && patch.text && patch.text.direction;
+    const direction = own || (ctx && ctx.direction);
+    return direction === 'vertical';
+  }
+
+  // The block deformations a base hold carries. A local substring effect avoids
+  // the warp-centre conflict with them (the local origin wins in motion.js).
+  const BLOCK_DEFORM_TYPES = new Set(['warp', 'letterWarp', 'fontSize', 'fillScreen', 'squashStretch']);
+
+  function blockDeformOf(patch) {
+    return (patch && Array.isArray(patch.hold) ? patch.hold : []).some((instance) => instance && BLOCK_DEFORM_TYPES.has(instance.type));
+  }
+
+  // The scoped rows of one beat: the first entry, then (on its own chance) a
+  // second one on another substring in a different group. Two holds may share a
+  // substring (they stack), but two entrances or two colours would overwrite
+  // each other, so the second pick avoids them.
+  // The weight keys, in table order. `SCOPED_FAMILIES` mirrors genParams.SCOPED_KEYS
+  // (the generator keeps its own copy so a missing profile cannot break the draw).
+  const SCOPED_FAMILIES = ['scopedStretch', 'scopedTracking', 'scopedWave', 'scopedDeco', 'scopedEnter'];
+  // A second entry replaces the first when both are in the same group (the engine
+  // takes one instance per group, except the hold stack), so the two draws never
+  // share a group. Two holds may share one - they stack.
+  const SCOPED_SECOND_EXCLUDE = { scopedEnter: ['scopedEnter'], scopedDeco: ['scopedDeco'] };
+
+  function scopedFor(random, ctx, options) {
+    const opts = options || {};
+    const p = opts.params || ctx.params;
+    if (!p || !SA.genParams) return null;
+    const text = opts.text == null ? '' : String(opts.text);
+    const first = SA.genParams.pickWeighted(random, p, SCOPED_FAMILIES);
+    if (!first) return null;
+    const scope = pickScope(random, ctx, { text, compose: opts.compose || null, analysis: opts.analysis || null, avoidKeywords: opts.avoidKeywords || [] });
+    if (!scope) return null;
+    const effectOptions = {
+      axes: opts.axes || {},
+      energy: opts.energy,
+      bpm: opts.bpm,
+      vertical: opts.vertical,
+      cueId: opts.cueId,
+      blockDeform: opts.blockDeform,
+      baseEnterDur: opts.baseEnterDur,
+    };
+    const entry = pickScopedEffect(random, ctx, first, effectOptions);
+    if (!entry) return null;
+    const list = [{ ...entry, scope }];
+    if (SA.genParams.roll(random, p.scopedSecondChance)) {
+      const exclude = SCOPED_SECOND_EXCLUDE[first] || [];
+      const pool = SCOPED_FAMILIES.filter((key) => !exclude.includes(key));
+      const second = SA.genParams.pickWeighted(random, p, pool);
+      if (second) {
+        const secondScope = pickScope(random, ctx, { text, compose: opts.compose || null, analysis: opts.analysis || null, avoidKeywords: opts.avoidKeywords || [] });
+        const effect = secondScope ? pickScopedEffect(random, ctx, second, effectOptions) : null;
+        // a second entry of the same group as the first would replace it
+        if (effect && secondScope && effect.group !== entry.group) list.push({ ...effect, scope: secondScope });
+      }
+    }
+    return list;
+  }
+
   // One beat as a composition: analyse the text, pick a template and write the
   // patch. The weird axis no longer jitters size / colour / tilt - it only
   // widens which compositions are allowed and how large the hero grows.
@@ -1690,6 +1999,24 @@
         patch.hold = [smartHold(pulseRandom, ctx.s, Math.round((0.02 + (Number(energy) || 0) * 0.08) * 1000) / 1000, pulseBpm, axes, ctx.beatFit)];
       }
     }
+    // partial decorations: one substring of the beat gets its own effect
+    const scopedRandom = stream('beat-scoped');
+    if (duration >= 0.6 && gp.roll(scopedRandom, p.scopedChance)) {
+      const scoped = scopedFor(scopedRandom, ctx, {
+        params: p,
+        text: beat.text,
+        compose: patch.text.compose || null,
+        analysis,
+        axes,
+        energy,
+        bpm: ctx.bpm,
+        vertical: verticalOf(patch, ctx),
+        cueId: cue.id,
+        blockDeform: blockDeformOf(patch),
+        baseEnterDur: patch.enter && patch.enter.motion && patch.enter.motion.in ? patch.enter.motion.in.duration : null,
+      });
+      if (scoped && scoped.length) patch.scoped = scoped;
+    }
     // entrance / exit: a fresh grammar draw, the mask keeps its entrance
     const motionRandom = stream('beat-motion');
     if (gp.roll(motionRandom, p.motionChance)) {
@@ -1808,6 +2135,35 @@
       if (w >= 0.6 && SA.genParams.roll(wr, p.beatFontChance)) {
         const fontId = SA.moods.weirdFont(wr, cueContext, themeStyle.text && themeStyle.text.fontId);
         if (fontId) beatPatch.text.fontId = fontId;
+      }
+      // partial decorations: outside a composition there is no hero word to
+      // spend, so the substring comes from the beat's own text (its visible
+      // letters and its line breaks). Its own stream, so the draws above keep
+      // their results. The keyword pop covers the preset words on this path, so a
+      // substring that lands exactly on one is skipped.
+      if (beatDuration >= 0.6) {
+        const sr = SA.rng.rngFor(beatSeed, beat.id, 'scoped');
+        if (SA.genParams.roll(sr, p.scopedChance)) {
+          const words = w >= 0.5 && SA.keywords && typeof SA.keywords.listFor === 'function'
+            ? SA.keywords.listFor(projectDoc.styleMode || {}).words
+            : [];
+          const scoped = scopedFor(sr, ctx, {
+            params: p,
+            text: beat.text,
+            compose: null,
+            analysis: null,
+            axes,
+            energy,
+            bpm,
+            // the beat's own writing direction wins over the song's default: a
+            // vertical template stretches down the column, not across it
+            vertical: verticalOf(beatPatch, ctx),
+            cueId: cue.id,
+            blockDeform: blockDeformOf(beatPatch),
+            avoidKeywords: w >= 0.5 ? words : [],
+          });
+          if (scoped && scoped.length) beatPatch.scoped = scoped;
+        }
       }
     }
     projectDoc.beatStyles[beat.id] = SA.project.mergeDeep(projectDoc.beatStyles[beat.id] || {}, beatPatch);

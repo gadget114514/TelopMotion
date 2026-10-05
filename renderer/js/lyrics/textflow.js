@@ -1574,6 +1574,14 @@
       if (text) kept.push({ ...beat });
       else orphans.push({ ...beat });
     }
+    // a re-flowed beat keeps the variation slot (Vary) of the beat it replaces
+    const variations = new Map();
+    for (const beat of previous || []) {
+      if (beat && beat.variation != null) variations.set(beat.id, beat.variation);
+    }
+    for (const beat of fresh) {
+      if (variations.has(beat.id) && beat.variation == null) beat.variation = variations.get(beat.id);
+    }
     let remaining = fresh.filter((beat) => {
       if (beat.kind === 'emphasis' || beat.kind === 'repeat') return true;
       return !kept.some((pinnedBeat) => normalizeText(pinnedBeat.text) === normalizeText(beat.text));

@@ -34,6 +34,7 @@ SA.themeEditor = (() => {
     color: 'studio.themeEditor.group.color',
     planes: 'studio.themeEditor.group.planes',
     motion: 'studio.themeEditor.group.motion',
+    scoped: 'studio.themeEditor.group.scoped',
     figure: 'studio.themeEditor.group.figure',
     stroke: 'studio.themeEditor.group.stroke',
   };

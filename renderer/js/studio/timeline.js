@@ -81,10 +81,13 @@ SA.timeline = (() => {
     return doc && doc.script ? doc.script.cues || [] : [];
   }
 
-  function layerList(slot) {
+  // The layers a layer track shows: the foreground / background slot, or the
+  // layers placed on one video track (`trackId`).
+  function layerList(slot, trackId) {
     const doc = project();
     const list = (doc && doc.layers) || [];
-    return list.filter((layer) => (layer && (layer.slot === 'foreground') === (slot === 'foreground')));
+    if (slot === 'video') return list.filter((layer) => layer && layer.slot === 'video' && layer.trackId === trackId);
+    return list.filter((layer) => layer && (layer.slot || 'background') === slot);
   }
 
   function trackList() {
@@ -106,6 +109,10 @@ SA.timeline = (() => {
     if (track.kind === 'subtitle') {
       const suffix = track.name && /^字幕/.test(track.name) ? track.name.replace(/^字幕/, '') : '';
       return suffix ? `${t('studio.track.subtitle')} ${suffix}` : track.name || t('studio.track.subtitle');
+    }
+    if (track.kind === 'video') {
+      const suffix = track.name && /^ビデオ/.test(track.name) ? track.name.replace(/^ビデオ/, '') : '';
+      return `${t('studio.track.video')}${suffix ? ` ${suffix}` : ''}${track.chroma && track.chroma.enabled ? ' · CK' : ''}`;
     }
     return track.name || track.id;
   }
@@ -379,9 +386,9 @@ SA.timeline = (() => {
     const tracks = trackList();
     for (const track of tracks) {
       if (!track) continue;
-      if (track.kind === 'foreground' || track.kind === 'background') {
-        const slot = track.kind === 'foreground' ? 'foreground' : 'background';
-        const layers = layerList(slot);
+      if (track.kind === 'foreground' || track.kind === 'background' || track.kind === 'video') {
+        const slot = track.kind;
+        const layers = layerList(slot, track.id);
         const packed = packRows(layers, (layer) => (layer.start == null ? 0 : layer.start), (layer) => (layer.end == null ? duration() : layer.end));
         const laneCount = Math.max(1, packed.length);
         for (let lane = 0; lane < laneCount; lane += 1) {
@@ -600,7 +607,26 @@ SA.timeline = (() => {
   function removableTrack(track) {
     if (!track) return false;
     if (track.kind === 'subtitle') return trackList().filter((entry) => entry && entry.kind === 'subtitle').length > 1;
-    return ['backdrop', 'filler', 'figure', 'textAnim'].includes(track.kind);
+    return ['backdrop', 'filler', 'figure', 'textAnim', 'video'].includes(track.kind);
+  }
+
+  // Tracks that can move up / down in the layer order (upper = front). The
+  // foreground / background tracks are fixed at the ends.
+  const FIXED_ORDER_KINDS = new Set(['foreground', 'background']);
+  function movableTrack(track) {
+    return !!(track && !FIXED_ORDER_KINDS.has(track.kind));
+  }
+
+  function canMoveTrack(trackId, direction) {
+    const tracks = trackList();
+    const index = tracks.findIndex((entry) => entry && entry.id === trackId);
+    if (index < 0) return false;
+    if (!movableTrack(tracks[index])) return false;
+    const step = direction === 'up' ? -1 : 1;
+    const target = index + step;
+    if (target < 0 || target >= tracks.length) return false;
+    if (!tracks[target] || FIXED_ORDER_KINDS.has(tracks[target].kind)) return false;
+    return true;
   }
 
   // The tree guide in the label column of a child row: a vertical line from the
@@ -668,7 +694,16 @@ SA.timeline = (() => {
     ctx.fillStyle = opts.hidden ? '#5a6175' : opts.color || '#8d96ab';
     const removeSize = 14;
     const removeX = LABEL_W - 20 - removeSize - 2;
-    const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0);
+    // the move arrows are always shown on a real track's own header row, even
+    // when that direction is blocked (then greyed out and inert): a missing
+    // arrow reads as a missing feature. Only an enabled arrow acts; the
+    // fixed-end tracks (foreground / background) never move, so theirs stay
+    // greyed. Rows without a track (e.g. the credits row) keep no arrows.
+    const showMove = opts.movable !== false && !row.depth && !!track;
+    const canUp = showMove && canMoveTrack(track ? track.id : null, 'up');
+    const canDown = showMove && canMoveTrack(track ? track.id : null, 'down');
+    const moveReserve = showMove ? 30 : 0;
+    const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0) + moveReserve;
     const fullTitle = String(opts.tooltip || (title == null ? '' : title));
     const titleText = fitLabel(title, LABEL_W - textX - reserve);
     ctx.fillText(titleText, textX, y + height / 2);
@@ -682,6 +717,34 @@ SA.timeline = (() => {
     });
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
+    if (showMove) {
+      const rightEdge = removable ? removeX : LABEL_W - 20;
+      const moveW = 13;
+      const upX = rightEdge - moveW * 2 - 4;
+      const downX = rightEdge - moveW - 2;
+      const cy = y + height / 2;
+      const drawArrow = (x, up, enabled) => {
+        ctx.save();
+        ctx.fillStyle = enabled ? '#8d96ab' : '#3a4050';
+        ctx.beginPath();
+        if (up) {
+          ctx.moveTo(x + moveW / 2, cy - 4);
+          ctx.lineTo(x + moveW - 3, cy + 3);
+          ctx.lineTo(x + 3, cy + 3);
+        } else {
+          ctx.moveTo(x + moveW / 2, cy + 4);
+          ctx.lineTo(x + moveW - 3, cy - 3);
+          ctx.lineTo(x + 3, cy - 3);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      };
+      drawArrow(upX, true, canUp);
+      drawArrow(downX, false, canDown);
+      if (canUp) hitRegions.push({ type: 'track-move-up', trackId: row.trackId, x: upX, y, w: moveW, h: height });
+      if (canDown) hitRegions.push({ type: 'track-move-down', trackId: row.trackId, x: downX, y, w: moveW, h: height });
+    }
     if (removable) {
       const cx = removeX + removeSize / 2;
       const cy = y + height / 2;
@@ -1002,16 +1065,17 @@ SA.timeline = (() => {
 
   function drawLayerTrack(size, row) {
     const foreground = row.slot === 'foreground';
+    const video = row.slot === 'video';
     const anyEnabled = row.layers.some((layer) => layer.enabled !== false);
     // the background track also owns the frame base colour: a set colour keeps
     // the track "visible" even without layers (the header shows a swatch)
-    const baseColor = !foreground && row.track && row.track.color ? (typeof row.track.color === 'string' ? row.track.color : row.track.color.value) : null;
+    const baseColor = row.slot === 'background' && row.track && row.track.color ? (typeof row.track.color === 'string' ? row.track.color : row.track.color.value) : null;
     // ... and the background clips the auto direction places on it: they are
     // content of the same track, so the header checkbox has to count them too
-    const clips = foreground ? [] : clipsOnTrack(project(), row.trackId);
+    const clips = row.slot === 'background' ? clipsOnTrack(project(), row.trackId) : [];
     if (row.first) {
       drawTrackHeader(row, trackTitle(row.track), {
-        color: foreground ? '#4dc8a0' : '#4d8fc8',
+        color: video ? '#c8954d' : foreground ? '#4dc8a0' : '#4d8fc8',
         hidden: trackHidden(row.track) || !(anyEnabled || !!baseColor || clips.length > 0),
         swatch: baseColor,
         twisty: !!row.collapsible,
@@ -1034,10 +1098,10 @@ SA.timeline = (() => {
       const selected = (SA.store.state.selection.paths || []).some((path) => path === `layer:${layer.id}`);
       const enabled = layer.enabled !== false;
       if (x + width < 0 || x > size.width) continue;
-      ctx.fillStyle = enabled ? (foreground ? 'rgba(30, 64, 52, 0.92)' : 'rgba(28, 46, 74, 0.92)') : 'rgba(30, 34, 44, 0.7)';
+      ctx.fillStyle = enabled ? (video ? 'rgba(70, 50, 26, 0.92)' : foreground ? 'rgba(30, 64, 52, 0.92)' : 'rgba(28, 46, 74, 0.92)') : 'rgba(30, 34, 44, 0.7)';
       rounded(x, y + 1.5, width, height, 4);
       ctx.fill();
-      ctx.strokeStyle = selected ? '#ff8a3d' : enabled ? (foreground ? '#4dc8a0' : '#4d8fc8') : '#4a5266';
+      ctx.strokeStyle = selected ? '#ff8a3d' : enabled ? (video ? '#c8954d' : foreground ? '#4dc8a0' : '#4d8fc8') : '#4a5266';
       ctx.lineWidth = selected ? 1.6 : 1;
       if (!enabled) ctx.setLineDash([3, 3]);
       ctx.stroke();
@@ -1049,7 +1113,7 @@ SA.timeline = (() => {
       ctx.fillStyle = enabled ? '#d6dbe9' : '#8d96ab';
       ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
       ctx.textBaseline = 'middle';
-      const label = `${foreground ? 'FG' : 'BG'} · ${layerTypeLabel(layer)}${layer.src || layer.type !== 'solid' ? '' : ` ${layer.color || ''}`}`;
+      const label = `${video ? 'VID' : foreground ? 'FG' : 'BG'} · ${layerTypeLabel(layer)}${layer.src || layer.type !== 'solid' ? '' : ` ${layer.color || ''}`}`;
       ctx.fillText(label, x + 5, y + height / 2 + 0.5);
       ctx.restore();
       hitRegions.push({ type: 'layer', x, y: row.y, w: width, h: LAYER_H, layerId: layer.id, edgeLeft: x, edgeRight: x + width });
@@ -1706,6 +1770,10 @@ SA.timeline = (() => {
       if (track && removableTrack(track)) SA.store.commands.removeTrack(hit.trackId);
       drag = null;
       draw();
+    } else if (hit.type === 'track-move-up' || hit.type === 'track-move-down') {
+      SA.store.commands.moveTrack(hit.trackId, hit.type === 'track-move-up' ? 'up' : 'down');
+      drag = null;
+      draw();
     } else if (hit.type === 'track-empty' && CREATABLE_CLIP_KINDS.includes(hit.kind)) {
       // dragging on an animation track creates a clip for that span
       const at = Math.max(0, timeAt(point.x));
@@ -1777,7 +1845,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -2132,6 +2200,64 @@ SA.timeline = (() => {
       });
       menu.appendChild(button);
     };
+    // "Move to track": the right-clicked item, plus every other selected item
+    // of the same type, goes to another track of the same kind in one undo
+    // step. `prefix` is the selection path prefix (cue / clip).
+    const addMoveTrackMenu = (prefix, itemId, kind, currentTrackOf, items, moveTo) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'menu-item';
+      button.textContent = `${t('studio.timeline.moveToTrack')} ▸`;
+      button.addEventListener('mouseenter', () => {
+        const pattern = new RegExp(`^${prefix}:([^/]+)`);
+        const selectedIds = (SA.store.state.selection.paths || [])
+          .map((path) => pattern.exec(path))
+          .filter(Boolean)
+          .map((match) => match[1]);
+        const ids = selectedIds.includes(itemId) ? [...new Set(selectedIds)] : [itemId];
+        const chosen = items().filter((entry) => ids.includes(entry.id) && trackKindOf(currentTrackOf(entry)) === kind);
+        const chosenIds = chosen.map((entry) => entry.id);
+        const move = (trackId) => {
+          const moved = moveTo(chosenIds, trackId);
+          if (moved < chosen.length && SA.studio && SA.studio.toast) SA.studio.toast('studio.timeline.moveSkipped', { n: chosen.length - moved });
+          draw();
+        };
+        hideMenu();
+        menu = document.createElement('div');
+        menu.className = 'timeline-menu';
+        const item = (label, run, disabled) => {
+          const entry = document.createElement('button');
+          entry.type = 'button';
+          entry.className = 'menu-item';
+          entry.textContent = label;
+          entry.disabled = !!disabled;
+          entry.addEventListener('click', () => {
+            hideMenu();
+            run();
+          });
+          menu.appendChild(entry);
+        };
+        for (const track of trackList().filter((entry) => entry && entry.kind === kind)) {
+          const here = chosen.every((entry) => currentTrackOf(entry) === track.id);
+          item(`${here ? '✓ ' : ''}${trackTitle(track)}`, () => move(track.id), here);
+        }
+        item(t('studio.timeline.moveToNewTrack'), () => {
+          const id = SA.store.commands.addTrack(kind);
+          if (id) move(id);
+        });
+        el.body.appendChild(menu);
+        const rect = el.body.getBoundingClientRect();
+        menu.style.left = `${Math.max(0, event.clientX - rect.left + 120)}px`;
+        menu.style.top = `${Math.max(0, event.clientY - rect.top)}px`;
+      });
+      menu.appendChild(button);
+    };
+    const trackKindOf = (trackId) => {
+      const track = trackList().find((entry) => entry && entry.id === trackId);
+      return track ? track.kind : 'subtitle';
+    };
+    const addMoveCueMenu = (cueId) =>
+      addMoveTrackMenu('cue', cueId, 'subtitle', (cue) => cue.trackId || 'sub1', cueList, (ids, trackId) => SA.store.commands.moveCuesToTrack(ids, trackId));
     if (hit.type === 'key') {
       selectedKeys.add(`${hit.path}|${hit.propPath}|${hit.index}`);
       addEaseMenu(hit.path, hit.propPath, hit.index);
@@ -2302,6 +2428,11 @@ SA.timeline = (() => {
       }
       add(t('studio.timeline.splitClip'), () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
       add(t('studio.timeline.duplicateClip'), () => SA.store.commands.duplicateClip(clip.id));
+      const clipKind = trackKindOf(clip.trackId);
+      // the background track's clips stay on it (there is one background)
+      if (clipKind !== 'background') {
+        addMoveTrackMenu('clip', clip.id, clipKind, (entry) => entry.trackId, () => (project().clips) || [], (ids, trackId) => SA.store.commands.moveClipsToTrack(ids, trackId));
+      }
       add(t('studio.inspector.reroll'), () => SA.store.commands.rerollClip(clip.id));
       add(t('studio.generate.rerollColors'), () =>
         SA.store.commands.rerollColors({ kinds: [hit.kind], clipIds: [clip.id], perClip: true })
@@ -2313,21 +2444,33 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
-        add(t('studio.track.addSubtitle'), () => {
+        add(t('studio.timeline.addSubtitle'), () => {
           const id = SA.store.commands.addTrack('subtitle');
           if (id) SA.store.setSelection([`track:${id}`], 'track');
         });
         add(track.textHidden ? t('studio.track.showText') : t('studio.track.hideText'), () => SA.store.commands.updateTrack(track.id, { textHidden: !track.textHidden }));
         add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
         add(track.graphicsHidden ? t('studio.track.showGraphics') : t('studio.track.hideGraphics'), () => SA.store.commands.updateTrack(track.id, { graphicsHidden: !track.graphicsHidden }));
-        add(t('studio.track.moveUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
-        add(t('studio.track.moveDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
       } else if (track.kind === 'filler') {
         add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());
+      } else if (track.kind === 'video') {
+        // tracks listed below a video track draw behind the video and show
+        // through its chroma key; upper tracks draw in front of it
+        const chroma = track.chroma || {};
+        add(chroma.enabled ? t('studio.track.chromaOff') : t('studio.track.chromaOn'), () =>
+          SA.store.commands.updateTrack(track.id, { chroma: { ...SA.glLayers.CHROMA_DEFAULTS, ...chroma, enabled: !chroma.enabled } })
+        );
+      }
+      // layer order = track order (upper = front); foreground / background are
+      // fixed, every other track moves freely past any kind. Each direction
+      // is only offered when the neighbour in that direction is movable too.
+      if (movableTrack(track)) {
+        if (canMoveTrack(track.id, 'up')) add(t('studio.timeline.moveTrackUp'), () => SA.store.commands.moveTrack(track.id, 'up'));
+        if (canMoveTrack(track.id, 'down')) add(t('studio.timeline.moveTrackDown'), () => SA.store.commands.moveTrack(track.id, 'down'));
       }
       // the clip tracks that draw behind the lyrics can opt out of the text
       // mask (the subtitle background is always knocked out)
@@ -2345,7 +2488,7 @@ SA.timeline = (() => {
           SA.store.commands.updateTrack(track.id, { textMask: track.textMask === false })
         );
       }
-      if (removableTrack(track)) add(t('studio.track.remove'), () => SA.store.commands.removeTrack(track.id));
+      if (removableTrack(track)) add(t('studio.timeline.removeTrack'), () => SA.store.commands.removeTrack(track.id));
       add(track.hidden ? t('layers.show') : t('layers.hide'), () => SA.store.commands.updateTrack(track.id, { hidden: !track.hidden }));
       draw();
       el.body.appendChild(menu);
@@ -2387,6 +2530,7 @@ SA.timeline = (() => {
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
       addRecapItem(add, cueId);
+      addMoveCueMenu(cueId);
       add(t('studio.motion.addHere'), () => {
         SA.store.setSelection([`cue:${cueId}/beat:${hit.beatId}`], 'beat');
         SA.motionDialog.open();
@@ -2412,6 +2556,7 @@ SA.timeline = (() => {
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
       addRecapItem(add, cueId);
+      addMoveCueMenu(cueId);
       add(t('studio.motion.addHere'), () => {
         SA.store.setSelection([`cue:${cueId}`], 'cue');
         SA.motionDialog.open();
@@ -2571,11 +2716,21 @@ SA.timeline = (() => {
     draw();
   }
 
+  // A dropped video lands on the video track under the pointer; elsewhere it
+  // becomes a foreground (above the first subtitle row) or background layer.
+  function dropLayerAt(point) {
+    const row = rows.find((entry) => point.y >= entry.y && point.y < entry.y + entry.h);
+    // white: the layer colour tints the video
+    if (row && row.track && row.track.kind === 'video') return { ...SA.layersDialog.defaults('video'), trackId: row.trackId, color: '#ffffff' };
+    const firstCue = rows.find((entry) => entry.type === 'cue-track');
+    return { ...SA.layersDialog.defaults(firstCue && point.y < firstCue.y ? 'foreground' : 'background'), color: '#ffffff' };
+  }
+
   function addAnimationTrack(kind) {
     const id = SA.store.commands.addTrack(kind);
     if (!id) return;
     SA.store.setSelection([`track:${id}`], 'track');
-    const toasts = { figure: 'studio.toast.figureTrack', textAnim: 'studio.toast.textTrack', filler: 'studio.toast.fillerTrack', backdrop: 'studio.toast.backdropTrack' };
+    const toasts = { video: 'studio.toast.videoTrack', figure: 'studio.toast.figureTrack', textAnim: 'studio.toast.textTrack', filler: 'studio.toast.fillerTrack', backdrop: 'studio.toast.backdropTrack' };
     SA.studio.toast(toasts[kind] || 'studio.toast.textTrack');
     draw();
   }
@@ -2660,9 +2815,7 @@ SA.timeline = (() => {
         if (entry) {
           event.preventDefault();
           const point = localPoint(event);
-          const firstCue = rows.find((row) => row.type === 'cue-track');
-          const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
-          const layer = SA.layersDialog.defaults(slot);
+          const layer = dropLayerAt(point);
           layer.type = 'video';
           layer.src = entry.src;
           layer.fit = 'cover';
@@ -2698,8 +2851,6 @@ SA.timeline = (() => {
             event.preventDefault();
             const url = URL.createObjectURL(file);
             const point = localPoint(event);
-            const firstCue = rows.find((row) => row.type === 'cue-track');
-            const slot = firstCue && point.y < firstCue.y ? 'foreground' : 'background';
             const entry = {
               id: `v${Date.now().toString(36)}${Math.floor(Math.random() * 1000)}`,
               name: file.name,
@@ -2708,7 +2859,7 @@ SA.timeline = (() => {
             };
             if (SA.store && SA.store.commands) {
               SA.store.commands.addMedia({ ...entry, kind: 'videos' });
-              const layer = SA.layersDialog.defaults(slot);
+              const layer = dropLayerAt(point);
               layer.type = 'video';
               layer.src = url;
               layer.fit = 'cover';
@@ -2780,6 +2931,9 @@ SA.timeline = (() => {
     if (el.addFillerTrack) {
       el.addFillerTrack.addEventListener('click', () => addAnimationTrack('filler'));
     }
+    if (el.addVideoTrack) {
+      el.addVideoTrack.addEventListener('click', () => addAnimationTrack('video'));
+    }
     document.addEventListener('click', (event) => {
       if (menu && !menu.contains(event.target)) hideMenu();
     });
@@ -2801,6 +2955,7 @@ SA.timeline = (() => {
     el.addFigureTrack = document.getElementById('tl-add-figure-track');
     el.addBackdropTrack = document.getElementById('tl-add-backdrop-track');
     el.addFillerTrack = document.getElementById('tl-add-filler-track');
+    el.addVideoTrack = document.getElementById('tl-add-video-track');
     // hover tooltip for row labels the fixed label column had to truncate
     el.tip = document.createElement('div');
     el.tip.className = 'timeline-tip';

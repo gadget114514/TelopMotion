@@ -25,7 +25,7 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 425,
+    "types": 431,
     "groups": 25,
     "overridden": 581
   },
@@ -82,6 +82,7 @@
       "rangeReveal": 1033407352,
       "substringReveal": 680036488,
       "tracking": 1317572184,
+      "stretch": 680036488,
       "gravityDrop": 1485342905,
       "riseIn": 696813704,
       "fallIn": 1485342856,
@@ -93,7 +94,8 @@
       "revealSweep": 730368136,
       "revealSoft": 998803592,
       "revealRandom": 1451788424,
-      "trackIn": 1032358024
+      "trackIn": 1032358024,
+      "stretchPopIn": 680036488
     },
     "exit": {
       "fade": 990416440,
@@ -116,6 +118,7 @@
       "rangeReveal": 1033407352,
       "substringReveal": 680036488,
       "tracking": 1317572184,
+      "stretch": 680036488,
       "fallLinear": 1485342856,
       "riseOut": 965249160,
       "fallOut": 1737001096,
@@ -153,6 +156,7 @@
       "animator": 1533578088,
       "rangeSelector": 1555597944,
       "tracking": 1300793480,
+      "stretch": 680036488,
       "softBody": 1491635846,
       "gravityHang": 1487440981,
       "breathe": 948471940,
@@ -187,7 +191,9 @@
       "waveLoop": 1200130182,
       "beatHighlight": 881559689,
       "trackBreath": 965249155,
-      "trackBeat": 881363081
+      "trackBeat": 881363081,
+      "stretchBreathX": 1216907400,
+      "stretchBeatY": 680036488
     },
     "location": {
       "center": 688425832,

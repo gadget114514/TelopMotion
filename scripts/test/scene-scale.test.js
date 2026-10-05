@@ -26,18 +26,26 @@ function layoutStub(text, style, fonts, options) {
   const size = options.size;
   const chars = Array.from(String(text));
   const advance = size * 0.6;
-  const letters = chars.map((char, index) => ({
-    char,
-    glyph: null,
-    fontId: 'stub',
-    src: 'stub',
-    raster: null,
-    advance,
-    advanceWithSpacing: advance,
-    x: index * advance,
-    y: size,
-    bbox: { x1: 0, y1: -size * 0.8, x2: advance, y2: 0 },
-  }));
+  // `textOffset` is the beat text's code-point cursor, which the `range` scope
+  // addresses (the real layout counts it the same way, font.js)
+  let cursor = 0;
+  const letters = chars.map((char, index) => {
+    const textOffset = cursor;
+    cursor += Array.from(char).length;
+    return {
+      char,
+      glyph: null,
+      fontId: 'stub',
+      src: 'stub',
+      raster: null,
+      advance,
+      advanceWithSpacing: advance,
+      x: index * advance,
+      y: size,
+      bbox: { x1: 0, y1: -size * 0.8, x2: advance, y2: 0 },
+      textOffset,
+    };
+  });
   const width = chars.length * advance;
   const line = { words: [{ letters, width }], width, height: size * 1.2, baseline: size, y: 0 };
   return {
@@ -196,6 +204,21 @@ test('a scoped text span scales every other letter', () => {
     global.SA.lyricsFont.layoutText = original;
   }
   sceneApi.clearCache();
+});
+
+test('a built scene carries the beat text offsets the range scope addresses', () => {
+  const { doc, beat } = scopedFixture(null, 'ABC DEF');
+  sceneApi.clearCache();
+  const scene = sceneApi.buildScene(doc, beat, [], {});
+  // the offsets count the code points of the beat text, so the range 4..7 is DE
+  // F in 'ABC DEF' - the same window `maskForText` measures
+  assert.deepEqual(scene.letters.map((letter) => letter.textOffset), [0, 1, 2, 3, 4, 5, 6]);
+  const mask = (spec) => Array.from(scope.scopeMask(scene, spec), (value) => (value ? 1 : 0)).join('');
+  assert.equal(mask({ kind: 'range', from: 4, to: 7 }), '0000111', 'the range covers D E F');
+  const text = (spec) => Array.from(scope.maskForText('ABC DEF', spec), (value) => (value ? 1 : 0)).join('');
+  assert.equal(text({ kind: 'range', from: 4, to: 7 }), '0000111', 'and the layout-time twin agrees');
+  assert.equal(mask({ kind: 'slice', anchor: 'text', from: 'end', offset: 0, length: 2 }), '0000011', 'a slice tail works on the built scene too');
+  assert.equal(text({ kind: 'slice', anchor: 'text', from: 'end', offset: 0, length: 2 }), '0000011');
 });
 
 test('a scoped text colour recolours the letters without resizing them', () => {

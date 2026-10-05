@@ -441,19 +441,33 @@
     });
   }
 
+  // `hold` is a static spread: the tracking never breathes, it just sits at the
+  // amount (the enter / exit forms are what land and leave).
+  const TRACKING_MODES = ['pulse', 'breathe', 'beat', 'hold'];
+
   const TRACKING_PARAMS = [
     { key: 'amount', kind: 'number', min: -2, max: 3, step: 0.02, default: 0.5, random: [0.2, 1.1], section: 'spacing' },
-    { key: 'mode', kind: 'select', options: ['pulse', 'breathe', 'beat'], default: 'breathe', section: 'spacing' },
+    { key: 'mode', kind: 'select', options: TRACKING_MODES, default: 'breathe', section: 'spacing' },
     { key: 'freq', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.4, section: 'spacing' },
     { key: 'trackAxis', kind: 'select', options: ['x', 'y'], default: 'x', section: 'spacing' },
   ];
 
   function trackingWave(params, h, info) {
-    const mode = params.mode === 'pulse' || params.mode === 'beat' ? params.mode : 'breathe';
+    const mode = TRACKING_MODES.includes(params.mode) ? params.mode : 'breathe';
     const rate = mode === 'beat' ? beatRate(info) : clamp(num(params.freq, 0.4), 0.05, 4);
     const phase = h * rate;
     if (mode === 'breathe') return Math.sin(TAU * phase);
     return 0.5 - 0.5 * Math.cos(TAU * phase);
+  }
+
+  // the tracking factor at hold time `h`: how much further from the substring's
+  // centre a letter of it sits (0 = the natural spacing). `spread` reports it so
+  // a `local` scoped entry pushes the rest of its line aside (motion.js §C).
+  function trackingSpread(params, h, env, info) {
+    const amount = trackingAmount(params);
+    if (!amount || env <= 0.0001) return 0;
+    const wave = params.mode === 'hold' ? 1 : trackingWave(params, h, info);
+    return amount * wave * clamp01(env);
   }
 
   function trackingAmount(params) {
@@ -498,7 +512,117 @@
     cpu(state, h, env, params, rng, info) {
       const amount = trackingAmount(params);
       if (!amount || env <= 0.0001) return;
-      applyTracking(state, info, amount * trackingWave(params, h, info) * clamp01(env), trackingAxis(params));
+      applyTracking(state, info, trackingSpread(params, h, env, info), trackingAxis(params));
+    },
+    // the letters the tracking pushes apart are the ones outside the string it
+    // spreads, so the rest of the line steps aside (motion.js §C)
+    spread(h, env, params, info) {
+      const axis = trackingAxis(params);
+      const factor = trackingSpread(params, h, env, info);
+      return { x: axis === 'y' ? 0 : factor, y: axis === 'x' ? 0 : factor };
+    },
+  });
+
+  // --- stretch (D) ---------------------------------------------------------------
+  // `stretch` squashes a substring along one axis while keeping the whole run
+  // together: the scale multiplies about the block centre (the substring's own
+  // centre under a `local` scope) and the letters are moved by the same factor,
+  // so the glyphs *and* their gaps grow together - the substring breathes like
+  // one drawn picture. `tracking` moves the letters without changing them; this
+  // is the other half of the pair.
+  const STRETCH_AXES = ['x', 'y', 'both'];
+  const STRETCH_MODES = ['pulse', 'breathe', 'beat', 'hold'];
+
+  const STRETCH_PARAMS = [
+    { key: 'amount', kind: 'number', min: -0.6, max: 2, step: 0.02, default: 0.3, random: [0.1, 0.6], section: 'transform' },
+    { key: 'stretchAxis', kind: 'select', options: STRETCH_AXES, default: 'x', section: 'transform' },
+    { key: 'mode', kind: 'select', options: STRETCH_MODES, default: 'breathe', section: 'transform' },
+    { key: 'freq', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.4, section: 'transform' },
+  ];
+
+  function stretchAmount(params) {
+    return clamp(num(params.amount, 0.3), -0.6, 2);
+  }
+
+  function stretchAxis(params) {
+    return STRETCH_AXES.includes(params.stretchAxis) ? params.stretchAxis : 'x';
+  }
+
+  // 0..1 (1 = fully stretched), unlike the tracking wave, so a negative amount
+  // squashes instead of flipping the glyphs inside out.
+  function stretchWave(params, h, info) {
+    const mode = STRETCH_MODES.includes(params.mode) ? params.mode : 'breathe';
+    if (mode === 'hold') return 1;
+    if (mode === 'beat') return 0.5 - 0.5 * Math.cos(TAU * beatRate(info) * h);
+    const phase = h * clamp(num(params.freq, 0.4), 0.05, 4);
+    if (mode === 'breathe') return 0.5 + 0.5 * Math.sin(TAU * phase);
+    return 0.5 - 0.5 * Math.cos(TAU * phase);
+  }
+
+  function stretchFactor(params, h, env, info) {
+    const amount = stretchAmount(params);
+    if (!amount || env <= 0.0001) return 1;
+    return 1 + amount * stretchWave(params, h, info) * clamp01(env);
+  }
+
+  function applyStretch(state, info, factor, axis) {
+    if (Math.abs(factor - 1) < 1e-6) return;
+    const center = (info && info.blockCenter) || { x: 0, y: 0 };
+    const x = (info && Number.isFinite(info.letterX) ? info.letterX : center.x) - center.x;
+    const y = (info && Number.isFinite(info.letterY) ? info.letterY : center.y) - center.y;
+    if (axis === 'x' || axis === 'both') {
+      state.scaleX *= factor;
+      state.x += x * (factor - 1);
+    }
+    if (axis === 'y' || axis === 'both') {
+      state.scaleY *= factor;
+      state.y += y * (factor - 1);
+    }
+  }
+
+  // the entrance / exit forms come from the stretched state back to rest (and
+  // the other way round), matching the tracking's own pair
+  for (const [group, mode] of [['enter', 'in'], ['exit', 'out']]) {
+    fx.register({
+      group,
+      type: 'stretch',
+      tags: ['pro', 'selector', 'text'],
+      pack: 'pro',
+      cost: 1,
+      params: STRETCH_PARAMS,
+      normalize(params) {
+        return { ...params, amount: stretchAmount(params), stretchAxis: stretchAxis(params) };
+      },
+      cpu(state, p, params, rng, info) {
+        const amount = stretchAmount(params);
+        if (!amount) return;
+        const progress = clamp01(p);
+        const wave = mode === 'in' ? 1 - progress : progress;
+        applyStretch(state, info, 1 + amount * wave, stretchAxis(params));
+      },
+    });
+  }
+
+  fx.register({
+    group: 'hold',
+    type: 'stretch',
+    tags: ['pro', 'selector', 'text'],
+    pack: 'pro',
+    cost: 1,
+    params: STRETCH_PARAMS,
+    normalize(params) {
+      return { ...params, amount: stretchAmount(params), stretchAxis: stretchAxis(params) };
+    },
+    cpu(state, h, env, params, rng, info) {
+      const amount = stretchAmount(params);
+      if (!amount || env <= 0.0001) return;
+      applyStretch(state, info, stretchFactor(params, h, env, info), stretchAxis(params));
+    },
+    // a wider substring pushes the letters outside it aside (motion.js §C)
+    spread(h, env, params, info) {
+      const axis = stretchAxis(params);
+      const factor = stretchFactor(params, h, env, info) - 1;
+      return { x: axis === 'y' ? 0 : factor, y: axis === 'x' ? 0 : factor };
     },
   });
 
@@ -510,6 +634,9 @@
     SELECTOR_PARAMS,
     PROP_PARAMS,
     TRACKING_PARAMS,
+    STRETCH_PARAMS,
+    STRETCH_AXES,
+    STRETCH_MODES,
     SUBSTRING_PARAMS,
     substringsOf,
     substringProgress,
@@ -526,6 +653,12 @@
     applyTracking,
     applyProps,
     trackingWave,
+    trackingSpread,
+    stretchAmount,
+    stretchAxis,
+    stretchWave,
+    stretchFactor,
+    applyStretch,
     beatRate,
     emOf,
   };

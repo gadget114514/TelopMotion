@@ -18,6 +18,9 @@
   //   { kind: 'span',    spanIndex }         one composition span
   //   { kind: 'nth',     unit, every, offset }
   //                                           every Nth letter / word / line
+  //   { kind: 'slice',   anchor, from, offset, length, skipSpaces }
+  //                                           N letters from a text / line head
+  //                                           or tail ("the first two letters")
   //   { kind: 'all' } / null                 every letter
   //
   // `scopeMask` returns a Uint8Array with one flag per letter; the result is
@@ -173,6 +176,35 @@
     }
   }
 
+  // A `slice` takes a run of `length` counted letters, `offset` counted from
+  // `from` ('start' of the group, or 'end' counting backwards). A length of 0
+  // (or none) runs to the end of the group. The counted letters are the same
+  // ones `nth` counts, so a space or punctuation mark inside the window never
+  // takes the flag.
+  function sliceRange(count, scope) {
+    const offset = Math.max(0, Math.floor(numOf(scope.offset, 0)) || 0);
+    const length = Math.max(0, Math.floor(numOf(scope.length, 0)) || 0);
+    const start = Math.min(count, offset);
+    const end = Math.min(count, length > 0 ? offset + length : count);
+    return { start, end: Math.max(start, end) };
+  }
+
+  function markSlice(mask, scene, scope) {
+    const letters = (scene && scene.letters) || [];
+    const skip = scope.skipSpaces !== false;
+    const fromEnd = scope.from === 'end';
+    const anchor = scope.anchor === 'line';
+    // the text anchor is one group; the line anchor is one group per wrapped
+    // line, so "the last two letters of each line" flags a run per line
+    const groups = anchor ? Array.from(lineDataOf(scene).values()).map((line) => line.letters) : [letters];
+    for (const group of groups) {
+      const counted = group.filter((letter) => !(skip && isSkippable(letter.char)));
+      if (fromEnd) counted.reverse();
+      const { start, end } = sliceRange(counted.length, scope);
+      for (let i = start; i < end; i += 1) mask[counted[i].globalIdx] = 1;
+    }
+  }
+
   function maskFor(scene, scope) {
     const letters = (scene && scene.letters) || [];
     const mask = new Uint8Array(letters.length);
@@ -185,6 +217,7 @@
     else if (scope.kind === 'keyword') markKeyword(mask, scene, scope);
     else if (scope.kind === 'span') markSpan(mask, scene, scope);
     else if (scope.kind === 'nth') markNth(mask, scene, scope);
+    else if (scope.kind === 'slice') markSlice(mask, scene, scope);
     else mask.fill(1);
     return mask;
   }
@@ -237,6 +270,31 @@
       const from = Math.max(0, Math.floor(numOf(target.from, 0)));
       const to = Math.min(chars.length, Math.floor(numOf(target.to, chars.length)));
       for (let i = from; i < to; i += 1) mask[i] = 1;
+      return mask;
+    }
+    if (scope.kind === 'slice') {
+      // the same window as markSlice, over the text's code points. `anchor:
+      // 'line'` resolves per paragraph (the '\n' breaks): the soft wrap is not
+      // known here, exactly like the word / line units of `nth`, which the
+      // layout-time twin also leaves empty.
+      const skip = scope.skipSpaces !== false;
+      const fromEnd = scope.from === 'end';
+      const groups = scope.anchor === 'line'
+        ? String(text == null ? '' : text).split(/\r\n|\r|\n/)
+        : [String(text == null ? '' : text)];
+      let base = 0;
+      for (const group of groups) {
+        const chars = Array.from(group);
+        const counted = [];
+        for (let i = 0; i < chars.length; i += 1) {
+          if (skip && isSkippable(chars[i])) continue;
+          counted.push(base + i);
+        }
+        if (fromEnd) counted.reverse();
+        const { start, end } = sliceRange(counted.length, scope);
+        for (let i = start; i < end; i += 1) mask[counted[i]] = 1;
+        base += chars.length;
+      }
       return mask;
     }
     if (scope.kind === 'nth') {

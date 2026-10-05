@@ -50,6 +50,17 @@ SA.layersDialog = (() => {
     };
   }
 
+  // The slot a layer is listed under: foreground / background, or the video
+  // track it sits on.
+  function slotLabel(layer) {
+    if (layer.slot === 'video') {
+      const doc = SA.store && SA.store.state && SA.store.state.project;
+      const track = ((doc && doc.tracks) || []).find((entry) => entry && entry.id === layer.trackId);
+      return `${t('layers.slotVideo')}${track && track.name ? ` (${track.name})` : ''}`;
+    }
+    return layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground');
+  }
+
   function field(labelText, control) {
     const row = document.createElement('div');
     row.className = 'field';
@@ -197,7 +208,7 @@ SA.layersDialog = (() => {
         row.type = 'button';
         row.className = `layer-row${index === selected ? ' is-active' : ''}`;
         const name = document.createElement('span');
-        name.textContent = `${index + 1}. ${layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground')} · ${layerTypeName(layer)}${
+        name.textContent = `${index + 1}. ${slotLabel(layer)} · ${layerTypeName(layer)}${
           layer.enabled === false ? ` · ${t('layers.hidden')}` : ''
         }`;
         row.appendChild(name);
@@ -383,11 +394,20 @@ SA.layersDialog = (() => {
       }), { min: 0, step: 0.1, nullable: true, placeholder: t('layers.endInfinity') })));
       editor.appendChild(timing);
       editor.appendChild(
-        field(t('layers.slot'), selectInput(layer.slot, [
+        field(t('layers.slot'), selectInput(layer.slot === 'video' ? `video:${layer.trackId}` : layer.slot, [
           { value: 'background', label: t('layers.slotBackground') },
           { value: 'foreground', label: t('layers.slotForeground') },
+          ...((SA.store.state.project && SA.store.state.project.tracks) || [])
+            .filter((track) => track && track.kind === 'video')
+            .map((track) => ({ value: `video:${track.id}`, label: slotLabel({ slot: 'video', trackId: track.id }) })),
         ], (value) => change((next) => {
-          next.slot = value;
+          if (value.startsWith('video:')) {
+            next.slot = 'video';
+            next.trackId = value.slice('video:'.length);
+          } else {
+            next.slot = value;
+            delete next.trackId;
+          }
         })))
       );
       editor.appendChild(
@@ -520,7 +540,10 @@ SA.layersDialog = (() => {
     add.className = 'btn btn-mini';
     add.textContent = t('layers.add');
     add.addEventListener('click', () => {
-      draft.push(defaults(selected >= 0 && draft[selected] && draft[selected].slot === 'foreground' ? 'foreground' : 'background'));
+      const current = selected >= 0 ? draft[selected] : null;
+      const layer = defaults(current && (current.slot === 'foreground' || current.slot === 'video') ? current.slot : 'background');
+      if (layer.slot === 'video') layer.trackId = current.trackId;
+      draft.push(layer);
       selected = draft.length - 1;
       renderList();
       renderEditor();
@@ -550,5 +573,5 @@ SA.layersDialog = (() => {
     renderEditor();
   }
 
-  return { open, defaults, FILTERS };
+  return { open, defaults, slotLabel, FILTERS };
 })();

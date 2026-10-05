@@ -789,3 +789,65 @@ test('resetTheme leaves a plain subtitle and unpins the hand edits', () => {
   assert.equal(store.undo(), true);
   assert.deepEqual(snapshot(), before);
 });
+
+// --- video tracks / moving items between tracks of one kind -----------------
+
+test('a video track moves past other kinds and takes its layers when removed', () => {
+  store.load(fixture());
+  const id = store.commands.addTrack('video');
+  assert.equal(id, 'video1');
+  const tracks = () => store.state.project.tracks.map((track) => track.id);
+  const bgAt = tracks().indexOf('bg');
+  assert.equal(tracks().indexOf(id), bgAt - 1, 'a new video track sits just above the background');
+  store.commands.moveTrack(id, 'up');
+  assert.equal(tracks().indexOf(id), bgAt - 2, 'it moves past a track of another kind');
+  store.commands.addLayer({ id: 'L1', slot: 'video', trackId: id, type: 'video', src: 'x.mp4' });
+  store.commands.addLayer({ id: 'L2', slot: 'background', type: 'solid' });
+  store.commands.removeTrack(id);
+  assert.deepEqual(store.state.project.layers.map((layer) => layer.id), ['L2']);
+});
+
+test('tracks move past any kind in layer order, foreground and background stay fixed', () => {
+  store.load(fixture());
+  const tracks = () => store.state.project.tracks.map((track) => track.id);
+  // default order: fg, sub1, fig, filler, mid, bg
+  store.commands.moveTrack('sub1', 'down');
+  assert.deepEqual(tracks(), ['fg', 'fig', 'sub1', 'filler', 'mid', 'bg'], 'a subtitle moves past a figure track');
+  store.commands.moveTrack('mid', 'up');
+  store.commands.moveTrack('mid', 'up');
+  assert.equal(tracks().indexOf('mid') < tracks().indexOf('sub1'), true, 'a backdrop moves past subtitles');
+  const before = tracks();
+  store.commands.moveTrack('fg', 'down');
+  store.commands.moveTrack('bg', 'up');
+  assert.deepEqual(tracks(), before, 'foreground and background never move');
+  store.commands.moveTrack('sub1', 'up');
+  store.commands.moveTrack('sub1', 'up');
+  assert.equal(tracks()[0], 'fg', 'no track moves past the foreground');
+  store.commands.moveTrack('filler', 'down');
+  store.commands.moveTrack('filler', 'down');
+  assert.equal(tracks()[tracks().length - 1], 'bg', 'no track moves past the background');
+});
+
+test('moveCuesToTrack moves several cues at once and skips overlaps', () => {
+  const doc = fixture();
+  doc.tracks.splice(2, 0, { id: 'sub2', kind: 'subtitle', name: '字幕2' });
+  doc.script.cues.push({ id: 'c3', start: 7.5, end: 8, text: 'x', trackId: 'sub2' });
+  store.load(doc);
+  const moved = store.commands.moveCuesToTrack(['c1', 'c2'], 'sub2');
+  assert.equal(moved, 1);
+  const trackOf = (id) => store.state.project.script.cues.find((cue) => cue.id === id).trackId;
+  assert.equal(trackOf('c1'), 'sub2');
+  assert.equal(trackOf('c2'), 'sub1', 'overlapping c3 keeps it on sub1');
+  assert.equal(store.commands.moveCuesToTrack(['c1'], 'fig'), 0, 'not onto another kind');
+});
+
+test('moveClipsToTrack only moves clips between tracks of the same kind', () => {
+  const doc = fixture();
+  doc.tracks.splice(3, 0, { id: 'fig2', kind: 'figure', name: '図形2' });
+  doc.clips.push({ id: 'f1', trackId: 'fig', start: 0, end: 2, spec: { type: 'figure', params: {} } });
+  store.load(doc);
+  assert.equal(store.commands.moveClipsToTrack(['f1', 'clip1'], 'fig2'), 1);
+  const clips = store.state.project.clips;
+  assert.equal(clips.find((clip) => clip.id === 'f1').trackId, 'fig2');
+  assert.equal(clips.find((clip) => clip.id === 'clip1').trackId, 'bg', 'a background clip is not a figure');
+});
