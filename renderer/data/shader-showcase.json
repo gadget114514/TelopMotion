@@ -1,0 +1,1431 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion シェーダ分解見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "sh_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. mosaicBreak/enter · モザイク分解・入場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 1,
+          "section": "mosaicBreak",
+          "phase": "enter",
+          "type": "mosaicBreak",
+          "value": "mosaicBreak/enter",
+          "detail": "モザイク分解・入場"
+        }
+      },
+      {
+        "id": "sh_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. mosaicBreak/hold · モザイク分解・保持\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 2,
+          "section": "mosaicBreak",
+          "phase": "hold",
+          "type": "mosaicBreak",
+          "value": "mosaicBreak/hold",
+          "detail": "モザイク分解・保持"
+        }
+      },
+      {
+        "id": "sh_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. mosaicBreak/exit · モザイク分解・退場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 3,
+          "section": "mosaicBreak",
+          "phase": "exit",
+          "type": "mosaicBreak",
+          "value": "mosaicBreak/exit",
+          "detail": "モザイク分解・退場"
+        }
+      },
+      {
+        "id": "sh_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. fogBreak/enter · 霧分解・入場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 4,
+          "section": "fogBreak",
+          "phase": "enter",
+          "type": "fogBreak",
+          "value": "fogBreak/enter",
+          "detail": "霧分解・入場"
+        }
+      },
+      {
+        "id": "sh_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. fogBreak/hold · 霧分解・保持\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 5,
+          "section": "fogBreak",
+          "phase": "hold",
+          "type": "fogBreak",
+          "value": "fogBreak/hold",
+          "detail": "霧分解・保持"
+        }
+      },
+      {
+        "id": "sh_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. fogBreak/exit · 霧分解・退場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 6,
+          "section": "fogBreak",
+          "phase": "exit",
+          "type": "fogBreak",
+          "value": "fogBreak/exit",
+          "detail": "霧分解・退場"
+        }
+      },
+      {
+        "id": "sh_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. windBreak/enter · 風分解・入場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 7,
+          "section": "windBreak",
+          "phase": "enter",
+          "type": "windBreak",
+          "value": "windBreak/enter",
+          "detail": "風分解・入場"
+        }
+      },
+      {
+        "id": "sh_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. windBreak/hold · 風分解・保持\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 8,
+          "section": "windBreak",
+          "phase": "hold",
+          "type": "windBreak",
+          "value": "windBreak/hold",
+          "detail": "風分解・保持"
+        }
+      },
+      {
+        "id": "sh_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. windBreak/exit · 風分解・退場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 9,
+          "section": "windBreak",
+          "phase": "exit",
+          "type": "windBreak",
+          "value": "windBreak/exit",
+          "detail": "風分解・退場"
+        }
+      },
+      {
+        "id": "sh_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. windNoBreak/enter · 風なびき・入場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 10,
+          "section": "windNoBreak",
+          "phase": "enter",
+          "type": "windNoBreak",
+          "value": "windNoBreak/enter",
+          "detail": "風なびき・入場"
+        }
+      },
+      {
+        "id": "sh_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. windNoBreak/hold · 風なびき・保持\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 11,
+          "section": "windNoBreak",
+          "phase": "hold",
+          "type": "windNoBreak",
+          "value": "windNoBreak/hold",
+          "detail": "風なびき・保持"
+        }
+      },
+      {
+        "id": "sh_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. windNoBreak/exit · 風なびき・退場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 12,
+          "section": "windNoBreak",
+          "phase": "exit",
+          "type": "windNoBreak",
+          "value": "windNoBreak/exit",
+          "detail": "風なびき・退場"
+        }
+      },
+      {
+        "id": "sh_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. cloth/enter · 布なびき・入場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 13,
+          "section": "cloth",
+          "phase": "enter",
+          "type": "cloth",
+          "value": "cloth/enter",
+          "detail": "布なびき・入場"
+        }
+      },
+      {
+        "id": "sh_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. cloth/hold · 布なびき・保持\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 14,
+          "section": "cloth",
+          "phase": "hold",
+          "type": "cloth",
+          "value": "cloth/hold",
+          "detail": "布なびき・保持"
+        }
+      },
+      {
+        "id": "sh_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. cloth/exit · 布なびき・退場\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "shader-showcase",
+          "index": 15,
+          "section": "cloth",
+          "phase": "exit",
+          "type": "cloth",
+          "value": "cloth/exit",
+          "detail": "布なびき・退場"
+        }
+      }
+    ],
+    "sourceName": "shader-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "sh_001": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "mosaicBreak",
+        "enabled": true,
+        "params": {
+          "cell": 8,
+          "scatter": 0.4
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_002": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "mosaicBreak",
+          "enabled": true,
+          "params": {
+            "cell": 8,
+            "scatter": 0.4
+          }
+        }
+      ]
+    },
+    "sh_003": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "mosaicBreak",
+        "enabled": true,
+        "params": {
+          "cell": 8,
+          "scatter": 0.4
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fogBreak",
+        "enabled": true,
+        "params": {
+          "soft": 12,
+          "rise": 0.1
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "fogBreak",
+          "enabled": true,
+          "params": {
+            "soft": 12,
+            "rise": 0.1
+          }
+        }
+      ]
+    },
+    "sh_006": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fogBreak",
+        "enabled": true,
+        "params": {
+          "soft": 12,
+          "rise": 0.1
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_007": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "windBreak",
+        "enabled": true,
+        "params": {
+          "wind": 0.5,
+          "grain": 3
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_008": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "windBreak",
+          "enabled": true,
+          "params": {
+            "wind": 0.5,
+            "grain": 3
+          }
+        }
+      ]
+    },
+    "sh_009": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "windBreak",
+        "enabled": true,
+        "params": {
+          "wind": 0.5,
+          "grain": 3
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_010": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "windNoBreak",
+        "enabled": true,
+        "params": {
+          "wind": 0.5,
+          "rise": 0.08
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_011": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "windNoBreak",
+          "enabled": true,
+          "params": {
+            "wind": 0.5,
+            "rise": 0.08
+          }
+        }
+      ]
+    },
+    "sh_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "windNoBreak",
+        "enabled": true,
+        "params": {
+          "wind": 0.5,
+          "rise": 0.08
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "cloth",
+        "enabled": true,
+        "params": {
+          "amount": 0.12,
+          "speed": 0.9
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "sh_014": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "cloth",
+          "enabled": true,
+          "params": {
+            "amount": 0.12,
+            "speed": 0.9
+          }
+        }
+      ]
+    },
+    "sh_015": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "cloth",
+        "enabled": true,
+        "params": {
+          "amount": 0.12,
+          "speed": 0.9
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "sh_001": [
+      {
+        "id": "sh_001:single0",
+        "cueId": "sh_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. mosaicBreak/enter · モザイク\n分解・入場あいうえお Aiueo 123",
+        "lines": [
+          "1. mosaicBreak/enter · モザイク",
+          "分解・入場あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_002": [
+      {
+        "id": "sh_002:single0",
+        "cueId": "sh_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. mosaicBreak/hold · モザイク\n分解・保持あいうえお Aiueo 123",
+        "lines": [
+          "2. mosaicBreak/hold · モザイク",
+          "分解・保持あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_003": [
+      {
+        "id": "sh_003:single0",
+        "cueId": "sh_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. mosaicBreak/exit · モザイク\n分解・退場あいうえお Aiueo 123",
+        "lines": [
+          "3. mosaicBreak/exit · モザイク",
+          "分解・退場あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_004": [
+      {
+        "id": "sh_004:single0",
+        "cueId": "sh_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. fogBreak/enter · 霧分解・入場\nあいうえお Aiueo 123",
+        "lines": [
+          "4. fogBreak/enter · 霧分解・入場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_005": [
+      {
+        "id": "sh_005:single0",
+        "cueId": "sh_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. fogBreak/hold · 霧分解・保持\nあいうえお Aiueo 123",
+        "lines": [
+          "5. fogBreak/hold · 霧分解・保持",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_006": [
+      {
+        "id": "sh_006:single0",
+        "cueId": "sh_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. fogBreak/exit · 霧分解・退場\nあいうえお Aiueo 123",
+        "lines": [
+          "6. fogBreak/exit · 霧分解・退場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_007": [
+      {
+        "id": "sh_007:single0",
+        "cueId": "sh_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. windBreak/enter · 風分解・入場\nあいうえお Aiueo 123",
+        "lines": [
+          "7. windBreak/enter · 風分解・入場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_008": [
+      {
+        "id": "sh_008:single0",
+        "cueId": "sh_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. windBreak/hold · 風分解・保持\nあいうえお Aiueo 123",
+        "lines": [
+          "8. windBreak/hold · 風分解・保持",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_009": [
+      {
+        "id": "sh_009:single0",
+        "cueId": "sh_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. windBreak/exit · 風分解・退場\nあいうえお Aiueo 123",
+        "lines": [
+          "9. windBreak/exit · 風分解・退場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_010": [
+      {
+        "id": "sh_010:single0",
+        "cueId": "sh_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. windNoBreak/enter · 風なびき・\n入場あいうえお Aiueo 123",
+        "lines": [
+          "10. windNoBreak/enter · 風なびき・",
+          "入場あいうえお Aiueo 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "sh_011": [
+      {
+        "id": "sh_011:single0",
+        "cueId": "sh_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. windNoBreak/hold · 風なびき・\n保持あいうえお Aiueo 123",
+        "lines": [
+          "11. windNoBreak/hold · 風なびき・",
+          "保持あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_012": [
+      {
+        "id": "sh_012:single0",
+        "cueId": "sh_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. windNoBreak/exit · 風なびき・\n退場あいうえお Aiueo 123",
+        "lines": [
+          "12. windNoBreak/exit · 風なびき・",
+          "退場あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_013": [
+      {
+        "id": "sh_013:single0",
+        "cueId": "sh_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. cloth/enter · 布なびき・入場\nあいうえお Aiueo 123",
+        "lines": [
+          "13. cloth/enter · 布なびき・入場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_014": [
+      {
+        "id": "sh_014:single0",
+        "cueId": "sh_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. cloth/hold · 布なびき・保持\nあいうえお Aiueo 123",
+        "lines": [
+          "14. cloth/hold · 布なびき・保持",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "sh_015": [
+      {
+        "id": "sh_015:single0",
+        "cueId": "sh_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. cloth/exit · 布なびき・退場\nあいうえお Aiueo 123",
+        "lines": [
+          "15. cloth/exit · 布なびき・退場",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "モザイク分解 (mosaicBreak)"
+    },
+    {
+      "t": 12,
+      "label": "霧分解 (fogBreak)"
+    },
+    {
+      "t": 24,
+      "label": "風分解 (windBreak)"
+    },
+    {
+      "t": 36,
+      "label": "風なびき (windNoBreak)"
+    },
+    {
+      "t": 48,
+      "label": "布なびき (cloth)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

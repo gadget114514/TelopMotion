@@ -1161,6 +1161,17 @@
     }
   }
 
+  // the shader-break families' own showcase: mosaic / fog / wind / drift /
+  // cloth, each in enter / hold / exit. The ids are language-independent, so
+  // no re-labelling is needed.
+  async function shaderShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/shader-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -2088,6 +2099,7 @@
       cloneShowcase: cloneShowcaseProject,
       letterFxShowcase: letterFxShowcaseProject,
       textShowcase: textShowcaseProject,
+      shaderShowcase: shaderShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,
