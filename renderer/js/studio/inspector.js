@@ -32,6 +32,7 @@ SA.inspector = (() => {
     ornEdge: 'studio.inspector.ornEdge',
     ornMotion: 'studio.inspector.ornMotion',
     repeat: 'studio.inspector.repeat',
+    strike: 'studio.inspector.strike',
   };
   const CONTROL_GROUPS = ['page', 'animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
 
@@ -1199,6 +1200,7 @@ SA.inspector = (() => {
           SA.controls.numberControl({ min: 0, step: 0.05, default: 0.5 }, motion.speed == null ? 0.5 : motion.speed, (next) => update({ motion: { ...motion, speed: next } }, `${key}:speed`))
         )
       );
+      box.appendChild(renderClonePerLetter(clone, key, update));
       body.appendChild(box);
     });
     const add = document.createElement('button');
@@ -1224,6 +1226,117 @@ SA.inspector = (() => {
       ]);
     });
     body.appendChild(add);
+  }
+
+  function renderClonePerLetter(clone, key, update) {
+    const details = document.createElement('details');
+    details.className = 'insp-perletter';
+    const summary = document.createElement('summary');
+    summary.textContent = t('studio.clones.perLetter');
+    details.appendChild(summary);
+    const per = clone.perLetter && typeof clone.perLetter === 'object' ? clone.perLetter : null;
+    const perUpdate = (patch, coalesceKey) => {
+      update({ perLetter: { ...(per || {}), ...patch } }, coalesceKey || `${key}:perLetter`);
+    };
+    const DEFAULTS = {
+      vary: 'alternate', dx: [0, 0], dy: [0.02, 0.04], opacity: [0.4, 0.8],
+      skew: [0, 0], rotate: [0, 0], colors: [], fonts: [],
+    };
+    const enabledBox = document.createElement('input');
+    enabledBox.type = 'checkbox';
+    enabledBox.checked = !!(per && per.enabled !== false);
+    enabledBox.addEventListener('change', () => {
+      if (enabledBox.checked) update({ perLetter: { ...DEFAULTS, ...(per || {}), enabled: true } }, `${key}:perEnabled`);
+      else perUpdate({ enabled: false }, `${key}:perEnabled`);
+    });
+    const enabledRow = document.createElement('label');
+    enabledRow.className = 'insp-inherit';
+    enabledRow.appendChild(enabledBox);
+    const enabledText = document.createElement('span');
+    enabledText.textContent = ` ${t('studio.clones.perLetter')}`;
+    enabledRow.appendChild(enabledText);
+    details.appendChild(enabledRow);
+    const current = { ...DEFAULTS, ...(per || {}) };
+    const varyOptions = ['alternate', 'random', 'wave', 'ramp', 'cycle'].map((value) => ({ value, label: SA.controls.valueLabel(value) }));
+    details.appendChild(
+      fieldRow(
+        t('studio.clones.vary'),
+        SA.controls.selectControl({}, current.vary || 'alternate', (value) => perUpdate({ vary: value }, `${key}:perVary`), varyOptions)
+      )
+    );
+    const rangeRow = (field, param) => {
+      const pair = Array.isArray(current[field]) ? current[field] : [0, 0];
+      const wrap = document.createElement('div');
+      wrap.className = 'ctrl-vec2';
+      const commit = (index, next) => {
+        const list = Array.isArray(per && per[field]) ? [...per[field]] : [pair[0], pair[1]];
+        list[index] = next;
+        perUpdate({ [field]: list }, `${key}:per${field}`);
+      };
+      for (const index of [0, 1]) {
+        const control = SA.controls.numberControl(param, pair[index], (next) => commit(index, next));
+        const tag = document.createElement('span');
+        tag.className = 'ctrl-label';
+        tag.textContent = index === 0 ? t('studio.clones.min') : t('studio.clones.max');
+        const cell = document.createElement('span');
+        cell.appendChild(tag);
+        cell.appendChild(control);
+        wrap.appendChild(cell);
+      }
+      return fieldRow(t(`studio.clones.${field}`), wrap);
+    };
+    details.appendChild(rangeRow('dx', { step: 0.005, default: 0 }));
+    details.appendChild(rangeRow('dy', { step: 0.005, default: 0 }));
+    details.appendChild(rangeRow('opacity', { min: 0, max: 1, step: 0.05, default: 0.5 }));
+    details.appendChild(rangeRow('skew', { step: 1, default: 0 }));
+    details.appendChild(rangeRow('rotate', { step: 1, default: 0 }));
+    details.appendChild(
+      fieldRow(
+        t('studio.clones.colors'),
+        SA.controls.colorsControl(Array.isArray(current.colors) ? current.colors : [], (next) => perUpdate({ colors: next }, `${key}:perColors`))
+      )
+    );
+    details.appendChild(fieldRow(t('studio.clones.fonts'), renderCloneFontChoices(Array.isArray(current.fonts) ? current.fonts : [], (next) => perUpdate({ fonts: next }, `${key}:perFonts`))));
+    details.appendChild(
+      fieldRow(
+        t('studio.clones.seed'),
+        SA.controls.numberControl({ min: 0, step: 1, default: 0 }, current.seed == null ? 0 : current.seed, (next) => perUpdate({ seed: Math.round(next) }, `${key}:perSeed`))
+      )
+    );
+    details.appendChild(
+      fieldRow(
+        t('studio.clones.waveFreq'),
+        SA.controls.numberControl({ min: 1, step: 1, default: 1 }, current.waveFreq == null ? 1 : current.waveFreq, (next) => perUpdate({ waveFreq: next }, `${key}:perWaveFreq`))
+      )
+    );
+    return details;
+  }
+
+  // per-letter clone typefaces: one checkbox per font choice, showing the
+  // choice label instead of the raw value
+  function renderCloneFontChoices(value, onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-multiselect';
+    const choices = SA.controls.fontChoices();
+    const selected = new Set(Array.isArray(value) ? value : []);
+    for (const choice of choices) {
+      const label = document.createElement('label');
+      label.className = 'ctrl-bool-row';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = selected.has(choice.value);
+      box.addEventListener('change', () => {
+        if (box.checked) selected.add(choice.value);
+        else selected.delete(choice.value);
+        onChange([...selected]);
+      });
+      const text = document.createElement('span');
+      text.textContent = choice.label;
+      label.appendChild(box);
+      label.appendChild(text);
+      wrap.appendChild(label);
+    }
+    return wrap;
   }
 
   function instanceFor(group) {
@@ -3199,7 +3312,7 @@ SA.inspector = (() => {
       row.appendChild(text);
       container.appendChild(row);
     }
-    renderGroups(['fill', 'edge', 'repeat']);
+    renderGroups(['fill', 'edge', 'strike', 'repeat']);
     heading('studio.inspector.sectionBg');
     // the subtitle track's background switch (data kept; the row's checkbox on
     // the timeline and this checkbox are the same flag)

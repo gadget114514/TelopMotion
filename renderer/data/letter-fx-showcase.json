@@ -1,0 +1,2262 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion 文字装飾見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "lf_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. glyph · 基準=glyph\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 1,
+          "section": "split",
+          "value": "glyph",
+          "detail": "基準=glyph"
+        }
+      },
+      {
+        "id": "lf_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. em · 基準=em\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 2,
+          "section": "split",
+          "value": "em",
+          "detail": "基準=em"
+        }
+      },
+      {
+        "id": "lf_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. soft · softness 0.12\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 3,
+          "section": "split",
+          "value": "soft",
+          "detail": "softness 0.12"
+        }
+      },
+      {
+        "id": "lf_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. angle · angle 20°\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 4,
+          "section": "split",
+          "value": "angle",
+          "detail": "angle 20°"
+        }
+      },
+      {
+        "id": "lf_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. band · band 0.06\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 5,
+          "section": "split",
+          "value": "band",
+          "detail": "band 0.06"
+        }
+      },
+      {
+        "id": "lf_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. alternate · alternate on\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 6,
+          "section": "split",
+          "value": "alternate",
+          "detail": "alternate on"
+        }
+      },
+      {
+        "id": "lf_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. line\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 7,
+          "section": "strike",
+          "value": "line",
+          "detail": "line"
+        }
+      },
+      {
+        "id": "lf_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. double\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 8,
+          "section": "strike",
+          "value": "double",
+          "detail": "double"
+        }
+      },
+      {
+        "id": "lf_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. wave\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 9,
+          "section": "strike",
+          "value": "wave",
+          "detail": "wave"
+        }
+      },
+      {
+        "id": "lf_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. slash\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 10,
+          "section": "strike",
+          "value": "slash",
+          "detail": "slash"
+        }
+      },
+      {
+        "id": "lf_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. jitter · angleJitter 20° + random\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 11,
+          "section": "strike",
+          "value": "jitter",
+          "detail": "angleJitter 20° + random"
+        }
+      },
+      {
+        "id": "lf_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. colors · colors alternate\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 12,
+          "section": "strike",
+          "value": "colors",
+          "detail": "colors alternate"
+        }
+      },
+      {
+        "id": "lf_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. stagger · drawIn stagger\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 13,
+          "section": "strike",
+          "value": "stagger",
+          "detail": "drawIn stagger"
+        }
+      },
+      {
+        "id": "lf_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. under · layer under\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 14,
+          "section": "strike",
+          "value": "under",
+          "detail": "layer under"
+        }
+      },
+      {
+        "id": "lf_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. dx · dx alternate\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 15,
+          "section": "shift",
+          "value": "dx",
+          "detail": "dx alternate"
+        }
+      },
+      {
+        "id": "lf_016",
+        "start": 60,
+        "end": 64,
+        "text": "16. dy · dy wave\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 16,
+          "section": "shift",
+          "value": "dy",
+          "detail": "dy wave"
+        }
+      },
+      {
+        "id": "lf_017",
+        "start": 64,
+        "end": 68,
+        "text": "17. color · colors cycle\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 17,
+          "section": "shift",
+          "value": "color",
+          "detail": "colors cycle"
+        }
+      },
+      {
+        "id": "lf_018",
+        "start": 68,
+        "end": 72,
+        "text": "18. opacity · opacity ramp\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 18,
+          "section": "shift",
+          "value": "opacity",
+          "detail": "opacity ramp"
+        }
+      },
+      {
+        "id": "lf_019",
+        "start": 72,
+        "end": 76,
+        "text": "19. skew · skew random\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 19,
+          "section": "shift",
+          "value": "skew",
+          "detail": "skew random"
+        }
+      },
+      {
+        "id": "lf_020",
+        "start": 76,
+        "end": 80,
+        "text": "20. font · fonts cycle\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 20,
+          "section": "shift",
+          "value": "font",
+          "detail": "fonts cycle"
+        }
+      },
+      {
+        "id": "lf_021",
+        "start": 80,
+        "end": 84,
+        "text": "21. combo · split + strike + shift\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "letter-fx-showcase",
+          "index": 21,
+          "section": "combo",
+          "value": "combo",
+          "detail": "split + strike + shift"
+        }
+      }
+    ],
+    "sourceName": "letter-fx-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "fill2": {
+        "kind": "solid",
+        "value": "#8fd0ff",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "lf_001": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5
+        }
+      }
+    },
+    "lf_002": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "em",
+          "split": 0.5
+        }
+      }
+    },
+    "lf_003": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5,
+          "softness": 0.12
+        }
+      }
+    },
+    "lf_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5,
+          "angle": 20
+        }
+      }
+    },
+    "lf_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5,
+          "band": 0.06
+        }
+      }
+    },
+    "lf_006": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5,
+          "alternate": true
+        }
+      }
+    },
+    "lf_007": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "line",
+        "enabled": true,
+        "params": {}
+      }
+    },
+    "lf_008": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "double",
+        "enabled": true,
+        "params": {}
+      }
+    },
+    "lf_009": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "wave",
+        "enabled": true,
+        "params": {}
+      }
+    },
+    "lf_010": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "slash",
+        "enabled": true,
+        "params": {}
+      }
+    },
+    "lf_011": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "line",
+        "enabled": true,
+        "params": {
+          "vary": "random",
+          "angleJitter": 20,
+          "seed": 7
+        }
+      }
+    },
+    "lf_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "line",
+        "enabled": true,
+        "params": {
+          "vary": "alternate",
+          "colors": [
+            "#ff4d6d",
+            "#4dd2ff"
+          ]
+        }
+      }
+    },
+    "lf_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "line",
+        "enabled": true,
+        "params": {
+          "drawIn": "stagger",
+          "drawTime": 0.5,
+          "stagger": 0.08
+        }
+      }
+    },
+    "lf_014": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "strike": {
+        "type": "line",
+        "enabled": true,
+        "params": {
+          "layer": "under"
+        }
+      }
+    },
+    "lf_015": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "alternate",
+            "dx": [
+              -0.02,
+              0.02
+            ]
+          }
+        }
+      ]
+    },
+    "lf_016": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "wave",
+            "dy": [
+              0,
+              0.05
+            ],
+            "waveFreq": 1
+          }
+        }
+      ]
+    },
+    "lf_017": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "alternate",
+            "colors": [
+              "#ff4d6d",
+              "#4dd2ff",
+              "#ffe600"
+            ]
+          }
+        }
+      ]
+    },
+    "lf_018": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "ramp",
+            "opacity": [
+              0.2,
+              1
+            ]
+          }
+        }
+      ]
+    },
+    "lf_019": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "random",
+            "skew": [
+              -15,
+              15
+            ],
+            "seed": 3
+          }
+        }
+      ]
+    },
+    "lf_020": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "alternate",
+            "fonts": [
+              "NotoSerifJP-Regular",
+              "NotoSansJP-Bold"
+            ]
+          }
+        }
+      ]
+    },
+    "lf_021": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        },
+        "fill2": {
+          "kind": "solid",
+          "value": "#8fd0ff",
+          "alpha": 1
+        },
+        "stroke": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "fill": {
+        "type": "splitTone",
+        "enabled": true,
+        "params": {
+          "basis": "glyph",
+          "split": 0.5,
+          "band": 0.04
+        }
+      },
+      "strike": {
+        "type": "wave",
+        "enabled": true,
+        "params": {}
+      },
+      "clones": [
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.85,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 0.5
+          },
+          "enabled": true,
+          "perLetter": {
+            "enabled": true,
+            "vary": "alternate",
+            "dy": [
+              0.01,
+              0.04
+            ],
+            "opacity": [
+              0.4,
+              0.9
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "lf_001": [
+      {
+        "id": "lf_001:single0",
+        "cueId": "lf_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. glyph · 基準=glyph\nあいうえお Aiueo 123",
+        "lines": [
+          "1. glyph · 基準=glyph",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_002": [
+      {
+        "id": "lf_002:single0",
+        "cueId": "lf_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. em · 基準=em\nあいうえお Aiueo 123",
+        "lines": [
+          "2. em · 基準=em",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_003": [
+      {
+        "id": "lf_003:single0",
+        "cueId": "lf_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. soft · softness 0.12\nあいうえお Aiueo 123",
+        "lines": [
+          "3. soft · softness 0.12",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_004": [
+      {
+        "id": "lf_004:single0",
+        "cueId": "lf_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. angle · angle 20°\nあいうえお Aiueo 123",
+        "lines": [
+          "4. angle · angle 20°",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_005": [
+      {
+        "id": "lf_005:single0",
+        "cueId": "lf_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. band · band 0.06\nあいうえお Aiueo 123",
+        "lines": [
+          "5. band · band 0.06",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_006": [
+      {
+        "id": "lf_006:single0",
+        "cueId": "lf_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. alternate · alternate on\nあいうえお Aiueo 123",
+        "lines": [
+          "6. alternate · alternate on",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_007": [
+      {
+        "id": "lf_007:single0",
+        "cueId": "lf_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. line\nあいうえお Aiueo 123",
+        "lines": [
+          "7. line",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_008": [
+      {
+        "id": "lf_008:single0",
+        "cueId": "lf_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. double\nあいうえお Aiueo 123",
+        "lines": [
+          "8. double",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_009": [
+      {
+        "id": "lf_009:single0",
+        "cueId": "lf_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. wave\nあいうえお Aiueo 123",
+        "lines": [
+          "9. wave",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_010": [
+      {
+        "id": "lf_010:single0",
+        "cueId": "lf_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. slash\nあいうえお Aiueo 123",
+        "lines": [
+          "10. slash",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_011": [
+      {
+        "id": "lf_011:single0",
+        "cueId": "lf_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. jitter · angleJitter 20° +\nrandomあいうえお Aiueo 123",
+        "lines": [
+          "11. jitter · angleJitter 20° +",
+          "randomあいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_012": [
+      {
+        "id": "lf_012:single0",
+        "cueId": "lf_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. colors · colors alternate\nあいうえお Aiueo 123",
+        "lines": [
+          "12. colors · colors alternate",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_013": [
+      {
+        "id": "lf_013:single0",
+        "cueId": "lf_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. stagger · drawIn stagger\nあいうえお Aiueo 123",
+        "lines": [
+          "13. stagger · drawIn stagger",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_014": [
+      {
+        "id": "lf_014:single0",
+        "cueId": "lf_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. under · layer under\nあいうえお Aiueo 123",
+        "lines": [
+          "14. under · layer under",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_015": [
+      {
+        "id": "lf_015:single0",
+        "cueId": "lf_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. dx · dx alternate\nあいうえお Aiueo 123",
+        "lines": [
+          "15. dx · dx alternate",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_016": [
+      {
+        "id": "lf_016:single0",
+        "cueId": "lf_016",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 64,
+        "text": "16. dy · dy wave\nあいうえお Aiueo 123",
+        "lines": [
+          "16. dy · dy wave",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_017": [
+      {
+        "id": "lf_017:single0",
+        "cueId": "lf_017",
+        "kind": "single",
+        "index": 0,
+        "start": 64,
+        "end": 68,
+        "text": "17. color · colors cycle\nあいうえお Aiueo 123",
+        "lines": [
+          "17. color · colors cycle",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_018": [
+      {
+        "id": "lf_018:single0",
+        "cueId": "lf_018",
+        "kind": "single",
+        "index": 0,
+        "start": 68,
+        "end": 72,
+        "text": "18. opacity · opacity ramp\nあいうえお Aiueo 123",
+        "lines": [
+          "18. opacity · opacity ramp",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_019": [
+      {
+        "id": "lf_019:single0",
+        "cueId": "lf_019",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 76,
+        "text": "19. skew · skew random\nあいうえお Aiueo 123",
+        "lines": [
+          "19. skew · skew random",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_020": [
+      {
+        "id": "lf_020:single0",
+        "cueId": "lf_020",
+        "kind": "single",
+        "index": 0,
+        "start": 76,
+        "end": 80,
+        "text": "20. font · fonts cycle\nあいうえお Aiueo 123",
+        "lines": [
+          "20. font · fonts cycle",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "lf_021": [
+      {
+        "id": "lf_021:single0",
+        "cueId": "lf_021",
+        "kind": "single",
+        "index": 0,
+        "start": 80,
+        "end": 84,
+        "text": "21. combo · split + strike + \nshiftあいうえお Aiueo 123",
+        "lines": [
+          "21. combo · split + strike + ",
+          "shiftあいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "上下2色 (split)"
+    },
+    {
+      "t": 24,
+      "label": "取り消し線 (strike)"
+    },
+    {
+      "t": 56,
+      "label": "ずらし重ね (shift)"
+    },
+    {
+      "t": 80,
+      "label": "組み合わせ (combo)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

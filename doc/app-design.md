@@ -385,7 +385,26 @@ Layout is special: the `in` progress moves letters from the start formation to t
   animation: EffectInstance, layout: EffectInstance, enter: EffectInstance, exit: EffectInstance,
   hold: EffectInstance[] /*stackable*/, location: EffectInstance, fill: EffectInstance,
   edge: EffectInstance[] /*stackable*/, post: EffectInstance[] /*stackable*/, background: EffectInstance,
+  repeat: EffectInstance, strike: EffectInstance /*per-letter strike-through, §7.7b*/,
+  clones: Clone[] /*parallel copies; each may carry a per-letter shift, §7.7c*/,
   color: ColorSet
+}
+```
+
+**Clone**:
+```js
+{
+  id, dx, dy /*frame short-side fractions*/, scale, rotate /*deg*/, opacity, hue /*deg*/, delay /*s*/,
+  motion: { type: 'none'|'drift'|'float'|'pulse'|'orbit'|'spin', amount, speed },
+  enabled: true,
+  perLetter: {                       // optional: shifts the copy letter by letter (§7.7c)
+    enabled: true, vary: 'alternate'|'random'|'wave'|'ramp'|'cycle',
+    dx: [min, max], dy: [min, max] /*same units as clone.dx/dy*/,
+    opacity: [min, max] /*multiplied onto clone.opacity*/,
+    skew: [min, max] /*deg, positive tips the top right*/, rotate: [min, max] /*deg*/,
+    colors: ['#…'] /*empty = the clone colour*/, fonts: [fontId] /*empty = the main typeface*/,
+    seed, waveFreq
+  }
 }
 ```
 
@@ -904,6 +923,17 @@ Params: `offsetX`, `offsetY`, `safeArea` (0.05–0.15), and `drift` (vector, app
 | glass | refraction, blur, tint; samples the background with an offset along the SDF gradient |
 | textureFill | imageId (a Media image or song cover), scale, pan |
 | karaokeWipe | colorBefore, colorAfter, softness; wipes from left to right with the cue's local progress (or top to bottom for vertical text) |
+| splitTone | top, bottom (null → `color.fill` / `color.fill2`), split (0..1 from the top), softness, angle (deg, of the split line), basis (`glyph` = ink box / `em` = em box), band (divider thickness), bandColor (null → `color.stroke`), alternate (odd letters swap top/bottom); pack `pro`. The em box rides state row 24.zw (em centre / half in ink-normalised space) |
+
+### 7.7b Per-letter strike-through (`style.strike`, capsules in the beat layer)
+| type | params |
+|---|---|
+| line / double / wave / slash | color (null → `color.stroke`), colors (per-letter list, empty = color), thickness (px @1080p), position (0 top .. 1 bottom, ink box), overshoot (width ratio, both ends), angle (deg), opacity, vary (`none`/`alternate`/`random`/`wave`/`ramp`), angleJitter (deg), posJitter, lengthJitter, layer (`over` = above the glyphs / `under` = behind them), drawIn (`none`/`stagger`/`sweep`), drawTime, stagger, pattern (`solid`/`dashed`/`dotted`/`double`/`zigzag`/`wave`), gap (double-line spacing, thickness ratio), seed. `double` draws two lines offset along the strike normal; `wave` adds a wiggle path op; `slash` joins the letter's diagonal corners. Each segment follows its letter's scale → rotation → translation (`engine.js quadForLetter` order), so entrances that spin or grow keep the line on the glyph. Segments are drawn with `drawPrimitives` into the bound beat layer: no extra `beginLayer` is needed. |
+
+### 7.7c Per-letter clone shift (`clones[].perLetter`)
+- `letterVary.planLetterVariants(n, perLetter, rngs)` resolves one `{ dx, dy, opacity, skew, rotate, color, font }` per letter from the `vary` rule (`alternate` = ±1 in turn, `random` = deterministic per-axis streams, `wave` = sine over the string, `ramp` = −1…1 across the string, `cycle` = index cycling for the lists). `dx`/`dy` are frame short-side fractions added to the letter state; `skew` tips the top right for positive degrees; `opacity` multiplies the letter opacity.
+- The engine (`drawLetterClone`) renders one mask per typeface group (main + one per `fonts` entry, mapped by `textOffset`, max 3 groups in preview) with per-letter colours as a `colorOverride` (`letterTint` on), commits each with the clone transform, then restores the main mask so edges and posts keep working.
+- Cost: `registry.costOf` adds 1 + typeface count per perLetter clone.
 
 ### 7.8 Edge shader (pass `edge`, using the distance field; stackable)
 | type | params |
@@ -1534,6 +1564,7 @@ If WebGL2 isn't available:
 - Letters are drawn as `Path2D` built from the glyph paths, with 2D transforms.
 - Supported: fill (solid or gradient), outline (stroke), shadow and glow (`shadowBlur`), opacity, blur (`ctx.filter`). Shader-only effects fall back to `solid` and `outline`.
 - The Studio shows the banner `studio.warn.noWebGL`.
+- The letter decorations (§7.7–7.7c: `splitTone`, `strike`, `clones[].perLetter`) are WebGL2-only and have no Canvas 2D fallback: the fallback draws the plain fill without them.
 
 ### 8.8 Text mask (glyph knockout of the clip layers)
 - `glPasses.buildTextMask(entries, { radius, feather, strength })` stacks every visible beat's mesh into `textRT` (one scene at a time, no clear in between), runs the SDF pass once, then bakes `maskRT` (RGBA8, full resolution) with `MASK_FRAG`: `a = strength * max(textAlpha, 1 - smoothstep(radius - feather, radius, max(dist, 0)))`. `radius` / `feather` arrive in px and are normalised by the SDF's `maxDistance` (the same conversion as EDGE_FRAG's outline). The empty-field sentinel (`< -900`) falls back to the glyph alpha, and without float targets the glyph alpha alone is the mask.
@@ -1914,7 +1945,10 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
 - The colour system's review project: `renderer/data/color-showcase.json`, 6 palette schemes (`palette-roles` `SCHEME_IDS`, mid split clips varying only `scheme`) + 14 palette families (`moods.PALETTE_FAMILIES` via `moods.generatePalette`, mid split clips) + 20 line patterns (`patterns.PATTERNS` as `edge.outline` pattern on static cues) — 40 cues in 3 sections. Same generated shape (`meta.kind: 'color-showcase'`). Help → Color showcase (`studio.help.colorShowcase`, 5 languages).
 
 ### 11.5j Clone showcase (`scripts/clone-showcase.js`, `npm run clone-showcase`)
-- The parallel copies' review project: `renderer/data/clone-showcase.json`, one cue per clone axis (offset dx/dy, scale, rotate, opacity, hue, delay) plus one cue per clone motion type (`none` / `drift` / `float` / `pulse` / `orbit` / `spin`) — 13 cues in 7 sections. Every cue draws the same sample as three parallel strings (three clones at dx -0.14 / 0 / +0.14, differing only in the axis under review); the hue cues use a chromatic main fill because hue shifts do nothing on grey. Same generated shape (`meta.kind: 'clone-showcase'`). Help → Clone showcase (`studio.help.cloneShowcase`, 5 languages).
+- The parallel copies' review project: `renderer/data/clone-showcase.json`, one cue per clone axis (offset dx/dy, scale, rotate, opacity, hue, delay) plus dy combos (dy+scale, dy+fx glow) plus one cue per clone motion type (`none` / `drift` / `float` / `pulse` / `orbit` / `spin`) — 15 cues in 7 sections. Every cue draws the same sample as three parallel strings (three clones at dx -0.14 / 0 / +0.14, differing only in the axis under review); the hue cues use a chromatic main fill because hue shifts do nothing on grey. Same generated shape (`meta.kind: 'clone-showcase'`). Help → Clone showcase (`studio.help.cloneShowcase`, 5 languages).
+
+### 11.5k Letter-effects showcase (`scripts/letter-fx-showcase.js`, `npm run letter-fx-showcase`)
+- The letter decorations' review project: `renderer/data/letter-fx-showcase.json`, 21 cues in 4 sections — `split` (splitTone: glyph / em / soft / angle / band / alternate), `strike` (line / double / wave / slash / angleJitter-random / colors-alternate / drawIn stagger / layer under), `shift` (perLetter dx-alternate / dy-wave / color-cycle / opacity-ramp / skew-random / font-cycle with bundled typefaces) and `combo` (all three at once). Same generated shape (`meta.kind: 'letter-fx-showcase'`). Help → Letter effects showcase (`studio.help.letterFxShowcase`, 5 languages).
 
 ### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.

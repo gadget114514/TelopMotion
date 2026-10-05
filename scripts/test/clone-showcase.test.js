@@ -32,12 +32,12 @@ test('the generated showcase migrates and keeps every cue', () => {
   const migrated = project.migrate(JSON.parse(JSON.stringify(b.project)));
   assert.equal(migrated.ok, true, migrated.error);
   assert.equal(migrated.project.script.cues.length, b.entries.length);
-  assert.equal(b.entries.filter((entry) => entry.section === 'offset').length, 2);
+  assert.equal(b.entries.filter((entry) => entry.section === 'offset').length, 4);
   assert.equal(b.entries.filter((entry) => entry.section === 'motion').length, showcase.MOTIONS.length);
   for (const section of ['scale', 'rotate', 'opacity', 'hue', 'delay']) {
     assert.equal(b.entries.filter((entry) => entry.section === section).length, 1, `${section} has no cue`);
   }
-  assert.equal(b.entries.length, 13);
+  assert.equal(b.entries.length, 15);
 });
 
 test('every cue draws the string three times in parallel', () => {
@@ -73,6 +73,18 @@ test('each section varies only its own axis', () => {
   assert.deepEqual(clonesOf('opacity').map((clone) => clone.opacity), [0.25, 0.5, 0.8]);
   assert.deepEqual(clonesOf('hue').map((clone) => clone.hue), [-70, 0, 70]);
   assert.deepEqual(clonesOf('delay').map((clone) => clone.delay), [0, 0.25, 0.5]);
+  // dy combos keep the same vertical spread and add one staged axis
+  const dyScale = b.project.cueStyles[b.entries.find((entry) => entry.value === 'dy+scale').cueId].clones;
+  assert.deepEqual(dyScale.map((clone) => clone.dy), [-0.12, 0, 0.12]);
+  assert.deepEqual(dyScale.map((clone) => clone.scale), [0.75, 1, 1.25]);
+  const dyFxEntry = b.entries.find((entry) => entry.value === 'dy+fx');
+  assert.ok(dyFxEntry, 'dy+fx cue missing');
+  const dyFxClones = b.project.cueStyles[dyFxEntry.cueId].clones;
+  assert.deepEqual(dyFxClones.map((clone) => clone.dy), [-0.12, 0, 0.12]);
+  assert.deepEqual(dyFxClones.map((clone) => clone.scale), [1, 1, 1]);
+  const dyFxEdge = b.project.cueStyles[dyFxEntry.cueId].edge;
+  assert.ok(Array.isArray(dyFxEdge) && dyFxEdge.length === 1, 'dy+fx cue must carry one edge');
+  assert.equal(dyFxEdge[0].type, 'neonGlow');
   // off-axis params stay neutral so neighbouring cues differ only in the axis
   for (const clone of clonesOf('scale')) assert.equal(clone.rotate, 0, 'scale cue must not rotate');
   for (const clone of clonesOf('rotate')) assert.equal(clone.scale, 1, 'rotate cue must not scale');

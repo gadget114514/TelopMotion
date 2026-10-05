@@ -90,6 +90,47 @@ test('the pattern fills pack their geometry into u_params2', () => {
   }
 });
 
+test('costOf charges per-letter clone shifts', () => {
+  const base = { fill: { type: 'solid', params: {} }, clones: [] };
+  const plain = fx.costOf({ ...base, clones: [{ perLetter: { enabled: false } }] });
+  const shifted = fx.costOf({ ...base, clones: [{ perLetter: { enabled: true, fonts: ['a', 'b'] } }] });
+  assert.equal(shifted - plain, 3);
+});
+
+test('the splitTone fill packs split, angle and basis', () => {
+  const descriptor = fx.get('fill', 'splitTone');
+  assert.ok(descriptor, 'fill.splitTone is not registered');
+  assert.equal(descriptor.pack, 'pro', 'fill.splitTone must stay in the pro pack');
+  const instance = fx.withDefaults({ type: 'splitTone', params: { split: 0.4, angle: 30, basis: 'em', alternate: true } }, 'fill');
+  const uniforms = fx.fillUniforms(instance, {
+    colors: { fill: [1, 0.5, 0.2, 1], fill2: [0.2, 0.5, 1, 1], stroke: [0, 0, 0, 1] },
+    time: 2,
+    progress: 0,
+  });
+  assert.equal(uniforms.u_type, 21);
+  assert.ok(Math.abs(uniforms.u_params[0] - 0.4) < 1e-9, 'split');
+  assert.ok(Math.abs(uniforms.u_params[2] - Math.PI / 6) < 1e-9, 'angle');
+  assert.deepEqual(uniforms.u_params2, [1, 1, 0, 0]);
+  // without explicit colours the fill falls back to fill / fill2
+  const fallback = fx.fillUniforms(
+    fx.withDefaults({ type: 'splitTone', params: {} }, 'fill'),
+    { colors: { fill: [1, 0, 0, 1], fill2: [0, 0, 1, 1] }, time: 0, progress: 0 }
+  );
+  assert.deepEqual(fallback.u_colorA, [1, 0, 0, 1]);
+  assert.deepEqual(fallback.u_colorB, [0, 0, 1, 1]);
+  // the shader keeps type 21 out of the pattern branch
+  const vm = require('node:vm');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const source = fs.readFileSync(path.join(__dirname, '../../renderer/js/lyrics/gl/shaders.js'), 'utf8');
+  const sandbox = { window: {} };
+  sandbox.SA = sandbox.window.SA = {};
+  vm.runInNewContext(source, sandbox);
+  const frag = sandbox.SA.glShaders.FILL_FRAG;
+  assert.ok(frag.includes('type == 21'), 'the splitTone branch is missing');
+  assert.ok(frag.includes('type >= 15 && type <= 20'), 'the pattern branch must exclude 21');
+});
+
 test('the checker fill alternates its two colours instead of blending them', () => {
   const vm = require('node:vm');
   const fs = require('node:fs');

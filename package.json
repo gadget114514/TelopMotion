@@ -24,6 +24,8 @@
     "camera-showcase": "node scripts/camera-showcase.js",
     "color-showcase": "node scripts/color-showcase.js",
     "clone-showcase": "node scripts/clone-showcase.js",
+    "letter-fx-showcase": "node scripts/letter-fx-showcase.js",
+    "text-showcase": "node scripts/text-showcase.js",
     "ease-showcase": "node scripts/ease-showcase.js",
     "layer-showcase": "node scripts/layer-showcase.js",
     "demo30": "node scripts/demo30.js build",

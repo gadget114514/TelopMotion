@@ -454,6 +454,8 @@ SA.controls = (() => {
     textControl,
     easeControl,
     pointsControl,
+    colorsControl,
+    multiselectControl,
     paramControl,
     paramEntries,
     fontChoices,

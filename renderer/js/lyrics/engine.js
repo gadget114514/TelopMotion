@@ -891,6 +891,194 @@ SA.lyricsEngine = (() => {
       }
     }
 
+    // Variant typeface scenes for the per-letter clone shift, cached per beat +
+    // entry + text for the life of the rendered project.
+    let variantSceneCache = { project: null, map: new Map() };
+
+    function cachedVariantScene(project, beat, entry) {
+      if (variantSceneCache.project !== project) variantSceneCache = { project, map: new Map() };
+      const key = `${beat.id}:${entry.id}:${beat.text}`;
+      const cached = variantSceneCache.map.get(key);
+      if (cached) return cached;
+      const scene = buildBeatScene(project, beat, [entry]);
+      variantSceneCache.map.set(key, scene);
+      return scene;
+    }
+
+    // One-letter strike-through: capsule segments in the current layer, so no
+    // beginLayer is needed (drawPrimitives draws where the layer is bound).
+    function buildStrike(active, t, colorSet, project) {
+      const none = { under: [], over: [] };
+      if (!SA.letterStrike || typeof SA.letterStrike.strikeSegments !== 'function') return none;
+      const instance = SA.fx.withDefaults(active.style.strike, 'strike');
+      if (!instance || !instance.type || instance.type === 'none' || instance.enabled === false) return none;
+      const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
+      const style = active.style;
+      const segs = SA.letterStrike.strikeSegments(active.scene, active.result.letters, instance, {
+        t,
+        beatStart: active.beat.start,
+        beatId: active.beat.id,
+        seed,
+        width: state.width,
+        height: state.height,
+        colors: colorSet.arrays,
+        resolveColor: (value, fallback) => SA.color.toRgba(value, fallback, {
+          palette: style.palette || null,
+          palettes: project ? project.palettes || [] : [],
+        }),
+      });
+      const layer = (instance.params && instance.params.layer) || 'over';
+      return layer === 'under' ? { under: segs, over: [] } : { under: [], over: segs };
+    }
+
+    // A clone whose letters shift one by one (style.clones[i].perLetter). Each
+    // typeface group renders its own mask, then the main mask is restored so
+    // the edges and posts that follow keep working. Returns the fresh sdf
+    // target for the caller to keep using.
+    function drawLetterClone(active, clone, cloneIndex, t, colorSet, fillInstance, category, progress, variant, colorOverride, sdfTarget) {
+      const { beat, scene, result, style } = active;
+      const project = state.project;
+      const per = (clone && clone.perLetter) || {};
+      const n = scene.letters.length;
+      if (!n || !SA.letterVary) return sdfTarget;
+      const seed = (project && project.styleMode && project.styleMode.seed) || 12345;
+      const rngs = {};
+      for (const key of ['dx', 'dy', 'opacity', 'skew', 'rotate', 'pick']) {
+        rngs[key] = SA.rng.rngFor(seed, beat.id, 'clone', clone.id || cloneIndex, per.seed || 0, key);
+      }
+      const plan = SA.letterVary.planLetterVariants(n, per, rngs);
+      const short = Math.max(1, Math.min(state.width, state.height));
+      const shifted = result.letters.map((letterState, i) => {
+        const v = plan[i];
+        const source = letterState || {};
+        return {
+          ...source,
+          x: (source.x || 0) + v.dx * short,
+          y: (source.y || 0) + v.dy * short,
+          rot: (source.rot || 0) + v.rotate,
+          skew: (source.skew || 0) - Math.tan((v.skew * Math.PI) / 180),
+          opacity: (source.opacity == null ? 1 : source.opacity) * v.opacity,
+        };
+      });
+      const baseColors = cloneColors(colorSet.arrays, clone, style, project);
+      const needTint = plan.some((v) => !!v.color);
+      const toBytes = (rgba) => {
+        const list = Array.isArray(rgba) ? rgba : [1, 1, 1, 1];
+        return [Math.round(Math.max(0, Math.min(1, Number(list[0]) || 0)) * 255),
+          Math.round(Math.max(0, Math.min(1, Number(list[1]) || 0)) * 255),
+          Math.round(Math.max(0, Math.min(1, Number(list[2]) || 0)) * 255),
+          Math.round(Math.max(0, Math.min(1, list[3] == null ? 1 : Number(list[3]))) * 255)];
+      };
+      const colorCtx = { palette: style.palette || null, palettes: project ? project.palettes || [] : [] };
+      let mainOverride = colorOverride || null;
+      if (needTint) {
+        mainOverride = new Uint8Array(n * 4);
+        for (let i = 0; i < n; i += 1) {
+          const rgba = plan[i].color ? SA.color.toRgba(plan[i].color, null, colorCtx) : baseColors.fill;
+          const bytes = toBytes(rgba);
+          mainOverride[i * 4] = bytes[0];
+          mainOverride[i * 4 + 1] = bytes[1];
+          mainOverride[i * 4 + 2] = bytes[2];
+          mainOverride[i * 4 + 3] = bytes[3];
+        }
+      }
+      const fonts = state.assets.fonts || [];
+      const mainIndices = [];
+      const byFont = new Map();
+      for (let i = 0; i < n; i += 1) {
+        const font = plan[i].font;
+        if (!font) {
+          mainIndices.push(i);
+          continue;
+        }
+        if (!byFont.has(font)) byFont.set(font, []);
+        byFont.get(font).push(i);
+      }
+      const fontGroups = [];
+      for (const [fontId, indices] of byFont) {
+        let entry = fonts.find((item) => item && item.id === fontId);
+        if (!entry) entry = variantFontFor(fontId, scene.text, fonts);
+        if (!entry) {
+          mainIndices.push(...indices);
+          continue;
+        }
+        fontGroups.push({ entry, indices });
+      }
+      // preview cost budget: at most three typeface groups, the rest joins main
+      if (state.quality === 'preview' && fontGroups.length > 3) {
+        for (const extra of fontGroups.slice(3)) mainIndices.push(...extra.indices);
+        fontGroups.length = 3;
+      }
+      const envelope = cloneEnvelope(clone, t, beat);
+      const opacity = (clone.opacity == null ? 0.5 : Number(clone.opacity)) * envelope;
+      const transform = cloneTransform(clone, t, state.width, state.height);
+      const fillShared = {
+        category,
+        time: t,
+        palette: style.palette || null,
+        palettes: project ? project.palettes || [] : [],
+        categoryColors: project ? project.categoryColors || {} : {},
+        progress,
+        letterTint: needTint,
+      };
+      const maskedFor = (indices) => {
+        const set = new Set(indices);
+        return shifted.map((letterState, i) => (set.has(i) ? letterState : { ...letterState, opacity: 0 }));
+      };
+      if (mainIndices.length) {
+        pipeline.text(scene, maskedFor(mainIndices), variant, mainOverride);
+        pipeline.letterBlur(scene, maskedFor(mainIndices));
+        const sdf = pipeline.sdf();
+        pipeline.beginLayer();
+        pipeline.fill(SA.fx.fillUniforms(fillInstance, { ...fillShared, colors: baseColors, sdfTexture: sdf ? sdf.texture : null }));
+        pipeline.commitLayer(opacity, transform);
+      }
+      for (const group of fontGroups) {
+        const vScene = cachedVariantScene(project, beat, group.entry);
+        if (!vScene || !vScene.letters.length) {
+          pipeline.text(scene, maskedFor(group.indices), variant, mainOverride);
+          pipeline.letterBlur(scene, maskedFor(group.indices));
+          const fallbackSdf = pipeline.sdf();
+          pipeline.beginLayer();
+          pipeline.fill(SA.fx.fillUniforms(fillInstance, { ...fillShared, colors: baseColors, sdfTexture: fallbackSdf ? fallbackSdf.texture : null }));
+          pipeline.commitLayer(opacity, transform);
+          continue;
+        }
+        const byOffset = new Map();
+        vScene.letters.forEach((letter, j) => byOffset.set(letter.textOffset, j));
+        const vStates = vScene.letters.map(() => ({ x: 0, y: 0, rot: 0, opacity: 0 }));
+        const vOverride = new Uint8Array(vScene.letters.length * 4);
+        const baseBytes = toBytes(baseColors.fill);
+        for (let j = 0; j < vOverride.length; j += 4) {
+          vOverride[j] = baseBytes[0];
+          vOverride[j + 1] = baseBytes[1];
+          vOverride[j + 2] = baseBytes[2];
+          vOverride[j + 3] = baseBytes[3];
+        }
+        for (const i of group.indices) {
+          const j = byOffset.get(scene.letters[i].textOffset);
+          if (j == null) continue;
+          vStates[j] = shifted[i];
+          const rgba = plan[i].color ? SA.color.toRgba(plan[i].color, null, colorCtx) : baseColors.fill;
+          const bytes = toBytes(rgba);
+          vOverride[j * 4] = bytes[0];
+          vOverride[j * 4 + 1] = bytes[1];
+          vOverride[j * 4 + 2] = bytes[2];
+          vOverride[j * 4 + 3] = bytes[3];
+        }
+        pipeline.text(vScene, vStates, variant, vOverride);
+        pipeline.letterBlur(vScene, vStates);
+        const vSdf = pipeline.sdf();
+        pipeline.beginLayer();
+        pipeline.fill(SA.fx.fillUniforms(fillInstance, { ...fillShared, colors: baseColors, sdfTexture: vSdf ? vSdf.texture : null }));
+        pipeline.commitLayer(opacity, transform);
+      }
+      // restore the main mask for the edges and posts that follow
+      pipeline.text(scene, result.letters, variant, colorOverride);
+      pipeline.letterBlur(scene, result.letters);
+      return pipeline.sdf();
+    }
+
     function needsPrevious(scene) {
       const style = (scene && scene.style) || {};
       const from = style.layout && style.layout.params && style.layout.params.from;
@@ -2341,15 +2529,22 @@ SA.lyricsEngine = (() => {
           // typefaces re-render the mask, so the sdf is created afterwards.
           drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
         }
-        const sdfTarget = textOn ? pipeline.sdf() : null;
+        let sdfTarget = textOn ? pipeline.sdf() : null;
+        const strike = textOn ? buildStrike(active, t, colorSet, project) : { under: [], over: [] };
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
         if (textOn) {
           const clones = Array.isArray(style.clones) ? style.clones : [];
-          for (const clone of clones) {
+          for (let cloneIndex = 0; cloneIndex < clones.length; cloneIndex += 1) {
+            const clone = clones[cloneIndex];
             if (!clone || clone.enabled === false) continue;
             const env = cloneEnvelope(clone, t, beat);
             if (env <= 0) continue;
+            if (clone.perLetter && clone.perLetter.enabled !== false && SA.letterVary) {
+              const restored = drawLetterClone(active, clone, cloneIndex, t, colorSet, fillInstance, category, progress, variant, colorOverride, sdfTarget);
+              if (restored) sdfTarget = restored;
+              continue;
+            }
             const transform = cloneTransform(clone, t, state.width, state.height);
             pipeline.beginLayer();
             pipeline.fill(
@@ -2370,6 +2565,7 @@ SA.lyricsEngine = (() => {
           pipeline.representation(scene, result.letters, 'pieces', variant);
           pipeline.representation(scene, result.letters, 'particles', variant);
           pipeline.representation(scene, result.letters, 'sand', variant);
+          if (strike.under.length) drawPrimitives(strike.under);
         }
         const edgeContext = {
           colorSet: colorSet.arrays,
@@ -2414,6 +2610,7 @@ SA.lyricsEngine = (() => {
           if (sdfTarget) {
             for (const edge of edges) if (edge.top) pipeline.edge(edge);
           }
+          if (strike.over.length) drawPrimitives(strike.over);
           drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
         }
         for (const instance of style.edge || []) {

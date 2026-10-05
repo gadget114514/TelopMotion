@@ -1139,6 +1139,28 @@
     }
   }
 
+  // the letter decorations' own showcase: split-tone fills, per-letter
+  // strike-throughs and per-letter clone shifts, each in its own section
+  async function letterFxShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/letter-fx-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the text vocabularies' own showcase: every fill, every edge and every
+  // background, each in four variants (single / double / dx-parallel /
+  // dy-parallel). The ids are language-independent, so no re-labelling is
+  // needed.
+  async function textShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/text-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -2064,6 +2086,8 @@
       cameraShowcase: cameraShowcaseProject,
       colorShowcase: colorShowcaseProject,
       cloneShowcase: cloneShowcaseProject,
+      letterFxShowcase: letterFxShowcaseProject,
+      textShowcase: textShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

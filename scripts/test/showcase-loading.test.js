@@ -25,6 +25,7 @@ const LOADERS = [
   ['cameraShowcase', 'data/camera-showcase.json'],
   ['colorShowcase', 'data/color-showcase.json'],
   ['cloneShowcase', 'data/clone-showcase.json'],
+  ['letterFxShowcase', 'data/letter-fx-showcase.json'],
 ];
 
 function appSource() {
@@ -41,7 +42,7 @@ test('the shared loader paints the busy dialog before reading', () => {
 
 test('every Help showcase loader delegates to the shared loader', () => {
   const app = appSource();
-  assert.equal(LOADERS.length, 13);
+  assert.equal(LOADERS.length, 14);
   for (const [, file] of LOADERS) {
     const escaped = file.replace(/\./g, '\\.');
     assert.match(app, new RegExp(`openShowcaseAsset\\('${escaped}'`), `${file} must load through openShowcaseAsset`);

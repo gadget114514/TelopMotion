@@ -42,6 +42,7 @@
     ornEdge: null,
     ornMotion: { type: 'follow', params: {} },
     repeat: { type: 'none', params: {} },
+    strike: { type: 'none', params: {} },
     page: { type: 'none', params: {} },
   };
 
@@ -242,7 +243,7 @@
   function costOf(style) {
     let cost = 0;
     if (!style) return cost;
-    for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'color', 'repeat']) {
+    for (const group of ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'background', 'color', 'repeat', 'strike']) {
       const instance = withDefaults(style[group], group);
       const entry = instance && get(group, instance.type);
       if (entry) cost += entry.costOf ? entry.costOf(instance.params, instance) : entry.cost;
@@ -272,6 +273,13 @@
         const entry = get(group, instance.type);
         if (entry) cost += entry.cost;
       }
+    }
+    // a per-letter clone shift redraws the mask once per typeface group
+    for (const clone of style.clones || []) {
+      const per = clone && clone.perLetter;
+      if (!per || per.enabled === false) continue;
+      const fonts = Array.isArray(per.fonts) ? per.fonts.filter(Boolean).length : 0;
+      cost += 1 + fonts;
     }
     return cost;
   }

@@ -67,140 +67,166 @@
         "id": "cl_003",
         "start": 8,
         "end": 12,
-        "text": "3. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
+        "text": "3. dy+scale · Y -0.12 / 0 / +0.12 · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 3,
-          "section": "scale",
-          "value": "scale",
-          "detail": "0.75 / 1 / 1.25"
+          "section": "offset",
+          "value": "dy+scale",
+          "detail": "Y -0.12 / 0 / +0.12 · 0.75 / 1 / 1.25"
         }
       },
       {
         "id": "cl_004",
         "start": 12,
         "end": 16,
-        "text": "4. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
+        "text": "4. dy+fx · Y -0.12 / 0 / +0.12 + glow\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 4,
-          "section": "rotate",
-          "value": "rotate",
-          "detail": "-10° / 0° / +10°"
+          "section": "offset",
+          "value": "dy+fx",
+          "detail": "Y -0.12 / 0 / +0.12 + glow"
         }
       },
       {
         "id": "cl_005",
         "start": 16,
         "end": 20,
-        "text": "5. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
+        "text": "5. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 5,
-          "section": "opacity",
-          "value": "opacity",
-          "detail": "0.25 / 0.5 / 0.8"
+          "section": "scale",
+          "value": "scale",
+          "detail": "0.75 / 1 / 1.25"
         }
       },
       {
         "id": "cl_006",
         "start": 20,
         "end": 24,
-        "text": "6. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
+        "text": "6. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 6,
-          "section": "hue",
-          "value": "hue",
-          "detail": "-70° / 0° / +70°"
+          "section": "rotate",
+          "value": "rotate",
+          "detail": "-10° / 0° / +10°"
         }
       },
       {
         "id": "cl_007",
         "start": 24,
         "end": 28,
-        "text": "7. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
+        "text": "7. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 7,
-          "section": "delay",
-          "value": "delay",
-          "detail": "0秒 / 0.25秒 / 0.5秒"
+          "section": "opacity",
+          "value": "opacity",
+          "detail": "0.25 / 0.5 / 0.8"
         }
       },
       {
         "id": "cl_008",
         "start": 28,
         "end": 32,
-        "text": "8. none · なし ×3\nあいうえお Aiueo 123",
+        "text": "8. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 8,
-          "section": "motion",
-          "value": "none",
-          "detail": "なし ×3"
+          "section": "hue",
+          "value": "hue",
+          "detail": "-70° / 0° / +70°"
         }
       },
       {
         "id": "cl_009",
         "start": 32,
         "end": 36,
-        "text": "9. drift · 漂流 ×3\nあいうえお Aiueo 123",
+        "text": "9. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 9,
-          "section": "motion",
-          "value": "drift",
-          "detail": "漂流 ×3"
+          "section": "delay",
+          "value": "delay",
+          "detail": "0秒 / 0.25秒 / 0.5秒"
         }
       },
       {
         "id": "cl_010",
         "start": 36,
         "end": 40,
-        "text": "10. float · 浮かぶ ×3\nあいうえお Aiueo 123",
+        "text": "10. none · なし ×3\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 10,
           "section": "motion",
-          "value": "float",
-          "detail": "浮かぶ ×3"
+          "value": "none",
+          "detail": "なし ×3"
         }
       },
       {
         "id": "cl_011",
         "start": 40,
         "end": 44,
-        "text": "11. pulse · 脈動 ×3\nあいうえお Aiueo 123",
+        "text": "11. drift · 漂流 ×3\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 11,
           "section": "motion",
-          "value": "pulse",
-          "detail": "脈動 ×3"
+          "value": "drift",
+          "detail": "漂流 ×3"
         }
       },
       {
         "id": "cl_012",
         "start": 44,
         "end": 48,
-        "text": "12. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "text": "12. float · 浮かぶ ×3\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 12,
           "section": "motion",
-          "value": "orbit",
-          "detail": "周回 ×3"
+          "value": "float",
+          "detail": "浮かぶ ×3"
         }
       },
       {
         "id": "cl_013",
         "start": 48,
         "end": 52,
-        "text": "13. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "text": "13. pulse · 脈動 ×3\nあいうえお Aiueo 123",
         "meta": {
           "kind": "clone-showcase",
           "index": 13,
+          "section": "motion",
+          "value": "pulse",
+          "detail": "脈動 ×3"
+        }
+      },
+      {
+        "id": "cl_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 14,
+          "section": "motion",
+          "value": "orbit",
+          "detail": "周回 ×3"
+        }
+      },
+      {
+        "id": "cl_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 15,
           "section": "motion",
           "value": "spin",
           "detail": "回転 ×3"
@@ -428,6 +454,193 @@
       "clones": [
         {
           "dx": -0.14,
+          "dy": -0.12,
+          "scale": 0.75,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0.12,
+          "scale": 1.25,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": -0.12,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0.12,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "edge": [
+        {
+          "type": "neonGlow",
+          "params": {
+            "radius": 18,
+            "intensity": 0.9,
+            "bloom": true
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cl_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
           "dy": 0,
           "scale": 0.75,
           "rotate": 0,
@@ -505,7 +718,7 @@
         }
       }
     },
-    "cl_004": {
+    "cl_006": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -593,7 +806,7 @@
         }
       }
     },
-    "cl_005": {
+    "cl_007": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -681,7 +894,7 @@
         }
       }
     },
-    "cl_006": {
+    "cl_008": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -769,7 +982,7 @@
         }
       }
     },
-    "cl_007": {
+    "cl_009": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -857,182 +1070,6 @@
         }
       }
     },
-    "cl_008": {
-      "color": {
-        "fill": {
-          "kind": "solid",
-          "value": "#e9edf8",
-          "alpha": 1
-        }
-      },
-      "clones": [
-        {
-          "dx": -0.14,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "none",
-            "amount": 0,
-            "speed": 1
-          },
-          "enabled": true
-        },
-        {
-          "dx": 0,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "none",
-            "amount": 0,
-            "speed": 1
-          },
-          "enabled": true
-        },
-        {
-          "dx": 0.14,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "none",
-            "amount": 0,
-            "speed": 1
-          },
-          "enabled": true
-        }
-      ],
-      "animation": {
-        "type": "simultaneous",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "stagger": {
-            "each": 0
-          }
-        }
-      },
-      "enter": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "in": {
-            "duration": 0.4,
-            "ease": "cubicOut"
-          }
-        }
-      },
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.4,
-            "ease": "cubicIn"
-          }
-        }
-      }
-    },
-    "cl_009": {
-      "color": {
-        "fill": {
-          "kind": "solid",
-          "value": "#e9edf8",
-          "alpha": 1
-        }
-      },
-      "clones": [
-        {
-          "dx": -0.14,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "drift",
-            "amount": 0.05,
-            "speed": 1
-          },
-          "enabled": true
-        },
-        {
-          "dx": 0,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "drift",
-            "amount": 0.05,
-            "speed": 1
-          },
-          "enabled": true
-        },
-        {
-          "dx": 0.14,
-          "dy": 0,
-          "scale": 1,
-          "rotate": 0,
-          "opacity": 0.5,
-          "hue": 0,
-          "delay": 0,
-          "motion": {
-            "type": "drift",
-            "amount": 0.05,
-            "speed": 1
-          },
-          "enabled": true
-        }
-      ],
-      "animation": {
-        "type": "simultaneous",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "stagger": {
-            "each": 0
-          }
-        }
-      },
-      "enter": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "in": {
-            "duration": 0.4,
-            "ease": "cubicOut"
-          }
-        }
-      },
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.4,
-            "ease": "cubicIn"
-          }
-        }
-      }
-    },
     "cl_010": {
       "color": {
         "fill": {
@@ -1051,8 +1088,8 @@
           "hue": 0,
           "delay": 0,
           "motion": {
-            "type": "float",
-            "amount": 0.05,
+            "type": "none",
+            "amount": 0,
             "speed": 1
           },
           "enabled": true
@@ -1066,8 +1103,8 @@
           "hue": 0,
           "delay": 0,
           "motion": {
-            "type": "float",
-            "amount": 0.05,
+            "type": "none",
+            "amount": 0,
             "speed": 1
           },
           "enabled": true
@@ -1081,8 +1118,8 @@
           "hue": 0,
           "delay": 0,
           "motion": {
-            "type": "float",
-            "amount": 0.05,
+            "type": "none",
+            "amount": 0,
             "speed": 1
           },
           "enabled": true
@@ -1139,6 +1176,182 @@
           "hue": 0,
           "delay": 0,
           "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
             "type": "pulse",
             "amount": 0.1,
             "speed": 1
@@ -1209,7 +1422,7 @@
         }
       }
     },
-    "cl_012": {
+    "cl_014": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -1297,7 +1510,7 @@
         }
       }
     },
-    "cl_013": {
+    "cl_015": {
       "color": {
         "fill": {
           "kind": "solid",
@@ -1499,12 +1712,12 @@
         "index": 0,
         "start": 8,
         "end": 12,
-        "text": "3. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
+        "text": "3. dy+scale · Y -0.12 / 0 / +0.12 · \n0.75 / 1 / 1.25あいうえお Aiueo 123",
         "lines": [
-          "3. scale · 0.75 / 1 / 1.25",
-          "あいうえお Aiueo 123"
+          "3. dy+scale · Y -0.12 / 0 / +0.12 · ",
+          "0.75 / 1 / 1.25あいうえお Aiueo 123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -1516,10 +1729,10 @@
         "index": 0,
         "start": 12,
         "end": 16,
-        "text": "4. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
+        "text": "4. dy+fx · Y -0.12 / 0 / +0.12\n+ glowあいうえお Aiueo 123",
         "lines": [
-          "4. rotate · -10° / 0° / +10°",
-          "あいうえお Aiueo 123"
+          "4. dy+fx · Y -0.12 / 0 / +0.12",
+          "+ glowあいうえお Aiueo 123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1533,9 +1746,9 @@
         "index": 0,
         "start": 16,
         "end": 20,
-        "text": "5. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
+        "text": "5. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
         "lines": [
-          "5. opacity · 0.25 / 0.5 / 0.8",
+          "5. scale · 0.75 / 1 / 1.25",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1550,9 +1763,9 @@
         "index": 0,
         "start": 20,
         "end": 24,
-        "text": "6. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
+        "text": "6. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
         "lines": [
-          "6. hue · -70° / 0° / +70°",
+          "6. rotate · -10° / 0° / +10°",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1567,9 +1780,9 @@
         "index": 0,
         "start": 24,
         "end": 28,
-        "text": "7. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
+        "text": "7. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
         "lines": [
-          "7. delay · 0秒 / 0.25秒 / 0.5秒",
+          "7. opacity · 0.25 / 0.5 / 0.8",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1584,9 +1797,9 @@
         "index": 0,
         "start": 28,
         "end": 32,
-        "text": "8. none · なし ×3\nあいうえお Aiueo 123",
+        "text": "8. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
         "lines": [
-          "8. none · なし ×3",
+          "8. hue · -70° / 0° / +70°",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1601,9 +1814,9 @@
         "index": 0,
         "start": 32,
         "end": 36,
-        "text": "9. drift · 漂流 ×3\nあいうえお Aiueo 123",
+        "text": "9. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
         "lines": [
-          "9. drift · 漂流 ×3",
+          "9. delay · 0秒 / 0.25秒 / 0.5秒",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1618,9 +1831,9 @@
         "index": 0,
         "start": 36,
         "end": 40,
-        "text": "10. float · 浮かぶ ×3\nあいうえお Aiueo 123",
+        "text": "10. none · なし ×3\nあいうえお Aiueo 123",
         "lines": [
-          "10. float · 浮かぶ ×3",
+          "10. none · なし ×3",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1635,9 +1848,9 @@
         "index": 0,
         "start": 40,
         "end": 44,
-        "text": "11. pulse · 脈動 ×3\nあいうえお Aiueo 123",
+        "text": "11. drift · 漂流 ×3\nあいうえお Aiueo 123",
         "lines": [
-          "11. pulse · 脈動 ×3",
+          "11. drift · 漂流 ×3",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1652,9 +1865,9 @@
         "index": 0,
         "start": 44,
         "end": 48,
-        "text": "12. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "text": "12. float · 浮かぶ ×3\nあいうえお Aiueo 123",
         "lines": [
-          "12. orbit · 周回 ×3",
+          "12. float · 浮かぶ ×3",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1669,9 +1882,43 @@
         "index": 0,
         "start": 48,
         "end": 52,
-        "text": "13. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "text": "13. pulse · 脈動 ×3\nあいうえお Aiueo 123",
         "lines": [
-          "13. spin · 回転 ×3",
+          "13. pulse · 脈動 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_014": [
+      {
+        "id": "cl_014:single0",
+        "cueId": "cl_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "14. orbit · 周回 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_015": [
+      {
+        "id": "cl_015:single0",
+        "cueId": "cl_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "15. spin · 回転 ×3",
           "あいうえお Aiueo 123"
         ],
         "fontScale": 1,
@@ -1692,27 +1939,27 @@
       "label": "ずらし (offset)"
     },
     {
-      "t": 8,
+      "t": 16,
       "label": "大きさ (scale)"
     },
     {
-      "t": 12,
+      "t": 20,
       "label": "回転 (rotate)"
     },
     {
-      "t": 16,
+      "t": 24,
       "label": "不透明度 (opacity)"
     },
     {
-      "t": 20,
+      "t": 28,
       "label": "色相 (hue)"
     },
     {
-      "t": 24,
+      "t": 32,
       "label": "遅延 (delay)"
     },
     {
-      "t": 28,
+      "t": 36,
       "label": "動き (motion)"
     }
   ],

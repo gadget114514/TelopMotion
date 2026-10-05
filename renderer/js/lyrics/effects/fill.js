@@ -28,6 +28,7 @@
     halftone: 18,
     hatch: 19,
     randomSpeckle: 20,
+    splitTone: 21,
   };
 
   fx.register({
@@ -248,6 +249,25 @@
     cost: 1,
   });
 
+  fx.register({
+    group: 'fill',
+    type: 'splitTone',
+    tags: ['pro', 'pattern'],
+    pack: 'pro',
+    params: [
+      { key: 'top', kind: 'color', default: null },
+      { key: 'bottom', kind: 'color', default: null },
+      { key: 'split', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
+      { key: 'softness', kind: 'number', min: 0, max: 0.3, step: 0.005, default: 0 },
+      { key: 'angle', kind: 'number', min: -60, max: 60, step: 1, default: 0 },
+      { key: 'basis', kind: 'select', options: ['glyph', 'em'], default: 'glyph' },
+      { key: 'band', kind: 'number', min: 0, max: 0.2, step: 0.005, default: 0 },
+      { key: 'bandColor', kind: 'color', default: null },
+      { key: 'alternate', kind: 'bool', default: false },
+    ],
+    cost: 0,
+  });
+
   function toRgba(value, fallback, ctx) {
     return color.toRgba(value, fallback || [1, 1, 1, 1], ctx);
   }
@@ -342,6 +362,14 @@
       if (params.colorAfter) colorB = toRgba(params.colorAfter, null, context);
     } else if (type === 14) {
       params4 = [num(params.scale, 3), num(params.threshold, 0.35), num(params.softness, 0.08), 0];
+    } else if (type === 21) {
+      if (params.top) colorA = toRgba(params.top, colorA, context);
+      if (params.bottom) colorB = toRgba(params.bottom, colorB, context);
+      else if (!colors.fill2) colorB = toRgba(colors.fill, colorA, context);
+      if (params.bandColor) colorC = toRgba(params.bandColor, colorC, context);
+      else colorC = toRgba(colors.stroke || colors.fill, colorC, context);
+      params4 = [num(params.split, 0.5), num(params.softness, 0), (num(params.angle, 0) * Math.PI) / 180, num(params.band, 0)];
+      params4b = [params.basis === 'em' ? 1 : 0, params.alternate ? 1 : 0, 0, 0];
     } else if (type >= 15) {
       // pattern fills: angle (rad), size, ratio, speed; the two colours come
       // from colorA / colorB so the palette drives them like every fill

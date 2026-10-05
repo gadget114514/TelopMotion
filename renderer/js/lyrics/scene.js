@@ -146,6 +146,23 @@ SA.lyricsScene = (() => {
     return { r: resolved.rgba.r, g: resolved.rgba.g, b: resolved.rgba.b, a: resolved.rgba.a == null ? 1 : resolved.rgba.a };
   }
 
+  // The em box for the splitTone fill (same formula as font.js:711): the
+  // typeface metrics when the font entry is known, else 0.88 / 0.12.
+  function emMetrics(source, size, fontList) {
+    const letterSize = source && source.size != null ? source.size : size;
+    const list = Array.isArray(fontList) ? fontList : [];
+    const entry = source && source.fontId != null ? list.find((item) => item && item.id === source.fontId) : null;
+    const font = entry && entry.font ? entry.font : null;
+    if (font && Number.isFinite(font.unitsPerEm) && font.unitsPerEm > 0) {
+      const scale = letterSize / font.unitsPerEm;
+      return {
+        ascent: (font.ascender || font.unitsPerEm) * scale,
+        descent: Math.abs(font.descender || 0) * scale || letterSize * 0.12,
+      };
+    }
+    return { ascent: letterSize * 0.88, descent: letterSize * 0.12 };
+  }
+
   function buildLetterMesh(letter) {
     if (letter.mesh) return letter.mesh;
     const geometry = SA.geometry;
@@ -389,6 +406,7 @@ SA.lyricsScene = (() => {
             : source.span && source.span.paletteIndex != null
               ? resolveFillColor(project, { color: { fill: { kind: 'palette', index: source.span.paletteIndex } }, palette: style.palette || null }, beat)
               : fillColor;
+          const em = emMetrics(source, size, fontList);
           const letter = {
             path,
             cueId,
@@ -404,6 +422,11 @@ SA.lyricsScene = (() => {
             src: source.src,
             raster: source.raster,
             size: source.size == null ? size : source.size,
+            // the em box for the splitTone fill (same formula as font.js:711):
+            // the typeface metrics when the font entry is known, else the
+            // default 0.88 / 0.12 ratio
+            ascent: em.ascent,
+            descent: em.descent,
             // the beat text's code-point offset, which the `range` scope addresses
             textOffset: source.textOffset,
             advance: source.advance,

@@ -188,6 +188,8 @@ SA.menu = (() => {
         { key: 'studio.help.cameraShowcase', action: 'cameraShowcase' },
         { key: 'studio.help.colorShowcase', action: 'colorShowcase' },
         { key: 'studio.help.cloneShowcase', action: 'cloneShowcase' },
+        { key: 'studio.help.letterFxShowcase', action: 'letterFxShowcase' },
+        { key: 'studio.help.textShowcase', action: 'textShowcase' },
         { key: 'studio.about.item', action: 'about' },
       ],
     },

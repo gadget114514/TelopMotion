@@ -146,10 +146,49 @@ SA.glPasses = (() => {
 
   // --- batches -----------------------------------------------------------------
 
+  // The splitTone em box per scene, so the passes that rewrite the state
+  // texture without a mesh batch (letterBlur, textBackground) can keep row
+  // 24.zw intact.
+  let emInfoByScene = new WeakMap();
+
+  function writeEmInfo(data, stride, emInfo, count) {
+    if (!emInfo || emInfo.length < count * 2) return;
+    for (let i = 0; i < count; i += 1) {
+      data[(SAND_ROW2 * stride + i) * 4 + 2] = emInfo[i * 2];
+      data[(SAND_ROW2 * stride + i) * 4 + 3] = emInfo[i * 2 + 1];
+    }
+  }
+
+  // Per-letter em-box descriptor for the splitTone fill (basis 'em'): the em
+  // centre and half-height expressed in the ink-normalised space the fill
+  // shader reads (q in -0.5..0.5, y down). Pure: letters carry
+  // ascent / descent (px at render size), meshes carry the ink bbox + scale.
+  // The mesh origin is the pen (baseline) position.
+  function packEmInfo(letters, meshes) {
+    const out = new Float32Array(letters.length * 2);
+    for (let i = 0; i < letters.length; i += 1) {
+      const letter = letters[i] || {};
+      const mesh = (meshes && meshes[i]) || {};
+      const size = Number(letter.size) || 0;
+      const ascent = letter.ascent != null ? Number(letter.ascent) : size * 0.88;
+      const descent = letter.descent != null ? Number(letter.descent) : size * 0.12;
+      const scale = mesh.scale || 1;
+      const bb = mesh.bbox || { x0: 0, y0: 0, x1: 0, y1: 0 };
+      const cy = ((bb.y0 + bb.y1) / 2) * scale;
+      const halfH = Math.max(1e-3, ((bb.y1 - bb.y0) / 2) * scale);
+      const top = -ascent;
+      const bottom = descent;
+      out[i * 2] = ((top + bottom) / 2 - cy) / halfH;
+      out[i * 2 + 1] = ((bottom - top) / 2) / halfH;
+    }
+    return out;
+  }
+
   function meshAttributes(gl, scene) {
     const positions = [];
     const indices = [];
     const colors = new Uint8Array(scene.letters.length * 4);
+    const meshes = [];
     for (let i = 0; i < scene.letters.length; i += 1) {
       const letter = scene.letters[i];
       const mesh = SA.lyricsScene.meshOf(letter);
@@ -174,8 +213,10 @@ SA.glPasses = (() => {
       colors[i * 4 + 1] = Math.round(clamp01(color.g) * 255);
       colors[i * 4 + 2] = Math.round(clamp01(color.b) * 255);
       colors[i * 4 + 3] = Math.round(clamp01(color.a) * 255);
+      meshes.push(mesh);
     }
-    return { positions, indices, colors };
+    const emInfo = packEmInfo(scene.letters, meshes);
+    return { positions, indices, colors, emInfo };
   }
 
   function makeVao(gl, positions, indices, extra) {
@@ -207,9 +248,11 @@ SA.glPasses = (() => {
   }
 
   function buildMeshBatch(gl, scene) {
-    const { positions, indices, colors } = meshAttributes(gl, scene);
+    const { positions, indices, colors, emInfo } = meshAttributes(gl, scene);
     const batch = makeVao(gl, positions, indices, { stride: 20 });
     batch.colors = colors;
+    batch.emInfo = emInfo;
+    emInfoByScene.set(scene, emInfo);
     return batch;
   }
 
@@ -745,6 +788,8 @@ SA.glPasses = (() => {
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
       packStateRows(states, stateData, states.length);
+      // row 24.zw: em centre / em half (splitTone basis em)
+      writeEmInfo(stateData, states.length, batch && batch.emInfo, states.length);
       if (colorOverride) colorData.set(colorOverride.subarray(0, Math.min(colorOverride.length, colorData.length)));
       else colorData.set(batch.colors.subarray(0, Math.min(batch.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
@@ -879,6 +924,7 @@ SA.glPasses = (() => {
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
       packStateRows(states, stateData, states.length);
+      writeEmInfo(stateData, states.length, emInfoByScene.get(scene), states.length);
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
 
@@ -1006,6 +1052,7 @@ SA.glPasses = (() => {
       ensureStateTexture(states.length);
       ensureColorTexture(states.length);
       packStateRows(states, stateData, states.length);
+      writeEmInfo(stateData, states.length, emInfoByScene.get(scene), states.length);
       if (mesh) colorData.set(mesh.colors.subarray(0, Math.min(mesh.colors.length, colorData.length)));
       gl.bindTexture(gl.TEXTURE_2D, stateTexture);
       gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, states.length, STATE_ROWS, gl.RGBA, gl.FLOAT, stateData.subarray(0, states.length * STATE_ROWS * 4));
@@ -1292,7 +1339,7 @@ SA.glPasses = (() => {
       dispose,
       targets: () => targets,
       debugError: () => gl.getError(),
-      _test: { deformSlots, packStateRows, STATE_ROWS, BG_STATE_ROWS },
+      _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS },
     };
   }
 
@@ -1388,6 +1435,6 @@ SA.glPasses = (() => {
     DEFORM_CODES,
     REP_CODES,
     // pure helpers, exposed for the unit tests (no GL context needed)
-    _test: { deformSlots, packStateRows, STATE_ROWS, BG_STATE_ROWS },
+    _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS },
   };
 })();

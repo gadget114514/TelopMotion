@@ -894,7 +894,29 @@ SA.glShaders = (() => {
       float soft = max(u_params.z, 0.001);
       float n = fbm(v_uv * max(u_params.x, 1.0) * 8.0, 4) + 0.35 * clamp(-distance * 8.0, 0.0, 1.0);
       color = vec4(u_colorA.rgb, u_colorA.a * smoothstep(threshold - soft, threshold + soft, n));
-    } else if (type >= 15) {
+    } else if (type == 21) {
+      // splitTone: the top half and the bottom half of each glyph take two
+      // colours. local is 0 (top) .. 1 (bottom) in the ink box; the em basis
+      // renormalises it into the em box via state row 24.zw (em centre / half).
+      float splitId = round(info.x * 255.0) * 255.0 + round(info.y * 255.0);
+      vec2 q = local - 0.5;
+      if (u_params2.x > 0.5) {
+        vec4 em = texelFetch(u_state, ivec2(int(splitId + 0.5), 24), 0);
+        q.y = ((q.y * 2.0) - em.z) / max(em.w, 1e-3) * 0.5;
+      }
+      float a = u_params.z;
+      float coord = q.y * cos(a) - q.x * sin(a) + 0.5;
+      float soft = max(u_params.y, 0.0005);
+      float lower = smoothstep(u_params.x - soft, u_params.x + soft, coord);
+      vec4 topColor = u_colorA;
+      vec4 bottomColor = u_colorB;
+      if (u_params2.y > 0.5 && mod(splitId, 2.0) > 0.5) { topColor = u_colorB; bottomColor = u_colorA; }
+      color = mix(topColor, bottomColor, lower);
+      if (u_params.w > 0.0) {
+        float bandMask = 1.0 - smoothstep(u_params.w * 0.5, u_params.w * 0.5 + soft, abs(coord - u_params.x));
+        color = mix(color, u_colorC, bandMask);
+      }
+    } else if (type >= 15 && type <= 20) {
       // pattern fills (stripes / checker / diamondGrid / halftone / hatch /
       // randomSpeckle): u_params2 = angle (rad), size (px), ratio, speed.
       float angle = u_params2.x;

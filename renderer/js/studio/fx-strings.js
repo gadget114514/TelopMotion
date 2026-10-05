@@ -1406,6 +1406,74 @@
     types: { enter: { dissolve: 'Растворение' }, hold: { dissolve: 'Растворение' } },
   };
 
+  // Letter-level text effects: the two-tone fill, the per-letter strike and
+  // the per-letter clone shift. All five languages receive the same key set.
+  const ADD_LETTERFX_EN = {
+    types: {
+      fill: { splitTone: 'Split tone' },
+      strike: { line: 'Line', double: 'Double', wave: 'Wave', slash: 'Slash' },
+    },
+    params: {
+      top: 'Top color', bottom: 'Bottom color', basis: 'Basis', band: 'Band', bandColor: 'Band color',
+      alternate: 'Alternate', angleJitter: 'Angle jitter', posJitter: 'Position jitter',
+      lengthJitter: 'Length jitter', drawIn: 'Draw in', drawTime: 'Draw time', stagger: 'Stagger time',
+      fonts: 'Fonts', waveFreq: 'Wave frequency',
+    },
+    values: { glyph: 'Glyph', over: 'Over', under: 'Under', ramp: 'Ramp' },
+  };
+  const ADD_LETTERFX_JA = {
+    types: {
+      fill: { splitTone: '上下2色' },
+      strike: { line: '取り消し線', double: '二重線', wave: '波線', slash: '斜線' },
+    },
+    params: {
+      top: '上の色', bottom: '下の色', basis: '基準', band: '帯の厚み', bandColor: '帯の色',
+      alternate: '交互', angleJitter: '角度ばらつき', posJitter: '位置ばらつき',
+      lengthJitter: '長さばらつき', drawIn: '描画演出', drawTime: '描画時間', stagger: 'ずらし時間',
+      fonts: 'フォント', waveFreq: '波の数',
+    },
+    values: { glyph: 'グリフ', over: '前面', under: '背面', ramp: 'ランプ' },
+  };
+  const ADD_LETTERFX_ES = {
+    types: {
+      fill: { splitTone: 'Doble tono' },
+      strike: { line: 'Tachado', double: 'Doble', wave: 'Onda', slash: 'Diagonal' },
+    },
+    params: {
+      top: 'Color superior', bottom: 'Color inferior', basis: 'Base', band: 'Banda', bandColor: 'Color de banda',
+      alternate: 'Alterno', angleJitter: 'Variación de ángulo', posJitter: 'Variación de posición',
+      lengthJitter: 'Variación de longitud', drawIn: 'Trazado', drawTime: 'Tiempo de trazado', stagger: 'Tiempo escalonado',
+      fonts: 'Fuentes', waveFreq: 'Frecuencia de onda',
+    },
+    values: { glyph: 'Glifo', over: 'Encima', under: 'Debajo', ramp: 'Rampa' },
+  };
+  const ADD_LETTERFX_FR = {
+    types: {
+      fill: { splitTone: 'Double ton' },
+      strike: { line: 'Biffure', double: 'Double', wave: 'Vague', slash: 'Diagonale' },
+    },
+    params: {
+      top: 'Couleur haute', bottom: 'Couleur basse', basis: 'Base', band: 'Bande', bandColor: 'Couleur de bande',
+      alternate: 'Alterné', angleJitter: "Variation d'angle", posJitter: 'Variation de position',
+      lengthJitter: 'Variation de longueur', drawIn: 'Tracé', drawTime: 'Durée du tracé', stagger: 'Temps décalé',
+      fonts: 'Polices', waveFreq: "Fréquence d'onde",
+    },
+    values: { glyph: 'Glyphe', over: 'Dessus', under: 'Dessous', ramp: 'Rampe' },
+  };
+  const ADD_LETTERFX_RU = {
+    types: {
+      fill: { splitTone: 'Двухцветная заливка' },
+      strike: { line: 'Зачёркивание', double: 'Двойная', wave: 'Волна', slash: 'Диагональ' },
+    },
+    params: {
+      top: 'Верхний цвет', bottom: 'Нижний цвет', basis: 'Основа', band: 'Полоса', bandColor: 'Цвет полосы',
+      alternate: 'Чередовать', angleJitter: 'Разброс угла', posJitter: 'Разброс позиции',
+      lengthJitter: 'Разброс длины', drawIn: 'Прорисовка', drawTime: 'Время прорисовки', stagger: 'Задержка',
+      fonts: 'Шрифты', waveFreq: 'Частота волны',
+    },
+    values: { glyph: 'Глиф', over: 'Сверху', under: 'Снизу', ramp: 'Рампа' },
+  };
+
   const ADD_SHADER_EN = {
     types: {
       post: { dither: 'Dither', fade: 'Fade (shader)', scanline: 'Scanlines', stealth: 'Stealth cloak', geometry: 'Geometry' },
@@ -1544,6 +1612,11 @@
   applyFxAdditions(es, ADD_DISSOLVE_ES);
   applyFxAdditions(fr, ADD_DISSOLVE_FR);
   applyFxAdditions(ru, ADD_DISSOLVE_RU);
+  applyFxAdditions(en, ADD_LETTERFX_EN);
+  applyFxAdditions(ja, ADD_LETTERFX_JA);
+  applyFxAdditions(es, ADD_LETTERFX_ES);
+  applyFxAdditions(fr, ADD_LETTERFX_FR);
+  applyFxAdditions(ru, ADD_LETTERFX_RU);
   // the shader pack (dither / fade / scanline / stealth / geometry), registered
   // as `post` types and as per-letter motions in enter / hold / exit
   applyFxAdditions(en, ADD_SHADER_EN);
