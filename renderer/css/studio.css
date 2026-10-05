@@ -1823,6 +1823,20 @@ body {
   letter-spacing: 0.06em;
 }
 
+.bg-dropzone {
+  border: 1px dashed var(--line-soft);
+  border-radius: 7px;
+  padding: 10px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bg-dropzone.is-over {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
 .insp-section-title {
   margin: 10px 0 4px;
   padding-top: 6px;

@@ -2857,7 +2857,7 @@ SA.timeline = (() => {
           event.dataTransfer.dropEffect = 'copy';
         }
       });
-      surface.addEventListener('drop', (event) => {
+      surface.addEventListener('drop', async (event) => {
         const transfer = event.dataTransfer;
         if (!transfer) return;
         const id = transfer.getData('text/x-sa-media') || transfer.getData('text/plain');
@@ -2878,6 +2878,7 @@ SA.timeline = (() => {
           const file = transfer.files[0];
           const isAudio = file.type.startsWith('audio/') || /\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(file.name);
           const isVideo = file.type.startsWith('video/') || /\.(mp4|webm|mov)$/i.test(file.name);
+          const isImage = file.type.startsWith('image/') || /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(file.name);
           if (isAudio) {
             event.preventDefault();
             const url = URL.createObjectURL(file);
@@ -2921,6 +2922,27 @@ SA.timeline = (() => {
               if (SA.studio.setMediaTab) SA.studio.setMediaTab('video');
               if (SA.studio.toast) SA.studio.toast('studio.media.videoImported', { name: file.name });
             }
+            draw();
+            return;
+          }
+          if (isImage) {
+            event.preventDefault();
+            const point = localPoint(event);
+            const dataUrl = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(new Error('read-failed'));
+              reader.readAsDataURL(file);
+            }).catch(() => null);
+            if (dataUrl && SA.store && SA.store.commands) {
+              const layer = dropLayerAt(point);
+              layer.type = 'image';
+              layer.src = dataUrl;
+              layer.fit = 'cover';
+              layer.color = '#ffffff';
+              SA.store.commands.addLayer(layer);
+            }
+            if (SA.studio && SA.studio.toast) SA.studio.toast('studio.media.layerAdded', { name: file.name });
             draw();
             return;
           }

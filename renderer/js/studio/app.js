@@ -1838,6 +1838,28 @@
         }
       });
     }
+    // Preview drop: an image / video file becomes a background layer,
+    // or a foreground layer when dropped with Alt / Shift held.
+    if (el.previewStage) {
+      el.previewStage.addEventListener('dragover', (event) => {
+        const types = event.dataTransfer ? event.dataTransfer.types || [] : [];
+        if (types.indexOf('Files') >= 0) {
+          event.preventDefault();
+          if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+        }
+      });
+      el.previewStage.addEventListener('drop', async (event) => {
+        const transfer = event.dataTransfer;
+        if (!transfer || !transfer.files || !transfer.files.length) return;
+        const slot = event.altKey || event.shiftKey ? 'foreground' : 'background';
+        event.preventDefault();
+        try {
+          await SA.backgroundDialog.setSlotFromFile(slot, transfer.files[0]);
+        } catch {
+          toast('studio.toast.error');
+        }
+      });
+    }
     setupSplitter(el.splitMedia, 'media');
     setupSplitter(el.splitInspector, 'inspector');
     setupSplitter(el.splitTimeline, 'timeline');
@@ -1965,6 +1987,7 @@
       themes: () => SA.themes.dialog(),
       editTheme: () => SA.themeEditor.open(null),
       layers: () => SA.layersDialog.open(),
+      background: () => SA.backgroundDialog.open(),
       audio: () => SA.audioDialog.open(),
       fonts: () => SA.fontsDialog.open(),
       about: aboutDialog,
