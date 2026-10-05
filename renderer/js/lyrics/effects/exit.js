@@ -346,5 +346,164 @@
     },
   });
 
+  // --- PowerPoint-compatible exits (Phase 1) ----------------------------------
+  fx.register({
+    group: 'exit', type: 'vanish', tags: ['basic'],
+    params: [],
+    cpu(state, p) { if (clamp01(p) >= 0.5) state.opacity = 0; },
+  });
+
+  fx.register({
+    group: 'exit', type: 'floatOut', tags: ['basic'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['up', 'down', 'left', 'right'], default: 'up', random: 'any' },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      const dist = (params.distance == null ? 0.25 : params.distance) * info.shortSide;
+      const off = { up: [0, -dist], down: [0, dist], left: [-dist, 0], right: [dist, 0] }[params.dir || 'up'] || [0, 0];
+      state.x += off[0] * k;
+      state.y += off[1] * k;
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'splitOut', tags: ['lively'],
+    params: [{ key: 'axis', kind: 'select', options: ['horizontal', 'vertical'], default: 'horizontal' }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      const dx = info.letterX - info.blockCenter.x;
+      const dy = info.letterY - info.blockCenter.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const dist = info.shortSide * 0.25 * k;
+      if (params.axis === 'vertical') state.y += (dy / len) * dist;
+      else state.x += (dx / len) * dist;
+      state.opacity *= 1 - k * 0.8;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'stripeShrink', tags: ['modest'],
+    params: [{ key: 'axis', kind: 'select', options: ['x', 'y'], default: 'x' }],
+    cpu(state, p, params) {
+      const k = clamp01(p);
+      if (params.axis === 'y') state.scaleY *= Math.max(0.001, 1 - k);
+      else state.scaleX *= Math.max(0.001, 1 - k);
+      state.opacity *= 1 - k * 0.7;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'rotateOut', tags: ['modest'],
+    params: [{ key: 'angle', kind: 'number', min: -360, max: 360, step: 5, default: 90, random: [-180, 180] }],
+    cpu(state, p, params) {
+      const k = clamp01(p);
+      state.rot += (params.angle == null ? 90 : params.angle) * k;
+      state.opacity *= 1 - k * 0.6;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'floatUp', tags: ['modest'],
+    params: [{ key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      state.y -= (params.distance == null ? 0.2 : params.distance) * info.shortSide * k;
+      state.x += Math.sin(k * Math.PI * 2 + info.i * 0.5) * info.shortSide * 0.02 * k;
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'floatDown', tags: ['modest'],
+    params: [{ key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      state.y += (params.distance == null ? 0.2 : params.distance) * info.shortSide * k;
+      state.x += Math.sin(k * Math.PI * 2 + info.i * 0.5) * info.shortSide * 0.02 * k;
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'shrinkDir', tags: ['modest'],
+    params: [{ key: 'dir', kind: 'select', options: ['up', 'down', 'left', 'right', 'center'], default: 'center' }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      const s = Math.max(0.001, 1 - k);
+      state.scaleX *= s; state.scaleY *= s;
+      const dist = info.shortSide * 0.15 * k;
+      if (params.dir === 'up') state.y -= dist;
+      else if (params.dir === 'down') state.y += dist;
+      else if (params.dir === 'left') state.x -= dist;
+      else if (params.dir === 'right') state.x += dist;
+      state.opacity *= 1 - k * 0.5;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'spiralOut', tags: ['showy'],
+    params: [
+      { key: 'turns', kind: 'number', min: 0.25, max: 4, step: 0.25, default: 1.25 },
+      { key: 'radius', kind: 'number', min: 0, max: 1.5, step: 0.01, default: 0.5, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      const turns = params.turns == null ? 1.25 : params.turns;
+      const radius = (params.radius == null ? 0.5 : params.radius) * info.shortSide;
+      const ang = k * turns * Math.PI * 2 + (info.i * 0.35);
+      state.x += Math.cos(ang) * radius * k;
+      state.y += Math.sin(ang) * radius * k;
+      state.rot += k * 180;
+      state.scaleX *= Math.max(0.001, 1 - 0.5 * k);
+      state.scaleY *= Math.max(0.001, 1 - 0.5 * k);
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'radialOut', tags: ['showy'],
+    params: [{ key: 'spread', kind: 'number', min: 0, max: 2, step: 0.05, default: 1 }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      const spread = params.spread == null ? 1 : params.spread;
+      const dx = info.letterX - info.blockCenter.x;
+      const dy = info.letterY - info.blockCenter.y;
+      const len = Math.hypot(dx, dy) || 1;
+      const dist = info.shortSide * 0.4 * spread * k;
+      state.x += (dx / len) * dist;
+      state.y += (dy / len) * dist;
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'warpOut', tags: ['modest'],
+    params: [{ key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4, unit: 'frame' }],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      state.y += (params.distance == null ? 0.4 : params.distance) * info.shortSide * k * k;
+      state.scaleY *= Math.max(0.001, 1 - k * 0.6);
+      state.blur = Math.max(state.blur || 0, 10 * k);
+      state.opacity *= 1 - k;
+    },
+  });
+
+  fx.register({
+    group: 'exit', type: 'evaporate', tags: ['showy', 'dissolve'],
+    params: [
+      { key: 'rise', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, unit: 'frame' },
+      { key: 'grain', kind: 'number', min: 1, max: 6, step: 0.1, default: 2.4 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = clamp01(p);
+      state.y -= (params.rise == null ? 0.25 : params.rise) * info.shortSide * k;
+      state.dissolve = { scale: params.grain == null ? 2.4 : params.grain, progress: 1 - k, edge: 0.2 };
+      state.opacity *= 1 - k * 0.5;
+    },
+  });
+
   return fx;
 });

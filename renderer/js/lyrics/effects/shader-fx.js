@@ -483,6 +483,132 @@
         fadeCore(state, env, params);
       },
     },
+    {
+      name: 'mosaicBreak',
+      tags: ['shader', 'dissolve'],
+      params: [
+        { key: 'cell', kind: 'number', min: 2, max: 32, step: 1, default: 8, random: [4, 16] },
+        { key: 'scatter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4 },
+      ],
+      enter: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.dissolve = { scale: params.cell == null ? 8 : params.cell, progress: k, edge: 0.25 };
+        const s = (params.scatter == null ? 0.4 : params.scatter) * shortSideOf(info) * 0.03 * (1 - k);
+        state.x += (rng() * 2 - 1) * s; state.y += (rng() * 2 - 1) * s;
+      },
+      hold: (state, h, env, params, rng, info) => {
+        state.dissolve = { scale: params.cell == null ? 8 : params.cell, progress: clamp01(env), edge: 0.25 };
+        void h; void rng; void info;
+      },
+      exit: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.dissolve = { scale: params.cell == null ? 8 : params.cell, progress: 1 - k, edge: 0.25 };
+        const s = (params.scatter == null ? 0.4 : params.scatter) * shortSideOf(info) * 0.03 * k;
+        state.x += (rng() * 2 - 1) * s; state.y += (rng() * 2 - 1) * s;
+      },
+    },
+    {
+      name: 'fogBreak',
+      tags: ['shader', 'dissolve'],
+      params: [
+        { key: 'soft', kind: 'number', min: 0, max: 40, step: 0.5, default: 12 },
+        { key: 'rise', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0.1 },
+      ],
+      enter: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.blur = Math.max(state.blur || 0, (params.soft == null ? 12 : params.soft) * (1 - k));
+        state.opacity *= k * k;
+        state.y -= (params.rise == null ? 0.1 : params.rise) * shortSideOf(info) * (1 - k) * 0.2;
+        void rng;
+      },
+      hold: (state, h, env, params, rng, info) => {
+        state.blur = Math.max(state.blur || 0, (params.soft == null ? 12 : params.soft) * 0.25 * clamp01(env));
+        state.opacity *= 1 - 0.3 * clamp01(env);
+        void h; void rng; void info;
+      },
+      exit: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.blur = Math.max(state.blur || 0, (params.soft == null ? 12 : params.soft) * k);
+        state.opacity *= 1 - k;
+        state.y -= (params.rise == null ? 0.1 : params.rise) * shortSideOf(info) * k * 0.2;
+        void rng;
+      },
+    },
+    {
+      name: 'windBreak',
+      tags: ['shader', 'dissolve', 'wind'],
+      params: [
+        { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.5, random: [-0.8, 0.8] },
+        { key: 'grain', kind: 'number', min: 1, max: 12, step: 0.1, default: 3 },
+      ],
+      enter: (state, p, params, rng, info) => {
+        const k = 1 - clamp01(p);
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.3 * k;
+        state.dissolve = { scale: params.grain == null ? 3 : params.grain, progress: clamp01(p), edge: 0.2 };
+        state.opacity *= clamp01(p * 1.5);
+        void rng;
+      },
+      hold: (state, h, env, params, rng, info) => {
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.05 * clamp01(env) * Math.sin(h * 2 + info.i);
+        void rng;
+      },
+      exit: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.3 * k;
+        state.dissolve = { scale: params.grain == null ? 3 : params.grain, progress: 1 - k, edge: 0.2 };
+        void rng;
+      },
+    },
+    {
+      name: 'windNoBreak',
+      tags: ['shader', 'wind'],
+      params: [
+        { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.5, random: [-0.8, 0.8] },
+        { key: 'rise', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0.08 },
+      ],
+      enter: (state, p, params, rng, info) => {
+        const k = 1 - clamp01(p);
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.35 * k * k;
+        state.y -= (params.rise == null ? 0.08 : params.rise) * shortSideOf(info) * k;
+        state.opacity *= clamp01(p * 1.4);
+        void rng;
+      },
+      hold: (state, h, env, params, rng, info) => {
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.03 * clamp01(env);
+        void h; void rng; void info;
+      },
+      exit: (state, p, params, rng, info) => {
+        const k = clamp01(p);
+        state.x += (params.wind == null ? 0.5 : params.wind) * shortSideOf(info) * 0.35 * k * k;
+        state.y -= (params.rise == null ? 0.08 : params.rise) * shortSideOf(info) * k;
+        state.opacity *= 1 - k;
+        void rng;
+      },
+    },
+    {
+      name: 'cloth',
+      tags: ['shader', 'deform', 'wind'],
+      params: [
+        { key: 'amount', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.12 },
+        { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 0.9 },
+      ],
+      enter: (state, p, params) => {
+        const k = 1 - clamp01(p);
+        state.deform.push({ type: 'wobbleWarp', amount: (params.amount == null ? 0.12 : params.amount) * k, scale: 2, time: k * 2, seed: 0 });
+        state.opacity *= clamp01(p * 1.3);
+        void params.speed;
+      },
+      hold: (state, h, env, params, rng, info) => {
+        state.deform.push({ type: 'wobbleWarp', amount: (params.amount == null ? 0.12 : params.amount) * clamp01(env), scale: 2, time: h * (params.speed || 0.9), seed: info.i });
+        void rng;
+      },
+      exit: (state, p, params) => {
+        const k = clamp01(p);
+        state.deform.push({ type: 'wobbleWarp', amount: (params.amount == null ? 0.12 : params.amount) * k, scale: 2, time: k * 2, seed: 0 });
+        state.opacity *= 1 - k * 0.7;
+        void params.speed;
+      },
+    },
   ];
 
   for (const family of FAMILIES) {

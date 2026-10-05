@@ -400,5 +400,289 @@
     },
   });
 
+  // --- PowerPoint-compatible basics + AE-style entrances (Phase 1) ---------------
+  fx.register({
+    group: 'enter', type: 'appear', tags: ['basic'],
+    params: [],
+    cpu(state, p) { if (clamp01(p) < 0.999) state.visibleFrac = 0; },
+  });
+
+  fx.register({
+    group: 'enter', type: 'wipe', tags: ['basic', 'mask'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['left', 'right', 'up', 'down'], default: 'left', random: 'any' },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+      { key: 'fade', kind: 'bool', default: false },
+    ],
+    cpu(state, p, params) {
+      const map = { left: 0, right: 1, up: 2, down: 3 };
+      state.wipeMode = map[params.dir] == null ? 0 : map[params.dir];
+      state.wipeSoft = params.soft == null ? 0.05 : params.soft;
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(p));
+      if (params.fade) state.opacity *= 0.3 + 0.7 * clamp01(p);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'blind', tags: ['basic', 'mask'],
+    params: [
+      { key: 'count', kind: 'int', min: 2, max: 16, step: 1, default: 6, random: [3, 10] },
+      { key: 'dir', kind: 'select', options: ['horizontal', 'vertical'], default: 'horizontal' },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.08 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const count = Math.max(2, params.count == null ? 6 : params.count);
+      state.wipeMode = params.dir === 'vertical' ? 2 : 0;
+      state.wipeSoft = params.soft == null ? 0.08 : params.soft;
+      const lane = (info ? info.i : 0) % count;
+      const local = clamp01(clamp01(p) * count - lane * 0.35);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(local));
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'box', tags: ['basic', 'mask'],
+    params: [{ key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.06 }],
+    cpu(state, p, params) {
+      state.wipeMode = 4;
+      state.wipeSoft = params.soft == null ? 0.06 : params.soft;
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(p));
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'checkerboard', tags: ['basic', 'mask'],
+    params: [
+      { key: 'cells', kind: 'int', min: 2, max: 8, step: 1, default: 4 },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const cells = Math.max(2, params.cells == null ? 4 : params.cells);
+      const i = info ? info.i : 0;
+      const parity = (i % 2) + ((Math.floor(i / cells) % 2) * 0.5);
+      state.wipeMode = (i % 2 === 0) ? 0 : 2;
+      state.wipeSoft = params.soft == null ? 0.05 : params.soft;
+      const local = clamp01(clamp01(p) * 2 - parity * 0.5);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(local));
+      const k = 1 - clamp01(local);
+      state.scaleX *= 1 - 0.12 * k;
+      state.scaleY *= 1 - 0.12 * k;
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'stretch', tags: ['basic'],
+    params: [
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'both'], default: 'x' },
+      { key: 'amount', kind: 'number', min: 0, max: 3, step: 0.05, default: 1.5, random: [0.8, 2.2] },
+    ],
+    cpu(state, p, params) {
+      const k = 1 - clamp01(p);
+      const amount = params.amount == null ? 1.5 : params.amount;
+      const f = 1 + amount * k;
+      if (params.axis === 'y') state.scaleY *= f;
+      else if (params.axis === 'both') { state.scaleX *= f; state.scaleY *= f; }
+      else state.scaleX *= f;
+      state.opacity *= clamp01(p * 1.2);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'split', tags: ['lively'],
+    params: [
+      { key: 'axis', kind: 'select', options: ['horizontal', 'vertical'], default: 'horizontal' },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.25 : params.distance) * info.shortSide;
+      const dx = info.letterX - info.blockCenter.x;
+      const dy = info.letterY - info.blockCenter.y;
+      const len = Math.hypot(dx, dy) || 1;
+      if (params.axis === 'vertical') state.y += (dy / len) * dist * k;
+      else state.x += (dx / len) * dist * k;
+      state.opacity *= clamp01(p * 1.5);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'peekIn', tags: ['lively'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['up', 'down', 'left', 'right'], default: 'down', random: 'any' },
+      { key: 'distance', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.12, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.12 : params.distance) * info.shortSide;
+      const off = { up: [0, -dist], down: [0, dist], left: [-dist, 0], right: [dist, 0] }[params.dir || 'down'] || [0, 0];
+      state.x += off[0] * k;
+      state.y += off[1] * k;
+      state.wipeMode = params.dir === 'up' ? 2 : params.dir === 'down' ? 3 : params.dir === 'left' ? 0 : 1;
+      state.wipeSoft = 0.1;
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(p * 1.1));
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'riseUp', tags: ['lively'],
+    params: [
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' },
+      { key: 'fade', kind: 'bool', default: true },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.2 : params.distance) * info.shortSide;
+      state.y += dist * k * k;
+      state.scaleY *= 1 - 0.1 * k;
+      if (params.fade !== false) state.opacity *= clamp01(p * 1.4);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'spiralIn', tags: ['gorgeous'],
+    params: [
+      { key: 'turns', kind: 'number', min: 0.25, max: 4, step: 0.25, default: 1.25, random: [0.75, 2] },
+      { key: 'radius', kind: 'number', min: 0, max: 1.5, step: 0.01, default: 0.5, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const turns = params.turns == null ? 1.25 : params.turns;
+      const radius = (params.radius == null ? 0.5 : params.radius) * info.shortSide;
+      const ang = k * turns * Math.PI * 2 + (info.i * 0.35);
+      state.x += Math.cos(ang) * radius * k;
+      state.y += Math.sin(ang) * radius * k;
+      state.rot += k * 180 * Math.sign(turns || 1);
+      state.scaleX *= 1 - 0.4 * k;
+      state.scaleY *= 1 - 0.4 * k;
+      state.opacity *= clamp01(p * 2);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'radialIn', tags: ['gorgeous'],
+    params: [{ key: 'spread', kind: 'number', min: 0, max: 2, step: 0.05, default: 1 }],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const spread = params.spread == null ? 1 : params.spread;
+      state.x += (info.blockCenter.x - info.letterX) * k * spread;
+      state.y += (info.blockCenter.y - info.letterY) * k * spread;
+      state.scaleX *= clamp01(p * 1.5) || 0.001;
+      state.scaleY *= clamp01(p * 1.5) || 0.001;
+      state.opacity *= clamp01(p * 1.5);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'floatIn', tags: ['gorgeous'],
+    params: [
+      { key: 'amp', kind: 'number', min: 0, max: 0.3, step: 0.005, default: 0.05 },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.2 : params.distance) * info.shortSide;
+      const amp = (params.amp == null ? 0.05 : params.amp) * info.shortSide;
+      state.y += dist * k;
+      state.x += Math.sin(clamp01(p) * Math.PI * 2 + info.i * 0.5) * amp * k;
+      state.opacity *= clamp01(p * 1.3);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'boomerang', tags: ['gorgeous'],
+    params: [
+      { key: 'distance', kind: 'number', min: 0, max: 1.5, step: 0.01, default: 0.6, unit: 'frame' },
+      { key: 'arc', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.3, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.6 : params.distance) * info.shortSide;
+      const arc = (params.arc == null ? 0.3 : params.arc) * info.shortSide;
+      state.x += dist * k * k;
+      state.y -= Math.sin(clamp01(p) * Math.PI) * arc;
+      state.rot += k * 120;
+      state.opacity *= clamp01(p * 1.6);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'slideBlur', tags: ['lively'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['up', 'down', 'left', 'right'], default: 'right', random: 'any' },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.35, unit: 'frame' },
+      { key: 'blur', kind: 'number', min: 0, max: 40, step: 0.5, default: 10 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const k = 1 - clamp01(p);
+      const dist = (params.distance == null ? 0.35 : params.distance) * info.shortSide;
+      const off = { up: [0, -dist], down: [0, dist], left: [-dist, 0], right: [dist, 0] }[params.dir || 'right'] || [0, 0];
+      state.x += off[0] * k;
+      state.y += off[1] * k;
+      state.blur = Math.max(state.blur || 0, (params.blur == null ? 10 : params.blur) * k);
+      state.opacity *= clamp01(p * 1.4);
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'lightReveal', tags: ['lively'],
+    params: [{ key: 'glow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.8 }],
+    cpu(state, p, params) {
+      const k = clamp01(p);
+      state.opacity *= k;
+      state.flash = Math.max(state.flash || 0, (params.glow == null ? 0.8 : params.glow) * Math.sin(k * Math.PI));
+      state.blur = Math.max(state.blur || 0, 8 * (1 - k));
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'jaggyIn', tags: ['lively'],
+    params: [
+      { key: 'levels', kind: 'int', min: 2, max: 8, step: 1, default: 4 },
+      { key: 'jitter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const levels = Math.max(2, Math.round(params.levels == null ? 4 : params.levels));
+      const step = Math.floor(clamp01(p) * levels) / levels;
+      state.opacity *= clamp01(step + 0.2);
+      const wob = (params.jitter == null ? 0.3 : params.jitter) * info.shortSide * 0.01 * (1 - clamp01(p));
+      state.x += (rng() * 2 - 1) * wob;
+      const s = 0.7 + 0.3 * clamp01(p);
+      state.scaleX *= s; state.scaleY *= s;
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'maskReveal', tags: ['basic', 'mask'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['left', 'right', 'up', 'down'], default: 'right', random: 'any' },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.12 },
+      { key: 'slope', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const map = { left: 0, right: 1, up: 2, down: 3 };
+      state.wipeMode = map[params.dir] == null ? 1 : map[params.dir];
+      state.wipeSoft = params.soft == null ? 0.12 : params.soft;
+      const slope = params.slope == null ? 0.3 : params.slope;
+      const local = clamp01(clamp01(p) * (1 + slope) - (info.i / Math.max(1, info.N)) * slope);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(local));
+    },
+  });
+
+  fx.register({
+    group: 'enter', type: 'depthBlurIn', tags: ['lively'],
+    params: [
+      { key: 'blur', kind: 'number', min: 0, max: 40, step: 0.5, default: 14 },
+      { key: 'from', kind: 'number', min: 0, max: 3, step: 0.05, default: 1.6 },
+    ],
+    cpu(state, p, params) {
+      const k = 1 - clamp01(p);
+      state.blur = Math.max(state.blur || 0, (params.blur == null ? 14 : params.blur) * k);
+      const from = params.from == null ? 1.6 : params.from;
+      const s = 1 + (from - 1) * k;
+      state.scaleX *= s; state.scaleY *= s;
+      state.opacity *= clamp01(p * 1.4);
+    },
+  });
+
   return fx;
 });
