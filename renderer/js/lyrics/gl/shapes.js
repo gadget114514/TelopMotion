@@ -151,20 +151,26 @@ void main() {
     across = clamp(d / max(u_stroke, 1e-4) + 0.5, 0.0, 1.0);
   }
   float alpha = color.a * (1.0 - smoothstep(-0.7, 0.7, d));
-  // trim path / patterns cut the outline by its own arc length
-  float t = pathParam(p);
-  float feather = max(fwidth(t), 0.004);
-  float tt = fract(t + u_trim.z);
-  float trim = smoothstep(u_trim.x - feather, u_trim.x + feather, tt) * (1.0 - smoothstep(u_trim.y - feather, u_trim.y + feather, tt));
-  alpha *= trim;
-  if (u_cap < 0.5 && u_shape == 2 && (t <= 0.0 || t >= 1.0)) alpha = 0.0;
-  if (u_pattern > 0) {
-    float period = max(u_patternParams.x, 0.5) / max(pathPx, 1.0);
-    float ratio = clamp(u_patternParams.y, 0.02, 0.98);
-    alpha *= patternMask(u_pattern, t, across, period, ratio, u_patternParams.z);
-  } else if (u_dash.x > 0.0) {
-    float dashPeriod = max(u_dash.x + u_dash.y, 1e-4);
-    alpha *= patternMask(1, tt, across, 1.0, clamp(u_dash.x / dashPeriod, 0.02, 0.98), -u_dash.z / dashPeriod);
+  // closed shapes jump 1 -> 0 on the negative x axis; skipping the trim math
+  // at the identity keeps that seam from dimming filled rects / circles
+  bool trimmed = u_trim.x > 0.0 || u_trim.y < 1.0;
+  bool needsPath = trimmed || u_pattern > 0 || u_dash.x > 0.0 || (u_cap < 0.5 && u_shape == 2);
+  if (needsPath) {
+    float t = pathParam(p);
+    // the angle seam: take the derivative of a copy shifted by half a turn
+    float feather = max(min(fwidth(t), fwidth(fract(t + 0.5))), 0.004);
+    float tt = fract(t + u_trim.z);
+    if (trimmed) alpha *= smoothstep(u_trim.x - feather, u_trim.x + feather, tt)
+                       * (1.0 - smoothstep(u_trim.y - feather, u_trim.y + feather, tt));
+    if (u_cap < 0.5 && u_shape == 2 && (t <= 0.0 || t >= 1.0)) alpha = 0.0;
+    if (u_pattern > 0) {
+      float period = max(u_patternParams.x, 0.5) / max(pathPx, 1.0);
+      float ratio = clamp(u_patternParams.y, 0.02, 0.98);
+      alpha *= patternMask(u_pattern, t, across, period, ratio, u_patternParams.z);
+    } else if (u_dash.x > 0.0) {
+      float dashPeriod = max(u_dash.x + u_dash.y, 1e-4);
+      alpha *= patternMask(1, tt, across, 1.0, clamp(u_dash.x / dashPeriod, 0.02, 0.98), -u_dash.z / dashPeriod);
+    }
   }
   if (alpha <= 0.001) discard;
   outColor = vec4(color.rgb * alpha, alpha);

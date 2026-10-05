@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'), require('./easing'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim, root.SA.easing);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim, easingApi) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -63,6 +63,9 @@
   }
   const BEHIND_MOTIFS = new Set([...SCENE_MOTIFS, ...GEO_MOTIFS]);
   const SEEDED_MOTIFS = new Set([...BEHIND_MOTIFS, ...FIELD_MOTIFS]);
+  // motifs drawn around the lyrics: their scale / camera fit anchors on the
+  // text box, never the frame centre
+  const TEXT_ANCHORED = new Set(['frame', 'underlineSweep', 'bracketsPop']);
   // the 2D camera moves any figure clip can carry (`params.camera`)
   const CAMERAS_2D = ['none', 'push', 'pull', 'pan', 'roll', 'shake', 'whip', 'orbit'];
   // the plain default: flat bars / rings / frames that snap in fast. Anything
@@ -83,8 +86,18 @@
   const HOLDS = ['spin', 'pulse', 'drift', 'morph'];
   const OUTS = ['shrink', 'fade', 'burstOut'];
   const SYNCS = ['beat', 'free', 'text'];
-  const STROKES = { thin: 0.7, med: 1.3, bold: 2.2 };
+  const STROKES = { hair: 0.4, thin: 0.7, med: 1.3, bold: 2.2, heavy: 3.2 };
   const TAU = Math.PI * 2;
+  // line decoration vocabulary: style -> [pattern code, ratio]. The codes are
+  // gl/shaders.js pattern words (the same table the proc decorations draw from).
+  const LINE_STYLES = ['solid', 'dashed', 'dotted', 'dashDot', 'double', 'triple', 'zigzag', 'wave', 'hatch', 'sketch', 'doubleDashed', 'chain', 'ornament', 'mixed'];
+  const LINE_PATTERN = {
+    dashed: [1, 0.55], dotted: [2, 0.3], dashDot: [3, 0.5], double: [4, 0.5], triple: [5, 0.5],
+    zigzag: [9, 0.5], wave: [10, 0.5], hatch: [13, 0.4], sketch: [15, 0.5],
+    doubleDashed: [16, 0.55], chain: [18, 0.5], ornament: [19, 0.5],
+  };
+  const WIDE_PATTERNS = new Set(['double', 'triple', 'hatch', 'doubleDashed', 'chain', 'ornament']);
+  const LINE_CAPS = ['round', 'butt', 'square', 'dot', 'arrow'];
 
   // Optional per-clip tuning (the filler params): count 3..24, radius 0.3..1.2,
   // aspect 0.5..2, spinRate 0..2, stroke thin / med / bold. Unset values keep
@@ -132,6 +145,11 @@
     const p = clamp01(t);
     return 1 - Math.pow(2, -10 * p) + 0.08 * Math.sin(Math.PI * p);
   }
+
+  // Named easings per clip (easing.js names, cubic-bezier(...) / spring(...) /
+  // steps(...)). Unset names keep the historic easing.
+  const easeFn = (name, fallback) => (name && easingApi ? easingApi.get(name) : fallback);
+  const easedPhase = (x, fn) => Math.floor(x) + fn(x - Math.floor(x));
 
   function pick(random, list) {
     return list[Math.min(list.length - 1, Math.floor(random() * list.length))];
@@ -364,6 +382,28 @@
     if (opts.stroke != null) params.stroke = STROKES[opts.stroke] != null ? opts.stroke : 'med';
     for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
       if (opts[key] != null && Number.isFinite(Number(opts[key]))) params[key] = Number(opts[key]);
+    }
+    // optional ease tuning: saved only when pinned, so an unset clip draws
+    // exactly as before
+    for (const key of ['inEase', 'outEase', 'holdEase', 'cameraEase']) {
+      if (opts[key] != null && opts[key] !== '' && opts[key] !== 'auto') params[key] = String(opts[key]);
+    }
+    for (const key of ['inDur', 'outDur']) {
+      if (opts[key] != null && opts[key] !== '' && Number.isFinite(Number(opts[key]))) params[key] = Math.max(0.05, Math.min(2, Number(opts[key])));
+    }
+    // automatic ease variety on its own stream, so every draw above stays put
+    const easeRoll = rng.rngFor(seed, 'figure-ease', id);
+    if (params.inEase == null && easeRoll() < rnd * 0.4) params.inEase = pick(easeRoll, ['backOut', 'elasticOut', 'bounceOut', 'expoOut', 'circOut']);
+    // automatic line variety on its own stream, so every draw above stays put
+    if (opts.lineStyle != null && opts.lineStyle !== 'auto' && LINE_STYLES.includes(opts.lineStyle)) params.lineStyle = opts.lineStyle;
+    if (opts.lineCap != null && opts.lineCap !== 'auto' && LINE_CAPS.includes(opts.lineCap)) params.lineCap = opts.lineCap;
+    if (opts.weightVar != null && opts.weightVar !== '' && Number.isFinite(Number(opts.weightVar))) params.weightVar = Math.max(0, Math.min(1, round(Number(opts.weightVar), 2)));
+    const lineRoll = rng.rngFor(seed, 'figure-line', id);
+    if (params.lineStyle == null && lineRoll() < rnd * 0.5) params.lineStyle = pick(lineRoll, LINE_STYLES.slice(1));
+    if (params.lineCap == null && lineRoll() < rnd * 0.4) params.lineCap = pick(lineRoll, LINE_CAPS.slice(1));
+    if (params.weightVar == null) {
+      const jitter = round(rnd * lineRoll(), 2);
+      if (jitter >= 0.05) params.weightVar = jitter;
     }
     // the element count: an explicit `shapes` survives, otherwise one draw from
     // the theme's range on its own stream (every draw above stays as it was)
@@ -736,7 +776,23 @@
       spinRate: pp.spinRate != null ? pp.spinRate : opts.spinRate,
       shapes: pp.shapes != null ? pp.shapes : opts.shapes,
       camera: pp.camera != null ? pp.camera : 'none',
+      inEase: pp.inEase != null ? pp.inEase : opts.inEase,
+      outEase: pp.outEase != null ? pp.outEase : opts.outEase,
+      holdEase: pp.holdEase != null ? pp.holdEase : opts.holdEase,
+      cameraEase: pp.cameraEase != null ? pp.cameraEase : opts.cameraEase,
+      inDur: pp.inDur != null ? pp.inDur : opts.inDur,
+      outDur: pp.outDur != null ? pp.outDur : opts.outDur,
+      lineStyle: pp.lineStyle != null ? pp.lineStyle : opts.lineStyle,
+      lineCap: pp.lineCap != null ? pp.lineCap : opts.lineCap,
+      weightVar: pp.weightVar != null ? pp.weightVar : opts.weightVar,
     });
+    // the ease / line auto-draws run on the new clip's own stream, so copy the
+    // previous figure's values back (or drop what it never had): candidate 0
+    // is the previous figure down to the last pixel
+    for (const key of ['inEase', 'outEase', 'holdEase', 'cameraEase', 'inDur', 'outDur', 'lineStyle', 'lineCap', 'weightVar']) {
+      if (pp[key] != null) clone.params[key] = pp[key];
+      else delete clone.params[key];
+    }
     // energy 0: the previous figure exactly, no small differences either
     if (energy <= 0) return clone;
     pool.push({ spec: clone, gap: figureDistance(before, embedFigure(clone)) });
@@ -804,7 +860,7 @@
 
   // Sub-beat at `time` with its local progress and the move windows. The bold
   // motifs open with a longer in window (0.45 s cap) so the snap reads.
-  function beatAt(beats, time, motif, adsrRaw) {
+  function beatAt(beats, time, motif, adsrRaw, timing) {
     if (!Array.isArray(beats) || !beats.length) return null;
     const bold = BOLD_MOTIFS.includes(motif);
     for (let i = 0; i < beats.length; i += 1) {
@@ -814,14 +870,18 @@
         const local = time - beat.start;
         const window = Math.min(bold ? 0.45 : 0.3, duration * (bold ? 0.35 : 0.25));
         const fast = PLAIN_MOTIFS.includes(motif) ? Math.min(window, 0.18) : window;
-        const inProgress = fast > 0 ? clamp01(local / fast) : 1;
-        const outProgress = fast > 0 ? clamp01((beat.end - time) / fast) : 1;
+        // explicit in / out windows (seconds, 0.05..2) replace the fixed one
+        const winOf = (value) => (value == null || value === '' || !Number.isFinite(Number(value)) ? null : Math.min(Math.max(0.05, Math.min(2, Number(value))), duration * 0.5));
+        const inFast = winOf(timing && timing.inDur) || fast;
+        const outFast = winOf(timing && timing.outDur) || fast;
+        const inProgress = inFast > 0 ? clamp01(local / inFast) : 1;
+        const outProgress = outFast > 0 ? clamp01((beat.end - time) / outFast) : 1;
         const info = { beat, index: i, local, duration, inProgress, outProgress };
         if (adsrRaw && adsrApi) {
           const a = adsrApi.def(adsrRaw, duration);
           if (a) {
-            const inWin = a.attack != null ? a.attack : fast;
-            const outWin = a.release != null ? a.release : fast;
+            const inWin = a.attack != null ? a.attack : inFast;
+            const outWin = a.release != null ? a.release : outFast;
             info.adsr = a;
             info.adsrLevel = adsrApi.level(a, local, 0, inWin, duration - outWin, outWin, null, null);
           }
@@ -1046,6 +1106,7 @@
       opacity: state.opacity,
       color: (index) => colorOf(params, ctx, index),
       variant: state.variant,
+      density: num(params.density, 0.5),
     });
     const tb = textBox(ctx, box);
     // the scene's place: centred and at its own size at randomness 0, shifted and
@@ -1072,6 +1133,7 @@
     const t = Math.max(0, num(ctx && ctx.time, 0) - clipStart);
     const tb = textBox(ctx || {}, box);
     const cap = 0.42 + 0.16 * rand;
+    const density = Math.max(0.15, Math.min(1, num(params.density, 0.5)));
     const field = {
       id: motif,
       p: glFields.genome(motif, seed, rand),
@@ -1080,7 +1142,8 @@
       opacity: clamp01(progress) * cap * (info.beat && info.beat.accent === false ? 0.85 : 1),
       colors: [0, 1, 2, 3, 4].map((index) => colorOf(params, ctx || {}, index)),
       textBox: { x0: tb.x0, y0: tb.y0, x1: tb.x1, y1: tb.y1 },
-      camera: null,
+      // dense air reads the field through a finer lens (0.5 keeps scale 1)
+      camera: { scale: 1 / (0.5 + density), dx: 0, dy: 0, rotate: 0 },
     };
     // A simulated field names the state it reads: one per clip, seed and
     // randomness level, which is what the runner keeps its ping-pong pair under.
@@ -1110,6 +1173,7 @@
       frame: { width: box.width, height: box.height, cx: box.cx, cy: box.cy, short: box.short },
       opacity: state.opacity,
       color: (index) => colorOf(params, ctx, index),
+      density: num(params.density, 0.5),
     });
     if (state.scale !== 1) transformShapes(shapes, { originX: box.cx, originY: box.cy, scale: state.scale, dx: 0, dy: 0, rotate: 0 });
     return shapes;
@@ -1126,16 +1190,155 @@
     });
   }
 
+  // Text-anchored motifs (frame / underline / brackets) are scaled about the
+  // text box, but the beat scale, the accent and the camera can still push
+  // them off screen. Shrink them about the text centre just enough to fit.
+  function fitToFrame(shapes, box, anchor) {
+    if (!Array.isArray(shapes) || !shapes.length) return shapes;
+    let u = null;
+    for (const shape of shapes) {
+      const b = procShapeBox(shape);
+      if (!b) continue;
+      u = u
+        ? { x0: Math.min(u.x0, b.x0), y0: Math.min(u.y0, b.y0), x1: Math.max(u.x1, b.x1), y1: Math.max(u.y1, b.y1) }
+        : { x0: b.x0, y0: b.y0, x1: b.x1, y1: b.y1 };
+    }
+    if (!u) return shapes;
+    const m = box.short * 0.02;
+    let k = 1;
+    if (anchor.x - u.x0 > 0) k = Math.min(k, (anchor.x - m) / (anchor.x - u.x0));
+    if (u.x1 - anchor.x > 0) k = Math.min(k, (box.width - m - anchor.x) / (u.x1 - anchor.x));
+    if (anchor.y - u.y0 > 0) k = Math.min(k, (anchor.y - m) / (anchor.y - u.y0));
+    if (u.y1 - anchor.y > 0) k = Math.min(k, (box.height - m - anchor.y) / (u.y1 - anchor.y));
+    if (!(k < 1)) return shapes;
+    return shapes.map((shape) => scaleShape(shape, k, anchor));
+  }
+
+  // Final line styling over finished pixel coordinates: per-line width jitter,
+  // dash / ornament patterns and capsule end caps. A clip without any of the
+  // three params returns its shapes untouched.
+  function styleStrokes(shapes, params, box) {
+    const style = params.lineStyle;
+    const cap = params.lineCap;
+    const weightVar = num(params.weightVar, 0);
+    if ((style == null || style === 'auto' || style === 'solid') && (cap == null || cap === 'round') && !(weightVar > 0)) return shapes;
+    if (!Array.isArray(shapes) || !shapes.length) return shapes;
+    const salt = num(params.seed, 0) + String(params.motif || '').length;
+    const out = shapes.slice();
+    const widthOf = (shape) => {
+      if (shape.kind === 'capsule') return shape.width || 0;
+      if (shape.kind === 'ring') return shape.thickness || 0;
+      return shape.stroke || 0;
+    };
+    const setWidth = (shape, w) => {
+      if (shape.kind === 'capsule') shape.width = w;
+      else if (shape.kind === 'ring') shape.thickness = w;
+      else shape.stroke = w;
+    };
+    const pathLengthOf = (shape) => {
+      if (shape.kind === 'capsule') return Math.hypot(shape.x1 - shape.x0, shape.y1 - shape.y0);
+      if (shape.kind === 'ring' || shape.kind === 'circle') return TAU * (shape.r || 0);
+      if (shape.kind === 'rect') return 2 * ((shape.w || 0) + (shape.h || 0));
+      if (Array.isArray(shape.points) && shape.points.length) {
+        let total = 0;
+        for (let i = 0; i < shape.points.length; i += 1) {
+          const a = shape.points[i];
+          const b = shape.points[(i + 1) % shape.points.length];
+          total += Math.hypot(b.x - a.x, b.y - a.y);
+        }
+        return total;
+      }
+      return 0;
+    };
+    for (let i = 0; i < shapes.length; i += 1) {
+      const shape = shapes[i];
+      if (!shape) continue;
+      const stroked = shape.kind === 'capsule' || shape.kind === 'ring'
+        || (shape.stroke != null && shape.stroke > 0 && (shape.kind === 'rect' || shape.kind === 'convex' || shape.kind === 'circle'));
+      if (!stroked) continue;
+      // width jitter, hashed per line so a scrub draws the same widths
+      let w = widthOf(shape);
+      if (weightVar > 0 && w > 0) {
+        w = Math.max(0.5, w * (1 + weightVar * 0.7 * (hash01(i, salt) * 2 - 1)));
+        setWidth(shape, w);
+      }
+      // decoration: mixed deals a style per line, short segments stay plain so
+      // scene trails and l-system twigs do not fall apart
+      const name = style === 'mixed' ? LINE_STYLES[1 + (i % 12)] : style;
+      const entry = LINE_PATTERN[name];
+      if (entry) {
+        const L = pathLengthOf(shape);
+        if (!(shape.kind === 'capsule' && L < box.short * 0.04)) {
+          if (WIDE_PATTERNS.has(name)) {
+            w = Math.max(w, box.short * 0.012);
+            setWidth(shape, w);
+          }
+          const base = Math.max(box.short * 0.018, w * 3);
+          const period = L > 0 ? L / Math.max(1, Math.round(L / base)) : base;
+          shape.pattern = entry[0];
+          shape.patternParams = [period, entry[1], 0];
+        }
+      }
+      // end caps (capsules only)
+      if (shape.kind === 'capsule' && cap && cap !== 'round') {
+        const dx = shape.x1 - shape.x0;
+        const dy = shape.y1 - shape.y0;
+        const len = Math.hypot(dx, dy);
+        const lw = w > 0 ? w : 1;
+        if (len <= 1e-6) {
+          shape.cap = 'butt';
+        } else if (cap === 'butt') {
+          shape.cap = 'butt';
+        } else if (cap === 'square') {
+          const ux = dx / len;
+          const uy = dy / len;
+          shape.x0 -= ux * (lw / 2);
+          shape.y0 -= uy * (lw / 2);
+          shape.x1 += ux * (lw / 2);
+          shape.y1 += uy * (lw / 2);
+          shape.cap = 'butt';
+        } else if (cap === 'dot') {
+          shape.cap = 'butt';
+          if (out.length + 2 <= PROC_TOTAL_BUDGET) {
+            out.push(
+              { kind: 'circle', x: shape.x0, y: shape.y0, r: lw * 0.9, color: shape.color, opacity: shape.opacity },
+              { kind: 'circle', x: shape.x1, y: shape.y1, r: lw * 0.9, color: shape.color, opacity: shape.opacity }
+            );
+          }
+        } else if (cap === 'arrow') {
+          shape.cap = 'butt';
+          if (out.length + 1 <= PROC_TOTAL_BUDGET) {
+            const ux = dx / len;
+            const uy = dy / len;
+            const nx = -uy;
+            const ny = ux;
+            out.push({
+              kind: 'convex',
+              points: [
+                { x: shape.x1 + ux * lw * 1.8, y: shape.y1 + uy * lw * 1.8 },
+                { x: shape.x1 + nx * lw * 1.3, y: shape.y1 + ny * lw * 1.3 },
+                { x: shape.x1 - nx * lw * 1.3, y: shape.y1 - ny * lw * 1.3 },
+              ],
+              color: shape.color,
+              opacity: shape.opacity,
+            });
+          }
+        }
+      }
+    }
+    return out;
+  }
+
   // The 2D camera of a clip at time `tClip` of `duration`: a scale / shift / turn
   // about the frame centre that is applied to the finished shapes.
-  function cameraMove(kind, seed, tClip, duration, box) {
+  function cameraMove(kind, seed, tClip, duration, box, ease) {
     const u = clamp01(tClip / Math.max(0.5, duration));
-    const ease = u * u * (3 - 2 * u);
+    const e = ease ? ease(u) : u * u * (3 - 2 * u);
     const dir = rng.rngFor(seed, 'camera-dir')() < 0.5 ? -1 : 1;
-    if (kind === 'push') return { scale: 1 + 0.35 * ease, dx: 0, dy: 0, rotate: 0 };
-    if (kind === 'pull') return { scale: 1.35 - 0.35 * ease, dx: 0, dy: 0, rotate: 0 };
-    if (kind === 'pan') return { scale: 1.12, dx: dir * (0.5 - ease) * 0.16 * box.width, dy: 0, rotate: 0 };
-    if (kind === 'roll') return { scale: 1.1, dx: 0, dy: 0, rotate: dir * (ease - 0.5) * 0.4 };
+    if (kind === 'push') return { scale: 1 + 0.35 * e, dx: 0, dy: 0, rotate: 0 };
+    if (kind === 'pull') return { scale: 1.35 - 0.35 * e, dx: 0, dy: 0, rotate: 0 };
+    if (kind === 'pan') return { scale: 1.12, dx: dir * (0.5 - e) * 0.16 * box.width, dy: 0, rotate: 0 };
+    if (kind === 'roll') return { scale: 1.1, dx: 0, dy: 0, rotate: dir * (e - 0.5) * 0.4 };
     if (kind === 'shake') {
       return {
         scale: 1,
@@ -1147,11 +1350,11 @@
     if (kind === 'whip') {
       const step = Math.floor(tClip / 2.2);
       const into = Math.min(1, (tClip - step * 2.2) / 0.35);
-      const e = into * into * (3 - 2 * into);
+      const eased = ease ? ease(into) : into * into * (3 - 2 * into);
       const side = ((step + 1) % 2 ? 1 : -1) * dir;
-      return { scale: 1.08, dx: side * (1 - e) * 0.12 * box.width, dy: 0, rotate: side * (1 - e) * 0.08 };
+      return { scale: 1.08, dx: side * (1 - eased) * 0.12 * box.width, dy: 0, rotate: side * (1 - eased) * 0.08 };
     }
-    if (kind === 'orbit') return { scale: 1.05 + 0.16 * Math.sin(Math.PI * u), dx: 0, dy: 0, rotate: dir * u * 0.5 };
+    if (kind === 'orbit') return { scale: 1.05 + 0.16 * Math.sin(Math.PI * u), dx: 0, dy: 0, rotate: dir * e * 0.5 };
     return null;
   }
 
@@ -1941,8 +2144,10 @@
   function buildMotif(motif, params, ctx, info, state) {
     const { beat, inProgress, outProgress } = info;
     const bold = BOLD_MOTIFS.includes(motif);
-    const enter = bold ? snap(inProgress) : easeOut(inProgress);
-    const leave = 1 - easeIn(1 - outProgress);
+    const inE = easeFn(params.inEase || (info.adsr && info.adsr.attackEase), bold ? snap : easeOut);
+    const outE = easeFn(params.outEase || (info.adsr && info.adsr.releaseEase), easeIn);
+    const enter = Math.max(-0.25, inE(inProgress));
+    const leave = 1 - outE(1 - outProgress);
     const progress = Math.min(enter, leave);
     const { box, opacity } = state;
     const grow = box.scale0 || 1;
@@ -2018,7 +2223,8 @@
       }
     } else if (motif === 'frame') {
       const tb = textBox(ctx, box);
-      const pad = tb.h * (0.2 + 0.25 * density) * (0.4 + 0.6 * progress);
+      let pad = tb.h * (0.2 + 0.25 * density) * (0.4 + 0.6 * progress);
+      pad = Math.max(0, Math.min(pad, tb.y0 - box.short * 0.02, box.height - box.short * 0.02 - tb.y1));
       const x0 = tb.x0 - pad;
       const y0 = tb.y0 - pad;
       const x1 = tb.x1 + pad;
@@ -2529,17 +2735,32 @@
 
   function motifShapes(motif, params, ctx, info) {
     const { beat, inProgress } = info;
-    const enter = easeOut(inProgress);
-    const leave = 1 - easeIn(1 - textProgress(info));
+    const progressEnter = easeFn(params.inEase || (info.adsr && info.adsr.attackEase), easeOut)(inProgress);
+    const enter = Math.max(-0.25, progressEnter);
+    const leave = 1 - easeFn(params.outEase || (info.adsr && info.adsr.releaseEase), easeIn)(1 - textProgress(info));
     const progress = Math.min(enter, leave);
     const { box, opacity } = base(ctx, progress);
-    if (FIELD_MOTIFS.includes(motif)) return fieldResult(motif, params, ctx, info, progress, box);
+    // a recoloured sub-beat carries a palette of its own, rotated by its tone
+    // like the clip palette (a legacy beat without a tone keeps its historic colours)
+    const tone = Math.round(num(beat.tone, 0));
+    const palette = Array.isArray(beat.colors) && beat.colors.length ? beat.colors
+      : params.colors && params.colors.length ? params.colors : ((ctx && ctx.colors) || []);
+    const ownColors = Array.isArray(beat.colors) && beat.colors.length;
+    const drawParams = (tone || ownColors) && palette.length ? { ...params, colors: palette.map((_, i) => palette[(i + tone) % palette.length]) } : params;
+    if (FIELD_MOTIFS.includes(motif)) return fieldResult(motif, drawParams, ctx, info, progress, box);
     const tuning = tuningOf(params);
     const variant = num(beat.variant, 0);
     const spinHold = beat.move.hold === 'spin';
-    let rotation = spinHold ? info.local * 40 * (variant % 2 ? -1 : 1) * tuning.spinRate : variant * 5 * tuning.spinRate;
+    const holdE = easeFn(params.holdEase, null);
+    const spinDir = variant % 2 ? -1 : 1;
+    let rotation = spinHold ? info.local * 40 * spinDir * tuning.spinRate : variant * 5 * tuning.spinRate;
     let pulse = beat.move.hold === 'pulse' ? 1 + 0.08 * Math.sin(TAU * info.local * 2) : 1;
     let drift = beat.move.hold === 'drift' ? Math.sin(info.local * 1.6) * box.short * 0.03 : 0;
+    if (holdE) {
+      if (spinHold) rotation = easedPhase(info.local * 0.5, holdE) * 80 * spinDir * tuning.spinRate;
+      if (beat.move.hold === 'pulse') pulse = 1 + 0.08 * Math.sin(TAU * easedPhase(info.local * 2, holdE));
+      if (beat.move.hold === 'drift') drift = Math.sin(TAU * easedPhase((info.local * 1.6) / TAU, holdE)) * box.short * 0.03;
+    }
     if (info.adsrLevel != null) {
       if (spinHold) rotation *= info.adsrLevel;
       if (beat.move.hold === 'pulse') pulse = 1 + 0.08 * Math.sin(TAU * info.local * 2) * info.adsrLevel;
@@ -2549,12 +2770,6 @@
     if (info.adsr && info.adsrLevel != null && info.adsrLevel > 0) {
       scale *= 1 + info.adsr.punch * Math.max(0, info.adsrLevel - info.adsr.sustain);
     }
-    // the sub-beat's palette rotation: the same motif cycles its colours across
-    // the beats instead of repeating one assignment (a legacy beat without a
-    // tone keeps its historic colours)
-    const tone = Math.round(num(beat.tone, 0));
-    const palette = params.colors && params.colors.length ? params.colors : ((ctx && ctx.colors) || []);
-    const drawParams = tone && palette.length ? { ...params, colors: palette.map((_, i) => palette[(i + tone) % palette.length]) } : params;
     const state = { box, opacity, scale, rotation, pulse, drift, variant, tuning, spinRate: spinHold ? tuning.spinRate : 1, morphPhase: null };
     const morphHold = beat.move.hold === 'morph';
     let shapes;
@@ -2571,21 +2786,23 @@
     } else {
       shapes = buildMotif(motif, drawParams, ctx, info, state);
     }
-    // radius: the optional motif size, about the frame centre
+    // radius: the optional motif size, about the text box for anchored motifs
+    const textAnchor = TEXT_ANCHORED.has(motif) ? textBox(ctx, box) : null;
+    const anchor = textAnchor ? { x: textAnchor.cx, y: textAnchor.cy } : { x: box.cx, y: box.cy };
     if (tuning.radius !== 1) {
-      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], tuning.radius, { x: box.cx, y: box.cy });
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], tuning.radius, anchor);
     }
-    if (tuning.aspect !== 1) shapes = stretchX(shapes, tuning.aspect, box.cx);
+    if (tuning.aspect !== 1) shapes = stretchX(shapes, tuning.aspect, anchor.x);
     if (tuning.stroke !== 1) shapes = scaleStroke(shapes, tuning.stroke);
     // the sub-beat's own scale (0.6..1.4): the same motif reads bigger or
     // smaller on every beat, so a clip never draws the identical stamp twice
     const beatSize = Math.max(0.3, Math.min(2, num(beat.size, 1)));
     if (beatSize !== 1) {
-      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], beatSize, { x: box.cx, y: box.cy });
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], beatSize, anchor);
     }
     // accent: the emphasised sub-beat reads bigger and fully opaque
     if (beat.accent) {
-      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], 1.25, { x: box.cx, y: box.cy });
+      for (let i = 0; i < shapes.length; i += 1) shapes[i] = scaleShape(shapes[i], 1.25, anchor);
     } else {
       for (const shape of shapes) shape.opacity = (shape.opacity == null ? 1 : shape.opacity) * 0.85;
     }
@@ -2767,7 +2984,7 @@
       // effect without regenerating: override on a shallow copy, never in place
       beats = beats.map((beat) => ({ ...beat, move: { ...(beat.move || {}), ...force } }));
     }
-    const info = beatAt(beats, time, params.motif, ctx && ctx.adsr);
+    const info = beatAt(beats, time, params.motif, ctx && ctx.adsr, { inDur: params.inDur, outDur: params.outDur });
     if (!info) return { shapes: [], texts: [] };
     const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
     const place = placementOf(params, ctx || {});
@@ -2778,16 +2995,26 @@
       const clipSpan = (ctx && ctx.clip) || {};
       const start = num(clipSpan.start != null ? clipSpan.start : clipSpan.from, beats.length ? num(beats[0].start, 0) : 0);
       const end = num(clipSpan.end != null ? clipSpan.end : clipSpan.to, beats.length ? num(beats[beats.length - 1].end, start + 4) : start + 4);
-      const move = cameraMove(params.camera, num(params.seed, 1) + String(params.motif || '').length, Math.max(0, time - start), end - start, { width: frame.width, height: frame.height });
+      const move = cameraMove(params.camera, num(params.seed, 1) + String(params.motif || '').length, Math.max(0, time - start), end - start, { width: frame.width, height: frame.height }, easeFn(params.cameraEase, null));
       if (move) transformShapes(result.shapes, { originX: frame.width / 2, originY: frame.height / 2, scale: move.scale, dx: move.dx, dy: move.dy, rotate: move.rotate });
-      if (move && result.field) result.field.camera = { scale: move.scale, dx: move.dx, dy: move.dy, rotate: move.rotate };
+      if (move && result.field) result.field.camera = { scale: move.scale * (result.field.camera ? result.field.camera.scale : 1), dx: move.dx, dy: move.dy, rotate: move.rotate };
+    }
+    // text-anchored motifs stay around the lyrics: fit them back on screen
+    // after every scale and the camera ran
+    if (TEXT_ANCHORED.has(params.motif)) {
+      const fitBox = frameBox(ctx || {});
+      const tb = textBox(ctx || {}, fitBox);
+      result.shapes = fitToFrame(result.shapes, fitBox, { x: tb.cx, y: tb.cy });
     }
     // a scene passes behind the lyrics: what still touches the text box after the
     // moves, the placement and the camera are applied is dropped
     if (BEHIND_MOTIFS.has(params.motif)) result.shapes = sceneClearShapes(result.shapes, textBox(ctx || {}, frameBox(ctx || {})));
+    // line styling runs last, so the pattern periods are measured in the final
+    // pixel coordinates
+    result.shapes = styleStrokes(result.shapes, params, frameBox(ctx || {}));
     return result;
   }
 
   return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, setStatefulAllowed, isStatefulAllowed, CAMERAS_2D, procKey,
- procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+ procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, LINE_STYLES, LINE_CAPS, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

@@ -44,6 +44,7 @@ body {
     var(--media-w) var(--split) 1fr var(--split) var(--inspector-w) var(--split-console) var(--console-w);
   height: 100vh;
   width: 100vw;
+  position: relative;
 }
 
 /* startup overlay (SA.boot): painted before the scripts, faded out by app.js */
@@ -201,6 +202,10 @@ body {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
+  /* preview overlay (z-index 5) が上に来てメニューのホバー/クリックを奪い、
+     カーソルが crosshair に変わってサブメニューが選べなくなるため、
+     メニューはプレビューより前面に出す */
+  z-index: 70;
 }
 
 .dropdown[hidden] {
@@ -1563,6 +1568,11 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+}
+
+.insp-actions.is-selected {
+  outline: 1px solid #ff8a3d;
+  border-radius: 4px;
 }
 
 .ctrl-points {

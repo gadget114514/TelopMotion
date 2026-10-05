@@ -72,7 +72,10 @@ SA.inspector = (() => {
     const raw = (SA.store.state.selection.paths || [])[0] || '';
     if (!raw) return { kind: 'none', path: '', raw };
     if (raw.startsWith('track:')) return { kind: 'track', trackId: raw.slice('track:'.length), path: raw, raw };
-    if (raw.startsWith('clip:')) return { kind: 'clip', clipId: raw.slice('clip:'.length), path: raw, raw };
+    if (raw.startsWith('clip:')) {
+      const [clipPart, beatPart] = raw.slice('clip:'.length).split('/beat:');
+      return { kind: 'clip', clipId: clipPart, clipBeat: beatPart != null ? Number(beatPart) : null, path: raw, raw };
+    }
     if (raw.startsWith('filler:')) return { kind: 'filler', fillerKey: raw.slice('filler:'.length), path: raw, raw };
     if (raw.startsWith('credit:')) return { kind: 'credit', creditMode: raw.slice('credit:'.length), path: raw, raw };
     const parts = raw.split('/');
@@ -445,7 +448,7 @@ SA.inspector = (() => {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'btn btn-mini is-active';
-      chip.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')}${clip ? ` · ${(clip.spec && clip.spec.type) || ''}` : ''}`;
+      chip.textContent = `${t(CLIP_KIND_LABELS[kind] || 'studio.inspector.clip')}${clip ? ` · ${(clip.spec && clip.spec.type) || ''}` : ''}${sel.clipBeat != null ? ` · #${sel.clipBeat + 1}` : ''}`;
       line.appendChild(chip);
       head.appendChild(line);
       container.appendChild(head);
@@ -546,7 +549,7 @@ SA.inspector = (() => {
     summaryActions(body, [
       ['🎲', 'studio.inspector.rerollCue', () => SA.store.commands.rerollCue(sel.cueId)],
       ['🔀', 'studio.inspector.varyCue', () => SA.store.commands.varyCue(sel.cueId)],
-      ['✕', 'studio.beat.deleteCue', () => SA.store.commands.deleteCue(sel.cueId)],
+      ['🗑', 'studio.beat.deleteCue', () => SA.store.commands.deleteCue(sel.cueId)],
     ]);
     const hint = document.createElement('div');
     hint.className = 'insp-inherit';
@@ -630,7 +633,7 @@ SA.inspector = (() => {
         const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
         if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
       }],
-      ['✕', 'studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id)],
+      ['🗑', 'studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id)],
     ]);
     const head = document.createElement('div');
     head.className = 'insp-beat-actions';
@@ -1853,42 +1856,18 @@ SA.inspector = (() => {
     });
     body.appendChild(fieldRow(t('studio.inspector.end'), endControl));
 
-    const actions = document.createElement('div');
-    actions.className = 'layer-order';
-    const split = document.createElement('button');
-    split.type = 'button';
-    split.className = 'btn btn-mini';
-    split.textContent = t('studio.timeline.splitClip');
-    split.addEventListener('click', () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead));
-    const reroll = document.createElement('button');
-    reroll.type = 'button';
-    reroll.className = 'btn btn-mini';
-    reroll.textContent = t('studio.inspector.reroll');
-    reroll.addEventListener('click', () => SA.store.commands.rerollClip(clip.id));
-    const vary = document.createElement('button');
-    vary.type = 'button';
-    vary.className = 'btn btn-mini';
-    vary.textContent = t('studio.inspector.varyClip');
-    vary.addEventListener('click', () => SA.store.commands.varyClip(clip.id));
-    const remove = document.createElement('button');
-    remove.type = 'button';
-    remove.className = 'btn btn-mini';
-    remove.textContent = t('studio.inspector.delete');
-    remove.addEventListener('click', () => SA.store.commands.deleteClip(clip.id));
-    const rerollColors = document.createElement('button');
-    rerollColors.type = 'button';
-    rerollColors.className = 'btn btn-mini';
-    rerollColors.textContent = t('studio.generate.rerollColors');
-    rerollColors.addEventListener('click', () => {
-      const kind = SA.project.trackKindOf(SA.store.state.project, clip.trackId);
-      SA.store.commands.rerollColors({ kinds: [kind], clipIds: [clip.id], perClip: true });
-    });
-    actions.appendChild(split);
-    actions.appendChild(reroll);
-    actions.appendChild(vary);
-    actions.appendChild(rerollColors);
-    actions.appendChild(remove);
-    body.appendChild(actions);
+    // split / reroll / vary / recolour / delete as glyph buttons in the
+    // section header, like the cue / beat sections
+    summaryActions(body, [
+      ['✂', 'studio.timeline.splitClip', () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead)],
+      ['🎲', 'studio.inspector.reroll', () => { SA.store.commands.rerollClip(clip.id); reportClipOp({ start: clip.start, end: clip.end }); }],
+      ['🔀', 'studio.inspector.varyClip', () => { SA.store.commands.varyClip(clip.id); reportClipOp({ start: clip.start, end: clip.end }); }],
+      ['🎨', 'studio.generate.rerollColors', () => {
+        const kind = SA.project.trackKindOf(SA.store.state.project, clip.trackId);
+        SA.store.commands.rerollColors({ kinds: [kind], clipIds: [clip.id], perClip: true });
+      }],
+      ['🗑', 'studio.inspector.delete', () => SA.store.commands.deleteClip(clip.id)],
+    ]);
   }
 
   // --- filler clip editor ------------------------------------------------------
@@ -2068,12 +2047,12 @@ SA.inspector = (() => {
       const structuralLayer = layer.type === 'split';
       const textLayer = layer.type === 'textAnim' || layer.type === 'credits';
       if (!structuralLayer && !textLayer) {
-        layerBeatBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, index));
+        layerBeatBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollClipLayer(clip.id, index), 'clipLayer'));
       }
       if (!structuralLayer) {
-        layerBeatBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, index));
+        layerBeatBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyClipLayer(clip.id, index), 'clipLayer'));
       }
-      layerBeatBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, index));
+      layerBeatBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorClipLayer(clip.id, index), 'clipLayer'));
       summary.appendChild(position);
       summary.appendChild(typeSelect);
       summary.appendChild(up);
@@ -2238,13 +2217,16 @@ SA.inspector = (() => {
         beatsTitle.className = 'insp-section-title';
         beatsTitle.textContent = `${t('studio.inspector.beat')} · ${subBeats.length}`;
         body.appendChild(beatsTitle);
+        const selectedBeat = selectionInfo().clipBeat;
         subBeats.forEach((sub, subIndex) => {
           const beatRow = document.createElement('div');
-          beatRow.className = 'insp-actions';
-          const label = document.createElement('span');
-          label.className = 'insp-inherit';
+          beatRow.className = `insp-actions${selectedBeat === subIndex ? ' is-selected' : ''}`;
+          const label = document.createElement('button');
+          label.type = 'button';
+          label.className = 'btn btn-mini insp-beat-label';
           const move = (sub && sub.move) || {};
           label.textContent = `#${subIndex + 1} ${Number(sub.start).toFixed(2)}–${Number(sub.end).toFixed(2)}s ${move.in || ''}/${move.hold || ''}/${move.out || ''}`;
+          label.addEventListener('click', () => SA.store.setSelection([`clip:${clip.id}/beat:${subIndex}`], 'clip'));
           beatRow.appendChild(label);
           const subBtn = (text, key, run) => {
             const node = document.createElement('button');
@@ -2255,10 +2237,11 @@ SA.inspector = (() => {
             node.addEventListener('click', run);
             beatRow.appendChild(node);
           };
-          subBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollFigureBeat(clip.id, subIndex));
-          subBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyFigureBeat(clip.id, subIndex));
-          subBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorFigureBeat(clip.id, subIndex));
+          subBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollFigureBeat(clip.id, subIndex), 'figureBeat'));
+          subBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyFigureBeat(clip.id, subIndex), 'figureBeat'));
+          subBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorFigureBeat(clip.id, subIndex), 'figureBeat'));
           body.appendChild(beatRow);
+          if (selectedBeat === subIndex && typeof beatRow.scrollIntoView === 'function') beatRow.scrollIntoView({ block: 'nearest' });
         });
       }
       appendClipCommon(body, doc, clip);
@@ -2325,7 +2308,7 @@ SA.inspector = (() => {
       if (Array.isArray(comboLayers) && comboLayers.length > 1) {
         const layersTitle = document.createElement('div');
         layersTitle.className = 'insp-section-title';
-        layersTitle.textContent = `${t('studio.inspector.beat')} · ${comboLayers.length}`;
+        layersTitle.textContent = `${t('filler.layers')} · ${comboLayers.length}`;
         body.appendChild(layersTitle);
         comboLayers.forEach((comboLayer, layerIndex) => {
           const layerRow = document.createElement('div');
@@ -2345,16 +2328,75 @@ SA.inspector = (() => {
           };
           const planeLayer = !comboLayer || comboLayer.type === 'split';
           if (!planeLayer) {
-            comboBtn('↻', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollClipLayer(clip.id, layerIndex));
-            comboBtn('≋', 'studio.inspector.varyBeat', () => SA.store.commands.varyClipLayer(clip.id, layerIndex));
+            comboBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollClipLayer(clip.id, layerIndex), 'clipLayer'));
+            comboBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyClipLayer(clip.id, layerIndex), 'clipLayer'));
           }
-          comboBtn('◐', 'studio.inspector.recolorBeat', () => SA.store.commands.recolorClipLayer(clip.id, layerIndex));
+          comboBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorClipLayer(clip.id, layerIndex), 'clipLayer'));
           body.appendChild(layerRow);
         });
       }
     }
 
+    if (kind === 'backdrop') {
+      const spans = SA.project.clipBeatSpans(doc, clip);
+      if (spans.length) {
+        const segTitle = document.createElement('div');
+        segTitle.className = 'insp-section-title';
+        segTitle.textContent = `${t('studio.inspector.beat')} · ${spans.length}`;
+        body.appendChild(segTitle);
+        const selectedBeat = selectionInfo().clipBeat;
+        spans.forEach((span) => {
+          const segRow = document.createElement('div');
+          segRow.className = `insp-actions${selectedBeat === span.index ? ' is-selected' : ''}`;
+          const segLabel = document.createElement('button');
+          segLabel.type = 'button';
+          segLabel.className = 'btn btn-mini insp-beat-label';
+          segLabel.textContent = `#${span.index + 1} ${Number(span.start).toFixed(2)}–${Number(span.end).toFixed(2)}s${span.own ? ` [${t('studio.inspector.segmentOwn')}]` : ''}`;
+          segLabel.addEventListener('click', () => SA.store.setSelection([`clip:${clip.id}/beat:${span.index}`], 'clip'));
+          segRow.appendChild(segLabel);
+          const segBtn = (text, key, run) => {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'btn btn-mini';
+            node.textContent = text;
+            node.title = t(key);
+            node.addEventListener('click', run);
+            segRow.appendChild(node);
+          };
+          segBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollClipSegment(clip.id, span.index), 'clipLayer'));
+          segBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyClipSegment(clip.id, span.index), 'clipLayer'));
+          segBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorClipSegment(clip.id, span.index), 'clipLayer'));
+          if (span.own) {
+            const reset = document.createElement('button');
+            reset.type = 'button';
+            reset.className = 'btn btn-mini';
+            reset.textContent = '✕';
+            reset.title = t('studio.inspector.resetSegment');
+            reset.addEventListener('click', () => SA.store.commands.resetClipSegment(clip.id, span.index));
+            segRow.appendChild(reset);
+          }
+          body.appendChild(segRow);
+          if (selectedBeat === span.index && typeof segRow.scrollIntoView === 'function') segRow.scrollIntoView({ block: 'nearest' });
+        });
+      }
+    }
+
     appendClipCommon(body, doc, clip);
+  }
+
+  // After a clip-beat / layer op: bring the playhead into the span that
+  // changed (a paused preview otherwise keeps showing another beat) and say
+  // what moved.
+  function reportClipOp(report, kind) {
+    if (!report) return;
+    const playhead = SA.store.state.playhead;
+    if (SA.preview && typeof SA.preview.seek === 'function' && Number.isFinite(report.start) && Number.isFinite(report.end)
+      && !(playhead >= report.start && playhead < report.end)) {
+      SA.preview.seek(report.start + Math.min(0.5, (report.end - report.start) / 2));
+    }
+    if (!kind || !SA.studio || !SA.studio.toast) return;
+    const vars = { n: report.index + 1, type: report.type || '', detail: report.detail || '', theme: report.theme || '' };
+    SA.studio.toast(`studio.toast.${kind}${report.op === 'recolor' ? 'Recolored' : report.op === 'vary' ? 'Varied' : 'Rerolled'}`, vars, 4200);
   }
 
   function creditsToggle(labelText, checked, onChange) {

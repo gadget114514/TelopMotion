@@ -148,6 +148,19 @@ test('removeTrack moves its cues to another subtitle track and drops its clips',
   assert.equal(store.state.project.tracks.some((track) => track.id === 'sub2'), false);
 });
 
+test('removeTrack removes the last subtitle track with its cues', () => {
+  const doc = fixture();
+  doc.tracks = doc.tracks.filter((track) => track.kind !== 'subtitle' || track.id === 'sub1');
+  store.load(doc);
+  store.commands.removeTrack('sub1');
+  assert.equal(store.state.project.tracks.some((track) => track.kind === 'subtitle'), false);
+  assert.equal(store.state.project.script.cues.filter((cue) => (cue.trackId || 'sub1') === 'sub1').length, 0);
+  const id = store.commands.addTrack('subtitle');
+  const tracks = store.state.project.tracks;
+  const fgAt = tracks.findIndex((track) => track.kind === 'foreground');
+  if (fgAt >= 0) assert.equal(tracks.findIndex((track) => track.id === id), fgAt + 1);
+});
+
 // --- palettes per scope ------------------------------------------------------
 
 globalThis.SA.color = require('../../renderer/js/color.js');
@@ -556,6 +569,42 @@ test('rerollBeat draws the selected beat style in one undo step', () => {
   assert.deepEqual(snapshot(), before);
 });
 
+test('rerollBeat draws a fresh typeface for the beat', () => {
+  const doc = fixture();
+  store.load(doc);
+  const fonts = new Set();
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    store.commands.rerollBeat('c1', 'c1:page0');
+    const bag = store.state.project.beatStyles['c1:page0'];
+    assert.ok(bag.text && bag.text.fontId, 'the beat carries its own font');
+    fonts.add(bag.text.fontId);
+  }
+  assert.ok(fonts.size > 1, `the font moves between re-rolls (${[...fonts].join(', ')})`);
+});
+
+test('rerollCue draws a fresh typeface for the cue', () => {
+  store.load(fixture());
+  store.commands.rerollCue('c1');
+  const bag = store.state.project.cueStyles.c1;
+  assert.ok(bag.text && bag.text.fontId, 'the cue carries its own font');
+});
+
+test('varyAll re-draws the style bags of every cue in one undo step', () => {
+  const doc = fixture();
+  // vary keeps the types, so the song needs a drawn effect to re-draw
+  doc.style.enter = { type: 'slide', params: {} };
+  store.load(doc);
+  const before = snapshot();
+  store.commands.varyAll();
+  const project = store.state.project;
+  assert.equal(project.beats.c1[0].variation, 1, 'the variation slot steps');
+  assert.ok(Object.keys(project.cueStyles.c1 || {}).length > 0, 'cue c1 was varied');
+  assert.ok(Object.keys(project.cueStyles.c2 || {}).length > 0, 'cue c2 was varied');
+  assert.notDeepEqual(snapshot().beatStyles, before.beatStyles, 'the beat styles moved');
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
 test('rerollClip redraws a figure clip with a fresh motif and moves', () => {
   const doc = fixture();
   doc.tracks.push({ id: 'fig', kind: 'figure', name: '図形' });
@@ -933,4 +982,192 @@ test('moveClipsToTrack only moves clips between tracks of the same kind', () => 
   const clips = store.state.project.clips;
   assert.equal(clips.find((clip) => clip.id === 'f1').trackId, 'fig2');
   assert.equal(clips.find((clip) => clip.id === 'clip1').trackId, 'bg', 'a background clip is not a figure');
+});
+
+// --- clip beats: figure sub-beats and combo layers ---------------------------
+
+function clipBeatFixture() {
+  globalThis.SA.fillerRender = globalThis.SA.fillerRender || require('../../renderer/js/lyrics/filler-render.js');
+  if (!globalThis.SA.colors) {
+    let n = 0;
+    globalThis.SA.colors = {
+      randomPalette(size) {
+        n += 1;
+        const colors = [];
+        for (let i = 0; i < (size || 5); i += 1) colors.push(`#${((n * 2654435761 + i * 40503) >>> 8).toString(16).padStart(6, '0').slice(0, 6)}`);
+        return { id: `rand${n}`, name: `Random ${n}`, colors };
+      },
+    };
+  }
+  const doc = fixture();
+  doc.tracks.push({ id: 'fig', kind: 'figure', name: '図形' }, { id: 'bd', kind: 'backdrop', name: '後景' });
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  doc.clips.push({
+    id: 'fig1', trackId: 'fig', start: 0, end: 4, opacity: 0.9, fadeIn: 0, fadeOut: 0, colors: null,
+    spec: SA.figures.generate({ span: { start: 0, end: 4 }, beats: [{ start: 0, end: 2 }, { start: 2, end: 4 }], axes: { weird: 0.5 }, seed: 1, id: 'fig1' }),
+  });
+  doc.clips.push({
+    id: 'bd1', trackId: 'bd', start: 0, end: 4, opacity: 1, fadeIn: 0, fadeOut: 0, colors: ['#223344', '#556677'],
+    spec: { type: 'combo', params: { list: [{ type: 'pattern', params: { mode: 'dots', count: 10 } }, { type: 'sineWave', params: {} }] } },
+  });
+  store.load(doc);
+  return doc;
+}
+
+test('recolorFigureBeat gives the sub-beat its own colours and reports the span', () => {
+  clipBeatFixture();
+  const report = store.commands.recolorFigureBeat('fig1', 0);
+  const sub = store.state.project.clips.find((clip) => clip.id === 'fig1').spec.params.beats[0];
+  assert.ok(Array.isArray(sub.colors) && sub.colors.length > 0, 'the sub-beat carries colours');
+  assert.equal(sub.colorLock, true);
+  assert.equal(report.op, 'recolor');
+  assert.equal(report.start, sub.start);
+  assert.equal(store.undo(), true);
+  assert.equal(store.state.project.clips.find((clip) => clip.id === 'fig1').spec.params.beats[0].colors, undefined);
+});
+
+test('varyFigureBeat always moves size, variant and tone a visible step', () => {
+  clipBeatFixture();
+  for (let attempt = 0; attempt < 8; attempt += 1) {
+    const before = { ...store.state.project.clips.find((clip) => clip.id === 'fig1').spec.params.beats[1] };
+    const report = store.commands.varyFigureBeat('fig1', 1);
+    const after = store.state.project.clips.find((clip) => clip.id === 'fig1').spec.params.beats[1];
+    assert.ok(Math.abs(after.size - (before.size == null ? 1 : before.size)) >= 0.29, `size ${before.size} -> ${after.size}`);
+    assert.notEqual(after.variant, before.variant || 0);
+    assert.notEqual(after.tone, before.tone || 0);
+    assert.deepEqual(after.move, before.move, 'vary keeps the moves');
+    assert.match(report.detail, /size/);
+  }
+});
+
+test('recolorClipLayer reaches a layer that has no colours of its own', () => {
+  clipBeatFixture();
+  const report = store.commands.recolorClipLayer('bd1', 1);
+  const layer = store.state.project.clips.find((clip) => clip.id === 'bd1').spec.params.list[1];
+  assert.ok(typeof layer.params.color === 'string' && layer.params.color.startsWith('#'), 'the layer got a colour');
+  assert.equal(layer.colorLock, true);
+  assert.equal(report.type, 'sineWave');
+  const other = store.state.project.clips.find((clip) => clip.id === 'bd1').spec.params.list[0];
+  assert.equal(other.colorLock, undefined, 'the other layer is untouched');
+});
+
+test('varyClipLayer keeps the layer type and reports the params it moved', () => {
+  clipBeatFixture();
+  const report = store.commands.varyClipLayer('bd1', 0);
+  const layer = store.state.project.clips.find((clip) => clip.id === 'bd1').spec.params.list[0];
+  assert.equal(layer.type, 'pattern');
+  assert.ok(report.detail.length > 0, 'something moved');
+});
+
+test('the stage palette leaves a colour-locked layer alone', () => {
+  const stage = require('../../renderer/js/lyrics/stage-palette.js');
+  const clip = {
+    colors: ['#112233'],
+    spec: { type: 'combo', params: { list: [{ type: 'pattern', params: { color: '#ff0000' } }, { type: 'sineWave', colorLock: true, params: { color: '#ff0000' } }] } },
+  };
+  const result = stage.recolorClip(clip, ['#ff0000', '#00ff00'], { cue: ['#ff0000', '#00ff00'], to: ['#0000ff', '#ffff00'], text: [], key: 'k' }, 0);
+  assert.notEqual(result.spec.params.list[0].params.color, '#ff0000');
+  assert.equal(result.spec.params.list[1].params.color, '#ff0000');
+});
+
+test('clipBeatSpans cuts a backdrop at the lyric beats and returns figure beats', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  const bd = store.state.project.clips.find((clip) => clip.id === 'bd1');
+  const spans = projectModule.clipBeatSpans(store.state.project, bd);
+  assert.equal(spans.length, 2);
+  assert.equal(spans[0].start, 0);
+  assert.equal(spans[0].end, 2);
+  assert.equal(spans[1].start, 2);
+  assert.equal(spans[1].end, 4);
+  const fig = store.state.project.clips.find((clip) => clip.id === 'fig1');
+  const figSpans = projectModule.clipBeatSpans(store.state.project, fig);
+  assert.equal(figSpans.length, fig.spec.params.beats.length);
+  assert.equal(figSpans[0].start, Number(fig.spec.params.beats[0].start));
+});
+
+test('varyClipSegment stores the spans and gives only one segment its own spec', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  const bodyBefore = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'bd1').spec);
+  const before = snapshot();
+  const report = store.commands.varyClipSegment('bd1', 1);
+  assert.ok(report, 'report returned');
+  const clip = store.state.project.clips.find((entry) => entry.id === 'bd1');
+  assert.equal(clip.segments.length, 2);
+  assert.equal(clip.segments[0].spec, undefined);
+  assert.ok(clip.segments[1].spec, 'the second segment has its own spec');
+  assert.equal(JSON.stringify(clip.spec), bodyBefore, 'the body spec is untouched');
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+  assert.equal(store.state.project.clips.find((entry) => entry.id === 'bd1').segments, undefined);
+});
+
+test('recolorClipSegment locks every layer of the segment spec', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  const report = store.commands.recolorClipSegment('bd1', 0);
+  assert.equal(report.op, 'recolor');
+  const seg = store.state.project.clips.find((clip) => clip.id === 'bd1').segments[0];
+  assert.ok(seg.spec, 'the segment has its own spec');
+  const layers = globalThis.SA.fillerRender.layersOf(seg.spec);
+  assert.ok(layers.length >= 1);
+  for (const layer of layers) {
+    if (layer && layer.type !== 'split') assert.equal(layer.colorLock, true);
+  }
+});
+
+test('move / split / trim shift and clamp the backdrop segments', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  store.commands.varyClipSegment('bd1', 1);
+  store.commands.moveClip('bd1', 1);
+  let clip = store.state.project.clips.find((entry) => entry.id === 'bd1');
+  assert.equal(clip.start, 1);
+  assert.equal(clip.segments[0].start, 1);
+  assert.equal(clip.segments[0].end, 3);
+  assert.equal(clip.segments[1].start, 3);
+  assert.equal(clip.segments[1].end, 5);
+  // split at 3: the first half keeps the plain segment (no spec -> dropped),
+  // the second half keeps the varied one
+  store.commands.splitClip('bd1', 3);
+  const first = store.state.project.clips.find((entry) => entry.id === 'bd1');
+  const second = store.state.project.clips.find((entry) => entry.id !== 'bd1' && entry.trackId === first.trackId && entry.start === 3);
+  assert.ok(second, 'the second half exists');
+  assert.equal(first.segments, undefined, 'the spec-less side drops its segments');
+  assert.ok(second.segments && second.segments.length === 1 && second.segments[0].spec, 'the varied side keeps one segment');
+  // trimming away the varied segment drops the segments: a fresh clip with a
+  // spec on the second span, cut before it, keeps only the plain span
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  store.commands.varyClipSegment('bd1', 1);
+  store.commands.trimClip('bd1', 'end', 1);
+  assert.equal(store.state.project.clips.find((entry) => entry.id === 'bd1').segments, undefined);
+});
+
+test('resetClipSegment drops the last own look and removes the segments', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  store.commands.varyClipSegment('bd1', 0);
+  assert.ok(store.state.project.clips.find((clip) => clip.id === 'bd1').segments[0].spec);
+  store.commands.resetClipSegment('bd1', 0);
+  assert.equal(store.state.project.clips.find((clip) => clip.id === 'bd1').segments, undefined);
 });

@@ -225,6 +225,22 @@ SA.lyricsEngine = (() => {
     return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId) && !isClipDisabled(clip)).sort((a, b) => a.start - b.start);
   }
 
+  // A backdrop clip with per-beat segments: the segment under t lends its own
+  // spec / colours. The derived clip is cached per segment object so the stage
+  // palette cache (a WeakMap keyed on the clip) keeps hitting frame to frame.
+  const segmentClipCache = new WeakMap();
+  function segmentClipAt(clip, t) {
+    const segments = clip && Array.isArray(clip.segments) ? clip.segments : null;
+    if (!segments) return clip;
+    const seg = segments.find((entry) => entry && entry.spec && t >= entry.start && t < entry.end);
+    if (!seg) return clip;
+    const cached = segmentClipCache.get(seg);
+    if (cached && cached.clip === clip) return cached.derived;
+    const derived = { ...clip, spec: seg.spec, colors: Array.isArray(seg.colors) && seg.colors.length ? seg.colors : clip.colors };
+    segmentClipCache.set(seg, { clip, derived });
+    return derived;
+  }
+
   // The back-to-front draw groups of a track list (top of the list = front).
   // A video track splits the list: the tracks under it form a group that draws
   // first, then the video covers them. Inside a group the layer order is the
@@ -2195,7 +2211,7 @@ SA.lyricsEngine = (() => {
           if (backgroundTrack && singleIds.has(backgroundTrack.id)) drawBackgroundLayers();
           else if (!backgroundTrack) drawBackgroundLayers();
         } else if (kind === 'backdrop') {
-          for (const clip of activeClips(project, 'backdrop', singleIds)) drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+          for (const clip of activeClips(project, 'backdrop', singleIds)) drawShapeClip(segmentClipAt(clip, t), t, duration, stage, stageWeird, maskFor(clip));
         } else if (kind === 'filler') {
           renderFillerClips(t, duration, stage, stageWeird, maskFor, singleIds);
         } else if (kind === 'figure') {
@@ -2742,5 +2758,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, segmentClipAt, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
 })();

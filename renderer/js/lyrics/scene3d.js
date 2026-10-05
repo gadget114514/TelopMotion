@@ -61,6 +61,15 @@
     };
   }
 
+  // Density scaling for element counts: density 0.5 keeps the drawn count, so
+  // a clip without a density draws exactly as before. Applied after the int
+  // draw, so the random stream never shifts.
+  function dens(args, n, lo, hi) {
+    const d = args && args.density;
+    if (d == null) return n;
+    return clamp(Math.round(n * (0.5 + d)), lo, Math.round(hi * 1.3));
+  }
+
   function cameraGenome(T) {
     return {
       kind: T.pick('static', CAMERA_KINDS),
@@ -245,7 +254,7 @@
 
   function solarSystem(T, args, cam, st, t) {
     const speed = T.range(1, 0.5, 1.8);
-    const n = T.int(4, 3, 7);
+    const n = dens(args, T.int(4, 3, 7), 3, 7);
     const spacing = T.range(0.17, 0.12, 0.22);
     const sunR = T.range(0.12, 0.08, 0.2);
     const orbitLines = T.chance(true, 0.75);
@@ -419,7 +428,7 @@
     const kind = T.pick('eight', ['eight', 'ring', 'chaos']);
     const n = kind === 'eight' ? 3 : T.int(4, 3, 8);
     const speed = T.range(1, 0.6, 1.6);
-    const trail = T.int(24, 14, 44);
+    const trail = dens(args, T.int(24, 14, 44), 14, 44);
     const tiltX = T.range(0.4, 0, 1.2);
     const tiltY = T.range(0, 0, TAU);
     const tr = nbodyTrajectory(args.seed, kind, n, args.variant % 2);
@@ -554,7 +563,7 @@
   }
 
   function pendulumWave(T, args, cam, st, t) {
-    const n = T.int(12, 8, 20);
+    const n = dens(args, T.int(12, 8, 20), 8, 20);
     const period = T.range(18, 12, 32);
     const amp = T.range(0.55, 0.4, 0.95);
     const ring = T.chance(false, 0.35);
@@ -582,7 +591,7 @@
   }
 
   function newtonCradle(T, args, cam, st, t) {
-    const n = T.int(5, 4, 8);
+    const n = dens(args, T.int(5, 4, 8), 4, 8);
     const period = T.range(2.2, 1.4, 3.4);
     const lift = T.int(1, 1, Math.max(1, Math.floor(n / 2)));
     const amp = T.range(0.7, 0.45, 1);
@@ -605,8 +614,8 @@
   }
 
   function chain(T, args, cam, st, t) {
-    const n = T.int(18, 12, 30);
-    const rows = T.int(3, 1, 8);
+    const n = dens(args, T.int(18, 12, 30), 12, 30);
+    const rows = dens(args, T.int(3, 1, 8), 1, 8);
     const modes = T.int(2, 1, 3);
     const amp = T.range(0.25, 0.15, 0.4);
     const speed = T.range(1, 0.6, 1.8);
@@ -632,13 +641,13 @@
   }
 
   function gravityWell(T, args, cam, st, t) {
-    const lines = T.int(8, 6, 11);
+    const lines = dens(args, T.int(8, 6, 11), 6, 11);
     const seg = 12;
     const bodies = T.int(1, 1, 3);
     const depth = T.range(0.5, 0.3, 0.8);
     const speed = T.range(0.8, 0.4, 1.6);
     const orbitR = T.range(0.4, 0.3, 0.6);
-    const probes = T.int(6, 3, 12);
+    const probes = dens(args, T.int(6, 3, 12), 3, 12);
     const masses = [];
     for (let i = 0; i < bodies; i += 1) masses.push({ m: T.range(1, 0.5, 1.3), a: (i / bodies) * TAU, w: T.range(0.6, 0.35, 0.9) * speed * (i % 2 ? -1 : 1) });
     const where = (m, tt) => (bodies === 1 ? [0, 0] : [Math.cos(m.a + m.w * tt) * orbitR, Math.sin(m.a + m.w * tt) * orbitR]);
@@ -770,7 +779,7 @@
   function attractor(T, args, cam, st, t) {
     const name = T.pick('lorenz', Object.keys(ATTRACTORS));
     const copies = T.int(1, 1, 3);
-    const trail = T.int(80, 50, 120);
+    const trail = dens(args, T.int(80, 50, 120), 50, 120);
     const speed = T.range(1, 0.6, 1.6);
     const spin = T.range(0.15, 0, 0.4);
     const base = attractorTrajectory(name, 0);
@@ -854,7 +863,7 @@
   }
 
   function starfield(T, args, cam, st, t, frame) {
-    const n = T.int(110, 70, 190);
+    const n = dens(args, T.int(110, 70, 190), 70, 190);
     const speed = T.range(0.25, 0.12, 0.6);
     const swirl = T.range(0, 0, 0.5);
     const streak = T.range(0.5, 0.15, 1.6);
@@ -911,5 +920,5 @@
     return shapes.slice(0, SHAPE_CAP);
   }
 
-  return { SCENES, CAMERA_KINDS, SHAPE_CAP, render, cameraGenome, cameraAt, tools, nbodyTrajectory, pendulumTrajectory, attractorTrajectory, sampleAt, polyhedronData, clearCache: () => cache.clear() };
+  return { SCENES, CAMERA_KINDS, SHAPE_CAP, render, cameraGenome, cameraAt, tools, dens, nbodyTrajectory, pendulumTrajectory, attractorTrajectory, sampleAt, polyhedronData, clearCache: () => cache.clear() };
 });

@@ -885,6 +885,44 @@
     project.output = { ...project.output, aspect, ...next };
   }
 
+  // The clip-beat spans of a figure / backdrop clip, in seconds. A figure clip
+  // owns its sub-beats (spec.params.beats); a backdrop clip uses its stored
+  // segments, or else is cut at the lyric beats it overlaps (the same rule as
+  // figures.subBeats: edges at beat starts, spans under 0.12 s dropped).
+  function clipBeatSpans(project, clip) {
+    if (!clip) return [];
+    const kind = trackKindOf(project, clip.trackId);
+    if (kind === 'figure') {
+      const beats = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.beats) ? clip.spec.params.beats : [];
+      return beats.map((beat, index) => ({ index, start: Number(beat.start), end: Number(beat.end), own: !!(beat.colors || beat.colorLock) }));
+    }
+    if (kind !== 'backdrop') return [];
+    if (Array.isArray(clip.segments) && clip.segments.length) {
+      return clip.segments
+        .map((seg, index) => ({ index, start: Math.max(clip.start, seg.start), end: Math.min(clip.end, seg.end), own: !!seg.spec }))
+        .filter((seg) => seg.end - seg.start > 1e-3);
+    }
+    return lyricBeatSpans(project, clip.start, clip.end).map((span, index) => ({ index, ...span, own: false }));
+  }
+
+  function lyricBeatSpans(project, start, end) {
+    const edges = [];
+    for (const cue of (project && project.script && project.script.cues) || []) {
+      if (cue.disabled) continue;
+      for (const beat of (project.beats && project.beats[cue.id]) || []) {
+        if (beat.end > start + 0.05 && beat.start < end - 0.05) edges.push(Math.max(start, beat.start));
+      }
+    }
+    const cuts = [...new Set(edges)].filter((at) => at > start + 0.05 && at < end - 0.05).sort((a, b) => a - b);
+    const bounds = [start, ...cuts, end];
+    const spans = [];
+    for (let i = 0; i < bounds.length - 1; i += 1) {
+      if (bounds[i + 1] - bounds[i] < 0.12) continue;
+      spans.push({ start: bounds[i], end: bounds[i + 1] });
+    }
+    return spans.length ? spans : [{ start, end }];
+  }
+
   return {
     FORMAT,
     VERSION,
@@ -913,5 +951,7 @@
     clipOf,
     clipsForTrack,
     nextClipId,
+    clipBeatSpans,
+    lyricBeatSpans,
   };
 });

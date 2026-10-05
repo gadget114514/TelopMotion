@@ -68,6 +68,12 @@ const LABEL_NAMESPACE = {
   camera: 'camera',
   // the procedural layer motions are namespaced `proc` in i18n
   procMotion: 'proc',
+  lineStyle: 'lineStyle',
+  lineCap: 'lineCap',
+  stroke: 'stroke',
+  density: 'density',
+  densityGeo: 'density',
+  ease: 'ease',
 };
 
 const AXIS_TITLES = {
@@ -77,10 +83,17 @@ const AXIS_TITLES = {
   sync: '同期 (sync)',
   camera: '2D カメラ (camera)',
   procMotion: '手続きモーション (proc motion)',
+  lineStyle: '線スタイル (lineStyle)',
+  lineCap: '線端 (lineCap)',
+  stroke: '線幅 (stroke)',
+  density: '密度 (density)',
+  densityGeo: '密度・幾何 (densityGeo)',
+  ease: 'イージング (ease)',
 };
 
 // the pools a clip can carry, read from the module so a new move is picked up
 // without touching this script
+const DENSITY_STEPS = { low: 0.15, mid: 0.5, high: 1 };
 const AXIS_VALUES = {
   in: figures.INS,
   hold: figures.HOLDS,
@@ -88,7 +101,16 @@ const AXIS_VALUES = {
   sync: figures.SYNCS,
   camera: figures.CAMERAS_2D,
   procMotion: figures.PROC_LISTS.motions,
+  lineStyle: figures.LINE_STYLES.filter((s) => s !== 'mixed').concat('mixed'),
+  lineCap: figures.LINE_CAPS,
+  stroke: Object.keys(figures.STROKES),
+  density: ['low', 'mid', 'high'],
+  densityGeo: ['low', 'mid', 'high'],
+  ease: ['linear', 'cubicOut', 'backOut', 'elasticOut', 'bounceOut', 'expoInOut'],
 };
+
+// the axis sections pin a different reference motif when `burst` hides the axis
+const AXIS_MOTIF = { densityGeo: 'voronoi', lineCap: 'scratches' };
 
 const AXIS_NOTES = {
   in: `参照 Motif \`${REFERENCE_MOTIF}\` を固定し、\`in\`（登場の動き）だけを変えています。`,
@@ -97,6 +119,12 @@ const AXIS_NOTES = {
   sync: '参照 Motif を固定し、4 拍のグリッドを渡したうえで、同期だけを変えています。beat と text は同じ拍で区切るので、差が出るのは自動演出の可読性側です。',
   camera: '参照 Motif を固定し、クリップ全体にかかる 2D カメラだけを変えています。',
   procMotion: '手続き型の genome は seed から生まるので、1 Motif では全モーションを見られません。モーションごとにその動きを描く最初の seed を探して割り当てています。',
+  lineStyle: '線の装飾（ダッシュや模様）だけを変えています。他の軸セクションは `solid` に固定し、Motif セクションは自動抽選のままです。',
+  lineCap: '参照 Motif `scratches` を固定し、線端の形だけを変えています。',
+  stroke: '線幅の段階だけを変えています。`weightVar` は 0.6 で固定し、線幅のゆらぎも同時に見られます。',
+  density: '参照 Motif を固定し、要素の密度だけを変えています（low 0.15 / mid 0.5 / high 1）。',
+  densityGeo: '参照 Motif `voronoi` を固定し、幾何図形の密度だけを変えています（low 0.15 / mid 0.5 / high 1）。',
+  ease: '登場のイージングだけを変えています（`in: pop, hold: pulse, out: shrink`、1 拍グリッド、in 1.2 秒 / out 0.6 秒）。',
 };
 
 function clone(value) {
@@ -239,12 +267,12 @@ function procMotionSeeds() {
 // text syncs really do switch their sub-beat and the free sync has cuts to cut
 // on. The figure clip stores the grid in `params.beats`, so the project's own
 // beats do not have to be re-cut.
-function beatGrid(span) {
-  const count = 4;
-  const step = (span.end - span.start) / count;
+function beatGrid(span, count) {
+  const steps = count || 4;
+  const step = (span.end - span.start) / steps;
   const beats = [];
   const cuts = [];
-  for (let i = 0; i < count; i += 1) {
+  for (let i = 0; i < steps; i += 1) {
     beats.push({ start: round(span.start + i * step), end: round(span.start + (i + 1) * step) });
     if (i > 0) cuts.push(round(span.start + i * step));
   }
@@ -254,7 +282,7 @@ function beatGrid(span) {
 function figureSpec(options) {
   const opts = options || {};
   const span = opts.span;
-  const grid = beatGrid(span);
+  const grid = beatGrid(span, opts.beatCount);
   const generateOptions = {
     span,
     beats: grid.beats,
@@ -266,7 +294,7 @@ function figureSpec(options) {
     seed: opts.seed,
     id: opts.id,
     motif: opts.motif,
-    density: 0.6,
+    density: opts.density != null ? opts.density : 0.6,
     sync: opts.sync || 'free',
   };
   if (opts.procSeed != null) generateOptions.procSeed = opts.procSeed;
@@ -274,6 +302,16 @@ function figureSpec(options) {
   if (opts.hold) generateOptions.hold = opts.hold;
   if (opts.out) generateOptions.out = opts.out;
   if (opts.camera) generateOptions.camera = opts.camera;
+  if (opts.lineStyle) generateOptions.lineStyle = opts.lineStyle;
+  if (opts.lineCap) generateOptions.lineCap = opts.lineCap;
+  if (opts.stroke) generateOptions.stroke = opts.stroke;
+  if (opts.weightVar != null) generateOptions.weightVar = opts.weightVar;
+  if (opts.inEase) generateOptions.inEase = opts.inEase;
+  if (opts.outEase) generateOptions.outEase = opts.outEase;
+  if (opts.holdEase) generateOptions.holdEase = opts.holdEase;
+  if (opts.cameraEase) generateOptions.cameraEase = opts.cameraEase;
+  if (opts.inDur != null) generateOptions.inDur = opts.inDur;
+  if (opts.outDur != null) generateOptions.outDur = opts.outDur;
   const spec = figures.generate(generateOptions);
   // pin the camera explicitly, so a `none` row is visible in the file too
   if (opts.camera) spec.params.camera = opts.camera;
@@ -319,14 +357,26 @@ function plan(options) {
         // where it sits on the timeline
         generate: {
           seed,
-          motif: procedural ? figures.PROC : section.kind === 'motif' ? value : REFERENCE_MOTIF,
+          motif: procedural ? figures.PROC : section.kind === 'motif' ? value : AXIS_MOTIF[section.axis] || REFERENCE_MOTIF,
           procSeed: procedural ? (section.axis === 'procMotion' ? procSeeds.get(value) : PROC_SEED) : undefined,
           id: cueId(index),
-          in: section.axis === 'in' ? value : undefined,
-          hold: section.axis === 'hold' ? value : undefined,
-          out: section.axis === 'out' ? value : undefined,
+          in: section.axis === 'in' ? value : section.axis === 'ease' ? 'pop' : undefined,
+          hold: section.axis === 'hold' ? value : section.axis === 'ease' ? 'pulse' : undefined,
+          out: section.axis === 'out' ? value : section.axis === 'ease' ? 'shrink' : undefined,
           sync: section.axis === 'sync' ? value : undefined,
           camera: section.axis === 'camera' ? value : undefined,
+          // the line axes pin their value and neutralise the rest, so two
+          // neighbouring cues differ only in the axis under review; the motif
+          // walk leaves them unset so the automatic variety shows
+          lineStyle: section.axis === 'lineStyle' ? value : section.kind === 'axis' ? 'solid' : undefined,
+          lineCap: section.axis === 'lineCap' ? value : section.kind === 'axis' ? 'round' : undefined,
+          stroke: section.axis === 'stroke' ? value : section.kind === 'axis' ? 'med' : undefined,
+          weightVar: section.axis === 'stroke' ? 0.6 : section.kind === 'axis' ? 0 : undefined,
+          density: section.axis === 'density' || section.axis === 'densityGeo' ? DENSITY_STEPS[value] : 0.6,
+          inEase: section.axis === 'ease' ? value : undefined,
+          inDur: section.axis === 'ease' ? 1.2 : undefined,
+          outDur: section.axis === 'ease' ? 0.6 : undefined,
+          beatCount: section.axis === 'ease' ? 1 : undefined,
         },
       });
     }
@@ -652,6 +702,8 @@ module.exports = {
   AXIS_SECONDS,
   AXIS_TITLES,
   AXIS_VALUES,
+  AXIS_MOTIF,
+  DENSITY_STEPS,
   FIGURE_COLORS,
   FIGURE_LANG,
   LABEL_COLOR,

@@ -109,6 +109,29 @@
 
   const cache = new WeakMap();
 
+  // roles.recolor that leaves alone what the user recoloured by hand (a combo
+  // layer or a figure sub-beat marked `colorLock`): those keep their colours
+  // while the stage follows the beat palette.
+  function recolorUnlocked(value, from, to) {
+    let locked = false;
+    const scan = (node) => {
+      if (locked || !node || typeof node !== 'object') return;
+      if (node.colorLock === true) locked = true;
+      else Object.values(node).forEach(scan);
+    };
+    scan(value);
+    if (!locked) return roles.recolor(value, from, to);
+    const walk = (node) => {
+      if (Array.isArray(node)) return node.map(walk);
+      if (!node || typeof node !== 'object') return typeof node === 'string' ? roles.recolor(node, from, to) : node;
+      if (node.colorLock === true) return node;
+      const out = {};
+      for (const [key, entry] of Object.entries(node)) out[key] = walk(entry);
+      return out;
+    };
+    return walk(value);
+  }
+
   function sameColors(a, b) {
     if (a === b) return true;
     if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
@@ -131,7 +154,7 @@
     const cached = cache.get(clip);
     if (cached && cached.key === key) return cached.result;
     const colors = Array.isArray(clip.colors) ? roles.recolor(clip.colors, source, to) : clip.colors;
-    const spec = clip.spec ? separateSplits(roles.recolor(clip.spec, source, to), stage.text, roles.ratioFor('backdrop', rawW)) : clip.spec;
+    const spec = clip.spec ? separateSplits(recolorUnlocked(clip.spec, source, to), stage.text, roles.ratioFor('backdrop', rawW)) : clip.spec;
     const result = { spec, colors };
     cache.set(clip, { key, result });
     return result;

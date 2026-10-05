@@ -1,0 +1,2018 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion 後景見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "bd_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. shapes\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 1,
+          "section": "accent",
+          "value": "shapes"
+        }
+      },
+      {
+        "id": "bd_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. pattern\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 2,
+          "section": "accent",
+          "value": "pattern"
+        }
+      },
+      {
+        "id": "bd_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. particles\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 3,
+          "section": "accent",
+          "value": "particles"
+        }
+      },
+      {
+        "id": "bd_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. spectrum\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 4,
+          "section": "accent",
+          "value": "spectrum"
+        }
+      },
+      {
+        "id": "bd_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. waveform\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 5,
+          "section": "accent",
+          "value": "waveform"
+        }
+      },
+      {
+        "id": "bd_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. figures\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 6,
+          "section": "accent",
+          "value": "figures"
+        }
+      },
+      {
+        "id": "bd_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. halves\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 7,
+          "section": "split",
+          "value": "halves"
+        }
+      },
+      {
+        "id": "bd_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. diagonal\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 8,
+          "section": "split",
+          "value": "diagonal"
+        }
+      },
+      {
+        "id": "bd_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. thirds\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 9,
+          "section": "split",
+          "value": "thirds"
+        }
+      },
+      {
+        "id": "bd_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. bands\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 10,
+          "section": "split",
+          "value": "bands"
+        }
+      },
+      {
+        "id": "bd_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. quads\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 11,
+          "section": "split",
+          "value": "quads"
+        }
+      },
+      {
+        "id": "bd_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. grid\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 12,
+          "section": "split",
+          "value": "grid"
+        }
+      },
+      {
+        "id": "bd_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. chevron\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 13,
+          "section": "split",
+          "value": "chevron"
+        }
+      },
+      {
+        "id": "bd_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. radial\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 14,
+          "section": "split",
+          "value": "radial"
+        }
+      },
+      {
+        "id": "bd_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. mondrian\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 15,
+          "section": "split",
+          "value": "mondrian"
+        }
+      },
+      {
+        "id": "bd_016",
+        "start": 60,
+        "end": 64,
+        "text": "16. frame\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 16,
+          "section": "split",
+          "value": "frame"
+        }
+      },
+      {
+        "id": "bd_017",
+        "start": 64,
+        "end": 68,
+        "text": "17. shards\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 17,
+          "section": "split",
+          "value": "shards"
+        }
+      },
+      {
+        "id": "bd_018",
+        "start": 68,
+        "end": 72,
+        "text": "18. accent\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 18,
+          "section": "motion",
+          "value": "accent"
+        }
+      },
+      {
+        "id": "bd_019",
+        "start": 72,
+        "end": 76,
+        "text": "19. swell\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 19,
+          "section": "motion",
+          "value": "swell"
+        }
+      },
+      {
+        "id": "bd_020",
+        "start": 76,
+        "end": 80,
+        "text": "20. sway\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 20,
+          "section": "motion",
+          "value": "sway"
+        }
+      },
+      {
+        "id": "bd_021",
+        "start": 80,
+        "end": 84,
+        "text": "21. drift\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 21,
+          "section": "motion",
+          "value": "drift"
+        }
+      },
+      {
+        "id": "bd_022",
+        "start": 84,
+        "end": 88,
+        "text": "22. still\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 22,
+          "section": "motion",
+          "value": "still"
+        }
+      },
+      {
+        "id": "bd_023",
+        "start": 88,
+        "end": 92,
+        "text": "23. pulse\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 23,
+          "section": "motion",
+          "value": "pulse"
+        }
+      },
+      {
+        "id": "bd_024",
+        "start": 92,
+        "end": 96,
+        "text": "24. travel\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 24,
+          "section": "motion",
+          "value": "travel"
+        }
+      },
+      {
+        "id": "bd_025",
+        "start": 96,
+        "end": 100,
+        "text": "25. zoom\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 25,
+          "section": "motion",
+          "value": "zoom"
+        }
+      },
+      {
+        "id": "bd_026",
+        "start": 100,
+        "end": 104,
+        "text": "26. tilt\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "backdrop-showcase",
+          "index": 26,
+          "section": "motion",
+          "value": "tilt"
+        }
+      }
+    ],
+    "sourceName": "backdrop-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {},
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "bd_001": [
+      {
+        "id": "bd_001:single0",
+        "cueId": "bd_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. shapesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "1. shapesあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_002": [
+      {
+        "id": "bd_002:single0",
+        "cueId": "bd_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. patternあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "2. patternあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_003": [
+      {
+        "id": "bd_003:single0",
+        "cueId": "bd_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. particlesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "3. particlesあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_004": [
+      {
+        "id": "bd_004:single0",
+        "cueId": "bd_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. spectrumあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "4. spectrumあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_005": [
+      {
+        "id": "bd_005:single0",
+        "cueId": "bd_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. waveformあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "5. waveformあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_006": [
+      {
+        "id": "bd_006:single0",
+        "cueId": "bd_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. figuresあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "6. figuresあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_007": [
+      {
+        "id": "bd_007:single0",
+        "cueId": "bd_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. halvesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "7. halvesあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_008": [
+      {
+        "id": "bd_008:single0",
+        "cueId": "bd_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. diagonalあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "8. diagonalあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_009": [
+      {
+        "id": "bd_009:single0",
+        "cueId": "bd_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. thirdsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "9. thirdsあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_010": [
+      {
+        "id": "bd_010:single0",
+        "cueId": "bd_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. bandsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "10. bandsあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_011": [
+      {
+        "id": "bd_011:single0",
+        "cueId": "bd_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. quadsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "11. quadsあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_012": [
+      {
+        "id": "bd_012:single0",
+        "cueId": "bd_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. gridあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "12. gridあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_013": [
+      {
+        "id": "bd_013:single0",
+        "cueId": "bd_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. chevronあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "13. chevronあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_014": [
+      {
+        "id": "bd_014:single0",
+        "cueId": "bd_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. radialあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "14. radialあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_015": [
+      {
+        "id": "bd_015:single0",
+        "cueId": "bd_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. mondrianあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "15. mondrianあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_016": [
+      {
+        "id": "bd_016:single0",
+        "cueId": "bd_016",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 64,
+        "text": "16. frameあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "16. frameあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_017": [
+      {
+        "id": "bd_017:single0",
+        "cueId": "bd_017",
+        "kind": "single",
+        "index": 0,
+        "start": 64,
+        "end": 68,
+        "text": "17. shardsあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "17. shardsあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_018": [
+      {
+        "id": "bd_018:single0",
+        "cueId": "bd_018",
+        "kind": "single",
+        "index": 0,
+        "start": 68,
+        "end": 72,
+        "text": "18. accentあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "18. accentあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_019": [
+      {
+        "id": "bd_019:single0",
+        "cueId": "bd_019",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 76,
+        "text": "19. swellあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "19. swellあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_020": [
+      {
+        "id": "bd_020:single0",
+        "cueId": "bd_020",
+        "kind": "single",
+        "index": 0,
+        "start": 76,
+        "end": 80,
+        "text": "20. swayあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "20. swayあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_021": [
+      {
+        "id": "bd_021:single0",
+        "cueId": "bd_021",
+        "kind": "single",
+        "index": 0,
+        "start": 80,
+        "end": 84,
+        "text": "21. driftあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "21. driftあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_022": [
+      {
+        "id": "bd_022:single0",
+        "cueId": "bd_022",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 88,
+        "text": "22. stillあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "22. stillあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_023": [
+      {
+        "id": "bd_023:single0",
+        "cueId": "bd_023",
+        "kind": "single",
+        "index": 0,
+        "start": 88,
+        "end": 92,
+        "text": "23. pulseあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "23. pulseあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_024": [
+      {
+        "id": "bd_024:single0",
+        "cueId": "bd_024",
+        "kind": "single",
+        "index": 0,
+        "start": 92,
+        "end": 96,
+        "text": "24. travelあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "24. travelあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_025": [
+      {
+        "id": "bd_025:single0",
+        "cueId": "bd_025",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 100,
+        "text": "25. zoomあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "25. zoomあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "bd_026": [
+      {
+        "id": "bd_026:single0",
+        "cueId": "bd_026",
+        "kind": "single",
+        "index": 0,
+        "start": 100,
+        "end": 104,
+        "text": "26. tiltあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "26. tiltあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "アクセント (accent)"
+    },
+    {
+      "t": 24,
+      "label": "分割プレーン (split)"
+    },
+    {
+      "t": 68,
+      "label": "クリップモーション (motion)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_bd_plate",
+      "trackId": "bg",
+      "start": 0,
+      "end": 104,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0d1220"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.2,
+      "fadeOut": 0.2,
+      "colors": null
+    },
+    {
+      "id": "clip_bd_001",
+      "trackId": "mid",
+      "start": 0,
+      "end": 4,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "burst",
+          "count": 12,
+          "speed": 0.8,
+          "opacity": 0.6
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_002",
+      "trackId": "mid",
+      "start": 4,
+      "end": 8,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "stripes",
+          "count": 24,
+          "size": 1,
+          "speed": 0.4,
+          "opacity": 0.6
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_003",
+      "trackId": "mid",
+      "start": 8,
+      "end": 12,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "rise",
+          "count": 24,
+          "size": 2.4
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_004",
+      "trackId": "mid",
+      "start": 12,
+      "end": 16,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "bars",
+          "bars": 48,
+          "falloff": 1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_005",
+      "trackId": "mid",
+      "start": 16,
+      "end": 20,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "line",
+          "thickness": 2.5,
+          "amp": 1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_006",
+      "trackId": "mid",
+      "start": 20,
+      "end": 24,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "orbit",
+          "sync": "free",
+          "density": 0.5,
+          "count": 8,
+          "opacity": 0.35
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_007",
+      "trackId": "mid",
+      "start": 24,
+      "end": 28,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 2,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_008",
+      "trackId": "mid",
+      "start": 28,
+      "end": 32,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "diagonal",
+          "parts": 2,
+          "angle": 12,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_009",
+      "trackId": "mid",
+      "start": 32,
+      "end": 36,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "thirds",
+          "parts": 3,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_010",
+      "trackId": "mid",
+      "start": 36,
+      "end": 40,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "bands",
+          "parts": 3,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_011",
+      "trackId": "mid",
+      "start": 40,
+      "end": 44,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "quads",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_012",
+      "trackId": "mid",
+      "start": 44,
+      "end": 48,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "grid",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_013",
+      "trackId": "mid",
+      "start": 48,
+      "end": 52,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "chevron",
+          "parts": 3,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_014",
+      "trackId": "mid",
+      "start": 52,
+      "end": 56,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "radial",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_015",
+      "trackId": "mid",
+      "start": 56,
+      "end": 60,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "mondrian",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_016",
+      "trackId": "mid",
+      "start": 60,
+      "end": 64,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "frame",
+          "parts": 2,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_017",
+      "trackId": "mid",
+      "start": 64,
+      "end": 68,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "shards",
+          "parts": 4,
+          "angle": 0,
+          "coverage": 0.85,
+          "scheme": "tonal",
+          "motion": "breathe",
+          "speed": 0.4,
+          "amp": 0.05,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_018",
+      "trackId": "mid",
+      "start": 68,
+      "end": 72,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "accent",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "every": 4
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_019",
+      "trackId": "mid",
+      "start": 72,
+      "end": 76,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "swell",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "every": 8
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_020",
+      "trackId": "mid",
+      "start": 76,
+      "end": 80,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "sway",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "every": 8,
+            "sway": 0.03
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_021",
+      "trackId": "mid",
+      "start": 80,
+      "end": 84,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "drift",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_022",
+      "trackId": "mid",
+      "start": 84,
+      "end": 88,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "still",
+            "pulse": 0.06,
+            "drift": 0.006,
+            "transition": "wipe",
+            "duration": 0.35
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_023",
+      "trackId": "mid",
+      "start": 88,
+      "end": 92,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "pulse",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_024",
+      "trackId": "mid",
+      "start": 92,
+      "end": 96,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "travel",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "travel": 0.08,
+            "dir": "right"
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_025",
+      "trackId": "mid",
+      "start": 96,
+      "end": 100,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "zoom",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "zoom": 0.1
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    },
+    {
+      "id": "clip_bd_026",
+      "trackId": "mid",
+      "start": 100,
+      "end": 104,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "halves",
+                "parts": 2,
+                "angle": 0,
+                "coverage": 0.85,
+                "scheme": "tonal",
+                "motion": "breathe",
+                "speed": 0.4,
+                "amp": 0.05,
+                "colors": [
+                  "#23365f",
+                  "#2e4a7d",
+                  "#3a5f9e"
+                ]
+              }
+            },
+            {
+              "type": "shapes",
+              "params": {
+                "set": "burst",
+                "count": 12,
+                "speed": 0.8,
+                "opacity": 0.6
+              }
+            }
+          ],
+          "animate": {
+            "mode": "tilt",
+            "pulse": 0.06,
+            "drift": 0.024,
+            "transition": "wipe",
+            "duration": 0.35,
+            "sync": 0.1,
+            "tilt": 0.02
+          }
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166"
+      ]
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

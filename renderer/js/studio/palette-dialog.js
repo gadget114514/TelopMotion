@@ -285,7 +285,7 @@ SA.paletteDialog = (() => {
     const selection = SA.store.state.selection || {};
     if (selection.kind !== 'clip') return null;
     const path = (selection.paths || [])[0] || '';
-    return path.startsWith('clip:') ? path.slice('clip:'.length) : null;
+    return path.startsWith('clip:') ? path.slice('clip:'.length).split('/')[0] : null;
   }
 
   function roleLabel(index) {

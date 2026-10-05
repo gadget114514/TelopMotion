@@ -1678,11 +1678,91 @@
     },
   };
 
+  // Effects-showcase walk labels. The generated `showcase.json` stores its cue
+  // texts in Japanese, and the Studio re-labels every effect cue from the cue
+  // meta (`{ kind: 'showcase', group, type, family?, target? }`) when it opens
+  // the project, so the walk reads in whatever language is on screen - the
+  // same shape as the figure showcase's re-labelling. `group` covers every
+  // group the walk plays (GROUP_ORDER + repeat); `family` / `target` only
+  // annotate the post walk (text = lyric layer, frame = whole picture).
+  const SHOWCASE_UI = {
+    en: {
+      page: 'Page layouts',
+      group: {
+        animation: 'Animation', layout: 'Arrangement', enter: 'Enter', exit: 'Exit', hold: 'Hold',
+        location: 'Position', fill: 'Fill', edge: 'Edge', post: 'Post', background: 'Background',
+        bgShape: 'Text background', bgFill: 'Text background fill', bgEdge: 'Text background edge',
+        bgMotion: 'Text background motion', repeat: 'Repeat',
+      },
+      family: {
+        glitch: 'Glitch', dissolve: 'Dissolve', blur: 'Blur & trails',
+        warp: 'Warp & mirror', light: 'Light', color: 'Color & texture',
+      },
+      target: { text: 'Text', frame: 'Frame' },
+    },
+    ja: {
+      page: '紙面レイアウト',
+      group: {
+        animation: 'アニメーション', layout: '配置', enter: '登場', exit: '退場', hold: '保持',
+        location: '位置', fill: '塗り', edge: '縁取り', post: '後処理', background: '背景',
+        bgShape: '文字背景', bgFill: '文字背景の塗り', bgEdge: '文字背景の縁取り',
+        bgMotion: '文字背景の動き', repeat: '繰り返し',
+      },
+      family: {
+        glitch: 'グリッチ', dissolve: 'ディゾルブ', blur: 'ブラー・残像',
+        warp: '変形・反転', light: '光', color: '色・質感',
+      },
+      target: { text: '文字', frame: '画面' },
+    },
+    es: {
+      page: 'Diseños de página',
+      group: {
+        animation: 'Animación', layout: 'Disposición', enter: 'Entrada', exit: 'Salida', hold: 'Sostenido',
+        location: 'Posición', fill: 'Relleno', edge: 'Borde', post: 'Post', background: 'Fondo',
+        bgShape: 'Fondo del texto', bgFill: 'Relleno del fondo del texto', bgEdge: 'Borde del fondo del texto',
+        bgMotion: 'Movimiento del fondo del texto', repeat: 'Repetición',
+      },
+      family: {
+        glitch: 'Glitch', dissolve: 'Disolución', blur: 'Desenfoque y estelas',
+        warp: 'Deformación y espejo', light: 'Luz', color: 'Color y textura',
+      },
+      target: { text: 'Texto', frame: 'Fotograma' },
+    },
+    fr: {
+      page: 'Mises en page',
+      group: {
+        animation: 'Animation', layout: 'Disposition', enter: 'Entrée', exit: 'Sortie', hold: 'Maintien',
+        location: 'Position', fill: 'Remplissage', edge: 'Bord', post: 'Post', background: 'Fond',
+        bgShape: 'Fond du texte', bgFill: 'Remplissage du fond du texte', bgEdge: 'Bord du fond du texte',
+        bgMotion: 'Mouvement du fond du texte', repeat: 'Répétition',
+      },
+      family: {
+        glitch: 'Glitch', dissolve: 'Dissolution', blur: 'Flou et traînées',
+        warp: 'Déformation et miroir', light: 'Lumière', color: 'Couleur et texture',
+      },
+      target: { text: 'Texte', frame: 'Image' },
+    },
+    ru: {
+      page: 'Макеты страниц',
+      group: {
+        animation: 'Анимация', layout: 'Компоновка', enter: 'Вход', exit: 'Выход', hold: 'Удержание',
+        location: 'Позиция', fill: 'Заливка', edge: 'Обводка', post: 'Пост', background: 'Фон',
+        bgShape: 'Фон текста', bgFill: 'Заливка фона текста', bgEdge: 'Обводка фона текста',
+        bgMotion: 'Движение фона текста', repeat: 'Повторы',
+      },
+      family: {
+        glitch: 'Глитч', dissolve: 'Диссолюция', blur: 'Блюр и шлейфы',
+        warp: 'Деформация и зеркало', light: 'Свет', color: 'Цвет и текстура',
+      },
+      target: { text: 'Текст', frame: 'Кадр' },
+    },
+  };
+
   return {
-    en: { fx: en, studio: { inspector: SCOPED_UI.en } },
-    ja: { fx: ja, studio: { inspector: SCOPED_UI.ja } },
-    es: { fx: es, studio: { inspector: SCOPED_UI.es } },
-    fr: { fx: fr, studio: { inspector: SCOPED_UI.fr } },
-    ru: { fx: ru, studio: { inspector: SCOPED_UI.ru } },
+    en: { fx: en, studio: { inspector: SCOPED_UI.en, showcase: SHOWCASE_UI.en } },
+    ja: { fx: ja, studio: { inspector: SCOPED_UI.ja, showcase: SHOWCASE_UI.ja } },
+    es: { fx: es, studio: { inspector: SCOPED_UI.es, showcase: SHOWCASE_UI.es } },
+    fr: { fx: fr, studio: { inspector: SCOPED_UI.fr, showcase: SHOWCASE_UI.fr } },
+    ru: { fx: ru, studio: { inspector: SCOPED_UI.ru, showcase: SHOWCASE_UI.ru } },
   };
 });

@@ -24,6 +24,7 @@ SA.timeline = (() => {
   const LAYER_SWITCH_KINDS = ['figure', 'filler'];
   const LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' };
   const LAYER_SWITCH_FILLS = { foreground: 'rgba(200, 107, 255, 0.28)', background: 'rgba(255, 209, 102, 0.28)' };
+  const CLIP_BEAT_KINDS = ['figure', 'backdrop'];
 
   const el = {};
   let ctx = null;
@@ -603,11 +604,10 @@ SA.timeline = (() => {
 
   // A track the timeline offers a remove button for. The two layer tracks
   // (foreground / background) are structural: their content is managed in the
-  // Layers dialog, so they stay. The last subtitle track stays too.
+  // Layers dialog, so they stay. Every subtitle track can go, the last one too.
   function removableTrack(track) {
     if (!track) return false;
-    if (track.kind === 'subtitle') return trackList().filter((entry) => entry && entry.kind === 'subtitle').length > 1;
-    return ['backdrop', 'filler', 'figure', 'textAnim', 'video'].includes(track.kind);
+    return ['subtitle', 'backdrop', 'filler', 'figure', 'textAnim', 'video'].includes(track.kind);
   }
 
   // Tracks that can move up / down in the layer order (upper = front). The
@@ -703,7 +703,10 @@ SA.timeline = (() => {
     const canUp = showMove && canMoveTrack(track ? track.id : null, 'up');
     const canDown = showMove && canMoveTrack(track ? track.id : null, 'down');
     const moveReserve = showMove ? 30 : 0;
-    const reserve = (opts.toggle === false ? 6 : 22) + (removable ? removeSize + 4 : 0) + moveReserve;
+    // a track header keeps the remove-button slot even when the track can't be
+    // removed (e.g. the foreground track), so the move arrows line up.
+    const keepRemoveSlot = removable || (showMove && opts.toggle !== false);
+    const reserve = (opts.toggle === false ? 6 : 22) + (keepRemoveSlot ? removeSize + 4 : 0) + moveReserve;
     const fullTitle = String(opts.tooltip || (title == null ? '' : title));
     const titleText = fitLabel(title, LABEL_W - textX - reserve);
     ctx.fillText(titleText, textX, y + height / 2);
@@ -718,7 +721,7 @@ SA.timeline = (() => {
     ctx.restore();
     hitRegions.push({ type: 'track-header', trackId: row.trackId, x: 0, y, w: LABEL_W - 1, h: height });
     if (showMove) {
-      const rightEdge = removable ? removeX : LABEL_W - 20;
+      const rightEdge = keepRemoveSlot ? removeX : LABEL_W - 20;
       const moveW = 13;
       const upX = rightEdge - moveW * 2 - 4;
       const downX = rightEdge - moveW - 2;
@@ -1233,7 +1236,7 @@ SA.timeline = (() => {
       const x = xOf(clip.start);
       const width = Math.max(3, (clip.end - clip.start) * pxPerSecond);
       if (x + width < 0 || x > size.width) continue;
-      const selected = (SA.store.state.selection.paths || []).some((path) => path === `clip:${clip.id}`);
+      const selected = (SA.store.state.selection.paths || []).some((path) => path === `clip:${clip.id}` || path.startsWith(`clip:${clip.id}/`));
       const disabled = isClipDisabled(clip) || clipLayerHidden(clip, row.track);
       const fill = CLIP_COLORS[(clip.spec && clip.spec.type) || 'none'] || CLIP_COLORS.none;
       ctx.fillStyle = disabled || trackHidden(row.track) ? 'rgba(30, 34, 44, 0.6)' : fill[0];
@@ -1270,7 +1273,35 @@ SA.timeline = (() => {
         ctx.closePath();
         ctx.fill();
       }
+      // figure / backdrop clips show the subtitle cues they span, so a clip
+      // can be lined up with the lyric lines without scrolling up
       ctx.restore();
+      const beatHits = [];
+      let hasClipBeats = false;
+      if (CLIP_BEAT_KINDS.includes(row.kind) && width > 8) {
+        const spans = SA.project.clipBeatSpans(project(), clip);
+        if (spans.length) hasClipBeats = true;
+        const paths = SA.store.state.selection.paths || [];
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x + 1, y + 1.5, width - 2, height);
+        ctx.clip();
+        spans.forEach((span) => {
+          const bx = xOf(span.start) + 1;
+          const bw = Math.max(1.5, (span.end - span.start) * pxPerSecond - 2);
+          if (bx + bw < 0 || bx > size.width) return;
+          const selectedBeat = paths.includes(`clip:${clip.id}/beat:${span.index}`);
+          ctx.fillStyle = span.own ? 'rgba(255, 138, 61, 0.26)' : 'rgba(255, 255, 255, 0.10)';
+          rounded(bx, y + height * 0.45, bw, height * 0.5, 2);
+          ctx.fill();
+          ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.18)';
+          ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
+          ctx.stroke();
+          // pushed after the clip hit so a click on a beat block wins (as on the cue track)
+          beatHits.push({ type: 'clip-beat', x: bx, y, w: bw, h: LAYER_H, clipId: clip.id, trackId: row.trackId, kind: row.kind, index: span.index, edgeLeft: x, edgeRight: x + width });
+        });
+        ctx.restore();
+      }
       if (width > 34) {
         ctx.save();
         ctx.beginPath();
@@ -1279,10 +1310,11 @@ SA.timeline = (() => {
         ctx.fillStyle = disabled ? '#8d96ab' : '#d6dbe9';
         ctx.font = '10px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
         ctx.textBaseline = 'middle';
-        ctx.fillText(clipTypeLabel(clip), x + 6, y + height / 2 + 0.5);
+        ctx.fillText(clipTypeLabel(clip), x + 6, y + (hasClipBeats ? height * 0.25 : height / 2) + 0.5);
         ctx.restore();
       }
       hitRegions.push({ type: 'clip', x, y, w: width, h: LAYER_H, clipId: clip.id, trackId: row.trackId, kind: row.kind, edgeLeft: x, edgeRight: x + width });
+      if (beatHits.length) hitRegions.push(...beatHits);
     }
     // a drag on an animation track's empty span creates a clip (the region is
     // pushed before the clip hits, so dragging a clip still moves it)
@@ -1784,6 +1816,11 @@ SA.timeline = (() => {
       const doc = project();
       const clip = ((doc && doc.clips) || []).find((entry) => entry.id === hit.clipId);
       drag = clip ? { type: 'clip-move', clipId: clip.id, start: timeAt(point.x), original: { start: clip.start, end: clip.end } } : null;
+    } else if (hit.type === 'clip-beat') {
+      SA.store.setSelection([`clip:${hit.clipId}/beat:${hit.index}`], 'clip');
+      const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
+      // dragging a beat block moves the whole clip, as on the cue track
+      drag = clip ? { type: 'clip-move', clipId: clip.id, start: timeAt(point.x), original: { start: clip.start, end: clip.end } } : null;
     } else if (hit.type === 'clip-edge') {
       const doc = project();
       const clip = ((doc && doc.clips) || []).find((entry) => entry.id === hit.clipId);
@@ -1845,7 +1882,7 @@ SA.timeline = (() => {
     const hit = hitTest(point);
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
-    else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'credit') cursor = 'pointer';
+    else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'clip-beat' || hit.type === 'credit') cursor = 'pointer';
     else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
@@ -2017,6 +2054,14 @@ SA.timeline = (() => {
     if (hit.type === 'beat') {
       const beat = ((project().beats[hit.cueId] || []).find((entry) => entry.id === hit.beatId)) || null;
       if (beat) editBeat(hit.cueId, hit.beatId, hit);
+      return;
+    }
+    if (hit.type === 'clip-beat') {
+      const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
+      const span = clip ? SA.project.clipBeatSpans(project(), clip)[hit.index] : null;
+      if (span && SA.preview && typeof SA.preview.seek === 'function') {
+        SA.preview.seek(span.start + Math.min(0.05, (span.end - span.start) / 2));
+      }
       return;
     }
     if (hit.type === 'cue') {
@@ -2410,10 +2455,11 @@ SA.timeline = (() => {
       });
       menu.appendChild(button);
     };
-    if (hit.type === 'clip' || hit.type === 'clip-edge') {
+    if (hit.type === 'clip' || hit.type === 'clip-edge' || hit.type === 'clip-beat') {
       const clip = ((project().clips) || []).find((entry) => entry.id === hit.clipId);
       if (!clip) return;
-      SA.store.setSelection([`clip:${clip.id}`], 'clip');
+      if (hit.type === 'clip-beat') SA.store.setSelection([`clip:${clip.id}/beat:${hit.index}`], 'clip');
+      else SA.store.setSelection([`clip:${clip.id}`], 'clip');
       const disabled = isClipDisabled(clip);
       add(disabled ? t('studio.timeline.enableClip') : t('studio.timeline.disableClip'), () => {
         const patch = { disabled: !disabled };

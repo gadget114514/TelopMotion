@@ -15,6 +15,8 @@
     "fx800": "node scripts/fx800.js",
     "showcase": "node scripts/showcase.js",
     "figure-showcase": "node scripts/figure-showcase.js",
+    "font-showcase": "node scripts/font-showcase.js",
+    "backdrop-showcase": "node scripts/backdrop-showcase.js",
     "demo30": "node scripts/demo30.js build",
     "distinct": "node scripts/distinct-count.js",
     "check": "node scripts/check.js",

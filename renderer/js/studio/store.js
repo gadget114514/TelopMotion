@@ -916,6 +916,64 @@ SA.store = (() => {
     }
   }
 
+  // The body of a cue vary (varyCue / varyAll): the cue container keeps its
+  // types and only params / motion are re-drawn, every beat steps its
+  // variation slot. Without force every beat under the cue is varied the same
+  // way (each with its own seed); with force the beats' own style bags are
+  // cleared first, so the varied cue style shows through.
+  function varyCueIn(projectDoc, cueId, mode, seed, force) {
+    const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
+    if (!target) return;
+    if (force) clearBeatStylesForCue(projectDoc, cueId);
+    const cuePath = `cue:${cueId}`;
+    const resolved = SA.project.resolveStyle(projectDoc, cuePath);
+    const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
+    const colors = palette.length ? [palette[2], palette[3], palette[5] || palette[3]].filter(Boolean) : [];
+    const cueResult = SA.random.vary({
+      project: projectDoc,
+      paths: [cuePath],
+      seed,
+      colors,
+    });
+    const cueBag = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
+    for (const patch of cueResult.patches || []) {
+      for (const [group, instance] of Object.entries(patch.style || {})) cueBag[group] = clone(instance);
+    }
+    const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+    if (!force) {
+      beats.forEach((beat, index) => {
+        const result = SA.random.vary({
+          project: projectDoc,
+          paths: [`cue:${cueId}/beat:${beat.id}`],
+          seed: seed + index + 1,
+          colors,
+        });
+        const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
+        for (const patch of result.patches || []) {
+          for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
+        }
+      });
+    }
+    // the variation slot: the letters re-draw without touching seed/style
+    for (const beat of beats) {
+      beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
+    }
+    if (SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
+      SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
+    }
+  }
+
+  // A fresh typeface for a re-roll, drawn inside the project axes / genre (the
+  // project's exclusive font set and font availability still apply). Only the
+  // face and weight move; the size stays with the size ladder.
+  function rerollFontInto(bag, projectDoc, cue, mode, random) {
+    if (!SA.moods || typeof SA.moods.textStyleFor !== 'function') return;
+    const context = SA.moods.contextForCue(projectDoc, cue);
+    const genre = mode.genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(mode.genre) : null;
+    const text = SA.moods.textStyleFor(random, mode.axes, context, genre);
+    bag.text = { ...(bag.text || {}), fontId: text.fontId, weight: text.weight };
+  }
+
   // recolor force: only the colour keys go, the beats' effect types survive.
   const BEAT_COLOR_KEYS = ['palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'colorLegacy'];
   function clearBeatColorsForCue(projectDoc, cueId) {
@@ -962,11 +1020,27 @@ SA.store = (() => {
     return { ...spec, params: varyLayerParams(spec.type, spec.params, axes, random) };
   }
 
-  // One figure sub-beat (spec.params.beats[index]) re-draw.
+  // One figure sub-beat (spec.params.beats[index]) re-draw. Returns what
+  // changed ({ index, start, end, op, detail, theme }) so the caller can show
+  // the beat and say what moved, or null when nothing ran.
   function figureSubBeatOp(clipId, index, op) {
-    if (typeof SA === 'undefined' || !SA.figures || !SA.rng) return;
+    if (typeof SA === 'undefined' || !SA.figures || !SA.rng) return null;
     const clip = findClip(clipId);
-    if (!clip) return;
+    if (!clip) return null;
+    const current = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.beats) ? clip.spec.params.beats[index] : null;
+    if (!current) return null;
+    // recolor gives the sub-beat a fresh palette of its own (a palette
+    // rotation alone is often invisible: a one-colour motif, a repeat)
+    let palette = null;
+    if (op === 'recolor') {
+      const from = (Array.isArray(current.colors) && current.colors.length && current.colors)
+        || (clip.spec.params.colors && clip.spec.params.colors.length && clip.spec.params.colors)
+        || (Array.isArray(clip.colors) && clip.colors.length && clip.colors)
+        || paletteColorsAt(state.project, '');
+      palette = drawPalette(from);
+      if (!palette) return null;
+    }
+    let report = null;
     dispatch({
       label: `${op} figure beat`,
       areas: ['project'],
@@ -977,37 +1051,98 @@ SA.store = (() => {
         const seed = Math.floor(Math.random() * 900000) + 1000;
         const random = SA.rng.rngFor(seed, 'clip-beat', clipId, String(index), op);
         const pick = (list) => list[Math.min(list.length - 1, Math.floor(random() * list.length))];
-        const sub = { ...beats[index], move: { ...(beats[index].move || {}) } };
+        const before = beats[index];
+        const sub = { ...before, move: { ...(before.move || {}) } };
+        const detail = [];
         if (op === 'reroll') {
           const prev = index > 0 && beats[index - 1] ? beats[index - 1].move || {} : null;
-          const ins = SA.figures.INS.filter((name) => !prev || name !== prev.in);
-          const outs = SA.figures.OUTS.filter((name) => !prev || name !== prev.out);
-          sub.move = { in: pick(ins.length ? ins : SA.figures.INS), hold: pick(SA.figures.HOLDS), out: pick(outs.length ? outs : SA.figures.OUTS) };
+          // the new moves always differ from this beat's own and the previous beat's
+          const fresh = (list, key) => {
+            const pool = list.filter((name) => name !== sub.move[key] && (!prev || name !== prev[key]));
+            return pick(pool.length ? pool : list);
+          };
+          sub.move = { in: fresh(SA.figures.INS, 'in'), hold: fresh(SA.figures.HOLDS, 'hold'), out: fresh(SA.figures.OUTS, 'out') };
+          detail.push(`${sub.move.in}/${sub.move.hold}/${sub.move.out}`);
         }
         if (op === 'reroll' || op === 'vary') {
-          sub.variant = Math.floor(random() * 3);
+          const oldVariant = Number(before.variant) || 0;
+          sub.variant = (oldVariant + 1 + Math.floor(random() * 2)) % 3;
+          // the size always moves a visible step (at least 0.3 of 0.6..1.4)
+          const oldSize = Number.isFinite(Number(before.size)) ? Number(before.size) : 1;
+          let size = oldSize;
+          for (let attempt = 0; attempt < 16 && Math.abs(size - oldSize) < 0.3; attempt += 1) size = 0.6 + random() * 0.8;
+          sub.size = Math.round(size * 100) / 100;
           sub.accent = random() < 0.5;
-          sub.size = Math.round((0.6 + random() * 0.8) * 100) / 100;
+          detail.push(`size ${oldSize.toFixed(2)}→${sub.size.toFixed(2)}`);
+          if (Boolean(before.accent) !== sub.accent) detail.push(`accent ${sub.accent ? 'on' : 'off'}`);
         }
-        sub.tone = Math.floor(random() * 8);
+        if (op === 'recolor') {
+          const colors = palette.colors.length >= 3 ? palette.colors.slice(3, 8) : palette.colors.slice();
+          sub.colors = colors.length ? colors : palette.colors.slice();
+          // an explicit recolor stays put while a beat colour scheme repaints the stage
+          sub.colorLock = true;
+          sub.tone = 0;
+        } else {
+          const oldTone = Math.round(Number(before.tone) || 0);
+          sub.tone = (oldTone + 1 + Math.floor(random() * 7)) % 8;
+        }
         const next = beats.slice();
         next[index] = sub;
         target.spec = { ...target.spec, params: { ...target.spec.params, beats: next } };
+        report = {
+          index,
+          op,
+          start: Number(sub.start),
+          end: Number(sub.end),
+          detail: detail.join(', '),
+          theme: palette ? palette.name || palette.id || '' : '',
+        };
       },
     });
+    return report;
+  }
+
+  // The colour keys a layer is painted with, to tell whether a recolor reached it.
+  function layerColorKey(layer) {
+    const found = [];
+    const walk = (node) => {
+      if (typeof node === 'string') {
+        if (/^#[0-9a-f]{3,8}$/i.test(node)) found.push(node.toLowerCase());
+      } else if (Array.isArray(node)) node.forEach(walk);
+      else if (node && typeof node === 'object') Object.values(node).forEach(walk);
+    };
+    walk(layer);
+    return found.join(',');
+  }
+
+  // "count 12→18, speed 0.4→0.9": the params a vary / reroll moved, at most four.
+  function paramDelta(before, after) {
+    const out = [];
+    const show = (value) => (typeof value === 'number' ? String(Math.round(value * 100) / 100) : String(value));
+    for (const [key, value] of Object.entries(after || {})) {
+      if (CLIP_VARY_KEEP.has(key) || key === 'colorLock') continue;
+      const old = before ? before[key] : undefined;
+      if (value === null || typeof value === 'object' || JSON.stringify(old) === JSON.stringify(value)) continue;
+      out.push(old === undefined || old === null || typeof old === 'object' ? `${key} ${show(value)}` : `${key} ${show(old)}→${show(value)}`);
+    }
+    return out.length > 4 ? `${out.slice(0, 4).join(', ')}…` : out.join(', ');
   }
 
   // One combo-layer re-draw. Layers come back through fromLayers so the combo
   // envelope (animate, names) is rebuilt exactly like the filler editor does.
+  // Returns what changed ({ index, type, start, end, op, detail, theme }) or null.
   function clipLayerOp(clipId, layerIndex, op) {
-    if (typeof SA === 'undefined' || !SA.moods || !SA.fillerRender) return;
+    if (typeof SA === 'undefined' || !SA.moods || !SA.fillerRender) return null;
     const clip = findClip(clipId);
-    if (!clip) return;
+    if (!clip) return null;
     const mode = modeAxes();
+    let report = null;
     if (op === 'recolor') {
-      const from = paletteColorsAt(state.project, '');
+      // the clip was painted with the palette of the lyrics it sits under
+      const cue = (state.project.script.cues || []).find((entry) => clip.start >= entry.start - 1e-4 && clip.start < entry.end);
+      const from = paletteColorsAt(state.project, cue ? `cue:${cue.id}` : '');
       const palette = drawPalette(from);
-      if (!palette) return;
+      if (!palette) return null;
       const kind = SA.project.trackKindOf(state.project, clip.trackId);
       dispatch({
         label: 'recolor clip layer',
@@ -1022,11 +1157,21 @@ SA.store = (() => {
             palette, from, axes: mode.axes, seed,
           });
           if (!result || !result.spec) return;
-          layers[layerIndex] = result.spec;
+          const layer = result.spec;
+          // a layer without colours of its own draws with the clip colours,
+          // which the walk above never reaches: give it one from the new palette
+          if (layerColorKey(layer) === layerColorKey(layers[layerIndex]) && layer.type !== 'split') {
+            const pool = Array.isArray(result.colors) && result.colors.length ? result.colors : palette.colors;
+            layer.params = { ...(layer.params || {}), color: pool[0] };
+          }
+          // an explicit recolor stays put while a beat colour scheme repaints the stage
+          layer.colorLock = true;
+          layers[layerIndex] = layer;
           target.spec = SA.fillerRender.fromLayers(layers, { name: target.spec && target.spec.name });
+          report = { index: layerIndex, type: layer.type, op, start: target.start, end: target.end, detail: '', theme: palette.name || palette.id || '' };
         },
       });
-      return;
+      return report;
     }
     dispatch({
       label: `${op} clip layer`,
@@ -1041,17 +1186,104 @@ SA.store = (() => {
         const seed = Math.floor(Math.random() * 900000) + 1000;
         const random = SA.rng && typeof SA.rng.rngFor === 'function' ? SA.rng.rngFor(seed, 'clip-layer', clipId, String(layerIndex), op) : Math.random;
         if (op === 'reroll') {
-          const pool = SA.fillerRender.types().filter((type) => !['combo', 'credits', 'cardPeek', 'none', 'split'].includes(type));
+          const pool = SA.fillerRender.types().filter((type) => !['combo', 'credits', 'cardPeek', 'none', 'split', layer.type].includes(type));
           if (!pool.length) return;
           const type = pool[Math.min(pool.length - 1, Math.floor(random() * pool.length))];
           const base = SA.fillerRender.defaults ? SA.fillerRender.defaults(type) : { type, params: {} };
           layers[layerIndex] = { ...base, type, params: varyLayerParams(type, (base && base.params) || {}, mode.axes, random) };
         } else {
-          layers[layerIndex] = { ...layer, params: varyLayerParams(layer.type, layer.params, mode.axes, random) };
+          // a vary that lands on the same params draws again (a few tries)
+          let params = layer.params;
+          for (let attempt = 0; attempt < 4 && !paramDelta(layer.params, params); attempt += 1) {
+            params = varyLayerParams(layer.type, layer.params, mode.axes, random);
+          }
+          layers[layerIndex] = { ...layer, params };
         }
         target.spec = SA.fillerRender.fromLayers(layers, { name: target.spec && target.spec.name });
+        const now = layers[layerIndex];
+        report = {
+          index: layerIndex,
+          type: now.type,
+          from: layer.type,
+          op,
+          start: target.start,
+          end: target.end,
+          detail: op === 'reroll' ? `${layer.type}→${now.type}` : paramDelta(layer.params, now.params),
+          theme: '',
+        };
       },
     });
+    return report;
+  }
+
+  function clampSegments(segments, start, end) {
+    if (!Array.isArray(segments)) return segments;
+    const kept = segments
+      .map((seg) => ({ ...seg, start: Math.max(start, seg.start), end: Math.min(end, seg.end) }))
+      .filter((seg) => seg.end - seg.start > 1e-3);
+    return kept.some((seg) => seg.spec) ? kept : undefined;
+  }
+
+  // Backdrop segment ops ("clip beats" cut at the lyric beats): the first op
+  // writes the spans down as clip.segments, then the one segment gets a spec of
+  // its own. reroll draws a fresh backdrop spec, vary keeps the types and
+  // re-draws params, recolor moves every layer onto a fresh palette.
+  function clipSegmentOp(clipId, index, op) {
+    if (typeof SA === 'undefined' || !SA.moods) return null;
+    const clip = findClip(clipId);
+    if (!clip || SA.project.trackKindOf(state.project, clip.trackId) !== 'backdrop') return null;
+    const spans = SA.project.clipBeatSpans(state.project, clip);
+    if (!spans[index]) return null;
+    const mode = modeAxes();
+    let palette = null;
+    let from = null;
+    if (op === 'recolor') {
+      const cue = (state.project.script.cues || []).find((entry) => spans[index].start >= entry.start - 1e-4 && spans[index].start < entry.end);
+      from = paletteColorsAt(state.project, cue ? `cue:${cue.id}` : '');
+      palette = drawPalette(from);
+      if (!palette) return null;
+    }
+    let report = null;
+    dispatch({
+      label: `${op} clip segment`,
+      areas: op === 'recolor' ? ['project', 'style'] : ['project'],
+      do(projectDoc) {
+        const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+        if (!target) return;
+        if (!Array.isArray(target.segments) || !target.segments.length) {
+          target.segments = SA.project.clipBeatSpans(projectDoc, target).map((span) => ({ start: span.start, end: span.end }));
+        }
+        const seg = target.segments[index];
+        if (!seg) return;
+        const base = clone(seg.spec || target.spec);
+        const seed = Math.floor(Math.random() * 900000) + 1000;
+        if (op === 'reroll') {
+          const result = SA.moods.rerollClipSpec('backdrop', {
+            axes: mode.axes, seed, genre: mode.genre, usePresets: false,
+            avoid: SA.direct && typeof SA.direct.avoidForClip === 'function' ? SA.direct.avoidForClip(projectDoc, target) : null,
+          });
+          if (!result || !result.spec) return;
+          seg.spec = result.spec;
+          if (result.colors) seg.colors = result.colors;
+        } else if (op === 'vary') {
+          const random = SA.rng && typeof SA.rng.rngFor === 'function' ? SA.rng.rngFor(seed, 'clip-segment', clipId, String(index), op) : Math.random;
+          seg.spec = varyClipSpec(base, mode.axes, random);
+        } else {
+          const result = SA.moods.rerollClipColors('backdrop', { spec: base, colors: seg.colors || target.colors }, { palette, from, axes: mode.axes, seed });
+          if (!result || !result.spec) return;
+          seg.spec = lockColors(result.spec);
+          if (result.colors) seg.colors = result.colors;
+        }
+        report = { index, type: (seg.spec && seg.spec.type) || '', op, start: seg.start, end: seg.end, detail: '', theme: palette ? palette.name || palette.id || '' : '' };
+      },
+    });
+    return report;
+  }
+
+  function lockColors(spec) {
+    if (!spec || !SA.fillerRender || typeof SA.fillerRender.layersOf !== 'function') return spec;
+    const layers = SA.fillerRender.layersOf(spec).map((layer) => (layer && layer.type !== 'split' ? { ...layer, colorLock: true } : layer));
+    return layers.length > 1 ? SA.fillerRender.fromLayers(layers, { name: spec.name }) : { ...spec, colorLock: true };
   }
 
   const commands = {
@@ -1992,7 +2224,9 @@ SA.store = (() => {
       if (lastSameKind >= 0) {
         index = lastSameKind + 1;
       } else if (trackKind === 'subtitle') {
-        index = lastSubtitle + 1;
+        // with no subtitle track left, the new one goes right below the foreground
+        const fgIndex = (project.tracks || []).findIndex((track) => track && track.kind === 'foreground');
+        index = lastSubtitle >= 0 ? lastSubtitle + 1 : fgIndex + 1;
       } else {
         const bgIndex = (project.tracks || []).findIndex((track) => track && track.kind === 'background');
         if (bgIndex >= 0) index = bgIndex;
@@ -2017,7 +2251,6 @@ SA.store = (() => {
       const track = trackById(id);
       if (!track) return;
       const subtitles = (project.tracks || []).filter((entry) => entry && entry.kind === 'subtitle');
-      if (track.kind === 'subtitle' && subtitles.length <= 1) return;
       if (!['subtitle', 'backdrop', 'filler', 'background', 'figure', 'textAnim', 'video'].includes(track.kind)) return;
       const fallback = track.kind === 'subtitle' ? subtitles.find((entry) => entry.id !== id) : null;
       dispatch({
@@ -2028,6 +2261,15 @@ SA.store = (() => {
           if (fallback) {
             for (const cue of projectDoc.script.cues) {
               if ((cue.trackId || 'sub1') === id) cue.trackId = fallback.id;
+            }
+          } else if (track.kind === 'subtitle') {
+            // the last subtitle track takes its cues (and their beats) with it
+            const dropped = new Set(projectDoc.script.cues.filter((cue) => (cue.trackId || 'sub1') === id).map((cue) => cue.id));
+            projectDoc.script.cues = projectDoc.script.cues.filter((cue) => !dropped.has(cue.id));
+            for (const cueId of dropped) {
+              if (projectDoc.beats) delete projectDoc.beats[cueId];
+              if (projectDoc.orphanBeats) delete projectDoc.orphanBeats[cueId];
+              if (projectDoc.beatWarnings) delete projectDoc.beatWarnings[cueId];
             }
           }
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== id);
@@ -2176,8 +2418,11 @@ SA.store = (() => {
         do(projectDoc) {
           const target = (projectDoc.clips || []).find((entry) => entry.id === id);
           if (!target) return;
+          const previousStart = target.start;
           target.start = Math.max(0, start);
           target.end = target.start + span;
+          const delta = target.start - previousStart;
+          if (Array.isArray(target.segments)) target.segments = target.segments.map((seg) => ({ ...seg, start: seg.start + delta, end: seg.end + delta }));
           delete target.auto;
         },
       });
@@ -2218,6 +2463,9 @@ SA.store = (() => {
           if (!target) return;
           if (edge === 'start') target.start = Math.max(0, Math.min(time, target.end - 0.1));
           else target.end = Math.max(target.start + 0.1, time);
+          const clamped = clampSegments(target.segments, target.start, target.end);
+          if (clamped === undefined) delete target.segments;
+          else if (Array.isArray(target.segments)) target.segments = clamped;
           delete target.auto;
         },
       });
@@ -2237,6 +2485,12 @@ SA.store = (() => {
           second.start = time;
           projectDoc.clips.push(second);
           target.end = time;
+          const secondClamped = clampSegments(second.segments, time, second.end);
+          if (secondClamped === undefined) delete second.segments;
+          else if (Array.isArray(second.segments)) second.segments = secondClamped;
+          const firstClamped = clampSegments(target.segments, target.start, time);
+          if (firstClamped === undefined) delete target.segments;
+          else if (Array.isArray(target.segments)) target.segments = firstClamped;
           delete target.auto;
           delete second.auto;
         },
@@ -2267,6 +2521,10 @@ SA.store = (() => {
           copy.id = newId;
           copy.start = start;
           copy.end = start + span;
+          if (Array.isArray(copy.segments)) {
+            const delta = start - clip.start;
+            copy.segments = copy.segments.map((seg) => ({ ...seg, start: seg.start + delta, end: seg.end + delta }));
+          }
           delete copy.auto; // the copy is a hand-made clip
           projectDoc.clips.push(copy);
         },
@@ -2346,6 +2604,10 @@ SA.store = (() => {
             enter: generated.enter,
             exit: generated.exit,
           });
+          if (generated.text) {
+            const cueBag = projectDoc.cueStyles[cueId];
+            cueBag.text = { ...(cueBag.text || {}), fontId: generated.text.fontId, weight: generated.text.weight };
+          }
           const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
           if (projectDoc.styleMode && projectDoc.styleMode.compose && SA.direct && typeof SA.direct.composeBeat === 'function' && SA.compositions) {
             const cueIndex = (projectDoc.script.cues || []).indexOf(target);
@@ -2399,6 +2661,7 @@ SA.store = (() => {
           for (const patch of result.patches || []) {
             for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
           }
+          rerollFontInto(bag, projectDoc, cue, mode, SA.rng.rngFor(seed, 'beat-font', beatId));
           // composition mode: the beat also redraws its picture, with the
           // neighbouring beats' compositions as the novelty context
           if (projectDoc.styleMode && projectDoc.styleMode.compose && SA.direct && typeof SA.direct.composeBeat === 'function' && SA.compositions) {
@@ -2422,20 +2685,19 @@ SA.store = (() => {
         },
       });
     },
-    // The same variation step across every cue of the song, as one undo.
-    // (the only vary command on the variation slot; the engine re-derives
-    // the background arrangement from it. varyBeat / varyCue below re-draw
-    // the style bags instead.)
+    // varyCue across every cue of the song, as one undo: the style bags keep
+    // their types and re-draw params, and every beat steps its variation slot.
     varyAll() {
+      if (typeof SA === 'undefined' || !SA.random || !SA.moods) return;
+      const mode = modeAxes();
       dispatch({
         label: 'vary all',
-        areas: ['script'],
+        areas: ['style', 'script'],
         do(projectDoc) {
-          for (const beats of Object.values(projectDoc.beats || {})) {
-            for (const beat of beats || []) {
-              beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
-            }
-          }
+          const seed = Math.floor(Math.random() * 900000) + 1000;
+          (projectDoc.script.cues || []).forEach((cue, index) => {
+            varyCueIn(projectDoc, cue.id, mode, seed + index * 101, false);
+          });
         },
       });
     },
@@ -2496,46 +2758,7 @@ SA.store = (() => {
         label: 'vary cue',
         areas: ['style', 'script'],
         do(projectDoc) {
-          const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
-          if (!target) return;
-          if (force) clearBeatStylesForCue(projectDoc, cueId);
-          const seed = Math.floor(Math.random() * 900000) + 1000;
-          const cuePath = `cue:${cueId}`;
-          const resolved = SA.project.resolveStyle(projectDoc, cuePath);
-          const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
-          const colors = palette.length ? [palette[2], palette[3], palette[5] || palette[3]].filter(Boolean) : [];
-          const cueResult = SA.random.vary({
-            project: projectDoc,
-            paths: [cuePath],
-            seed,
-            colors,
-          });
-          const cueBag = projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {});
-          for (const patch of cueResult.patches || []) {
-            for (const [group, instance] of Object.entries(patch.style || {})) cueBag[group] = clone(instance);
-          }
-          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
-          if (!force) {
-            beats.forEach((beat, index) => {
-              const result = SA.random.vary({
-                project: projectDoc,
-                paths: [`cue:${cueId}/beat:${beat.id}`],
-                seed: seed + index + 1,
-                colors,
-              });
-              const bag = projectDoc.beatStyles[beat.id] || (projectDoc.beatStyles[beat.id] = {});
-              for (const patch of result.patches || []) {
-                for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
-              }
-            });
-          }
-          // the variation slot: the letters re-draw without touching seed/style
-          for (const beat of beats) {
-            beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
-          }
-          if (SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
-            SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
-          }
+          varyCueIn(projectDoc, cueId, mode, Math.floor(Math.random() * 900000) + 1000, force);
         },
       });
     },
@@ -2592,6 +2815,7 @@ SA.store = (() => {
           if (!result) return;
           if (result.spec) target.spec = result.spec;
           if (result.colors) target.colors = result.colors;
+          if (kind === 'backdrop') delete target.segments;
         },
       });
     },
@@ -2642,6 +2866,7 @@ SA.store = (() => {
           if (typeof SA.moods.sampleClipParams !== 'function' || !SA.rng) return;
           const random = SA.rng.rngFor(seed, 'clip-vary', target.id);
           target.spec = varyClipSpec(target.spec, mode.axes, random);
+          if (kind === 'backdrop') delete target.segments;
         },
       });
     },
@@ -2649,26 +2874,47 @@ SA.store = (() => {
     // vary keeps the moves and re-draws size / tone / variant / accent,
     // recolor re-draws the palette rotation (tone) only. One undo reverts.
     rerollFigureBeat(clipId, index) {
-      figureSubBeatOp(clipId, index, 'reroll');
+      return figureSubBeatOp(clipId, index, 'reroll');
     },
     varyFigureBeat(clipId, index) {
-      figureSubBeatOp(clipId, index, 'vary');
+      return figureSubBeatOp(clipId, index, 'vary');
     },
     recolorFigureBeat(clipId, index) {
-      figureSubBeatOp(clipId, index, 'recolor');
+      return figureSubBeatOp(clipId, index, 'recolor');
     },
     // Combo-layer ops ("clip beats" for filler / backdrop combos): reroll
     // draws a fresh layer type, vary keeps the type and re-draws params,
     // recolor moves the layer onto a fresh palette. Split planes are
     // structural: they only take recolor. One undo reverts each.
     rerollClipLayer(clipId, layerIndex) {
-      clipLayerOp(clipId, layerIndex, 'reroll');
+      return clipLayerOp(clipId, layerIndex, 'reroll');
     },
     varyClipLayer(clipId, layerIndex) {
-      clipLayerOp(clipId, layerIndex, 'vary');
+      return clipLayerOp(clipId, layerIndex, 'vary');
     },
     recolorClipLayer(clipId, layerIndex) {
-      clipLayerOp(clipId, layerIndex, 'recolor');
+      return clipLayerOp(clipId, layerIndex, 'recolor');
+    },
+    rerollClipSegment(clipId, index) { return clipSegmentOp(clipId, index, 'reroll'); },
+    varyClipSegment(clipId, index) { return clipSegmentOp(clipId, index, 'vary'); },
+    recolorClipSegment(clipId, index) { return clipSegmentOp(clipId, index, 'recolor'); },
+    // drops one segment's own look (the clip spec shows through again); with no
+    // segment left carrying a spec, the segments go away entirely
+    resetClipSegment(clipId, index) {
+      const clip = findClip(clipId);
+      if (!clip || !Array.isArray(clip.segments) || !clip.segments[index]) return;
+      dispatch({
+        label: 'reset clip segment',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          const seg = target && Array.isArray(target.segments) ? target.segments[index] : null;
+          if (!seg) return;
+          delete seg.spec;
+          delete seg.colors;
+          if (!target.segments.some((entry) => entry.spec)) delete target.segments;
+        },
+      });
     },
     // a palette for the project, a cue ({ cueId }) or a beat ({ cueId, beatId });
     // the literal colours of that scope move with it. With {force:true} on a

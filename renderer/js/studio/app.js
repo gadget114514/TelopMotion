@@ -875,12 +875,85 @@
     try {
       const buffer = await SA.platform.readAsset('data/showcase.json');
       const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
+      SA.io.loadFromObject(localizeShowcase(JSON.parse(text)));
       welcomeDismissed = false;
       toast('studio.toast.opened');
     } catch {
       toast('studio.toast.invalidProject');
     }
+  }
+
+  // The effects showcase is generated in Japanese, so its cue labels and
+  // section markers are re-written in the language on screen: every effect cue
+  // carries `{ kind: 'showcase', group, type, family?, target? }`, the effect
+  // name comes from the same `fx.*` table the inspector reads, and the walk
+  // scaffolding (group / post-family / text-vs-frame / page marker) from
+  // `studio.showcase.*`. Markers are rebuilt from the cue order so they stay
+  // in step with the cues in every language.
+  function showcaseLabel(key, fallback) {
+    const label = i18n.t(key);
+    if (typeof label !== 'string' || label === key || !label.trim()) return fallback;
+    return label;
+  }
+
+  function showcaseTypeName(group, type) {
+    const base = SA.fx && typeof SA.fx.baseOf === 'function' ? SA.fx.baseOf(group) : group;
+    const key = `fx.${base}.${type}`;
+    const translated = i18n.t(key);
+    if (typeof translated === 'string' && translated !== key && translated.trim()) return translated;
+    return type;
+  }
+
+  function showcaseCueText(meta) {
+    const groupLabel = showcaseLabel(`studio.showcase.group.${meta.group}`, meta.group);
+    const typeName = showcaseTypeName(meta.group, meta.type);
+    if (meta.group === 'post' && meta.family) {
+      const familyLabel = showcaseLabel(`studio.showcase.family.${meta.family}`, meta.family);
+      const targetLabel = showcaseLabel(`studio.showcase.target.${meta.target || 'text'}`, meta.target || 'text');
+      return `${groupLabel}［${familyLabel}/${targetLabel}］ ${typeName} / ${meta.type}`;
+    }
+    return `${groupLabel} / ${typeName} / ${meta.type}`;
+  }
+
+  function localizeShowcase(doc) {
+    const cues = (doc && doc.script && doc.script.cues) || [];
+    for (const cue of cues) {
+      const meta = cue && cue.meta;
+      if (!meta || meta.kind !== 'showcase' || !meta.group || !meta.type) continue;
+      cue.text = showcaseCueText(meta);
+    }
+    const markers = [];
+    let lastGroup = null;
+    let lastFamily = null;
+    for (const cue of cues) {
+      const meta = cue && cue.meta;
+      if (!meta) continue;
+      if (meta.kind === 'page') {
+        if (lastGroup !== 'page') {
+          lastGroup = 'page';
+          lastFamily = null;
+          markers.push({ t: cue.start, label: `${showcaseLabel('studio.showcase.page', '紙面レイアウト')} (page)` });
+        }
+      } else if (meta.kind === 'showcase') {
+        if (meta.group === 'post') {
+          if (meta.family !== lastFamily || lastGroup !== 'post') {
+            lastGroup = 'post';
+            lastFamily = meta.family || null;
+            const groupLabel = showcaseLabel('studio.showcase.group.post', '後処理');
+            const familyLabel = showcaseLabel(`studio.showcase.family.${meta.family}`, meta.family);
+            markers.push({ t: cue.start, label: `${groupLabel}［${familyLabel}］ (post/${meta.family})` });
+          }
+        } else {
+          lastFamily = null;
+          if (meta.group !== lastGroup) {
+            lastGroup = meta.group;
+            markers.push({ t: cue.start, label: `${showcaseLabel(`studio.showcase.group.${meta.group}`, meta.group)} (${meta.group})` });
+          }
+        }
+      }
+    }
+    if (markers.length) doc.markers = markers;
+    return doc;
   }
 
   // The figure showcase is generated in Japanese, so its cue labels are
@@ -925,6 +998,38 @@
       welcomeDismissed = false;
       toast('studio.toast.opened');
       if (opened) toast('studio.toast.statefulOn');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the backdrop's own showcase: one cue per accent type, split layout and
+  // clip motion, all on the `mid` track. The type ids are
+  // language-independent, so no re-labelling is needed (same shape as the
+  // font showcase).
+  async function backdropShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/backdrop-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the bundled typefaces' own showcase: one cue per font, the cue style pins
+  // `text.fontId` (and its weight) so neighbouring cues differ only in the
+  // typeface. The family names and ids are language-independent, so no
+  // re-labelling is needed.
+  async function fontShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/font-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1120,6 +1225,19 @@
       return;
     }
     if (palette) toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+  }
+
+  // timeline Vary: the whole song in one undo, behind the progress bar
+  async function varyAll() {
+    if (!project()) return;
+    try {
+      await withBusy('studio.busy.vary', async (step) => {
+        await step('studio.busy.apply', 0.5);
+        store.commands.varyAll();
+      });
+    } catch {
+      toast('studio.toast.error');
+    }
   }
 
   async function autoDirect(options) {
@@ -1715,7 +1833,7 @@
       });
     }
     if (el.rerollColors) el.rerollColors.addEventListener('click', () => rerollColors());
-    if (el.vary) el.vary.addEventListener('click', () => store.commands.varyAll());
+    if (el.vary) el.vary.addEventListener('click', () => varyAll());
     window.addEventListener('resize', () => applyLayout());
     document.addEventListener('keydown', (event) => {
       const target = event.target;
@@ -1806,6 +1924,8 @@
       openRecent,
       showcase: showcaseProject,
       figureShowcase: figureShowcaseProject,
+      backdropShowcase: backdropShowcaseProject,
+      fontShowcase: fontShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

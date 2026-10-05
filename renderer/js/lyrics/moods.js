@@ -2960,6 +2960,7 @@
     weirdPalette,
     weirdBeatHold,
     weirdFont,
+    textStyleFor,
     weirdDecoration,
     weirdClipColors,
     splitColors,

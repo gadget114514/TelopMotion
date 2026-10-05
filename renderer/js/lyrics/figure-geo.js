@@ -19,6 +19,8 @@
   const GEOS = ['kdTree', 'voronoi', 'delaunay', 'proximity', 'lsystem', 'spaceFilling', 'circlePack', 'treemap', 'colonization', 'stringArt'];
   const SHAPE_CAP = 440;
   const tools = scene3d.tools;
+  // density scaling lives next to tools in scene3d, so both modules share it
+  const dens = scene3d.dens;
 
   function clamp(v, lo, hi) {
     return Math.max(lo, Math.min(hi, v));
@@ -185,7 +187,7 @@
   }
 
   function kdTree(T, args, sk, t, frame) {
-    const n = T.int(24, 10, 72);
+    const n = dens(args, T.int(24, 10, 72), 10, 72);
     const area = areaOf(frame, T.range(0.02, 0.02, 0.1));
     const speed = T.range(0.5, 0.25, 1.1);
     const drift = T.range(0.08, 0.04, 0.2);
@@ -278,7 +280,7 @@
   }
 
   function voronoi(T, args, sk, t, frame) {
-    const n = T.int(18, 8, 40);
+    const n = dens(args, T.int(18, 8, 40), 8, 40);
     const area = areaOf(frame, T.range(0.02, 0.02, 0.1));
     const speed = T.range(0.5, 0.2, 1);
     const drift = T.range(0.07, 0.04, 0.16);
@@ -352,7 +354,7 @@
   }
 
   function delaunay(T, args, sk, t, frame) {
-    const n = T.int(18, 8, 42);
+    const n = dens(args, T.int(18, 8, 42), 8, 42);
     const area = areaOf(frame, T.range(0.0, 0, 0.08));
     const speed = T.range(0.45, 0.2, 0.9);
     const drift = T.range(0.07, 0.04, 0.15);
@@ -385,7 +387,7 @@
   // proximity graphs
 
   function proximity(T, args, sk, t, frame) {
-    const n = T.int(26, 12, 56);
+    const n = dens(args, T.int(26, 12, 56), 12, 56);
     const area = areaOf(frame, T.range(0.04, 0.02, 0.12));
     const speed = T.range(0.4, 0.2, 0.9);
     const drift = T.range(0.08, 0.04, 0.18);
@@ -524,7 +526,9 @@
   function lsystem(T, args, sk, t, frame) {
     const name = T.pick('plant', Object.keys(LSYSTEMS));
     const sys = LSYSTEMS[name];
-    const iterWanted = T.int(sys.maxIter, Math.max(2, sys.maxIter - 2), sys.maxIter);
+    const iterDrawn = T.int(sys.maxIter, Math.max(2, sys.maxIter - 2), sys.maxIter);
+    // thin air draws one iteration less (density 0.5 keeps the drawn one)
+    const iterWanted = args.density != null && args.density < 0.3 ? iterDrawn - 1 : iterDrawn;
     const speed = T.range(0.12, 0.06, 0.25);
     const size = T.range(0.78, 0.55, 0.95) * frame.short;
     const spin = T.range(0, -0.12, 0.12);
@@ -633,7 +637,13 @@
 
   function spaceFilling(T, args, sk, t, frame) {
     const kind = T.pick('hilbert', ['hilbert', 'zorder', 'snake', 'spiral']);
-    const order = T.int(3, 2, 4);
+    const orderDrawn = T.int(3, 2, 4);
+    // thin air steps one order down, dense air one up (density 0.5 keeps it)
+    let order = orderDrawn;
+    if (args.density != null) {
+      if (args.density < 0.3) order -= 1;
+      else if (args.density > 0.85) order = Math.min(5, order + 1);
+    }
     const worm = T.range(0.35, 0.08, 1);
     const speed = T.range(0.5, 0.2, 1.2);
     const size = T.range(0.78, 0.55, 0.95) * frame.short;
@@ -686,7 +696,7 @@
   }
 
   function circlePack(T, args, sk, t, frame) {
-    const count = T.int(60, 24, 150);
+    const count = dens(args, T.int(60, 24, 150), 24, 150);
     const maxR = T.range(0.12, 0.07, 0.2) * frame.short;
     const minR = T.range(0.014, 0.008, 0.03) * frame.short;
     const margin = T.range(0.03, 0, 0.1) * frame.short;
@@ -759,7 +769,7 @@
   }
 
   function treemap(T, args, sk, t, frame) {
-    const n = T.int(18, 8, 44);
+    const n = dens(args, T.int(18, 8, 44), 8, 44);
     const margin = T.range(0.03, 0, 0.1) * frame.short;
     const gap = T.range(0.006, 0, 0.02) * frame.short;
     const speed = T.range(0.5, 0.2, 1.2);
@@ -880,7 +890,7 @@
   // string art
 
   function stringArt(T, args, sk, t, frame) {
-    const n = T.int(90, 40, 150);
+    const n = dens(args, T.int(90, 40, 150), 40, 150);
     const shape = T.pick('circle', ['circle', 'ellipse', 'rounded', 'star']);
     const base = T.range(2, 2, 6);
     const swing = T.range(0.6, 0.2, 1.4);
