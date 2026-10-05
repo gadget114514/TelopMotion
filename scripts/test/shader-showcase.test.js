@@ -1,8 +1,8 @@
 'use strict';
 
-// The shader showcase: the five shader-break families in all three phases,
-// one phase per cue. Every cue must survive the migration and keep its label,
-// section and style.
+// The shader showcase: a title cue plus four cues per shader-break family
+// (full arc, enter, hold, exit). Every cue must survive the migration and
+// keep its label, beats, plate and style.
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -27,38 +27,73 @@ function mdPath() {
   return path.join(ROOT, 'demo', 'shader-showcase.md');
 }
 
-test('the generated showcase migrates and keeps every cue', () => {
+test('one title cue plus four cues per family', () => {
   const b = built();
   const migrated = project.migrate(JSON.parse(JSON.stringify(b.project)));
   assert.equal(migrated.ok, true, migrated.error);
   assert.equal(migrated.project.script.cues.length, b.entries.length);
+  assert.equal(b.entries.length, 1 + showcase.FAMILIES.length * 4);
   for (const type of showcase.FAMILIES) {
-    assert.equal(b.entries.filter((entry) => entry.section === type).length, 3, `${type} cues`);
+    assert.equal(b.entries.filter((entry) => entry.section === type).length, 4, `${type} cues`);
   }
-  assert.equal(b.entries.length, showcase.FAMILIES.length * 3);
 });
 
-test('every cue carries its label, phase and style', () => {
+test('cue spans follow the phase seconds', () => {
   const b = built();
   const cueById = new Map(b.project.script.cues.map((cue) => [cue.id, cue]));
   for (const entry of b.entries) {
     const cue = cueById.get(entry.cueId);
     assert.ok(cue, `cue ${entry.cueId} missing`);
-    assert.equal(cue.end - cue.start, showcase.CUE_SECONDS, `${entry.cueId} span`);
-    assert.ok(String(cue.text).includes(entry.value), `${entry.cueId} label must name ${entry.value}`);
+    const want = entry.section === 'intro' ? showcase.INTRO_SECONDS : showcase.PHASE_SECONDS[entry.phase];
+    assert.equal(cue.end - cue.start, want, `${entry.cueId} span`);
+    if (entry.section !== 'intro') {
+      assert.ok(String(cue.text).includes(entry.type), `${entry.cueId} label must name ${entry.type}`);
+    }
     assert.equal(cue.meta.kind, 'shader-showcase');
     assert.equal(cue.meta.section, entry.section);
     assert.equal(cue.meta.phase, entry.phase);
-    assert.equal(cue.meta.type, entry.type);
+  }
+});
+
+test('full cues carry the family in enter, hold and exit', () => {
+  const b = built();
+  for (const entry of b.entries.filter((item) => item.phase === 'full')) {
     const style = b.project.cueStyles[entry.cueId];
     assert.ok(style, `cue ${entry.cueId} style missing`);
-    if (entry.phase === 'enter') assert.equal(style.enter && style.enter.type, entry.type, `${entry.cueId} enter`);
-    if (entry.phase === 'exit') assert.equal(style.exit && style.exit.type, entry.type, `${entry.cueId} exit`);
-    if (entry.phase === 'hold') {
-      assert.ok(Array.isArray(style.hold) && style.hold.length === 1, `${entry.cueId} hold`);
-      assert.equal(style.hold[0].type, entry.type, `${entry.cueId} hold type`);
-    }
+    assert.equal(style.enter && style.enter.type, entry.type, `${entry.cueId} enter`);
+    assert.equal(style.exit && style.exit.type, entry.type, `${entry.cueId} exit`);
+    assert.ok(Array.isArray(style.hold) && style.hold.length === 1, `${entry.cueId} hold`);
+    assert.equal(style.hold[0].type, entry.type, `${entry.cueId} hold type`);
   }
+});
+
+test('every cue is two pinned beats with a plain title beat', () => {
+  const b = built();
+  for (const entry of b.entries) {
+    const beats = b.project.beats[entry.cueId];
+    assert.ok(Array.isArray(beats) && beats.length === 2, `${entry.cueId} beats`);
+    for (const beat of beats) assert.equal(beat.pinned, true, `${beat.id} pinned`);
+    assert.equal(beats[0].text, entry.title, `${entry.cueId} title text`);
+    assert.equal(beats[1].text, entry.body, `${entry.cueId} body text`);
+    const titleStyle = b.project.beatStyles[`${entry.cueId}:title`];
+    assert.ok(titleStyle, `${entry.cueId} title style missing`);
+    assert.equal(titleStyle.location && titleStyle.location.type, 'upperThird', `${entry.cueId} title location`);
+    assert.deepEqual(titleStyle.hold, [], `${entry.cueId} title hold must be empty`);
+  }
+});
+
+test('every family section plays against its own plate', () => {
+  const b = built();
+  const cueById = new Map(b.project.script.cues.map((cue) => [cue.id, cue]));
+  for (const entry of b.entries) {
+    const cue = cueById.get(entry.cueId);
+    const cover = (b.project.clips || []).filter(
+      (clip) => clip.trackId === 'bg' && clip.start <= cue.start + 1e-4 && clip.end >= cue.end - 1e-4
+    );
+    assert.ok(cover.length >= 1, `cue ${entry.cueId} has no background plate`);
+  }
+  const plates = (b.project.clips || []).filter((clip) => String(clip.id).startsWith('clip_sh_'));
+  assert.equal(plates.length, b.sections.length, `plates ${plates.length} vs sections ${b.sections.length}`);
 });
 
 test('every section opens a marker and is listed once', () => {
@@ -72,7 +107,7 @@ test('every section opens a marker and is listed once', () => {
 
 test('the --sections filter keeps only the named sections', () => {
   const b = showcase.buildShowcase({ sections: ['windBreak'] });
-  assert.equal(b.entries.length, 3);
+  assert.equal(b.entries.length, 4);
   for (const entry of b.entries) assert.equal(entry.section, 'windBreak');
   assert.equal(b.markers.length, 1);
 });

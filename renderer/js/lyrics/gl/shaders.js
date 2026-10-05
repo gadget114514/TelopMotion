@@ -300,6 +300,47 @@ SA.glShaders = (() => {
   }
   `;
 
+  // --- shared dissolve field ---------------------------------------------------
+  // One implementation of the dissolve level that the text pass (mesh holes)
+  // and the dust pass (grain emission) both reuse, so a hole and its grains
+  // always agree. `d2` is state row 25: mode (0 noise / 1 mosaic / 2 soft),
+  // dir.xy, bias. Vertex stages may include it (no fwidth inside).
+  const DISSOLVE_GLSL = `
+  float dissolveCell(vec2 p) {
+    vec2 cell = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
+    float b = fract(sin(dot(cell + vec2(1.0, 0.0), vec2(12.9898, 78.233))) * 43758.5453);
+    float c = fract(sin(dot(cell + vec2(0.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
+    float d = fract(sin(dot(cell + vec2(1.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+  }
+  float dissolveLevel(vec2 local, vec2 bbox, float letter, float scale, vec4 d2) {
+    vec2 uv = local / max(bbox, vec2(1.0));
+    float sc = max(scale, 1.0);
+    float level;
+    if (d2.x > 0.5 && d2.x < 1.5) {
+      // mosaic: square blocks in pixels, no interpolation, one value per block
+      float side = max(max(bbox.x, bbox.y) * 2.0 / sc, 1.0);
+      vec2 cell = floor(local / side);
+      level = fract(sin(dot(cell + letter * 0.37, vec2(12.9898, 78.233))) * 43758.5453);
+    } else {
+      vec2 q = uv * sc;
+      level = dissolveCell(q + letter * 0.37) * 0.82 + 0.18 * dissolveCell(q * 2.7 + 4.1);
+    }
+    // directional sweep: the upwind side (dot < 0) carries the highest level,
+    // so it is the first to go on an exit and the last to arrive on an enter
+    float bias = clamp(d2.w, 0.0, 1.0);
+    if (bias > 0.0) {
+      vec2 dir = d2.yz;
+      float len = length(dir);
+      float sweep = len > 0.0001 ? dot(uv, dir / len) * 0.5 + 0.5 : 0.5;
+      level = mix(level, 1.0 - sweep, bias);
+    }
+    return level;
+  }
+  `;
   // --- shared decoration patterns ---------------------------------------------
   // The fragment-stage half of the pattern vocabulary: one implementation of
   // `patternMask` that the fill / edge / post passes and the shape pass all
@@ -467,12 +508,14 @@ SA.glShaders = (() => {
   out float v_flash;
   out float v_mask;
   out vec3 v_dissolve;
+  out vec4 v_dissolve2;   // dissolve mode, dir.xy, bias (state row 25)
   ${COMMON}
   vec4 stateAt(int row) {
     return texelFetch(u_state, ivec2(int(a_letter + 0.5), row), 0);
   }
   void main() {
     v_letter = a_letter;
+    v_dissolve2 = vec4(0.0);
     vec4 s0 = stateAt(0);   // x, y, rot(deg), scale
     vec4 s1 = stateAt(1);   // scaleY, skew, opacity, blur
     vec4 s2 = stateAt(2);   // tiltX, tiltY, visibleFrac, reprProgress
@@ -502,8 +545,9 @@ SA.glShaders = (() => {
     v_wipeSoft = s8.y;
     v_flash = s8.z;
     v_mask = s8.w;
-    // row 22.yzw: the per-glyph dissolve (see packStateRows)
+    // row 22.yzw: the per-glyph dissolve (see packStateRows), row 25: mode/dir/bias
     v_dissolve = stateAt(22).yzw;
+    v_dissolve2 = stateAt(25);
     v_local = a_pos;
     v_bbox = a_bbox;
     vec2 soft = latticeDisp(u_state, int(a_letter + 0.5), a_pos / max(a_bbox, vec2(1.0))) * a_bbox;
@@ -526,21 +570,11 @@ SA.glShaders = (() => {
   in float v_flash;
   in float v_mask;
   in vec3 v_dissolve;   // cell scale, progress, edge width
+  in vec4 v_dissolve2;  // mode (0 noise / 1 mosaic / 2 soft), dir.xy, bias
   layout(location = 0) out vec4 fragColor;
   layout(location = 1) out vec4 o_info;
 
-  // The dissolve grid: a cheap value noise over the glyph's own box, so the
-  // cells are the same size on every letter instead of following the frame.
-  float dissolveCell(vec2 p) {
-    vec2 cell = floor(p);
-    vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    float a = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
-    float b = fract(sin(dot(cell + vec2(1.0, 0.0), vec2(12.9898, 78.233))) * 43758.5453);
-    float c = fract(sin(dot(cell + vec2(0.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
-    float d = fract(sin(dot(cell + vec2(1.0, 1.0), vec2(12.9898, 78.233))) * 43758.5453);
-    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
-  }
+  ${DISSOLVE_GLSL}
 
   void main() {
     if (v_color.a <= 0.001) {
@@ -575,11 +609,14 @@ SA.glShaders = (() => {
     // row is zero for every other letter), progress 1 = whole glyph, 0 = none.
     if (v_dissolve.x > 0.0 && v_dissolve.y < 0.999) {
       float scale = max(v_dissolve.x, 1.0);
-      float n = dissolveCell(vec2(u, v) * scale + v_letter * 0.37);
+      float mode = v_dissolve2.x;
+      float level = dissolveLevel(v_local, v_bbox, v_letter, scale, v_dissolve2);
       float edge = max(v_dissolve.z, 0.01);
-      float level = n * 0.82 + 0.18 * dissolveCell(vec2(u, v) * scale * 2.7 + 4.1);
       float t = clamp(v_dissolve.y, 0.0, 1.0);
-      if (level > t) {
+      if (mode > 1.5) {
+        // soft (fog): an alpha ramp across the edge, no burning rim
+        vis *= smoothstep(0.0, edge, t - level);
+      } else if (level > t) {
         vis = 0.0;
       } else if (level > t - edge) {
         glow = 1.0 - (t - level) / edge;
@@ -2692,6 +2729,7 @@ SA.glShaders = (() => {
   out float v_flash;
   out vec4 v_extra;
   ${COMMON}
+  ${DISSOLVE_GLSL}
   vec4 stateAt(int row) {
     return texelFetch(u_state, ivec2(int(a_letter + 0.5), row), 0);
   }
@@ -2782,6 +2820,30 @@ SA.glShaders = (() => {
       }
       p *= vec2(s0.w, s1.x);
       gl_PointSize = max(1.0, sp.z * a_extra.y * u_resolution.y / 1080.0);
+    } else if (u_repMode == 5) {
+      // dust: grains emitted exactly where the dissolve ate the mesh (exit) or
+      // flying in to land where the glyph appears (enter). tau > 0 means the
+      // grain is in flight; amount thins the grains out.
+      vec4 d1 = stateAt(22);            // _, scale, progress, edge
+      vec4 d2 = stateAt(25);            // mode, dir, bias
+      vec4 dp = stateAt(23);            // windX, windY, size, turbulence
+      vec4 dp2 = stateAt(24);           // spread, amount
+      float level = dissolveLevel(a_pos, a_bbox, a_letter, max(d1.y, 1.0), d2);
+      float tau = level - clamp(d1.z, 0.0, 1.0);
+      if (tau <= 0.0 || a_extra.x > dp2.y) {
+        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+        return;
+      }
+      float R = u_resolution.y * 0.5;
+      float side = fract(a_extra.x * 91.7 + 0.31) * 2.0 - 1.0;
+      vec2 curl = vec2(sin(a_pos.y * 0.05 + tau * 9.0 + a_extra.x * 40.0), cos(a_pos.x * 0.05 + tau * 7.0));
+      p = a_pos + dp.xy * tau * R * (0.6 + 0.8 * a_extra.x)
+        + curl * dp.w * tau * R * 0.08
+        + normalize(a_pos + vec2(1e-4)) * dp2.x * tau * R * 0.3 * (0.5 + 0.5 * side);
+      p *= vec2(s0.w, s1.x);
+      gl_PointSize = max(1.0, dp.z * a_extra.y * u_resolution.y / 1080.0);
+      v_extra = vec4(a_extra, 1.0 - smoothstep(0.55, 1.0, tau), d2.x);
+      v_flash = max(v_flash, 1.0 - smoothstep(0.0, 0.08, tau));
     }
     vec2 world = applyTransform(p, s0, s1, s2, s3, s5, s6, s7, a_bbox);
     vec2 clip = (world / u_resolution) * 2.0 - 1.0;
@@ -2797,7 +2859,7 @@ SA.glShaders = (() => {
   in float v_wipe;
   in float v_flash;
   in vec4 v_extra;
-  uniform int u_repMode;      // 1 stroke, 2 pieces, 3 particles, 4 sand
+  uniform int u_repMode;      // 1 stroke, 2 pieces, 3 particles, 4 sand, 5 dust
   uniform vec4 u_strokeColor; // straight rgba
   out vec4 fragColor;
   void main() {
@@ -2807,6 +2869,19 @@ SA.glShaders = (() => {
       vec2 point = gl_PointCoord - vec2(0.5);
       if (dot(point, point) > 0.25) discard;
       fragColor = color;
+      return;
+    }
+    if (u_repMode == 5) {
+      // dust: square pixel chips for mosaic, soft round grains otherwise.
+      // v_extra.z is the flight fade, v_extra.w the mosaic flag.
+      if (v_extra.w > 0.5) {
+        fragColor = color * v_extra.z;
+        return;
+      }
+      vec2 point = gl_PointCoord - vec2(0.5);
+      float d = length(point);
+      if (d > 0.5) discard;
+      fragColor = color * v_extra.z * smoothstep(0.5, 0.15, d);
       return;
     }
     if (u_repMode == 2) {
@@ -2821,6 +2896,7 @@ SA.glShaders = (() => {
   return {
     COMMON,
     PATTERN_GLSL,
+    DISSOLVE_GLSL,
     TEXT_VERT,
     TEXT_FRAG,
     QUAD_VERT,

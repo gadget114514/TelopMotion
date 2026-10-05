@@ -2565,6 +2565,7 @@ SA.lyricsEngine = (() => {
           pipeline.representation(scene, result.letters, 'pieces', variant);
           pipeline.representation(scene, result.letters, 'particles', variant);
           pipeline.representation(scene, result.letters, 'sand', variant);
+          pipeline.representation(scene, result.letters, 'dust', variant);
           if (strike.under.length) drawPrimitives(strike.under);
         }
         const edgeContext = {

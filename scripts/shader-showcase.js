@@ -4,14 +4,19 @@
 // `mosaicBreak`, `fogBreak`, `windBreak`, `windNoBreak` and `cloth` — so they
 // can be reviewed on their own from Help → Shader showcase.
 //
-//   node scripts/shader-showcase.js build [--sections mosaic,fog] [--out <file>] [--md off]
+//   node scripts/shader-showcase.js build [--sections intro,mosaicBreak] [--out <file>] [--md off]
 //     writes renderer/data/shader-showcase.json and demo/shader-showcase.md
 //   node scripts/shader-showcase.js list [--section wind]
 //
-// Every family is registered in all three phases (enter / hold / exit), so one
-// family expands to three cues in playing order: `enter` (the reveal),
-// `hold` (the loop) and `exit` (the release). One cue is four seconds, one
-// marker opens every section.
+// The walk opens with a title cue, then one section per family. Every family
+// expands to four cues in playing order: `full` (enter + hold + exit all of
+// that family, the whole arc in one cue), `enter`, `hold` and `exit` (the
+// phase under review with short fades around it).
+//
+// Every cue is two pinned beats (camera-showcase.js:161-172): a title beat
+// pinned to the upper third and a body beat with the family's phrase, so the
+// label never sits on the sample. Every family section plays against its own
+// solid background plate.
 //
 // The output is generated, never hand edited: re-run this after the families
 // in `renderer/js/lyrics/effects/shader-fx.js` change.
@@ -27,20 +32,21 @@ requirePart('renderer/js/lyrics/effects/shader-fx.js');
 const project = requirePart('renderer/js/studio/project.js');
 const textflow = requirePart('renderer/js/lyrics/textflow.js');
 
-const CUE_SECONDS = 4;
 // a fixed stamp keeps the generated file byte-identical on every run, so the
 // build only writes when the walk itself changed
 const FIXED_TIME = '2026-01-01T00:00:00.000Z';
 const OUT_PATH = path.join(ROOT, 'renderer', 'data', 'shader-showcase.json');
 const MD_PATH = path.join(ROOT, 'demo', 'shader-showcase.md');
 
-const SAMPLE = 'あいうえお Aiueo 123';
 const LABEL_COLOR = '#e9edf8';
+const INTRO_PLATE = '#0b0d14';
 
 // read live from the registry so a new family fails loudly in the test
 // instead of silently missing its cues
 const FAMILIES = ['mosaicBreak', 'fogBreak', 'windBreak', 'windNoBreak', 'cloth'];
-const PHASES = ['enter', 'hold', 'exit'];
+const PHASES = ['full', 'enter', 'hold', 'exit'];
+const INTRO_SECONDS = 6;
+const PHASE_SECONDS = { full: 6, enter: 5, hold: 5, exit: 5 };
 
 const FAMILY_JA = {
   mosaicBreak: 'モザイク分解',
@@ -49,22 +55,24 @@ const FAMILY_JA = {
   windNoBreak: '風なびき',
   cloth: '布なびき',
 };
-const PHASE_JA = { enter: '入場', hold: '保持', exit: '退場' };
+const PHASE_JA = { full: '通し', enter: '入場', hold: '保持', exit: '退場' };
 
-const SECTIONS = FAMILIES.map((type) => ({
-  id: type,
-  label: `${FAMILY_JA[type]} (${type})`,
-  note: `シェーダ分解 \`${type}\` を入場・保持・退場の3キューで並べています。`,
-}));
-
-// demo params per family: the readable middle of each range
-const FAMILY_PARAMS = {
-  mosaicBreak: { cell: 8, scatter: 0.4 },
-  fogBreak: { soft: 12, rise: 0.1 },
-  windBreak: { wind: 0.5, grain: 3 },
-  windNoBreak: { wind: 0.5, rise: 0.08 },
-  cloth: { amount: 0.12, speed: 0.9 },
+const FAMILY_LOOK = {
+  mosaicBreak: { phrase: 'デジタルの欠片', plate: '#06141c', fill: '#5ce1ff' },
+  fogBreak: { phrase: '霧の向こうへ', plate: '#151824', fill: '#d9dcf2' },
+  windBreak: { phrase: '風に散る言葉', plate: '#1d140a', fill: '#ffb547' },
+  windNoBreak: { phrase: '風に揺れて', plate: '#0a1c14', fill: '#7cf0b0' },
+  cloth: { phrase: 'はためく想い', plate: '#200810', fill: '#ff5c7a' },
 };
+
+const SECTIONS = [
+  { id: 'intro', label: 'シェーダ分解 5種 (intro)', note: 'タイトルキュー。シェーダ分解5家族の見本です。' },
+  ...FAMILIES.map((type) => ({
+    id: type,
+    label: `${FAMILY_JA[type]} (${type})`,
+    note: `シェーダ分解 \`${type}\` を通し・入場・保持・退場の4キューで並べています。本文は「${FAMILY_LOOK[type].phrase}」です。`,
+  })),
+];
 
 const STATIC_ANIMATION = { type: 'simultaneous', enabled: true, params: {}, motion: { stagger: { each: 0 } } };
 const STATIC_ENTER = { type: 'fade', enabled: true, params: {}, motion: { in: { duration: 0.4, ease: 'cubicOut' } } };
@@ -83,52 +91,75 @@ function cueId(index) {
   return `sh_${String(index + 1).padStart(3, '0')}`;
 }
 
-function baseStyle() {
-  return {
-    color: { fill: { kind: 'solid', value: LABEL_COLOR, alpha: 1 } },
-    animation: clone(STATIC_ANIMATION),
+function familyParams(type, phase) {
+  const resolved = fx.withDefaults({ type, params: {} }, phase);
+  return clone(resolved ? resolved.params : {});
+}
+
+// the body style of one cue: the family's own phrase in its colour, a small
+// stagger so the built-in cascade reads, and a readable enter / exit
+function styleFor(type, phase) {
+  const look = FAMILY_LOOK[type];
+  const style = {
+    color: { fill: { kind: 'solid', value: look.fill, alpha: 1 } },
+    animation: { type: 'simultaneous', enabled: true, params: {}, motion: { stagger: { each: 0.05 } } },
     enter: clone(STATIC_ENTER),
     exit: clone(STATIC_EXIT),
   };
-}
-
-// one family in one phase: the other two phases stay plain fades so the cue
-// shows exactly the motion under review
-function styleFor(type, phase) {
-  const style = baseStyle();
-  const resolved = fx.withDefaults({ type, params: FAMILY_PARAMS[type] || {} }, phase);
-  const params = clone(resolved ? resolved.params : { ...(FAMILY_PARAMS[type] || {}) });
-  if (phase === 'enter') {
-    style.enter = { type, enabled: true, params, motion: { in: { duration: 1.2, ease: 'cubicOut' } } };
-  } else if (phase === 'exit') {
-    style.exit = { type, enabled: true, params, motion: { out: { duration: 1.0, ease: 'cubicIn' } } };
-  } else {
-    style.hold = [{ type, enabled: true, params }];
+  const phases = phase === 'full' ? ['enter', 'hold', 'exit'] : [phase];
+  for (const name of phases) {
+    const params = familyParams(type, name);
+    if (name === 'enter') {
+      style.enter = { type, enabled: true, params, motion: { in: { duration: 1.6, ease: 'cubicOut' } } };
+    } else if (name === 'exit') {
+      style.exit = { type, enabled: true, params, motion: { out: { duration: 1.4, ease: 'cubicIn' } } };
+    } else {
+      style.hold = [{ type, enabled: true, params }];
+    }
   }
   return style;
 }
 
-function cueText(index, type, phase) {
-  const value = `${type}/${phase}`;
-  const detail = `${FAMILY_JA[type] || type}・${PHASE_JA[phase] || phase}`;
-  return `${index}. ${value} · ${detail}\n${SAMPLE}`;
+function introStyle() {
+  const style = {
+    color: { fill: { kind: 'solid', value: LABEL_COLOR, alpha: 1 } },
+    animation: { type: 'simultaneous', enabled: true, params: {}, motion: { stagger: { each: 0.05 } } },
+    enter: { type: 'mosaicBreak', enabled: true, params: familyParams('mosaicBreak', 'enter'), motion: { in: { duration: 1.6, ease: 'cubicOut' } } },
+    exit: { type: 'windBreak', enabled: true, params: familyParams('windBreak', 'exit'), motion: { out: { duration: 1.4, ease: 'cubicIn' } } },
+    hold: [{ type: 'windNoBreak', enabled: true, params: familyParams('windNoBreak', 'hold') }],
+  };
+  return style;
 }
 
 // The walk itself, without any timing: one slot per cue, in playing order.
-// Every family expands to enter → hold → exit so the three phases of one
-// family play back to back.
+// The title cue opens, then every family expands to full → enter → hold →
+// exit so the whole arc plays first and the phases follow in isolation.
 function plan() {
   const slots = [];
+  const push = (slot) => {
+    const index = slots.length;
+    slots.push({ index: index + 1, cueId: cueId(index), ...slot });
+  };
+  push({
+    section: 'intro', phase: 'intro', type: null,
+    value: 'intro', detail: 'シェーダ分解 5種',
+    title: 'シェーダ分解 5種', body: 'SHADER BREAKS',
+    seconds: INTRO_SECONDS, style: introStyle(), plate: INTRO_PLATE,
+  });
   for (const type of FAMILIES) {
-    const entry = fx.get('enter', type) && fx.get('hold', type) && fx.get('exit', type);
-    if (!entry) throw new Error(`shader family ${type} is not registered in all three phases`);
+    for (const phase of ['enter', 'hold', 'exit']) {
+      const entry = fx.get(phase, type);
+      if (!entry) throw new Error(`shader family ${type} is not registered in ${phase}`);
+    }
+    const look = FAMILY_LOOK[type];
     for (const phase of PHASES) {
-      const index = slots.length;
       const value = `${type}/${phase}`;
-      slots.push({
-        index: index + 1, section: type, phase, type, value,
-        detail: `${FAMILY_JA[type] || type}・${PHASE_JA[phase] || phase}`,
-        seconds: CUE_SECONDS, cueId: cueId(index), style: styleFor(type, phase),
+      push({
+        section: type, phase, type,
+        value, detail: `${FAMILY_JA[type]}・${PHASE_JA[phase]}`,
+        title: `${slots.length + 1}. ${FAMILY_JA[type]} ${type} · ${PHASE_JA[phase]}`,
+        body: look.phrase,
+        seconds: PHASE_SECONDS[phase], style: styleFor(type, phase), plate: look.plate,
       });
     }
   }
@@ -144,6 +175,7 @@ function buildShowcase(options) {
   const cues = [];
   const markers = [];
   const entries = [];
+  const clips = [];
   let t = 0;
   let lastSection = null;
   const sectionById = new Map(SECTIONS.map((section) => [section.id, section]));
@@ -160,7 +192,8 @@ function buildShowcase(options) {
       id,
       start,
       end,
-      text: cueText(slot.index, slot.type, slot.phase),
+      // title + phrase: the cue text keeps naming the value, as before
+      text: `${slot.title}\n${slot.body}`,
       // language-independent ids, so the Studio needs no re-labelling (same
       // shape as the letter-fx showcase's meta)
       meta: {
@@ -171,7 +204,8 @@ function buildShowcase(options) {
     entries.push({
       index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label,
       cueId: id, start, end, phase: slot.phase, type: slot.type,
-      value: slot.value, detail: slot.detail, style: clone(slot.style),
+      value: slot.value, detail: slot.detail, title: slot.title, body: slot.body,
+      style: clone(slot.style), plate: slot.plate,
     });
     t = end;
   });
@@ -186,21 +220,66 @@ function buildShowcase(options) {
   doc.script.sourceName = 'shader-showcase.json';
   doc.markers = markers;
   doc.style.text.fontId = 'NotoSansJP-Regular';
-  doc.style.text.size = 64;
+  doc.style.text.size = 96;
   doc.style.text.align = 'center';
   doc.style.color = {
     fill: { kind: 'solid', value: LABEL_COLOR, alpha: 1 },
     stroke: { kind: 'solid', value: LABEL_COLOR, alpha: 1 },
   };
   textflow.apply(doc);
+  // one cue, two full-span beats: the label pinned to the top of the frame,
+  // the phrase centered (same shape as camera-showcase.js:161-172)
   for (const entry of entries) {
     doc.cueStyles[entry.cueId] = clone(entry.style);
+    doc.beats[entry.cueId] = [
+      { id: `${entry.cueId}:title`, cueId: entry.cueId, kind: 'single', index: 0, start: entry.start, end: entry.end, text: entry.title, lines: [entry.title], fontScale: 1, pinned: true },
+      { id: `${entry.cueId}:body`, cueId: entry.cueId, kind: 'single', index: 1, start: entry.start, end: entry.end, text: entry.body, lines: [entry.body], fontScale: 1, pinned: true },
+    ];
+    // mergeDeep (project.js:138) replaces arrays, so hold:[] takes the shader
+    // hold off the title: the label itself never breaks apart
+    doc.beatStyles[`${entry.cueId}:title`] = {
+      location: { type: 'upperThird', params: {} },
+      text: { size: 34 },
+      color: { fill: { kind: 'solid', value: LABEL_COLOR, alpha: 0.85 } },
+      animation: clone(STATIC_ANIMATION),
+      enter: clone(STATIC_ENTER),
+      exit: clone(STATIC_EXIT),
+      hold: [],
+    };
+    if (doc.beatWarnings) delete doc.beatWarnings[entry.cueId];
+  }
+  // one solid plate per drawn section, so every family reads against its own
+  // ground (same shape as the camera-showcase plate)
+  {
+    let plateStart = null;
+    let plateId = null;
+    let plateSpec = null;
+    const flush = (end) => {
+      if (plateStart == null) return;
+      clips.push({
+        id: plateId, trackId: 'bg', start: plateStart, end,
+        spec: plateSpec, opacity: 1, fadeIn: 0.4, fadeOut: 0.4, colors: null,
+      });
+      plateStart = null;
+    };
+    for (const entry of entries) {
+      const id = `clip_sh_${entry.section}`;
+      if (plateStart == null || plateId !== id) {
+        flush(entry.start);
+        plateStart = entry.start;
+        plateId = id;
+        plateSpec = { type: 'solid', params: { color: entry.plate } };
+      }
+    }
+    flush(total);
+    doc.clips = (doc.clips || []).concat(clips);
   }
 
   return {
     project: doc,
     entries,
     markers,
+    clips,
     sections: SECTIONS.filter((section) => !wanted || wanted.has(section.id)),
     total,
   };
@@ -231,10 +310,12 @@ function indexMarkdown(built) {
   const lines = [];
   lines.push('# シェーダ分解見本 (shader showcase)');
   lines.push('');
-  lines.push('シェーダ分解5種（モザイク・霧・風分解・風なびき・布なびき）を入場・保持・退場の3キューずつ並べた見本プロジェクトです。1家族の3相が連続再生されます。');
+  lines.push('シェーダ分解5種（モザイク・霧・風分解・風なびき・布なびき）の見本プロジェクトです。タイトルに続き、1家族につき4キュー（通し・入場・保持・退場）で、通しで全体の流れを、残り3つで各相を単独で見せます。');
   lines.push('');
-  lines.push(`- 1 キュー＝${CUE_SECONDS} 秒。開くには Studio の *Help → シェーダ見本*、または *File → Open project…* を使います`);
-  lines.push('- 入場キューは該当enterのみ1.2秒、退場キューは該当exitのみ1.0秒、保持キューは該当holdのみ。それ以外は短いフェードです');
+  lines.push(`- タイトル ${INTRO_SECONDS} 秒、各家族は通し ${PHASE_SECONDS.full} 秒＋入場・保持・退場 各${PHASE_SECONDS.enter} 秒`);
+  lines.push('- 各キューは2ビート（上部のタイトル＋中央の本文句）で、ラベルと本文が重なりません。タイトルビートは shader hold を外しています');
+  lines.push('- 各家族区間は固有色の背景クリップ付き。本文は家族ごとの句・色です');
+  lines.push('- 開くには Studio の *Help → シェーダ見本*、または *File → Open project…* を使います');
   lines.push('');
   lines.push('| # | セクション | キュー数 | 時間 |');
   lines.push('|---:|---|---:|---|');
@@ -261,7 +342,7 @@ function indexMarkdown(built) {
   lines.push('| `npm run shader-showcase -- build` | このプロジェクトとこの一覧を再生成 |');
   lines.push('| `node scripts/shader-showcase.js list` | セクションとキューを一覧 |');
   lines.push('| `node scripts/shader-showcase.js list --section wind` | 1 セクションだけ表示 |');
-  lines.push('| `npm run shader-showcase -- build --sections mosaic,fog` | セクションを絞って生成 |');
+  lines.push('| `npm run shader-showcase -- build --sections intro,mosaicBreak` | セクションを絞って生成 |');
   lines.push('');
   let sectionIndex = 0;
   for (const section of built.sections) {
@@ -296,6 +377,21 @@ function build(options) {
   if (migratedStyles.length !== built.entries.length) {
     throw new Error(`generated project kept styles for ${migratedStyles.length} of ${built.entries.length} cues`);
   }
+  // every family section plays against its own plate: each body must sit
+  // inside a bg clip of that section's colour
+  const cueById = new Map(built.project.script.cues.map((cue) => [cue.id, cue]));
+  for (const entry of built.entries) {
+    const cue = cueById.get(entry.cueId);
+    const cover = (built.project.clips || []).filter((clip) => clip.trackId === 'bg' && clip.start <= cue.start + 1e-4 && clip.end >= cue.end - 1e-4);
+    if (!cover.length) throw new Error(`cue ${entry.cueId} has no background plate`);
+    if (entry.phase === 'full') {
+      const style = built.project.cueStyles[entry.cueId];
+      if (!style || !style.enter || style.enter.type !== entry.type) throw new Error(`full cue ${entry.cueId} enter is not ${entry.type}`);
+      if (!style.exit || style.exit.type !== entry.type) throw new Error(`full cue ${entry.cueId} exit is not ${entry.type}`);
+      const hold = Array.isArray(style.hold) ? style.hold[0] : null;
+      if (!hold || hold.type !== entry.type) throw new Error(`full cue ${entry.cueId} hold is not ${entry.type}`);
+    }
+  }
   const changed = writeFileIfChanged(out, serialize(built.project));
   const mdChanged = md ? writeFileIfChanged(md, indexMarkdown(built)) : false;
   return { ...built, written: { out, changed, md, mdChanged } };
@@ -323,7 +419,7 @@ function parseArgs(argv) {
 function parseSections(value) {
   if (typeof value !== 'string') return null;
   const known = SECTIONS.map((section) => section.id);
-  const alias = { mosaic: 'mosaicBreak', fog: 'fogBreak', wind: 'windBreak', drift: 'windNoBreak', cloth: 'cloth' };
+  const alias = { intro: 'intro', mosaic: 'mosaicBreak', fog: 'fogBreak', wind: 'windBreak', drift: 'windNoBreak', cloth: 'cloth' };
   const ids = value.split(',').map((item) => item.trim()).filter(Boolean).map((item) => alias[item] || item);
   if (!ids.length) return null;
   for (const id of ids) {
@@ -352,9 +448,9 @@ function listText(options) {
 
 function help() {
   console.log([
-    'SHADER SHOWCASE: the five shader-break families in all three phases',
+    'SHADER SHOWCASE: the five shader-break families, full arc plus each phase',
     '',
-    '  node scripts/shader-showcase.js build [--sections mosaic,fog] [--out <file>] [--md off]',
+    '  node scripts/shader-showcase.js build [--sections intro,mosaicBreak] [--out <file>] [--md off]',
     '  node scripts/shader-showcase.js list [--section wind]',
     '',
     `sections: ${SECTIONS.map((section) => section.id).join(', ')}`,
@@ -398,14 +494,14 @@ function main(argv) {
 if (require.main === module) process.exit(main(process.argv.slice(2)));
 
 module.exports = {
-  CUE_SECONDS,
+  INTRO_SECONDS,
+  PHASE_SECONDS,
   FAMILIES,
   PHASES,
   SECTIONS,
   OUT_PATH,
   MD_PATH,
   styleFor,
-  cueText,
   plan,
   buildShowcase,
   indexMarkdown,

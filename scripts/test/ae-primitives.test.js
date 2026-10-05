@@ -150,5 +150,16 @@ test('the deformation slots keep a block warp and drop the smallest amount', () 
   const twist = { deform: [letter('twist', 12), letter('bulge', 0.3)] };
   assert.deepEqual(slots(twist).map((entry) => entry.item.type), ['bulge', 'twist']);
   assert.equal(slots({ deform: [] }), null);
-  assert.equal(passes._test.STATE_ROWS, 25);
+  assert.equal(passes._test.STATE_ROWS, 26);
+  // row 25 rides the dissolve mode / direction / bias; unwritten rows read 0
+  const pack = passes._test.packStateRows;
+  const row25 = (state) => {
+    const data = new Float32Array(26 * 4);
+    pack([state], data, 1);
+    return [data[25 * 4], data[25 * 4 + 1], data[25 * 4 + 2], data[25 * 4 + 3]];
+  };
+  const near25 = (got, want) => assert.ok(Math.abs(got - want) < 1e-6, `expected ${want}, got ${got}`);
+  const dissolved = row25({ dissolve: { scale: 8, progress: 0.5, edge: 0.2, mode: 1, dir: { x: 1, y: 0 }, bias: 0.7 } });
+  [1, 1, 0, 0.7].forEach((want, k) => near25(dissolved[k], want));
+  assert.deepEqual(row25({}), [0, 0, 0, 0]);
 });

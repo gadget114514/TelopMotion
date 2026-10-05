@@ -1535,7 +1535,7 @@
     params: {
       levels: 'Levels', sides: 'Sides', split: 'Split', cloak: 'Cloak', shimmer: 'Shimmer',
       flicker: 'Flicker', rollHeight: 'Roll bar', strokeOpacity: 'Stroke opacity', strokeWidth: 'Stroke width',
-      dipColor: 'Dip color', grain: 'Grain', edge: 'Edge', drift: 'Drift',
+      dipColor: 'Dip color', grain: 'Grain', edge: 'Edge', drift: 'Drift', dust: 'Dust',
       soft: 'Softness', cells: 'Cells', cell: 'Cell size', scatter: 'Scatter', slope: 'Slope', arc: 'Arc height',
     },
     values: {
@@ -1555,7 +1555,7 @@
     params: {
       levels: '階調数', sides: '辺数', split: '分離量', cloak: 'クローク', shimmer: 'シマー',
       flicker: 'ちらつき', rollHeight: 'ロールバー', strokeOpacity: '線の不透明度', strokeWidth: '線の太さ',
-      dipColor: '遷移色', grain: '粒度', edge: '縁の幅', drift: '漂い',
+      dipColor: '遷移色', grain: '粒度', edge: '縁の幅', drift: '漂い', dust: '粒子量',
       soft: '柔らかさ', cells: 'セル数', cell: 'セルサイズ', scatter: '散らばり', slope: '傾斜', arc: '弧の高さ',
     },
     values: {
@@ -1575,7 +1575,7 @@
     params: {
       levels: 'Niveles', sides: 'Lados', split: 'Separación', cloak: 'Ocultación', shimmer: 'Brillo tenue',
       flicker: 'Parpadeo', rollHeight: 'Barra de rodadura', strokeOpacity: 'Opacidad del trazo', strokeWidth: 'Grosor del trazo',
-      dipColor: 'Color de transición', grain: 'Grano', edge: 'Borde', drift: 'Deriva',
+      dipColor: 'Color de transición', grain: 'Grano', edge: 'Borde', drift: 'Deriva', dust: 'Polvo',
       soft: 'Suavidad', cells: 'Celdas', cell: 'Tamaño de celda', scatter: 'Dispersión', slope: 'Inclinación', arc: 'Altura del arco',
     },
     values: {
@@ -1595,7 +1595,7 @@
     params: {
       levels: 'Niveaux', sides: 'Côtés', split: 'Séparation', cloak: 'Dissimulation', shimmer: 'Scintillement',
       flicker: 'Papillotement', rollHeight: 'Barre de défilement', strokeOpacity: 'Opacité du trait', strokeWidth: 'Épaisseur du trait',
-      dipColor: 'Couleur de transition', grain: 'Grain', edge: 'Bord', drift: 'Dérive',
+      dipColor: 'Couleur de transition', grain: 'Grain', edge: 'Bord', drift: 'Dérive', dust: 'Poussière',
       soft: 'Douceur', cells: 'Cellules', cell: 'Taille de cellule', scatter: 'Dispersion', slope: 'Pente', arc: 'Hauteur de l’arc',
     },
     values: {
@@ -1615,7 +1615,7 @@
     params: {
       levels: 'Уровни', sides: 'Стороны', split: 'Разделение', cloak: 'Маскировка', shimmer: 'Мерцание',
       flicker: 'Дрожание', rollHeight: 'Полоса прокрутки', strokeOpacity: 'Непрозрачность обводки', strokeWidth: 'Толщина обводки',
-      dipColor: 'Цвет перехода', grain: 'Зерно', edge: 'Край', drift: 'Дрейф',
+      dipColor: 'Цвет перехода', grain: 'Зерно', edge: 'Край', drift: 'Дрейф', dust: 'Пыль',
       soft: 'Мягкость', cells: 'Ячейки', cell: 'Размер ячейки', scatter: 'Разброс', slope: 'Наклон', arc: 'Высота дуги',
     },
     values: {

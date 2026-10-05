@@ -4,8 +4,9 @@ SA.glPasses = (() => {
   'use strict';
 
   let batches = new WeakMap();
-  const REP_CODES = { mesh: 0, stroke: 1, pieces: 2, particles: 3, sand: 4 };
+  const REP_CODES = { mesh: 0, stroke: 1, pieces: 2, particles: 3, sand: 4, dust: 5 };
   const SAND_GRAINS = 160;
+  const DUST_GRAINS = 360;
   const FALLBACK_DEFORM_CODES = {
     jelly: 1, wobbleWarp: 2, twist: 3, breathing: 4, melt: 5,
     stretch: 15, skew: 16, swirl: 17,
@@ -17,15 +18,18 @@ SA.glPasses = (() => {
     return Math.max(0, Math.min(1, value));
   }
 
-  // Per-letter state texture: 23 RGBA rows. Rows 0-4 are the original layout,
+  // Per-letter state texture: 26 RGBA rows. Rows 0-4 are the original layout,
   // rows 5-6 hold the second and third deformation slots, row 7 the block-warp
   // origin and half-size, row 8 the wipe / flash / mask fields. Rows 9-21 carry
   // the soft body lattice (25 vec2: xy is an even node, zw the next odd node)
   // and row 22 the lattice / decor flags. Row 23 carries the sand parameters
-  // (wind, gravity, grain size, pile flag).
-  const STATE_ROWS = 25;
+  // (wind, gravity, grain size, pile flag) or the dust parameters
+  // (windX, windY, size, turbulence). Row 24 carries spread / strength, row 25
+  // the dissolve mode / direction / bias (see DISSOLVE_ROW).
+  const STATE_ROWS = 26;
   const SAND_ROW = 23;
   const SAND_ROW2 = 24; // spread, strength
+  const DISSOLVE_ROW = 25; // mode, dir.x, dir.y, bias
   const LATTICE_ROW0 = 9;
   const LATTICE_ROW1 = 21;
   const LATTICE_FLAGS_ROW = 22;
@@ -128,13 +132,31 @@ SA.glPasses = (() => {
       data[at(LATTICE_FLAGS_ROW) + 1] = dissolve ? dissolve.scale || 0 : 0;
       data[at(LATTICE_FLAGS_ROW) + 2] = dissolve ? dissolve.progress || 0 : 0;
       data[at(LATTICE_FLAGS_ROW) + 3] = dissolve ? dissolve.edge || 0 : 0;
+      // row 25 rides the dissolve mode / direction / bias. Every letter must
+      // write it (the buffer is reused across frames), so 0 when unused.
+      data[at(DISSOLVE_ROW)] = dissolve ? dissolve.mode || 0 : 0;
+      data[at(DISSOLVE_ROW) + 1] = dissolve && dissolve.dir ? dissolve.dir.x || 0 : 0;
+      data[at(DISSOLVE_ROW) + 2] = dissolve && dissolve.dir ? dissolve.dir.y || 0 : 0;
+      data[at(DISSOLVE_ROW) + 3] = dissolve ? dissolve.bias || 0 : 0;
+      // dust shares the sand rows with its own layout (windX, windY, size,
+      // turbulence / spread, amount); row 24.zw stays the em info slot.
       const sand = state.sand || null;
-      data[at(SAND_ROW)] = sand ? sand.wind || 0 : 0;
-      data[at(SAND_ROW) + 1] = sand ? sand.gravity || 0 : 0;
-      data[at(SAND_ROW) + 2] = sand ? sand.grain || 0 : 0;
-      data[at(SAND_ROW) + 3] = sand && sand.pile ? 1 : 0;
-      data[at(SAND_ROW2)] = sand ? sand.spread || 0 : 0;
-      data[at(SAND_ROW2) + 1] = sand ? sand.strength || 0 : 0;
+      const dust = !sand && state.dust ? state.dust : null;
+      if (dust) {
+        data[at(SAND_ROW)] = dust.windX || 0;
+        data[at(SAND_ROW) + 1] = dust.windY || 0;
+        data[at(SAND_ROW) + 2] = dust.size || 0;
+        data[at(SAND_ROW) + 3] = dust.turbulence || 0;
+        data[at(SAND_ROW2)] = dust.spread || 0;
+        data[at(SAND_ROW2) + 1] = dust.amount || 0;
+      } else {
+        data[at(SAND_ROW)] = sand ? sand.wind || 0 : 0;
+        data[at(SAND_ROW) + 1] = sand ? sand.gravity || 0 : 0;
+        data[at(SAND_ROW) + 2] = sand ? sand.grain || 0 : 0;
+        data[at(SAND_ROW) + 3] = sand && sand.pile ? 1 : 0;
+        data[at(SAND_ROW2)] = sand ? sand.spread || 0 : 0;
+        data[at(SAND_ROW2) + 1] = sand ? sand.strength || 0 : 0;
+      }
       data[at(SAND_ROW2) + 2] = 0;
       data[at(SAND_ROW2) + 3] = 0;
       data[at(4)] = REP_CODES[state.represent] == null ? 0 : REP_CODES[state.represent];
@@ -450,10 +472,12 @@ SA.glPasses = (() => {
     return { vao, positionBuffer, indexBuffer: null, count: positions.length / 9 };
   }
 
-  // Sand: SAND_GRAINS interior points per letter in the mesh's letter-local
+  // Sand: `grains` interior points per letter in the mesh's letter-local
   // space (centered on the bbox), so the grains sit exactly on the glyph.
-  // extra = (random, size factor), centroid is unused.
-  function buildSandBatch(gl, scene) {
+  // extra = (random, size factor), centroid is unused. Dust reuses the same
+  // layout with more grains; the per-letter thinning comes from the state.
+  function buildSandBatch(gl, scene, grains) {
+    const count = Math.max(1, Math.round(grains) || SAND_GRAINS);
     const positions = [];
     for (let i = 0; i < scene.letters.length; i += 1) {
       const letter = scene.letters[i];
@@ -469,8 +493,8 @@ SA.glPasses = (() => {
       const scaled = { positions: new Float32Array(fill.positions.length), indices: fill.indices };
       for (let j = 0; j < fill.positions.length; j += 1) scaled.positions[j] = fill.positions[j] * scale;
       const random = SA.rng.rngFor(0x5a4d, letter.path, 'sand');
-      const samples = SA.geometry.sampleInterior(scaled, SAND_GRAINS, random);
-      for (let j = 0; j < SAND_GRAINS; j += 1) {
+      const samples = SA.geometry.sampleInterior(scaled, count, random);
+      for (let j = 0; j < count; j += 1) {
         const rnd = ((i * 31 + j * 17) % 97) / 97;
         const size = 0.55 + ((j * 53 + i * 7) % 11) / 11 * 0.9;
         positions.push(samples[j * 2] - cx, samples[j * 2 + 1] - cy, i, halfW, halfH, rnd, size, 0, 0);
@@ -511,6 +535,7 @@ SA.glPasses = (() => {
       pieces: buildPiecesBatch(gl, scene),
       particles: buildParticlesBatch(gl, scene, variant && variant.sources),
       sand: buildSandBatch(gl, scene),
+      dust: buildSandBatch(gl, scene, DUST_GRAINS),
       bg: buildBgBatch(gl, scene),
     };
     variants.set(key, built);

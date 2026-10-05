@@ -1,18 +1,21 @@
 # シェーダ分解見本 (shader showcase)
 
-シェーダ分解5種（モザイク・霧・風分解・風なびき・布なびき）を入場・保持・退場の3キューずつ並べた見本プロジェクトです。1家族の3相が連続再生されます。
+シェーダ分解5種（モザイク・霧・風分解・風なびき・布なびき）の見本プロジェクトです。タイトルに続き、1家族につき4キュー（通し・入場・保持・退場）で、通しで全体の流れを、残り3つで各相を単独で見せます。
 
-- 1 キュー＝4 秒。開くには Studio の *Help → シェーダ見本*、または *File → Open project…* を使います
-- 入場キューは該当enterのみ1.2秒、退場キューは該当exitのみ1.0秒、保持キューは該当holdのみ。それ以外は短いフェードです
+- タイトル 6 秒、各家族は通し 6 秒＋入場・保持・退場 各5 秒
+- 各キューは2ビート（上部のタイトル＋中央の本文句）で、ラベルと本文が重なりません。タイトルビートは shader hold を外しています
+- 各家族区間は固有色の背景クリップ付き。本文は家族ごとの句・色です
+- 開くには Studio の *Help → シェーダ見本*、または *File → Open project…* を使います
 
 | # | セクション | キュー数 | 時間 |
 |---:|---|---:|---|
-| 1 | モザイク分解 (mosaicBreak) | 3 | 0–12s |
-| 2 | 霧分解 (fogBreak) | 3 | 12–24s |
-| 3 | 風分解 (windBreak) | 3 | 24–36s |
-| 4 | 風なびき (windNoBreak) | 3 | 36–48s |
-| 5 | 布なびき (cloth) | 3 | 48–60s |
-| | **合計** | **15** | **60s** |
+| 1 | シェーダ分解 5種 (intro) | 1 | 0–6s |
+| 2 | モザイク分解 (mosaicBreak) | 4 | 6–27s |
+| 3 | 霧分解 (fogBreak) | 4 | 27–48s |
+| 4 | 風分解 (windBreak) | 4 | 48–69s |
+| 5 | 風なびき (windNoBreak) | 4 | 69–90s |
+| 6 | 布なびき (cloth) | 4 | 90–111s |
+| | **合計** | **21** | **111s** |
 
 ## コマンド
 
@@ -21,55 +24,68 @@
 | `npm run shader-showcase -- build` | このプロジェクトとこの一覧を再生成 |
 | `node scripts/shader-showcase.js list` | セクションとキューを一覧 |
 | `node scripts/shader-showcase.js list --section wind` | 1 セクションだけ表示 |
-| `npm run shader-showcase -- build --sections mosaic,fog` | セクションを絞って生成 |
+| `npm run shader-showcase -- build --sections intro,mosaicBreak` | セクションを絞って生成 |
 
-## 1. モザイク分解 (mosaicBreak) (mosaicBreak)
+## 1. シェーダ分解 5種 (intro) (intro)
 
-シェーダ分解 `mosaicBreak` を入場・保持・退場の3キューで並べています。
-
-| # | キュー | 時間 | 値 | 内容 |
-|---:|---|---|---|---|
-| 1 | `sh_001` | 0–4s | `mosaicBreak/enter` | モザイク分解・入場 |
-| 2 | `sh_002` | 4–8s | `mosaicBreak/hold` | モザイク分解・保持 |
-| 3 | `sh_003` | 8–12s | `mosaicBreak/exit` | モザイク分解・退場 |
-
-## 2. 霧分解 (fogBreak) (fogBreak)
-
-シェーダ分解 `fogBreak` を入場・保持・退場の3キューで並べています。
+タイトルキュー。シェーダ分解5家族の見本です。
 
 | # | キュー | 時間 | 値 | 内容 |
 |---:|---|---|---|---|
-| 4 | `sh_004` | 12–16s | `fogBreak/enter` | 霧分解・入場 |
-| 5 | `sh_005` | 16–20s | `fogBreak/hold` | 霧分解・保持 |
-| 6 | `sh_006` | 20–24s | `fogBreak/exit` | 霧分解・退場 |
+| 1 | `sh_001` | 0–6s | `intro` | シェーダ分解 5種 |
 
-## 3. 風分解 (windBreak) (windBreak)
+## 2. モザイク分解 (mosaicBreak) (mosaicBreak)
 
-シェーダ分解 `windBreak` を入場・保持・退場の3キューで並べています。
+シェーダ分解 `mosaicBreak` を通し・入場・保持・退場の4キューで並べています。本文は「デジタルの欠片」です。
 
 | # | キュー | 時間 | 値 | 内容 |
 |---:|---|---|---|---|
-| 7 | `sh_007` | 24–28s | `windBreak/enter` | 風分解・入場 |
-| 8 | `sh_008` | 28–32s | `windBreak/hold` | 風分解・保持 |
-| 9 | `sh_009` | 32–36s | `windBreak/exit` | 風分解・退場 |
+| 2 | `sh_002` | 6–12s | `mosaicBreak/full` | モザイク分解・通し |
+| 3 | `sh_003` | 12–17s | `mosaicBreak/enter` | モザイク分解・入場 |
+| 4 | `sh_004` | 17–22s | `mosaicBreak/hold` | モザイク分解・保持 |
+| 5 | `sh_005` | 22–27s | `mosaicBreak/exit` | モザイク分解・退場 |
 
-## 4. 風なびき (windNoBreak) (windNoBreak)
+## 3. 霧分解 (fogBreak) (fogBreak)
 
-シェーダ分解 `windNoBreak` を入場・保持・退場の3キューで並べています。
-
-| # | キュー | 時間 | 値 | 内容 |
-|---:|---|---|---|---|
-| 10 | `sh_010` | 36–40s | `windNoBreak/enter` | 風なびき・入場 |
-| 11 | `sh_011` | 40–44s | `windNoBreak/hold` | 風なびき・保持 |
-| 12 | `sh_012` | 44–48s | `windNoBreak/exit` | 風なびき・退場 |
-
-## 5. 布なびき (cloth) (cloth)
-
-シェーダ分解 `cloth` を入場・保持・退場の3キューで並べています。
+シェーダ分解 `fogBreak` を通し・入場・保持・退場の4キューで並べています。本文は「霧の向こうへ」です。
 
 | # | キュー | 時間 | 値 | 内容 |
 |---:|---|---|---|---|
-| 13 | `sh_013` | 48–52s | `cloth/enter` | 布なびき・入場 |
-| 14 | `sh_014` | 52–56s | `cloth/hold` | 布なびき・保持 |
-| 15 | `sh_015` | 56–60s | `cloth/exit` | 布なびき・退場 |
+| 6 | `sh_006` | 27–33s | `fogBreak/full` | 霧分解・通し |
+| 7 | `sh_007` | 33–38s | `fogBreak/enter` | 霧分解・入場 |
+| 8 | `sh_008` | 38–43s | `fogBreak/hold` | 霧分解・保持 |
+| 9 | `sh_009` | 43–48s | `fogBreak/exit` | 霧分解・退場 |
+
+## 4. 風分解 (windBreak) (windBreak)
+
+シェーダ分解 `windBreak` を通し・入場・保持・退場の4キューで並べています。本文は「風に散る言葉」です。
+
+| # | キュー | 時間 | 値 | 内容 |
+|---:|---|---|---|---|
+| 10 | `sh_010` | 48–54s | `windBreak/full` | 風分解・通し |
+| 11 | `sh_011` | 54–59s | `windBreak/enter` | 風分解・入場 |
+| 12 | `sh_012` | 59–64s | `windBreak/hold` | 風分解・保持 |
+| 13 | `sh_013` | 64–69s | `windBreak/exit` | 風分解・退場 |
+
+## 5. 風なびき (windNoBreak) (windNoBreak)
+
+シェーダ分解 `windNoBreak` を通し・入場・保持・退場の4キューで並べています。本文は「風に揺れて」です。
+
+| # | キュー | 時間 | 値 | 内容 |
+|---:|---|---|---|---|
+| 14 | `sh_014` | 69–75s | `windNoBreak/full` | 風なびき・通し |
+| 15 | `sh_015` | 75–80s | `windNoBreak/enter` | 風なびき・入場 |
+| 16 | `sh_016` | 80–85s | `windNoBreak/hold` | 風なびき・保持 |
+| 17 | `sh_017` | 85–90s | `windNoBreak/exit` | 風なびき・退場 |
+
+## 6. 布なびき (cloth) (cloth)
+
+シェーダ分解 `cloth` を通し・入場・保持・退場の4キューで並べています。本文は「はためく想い」です。
+
+| # | キュー | 時間 | 値 | 内容 |
+|---:|---|---|---|---|
+| 18 | `sh_018` | 90–96s | `cloth/full` | 布なびき・通し |
+| 19 | `sh_019` | 96–101s | `cloth/enter` | 布なびき・入場 |
+| 20 | `sh_020` | 101–106s | `cloth/hold` | 布なびき・保持 |
+| 21 | `sh_021` | 106–111s | `cloth/exit` | 布なびき・退場 |
 
