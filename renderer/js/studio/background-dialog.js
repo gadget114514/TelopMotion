@@ -86,6 +86,7 @@
         const bytes = input.bytes;
         const blob = bytes ? new Blob([bytes], { type: mime }) : input;
         url = URL.createObjectURL(blob);
+        SA.mediaNotice.warn('video');
       }
       layer.type = 'video';
       layer.src = url;

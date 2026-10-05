@@ -1907,6 +1907,7 @@ SA.inspector = (() => {
       if (!picked || !picked.bytes) return;
       const url = URL.createObjectURL(new Blob([picked.bytes], { type: picked.type || 'video/mp4' }));
       writeSheet(layer.id, { src: url }, `sheet:${layer.id}:src`);
+      SA.mediaNotice.warn('video');
     });
     wrap.appendChild(choose);
     wrap.appendChild(sheetTextInput(layer.src && layer.src.length < 200 ? layer.src : '', t('layers.url'), (value) => {

@@ -490,6 +490,7 @@
       height: meta && meta.height,
     };
     SA.store.commands.addMedia({ ...entry, kind: 'videos' });
+    SA.mediaNotice.warn('video');
     const currentDoc = project();
     if (!(currentDoc.layers || []).some((l) => l && l.type === 'video')) {
       addVideoLayer(entry, 'background');
@@ -1202,6 +1203,7 @@
     else if (result.error) toast('studio.toast.error');
     else {
       toast('studio.toast.audioImported', { name: result.name });
+      SA.mediaNotice.warn('audio');
       setMediaTab('audio');
       refreshAudioVisual();
       if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
@@ -1909,6 +1911,7 @@
           event.preventDefault();
           const url = URL.createObjectURL(file);
           SA.preview.setAudioSource(url, file.name);
+          SA.mediaNotice.warn('audio');
           if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
             SA.store.commands.addMedia({
               id: 'audio',

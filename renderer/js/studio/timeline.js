@@ -3019,6 +3019,7 @@ SA.timeline = (() => {
             event.preventDefault();
             const url = URL.createObjectURL(file);
             SA.preview.setAudioSource(url, file.name);
+            SA.mediaNotice.warn('audio');
             if (SA.store && SA.store.commands && SA.store.commands.addMedia) {
               SA.store.commands.addMedia({
                 id: 'audio',
@@ -3047,6 +3048,7 @@ SA.timeline = (() => {
             };
             if (SA.store && SA.store.commands) {
               SA.store.commands.addMedia({ ...entry, kind: 'videos' });
+              SA.mediaNotice.warn('video');
               const layer = dropLayerAt(point);
               layer.type = 'video';
               layer.src = url;
