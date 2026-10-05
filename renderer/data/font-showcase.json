@@ -41,7 +41,13 @@
         "id": "font_01",
         "start": 0,
         "end": 4,
-        "text": "1. Noto Sans / NotoSans-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "1. Noto Sans\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 1,
@@ -52,7 +58,13 @@
         "id": "font_02",
         "start": 4,
         "end": 8,
-        "text": "2. Noto Sans JP / NotoSansJP-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "2. Noto Sans JP\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 2,
@@ -63,7 +75,13 @@
         "id": "font_03",
         "start": 8,
         "end": 12,
-        "text": "3. Noto Sans / NotoSans-Bold\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "3. Noto Sans Bold\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 3,
@@ -74,7 +92,13 @@
         "id": "font_04",
         "start": 12,
         "end": 16,
-        "text": "4. Noto Sans JP / NotoSansJP-Bold\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "4. Noto Sans JP Bold\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 4,
@@ -85,7 +109,13 @@
         "id": "font_05",
         "start": 16,
         "end": 20,
-        "text": "5. Noto Serif / NotoSerif-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "5. Noto Serif\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 5,
@@ -96,7 +126,13 @@
         "id": "font_06",
         "start": 20,
         "end": 24,
-        "text": "6. Noto Serif JP / NotoSerifJP-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "6. Noto Serif JP\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 6,
@@ -107,7 +143,13 @@
         "id": "font_07",
         "start": 24,
         "end": 28,
-        "text": "7. Dela Gothic One / DelaGothicOne-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "7. Dela Gothic One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 7,
@@ -118,7 +160,13 @@
         "id": "font_08",
         "start": 28,
         "end": 32,
-        "text": "8. Bebas Neue / BebasNeue-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "8. Bebas Neue\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 8,
@@ -129,7 +177,13 @@
         "id": "font_09",
         "start": 32,
         "end": 36,
-        "text": "9. Zen Maru Gothic / ZenMaruGothic-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "9. Zen Maru Gothic\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 9,
@@ -140,7 +194,13 @@
         "id": "font_10",
         "start": 36,
         "end": 40,
-        "text": "10. Klee One / KleeOne-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "10. Klee One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 10,
@@ -151,7 +211,13 @@
         "id": "font_11",
         "start": 40,
         "end": 44,
-        "text": "11. RocknRoll One / RocknRollOne-Regular\nAaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "11. RocknRoll One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 4,
+            "9:16": 4
+          }
+        },
         "meta": {
           "kind": "font-showcase",
           "index": 11,
@@ -184,67 +250,648 @@
     "font_01": {
       "text": {
         "fontId": "NotoSans-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_02": {
       "text": {
         "fontId": "NotoSansJP-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ffe600",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_03": {
       "text": {
         "fontId": "NotoSans-Bold",
-        "weight": 700
+        "weight": 700,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#00e5ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blur": 18,
+            "color": "#ffffff",
+            "opacity": 0.35
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_04": {
       "text": {
         "fontId": "NotoSansJP-Bold",
-        "weight": 700
+        "weight": 700,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff5cd0",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blur": 18,
+            "color": "#ffffff",
+            "opacity": 0.35
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_05": {
       "text": {
         "fontId": "NotoSerif-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#7dff8a",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_06": {
       "text": {
         "fontId": "NotoSerifJP-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff8a3d",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_07": {
       "text": {
         "fontId": "DelaGothicOne-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff4d5e",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blur": 18,
+            "color": "#ffffff",
+            "opacity": 0.35
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_08": {
       "text": {
         "fontId": "BebasNeue-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#c77dff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blur": 18,
+            "color": "#ffffff",
+            "opacity": 0.35
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_09": {
       "text": {
         "fontId": "ZenMaruGothic-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#8ef6ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_10": {
       "text": {
         "fontId": "KleeOne-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#d0ff4d",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "enabled": true,
+          "params": {
+            "offset": {
+              "x": 0,
+              "y": 0
+            },
+            "blur": 18,
+            "color": "#ffffff",
+            "opacity": 0.35
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     },
     "font_11": {
       "text": {
         "fontId": "RocknRollOne-Regular",
-        "weight": 400
+        "weight": 400,
+        "size": 150
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#4dd6c1",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "enabled": true,
+          "params": {
+            "width": 5,
+            "color": "#101018",
+            "softness": 0.4
+          }
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
       }
     }
   },
@@ -321,344 +968,210 @@
   "beats": {
     "font_01": [
       {
-        "id": "font_01:page1",
+        "id": "font_01:single0",
         "cueId": "font_01",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 0,
-        "end": 1.6135265700483092,
-        "text": "1. Noto Sans / NotoSans-Regular",
-        "lines": [
-          "1. Noto Sans / NotoSans-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_01:page2",
-        "cueId": "font_01",
-        "kind": "page",
-        "index": 2,
-        "start": 1.6135265700483092,
         "end": 4,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "1. Noto Sans\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "1. Noto Sans",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_02": [
       {
-        "id": "font_02:page1",
+        "id": "font_02:single0",
         "cueId": "font_02",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 4,
-        "end": 5.7494305239179955,
-        "text": "2. Noto Sans JP / NotoSansJP-Regular",
-        "lines": [
-          "2. Noto Sans JP / NotoSansJP-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_02:page2",
-        "cueId": "font_02",
-        "kind": "page",
-        "index": 2,
-        "start": 5.7494305239179955,
         "end": 8,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "2. Noto Sans JP\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "2. Noto Sans JP",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_03": [
       {
-        "id": "font_03:page1",
+        "id": "font_03:single0",
         "cueId": "font_03",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 8,
-        "end": 9.523809523809524,
-        "text": "3. Noto Sans / NotoSans-Bold",
-        "lines": [
-          "3. Noto Sans / NotoSans-Bold"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_03:page2",
-        "cueId": "font_03",
-        "kind": "page",
-        "index": 2,
-        "start": 9.523809523809524,
         "end": 12,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "3. Noto Sans Bold\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "3. Noto Sans Bold",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_04": [
       {
-        "id": "font_04:page1",
+        "id": "font_04:single0",
         "cueId": "font_04",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 12,
-        "end": 13.669811320754716,
-        "text": "4. Noto Sans JP / NotoSansJP-Bold",
-        "lines": [
-          "4. Noto Sans JP / NotoSansJP-Bold"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_04:page2",
-        "cueId": "font_04",
-        "kind": "page",
-        "index": 2,
-        "start": 13.669811320754716,
         "end": 16,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "4. Noto Sans JP Bold\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "4. Noto Sans JP Bold",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_05": [
       {
-        "id": "font_05:page1",
+        "id": "font_05:single0",
         "cueId": "font_05",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 16,
-        "end": 17.669811320754718,
-        "text": "5. Noto Serif / NotoSerif-Regular",
-        "lines": [
-          "5. Noto Serif / NotoSerif-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_05:page2",
-        "cueId": "font_05",
-        "kind": "page",
-        "index": 2,
-        "start": 17.669811320754718,
         "end": 20,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "5. Noto Serif\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "5. Noto Serif",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_06": [
       {
-        "id": "font_06:page1",
+        "id": "font_06:single0",
         "cueId": "font_06",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 20,
-        "end": 21.79955456570156,
-        "text": "6. Noto Serif JP / NotoSerifJP-Regular",
-        "lines": [
-          "6. Noto Serif JP / NotoSerifJP-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_06:page2",
-        "cueId": "font_06",
-        "kind": "page",
-        "index": 2,
-        "start": 21.79955456570156,
         "end": 24,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "6. Noto Serif JP\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "6. Noto Serif JP",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_07": [
       {
-        "id": "font_07:page1",
+        "id": "font_07:single0",
         "cueId": "font_07",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 24,
-        "end": 25.893390191897655,
-        "text": "7.\nDela Gothic One / DelaGothicOne-Regular",
-        "lines": [
-          "7.",
-          "Dela Gothic One / DelaGothicOne-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_07:page2",
-        "cueId": "font_07",
-        "kind": "page",
-        "index": 2,
-        "start": 25.893390191897655,
         "end": 28,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "7. Dela Gothic One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "7. Dela Gothic One",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_08": [
       {
-        "id": "font_08:page1",
+        "id": "font_08:single0",
         "cueId": "font_08",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 28,
-        "end": 29.669811320754718,
-        "text": "8. Bebas Neue / BebasNeue-Regular",
-        "lines": [
-          "8. Bebas Neue / BebasNeue-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_08:page2",
-        "cueId": "font_08",
-        "kind": "page",
-        "index": 2,
-        "start": 29.669811320754718,
         "end": 32,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "8. Bebas Neue\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "8. Bebas Neue",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_09": [
       {
-        "id": "font_09:page1",
+        "id": "font_09:single0",
         "cueId": "font_09",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 32,
-        "end": 33.89339019189765,
-        "text": "9.\nZen Maru Gothic / ZenMaruGothic-Regular",
-        "lines": [
-          "9.",
-          "Zen Maru Gothic / ZenMaruGothic-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_09:page2",
-        "cueId": "font_09",
-        "kind": "page",
-        "index": 2,
-        "start": 33.89339019189765,
         "end": 36,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "9. Zen Maru Gothic\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "9. Zen Maru Gothic",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_10": [
       {
-        "id": "font_10:page1",
+        "id": "font_10:single0",
         "cueId": "font_10",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 36,
-        "end": 37.58435207823961,
-        "text": "10. Klee One / KleeOne-Regular",
-        "lines": [
-          "10. Klee One / KleeOne-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_10:page2",
-        "cueId": "font_10",
-        "kind": "page",
-        "index": 2,
-        "start": 37.58435207823961,
         "end": 40,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "10. Klee One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "10. Klee One",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "font_11": [
       {
-        "id": "font_11:page1",
+        "id": "font_11:single0",
         "cueId": "font_11",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 40,
-        "end": 41.847494553376904,
-        "text": "11. RocknRoll One / RocknRollOne-Regular",
-        "lines": [
-          "11. RocknRoll One / RocknRollOne-Regular"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "font_11:page2",
-        "cueId": "font_11",
-        "kind": "page",
-        "index": 2,
-        "start": 41.847494553376904,
         "end": 44,
-        "text": "AaBbCcDdEeFfGg 0123456789\nあいうえお カキクケコ 愛永漢字 0123",
+        "text": "11. RocknRoll One\nAaBbCcDdEe\n0123456789\nあア愛永漢字",
         "lines": [
-          "AaBbCcDdEeFfGg 0123456789",
-          "あいうえお カキクケコ 愛永漢字 0123"
+          "11. RocknRoll One",
+          "AaBbCcDdEe",
+          "0123456789",
+          "あア愛永漢字"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ]

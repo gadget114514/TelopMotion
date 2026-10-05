@@ -62,20 +62,72 @@ test('every bundled font gets its own cue with a pinned style', () => {
     'scripts/font-showcase.js FONTS must mirror font.js BUILTINS'
   );
   const cueById = new Map(b.project.script.cues.map((cue) => [cue.id, cue]));
+  // section order in the walk (only sections that have fonts)
+  const sectionOrder = b.sections.map((section) => section.id);
+  const expectedLines = (index, font) => [
+    showcase.cueLabel(index, font),
+    showcase.SAMPLE_LATIN,
+    showcase.SAMPLE_DIGITS,
+    showcase.SAMPLE_JA,
+  ];
   for (const entry of b.entries) {
     const cue = cueById.get(entry.cueId);
     assert.ok(cue, `cue ${entry.cueId} missing`);
     assert.equal(cue.end - cue.start, showcase.FONT_SECONDS, `${entry.cueId} span`);
-    assert.ok(String(cue.text).includes(entry.font.id), `${entry.cueId} label must name ${entry.font.id}`);
-    assert.ok(String(cue.text).includes(showcase.SAMPLE_LATIN), `${entry.cueId} must show the latin sample`);
-    assert.ok(String(cue.text).includes(showcase.SAMPLE_JA), `${entry.cueId} must show the japanese sample`);
+    assert.equal(cue.text, expectedLines(entry.index, entry.font).join('\n'), `${entry.cueId} text`);
+    assert.ok(String(cue.text).includes(showcase.SAMPLE_DIGITS), `${entry.cueId} must show the digit sample`);
     assert.equal(cue.meta.kind, 'font-showcase');
     assert.equal(cue.meta.fontId, entry.font.id);
     assert.equal(cue.meta.index, entry.index);
+    // one beat showing the four lines exactly as written (the textFlow cap
+    // keeps the lyric balancer from re-wrapping them)
+    const beats = b.project.beats[entry.cueId] || [];
+    assert.equal(beats.length, 1, `cue ${entry.cueId} must stay a single beat`);
+    assert.deepEqual(beats[0].lines, cue.text.split('\n'), `cue ${entry.cueId} lines`);
     const container = b.project.cueStyles[entry.cueId];
     assert.ok(container && container.text, `cue ${entry.cueId} has no text style`);
     assert.equal(container.text.fontId, entry.font.id, `cue ${entry.cueId} font`);
     assert.equal(container.text.weight, entry.font.weight, `cue ${entry.cueId} weight`);
+    // one large size everywhere (about twice the old rendering)
+    assert.equal(container.text.size, showcase.TEXT_SIZE, `cue ${entry.cueId} size`);
+    assert.equal(showcase.TEXT_SIZE, 150);
+    // the cue's own bright fill colour
+    assert.deepEqual(
+      container.color && container.color.fill,
+      { kind: 'solid', value: showcase.FONT_FILLS[entry.font.id], alpha: 1 },
+      `cue ${entry.cueId} fill`
+    );
+    // one simple edge decoration per section: outline on even sections,
+    // a soft dropShadow halo on odd ones
+    const sectionIndex = sectionOrder.indexOf(entry.section);
+    assert.ok(sectionIndex >= 0, `cue ${entry.cueId} section ${entry.section} missing`);
+    const edge = container.edge && container.edge[0];
+    assert.ok(edge && edge.enabled !== false, `cue ${entry.cueId} has no edge decoration`);
+    assert.equal(edge.type, showcase.decorationName(sectionIndex), `cue ${entry.cueId} decoration`);
+  }
+});
+
+test('sections alternate the two decorations across the walk', () => {
+  const b = built();
+  assert.deepEqual(
+    b.sections.map((section, index) => showcase.decorationName(index)),
+    ['outline', 'dropShadow', 'outline', 'dropShadow', 'outline', 'dropShadow', 'outline']
+  );
+  // every fill colour is a bright solid on the dark preview
+  for (const font of showcase.FONTS) {
+    assert.match(showcase.FONT_FILLS[font.id], /^#[0-9a-f]{6}$/i, `${font.id} fill`);
+  }
+});
+
+test('every cue holds its text still (instant simultaneous fade)', () => {
+  const b = built();
+  for (const entry of b.entries) {
+    const container = b.project.cueStyles[entry.cueId];
+    assert.equal(container.animation && container.animation.type, 'simultaneous', `cue ${entry.cueId} animation`);
+    assert.equal(container.enter && container.enter.type, 'fade', `cue ${entry.cueId} enter`);
+    assert.equal(container.exit && container.exit.type, 'fade', `cue ${entry.cueId} exit`);
+    assert.ok(Number(container.enter.motion.in.duration) <= 0.05, `cue ${entry.cueId} enter duration`);
+    assert.ok(Number(container.exit.motion.out.duration) <= 0.05, `cue ${entry.cueId} exit duration`);
   }
 });
 

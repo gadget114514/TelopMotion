@@ -7,14 +7,25 @@
 //     writes renderer/data/font-showcase.json and demo/font-showcase.md
 //   node scripts/font-showcase.js list
 //
-// One bundled font is one four-second cue: the cue text names the family and
-// the id on the first line and shows the same Latin + Japanese sample on the
-// next lines, so a CJK face and a Latin-only face read differently at a glance
-// (a Latin-only face falls back per character to the bundled Noto Sans JP).
-// The cue style pins `text.fontId` (and the matching weight), nothing else, so
-// neighbouring cues differ only in the typeface. Cues are grouped by
-// `fontClass` — the perceptual class the repeat group's font variation swaps
-// between — with one marker per class.
+// One bundled font is one four-second cue: the first line names the family,
+// the next lines show the same short Latin + digit + Japanese sample, so a
+// CJK face and a Latin-only face read differently at a glance (a Latin-only
+// face falls back per character to the bundled Noto Sans JP). Every cue
+// renders at the same large size (150px): the lines stay short on purpose, so
+// even the widest bundled face (Dela Gothic One) fits the frame without the
+// renderer having to wrap mid-word, and a long label would spill past the
+// frame at these sizes. The full font id lives in the cue meta and in
+// demo/font-showcase.md.
+// A cue shows its four lines at once: `textFlow.maxLines` lifts the default
+// two-line lyric cap (the page showcase does the same), so the flow keeps the
+// explicit breaks in a single beat instead of rebalancing them.
+// Each cue pins `text.fontId` (with the matching weight and size), a bright
+// solid `color.fill` of its own and one simple edge decoration — a dark
+// `outline` on even sections, a soft `dropShadow` halo on odd ones — so the
+// walk also shows colouring and simple decoration. The text holds still
+// (instant simultaneous fades), so letterforms can be judged at any moment. Cues are
+// grouped by `fontClass` — the perceptual class the repeat group's font
+// variation swaps between — with one marker per class.
 //
 // The output is generated, never hand edited: re-run this after the bundled
 // list in `renderer/js/lyrics/font.js` (BUILTINS) changes. The table below
@@ -52,8 +63,52 @@ const FIXED_TIME = '2026-01-01T00:00:00.000Z';
 const OUT_PATH = path.join(ROOT, 'renderer', 'data', 'font-showcase.json');
 const MD_PATH = path.join(ROOT, 'demo', 'font-showcase.md');
 
-const SAMPLE_LATIN = 'AaBbCcDdEeFfGg 0123456789';
-const SAMPLE_JA = 'あいうえお カキクケコ 愛永漢字 0123';
+const SAMPLE_LATIN = 'AaBbCcDdEe';
+const SAMPLE_DIGITS = '0123456789';
+const SAMPLE_JA = 'あア愛永漢字';
+
+// One large size for every cue (about twice the previous 77px rendering), so
+// neighbouring cues stay comparable. Short lines keep even the widest face
+// inside the frame at this size (verified with real font metrics).
+const TEXT_SIZE = 150;
+
+// One bright solid fill per font (all readable on the black preview).
+const FONT_FILLS = {
+  'NotoSans-Regular': '#f4f7ff',
+  'NotoSansJP-Regular': '#ffe600',
+  'NotoSans-Bold': '#00e5ff',
+  'NotoSansJP-Bold': '#ff5cd0',
+  'NotoSerif-Regular': '#7dff8a',
+  'NotoSerifJP-Regular': '#ff8a3d',
+  'DelaGothicOne-Regular': '#ff4d5e',
+  'BebasNeue-Regular': '#c77dff',
+  'ZenMaruGothic-Regular': '#8ef6ff',
+  'KleeOne-Regular': '#d0ff4d',
+  'RocknRollOne-Regular': '#4dd6c1',
+};
+
+// Even sections draw a dark outline, odd sections a soft halo: two simple
+// decorations across the walk, one per section so neighbours in a section
+// stay comparable.
+const OUTLINE = { type: 'outline', enabled: true, params: { width: 5, color: '#101018', softness: 0.4 } };
+const HALO = { type: 'dropShadow', enabled: true, params: { offset: { x: 0, y: 0 }, blur: 18, color: '#ffffff', opacity: 0.35 } };
+
+// The walk judges letterforms, so the text stays still: entrances and exits
+// are instant fades and the animation is simultaneous. Without this the
+// engine default (fade + a per-letter stagger of ~35ms) smears the exit
+// across more than a second, leaving the first letters half-exited at the
+// capture point near the cue end.
+const STATIC_ANIMATION = { type: 'simultaneous', enabled: true, params: {}, motion: { stagger: { each: 0 } } };
+const STATIC_ENTER = { type: 'fade', enabled: true, params: {}, motion: { in: { duration: 0.01, ease: 'linear' } } };
+const STATIC_EXIT = { type: 'fade', enabled: true, params: {}, motion: { out: { duration: 0.01, ease: 'linear' } } };
+
+function edgeOf(sectionIndex) {
+  return clone(sectionIndex % 2 === 0 ? OUTLINE : HALO);
+}
+
+function decorationName(sectionIndex) {
+  return sectionIndex % 2 === 0 ? 'outline' : 'dropShadow';
+}
 
 const SECTIONS = [
   { id: 'sans', label: 'ゴシック (sans)', note: '本文の基本となるサンセリフ。欧文のみと和文の2書体を見比べます。' },
@@ -82,8 +137,13 @@ function cueId(index) {
   return `font_${String(index + 1).padStart(2, '0')}`;
 }
 
+function cueLabel(index, entry) {
+  const bold = (entry.weight || 400) >= 600 && !/bold/i.test(entry.family) ? ' Bold' : '';
+  return `${index}. ${entry.family}${bold}`;
+}
+
 function cueText(index, entry) {
-  return `${index}. ${entry.family} / ${entry.id}\n${SAMPLE_LATIN}\n${SAMPLE_JA}`;
+  return `${cueLabel(index, entry)}\n${SAMPLE_LATIN}\n${SAMPLE_DIGITS}\n${SAMPLE_JA}`;
 }
 
 function buildShowcase() {
@@ -106,6 +166,9 @@ function buildShowcase() {
         start,
         end,
         text: cueText(index, entry),
+        // four lines shown at once: keep the lyric two-line cap from
+        // rebalancing the explicit breaks (see showcase.js PAGE_TEXT_FLOW)
+        textFlow: { maxLines: { '16:9': 4, '9:16': 4 } },
         meta: { kind: 'font-showcase', index, fontId: entry.id },
       });
       entries.push({ index, section: section.id, sectionLabel: section.label, cueId: id, start, end, font: entry });
@@ -122,8 +185,21 @@ function buildShowcase() {
   doc.script.sourceName = 'font-showcase.json';
   doc.markers = markers;
   textflow.apply(doc);
+  let sectionIndex = -1;
+  let lastSection = null;
   for (const entry of entries) {
-    doc.cueStyles[entry.cueId] = { text: { fontId: entry.font.id, weight: entry.font.weight } };
+    if (entry.section !== lastSection) {
+      lastSection = entry.section;
+      sectionIndex += 1;
+    }
+    doc.cueStyles[entry.cueId] = {
+      text: { fontId: entry.font.id, weight: entry.font.weight, size: TEXT_SIZE },
+      color: { fill: { kind: 'solid', value: FONT_FILLS[entry.font.id], alpha: 1 } },
+      edge: [edgeOf(sectionIndex)],
+      animation: clone(STATIC_ANIMATION),
+      enter: clone(STATIC_ENTER),
+      exit: clone(STATIC_EXIT),
+    };
   }
 
   return { project: doc, entries, markers, sections: SECTIONS.filter((section) => fontsOf(section.id).length), total: round(t) };
@@ -154,9 +230,9 @@ function indexMarkdown(built) {
   const lines = [];
   lines.push('# フォント見本 (font showcase)');
   lines.push('');
-  lines.push(`同梱フォント ${FONTS.length} 書体を 1 キューずつ並べた見本プロジェクトです。各キューは同じ欧文・和文サンプルを表示し、キューの書体だけが違います（欧文専用書体の和文は Noto Sans JP へのフォールバックで表示されます）。`);
+  lines.push(`同梱フォント ${FONTS.length} 書体を 1 キューずつ並べた見本プロジェクトです。各キューは同じ欧文・数字・和文サンプルを大きなサイズ（${TEXT_SIZE}px）で表示し、書体ごとの色とシンプルな装飾（縁取り・影）も付けています（欧文専用書体の和文は Noto Sans JP へのフォールバックで表示されます）。`);
   lines.push('');
-  lines.push(`- 1 書体 = 1 キュー（${FONT_SECONDS} 秒）`);
+  lines.push(`- 1 書体 = 1 キュー（${FONT_SECONDS} 秒）、全文を1ビートで静止表示します`);
   lines.push('- 開くには Studio の *Help → フォント見本*、または *File → Open project…* を使います');
   lines.push('');
   lines.push('| # | セクション | キュー数 | 時間 |');
@@ -193,10 +269,12 @@ function indexMarkdown(built) {
     lines.push('');
     if (section.note) lines.push(section.note);
     lines.push('');
-    lines.push('| # | キュー | 時間 | 書体 | 和文 |');
-    lines.push('|---:|---|---|---|---|');
+    lines.push(`サイズ ${TEXT_SIZE}px・装飾 ${decorationName(sectionIndex - 1)}`);
+    lines.push('');
+    lines.push('| # | キュー | 時間 | 書体 | 和文 | 色 |');
+    lines.push('|---:|---|---|---|---|---|');
     for (const entry of sectionRows) {
-      lines.push(`| ${entry.index} | \`${entry.cueId}\` | ${formatRange(entry)} | ${entry.font.family} \`${entry.font.id}\` | ${entry.font.cjk ? 'あり' : 'なし（フォールバック）'} |`);
+      lines.push(`| ${entry.index} | \`${entry.cueId}\` | ${formatRange(entry)} | ${entry.font.family} \`${entry.font.id}\` | ${entry.font.cjk ? 'あり' : 'なし（フォールバック）'} | \`${FONT_FILLS[entry.font.id]}\` |`);
     }
     lines.push('');
   }
@@ -211,9 +289,9 @@ function listText() {
     const rows = built.entries.filter((entry) => entry.section === section.id);
     if (!rows.length) continue;
     order += 1;
-    lines.push(`${order}. ${section.label} — ${rows.length} cues`);
+    lines.push(`${order}. ${section.label} — ${rows.length} cues, ${TEXT_SIZE}px, ${decorationName(order - 1)}`);
     for (const entry of rows) {
-      lines.push(`   ${String(entry.index).padStart(3, ' ')}. ${formatRange(entry)}  ${entry.font.family} / ${entry.font.id}`);
+      lines.push(`   ${String(entry.index).padStart(3, ' ')}. ${formatRange(entry)}  ${entry.font.family} / ${entry.font.id} ${FONT_FILLS[entry.font.id]}`);
     }
     lines.push('');
   }
@@ -299,12 +377,18 @@ module.exports = {
   FONTS,
   FONT_SECONDS,
   SECTIONS,
+  TEXT_SIZE,
+  FONT_FILLS,
   SAMPLE_LATIN,
+  SAMPLE_DIGITS,
   SAMPLE_JA,
   OUT_PATH,
   MD_PATH,
   fontsOf,
+  cueLabel,
   cueText,
+  edgeOf,
+  decorationName,
   buildShowcase,
   indexMarkdown,
   listText,
