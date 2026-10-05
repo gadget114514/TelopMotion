@@ -2440,16 +2440,17 @@ SA.store = (() => {
       });
     },
     // Vary the beat: every effect type stays, only params / motion are
-    // re-drawn ("same style, new seed"). The composed picture (compose mode)
-    // is kept on purpose, so the look does not change its face; only the
-    // size ladder follows. One undo reverts the whole draw.
+    // re-drawn ("same style, new seed"), and the variation slot steps so the
+    // letters re-draw too. The composed picture (compose mode) is kept on
+    // purpose, so the look does not change its face; only the size ladder
+    // follows. One undo reverts the whole draw.
     varyBeat(cueId, beatId) {
       const cue = findCue(cueId);
       if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
       const mode = modeAxes();
       dispatch({
         label: 'vary beat',
-        areas: ['style'],
+        areas: ['style', 'script'],
         do(projectDoc) {
           const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
           const beat = beats.find((entry) => entry.id === beatId);
@@ -2469,6 +2470,8 @@ SA.store = (() => {
           for (const patch of result.patches || []) {
             for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
           }
+          // the variation slot: the letters re-draw without touching seed/style
+          beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
           const composeMode = !!(projectDoc.styleMode && projectDoc.styleMode.compose);
           const change = mode.params.sizeChange;
           const ladderActive = !composeMode || change > 0 || !(mode.rawW > 0);
@@ -2479,7 +2482,8 @@ SA.store = (() => {
       });
     },
     // Vary the cue: the cue container keeps its types and only params /
-    // motion are re-drawn. Without force every beat under the cue is varied
+    // motion are re-drawn, and every beat steps its variation slot so the
+    // letters re-draw too. Without force every beat under the cue is varied
     // the same way (each with its own seed); with {force:true} the beats'
     // own style bags are cleared first, so the varied cue style shows through
     // on every beat. One undo reverts the whole draw.
@@ -2490,7 +2494,7 @@ SA.store = (() => {
       const force = !!(opts && opts.force);
       dispatch({
         label: 'vary cue',
-        areas: ['style'],
+        areas: ['style', 'script'],
         do(projectDoc) {
           const target = projectDoc.script.cues.find((entry) => entry.id === cueId);
           if (!target) return;
@@ -2524,6 +2528,10 @@ SA.store = (() => {
                 for (const [group, instance] of Object.entries(patch.style || {})) bag[group] = clone(instance);
               }
             });
+          }
+          // the variation slot: the letters re-draw without touching seed/style
+          for (const beat of beats) {
+            beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
           }
           if (SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
             SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
