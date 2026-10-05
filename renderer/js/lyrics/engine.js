@@ -213,13 +213,46 @@ SA.lyricsEngine = (() => {
     return false;
   }
 
-  // Clips of one track kind, hidden tracks excluded, in start order.
-  function activeClips(project, kind) {
+  // Clips of one track kind, hidden tracks excluded, in start order. `within`
+  // (a Set of track ids) narrows them to one draw group.
+  function activeClips(project, kind, within) {
     const ids = new Set(
-      ((project && project.tracks) || []).filter((track) => track && track.kind === kind && !track.hidden && track.enabled !== false).map((track) => track.id)
+      ((project && project.tracks) || [])
+        .filter((track) => track && track.kind === kind && !track.hidden && track.enabled !== false && (!within || within.has(track.id)))
+        .map((track) => track.id)
     );
     if (!ids.size) return [];
     return ((project.clips || [])).filter((clip) => clip && ids.has(clip.trackId) && !isClipDisabled(clip)).sort((a, b) => a.start - b.start);
+  }
+
+  // The back-to-front draw groups of a track list (top of the list = front).
+  // A video track splits the list: the tracks under it form a group that draws
+  // first, then the video covers them. Inside a group the layer order is the
+  // track order (upper = front), so `order` lists the group's tracks back to
+  // front (the bottom track first, the top track last). A list without video
+  // tracks is one group with every track. `ids` stays for membership tests.
+  // Returns [{ type: 'tracks', ids: Set, order: [] }, { type: 'video', track }, ...].
+  function drawSegments(tracks) {
+    const list = (tracks || []).filter(Boolean);
+    const segments = [];
+    let ids = new Set();
+    const flush = () => {
+      if (!ids.size) return;
+      segments.push({ type: 'tracks', ids, order: [...ids] });
+      ids = new Set();
+    };
+    for (let i = list.length - 1; i >= 0; i -= 1) {
+      const track = list[i];
+      if (track.kind !== 'video') {
+        ids.add(track.id);
+        continue;
+      }
+      flush();
+      segments.push({ type: 'video', track });
+    }
+    flush();
+    if (!segments.some((segment) => segment.type === 'tracks')) segments.push({ type: 'tracks', ids: new Set(), order: [] });
+    return segments;
   }
 
   // The layer tracks (foreground / background) own the layers of their slot:
@@ -1538,54 +1571,54 @@ SA.lyricsEngine = (() => {
 
     // Filler clips live on their own track and are drawn whenever they are
     // active, whether or not a lyric beat is on screen.
-    function renderFillerClips(t, duration, stage, stageWeird, maskFor) {
+    function drawSingleFillerClip(clip, t, duration, stage, stageWeird, maskFor) {
       const project = state.project;
-      for (const clip of activeClips(project, 'filler')) {
-        const envelope = clipEnvelope(t, clip);
-        if (envelope <= 0) continue;
-        const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
-        const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
-        if (spec.type === 'credits') {
-          if (!activeCredit(t) && SA.credits) {
-            const settings = SA.credits.settingsFor(project);
-            const lines = SA.credits.expandTemplate(project, settings, {});
-            const style = creditStyleFor('element', 0.06);
-            pipeline.beginLayer();
-            drawTexts(centeredTexts(lines, { size: style.size, color: style.color, opacity: envelope }));
-            pipeline.commitLayer(1);
-          }
-          continue;
-        }
-        if (!SA.fillerRender) continue;
-        const context = fillerClipContext(t, recolored ? { ...clip, spec, colors: recolored.colors } : clip, duration);
-        const list = SA.fillerRender.drawList(spec, context);
-        const shapes = (list && list.shapes) || [];
-        const texts = (list && list.texts) || [];
-        const anims = (list && list.textAnims) || [];
-        if (!shapes.length && !texts.length && !anims.length) continue;
-        const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
-        const mask = typeof maskFor === 'function' ? maskFor(clip) : !!maskFor;
-        if (shapes.length || texts.length) {
+      const envelope = clipEnvelope(t, clip);
+      if (envelope <= 0) return;
+      const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
+      const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
+      if (spec.type === 'credits') {
+        if (!activeCredit(t) && SA.credits) {
+          const settings = SA.credits.settingsFor(project);
+          const lines = SA.credits.expandTemplate(project, settings, {});
+          const style = creditStyleFor('element', 0.06);
           pipeline.beginLayer();
-          drawPrimitives(shapes);
-          drawTexts(texts);
-          if (mask) pipeline.maskLayer();
-          pipeline.commitLayer(clipOpacity);
+          drawTexts(centeredTexts(lines, { size: style.size, color: style.color, opacity: envelope }));
+          pipeline.commitLayer(1);
         }
-        // animated text layers draw on top of the shapes
-        for (let i = 0; i < anims.length; i += 1) {
-          const params = (anims[i] && anims[i].params) || {};
-          drawTextAnim(
-            SA.fillerRender.expandTokens(params.text, context),
-            textAnimStyle(params),
-            clip.start,
-            clip.end,
-            t,
-            clipOpacity,
-            `${clip.id}:${i}`
-          );
-        }
+        return;
       }
+      if (!SA.fillerRender) return;
+      const context = fillerClipContext(t, recolored ? { ...clip, spec, colors: recolored.colors } : clip, duration);
+      const list = SA.fillerRender.drawList(spec, context);
+      const shapes = (list && list.shapes) || [];
+      const texts = (list && list.texts) || [];
+      const anims = (list && list.textAnims) || [];
+      if (!shapes.length && !texts.length && !anims.length) return;
+      const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
+      const mask = typeof maskFor === 'function' ? maskFor(clip) : !!maskFor;
+      if (shapes.length || texts.length) {
+        pipeline.beginLayer();
+        drawPrimitives(shapes);
+        drawTexts(texts);
+        if (mask) pipeline.maskLayer();
+        pipeline.commitLayer(clipOpacity);
+      }
+      // animated text layers draw on top of the shapes
+      for (let i = 0; i < anims.length; i += 1) {
+        const params = (anims[i] && anims[i].params) || {};
+        drawTextAnim(
+          SA.fillerRender.expandTokens(params.text, context),
+          textAnimStyle(params),
+          clip.start,
+          clip.end,
+          t,
+          clipOpacity,
+          `${clip.id}:${i}`
+        );
+      }
+    }
+    function drawActiveCreditElements(t) {
       const credit = activeCredit(t);
       if (credit) {
         const texts = creditElementTexts(credit);
@@ -1593,6 +1626,13 @@ SA.lyricsEngine = (() => {
         drawTexts(texts);
         pipeline.commitLayer(1);
       }
+    }
+    function renderFillerClips(t, duration, stage, stageWeird, maskFor, ids) {
+      const project = state.project;
+      for (const clip of activeClips(project, 'filler', ids)) {
+        drawSingleFillerClip(clip, t, duration, stage, stageWeird, maskFor);
+      }
+      drawActiveCreditElements(t);
     }
 
     function renderAlwaysCredits(t, beats, drawForeground) {
@@ -1759,7 +1799,12 @@ SA.lyricsEngine = (() => {
       const scoped = scopedBgEntries(style);
       // the scoped entries are part of the result, so they are part of the key
       const scopedKey = scoped.length ? JSON.stringify(scoped.map((entry) => [entry.group, entry.type, entry.params || {}, entry.scope || null])) : '';
-      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}|${scopedKey}`;
+      // the per-beat variation slot: 0 keeps the legacy stream byte-for-byte,
+      // a vary press steps it and reshuffles the letters without touching the
+      // seed or the style
+      const variant = beat && Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0;
+      const seedKey = variant ? [seed, beat.id, variant] : [seed, beat.id];
+      const key = `${seed}|${beat.id}|${group || 'bgShape'}|${JSON.stringify(shape.params)}|${scopedKey}|v${variant}`;
       if (scene.__bgVary && scene.__bgVary.key === key) return scene.__bgVary.value;
       const palette = (style.palette && style.palette.colors) || [];
       const letters = scene.letters.map((letter) => ({
@@ -1768,7 +1813,7 @@ SA.lyricsEngine = (() => {
         wordIdx: letter.wordIdx,
         path: letter.path,
       }));
-      const value = applyScopedBg(SA.vary.letterVariation(shape.params, letters, palette, [seed, beat.id]), scene, style);
+      const value = applyScopedBg(SA.vary.letterVariation(shape.params, letters, palette, seedKey), scene, style);
       scene.__bgVary = { key, value };
       return value;
     }
@@ -2095,43 +2140,91 @@ SA.lyricsEngine = (() => {
       if (!subtitleOnly && textActiveBeats.length && pipeline && typeof pipeline.buildTextMask === 'function' && maskWanted) {
         maskOn = buildFrameTextMask(textActiveBeats, project);
       }
-      // back to front: background clips + background layers -> backdrop clips ->
-      // filler clips -> subtitle tracks (bottom to top) -> foreground layers
-      if (!subtitleOnly) {
-        const maskFor = (clip) => maskOn && trackTextMaskOn(trackById(project, clip.trackId));
-        for (const clip of activeClips(project, 'background')) drawBackgroundClip(clip, t, card, stage, stageWeird);
-        drawBackgroundLayers();
-        for (const clip of activeClips(project, 'backdrop')) drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
-        renderFillerClips(t, duration, stage, stageWeird, maskFor);
-        const figureClips = activeClips(project, 'figure');
-        for (const clip of figureClips) {
-          const spec = clip.spec || {};
-          if (figureLayerOf(spec) === 'background') {
-            drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+      // Layer order = track order (upper = front). Within one draw group
+      // (tracks not split by a video track) every clip / subtitle track draws
+      // back to front: the bottom track first, the top track last, following
+      // `segment.order`. The foreground track stays fixed at the top of the
+      // list and the background track at the bottom, so they draw first and
+      // last inside their group.
+      //
+      // A video track splits that order (see drawSegments): the tracks listed
+      // under it draw first, then its video covers them, and a chroma key
+      // lets them show through where the key colour was.
+      const segments = drawSegments(project.tracks);
+      const firstGroup = segments.find((segment) => segment.type === 'tracks') || null;
+      const allTracks = (project.tracks || []).filter(Boolean);
+      const backgroundTrack = allTracks.find((track) => track.kind === 'background') || null;
+      const trackIndexOf = new Map((allTracks || []).map((track, index) => [track.id, index]));
+      // the text mask knocks clips out under the glyphs, per track: a clip is
+      // masked when a subtitle track with visible text sits in front of it
+      // (above it in the list). A clip moved in front of every visible lyric
+      // covers the text instead, so it skips the mask.
+      const textFrontIndex = textActiveBeats.reduce(
+        (at, active) => (trackIndexOf.has(active.trackId) ? Math.min(at, trackIndexOf.get(active.trackId)) : at),
+        Infinity
+      );
+      const maskFor = (clip) => {
+        if (!maskOn) return false;
+        if (!trackTextMaskOn(trackById(project, clip.trackId))) return false;
+        if (!trackIndexOf.has(clip.trackId)) return true;
+        return textFrontIndex < trackIndexOf.get(clip.trackId);
+      };
+      const drawVideoTrack = (track) => {
+        if (!layerPass || !track || track.hidden || track.enabled === false) return;
+        const chroma = track.chroma && track.chroma.enabled ? track.chroma : null;
+        const list = layers.filter((layer) => layer.slot === 'video' && layer.trackId === track.id).map((layer) => (chroma ? { ...layer, chroma } : layer));
+        if (list.length) layerPass.draw(list, { width: state.width, height: state.height }, t);
+      };
+      const drawTrackClips = (track, singleIds) => {
+        const kind = track ? track.kind : null;
+        if (kind === 'background') {
+          for (const clip of activeClips(project, 'background', singleIds)) drawBackgroundClip(clip, t, card, stage, stageWeird);
+          if (backgroundTrack && singleIds.has(backgroundTrack.id)) drawBackgroundLayers();
+          else if (!backgroundTrack) drawBackgroundLayers();
+        } else if (kind === 'backdrop') {
+          for (const clip of activeClips(project, 'backdrop', singleIds)) drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+        } else if (kind === 'filler') {
+          renderFillerClips(t, duration, stage, stageWeird, maskFor, singleIds);
+        } else if (kind === 'figure') {
+          const figureClips = activeClips(project, 'figure', singleIds);
+          for (const clip of figureClips) {
+            const spec = clip.spec || {};
+            if (figureLayerOf(spec) === 'background') {
+              drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+            }
           }
-        }
-        for (const clip of figureClips) {
-          const spec = clip.spec || {};
-          if (figureLayerOf(spec) !== 'background') {
-            if (spec.type === 'figure') drawFigureClip(clip, t, duration, stage, stageWeird, maskFor(clip));
-            else drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+          for (const clip of figureClips) {
+            const spec = clip.spec || {};
+            if (figureLayerOf(spec) !== 'background') {
+              if (spec.type === 'figure') drawFigureClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+              else drawShapeClip(clip, t, duration, stage, stageWeird, maskFor(clip));
+            }
           }
+        } else if (kind === 'textAnim') {
+          for (const clip of activeClips(project, 'textAnim', singleIds)) drawTextClip(clip, t);
+        } else if (kind === 'subtitle') {
+          for (const active of beatsByTrack.get(track.id) || []) drawActiveBeat(active);
+        } else if (kind === 'foreground') {
+          drawForegroundLayers();
         }
-        for (const clip of activeClips(project, 'textAnim')) drawTextClip(clip, t);
-      }
+      };
+      // `segment.order` already lists the group's tracks back to front; the
+      // index map is only the fallback for segments built without it.
+      const orderedTrackIdsFor = (segment) => {
+        if (segment && Array.isArray(segment.order)) return segment.order.filter((id) => trackIndexOf.has(id));
+        const ids = [...segment.ids].filter((id) => trackIndexOf.has(id));
+        ids.sort((a, b) => trackIndexOf.get(b) - trackIndexOf.get(a));
+        return ids;
+      };
       // subtitle tracks whose text background was switched off keep their data
       // (bgShape is untouched) and simply skip the background pass
       const bgHiddenTracks = new Set(subtitleTracks.filter((track) => track.bgHidden).map((track) => track.id));
-      const trackOrder = subtitleTracks.map((track) => track.id);
       const beatsByTrack = new Map();
       for (const active of visibleBeats) {
         if (!beatsByTrack.has(active.trackId)) beatsByTrack.set(active.trackId, []);
         beatsByTrack.get(active.trackId).push(active);
       }
-      const drawOrder = [];
-      for (const trackId of beatsByTrack.keys()) if (!trackOrder.includes(trackId)) drawOrder.push(trackId);
-      for (const trackId of [...trackOrder].reverse()) drawOrder.push(trackId);
-      for (const active of drawOrder.flatMap((trackId) => beatsByTrack.get(trackId) || [])) {
+      const drawActiveBeat = (active) => {
         const { beat, scene, result, style } = active;
         const graphicsOn = subtitleGraphicsOn({ graphicsHidden: graphicsHiddenTracks.has(active.trackId) }, view);
         const textOn = subtitleTextOn({ textHidden: textHiddenTracks.has(active.trackId) }, view, style);
@@ -2343,6 +2436,49 @@ SA.lyricsEngine = (() => {
           }
         }
         frame.cues.push(entry);
+      };
+      for (const segment of segments) {
+        if (segment.type === 'video') {
+          if (!subtitleOnly) drawVideoTrack(segment.track);
+          continue;
+        }
+        // cues on a track that no longer exists draw first, with the backmost
+        // group
+        if (segment === firstGroup && !subtitleOnly) {
+          for (const trackId of beatsByTrack.keys()) {
+            if (trackIndexOf.has(trackId)) continue;
+            for (const active of beatsByTrack.get(trackId) || []) drawActiveBeat(active);
+          }
+        }
+        if (subtitleOnly) {
+          for (const trackId of orderedTrackIdsFor(segment)) {
+            const st = trackById(project, trackId);
+            if (!st || st.kind !== 'subtitle') continue;
+            for (const active of beatsByTrack.get(trackId) || []) drawActiveBeat(active);
+          }
+          continue;
+        }
+        // one pass over the segment in track order: each track draws its own
+        // clips (or lyrics) back to front, so any kind can sit in front of
+        // any other. `renderFillerClips` also draws the credit elements, so
+        // the second filler track (if any) draws its clips only.
+        let fillerSeen = false;
+        for (const trackId of orderedTrackIdsFor(segment)) {
+          const track = trackById(project, trackId);
+          if (!track) continue;
+          if (track.kind === 'filler' && fillerSeen) {
+            for (const clip of activeClips(project, 'filler', new Set([trackId]))) {
+              drawSingleFillerClip(clip, t, duration, stage, stageWeird, maskFor);
+            }
+            continue;
+          }
+          drawTrackClips(track, new Set([trackId]));
+          if (track.kind === 'filler') fillerSeen = true;
+        }
+        // a project without a background track still draws its background
+        // layers with the backmost group
+        if (!backgroundTrack && segment === firstGroup) drawBackgroundLayers();
+        if (!fillerSeen) drawActiveCreditElements(t);
       }
       if (!subtitleOnly) {
         drawBackgroundLayers();
@@ -2392,9 +2528,18 @@ SA.lyricsEngine = (() => {
         const cue = (project.script.cues || []).find((entry) => entry.id === beat.cueId);
         return (cue && cue.trackId) || 'sub1';
       };
+      // Layer order = track order (upper = front): the fallback draws back to
+      // front like the full engine.
+      const fallbackIndexOf = new Map(((project && project.tracks) || []).map((track, index) => [track && track.id, index]));
+      const orderedBeats = beats.slice().sort((a, b) => {
+        const ai = fallbackIndexOf.has(cueTrackId(a)) ? fallbackIndexOf.get(cueTrackId(a)) : Infinity;
+        const bi = fallbackIndexOf.has(cueTrackId(b)) ? fallbackIndexOf.get(cueTrackId(b)) : Infinity;
+        if (bi !== ai) return bi - ai;
+        return (a.start || 0) - (b.start || 0);
+      });
 
       const fonts = state.assets.fonts || [];
-      for (const beat of beats) {
+      for (const beat of orderedBeats) {
         const textTrackId = cueTrackId(beat);
         const baseStyle = SA.project && SA.project.resolveStyle ? SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`) : {};
         const textOn = subtitleTextOn({ textHidden: textHiddenTracks.has(textTrackId) }, view, baseStyle);
@@ -2583,5 +2728,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
 })();

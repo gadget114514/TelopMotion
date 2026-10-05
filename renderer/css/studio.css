@@ -793,6 +793,17 @@ body {
   font-weight: 600;
 }
 
+/* the cue / beat draw + delete actions: tinted with the accent orange */
+.btn-orange {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1005;
+}
+
+.btn-orange:hover {
+  border-color: #ffb07a;
+}
+
 .btn-icon {
   padding: 5px 9px;
 }
@@ -1176,12 +1187,66 @@ body {
   gap: 6px;
 }
 
+/* the inspector's own variant of the beat button strip */
+.insp-beat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
 .insp-breadcrumb {
   display: flex;
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
   margin-bottom: 8px;
+}
+
+/* the draw tools pinned above the breadcrumb: one boxed group per scope */
+.insp-regen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 5px 6px;
+  border: 1px solid var(--line-soft);
+  border-radius: 9px;
+  background: var(--card);
+}
+
+.insp-regen-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding-right: 6px;
+  border-right: 1px solid var(--line-soft);
+}
+
+.insp-regen-group:last-child {
+  padding-right: 0;
+  border-right: none;
+}
+
+.insp-regen-tag {
+  color: #5d6785;
+  font-size: 12px;
+  line-height: 1;
+  cursor: default;
+}
+
+.insp-regen-btn {
+  min-width: 28px;
+  padding: 4px 7px;
+  font-size: 13px;
+  line-height: 1;
+  text-align: center;
+}
+
+.insp-regen-btn.is-disabled,
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 .insp-breadcrumb .insp-sep {
@@ -1217,6 +1282,22 @@ body {
   letter-spacing: 0.6px;
   color: var(--muted);
   user-select: none;
+}
+
+/* the cue / beat draw + delete buttons, right of the section label */
+.insp-summary-actions {
+  float: right;
+  display: inline-flex;
+  gap: 3px;
+  margin: -3px 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.insp-summary-actions .insp-regen-btn {
+  min-width: 24px;
+  padding: 3px 6px;
+  font-size: 12px;
 }
 
 .insp-section[open] > summary {

@@ -807,7 +807,7 @@ SA.store = (() => {
   }
 
   function nextTrackId(project, kind) {
-    const prefix = kind === 'subtitle' ? 'sub' : kind === 'backdrop' ? 'mid' : kind === 'filler' ? 'filler' : kind === 'figure' ? 'fig' : kind === 'textAnim' ? 'text' : kind === 'background' ? 'bg' : 'trk';
+    const prefix = kind === 'subtitle' ? 'sub' : kind === 'backdrop' ? 'mid' : kind === 'filler' ? 'filler' : kind === 'figure' ? 'fig' : kind === 'textAnim' ? 'text' : kind === 'background' ? 'bg' : kind === 'video' ? 'video' : 'trk';
     const used = new Set((project.tracks || []).map((track) => track && track.id));
     let index = 1;
     while (used.has(`${prefix}${index}`)) index += 1;
@@ -1771,7 +1771,7 @@ SA.store = (() => {
       const trackKind = kind || 'subtitle';
       const subtitle = (project.tracks || []).filter((track) => track && track.kind === 'subtitle');
       const id = nextTrackId(project, trackKind);
-      const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景', figure: '図形', textAnim: 'テキスト' };
+      const labels = { subtitle: '字幕', backdrop: '後景', background: '背景', filler: 'フィラー', foreground: '前景', figure: '図形', textAnim: 'テキスト', video: 'ビデオ' };
       const lastSameKind = (project.tracks || []).reduce((at, track, i) => (track && track.kind === trackKind ? i : at), -1);
       const lastSubtitle = (project.tracks || []).reduce((at, track, i) => (track.kind === 'subtitle' ? i : at), -1);
       let index = (project.tracks || []).length;
@@ -1791,7 +1791,7 @@ SA.store = (() => {
           projectDoc.tracks.splice(Math.min(projectDoc.tracks.length, index), 0, {
             id,
             kind: trackKind,
-            name: `${labels[trackKind] || trackKind}${trackKind === 'subtitle' ? subtitle.length + 1 : ''}`,
+            name: `${labels[trackKind] || trackKind}${trackKind === 'subtitle' ? subtitle.length + 1 : trackKind === 'video' ? id.replace(/^video/, '') : ''}`,
           });
         },
       });
@@ -1804,11 +1804,11 @@ SA.store = (() => {
       if (!track) return;
       const subtitles = (project.tracks || []).filter((entry) => entry && entry.kind === 'subtitle');
       if (track.kind === 'subtitle' && subtitles.length <= 1) return;
-      if (!['subtitle', 'backdrop', 'filler', 'background', 'figure', 'textAnim'].includes(track.kind)) return;
+      if (!['subtitle', 'backdrop', 'filler', 'background', 'figure', 'textAnim', 'video'].includes(track.kind)) return;
       const fallback = track.kind === 'subtitle' ? subtitles.find((entry) => entry.id !== id) : null;
       dispatch({
         label: 'remove track',
-        areas: ['project'],
+        areas: track.kind === 'video' ? ['project', 'layers'] : ['project'],
         do(projectDoc) {
           projectDoc.tracks = (projectDoc.tracks || []).filter((entry) => entry.id !== id);
           if (fallback) {
@@ -1817,6 +1817,8 @@ SA.store = (() => {
             }
           }
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== id);
+          // a video track owns the layers placed on it
+          if (track.kind === 'video') projectDoc.layers = (projectDoc.layers || []).filter((layer) => !(layer && layer.slot === 'video' && layer.trackId === id));
         },
       });
     },
@@ -1829,7 +1831,13 @@ SA.store = (() => {
       const step = direction === 'up' ? -1 : 1;
       const target = index + step;
       if (target < 0 || target >= tracks.length) return;
-      if (tracks[index].kind !== tracks[target].kind) return;
+      // The layer order is the track order (upper = front). The foreground
+      // and background tracks are fixed at the ends: they never move and no
+      // other track moves past them. Every other track moves freely past any
+      // kind.
+      const FIXED = new Set(['foreground', 'background']);
+      if (FIXED.has(tracks[index].kind)) return;
+      if (FIXED.has(tracks[target].kind)) return;
       dispatch({
         label: 'move track',
         areas: ['project'],
@@ -1837,6 +1845,8 @@ SA.store = (() => {
           const list = projectDoc.tracks || [];
           const at = list.findIndex((track) => track.id === id);
           if (at < 0 || at + step < 0 || at + step >= list.length) return;
+          if (FIXED.has(list[at].kind)) return;
+          if (FIXED.has(list[at + step].kind)) return;
           [list[at], list[at + step]] = [list[at + step], list[at]];
         },
       });
@@ -1855,6 +1865,32 @@ SA.store = (() => {
           if (target) target.trackId = trackId;
         },
       });
+    },
+    // Moves several cues onto one subtitle track in a single undo step. A cue
+    // that would overlap a cue already there (or one moved before it) stays
+    // where it is. Returns the number of cues moved.
+    moveCuesToTrack(cueIds, trackId) {
+      const project = state.project;
+      const track = trackById(trackId);
+      if (!project || !track || track.kind !== 'subtitle') return 0;
+      const ids = new Set(cueIds || []);
+      const moving = project.script.cues.filter((cue) => ids.has(cue.id) && (cue.trackId || 'sub1') !== trackId).sort((a, b) => a.start - b.start);
+      const placed = [];
+      for (const cue of moving) {
+        if (overlappingCue(project, trackId, cue.id, cue.start, cue.end)) continue;
+        if (placed.some((other) => other.start < cue.end - 1e-4 && other.end > cue.start + 1e-4)) continue;
+        placed.push(cue);
+      }
+      if (!placed.length) return 0;
+      const placedIds = new Set(placed.map((cue) => cue.id));
+      dispatch({
+        label: 'move cues to track',
+        areas: ['script'],
+        do(projectDoc) {
+          for (const cue of projectDoc.script.cues) if (placedIds.has(cue.id)) cue.trackId = trackId;
+        },
+      });
+      return placed.length;
     },
     setCueDisabled(cueId, disabled) {
       const cue = findCue(cueId);
@@ -1931,6 +1967,30 @@ SA.store = (() => {
           delete target.auto;
         },
       });
+    },
+    // Moves clips onto another track of the same kind in one undo step (clips
+    // may overlap on a track, so nothing is skipped for timing). Returns the
+    // number of clips moved.
+    moveClipsToTrack(clipIds, trackId) {
+      const project = state.project;
+      const track = trackById(trackId);
+      if (!project || !track) return 0;
+      const ids = new Set(clipIds || []);
+      const moving = (project.clips || []).filter((clip) => {
+        if (!clip || !ids.has(clip.id) || clip.trackId === trackId) return false;
+        const from = trackById(clip.trackId);
+        return !!from && from.kind === track.kind;
+      });
+      if (!moving.length) return 0;
+      const movingIds = new Set(moving.map((clip) => clip.id));
+      dispatch({
+        label: 'move clips to track',
+        areas: ['project'],
+        do(projectDoc) {
+          for (const clip of projectDoc.clips || []) if (movingIds.has(clip.id)) clip.trackId = trackId;
+        },
+      });
+      return moving.length;
     },
     trimClip(id, edge, time, options) {
       const clip = findClip(id);
@@ -2124,6 +2184,52 @@ SA.store = (() => {
           if (ladderActive && SA.direct && typeof SA.direct.resizeBeats === 'function') {
             SA.direct.resizeBeats(projectDoc, mode.axes, [beatId], Math.floor(Math.random() * 900000) + 1000, { params: mode.params, curve: mode.curve });
           }
+        },
+      });
+    },
+    // A lighter touch than reroll: step the per-beat variation slot. The seed
+    // and the style stay exactly as they are — only the letter-by-letter
+    // arrangement (vary.js) is re-drawn. One undo reverts the whole pass.
+    varyCue(cueId) {
+      const cue = findCue(cueId);
+      if (!cue) return;
+      dispatch({
+        label: 'vary cue',
+        areas: ['script'],
+        do(projectDoc) {
+          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          for (const beat of beats) {
+            beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
+          }
+        },
+      });
+    },
+    // The same variation step across every cue of the song, as one undo.
+    varyAll() {
+      dispatch({
+        label: 'vary all',
+        areas: ['script'],
+        do(projectDoc) {
+          for (const beats of Object.values(projectDoc.beats || {})) {
+            for (const beat of beats || []) {
+              beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
+            }
+          }
+        },
+      });
+    },
+    // The same variation step for one beat only: the neighbours keep theirs.
+    varyBeat(cueId, beatId) {
+      const cue = findCue(cueId);
+      if (!cue) return;
+      dispatch({
+        label: 'vary beat',
+        areas: ['script'],
+        do(projectDoc) {
+          const beats = (projectDoc.beats && projectDoc.beats[cueId]) || [];
+          const beat = beats.find((entry) => entry.id === beatId);
+          if (!beat) return;
+          beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
         },
       });
     },

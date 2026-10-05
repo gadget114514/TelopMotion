@@ -52,6 +52,10 @@ SA.inspector = (() => {
       const suffix = track.name && /^字幕/.test(track.name) ? track.name.replace(/^字幕/, '') : '';
       return /^字幕/.test(track.name) ? (t('studio.track.subtitle') + (suffix ? ' ' + suffix : '')) : (track.name || track.id);
     }
+    if (track.kind === 'video' && /^ビデオ/.test(track.name || '')) {
+      const suffix = track.name.replace(/^ビデオ/, '');
+      return t('studio.track.video') + (suffix ? ' ' + suffix : '');
+    }
     return track.name || track.id;
   }
 
@@ -280,6 +284,31 @@ SA.inspector = (() => {
     return body;
   }
 
+  // glyph-only orange action buttons pinned to the right of a section's
+  // summary (the label lives in the tooltip). A click must not fold the
+  // section, so the summary's own toggle is cancelled.
+  function summaryActions(body, buttons) {
+    const summary = body.parentNode && body.parentNode.querySelector('summary');
+    if (!summary) return;
+    const box = document.createElement('span');
+    box.className = 'insp-summary-actions';
+    for (const [glyph, titleKey, run] of buttons) {
+      const node = document.createElement('button');
+      node.type = 'button';
+      node.className = 'btn btn-mini insp-regen-btn btn-orange';
+      node.textContent = glyph;
+      node.title = t(titleKey);
+      node.setAttribute('aria-label', t(titleKey));
+      node.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        run();
+      });
+      box.appendChild(node);
+    }
+    summary.appendChild(box);
+  }
+
   // right-aligned "enabled" checkbox + delete button for an entry header row
   function headActions(head, enabled, onEnabled, onRemove) {
     const actions = document.createElement('span');
@@ -334,6 +363,50 @@ SA.inspector = (() => {
     }
   }
 
+  // --- top toolbar ------------------------------------------------------------
+
+  // The palette draw lives in a strip pinned to the top of the inspector, above
+  // the breadcrumb; the cue / beat draws (reroll / vary / recolour / delete)
+  // sit in their own section headers (summaryActions).
+  function renderRegenBar(container) {
+    const sel = selectionInfo();
+    if (sel.kind !== 'cue' && sel.kind !== 'beat' && sel.kind !== 'line' && sel.kind !== 'word' && sel.kind !== 'letter') return;
+    if (!sel.cueId) return;
+    const bar = document.createElement('div');
+    bar.className = 'insp-regen';
+    const group = (labelKey, icon) => {
+      const box = document.createElement('div');
+      box.className = 'insp-regen-group';
+      const tag = document.createElement('span');
+      tag.className = 'insp-regen-tag';
+      tag.textContent = icon;
+      tag.title = t(labelKey);
+      box.appendChild(tag);
+      bar.appendChild(box);
+      return box;
+    };
+    // a glyph-only icon button: the label lives in the tooltip, so the strip
+    // stays narrow however long the translations get
+    const drawButton = (box, glyph, titleKey, run) => {
+      const node = document.createElement('button');
+      node.type = 'button';
+      node.className = 'btn btn-mini insp-regen-btn';
+      node.textContent = glyph;
+      node.title = t(titleKey);
+      node.setAttribute('aria-label', t(titleKey));
+      node.addEventListener('click', run);
+      box.appendChild(node);
+      return node;
+    };
+
+    // the colours of the selected level: a line / word / letter edits its beat
+    const colorScope = sel.beatId ? { cueId: sel.cueId, beatId: sel.beatId } : { cueId: sel.cueId };
+    const colorBox = group('studio.inspector.palette', '◑');
+    drawButton(colorBox, '🎨', 'studio.inspector.paletteReroll', () => SA.store.commands.rerollPalette(colorScope));
+
+    container.appendChild(bar);
+  }
+
   // --- sections ----------------------------------------------------------------
 
   function renderBreadcrumb(container) {
@@ -353,7 +426,7 @@ SA.inspector = (() => {
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'btn btn-mini is-active';
-      chip.textContent = `${t('layers.title')} · ${layer && layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground')}`;
+      chip.textContent = `${t('layers.title')} · ${layer ? SA.layersDialog.slotLabel(layer) : t('layers.slotBackground')}`;
       line.appendChild(chip);
       head.appendChild(line);
       const edit = document.createElement('button');
@@ -468,6 +541,13 @@ SA.inspector = (() => {
     const cue = doc.script.cues.find((entry) => entry.id === sel.cueId);
     if (!cue) return;
     const body = section(container, 'cue', t('studio.inspector.cue'));
+    // the whole cue: a fresh enter / exit pair plus a new size ladder (🎲),
+    // or a light pass over its beats that keeps the structure (🔀)
+    summaryActions(body, [
+      ['🎲', 'studio.inspector.rerollCue', () => SA.store.commands.rerollCue(sel.cueId)],
+      ['🔀', 'studio.inspector.varyCue', () => SA.store.commands.varyCue(sel.cueId)],
+      ['✕', 'studio.beat.deleteCue', () => SA.store.commands.deleteCue(sel.cueId)],
+    ]);
     const hint = document.createElement('div');
     hint.className = 'insp-inherit';
     hint.textContent = t('studio.inspector.cueHint');
@@ -523,24 +603,12 @@ SA.inspector = (() => {
     }
     const actions = document.createElement('div');
     actions.className = 'layer-order';
-    const rerollCue = document.createElement('button');
-    rerollCue.type = 'button';
-    rerollCue.className = 'btn btn-mini';
-    rerollCue.textContent = t('studio.inspector.rerollCue');
-    rerollCue.addEventListener('click', () => SA.store.commands.rerollCue(sel.cueId));
     const addBeat = document.createElement('button');
     addBeat.type = 'button';
     addBeat.className = 'btn btn-mini';
     addBeat.textContent = `+ ${t('studio.beat.addBeat')}`;
     addBeat.addEventListener('click', () => SA.store.commands.addBeat(sel.cueId));
-    const removeCue = document.createElement('button');
-    removeCue.type = 'button';
-    removeCue.className = 'btn btn-mini';
-    removeCue.textContent = t('studio.beat.deleteCue');
-    removeCue.addEventListener('click', () => SA.store.commands.deleteCue(sel.cueId));
-    actions.appendChild(rerollCue);
     actions.appendChild(addBeat);
-    actions.appendChild(removeCue);
     body.appendChild(actions);
   }
 
@@ -554,6 +622,16 @@ SA.inspector = (() => {
       (cue && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null);
     if (!beat) return;
     const body = section(container, 'beat', `${t('studio.inspector.beat')} · ${t(`studio.beat.${beat.kind}`)}`);
+    // the selected beat: its own grammar only
+    summaryActions(body, [
+      ['🎲', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id)],
+      ['🔀', 'studio.inspector.varyBeat', () => SA.store.commands.varyBeat(sel.cueId, beat.id)],
+      ['◐', 'studio.inspector.rerollBeatColors', () => {
+        const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
+        if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+      }],
+      ['✕', 'studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id)],
+    ]);
     const head = document.createElement('div');
     head.className = 'insp-beat-actions';
     const button = (key, run) => {
@@ -573,12 +651,6 @@ SA.inspector = (() => {
     const beatIndex = beatList.findIndex((entry) => entry && entry.id === beat.id);
     if (beatIndex > 0) button('studio.beat.prevBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex - 1].id}`));
     if (beatIndex >= 0 && beatIndex < beatList.length - 1) button('studio.beat.nextBeat', () => selectAt(`cue:${sel.cueId}/beat:${beatList[beatIndex + 1].id}`));
-    button('studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id));
-    button('studio.inspector.rerollBeatColors', () => {
-      const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
-      if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
-    });
-    button('studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id));
     body.appendChild(head);
     const ownBeat = (doc.beatStyles && doc.beatStyles[beat.id]) || {};
     body.appendChild(
@@ -1193,7 +1265,7 @@ SA.inspector = (() => {
   // fill / edge draw a scoped overlay mask in the engine.
 
   const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge', 'bgFill', 'bgShape', 'text'];
-  const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span', 'nth'];
+  const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span', 'nth', 'slice'];
   const SCOPE_KIND_LABELS = {
     all: 'studio.inspector.scopeAll',
     range: 'studio.inspector.scopeRange',
@@ -1201,6 +1273,7 @@ SA.inspector = (() => {
     keyword: 'studio.inspector.scopeKeyword',
     span: 'studio.inspector.scopeSpan',
     nth: 'studio.inspector.scopeNth',
+    slice: 'studio.inspector.scopeSlice',
   };
   // The scoped background colour is a plain fill: a per-letter gradient would
   // need a per-letter overlay pass. These groups list every type of their own
@@ -1282,6 +1355,30 @@ SA.inspector = (() => {
         row(box, `scoped.${index}.every`, t('studio.inspector.scopeEvery'), SA.controls.numberControl(numberParam('every', 1, 64, 1, 2), scope.every == null ? 2 : scope.every, (next) => setScope({ every: next }), { noSlider: true }));
         row(box, `scoped.${index}.offset`, t('studio.inspector.scopeOffset'), SA.controls.numberControl(numberParam('offset', 0, 63, 1, 0), scope.offset == null ? 0 : scope.offset, (next) => setScope({ offset: next }), { noSlider: true }));
         row(box, `scoped.${index}.skipSpaces`, t('studio.inspector.scopeSkipSpaces'), SA.controls.boolControl(scope.skipSpaces !== false, (value) => setScope({ skipSpaces: value })));
+      } else if (scope.kind === 'slice') {
+        // N letters from the head or the tail of the whole text, or of every
+        // line. A length of 0 runs to the end. The wrapped line is unknown
+        // before the layout, so `anchor: line` resolves per paragraph - the
+        // same caveat the word / line units of `nth` carry.
+        const anchor = scope.anchor === 'line' ? 'line' : 'text';
+        row(box, `scoped.${index}.anchor`, t('studio.inspector.scopeAnchor'), SA.controls.selectControl({}, anchor, (next) => setScope({ anchor: next }), [
+          { value: 'text', label: t('studio.inspector.scopeAnchorText') },
+          { value: 'line', label: t('studio.inspector.scopeAnchorLine') },
+        ]));
+        const from = scope.from === 'end' ? 'end' : 'start';
+        row(box, `scoped.${index}.from`, t('studio.inspector.scopeFrom'), SA.controls.selectControl({}, from, (next) => setScope({ from: next }), [
+          { value: 'start', label: t('studio.inspector.scopeFromStart') },
+          { value: 'end', label: t('studio.inspector.scopeFromEnd') },
+        ]));
+        row(box, `scoped.${index}.offset`, t('studio.inspector.scopeOffset'), SA.controls.numberControl(numberParam('offset', 0, 99, 1, 0), scope.offset == null ? 0 : scope.offset, (next) => setScope({ offset: next }), { noSlider: true }));
+        row(box, `scoped.${index}.length`, t('studio.inspector.scopeLength'), SA.controls.numberControl(numberParam('length', 0, 99, 1, 0), scope.length == null ? 0 : scope.length, (next) => setScope({ length: next }), { noSlider: true }));
+        row(box, `scoped.${index}.skipSpaces`, t('studio.inspector.scopeSkipSpaces'), SA.controls.boolControl(scope.skipSpaces !== false, (value) => setScope({ skipSpaces: value })));
+      }
+      // `local` treats the substring as a string of its own: the effect measures
+      // around the substring's centre, and a substring that grows sideways
+      // pushes the rest of its line aside.
+      if (entry.group === 'enter' || entry.group === 'exit' || entry.group === 'hold') {
+        row(box, `scoped.${index}.local`, t('studio.inspector.scopedLocal'), SA.controls.boolControl(entry.local === true, (value) => update(list.map((item, i) => (i === index ? { ...item, local: value } : item)))));
       }
 
       // the effect parameters (the same rows as a stack group). A preset's own
@@ -1370,7 +1467,7 @@ SA.inspector = (() => {
       line.className = 'ctrl-row';
       const label = document.createElement('span');
       label.className = 'ctrl-label';
-      const slot = layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground');
+      const slot = SA.layersDialog.slotLabel(layer);
       const type = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : t('layers.typeImage');
       label.textContent = `${slot} · ${type}`;
       line.appendChild(label);
@@ -1432,6 +1529,10 @@ SA.inspector = (() => {
     const sel = selectionInfo();
     const track = ((doc && doc.tracks) || []).find((entry) => entry.id === sel.trackId);
     if (!track) return;
+    if (track.kind === 'video') {
+      renderVideoTrackSection(container, doc, track);
+      return;
+    }
     if (track.kind === 'figure' || track.kind === 'backdrop' || track.kind === 'filler') {
       const view = (SA.store && SA.store.state && SA.store.state.view) || null;
       const isFg = SA.lyricsEngine && SA.lyricsEngine.figureLayerOn ? SA.lyricsEngine.figureLayerOn('foreground', track, view) : !track.figureFgHidden;
@@ -1501,6 +1602,49 @@ SA.inspector = (() => {
     body.appendChild(actions);
   }
 
+  // A video track: its place in the track list decides what draws behind it,
+  // and the chroma key cuts the key colour out of its video so those tracks
+  // show through.
+  function renderVideoTrackSection(container, doc, track) {
+    const body = section(container, 'track', trackDisplayName(track) || t('studio.track.video'));
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit';
+    hint.textContent = t('studio.track.videoHint');
+    body.appendChild(hint);
+    const chroma = { ...SA.glLayers.CHROMA_DEFAULTS, ...(track.chroma || {}) };
+    const write = (patch, key) =>
+      SA.store.commands.updateTrack(track.id, { chroma: { ...chroma, ...patch } }, key ? { coalesceKey: `track:${track.id}:chroma:${key}` } : undefined);
+    body.appendChild(fieldRow(t('studio.track.chromaEnabled'), SA.controls.boolControl(!!chroma.enabled, (value) => write({ enabled: value }))));
+    body.appendChild(
+      fieldRow(
+        t('studio.track.chromaColor'),
+        SA.controls.colorControl(chroma.color, (next) => {
+          const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+          if (value) write({ color: value });
+        })
+      )
+    );
+    const numbers = [
+      ['similarity', 'chromaSimilarity', 0, 1],
+      ['smoothness', 'chromaSmoothness', 0, 0.5],
+      ['spill', 'chromaSpill', 0, 1],
+    ];
+    for (const [key, label, min, max] of numbers) {
+      const control = SA.controls.numberControl({ min, max, step: 0.01, default: SA.glLayers.CHROMA_DEFAULTS[key] }, chroma[key], (value) => write({ [key]: value }, key));
+      body.appendChild(fieldRow(t(`studio.track.${label}`), control));
+    }
+    const videos = (doc.media && doc.media.videos) || [];
+    if (videos.length) {
+      const picker = SA.controls.selectControl({}, '', (id) => {
+        const entry = videos.find((video) => video.id === id);
+        if (!entry) return;
+        const layer = { ...SA.layersDialog.defaults('video'), trackId: track.id, type: 'video', src: entry.src, fit: 'cover', color: '#ffffff' };
+        SA.store.commands.addLayer(layer);
+      }, [{ value: '', label: t('studio.track.addVideoLayer') }, ...videos.map((video) => ({ value: video.id, label: video.name || video.id }))]);
+      body.appendChild(fieldRow(t('layers.typeVideo'), picker));
+    }
+  }
+
   function renderLayerSection(container) {
     const doc = project();
     const id = String(selectionInfo().raw).replace(/^layer:/, '');
@@ -1511,7 +1655,7 @@ SA.inspector = (() => {
     const filterName = layer.filter && layer.filter.type && layer.filter.type !== 'none' ? layer.filter.type : t('layers.filterNone');
     const rows = [
       [t('layers.type'), typeName],
-      [t('layers.slot'), layer.slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground')],
+      [t('layers.slot'), SA.layersDialog.slotLabel(layer)],
       [t('layers.blend'), String(layer.blend || 'normal')],
       [t('layers.opacity'), String(layer.opacity == null ? 1 : layer.opacity)],
       [t('layers.start'), String(layer.start == null ? 0 : layer.start)],
@@ -2371,6 +2515,7 @@ SA.inspector = (() => {
     const sel = selectionInfo();
     const key = `${sel.raw}|${SA.store.state.project ? SA.store.state.project.meta.updatedAt : ''}|${SA.store.state.playhead.toFixed(3)}`;
     el.body.innerHTML = '';
+    renderRegenBar(el.body);
     renderBreadcrumb(el.body);
     if (sel.kind === 'none') return;
     if (sel.kind === 'track') {
