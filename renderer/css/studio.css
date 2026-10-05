@@ -1746,7 +1746,8 @@ body {
   display: grid;
   grid-template-columns: 190px 1fr;
   gap: 12px;
-  max-height: min(66vh, 620px);
+  max-height: min(76vh, 760px);
+  min-height: 0;
 }
 
 .layer-list {
@@ -1754,6 +1755,7 @@ body {
   flex-direction: column;
   gap: 4px;
   overflow: auto;
+  min-height: 0;
 }
 
 .layer-row {
@@ -1785,6 +1787,18 @@ body {
   gap: 6px;
   overflow: auto;
   padding-right: 4px;
+  min-height: 0;
+}
+
+/* The layers dialog grew with the anchor / crop fields: cap the whole dialog
+   at the viewport and scroll the editor column (the grid children need
+   min-height: 0 or overflow never engages). Title and actions stay visible. */
+.layer-dialog {
+  max-height: calc(100vh - 60px);
+}
+
+.layer-dialog > :not(.layer-body) {
+  flex-shrink: 0;
 }
 
 .layer-source {

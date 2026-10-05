@@ -168,7 +168,7 @@ const SECTIONS = [
   { id: 'move', label: '移動 (move)', note: '切り絵の位置だけを動かしています。X と Y に1キーずつ（開始→終了の2キー）打ち、間は直線補間です。' },
   { id: 'spin', label: '回転・拡大 (spin)', note: '回転と拡大だけを動かしています。scaleX/scaleY は scale に掛かる非等倍で、伸び縮み（squash & stretch）になります。' },
   { id: 'anchor', label: '中心点 (anchor)', note: '同じ一回転を、回転・拡大の中心だけ変えて比べます。中央 (0.5,0.5) と左上 (0,0) では軌跡が変わります。' },
-  { id: 'fade', label: '透明度 (fade)', note: '不透明度だけを動かしています。レイヤー直下の opacity がキー対象です。' },
+  { id: 'fade', label: '透明度 (fade)', note: '不透明度だけを動かしています。シート直下の opacity がキー対象です。' },
   { id: 'crop', label: '切り抜き (crop)', note: '絵の各辺を割合で削ります。左だけのワイプと、四辺を絞るアイリスを見せます。' },
   { id: 'combo', label: '仕上げ (combo)', note: '位置・回転・拡大を重ねた切り絵に、in/out のフェードを掛けています。キーの評価値にプリセットが重なるのが分かります。' },
 ];
@@ -322,7 +322,7 @@ function buildShowcase(options) {
   });
 
   const doc = project.create({});
-  doc.meta.title = 'TelopMotion レイヤー見本';
+  doc.meta.title = 'TelopMotion シート見本';
   doc.meta.lang = 'ja';
   doc.meta.createdAt = FIXED_TIME;
   doc.meta.updatedAt = FIXED_TIME;
@@ -374,14 +374,14 @@ function formatRange(entry) {
 
 function indexMarkdown(built) {
   const lines = [];
-  lines.push('# レイヤー見本 (layer showcase)');
+  lines.push('# シート見本 (layer showcase)');
   lines.push('');
-  lines.push(`画像レイヤーのキーフレーム（切り絵アニメ）を 1 キューずつ並べた見本プロジェクトです。どのキューも同じサンプル文を表示し、違うのはレイヤーの動きだけです。絵はこのスクリプトが生成した PNG（data URL 埋め込み）なので、ファイル単体で開けます。`);
+  lines.push(`画像シートのキーフレーム（切り絵アニメ）を 1 キューずつ並べた見本プロジェクトです。どのキューも同じサンプル文を表示し、違うのはシートの動きだけです。絵はこのスクリプトが生成した PNG（data URL 埋め込み）なので、ファイル単体で開けます。`);
   lines.push('');
-  lines.push(`- 1 キュー＝${CUE_SECONDS} 秒。キーはレイヤー開始からの相対秒で、値は絶対値（静的値を上書き）です`);
-  lines.push('- レイヤーは背景スロットの画像（`contain`）で、タイムラインのレイヤートラック下にキーレーンが出ます');
+  lines.push(`- 1 キュー＝${CUE_SECONDS} 秒。キーはシート開始からの相対秒で、値は絶対値（静的値を上書き）です`);
+  lines.push('- シートは背景スロットの画像（`contain`）で、タイムラインのシートトラック下にキーレーンが出ます');
   lines.push('- 仕上げ（combo）だけ in/out フェード付き：キーの評価値にプリセットが重なるのが分かります');
-  lines.push('- 開くには Studio の *Help → レイヤー見本*、または *File → Open project…* を使います');
+  lines.push('- 開くには Studio の *Help → シート見本*、または *File → Open project…* を使います');
   lines.push('');
   lines.push('| # | セクション | キュー数 | 時間 |');
   lines.push('|---:|---|---:|---|');

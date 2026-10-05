@@ -24,6 +24,12 @@ SA.store = (() => {
   let savedId = null;
   let nextEntryId = 1;
 
+  // Style clipboard: copy the look of one beat/cue, paste it onto another
+  // beat/cue while keeping the destination text and timing. Only style bags
+  // (cueStyles / beatStyles), sub-element overrides and keyframes travel;
+  // beats[].text / lines / start / end never move.
+  let styleClipboard = null;
+
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
   }
@@ -1286,6 +1292,218 @@ SA.store = (() => {
     return layers.length > 1 ? SA.fillerRender.fromLayers(layers, { name: spec.name }) : { ...spec, colorLock: true };
   }
 
+  // --- style copy / paste ----------------------------------------------------
+  // A "style" is the resolved look minus the words: the cue/beat style bags
+  // plus the sub-element overrides and keyframes hanging under the path.
+  // The beat text, line breaks and timing stay with the destination.
+
+  function parseStylePath(rawPath) {
+    const parts = String(rawPath || '').split('/').filter(Boolean);
+    let cueId = null, beatId = null;
+    for (const part of parts) {
+      const index = part.indexOf(':');
+      if (index < 0) continue;
+      const type = part.slice(0, index);
+      const value = part.slice(index + 1);
+      if (type === 'cue') cueId = value;
+      else if (type === 'beat') beatId = value;
+    }
+    return { cueId, beatId };
+  }
+
+  function beatPathOf(cueId, beatId) {
+    return `cue:${cueId}/beat:${beatId}`;
+  }
+
+  function deleteKeysWithPrefix(container, prefix) {
+    if (!container) return;
+    for (const key of Object.keys(container)) {
+      if (key === prefix || key.startsWith(`${prefix}/`)) delete container[key];
+    }
+  }
+
+  function collectStyleClipboard(projectDoc, srcPath) {
+    const parsed = parseStylePath(srcPath);
+    if (!parsed.cueId) return null;
+    const cue = (projectDoc.script.cues || []).find((entry) => entry.id === parsed.cueId);
+    if (!cue) return null;
+    const srcBeats = (projectDoc.beats[parsed.cueId] || []).map((beat) => beat.id);
+    const overrides = {};
+    const keyframes = {};
+    if (parsed.beatId) {
+      const prefix = beatPathOf(parsed.cueId, parsed.beatId);
+      const beatExists = (projectDoc.beats[parsed.cueId] || []).some((beat) => beat.id === parsed.beatId);
+      if (!beatExists) return null;
+      for (const [key, bag] of Object.entries(projectDoc.overrides || {})) {
+        if (key === prefix || key.startsWith(`${prefix}/`)) overrides[key] = clone(bag);
+      }
+      for (const [key, tracks] of Object.entries(projectDoc.keyframes || {})) {
+        if (key === prefix || key.startsWith(`${prefix}/`)) keyframes[key] = clone(tracks);
+      }
+      return {
+        kind: 'beat',
+        srcPath: prefix,
+        cueId: parsed.cueId,
+        beatId: parsed.beatId,
+        beatBag: clone((projectDoc.beatStyles || {})[parsed.beatId] || {}),
+        overrides,
+        keyframes,
+      };
+    }
+    const cuePrefix = `cue:${parsed.cueId}`;
+    const beatBags = {};
+    for (const beatId of srcBeats) beatBags[beatId] = clone((projectDoc.beatStyles || {})[beatId] || {});
+    for (const [key, bag] of Object.entries(projectDoc.overrides || {})) {
+      if (key === cuePrefix || key.startsWith(`${cuePrefix}/`)) overrides[key] = clone(bag);
+    }
+    for (const [key, tracks] of Object.entries(projectDoc.keyframes || {})) {
+      if (key === cuePrefix || key.startsWith(`${cuePrefix}/`)) keyframes[key] = clone(tracks);
+    }
+    return {
+      kind: 'cue',
+      srcPath: cuePrefix,
+      cueId: parsed.cueId,
+      beatId: null,
+      cueBag: clone((projectDoc.cueStyles || {})[parsed.cueId] || {}),
+      beatBags,
+      beatOrder: srcBeats.slice(),
+      overrides,
+      keyframes,
+    };
+  }
+
+  function applyBeatLook(projectDoc, destCueId, destBeatId, bag, srcPrefix, destPrefix, clip) {
+    if (bag && Object.keys(bag).length) projectDoc.beatStyles[destBeatId] = clone(bag);
+    else if (projectDoc.beatStyles) delete projectDoc.beatStyles[destBeatId];
+    deleteKeysWithPrefix(projectDoc.overrides, destPrefix);
+    deleteKeysWithPrefix(projectDoc.keyframes, destPrefix);
+    for (const [key, value] of Object.entries(clip.overrides || {})) {
+      if (key !== srcPrefix && !key.startsWith(`${srcPrefix}/`)) continue;
+      const rel = key.slice(srcPrefix.length);
+      projectDoc.overrides = projectDoc.overrides || {};
+      projectDoc.overrides[destPrefix + rel] = clone(value);
+    }
+    for (const [key, value] of Object.entries(clip.keyframes || {})) {
+      if (key !== srcPrefix && !key.startsWith(`${srcPrefix}/`)) continue;
+      const rel = key.slice(srcPrefix.length);
+      projectDoc.keyframes = projectDoc.keyframes || {};
+      projectDoc.keyframes[destPrefix + rel] = clone(value);
+    }
+    // Empty override bags can appear when the source had an explicitly
+    // cleared entry; drop them so the destination inherits cleanly.
+    if (projectDoc.overrides && projectDoc.overrides[destPrefix] && !Object.keys(projectDoc.overrides[destPrefix]).length) {
+      delete projectDoc.overrides[destPrefix];
+    }
+  }
+
+  function pasteStyleClipboard(projectDoc, clip, destPath) {
+    const parsed = parseStylePath(destPath);
+    if (!parsed.cueId) return false;
+    const destCue = (projectDoc.script.cues || []).find((entry) => entry.id === parsed.cueId);
+    if (!destCue) return false;
+    projectDoc.cueStyles = projectDoc.cueStyles || {};
+    projectDoc.beatStyles = projectDoc.beatStyles || {};
+    const destBeats = (projectDoc.beats[parsed.cueId] || []).map((beat) => beat.id);
+    if (clip.kind === 'beat') {
+      const srcPrefix = clip.srcPath;
+      if (parsed.beatId) {
+        if (!destBeats.includes(parsed.beatId)) return false;
+        applyBeatLook(projectDoc, parsed.cueId, parsed.beatId, clip.beatBag, srcPrefix, beatPathOf(parsed.cueId, parsed.beatId), clip);
+        return true;
+      }
+      // beat -> cue: every beat of the destination cue takes the look
+      if (!destBeats.length) return false;
+      for (const beatId of destBeats) {
+        applyBeatLook(projectDoc, parsed.cueId, beatId, clip.beatBag, srcPrefix, beatPathOf(parsed.cueId, beatId), clip);
+      }
+      return true;
+    }
+    // cue -> ...
+    const srcCuePrefix = clip.srcPath;
+    if (parsed.beatId) {
+      // cue -> beat: bake the source cue bag plus its first beat bag into the
+      // destination beat, so the beat looks the same under its own cue
+      if (!destBeats.includes(parsed.beatId)) return false;
+      const firstId = clip.beatOrder[0];
+      const merge = (typeof SA !== 'undefined' && SA.project && SA.project.mergeDeep) || ((target, patch) => Object.assign(target, clone(patch)));
+      const baked = merge(merge({}, clip.cueBag || {}), firstId ? clip.beatBags[firstId] || {} : {});
+      const destPrefix = beatPathOf(parsed.cueId, parsed.beatId);
+      // destination beat first: beat-level look (clears its old sub-edits)
+      const beatOnly = { overrides: {}, keyframes: {} };
+      if (firstId) {
+        const beatPrefix = `${srcCuePrefix}/beat:${firstId}`;
+        for (const [key, value] of Object.entries(clip.overrides || {})) {
+          if (key === beatPrefix || key.startsWith(`${beatPrefix}/`)) beatOnly.overrides[key] = value;
+        }
+        for (const [key, value] of Object.entries(clip.keyframes || {})) {
+          if (key === beatPrefix || key.startsWith(`${beatPrefix}/`)) beatOnly.keyframes[key] = value;
+        }
+      }
+      applyBeatLook(projectDoc, parsed.cueId, parsed.beatId, baked, firstId ? `${srcCuePrefix}/beat:${firstId}` : srcCuePrefix, destPrefix, beatOnly.overrides && Object.keys(beatOnly.overrides).length ? beatOnly : { overrides: {}, keyframes: beatOnly.keyframes });
+      // cue-level overrides/keys of the source land on the beat as well
+      for (const [key, value] of Object.entries(clip.overrides || {})) {
+        const isBeatKey = key !== srcCuePrefix && key.startsWith(`${srcCuePrefix}/beat:`);
+        if (isBeatKey) continue;
+        if (key !== srcCuePrefix && !key.startsWith(`${srcCuePrefix}/`)) continue;
+        const rel = key.slice(srcCuePrefix.length);
+        if (rel.startsWith('/beat:')) continue;
+        if (!rel) {
+          projectDoc.overrides[destPrefix] = merge(clone(projectDoc.overrides[destPrefix] || {}), value);
+        } else {
+          projectDoc.overrides[destPrefix + rel] = clone(value);
+        }
+      }
+      for (const [key, value] of Object.entries(clip.keyframes || {})) {
+        if (key !== srcCuePrefix && !key.startsWith(`${srcCuePrefix}/`)) continue;
+        if (key !== srcCuePrefix && key.slice(srcCuePrefix.length).startsWith('/beat:')) continue;
+        const rel = key.slice(srcCuePrefix.length) || '';
+        const targetKey = rel ? destPrefix + rel : destPrefix;
+        projectDoc.keyframes[targetKey] = merge(clone(projectDoc.keyframes[targetKey] || {}), value);
+      }
+      return true;
+    }
+    // cue -> cue: cue bag plus beat bags mapped by index (round-robin)
+    if (Object.keys(clip.cueBag || {}).length) projectDoc.cueStyles[parsed.cueId] = clone(clip.cueBag);
+    else delete projectDoc.cueStyles[parsed.cueId];
+    const destPrefix = `cue:${parsed.cueId}`;
+    // clear destination sub-edits first; cue-level entries are re-applied below
+    for (const beatId of destBeats) {
+      if (projectDoc.beatStyles) delete projectDoc.beatStyles[beatId];
+      deleteKeysWithPrefix(projectDoc.overrides, beatPathOf(parsed.cueId, beatId));
+      deleteKeysWithPrefix(projectDoc.keyframes, beatPathOf(parsed.cueId, beatId));
+    }
+    for (const [key, value] of Object.entries(clip.overrides || {})) {
+      if (key === srcCuePrefix || (key.startsWith(`${srcCuePrefix}/`) && !key.startsWith(`${srcCuePrefix}/beat:`))) {
+        const rel = key.slice(srcCuePrefix.length);
+        projectDoc.overrides = projectDoc.overrides || {};
+        if (!rel && !Object.keys(clone(value) || {}).length) continue;
+        projectDoc.overrides[destPrefix + rel] = clone(value);
+      }
+    }
+    for (const [key, value] of Object.entries(clip.keyframes || {})) {
+      if (key === srcCuePrefix || (key.startsWith(`${srcCuePrefix}/`) && !key.startsWith(`${srcCuePrefix}/beat:`))) {
+        const rel = key.slice(srcCuePrefix.length);
+        projectDoc.keyframes = projectDoc.keyframes || {};
+        projectDoc.keyframes[destPrefix + rel] = clone(value);
+      }
+    }
+    if (!destBeats.length) return true;
+    if (!clip.beatOrder.length) return true;
+    destBeats.forEach((destBeatId, index) => {
+      const srcBeatId = clip.beatOrder[index % clip.beatOrder.length];
+      const srcPrefix = `${srcCuePrefix}/beat:${srcBeatId}`;
+      const single = { overrides: {}, keyframes: {} };
+      for (const [key, value] of Object.entries(clip.overrides || {})) {
+        if (key === srcPrefix || key.startsWith(`${srcPrefix}/`)) single.overrides[key] = value;
+      }
+      for (const [key, value] of Object.entries(clip.keyframes || {})) {
+        if (key === srcPrefix || key.startsWith(`${srcPrefix}/`)) single.keyframes[key] = value;
+      }
+      applyBeatLook(projectDoc, parsed.cueId, destBeatId, clip.beatBags[srcBeatId] || {}, srcPrefix, beatPathOf(parsed.cueId, destBeatId), single);
+    });
+    return true;
+  }
+
   const commands = {
     setProp(path, propPath, value, options) {
       dispatch({
@@ -2024,6 +2242,39 @@ SA.store = (() => {
         },
       });
     },
+    // Style clipboard: copy the look of a beat/cue, paste it elsewhere.
+    // Text and timing never travel — only the style bags, the sub-element
+    // overrides and the keyframes. One paste is one undo step.
+    copyStyle(srcPath) {
+      if (!state.project) return false;
+      const path = srcPath || (state.selection.paths || [])[0] || '';
+      const clip = collectStyleClipboard(state.project, path);
+      if (!clip) return false;
+      styleClipboard = clip;
+      return true;
+    },
+    pasteStyle(destPath) {
+      if (!state.project || !styleClipboard) return false;
+      const path = destPath || (state.selection.paths || [])[0] || '';
+      const parsed = parseStylePath(path);
+      if (!parsed.cueId) return false;
+      const clip = clone(styleClipboard);
+      let applied = false;
+      dispatch({
+        label: 'paste style',
+        areas: ['style', 'overrides', 'keyframes'],
+        do(projectDoc) {
+          applied = pasteStyleClipboard(projectDoc, clip, path);
+        },
+      });
+      return applied;
+    },
+    hasStyleClipboard() {
+      return !!styleClipboard;
+    },
+    styleClipboardPath() {
+      return styleClipboard ? styleClipboard.srcPath : '';
+    },
     setPalette(palettes) {
       dispatch({
         label: 'palettes',
@@ -2086,7 +2337,20 @@ SA.store = (() => {
         label: 'layers',
         areas: ['layers', 'keyframes'],
         do(project) {
-          project.layers = clone(layers || []);
+          const incoming = clone(layers || []);
+          // locked layers survive a wholesale replace: anything locked that
+          // the incoming list drops is spliced back at its original index,
+          // so an automatic rewrite can never lose a manual setup
+          const have = new Set(incoming.map((entry) => entry && entry.id));
+          const keep = (project.layers || []).filter((entry) => entry && entry.locked && !have.has(entry.id));
+          if (keep.length) {
+            const current = project.layers || [];
+            for (const entry of keep) {
+              const at = current.indexOf(entry);
+              incoming.splice(Math.max(0, Math.min(incoming.length, at < 0 ? incoming.length : at)), 0, clone(entry));
+            }
+          }
+          project.layers = incoming;
           if (project.keyframes) {
             const alive = new Set((project.layers || []).map((entry) => entry && entry.id).filter((id) => id != null).map((id) => `layer:${id}`));
             for (const key of Object.keys(project.keyframes)) {
@@ -2126,7 +2390,8 @@ SA.store = (() => {
       });
     },
     removeLayer(id) {
-      if (!(state.project.layers || []).some((entry) => entry.id === id)) return;
+      const target = (state.project.layers || []).find((entry) => entry.id === id);
+      if (!target || target.locked) return;
       dispatch({
         label: 'remove layer',
         areas: ['layers', 'keyframes'],
@@ -2280,8 +2545,24 @@ SA.store = (() => {
             }
           }
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip.trackId !== id);
-          // a video track owns the layers placed on it
-          if (track.kind === 'video') projectDoc.layers = (projectDoc.layers || []).filter((layer) => !(layer && layer.slot === 'video' && layer.trackId === id));
+          // a video track owns the layers placed on it; locked sheets survive
+          // by falling back to the background slot instead of being deleted
+          if (track.kind === 'video') {
+            const kept = [];
+            projectDoc.layers = (projectDoc.layers || []).filter((layer) => {
+              const owned = layer && layer.slot === 'video' && layer.trackId === id;
+              if (owned && layer.locked) {
+                kept.push(layer);
+                return false;
+              }
+              return !owned;
+            });
+            for (const layer of kept) {
+              delete layer.trackId;
+              layer.slot = 'background';
+              projectDoc.layers.push(layer);
+            }
+          }
         },
       });
     },

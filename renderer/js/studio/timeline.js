@@ -2663,6 +2663,18 @@ SA.timeline = (() => {
       add(t('studio.inspector.rerollBeat'), () => SA.store.commands.rerollBeat(cueId, hit.beatId));
       add(t('studio.inspector.varyBeat'), () => SA.store.commands.varyBeat(cueId, hit.beatId));
       add(t('studio.inspector.recolorBeat'), () => SA.store.commands.rerollPalette({ cueId, beatId: hit.beatId }));
+      add(t('studio.inspector.copyStyle'), () => {
+        const ok = SA.store.commands.copyStyle(`cue:${cueId}/beat:${hit.beatId}`);
+        SA.studio.toast(ok ? 'studio.toast.styleCopied' : 'studio.toast.error');
+      });
+      add(t('studio.inspector.pasteStyle'), () => {
+        if (!SA.store.commands.hasStyleClipboard()) {
+          SA.studio.toast('studio.toast.noStyleClipboard');
+          return;
+        }
+        const ok = SA.store.commands.pasteStyle(`cue:${cueId}/beat:${hit.beatId}`);
+        SA.studio.toast(ok ? 'studio.toast.stylePasted' : 'studio.toast.error');
+      });
       add(t('studio.beat.restructureCue'), () => SA.store.commands.restructureCue(cueId));
       add(t('studio.beat.randomChunk'), () => SA.store.commands.restructureCueRandom(cueId));
       addRecapItem(add, cueId);
@@ -2684,6 +2696,18 @@ SA.timeline = (() => {
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
       add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));
+      add(t('studio.inspector.copyStyle'), () => {
+        const ok = SA.store.commands.copyStyle(`cue:${cueId}`);
+        SA.studio.toast(ok ? 'studio.toast.styleCopied' : 'studio.toast.error');
+      });
+      add(t('studio.inspector.pasteStyle'), () => {
+        if (!SA.store.commands.hasStyleClipboard()) {
+          SA.studio.toast('studio.toast.noStyleClipboard');
+          return;
+        }
+        const ok = SA.store.commands.pasteStyle(`cue:${cueId}`);
+        SA.studio.toast(ok ? 'studio.toast.stylePasted' : 'studio.toast.error');
+      });
       add(t('studio.beat.duplicateCue'), () => {
         const cue = cueList().find((entry) => entry.id === cueId);
         if (cue) copyCue(cue);
@@ -3013,22 +3037,31 @@ SA.timeline = (() => {
           if (isImage) {
             event.preventDefault();
             const point = localPoint(event);
-            const dataUrl = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error('read-failed'));
-              reader.readAsDataURL(file);
-            }).catch(() => null);
-            if (dataUrl && SA.store && SA.store.commands) {
-              const layer = dropLayerAt(point);
-              layer.type = 'image';
-              layer.src = dataUrl;
-              layer.fit = 'cover';
-              layer.color = '#ffffff';
-              SA.store.commands.addLayer(layer);
-            }
-            if (SA.studio && SA.studio.toast) SA.studio.toast('studio.media.layerAdded', { name: file.name });
-            draw();
+            // every dropped image becomes its own sheet (1 sheet = 1 image),
+            // stacked at the drop position so a cutout set lands at once
+            const images = [...transfer.files].filter(
+              (entry) => entry.type.startsWith('image/') || /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(entry.name)
+            );
+            (async () => {
+              for (const image of images) {
+                const dataUrl = await new Promise((resolve) => {
+                  const reader = new FileReader();
+                  reader.onload = () => resolve(reader.result);
+                  reader.onerror = () => resolve(null);
+                  reader.readAsDataURL(image);
+                });
+                if (dataUrl && SA.store && SA.store.commands) {
+                  const layer = dropLayerAt(point);
+                  layer.type = 'image';
+                  layer.src = dataUrl;
+                  layer.fit = 'cover';
+                  layer.color = '#ffffff';
+                  SA.store.commands.addLayer(layer);
+                  if (SA.studio && SA.studio.toast) SA.studio.toast('studio.media.layerAdded', { name: image.name });
+                }
+              }
+              draw();
+            })();
             return;
           }
         }

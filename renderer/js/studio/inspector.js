@@ -463,6 +463,25 @@ SA.inspector = (() => {
     }
   }
 
+  // --- style copy / paste ----------------------------------------------------
+  // Same picture, different words: copy the look of a cue/beat and paste it
+  // elsewhere. Text and timing never travel — only the style bags, the
+  // sub-element overrides and the keyframes.
+
+  function copyStyleAt(path) {
+    const ok = SA.store.commands.copyStyle(path);
+    if (SA.studio && SA.studio.toast) SA.studio.toast(ok ? 'studio.toast.styleCopied' : 'studio.toast.error');
+  }
+
+  function pasteStyleAt(path) {
+    if (!SA.store.commands.hasStyleClipboard()) {
+      if (SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.noStyleClipboard');
+      return;
+    }
+    const ok = SA.store.commands.pasteStyle(path);
+    if (SA.studio && SA.studio.toast) SA.studio.toast(ok ? 'studio.toast.stylePasted' : 'studio.toast.error');
+  }
+
   // --- top toolbar ------------------------------------------------------------
 
   // The palette draw lives in a strip pinned to the top of the inspector, above
@@ -646,6 +665,8 @@ SA.inspector = (() => {
     summaryActions(body, [
       ['🎲', 'studio.inspector.rerollCue', () => SA.store.commands.rerollCue(sel.cueId)],
       ['🔀', 'studio.inspector.varyCue', () => SA.store.commands.varyCue(sel.cueId)],
+      ['📋', 'studio.inspector.copyStyle', () => copyStyleAt(`cue:${sel.cueId}`)],
+      ['📑', 'studio.inspector.pasteStyle', () => pasteStyleAt(`cue:${sel.cueId}`)],
       ['🗑', 'studio.beat.deleteCue', () => SA.store.commands.deleteCue(sel.cueId)],
     ]);
     const hint = document.createElement('div');
@@ -730,6 +751,8 @@ SA.inspector = (() => {
         const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
         if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
       }],
+      ['📋', 'studio.inspector.copyStyle', () => copyStyleAt(`cue:${sel.cueId}/beat:${beat.id}`)],
+      ['📑', 'studio.inspector.pasteStyle', () => pasteStyleAt(`cue:${sel.cueId}/beat:${beat.id}`)],
       ['🗑', 'studio.beat.deleteBeat', () => SA.store.commands.deleteBeat(sel.cueId, beat.id)],
     ]);
     const head = document.createElement('div');
@@ -1757,42 +1780,275 @@ SA.inspector = (() => {
     }
   }
 
+  // --- sheet editing (the inspector is the center of sheet editing) ------------
+  // Every per-sheet property lives here and writes live through setLayer.
+  // The layers dialog only manages the list (add / remove / reorder).
+
+  function writeSheet(id, patch, coalesceKey) {
+    SA.store.commands.setLayer(id, patch, coalesceKey ? { coalesceKey } : undefined);
+  }
+
+  function sheetTextInput(value, placeholder, onCommit) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ctrl-text';
+    input.placeholder = placeholder || '';
+    input.value = value == null ? '' : String(value);
+    input.addEventListener('keydown', (event) => event.stopPropagation());
+    input.addEventListener('change', () => onCommit(input.value));
+    return input;
+  }
+
+  function sheetTypeOptions() {
+    return [
+      { value: 'solid', label: t('layers.typeSolid') },
+      { value: 'image', label: t('layers.typeImage') },
+      { value: 'video', label: t('layers.typeVideo') },
+      { value: 'scene3d', label: t('layers.typeScene3d') },
+    ];
+  }
+
+  function sheetSlotOptions() {
+    const tracks = ((SA.store.state.project && SA.store.state.project.tracks) || []).filter((track) => track && track.kind === 'video');
+    return [
+      { value: 'background', label: t('layers.slotBackground') },
+      { value: 'foreground', label: t('layers.slotForeground') },
+      ...tracks.map((track) => ({ value: `video:${track.id}`, label: `${t('layers.slotVideo')}${track.name ? ` (${track.name})` : ''}` })),
+    ];
+  }
+
+  function sheetSlotValue(layer) {
+    return layer.slot === 'video' ? `video:${layer.trackId}` : layer.slot || 'background';
+  }
+
+  function sheetBlendOptions() {
+    return [
+      ['normal', 'layers.blendNormal'], ['add', 'layers.blendAdd'], ['multiply', 'layers.blendMultiply'], ['screen', 'layers.blendScreen'],
+      ['overlay', 'layers.blendOverlay'], ['softLight', 'layers.blendSoftLight'], ['hardLight', 'layers.blendHardLight'],
+      ['lighten', 'layers.blendLighten'], ['darken', 'layers.blendDarken'], ['difference', 'layers.blendDifference'],
+      ['exclusion', 'layers.blendExclusion'], ['colorDodge', 'layers.blendColorDodge'], ['colorBurn', 'layers.blendColorBurn'],
+    ].map(([value, key]) => ({ value, label: t(key) }));
+  }
+
+  function sheetFitOptions() {
+    return [
+      ['cover', 'layers.fitCover'], ['contain', 'layers.fitContain'], ['stretch', 'layers.fitStretch'], ['actual', 'layers.fitActual'],
+    ].map(([value, key]) => ({ value, label: t(key) }));
+  }
+
+  function sheetColorValue(next) {
+    if (typeof next === 'string') return next;
+    if (next && typeof next === 'object' && typeof next.value === 'string') return next.value;
+    return null;
+  }
+
+  async function sheetPickImage(layer) {
+    const picked = await SA.platform.readFile('.png,.jpg,.jpeg,.webp,.gif,.bmp,image/png,image/jpeg,image/webp');
+    if (!picked || !picked.bytes) return;
+    const extension = String(picked.name || '').split('.').pop().toLowerCase();
+    const mime = (SA.layersDialog.MIME && SA.layersDialog.MIME[extension]) || 'image/png';
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('read-failed'));
+      reader.readAsDataURL(new Blob([picked.bytes], { type: mime }));
+    }).catch(() => null);
+    if (dataUrl) writeSheet(layer.id, { src: dataUrl }, `sheet:${layer.id}:src`);
+  }
+
+  function appendSheetSource(body, layer) {
+    if (layer.type === 'solid') {
+      const control = SA.controls.colorControl(layer.color || '#101826', (next) => {
+        const hex = sheetColorValue(next);
+        if (hex) writeSheet(layer.id, { color: hex }, `sheet:${layer.id}:color`);
+      });
+      body.appendChild(fieldRow(t('layers.color'), control));
+      return;
+    }
+    if (layer.type === 'scene3d') {
+      const scene = layer.scene || {};
+      const presets = [
+        { value: 'starfield', label: t('layers.scene3dStarfield') },
+        { value: 'grid', label: t('layers.scene3dGrid') },
+        { value: 'floating', label: t('layers.scene3dFloating') },
+      ];
+      body.appendChild(fieldRow(t('layers.scene3dPreset'),
+        SA.controls.selectControl({}, scene.preset || 'starfield', (value) => {
+          writeSheet(layer.id, { scene: { ...(layer.scene || {}), preset: value } });
+        }, presets)));
+      body.appendChild(fieldRow(t('layers.speed'),
+        numberField(scene.speed == null ? 1 : scene.speed, { min: 0.05, step: 0.05, default: 1 }, (value) => {
+          writeSheet(layer.id, { scene: { ...(layer.scene || {}), speed: value > 0 ? value : 1 } }, `sheet:${layer.id}:scene`);
+        })));
+      body.appendChild(fieldRow(t('layers.scene3dDensity'),
+        numberField(scene.density == null ? 1 : scene.density, { min: 0.2, max: 3, step: 0.1, default: 1 }, (value) => {
+          writeSheet(layer.id, { scene: { ...(layer.scene || {}), density: Math.max(0.2, Math.min(3, value || 1)) } }, `sheet:${layer.id}:scene`);
+        })));
+      body.appendChild(fieldRow(t('layers.scene3dColor'),
+        sheetTextInput(scene.color || '', '#9fb8ff', (value) => {
+          writeSheet(layer.id, { scene: { ...(layer.scene || {}), color: String(value || '').trim() } });
+        })));
+      return;
+    }
+    // image / video: file picker plus a URL field
+    const isVideo = layer.type === 'video';
+    const wrap = document.createElement('div');
+    wrap.className = 'layer-source';
+    const choose = document.createElement('button');
+    choose.type = 'button';
+    choose.className = 'btn btn-mini';
+    choose.textContent = t(isVideo ? 'layers.chooseVideo' : 'layers.choose');
+    choose.addEventListener('click', async () => {
+      if (!isVideo) {
+        sheetPickImage(layer);
+        return;
+      }
+      const picked = await SA.platform.readFile('.mp4,.webm,.mov,video/mp4,video/webm');
+      if (!picked || !picked.bytes) return;
+      const url = URL.createObjectURL(new Blob([picked.bytes], { type: picked.type || 'video/mp4' }));
+      writeSheet(layer.id, { src: url }, `sheet:${layer.id}:src`);
+    });
+    wrap.appendChild(choose);
+    wrap.appendChild(sheetTextInput(layer.src && layer.src.length < 200 ? layer.src : '', t('layers.url'), (value) => {
+      writeSheet(layer.id, { src: String(value || '').trim() });
+    }));
+    body.appendChild(fieldRow(isVideo ? t('layers.video') : t('layers.image'), wrap));
+    if (isVideo) {
+      const video = layer.video || {};
+      body.appendChild(fieldRow(t('layers.speed'),
+        numberField(video.speed == null ? 1 : video.speed, { step: 0.05, default: 1 }, (value) => {
+          writeSheet(layer.id, { video: { ...(layer.video || {}), speed: value || 1 } }, `sheet:${layer.id}:video`);
+        })));
+      body.appendChild(fieldRow(t('layers.offset'),
+        numberField(video.offset == null ? 0 : video.offset, { step: 0.05, default: 0 }, (value) => {
+          writeSheet(layer.id, { video: { ...(layer.video || {}), offset: value } }, `sheet:${layer.id}:video`);
+        })));
+      body.appendChild(fieldRow(t('layers.loop'), SA.controls.boolControl(video.loop !== false, (value) => {
+        writeSheet(layer.id, { video: { ...(layer.video || {}), loop: value } });
+      })));
+      body.appendChild(fieldRow(t('layers.playInPreview'), SA.controls.boolControl(video.play !== false, (value) => {
+        writeSheet(layer.id, { video: { ...(layer.video || {}), play: value } });
+      })));
+    }
+  }
+
+  function appendSheetMotion(body, layer, direction, group) {
+    const fallback = { type: 'fade', duration: direction === 'in' ? 0.5 : 0.5, delay: 0, ease: direction === 'in' ? 'easeOutCubic' : 'easeInCubic', params: {} };
+    const current = { ...fallback, ...((layer.motion || {})[direction] || {}) };
+    const write = (part) => {
+      writeSheet(layer.id, { motion: { ...(layer.motion || {}), [direction]: { ...current, ...part } } }, `sheet:${layer.id}:motion`);
+    };
+    appendLayerSubhead(body, direction === 'in' ? t('layers.motionIn') : t('layers.motionOut'));
+    const types = SA.fx && SA.fx.list ? SA.fx.list(group) : [];
+    const options = types.map((entry) => ({ value: entry.type, label: SA.controls.typeLabel(group, entry.type) }));
+    if (!options.some((option) => option.value === current.type) && current.type) options.unshift({ value: current.type, label: current.type });
+    body.appendChild(fieldRow(t('layers.motionType'), SA.controls.selectControl({}, current.type, (value) => {
+      write({ type: value, params: {} });
+    }, options)));
+    body.appendChild(fieldRow(t('layers.duration'),
+      numberField(current.duration, { min: 0, step: 0.05, default: 0.5 }, (value) => write({ duration: Math.max(0, value) }))));
+    body.appendChild(fieldRow(t('layers.delay'),
+      numberField(current.delay, { step: 0.05, default: 0 }, (value) => write({ delay: value }))));
+    body.appendChild(fieldRow(t('layers.ease'), SA.controls.easeControl(current.ease, (value) => write({ ease: value }))));
+    const descriptor = SA.fx && SA.fx.get ? SA.fx.get(group, current.type) : null;
+    for (const param of (descriptor && descriptor.params) || []) {
+      const value = current.params && current.params[param.key] != null ? current.params[param.key] : param.default;
+      body.appendChild(fieldRow(SA.controls.labelFor(param.key),
+        SA.controls.paramControl(group, param, value, (next) => {
+          write({ params: { ...(current.params || {}), [param.key]: next } });
+        })));
+    }
+  }
+
+  function appendSheetFilter(body, layer) {
+    const current = layer.filter || { type: 'none', params: {} };
+    appendLayerSubhead(body, t('layers.filters'));
+    body.appendChild(fieldRow(t('layers.filter'), SA.controls.selectControl({}, current.type || 'none', (value) => {
+      writeSheet(layer.id, { filter: { type: value, params: {} } });
+    }, [
+      { value: 'none', label: t('layers.filterNone') },
+      { value: 'chromaticAberration', label: t('layers.filterChromatic') },
+      { value: 'rgbShift', label: t('layers.filterRgbShift') },
+      { value: 'glitchBlocks', label: t('layers.filterGlitch') },
+    ])));
+    for (const param of (SA.layersDialog.FILTERS || {})[current.type] || []) {
+      const value = current.params && current.params[param.key] != null ? current.params[param.key] : param.default;
+      const control = param.kind === 'bool'
+        ? SA.controls.boolControl(value, (next) => {
+          writeSheet(layer.id, { filter: { type: current.type, params: { ...(current.params || {}), [param.key]: next } } });
+        })
+        : SA.controls.numberControl({ min: param.min, max: param.max, step: param.step, default: param.default }, value, (next) => {
+          writeSheet(layer.id, { filter: { type: current.type, params: { ...(current.params || {}), [param.key]: next } } }, `sheet:${layer.id}:filter`);
+        });
+      body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+    }
+  }
+
   function renderLayerSection(container) {
     const doc = project();
     const id = String(selectionInfo().raw).replace(/^layer:/, '');
     const layer = (doc.layers || []).find((entry) => entry.id === id);
     if (!layer) return;
     const body = section(container, 'layer', t('layers.title'));
-    const typeName = layer.type === 'solid' ? t('layers.typeSolid') : layer.type === 'video' ? t('layers.typeVideo') : layer.type === 'scene3d' ? t('layers.typeScene3d') : t('layers.typeImage');
-    const filterName = layer.filter && layer.filter.type && layer.filter.type !== 'none' ? layer.filter.type : t('layers.filterNone');
-    const rows = [
-      [t('layers.type'), typeName],
-      [t('layers.slot'), SA.layersDialog.slotLabel(layer)],
-      [t('layers.blend'), String(layer.blend || 'normal')],
-      [t('layers.opacity'), String(layer.opacity == null ? 1 : layer.opacity)],
-      [t('layers.start'), String(layer.start == null ? 0 : layer.start)],
-      [t('layers.end'), layer.end == null ? '∞' : String(layer.end)],
-      [t('layers.filter'), filterName],
-    ];
-    for (const [label, value] of rows) {
-      const row = document.createElement('div');
-      row.className = 'ctrl-row';
-      const left = document.createElement('span');
-      left.className = 'ctrl-label';
-      left.textContent = label;
-      const right = document.createElement('span');
-      right.textContent = value;
-      row.appendChild(left);
-      row.appendChild(right);
-      body.appendChild(row);
-    }
+    // identity: type plus the source editor for that type
+    body.appendChild(fieldRow(t('layers.type'),
+      SA.controls.selectControl({}, layer.type || 'image', (value) => {
+        writeSheet(layer.id, { type: value });
+      }, sheetTypeOptions())));
+    appendSheetSource(body, layer);
+    // placement
+    body.appendChild(fieldRow(t('layers.slot'),
+      SA.controls.selectControl({}, sheetSlotValue(layer), (value) => {
+        if (String(value).startsWith('video:')) {
+          writeSheet(layer.id, { slot: 'video', trackId: String(value).slice('video:'.length) });
+        } else {
+          const patch = { slot: value };
+          writeSheet(layer.id, patch);
+        }
+      }, sheetSlotOptions())));
+    body.appendChild(fieldRow(t('layers.blend'),
+      SA.controls.selectControl({}, layer.blend || 'normal', (value) => {
+        writeSheet(layer.id, { blend: value });
+      }, sheetBlendOptions())));
+    body.appendChild(fieldRow(t('layers.fit'),
+      SA.controls.selectControl({}, layer.fit || 'stretch', (value) => {
+        writeSheet(layer.id, { fit: value });
+      }, sheetFitOptions())));
+    body.appendChild(fieldRow(t('layers.start'),
+      numberField(layer.start == null ? 0 : layer.start, { min: 0, step: 0.1, default: 0 }, (value) => {
+        writeSheet(layer.id, { start: Math.max(0, value || 0) }, `sheet:${layer.id}:timing`);
+      })));
+    body.appendChild(fieldRow(t('layers.end'), (() => {
+      const wrap = document.createElement('div');
+      wrap.className = 'layer-source';
+      wrap.appendChild(numberField(layer.end, { min: 0, step: 0.1, default: 0 }, (value) => {
+        writeSheet(layer.id, { end: Math.max(0, value || 0) }, `sheet:${layer.id}:timing`);
+      }));
+      const infinite = document.createElement('button');
+      infinite.type = 'button';
+      infinite.className = 'btn btn-mini';
+      infinite.textContent = t('layers.endInfinity');
+      infinite.title = t('layers.endInfinity');
+      infinite.addEventListener('click', () => writeSheet(layer.id, { end: null }));
+      wrap.appendChild(infinite);
+      return wrap;
+    })()));
+    body.appendChild(fieldRow(t('layers.radius'),
+      numberField(layer.radius == null ? 0 : layer.radius, { min: 0, max: 0.5, step: 0.02, default: 0 }, (value) => {
+        writeSheet(layer.id, { radius: Math.max(0, Math.min(0.5, value)) }, `sheet:${layer.id}:radius`);
+      })));
+    // keyframed numbers (transform / opacity / anchor / crop)
+    appendLayerKeyframeRows(body, id);
+    // in/out motion and filter
+    appendSheetMotion(body, layer, 'in', 'enter');
+    appendSheetMotion(body, layer, 'out', 'exit');
+    appendSheetFilter(body, layer);
+    // protection + visibility + list management
+    body.appendChild(fieldRow(t('layers.locked'), SA.controls.boolControl(!!layer.locked, (value) => {
+      writeSheet(layer.id, { locked: value });
+    })));
     const actions = document.createElement('div');
     actions.className = 'layer-order';
-    const edit = document.createElement('button');
-    edit.type = 'button';
-    edit.className = 'btn btn-mini';
-    edit.textContent = t('layers.edit');
-    edit.addEventListener('click', () => SA.layersDialog.open());
     const toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'btn btn-mini';
@@ -1802,12 +2058,22 @@ SA.inspector = (() => {
     remove.type = 'button';
     remove.className = 'btn btn-mini';
     remove.textContent = t('layers.remove');
-    remove.addEventListener('click', () => SA.store.commands.removeLayer(layer.id));
-    actions.appendChild(edit);
+    if (layer.locked) {
+      remove.disabled = true;
+      remove.title = t('layers.locked');
+    } else {
+      remove.addEventListener('click', () => SA.store.commands.removeLayer(layer.id));
+    }
+    const list = document.createElement('button');
+    list.type = 'button';
+    list.className = 'btn btn-mini';
+    list.textContent = t('layers.edit');
+    list.title = t('layers.inspectorHint');
+    list.addEventListener('click', () => SA.layersDialog.open());
     actions.appendChild(toggle);
     actions.appendChild(remove);
+    actions.appendChild(list);
     body.appendChild(actions);
-    appendLayerKeyframeRows(body, id);
   }
 
   function appendLayerSubhead(body, text) {
