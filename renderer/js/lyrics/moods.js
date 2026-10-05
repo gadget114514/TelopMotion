@@ -2287,6 +2287,9 @@
     bracket: [0.75, 0.35],
     paper: [0.6, 0.5],
     cloud: [0.3, 0.9],
+    plate: [0.55, 0.6],
+    oval: [0.5, 0.65],
+    bubble: [0.45, 0.75],
   };
 
   const BG_PLAIN_TRAITS = {
@@ -2296,6 +2299,8 @@
     diamond: BG_SHAPE_TRAITS.diamond,
     bar: BG_SHAPE_TRAITS.bar,
     ring: BG_SHAPE_TRAITS.ring,
+    plate: BG_SHAPE_TRAITS.plate,
+    oval: BG_SHAPE_TRAITS.oval,
   };
   const BG_PLAIN_MOTIONS = { follow: 3, pop: 2, wipe: 1, grow: 1 };
 
@@ -2411,7 +2416,7 @@
   const BG_AUTO_SCALE = 0.4;
   // The basic marks hug their letter: same size as the letter box, centred on
   // the letter, whatever the placement the draw picked.
-  const BG_LETTER_SHAPES = new Set(['square', 'rounded', 'circle', 'diamond', 'star', 'heart']);
+  const BG_LETTER_SHAPES = new Set(['square', 'rounded', 'circle', 'diamond', 'star', 'heart', 'plate', 'oval', 'bubble']);
 
   // The text background of one look. The optional `options` (the compose
   // profile) may pin the presence chance / placement weights / vary and edge
@@ -2521,6 +2526,12 @@
       params.opacity = 1;
       delete params.offset;
       delete params.varyRotation;
+    }
+    if (shape === 'bubble') {
+      // one tail side and one body per look: the bubble reads as a single
+      // speech balloon instead of a mixed set
+      params.tail = pick(random, ['right', 'left', 'top', 'bottom']);
+      params.body = pick(random, ['oval', 'oval', 'square', 'rounded', 'cloud']);
     }
     // variation
     const varyTable = (config && config.vary) || null;

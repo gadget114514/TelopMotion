@@ -16,6 +16,7 @@ const textBg = require('../../renderer/js/lyrics/effects/text-bg.js');
 const SHAPE_ORDER = [
   'none', 'square', 'rounded', 'circle', 'diamond', 'ring', 'bar', 'star', 'blob',
   'heart', 'splatter', 'scratch', 'drop', 'bracket', 'paper', 'cloud',
+  'plate', 'oval', 'bubble',
 ];
 
 function entry(overrides) {
@@ -297,13 +298,44 @@ test('capBackground keeps cell / em sizes inside the engine caps', () => {
   assert.deepEqual(randomRange, [0.7, 1.15]);
 });
 
+test('the bubble packs body and tail into one code', () => {
+  assert.deepEqual(textBg.BUBBLE_BODIES, ['oval', 'square', 'rounded', 'cloud']);
+  assert.deepEqual(textBg.BUBBLE_TAILS, ['right', 'left', 'top', 'bottom']);
+  assert.equal(textBg.bubbleCode({ body: 'oval', tail: 'right' }), 0);
+  assert.equal(textBg.bubbleCode({ body: 'square', tail: 'left' }), 5);
+  assert.equal(textBg.bubbleCode({ body: 'cloud', tail: 'bottom' }), 15);
+  assert.equal(textBg.bubbleCode({}), 0, 'unknown bodies fall back to oval/right');
+  const shape = { type: 'bubble', params: { unit: 'cell', tail: 'left', body: 'cloud' } };
+  const result = textBg.evaluateBg(shape, { type: 'follow', params: {} }, [entry()], null, null, 0, { seed: 1 });
+  assert.equal(result.states[0].shapeIndex, textBg.SHAPES.bubble);
+  assert.equal(result.states[0].tailCode, 3 * 4 + 1);
+  // every other shape uploads 0, which the shader ignores
+  const plain = textBg.evaluateBg({ type: 'rounded', params: {} }, { type: 'follow', params: {} }, [entry()], null, null, 0, { seed: 1 });
+  assert.equal(plain.states[0].tailCode, 0);
+});
+
+test('the shader carries the signboard and bubble branches', () => {
+  const shaders = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'shaders.js'), 'utf8');
+  const bg = shaders.slice(shaders.indexOf('const BG_FRAG'), shaders.indexOf('const BACKGROUND_FRAG'));
+  for (const token of ['sdPlate', 'sdOval', 'sdBubble', 'v_tail', 'shape == 16', 'shape == 17', 'shape == 18']) {
+    assert.ok(bg.includes(token), `BG_FRAG has no ${token}`);
+  }
+  // no reserved words in a declaration
+  assert.ok(!/\b(half|fixed|input|output|filter)\s+\w+\s*=/.test(bg), 'the shader declares a reserved word');
+});
+
+test('the bg state texture carries the bubble code', () => {
+  const passes = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'), 'utf8');
+  assert.ok(passes.includes('state.tailCode'), 'the tail code is not uploaded');
+});
+
 test('ornShape and its companions default to none / follow', () => {
   assert.equal(fx.defaultsFor('ornShape').type, 'none');
   assert.equal(fx.defaultsFor('ornMotion').type, 'follow');
   assert.equal(fx.defaultsFor('ornFill').type, 'solid');
   assert.equal(fx.defaultsFor('ornEdge'), null);
   const shapes = fx.list('ornShape').map((descriptor) => descriptor.type).sort();
-  assert.deepEqual(shapes, ['bar', 'blob', 'bracket', 'circle', 'cloud', 'diamond', 'drop', 'heart', 'paper', 'ring', 'rounded', 'scratch', 'splatter', 'square', 'star']);
+  assert.deepEqual(shapes, ['bar', 'blob', 'bracket', 'bubble', 'circle', 'cloud', 'diamond', 'drop', 'heart', 'oval', 'paper', 'plate', 'ring', 'rounded', 'scratch', 'splatter', 'square', 'star']);
 });
 
 test('a background square is forced to the letter cell; an ornament keeps its geometry', () => {
@@ -387,41 +419,54 @@ test('splitStyle sorts the legacy bg groups into background and ornament', () =>
 test('generated text backgrounds stay inside the caps', () => {
   const effects = ['animation', 'layout', 'enter', 'exit', 'hold', 'location', 'post', 'background', 'color', 'vary'];
   for (const name of effects) require(`../../renderer/js/lyrics/effects/${name}.js`);
+  const rng = require('../../renderer/js/lyrics/rng.js');
   const moods = require('../../renderer/js/lyrics/moods.js');
   const context = { letterCount: 12, cjk: false, hasPrevious: true, badgeId: false, hasCard: false, aspect: '16:9' };
-  let backgrounds = 0;
-  let ornaments = 0;
-  // A background only comes out of the auto direction when it draws a cell
-  // square in the enclose placement (every other shape is a text ornament), so
-  // the branch is rare: the walk has to be wide enough for the caps below to be
-  // checked against at least one real background (first occurs at seed 165).
-  const SEEDS = 200;
-  for (let seed = 1; seed <= SEEDS; seed += 1) {
-    const style = moods.generate({ axes: { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.6, brightness: 0.4, weird: 0.7 }, seed, context }).style;
+  const axes = { speed: 0.5, energy: 0.6, softness: 0.5, density: 0.6, brightness: 0.4, weird: 0.7 };
+  const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+  // A background only comes out of the auto direction when it draws a square
+  // in the enclose placement (every other shape is a text ornament), so the
+  // unpinned walk below almost never hits one: backgrounds are drawn through
+  // a pinned enclose placement instead, which keeps the same generator code
+  // path but lands on one deterministically.
+  const backgrounds = [];
+  for (let seed = 1; seed <= 200 && backgrounds.length < 8; seed += 1) {
+    const style = {};
+    const applied = moods.applyGenreBackground(style, null, axes, rng.rngFor(seed, 'bg-cap'), palette, false, {
+      chance: 1,
+      placement: { bgEnclose: 1 },
+    });
+    if (!applied || !style.bgShape) continue;
+    backgrounds.push({ seed, style });
+  }
+  assert.ok(backgrounds.length >= 3, `only ${backgrounds.length} backgrounds drawn`);
+  for (const { seed, style } of backgrounds) {
     // the background is always a cell square with no geometry in the data
     const shape = style.bgShape;
-    if (shape && shape.type && shape.type !== 'none') {
-      assert.equal(shape.type, 'square', `seed ${seed} background type ${shape.type}`);
-      // the automatic direction stores scale
-      assert.ok(shape.params.scale >= 0.1 && shape.params.scale <= 10, `seed ${seed} background scale ${shape.params.scale}`);
-      assert.equal(shape.params.width, undefined, `seed ${seed} background width ${shape.params.width}`);
-      const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'bgShape' });
-      assert.ok(bg, `seed ${seed} background does not evaluate`);
-      // the box stays glued to the glyph: the data carries no geometry, and only
-      // a `follow` motion adds none. The generator does hand the independent
-      // clock a rotating hold (wobble / spin), which is a deliberate look, so the
-      // offset / rotation guard applies to the glued case.
-      const glued = !style.bgMotion || style.bgMotion.type === 'follow' || style.bgMotion.type === 'none';
-      for (const state of bg.states) {
-        assert.ok(state.sizeX >= 0.1 && state.sizeX <= 10, `seed ${seed} background width`);
-        assert.ok(state.sizeY >= 0.1 && state.sizeY <= 10, `seed ${seed} background height`);
-        if (glued) {
-          assert.equal(state.offsetX, 0, `seed ${seed} background offset`);
-          assert.equal(state.rotation, 0, `seed ${seed} background rotation`);
-        }
+    assert.equal(shape.type, 'square', `seed ${seed} background type ${shape.type}`);
+    // the automatic direction stores scale
+    assert.ok(shape.params.scale >= 0.1 && shape.params.scale <= 10, `seed ${seed} background scale ${shape.params.scale}`);
+    assert.equal(shape.params.width, undefined, `seed ${seed} background width ${shape.params.width}`);
+    const bg = textBg.evaluateBg(shape, style.bgMotion || { type: 'follow', params: {} }, [entry()], null, null, 2, { seed, group: 'bgShape' });
+    assert.ok(bg, `seed ${seed} background does not evaluate`);
+    // the box stays glued to the glyph: the data carries no geometry, and only
+    // a `follow` motion adds none. The generator does hand the independent
+    // clock a rotating hold (wobble / spin), which is a deliberate look, so the
+    // offset / rotation guard applies to the glued case.
+    const glued = !style.bgMotion || style.bgMotion.type === 'follow' || style.bgMotion.type === 'none';
+    for (const state of bg.states) {
+      assert.ok(state.sizeX >= 0.1 && state.sizeX <= 10, `seed ${seed} background width`);
+      assert.ok(state.sizeY >= 0.1 && state.sizeY <= 10, `seed ${seed} background height`);
+      if (glued) {
+        assert.equal(state.offsetX, 0, `seed ${seed} background offset`);
+        assert.equal(state.rotation, 0, `seed ${seed} background rotation`);
       }
-      backgrounds += 1;
     }
+  }
+  let ornaments = 0;
+  const SEEDS = 200;
+  for (let seed = 1; seed <= SEEDS; seed += 1) {
+    const style = moods.generate({ axes, seed, context }).style;
     // the ornaments keep their data geometry and stay inside the caps
     const orn = style.ornShape;
     if (orn && orn.type && orn.type !== 'none') {
@@ -446,7 +491,6 @@ test('generated text backgrounds stay inside the caps', () => {
       ornaments += 1;
     }
   }
-  assert.ok(backgrounds >= 1, `only ${backgrounds} backgrounds in ${SEEDS} seeds`);
   assert.ok(ornaments > 20, `only ${ornaments} ornaments drawn`);
 });
 
@@ -464,9 +508,13 @@ test('the pinned profile options override the genre tables', () => {
     edgeChance: 1,
   });
   assert.equal(applied, true);
-  // a pinned accent is not a background: it lands on the ornament groups
-  // (a basic mark hugs its letter instead: a cell-sized shape behind it)
-  if (!(style.ornShape.params.unit === 'cell' && style.ornShape.params.width === 1)) {
+  // a pinned accent is not a background: it lands on the ornament groups. A
+  // letter-hugging mark (square / rounded / plate / bubble ...) stays a
+  // cell-sized shape behind its letter instead of an em accent in front.
+  if (style.ornShape.params.unit === 'cell') {
+    assert.equal(style.ornShape.params.layer, 'behind');
+    assert.ok(style.ornShape.params.width >= 0.6 && style.ornShape.params.width <= 1.8);
+  } else {
     assert.equal(style.ornShape.params.unit, 'em');
     assert.equal(style.ornShape.params.layer, 'front');
   }

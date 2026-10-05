@@ -974,7 +974,10 @@ SA.glPasses = (() => {
         bgStateData[(4 * stride + i) * 4] = dir[0];
         bgStateData[(4 * stride + i) * 4 + 1] = dir[1];
         bgStateData[(4 * stride + i) * 4 + 2] = state.amount == null ? 5 : state.amount;
-        bgStateData[(4 * stride + i) * 4 + 3] = state.roughness == null ? 0.5 : state.roughness;
+        // row 4 w rides the bubble body+tail code (body * 4 + tail); the old
+        // `roughness` never reached the fragment shader, and every other
+        // shape uploads 0, which the shader ignores
+        bgStateData[(4 * stride + i) * 4 + 3] = state.tailCode == null ? 0 : state.tailCode;
         // row 5: trim (start, end, offset) + outline stroke; row 6: dash
         // (on, off, offset) + the interior fill amount (bgMotion.draw)
         const trim = Array.isArray(state.trim) ? state.trim : [0, 1, 0];

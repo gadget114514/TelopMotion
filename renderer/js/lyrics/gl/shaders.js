@@ -1948,6 +1948,7 @@ SA.glShaders = (() => {
   out float v_shape;
   out float v_seed;
   out float v_clip;
+  out float v_tail;
   out vec2 v_clipDir;
   out float v_amount;
   out float v_letter;
@@ -1974,6 +1975,7 @@ SA.glShaders = (() => {
     v_clip = b3.x;
     v_clipDir = b4.xy;
     v_amount = b4.z;
+    v_tail = b4.w;
     v_color = b2;
     v_trim = b5;
     v_dash = b6;
@@ -2001,6 +2003,7 @@ SA.glShaders = (() => {
   in float v_clip;
   in vec2 v_clipDir;
   in float v_amount;
+  in float v_tail;
   in float v_letter;
   in vec4 v_color;
   in vec4 v_trim;
@@ -2094,8 +2097,47 @@ SA.glShaders = (() => {
     }
     return d;
   }
+  // A rectangular signboard: a nearly-sharp wide plaque (sharper corners and
+  // a wider build than rounded, flatter than square).
+  float sdPlate(vec2 p) {
+    return sdRoundBox(p, vec2(0.95, 0.78), 0.07);
+  }
+  // An oval signboard: explicitly wider than tall (the circle stays uniform
+  // and only turns elliptical through the letterbox scale).
+  float sdOval(vec2 p) {
+    return sdEllipseApprox(p, vec2(1.0, 0.72));
+  }
+  float sdBubbleBody(vec2 p, float body) {
+    if (body < 0.5) return sdEllipseApprox(p, vec2(1.0, 0.78));
+    if (body < 1.5) return sdBox(p, vec2(0.88));
+    if (body < 2.5) return sdRoundBox(p, vec2(0.88), 0.3);
+    return sdCloud(p);
+  }
+  // A speech bubble: the body (oval / square / rounded / cloud) plus a tail
+  // triangle on one side. code packs body * 4 + tail (0 right, 1 left,
+  // 2 top, 3 bottom); the coordinates are y-down, so +y is the bottom. The
+  // whole bubble is drawn at 0.7 scale: the tail sticks out past the body,
+  // so without the shrink its apex would fall outside the letter quad and
+  // be clipped away.
+  float sdBubble(vec2 p, float code) {
+    // code is always an exact integer float (body * 4 + tail)
+    float body = floor(code / 4.0);
+    float tail = code - body * 4.0;
+    vec2 q = p / 0.7;
+    // rotate a copy so the tail always grows toward +y (down)
+    vec2 tq = q;
+    vec2 shift = vec2(0.0);
+    if (tail < 0.5) { tq = vec2(-q.y, q.x); shift = vec2(-0.14, 0.0); }
+    else if (tail < 1.5) { tq = vec2(q.y, -q.x); shift = vec2(0.14, 0.0); }
+    else if (tail < 2.5) { tq = -q; shift = vec2(0.0, 0.14); }
+    else { shift = vec2(0.0, -0.14); }
+    float d = sdBubbleBody(q - shift, body);
+    // tail triangle: apex outside the body (tq.y 1.35), base buried in it
+    float tri = sdTriangleIsosceles(vec2(tq.x - 0.15, -(tq.y - 1.35)), vec2(0.26, 0.9));
+    return smin(d, tri, 0.1) * 0.7;
+  }
 
-  float shapeDistance(vec2 p, int shape, float seed, float amount) {
+  float shapeDistance(vec2 p, int shape, float seed, float amount, float tail) {
     if (shape == 1) return sdBox(p, vec2(0.85));
     if (shape == 2) return sdRoundBox(p, vec2(0.85), 0.28);
     if (shape == 3) return sdEllipseApprox(p, vec2(0.9));
@@ -2111,6 +2153,9 @@ SA.glShaders = (() => {
     if (shape == 13) return sdBracket(p, vec2(0.95), 0.09, 0.42);
     if (shape == 14) return sdPaper(p, vec2(0.85), clamp(amount, 0.0, 1.0), seed);
     if (shape == 15) return sdCloud(p);
+    if (shape == 16) return sdPlate(p);
+    if (shape == 17) return sdOval(p);
+    if (shape == 18) return sdBubble(p, tail);
     return 1e9;
   }
 
@@ -2129,7 +2174,7 @@ SA.glShaders = (() => {
       return;
     }
     vec2 q = v_local * v_half;
-    float d = shapeDistance(q, int(v_shape + 0.5), v_seed, v_amount);
+    float d = shapeDistance(q, int(v_shape + 0.5), v_seed, v_amount, v_tail);
     d /= max(min(v_half.x, v_half.y), 0.001);
     float aa = max(fwidth(d), 0.004);
     float inside = 1.0 - smoothstep(-aa, aa, d);

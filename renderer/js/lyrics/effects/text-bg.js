@@ -25,6 +25,9 @@
     bracket: 13,
     paper: 14,
     cloud: 15,
+    plate: 16,
+    oval: 17,
+    bubble: 18,
   };
 
   const SHAPE_TYPES = Object.keys(SHAPES);
@@ -86,6 +89,15 @@
     ],
     blob: [{ key: 'seedShift', kind: 'int', min: 0, max: 9999, step: 1, default: 0 }],
     cloud: [{ key: 'seedShift', kind: 'int', min: 0, max: 9999, step: 1, default: 0 }],
+    // the speech bubble draws its body (oval / square / rounded / cloud) with
+    // a tail on one side; `tail` picks the side the tail grows from, `body`
+    // the body shape, so right/left/top/bottom and the four bodies read as
+    // different nuances of the same bubble
+    bubble: [
+      { key: 'tail', kind: 'select', options: ['right', 'left', 'top', 'bottom'], default: 'right' },
+      { key: 'body', kind: 'select', options: ['oval', 'square', 'rounded', 'cloud'], default: 'oval' },
+      { key: 'seedShift', kind: 'int', min: 0, max: 9999, step: 1, default: 0 },
+    ],
   };
 
   function paramsFor(type) {
@@ -204,6 +216,20 @@
     const number = Number(value);
     if (!Number.isFinite(number)) return 0;
     return number < 0 ? 0 : number > 1 ? 1 : number;
+  }
+
+  // The bubble packs its body + tail choice into one float the shader
+  // decodes (body * 4 + tail): the bg state texture has no spare channel for
+  // two discrete knobs, and `roughness` (row 4 w) never reaches the fragment
+  // shader, so the code rides there. Every other shape uploads 0 and the
+  // shader ignores it.
+  const BUBBLE_BODIES = ['oval', 'square', 'rounded', 'cloud'];
+  const BUBBLE_TAILS = ['right', 'left', 'top', 'bottom'];
+
+  function bubbleCode(params) {
+    const body = BUBBLE_BODIES.indexOf(params && params.body);
+    const tail = BUBBLE_TAILS.indexOf(params && params.tail);
+    return (body < 0 ? 0 : body) * 4 + (tail < 0 ? 0 : tail);
   }
 
   function num(value, fallback) {
@@ -619,6 +645,7 @@
         dash,
         stroke: mode === 'draw' && stroke <= 0.001 ? 0.07 : stroke,
         fill,
+        tailCode: shapeInstance.type === 'bubble' ? bubbleCode(shapeParams) : 0,
       });
     }
     return { unit, type: shapeInstance.type, shapeIndex: typeIndex, motion: mode, states, params: shapeParams, motionParams, group };
@@ -632,6 +659,9 @@
     VARY_MODES,
     BG_SCALE_MIN,
     BG_SCALE_MAX,
+    BUBBLE_BODIES,
+    BUBBLE_TAILS,
+    bubbleCode,
     backgroundScale,
     capBackground,
     cellMetrics,

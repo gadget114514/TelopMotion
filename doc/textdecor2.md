@@ -516,6 +516,9 @@
 | bracket | E 質感（背景） | 時間 t |  |
 | paper | E 質感（背景） | 時間 t |  |
 | cloud | E 質感（背景） | 時間 t |  |
+| plate | E 質感（背景） | 時間 t | 四角い看板。ornShape のみ（bgShape 登録は none/square のまま） |
+| oval | E 質感（背景） | 時間 t | 楕円の看板。ornShape のみ |
+| bubble | E 質感（背景） | 時間 t | ふきだし（本体 oval/square/rounded/cloud × しっぽ right/left/top/bottom）。ornShape のみ |
 
 ### bgFill（14）
 
