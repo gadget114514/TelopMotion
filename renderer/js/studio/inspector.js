@@ -1432,12 +1432,24 @@ SA.inspector = (() => {
     const slots = ['fill', 'fill2', 'stroke', 'glow', 'shadow'];
     for (const slot of slots) {
       const value = colorSet[slot];
-      const current = value && value.kind === 'solid' ? value.value : value && value.value ? value.value : '';
       const propPath = `color.${slot}`;
-      const control = SA.controls.colorControl(current, (next) => {
-        writeProp(propPath, next == null ? null : { kind: 'solid', value: next, alpha: 1 });
-      });
-      row(body, propPath, SA.controls.labelFor(slot), control);
+      // pass the full ColorValue (solid / palette / gradient / category) plus
+      // the scoped palette so a palette reference resolves to its colour
+      // instead of falling back to white
+      const control = SA.controls.colorControl(value == null ? null : value, (next) => {
+        if (next == null || next === '') {
+          writeProp(propPath, null);
+          return;
+        }
+        if (typeof next === 'string') {
+          writeProp(propPath, { kind: 'solid', value: next, alpha: 1 });
+          return;
+        }
+        writeProp(propPath, next);
+      }, { palette: style.palette || null, slotLabel: t('studio.inspector.palette') });
+      // `labelFor` collides with effect params (fill -> 埋める割合,
+      // stroke -> 線幅), so the colour slots use their own names
+      row(body, propPath, SA.controls.prettify(slot), control);
     }
     const useCategory = !!colorSet.useCategory;
     const catRow = document.createElement('label');
