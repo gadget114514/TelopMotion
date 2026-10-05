@@ -52,7 +52,7 @@ test('every motif in the registry gets its own cue', () => {
 
 test('every motion axis value gets its own cue', () => {
   const b = built();
-  const axes = ['in', 'hold', 'out', 'sync', 'camera', 'procMotion'];
+  const axes = ['in', 'hold', 'out', 'sync', 'camera', 'procMotion', 'lineStyle', 'lineCap', 'stroke', 'density', 'densityGeo', 'ease'];
   for (const axis of axes) {
     const values = showcase.AXIS_VALUES[axis];
     assert.ok(values && values.length, `${axis} has no values`);
@@ -81,6 +81,32 @@ test('the axis cues pin the move / camera and hold the reference motif', () => {
     assert.equal(entry.spec.params.sync, entry.value, `sync ${entry.value}`);
     // the beat and text syncs cut on the lyric beats, free on the cuts
     assert.ok(entry.spec.params.beats.length >= 1, `sync ${entry.value} has no sub-beats`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'lineStyle')) {
+    assert.equal(entry.spec.params.lineStyle, entry.value, `lineStyle ${entry.value}`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'lineCap')) {
+    assert.equal(entry.spec.params.motif, 'scratches', `lineCap ${entry.value} reference`);
+    assert.equal(entry.spec.params.lineCap, entry.value, `lineCap ${entry.value}`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'stroke')) {
+    assert.equal(entry.spec.params.stroke, entry.value, `stroke ${entry.value}`);
+    assert.equal(entry.spec.params.weightVar, 0.6, `stroke ${entry.value} weightVar`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'density')) {
+    assert.equal(entry.spec.params.density, showcase.DENSITY_STEPS[entry.value], `density ${entry.value}`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'densityGeo')) {
+    assert.equal(entry.spec.params.motif, 'voronoi', `densityGeo ${entry.value} reference`);
+    assert.equal(entry.spec.params.density, showcase.DENSITY_STEPS[entry.value], `densityGeo ${entry.value}`);
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'ease')) {
+    assert.equal(entry.spec.params.inEase, entry.value, `ease ${entry.value}`);
+    assert.equal(entry.spec.params.inDur, 1.2, `ease ${entry.value} inDur`);
+    assert.equal(entry.spec.params.outDur, 0.6, `ease ${entry.value} outDur`);
+    for (const beat of entry.spec.params.beats) {
+      assert.deepEqual([beat.move.in, beat.move.hold, beat.move.out], ['pop', 'pulse', 'shrink'], `ease ${entry.value} beat ${beat.start}`);
+    }
   }
 });
 
@@ -270,13 +296,19 @@ test('every figure name the walk prints has a label in all five languages', () =
     sync: figures.SYNCS,
     camera: figures.CAMERAS_2D,
     procMotion: figures.PROC_LISTS.motions,
+    lineStyle: figures.LINE_STYLES,
+    lineCap: figures.LINE_CAPS,
+    stroke: Object.keys(figures.STROKES),
+    density: ['low', 'mid', 'high'],
+    ease: ['linear', 'cubicOut', 'backOut', 'elasticOut', 'bounceOut', 'expoInOut'],
   };
   const b = built();
   // the namespaces the script asks for have to line up with the i18n table
   assert.equal(showcase.LABEL_NAMESPACE.motif, 'motif');
   assert.equal(showcase.LABEL_NAMESPACE.procMotion, 'proc');
+  assert.equal(showcase.LABEL_NAMESPACE.densityGeo, 'density');
   const namespaces = new Set(b.entries.map((entry) => entry.namespace));
-  assert.deepEqual([...namespaces].sort(), ['camera', 'hold', 'in', 'motif', 'out', 'proc', 'sync']);
+  assert.deepEqual([...namespaces].sort(), ['camera', 'density', 'ease', 'hold', 'in', 'lineCap', 'lineStyle', 'motif', 'out', 'proc', 'stroke', 'sync']);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};
