@@ -159,7 +159,7 @@ test('the Help menu offers the font showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.fontShowcase', action: 'fontShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /fontShowcase: fontShowcaseProject/);
-  assert.match(app, /readAsset\('data\/font-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/font-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

@@ -113,7 +113,7 @@ test('every effect cue carries its i18n address for re-labelling', () => {
 test('the Studio re-labels the walk in all five languages', () => {
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /function localizeShowcase\(doc\)/);
-  assert.match(app, /SA\.io\.loadFromObject\(localizeShowcase\(JSON\.parse\(text\)\)\)/);
+  assert.match(app, /openShowcaseAsset\('data\/showcase\.json', localizeShowcase\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

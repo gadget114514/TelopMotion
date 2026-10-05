@@ -874,14 +874,30 @@
 
   async function showcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(localizeShowcase(JSON.parse(text)));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/showcase.json', localizeShowcase);
     } catch {
       toast('studio.toast.invalidProject');
     }
+  }
+
+  // Showcase JSONs are big (dozens of cues) and `loadFromObject` blocks the
+  // main thread while the beats are built, so every Help → showcase path
+  // opens through the shared busy dialog: it paints first, then the read /
+  // parse / apply runs under it. Returns false when another load is already
+  // running (double click), true after the opened toast.
+  async function openShowcaseAsset(file, localize) {
+    const opened = await withBusy('studio.busy.open', async (step) => {
+      await step('studio.busy.open', 0.15);
+      const buffer = await SA.platform.readAsset(file);
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      await step('studio.busy.apply', 0.5);
+      SA.io.loadFromObject(localize ? localize(JSON.parse(text)) : JSON.parse(text));
+      return true;
+    });
+    if (!opened) return false;
+    welcomeDismissed = false;
+    toast('studio.toast.opened');
+    return true;
   }
 
   // The effects showcase is generated in Japanese, so its cue labels and
@@ -992,13 +1008,10 @@
   // each. Same shape as the effects showcase, a different generated asset.
   async function figureShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/figure-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(localizeFigureShowcase(JSON.parse(text)));
-      const opened = openStatefulGateForShowcase();
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
-      if (opened) toast('studio.toast.statefulOn');
+      const opened = await openShowcaseAsset('data/figure-showcase.json', localizeFigureShowcase);
+      if (!opened) return;
+      const gated = openStatefulGateForShowcase();
+      if (gated) toast('studio.toast.statefulOn');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1010,11 +1023,7 @@
   // font showcase).
   async function backdropShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/backdrop-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/backdrop-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1026,11 +1035,7 @@
   // re-labelling is needed.
   async function fontShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/font-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/font-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1042,11 +1047,7 @@
   // needed (same shape as the backdrop showcase).
   async function layerShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/layer-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/layer-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1057,11 +1058,7 @@
   // (same shape as the font showcase).
   async function decorShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/decor-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/decor-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1072,11 +1069,7 @@
   // re-labelling is needed (same shape as the font showcase).
   async function easeShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/ease-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/ease-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1087,11 +1080,7 @@
   // re-labelling is needed (same shape as the font showcase).
   async function themeShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/theme-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/theme-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1102,11 +1091,7 @@
   // needed (same shape as the backdrop showcase).
   async function fillerShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/filler-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/filler-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1116,11 +1101,7 @@
   // mood. The ids are language-independent, so no re-labelling is needed.
   async function directShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/direct-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/direct-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1130,11 +1111,7 @@
   // The move ids are language-independent, so no re-labelling is needed.
   async function cameraShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/camera-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/camera-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -1145,11 +1122,7 @@
   // re-labelling is needed.
   async function colorShowcaseProject() {
     try {
-      const buffer = await SA.platform.readAsset('data/color-showcase.json');
-      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
-      SA.io.loadFromObject(JSON.parse(text));
-      welcomeDismissed = false;
-      toast('studio.toast.opened');
+      await openShowcaseAsset('data/color-showcase.json');
     } catch {
       toast('studio.toast.invalidProject');
     }
@@ -2140,13 +2113,32 @@
   }
 
   async function startup() {
-    const boot = SA.boot || { set() {}, busy() {}, finish() {} };
+    const boot = SA.boot || { set() {}, busy() {}, finish() {}, detail() {} };
+    const paint = () => {
+      if (typeof requestAnimationFrame === 'function') {
+        return new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)));
+      }
+      return new Promise((resolve) => setTimeout(resolve, 0));
+    };
+    // one startup step: move the bar, name the phase, show the technical
+    // detail (component / file) and let the overlay paint before the work
+    const step = async (percent, key, toward, over, detailText) => {
+      try {
+        boot.set(percent, key, toward, over);
+        if (detailText !== undefined) boot.detail(detailText);
+      } catch {
+        /* boot must never break startup */
+      }
+      await paint();
+    };
     try {
-      boot.set(6, 'studio.boot.loading', 16, 1500);
+      await step(4, 'studio.boot.loading', 10, 1500, '');
       cacheElements();
       if (SA.debugConsole) SA.debugConsole.init();
+      await step(10, 'studio.boot.loading', 16, 1500, 'elements');
       loadLayout();
       applyLayout();
+      await step(16, 'studio.boot.interface', 22, 2000, 'layout');
       i18n.set(localStorage.getItem('sa.lang') || i18n.detect());
       try {
         statefulEnabled = localStorage.getItem(LS_STATEFUL) === '1';
@@ -2155,16 +2147,21 @@
       }
       applyStateful();
       applyStaticText();
-      boot.set(16, 'studio.boot.interface', 34, 3000);
+      await step(22, 'studio.boot.interface', 28, 2000, 'language');
       bindEvents();
+      await step(28, 'studio.boot.interface', 36, 2000, 'events');
       SA.preview.init();
+      await step(36, 'studio.boot.preview', 42, 3000, 'preview');
       SA.timeline.init();
+      await step(42, 'studio.boot.preview', 48, 3000, 'timeline');
       SA.inspector.init();
       SA.overlay.init();
+      await step(48, 'studio.boot.preview', 54, 3000, 'inspector');
       SA.menu.init({ handlers: menuHandlers() });
       platform.recent.list().then(SA.menu.setRecent).catch(() => {});
-      boot.set(34, 'studio.boot.preview', 58, 3000);
+      await step(54, 'studio.boot.preview', 58, 3000, 'menu');
 
+      await step(58, 'studio.boot.project', 62, 3000, 'handoff');
       let handoff = null;
       if (!platform.isElectron) {
         if (window.location.hash === '#handoff') handoff = await platform.readHandoff();
@@ -2185,35 +2182,81 @@
         projectDoc = SA.project.create({ lang: handoff.lang || i18n.lang(), aspect: '16:9' });
         projectDoc.script.cues = handoff.cues.map((cue) => ({ ...cue }));
       } else {
+        await step(62, 'studio.boot.project', 68, 3000, 'autosave');
         projectDoc = await SA.io.loadAutosave();
       }
 
-      boot.set(58, 'studio.boot.project', 74, 3000);
+      await step(68, 'studio.boot.project', 72, 3000, projectDoc ? `cues ${(projectDoc.script && projectDoc.script.cues && projectDoc.script.cues.length) || 0}` : 'new');
       if (projectDoc) {
         store.load(projectDoc);
       } else {
         SA.io.newProject({ lang: i18n.lang() });
       }
-      if (SA.textflow && store.state.project) SA.textflow.apply(store.state.project);
+      if (SA.textflow && store.state.project) {
+        try {
+          boot.detail('textflow');
+        } catch {
+          /* ignore */
+        }
+        SA.textflow.apply(store.state.project);
+      }
       SA.io.startAutosave(project, autosaveEnabled ? 30 : 999999);
-      boot.set(74, 'studio.boot.fonts', 96, 20000);
+      await step(72, 'studio.boot.fonts', 94, 20000, '');
+      // fonts decide what the preview can draw: the explicit ensureFonts call
+      // below is the first real load for this project (preview.init ran with
+      // no project), so its per-font callback drives 72 -> 92. renderAll
+      // afterwards is a no-op for fonts (same key) and only draws.
+      const onFont = (info) => {
+        const total = Math.max(1, Number(info.total) || 1);
+        const done = Math.max(0, Math.min(total, Number(info.done) || 0));
+        try {
+          boot.set(72 + Math.round((done / total) * 20), 'studio.boot.fonts', 94, 20000);
+          boot.detail(`${info.name || ''} ${Math.min(total, done + 1)}/${total}`.trim());
+        } catch {
+          /* ignore */
+        }
+      };
+      try {
+        const firstFonts = SA.preview && SA.preview.ensureFonts ? SA.preview.ensureFonts(onFont) : null;
+        if (firstFonts && typeof firstFonts.then === 'function') await firstFonts.catch(() => {});
+      } catch {
+        /* a failed font load resolves on its own; startup continues */
+      }
       renderAll();
-      // fonts decide what the preview can draw: wait until every request has
-      // settled (a textflow pass can start a second one) before revealing the
-      // app, so parsed metrics are never shown mid-change. The 30 s cap is only
-      // a safety net for a hung asset read; a failed load resolves on its own.
+      // a textflow pass can start a second font request: wait until every
+      // request has settled before revealing the app, so parsed metrics are
+      // never shown mid-change. The 30 s cap is only a safety net for a hung
+      // asset read; a failed load resolves on its own.
       if (boot.busy) boot.busy(true);
       const deadline = Date.now() + 30000;
+      let pass = 0;
       let fonts = SA.preview && SA.preview.whenFontsReady ? SA.preview.whenFontsReady() : null;
       while (fonts) {
+        pass += 1;
         const remaining = Math.max(0, deadline - Date.now());
-        await Promise.race([Promise.resolve(fonts).catch(() => {}), new Promise((resolve) => setTimeout(resolve, remaining))]);
+        if (remaining <= 0) break;
+        // poll in short slices so the detail line can show that we are still
+        // waiting (a textflow pass can start a second font request)
+        const slice = Math.min(500, remaining);
+        let settled = false;
+        const wait = Promise.resolve(fonts).catch(() => {}).then(() => {
+          settled = true;
+        });
+        await Promise.race([wait, new Promise((resolve) => setTimeout(resolve, slice))]);
+        if (!settled) {
+          try {
+            const elapsed = ((Date.now() - (deadline - 30000)) / 1000).toFixed(0);
+            boot.detail(`settle ${pass} …${elapsed}s`);
+          } catch {
+            /* ignore */
+          }
+        }
         const next = SA.preview && SA.preview.whenFontsReady ? SA.preview.whenFontsReady() : null;
         if (!next || next === fonts || Date.now() >= deadline) break;
         fonts = next;
       }
       if (boot.busy) boot.busy(false);
-      boot.set(96);
+      await step(96, 'studio.boot.fonts', 100, 800, '');
       renderAll();
     } catch (error) {
       console.error('studio startup failed', error);

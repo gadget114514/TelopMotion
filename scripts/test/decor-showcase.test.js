@@ -163,6 +163,30 @@ test('every section opens a marker and is listed once', () => {
   );
 });
 
+test('every ornament cue pairs dark text with a bright ornament', () => {
+  const b = built();
+  const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
+  for (const entry of b.entries.filter((entry) => entry.section !== 'page')) {
+    const style = b.project.cueStyles[entry.cueId];
+    assert.ok(style && style.color && style.color.fill, `cue ${entry.cueId} has no text fill`);
+    assert.equal(style.color.fill.value, showcase.TEXT_DARK, `cue ${entry.cueId} text must be dark`);
+    const colors = style.palette && style.palette.colors;
+    assert.ok(Array.isArray(colors) && colors.length >= 6, `cue ${entry.cueId} has no ornament palette`);
+    // the ornament roles the engine reads (fill:3 / stroke:4 / fill2:5) must
+    // stand apart from the dark text, or every cue is the same white blob
+    for (const slot of [3, 4, 5]) {
+      const ratio = color.contrastRatio(color.parse(colors[slot]), color.parse(showcase.TEXT_DARK));
+      assert.ok(ratio >= 3, `cue ${entry.cueId} palette[${slot}] ${colors[slot]} has no contrast (${ratio})`);
+    }
+    assert.equal(colors[3], showcase.ornFillOf(entry.index), `cue ${entry.cueId} ornament colour`);
+  }
+  // neighbouring ornament cues differ in colour too, not just in shape
+  const ornFills = b.entries
+    .filter((entry) => entry.section === 'orn')
+    .map((entry) => b.project.cueStyles[entry.cueId].palette.colors[3]);
+  assert.ok(new Set(ornFills).size > 1, 'ornament cues must rotate colours');
+});
+
 test('the --sections filter keeps only the named sections', () => {
   const b = showcase.buildShowcase({ sections: ['bubble'] });
   assert.equal(b.entries.length, showcase.BUBBLE_TAILS.length * showcase.BUBBLE_BODIES.length);
@@ -181,7 +205,7 @@ test('the Help menu offers the decor showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.decorShowcase', action: 'decorShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /decorShowcase: decorShowcaseProject/);
-  assert.match(app, /readAsset\('data\/decor-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/decor-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

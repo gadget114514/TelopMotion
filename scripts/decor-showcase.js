@@ -42,10 +42,39 @@ const PAGE_SECONDS = 4;
 const FIXED_TIME = '2026-01-01T00:00:00.000Z';
 const OUT_PATH = path.join(ROOT, 'renderer', 'data', 'decor-showcase.json');
 const MD_PATH = path.join(ROOT, 'demo', 'decor-showcase.md');
-// every decoration is read against the same ground: one label colour, one
-// shared text size
+// every decoration is read against the same ground: dark letterpress text on
+// a bright ornament, the ornament fill rotating so neighbouring cues differ
+// in colour too
 const LABEL_COLOR = '#e9edf8';
+const TEXT_DARK = '#14141c';
 const TEXT_SIZE = 64;
+
+// ornaments (and the frame shapeLayer) resolve their paint through the
+// palette roles (fill:3 / stroke:4 / fill2:5). The walk used to pin no
+// palette, so every cue fell back to white ornaments on near-white text:
+// identical white blobs with unreadable letters. Each cue now carries its
+// own palette with a bright ornament, and dark text on top of it.
+const ORN_FILLS = [
+  '#ffd166', '#ff5cd0', '#00e5ff', '#7dff8a', '#ff8a3d',
+  '#ff4d5e', '#c77dff', '#8ef6ff', '#d0ff4d', '#4dd6c1',
+];
+
+function ornFillOf(index) {
+  return ORN_FILLS[(index - 1) % ORN_FILLS.length];
+}
+
+function decorColorFor(index) {
+  const main = ornFillOf(index);
+  return {
+    color: { fill: { kind: 'solid', value: TEXT_DARK, alpha: 1 } },
+    palette: {
+      colors: [
+        '#101018', '#1a1a24', TEXT_DARK, main, '#ffffff',
+        main, '#8fa8ff', '#101018', main, '#8fa8ff',
+      ],
+    },
+  };
+}
 
 const SAMPLE = 'あいうえお カキクケコ Deco 123';
 
@@ -339,7 +368,11 @@ function buildShowcase(options) {
     entries.push({
       index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label,
       cueId: id, start, end, value: slot.value, detail: slot.detail,
-      style: clone(slot.style), pageType: slot.pageType,
+      // page cues paint their own paper from the ink, so they keep the light
+      // text; every other cue gets dark text on a bright ornament (see
+      // decorColorFor) so the shape under review actually reads
+      style: slot.style ? { ...decorColorFor(slot.index), ...clone(slot.style) } : clone(slot.style),
+      pageType: slot.pageType,
     });
     t = end;
   });
@@ -582,8 +615,12 @@ module.exports = {
   FRAME_SHAPES,
   PAGE_TYPES,
   SECTIONS,
+  TEXT_DARK,
+  ORN_FILLS,
   ornParamsFor,
   bubbleParamsFor,
+  ornFillOf,
+  decorColorFor,
   ornStyleFor,
   bubbleStyleFor,
   lineStyleFor,

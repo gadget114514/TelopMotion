@@ -102,7 +102,7 @@ test('the Help menu offers the filler showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.fillerShowcase', action: 'fillerShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /fillerShowcase: fillerShowcaseProject/);
-  assert.match(app, /readAsset\('data\/filler-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/filler-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

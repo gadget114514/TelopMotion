@@ -92,7 +92,7 @@ test('the Help menu offers the theme showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.themeShowcase', action: 'themeShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /themeShowcase: themeShowcaseProject/);
-  assert.match(app, /readAsset\('data\/theme-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/theme-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

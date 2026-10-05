@@ -137,7 +137,7 @@ test('the Help menu offers the color showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.colorShowcase', action: 'colorShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /colorShowcase: colorShowcaseProject/);
-  assert.match(app, /readAsset\('data\/color-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/color-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

@@ -105,7 +105,7 @@ test('the Help menu offers the camera showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.cameraShowcase', action: 'cameraShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /cameraShowcase: cameraShowcaseProject/);
-  assert.match(app, /readAsset\('data\/camera-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/camera-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

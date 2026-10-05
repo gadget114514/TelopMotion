@@ -243,7 +243,7 @@ test('the stateful motifs are in the walk and the Studio opens the gate for it',
   assert.match(body, /applyStateful\(\)/);
   assert.match(body, /SA\.menu\.refresh/);
   assert.doesNotMatch(body, /localStorage/);
-  assert.match(app, /if \(opened\) toast\('studio\.toast\.statefulOn'\)/);
+  assert.match(app, /if \(gated\) toast\('studio\.toast\.statefulOn'\)/);
   for (const code of ['en', 'ja', 'es', 'fr', 'ru']) {
     globalThis.SA.i18n.set(code);
     const key = 'studio.toast.statefulOn';
@@ -270,7 +270,7 @@ test('the Help menu offers the figure showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.figureShowcase', action: 'figureShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /figureShowcase: figureShowcaseProject/);
-  assert.match(app, /readAsset\('data\/figure-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/figure-showcase\.json', localizeFigureShowcase\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

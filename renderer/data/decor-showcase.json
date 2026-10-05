@@ -1202,6 +1202,27 @@
   },
   "cueStyles": {
     "dc_001": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "square",
         "params": {
@@ -1258,6 +1279,27 @@
       }
     },
     "dc_002": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -1314,6 +1356,27 @@
       }
     },
     "dc_003": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "circle",
         "params": {
@@ -1370,6 +1433,27 @@
       }
     },
     "dc_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "diamond",
         "params": {
@@ -1426,6 +1510,27 @@
       }
     },
     "dc_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "ring",
         "params": {
@@ -1482,6 +1587,27 @@
       }
     },
     "dc_006": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bar",
         "params": {
@@ -1538,6 +1664,27 @@
       }
     },
     "dc_007": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "star",
         "params": {
@@ -1595,6 +1742,27 @@
       }
     },
     "dc_008": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "blob",
         "params": {
@@ -1651,6 +1819,27 @@
       }
     },
     "dc_009": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "heart",
         "params": {
@@ -1707,6 +1896,27 @@
       }
     },
     "dc_010": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "splatter",
         "params": {
@@ -1764,6 +1974,27 @@
       }
     },
     "dc_011": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "scratch",
         "params": {
@@ -1820,6 +2051,27 @@
       }
     },
     "dc_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "drop",
         "params": {
@@ -1876,6 +2128,27 @@
       }
     },
     "dc_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bracket",
         "params": {
@@ -1932,6 +2205,27 @@
       }
     },
     "dc_014": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "paper",
         "params": {
@@ -1989,6 +2283,27 @@
       }
     },
     "dc_015": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "cloud",
         "params": {
@@ -2045,6 +2360,27 @@
       }
     },
     "dc_016": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "plate",
         "params": {
@@ -2101,6 +2437,27 @@
       }
     },
     "dc_017": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "oval",
         "params": {
@@ -2157,6 +2514,27 @@
       }
     },
     "dc_018": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2213,6 +2591,27 @@
       }
     },
     "dc_019": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2271,6 +2670,27 @@
       }
     },
     "dc_020": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2329,6 +2749,27 @@
       }
     },
     "dc_021": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2387,6 +2828,27 @@
       }
     },
     "dc_022": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2445,6 +2907,27 @@
       }
     },
     "dc_023": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2503,6 +2986,27 @@
       }
     },
     "dc_024": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2561,6 +3065,27 @@
       }
     },
     "dc_025": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2619,6 +3144,27 @@
       }
     },
     "dc_026": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2677,6 +3223,27 @@
       }
     },
     "dc_027": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2735,6 +3302,27 @@
       }
     },
     "dc_028": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2793,6 +3381,27 @@
       }
     },
     "dc_029": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2851,6 +3460,27 @@
       }
     },
     "dc_030": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2909,6 +3539,27 @@
       }
     },
     "dc_031": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -2967,6 +3618,27 @@
       }
     },
     "dc_032": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -3025,6 +3697,27 @@
       }
     },
     "dc_033": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -3083,6 +3776,27 @@
       }
     },
     "dc_034": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -3141,6 +3855,27 @@
       }
     },
     "dc_035": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "square",
         "params": {
@@ -3199,6 +3934,27 @@
       }
     },
     "dc_036": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3257,6 +4013,27 @@
       }
     },
     "dc_037": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "circle",
         "params": {
@@ -3315,6 +4092,27 @@
       }
     },
     "dc_038": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "plate",
         "params": {
@@ -3373,6 +4171,27 @@
       }
     },
     "dc_039": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "oval",
         "params": {
@@ -3431,6 +4250,27 @@
       }
     },
     "dc_040": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "bubble",
         "params": {
@@ -3489,6 +4329,27 @@
       }
     },
     "dc_041": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "cloud",
         "params": {
@@ -3547,6 +4408,27 @@
       }
     },
     "dc_042": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "star",
         "params": {
@@ -3606,6 +4488,27 @@
       }
     },
     "dc_043": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3662,6 +4565,27 @@
       }
     },
     "dc_044": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3718,6 +4642,27 @@
       }
     },
     "dc_045": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3774,6 +4719,27 @@
       }
     },
     "dc_046": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3830,6 +4796,27 @@
       }
     },
     "dc_047": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3886,6 +4873,27 @@
       }
     },
     "dc_048": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3942,6 +4950,27 @@
       }
     },
     "dc_049": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -3998,6 +5027,27 @@
       }
     },
     "dc_050": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4054,6 +5104,27 @@
       }
     },
     "dc_051": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4110,6 +5181,27 @@
       }
     },
     "dc_052": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4166,6 +5258,27 @@
       }
     },
     "dc_053": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4222,6 +5335,27 @@
       }
     },
     "dc_054": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4278,6 +5412,27 @@
       }
     },
     "dc_055": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4334,6 +5489,27 @@
       }
     },
     "dc_056": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4397,6 +5573,27 @@
       }
     },
     "dc_057": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4460,6 +5657,27 @@
       }
     },
     "dc_058": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4523,6 +5741,27 @@
       }
     },
     "dc_059": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4586,6 +5825,27 @@
       }
     },
     "dc_060": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4649,6 +5909,27 @@
       }
     },
     "dc_061": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4712,6 +5993,27 @@
       }
     },
     "dc_062": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4775,6 +6077,27 @@
       }
     },
     "dc_063": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4838,6 +6161,27 @@
       }
     },
     "dc_064": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "ornShape": {
         "type": "rounded",
         "params": {
@@ -4901,6 +6245,27 @@
       }
     },
     "dc_065": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -4950,6 +6315,27 @@
       ]
     },
     "dc_066": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -4999,6 +6385,27 @@
       ]
     },
     "dc_067": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5048,6 +6455,27 @@
       ]
     },
     "dc_068": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5097,6 +6525,27 @@
       ]
     },
     "dc_069": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5146,6 +6595,27 @@
       ]
     },
     "dc_070": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5195,6 +6665,27 @@
       ]
     },
     "dc_071": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5244,6 +6735,27 @@
       ]
     },
     "dc_072": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff5cd0",
+          "#ffffff",
+          "#ff5cd0",
+          "#8fa8ff",
+          "#101018",
+          "#ff5cd0",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5293,6 +6805,27 @@
       ]
     },
     "dc_073": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#00e5ff",
+          "#ffffff",
+          "#00e5ff",
+          "#8fa8ff",
+          "#101018",
+          "#00e5ff",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5342,6 +6875,27 @@
       ]
     },
     "dc_074": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#7dff8a",
+          "#ffffff",
+          "#7dff8a",
+          "#8fa8ff",
+          "#101018",
+          "#7dff8a",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5391,6 +6945,27 @@
       ]
     },
     "dc_075": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff8a3d",
+          "#ffffff",
+          "#ff8a3d",
+          "#8fa8ff",
+          "#101018",
+          "#ff8a3d",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5440,6 +7015,27 @@
       ]
     },
     "dc_076": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ff4d5e",
+          "#ffffff",
+          "#ff4d5e",
+          "#8fa8ff",
+          "#101018",
+          "#ff4d5e",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5489,6 +7085,27 @@
       ]
     },
     "dc_077": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#c77dff",
+          "#ffffff",
+          "#c77dff",
+          "#8fa8ff",
+          "#101018",
+          "#c77dff",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5538,6 +7155,27 @@
       ]
     },
     "dc_078": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#8ef6ff",
+          "#ffffff",
+          "#8ef6ff",
+          "#8fa8ff",
+          "#101018",
+          "#8ef6ff",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5587,6 +7225,27 @@
       ]
     },
     "dc_079": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#d0ff4d",
+          "#ffffff",
+          "#d0ff4d",
+          "#8fa8ff",
+          "#101018",
+          "#d0ff4d",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5636,6 +7295,27 @@
       ]
     },
     "dc_080": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#4dd6c1",
+          "#ffffff",
+          "#4dd6c1",
+          "#8fa8ff",
+          "#101018",
+          "#4dd6c1",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,
@@ -5685,6 +7365,27 @@
       ]
     },
     "dc_081": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#14141c",
+          "alpha": 1
+        }
+      },
+      "palette": {
+        "colors": [
+          "#101018",
+          "#1a1a24",
+          "#14141c",
+          "#ffd166",
+          "#ffffff",
+          "#ffd166",
+          "#8fa8ff",
+          "#101018",
+          "#ffd166",
+          "#8fa8ff"
+        ]
+      },
       "animation": {
         "type": "simultaneous",
         "enabled": true,

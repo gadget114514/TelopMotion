@@ -158,7 +158,7 @@ test('the Help menu offers the layer showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.layerShowcase', action: 'layerShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /layerShowcase: layerShowcaseProject/);
-  assert.match(app, /readAsset\('data\/layer-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/layer-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

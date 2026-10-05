@@ -103,7 +103,7 @@ test('the Help menu offers the direct showcase in all five languages', () => {
   assert.match(menu, /key: 'studio\.help\.directShowcase', action: 'directShowcase'/);
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /directShowcase: directShowcaseProject/);
-  assert.match(app, /readAsset\('data\/direct-showcase\.json'\)/);
+  assert.match(app, /openShowcaseAsset\('data\/direct-showcase\.json'\)/);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};
