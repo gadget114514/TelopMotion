@@ -1,0 +1,3045 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion カラー見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "color_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. tonal\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 1,
+          "section": "scheme",
+          "value": "tonal"
+        }
+      },
+      {
+        "id": "color_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. analogous\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 2,
+          "section": "scheme",
+          "value": "analogous"
+        }
+      },
+      {
+        "id": "color_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. complementary\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 3,
+          "section": "scheme",
+          "value": "complementary"
+        }
+      },
+      {
+        "id": "color_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. triad\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 4,
+          "section": "scheme",
+          "value": "triad"
+        }
+      },
+      {
+        "id": "color_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. splitComplementary\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 5,
+          "section": "scheme",
+          "value": "splitComplementary"
+        }
+      },
+      {
+        "id": "color_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. neutralAccent\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 6,
+          "section": "scheme",
+          "value": "neutralAccent"
+        }
+      },
+      {
+        "id": "color_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. night\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 7,
+          "section": "palette",
+          "value": "night"
+        }
+      },
+      {
+        "id": "color_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. mono\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 8,
+          "section": "palette",
+          "value": "mono"
+        }
+      },
+      {
+        "id": "color_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. gold\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 9,
+          "section": "palette",
+          "value": "gold"
+        }
+      },
+      {
+        "id": "color_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. pastel\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 10,
+          "section": "palette",
+          "value": "pastel"
+        }
+      },
+      {
+        "id": "color_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. warm\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 11,
+          "section": "palette",
+          "value": "warm"
+        }
+      },
+      {
+        "id": "color_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. neon\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 12,
+          "section": "palette",
+          "value": "neon"
+        }
+      },
+      {
+        "id": "color_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. rose\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 13,
+          "section": "palette",
+          "value": "rose"
+        }
+      },
+      {
+        "id": "color_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. ocean\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 14,
+          "section": "palette",
+          "value": "ocean"
+        }
+      },
+      {
+        "id": "color_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. blood\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 15,
+          "section": "palette",
+          "value": "blood"
+        }
+      },
+      {
+        "id": "color_016",
+        "start": 60,
+        "end": 64,
+        "text": "16. ash\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 16,
+          "section": "palette",
+          "value": "ash"
+        }
+      },
+      {
+        "id": "color_017",
+        "start": 64,
+        "end": 68,
+        "text": "17. blush\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 17,
+          "section": "palette",
+          "value": "blush"
+        }
+      },
+      {
+        "id": "color_018",
+        "start": 68,
+        "end": 72,
+        "text": "18. sunset\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 18,
+          "section": "palette",
+          "value": "sunset"
+        }
+      },
+      {
+        "id": "color_019",
+        "start": 72,
+        "end": 76,
+        "text": "19. rain\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 19,
+          "section": "palette",
+          "value": "rain"
+        }
+      },
+      {
+        "id": "color_020",
+        "start": 76,
+        "end": 80,
+        "text": "20. festival\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 20,
+          "section": "palette",
+          "value": "festival"
+        }
+      },
+      {
+        "id": "color_021",
+        "start": 80,
+        "end": 83,
+        "text": "21. solid\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 21,
+          "section": "pattern",
+          "value": "solid"
+        }
+      },
+      {
+        "id": "color_022",
+        "start": 83,
+        "end": 86,
+        "text": "22. dashed\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 22,
+          "section": "pattern",
+          "value": "dashed"
+        }
+      },
+      {
+        "id": "color_023",
+        "start": 86,
+        "end": 89,
+        "text": "23. dotted\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 23,
+          "section": "pattern",
+          "value": "dotted"
+        }
+      },
+      {
+        "id": "color_024",
+        "start": 89,
+        "end": 92,
+        "text": "24. dashDot\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 24,
+          "section": "pattern",
+          "value": "dashDot"
+        }
+      },
+      {
+        "id": "color_025",
+        "start": 92,
+        "end": 95,
+        "text": "25. double\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 25,
+          "section": "pattern",
+          "value": "double"
+        }
+      },
+      {
+        "id": "color_026",
+        "start": 95,
+        "end": 98,
+        "text": "26. triple\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 26,
+          "section": "pattern",
+          "value": "triple"
+        }
+      },
+      {
+        "id": "color_027",
+        "start": 98,
+        "end": 101,
+        "text": "27. stripes\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 27,
+          "section": "pattern",
+          "value": "stripes"
+        }
+      },
+      {
+        "id": "color_028",
+        "start": 101,
+        "end": 104,
+        "text": "28. checker\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 28,
+          "section": "pattern",
+          "value": "checker"
+        }
+      },
+      {
+        "id": "color_029",
+        "start": 104,
+        "end": 107,
+        "text": "29. diamond\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 29,
+          "section": "pattern",
+          "value": "diamond"
+        }
+      },
+      {
+        "id": "color_030",
+        "start": 107,
+        "end": 110,
+        "text": "30. zigzag\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 30,
+          "section": "pattern",
+          "value": "zigzag"
+        }
+      },
+      {
+        "id": "color_031",
+        "start": 110,
+        "end": 113,
+        "text": "31. wave\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 31,
+          "section": "pattern",
+          "value": "wave"
+        }
+      },
+      {
+        "id": "color_032",
+        "start": 113,
+        "end": 116,
+        "text": "32. random\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 32,
+          "section": "pattern",
+          "value": "random"
+        }
+      },
+      {
+        "id": "color_033",
+        "start": 116,
+        "end": 119,
+        "text": "33. railroad\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 33,
+          "section": "pattern",
+          "value": "railroad"
+        }
+      },
+      {
+        "id": "color_034",
+        "start": 119,
+        "end": 122,
+        "text": "34. hatch\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 34,
+          "section": "pattern",
+          "value": "hatch"
+        }
+      },
+      {
+        "id": "color_035",
+        "start": 122,
+        "end": 125,
+        "text": "35. crosshatch\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 35,
+          "section": "pattern",
+          "value": "crosshatch"
+        }
+      },
+      {
+        "id": "color_036",
+        "start": 125,
+        "end": 128,
+        "text": "36. sketch\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 36,
+          "section": "pattern",
+          "value": "sketch"
+        }
+      },
+      {
+        "id": "color_037",
+        "start": 128,
+        "end": 131,
+        "text": "37. doubleDashed\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 37,
+          "section": "pattern",
+          "value": "doubleDashed"
+        }
+      },
+      {
+        "id": "color_038",
+        "start": 131,
+        "end": 134,
+        "text": "38. squareChain\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 38,
+          "section": "pattern",
+          "value": "squareChain"
+        }
+      },
+      {
+        "id": "color_039",
+        "start": 134,
+        "end": 137,
+        "text": "39. chain\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 39,
+          "section": "pattern",
+          "value": "chain"
+        }
+      },
+      {
+        "id": "color_040",
+        "start": 137,
+        "end": 140,
+        "text": "40. ornament\nあいうえお カキクケコ 愛永漢字 Aiueo 0123",
+        "meta": {
+          "kind": "color-showcase",
+          "index": 40,
+          "section": "pattern",
+          "value": "ornament"
+        }
+      }
+    ],
+    "sourceName": "color-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "color_021": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "solid"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_022": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "dashed"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_023": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "dotted"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_024": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "dashDot"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_025": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "double"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_026": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "triple"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_027": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "stripes"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_028": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "checker"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_029": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "diamond"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_030": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "zigzag"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_031": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "wave"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_032": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "random"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_033": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "railroad"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_034": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "hatch"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_035": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "crosshatch"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_036": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "sketch"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_037": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "doubleDashed"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_038": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "squareChain"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_039": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "chain"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    },
+    "color_040": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#f4f7ff",
+          "alpha": 1
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 4,
+            "pattern": "ornament"
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.01,
+            "ease": "linear"
+          }
+        }
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "color_001": [
+      {
+        "id": "color_001:single0",
+        "cueId": "color_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. tonalあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "1. tonalあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_002": [
+      {
+        "id": "color_002:single0",
+        "cueId": "color_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. analogousあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "2. analogousあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_003": [
+      {
+        "id": "color_003:single0",
+        "cueId": "color_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. complementaryあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "3. complementaryあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_004": [
+      {
+        "id": "color_004:single0",
+        "cueId": "color_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. triadあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "4. triadあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_005": [
+      {
+        "id": "color_005:single0",
+        "cueId": "color_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. splitComplementaryあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "5. splitComplementaryあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_006": [
+      {
+        "id": "color_006:single0",
+        "cueId": "color_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. neutralAccentあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "6. neutralAccentあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_007": [
+      {
+        "id": "color_007:single0",
+        "cueId": "color_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. nightあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "7. nightあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_008": [
+      {
+        "id": "color_008:single0",
+        "cueId": "color_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. monoあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "8. monoあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_009": [
+      {
+        "id": "color_009:single0",
+        "cueId": "color_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. goldあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "9. goldあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_010": [
+      {
+        "id": "color_010:single0",
+        "cueId": "color_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. pastelあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "10. pastelあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_011": [
+      {
+        "id": "color_011:single0",
+        "cueId": "color_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. warmあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "11. warmあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_012": [
+      {
+        "id": "color_012:single0",
+        "cueId": "color_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. neonあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "12. neonあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_013": [
+      {
+        "id": "color_013:single0",
+        "cueId": "color_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. roseあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "13. roseあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_014": [
+      {
+        "id": "color_014:single0",
+        "cueId": "color_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. oceanあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "14. oceanあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_015": [
+      {
+        "id": "color_015:single0",
+        "cueId": "color_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. bloodあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "15. bloodあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_016": [
+      {
+        "id": "color_016:single0",
+        "cueId": "color_016",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 64,
+        "text": "16. ashあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "16. ashあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_017": [
+      {
+        "id": "color_017:single0",
+        "cueId": "color_017",
+        "kind": "single",
+        "index": 0,
+        "start": 64,
+        "end": 68,
+        "text": "17. blushあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "17. blushあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_018": [
+      {
+        "id": "color_018:single0",
+        "cueId": "color_018",
+        "kind": "single",
+        "index": 0,
+        "start": 68,
+        "end": 72,
+        "text": "18. sunsetあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "18. sunsetあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_019": [
+      {
+        "id": "color_019:single0",
+        "cueId": "color_019",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 76,
+        "text": "19. rainあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "19. rainあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_020": [
+      {
+        "id": "color_020:single0",
+        "cueId": "color_020",
+        "kind": "single",
+        "index": 0,
+        "start": 76,
+        "end": 80,
+        "text": "20. festivalあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "20. festivalあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_021": [
+      {
+        "id": "color_021:single0",
+        "cueId": "color_021",
+        "kind": "single",
+        "index": 0,
+        "start": 80,
+        "end": 83,
+        "text": "21. solidあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "21. solidあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_022": [
+      {
+        "id": "color_022:single0",
+        "cueId": "color_022",
+        "kind": "single",
+        "index": 0,
+        "start": 83,
+        "end": 86,
+        "text": "22. dashedあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "22. dashedあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_023": [
+      {
+        "id": "color_023:single0",
+        "cueId": "color_023",
+        "kind": "single",
+        "index": 0,
+        "start": 86,
+        "end": 89,
+        "text": "23. dottedあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "23. dottedあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_024": [
+      {
+        "id": "color_024:single0",
+        "cueId": "color_024",
+        "kind": "single",
+        "index": 0,
+        "start": 89,
+        "end": 92,
+        "text": "24. dashDotあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "24. dashDotあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_025": [
+      {
+        "id": "color_025:single0",
+        "cueId": "color_025",
+        "kind": "single",
+        "index": 0,
+        "start": 92,
+        "end": 95,
+        "text": "25. doubleあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "25. doubleあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_026": [
+      {
+        "id": "color_026:single0",
+        "cueId": "color_026",
+        "kind": "single",
+        "index": 0,
+        "start": 95,
+        "end": 98,
+        "text": "26. tripleあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "26. tripleあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_027": [
+      {
+        "id": "color_027:single0",
+        "cueId": "color_027",
+        "kind": "single",
+        "index": 0,
+        "start": 98,
+        "end": 101,
+        "text": "27. stripesあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "27. stripesあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_028": [
+      {
+        "id": "color_028:single0",
+        "cueId": "color_028",
+        "kind": "single",
+        "index": 0,
+        "start": 101,
+        "end": 104,
+        "text": "28. checkerあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "28. checkerあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_029": [
+      {
+        "id": "color_029:single0",
+        "cueId": "color_029",
+        "kind": "single",
+        "index": 0,
+        "start": 104,
+        "end": 107,
+        "text": "29. diamondあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "29. diamondあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_030": [
+      {
+        "id": "color_030:single0",
+        "cueId": "color_030",
+        "kind": "single",
+        "index": 0,
+        "start": 107,
+        "end": 110,
+        "text": "30. zigzagあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "30. zigzagあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_031": [
+      {
+        "id": "color_031:single0",
+        "cueId": "color_031",
+        "kind": "single",
+        "index": 0,
+        "start": 110,
+        "end": 113,
+        "text": "31. waveあいうえお カキクケコ 愛永\n漢字 Aiueo 0123",
+        "lines": [
+          "31. waveあいうえお カキクケコ 愛永",
+          "漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_032": [
+      {
+        "id": "color_032:single0",
+        "cueId": "color_032",
+        "kind": "single",
+        "index": 0,
+        "start": 113,
+        "end": 116,
+        "text": "32. randomあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "32. randomあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_033": [
+      {
+        "id": "color_033:single0",
+        "cueId": "color_033",
+        "kind": "single",
+        "index": 0,
+        "start": 116,
+        "end": 119,
+        "text": "33. railroadあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "33. railroadあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_034": [
+      {
+        "id": "color_034:single0",
+        "cueId": "color_034",
+        "kind": "single",
+        "index": 0,
+        "start": 119,
+        "end": 122,
+        "text": "34. hatchあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "34. hatchあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_035": [
+      {
+        "id": "color_035:single0",
+        "cueId": "color_035",
+        "kind": "single",
+        "index": 0,
+        "start": 122,
+        "end": 125,
+        "text": "35. crosshatchあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "35. crosshatchあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_036": [
+      {
+        "id": "color_036:single0",
+        "cueId": "color_036",
+        "kind": "single",
+        "index": 0,
+        "start": 125,
+        "end": 128,
+        "text": "36. sketchあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "36. sketchあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_037": [
+      {
+        "id": "color_037:single0",
+        "cueId": "color_037",
+        "kind": "single",
+        "index": 0,
+        "start": 128,
+        "end": 131,
+        "text": "37. doubleDashedあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "37. doubleDashedあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_038": [
+      {
+        "id": "color_038:single0",
+        "cueId": "color_038",
+        "kind": "single",
+        "index": 0,
+        "start": 131,
+        "end": 134,
+        "text": "38. squareChainあいうえお\nカキクケコ 愛永漢字 Aiueo 0123",
+        "lines": [
+          "38. squareChainあいうえお",
+          "カキクケコ 愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_039": [
+      {
+        "id": "color_039:single0",
+        "cueId": "color_039",
+        "kind": "single",
+        "index": 0,
+        "start": 134,
+        "end": 137,
+        "text": "39. chainあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "39. chainあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "color_040": [
+      {
+        "id": "color_040:single0",
+        "cueId": "color_040",
+        "kind": "single",
+        "index": 0,
+        "start": 137,
+        "end": 140,
+        "text": "40. ornamentあいうえお カキクケコ\n愛永漢字 Aiueo 0123",
+        "lines": [
+          "40. ornamentあいうえお カキクケコ",
+          "愛永漢字 Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "配色スキーム (scheme)"
+    },
+    {
+      "t": 24,
+      "label": "パレット (palette)"
+    },
+    {
+      "t": 80,
+      "label": "線パターン (pattern)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_color_plate",
+      "trackId": "bg",
+      "start": 0,
+      "end": 140,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0d1220"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.2,
+      "fadeOut": 0.2,
+      "colors": null
+    },
+    {
+      "id": "clip_color_001",
+      "trackId": "mid",
+      "start": 0,
+      "end": 4,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_002",
+      "trackId": "mid",
+      "start": 4,
+      "end": 8,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "analogous",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_003",
+      "trackId": "mid",
+      "start": 8,
+      "end": 12,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "complementary",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_004",
+      "trackId": "mid",
+      "start": 12,
+      "end": 16,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "triad",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_005",
+      "trackId": "mid",
+      "start": 16,
+      "end": 20,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "splitComplementary",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_006",
+      "trackId": "mid",
+      "start": 20,
+      "end": 24,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "neutralAccent",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#23365f",
+            "#2e4a7d",
+            "#3a5f9e"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#23365f",
+        "#2e4a7d",
+        "#3a5f9e"
+      ]
+    },
+    {
+      "id": "clip_color_007",
+      "trackId": "mid",
+      "start": 24,
+      "end": 28,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#2e3354",
+            "#2d2945",
+            "#deebff"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#2e3354",
+        "#2d2945",
+        "#deebff"
+      ]
+    },
+    {
+      "id": "clip_color_008",
+      "trackId": "mid",
+      "start": 28,
+      "end": 32,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#2d4552",
+            "#293443",
+            "#dae5f9"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#2d4552",
+        "#293443",
+        "#dae5f9"
+      ]
+    },
+    {
+      "id": "clip_color_009",
+      "trackId": "mid",
+      "start": 32,
+      "end": 36,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#544f33",
+            "#42452d",
+            "#fff9e2"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#544f33",
+        "#42452d",
+        "#fff9e2"
+      ]
+    },
+    {
+      "id": "clip_color_010",
+      "trackId": "mid",
+      "start": 36,
+      "end": 40,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#4e2a4c",
+            "#402638",
+            "#edcddf"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#4e2a4c",
+        "#402638",
+        "#edcddf"
+      ]
+    },
+    {
+      "id": "clip_color_011",
+      "trackId": "mid",
+      "start": 40,
+      "end": 44,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#554a2d",
+            "#454529",
+            "#fff1dd"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#554a2d",
+        "#454529",
+        "#fff1dd"
+      ]
+    },
+    {
+      "id": "clip_color_012",
+      "trackId": "mid",
+      "start": 44,
+      "end": 48,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#432a4f",
+            "#3e2640",
+            "#cfe6ee"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#432a4f",
+        "#3e2640",
+        "#cfe6ee"
+      ]
+    },
+    {
+      "id": "clip_color_013",
+      "trackId": "mid",
+      "start": 48,
+      "end": 52,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#553045",
+            "#452b34",
+            "#ffe0e9"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#553045",
+        "#452b34",
+        "#ffe0e9"
+      ]
+    },
+    {
+      "id": "clip_color_014",
+      "trackId": "mid",
+      "start": 52,
+      "end": 56,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#2a444f",
+            "#263341",
+            "#d0f0e7"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#2a444f",
+        "#263341",
+        "#d0f0e7"
+      ]
+    },
+    {
+      "id": "clip_color_015",
+      "trackId": "mid",
+      "start": 56,
+      "end": 60,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#140909",
+            "#432a23",
+            "#f9f0db"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#140909",
+        "#432a23",
+        "#f9f0db"
+      ]
+    },
+    {
+      "id": "clip_color_016",
+      "trackId": "mid",
+      "start": 60,
+      "end": 64,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#30342d",
+            "#3d433b",
+            "#f7f7e2"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#30342d",
+        "#3d433b",
+        "#f7f7e2"
+      ]
+    },
+    {
+      "id": "clip_color_017",
+      "trackId": "mid",
+      "start": 64,
+      "end": 68,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#ffd3df",
+            "#463b3c",
+            "#974055"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#ffd3df",
+        "#463b3c",
+        "#974055"
+      ]
+    },
+    {
+      "id": "clip_color_018",
+      "trackId": "mid",
+      "start": 68,
+      "end": 72,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#4d3920",
+            "#3f381f",
+            "#e9ccd9"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#4d3920",
+        "#3f381f",
+        "#e9ccd9"
+      ]
+    },
+    {
+      "id": "clip_color_019",
+      "trackId": "mid",
+      "start": 72,
+      "end": 76,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#39454e",
+            "#31363f",
+            "#cde2eb"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#39454e",
+        "#31363f",
+        "#cde2eb"
+      ]
+    },
+    {
+      "id": "clip_color_020",
+      "trackId": "mid",
+      "start": 76,
+      "end": 80,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "scheme": "tonal",
+          "motion": "none",
+          "speed": 0.4,
+          "colors": [
+            "#513a17",
+            "#423c18",
+            "#f6d8dc"
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#513a17",
+        "#423c18",
+        "#f6d8dc"
+      ]
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

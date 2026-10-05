@@ -1,0 +1,7402 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion 装飾見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "dc_001",
+        "start": 0,
+        "end": 3,
+        "text": "1. square · 四角\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 1,
+          "section": "orn",
+          "value": "square",
+          "detail": "四角"
+        }
+      },
+      {
+        "id": "dc_002",
+        "start": 3,
+        "end": 6,
+        "text": "2. rounded · 角丸\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 2,
+          "section": "orn",
+          "value": "rounded",
+          "detail": "角丸"
+        }
+      },
+      {
+        "id": "dc_003",
+        "start": 6,
+        "end": 9,
+        "text": "3. circle · 円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 3,
+          "section": "orn",
+          "value": "circle",
+          "detail": "円"
+        }
+      },
+      {
+        "id": "dc_004",
+        "start": 9,
+        "end": 12,
+        "text": "4. diamond · ひし形\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 4,
+          "section": "orn",
+          "value": "diamond",
+          "detail": "ひし形"
+        }
+      },
+      {
+        "id": "dc_005",
+        "start": 12,
+        "end": 15,
+        "text": "5. ring · リング\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 5,
+          "section": "orn",
+          "value": "ring",
+          "detail": "リング"
+        }
+      },
+      {
+        "id": "dc_006",
+        "start": 15,
+        "end": 18,
+        "text": "6. bar · 帯\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 6,
+          "section": "orn",
+          "value": "bar",
+          "detail": "帯"
+        }
+      },
+      {
+        "id": "dc_007",
+        "start": 18,
+        "end": 21,
+        "text": "7. star · 星\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 7,
+          "section": "orn",
+          "value": "star",
+          "detail": "星"
+        }
+      },
+      {
+        "id": "dc_008",
+        "start": 21,
+        "end": 24,
+        "text": "8. blob · 不定形\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 8,
+          "section": "orn",
+          "value": "blob",
+          "detail": "不定形"
+        }
+      },
+      {
+        "id": "dc_009",
+        "start": 24,
+        "end": 27,
+        "text": "9. heart · ハート\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 9,
+          "section": "orn",
+          "value": "heart",
+          "detail": "ハート"
+        }
+      },
+      {
+        "id": "dc_010",
+        "start": 27,
+        "end": 30,
+        "text": "10. splatter · 血しぶき\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 10,
+          "section": "orn",
+          "value": "splatter",
+          "detail": "血しぶき"
+        }
+      },
+      {
+        "id": "dc_011",
+        "start": 30,
+        "end": 33,
+        "text": "11. scratch · ひっかき傷\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 11,
+          "section": "orn",
+          "value": "scratch",
+          "detail": "ひっかき傷"
+        }
+      },
+      {
+        "id": "dc_012",
+        "start": 33,
+        "end": 36,
+        "text": "12. drop · しずく\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 12,
+          "section": "orn",
+          "value": "drop",
+          "detail": "しずく"
+        }
+      },
+      {
+        "id": "dc_013",
+        "start": 36,
+        "end": 39,
+        "text": "13. bracket · カギ括弧\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 13,
+          "section": "orn",
+          "value": "bracket",
+          "detail": "カギ括弧"
+        }
+      },
+      {
+        "id": "dc_014",
+        "start": 39,
+        "end": 42,
+        "text": "14. paper · 紙片\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 14,
+          "section": "orn",
+          "value": "paper",
+          "detail": "紙片"
+        }
+      },
+      {
+        "id": "dc_015",
+        "start": 42,
+        "end": 45,
+        "text": "15. cloud · 雲\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 15,
+          "section": "orn",
+          "value": "cloud",
+          "detail": "雲"
+        }
+      },
+      {
+        "id": "dc_016",
+        "start": 45,
+        "end": 48,
+        "text": "16. plate · 看板\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 16,
+          "section": "orn",
+          "value": "plate",
+          "detail": "看板"
+        }
+      },
+      {
+        "id": "dc_017",
+        "start": 48,
+        "end": 51,
+        "text": "17. oval · 楕円看板\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 17,
+          "section": "orn",
+          "value": "oval",
+          "detail": "楕円看板"
+        }
+      },
+      {
+        "id": "dc_018",
+        "start": 51,
+        "end": 54,
+        "text": "18. bubble · ふきだし\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 18,
+          "section": "orn",
+          "value": "bubble",
+          "detail": "ふきだし"
+        }
+      },
+      {
+        "id": "dc_019",
+        "start": 54,
+        "end": 57,
+        "text": "19. bubble/right/oval · 右しっぽ×楕円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 19,
+          "section": "bubble",
+          "value": "bubble/right/oval",
+          "detail": "右しっぽ×楕円"
+        }
+      },
+      {
+        "id": "dc_020",
+        "start": 57,
+        "end": 60,
+        "text": "20. bubble/right/square · 右しっぽ×四角\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 20,
+          "section": "bubble",
+          "value": "bubble/right/square",
+          "detail": "右しっぽ×四角"
+        }
+      },
+      {
+        "id": "dc_021",
+        "start": 60,
+        "end": 63,
+        "text": "21. bubble/right/rounded · 右しっぽ×角丸\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 21,
+          "section": "bubble",
+          "value": "bubble/right/rounded",
+          "detail": "右しっぽ×角丸"
+        }
+      },
+      {
+        "id": "dc_022",
+        "start": 63,
+        "end": 66,
+        "text": "22. bubble/right/cloud · 右しっぽ×雲\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 22,
+          "section": "bubble",
+          "value": "bubble/right/cloud",
+          "detail": "右しっぽ×雲"
+        }
+      },
+      {
+        "id": "dc_023",
+        "start": 66,
+        "end": 69,
+        "text": "23. bubble/left/oval · 左しっぽ×楕円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 23,
+          "section": "bubble",
+          "value": "bubble/left/oval",
+          "detail": "左しっぽ×楕円"
+        }
+      },
+      {
+        "id": "dc_024",
+        "start": 69,
+        "end": 72,
+        "text": "24. bubble/left/square · 左しっぽ×四角\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 24,
+          "section": "bubble",
+          "value": "bubble/left/square",
+          "detail": "左しっぽ×四角"
+        }
+      },
+      {
+        "id": "dc_025",
+        "start": 72,
+        "end": 75,
+        "text": "25. bubble/left/rounded · 左しっぽ×角丸\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 25,
+          "section": "bubble",
+          "value": "bubble/left/rounded",
+          "detail": "左しっぽ×角丸"
+        }
+      },
+      {
+        "id": "dc_026",
+        "start": 75,
+        "end": 78,
+        "text": "26. bubble/left/cloud · 左しっぽ×雲\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 26,
+          "section": "bubble",
+          "value": "bubble/left/cloud",
+          "detail": "左しっぽ×雲"
+        }
+      },
+      {
+        "id": "dc_027",
+        "start": 78,
+        "end": 81,
+        "text": "27. bubble/top/oval · 上しっぽ×楕円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 27,
+          "section": "bubble",
+          "value": "bubble/top/oval",
+          "detail": "上しっぽ×楕円"
+        }
+      },
+      {
+        "id": "dc_028",
+        "start": 81,
+        "end": 84,
+        "text": "28. bubble/top/square · 上しっぽ×四角\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 28,
+          "section": "bubble",
+          "value": "bubble/top/square",
+          "detail": "上しっぽ×四角"
+        }
+      },
+      {
+        "id": "dc_029",
+        "start": 84,
+        "end": 87,
+        "text": "29. bubble/top/rounded · 上しっぽ×角丸\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 29,
+          "section": "bubble",
+          "value": "bubble/top/rounded",
+          "detail": "上しっぽ×角丸"
+        }
+      },
+      {
+        "id": "dc_030",
+        "start": 87,
+        "end": 90,
+        "text": "30. bubble/top/cloud · 上しっぽ×雲\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 30,
+          "section": "bubble",
+          "value": "bubble/top/cloud",
+          "detail": "上しっぽ×雲"
+        }
+      },
+      {
+        "id": "dc_031",
+        "start": 90,
+        "end": 93,
+        "text": "31. bubble/bottom/oval · 下しっぽ×楕円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 31,
+          "section": "bubble",
+          "value": "bubble/bottom/oval",
+          "detail": "下しっぽ×楕円"
+        }
+      },
+      {
+        "id": "dc_032",
+        "start": 93,
+        "end": 96,
+        "text": "32. bubble/bottom/square · 下しっぽ×四角\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 32,
+          "section": "bubble",
+          "value": "bubble/bottom/square",
+          "detail": "下しっぽ×四角"
+        }
+      },
+      {
+        "id": "dc_033",
+        "start": 96,
+        "end": 99,
+        "text": "33. bubble/bottom/rounded · 下しっぽ×角丸\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 33,
+          "section": "bubble",
+          "value": "bubble/bottom/rounded",
+          "detail": "下しっぽ×角丸"
+        }
+      },
+      {
+        "id": "dc_034",
+        "start": 99,
+        "end": 102,
+        "text": "34. bubble/bottom/cloud · 下しっぽ×雲\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 34,
+          "section": "bubble",
+          "value": "bubble/bottom/cloud",
+          "detail": "下しっぽ×雲"
+        }
+      },
+      {
+        "id": "dc_035",
+        "start": 102,
+        "end": 105,
+        "text": "35. square · 四角・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 35,
+          "section": "line",
+          "value": "square",
+          "detail": "四角・線だけ"
+        }
+      },
+      {
+        "id": "dc_036",
+        "start": 105,
+        "end": 108,
+        "text": "36. rounded · 角丸・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 36,
+          "section": "line",
+          "value": "rounded",
+          "detail": "角丸・線だけ"
+        }
+      },
+      {
+        "id": "dc_037",
+        "start": 108,
+        "end": 111,
+        "text": "37. circle · 円・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 37,
+          "section": "line",
+          "value": "circle",
+          "detail": "円・線だけ"
+        }
+      },
+      {
+        "id": "dc_038",
+        "start": 111,
+        "end": 114,
+        "text": "38. plate · 看板・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 38,
+          "section": "line",
+          "value": "plate",
+          "detail": "看板・線だけ"
+        }
+      },
+      {
+        "id": "dc_039",
+        "start": 114,
+        "end": 117,
+        "text": "39. oval · 楕円看板・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 39,
+          "section": "line",
+          "value": "oval",
+          "detail": "楕円看板・線だけ"
+        }
+      },
+      {
+        "id": "dc_040",
+        "start": 117,
+        "end": 120,
+        "text": "40. bubble · ふきだし・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 40,
+          "section": "line",
+          "value": "bubble",
+          "detail": "ふきだし・線だけ"
+        }
+      },
+      {
+        "id": "dc_041",
+        "start": 120,
+        "end": 123,
+        "text": "41. cloud · 雲・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 41,
+          "section": "line",
+          "value": "cloud",
+          "detail": "雲・線だけ"
+        }
+      },
+      {
+        "id": "dc_042",
+        "start": 123,
+        "end": 126,
+        "text": "42. star · 星・線だけ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 42,
+          "section": "line",
+          "value": "star",
+          "detail": "星・線だけ"
+        }
+      },
+      {
+        "id": "dc_043",
+        "start": 126,
+        "end": 129,
+        "text": "43. follow · 文字に追従\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 43,
+          "section": "motion",
+          "value": "follow",
+          "detail": "文字に追従"
+        }
+      },
+      {
+        "id": "dc_044",
+        "start": 129,
+        "end": 132,
+        "text": "44. fade · フェード\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 44,
+          "section": "motion",
+          "value": "fade",
+          "detail": "フェード"
+        }
+      },
+      {
+        "id": "dc_045",
+        "start": 132,
+        "end": 135,
+        "text": "45. pop · ポップ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 45,
+          "section": "motion",
+          "value": "pop",
+          "detail": "ポップ"
+        }
+      },
+      {
+        "id": "dc_046",
+        "start": 135,
+        "end": 138,
+        "text": "46. stamp · スタンプ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 46,
+          "section": "motion",
+          "value": "stamp",
+          "detail": "スタンプ"
+        }
+      },
+      {
+        "id": "dc_047",
+        "start": 138,
+        "end": 141,
+        "text": "47. wipe · ワイプ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 47,
+          "section": "motion",
+          "value": "wipe",
+          "detail": "ワイプ"
+        }
+      },
+      {
+        "id": "dc_048",
+        "start": 141,
+        "end": 144,
+        "text": "48. spin · 回転\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 48,
+          "section": "motion",
+          "value": "spin",
+          "detail": "回転"
+        }
+      },
+      {
+        "id": "dc_049",
+        "start": 144,
+        "end": 147,
+        "text": "49. grow · 伸びる\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 49,
+          "section": "motion",
+          "value": "grow",
+          "detail": "伸びる"
+        }
+      },
+      {
+        "id": "dc_050",
+        "start": 147,
+        "end": 150,
+        "text": "50. none · なし\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 50,
+          "section": "motion",
+          "value": "none",
+          "detail": "なし"
+        }
+      },
+      {
+        "id": "dc_051",
+        "start": 150,
+        "end": 153,
+        "text": "51. flicker · ちらつき\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 51,
+          "section": "motion",
+          "value": "flicker",
+          "detail": "ちらつき"
+        }
+      },
+      {
+        "id": "dc_052",
+        "start": 153,
+        "end": 156,
+        "text": "52. bleed · にじみ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 52,
+          "section": "motion",
+          "value": "bleed",
+          "detail": "にじみ"
+        }
+      },
+      {
+        "id": "dc_053",
+        "start": 156,
+        "end": 159,
+        "text": "53. float · 浮かぶ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 53,
+          "section": "motion",
+          "value": "float",
+          "detail": "浮かぶ"
+        }
+      },
+      {
+        "id": "dc_054",
+        "start": 159,
+        "end": 162,
+        "text": "54. fall · 落下\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 54,
+          "section": "motion",
+          "value": "fall",
+          "detail": "落下"
+        }
+      },
+      {
+        "id": "dc_055",
+        "start": 162,
+        "end": 165,
+        "text": "55. draw · 描画\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 55,
+          "section": "motion",
+          "value": "draw",
+          "detail": "描画"
+        }
+      },
+      {
+        "id": "dc_056",
+        "start": 165,
+        "end": 168,
+        "text": "56. outline · 縁取り\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 56,
+          "section": "edge",
+          "value": "outline",
+          "detail": "縁取り"
+        }
+      },
+      {
+        "id": "dc_057",
+        "start": 168,
+        "end": 171,
+        "text": "57. neonGlow · ネオン\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 57,
+          "section": "edge",
+          "value": "neonGlow",
+          "detail": "ネオン"
+        }
+      },
+      {
+        "id": "dc_058",
+        "start": 171,
+        "end": 174,
+        "text": "58. innerGlow · 内側の光\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 58,
+          "section": "edge",
+          "value": "innerGlow",
+          "detail": "内側の光"
+        }
+      },
+      {
+        "id": "dc_059",
+        "start": 174,
+        "end": 177,
+        "text": "59. bevel · ベベル\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 59,
+          "section": "edge",
+          "value": "bevel",
+          "detail": "ベベル"
+        }
+      },
+      {
+        "id": "dc_060",
+        "start": 177,
+        "end": 180,
+        "text": "60. extrude · 押し出し\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 60,
+          "section": "edge",
+          "value": "extrude",
+          "detail": "押し出し"
+        }
+      },
+      {
+        "id": "dc_061",
+        "start": 180,
+        "end": 183,
+        "text": "61. longShadow · 長い影\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 61,
+          "section": "edge",
+          "value": "longShadow",
+          "detail": "長い影"
+        }
+      },
+      {
+        "id": "dc_062",
+        "start": 183,
+        "end": 186,
+        "text": "62. dropShadow · ドロップシャドウ\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 62,
+          "section": "edge",
+          "value": "dropShadow",
+          "detail": "ドロップシャドウ"
+        }
+      },
+      {
+        "id": "dc_063",
+        "start": 186,
+        "end": 189,
+        "text": "63. drip · 滴り\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 63,
+          "section": "edge",
+          "value": "drip",
+          "detail": "滴り"
+        }
+      },
+      {
+        "id": "dc_064",
+        "start": 189,
+        "end": 192,
+        "text": "64. multiLine · 多重線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 64,
+          "section": "edge",
+          "value": "multiLine",
+          "detail": "多重線"
+        }
+      },
+      {
+        "id": "dc_065",
+        "start": 192,
+        "end": 195,
+        "text": "65. underline · 下線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 65,
+          "section": "frame",
+          "value": "underline",
+          "detail": "下線"
+        }
+      },
+      {
+        "id": "dc_066",
+        "start": 195,
+        "end": 198,
+        "text": "66. strike · 取り消し線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 66,
+          "section": "frame",
+          "value": "strike",
+          "detail": "取り消し線"
+        }
+      },
+      {
+        "id": "dc_067",
+        "start": 198,
+        "end": 201,
+        "text": "67. box · 四角囲み\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 67,
+          "section": "frame",
+          "value": "box",
+          "detail": "四角囲み"
+        }
+      },
+      {
+        "id": "dc_068",
+        "start": 201,
+        "end": 204,
+        "text": "68. brackets · カギ括弧\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 68,
+          "section": "frame",
+          "value": "brackets",
+          "detail": "カギ括弧"
+        }
+      },
+      {
+        "id": "dc_069",
+        "start": 204,
+        "end": 207,
+        "text": "69. circle · 円囲み\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 69,
+          "section": "frame",
+          "value": "circle",
+          "detail": "円囲み"
+        }
+      },
+      {
+        "id": "dc_070",
+        "start": 207,
+        "end": 210,
+        "text": "70. ring · リング\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 70,
+          "section": "frame",
+          "value": "ring",
+          "detail": "リング"
+        }
+      },
+      {
+        "id": "dc_071",
+        "start": 210,
+        "end": 213,
+        "text": "71. burst · 爆発\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 71,
+          "section": "frame",
+          "value": "burst",
+          "detail": "爆発"
+        }
+      },
+      {
+        "id": "dc_072",
+        "start": 213,
+        "end": 216,
+        "text": "72. cross · クロス\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 72,
+          "section": "frame",
+          "value": "cross",
+          "detail": "クロス"
+        }
+      },
+      {
+        "id": "dc_073",
+        "start": 216,
+        "end": 219,
+        "text": "73. diagonal · 斜線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 73,
+          "section": "frame",
+          "value": "diagonal",
+          "detail": "斜線"
+        }
+      },
+      {
+        "id": "dc_074",
+        "start": 219,
+        "end": 222,
+        "text": "74. overline · 上線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 74,
+          "section": "frame",
+          "value": "overline",
+          "detail": "上線"
+        }
+      },
+      {
+        "id": "dc_075",
+        "start": 222,
+        "end": 225,
+        "text": "75. topBottom · 上下線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 75,
+          "section": "frame",
+          "value": "topBottom",
+          "detail": "上下線"
+        }
+      },
+      {
+        "id": "dc_076",
+        "start": 225,
+        "end": 228,
+        "text": "76. sides · 両側線\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 76,
+          "section": "frame",
+          "value": "sides",
+          "detail": "両側線"
+        }
+      },
+      {
+        "id": "dc_077",
+        "start": 228,
+        "end": 231,
+        "text": "77. sidesSemicircle · 両側半円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 77,
+          "section": "frame",
+          "value": "sidesSemicircle",
+          "detail": "両側半円"
+        }
+      },
+      {
+        "id": "dc_078",
+        "start": 231,
+        "end": 234,
+        "text": "78. sidesSemiellipse · 両側半楕円\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 78,
+          "section": "frame",
+          "value": "sidesSemiellipse",
+          "detail": "両側半楕円"
+        }
+      },
+      {
+        "id": "dc_079",
+        "start": 234,
+        "end": 237,
+        "text": "79. capsule · カプセル\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 79,
+          "section": "frame",
+          "value": "capsule",
+          "detail": "カプセル"
+        }
+      },
+      {
+        "id": "dc_080",
+        "start": 237,
+        "end": 240,
+        "text": "80. plate · ラベル板\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 80,
+          "section": "frame",
+          "value": "plate",
+          "detail": "ラベル板"
+        }
+      },
+      {
+        "id": "dc_081",
+        "start": 240,
+        "end": 243,
+        "text": "81. ornament · 飾り罫\nあいうえお カキクケコ Deco 123",
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 81,
+          "section": "frame",
+          "value": "ornament",
+          "detail": "飾り罫"
+        }
+      },
+      {
+        "id": "dc_082",
+        "start": 243,
+        "end": 247,
+        "text": "Hey what is up?\nNot much, working on TelopMotion!\nNice!",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 82,
+          "section": "page",
+          "value": "chatBubble",
+          "detail": "チャット"
+        }
+      },
+      {
+        "id": "dc_083",
+        "start": 247,
+        "end": 251,
+        "text": "TelopMotion\nXのカード風レイアウトです。\n本文と時刻をカードに収めます。\n3:00 PM",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 83,
+          "section": "page",
+          "value": "xCard",
+          "detail": "SNSカード"
+        }
+      },
+      {
+        "id": "dc_084",
+        "start": 251,
+        "end": 255,
+        "text": "MENU / cafeMenu\nCaramel Macchiato | ¥650\nCafe Latte | ¥580\nGreen Tea Latte | ¥560",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 84,
+          "section": "page",
+          "value": "cafeMenu",
+          "detail": "カフェメニュー"
+        }
+      },
+      {
+        "id": "dc_085",
+        "start": 255,
+        "end": 259,
+        "text": "BOUTIQUE\n上質な余白と細い罫線。\nブランドの世界観を伝えます。\n— atelier —",
+        "textFlow": {
+          "maxLines": {
+            "16:9": 10,
+            "9:16": 10
+          }
+        },
+        "meta": {
+          "kind": "decor-showcase",
+          "index": 85,
+          "section": "page",
+          "value": "boutique",
+          "detail": "ブティック"
+        }
+      }
+    ],
+    "sourceName": "decor-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "dc_001": {
+      "ornShape": {
+        "type": "square",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_002": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_003": {
+      "ornShape": {
+        "type": "circle",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_004": {
+      "ornShape": {
+        "type": "diamond",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_005": {
+      "ornShape": {
+        "type": "ring",
+        "params": {
+          "unit": "cell",
+          "width": 1.3,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_006": {
+      "ornShape": {
+        "type": "bar",
+        "params": {
+          "unit": "cell",
+          "width": 1.3,
+          "height": 0.45,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_007": {
+      "ornShape": {
+        "type": "star",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "points": 5
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_008": {
+      "ornShape": {
+        "type": "blob",
+        "params": {
+          "unit": "cell",
+          "width": 1.35,
+          "height": 1.35,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_009": {
+      "ornShape": {
+        "type": "heart",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_010": {
+      "ornShape": {
+        "type": "splatter",
+        "params": {
+          "unit": "cell",
+          "width": 1.35,
+          "height": 1.35,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "spikes": 0.5
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_011": {
+      "ornShape": {
+        "type": "scratch",
+        "params": {
+          "unit": "cell",
+          "width": 1.4,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_012": {
+      "ornShape": {
+        "type": "drop",
+        "params": {
+          "unit": "cell",
+          "width": 1.2,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_013": {
+      "ornShape": {
+        "type": "bracket",
+        "params": {
+          "unit": "cell",
+          "width": 1.3,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_014": {
+      "ornShape": {
+        "type": "paper",
+        "params": {
+          "unit": "cell",
+          "width": 1.35,
+          "height": 1.35,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "jag": 0.4
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_015": {
+      "ornShape": {
+        "type": "cloud",
+        "params": {
+          "unit": "cell",
+          "width": 1.35,
+          "height": 1.35,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_016": {
+      "ornShape": {
+        "type": "plate",
+        "params": {
+          "unit": "cell",
+          "width": 1.4,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_017": {
+      "ornShape": {
+        "type": "oval",
+        "params": {
+          "unit": "cell",
+          "width": 1.4,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_018": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_019": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "right",
+          "body": "oval"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_020": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "right",
+          "body": "square"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_021": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "right",
+          "body": "rounded"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_022": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "right",
+          "body": "cloud"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_023": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "left",
+          "body": "oval"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_024": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "left",
+          "body": "square"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_025": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "left",
+          "body": "rounded"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_026": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "left",
+          "body": "cloud"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_027": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "top",
+          "body": "oval"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_028": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "top",
+          "body": "square"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_029": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "top",
+          "body": "rounded"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_030": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "top",
+          "body": "cloud"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_031": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "bottom",
+          "body": "oval"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_032": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "bottom",
+          "body": "square"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_033": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "bottom",
+          "body": "rounded"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_034": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "tail": "bottom",
+          "body": "cloud"
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_035": {
+      "ornShape": {
+        "type": "square",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_036": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_037": {
+      "ornShape": {
+        "type": "circle",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_038": {
+      "ornShape": {
+        "type": "plate",
+        "params": {
+          "unit": "cell",
+          "width": 1.4,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_039": {
+      "ornShape": {
+        "type": "oval",
+        "params": {
+          "unit": "cell",
+          "width": 1.4,
+          "height": 1.3,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_040": {
+      "ornShape": {
+        "type": "bubble",
+        "params": {
+          "unit": "cell",
+          "width": 1.5,
+          "height": 1.4,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_041": {
+      "ornShape": {
+        "type": "cloud",
+        "params": {
+          "unit": "cell",
+          "width": 1.35,
+          "height": 1.35,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_042": {
+      "ornShape": {
+        "type": "star",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1,
+          "points": 5,
+          "fill": 0,
+          "stroke": 0.08
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_043": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_044": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "fade",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_045": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "pop",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_046": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "stamp",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_047": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "wipe",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_048": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "spin",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_049": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "grow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_050": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "none",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_051": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "flicker",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_052": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "bleed",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_053": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "float",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_054": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "fall",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_055": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "draw",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_056": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "outline",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_057": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "neonGlow",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_058": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "innerGlow",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_059": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "bevel",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_060": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "extrude",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_061": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "longShadow",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_062": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "dropShadow",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_063": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "drip",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_064": {
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "unit": "cell",
+          "width": 1.25,
+          "height": 1.25,
+          "skipSpaces": true,
+          "layer": "behind",
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "multiLine",
+          "params": {},
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "follow",
+        "params": {},
+        "enabled": true
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "dc_065": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "underline",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_066": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "strike",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_067": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "box",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_068": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "brackets",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_069": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "circle",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_070": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "ring",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_071": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "burst",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_072": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "cross",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_073": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "diagonal",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_074": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "overline",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_075": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "topBottom",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_076": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "sides",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_077": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "sidesSemicircle",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_078": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "sidesSemiellipse",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_079": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "capsule",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_080": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "plate",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_081": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "ornament",
+            "drive": "enter",
+            "enterAnim": "draw",
+            "exitAnim": "erase",
+            "holdAnim": "flow",
+            "stroke": 6,
+            "padding": 0.12
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "dc_082": {
+      "page": {
+        "type": "chatBubble",
+        "params": {}
+      }
+    },
+    "dc_083": {
+      "page": {
+        "type": "xCard",
+        "params": {}
+      }
+    },
+    "dc_084": {
+      "page": {
+        "type": "cafeMenu",
+        "params": {}
+      }
+    },
+    "dc_085": {
+      "page": {
+        "type": "boutique",
+        "params": {}
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "dc_001": [
+      {
+        "id": "dc_001:single0",
+        "cueId": "dc_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 3,
+        "text": "1. square · 四角\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "1. square · 四角",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_002": [
+      {
+        "id": "dc_002:single0",
+        "cueId": "dc_002",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "2. rounded · 角丸\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "2. rounded · 角丸",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_003": [
+      {
+        "id": "dc_003:single0",
+        "cueId": "dc_003",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 9,
+        "text": "3. circle · 円\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "3. circle · 円",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_004": [
+      {
+        "id": "dc_004:single0",
+        "cueId": "dc_004",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "4. diamond · ひし形\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "4. diamond · ひし形",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_005": [
+      {
+        "id": "dc_005:single0",
+        "cueId": "dc_005",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 15,
+        "text": "5. ring · リング\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "5. ring · リング",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_006": [
+      {
+        "id": "dc_006:single0",
+        "cueId": "dc_006",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 18,
+        "text": "6. bar · 帯\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "6. bar · 帯",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_007": [
+      {
+        "id": "dc_007:single0",
+        "cueId": "dc_007",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "7. star · 星\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "7. star · 星",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_008": [
+      {
+        "id": "dc_008:single0",
+        "cueId": "dc_008",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "8. blob · 不定形\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "8. blob · 不定形",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_009": [
+      {
+        "id": "dc_009:single0",
+        "cueId": "dc_009",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 27,
+        "text": "9. heart · ハート\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "9. heart · ハート",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_010": [
+      {
+        "id": "dc_010:single0",
+        "cueId": "dc_010",
+        "kind": "single",
+        "index": 0,
+        "start": 27,
+        "end": 30,
+        "text": "10. splatter · 血しぶき\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "10. splatter · 血しぶき",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_011": [
+      {
+        "id": "dc_011:single0",
+        "cueId": "dc_011",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 33,
+        "text": "11. scratch · ひっかき傷\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "11. scratch · ひっかき傷",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_012": [
+      {
+        "id": "dc_012:single0",
+        "cueId": "dc_012",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "12. drop · しずく\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "12. drop · しずく",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_013": [
+      {
+        "id": "dc_013:single0",
+        "cueId": "dc_013",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 39,
+        "text": "13. bracket · カギ括弧\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "13. bracket · カギ括弧",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_014": [
+      {
+        "id": "dc_014:single0",
+        "cueId": "dc_014",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "14. paper · 紙片\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "14. paper · 紙片",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_015": [
+      {
+        "id": "dc_015:single0",
+        "cueId": "dc_015",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 45,
+        "text": "15. cloud · 雲\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "15. cloud · 雲",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_016": [
+      {
+        "id": "dc_016:single0",
+        "cueId": "dc_016",
+        "kind": "single",
+        "index": 0,
+        "start": 45,
+        "end": 48,
+        "text": "16. plate · 看板\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "16. plate · 看板",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_017": [
+      {
+        "id": "dc_017:single0",
+        "cueId": "dc_017",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 51,
+        "text": "17. oval · 楕円看板\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "17. oval · 楕円看板",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_018": [
+      {
+        "id": "dc_018:single0",
+        "cueId": "dc_018",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "18. bubble · ふきだし\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "18. bubble · ふきだし",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_019": [
+      {
+        "id": "dc_019:single0",
+        "cueId": "dc_019",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "19. bubble/right/oval · 右しっぽ×\n楕円あいうえお カキクケコ Deco 123",
+        "lines": [
+          "19. bubble/right/oval · 右しっぽ×",
+          "楕円あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_020": [
+      {
+        "id": "dc_020:single0",
+        "cueId": "dc_020",
+        "kind": "single",
+        "index": 0,
+        "start": 57,
+        "end": 60,
+        "text": "20. bubble/right/square · 右しっぽ\n×四角あいうえお カキクケコ Deco 123",
+        "lines": [
+          "20. bubble/right/square · 右しっぽ",
+          "×四角あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_021": [
+      {
+        "id": "dc_021:single0",
+        "cueId": "dc_021",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "21. bubble/right/rounded · 右しっぽ\n×角丸あいうえお カキクケコ Deco 123",
+        "lines": [
+          "21. bubble/right/rounded · 右しっぽ",
+          "×角丸あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "dc_022": [
+      {
+        "id": "dc_022:single0",
+        "cueId": "dc_022",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "22. bubble/right/cloud · 右しっぽ\n×雲あいうえお カキクケコ Deco 123",
+        "lines": [
+          "22. bubble/right/cloud · 右しっぽ",
+          "×雲あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_023": [
+      {
+        "id": "dc_023:single0",
+        "cueId": "dc_023",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 69,
+        "text": "23. bubble/left/oval · 左しっぽ×\n楕円あいうえお カキクケコ Deco 123",
+        "lines": [
+          "23. bubble/left/oval · 左しっぽ×",
+          "楕円あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_024": [
+      {
+        "id": "dc_024:single0",
+        "cueId": "dc_024",
+        "kind": "single",
+        "index": 0,
+        "start": 69,
+        "end": 72,
+        "text": "24. bubble/left/square · 左しっぽ×\n四角あいうえお カキクケコ Deco 123",
+        "lines": [
+          "24. bubble/left/square · 左しっぽ×",
+          "四角あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_025": [
+      {
+        "id": "dc_025:single0",
+        "cueId": "dc_025",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 75,
+        "text": "25. bubble/left/rounded · 左しっぽ\n×角丸あいうえお カキクケコ Deco 123",
+        "lines": [
+          "25. bubble/left/rounded · 左しっぽ",
+          "×角丸あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_026": [
+      {
+        "id": "dc_026:single0",
+        "cueId": "dc_026",
+        "kind": "single",
+        "index": 0,
+        "start": 75,
+        "end": 78,
+        "text": "26. bubble/left/cloud · 左しっぽ×\n雲あいうえお カキクケコ Deco 123",
+        "lines": [
+          "26. bubble/left/cloud · 左しっぽ×",
+          "雲あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_027": [
+      {
+        "id": "dc_027:single0",
+        "cueId": "dc_027",
+        "kind": "single",
+        "index": 0,
+        "start": 78,
+        "end": 81,
+        "text": "27. bubble/top/oval · 上しっぽ×\n楕円あいうえお カキクケコ Deco 123",
+        "lines": [
+          "27. bubble/top/oval · 上しっぽ×",
+          "楕円あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_028": [
+      {
+        "id": "dc_028:single0",
+        "cueId": "dc_028",
+        "kind": "single",
+        "index": 0,
+        "start": 81,
+        "end": 84,
+        "text": "28. bubble/top/square · 上しっぽ×\n四角あいうえお カキクケコ Deco 123",
+        "lines": [
+          "28. bubble/top/square · 上しっぽ×",
+          "四角あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_029": [
+      {
+        "id": "dc_029:single0",
+        "cueId": "dc_029",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 87,
+        "text": "29. bubble/top/rounded · 上しっぽ×\n角丸あいうえお カキクケコ Deco 123",
+        "lines": [
+          "29. bubble/top/rounded · 上しっぽ×",
+          "角丸あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_030": [
+      {
+        "id": "dc_030:single0",
+        "cueId": "dc_030",
+        "kind": "single",
+        "index": 0,
+        "start": 87,
+        "end": 90,
+        "text": "30. bubble/top/cloud · 上しっぽ×\n雲あいうえお カキクケコ Deco 123",
+        "lines": [
+          "30. bubble/top/cloud · 上しっぽ×",
+          "雲あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_031": [
+      {
+        "id": "dc_031:single0",
+        "cueId": "dc_031",
+        "kind": "single",
+        "index": 0,
+        "start": 90,
+        "end": 93,
+        "text": "31. bubble/bottom/oval · 下しっぽ×\n楕円あいうえお カキクケコ Deco 123",
+        "lines": [
+          "31. bubble/bottom/oval · 下しっぽ×",
+          "楕円あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_032": [
+      {
+        "id": "dc_032:single0",
+        "cueId": "dc_032",
+        "kind": "single",
+        "index": 0,
+        "start": 93,
+        "end": 96,
+        "text": "32. bubble/bottom/square · 下しっぽ\n×四角あいうえお カキクケコ Deco 123",
+        "lines": [
+          "32. bubble/bottom/square · 下しっぽ",
+          "×四角あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "dc_033": [
+      {
+        "id": "dc_033:single0",
+        "cueId": "dc_033",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 99,
+        "text": "33. bubble/bottom/rounded · 下しっぽ\n×角丸あいうえお カキクケコ Deco 123",
+        "lines": [
+          "33. bubble/bottom/rounded · 下しっぽ",
+          "×角丸あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "dc_034": [
+      {
+        "id": "dc_034:single0",
+        "cueId": "dc_034",
+        "kind": "single",
+        "index": 0,
+        "start": 99,
+        "end": 102,
+        "text": "34. bubble/bottom/cloud · 下しっぽ\n×雲あいうえお カキクケコ Deco 123",
+        "lines": [
+          "34. bubble/bottom/cloud · 下しっぽ",
+          "×雲あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "dc_035": [
+      {
+        "id": "dc_035:single0",
+        "cueId": "dc_035",
+        "kind": "single",
+        "index": 0,
+        "start": 102,
+        "end": 105,
+        "text": "35. square · 四角・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "35. square · 四角・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_036": [
+      {
+        "id": "dc_036:single0",
+        "cueId": "dc_036",
+        "kind": "single",
+        "index": 0,
+        "start": 105,
+        "end": 108,
+        "text": "36. rounded · 角丸・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "36. rounded · 角丸・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_037": [
+      {
+        "id": "dc_037:single0",
+        "cueId": "dc_037",
+        "kind": "single",
+        "index": 0,
+        "start": 108,
+        "end": 111,
+        "text": "37. circle · 円・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "37. circle · 円・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_038": [
+      {
+        "id": "dc_038:single0",
+        "cueId": "dc_038",
+        "kind": "single",
+        "index": 0,
+        "start": 111,
+        "end": 114,
+        "text": "38. plate · 看板・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "38. plate · 看板・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_039": [
+      {
+        "id": "dc_039:single0",
+        "cueId": "dc_039",
+        "kind": "single",
+        "index": 0,
+        "start": 114,
+        "end": 117,
+        "text": "39. oval · 楕円看板・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "39. oval · 楕円看板・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_040": [
+      {
+        "id": "dc_040:single0",
+        "cueId": "dc_040",
+        "kind": "single",
+        "index": 0,
+        "start": 117,
+        "end": 120,
+        "text": "40. bubble · ふきだし・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "40. bubble · ふきだし・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_041": [
+      {
+        "id": "dc_041:single0",
+        "cueId": "dc_041",
+        "kind": "single",
+        "index": 0,
+        "start": 120,
+        "end": 123,
+        "text": "41. cloud · 雲・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "41. cloud · 雲・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_042": [
+      {
+        "id": "dc_042:single0",
+        "cueId": "dc_042",
+        "kind": "single",
+        "index": 0,
+        "start": 123,
+        "end": 126,
+        "text": "42. star · 星・線だけ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "42. star · 星・線だけ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_043": [
+      {
+        "id": "dc_043:single0",
+        "cueId": "dc_043",
+        "kind": "single",
+        "index": 0,
+        "start": 126,
+        "end": 129,
+        "text": "43. follow · 文字に追従\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "43. follow · 文字に追従",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_044": [
+      {
+        "id": "dc_044:single0",
+        "cueId": "dc_044",
+        "kind": "single",
+        "index": 0,
+        "start": 129,
+        "end": 132,
+        "text": "44. fade · フェード\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "44. fade · フェード",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_045": [
+      {
+        "id": "dc_045:single0",
+        "cueId": "dc_045",
+        "kind": "single",
+        "index": 0,
+        "start": 132,
+        "end": 135,
+        "text": "45. pop · ポップ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "45. pop · ポップ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_046": [
+      {
+        "id": "dc_046:single0",
+        "cueId": "dc_046",
+        "kind": "single",
+        "index": 0,
+        "start": 135,
+        "end": 138,
+        "text": "46. stamp · スタンプ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "46. stamp · スタンプ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_047": [
+      {
+        "id": "dc_047:single0",
+        "cueId": "dc_047",
+        "kind": "single",
+        "index": 0,
+        "start": 138,
+        "end": 141,
+        "text": "47. wipe · ワイプ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "47. wipe · ワイプ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_048": [
+      {
+        "id": "dc_048:single0",
+        "cueId": "dc_048",
+        "kind": "single",
+        "index": 0,
+        "start": 141,
+        "end": 144,
+        "text": "48. spin · 回転\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "48. spin · 回転",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_049": [
+      {
+        "id": "dc_049:single0",
+        "cueId": "dc_049",
+        "kind": "single",
+        "index": 0,
+        "start": 144,
+        "end": 147,
+        "text": "49. grow · 伸びる\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "49. grow · 伸びる",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_050": [
+      {
+        "id": "dc_050:single0",
+        "cueId": "dc_050",
+        "kind": "single",
+        "index": 0,
+        "start": 147,
+        "end": 150,
+        "text": "50. none · なし\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "50. none · なし",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_051": [
+      {
+        "id": "dc_051:single0",
+        "cueId": "dc_051",
+        "kind": "single",
+        "index": 0,
+        "start": 150,
+        "end": 153,
+        "text": "51. flicker · ちらつき\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "51. flicker · ちらつき",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_052": [
+      {
+        "id": "dc_052:single0",
+        "cueId": "dc_052",
+        "kind": "single",
+        "index": 0,
+        "start": 153,
+        "end": 156,
+        "text": "52. bleed · にじみ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "52. bleed · にじみ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_053": [
+      {
+        "id": "dc_053:single0",
+        "cueId": "dc_053",
+        "kind": "single",
+        "index": 0,
+        "start": 156,
+        "end": 159,
+        "text": "53. float · 浮かぶ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "53. float · 浮かぶ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_054": [
+      {
+        "id": "dc_054:single0",
+        "cueId": "dc_054",
+        "kind": "single",
+        "index": 0,
+        "start": 159,
+        "end": 162,
+        "text": "54. fall · 落下\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "54. fall · 落下",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_055": [
+      {
+        "id": "dc_055:single0",
+        "cueId": "dc_055",
+        "kind": "single",
+        "index": 0,
+        "start": 162,
+        "end": 165,
+        "text": "55. draw · 描画\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "55. draw · 描画",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_056": [
+      {
+        "id": "dc_056:single0",
+        "cueId": "dc_056",
+        "kind": "single",
+        "index": 0,
+        "start": 165,
+        "end": 168,
+        "text": "56. outline · 縁取り\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "56. outline · 縁取り",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_057": [
+      {
+        "id": "dc_057:single0",
+        "cueId": "dc_057",
+        "kind": "single",
+        "index": 0,
+        "start": 168,
+        "end": 171,
+        "text": "57. neonGlow · ネオン\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "57. neonGlow · ネオン",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_058": [
+      {
+        "id": "dc_058:single0",
+        "cueId": "dc_058",
+        "kind": "single",
+        "index": 0,
+        "start": 171,
+        "end": 174,
+        "text": "58. innerGlow · 内側の光\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "58. innerGlow · 内側の光",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_059": [
+      {
+        "id": "dc_059:single0",
+        "cueId": "dc_059",
+        "kind": "single",
+        "index": 0,
+        "start": 174,
+        "end": 177,
+        "text": "59. bevel · ベベル\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "59. bevel · ベベル",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_060": [
+      {
+        "id": "dc_060:single0",
+        "cueId": "dc_060",
+        "kind": "single",
+        "index": 0,
+        "start": 177,
+        "end": 180,
+        "text": "60. extrude · 押し出し\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "60. extrude · 押し出し",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_061": [
+      {
+        "id": "dc_061:single0",
+        "cueId": "dc_061",
+        "kind": "single",
+        "index": 0,
+        "start": 180,
+        "end": 183,
+        "text": "61. longShadow · 長い影\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "61. longShadow · 長い影",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_062": [
+      {
+        "id": "dc_062:single0",
+        "cueId": "dc_062",
+        "kind": "single",
+        "index": 0,
+        "start": 183,
+        "end": 186,
+        "text": "62. dropShadow · ドロップシャドウ\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "62. dropShadow · ドロップシャドウ",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_063": [
+      {
+        "id": "dc_063:single0",
+        "cueId": "dc_063",
+        "kind": "single",
+        "index": 0,
+        "start": 186,
+        "end": 189,
+        "text": "63. drip · 滴り\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "63. drip · 滴り",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_064": [
+      {
+        "id": "dc_064:single0",
+        "cueId": "dc_064",
+        "kind": "single",
+        "index": 0,
+        "start": 189,
+        "end": 192,
+        "text": "64. multiLine · 多重線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "64. multiLine · 多重線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_065": [
+      {
+        "id": "dc_065:single0",
+        "cueId": "dc_065",
+        "kind": "single",
+        "index": 0,
+        "start": 192,
+        "end": 195,
+        "text": "65. underline · 下線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "65. underline · 下線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_066": [
+      {
+        "id": "dc_066:single0",
+        "cueId": "dc_066",
+        "kind": "single",
+        "index": 0,
+        "start": 195,
+        "end": 198,
+        "text": "66. strike · 取り消し線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "66. strike · 取り消し線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_067": [
+      {
+        "id": "dc_067:single0",
+        "cueId": "dc_067",
+        "kind": "single",
+        "index": 0,
+        "start": 198,
+        "end": 201,
+        "text": "67. box · 四角囲み\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "67. box · 四角囲み",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_068": [
+      {
+        "id": "dc_068:single0",
+        "cueId": "dc_068",
+        "kind": "single",
+        "index": 0,
+        "start": 201,
+        "end": 204,
+        "text": "68. brackets · カギ括弧\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "68. brackets · カギ括弧",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_069": [
+      {
+        "id": "dc_069:single0",
+        "cueId": "dc_069",
+        "kind": "single",
+        "index": 0,
+        "start": 204,
+        "end": 207,
+        "text": "69. circle · 円囲み\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "69. circle · 円囲み",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_070": [
+      {
+        "id": "dc_070:single0",
+        "cueId": "dc_070",
+        "kind": "single",
+        "index": 0,
+        "start": 207,
+        "end": 210,
+        "text": "70. ring · リング\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "70. ring · リング",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_071": [
+      {
+        "id": "dc_071:single0",
+        "cueId": "dc_071",
+        "kind": "single",
+        "index": 0,
+        "start": 210,
+        "end": 213,
+        "text": "71. burst · 爆発\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "71. burst · 爆発",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_072": [
+      {
+        "id": "dc_072:single0",
+        "cueId": "dc_072",
+        "kind": "single",
+        "index": 0,
+        "start": 213,
+        "end": 216,
+        "text": "72. cross · クロス\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "72. cross · クロス",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_073": [
+      {
+        "id": "dc_073:single0",
+        "cueId": "dc_073",
+        "kind": "single",
+        "index": 0,
+        "start": 216,
+        "end": 219,
+        "text": "73. diagonal · 斜線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "73. diagonal · 斜線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_074": [
+      {
+        "id": "dc_074:single0",
+        "cueId": "dc_074",
+        "kind": "single",
+        "index": 0,
+        "start": 219,
+        "end": 222,
+        "text": "74. overline · 上線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "74. overline · 上線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_075": [
+      {
+        "id": "dc_075:single0",
+        "cueId": "dc_075",
+        "kind": "single",
+        "index": 0,
+        "start": 222,
+        "end": 225,
+        "text": "75. topBottom · 上下線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "75. topBottom · 上下線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_076": [
+      {
+        "id": "dc_076:single0",
+        "cueId": "dc_076",
+        "kind": "single",
+        "index": 0,
+        "start": 225,
+        "end": 228,
+        "text": "76. sides · 両側線\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "76. sides · 両側線",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_077": [
+      {
+        "id": "dc_077:single0",
+        "cueId": "dc_077",
+        "kind": "single",
+        "index": 0,
+        "start": 228,
+        "end": 231,
+        "text": "77. sidesSemicircle · 両側半円\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "77. sidesSemicircle · 両側半円",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_078": [
+      {
+        "id": "dc_078:single0",
+        "cueId": "dc_078",
+        "kind": "single",
+        "index": 0,
+        "start": 231,
+        "end": 234,
+        "text": "78. sidesSemiellipse · 両側半楕円\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "78. sidesSemiellipse · 両側半楕円",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_079": [
+      {
+        "id": "dc_079:single0",
+        "cueId": "dc_079",
+        "kind": "single",
+        "index": 0,
+        "start": 234,
+        "end": 237,
+        "text": "79. capsule · カプセル\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "79. capsule · カプセル",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_080": [
+      {
+        "id": "dc_080:single0",
+        "cueId": "dc_080",
+        "kind": "single",
+        "index": 0,
+        "start": 237,
+        "end": 240,
+        "text": "80. plate · ラベル板\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "80. plate · ラベル板",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_081": [
+      {
+        "id": "dc_081:single0",
+        "cueId": "dc_081",
+        "kind": "single",
+        "index": 0,
+        "start": 240,
+        "end": 243,
+        "text": "81. ornament · 飾り罫\nあいうえお カキクケコ Deco 123",
+        "lines": [
+          "81. ornament · 飾り罫",
+          "あいうえお カキクケコ Deco 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_082": [
+      {
+        "id": "dc_082:single0",
+        "cueId": "dc_082",
+        "kind": "single",
+        "index": 0,
+        "start": 243,
+        "end": 247,
+        "text": "Hey what is up?\nNot much, working\non TelopMotion!\nNice!",
+        "lines": [
+          "Hey what is up?",
+          "Not much, working",
+          "on TelopMotion!",
+          "Nice!"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_083": [
+      {
+        "id": "dc_083:single0",
+        "cueId": "dc_083",
+        "kind": "single",
+        "index": 0,
+        "start": 247,
+        "end": 251,
+        "text": "TelopMotion\nXのカード風レイアウトです。\n本文と時刻をカードに収めます。\n3:00 PM",
+        "lines": [
+          "TelopMotion",
+          "Xのカード風レイアウトです。",
+          "本文と時刻をカードに収めます。",
+          "3:00 PM"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_084": [
+      {
+        "id": "dc_084:single0",
+        "cueId": "dc_084",
+        "kind": "single",
+        "index": 0,
+        "start": 251,
+        "end": 255,
+        "text": "MENU / cafeMenu\nCaramel Macchiato | ¥650\nCafe Latte | ¥580\nGreen Tea Latte | ¥560",
+        "lines": [
+          "MENU / cafeMenu",
+          "Caramel Macchiato | ¥650",
+          "Cafe Latte | ¥580",
+          "Green Tea Latte | ¥560"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dc_085": [
+      {
+        "id": "dc_085:single0",
+        "cueId": "dc_085",
+        "kind": "single",
+        "index": 0,
+        "start": 255,
+        "end": 259,
+        "text": "BOUTIQUE\n上質な余白と細い罫線。\nブランドの世界観を伝えます。\n— atelier —",
+        "lines": [
+          "BOUTIQUE",
+          "上質な余白と細い罫線。",
+          "ブランドの世界観を伝えます。",
+          "— atelier —"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "文字飾り (ornShape)"
+    },
+    {
+      "t": 54,
+      "label": "ふきだし (bubble)"
+    },
+    {
+      "t": 102,
+      "label": "抜き・線だけ (stroke)"
+    },
+    {
+      "t": 126,
+      "label": "飾りの動き (ornMotion)"
+    },
+    {
+      "t": 165,
+      "label": "飾りの縁 (ornEdge)"
+    },
+    {
+      "t": 192,
+      "label": "囲みフレーム (shapeLayer)"
+    },
+    {
+      "t": 243,
+      "label": "チャット・カード (page)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

@@ -1895,6 +1895,24 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
 - Help → Ease showcase (`studio.help.easeShowcase`, 5 languages) reads it with `SA.platform.readAsset('data/ease-showcase.json')`.
 - The GPU-simulation motifs (`figures.SIM_MOTIFS`, a **Set**) draw nothing while *Settings → Allow stateful effects* is off, because a stateful figure needs the frames before it. The walk's job is to show them, so `app.js`'s `openStatefulGateForShowcase()` flips `statefulEnabled` + `applyStateful()` for the session, refreshes the menu tick and shows `studio.toast.statefulOn` — **without** writing `localStorage`, so the stored preference is untouched. The generator notes the gate in the markdown index (read `SIM_MOTIFS` as an iterable, not with `Array.isArray`).
 
+### 11.5d Decor showcase (`scripts/decor-showcase.js`, `npm run decor-showcase`)
+- The text decorations' review project: `renderer/data/decor-showcase.json`, one cue per signboard/bubble shape, line, motion, edge and frame plus the chat/card pages in a decoration context (85 cues, 7 sections). Same generated shape as the font showcase (`meta.kind: 'decor-showcase'`, language-independent ids, no re-labelling). Help → Decor showcase (`studio.help.decorShowcase`, 5 languages).
+
+### 11.5e Theme showcase (`scripts/theme-showcase.js`, `npm run theme-showcase`)
+- The theme presets' review project: `renderer/data/theme-showcase.json`, one 4-second cue per entry of `presets.list({ packs: 'all' })` — 14 standard + 7 background + 7 genre (built via `moods.generate` + signature patch, same as `gen-genre-presets.js`) + 25 pro staged looks, 53 cues in 4 sections. Each cue pins the preset style as its `cueStyles`, so applying the theme is previewed as-is. Genre presets need `global.SA = { moods, genres, project }` before `presets.list()` in Node. Same generated shape (`meta.kind: 'theme-showcase'`). Help → Theme showcase (`studio.help.themeShowcase`, 5 languages).
+
+### 11.5f Filler showcase (`scripts/filler-showcase.js`, `npm run filler-showcase`)
+- The filler library's review project: `renderer/data/filler-showcase.json`, one 3-second cue per `fillerPresets.list()` entry (131 cues in the 9 `groups()` sections), each with one `mid`-track clip carrying the preset spec. Same generated shape (`meta.kind: 'filler-showcase'`) plus a shared `bg` plate. Help → Filler showcase (`studio.help.fillerShowcase`, 5 languages).
+
+### 11.5g Direct showcase (`scripts/direct-showcase.js`, `npm run direct-showcase`)
+- The auto-direction staging review project: `renderer/data/direct-showcase.json`, 10 compositions (`compositions.build` over a fixed `analyzeBeat` sample) + 10 genres + 6 moods (both via `moods.generate` with a fixed seed), one 4-second cue each with the generated style pinned as `cueStyles` — 26 cues in 3 sections. Same generated shape (`meta.kind: 'direct-showcase'`). Help → Direct showcase (`studio.help.directShowcase`, 5 languages).
+
+### 11.5h Camera showcase (`scripts/camera-showcase.js`, `npm run camera-showcase`)
+- The frame camera's review project: `renderer/data/camera-showcase.json`, one 4-second cue per move in `effects/camera.js` `MOVES` (10 moves in 3 sections: push / pan / tilt), each with `post: [{ type: 'camera', params: { move } }]` on a fixed slide entrance plus a shared `bg` plate. The script reads `MOVES` live and throws on drift. Same generated shape (`meta.kind: 'camera-showcase'`). Help → Camera showcase (`studio.help.cameraShowcase`, 5 languages).
+
+### 11.5i Color showcase (`scripts/color-showcase.js`, `npm run color-showcase`)
+- The colour system's review project: `renderer/data/color-showcase.json`, 6 palette schemes (`palette-roles` `SCHEME_IDS`, mid split clips varying only `scheme`) + 14 palette families (`moods.PALETTE_FAMILIES` via `moods.generatePalette`, mid split clips) + 20 line patterns (`patterns.PATTERNS` as `edge.outline` pattern on static cues) — 40 cues in 3 sections. Same generated shape (`meta.kind: 'color-showcase'`). Help → Color showcase (`studio.help.colorShowcase`, 5 languages).
+
 ### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.
 - The smoke test that checks for missing translations is extended to `studio.html`: every `[data-i18n]` and every generated control label must resolve (not come back as the raw key) in all 5 languages.

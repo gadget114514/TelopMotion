@@ -1050,6 +1050,21 @@
       toast('studio.toast.invalidProject');
     }
   }
+  // the decorations' own showcase: one cue per ornShape type, ornMotion type
+  // and shapeLayer frame, plus the chat / card pages in a decoration context.
+  // The shape ids are language-independent, so no re-labelling is needed
+  // (same shape as the font showcase).
+  async function decorShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/decor-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
   // the ease curves' own showcase: one cue per named curve and parametric
   // recipe on the same slide entrance, plus one cue per lyric slot that
   // accepts an ease. The ease ids are language-independent, so no
@@ -1057,6 +1072,79 @@
   async function easeShowcaseProject() {
     try {
       const buffer = await SA.platform.readAsset('data/ease-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the theme presets' own showcase: one cue per preset (standard /
+  // background / genre / pro). The preset ids are language-independent, so no
+  // re-labelling is needed (same shape as the font showcase).
+  async function themeShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/theme-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the filler library's own showcase: one cue per filler preset on the `mid`
+  // track. The preset ids are language-independent, so no re-labelling is
+  // needed (same shape as the backdrop showcase).
+  async function fillerShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/filler-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the auto-direction staging showcase: one cue per composition, genre and
+  // mood. The ids are language-independent, so no re-labelling is needed.
+  async function directShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/direct-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the frame camera's own showcase: one cue per camera move as a frame post.
+  // The move ids are language-independent, so no re-labelling is needed.
+  async function cameraShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/camera-showcase.json');
+      const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
+      SA.io.loadFromObject(JSON.parse(text));
+      welcomeDismissed = false;
+      toast('studio.toast.opened');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  // the colour system's own showcase: one cue per palette scheme, palette
+  // family and line pattern. The ids are language-independent, so no
+  // re-labelling is needed.
+  async function colorShowcaseProject() {
+    try {
+      const buffer = await SA.platform.readAsset('data/color-showcase.json');
       const text = new TextDecoder('utf-8').decode(new Uint8Array(buffer));
       SA.io.loadFromObject(JSON.parse(text));
       welcomeDismissed = false;
@@ -1982,6 +2070,12 @@
       backdropShowcase: backdropShowcaseProject,
       fontShowcase: fontShowcaseProject,
       layerShowcase: layerShowcaseProject,
+      decorShowcase: decorShowcaseProject,
+      themeShowcase: themeShowcaseProject,
+      fillerShowcase: fillerShowcaseProject,
+      directShowcase: directShowcaseProject,
+      cameraShowcase: cameraShowcaseProject,
+      colorShowcase: colorShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

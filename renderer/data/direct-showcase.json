@@ -1,0 +1,6764 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion 演出見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "dr_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. comp/heroCenter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "heroCenter"
+        }
+      },
+      {
+        "id": "dr_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. comp/leftHeadline\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "leftHeadline"
+        }
+      },
+      {
+        "id": "dr_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. comp/lowerBand\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "lowerBand"
+        }
+      },
+      {
+        "id": "dr_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. comp/bracketCenter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "bracketCenter"
+        }
+      },
+      {
+        "id": "dr_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. comp/posterStack\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "posterStack"
+        }
+      },
+      {
+        "id": "dr_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. comp/cornerQuiet\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "cornerQuiet"
+        }
+      },
+      {
+        "id": "dr_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. comp/verticalRight\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "verticalRight"
+        }
+      },
+      {
+        "id": "dr_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. comp/diagonalJump\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "diagonalJump"
+        }
+      },
+      {
+        "id": "dr_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. comp/bleedHero\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "bleedHero"
+        }
+      },
+      {
+        "id": "dr_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. comp/whisper\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "comp",
+          "value": "whisper"
+        }
+      },
+      {
+        "id": "dr_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. genre/horror\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "horror"
+        }
+      },
+      {
+        "id": "dr_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. genre/love\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "love"
+        }
+      },
+      {
+        "id": "dr_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. genre/heartbreak\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "heartbreak"
+        }
+      },
+      {
+        "id": "dr_014",
+        "start": 52,
+        "end": 56,
+        "text": "14. genre/party\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "party"
+        }
+      },
+      {
+        "id": "dr_015",
+        "start": 56,
+        "end": 60,
+        "text": "15. genre/ballad\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "ballad"
+        }
+      },
+      {
+        "id": "dr_016",
+        "start": 60,
+        "end": 64,
+        "text": "16. genre/cinematic\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "cinematic"
+        }
+      },
+      {
+        "id": "dr_017",
+        "start": 64,
+        "end": 68,
+        "text": "17. genre/cute\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "cute"
+        }
+      },
+      {
+        "id": "dr_018",
+        "start": 68,
+        "end": 72,
+        "text": "18. genre/electro\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "electro"
+        }
+      },
+      {
+        "id": "dr_019",
+        "start": 72,
+        "end": 76,
+        "text": "19. genre/rock\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "rock"
+        }
+      },
+      {
+        "id": "dr_020",
+        "start": 76,
+        "end": 80,
+        "text": "20. genre/washu\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "genre",
+          "value": "washu"
+        }
+      },
+      {
+        "id": "dr_021",
+        "start": 80,
+        "end": 84,
+        "text": "21. mood/ballad\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "ballad"
+        }
+      },
+      {
+        "id": "dr_022",
+        "start": 84,
+        "end": 88,
+        "text": "22. mood/cinematic\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "cinematic"
+        }
+      },
+      {
+        "id": "dr_023",
+        "start": 88,
+        "end": 92,
+        "text": "23. mood/cute\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "cute"
+        }
+      },
+      {
+        "id": "dr_024",
+        "start": 92,
+        "end": 96,
+        "text": "24. mood/electro\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "electro"
+        }
+      },
+      {
+        "id": "dr_025",
+        "start": 96,
+        "end": 100,
+        "text": "25. mood/rock\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "rock"
+        }
+      },
+      {
+        "id": "dr_026",
+        "start": 100,
+        "end": 104,
+        "text": "26. mood/washu\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "direct-showcase",
+          "section": "mood",
+          "value": "washu"
+        }
+      }
+    ],
+    "sourceName": "direct-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "dr_001": {
+      "text": {
+        "size": 162,
+        "weight": 400,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.92,
+        "letterSpacing": 0.01,
+        "lineHeight": 1.12,
+        "compose": {
+          "id": "heroCenter",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 2.1,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "revealSweep",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.23,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.2,
+            "ease": "cubicIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_002": {
+      "text": {
+        "size": 113,
+        "weight": 400,
+        "align": "left",
+        "direction": "horizontal",
+        "maxWidth": 0.62,
+        "letterSpacing": 0,
+        "lineHeight": 1.18,
+        "compose": {
+          "id": "leftHeadline",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.8,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.1,
+          "y": 0.5,
+          "edgeX": -1,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "revealSweep",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.23,
+            "ease": "expoOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.18,
+            "ease": "expoIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "underline",
+            "drive": "enter",
+            "stroke": 5,
+            "padding": 0.1,
+            "feather": 0.04,
+            "glow": 0.3
+          },
+          "enabled": true
+        }
+      ],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_003": {
+      "text": {
+        "size": 81,
+        "weight": 700,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.88,
+        "letterSpacing": 0.01,
+        "lineHeight": 1.1,
+        "compose": {
+          "id": "lowerBand",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.6,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.8,
+          "edgeX": 0,
+          "edgeY": 0.5
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "rangeReveal",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.22,
+            "ease": "cubicIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "box",
+            "drive": "enter",
+            "stroke": 3.5,
+            "padding": 0.14,
+            "feather": 0.02,
+            "glow": 0.25
+          },
+          "enabled": true
+        }
+      ],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_004": {
+      "text": {
+        "size": 124,
+        "weight": 400,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.82,
+        "letterSpacing": 0.01,
+        "lineHeight": 1.16,
+        "compose": {
+          "id": "bracketCenter",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.7,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "ease": "expoOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.18,
+            "ease": "cubicIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [
+        {
+          "type": "shapeLayer",
+          "params": {
+            "shape": "brackets",
+            "drive": "enter",
+            "stroke": 4,
+            "padding": 0.12,
+            "feather": 0.05,
+            "glow": 0.3
+          },
+          "enabled": true
+        }
+      ],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_005": {
+      "text": {
+        "size": 140,
+        "weight": 700,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.8,
+        "letterSpacing": 0.02,
+        "lineHeight": 1.06,
+        "compose": {
+          "id": "posterStack",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.35,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "stackedWords",
+        "params": {
+          "fillWidth": 0.9
+        }
+      },
+      "enter": {
+        "type": "revealSweep",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.31,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.18,
+            "ease": "expoIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_006": {
+      "text": {
+        "size": 67,
+        "weight": 400,
+        "align": "left",
+        "direction": "horizontal",
+        "maxWidth": 0.46,
+        "letterSpacing": 0.02,
+        "lineHeight": 1.22,
+        "compose": {
+          "id": "cornerQuiet",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.6,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.08,
+          "y": 0.14,
+          "edgeX": -1,
+          "edgeY": -1
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "typewriter",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.34,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.17,
+            "ease": "expoIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_007": {
+      "text": {
+        "size": 113,
+        "weight": 400,
+        "align": "center",
+        "direction": "vertical",
+        "maxWidth": 0.5,
+        "letterSpacing": 0.01,
+        "lineHeight": 1.08,
+        "compose": {
+          "id": "verticalRight",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.5,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.84,
+          "y": 0.5,
+          "edgeX": 1,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "vertical",
+        "params": {}
+      },
+      "enter": {
+        "type": "typewriter",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.28,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.18,
+            "ease": "cubicIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_008": {
+      "text": {
+        "size": 162,
+        "weight": 700,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.9,
+        "letterSpacing": 0,
+        "lineHeight": 1.14,
+        "compose": {
+          "id": "diagonalJump",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            4,
+            6,
+            12,
+            13,
+            14,
+            15
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 2.2,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "diagonal",
+        "params": {
+          "angle": -12
+        }
+      },
+      "enter": {
+        "type": "zoomIn",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "ease": "expoOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.23,
+            "ease": "cubicIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_009": {
+      "text": {
+        "size": 324,
+        "weight": 700,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 1.35,
+        "letterSpacing": -0.01,
+        "lineHeight": 1.02,
+        "compose": {
+          "id": "bleedHero",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [
+            6,
+            11
+          ],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 2.3,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "maxHeight": 1.2
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "megaZoomIn",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "expoOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.17,
+            "ease": "expoIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_010": {
+      "text": {
+        "size": 52,
+        "weight": 400,
+        "align": "center",
+        "direction": "horizontal",
+        "maxWidth": 0.7,
+        "letterSpacing": 0.2,
+        "lineHeight": 1.35,
+        "compose": {
+          "id": "whisper",
+          "text": "あいうえお Aiueo 0123",
+          "breaks": [],
+          "spans": [
+            {
+              "from": 6,
+              "to": 11,
+              "scale": 1.3,
+              "weight": 700,
+              "paletteIndex": 3
+            }
+          ]
+        }
+      },
+      "location": {
+        "type": "grid",
+        "params": {
+          "x": 0.5,
+          "y": 0.5,
+          "edgeX": 0,
+          "edgeY": 0
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {}
+      },
+      "enter": {
+        "type": "revealSoft",
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.33,
+            "ease": "cubicOut",
+            "delay": 0
+          }
+        }
+      },
+      "exit": {
+        "type": "dissolve",
+        "enabled": true,
+        "motion": {
+          "out": {
+            "duration": 0.18,
+            "ease": "expoIn",
+            "delay": 0
+          }
+        }
+      },
+      "hold": [],
+      "post": [],
+      "transform": {
+        "rotate": 0,
+        "tiltX": 0,
+        "tiltY": 0
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "fill2": {
+          "kind": "palette",
+          "index": 3
+        }
+      }
+    },
+    "dr_011": {
+      "palette": {
+        "id": "theme_55aff8f",
+        "name": "blood",
+        "colors": [
+          "#0b0605",
+          "#2b1d16",
+          "#fdf5df",
+          "#922911",
+          "#cc3917",
+          "#9e8c21",
+          "#9e5812"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stopMotion",
+        "params": {
+          "fps": 12
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.74,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.56,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "params": {
+          "from": "point",
+          "fromFormation": "scatter",
+          "curve": 0,
+          "curveDir": "right",
+          "to": "stackedWords",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.74,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.64,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.025,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "noiseDissolveIn",
+        "params": {
+          "scale": 12,
+          "edgeColor": "#9e8c21",
+          "edgeWidth": 0.1
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 1.23,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.56,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.08,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "params": {
+          "dir": "down",
+          "distance": 0.38
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.82,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.186,
+            "delay": 0,
+            "ease": "expoIn"
+          },
+          "stagger": {
+            "each": 0.094,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.69,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.59,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.86,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.028,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "edge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 2.696,
+            "color": "#9e8c21",
+            "softness": 0.35,
+            "pattern": "sketch",
+            "dashLength": 14,
+            "gapRatio": 0.45,
+            "flow": 0,
+            "offset": 0,
+            "inner": 0
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.86,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.56,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.03,
+              "order": "word",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "diamond",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "cell",
+          "width": 0.89,
+          "height": 0.89,
+          "layer": "behind",
+          "scale": 1,
+          "maxScale": 1,
+          "opacity": 1,
+          "varySize": 0.4,
+          "vary": "random",
+          "varyColors": [
+            "#922911",
+            "#9e8c21"
+          ]
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {
+          "lead": 0.1,
+          "duration": 0.2,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 94,
+        "weight": 400,
+        "letterSpacing": 0.009899999999999999,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_012": {
+      "palette": {
+        "id": "theme_31fb17d3",
+        "name": "sunset",
+        "colors": [
+          "#d98e56",
+          "#c7a35e",
+          "#312129",
+          "#4c162d",
+          "#ef468c",
+          "#522b1d",
+          "#521819"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "gradient",
+          "type": "linear",
+          "angle": 177,
+          "stops": [
+            {
+              "pos": 0,
+              "paletteIndex": 2
+            },
+            {
+              "pos": 1,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "followThrough",
+        "params": {
+          "amount": 0.27,
+          "decay": 3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.9,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.61,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.016,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "corners",
+          "fromFormation": "staircase",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "diagonal"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.85,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.025,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.26
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.845,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.58,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.043,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.12
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.66,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.588,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.044,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "stacked",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.77,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.027,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "caustics",
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": "#4c162d",
+          "colorB": "#4c162d"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.8,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.56,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.027,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "heartbeat",
+          "params": {
+            "amount": 0.06,
+            "bpm": "audio"
+          },
+          "enabled": true
+        }
+      ],
+      "edge": [
+        {
+          "type": "neonGlow",
+          "params": {
+            "radius": 14,
+            "intensity": 0.6,
+            "bloom": true
+          },
+          "enabled": true
+        }
+      ],
+      "post": [
+        {
+          "type": "sparkles",
+          "params": {
+            "count": 16.721,
+            "size": 2.086,
+            "shape": "heart",
+            "color": "#522b1d",
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.69,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.57,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "stagger": {
+              "each": 0.028,
+              "order": "word",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "bar",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "cell",
+          "width": 0.9,
+          "height": 0.45,
+          "layer": "behind",
+          "offset": {
+            "x": 0,
+            "y": 0.3
+          },
+          "varySize": 0.4,
+          "vary": "none",
+          "varyColors": [
+            "#4c162d",
+            "#522b1d"
+          ]
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "gradientSweep",
+        "params": {
+          "angle": 0,
+          "speed": 0.3
+        },
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "innerGlow",
+          "params": {
+            "color": null,
+            "radius": 14,
+            "intensity": 0.9
+          },
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "grow",
+        "params": {
+          "lead": 0.09,
+          "duration": 0.19,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "axis": "x"
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 96,
+        "weight": 400,
+        "letterSpacing": 0.030600000000000002,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_013": {
+      "palette": {
+        "id": "theme_255a5dfe",
+        "name": "night",
+        "colors": [
+          "#1c1f28",
+          "#262734",
+          "#c9dbf3",
+          "#4775c8",
+          "#3c64ab",
+          "#815bd8",
+          "#6d4dd8"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "followThrough",
+        "params": {
+          "amount": 0.31,
+          "decay": 3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.83,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "corners",
+          "fromFormation": "arc",
+          "curve": 0,
+          "curveDir": "random",
+          "to": "spiral"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.91,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.71,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.032,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.19
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 1.312,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.108,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "params": {
+          "dir": "right",
+          "distance": 0.2
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.82,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 1.152,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.092,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "upperThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.99,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.62,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.92,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.67,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.026,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "breathing",
+          "params": {
+            "amount": 0.0358
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.81,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.56,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "stagger": {
+              "each": 0.027,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "post": [
+        {
+          "type": "filmGrain",
+          "params": {
+            "amount": 0.2,
+            "size": 1,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.77,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.65,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "stagger": {
+              "each": 0.026,
+              "order": "word",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "drop",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "em",
+          "width": 0.18,
+          "height": 0.26,
+          "layer": "behind",
+          "offset": {
+            "x": 0.1,
+            "y": 0.62
+          },
+          "varySize": 0.4,
+          "vary": "random",
+          "varyColors": [
+            "#c9dbf3",
+            "#3c64ab"
+          ],
+          "lockAspect": false,
+          "skipRate": 0.7,
+          "opacity": 0.85
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "glass",
+        "params": {},
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "dropShadow",
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": null,
+            "opacity": 0.6
+          },
+          "enabled": true
+        }
+      ],
+      "ornMotion": {
+        "type": "fall",
+        "params": {
+          "lead": -0.3,
+          "duration": 0.9,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "axis": "x",
+          "from": 0.4
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 120,
+        "weight": 400,
+        "letterSpacing": 0.0336,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_014": {
+      "palette": {
+        "id": "theme_20a00486",
+        "name": "festival",
+        "colors": [
+          "#dadf4d",
+          "#adcc56",
+          "#241b1b",
+          "#e84b24",
+          "#c7401e",
+          "#f5dc3a",
+          "#fb8927"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "spring",
+        "params": {
+          "stiffness": 170,
+          "damping": 26
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.42,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.26,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.006,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "wave",
+        "params": {
+          "from": "ring",
+          "fromFormation": "scatter",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "wave",
+          "amp": 0.06,
+          "wavelength": 0.5,
+          "phase": 0
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.37,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.28,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "flickerIn",
+        "params": {
+          "flickers": 7
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.352,
+            "delay": 0,
+            "ease": "elasticOut"
+          },
+          "out": {
+            "duration": 0.28,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.04,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.72
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.36,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.264,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.023,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.44,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.31,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "rainbowFlow",
+        "params": {
+          "saturation": 0.7,
+          "lightness": 0.6,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.27,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "wobbleWarp",
+          "params": {
+            "amount": 0.1,
+            "scale": 2,
+            "speed": 0.8
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.41,
+              "delay": 0,
+              "ease": "expoOut"
+            },
+            "out": {
+              "duration": 0.31,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.006,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 2,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "paper",
+        "params": {
+          "unit": "em",
+          "width": 2.4,
+          "height": 2.4,
+          "opacity": 0.4,
+          "vary": "random",
+          "varyRotation": 40,
+          "varyOffset": 0.3,
+          "skipSpaces": true
+        }
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {}
+      },
+      "ornMotion": {
+        "type": "fall",
+        "params": {
+          "from": 0.8,
+          "lead": -0.15,
+          "duration": 0.8
+        }
+      },
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 104,
+        "weight": 700,
+        "letterSpacing": 0.006,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_015": {
+      "palette": {
+        "id": "theme_23e3f840",
+        "name": "night",
+        "colors": [
+          "#2a3747",
+          "#25293a",
+          "#d2e2f2",
+          "#3594ce",
+          "#2c7eb1",
+          "#514adf",
+          "#3975de"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "gradient",
+          "type": "linear",
+          "angle": 291,
+          "stops": [
+            {
+              "pos": 0,
+              "paletteIndex": 2
+            },
+            {
+              "pos": 1,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stopMotion",
+        "params": {
+          "fps": 9
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.86,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.63,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.028,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "corners",
+          "fromFormation": "stackedWords",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "wave"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.86,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.026,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.0816
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 1.164,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.044,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "shrinkToCenter",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.87,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.804,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.044,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "lowerThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.96,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "glass",
+        "params": {
+          "refraction": 0.4,
+          "blur": 0.2,
+          "tint": "#3594ce"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.92,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.033,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "ornShape": {
+        "type": "diamond",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "cell",
+          "width": 1.33,
+          "height": 1.33,
+          "layer": "behind",
+          "opacity": 1,
+          "scale": 1,
+          "maxScale": 1,
+          "varySize": 0.4,
+          "vary": "none",
+          "varyColors": [
+            "#d2e2f2",
+            "#2c7eb1"
+          ]
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "gradientSweep",
+        "params": {
+          "angle": 0,
+          "speed": 0.3
+        },
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "follow",
+        "params": {
+          "lead": 0.11,
+          "duration": 0.21,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3
+        },
+        "enabled": true
+      },
+      "edge": [
+        {
+          "type": "innerGlow",
+          "params": {
+            "radius": 18,
+            "intensity": 0.7
+          },
+          "enabled": true
+        }
+      ],
+      "post": [
+        {
+          "type": "lightLeak",
+          "params": {
+            "intensity": 0.4
+          },
+          "enabled": true
+        }
+      ],
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 128,
+        "weight": 400,
+        "letterSpacing": 0.0332,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_016": {
+      "palette": {
+        "id": "theme_310e4abd",
+        "name": "night",
+        "colors": [
+          "#27263d",
+          "#272232",
+          "#cdd7eb",
+          "#3648c8",
+          "#273392",
+          "#974bd9",
+          "#553ad8"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "gradient",
+          "type": "linear",
+          "angle": 300,
+          "stops": [
+            {
+              "pos": 0,
+              "paletteIndex": 2
+            },
+            {
+              "pos": 1,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "loop",
+        "params": {
+          "period": 2.43,
+          "yoyo": false
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.72,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.49,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.026,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "params": {
+          "from": "corners",
+          "fromFormation": "scatter",
+          "curve": 0,
+          "curveDir": "alternate",
+          "to": "diagonal",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.94,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.51,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.15
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.825,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.055,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.4
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.79,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.059,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.91,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.5,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.8,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.58,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.03,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "floatBob",
+          "params": {
+            "amp": 0.0297,
+            "speed": 0.66
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.94,
+              "delay": 0,
+              "ease": "cubicOut"
+            },
+            "out": {
+              "duration": 0.53,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.022,
+              "order": "word",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "edge": [
+        {
+          "type": "dropShadow",
+          "params": {
+            "blur": 18,
+            "opacity": 0.55
+          },
+          "enabled": true
+        }
+      ],
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {
+            "width": 0.1,
+            "speed": 0.4
+          },
+          "enabled": true
+        }
+      ],
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 122,
+        "weight": 400,
+        "letterSpacing": 0.0216,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_017": {
+      "palette": {
+        "id": "theme_379bf0b0",
+        "name": "pastel",
+        "colors": [
+          "#dd9dd6",
+          "#cb97b9",
+          "#241b1f",
+          "#49172b",
+          "#c03d71",
+          "#4f2c1f",
+          "#4f191e"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "spring",
+        "params": {
+          "stiffness": 170,
+          "damping": 26
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.48,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.36,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.016,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "params": {
+          "from": "offscreenEdges",
+          "fromFormation": "spiral",
+          "curve": 0,
+          "curveDir": "right",
+          "to": "none",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.63,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.42,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.012,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "waveRise",
+        "params": {
+          "amp": 0.15
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.544,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.36,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.027,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "dissolve",
+        "params": {
+          "scale": 10,
+          "edge": 0.16
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.324,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.021,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "lowerThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.5,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.41,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "ink",
+        "params": {
+          "scale": 3,
+          "threshold": 0.35,
+          "softness": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.48,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.4,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.014,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": "#4f2c1f",
+            "opacity": 0.6
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.6,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.36,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.017,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "star",
+        "params": {
+          "unit": "em",
+          "width": 0.3,
+          "height": 0.3,
+          "offset": {
+            "x": 0.5,
+            "y": -0.5
+          },
+          "layer": "front",
+          "varyRotation": 20,
+          "skipSpaces": true
+        }
+      },
+      "ornFill": {
+        "type": "gradientSweep",
+        "params": {
+          "speed": 0.2
+        }
+      },
+      "ornMotion": {
+        "type": "spin",
+        "params": {
+          "turns": 0.25,
+          "lead": 0,
+          "duration": 0.4
+        }
+      },
+      "text": {
+        "fontId": "NotoSans-Regular",
+        "size": 110,
+        "weight": 400,
+        "letterSpacing": 0.0225,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_018": {
+      "palette": {
+        "id": "theme_adb9fd7",
+        "name": "neon",
+        "colors": [
+          "#caadf1",
+          "#cba7de",
+          "#182123",
+          "#14444e",
+          "#40dfff",
+          "#1c2554",
+          "#163954"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.39,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.014,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "none",
+          "fromFormation": "grid",
+          "curve": 0,
+          "curveDir": "random",
+          "to": "arc"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.58,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.37,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.01,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "down",
+          "distance": 0.36
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.522,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.33,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "particlesDisperse",
+        "params": {
+          "count": 16,
+          "drift": 0.3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.52,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.24,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.025,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "center",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.4,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.013,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "gradientSweep",
+        "params": {
+          "angle": 0,
+          "speed": 0.3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.58,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.37,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.011,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "sway",
+          "params": {
+            "angle": 6.18,
+            "speed": 0.7
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.53,
+              "delay": 0,
+              "ease": "quartOut"
+            },
+            "out": {
+              "duration": 0.4,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.011,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 2.3,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "params": {
+            "amount": 0.4,
+            "radial": 0,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.51,
+              "delay": 0,
+              "ease": "cubicOut"
+            },
+            "out": {
+              "duration": 0.35,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "stagger": {
+              "each": 0.009,
+              "order": "word",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "bracket",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "cell",
+          "width": 1.3,
+          "height": 1.3,
+          "layer": "behind",
+          "offset": {
+            "x": 0,
+            "y": 0.3
+          },
+          "varySize": 0.4,
+          "vary": "none",
+          "varyColors": [
+            "#14444e",
+            "#1c2554"
+          ],
+          "opacity": 1
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {
+          "color": null
+        },
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "wipe",
+        "params": {
+          "lead": 0.05,
+          "duration": 0.3,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "dir": "left"
+        },
+        "enabled": true
+      },
+      "ornEdge": [
+        {
+          "type": "outline",
+          "params": {
+            "width": 2,
+            "pattern": "dashed",
+            "dashLength": 10,
+            "flow": 1.2
+          },
+          "enabled": true
+        }
+      ],
+      "text": {
+        "fontId": "BebasNeue-Regular",
+        "size": 112,
+        "weight": 700,
+        "letterSpacing": 0.0084,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_019": {
+      "palette": {
+        "id": "theme_18658691",
+        "name": "mono",
+        "colors": [
+          "#7692d2",
+          "#777dc1",
+          "#1e212c",
+          "#0e1b49",
+          "#2345b4",
+          "#2e164e",
+          "#170f4f"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stopMotion",
+        "params": {
+          "fps": 17
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.33,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.28,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "word",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "params": {
+          "from": "formation",
+          "fromFormation": "circle",
+          "curve": 0,
+          "curveDir": "alternate",
+          "to": "wave",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.32,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.28,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.006,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "shatterRebuild",
+        "params": {
+          "spread": 0.62,
+          "spin": 120
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.266,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.27,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.027,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "creepOut",
+        "params": {
+          "shift": 0.15
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.32,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.161,
+            "delay": 0,
+            "ease": "expoIn"
+          },
+          "stagger": {
+            "each": 0.023,
+            "order": "random",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "stacked",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.43,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "fire",
+        "params": {
+          "scale": 1.53,
+          "speed": 1
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.41,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "backIn"
+          },
+          "stagger": {
+            "each": 0.005,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "jitter",
+          "params": {
+            "amp": 0.0156,
+            "rate": 12
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.42,
+              "delay": 0,
+              "ease": "quartOut"
+            },
+            "out": {
+              "duration": 0.3,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.005,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 1.5,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "edge": [
+        {
+          "type": "extrude",
+          "params": {
+            "depth": 20,
+            "angle": 135,
+            "colorNear": "#b2bde6",
+            "colorFar": "#b2bde6"
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.4,
+              "delay": 0,
+              "ease": "quartOut"
+            },
+            "out": {
+              "duration": 0.28,
+              "delay": 0,
+              "ease": "quartIn"
+            },
+            "stagger": {
+              "each": 0.005,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        },
+        {
+          "type": "longShadow",
+          "params": {
+            "length": 40,
+            "angle": 135,
+            "color": "#0e1b49",
+            "fade": 0.7
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.34,
+              "delay": 0,
+              "ease": "expoOut"
+            },
+            "out": {
+              "duration": 0.26,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.007,
+              "order": "ltr",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "text": {
+        "fontId": "BebasNeue-Regular",
+        "size": 94,
+        "weight": 700,
+        "letterSpacing": 0.0022,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_020": {
+      "palette": {
+        "id": "theme_1b6fd72b",
+        "name": "gold",
+        "colors": [
+          "#543e2d",
+          "#453d28",
+          "#fff3dd",
+          "#da9233",
+          "#eea037",
+          "#c5ec4a",
+          "#d6eb37"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "followThrough",
+        "params": {
+          "amount": 0.31,
+          "decay": 3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.02,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "vertical",
+        "params": {
+          "from": "point",
+          "fromFormation": "path",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "path",
+          "columnGap": 1.2
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.56,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.017,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "flip3D",
+        "params": {
+          "axis": "y",
+          "angle": 77.72
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.852,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.51,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.083,
+            "order": "vertical-reading",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.27
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.77,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.66,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.07,
+            "order": "vertical-reading",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "lowerThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.68,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.016,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "ink",
+        "params": {
+          "scale": 3.021,
+          "threshold": 0.414,
+          "softness": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.85,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.02,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "ornShape": {
+        "type": "square",
+        "params": {
+          "unit": "em",
+          "width": 0.42,
+          "height": 0.42,
+          "offset": {
+            "x": 0.62,
+            "y": 0.62
+          },
+          "vary": "last",
+          "varyColors": [
+            "#c0392b"
+          ],
+          "skipSpaces": true
+        }
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {}
+      },
+      "ornMotion": {
+        "type": "stamp",
+        "params": {
+          "from": 1.7,
+          "lead": 0.02,
+          "duration": 0.2
+        }
+      },
+      "text": {
+        "fontId": "NotoSerif-Regular",
+        "size": 124,
+        "weight": 400,
+        "letterSpacing": 0.0315,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_021": {
+      "palette": {
+        "id": "theme_22f75b13",
+        "name": "night",
+        "colors": [
+          "#2a3248",
+          "#26263b",
+          "#d5e3f6",
+          "#3579d1",
+          "#306dc0",
+          "#6d4ae3",
+          "#5139e2"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "stagger",
+        "params": {
+          "order": "word",
+          "each": 0.0293,
+          "from": 0.5,
+          "unit": "word",
+          "exitOrder": "same"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.74,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.71,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.031,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "stackedWords",
+        "params": {
+          "from": "mirror",
+          "fromFormation": "circle",
+          "curve": 0,
+          "curveDir": "right",
+          "to": "none",
+          "fillWidth": 0.8
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.78,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.031,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "waveRise",
+        "params": {
+          "amp": 0.0987
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.78,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.62,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "shrinkToCenter",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.91,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.034,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "lowerThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.75,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.025,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "ink",
+        "params": {
+          "scale": 3,
+          "threshold": 0.35,
+          "softness": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.94,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.66,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.031,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "edge": [
+        {
+          "type": "dropShadow",
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": "#3579d1",
+            "opacity": 0.6
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.84,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.56,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.031,
+              "order": "line",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "ornShape": {
+        "type": "rounded",
+        "params": {
+          "color": null,
+          "skipSpaces": true,
+          "unit": "cell",
+          "width": 1.05,
+          "height": 1.05,
+          "layer": "behind",
+          "scale": 1,
+          "maxScale": 1,
+          "opacity": 1,
+          "varySize": 0.4,
+          "vary": "none",
+          "varyColors": [
+            "#3579d1",
+            "#6d4ae3"
+          ]
+        },
+        "enabled": true
+      },
+      "ornFill": {
+        "type": "solid",
+        "params": {},
+        "enabled": true
+      },
+      "ornMotion": {
+        "type": "pop",
+        "params": {
+          "lead": 0.11,
+          "duration": 0.21,
+          "ease": "easeOutCubic",
+          "exit": "withText",
+          "exitDuration": 0.3,
+          "hold": "none",
+          "holdAmount": 0.3,
+          "overshoot": 0.15
+        },
+        "enabled": true
+      },
+      "text": {
+        "fontId": "NotoSansJP-Regular",
+        "size": 110,
+        "weight": 400,
+        "letterSpacing": 0.0332,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_022": {
+      "palette": {
+        "id": "theme_4821c90",
+        "name": "warm",
+        "colors": [
+          "#433729",
+          "#373224",
+          "#ffefdd",
+          "#db9735",
+          "#e9a037",
+          "#c3ed4c",
+          "#bced39"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "gradient",
+          "type": "linear",
+          "angle": 21,
+          "stops": [
+            {
+              "pos": 0,
+              "paletteIndex": 2
+            },
+            {
+              "pos": 1,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "loop",
+        "params": {
+          "period": 1.86,
+          "yoyo": true
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.74,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.63,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.027,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "mirror",
+          "fromFormation": "scatter",
+          "curve": 0,
+          "curveDir": "right",
+          "to": "spiral"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.7,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.023,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "elasticPop",
+        "params": {},
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.94,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.51,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.025,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.19
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.78,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.03,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "upperThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.71,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.61,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.029,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "ink",
+        "params": {
+          "scale": 3,
+          "threshold": 0.35,
+          "softness": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.81,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.018,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "text": {
+        "fontId": "NotoSans-Regular",
+        "size": 104,
+        "weight": 400,
+        "letterSpacing": 0.0216,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_023": {
+      "palette": {
+        "id": "theme_4f71e65",
+        "name": "night",
+        "colors": [
+          "#9490db",
+          "#9d8cc9",
+          "#191d24",
+          "#0f1649",
+          "#2537b3",
+          "#35164e",
+          "#26104f"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "gradient",
+          "type": "linear",
+          "angle": 328,
+          "stops": [
+            {
+              "pos": 0,
+              "paletteIndex": 2
+            },
+            {
+              "pos": 1,
+              "paletteIndex": 3
+            }
+          ]
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "followThrough",
+        "params": {
+          "amount": 0.36,
+          "decay": 3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.34,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.012,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "vertical",
+        "params": {
+          "from": "depth",
+          "fromFormation": "stackedWords",
+          "curve": 0,
+          "curveDir": "left",
+          "to": "arc",
+          "columnGap": 1.2
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.66,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.43,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.014,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "zoomIn",
+        "params": {
+          "from": 0.66
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.57,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.41,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.015,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "wipe",
+        "params": {
+          "dir": "left"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.51,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.43,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.015,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "stacked",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.58,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.38,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.017,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "caustics",
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": "#0f1649",
+          "colorB": "#0f1649"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.67,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.39,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.011,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "jelly",
+          "params": {
+            "amount": 0.1,
+            "freq": 2
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.56,
+              "delay": 0,
+              "ease": "cubicOut"
+            },
+            "out": {
+              "duration": 0.41,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.018,
+              "order": "line",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "edge": [
+        {
+          "type": "dropShadow",
+          "params": {
+            "offset": {
+              "x": 6,
+              "y": 8
+            },
+            "blur": 10,
+            "color": "#b4c6e6",
+            "opacity": 0.6
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.53,
+              "delay": 0,
+              "ease": "cubicOut"
+            },
+            "out": {
+              "duration": 0.39,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.013,
+              "order": "word",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "text": {
+        "fontId": "NotoSans-Regular",
+        "size": 110,
+        "weight": 400,
+        "letterSpacing": 0.0225,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_024": {
+      "palette": {
+        "id": "theme_ef3f6e7",
+        "name": "rose",
+        "colors": [
+          "#e29cb3",
+          "#d0989c",
+          "#201618",
+          "#490d10",
+          "#bf222d",
+          "#4f3815",
+          "#4f270e"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "cascade",
+        "params": {
+          "overlap": 0.45
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.48,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.41,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.013,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "corners",
+          "fromFormation": "wave",
+          "curve": 0,
+          "curveDir": "alternate",
+          "to": "diagonal"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.29,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.013,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "shatterRebuild",
+        "params": {
+          "spread": 0.54,
+          "spin": 120
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.54,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.39,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.012,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "melt",
+        "params": {
+          "drip": 0.7
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.52,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.4,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.013,
+            "order": "line",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "stacked",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.5,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.36,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.015,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "gradientSweep",
+        "params": {
+          "angle": 0,
+          "speed": 0.3
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.46,
+            "delay": 0,
+            "ease": "cubicOut"
+          },
+          "out": {
+            "duration": 0.32,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.011,
+            "order": "word",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "shiver",
+          "params": {
+            "amount": 0.85,
+            "interval": 3.55
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "delay": 0,
+              "ease": "cubicOut"
+            },
+            "out": {
+              "duration": 0.39,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.011,
+              "order": "line",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 2.3,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "edge": [
+        {
+          "type": "longShadow",
+          "params": {
+            "length": 40,
+            "angle": 135,
+            "color": "#490d10",
+            "fade": 0.7
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.56,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.33,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "stagger": {
+              "each": 0.01,
+              "order": "word",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "params": {
+            "amount": 0.4,
+            "radial": 0,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.54,
+              "delay": 0,
+              "ease": "quartOut"
+            },
+            "out": {
+              "duration": 0.33,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.015,
+              "order": "line",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "text": {
+        "fontId": "NotoSans-Bold",
+        "size": 102,
+        "weight": 700,
+        "letterSpacing": 0.0084,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_025": {
+      "palette": {
+        "id": "theme_7bfdfa3",
+        "name": "mono",
+        "colors": [
+          "#7c9ae0",
+          "#7e83ce",
+          "#20232f",
+          "#0e1b4e",
+          "#2e5cff",
+          "#321654",
+          "#270f54"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "cascade",
+        "params": {
+          "overlap": 0.62
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.43,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.29,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "grid",
+        "params": {
+          "from": "none",
+          "fromFormation": "diagonal",
+          "curve": 0,
+          "curveDir": "random",
+          "to": "spiral",
+          "cols": 0,
+          "gap": 0.08
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.41,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.22,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.005,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "flickerIn",
+        "params": {
+          "flickers": 8
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.36,
+            "delay": 0,
+            "ease": "expoOut"
+          },
+          "out": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.005,
+            "order": "word",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "zoomOut",
+        "params": {
+          "to": 0.54
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.42,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.24,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.006,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "upperThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.42,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "quartIn"
+          },
+          "stagger": {
+            "each": 0.007,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "rainbowFlow",
+        "params": {
+          "saturation": 0.7,
+          "lightness": 0.6,
+          "speed": 0.5,
+          "perLetter": false
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.31,
+            "delay": 0,
+            "ease": "backOut"
+          },
+          "out": {
+            "duration": 0.29,
+            "delay": 0,
+            "ease": "cubicIn"
+          },
+          "stagger": {
+            "each": 0.008,
+            "order": "word",
+            "ease": "linear",
+            "unit": "letter",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "chromaticAberration",
+          "params": {
+            "amount": 0.4,
+            "radial": 0,
+            "angle": 0,
+            "enabled": true,
+            "in": 1,
+            "out": 1
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.33,
+              "delay": 0,
+              "ease": "backOut"
+            },
+            "out": {
+              "duration": 0.23,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.005,
+              "order": "word",
+              "ease": "linear",
+              "unit": "letter",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "text": {
+        "fontId": "DelaGothicOne-Regular",
+        "size": 102,
+        "weight": 700,
+        "letterSpacing": 0.0022,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    },
+    "dr_026": {
+      "palette": {
+        "id": "theme_12cbf376",
+        "name": "mono",
+        "colors": [
+          "#2b2e4f",
+          "#2b2740",
+          "#d0d6ee",
+          "#3838cb",
+          "#2d2ea6",
+          "#ab4cdc",
+          "#6e3cdb"
+        ]
+      },
+      "color": {
+        "fill": {
+          "kind": "palette",
+          "index": 2
+        },
+        "stroke": {
+          "kind": "palette",
+          "index": 4
+        }
+      },
+      "animation": {
+        "type": "loop",
+        "params": {
+          "period": 1.14,
+          "yoyo": false
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.63,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.49,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "layout": {
+        "type": "row",
+        "params": {
+          "from": "mirror",
+          "fromFormation": "staircase",
+          "curve": 0,
+          "curveDir": "alternate",
+          "to": "stackedWords"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.65,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.022,
+            "order": "word",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "down",
+          "distance": 0.23
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.62,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.6,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.015,
+            "order": "line",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {
+          "softness": 0,
+          "glow": 0.11
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.7,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.46,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.026,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "location": {
+        "type": "upperThird",
+        "params": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "safeArea": 0.08,
+          "drift": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.86,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "out": {
+            "duration": 0.55,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.02,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "fill": {
+        "type": "caustics",
+        "params": {
+          "scale": 2,
+          "speed": 0.4,
+          "colorA": "#3838cb",
+          "colorB": "#ab4cdc"
+        },
+        "enabled": true,
+        "motion": {
+          "in": {
+            "duration": 0.73,
+            "delay": 0,
+            "ease": "quartOut"
+          },
+          "out": {
+            "duration": 0.53,
+            "delay": 0,
+            "ease": "sineInOut"
+          },
+          "stagger": {
+            "each": 0.016,
+            "order": "ltr",
+            "ease": "linear",
+            "unit": "word",
+            "from": 0.5
+          },
+          "loop": {
+            "period": 0,
+            "yoyo": true,
+            "ease": "easeInOutSine"
+          }
+        }
+      },
+      "edge": [
+        {
+          "type": "innerGlow",
+          "params": {
+            "color": "#d0d6ee",
+            "radius": 14,
+            "intensity": 0.9
+          },
+          "enabled": true,
+          "motion": {
+            "in": {
+              "duration": 0.8,
+              "delay": 0,
+              "ease": "sineInOut"
+            },
+            "out": {
+              "duration": 0.52,
+              "delay": 0,
+              "ease": "cubicIn"
+            },
+            "stagger": {
+              "each": 0.018,
+              "order": "line",
+              "ease": "linear",
+              "unit": "word",
+              "from": 0.5
+            },
+            "loop": {
+              "period": 0,
+              "yoyo": true,
+              "ease": "easeInOutSine"
+            }
+          }
+        }
+      ],
+      "text": {
+        "fontId": "NotoSans-Regular",
+        "size": 134,
+        "weight": 400,
+        "letterSpacing": 0.0315,
+        "lineHeight": 1.2,
+        "align": "center",
+        "maxWidth": 0.86
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "dr_001": [
+      {
+        "id": "dr_001:single0",
+        "cueId": "dr_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. comp/heroCenter\nあいうえお Aiueo 0123",
+        "lines": [
+          "1. comp/heroCenter",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_002": [
+      {
+        "id": "dr_002:single0",
+        "cueId": "dr_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. comp/leftHeadline\nあいうえお Aiueo 0123",
+        "lines": [
+          "2. comp/leftHeadline",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_003": [
+      {
+        "id": "dr_003:single0",
+        "cueId": "dr_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. comp/lowerBand\nあいうえお Aiueo 0123",
+        "lines": [
+          "3. comp/lowerBand",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_004": [
+      {
+        "id": "dr_004:single0",
+        "cueId": "dr_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. comp/bracketCenter\nあいうえお Aiueo 0123",
+        "lines": [
+          "4. comp/bracketCenter",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_005": [
+      {
+        "id": "dr_005:single0",
+        "cueId": "dr_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. comp/posterStack\nあいうえお Aiueo 0123",
+        "lines": [
+          "5. comp/posterStack",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_006": [
+      {
+        "id": "dr_006:single0",
+        "cueId": "dr_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. comp/cornerQuiet\nあいうえお Aiueo 0123",
+        "lines": [
+          "6. comp/cornerQuiet",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_007": [
+      {
+        "id": "dr_007:single0",
+        "cueId": "dr_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. comp/verticalRight\nあいうえお Aiueo 0123",
+        "lines": [
+          "7. comp/verticalRight",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_008": [
+      {
+        "id": "dr_008:single0",
+        "cueId": "dr_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. comp/diagonalJump\nあいうえお Aiueo 0123",
+        "lines": [
+          "8. comp/diagonalJump",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_009": [
+      {
+        "id": "dr_009:single0",
+        "cueId": "dr_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. comp/bleedHero\nあいうえお Aiueo 0123",
+        "lines": [
+          "9. comp/bleedHero",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_010": [
+      {
+        "id": "dr_010:single0",
+        "cueId": "dr_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. comp/whisper\nあいうえお Aiueo 0123",
+        "lines": [
+          "10. comp/whisper",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_011": [
+      {
+        "id": "dr_011:single0",
+        "cueId": "dr_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. genre/horror\nあいうえお Aiueo 0123",
+        "lines": [
+          "11. genre/horror",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_012": [
+      {
+        "id": "dr_012:single0",
+        "cueId": "dr_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. genre/love\nあいうえお Aiueo 0123",
+        "lines": [
+          "12. genre/love",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_013": [
+      {
+        "id": "dr_013:single0",
+        "cueId": "dr_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. genre/heartbreak\nあいうえお Aiueo 0123",
+        "lines": [
+          "13. genre/heartbreak",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_014": [
+      {
+        "id": "dr_014:single0",
+        "cueId": "dr_014",
+        "kind": "single",
+        "index": 0,
+        "start": 52,
+        "end": 56,
+        "text": "14. genre/party\nあいうえお Aiueo 0123",
+        "lines": [
+          "14. genre/party",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_015": [
+      {
+        "id": "dr_015:single0",
+        "cueId": "dr_015",
+        "kind": "single",
+        "index": 0,
+        "start": 56,
+        "end": 60,
+        "text": "15. genre/ballad\nあいうえお Aiueo 0123",
+        "lines": [
+          "15. genre/ballad",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_016": [
+      {
+        "id": "dr_016:single0",
+        "cueId": "dr_016",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 64,
+        "text": "16. genre/cinematic\nあいうえお Aiueo 0123",
+        "lines": [
+          "16. genre/cinematic",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_017": [
+      {
+        "id": "dr_017:single0",
+        "cueId": "dr_017",
+        "kind": "single",
+        "index": 0,
+        "start": 64,
+        "end": 68,
+        "text": "17. genre/cute\nあいうえお Aiueo 0123",
+        "lines": [
+          "17. genre/cute",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_018": [
+      {
+        "id": "dr_018:single0",
+        "cueId": "dr_018",
+        "kind": "single",
+        "index": 0,
+        "start": 68,
+        "end": 72,
+        "text": "18. genre/electro\nあいうえお Aiueo 0123",
+        "lines": [
+          "18. genre/electro",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_019": [
+      {
+        "id": "dr_019:single0",
+        "cueId": "dr_019",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 76,
+        "text": "19. genre/rock\nあいうえお Aiueo 0123",
+        "lines": [
+          "19. genre/rock",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_020": [
+      {
+        "id": "dr_020:single0",
+        "cueId": "dr_020",
+        "kind": "single",
+        "index": 0,
+        "start": 76,
+        "end": 80,
+        "text": "20. genre/washu\nあいうえお Aiueo 0123",
+        "lines": [
+          "20. genre/washu",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_021": [
+      {
+        "id": "dr_021:single0",
+        "cueId": "dr_021",
+        "kind": "single",
+        "index": 0,
+        "start": 80,
+        "end": 84,
+        "text": "21. mood/ballad\nあいうえお Aiueo 0123",
+        "lines": [
+          "21. mood/ballad",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_022": [
+      {
+        "id": "dr_022:single0",
+        "cueId": "dr_022",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 88,
+        "text": "22. mood/cinematic\nあいうえお Aiueo 0123",
+        "lines": [
+          "22. mood/cinematic",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_023": [
+      {
+        "id": "dr_023:single0",
+        "cueId": "dr_023",
+        "kind": "single",
+        "index": 0,
+        "start": 88,
+        "end": 92,
+        "text": "23. mood/cute\nあいうえお Aiueo 0123",
+        "lines": [
+          "23. mood/cute",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_024": [
+      {
+        "id": "dr_024:single0",
+        "cueId": "dr_024",
+        "kind": "single",
+        "index": 0,
+        "start": 92,
+        "end": 96,
+        "text": "24. mood/electro\nあいうえお Aiueo 0123",
+        "lines": [
+          "24. mood/electro",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_025": [
+      {
+        "id": "dr_025:single0",
+        "cueId": "dr_025",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 100,
+        "text": "25. mood/rock\nあいうえお Aiueo 0123",
+        "lines": [
+          "25. mood/rock",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "dr_026": [
+      {
+        "id": "dr_026:single0",
+        "cueId": "dr_026",
+        "kind": "single",
+        "index": 0,
+        "start": 100,
+        "end": 104,
+        "text": "26. mood/washu\nあいうえお Aiueo 0123",
+        "lines": [
+          "26. mood/washu",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "構図 (comp)"
+    },
+    {
+      "t": 40,
+      "label": "ジャンル (genre)"
+    },
+    {
+      "t": 80,
+      "label": "ムード (mood)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

@@ -1,0 +1,893 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion カメラ見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "cm_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. pushIn\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "push",
+          "value": "pushIn"
+        }
+      },
+      {
+        "id": "cm_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. pullOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "push",
+          "value": "pullOut"
+        }
+      },
+      {
+        "id": "cm_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. zoomPunch\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "push",
+          "value": "zoomPunch"
+        }
+      },
+      {
+        "id": "cm_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. panLeft\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "pan",
+          "value": "panLeft"
+        }
+      },
+      {
+        "id": "cm_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. panRight\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "pan",
+          "value": "panRight"
+        }
+      },
+      {
+        "id": "cm_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. panUp\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "pan",
+          "value": "panUp"
+        }
+      },
+      {
+        "id": "cm_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. panDown\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "pan",
+          "value": "panDown"
+        }
+      },
+      {
+        "id": "cm_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. tilt\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "tilt",
+          "value": "tilt"
+        }
+      },
+      {
+        "id": "cm_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. orbit\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "tilt",
+          "value": "orbit"
+        }
+      },
+      {
+        "id": "cm_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. handheld\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "camera-showcase",
+          "section": "tilt",
+          "value": "handheld"
+        }
+      }
+    ],
+    "sourceName": "camera-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "cm_001": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "pushIn",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_002": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "pullOut",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_003": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "zoomPunch",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_004": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "panLeft",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_005": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "panRight",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_006": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "panUp",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_007": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "panDown",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_008": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "tilt",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_009": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "orbit",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "cm_010": {
+      "enter": {
+        "type": "slide",
+        "params": {
+          "dir": "up",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "camera",
+          "params": {
+            "move": "handheld",
+            "amount": 0.3,
+            "speed": 0.6
+          },
+          "enabled": true
+        }
+      ]
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "cm_001": [
+      {
+        "id": "cm_001:single0",
+        "cueId": "cm_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. pushIn\nあいうえお Aiueo 0123",
+        "lines": [
+          "1. pushIn",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_002": [
+      {
+        "id": "cm_002:single0",
+        "cueId": "cm_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. pullOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "2. pullOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_003": [
+      {
+        "id": "cm_003:single0",
+        "cueId": "cm_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. zoomPunch\nあいうえお Aiueo 0123",
+        "lines": [
+          "3. zoomPunch",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_004": [
+      {
+        "id": "cm_004:single0",
+        "cueId": "cm_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. panLeft\nあいうえお Aiueo 0123",
+        "lines": [
+          "4. panLeft",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_005": [
+      {
+        "id": "cm_005:single0",
+        "cueId": "cm_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. panRight\nあいうえお Aiueo 0123",
+        "lines": [
+          "5. panRight",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_006": [
+      {
+        "id": "cm_006:single0",
+        "cueId": "cm_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. panUp\nあいうえお Aiueo 0123",
+        "lines": [
+          "6. panUp",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_007": [
+      {
+        "id": "cm_007:single0",
+        "cueId": "cm_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. panDown\nあいうえお Aiueo 0123",
+        "lines": [
+          "7. panDown",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_008": [
+      {
+        "id": "cm_008:single0",
+        "cueId": "cm_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. tilt\nあいうえお Aiueo 0123",
+        "lines": [
+          "8. tilt",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_009": [
+      {
+        "id": "cm_009:single0",
+        "cueId": "cm_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. orbit\nあいうえお Aiueo 0123",
+        "lines": [
+          "9. orbit",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cm_010": [
+      {
+        "id": "cm_010:single0",
+        "cueId": "cm_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. handheld\nあいうえお Aiueo 0123",
+        "lines": [
+          "10. handheld",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "寄り・引き (push)"
+    },
+    {
+      "t": 12,
+      "label": "パン (pan)"
+    },
+    {
+      "t": 28,
+      "label": "傾き・揺れ (tilt)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_cm_plate",
+      "trackId": "bg",
+      "start": 0,
+      "end": 40,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0d1220"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.2,
+      "fadeOut": 0.2,
+      "colors": null
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

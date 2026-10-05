@@ -1,0 +1,6931 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion フィラー見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "fl_001",
+        "start": 0,
+        "end": 3,
+        "text": "1. pattern-grid-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-grid-calm"
+        }
+      },
+      {
+        "id": "fl_002",
+        "start": 3,
+        "end": 6,
+        "text": "2. pattern-grid-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-grid-bold"
+        }
+      },
+      {
+        "id": "fl_003",
+        "start": 6,
+        "end": 9,
+        "text": "3. pattern-dots-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-dots-calm"
+        }
+      },
+      {
+        "id": "fl_004",
+        "start": 9,
+        "end": 12,
+        "text": "4. pattern-dots-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-dots-bold"
+        }
+      },
+      {
+        "id": "fl_005",
+        "start": 12,
+        "end": 15,
+        "text": "5. pattern-stripes-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-stripes-calm"
+        }
+      },
+      {
+        "id": "fl_006",
+        "start": 15,
+        "end": 18,
+        "text": "6. pattern-stripes-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-stripes-bold"
+        }
+      },
+      {
+        "id": "fl_007",
+        "start": 18,
+        "end": 21,
+        "text": "7. pattern-rings-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-rings-calm"
+        }
+      },
+      {
+        "id": "fl_008",
+        "start": 21,
+        "end": 24,
+        "text": "8. pattern-rings-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-rings-bold"
+        }
+      },
+      {
+        "id": "fl_009",
+        "start": 24,
+        "end": 27,
+        "text": "9. pattern-triangles-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-triangles-calm"
+        }
+      },
+      {
+        "id": "fl_010",
+        "start": 27,
+        "end": 30,
+        "text": "10. pattern-triangles-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-triangles-bold"
+        }
+      },
+      {
+        "id": "fl_011",
+        "start": 30,
+        "end": 33,
+        "text": "11. pattern-diamonds-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-diamonds-calm"
+        }
+      },
+      {
+        "id": "fl_012",
+        "start": 33,
+        "end": 36,
+        "text": "12. pattern-diamonds-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-diamonds-bold"
+        }
+      },
+      {
+        "id": "fl_013",
+        "start": 36,
+        "end": 39,
+        "text": "13. pattern-hexes-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-hexes-calm"
+        }
+      },
+      {
+        "id": "fl_014",
+        "start": 39,
+        "end": 42,
+        "text": "14. pattern-hexes-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-hexes-bold"
+        }
+      },
+      {
+        "id": "fl_015",
+        "start": 42,
+        "end": 45,
+        "text": "15. pattern-rain-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-rain-calm"
+        }
+      },
+      {
+        "id": "fl_016",
+        "start": 45,
+        "end": 48,
+        "text": "16. pattern-rain-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-rain-bold"
+        }
+      },
+      {
+        "id": "fl_017",
+        "start": 48,
+        "end": 51,
+        "text": "17. pattern-checks-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-checks-calm"
+        }
+      },
+      {
+        "id": "fl_018",
+        "start": 51,
+        "end": 54,
+        "text": "18. pattern-checks-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-checks-bold"
+        }
+      },
+      {
+        "id": "fl_019",
+        "start": 54,
+        "end": 57,
+        "text": "19. pattern-polka-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-polka-calm"
+        }
+      },
+      {
+        "id": "fl_020",
+        "start": 57,
+        "end": 60,
+        "text": "20. pattern-polka-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-polka-bold"
+        }
+      },
+      {
+        "id": "fl_021",
+        "start": 60,
+        "end": 63,
+        "text": "21. pattern-sinecurve-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-sinecurve-calm"
+        }
+      },
+      {
+        "id": "fl_022",
+        "start": 63,
+        "end": 66,
+        "text": "22. pattern-sinecurve-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-sinecurve-bold"
+        }
+      },
+      {
+        "id": "fl_023",
+        "start": 66,
+        "end": 69,
+        "text": "23. pattern-waves-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-waves-calm"
+        }
+      },
+      {
+        "id": "fl_024",
+        "start": 69,
+        "end": 72,
+        "text": "24. pattern-waves-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-waves-bold"
+        }
+      },
+      {
+        "id": "fl_025",
+        "start": 72,
+        "end": 75,
+        "text": "25. pattern-randomfill-calm\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-randomfill-calm"
+        }
+      },
+      {
+        "id": "fl_026",
+        "start": 75,
+        "end": 78,
+        "text": "26. pattern-randomfill-bold\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "pattern",
+          "value": "pattern-randomfill-bold"
+        }
+      },
+      {
+        "id": "fl_027",
+        "start": 78,
+        "end": 81,
+        "text": "27. split-halves-slide\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-halves-slide"
+        }
+      },
+      {
+        "id": "fl_028",
+        "start": 81,
+        "end": 84,
+        "text": "28. split-diagonal-still\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-diagonal-still"
+        }
+      },
+      {
+        "id": "fl_029",
+        "start": 84,
+        "end": 87,
+        "text": "29. split-diagonal-swap\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-diagonal-swap"
+        }
+      },
+      {
+        "id": "fl_030",
+        "start": 87,
+        "end": 90,
+        "text": "30. split-thirds-still\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-thirds-still"
+        }
+      },
+      {
+        "id": "fl_031",
+        "start": 90,
+        "end": 93,
+        "text": "31. split-thirds-slide\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-thirds-slide"
+        }
+      },
+      {
+        "id": "fl_032",
+        "start": 93,
+        "end": 96,
+        "text": "32. split-bands-drift\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-bands-drift"
+        }
+      },
+      {
+        "id": "fl_033",
+        "start": 96,
+        "end": 99,
+        "text": "33. split-quads-rotate\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-quads-rotate"
+        }
+      },
+      {
+        "id": "fl_034",
+        "start": 99,
+        "end": 102,
+        "text": "34. split-grid-breathe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-grid-breathe"
+        }
+      },
+      {
+        "id": "fl_035",
+        "start": 102,
+        "end": 105,
+        "text": "35. split-chevron-still\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-chevron-still"
+        }
+      },
+      {
+        "id": "fl_036",
+        "start": 105,
+        "end": 108,
+        "text": "36. split-chevron-swap\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-chevron-swap"
+        }
+      },
+      {
+        "id": "fl_037",
+        "start": 108,
+        "end": 111,
+        "text": "37. split-radial-still\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-radial-still"
+        }
+      },
+      {
+        "id": "fl_038",
+        "start": 111,
+        "end": 114,
+        "text": "38. split-radial-rotate\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-radial-rotate"
+        }
+      },
+      {
+        "id": "fl_039",
+        "start": 114,
+        "end": 117,
+        "text": "39. split-mondrian-drift\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-mondrian-drift"
+        }
+      },
+      {
+        "id": "fl_040",
+        "start": 117,
+        "end": 120,
+        "text": "40. split-frame-still\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-frame-still"
+        }
+      },
+      {
+        "id": "fl_041",
+        "start": 120,
+        "end": 123,
+        "text": "41. split-frame-breathe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-frame-breathe"
+        }
+      },
+      {
+        "id": "fl_042",
+        "start": 123,
+        "end": 126,
+        "text": "42. split-shards-swap\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "split",
+          "value": "split-shards-swap"
+        }
+      },
+      {
+        "id": "fl_043",
+        "start": 126,
+        "end": 129,
+        "text": "43. shapes-circles-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-circles-few"
+        }
+      },
+      {
+        "id": "fl_044",
+        "start": 129,
+        "end": 132,
+        "text": "44. shapes-circles-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-circles-many"
+        }
+      },
+      {
+        "id": "fl_045",
+        "start": 132,
+        "end": 135,
+        "text": "45. shapes-polygons-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-polygons-few"
+        }
+      },
+      {
+        "id": "fl_046",
+        "start": 135,
+        "end": 138,
+        "text": "46. shapes-polygons-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-polygons-many"
+        }
+      },
+      {
+        "id": "fl_047",
+        "start": 138,
+        "end": 141,
+        "text": "47. shapes-lines-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-lines-few"
+        }
+      },
+      {
+        "id": "fl_048",
+        "start": 141,
+        "end": 144,
+        "text": "48. shapes-lines-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-lines-many"
+        }
+      },
+      {
+        "id": "fl_049",
+        "start": 144,
+        "end": 147,
+        "text": "49. shapes-burst-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-burst-few"
+        }
+      },
+      {
+        "id": "fl_050",
+        "start": 147,
+        "end": 150,
+        "text": "50. shapes-burst-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-burst-many"
+        }
+      },
+      {
+        "id": "fl_051",
+        "start": 150,
+        "end": 153,
+        "text": "51. shapes-grid-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-grid-few"
+        }
+      },
+      {
+        "id": "fl_052",
+        "start": 153,
+        "end": 156,
+        "text": "52. shapes-grid-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-grid-many"
+        }
+      },
+      {
+        "id": "fl_053",
+        "start": 156,
+        "end": 159,
+        "text": "53. shapes-orbit-few\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-orbit-few"
+        }
+      },
+      {
+        "id": "fl_054",
+        "start": 159,
+        "end": 162,
+        "text": "54. shapes-orbit-many\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "shapes",
+          "value": "shapes-orbit-many"
+        }
+      },
+      {
+        "id": "fl_055",
+        "start": 162,
+        "end": 165,
+        "text": "55. particles-rise-fine\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-rise-fine"
+        }
+      },
+      {
+        "id": "fl_056",
+        "start": 165,
+        "end": 168,
+        "text": "56. particles-rise-soft\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-rise-soft"
+        }
+      },
+      {
+        "id": "fl_057",
+        "start": 168,
+        "end": 171,
+        "text": "57. particles-fall-fine\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-fall-fine"
+        }
+      },
+      {
+        "id": "fl_058",
+        "start": 171,
+        "end": 174,
+        "text": "58. particles-fall-soft\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-fall-soft"
+        }
+      },
+      {
+        "id": "fl_059",
+        "start": 174,
+        "end": 177,
+        "text": "59. particles-drift-fine\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-drift-fine"
+        }
+      },
+      {
+        "id": "fl_060",
+        "start": 177,
+        "end": 180,
+        "text": "60. particles-drift-soft\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-drift-soft"
+        }
+      },
+      {
+        "id": "fl_061",
+        "start": 180,
+        "end": 183,
+        "text": "61. particles-vortex-fine\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-vortex-fine"
+        }
+      },
+      {
+        "id": "fl_062",
+        "start": 183,
+        "end": 186,
+        "text": "62. particles-vortex-soft\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "particles",
+          "value": "particles-vortex-soft"
+        }
+      },
+      {
+        "id": "fl_063",
+        "start": 186,
+        "end": 189,
+        "text": "63. audio-wave-line\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-wave-line"
+        }
+      },
+      {
+        "id": "fl_064",
+        "start": 189,
+        "end": 192,
+        "text": "64. audio-wave-mirror\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-wave-mirror"
+        }
+      },
+      {
+        "id": "fl_065",
+        "start": 192,
+        "end": 195,
+        "text": "65. audio-wave-circle\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-wave-circle"
+        }
+      },
+      {
+        "id": "fl_066",
+        "start": 195,
+        "end": 198,
+        "text": "66. audio-spectrum-bars\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-spectrum-bars"
+        }
+      },
+      {
+        "id": "fl_067",
+        "start": 198,
+        "end": 201,
+        "text": "67. audio-spectrum-radial\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-spectrum-radial"
+        }
+      },
+      {
+        "id": "fl_068",
+        "start": 201,
+        "end": 204,
+        "text": "68. audio-spectrum-blob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-spectrum-blob"
+        }
+      },
+      {
+        "id": "fl_069",
+        "start": 204,
+        "end": 207,
+        "text": "69. audio-sine-1\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-sine-1"
+        }
+      },
+      {
+        "id": "fl_070",
+        "start": 207,
+        "end": 210,
+        "text": "70. audio-sine-3\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-sine-3"
+        }
+      },
+      {
+        "id": "fl_071",
+        "start": 210,
+        "end": 213,
+        "text": "71. audio-sine-5\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "audio",
+          "value": "audio-sine-5"
+        }
+      },
+      {
+        "id": "fl_072",
+        "start": 213,
+        "end": 216,
+        "text": "72. figures-orbit\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-orbit"
+        }
+      },
+      {
+        "id": "fl_073",
+        "start": 216,
+        "end": 219,
+        "text": "73. figures-burst\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-burst"
+        }
+      },
+      {
+        "id": "fl_074",
+        "start": 219,
+        "end": 222,
+        "text": "74. figures-bars\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-bars"
+        }
+      },
+      {
+        "id": "fl_075",
+        "start": 222,
+        "end": 225,
+        "text": "75. figures-rings\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-rings"
+        }
+      },
+      {
+        "id": "fl_076",
+        "start": 225,
+        "end": 228,
+        "text": "76. figures-confetti\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-confetti"
+        }
+      },
+      {
+        "id": "fl_077",
+        "start": 228,
+        "end": 231,
+        "text": "77. figures-frame\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-frame"
+        }
+      },
+      {
+        "id": "fl_078",
+        "start": 231,
+        "end": 234,
+        "text": "78. figures-underlinesweep\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-underlinesweep"
+        }
+      },
+      {
+        "id": "fl_079",
+        "start": 234,
+        "end": 237,
+        "text": "79. figures-bracketspop\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-bracketspop"
+        }
+      },
+      {
+        "id": "fl_080",
+        "start": 237,
+        "end": 240,
+        "text": "80. figures-polymorph\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-polymorph"
+        }
+      },
+      {
+        "id": "fl_081",
+        "start": 240,
+        "end": 243,
+        "text": "81. figures-ribbon\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-ribbon"
+        }
+      },
+      {
+        "id": "fl_082",
+        "start": 243,
+        "end": 246,
+        "text": "82. figures-ticker\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-ticker"
+        }
+      },
+      {
+        "id": "fl_083",
+        "start": 246,
+        "end": 249,
+        "text": "83. figures-halftone\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-halftone"
+        }
+      },
+      {
+        "id": "fl_084",
+        "start": 249,
+        "end": 252,
+        "text": "84. figures-cracks\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-cracks"
+        }
+      },
+      {
+        "id": "fl_085",
+        "start": 252,
+        "end": 255,
+        "text": "85. figures-spikes\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-spikes"
+        }
+      },
+      {
+        "id": "fl_086",
+        "start": 255,
+        "end": 258,
+        "text": "86. figures-eyes\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-eyes"
+        }
+      },
+      {
+        "id": "fl_087",
+        "start": 258,
+        "end": 261,
+        "text": "87. figures-scratches\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-scratches"
+        }
+      },
+      {
+        "id": "fl_088",
+        "start": 261,
+        "end": 264,
+        "text": "88. figures-drips\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-drips"
+        }
+      },
+      {
+        "id": "fl_089",
+        "start": 264,
+        "end": 267,
+        "text": "89. figures-lattice\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-lattice"
+        }
+      },
+      {
+        "id": "fl_090",
+        "start": 267,
+        "end": 270,
+        "text": "90. figures-waves\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-waves"
+        }
+      },
+      {
+        "id": "fl_091",
+        "start": 270,
+        "end": 273,
+        "text": "91. figures-comets\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-comets"
+        }
+      },
+      {
+        "id": "fl_092",
+        "start": 273,
+        "end": 276,
+        "text": "92. figures-proc\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-proc"
+        }
+      },
+      {
+        "id": "fl_093",
+        "start": 276,
+        "end": 279,
+        "text": "93. figures-orbit-spin\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-orbit-spin"
+        }
+      },
+      {
+        "id": "fl_094",
+        "start": 279,
+        "end": 282,
+        "text": "94. figures-burst-pop-burstout\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-burst-pop-burstout"
+        }
+      },
+      {
+        "id": "fl_095",
+        "start": 282,
+        "end": 285,
+        "text": "95. figures-rings-pulse\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-rings-pulse"
+        }
+      },
+      {
+        "id": "fl_096",
+        "start": 285,
+        "end": 288,
+        "text": "96. figures-ribbon-draw-fade\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-ribbon-draw-fade"
+        }
+      },
+      {
+        "id": "fl_097",
+        "start": 288,
+        "end": 291,
+        "text": "97. figures-frame-wipe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-frame-wipe"
+        }
+      },
+      {
+        "id": "fl_098",
+        "start": 291,
+        "end": 294,
+        "text": "98. figures-confetti-scatter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-confetti-scatter"
+        }
+      },
+      {
+        "id": "fl_099",
+        "start": 294,
+        "end": 297,
+        "text": "99. figures-polymorph-morph\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-polymorph-morph"
+        }
+      },
+      {
+        "id": "fl_100",
+        "start": 297,
+        "end": 300,
+        "text": "100. figures-halftone-drift\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "figures",
+          "value": "figures-halftone-drift"
+        }
+      },
+      {
+        "id": "fl_101",
+        "start": 300,
+        "end": 303,
+        "text": "101. text-title\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-title"
+        }
+      },
+      {
+        "id": "fl_102",
+        "start": 303,
+        "end": 306,
+        "text": "102. text-artist\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-artist"
+        }
+      },
+      {
+        "id": "fl_103",
+        "start": 306,
+        "end": 309,
+        "text": "103. text-next\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-next"
+        }
+      },
+      {
+        "id": "fl_104",
+        "start": 309,
+        "end": 312,
+        "text": "104. text-note\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-note"
+        }
+      },
+      {
+        "id": "fl_105",
+        "start": 312,
+        "end": 315,
+        "text": "105. text-title-artist\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-title-artist"
+        }
+      },
+      {
+        "id": "fl_106",
+        "start": 315,
+        "end": 318,
+        "text": "106. text-intro\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-intro"
+        }
+      },
+      {
+        "id": "fl_107",
+        "start": 318,
+        "end": 321,
+        "text": "107. text-interlude\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-interlude"
+        }
+      },
+      {
+        "id": "fl_108",
+        "start": 321,
+        "end": 324,
+        "text": "108. text-outro\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-outro"
+        }
+      },
+      {
+        "id": "fl_109",
+        "start": 324,
+        "end": 327,
+        "text": "109. text-prev\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-prev"
+        }
+      },
+      {
+        "id": "fl_110",
+        "start": 327,
+        "end": 330,
+        "text": "110. text-thanks\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "text",
+          "value": "text-thanks"
+        }
+      },
+      {
+        "id": "fl_111",
+        "start": 330,
+        "end": 333,
+        "text": "111. timer-countdown-digits\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-countdown-digits"
+        }
+      },
+      {
+        "id": "fl_112",
+        "start": 333,
+        "end": 336,
+        "text": "112. timer-countdown-ring\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-countdown-ring"
+        }
+      },
+      {
+        "id": "fl_113",
+        "start": 336,
+        "end": 339,
+        "text": "113. timer-countdown-bar\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-countdown-bar"
+        }
+      },
+      {
+        "id": "fl_114",
+        "start": 339,
+        "end": 342,
+        "text": "114. timer-countdown-dots\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-countdown-dots"
+        }
+      },
+      {
+        "id": "fl_115",
+        "start": 342,
+        "end": 345,
+        "text": "115. timer-progress-bar\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-progress-bar"
+        }
+      },
+      {
+        "id": "fl_116",
+        "start": 345,
+        "end": 348,
+        "text": "116. timer-progress-ring\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "timer",
+          "value": "timer-progress-ring"
+        }
+      },
+      {
+        "id": "fl_117",
+        "start": 348,
+        "end": 351,
+        "text": "117. combo-dots-calm-orbit\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-dots-calm-orbit"
+        }
+      },
+      {
+        "id": "fl_118",
+        "start": 351,
+        "end": 354,
+        "text": "118. combo-diagonal-still-title\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-diagonal-still-title"
+        }
+      },
+      {
+        "id": "fl_119",
+        "start": 354,
+        "end": 357,
+        "text": "119. combo-rise-fine-countdown-ring\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-rise-fine-countdown-ring"
+        }
+      },
+      {
+        "id": "fl_120",
+        "start": 357,
+        "end": 360,
+        "text": "120. combo-spectrum-radial-artist\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-spectrum-radial-artist"
+        }
+      },
+      {
+        "id": "fl_121",
+        "start": 360,
+        "end": 363,
+        "text": "121. combo-rain-bold-ticker\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-rain-bold-ticker"
+        }
+      },
+      {
+        "id": "fl_122",
+        "start": 363,
+        "end": 366,
+        "text": "122. combo-frame-still-bracketspop-next\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-frame-still-bracketspop-next"
+        }
+      },
+      {
+        "id": "fl_123",
+        "start": 366,
+        "end": 369,
+        "text": "123. combo-stripes-bold-burst\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-stripes-bold-burst"
+        }
+      },
+      {
+        "id": "fl_124",
+        "start": 369,
+        "end": 372,
+        "text": "124. combo-waves-calm-rings\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-waves-calm-rings"
+        }
+      },
+      {
+        "id": "fl_125",
+        "start": 372,
+        "end": 375,
+        "text": "125. combo-grid-calm-halftone\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-grid-calm-halftone"
+        }
+      },
+      {
+        "id": "fl_126",
+        "start": 375,
+        "end": 378,
+        "text": "126. combo-vortex-soft-polymorph\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-vortex-soft-polymorph"
+        }
+      },
+      {
+        "id": "fl_127",
+        "start": 378,
+        "end": 381,
+        "text": "127. combo-sine-3-rings-pulse\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-sine-3-rings-pulse"
+        }
+      },
+      {
+        "id": "fl_128",
+        "start": 381,
+        "end": 384,
+        "text": "128. combo-diamonds-bold-confetti\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-diamonds-bold-confetti"
+        }
+      },
+      {
+        "id": "fl_129",
+        "start": 384,
+        "end": 387,
+        "text": "129. combo-checks-calm-underlinesweep\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-checks-calm-underlinesweep"
+        }
+      },
+      {
+        "id": "fl_130",
+        "start": 387,
+        "end": 390,
+        "text": "130. combo-spectrum-blob-bars\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-spectrum-blob-bars"
+        }
+      },
+      {
+        "id": "fl_131",
+        "start": 390,
+        "end": 393,
+        "text": "131. combo-orbit-many-progress-bar\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "filler-showcase",
+          "section": "combo",
+          "value": "combo-orbit-many-progress-bar"
+        }
+      }
+    ],
+    "sourceName": "filler-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {},
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "fl_001": [
+      {
+        "id": "fl_001:single0",
+        "cueId": "fl_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 3,
+        "text": "1. pattern-grid-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "1. pattern-grid-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_002": [
+      {
+        "id": "fl_002:single0",
+        "cueId": "fl_002",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "2. pattern-grid-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "2. pattern-grid-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_003": [
+      {
+        "id": "fl_003:single0",
+        "cueId": "fl_003",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 9,
+        "text": "3. pattern-dots-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "3. pattern-dots-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_004": [
+      {
+        "id": "fl_004:single0",
+        "cueId": "fl_004",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "4. pattern-dots-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "4. pattern-dots-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_005": [
+      {
+        "id": "fl_005:single0",
+        "cueId": "fl_005",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 15,
+        "text": "5. pattern-stripes-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "5. pattern-stripes-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_006": [
+      {
+        "id": "fl_006:single0",
+        "cueId": "fl_006",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 18,
+        "text": "6. pattern-stripes-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "6. pattern-stripes-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_007": [
+      {
+        "id": "fl_007:single0",
+        "cueId": "fl_007",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "7. pattern-rings-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "7. pattern-rings-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_008": [
+      {
+        "id": "fl_008:single0",
+        "cueId": "fl_008",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "8. pattern-rings-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "8. pattern-rings-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_009": [
+      {
+        "id": "fl_009:single0",
+        "cueId": "fl_009",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 27,
+        "text": "9. pattern-triangles-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "9. pattern-triangles-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_010": [
+      {
+        "id": "fl_010:single0",
+        "cueId": "fl_010",
+        "kind": "single",
+        "index": 0,
+        "start": 27,
+        "end": 30,
+        "text": "10. pattern-triangles-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "10. pattern-triangles-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_011": [
+      {
+        "id": "fl_011:single0",
+        "cueId": "fl_011",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 33,
+        "text": "11. pattern-diamonds-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "11. pattern-diamonds-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_012": [
+      {
+        "id": "fl_012:single0",
+        "cueId": "fl_012",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "12. pattern-diamonds-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "12. pattern-diamonds-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_013": [
+      {
+        "id": "fl_013:single0",
+        "cueId": "fl_013",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 39,
+        "text": "13. pattern-hexes-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "13. pattern-hexes-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_014": [
+      {
+        "id": "fl_014:single0",
+        "cueId": "fl_014",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "14. pattern-hexes-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "14. pattern-hexes-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_015": [
+      {
+        "id": "fl_015:single0",
+        "cueId": "fl_015",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 45,
+        "text": "15. pattern-rain-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "15. pattern-rain-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_016": [
+      {
+        "id": "fl_016:single0",
+        "cueId": "fl_016",
+        "kind": "single",
+        "index": 0,
+        "start": 45,
+        "end": 48,
+        "text": "16. pattern-rain-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "16. pattern-rain-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_017": [
+      {
+        "id": "fl_017:single0",
+        "cueId": "fl_017",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 51,
+        "text": "17. pattern-checks-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "17. pattern-checks-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_018": [
+      {
+        "id": "fl_018:single0",
+        "cueId": "fl_018",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "18. pattern-checks-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "18. pattern-checks-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_019": [
+      {
+        "id": "fl_019:single0",
+        "cueId": "fl_019",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "19. pattern-polka-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "19. pattern-polka-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_020": [
+      {
+        "id": "fl_020:single0",
+        "cueId": "fl_020",
+        "kind": "single",
+        "index": 0,
+        "start": 57,
+        "end": 60,
+        "text": "20. pattern-polka-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "20. pattern-polka-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_021": [
+      {
+        "id": "fl_021:single0",
+        "cueId": "fl_021",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "21. pattern-sinecurve-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "21. pattern-sinecurve-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_022": [
+      {
+        "id": "fl_022:single0",
+        "cueId": "fl_022",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "22. pattern-sinecurve-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "22. pattern-sinecurve-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_023": [
+      {
+        "id": "fl_023:single0",
+        "cueId": "fl_023",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 69,
+        "text": "23. pattern-waves-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "23. pattern-waves-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_024": [
+      {
+        "id": "fl_024:single0",
+        "cueId": "fl_024",
+        "kind": "single",
+        "index": 0,
+        "start": 69,
+        "end": 72,
+        "text": "24. pattern-waves-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "24. pattern-waves-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_025": [
+      {
+        "id": "fl_025:single0",
+        "cueId": "fl_025",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 75,
+        "text": "25. pattern-randomfill-calm\nあいうえお Aiueo 0123",
+        "lines": [
+          "25. pattern-randomfill-calm",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_026": [
+      {
+        "id": "fl_026:single0",
+        "cueId": "fl_026",
+        "kind": "single",
+        "index": 0,
+        "start": 75,
+        "end": 78,
+        "text": "26. pattern-randomfill-bold\nあいうえお Aiueo 0123",
+        "lines": [
+          "26. pattern-randomfill-bold",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_027": [
+      {
+        "id": "fl_027:single0",
+        "cueId": "fl_027",
+        "kind": "single",
+        "index": 0,
+        "start": 78,
+        "end": 81,
+        "text": "27. split-halves-slide\nあいうえお Aiueo 0123",
+        "lines": [
+          "27. split-halves-slide",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_028": [
+      {
+        "id": "fl_028:single0",
+        "cueId": "fl_028",
+        "kind": "single",
+        "index": 0,
+        "start": 81,
+        "end": 84,
+        "text": "28. split-diagonal-still\nあいうえお Aiueo 0123",
+        "lines": [
+          "28. split-diagonal-still",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_029": [
+      {
+        "id": "fl_029:single0",
+        "cueId": "fl_029",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 87,
+        "text": "29. split-diagonal-swap\nあいうえお Aiueo 0123",
+        "lines": [
+          "29. split-diagonal-swap",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_030": [
+      {
+        "id": "fl_030:single0",
+        "cueId": "fl_030",
+        "kind": "single",
+        "index": 0,
+        "start": 87,
+        "end": 90,
+        "text": "30. split-thirds-still\nあいうえお Aiueo 0123",
+        "lines": [
+          "30. split-thirds-still",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_031": [
+      {
+        "id": "fl_031:single0",
+        "cueId": "fl_031",
+        "kind": "single",
+        "index": 0,
+        "start": 90,
+        "end": 93,
+        "text": "31. split-thirds-slide\nあいうえお Aiueo 0123",
+        "lines": [
+          "31. split-thirds-slide",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_032": [
+      {
+        "id": "fl_032:single0",
+        "cueId": "fl_032",
+        "kind": "single",
+        "index": 0,
+        "start": 93,
+        "end": 96,
+        "text": "32. split-bands-drift\nあいうえお Aiueo 0123",
+        "lines": [
+          "32. split-bands-drift",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_033": [
+      {
+        "id": "fl_033:single0",
+        "cueId": "fl_033",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 99,
+        "text": "33. split-quads-rotate\nあいうえお Aiueo 0123",
+        "lines": [
+          "33. split-quads-rotate",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_034": [
+      {
+        "id": "fl_034:single0",
+        "cueId": "fl_034",
+        "kind": "single",
+        "index": 0,
+        "start": 99,
+        "end": 102,
+        "text": "34. split-grid-breathe\nあいうえお Aiueo 0123",
+        "lines": [
+          "34. split-grid-breathe",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_035": [
+      {
+        "id": "fl_035:single0",
+        "cueId": "fl_035",
+        "kind": "single",
+        "index": 0,
+        "start": 102,
+        "end": 105,
+        "text": "35. split-chevron-still\nあいうえお Aiueo 0123",
+        "lines": [
+          "35. split-chevron-still",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_036": [
+      {
+        "id": "fl_036:single0",
+        "cueId": "fl_036",
+        "kind": "single",
+        "index": 0,
+        "start": 105,
+        "end": 108,
+        "text": "36. split-chevron-swap\nあいうえお Aiueo 0123",
+        "lines": [
+          "36. split-chevron-swap",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_037": [
+      {
+        "id": "fl_037:single0",
+        "cueId": "fl_037",
+        "kind": "single",
+        "index": 0,
+        "start": 108,
+        "end": 111,
+        "text": "37. split-radial-still\nあいうえお Aiueo 0123",
+        "lines": [
+          "37. split-radial-still",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_038": [
+      {
+        "id": "fl_038:single0",
+        "cueId": "fl_038",
+        "kind": "single",
+        "index": 0,
+        "start": 111,
+        "end": 114,
+        "text": "38. split-radial-rotate\nあいうえお Aiueo 0123",
+        "lines": [
+          "38. split-radial-rotate",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_039": [
+      {
+        "id": "fl_039:single0",
+        "cueId": "fl_039",
+        "kind": "single",
+        "index": 0,
+        "start": 114,
+        "end": 117,
+        "text": "39. split-mondrian-drift\nあいうえお Aiueo 0123",
+        "lines": [
+          "39. split-mondrian-drift",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_040": [
+      {
+        "id": "fl_040:single0",
+        "cueId": "fl_040",
+        "kind": "single",
+        "index": 0,
+        "start": 117,
+        "end": 120,
+        "text": "40. split-frame-still\nあいうえお Aiueo 0123",
+        "lines": [
+          "40. split-frame-still",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_041": [
+      {
+        "id": "fl_041:single0",
+        "cueId": "fl_041",
+        "kind": "single",
+        "index": 0,
+        "start": 120,
+        "end": 123,
+        "text": "41. split-frame-breathe\nあいうえお Aiueo 0123",
+        "lines": [
+          "41. split-frame-breathe",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_042": [
+      {
+        "id": "fl_042:single0",
+        "cueId": "fl_042",
+        "kind": "single",
+        "index": 0,
+        "start": 123,
+        "end": 126,
+        "text": "42. split-shards-swap\nあいうえお Aiueo 0123",
+        "lines": [
+          "42. split-shards-swap",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_043": [
+      {
+        "id": "fl_043:single0",
+        "cueId": "fl_043",
+        "kind": "single",
+        "index": 0,
+        "start": 126,
+        "end": 129,
+        "text": "43. shapes-circles-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "43. shapes-circles-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_044": [
+      {
+        "id": "fl_044:single0",
+        "cueId": "fl_044",
+        "kind": "single",
+        "index": 0,
+        "start": 129,
+        "end": 132,
+        "text": "44. shapes-circles-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "44. shapes-circles-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_045": [
+      {
+        "id": "fl_045:single0",
+        "cueId": "fl_045",
+        "kind": "single",
+        "index": 0,
+        "start": 132,
+        "end": 135,
+        "text": "45. shapes-polygons-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "45. shapes-polygons-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_046": [
+      {
+        "id": "fl_046:single0",
+        "cueId": "fl_046",
+        "kind": "single",
+        "index": 0,
+        "start": 135,
+        "end": 138,
+        "text": "46. shapes-polygons-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "46. shapes-polygons-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_047": [
+      {
+        "id": "fl_047:single0",
+        "cueId": "fl_047",
+        "kind": "single",
+        "index": 0,
+        "start": 138,
+        "end": 141,
+        "text": "47. shapes-lines-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "47. shapes-lines-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_048": [
+      {
+        "id": "fl_048:single0",
+        "cueId": "fl_048",
+        "kind": "single",
+        "index": 0,
+        "start": 141,
+        "end": 144,
+        "text": "48. shapes-lines-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "48. shapes-lines-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_049": [
+      {
+        "id": "fl_049:single0",
+        "cueId": "fl_049",
+        "kind": "single",
+        "index": 0,
+        "start": 144,
+        "end": 147,
+        "text": "49. shapes-burst-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "49. shapes-burst-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_050": [
+      {
+        "id": "fl_050:single0",
+        "cueId": "fl_050",
+        "kind": "single",
+        "index": 0,
+        "start": 147,
+        "end": 150,
+        "text": "50. shapes-burst-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "50. shapes-burst-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_051": [
+      {
+        "id": "fl_051:single0",
+        "cueId": "fl_051",
+        "kind": "single",
+        "index": 0,
+        "start": 150,
+        "end": 153,
+        "text": "51. shapes-grid-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "51. shapes-grid-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_052": [
+      {
+        "id": "fl_052:single0",
+        "cueId": "fl_052",
+        "kind": "single",
+        "index": 0,
+        "start": 153,
+        "end": 156,
+        "text": "52. shapes-grid-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "52. shapes-grid-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_053": [
+      {
+        "id": "fl_053:single0",
+        "cueId": "fl_053",
+        "kind": "single",
+        "index": 0,
+        "start": 156,
+        "end": 159,
+        "text": "53. shapes-orbit-few\nあいうえお Aiueo 0123",
+        "lines": [
+          "53. shapes-orbit-few",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_054": [
+      {
+        "id": "fl_054:single0",
+        "cueId": "fl_054",
+        "kind": "single",
+        "index": 0,
+        "start": 159,
+        "end": 162,
+        "text": "54. shapes-orbit-many\nあいうえお Aiueo 0123",
+        "lines": [
+          "54. shapes-orbit-many",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_055": [
+      {
+        "id": "fl_055:single0",
+        "cueId": "fl_055",
+        "kind": "single",
+        "index": 0,
+        "start": 162,
+        "end": 165,
+        "text": "55. particles-rise-fine\nあいうえお Aiueo 0123",
+        "lines": [
+          "55. particles-rise-fine",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_056": [
+      {
+        "id": "fl_056:single0",
+        "cueId": "fl_056",
+        "kind": "single",
+        "index": 0,
+        "start": 165,
+        "end": 168,
+        "text": "56. particles-rise-soft\nあいうえお Aiueo 0123",
+        "lines": [
+          "56. particles-rise-soft",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_057": [
+      {
+        "id": "fl_057:single0",
+        "cueId": "fl_057",
+        "kind": "single",
+        "index": 0,
+        "start": 168,
+        "end": 171,
+        "text": "57. particles-fall-fine\nあいうえお Aiueo 0123",
+        "lines": [
+          "57. particles-fall-fine",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_058": [
+      {
+        "id": "fl_058:single0",
+        "cueId": "fl_058",
+        "kind": "single",
+        "index": 0,
+        "start": 171,
+        "end": 174,
+        "text": "58. particles-fall-soft\nあいうえお Aiueo 0123",
+        "lines": [
+          "58. particles-fall-soft",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_059": [
+      {
+        "id": "fl_059:single0",
+        "cueId": "fl_059",
+        "kind": "single",
+        "index": 0,
+        "start": 174,
+        "end": 177,
+        "text": "59. particles-drift-fine\nあいうえお Aiueo 0123",
+        "lines": [
+          "59. particles-drift-fine",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_060": [
+      {
+        "id": "fl_060:single0",
+        "cueId": "fl_060",
+        "kind": "single",
+        "index": 0,
+        "start": 177,
+        "end": 180,
+        "text": "60. particles-drift-soft\nあいうえお Aiueo 0123",
+        "lines": [
+          "60. particles-drift-soft",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_061": [
+      {
+        "id": "fl_061:single0",
+        "cueId": "fl_061",
+        "kind": "single",
+        "index": 0,
+        "start": 180,
+        "end": 183,
+        "text": "61. particles-vortex-fine\nあいうえお Aiueo 0123",
+        "lines": [
+          "61. particles-vortex-fine",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_062": [
+      {
+        "id": "fl_062:single0",
+        "cueId": "fl_062",
+        "kind": "single",
+        "index": 0,
+        "start": 183,
+        "end": 186,
+        "text": "62. particles-vortex-soft\nあいうえお Aiueo 0123",
+        "lines": [
+          "62. particles-vortex-soft",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_063": [
+      {
+        "id": "fl_063:single0",
+        "cueId": "fl_063",
+        "kind": "single",
+        "index": 0,
+        "start": 186,
+        "end": 189,
+        "text": "63. audio-wave-line\nあいうえお Aiueo 0123",
+        "lines": [
+          "63. audio-wave-line",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_064": [
+      {
+        "id": "fl_064:single0",
+        "cueId": "fl_064",
+        "kind": "single",
+        "index": 0,
+        "start": 189,
+        "end": 192,
+        "text": "64. audio-wave-mirror\nあいうえお Aiueo 0123",
+        "lines": [
+          "64. audio-wave-mirror",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_065": [
+      {
+        "id": "fl_065:single0",
+        "cueId": "fl_065",
+        "kind": "single",
+        "index": 0,
+        "start": 192,
+        "end": 195,
+        "text": "65. audio-wave-circle\nあいうえお Aiueo 0123",
+        "lines": [
+          "65. audio-wave-circle",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_066": [
+      {
+        "id": "fl_066:single0",
+        "cueId": "fl_066",
+        "kind": "single",
+        "index": 0,
+        "start": 195,
+        "end": 198,
+        "text": "66. audio-spectrum-bars\nあいうえお Aiueo 0123",
+        "lines": [
+          "66. audio-spectrum-bars",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_067": [
+      {
+        "id": "fl_067:single0",
+        "cueId": "fl_067",
+        "kind": "single",
+        "index": 0,
+        "start": 198,
+        "end": 201,
+        "text": "67. audio-spectrum-radial\nあいうえお Aiueo 0123",
+        "lines": [
+          "67. audio-spectrum-radial",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_068": [
+      {
+        "id": "fl_068:single0",
+        "cueId": "fl_068",
+        "kind": "single",
+        "index": 0,
+        "start": 201,
+        "end": 204,
+        "text": "68. audio-spectrum-blob\nあいうえお Aiueo 0123",
+        "lines": [
+          "68. audio-spectrum-blob",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_069": [
+      {
+        "id": "fl_069:single0",
+        "cueId": "fl_069",
+        "kind": "single",
+        "index": 0,
+        "start": 204,
+        "end": 207,
+        "text": "69. audio-sine-1\nあいうえお Aiueo 0123",
+        "lines": [
+          "69. audio-sine-1",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_070": [
+      {
+        "id": "fl_070:single0",
+        "cueId": "fl_070",
+        "kind": "single",
+        "index": 0,
+        "start": 207,
+        "end": 210,
+        "text": "70. audio-sine-3\nあいうえお Aiueo 0123",
+        "lines": [
+          "70. audio-sine-3",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_071": [
+      {
+        "id": "fl_071:single0",
+        "cueId": "fl_071",
+        "kind": "single",
+        "index": 0,
+        "start": 210,
+        "end": 213,
+        "text": "71. audio-sine-5\nあいうえお Aiueo 0123",
+        "lines": [
+          "71. audio-sine-5",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_072": [
+      {
+        "id": "fl_072:single0",
+        "cueId": "fl_072",
+        "kind": "single",
+        "index": 0,
+        "start": 213,
+        "end": 216,
+        "text": "72. figures-orbit\nあいうえお Aiueo 0123",
+        "lines": [
+          "72. figures-orbit",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_073": [
+      {
+        "id": "fl_073:single0",
+        "cueId": "fl_073",
+        "kind": "single",
+        "index": 0,
+        "start": 216,
+        "end": 219,
+        "text": "73. figures-burst\nあいうえお Aiueo 0123",
+        "lines": [
+          "73. figures-burst",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_074": [
+      {
+        "id": "fl_074:single0",
+        "cueId": "fl_074",
+        "kind": "single",
+        "index": 0,
+        "start": 219,
+        "end": 222,
+        "text": "74. figures-bars\nあいうえお Aiueo 0123",
+        "lines": [
+          "74. figures-bars",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_075": [
+      {
+        "id": "fl_075:single0",
+        "cueId": "fl_075",
+        "kind": "single",
+        "index": 0,
+        "start": 222,
+        "end": 225,
+        "text": "75. figures-rings\nあいうえお Aiueo 0123",
+        "lines": [
+          "75. figures-rings",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_076": [
+      {
+        "id": "fl_076:single0",
+        "cueId": "fl_076",
+        "kind": "single",
+        "index": 0,
+        "start": 225,
+        "end": 228,
+        "text": "76. figures-confetti\nあいうえお Aiueo 0123",
+        "lines": [
+          "76. figures-confetti",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_077": [
+      {
+        "id": "fl_077:single0",
+        "cueId": "fl_077",
+        "kind": "single",
+        "index": 0,
+        "start": 228,
+        "end": 231,
+        "text": "77. figures-frame\nあいうえお Aiueo 0123",
+        "lines": [
+          "77. figures-frame",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_078": [
+      {
+        "id": "fl_078:single0",
+        "cueId": "fl_078",
+        "kind": "single",
+        "index": 0,
+        "start": 231,
+        "end": 234,
+        "text": "78. figures-underlinesweep\nあいうえお Aiueo 0123",
+        "lines": [
+          "78. figures-underlinesweep",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_079": [
+      {
+        "id": "fl_079:single0",
+        "cueId": "fl_079",
+        "kind": "single",
+        "index": 0,
+        "start": 234,
+        "end": 237,
+        "text": "79. figures-bracketspop\nあいうえお Aiueo 0123",
+        "lines": [
+          "79. figures-bracketspop",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_080": [
+      {
+        "id": "fl_080:single0",
+        "cueId": "fl_080",
+        "kind": "single",
+        "index": 0,
+        "start": 237,
+        "end": 240,
+        "text": "80. figures-polymorph\nあいうえお Aiueo 0123",
+        "lines": [
+          "80. figures-polymorph",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_081": [
+      {
+        "id": "fl_081:single0",
+        "cueId": "fl_081",
+        "kind": "single",
+        "index": 0,
+        "start": 240,
+        "end": 243,
+        "text": "81. figures-ribbon\nあいうえお Aiueo 0123",
+        "lines": [
+          "81. figures-ribbon",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_082": [
+      {
+        "id": "fl_082:single0",
+        "cueId": "fl_082",
+        "kind": "single",
+        "index": 0,
+        "start": 243,
+        "end": 246,
+        "text": "82. figures-ticker\nあいうえお Aiueo 0123",
+        "lines": [
+          "82. figures-ticker",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_083": [
+      {
+        "id": "fl_083:single0",
+        "cueId": "fl_083",
+        "kind": "single",
+        "index": 0,
+        "start": 246,
+        "end": 249,
+        "text": "83. figures-halftone\nあいうえお Aiueo 0123",
+        "lines": [
+          "83. figures-halftone",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_084": [
+      {
+        "id": "fl_084:single0",
+        "cueId": "fl_084",
+        "kind": "single",
+        "index": 0,
+        "start": 249,
+        "end": 252,
+        "text": "84. figures-cracks\nあいうえお Aiueo 0123",
+        "lines": [
+          "84. figures-cracks",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_085": [
+      {
+        "id": "fl_085:single0",
+        "cueId": "fl_085",
+        "kind": "single",
+        "index": 0,
+        "start": 252,
+        "end": 255,
+        "text": "85. figures-spikes\nあいうえお Aiueo 0123",
+        "lines": [
+          "85. figures-spikes",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_086": [
+      {
+        "id": "fl_086:single0",
+        "cueId": "fl_086",
+        "kind": "single",
+        "index": 0,
+        "start": 255,
+        "end": 258,
+        "text": "86. figures-eyes\nあいうえお Aiueo 0123",
+        "lines": [
+          "86. figures-eyes",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_087": [
+      {
+        "id": "fl_087:single0",
+        "cueId": "fl_087",
+        "kind": "single",
+        "index": 0,
+        "start": 258,
+        "end": 261,
+        "text": "87. figures-scratches\nあいうえお Aiueo 0123",
+        "lines": [
+          "87. figures-scratches",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_088": [
+      {
+        "id": "fl_088:single0",
+        "cueId": "fl_088",
+        "kind": "single",
+        "index": 0,
+        "start": 261,
+        "end": 264,
+        "text": "88. figures-drips\nあいうえお Aiueo 0123",
+        "lines": [
+          "88. figures-drips",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_089": [
+      {
+        "id": "fl_089:single0",
+        "cueId": "fl_089",
+        "kind": "single",
+        "index": 0,
+        "start": 264,
+        "end": 267,
+        "text": "89. figures-lattice\nあいうえお Aiueo 0123",
+        "lines": [
+          "89. figures-lattice",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_090": [
+      {
+        "id": "fl_090:single0",
+        "cueId": "fl_090",
+        "kind": "single",
+        "index": 0,
+        "start": 267,
+        "end": 270,
+        "text": "90. figures-waves\nあいうえお Aiueo 0123",
+        "lines": [
+          "90. figures-waves",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_091": [
+      {
+        "id": "fl_091:single0",
+        "cueId": "fl_091",
+        "kind": "single",
+        "index": 0,
+        "start": 270,
+        "end": 273,
+        "text": "91. figures-comets\nあいうえお Aiueo 0123",
+        "lines": [
+          "91. figures-comets",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_092": [
+      {
+        "id": "fl_092:single0",
+        "cueId": "fl_092",
+        "kind": "single",
+        "index": 0,
+        "start": 273,
+        "end": 276,
+        "text": "92. figures-proc\nあいうえお Aiueo 0123",
+        "lines": [
+          "92. figures-proc",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_093": [
+      {
+        "id": "fl_093:single0",
+        "cueId": "fl_093",
+        "kind": "single",
+        "index": 0,
+        "start": 276,
+        "end": 279,
+        "text": "93. figures-orbit-spin\nあいうえお Aiueo 0123",
+        "lines": [
+          "93. figures-orbit-spin",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_094": [
+      {
+        "id": "fl_094:single0",
+        "cueId": "fl_094",
+        "kind": "single",
+        "index": 0,
+        "start": 279,
+        "end": 282,
+        "text": "94. figures-burst-pop-burstout\nあいうえお Aiueo 0123",
+        "lines": [
+          "94. figures-burst-pop-burstout",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_095": [
+      {
+        "id": "fl_095:single0",
+        "cueId": "fl_095",
+        "kind": "single",
+        "index": 0,
+        "start": 282,
+        "end": 285,
+        "text": "95. figures-rings-pulse\nあいうえお Aiueo 0123",
+        "lines": [
+          "95. figures-rings-pulse",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_096": [
+      {
+        "id": "fl_096:single0",
+        "cueId": "fl_096",
+        "kind": "single",
+        "index": 0,
+        "start": 285,
+        "end": 288,
+        "text": "96. figures-ribbon-draw-fade\nあいうえお Aiueo 0123",
+        "lines": [
+          "96. figures-ribbon-draw-fade",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_097": [
+      {
+        "id": "fl_097:single0",
+        "cueId": "fl_097",
+        "kind": "single",
+        "index": 0,
+        "start": 288,
+        "end": 291,
+        "text": "97. figures-frame-wipe\nあいうえお Aiueo 0123",
+        "lines": [
+          "97. figures-frame-wipe",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_098": [
+      {
+        "id": "fl_098:single0",
+        "cueId": "fl_098",
+        "kind": "single",
+        "index": 0,
+        "start": 291,
+        "end": 294,
+        "text": "98. figures-confetti-scatter\nあいうえお Aiueo 0123",
+        "lines": [
+          "98. figures-confetti-scatter",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_099": [
+      {
+        "id": "fl_099:single0",
+        "cueId": "fl_099",
+        "kind": "single",
+        "index": 0,
+        "start": 294,
+        "end": 297,
+        "text": "99. figures-polymorph-morph\nあいうえお Aiueo 0123",
+        "lines": [
+          "99. figures-polymorph-morph",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_100": [
+      {
+        "id": "fl_100:single0",
+        "cueId": "fl_100",
+        "kind": "single",
+        "index": 0,
+        "start": 297,
+        "end": 300,
+        "text": "100. figures-halftone-drift\nあいうえお Aiueo 0123",
+        "lines": [
+          "100. figures-halftone-drift",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_101": [
+      {
+        "id": "fl_101:single0",
+        "cueId": "fl_101",
+        "kind": "single",
+        "index": 0,
+        "start": 300,
+        "end": 303,
+        "text": "101. text-title\nあいうえお Aiueo 0123",
+        "lines": [
+          "101. text-title",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_102": [
+      {
+        "id": "fl_102:single0",
+        "cueId": "fl_102",
+        "kind": "single",
+        "index": 0,
+        "start": 303,
+        "end": 306,
+        "text": "102. text-artist\nあいうえお Aiueo 0123",
+        "lines": [
+          "102. text-artist",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_103": [
+      {
+        "id": "fl_103:single0",
+        "cueId": "fl_103",
+        "kind": "single",
+        "index": 0,
+        "start": 306,
+        "end": 309,
+        "text": "103. text-next\nあいうえお Aiueo 0123",
+        "lines": [
+          "103. text-next",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_104": [
+      {
+        "id": "fl_104:single0",
+        "cueId": "fl_104",
+        "kind": "single",
+        "index": 0,
+        "start": 309,
+        "end": 312,
+        "text": "104. text-note\nあいうえお Aiueo 0123",
+        "lines": [
+          "104. text-note",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_105": [
+      {
+        "id": "fl_105:single0",
+        "cueId": "fl_105",
+        "kind": "single",
+        "index": 0,
+        "start": 312,
+        "end": 315,
+        "text": "105. text-title-artist\nあいうえお Aiueo 0123",
+        "lines": [
+          "105. text-title-artist",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_106": [
+      {
+        "id": "fl_106:single0",
+        "cueId": "fl_106",
+        "kind": "single",
+        "index": 0,
+        "start": 315,
+        "end": 318,
+        "text": "106. text-intro\nあいうえお Aiueo 0123",
+        "lines": [
+          "106. text-intro",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_107": [
+      {
+        "id": "fl_107:single0",
+        "cueId": "fl_107",
+        "kind": "single",
+        "index": 0,
+        "start": 318,
+        "end": 321,
+        "text": "107. text-interlude\nあいうえお Aiueo 0123",
+        "lines": [
+          "107. text-interlude",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_108": [
+      {
+        "id": "fl_108:single0",
+        "cueId": "fl_108",
+        "kind": "single",
+        "index": 0,
+        "start": 321,
+        "end": 324,
+        "text": "108. text-outro\nあいうえお Aiueo 0123",
+        "lines": [
+          "108. text-outro",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_109": [
+      {
+        "id": "fl_109:single0",
+        "cueId": "fl_109",
+        "kind": "single",
+        "index": 0,
+        "start": 324,
+        "end": 327,
+        "text": "109. text-prev\nあいうえお Aiueo 0123",
+        "lines": [
+          "109. text-prev",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_110": [
+      {
+        "id": "fl_110:single0",
+        "cueId": "fl_110",
+        "kind": "single",
+        "index": 0,
+        "start": 327,
+        "end": 330,
+        "text": "110. text-thanks\nあいうえお Aiueo 0123",
+        "lines": [
+          "110. text-thanks",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_111": [
+      {
+        "id": "fl_111:single0",
+        "cueId": "fl_111",
+        "kind": "single",
+        "index": 0,
+        "start": 330,
+        "end": 333,
+        "text": "111. timer-countdown-digits\nあいうえお Aiueo 0123",
+        "lines": [
+          "111. timer-countdown-digits",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_112": [
+      {
+        "id": "fl_112:single0",
+        "cueId": "fl_112",
+        "kind": "single",
+        "index": 0,
+        "start": 333,
+        "end": 336,
+        "text": "112. timer-countdown-ring\nあいうえお Aiueo 0123",
+        "lines": [
+          "112. timer-countdown-ring",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_113": [
+      {
+        "id": "fl_113:single0",
+        "cueId": "fl_113",
+        "kind": "single",
+        "index": 0,
+        "start": 336,
+        "end": 339,
+        "text": "113. timer-countdown-bar\nあいうえお Aiueo 0123",
+        "lines": [
+          "113. timer-countdown-bar",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_114": [
+      {
+        "id": "fl_114:single0",
+        "cueId": "fl_114",
+        "kind": "single",
+        "index": 0,
+        "start": 339,
+        "end": 342,
+        "text": "114. timer-countdown-dots\nあいうえお Aiueo 0123",
+        "lines": [
+          "114. timer-countdown-dots",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_115": [
+      {
+        "id": "fl_115:single0",
+        "cueId": "fl_115",
+        "kind": "single",
+        "index": 0,
+        "start": 342,
+        "end": 345,
+        "text": "115. timer-progress-bar\nあいうえお Aiueo 0123",
+        "lines": [
+          "115. timer-progress-bar",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_116": [
+      {
+        "id": "fl_116:single0",
+        "cueId": "fl_116",
+        "kind": "single",
+        "index": 0,
+        "start": 345,
+        "end": 348,
+        "text": "116. timer-progress-ring\nあいうえお Aiueo 0123",
+        "lines": [
+          "116. timer-progress-ring",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_117": [
+      {
+        "id": "fl_117:single0",
+        "cueId": "fl_117",
+        "kind": "single",
+        "index": 0,
+        "start": 348,
+        "end": 351,
+        "text": "117. combo-dots-calm-orbit\nあいうえお Aiueo 0123",
+        "lines": [
+          "117. combo-dots-calm-orbit",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_118": [
+      {
+        "id": "fl_118:single0",
+        "cueId": "fl_118",
+        "kind": "single",
+        "index": 0,
+        "start": 351,
+        "end": 354,
+        "text": "118. combo-diagonal-still-title\nあいうえお Aiueo 0123",
+        "lines": [
+          "118. combo-diagonal-still-title",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_119": [
+      {
+        "id": "fl_119:single0",
+        "cueId": "fl_119",
+        "kind": "single",
+        "index": 0,
+        "start": 354,
+        "end": 357,
+        "text": "119. combo-rise-fine-countdown-\nringあいうえお Aiueo 0123",
+        "lines": [
+          "119. combo-rise-fine-countdown-",
+          "ringあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_120": [
+      {
+        "id": "fl_120:single0",
+        "cueId": "fl_120",
+        "kind": "single",
+        "index": 0,
+        "start": 357,
+        "end": 360,
+        "text": "120. combo-spectrum-radial-\nartistあいうえお Aiueo 0123",
+        "lines": [
+          "120. combo-spectrum-radial-",
+          "artistあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_121": [
+      {
+        "id": "fl_121:single0",
+        "cueId": "fl_121",
+        "kind": "single",
+        "index": 0,
+        "start": 360,
+        "end": 363,
+        "text": "121. combo-rain-bold-ticker\nあいうえお Aiueo 0123",
+        "lines": [
+          "121. combo-rain-bold-ticker",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_122": [
+      {
+        "id": "fl_122:single0",
+        "cueId": "fl_122",
+        "kind": "single",
+        "index": 0,
+        "start": 363,
+        "end": 366,
+        "text": "122. combo-frame-still-bracketspop\n-nextあいうえお Aiueo 0123",
+        "lines": [
+          "122. combo-frame-still-bracketspop",
+          "-nextあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.96,
+        "pinned": false
+      }
+    ],
+    "fl_123": [
+      {
+        "id": "fl_123:single0",
+        "cueId": "fl_123",
+        "kind": "single",
+        "index": 0,
+        "start": 366,
+        "end": 369,
+        "text": "123. combo-stripes-bold-burst\nあいうえお Aiueo 0123",
+        "lines": [
+          "123. combo-stripes-bold-burst",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_124": [
+      {
+        "id": "fl_124:single0",
+        "cueId": "fl_124",
+        "kind": "single",
+        "index": 0,
+        "start": 369,
+        "end": 372,
+        "text": "124. combo-waves-calm-rings\nあいうえお Aiueo 0123",
+        "lines": [
+          "124. combo-waves-calm-rings",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_125": [
+      {
+        "id": "fl_125:single0",
+        "cueId": "fl_125",
+        "kind": "single",
+        "index": 0,
+        "start": 372,
+        "end": 375,
+        "text": "125. combo-grid-calm-halftone\nあいうえお Aiueo 0123",
+        "lines": [
+          "125. combo-grid-calm-halftone",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_126": [
+      {
+        "id": "fl_126:single0",
+        "cueId": "fl_126",
+        "kind": "single",
+        "index": 0,
+        "start": 375,
+        "end": 378,
+        "text": "126. combo-vortex-soft-polymorph\nあいうえお Aiueo 0123",
+        "lines": [
+          "126. combo-vortex-soft-polymorph",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_127": [
+      {
+        "id": "fl_127:single0",
+        "cueId": "fl_127",
+        "kind": "single",
+        "index": 0,
+        "start": 378,
+        "end": 381,
+        "text": "127. combo-sine-3-rings-pulse\nあいうえお Aiueo 0123",
+        "lines": [
+          "127. combo-sine-3-rings-pulse",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_128": [
+      {
+        "id": "fl_128:single0",
+        "cueId": "fl_128",
+        "kind": "single",
+        "index": 0,
+        "start": 381,
+        "end": 384,
+        "text": "128. combo-diamonds-bold-\nconfettiあいうえお Aiueo 0123",
+        "lines": [
+          "128. combo-diamonds-bold-",
+          "confettiあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_129": [
+      {
+        "id": "fl_129:single0",
+        "cueId": "fl_129",
+        "kind": "single",
+        "index": 0,
+        "start": 384,
+        "end": 387,
+        "text": "129. combo-checks-calm-\nunderlinesweepあいうえお Aiueo 0123",
+        "lines": [
+          "129. combo-checks-calm-",
+          "underlinesweepあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "fl_130": [
+      {
+        "id": "fl_130:single0",
+        "cueId": "fl_130",
+        "kind": "single",
+        "index": 0,
+        "start": 387,
+        "end": 390,
+        "text": "130. combo-spectrum-blob-bars\nあいうえお Aiueo 0123",
+        "lines": [
+          "130. combo-spectrum-blob-bars",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fl_131": [
+      {
+        "id": "fl_131:single0",
+        "cueId": "fl_131",
+        "kind": "single",
+        "index": 0,
+        "start": 390,
+        "end": 393,
+        "text": "131. combo-orbit-many-progress-\nbarあいうえお Aiueo 0123",
+        "lines": [
+          "131. combo-orbit-many-progress-",
+          "barあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "パターン (pattern)"
+    },
+    {
+      "t": 78,
+      "label": "分割面 (split)"
+    },
+    {
+      "t": 126,
+      "label": "図形 (shapes)"
+    },
+    {
+      "t": 162,
+      "label": "パーティクル (particles)"
+    },
+    {
+      "t": 186,
+      "label": "オーディオ (audio)"
+    },
+    {
+      "t": 213,
+      "label": "フィギュア (figures)"
+    },
+    {
+      "t": 300,
+      "label": "テキスト (text)"
+    },
+    {
+      "t": 330,
+      "label": "タイマー (timer)"
+    },
+    {
+      "t": 348,
+      "label": "コンボ (combo)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_filler_plate",
+      "trackId": "bg",
+      "start": 0,
+      "end": 393,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0d1220"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.2,
+      "fadeOut": 0.2,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_001",
+      "trackId": "mid",
+      "start": 0,
+      "end": 3,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "grid",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_002",
+      "trackId": "mid",
+      "start": 3,
+      "end": 6,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "grid",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_003",
+      "trackId": "mid",
+      "start": 6,
+      "end": 9,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "dots",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_004",
+      "trackId": "mid",
+      "start": 9,
+      "end": 12,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "dots",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_005",
+      "trackId": "mid",
+      "start": 12,
+      "end": 15,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "stripes",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_006",
+      "trackId": "mid",
+      "start": 15,
+      "end": 18,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "stripes",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_007",
+      "trackId": "mid",
+      "start": 18,
+      "end": 21,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "rings",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_008",
+      "trackId": "mid",
+      "start": 21,
+      "end": 24,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "rings",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_009",
+      "trackId": "mid",
+      "start": 24,
+      "end": 27,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "triangles",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_010",
+      "trackId": "mid",
+      "start": 27,
+      "end": 30,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "triangles",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_011",
+      "trackId": "mid",
+      "start": 30,
+      "end": 33,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "diamonds",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_012",
+      "trackId": "mid",
+      "start": 33,
+      "end": 36,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "diamonds",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_013",
+      "trackId": "mid",
+      "start": 36,
+      "end": 39,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "hexes",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_014",
+      "trackId": "mid",
+      "start": 39,
+      "end": 42,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "hexes",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_015",
+      "trackId": "mid",
+      "start": 42,
+      "end": 45,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "rain",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_016",
+      "trackId": "mid",
+      "start": 45,
+      "end": 48,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "rain",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_017",
+      "trackId": "mid",
+      "start": 48,
+      "end": 51,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "checks",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_018",
+      "trackId": "mid",
+      "start": 51,
+      "end": 54,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "checks",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_019",
+      "trackId": "mid",
+      "start": 54,
+      "end": 57,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "polka",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_020",
+      "trackId": "mid",
+      "start": 57,
+      "end": 60,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "polka",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_021",
+      "trackId": "mid",
+      "start": 60,
+      "end": 63,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "sineCurve",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_022",
+      "trackId": "mid",
+      "start": 63,
+      "end": 66,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "sineCurve",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_023",
+      "trackId": "mid",
+      "start": 66,
+      "end": 69,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "waves",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_024",
+      "trackId": "mid",
+      "start": 69,
+      "end": 72,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "waves",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_025",
+      "trackId": "mid",
+      "start": 72,
+      "end": 75,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "randomFill",
+          "count": 24,
+          "size": 1,
+          "speed": 0.2,
+          "opacity": 0.35,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_026",
+      "trackId": "mid",
+      "start": 75,
+      "end": 78,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "mode": "randomFill",
+          "count": 48,
+          "size": 1.6,
+          "speed": 0.9,
+          "opacity": 0.8,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_027",
+      "trackId": "mid",
+      "start": 78,
+      "end": 81,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "halves",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "slide",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_028",
+      "trackId": "mid",
+      "start": 81,
+      "end": 84,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "diagonal",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "none",
+          "speed": 0.4,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_029",
+      "trackId": "mid",
+      "start": 84,
+      "end": 87,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "diagonal",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "swap",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_030",
+      "trackId": "mid",
+      "start": 87,
+      "end": 90,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "thirds",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "none",
+          "speed": 0.4,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_031",
+      "trackId": "mid",
+      "start": 90,
+      "end": 93,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "thirds",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "slide",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_032",
+      "trackId": "mid",
+      "start": 93,
+      "end": 96,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "bands",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "drift",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_033",
+      "trackId": "mid",
+      "start": 96,
+      "end": 99,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "quads",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "rotate",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_034",
+      "trackId": "mid",
+      "start": 99,
+      "end": 102,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "grid",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "breathe",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_035",
+      "trackId": "mid",
+      "start": 102,
+      "end": 105,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "chevron",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "none",
+          "speed": 0.4,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_036",
+      "trackId": "mid",
+      "start": 105,
+      "end": 108,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "chevron",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "swap",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_037",
+      "trackId": "mid",
+      "start": 108,
+      "end": 111,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "radial",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "none",
+          "speed": 0.4,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_038",
+      "trackId": "mid",
+      "start": 111,
+      "end": 114,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "radial",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "rotate",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_039",
+      "trackId": "mid",
+      "start": 114,
+      "end": 117,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "mondrian",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "drift",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_040",
+      "trackId": "mid",
+      "start": 117,
+      "end": 120,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "frame",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "none",
+          "speed": 0.4,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_041",
+      "trackId": "mid",
+      "start": 120,
+      "end": 123,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "frame",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "breathe",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_042",
+      "trackId": "mid",
+      "start": 123,
+      "end": 126,
+      "spec": {
+        "type": "split",
+        "params": {
+          "layout": "shards",
+          "parts": 3,
+          "coverage": 0.6,
+          "motion": "swap",
+          "speed": 0.6,
+          "amp": 0.06,
+          "colors": null
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_043",
+      "trackId": "mid",
+      "start": 126,
+      "end": 129,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "circles",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_044",
+      "trackId": "mid",
+      "start": 129,
+      "end": 132,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "circles",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_045",
+      "trackId": "mid",
+      "start": 132,
+      "end": 135,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "polygons",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_046",
+      "trackId": "mid",
+      "start": 135,
+      "end": 138,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "polygons",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_047",
+      "trackId": "mid",
+      "start": 138,
+      "end": 141,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "lines",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_048",
+      "trackId": "mid",
+      "start": 141,
+      "end": 144,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "lines",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_049",
+      "trackId": "mid",
+      "start": 144,
+      "end": 147,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "burst",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_050",
+      "trackId": "mid",
+      "start": 147,
+      "end": 150,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "burst",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_051",
+      "trackId": "mid",
+      "start": 150,
+      "end": 153,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "grid",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_052",
+      "trackId": "mid",
+      "start": 153,
+      "end": 156,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "grid",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_053",
+      "trackId": "mid",
+      "start": 156,
+      "end": 159,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "orbit",
+          "count": 6,
+          "speed": 0.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_054",
+      "trackId": "mid",
+      "start": 159,
+      "end": 162,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "set": "orbit",
+          "count": 32,
+          "speed": 1.6,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_055",
+      "trackId": "mid",
+      "start": 162,
+      "end": 165,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "rise",
+          "count": 80,
+          "size": 1.2,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_056",
+      "trackId": "mid",
+      "start": 165,
+      "end": 168,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "rise",
+          "count": 18,
+          "size": 5,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_057",
+      "trackId": "mid",
+      "start": 168,
+      "end": 171,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "fall",
+          "count": 80,
+          "size": 1.2,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_058",
+      "trackId": "mid",
+      "start": 171,
+      "end": 174,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "fall",
+          "count": 18,
+          "size": 5,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_059",
+      "trackId": "mid",
+      "start": 174,
+      "end": 177,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "drift",
+          "count": 80,
+          "size": 1.2,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_060",
+      "trackId": "mid",
+      "start": 177,
+      "end": 180,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "drift",
+          "count": 18,
+          "size": 5,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_061",
+      "trackId": "mid",
+      "start": 180,
+      "end": 183,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "vortex",
+          "count": 80,
+          "size": 1.2,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_062",
+      "trackId": "mid",
+      "start": 183,
+      "end": 186,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "flow": "vortex",
+          "count": 18,
+          "size": 5,
+          "color": "#d6dbe9"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_063",
+      "trackId": "mid",
+      "start": 186,
+      "end": 189,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "line",
+          "thickness": 2.5,
+          "amp": 1,
+          "color": "#4dc8ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_064",
+      "trackId": "mid",
+      "start": 189,
+      "end": 192,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "mirror",
+          "thickness": 2.5,
+          "amp": 1,
+          "color": "#4dc8ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_065",
+      "trackId": "mid",
+      "start": 192,
+      "end": 195,
+      "spec": {
+        "type": "waveform",
+        "params": {
+          "mode": "circle",
+          "thickness": 2.5,
+          "amp": 1,
+          "color": "#4dc8ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_066",
+      "trackId": "mid",
+      "start": 195,
+      "end": 198,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "bars",
+          "bars": 48,
+          "falloff": 1,
+          "color": "#7ce0a4"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_067",
+      "trackId": "mid",
+      "start": 198,
+      "end": 201,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "radial",
+          "bars": 48,
+          "falloff": 1,
+          "color": "#7ce0a4"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_068",
+      "trackId": "mid",
+      "start": 201,
+      "end": 204,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "mode": "blob",
+          "bars": 48,
+          "falloff": 1,
+          "color": "#7ce0a4"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_069",
+      "trackId": "mid",
+      "start": 204,
+      "end": 207,
+      "spec": {
+        "type": "sineWave",
+        "params": {
+          "waves": 1,
+          "amp": 1,
+          "speed": 1,
+          "color": "#9db2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_070",
+      "trackId": "mid",
+      "start": 207,
+      "end": 210,
+      "spec": {
+        "type": "sineWave",
+        "params": {
+          "waves": 3,
+          "amp": 1,
+          "speed": 1,
+          "color": "#9db2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_071",
+      "trackId": "mid",
+      "start": 210,
+      "end": 213,
+      "spec": {
+        "type": "sineWave",
+        "params": {
+          "waves": 5,
+          "amp": 1,
+          "speed": 1,
+          "color": "#9db2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_072",
+      "trackId": "mid",
+      "start": 213,
+      "end": 216,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "orbit",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_073",
+      "trackId": "mid",
+      "start": 216,
+      "end": 219,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "burst",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_074",
+      "trackId": "mid",
+      "start": 219,
+      "end": 222,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "bars",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_075",
+      "trackId": "mid",
+      "start": 222,
+      "end": 225,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "rings",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_076",
+      "trackId": "mid",
+      "start": 225,
+      "end": 228,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "confetti",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_077",
+      "trackId": "mid",
+      "start": 228,
+      "end": 231,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "frame",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_078",
+      "trackId": "mid",
+      "start": 231,
+      "end": 234,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "underlineSweep",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_079",
+      "trackId": "mid",
+      "start": 234,
+      "end": 237,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "bracketsPop",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_080",
+      "trackId": "mid",
+      "start": 237,
+      "end": 240,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "polyMorph",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_081",
+      "trackId": "mid",
+      "start": 240,
+      "end": 243,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "ribbon",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_082",
+      "trackId": "mid",
+      "start": 243,
+      "end": 246,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "ticker",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_083",
+      "trackId": "mid",
+      "start": 246,
+      "end": 249,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "halftone",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_084",
+      "trackId": "mid",
+      "start": 249,
+      "end": 252,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "cracks",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_085",
+      "trackId": "mid",
+      "start": 252,
+      "end": 255,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "spikes",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_086",
+      "trackId": "mid",
+      "start": 255,
+      "end": 258,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "eyes",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_087",
+      "trackId": "mid",
+      "start": 258,
+      "end": 261,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "scratches",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_088",
+      "trackId": "mid",
+      "start": 261,
+      "end": 264,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "drips",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_089",
+      "trackId": "mid",
+      "start": 264,
+      "end": 267,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "lattice",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_090",
+      "trackId": "mid",
+      "start": 267,
+      "end": 270,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "waves",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_091",
+      "trackId": "mid",
+      "start": 270,
+      "end": 273,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "comets",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_092",
+      "trackId": "mid",
+      "start": 273,
+      "end": 276,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "proc",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_093",
+      "trackId": "mid",
+      "start": 276,
+      "end": 279,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "orbit",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "spin",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_094",
+      "trackId": "mid",
+      "start": 279,
+      "end": 282,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "burst",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "pop",
+          "hold": "auto",
+          "out": "burstOut"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_095",
+      "trackId": "mid",
+      "start": 282,
+      "end": 285,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "rings",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "pulse",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_096",
+      "trackId": "mid",
+      "start": 285,
+      "end": 288,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "ribbon",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "draw",
+          "hold": "auto",
+          "out": "fade"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_097",
+      "trackId": "mid",
+      "start": 288,
+      "end": 291,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "frame",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "wipe",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_098",
+      "trackId": "mid",
+      "start": 291,
+      "end": 294,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "confetti",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "scatterIn",
+          "hold": "auto",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_099",
+      "trackId": "mid",
+      "start": 294,
+      "end": 297,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "polyMorph",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "morph",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_100",
+      "trackId": "mid",
+      "start": 297,
+      "end": 300,
+      "spec": {
+        "type": "figures",
+        "params": {
+          "motif": "halftone",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "drift",
+          "out": "auto"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_101",
+      "trackId": "mid",
+      "start": 300,
+      "end": 303,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "{title}",
+          "enter": "zoomIn",
+          "hold": "auto",
+          "exit": "fade",
+          "size": 0.12,
+          "y": 0.5,
+          "color": "#eef2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_102",
+      "trackId": "mid",
+      "start": 303,
+      "end": 306,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "{artist}",
+          "enter": "fade",
+          "hold": "floatBob",
+          "exit": "none",
+          "size": 0.05,
+          "y": 0.78,
+          "color": "#c8d2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_103",
+      "trackId": "mid",
+      "start": 306,
+      "end": 309,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "{next}",
+          "enter": "slide",
+          "hold": "none",
+          "exit": "fade",
+          "size": 0.06,
+          "y": 0.72,
+          "color": "#cbd3ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_104",
+      "trackId": "mid",
+      "start": 309,
+      "end": 312,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "♪",
+          "enter": "elasticPop",
+          "hold": "pulse",
+          "exit": "shrinkToCenter",
+          "size": 0.14,
+          "y": 0.5,
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_105",
+      "trackId": "mid",
+      "start": 312,
+      "end": 315,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "{title}\n{artist}",
+          "enter": "typewriter",
+          "hold": "none",
+          "exit": "blurOut",
+          "size": 0.07,
+          "y": 0.52,
+          "color": "#eef2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_106",
+      "trackId": "mid",
+      "start": 315,
+      "end": 318,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "INTRO",
+          "enter": "dropBounce",
+          "hold": "jitter",
+          "exit": "zoomOut",
+          "size": 0.16,
+          "y": 0.5,
+          "color": "#8a7cff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_107",
+      "trackId": "mid",
+      "start": 318,
+      "end": 321,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "INTERLUDE",
+          "enter": "waveRise",
+          "hold": "sineWave",
+          "exit": "dissolve",
+          "size": 0.12,
+          "y": 0.5,
+          "color": "#4dc8ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_108",
+      "trackId": "mid",
+      "start": 321,
+      "end": 324,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "OUTRO",
+          "enter": "flip3D",
+          "hold": "breathing",
+          "exit": "gravityFall",
+          "size": 0.14,
+          "y": 0.5,
+          "color": "#ff8a3d"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_109",
+      "trackId": "mid",
+      "start": 324,
+      "end": 327,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "{prev}",
+          "enter": "blurIn",
+          "hold": "drift",
+          "exit": "creepOut",
+          "size": 0.05,
+          "y": 0.3,
+          "color": "#8d96ab"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_110",
+      "trackId": "mid",
+      "start": 327,
+      "end": 330,
+      "spec": {
+        "type": "textAnim",
+        "params": {
+          "theme": "",
+          "text": "Thanks for listening",
+          "enter": "strokeDrawOn",
+          "hold": "none",
+          "exit": "burnAway",
+          "size": 0.06,
+          "y": 0.6,
+          "color": "#eef2ff"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_111",
+      "trackId": "mid",
+      "start": 330,
+      "end": 333,
+      "spec": {
+        "type": "countdown",
+        "params": {
+          "style": "digits",
+          "from": 5,
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_112",
+      "trackId": "mid",
+      "start": 333,
+      "end": 336,
+      "spec": {
+        "type": "countdown",
+        "params": {
+          "style": "ring",
+          "from": 5,
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_113",
+      "trackId": "mid",
+      "start": 336,
+      "end": 339,
+      "spec": {
+        "type": "countdown",
+        "params": {
+          "style": "bar",
+          "from": 5,
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_114",
+      "trackId": "mid",
+      "start": 339,
+      "end": 342,
+      "spec": {
+        "type": "countdown",
+        "params": {
+          "style": "dots",
+          "from": 3,
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_115",
+      "trackId": "mid",
+      "start": 342,
+      "end": 345,
+      "spec": {
+        "type": "progress",
+        "params": {
+          "style": "bar",
+          "position": "bottom",
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_116",
+      "trackId": "mid",
+      "start": 345,
+      "end": 348,
+      "spec": {
+        "type": "progress",
+        "params": {
+          "style": "ring",
+          "position": "bottom",
+          "color": "#ffd166"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_117",
+      "trackId": "mid",
+      "start": 348,
+      "end": 351,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "dots",
+                "count": 24,
+                "size": 1,
+                "speed": 0.2,
+                "opacity": 0.35,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "orbit",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_118",
+      "trackId": "mid",
+      "start": 351,
+      "end": 354,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "diagonal",
+                "parts": 3,
+                "coverage": 0.6,
+                "motion": "none",
+                "speed": 0.4,
+                "colors": null
+              }
+            },
+            {
+              "type": "textAnim",
+              "params": {
+                "theme": "",
+                "text": "{title}",
+                "enter": "zoomIn",
+                "hold": "auto",
+                "exit": "fade",
+                "size": 0.12,
+                "y": 0.5,
+                "color": "#eef2ff"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_119",
+      "trackId": "mid",
+      "start": 354,
+      "end": 357,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "particles",
+              "params": {
+                "flow": "rise",
+                "count": 80,
+                "size": 1.2,
+                "color": "#d6dbe9"
+              }
+            },
+            {
+              "type": "countdown",
+              "params": {
+                "style": "ring",
+                "from": 5,
+                "color": "#ffd166"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_120",
+      "trackId": "mid",
+      "start": 357,
+      "end": 360,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "spectrum",
+              "params": {
+                "mode": "radial",
+                "bars": 48,
+                "falloff": 1,
+                "color": "#7ce0a4"
+              }
+            },
+            {
+              "type": "textAnim",
+              "params": {
+                "theme": "",
+                "text": "{artist}",
+                "enter": "fade",
+                "hold": "floatBob",
+                "exit": "none",
+                "size": 0.05,
+                "y": 0.78,
+                "color": "#c8d2ff"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_121",
+      "trackId": "mid",
+      "start": 360,
+      "end": 363,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "rain",
+                "count": 48,
+                "size": 1.6,
+                "speed": 0.9,
+                "opacity": 0.8,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "ticker",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_122",
+      "trackId": "mid",
+      "start": 363,
+      "end": 366,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "split",
+              "params": {
+                "layout": "frame",
+                "parts": 3,
+                "coverage": 0.6,
+                "motion": "none",
+                "speed": 0.4,
+                "colors": null
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "bracketsPop",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            },
+            {
+              "type": "textAnim",
+              "params": {
+                "theme": "",
+                "text": "{next}",
+                "enter": "slide",
+                "hold": "none",
+                "exit": "fade",
+                "size": 0.06,
+                "y": 0.72,
+                "color": "#cbd3ff"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_123",
+      "trackId": "mid",
+      "start": 366,
+      "end": 369,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "stripes",
+                "count": 48,
+                "size": 1.6,
+                "speed": 0.9,
+                "opacity": 0.8,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "burst",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_124",
+      "trackId": "mid",
+      "start": 369,
+      "end": 372,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "waves",
+                "count": 24,
+                "size": 1,
+                "speed": 0.2,
+                "opacity": 0.35,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "rings",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_125",
+      "trackId": "mid",
+      "start": 372,
+      "end": 375,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "grid",
+                "count": 24,
+                "size": 1,
+                "speed": 0.2,
+                "opacity": 0.35,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "halftone",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_126",
+      "trackId": "mid",
+      "start": 375,
+      "end": 378,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "particles",
+              "params": {
+                "flow": "vortex",
+                "count": 18,
+                "size": 5,
+                "color": "#d6dbe9"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "polyMorph",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_127",
+      "trackId": "mid",
+      "start": 378,
+      "end": 381,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "sineWave",
+              "params": {
+                "waves": 3,
+                "amp": 1,
+                "speed": 1,
+                "color": "#9db2ff"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "rings",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "pulse",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_128",
+      "trackId": "mid",
+      "start": 381,
+      "end": 384,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "diamonds",
+                "count": 48,
+                "size": 1.6,
+                "speed": 0.9,
+                "opacity": 0.8,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "confetti",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_129",
+      "trackId": "mid",
+      "start": 384,
+      "end": 387,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "checks",
+                "count": 24,
+                "size": 1,
+                "speed": 0.2,
+                "opacity": 0.35,
+                "color": "#8d96ab"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "underlineSweep",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_130",
+      "trackId": "mid",
+      "start": 387,
+      "end": 390,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "spectrum",
+              "params": {
+                "mode": "blob",
+                "bars": 48,
+                "falloff": 1,
+                "color": "#7ce0a4"
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "bars",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    },
+    {
+      "id": "clip_fl_131",
+      "trackId": "mid",
+      "start": 390,
+      "end": 393,
+      "spec": {
+        "type": "combo",
+        "params": {
+          "list": [
+            {
+              "type": "shapes",
+              "params": {
+                "set": "orbit",
+                "count": 32,
+                "speed": 1.6,
+                "color": "#ff8a3d"
+              }
+            },
+            {
+              "type": "progress",
+              "params": {
+                "style": "bar",
+                "position": "bottom",
+                "color": "#ffd166"
+              }
+            }
+          ]
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": null
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}
