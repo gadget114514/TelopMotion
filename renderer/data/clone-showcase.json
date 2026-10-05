@@ -1,0 +1,1798 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion クローン見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "cl_001",
+        "start": 0,
+        "end": 4,
+        "text": "1. dx · X -0.14 / 0 / +0.14\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 1,
+          "section": "offset",
+          "value": "dx",
+          "detail": "X -0.14 / 0 / +0.14"
+        }
+      },
+      {
+        "id": "cl_002",
+        "start": 4,
+        "end": 8,
+        "text": "2. dy · Y -0.12 / 0 / +0.12\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 2,
+          "section": "offset",
+          "value": "dy",
+          "detail": "Y -0.12 / 0 / +0.12"
+        }
+      },
+      {
+        "id": "cl_003",
+        "start": 8,
+        "end": 12,
+        "text": "3. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 3,
+          "section": "scale",
+          "value": "scale",
+          "detail": "0.75 / 1 / 1.25"
+        }
+      },
+      {
+        "id": "cl_004",
+        "start": 12,
+        "end": 16,
+        "text": "4. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 4,
+          "section": "rotate",
+          "value": "rotate",
+          "detail": "-10° / 0° / +10°"
+        }
+      },
+      {
+        "id": "cl_005",
+        "start": 16,
+        "end": 20,
+        "text": "5. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 5,
+          "section": "opacity",
+          "value": "opacity",
+          "detail": "0.25 / 0.5 / 0.8"
+        }
+      },
+      {
+        "id": "cl_006",
+        "start": 20,
+        "end": 24,
+        "text": "6. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 6,
+          "section": "hue",
+          "value": "hue",
+          "detail": "-70° / 0° / +70°"
+        }
+      },
+      {
+        "id": "cl_007",
+        "start": 24,
+        "end": 28,
+        "text": "7. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 7,
+          "section": "delay",
+          "value": "delay",
+          "detail": "0秒 / 0.25秒 / 0.5秒"
+        }
+      },
+      {
+        "id": "cl_008",
+        "start": 28,
+        "end": 32,
+        "text": "8. none · なし ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 8,
+          "section": "motion",
+          "value": "none",
+          "detail": "なし ×3"
+        }
+      },
+      {
+        "id": "cl_009",
+        "start": 32,
+        "end": 36,
+        "text": "9. drift · 漂流 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 9,
+          "section": "motion",
+          "value": "drift",
+          "detail": "漂流 ×3"
+        }
+      },
+      {
+        "id": "cl_010",
+        "start": 36,
+        "end": 40,
+        "text": "10. float · 浮かぶ ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 10,
+          "section": "motion",
+          "value": "float",
+          "detail": "浮かぶ ×3"
+        }
+      },
+      {
+        "id": "cl_011",
+        "start": 40,
+        "end": 44,
+        "text": "11. pulse · 脈動 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 11,
+          "section": "motion",
+          "value": "pulse",
+          "detail": "脈動 ×3"
+        }
+      },
+      {
+        "id": "cl_012",
+        "start": 44,
+        "end": 48,
+        "text": "12. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 12,
+          "section": "motion",
+          "value": "orbit",
+          "detail": "周回 ×3"
+        }
+      },
+      {
+        "id": "cl_013",
+        "start": 48,
+        "end": 52,
+        "text": "13. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "meta": {
+          "kind": "clone-showcase",
+          "index": 13,
+          "section": "motion",
+          "value": "spin",
+          "detail": "回転 ×3"
+        }
+      }
+    ],
+    "sourceName": "clone-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 64,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "cl_001": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_002": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": -0.12,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0.12,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_003": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 0.75,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1.25,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": -10,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 10,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.25,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.8,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_006": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff7a3d",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": -70,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 70,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_007": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0.25,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0.5,
+          "motion": {
+            "type": "none",
+            "amount": 0.03,
+            "speed": 0.8
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_008": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "none",
+            "amount": 0,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_009": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "drift",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_010": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "float",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_011": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "pulse",
+            "amount": 0.1,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "pulse",
+            "amount": 0.1,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "pulse",
+            "amount": 0.1,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "orbit",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "orbit",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "orbit",
+            "amount": 0.05,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "cl_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "clones": [
+        {
+          "dx": -0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "spin",
+            "amount": 0.12,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "spin",
+            "amount": 0.12,
+            "speed": 1
+          },
+          "enabled": true
+        },
+        {
+          "dx": 0.14,
+          "dy": 0,
+          "scale": 1,
+          "rotate": 0,
+          "opacity": 0.5,
+          "hue": 0,
+          "delay": 0,
+          "motion": {
+            "type": "spin",
+            "amount": 0.12,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ],
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "cl_001": [
+      {
+        "id": "cl_001:single0",
+        "cueId": "cl_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 4,
+        "text": "1. dx · X -0.14 / 0 / +0.14\nあいうえお Aiueo 123",
+        "lines": [
+          "1. dx · X -0.14 / 0 / +0.14",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_002": [
+      {
+        "id": "cl_002:single0",
+        "cueId": "cl_002",
+        "kind": "single",
+        "index": 0,
+        "start": 4,
+        "end": 8,
+        "text": "2. dy · Y -0.12 / 0 / +0.12\nあいうえお Aiueo 123",
+        "lines": [
+          "2. dy · Y -0.12 / 0 / +0.12",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_003": [
+      {
+        "id": "cl_003:single0",
+        "cueId": "cl_003",
+        "kind": "single",
+        "index": 0,
+        "start": 8,
+        "end": 12,
+        "text": "3. scale · 0.75 / 1 / 1.25\nあいうえお Aiueo 123",
+        "lines": [
+          "3. scale · 0.75 / 1 / 1.25",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_004": [
+      {
+        "id": "cl_004:single0",
+        "cueId": "cl_004",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 16,
+        "text": "4. rotate · -10° / 0° / +10°\nあいうえお Aiueo 123",
+        "lines": [
+          "4. rotate · -10° / 0° / +10°",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_005": [
+      {
+        "id": "cl_005:single0",
+        "cueId": "cl_005",
+        "kind": "single",
+        "index": 0,
+        "start": 16,
+        "end": 20,
+        "text": "5. opacity · 0.25 / 0.5 / 0.8\nあいうえお Aiueo 123",
+        "lines": [
+          "5. opacity · 0.25 / 0.5 / 0.8",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_006": [
+      {
+        "id": "cl_006:single0",
+        "cueId": "cl_006",
+        "kind": "single",
+        "index": 0,
+        "start": 20,
+        "end": 24,
+        "text": "6. hue · -70° / 0° / +70°\nあいうえお Aiueo 123",
+        "lines": [
+          "6. hue · -70° / 0° / +70°",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_007": [
+      {
+        "id": "cl_007:single0",
+        "cueId": "cl_007",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 28,
+        "text": "7. delay · 0秒 / 0.25秒 / 0.5秒\nあいうえお Aiueo 123",
+        "lines": [
+          "7. delay · 0秒 / 0.25秒 / 0.5秒",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_008": [
+      {
+        "id": "cl_008:single0",
+        "cueId": "cl_008",
+        "kind": "single",
+        "index": 0,
+        "start": 28,
+        "end": 32,
+        "text": "8. none · なし ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "8. none · なし ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_009": [
+      {
+        "id": "cl_009:single0",
+        "cueId": "cl_009",
+        "kind": "single",
+        "index": 0,
+        "start": 32,
+        "end": 36,
+        "text": "9. drift · 漂流 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "9. drift · 漂流 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_010": [
+      {
+        "id": "cl_010:single0",
+        "cueId": "cl_010",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 40,
+        "text": "10. float · 浮かぶ ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "10. float · 浮かぶ ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_011": [
+      {
+        "id": "cl_011:single0",
+        "cueId": "cl_011",
+        "kind": "single",
+        "index": 0,
+        "start": 40,
+        "end": 44,
+        "text": "11. pulse · 脈動 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "11. pulse · 脈動 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_012": [
+      {
+        "id": "cl_012:single0",
+        "cueId": "cl_012",
+        "kind": "single",
+        "index": 0,
+        "start": 44,
+        "end": 48,
+        "text": "12. orbit · 周回 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "12. orbit · 周回 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "cl_013": [
+      {
+        "id": "cl_013:single0",
+        "cueId": "cl_013",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 52,
+        "text": "13. spin · 回転 ×3\nあいうえお Aiueo 123",
+        "lines": [
+          "13. spin · 回転 ×3",
+          "あいうえお Aiueo 123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "ずらし (offset)"
+    },
+    {
+      "t": 8,
+      "label": "大きさ (scale)"
+    },
+    {
+      "t": 12,
+      "label": "回転 (rotate)"
+    },
+    {
+      "t": 16,
+      "label": "不透明度 (opacity)"
+    },
+    {
+      "t": 20,
+      "label": "色相 (hue)"
+    },
+    {
+      "t": 24,
+      "label": "遅延 (delay)"
+    },
+    {
+      "t": 28,
+      "label": "動き (motion)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

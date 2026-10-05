@@ -1128,6 +1128,17 @@
     }
   }
 
+  // the parallel copies' own showcase: the same string three times with one
+  // clone axis varying per cue. The ids are language-independent, so no
+  // re-labelling is needed.
+  async function cloneShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/clone-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -2052,6 +2063,7 @@
       directShowcase: directShowcaseProject,
       cameraShowcase: cameraShowcaseProject,
       colorShowcase: colorShowcaseProject,
+      cloneShowcase: cloneShowcaseProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

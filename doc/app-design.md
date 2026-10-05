@@ -1913,6 +1913,9 @@ Add `renderer/.nojekyll`. The README tells the user to set Settings → Pages �
 ### 11.5i Color showcase (`scripts/color-showcase.js`, `npm run color-showcase`)
 - The colour system's review project: `renderer/data/color-showcase.json`, 6 palette schemes (`palette-roles` `SCHEME_IDS`, mid split clips varying only `scheme`) + 14 palette families (`moods.PALETTE_FAMILIES` via `moods.generatePalette`, mid split clips) + 20 line patterns (`patterns.PATTERNS` as `edge.outline` pattern on static cues) — 40 cues in 3 sections. Same generated shape (`meta.kind: 'color-showcase'`). Help → Color showcase (`studio.help.colorShowcase`, 5 languages).
 
+### 11.5j Clone showcase (`scripts/clone-showcase.js`, `npm run clone-showcase`)
+- The parallel copies' review project: `renderer/data/clone-showcase.json`, one cue per clone axis (offset dx/dy, scale, rotate, opacity, hue, delay) plus one cue per clone motion type (`none` / `drift` / `float` / `pulse` / `orbit` / `spin`) — 13 cues in 7 sections. Every cue draws the same sample as three parallel strings (three clones at dx -0.14 / 0 / +0.14, differing only in the axis under review); the hue cues use a chromatic main fill because hue shifts do nothing on grey. Same generated shape (`meta.kind: 'clone-showcase'`). Help → Clone showcase (`studio.help.cloneShowcase`, 5 languages).
+
 ### 11.6 i18n
 - Add these namespaces in all 5 languages: `studio.*` (menu, panels, inspector, timeline, dialogs, warnings), `fx.<group>.<type>` labels, `fx.param.<key>` labels, `ease.<name>`, `color.*`, `export.*`, `web.*`, `studio.script.*`.
 - The smoke test that checks for missing translations is extended to `studio.html`: every `[data-i18n]` and every generated control label must resolve (not come back as the raw key) in all 5 languages.

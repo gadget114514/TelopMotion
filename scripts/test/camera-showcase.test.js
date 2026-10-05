@@ -72,8 +72,31 @@ test('every camera move gets its own cue with a pinned post', () => {
   }
 });
 
-test('every section opens a marker and is listed once', () => {
+test('the title beat sits at the top and the sample stays centered', () => {
   const b = built();
+  const migrated = project.migrate(JSON.parse(JSON.stringify(b.project)));
+  assert.equal(migrated.ok, true, migrated.error);
+  for (const entry of b.entries) {
+    for (const doc of [b.project, migrated.project]) {
+      const beats = (doc.beats || {})[entry.cueId] || [];
+      assert.equal(beats.length, 2, `cue ${entry.cueId} must be a title beat plus a sample beat`);
+      const [title, body] = beats;
+      assert.deepEqual(title.lines, [showcase.cueTitle(entry.index, entry.value)], `cue ${entry.cueId} title text`);
+      assert.deepEqual(body.lines, [showcase.SAMPLE], `cue ${entry.cueId} sample text`);
+      assert.equal(title.start, entry.start, `cue ${entry.cueId} title start`);
+      assert.equal(body.end, entry.end, `cue ${entry.cueId} body end`);
+      assert.ok(title.pinned && body.pinned, `cue ${entry.cueId} beats must survive re-flows`);
+      assert.deepEqual(
+        (doc.beatStyles || {})[`${entry.cueId}:title`],
+        { location: { type: 'upperThird', params: {} } },
+        `cue ${entry.cueId} title location`
+      );
+      assert.equal((doc.beatStyles || {})[`${entry.cueId}:body`], undefined, `cue ${entry.cueId} sample keeps the default location`);
+    }
+  }
+});
+
+test('every section opens a marker and is listed once', () => {  const b = built();
   assert.equal(b.markers.length, b.sections.length);
   assert.equal(b.sections.length, 3);
   assert.deepEqual(

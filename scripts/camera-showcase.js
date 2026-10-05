@@ -13,7 +13,9 @@
 // One cue is four seconds; the lyric text is the same sample everywhere, the
 // entrance and exit stay fixed, and one dark plate sits behind the whole walk
 // so the frame moves read against the same ground. Neighbouring cues differ
-// only in the camera move under review.
+// only in the camera move under review. Each cue is two full-span beats: the
+// move name pinned to the top of the frame (`upperThird`) and the sample
+// centered, so the label never sits on the sample.
 //
 // The output is generated, never hand edited: re-run this after
 // `renderer/js/lyrics/effects/camera.js` gains or loses a move. The move ids
@@ -77,6 +79,10 @@ function cueText(index, move) {
   return `${index}. ${move}\n${SAMPLE}`;
 }
 
+function cueTitle(index, move) {
+  return `${index}. ${move}`;
+}
+
 // One move cue's style: everything fixed except the camera move under review
 // (amount 0.3 / speed 0.6), on the shared slide entrance and fade exit so
 // neighbouring cues differ only in the move.
@@ -93,7 +99,7 @@ function plan() {
   const slots = [];
   const push = (section, value) => {
     const index = slots.length;
-    slots.push({ index: index + 1, section, value, detail: value, seconds: CAMERA_SECONDS, cueId: cueId(index), style: cameraStyle(value) });
+    slots.push({ index: index + 1, section, value, detail: value, seconds: CAMERA_SECONDS, cueId: cueId(index), style: cameraStyle(value), title: cueTitle(index + 1, value), body: SAMPLE });
   };
   for (const section of SECTIONS) {
     const moves = SECTION_MOVES[section.id];
@@ -138,7 +144,7 @@ function buildShowcase(options) {
       // (same shape as the ease showcase's `{ kind, section, value }`)
       meta: { kind: 'camera-showcase', section: slot.section, value: slot.value },
     });
-    entries.push({ index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label, cueId: id, start, end, value: slot.value, detail: slot.detail, style: clone(slot.style) });
+    entries.push({ index: slot.index, section: slot.section, sectionLabel: sectionById.get(slot.section).label, cueId: id, start, end, value: slot.value, detail: slot.detail, style: clone(slot.style), title: slot.title, body: slot.body });
     t = end;
   });
   const total = round(t);
@@ -154,6 +160,16 @@ function buildShowcase(options) {
   textflow.apply(doc);
   for (const entry of entries) {
     doc.cueStyles[entry.cueId] = clone(entry.style);
+    // one cue, two full-span beats: the move name pinned to the top of the
+    // frame, the sample centered. Separate screen regions, so the label can
+    // never sit on the sample no matter the camera move. Pinned, so a later
+    // re-flow keeps them instead of rebuilding one two-line beat.
+    doc.beats[entry.cueId] = [
+      { id: `${entry.cueId}:title`, cueId: entry.cueId, kind: 'single', index: 0, start: entry.start, end: entry.end, text: entry.title, lines: [entry.title], fontScale: 1, pinned: true },
+      { id: `${entry.cueId}:body`, cueId: entry.cueId, kind: 'single', index: 1, start: entry.start, end: entry.end, text: entry.body, lines: [entry.body], fontScale: 1, pinned: true },
+    ];
+    doc.beatStyles[`${entry.cueId}:title`] = { location: { type: 'upperThird', params: {} } };
+    if (doc.beatWarnings) delete doc.beatWarnings[entry.cueId];
   }
   // one plate under the whole walk, so every frame move reads against the
   // same ground (same shape as the backdrop showcase plate)
@@ -206,6 +222,7 @@ function indexMarkdown(built) {
   lines.push('フレーム全体を動かすカメラワーク（`post` の camera エフェクトの 10 ムーブ）を 1 キューずつ並べた見本プロジェクトです。どのキューも同じサンプル文・同じ出入りで始まり、違うのはカメラの動きだけです。');
   lines.push('');
   lines.push(`- 1ムーブ＝1キュー（${CAMERA_SECONDS} 秒）、量 (amount) 0.3・速さ (speed) 0.6 に固定`);
+  lines.push('- 各キューは2ビート構成です：ムーブ名だけのタイトルビートを画面上部（`upperThird`）に、サンプル文ビートを中央に置くので、名前と本文が重なりません');
   lines.push('- 開くには Studio の *Help → カメラ見本*、または *File → Open project…* を使います');
   lines.push(`- 全キューの背後には濃色プレート（\`${PLATE}\`）を敷いています`);
   lines.push('');
@@ -379,9 +396,11 @@ module.exports = {
   SECTION_MOVES,
   MOVES,
   PLATE,
+  SAMPLE,
   OUT_PATH,
   MD_PATH,
   cameraStyle,
+  cueTitle,
   plan,
   buildShowcase,
   indexMarkdown,
