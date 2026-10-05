@@ -3,7 +3,7 @@
   "version": 2,
   "seed": 400400,
   "total": 400,
-  "typeCount": 256,
+  "typeCount": 223,
   "sample": "今日はとてもいい天気ですね、散歩でもしましょうか",
   "verification": {
     "motion": [
@@ -43,18 +43,18 @@
     },
     {
       "group": "enter",
-      "types": 48,
-      "entries": 94
+      "types": 40,
+      "entries": 78
     },
     {
       "group": "exit",
-      "types": 37,
-      "entries": 72
+      "types": 28,
+      "entries": 54
     },
     {
       "group": "hold",
-      "types": 30,
-      "entries": 49
+      "types": 20,
+      "entries": 34
     },
     {
       "group": "location",
@@ -69,27 +69,27 @@
     {
       "group": "edge",
       "types": 8,
-      "entries": 15
+      "entries": 16
     },
     {
       "group": "post",
-      "types": 42,
-      "entries": 42
+      "types": 36,
+      "entries": 72
     },
     {
       "group": "background",
       "types": 10,
-      "entries": 9
+      "entries": 18
     },
     {
       "group": "bgShape",
       "types": 2,
-      "entries": 2
+      "entries": 4
     },
     {
       "group": "bgFill",
       "types": 14,
-      "entries": 12
+      "entries": 19
     },
     {
       "group": "bgEdge",
@@ -111,11 +111,6 @@
     {
       "group": "hold",
       "type": "sway",
-      "reason": "通常表示と区別できる変化なし（実測）"
-    },
-    {
-      "group": "hold",
-      "type": "mosaicBreak",
       "reason": "通常表示と区別できる変化なし（実測）"
     },
     {
@@ -2520,6 +2515,35 @@
     },
     {
       "n": 69,
+      "id": "enter.stretch.v1",
+      "group": "enter",
+      "type": "stretch",
+      "variant": 1,
+      "label": "登場 / ストレッチ（登場）（代表1）",
+      "apply": "style",
+      "changes": [],
+      "verified": "motion",
+      "score": 0.957,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretch",
+          "enabled": true,
+          "params": {
+            "axis": "x",
+            "amount": 1.5
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 70,
       "id": "enter.split.v1",
       "group": "enter",
       "type": "split",
@@ -2554,7 +2578,7 @@
       }
     },
     {
-      "n": 70,
+      "n": 71,
       "id": "enter.peekIn.v1",
       "group": "enter",
       "type": "peekIn",
@@ -2589,7 +2613,7 @@
       }
     },
     {
-      "n": 71,
+      "n": 72,
       "id": "enter.riseUp.v1",
       "group": "enter",
       "type": "riseUp",
@@ -2618,7 +2642,7 @@
       }
     },
     {
-      "n": 72,
+      "n": 73,
       "id": "enter.spiralIn.v1",
       "group": "enter",
       "type": "spiralIn",
@@ -2647,7 +2671,7 @@
       }
     },
     {
-      "n": 73,
+      "n": 74,
       "id": "enter.radialIn.v1",
       "group": "enter",
       "type": "radialIn",
@@ -2675,7 +2699,7 @@
       }
     },
     {
-      "n": 74,
+      "n": 75,
       "id": "enter.floatIn.v1",
       "group": "enter",
       "type": "floatIn",
@@ -2704,7 +2728,7 @@
       }
     },
     {
-      "n": 75,
+      "n": 76,
       "id": "enter.boomerang.v1",
       "group": "enter",
       "type": "boomerang",
@@ -2733,7 +2757,7 @@
       }
     },
     {
-      "n": 76,
+      "n": 77,
       "id": "enter.slideBlur.v1",
       "group": "enter",
       "type": "slideBlur",
@@ -2769,7 +2793,7 @@
       }
     },
     {
-      "n": 77,
+      "n": 78,
       "id": "enter.lightReveal.v1",
       "group": "enter",
       "type": "lightReveal",
@@ -2808,7 +2832,7 @@
       }
     },
     {
-      "n": 78,
+      "n": 79,
       "id": "enter.jaggyIn.v1",
       "group": "enter",
       "type": "jaggyIn",
@@ -2848,7 +2872,7 @@
       }
     },
     {
-      "n": 79,
+      "n": 80,
       "id": "enter.maskReveal.v1",
       "group": "enter",
       "type": "maskReveal",
@@ -2894,7 +2918,7 @@
       }
     },
     {
-      "n": 80,
+      "n": 81,
       "id": "enter.depthBlurIn.v1",
       "group": "enter",
       "type": "depthBlurIn",
@@ -2923,312 +2947,7 @@
       }
     },
     {
-      "n": 81,
-      "id": "enter.dither.v1",
-      "group": "enter",
-      "type": "dither",
-      "variant": 1,
-      "label": "登場 / ディザイン（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.264,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "dither",
-          "enabled": true,
-          "params": {
-            "levels": 4,
-            "jitter": 0.3,
-            "speed": 2
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
       "n": 82,
-      "id": "enter.scanline.v1",
-      "group": "enter",
-      "type": "scanline",
-      "variant": 1,
-      "label": "登場 / 走査線イン（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.954,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "scanline",
-          "enabled": true,
-          "params": {
-            "lines": 8,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 83,
-      "id": "enter.stealth.v1",
-      "group": "enter",
-      "type": "stealth",
-      "variant": 1,
-      "label": "登場 / ステルス・クロークイン（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.815,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "stealth",
-          "enabled": true,
-          "params": {
-            "split": 6,
-            "glow": 0.7,
-            "speed": 1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 84,
-      "id": "enter.geometry.v1",
-      "group": "enter",
-      "type": "geometry",
-      "variant": 1,
-      "label": "登場 / ジオメトリイン（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "circle",
-          "to": "hexagon"
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.414,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "geometry",
-          "enabled": true,
-          "params": {
-            "shape": "hexagon",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 85,
-      "id": "enter.mosaicBreak.v1",
-      "group": "enter",
-      "type": "mosaicBreak",
-      "variant": 1,
-      "label": "登場 / モザイク分解（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "cell",
-          "from": 8,
-          "to": 16
-        },
-        {
-          "key": "scatter",
-          "from": 0.4,
-          "to": 0.25
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.19,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "mosaicBreak",
-          "enabled": true,
-          "params": {
-            "cell": 16,
-            "scatter": 0.25
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 86,
-      "id": "enter.fogBreak.v1",
-      "group": "enter",
-      "type": "fogBreak",
-      "variant": 1,
-      "label": "登場 / 霧分解（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.53,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "fogBreak",
-          "enabled": true,
-          "params": {
-            "soft": 12,
-            "rise": 0.1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 87,
-      "id": "enter.windBreak.v1",
-      "group": "enter",
-      "type": "windBreak",
-      "variant": 1,
-      "label": "登場 / 風分解（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 1.299,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "windBreak",
-          "enabled": true,
-          "params": {
-            "wind": 0.5,
-            "grain": 3
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 88,
-      "id": "enter.windNoBreak.v1",
-      "group": "enter",
-      "type": "windNoBreak",
-      "variant": 1,
-      "label": "登場 / 風なびき（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 1.471,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "windNoBreak",
-          "enabled": true,
-          "params": {
-            "wind": 0.5,
-            "rise": 0.08
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 89,
-      "id": "enter.cloth.v1",
-      "group": "enter",
-      "type": "cloth",
-      "variant": 1,
-      "label": "登場 / 布なびき（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.38
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "1.2s/backOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.811,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "cloth",
-          "enabled": true,
-          "params": {
-            "amount": 0.38,
-            "speed": 0.9
-          },
-          "motion": {
-            "in": {
-              "duration": 1.2,
-              "ease": "backOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 90,
       "id": "enter.fade.v2",
       "group": "enter",
       "type": "fade",
@@ -3263,7 +2982,7 @@
       }
     },
     {
-      "n": 91,
+      "n": 83,
       "id": "enter.typewriter.v2",
       "group": "enter",
       "type": "typewriter",
@@ -3306,7 +3025,7 @@
       }
     },
     {
-      "n": 92,
+      "n": 84,
       "id": "enter.slide.v2",
       "group": "enter",
       "type": "slide",
@@ -3346,7 +3065,7 @@
       }
     },
     {
-      "n": 93,
+      "n": 85,
       "id": "enter.dropBounce.v2",
       "group": "enter",
       "type": "dropBounce",
@@ -3385,7 +3104,7 @@
       }
     },
     {
-      "n": 94,
+      "n": 86,
       "id": "enter.zoomIn.v2",
       "group": "enter",
       "type": "zoomIn",
@@ -3419,7 +3138,7 @@
       }
     },
     {
-      "n": 95,
+      "n": 87,
       "id": "enter.blurIn.v2",
       "group": "enter",
       "type": "blurIn",
@@ -3453,7 +3172,7 @@
       }
     },
     {
-      "n": 96,
+      "n": 88,
       "id": "enter.flip3D.v2",
       "group": "enter",
       "type": "flip3D",
@@ -3498,7 +3217,7 @@
       }
     },
     {
-      "n": 97,
+      "n": 89,
       "id": "enter.rotateIn.v2",
       "group": "enter",
       "type": "rotateIn",
@@ -3532,7 +3251,7 @@
       }
     },
     {
-      "n": 98,
+      "n": 90,
       "id": "enter.scatterIn.v2",
       "group": "enter",
       "type": "scatterIn",
@@ -3571,7 +3290,7 @@
       }
     },
     {
-      "n": 99,
+      "n": 91,
       "id": "enter.waveRise.v2",
       "group": "enter",
       "type": "waveRise",
@@ -3605,7 +3324,7 @@
       }
     },
     {
-      "n": 100,
+      "n": 92,
       "id": "enter.elasticPop.v2",
       "group": "enter",
       "type": "elasticPop",
@@ -3637,7 +3356,7 @@
       }
     },
     {
-      "n": 101,
+      "n": 93,
       "id": "enter.scramble.v2",
       "group": "enter",
       "type": "scramble",
@@ -3682,7 +3401,7 @@
       }
     },
     {
-      "n": 102,
+      "n": 94,
       "id": "enter.glitchIn.v2",
       "group": "enter",
       "type": "glitchIn",
@@ -3716,7 +3435,7 @@
       }
     },
     {
-      "n": 103,
+      "n": 95,
       "id": "enter.neonFlicker.v2",
       "group": "enter",
       "type": "neonFlicker",
@@ -3755,7 +3474,7 @@
       }
     },
     {
-      "n": 104,
+      "n": 96,
       "id": "enter.flickerIn.v2",
       "group": "enter",
       "type": "flickerIn",
@@ -3789,7 +3508,7 @@
       }
     },
     {
-      "n": 105,
+      "n": 97,
       "id": "enter.strokeDrawOn.v2",
       "group": "enter",
       "type": "strokeDrawOn",
@@ -3829,7 +3548,7 @@
       }
     },
     {
-      "n": 106,
+      "n": 98,
       "id": "enter.particlesAssemble.v2",
       "group": "enter",
       "type": "particlesAssemble",
@@ -3870,7 +3589,7 @@
       }
     },
     {
-      "n": 107,
+      "n": 99,
       "id": "enter.sandGather.v2",
       "group": "enter",
       "type": "sandGather",
@@ -3919,7 +3638,7 @@
       }
     },
     {
-      "n": 108,
+      "n": 100,
       "id": "enter.shatterRebuild.v2",
       "group": "enter",
       "type": "shatterRebuild",
@@ -3959,7 +3678,7 @@
       }
     },
     {
-      "n": 109,
+      "n": 101,
       "id": "enter.morphFromPrevious.v2",
       "group": "enter",
       "type": "morphFromPrevious",
@@ -3998,7 +3717,7 @@
       }
     },
     {
-      "n": 110,
+      "n": 102,
       "id": "enter.appear.v2",
       "group": "enter",
       "type": "appear",
@@ -4030,7 +3749,7 @@
       }
     },
     {
-      "n": 111,
+      "n": 103,
       "id": "enter.wipe.v2",
       "group": "enter",
       "type": "wipe",
@@ -4076,7 +3795,7 @@
       }
     },
     {
-      "n": 112,
+      "n": 104,
       "id": "enter.blind.v2",
       "group": "enter",
       "type": "blind",
@@ -4122,7 +3841,7 @@
       }
     },
     {
-      "n": 113,
+      "n": 105,
       "id": "enter.box.v2",
       "group": "enter",
       "type": "box",
@@ -4156,7 +3875,7 @@
       }
     },
     {
-      "n": 114,
+      "n": 106,
       "id": "enter.checkerboard.v2",
       "group": "enter",
       "type": "checkerboard",
@@ -4196,7 +3915,47 @@
       }
     },
     {
-      "n": 115,
+      "n": 107,
+      "id": "enter.stretch.v2",
+      "group": "enter",
+      "type": "stretch",
+      "variant": 2,
+      "label": "登場 / ストレッチ（登場）（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "axis",
+          "from": "x",
+          "to": "both"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.957,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretch",
+          "enabled": true,
+          "params": {
+            "axis": "both",
+            "amount": 1.5
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 108,
       "id": "enter.split.v2",
       "group": "enter",
       "type": "split",
@@ -4236,7 +3995,7 @@
       }
     },
     {
-      "n": 116,
+      "n": 109,
       "id": "enter.peekIn.v2",
       "group": "enter",
       "type": "peekIn",
@@ -4271,7 +4030,7 @@
       }
     },
     {
-      "n": 117,
+      "n": 110,
       "id": "enter.riseUp.v2",
       "group": "enter",
       "type": "riseUp",
@@ -4311,7 +4070,7 @@
       }
     },
     {
-      "n": 118,
+      "n": 111,
       "id": "enter.spiralIn.v2",
       "group": "enter",
       "type": "spiralIn",
@@ -4351,7 +4110,7 @@
       }
     },
     {
-      "n": 119,
+      "n": 112,
       "id": "enter.radialIn.v2",
       "group": "enter",
       "type": "radialIn",
@@ -4390,7 +4149,7 @@
       }
     },
     {
-      "n": 120,
+      "n": 113,
       "id": "enter.floatIn.v2",
       "group": "enter",
       "type": "floatIn",
@@ -4430,7 +4189,7 @@
       }
     },
     {
-      "n": 121,
+      "n": 114,
       "id": "enter.boomerang.v2",
       "group": "enter",
       "type": "boomerang",
@@ -4470,7 +4229,7 @@
       }
     },
     {
-      "n": 122,
+      "n": 115,
       "id": "enter.slideBlur.v2",
       "group": "enter",
       "type": "slideBlur",
@@ -4511,7 +4270,7 @@
       }
     },
     {
-      "n": 123,
+      "n": 116,
       "id": "enter.lightReveal.v2",
       "group": "enter",
       "type": "lightReveal",
@@ -4545,7 +4304,7 @@
       }
     },
     {
-      "n": 124,
+      "n": 117,
       "id": "enter.jaggyIn.v2",
       "group": "enter",
       "type": "jaggyIn",
@@ -4590,7 +4349,7 @@
       }
     },
     {
-      "n": 125,
+      "n": 118,
       "id": "enter.maskReveal.v2",
       "group": "enter",
       "type": "maskReveal",
@@ -4631,7 +4390,7 @@
       }
     },
     {
-      "n": 126,
+      "n": 119,
       "id": "enter.depthBlurIn.v2",
       "group": "enter",
       "type": "depthBlurIn",
@@ -4671,383 +4430,7 @@
       }
     },
     {
-      "n": 127,
-      "id": "enter.dither.v2",
-      "group": "enter",
-      "type": "dither",
-      "variant": 2,
-      "label": "登場 / ディザイン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "levels",
-          "from": 4,
-          "to": 2
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.401,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "dither",
-          "enabled": true,
-          "params": {
-            "levels": 2,
-            "jitter": 0.3,
-            "speed": 2
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 128,
-      "id": "enter.scanline.v2",
-      "group": "enter",
-      "type": "scanline",
-      "variant": 2,
-      "label": "登場 / 走査線イン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "lines",
-          "from": 8,
-          "to": 3
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.874,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "scanline",
-          "enabled": true,
-          "params": {
-            "lines": 3,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 129,
-      "id": "enter.stealth.v2",
-      "group": "enter",
-      "type": "stealth",
-      "variant": 2,
-      "label": "登場 / ステルス・クロークイン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "split",
-          "from": 6,
-          "to": 2
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.737,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "stealth",
-          "enabled": true,
-          "params": {
-            "split": 2,
-            "glow": 0.7,
-            "speed": 1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 130,
-      "id": "enter.geometry.v2",
-      "group": "enter",
-      "type": "geometry",
-      "variant": 2,
-      "label": "登場 / ジオメトリイン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "circle",
-          "to": "diamond"
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "1.2s/backOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.414,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "geometry",
-          "enabled": true,
-          "params": {
-            "shape": "diamond",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
-          },
-          "motion": {
-            "in": {
-              "duration": 1.2,
-              "ease": "backOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 131,
-      "id": "enter.mosaicBreak.v2",
-      "group": "enter",
-      "type": "mosaicBreak",
-      "variant": 2,
-      "label": "登場 / モザイク分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "cell",
-          "from": 8,
-          "to": 4
-        },
-        {
-          "key": "scatter",
-          "from": 0.4,
-          "to": 0.75
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.7s/elasticOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.195,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "mosaicBreak",
-          "enabled": true,
-          "params": {
-            "cell": 4,
-            "scatter": 0.75
-          },
-          "motion": {
-            "in": {
-              "duration": 0.7,
-              "ease": "elasticOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 132,
-      "id": "enter.fogBreak.v2",
-      "group": "enter",
-      "type": "fogBreak",
-      "variant": 2,
-      "label": "登場 / 霧分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "soft",
-          "from": 12,
-          "to": 10
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.493,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "fogBreak",
-          "enabled": true,
-          "params": {
-            "soft": 10,
-            "rise": 0.1
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 133,
-      "id": "enter.windBreak.v2",
-      "group": "enter",
-      "type": "windBreak",
-      "variant": 2,
-      "label": "登場 / 風分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": -0.8
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.643,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "windBreak",
-          "enabled": true,
-          "params": {
-            "wind": -0.8,
-            "grain": 3
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 134,
-      "id": "enter.windNoBreak.v2",
-      "group": "enter",
-      "type": "windNoBreak",
-      "variant": 2,
-      "label": "登場 / 風なびき（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": -0.8
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.25s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.81,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "windNoBreak",
-          "enabled": true,
-          "params": {
-            "wind": -0.8,
-            "rise": 0.08
-          },
-          "motion": {
-            "in": {
-              "duration": 0.25,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 135,
-      "id": "enter.cloth.v2",
-      "group": "enter",
-      "type": "cloth",
-      "variant": 2,
-      "label": "登場 / 布なびき（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.13
-        },
-        {
-          "key": "speed",
-          "from": 0.9,
-          "to": 1.05
-        },
-        {
-          "key": "motion.in",
-          "from": "(既定)",
-          "to": "0.55s/cubicOut"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.475,
-      "notes": [],
-      "style": {
-        "enter": {
-          "type": "cloth",
-          "enabled": true,
-          "params": {
-            "amount": 0.13,
-            "speed": 1.05
-          },
-          "motion": {
-            "in": {
-              "duration": 0.55,
-              "ease": "cubicOut"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 136,
+      "n": 120,
       "id": "exit.fade.v1",
       "group": "exit",
       "type": "fade",
@@ -5087,7 +4470,7 @@
       }
     },
     {
-      "n": 137,
+      "n": 121,
       "id": "exit.slide.v1",
       "group": "exit",
       "type": "slide",
@@ -5122,7 +4505,7 @@
       }
     },
     {
-      "n": 138,
+      "n": 122,
       "id": "exit.zoomOut.v1",
       "group": "exit",
       "type": "zoomOut",
@@ -5150,7 +4533,7 @@
       }
     },
     {
-      "n": 139,
+      "n": 123,
       "id": "exit.blurOut.v1",
       "group": "exit",
       "type": "blurOut",
@@ -5189,7 +4572,7 @@
       }
     },
     {
-      "n": 140,
+      "n": 124,
       "id": "exit.explode.v1",
       "group": "exit",
       "type": "explode",
@@ -5218,7 +4601,7 @@
       }
     },
     {
-      "n": 141,
+      "n": 125,
       "id": "exit.gravityFall.v1",
       "group": "exit",
       "type": "gravityFall",
@@ -5247,7 +4630,7 @@
       }
     },
     {
-      "n": 142,
+      "n": 126,
       "id": "exit.dissolve.v1",
       "group": "exit",
       "type": "dissolve",
@@ -5287,7 +4670,7 @@
       }
     },
     {
-      "n": 143,
+      "n": 127,
       "id": "exit.wipe.v1",
       "group": "exit",
       "type": "wipe",
@@ -5321,7 +4704,7 @@
       }
     },
     {
-      "n": 144,
+      "n": 128,
       "id": "exit.typewriterReverse.v1",
       "group": "exit",
       "type": "typewriterReverse",
@@ -5353,7 +4736,7 @@
       }
     },
     {
-      "n": 145,
+      "n": 129,
       "id": "exit.shrinkToCenter.v1",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -5385,7 +4768,7 @@
       }
     },
     {
-      "n": 146,
+      "n": 130,
       "id": "exit.particlesDisperse.v1",
       "group": "exit",
       "type": "particlesDisperse",
@@ -5414,7 +4797,7 @@
       }
     },
     {
-      "n": 147,
+      "n": 131,
       "id": "exit.sandCrumble.v1",
       "group": "exit",
       "type": "sandCrumble",
@@ -5463,7 +4846,7 @@
       }
     },
     {
-      "n": 148,
+      "n": 132,
       "id": "exit.melt.v1",
       "group": "exit",
       "type": "melt",
@@ -5491,7 +4874,7 @@
       }
     },
     {
-      "n": 149,
+      "n": 133,
       "id": "exit.burnAway.v1",
       "group": "exit",
       "type": "burnAway",
@@ -5537,7 +4920,7 @@
       }
     },
     {
-      "n": 150,
+      "n": 134,
       "id": "exit.strokeErase.v1",
       "group": "exit",
       "type": "strokeErase",
@@ -5576,7 +4959,7 @@
       }
     },
     {
-      "n": 151,
+      "n": 135,
       "id": "exit.creepOut.v1",
       "group": "exit",
       "type": "creepOut",
@@ -5615,7 +4998,7 @@
       }
     },
     {
-      "n": 152,
+      "n": 136,
       "id": "exit.vanish.v1",
       "group": "exit",
       "type": "vanish",
@@ -5647,7 +5030,7 @@
       }
     },
     {
-      "n": 153,
+      "n": 137,
       "id": "exit.floatOut.v1",
       "group": "exit",
       "type": "floatOut",
@@ -5676,7 +5059,7 @@
       }
     },
     {
-      "n": 154,
+      "n": 138,
       "id": "exit.splitOut.v1",
       "group": "exit",
       "type": "splitOut",
@@ -5710,7 +5093,7 @@
       }
     },
     {
-      "n": 155,
+      "n": 139,
       "id": "exit.stripeShrink.v1",
       "group": "exit",
       "type": "stripeShrink",
@@ -5744,7 +5127,7 @@
       }
     },
     {
-      "n": 156,
+      "n": 140,
       "id": "exit.rotateOut.v1",
       "group": "exit",
       "type": "rotateOut",
@@ -5783,7 +5166,7 @@
       }
     },
     {
-      "n": 157,
+      "n": 141,
       "id": "exit.floatUp.v1",
       "group": "exit",
       "type": "floatUp",
@@ -5811,7 +5194,7 @@
       }
     },
     {
-      "n": 158,
+      "n": 142,
       "id": "exit.floatDown.v1",
       "group": "exit",
       "type": "floatDown",
@@ -5839,7 +5222,7 @@
       }
     },
     {
-      "n": 159,
+      "n": 143,
       "id": "exit.shrinkDir.v1",
       "group": "exit",
       "type": "shrinkDir",
@@ -5873,7 +5256,7 @@
       }
     },
     {
-      "n": 160,
+      "n": 144,
       "id": "exit.spiralOut.v1",
       "group": "exit",
       "type": "spiralOut",
@@ -5902,7 +5285,7 @@
       }
     },
     {
-      "n": 161,
+      "n": 145,
       "id": "exit.radialOut.v1",
       "group": "exit",
       "type": "radialOut",
@@ -5930,7 +5313,7 @@
       }
     },
     {
-      "n": 162,
+      "n": 146,
       "id": "exit.warpOut.v1",
       "group": "exit",
       "type": "warpOut",
@@ -5958,7 +5341,7 @@
       }
     },
     {
-      "n": 163,
+      "n": 147,
       "id": "exit.evaporate.v1",
       "group": "exit",
       "type": "evaporate",
@@ -5998,312 +5381,7 @@
       }
     },
     {
-      "n": 164,
-      "id": "exit.dither.v1",
-      "group": "exit",
-      "type": "dither",
-      "variant": 1,
-      "label": "退場 / ディザアウト（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.242,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "dither",
-          "enabled": true,
-          "params": {
-            "levels": 4,
-            "jitter": 0.3,
-            "speed": 2
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 165,
-      "id": "exit.scanline.v1",
-      "group": "exit",
-      "type": "scanline",
-      "variant": 1,
-      "label": "退場 / 走査線アウト（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.683,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "scanline",
-          "enabled": true,
-          "params": {
-            "lines": 8,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 166,
-      "id": "exit.stealth.v1",
-      "group": "exit",
-      "type": "stealth",
-      "variant": 1,
-      "label": "退場 / ステルス・クロークアウト（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.816,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "stealth",
-          "enabled": true,
-          "params": {
-            "split": 6,
-            "glow": 0.7,
-            "speed": 1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 167,
-      "id": "exit.geometry.v1",
-      "group": "exit",
-      "type": "geometry",
-      "variant": 1,
-      "label": "退場 / ジオメトリアウト（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "circle",
-          "to": "polygon"
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.4s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.401,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "geometry",
-          "enabled": true,
-          "params": {
-            "shape": "polygon",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 168,
-      "id": "exit.mosaicBreak.v1",
-      "group": "exit",
-      "type": "mosaicBreak",
-      "variant": 1,
-      "label": "退場 / モザイク分解（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "cell",
-          "from": 8,
-          "to": 16
-        },
-        {
-          "key": "scatter",
-          "from": 0.4,
-          "to": 0.25
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.179,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "mosaicBreak",
-          "enabled": true,
-          "params": {
-            "cell": 16,
-            "scatter": 0.25
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 169,
-      "id": "exit.fogBreak.v1",
-      "group": "exit",
-      "type": "fogBreak",
-      "variant": 1,
-      "label": "退場 / 霧分解（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.496,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "fogBreak",
-          "enabled": true,
-          "params": {
-            "soft": 12,
-            "rise": 0.1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 170,
-      "id": "exit.windBreak.v1",
-      "group": "exit",
-      "type": "windBreak",
-      "variant": 1,
-      "label": "退場 / 風分解（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 1.47,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "windBreak",
-          "enabled": true,
-          "params": {
-            "wind": 0.5,
-            "grain": 3
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 171,
-      "id": "exit.windNoBreak.v1",
-      "group": "exit",
-      "type": "windNoBreak",
-      "variant": 1,
-      "label": "退場 / 風なびき（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 1.45,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "windNoBreak",
-          "enabled": true,
-          "params": {
-            "wind": 0.5,
-            "rise": 0.08
-          },
-          "motion": {
-            "out": {
-              "duration": 0.4,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 172,
-      "id": "exit.cloth.v1",
-      "group": "exit",
-      "type": "cloth",
-      "variant": 1,
-      "label": "退場 / 布なびき（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.13
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.696,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "cloth",
-          "enabled": true,
-          "params": {
-            "amount": 0.13,
-            "speed": 0.9
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 173,
+      "n": 148,
       "id": "exit.fade.v2",
       "group": "exit",
       "type": "fade",
@@ -6348,7 +5426,7 @@
       }
     },
     {
-      "n": 174,
+      "n": 149,
       "id": "exit.slide.v2",
       "group": "exit",
       "type": "slide",
@@ -6383,7 +5461,7 @@
       }
     },
     {
-      "n": 175,
+      "n": 150,
       "id": "exit.zoomOut.v2",
       "group": "exit",
       "type": "zoomOut",
@@ -6422,7 +5500,7 @@
       }
     },
     {
-      "n": 176,
+      "n": 151,
       "id": "exit.blurOut.v2",
       "group": "exit",
       "type": "blurOut",
@@ -6456,7 +5534,7 @@
       }
     },
     {
-      "n": 177,
+      "n": 152,
       "id": "exit.explode.v2",
       "group": "exit",
       "type": "explode",
@@ -6496,7 +5574,7 @@
       }
     },
     {
-      "n": 178,
+      "n": 153,
       "id": "exit.gravityFall.v2",
       "group": "exit",
       "type": "gravityFall",
@@ -6536,7 +5614,7 @@
       }
     },
     {
-      "n": 179,
+      "n": 154,
       "id": "exit.wipe.v2",
       "group": "exit",
       "type": "wipe",
@@ -6575,7 +5653,7 @@
       }
     },
     {
-      "n": 180,
+      "n": 155,
       "id": "exit.shrinkToCenter.v2",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -6607,7 +5685,7 @@
       }
     },
     {
-      "n": 181,
+      "n": 156,
       "id": "exit.particlesDisperse.v2",
       "group": "exit",
       "type": "particlesDisperse",
@@ -6647,7 +5725,7 @@
       }
     },
     {
-      "n": 182,
+      "n": 157,
       "id": "exit.sandCrumble.v2",
       "group": "exit",
       "type": "sandCrumble",
@@ -6696,7 +5774,7 @@
       }
     },
     {
-      "n": 183,
+      "n": 158,
       "id": "exit.melt.v2",
       "group": "exit",
       "type": "melt",
@@ -6735,7 +5813,7 @@
       }
     },
     {
-      "n": 184,
+      "n": 159,
       "id": "exit.burnAway.v2",
       "group": "exit",
       "type": "burnAway",
@@ -6781,7 +5859,7 @@
       }
     },
     {
-      "n": 185,
+      "n": 160,
       "id": "exit.strokeErase.v2",
       "group": "exit",
       "type": "strokeErase",
@@ -6820,7 +5898,7 @@
       }
     },
     {
-      "n": 186,
+      "n": 161,
       "id": "exit.creepOut.v2",
       "group": "exit",
       "type": "creepOut",
@@ -6859,7 +5937,7 @@
       }
     },
     {
-      "n": 187,
+      "n": 162,
       "id": "exit.vanish.v2",
       "group": "exit",
       "type": "vanish",
@@ -6891,7 +5969,7 @@
       }
     },
     {
-      "n": 188,
+      "n": 163,
       "id": "exit.floatOut.v2",
       "group": "exit",
       "type": "floatOut",
@@ -6931,7 +6009,7 @@
       }
     },
     {
-      "n": 189,
+      "n": 164,
       "id": "exit.splitOut.v2",
       "group": "exit",
       "type": "splitOut",
@@ -6970,7 +6048,7 @@
       }
     },
     {
-      "n": 190,
+      "n": 165,
       "id": "exit.stripeShrink.v2",
       "group": "exit",
       "type": "stripeShrink",
@@ -7009,7 +6087,7 @@
       }
     },
     {
-      "n": 191,
+      "n": 166,
       "id": "exit.rotateOut.v2",
       "group": "exit",
       "type": "rotateOut",
@@ -7048,7 +6126,7 @@
       }
     },
     {
-      "n": 192,
+      "n": 167,
       "id": "exit.floatUp.v2",
       "group": "exit",
       "type": "floatUp",
@@ -7087,7 +6165,7 @@
       }
     },
     {
-      "n": 193,
+      "n": 168,
       "id": "exit.floatDown.v2",
       "group": "exit",
       "type": "floatDown",
@@ -7126,7 +6204,7 @@
       }
     },
     {
-      "n": 194,
+      "n": 169,
       "id": "exit.shrinkDir.v2",
       "group": "exit",
       "type": "shrinkDir",
@@ -7165,7 +6243,7 @@
       }
     },
     {
-      "n": 195,
+      "n": 170,
       "id": "exit.spiralOut.v2",
       "group": "exit",
       "type": "spiralOut",
@@ -7205,7 +6283,7 @@
       }
     },
     {
-      "n": 196,
+      "n": 171,
       "id": "exit.radialOut.v2",
       "group": "exit",
       "type": "radialOut",
@@ -7244,7 +6322,7 @@
       }
     },
     {
-      "n": 197,
+      "n": 172,
       "id": "exit.warpOut.v2",
       "group": "exit",
       "type": "warpOut",
@@ -7283,7 +6361,7 @@
       }
     },
     {
-      "n": 198,
+      "n": 173,
       "id": "exit.evaporate.v2",
       "group": "exit",
       "type": "evaporate",
@@ -7328,378 +6406,7 @@
       }
     },
     {
-      "n": 199,
-      "id": "exit.dither.v2",
-      "group": "exit",
-      "type": "dither",
-      "variant": 2,
-      "label": "退場 / ディザアウト（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "levels",
-          "from": 4,
-          "to": 2
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.369,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "dither",
-          "enabled": true,
-          "params": {
-            "levels": 2,
-            "jitter": 0.3,
-            "speed": 2
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 200,
-      "id": "exit.scanline.v2",
-      "group": "exit",
-      "type": "scanline",
-      "variant": 2,
-      "label": "退場 / 走査線アウト（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "lines",
-          "from": 8,
-          "to": 3
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.541,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "scanline",
-          "enabled": true,
-          "params": {
-            "lines": 3,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 201,
-      "id": "exit.stealth.v2",
-      "group": "exit",
-      "type": "stealth",
-      "variant": 2,
-      "label": "退場 / ステルス・クロークアウト（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "split",
-          "from": 6,
-          "to": 2
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.74,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "stealth",
-          "enabled": true,
-          "params": {
-            "split": 2,
-            "glow": 0.7,
-            "speed": 1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 202,
-      "id": "exit.geometry.v2",
-      "group": "exit",
-      "type": "geometry",
-      "variant": 2,
-      "label": "退場 / ジオメトリアウト（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "circle",
-          "to": "hexagon"
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.397,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "geometry",
-          "enabled": true,
-          "params": {
-            "shape": "hexagon",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 203,
-      "id": "exit.mosaicBreak.v2",
-      "group": "exit",
-      "type": "mosaicBreak",
-      "variant": 2,
-      "label": "退場 / モザイク分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "cell",
-          "from": 8,
-          "to": 4
-        },
-        {
-          "key": "scatter",
-          "from": 0.4,
-          "to": 0.75
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.6s/bounceIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.186,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "mosaicBreak",
-          "enabled": true,
-          "params": {
-            "cell": 4,
-            "scatter": 0.75
-          },
-          "motion": {
-            "out": {
-              "duration": 0.6,
-              "ease": "bounceIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 204,
-      "id": "exit.fogBreak.v2",
-      "group": "exit",
-      "type": "fogBreak",
-      "variant": 2,
-      "label": "退場 / 霧分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "soft",
-          "from": 12,
-          "to": 10
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.498,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "fogBreak",
-          "enabled": true,
-          "params": {
-            "soft": 10,
-            "rise": 0.1
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 205,
-      "id": "exit.windBreak.v2",
-      "group": "exit",
-      "type": "windBreak",
-      "variant": 2,
-      "label": "退場 / 風分解（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": -0.8
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.72,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "windBreak",
-          "enabled": true,
-          "params": {
-            "wind": -0.8,
-            "grain": 3
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 206,
-      "id": "exit.windNoBreak.v2",
-      "group": "exit",
-      "type": "windNoBreak",
-      "variant": 2,
-      "label": "退場 / 風なびき（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": -0.8
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "0.2s/cubicIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.767,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "windNoBreak",
-          "enabled": true,
-          "params": {
-            "wind": -0.8,
-            "rise": 0.08
-          },
-          "motion": {
-            "out": {
-              "duration": 0.2,
-              "ease": "cubicIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 207,
-      "id": "exit.cloth.v2",
-      "group": "exit",
-      "type": "cloth",
-      "variant": 2,
-      "label": "退場 / 布なびき（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.38
-        },
-        {
-          "key": "motion.out",
-          "from": "(既定)",
-          "to": "1s/backIn"
-        }
-      ],
-      "verified": "motion",
-      "score": 0.877,
-      "notes": [],
-      "style": {
-        "exit": {
-          "type": "cloth",
-          "enabled": true,
-          "params": {
-            "amount": 0.38,
-            "speed": 0.9
-          },
-          "motion": {
-            "out": {
-              "duration": 1,
-              "ease": "backIn"
-            }
-          }
-        }
-      }
-    },
-    {
-      "n": 208,
+      "n": 174,
       "id": "hold.floatBob.v1",
       "group": "hold",
       "type": "floatBob",
@@ -7725,7 +6432,7 @@
       }
     },
     {
-      "n": 209,
+      "n": 175,
       "id": "hold.sineWave.v1",
       "group": "hold",
       "type": "sineWave",
@@ -7752,7 +6459,7 @@
       }
     },
     {
-      "n": 210,
+      "n": 176,
       "id": "hold.jitter.v1",
       "group": "hold",
       "type": "jitter",
@@ -7778,7 +6485,7 @@
       }
     },
     {
-      "n": 211,
+      "n": 177,
       "id": "hold.pulse.v1",
       "group": "hold",
       "type": "pulse",
@@ -7810,7 +6517,7 @@
       }
     },
     {
-      "n": 212,
+      "n": 178,
       "id": "hold.opacityPulse.v1",
       "group": "hold",
       "type": "opacityPulse",
@@ -7837,7 +6544,7 @@
       }
     },
     {
-      "n": 213,
+      "n": 179,
       "id": "hold.kenBurns.v1",
       "group": "hold",
       "type": "kenBurns",
@@ -7872,7 +6579,7 @@
       }
     },
     {
-      "n": 214,
+      "n": 180,
       "id": "hold.drift.v1",
       "group": "hold",
       "type": "drift",
@@ -7898,7 +6605,7 @@
       }
     },
     {
-      "n": 215,
+      "n": 181,
       "id": "hold.marquee.v1",
       "group": "hold",
       "type": "marquee",
@@ -7929,7 +6636,7 @@
       }
     },
     {
-      "n": 216,
+      "n": 182,
       "id": "hold.jelly.v1",
       "group": "hold",
       "type": "jelly",
@@ -7966,7 +6673,7 @@
       }
     },
     {
-      "n": 217,
+      "n": 183,
       "id": "hold.wobbleWarp.v1",
       "group": "hold",
       "type": "wobbleWarp",
@@ -8004,7 +6711,7 @@
       }
     },
     {
-      "n": 218,
+      "n": 184,
       "id": "hold.twist.v1",
       "group": "hold",
       "type": "twist",
@@ -8029,7 +6736,7 @@
       }
     },
     {
-      "n": 219,
+      "n": 185,
       "id": "hold.breathing.v1",
       "group": "hold",
       "type": "breathing",
@@ -8060,7 +6767,7 @@
       }
     },
     {
-      "n": 220,
+      "n": 186,
       "id": "hold.orbit3D.v1",
       "group": "hold",
       "type": "orbit3D",
@@ -8086,7 +6793,7 @@
       }
     },
     {
-      "n": 221,
+      "n": 187,
       "id": "hold.orbit2D.v1",
       "group": "hold",
       "type": "orbit2D",
@@ -8115,7 +6822,7 @@
       }
     },
     {
-      "n": 222,
+      "n": 188,
       "id": "hold.pathFollow.v1",
       "group": "hold",
       "type": "pathFollow",
@@ -8160,7 +6867,7 @@
       }
     },
     {
-      "n": 223,
+      "n": 189,
       "id": "hold.heartbeat.v1",
       "group": "hold",
       "type": "heartbeat",
@@ -8192,7 +6899,7 @@
       }
     },
     {
-      "n": 224,
+      "n": 190,
       "id": "hold.shiver.v1",
       "group": "hold",
       "type": "shiver",
@@ -8224,7 +6931,7 @@
       }
     },
     {
-      "n": 225,
+      "n": 191,
       "id": "hold.dissolve.v1",
       "group": "hold",
       "type": "dissolve",
@@ -8261,309 +6968,7 @@
       }
     },
     {
-      "n": 226,
-      "id": "hold.dither.v1",
-      "group": "hold",
-      "type": "dither",
-      "variant": 1,
-      "label": "保持 / ディザ（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "jitter",
-          "from": 0.3,
-          "to": 0
-        }
-      ],
-      "verified": "motion",
-      "score": 0.743,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "dither",
-            "enabled": true,
-            "params": {
-              "levels": 4,
-              "jitter": 0,
-              "speed": 2
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 227,
-      "id": "hold.scanline.v1",
-      "group": "hold",
-      "type": "scanline",
-      "variant": 1,
-      "label": "保持 / 走査線（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.872,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "scanline",
-            "enabled": true,
-            "params": {
-              "lines": 8,
-              "bandWidth": 0.3,
-              "depth": 0.85,
-              "speed": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 228,
-      "id": "hold.stealth.v1",
-      "group": "hold",
-      "type": "stealth",
-      "variant": 1,
-      "label": "保持 / ステルス・クローク（代表1）",
-      "apply": "style",
-      "changes": [],
-      "verified": "motion",
-      "score": 0.788,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "stealth",
-            "enabled": true,
-            "params": {
-              "split": 6,
-              "glow": 0.7,
-              "speed": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 229,
-      "id": "hold.geometry.v1",
-      "group": "hold",
-      "type": "geometry",
-      "variant": 1,
-      "label": "保持 / ジオメトリ（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "circle",
-          "to": "band"
-        }
-      ],
-      "verified": "motion",
-      "score": 1.189,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "geometry",
-            "enabled": true,
-            "params": {
-              "shape": "band",
-              "feather": 0.05,
-              "spin": 0,
-              "speed": 0.6
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 230,
-      "id": "hold.fade.v1",
-      "group": "hold",
-      "type": "fade",
-      "variant": 1,
-      "label": "保持 / フェード（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "glow",
-          "from": 0,
-          "to": 0.5
-        }
-      ],
-      "verified": "motion",
-      "score": 0.574,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "fade",
-            "enabled": true,
-            "params": {
-              "softness": 0,
-              "glow": 0.5
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 231,
-      "id": "hold.fogBreak.v1",
-      "group": "hold",
-      "type": "fogBreak",
-      "variant": 1,
-      "label": "保持 / fogBreak（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "soft",
-          "from": 12,
-          "to": 10
-        },
-        {
-          "key": "rise",
-          "from": 0.1,
-          "to": 0.25
-        }
-      ],
-      "verified": "motion",
-      "score": 0.599,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "fogBreak",
-            "enabled": true,
-            "params": {
-              "soft": 10,
-              "rise": 0.25
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 232,
-      "id": "hold.windBreak.v1",
-      "group": "hold",
-      "type": "windBreak",
-      "variant": 1,
-      "label": "保持 / windBreak（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": 0.8
-        },
-        {
-          "key": "grain",
-          "from": 3,
-          "to": 3.8
-        }
-      ],
-      "verified": "motion",
-      "score": 0.539,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "windBreak",
-            "enabled": true,
-            "params": {
-              "wind": 0.8,
-              "grain": 3.8
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 233,
-      "id": "hold.windNoBreak.v1",
-      "group": "hold",
-      "type": "windNoBreak",
-      "variant": 1,
-      "label": "保持 / windNoBreak（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "wind",
-          "from": 0.5,
-          "to": 0.8
-        },
-        {
-          "key": "rise",
-          "from": 0.08,
-          "to": -0.25
-        }
-      ],
-      "verified": "motion",
-      "score": 0.52,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "windNoBreak",
-            "enabled": true,
-            "params": {
-              "wind": 0.8,
-              "rise": -0.25
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 234,
-      "id": "hold.cloth.v1",
-      "group": "hold",
-      "type": "cloth",
-      "variant": 1,
-      "label": "保持 / cloth（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.38
-        },
-        {
-          "key": "speed",
-          "from": 0.9,
-          "to": 1.05
-        }
-      ],
-      "verified": "motion",
-      "score": 0.811,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "cloth",
-            "enabled": true,
-            "params": {
-              "amount": 0.38,
-              "speed": 1.05
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 235,
+      "n": 192,
       "id": "hold.floatBob.v2",
       "group": "hold",
       "type": "floatBob",
@@ -8595,7 +7000,7 @@
       }
     },
     {
-      "n": 236,
+      "n": 193,
       "id": "hold.sineWave.v2",
       "group": "hold",
       "type": "sineWave",
@@ -8628,7 +7033,7 @@
       }
     },
     {
-      "n": 237,
+      "n": 194,
       "id": "hold.jitter.v2",
       "group": "hold",
       "type": "jitter",
@@ -8660,7 +7065,7 @@
       }
     },
     {
-      "n": 238,
+      "n": 195,
       "id": "hold.opacityPulse.v2",
       "group": "hold",
       "type": "opacityPulse",
@@ -8693,7 +7098,7 @@
       }
     },
     {
-      "n": 239,
+      "n": 196,
       "id": "hold.kenBurns.v2",
       "group": "hold",
       "type": "kenBurns",
@@ -8728,7 +7133,7 @@
       }
     },
     {
-      "n": 240,
+      "n": 197,
       "id": "hold.drift.v2",
       "group": "hold",
       "type": "drift",
@@ -8760,7 +7165,7 @@
       }
     },
     {
-      "n": 241,
+      "n": 198,
       "id": "hold.marquee.v2",
       "group": "hold",
       "type": "marquee",
@@ -8785,7 +7190,7 @@
       }
     },
     {
-      "n": 242,
+      "n": 199,
       "id": "hold.jelly.v2",
       "group": "hold",
       "type": "jelly",
@@ -8817,7 +7222,7 @@
       }
     },
     {
-      "n": 243,
+      "n": 200,
       "id": "hold.wobbleWarp.v2",
       "group": "hold",
       "type": "wobbleWarp",
@@ -8850,7 +7255,7 @@
       }
     },
     {
-      "n": 244,
+      "n": 201,
       "id": "hold.twist.v2",
       "group": "hold",
       "type": "twist",
@@ -8881,7 +7286,7 @@
       }
     },
     {
-      "n": 245,
+      "n": 202,
       "id": "hold.breathing.v2",
       "group": "hold",
       "type": "breathing",
@@ -8906,7 +7311,7 @@
       }
     },
     {
-      "n": 246,
+      "n": 203,
       "id": "hold.orbit3D.v2",
       "group": "hold",
       "type": "orbit3D",
@@ -8943,7 +7348,7 @@
       }
     },
     {
-      "n": 247,
+      "n": 204,
       "id": "hold.orbit2D.v2",
       "group": "hold",
       "type": "orbit2D",
@@ -8978,7 +7383,7 @@
       }
     },
     {
-      "n": 248,
+      "n": 205,
       "id": "hold.pathFollow.v2",
       "group": "hold",
       "type": "pathFollow",
@@ -9017,7 +7422,7 @@
       }
     },
     {
-      "n": 249,
+      "n": 206,
       "id": "hold.shiver.v2",
       "group": "hold",
       "type": "shiver",
@@ -9054,7 +7459,7 @@
       }
     },
     {
-      "n": 250,
+      "n": 207,
       "id": "hold.dissolve.v2",
       "group": "hold",
       "type": "dissolve",
@@ -9086,213 +7491,7 @@
       }
     },
     {
-      "n": 251,
-      "id": "hold.dither.v2",
-      "group": "hold",
-      "type": "dither",
-      "variant": 2,
-      "label": "保持 / ディザ（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "levels",
-          "from": 4,
-          "to": 6
-        },
-        {
-          "key": "jitter",
-          "from": 0.3,
-          "to": 0
-        }
-      ],
-      "verified": "motion",
-      "score": 0.768,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "dither",
-            "enabled": true,
-            "params": {
-              "levels": 6,
-              "jitter": 0,
-              "speed": 2
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 252,
-      "id": "hold.scanline.v2",
-      "group": "hold",
-      "type": "scanline",
-      "variant": 2,
-      "label": "保持 / 走査線（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "lines",
-          "from": 8,
-          "to": 3
-        }
-      ],
-      "verified": "motion",
-      "score": 0.849,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "scanline",
-            "enabled": true,
-            "params": {
-              "lines": 3,
-              "bandWidth": 0.3,
-              "depth": 0.85,
-              "speed": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 253,
-      "id": "hold.stealth.v2",
-      "group": "hold",
-      "type": "stealth",
-      "variant": 2,
-      "label": "保持 / ステルス・クローク（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "split",
-          "from": 6,
-          "to": 2
-        }
-      ],
-      "verified": "motion",
-      "score": 0.728,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "stealth",
-            "enabled": true,
-            "params": {
-              "split": 2,
-              "glow": 0.7,
-              "speed": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 254,
-      "id": "hold.windBreak.v2",
-      "group": "hold",
-      "type": "windBreak",
-      "variant": 2,
-      "label": "保持 / windBreak（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "grain",
-          "from": 3,
-          "to": 9.3
-        }
-      ],
-      "verified": "motion",
-      "score": 0.426,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "windBreak",
-            "enabled": true,
-            "params": {
-              "wind": 0.5,
-              "grain": 9.3
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 255,
-      "id": "hold.windNoBreak.v2",
-      "group": "hold",
-      "type": "windNoBreak",
-      "variant": 2,
-      "label": "保持 / windNoBreak（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "rise",
-          "from": 0.08,
-          "to": 0.25
-        }
-      ],
-      "verified": "motion",
-      "score": 0.411,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "windNoBreak",
-            "enabled": true,
-            "params": {
-              "wind": 0.5,
-              "rise": 0.25
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 256,
-      "id": "hold.cloth.v2",
-      "group": "hold",
-      "type": "cloth",
-      "variant": 2,
-      "label": "保持 / cloth（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.12,
-          "to": 0.13
-        },
-        {
-          "key": "speed",
-          "from": 0.9,
-          "to": 3
-        }
-      ],
-      "verified": "motion",
-      "score": 0.474,
-      "notes": [],
-      "style": {
-        "hold": [
-          {
-            "type": "cloth",
-            "enabled": true,
-            "params": {
-              "amount": 0.13,
-              "speed": 3
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 257,
+      "n": 208,
       "id": "location.center.v1",
       "group": "location",
       "type": "center",
@@ -9327,7 +7526,7 @@
       }
     },
     {
-      "n": 258,
+      "n": 209,
       "id": "location.lowerThird.v1",
       "group": "location",
       "type": "lowerThird",
@@ -9356,7 +7555,7 @@
       }
     },
     {
-      "n": 259,
+      "n": 210,
       "id": "location.upperThird.v1",
       "group": "location",
       "type": "upperThird",
@@ -9385,7 +7584,7 @@
       }
     },
     {
-      "n": 260,
+      "n": 211,
       "id": "location.left.v1",
       "group": "location",
       "type": "left",
@@ -9420,7 +7619,7 @@
       }
     },
     {
-      "n": 261,
+      "n": 212,
       "id": "location.right.v1",
       "group": "location",
       "type": "right",
@@ -9455,7 +7654,7 @@
       }
     },
     {
-      "n": 262,
+      "n": 213,
       "id": "location.karaoke.v1",
       "group": "location",
       "type": "karaoke",
@@ -9490,7 +7689,7 @@
       }
     },
     {
-      "n": 263,
+      "n": 214,
       "id": "location.stacked.v1",
       "group": "location",
       "type": "stacked",
@@ -9519,7 +7718,7 @@
       }
     },
     {
-      "n": 264,
+      "n": 215,
       "id": "location.randomSafe.v1",
       "group": "location",
       "type": "randomSafe",
@@ -9548,7 +7747,7 @@
       }
     },
     {
-      "n": 265,
+      "n": 216,
       "id": "location.badgeAnchored.v1",
       "group": "location",
       "type": "badgeAnchored",
@@ -9585,7 +7784,7 @@
       }
     },
     {
-      "n": 266,
+      "n": 217,
       "id": "location.custom.v1",
       "group": "location",
       "type": "custom",
@@ -9622,7 +7821,7 @@
       }
     },
     {
-      "n": 267,
+      "n": 218,
       "id": "location.center.v2",
       "group": "location",
       "type": "center",
@@ -9657,7 +7856,7 @@
       }
     },
     {
-      "n": 268,
+      "n": 219,
       "id": "location.lowerThird.v2",
       "group": "location",
       "type": "lowerThird",
@@ -9692,7 +7891,7 @@
       }
     },
     {
-      "n": 269,
+      "n": 220,
       "id": "location.upperThird.v2",
       "group": "location",
       "type": "upperThird",
@@ -9727,7 +7926,7 @@
       }
     },
     {
-      "n": 270,
+      "n": 221,
       "id": "location.left.v2",
       "group": "location",
       "type": "left",
@@ -9762,7 +7961,7 @@
       }
     },
     {
-      "n": 271,
+      "n": 222,
       "id": "location.right.v2",
       "group": "location",
       "type": "right",
@@ -9797,7 +7996,7 @@
       }
     },
     {
-      "n": 272,
+      "n": 223,
       "id": "location.karaoke.v2",
       "group": "location",
       "type": "karaoke",
@@ -9832,7 +8031,7 @@
       }
     },
     {
-      "n": 273,
+      "n": 224,
       "id": "location.stacked.v2",
       "group": "location",
       "type": "stacked",
@@ -9867,7 +8066,7 @@
       }
     },
     {
-      "n": 274,
+      "n": 225,
       "id": "location.randomSafe.v2",
       "group": "location",
       "type": "randomSafe",
@@ -9902,7 +8101,7 @@
       }
     },
     {
-      "n": 275,
+      "n": 226,
       "id": "location.badgeAnchored.v2",
       "group": "location",
       "type": "badgeAnchored",
@@ -9939,7 +8138,7 @@
       }
     },
     {
-      "n": 276,
+      "n": 227,
       "id": "location.custom.v2",
       "group": "location",
       "type": "custom",
@@ -9976,7 +8175,7 @@
       }
     },
     {
-      "n": 277,
+      "n": 228,
       "id": "fill.gradientSweep.v1",
       "group": "fill",
       "type": "gradientSweep",
@@ -10006,7 +8205,7 @@
       }
     },
     {
-      "n": 278,
+      "n": 229,
       "id": "fill.rainbowFlow.v1",
       "group": "fill",
       "type": "rainbowFlow",
@@ -10038,7 +8237,7 @@
       }
     },
     {
-      "n": 279,
+      "n": 230,
       "id": "fill.holographic.v1",
       "group": "fill",
       "type": "holographic",
@@ -10074,7 +8273,7 @@
       }
     },
     {
-      "n": 280,
+      "n": 231,
       "id": "fill.chrome.v1",
       "group": "fill",
       "type": "chrome",
@@ -10104,7 +8303,7 @@
       }
     },
     {
-      "n": 281,
+      "n": 232,
       "id": "fill.goldFoil.v1",
       "group": "fill",
       "type": "goldFoil",
@@ -10135,7 +8334,7 @@
       }
     },
     {
-      "n": 282,
+      "n": 233,
       "id": "fill.fire.v1",
       "group": "fill",
       "type": "fire",
@@ -10171,7 +8370,7 @@
       }
     },
     {
-      "n": 283,
+      "n": 234,
       "id": "fill.caustics.v1",
       "group": "fill",
       "type": "caustics",
@@ -10203,7 +8402,7 @@
       }
     },
     {
-      "n": 284,
+      "n": 235,
       "id": "fill.marble.v1",
       "group": "fill",
       "type": "marble",
@@ -10240,7 +8439,7 @@
       }
     },
     {
-      "n": 285,
+      "n": 236,
       "id": "fill.glass.v1",
       "group": "fill",
       "type": "glass",
@@ -10271,7 +8470,7 @@
       }
     },
     {
-      "n": 286,
+      "n": 237,
       "id": "fill.textureFill.v1",
       "group": "fill",
       "type": "textureFill",
@@ -10307,7 +8506,7 @@
       }
     },
     {
-      "n": 287,
+      "n": 238,
       "id": "fill.karaokeWipe.v1",
       "group": "fill",
       "type": "karaokeWipe",
@@ -10338,7 +8537,7 @@
       }
     },
     {
-      "n": 288,
+      "n": 239,
       "id": "fill.ink.v1",
       "group": "fill",
       "type": "ink",
@@ -10374,7 +8573,7 @@
       }
     },
     {
-      "n": 289,
+      "n": 240,
       "id": "fill.gradientSweep.v2",
       "group": "fill",
       "type": "gradientSweep",
@@ -10404,7 +8603,7 @@
       }
     },
     {
-      "n": 290,
+      "n": 241,
       "id": "fill.rainbowFlow.v2",
       "group": "fill",
       "type": "rainbowFlow",
@@ -10436,7 +8635,7 @@
       }
     },
     {
-      "n": 291,
+      "n": 242,
       "id": "fill.holographic.v2",
       "group": "fill",
       "type": "holographic",
@@ -10472,7 +8671,7 @@
       }
     },
     {
-      "n": 292,
+      "n": 243,
       "id": "fill.chrome.v2",
       "group": "fill",
       "type": "chrome",
@@ -10525,7 +8724,7 @@
       }
     },
     {
-      "n": 293,
+      "n": 244,
       "id": "fill.goldFoil.v2",
       "group": "fill",
       "type": "goldFoil",
@@ -10579,7 +8778,7 @@
       }
     },
     {
-      "n": 294,
+      "n": 245,
       "id": "fill.fire.v2",
       "group": "fill",
       "type": "fire",
@@ -10615,7 +8814,7 @@
       }
     },
     {
-      "n": 295,
+      "n": 246,
       "id": "fill.caustics.v2",
       "group": "fill",
       "type": "caustics",
@@ -10652,7 +8851,7 @@
       }
     },
     {
-      "n": 296,
+      "n": 247,
       "id": "fill.marble.v2",
       "group": "fill",
       "type": "marble",
@@ -10712,7 +8911,7 @@
       }
     },
     {
-      "n": 297,
+      "n": 248,
       "id": "fill.glass.v2",
       "group": "fill",
       "type": "glass",
@@ -10748,7 +8947,7 @@
       }
     },
     {
-      "n": 298,
+      "n": 249,
       "id": "fill.textureFill.v2",
       "group": "fill",
       "type": "textureFill",
@@ -10784,7 +8983,7 @@
       }
     },
     {
-      "n": 299,
+      "n": 250,
       "id": "fill.karaokeWipe.v2",
       "group": "fill",
       "type": "karaokeWipe",
@@ -10820,7 +9019,7 @@
       }
     },
     {
-      "n": 300,
+      "n": 251,
       "id": "fill.ink.v2",
       "group": "fill",
       "type": "ink",
@@ -10856,7 +9055,7 @@
       }
     },
     {
-      "n": 301,
+      "n": 252,
       "id": "edge.outline.v1",
       "group": "edge",
       "type": "outline",
@@ -10895,7 +9094,7 @@
       }
     },
     {
-      "n": 302,
+      "n": 253,
       "id": "edge.neonGlow.v1",
       "group": "edge",
       "type": "neonGlow",
@@ -10929,7 +9128,7 @@
       }
     },
     {
-      "n": 303,
+      "n": 254,
       "id": "edge.innerGlow.v1",
       "group": "edge",
       "type": "innerGlow",
@@ -10962,7 +9161,7 @@
       }
     },
     {
-      "n": 304,
+      "n": 255,
       "id": "edge.bevel.v1",
       "group": "edge",
       "type": "bevel",
@@ -10996,7 +9195,7 @@
       }
     },
     {
-      "n": 305,
+      "n": 256,
       "id": "edge.extrude.v1",
       "group": "edge",
       "type": "extrude",
@@ -11030,7 +9229,7 @@
       }
     },
     {
-      "n": 306,
+      "n": 257,
       "id": "edge.longShadow.v1",
       "group": "edge",
       "type": "longShadow",
@@ -11064,7 +9263,7 @@
       }
     },
     {
-      "n": 307,
+      "n": 258,
       "id": "edge.dropShadow.v1",
       "group": "edge",
       "type": "dropShadow",
@@ -11101,7 +9300,7 @@
       }
     },
     {
-      "n": 308,
+      "n": 259,
       "id": "edge.drip.v1",
       "group": "edge",
       "type": "drip",
@@ -11135,7 +9334,7 @@
       }
     },
     {
-      "n": 309,
+      "n": 260,
       "id": "edge.outline.v2",
       "group": "edge",
       "type": "outline",
@@ -11174,7 +9373,7 @@
       }
     },
     {
-      "n": 310,
+      "n": 261,
       "id": "edge.neonGlow.v2",
       "group": "edge",
       "type": "neonGlow",
@@ -11213,7 +9412,7 @@
       }
     },
     {
-      "n": 311,
+      "n": 262,
       "id": "edge.innerGlow.v2",
       "group": "edge",
       "type": "innerGlow",
@@ -11251,7 +9450,7 @@
       }
     },
     {
-      "n": 312,
+      "n": 263,
       "id": "edge.bevel.v2",
       "group": "edge",
       "type": "bevel",
@@ -11285,7 +9484,7 @@
       }
     },
     {
-      "n": 313,
+      "n": 264,
       "id": "edge.extrude.v2",
       "group": "edge",
       "type": "extrude",
@@ -11319,7 +9518,7 @@
       }
     },
     {
-      "n": 314,
+      "n": 265,
       "id": "edge.longShadow.v2",
       "group": "edge",
       "type": "longShadow",
@@ -11358,7 +9557,7 @@
       }
     },
     {
-      "n": 315,
+      "n": 266,
       "id": "edge.dropShadow.v2",
       "group": "edge",
       "type": "dropShadow",
@@ -11395,7 +9594,46 @@
       }
     },
     {
-      "n": 316,
+      "n": 267,
+      "id": "edge.drip.v2",
+      "group": "edge",
+      "type": "drip",
+      "variant": 2,
+      "label": "縁取り / 滴り（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "length",
+          "from": 40,
+          "to": 121
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "edge": [
+          {
+            "type": "drip",
+            "enabled": true,
+            "params": {
+              "length": 121,
+              "width": 0.35,
+              "grow": 0.5,
+              "color": "#ff8a3d"
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 268,
       "id": "post.glitchBlocks.v1",
       "group": "post",
       "type": "glitchBlocks",
@@ -11437,7 +9675,7 @@
       }
     },
     {
-      "n": 317,
+      "n": 269,
       "id": "post.rgbShift.v1",
       "group": "post",
       "type": "rgbShift",
@@ -11478,7 +9716,7 @@
       }
     },
     {
-      "n": 318,
+      "n": 270,
       "id": "post.scanTear.v1",
       "group": "post",
       "type": "scanTear",
@@ -11519,7 +9757,7 @@
       }
     },
     {
-      "n": 319,
+      "n": 271,
       "id": "post.vhsTracking.v1",
       "group": "post",
       "type": "vhsTracking",
@@ -11560,7 +9798,7 @@
       }
     },
     {
-      "n": 320,
+      "n": 272,
       "id": "post.dataSmear.v1",
       "group": "post",
       "type": "dataSmear",
@@ -11601,7 +9839,7 @@
       }
     },
     {
-      "n": 321,
+      "n": 273,
       "id": "post.digitalNoise.v1",
       "group": "post",
       "type": "digitalNoise",
@@ -11641,7 +9879,7 @@
       }
     },
     {
-      "n": 322,
+      "n": 274,
       "id": "post.glitchSlice.v1",
       "group": "post",
       "type": "glitchSlice",
@@ -11682,7 +9920,7 @@
       }
     },
     {
-      "n": 323,
+      "n": 275,
       "id": "post.noiseDissolve.v1",
       "group": "post",
       "type": "noiseDissolve",
@@ -11718,7 +9956,7 @@
       }
     },
     {
-      "n": 324,
+      "n": 276,
       "id": "post.directionalDissolve.v1",
       "group": "post",
       "type": "directionalDissolve",
@@ -11754,7 +9992,7 @@
       }
     },
     {
-      "n": 325,
+      "n": 277,
       "id": "post.pixelDissolve.v1",
       "group": "post",
       "type": "pixelDissolve",
@@ -11788,7 +10026,7 @@
       }
     },
     {
-      "n": 326,
+      "n": 278,
       "id": "post.burnDissolve.v1",
       "group": "post",
       "type": "burnDissolve",
@@ -11824,7 +10062,7 @@
       }
     },
     {
-      "n": 327,
+      "n": 279,
       "id": "post.halftoneDissolve.v1",
       "group": "post",
       "type": "halftoneDissolve",
@@ -11864,7 +10102,7 @@
       }
     },
     {
-      "n": 328,
+      "n": 280,
       "id": "post.particleDissolve.v1",
       "group": "post",
       "type": "particleDissolve",
@@ -11904,7 +10142,7 @@
       }
     },
     {
-      "n": 329,
+      "n": 281,
       "id": "post.shockwave.v1",
       "group": "post",
       "type": "shockwave",
@@ -11949,7 +10187,7 @@
       }
     },
     {
-      "n": 330,
+      "n": 282,
       "id": "post.zoomBlur.v1",
       "group": "post",
       "type": "zoomBlur",
@@ -11987,7 +10225,7 @@
       }
     },
     {
-      "n": 331,
+      "n": 283,
       "id": "post.motionBlur.v1",
       "group": "post",
       "type": "motionBlur",
@@ -12023,7 +10261,7 @@
       }
     },
     {
-      "n": 332,
+      "n": 284,
       "id": "post.echoTrail.v1",
       "group": "post",
       "type": "echoTrail",
@@ -12060,7 +10298,7 @@
       }
     },
     {
-      "n": 333,
+      "n": 285,
       "id": "post.godRays.v1",
       "group": "post",
       "type": "godRays",
@@ -12105,7 +10343,7 @@
       }
     },
     {
-      "n": 334,
+      "n": 286,
       "id": "post.lightSweep.v1",
       "group": "post",
       "type": "lightSweep",
@@ -12142,7 +10380,7 @@
       }
     },
     {
-      "n": 335,
+      "n": 287,
       "id": "post.kaleidoscope.v1",
       "group": "post",
       "type": "kaleidoscope",
@@ -12177,7 +10415,7 @@
       }
     },
     {
-      "n": 336,
+      "n": 288,
       "id": "post.mirror.v1",
       "group": "post",
       "type": "mirror",
@@ -12212,7 +10450,7 @@
       }
     },
     {
-      "n": 337,
+      "n": 289,
       "id": "post.pixelSort.v1",
       "group": "post",
       "type": "pixelSort",
@@ -12253,7 +10491,7 @@
       }
     },
     {
-      "n": 338,
+      "n": 290,
       "id": "post.lensDistortion.v1",
       "group": "post",
       "type": "lensDistortion",
@@ -12294,7 +10532,7 @@
       }
     },
     {
-      "n": 339,
+      "n": 291,
       "id": "post.colorGrade.v1",
       "group": "post",
       "type": "colorGrade",
@@ -12331,7 +10569,7 @@
       }
     },
     {
-      "n": 340,
+      "n": 292,
       "id": "post.displacementMap.v1",
       "group": "post",
       "type": "displacementMap",
@@ -12371,7 +10609,7 @@
       }
     },
     {
-      "n": 341,
+      "n": 293,
       "id": "post.bloom.v1",
       "group": "post",
       "type": "bloom",
@@ -12412,7 +10650,7 @@
       }
     },
     {
-      "n": 342,
+      "n": 294,
       "id": "post.chromaticAberration.v1",
       "group": "post",
       "type": "chromaticAberration",
@@ -12448,7 +10686,7 @@
       }
     },
     {
-      "n": 343,
+      "n": 295,
       "id": "post.crt.v1",
       "group": "post",
       "type": "crt",
@@ -12489,7 +10727,7 @@
       }
     },
     {
-      "n": 344,
+      "n": 296,
       "id": "post.filmGrain.v1",
       "group": "post",
       "type": "filmGrain",
@@ -12529,7 +10767,7 @@
       }
     },
     {
-      "n": 345,
+      "n": 297,
       "id": "post.halftone.v1",
       "group": "post",
       "type": "halftone",
@@ -12569,7 +10807,7 @@
       }
     },
     {
-      "n": 346,
+      "n": 298,
       "id": "post.pixelate.v1",
       "group": "post",
       "type": "pixelate",
@@ -12603,7 +10841,7 @@
       }
     },
     {
-      "n": 347,
+      "n": 299,
       "id": "post.heatHaze.v1",
       "group": "post",
       "type": "heatHaze",
@@ -12638,7 +10876,7 @@
       }
     },
     {
-      "n": 348,
+      "n": 300,
       "id": "post.lightLeak.v1",
       "group": "post",
       "type": "lightLeak",
@@ -12675,7 +10913,7 @@
       }
     },
     {
-      "n": 349,
+      "n": 301,
       "id": "post.vignette.v1",
       "group": "post",
       "type": "vignette",
@@ -12710,7 +10948,7 @@
       }
     },
     {
-      "n": 350,
+      "n": 302,
       "id": "post.sparkles.v1",
       "group": "post",
       "type": "sparkles",
@@ -12747,7 +10985,7 @@
       }
     },
     {
-      "n": 351,
+      "n": 303,
       "id": "post.lensFlare.v1",
       "group": "post",
       "type": "lensFlare",
@@ -12785,148 +11023,23 @@
       }
     },
     {
-      "n": 352,
-      "id": "post.dither.v1",
+      "n": 304,
+      "id": "post.glitchBlocks.v2",
       "group": "post",
-      "type": "dither",
-      "variant": 1,
-      "label": "後処理 / ディザ（代表1）",
+      "type": "glitchBlocks",
+      "variant": 2,
+      "label": "後処理 / グリッチブロック（代表2）",
       "apply": "style",
       "changes": [
         {
-          "key": "pattern",
-          "from": "bayer4",
-          "to": "bayer2"
+          "key": "blockSize",
+          "from": 24,
+          "to": 97
         },
         {
-          "key": "mode",
-          "from": "luma",
-          "to": "rgb"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "dither",
-            "enabled": true,
-            "params": {
-              "pattern": "bayer2",
-              "mode": "rgb",
-              "levels": 6,
-              "cellSize": 2,
-              "colorA": null,
-              "colorB": null,
-              "strength": 0.8,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 353,
-      "id": "post.fade.v1",
-      "group": "post",
-      "type": "fade",
-      "variant": 1,
-      "label": "後処理 / フェード（シェーダ）（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "mode",
-          "from": "through",
-          "to": "toColor"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "fade",
-            "enabled": true,
-            "params": {
-              "mode": "toColor",
-              "softness": 0.4,
-              "color": null,
-              "dipColor": null,
-              "strength": 1,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 354,
-      "id": "post.scanline.v1",
-      "group": "post",
-      "type": "scanline",
-      "variant": 1,
-      "label": "後処理 / 走査線（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "depth",
-          "from": 0.35,
-          "to": 0.15
-        },
-        {
-          "key": "speed",
-          "from": 0.6,
-          "to": 0
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "scanline",
-            "enabled": true,
-            "params": {
-              "count": 90,
-              "depth": 0.15,
-              "duty": 0.45,
-              "speed": 0,
-              "angle": 0,
-              "rollHeight": 0,
-              "flicker": 0.1,
-              "tint": null,
-              "strength": 1,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 355,
-      "id": "post.stealth.v1",
-      "group": "post",
-      "type": "stealth",
-      "variant": 1,
-      "label": "後処理 / ステルス・クローク（代表1）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "split",
+          "key": "rate",
           "from": 6,
-          "to": 2
+          "to": 8.25
         }
       ],
       "verified": "static",
@@ -12935,16 +11048,13 @@
       "style": {
         "post": [
           {
-            "type": "stealth",
+            "type": "glitchBlocks",
             "enabled": true,
             "params": {
-              "split": 2,
-              "angle": 0,
-              "glow": 1.2,
-              "cloak": 0.6,
-              "shimmer": 0.25,
-              "tint": null,
-              "strength": 1,
+              "blockSize": 97,
+              "rate": 8.25,
+              "intensity": 0.5,
+              "rgbSplit": true,
               "enabled": true,
               "in": 1,
               "out": 1
@@ -12955,18 +11065,1336 @@
       }
     },
     {
-      "n": 356,
-      "id": "post.geometry.v1",
+      "n": 305,
+      "id": "post.rgbShift.v2",
       "group": "post",
-      "type": "geometry",
-      "variant": 1,
-      "label": "後処理 / ジオメトリ（代表1）",
+      "type": "rgbShift",
+      "variant": 2,
+      "label": "後処理 / RGBシフト（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 3,
+          "to": 22.5
+        },
+        {
+          "key": "angle",
+          "from": 0,
+          "to": -90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "rgbShift",
+            "enabled": true,
+            "params": {
+              "amount": 22.5,
+              "angle": -90,
+              "jitter": 0.3,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 306,
+      "id": "post.scanTear.v2",
+      "group": "post",
+      "type": "scanTear",
+      "variant": 2,
+      "label": "後処理 / スキャンティア（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "lines",
+          "from": 24,
+          "to": 150.5
+        },
+        {
+          "key": "amount",
+          "from": 0.4,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "scanTear",
+            "enabled": true,
+            "params": {
+              "lines": 150.5,
+              "amount": 0.25,
+              "speed": 1,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 307,
+      "id": "post.vhsTracking.v2",
+      "group": "post",
+      "type": "vhsTracking",
+      "variant": 2,
+      "label": "後処理 / VHSトラッキング（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.3,
+          "to": 0.75
+        },
+        {
+          "key": "noise",
+          "from": 0.2,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "vhsTracking",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "noise": 0.75,
+              "rollSpeed": 0.3,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 308,
+      "id": "post.dataSmear.v2",
+      "group": "post",
+      "type": "dataSmear",
+      "variant": 2,
+      "label": "後処理 / データスミア（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.4,
+          "to": 0.75
+        },
+        {
+          "key": "direction",
+          "from": 0,
+          "to": -90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "dataSmear",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "direction": -90,
+              "threshold": 0.3,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 309,
+      "id": "post.digitalNoise.v2",
+      "group": "post",
+      "type": "digitalNoise",
+      "variant": 2,
+      "label": "後処理 / デジタルノイズ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "density",
+          "from": 0.3,
+          "to": 0.75
+        },
+        {
+          "key": "blockSize",
+          "from": 12,
+          "to": 48.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "digitalNoise",
+            "enabled": true,
+            "params": {
+              "density": 0.75,
+              "blockSize": 48.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 310,
+      "id": "post.glitchSlice.v2",
+      "group": "post",
+      "type": "glitchSlice",
+      "variant": 2,
+      "label": "後処理 / グリッチスライス（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "slices",
+          "from": 8,
+          "to": 48.5
+        },
+        {
+          "key": "offset",
+          "from": 0.4,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "glitchSlice",
+            "enabled": true,
+            "params": {
+              "slices": 48.5,
+              "offset": 0.75,
+              "rate": 6,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 311,
+      "id": "post.noiseDissolve.v2",
+      "group": "post",
+      "type": "noiseDissolve",
+      "variant": 2,
+      "label": "後処理 / ノイズディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "edgeColor",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "scale",
+          "from": 10,
+          "to": 48.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "noiseDissolve",
+            "enabled": true,
+            "params": {
+              "scale": 48.25,
+              "edgeWidth": 0.1,
+              "edgeColor": "#ff8a3d",
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 312,
+      "id": "post.directionalDissolve.v2",
+      "group": "post",
+      "type": "directionalDissolve",
+      "variant": 2,
+      "label": "後処理 / 方向ディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "angle",
+          "from": 0,
+          "to": -90
+        },
+        {
+          "key": "softness",
+          "from": 0.1,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "directionalDissolve",
+            "enabled": true,
+            "params": {
+              "angle": -90,
+              "softness": 0.75,
+              "noiseMix": 0.3,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 313,
+      "id": "post.pixelDissolve.v2",
+      "group": "post",
+      "type": "pixelDissolve",
+      "variant": 2,
+      "label": "後処理 / ピクセルディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "cellSize",
+          "from": 10,
+          "to": 48.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "pixelDissolve",
+            "enabled": true,
+            "params": {
+              "cellSize": 48.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 314,
+      "id": "post.burnDissolve.v2",
+      "group": "post",
+      "type": "burnDissolve",
+      "variant": 2,
+      "label": "後処理 / 燃焼ディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "emberColor",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "charColor",
+          "from": null,
+          "to": "#ff8a3d"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "burnDissolve",
+            "enabled": true,
+            "params": {
+              "scale": 10,
+              "emberColor": "#ff8a3d",
+              "charColor": "#ff8a3d",
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 315,
+      "id": "post.halftoneDissolve.v2",
+      "group": "post",
+      "type": "halftoneDissolve",
+      "variant": 2,
+      "label": "後処理 / ハーフトーンディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "dotSize",
+          "from": 8,
+          "to": 30.5
+        },
+        {
+          "key": "angle",
+          "from": 0,
+          "to": -90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "halftoneDissolve",
+            "enabled": true,
+            "params": {
+              "dotSize": 30.5,
+              "angle": -90,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 316,
+      "id": "post.particleDissolve.v2",
+      "group": "post",
+      "type": "particleDissolve",
+      "variant": 2,
+      "label": "後処理 / パーティクルディゾルブ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "count",
+          "from": 24,
+          "to": 97
+        },
+        {
+          "key": "drift",
+          "from": 0.4,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "particleDissolve",
+            "enabled": true,
+            "params": {
+              "count": 97,
+              "drift": 0.75,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 317,
+      "id": "post.shockwave.v2",
+      "group": "post",
+      "type": "shockwave",
+      "variant": 2,
+      "label": "後処理 / 衝撃波（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "radius",
+          "from": 0.25,
+          "to": 0.75
+        },
+        {
+          "key": "width",
+          "from": 0.06,
+          "to": 0.129
+        },
+        {
+          "key": "strength",
+          "from": 0.6,
+          "to": 0.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "shockwave",
+            "enabled": true,
+            "params": {
+              "center": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "radius": 0.75,
+              "width": 0.129,
+              "strength": 0.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 318,
+      "id": "post.zoomBlur.v2",
+      "group": "post",
+      "type": "zoomBlur",
+      "variant": 2,
+      "label": "後処理 / ズームブラー（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "strength",
+          "from": 0.4,
+          "to": 1.125
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "zoomBlur",
+            "enabled": true,
+            "params": {
+              "center": {
+                "x": 0.5,
+                "y": 0.5
+              },
+              "strength": 1.125,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 319,
+      "id": "post.motionBlur.v2",
+      "group": "post",
+      "type": "motionBlur",
+      "variant": 2,
+      "label": "後処理 / モーションブラー（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "samples",
+          "from": 8,
+          "to": 13
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "motionBlur",
+            "enabled": true,
+            "params": {
+              "samples": 13,
+              "shutter": 0.5,
+              "angle": 0,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 320,
+      "id": "post.echoTrail.v2",
+      "group": "post",
+      "type": "echoTrail",
+      "variant": 2,
+      "label": "後処理 / エコートレイル（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "tint",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "spacing",
+          "from": 0.08,
+          "to": 0.108
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "echoTrail",
+            "enabled": true,
+            "params": {
+              "copies": 4,
+              "spacing": 0.108,
+              "decay": 0.6,
+              "tint": "#ff8a3d",
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 321,
+      "id": "post.godRays.v2",
+      "group": "post",
+      "type": "godRays",
+      "variant": 2,
+      "label": "後処理 / ゴッドレイ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "decay",
+          "from": 0.9,
+          "to": 0.875
+        },
+        {
+          "key": "density",
+          "from": 0.6,
+          "to": 0.325
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "godRays",
+            "enabled": true,
+            "params": {
+              "center": {
+                "x": 0.5,
+                "y": 0.4
+              },
+              "decay": 0.875,
+              "density": 0.325,
+              "weight": 1,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 322,
+      "id": "post.lightSweep.v2",
+      "group": "post",
+      "type": "lightSweep",
+      "variant": 2,
+      "label": "後処理 / ライトスイープ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "angle",
+          "from": -30,
+          "to": 90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "lightSweep",
+            "enabled": true,
+            "params": {
+              "angle": 90,
+              "width": 0.12,
+              "speed": 0.6,
+              "color": "#ff8a3d",
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 323,
+      "id": "post.kaleidoscope.v2",
+      "group": "post",
+      "type": "kaleidoscope",
+      "variant": 2,
+      "label": "後処理 / 万華鏡（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "rotation",
+          "from": 0,
+          "to": -90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "kaleidoscope",
+            "enabled": true,
+            "params": {
+              "segments": 6,
+              "rotation": -90,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 324,
+      "id": "post.mirror.v2",
+      "group": "post",
+      "type": "mirror",
+      "variant": 2,
+      "label": "後処理 / ミラー（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "offset",
+          "from": 0,
+          "to": -0.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "mirror",
+            "enabled": true,
+            "params": {
+              "axis": "x",
+              "offset": -0.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 325,
+      "id": "post.pixelSort.v2",
+      "group": "post",
+      "type": "pixelSort",
+      "variant": 2,
+      "label": "後処理 / ピクセルソート（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "threshold",
+          "from": 0.55,
+          "to": 0.75
+        },
+        {
+          "key": "length",
+          "from": 24,
+          "to": 16.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "pixelSort",
+            "enabled": true,
+            "params": {
+              "threshold": 0.75,
+              "length": 16.75,
+              "direction": 90,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 326,
+      "id": "post.lensDistortion.v2",
+      "group": "post",
+      "type": "lensDistortion",
+      "variant": 2,
+      "label": "後処理 / レンズ歪み（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "k1",
+          "from": 0.15,
+          "to": 0.5
+        },
+        {
+          "key": "k2",
+          "from": 0,
+          "to": -0.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "lensDistortion",
+            "enabled": true,
+            "params": {
+              "k1": 0.5,
+              "k2": -0.5,
+              "chroma": 0.2,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 327,
+      "id": "post.colorGrade.v2",
+      "group": "post",
+      "type": "colorGrade",
+      "variant": 2,
+      "label": "後処理 / カラーグレード（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "duotone",
+          "from": null,
+          "to": "#4dc8ff"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "colorGrade",
+            "enabled": true,
+            "params": {
+              "lift": 0,
+              "saturation": 1,
+              "posterize": 0,
+              "duotone": "#4dc8ff",
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 328,
+      "id": "post.displacementMap.v2",
+      "group": "post",
+      "type": "displacementMap",
+      "variant": 2,
+      "label": "後処理 / 変位マップ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.3,
+          "to": 0.75
+        },
+        {
+          "key": "scroll",
+          "from": 0.2,
+          "to": 1.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "displacementMap",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "scroll": 1.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 329,
+      "id": "post.bloom.v2",
+      "group": "post",
+      "type": "bloom",
+      "variant": 2,
+      "label": "後処理 / ブルーム（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "threshold",
+          "from": 0.6,
+          "to": 0.75
+        },
+        {
+          "key": "intensity",
+          "from": 0.7,
+          "to": 0.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "bloom",
+            "enabled": true,
+            "params": {
+              "threshold": 0.75,
+              "intensity": 0.5,
+              "radius": 0.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 330,
+      "id": "post.chromaticAberration.v2",
+      "group": "post",
+      "type": "chromaticAberration",
+      "variant": 2,
+      "label": "後処理 / 色収差（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.4,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "chromaticAberration",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "radial": 0,
+              "angle": 0,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 331,
+      "id": "post.crt.v2",
+      "group": "post",
+      "type": "crt",
+      "variant": 2,
+      "label": "後処理 / CRT（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "scanlines",
+          "from": 0.2,
+          "to": 0.75
+        },
+        {
+          "key": "curvature",
+          "from": 0.1,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "crt",
+            "enabled": true,
+            "params": {
+              "scanlines": 0.75,
+              "curvature": 0.75,
+              "vignette": 0.3,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 332,
+      "id": "post.filmGrain.v2",
+      "group": "post",
+      "type": "filmGrain",
+      "variant": 2,
+      "label": "後処理 / フィルムグレイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.2,
+          "to": 0.75
+        },
+        {
+          "key": "size",
+          "from": 1,
+          "to": 3.125
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "filmGrain",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "size": 3.125,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 333,
+      "id": "post.halftone.v2",
+      "group": "post",
+      "type": "halftone",
+      "variant": 2,
+      "label": "後処理 / ハーフトーン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "dotSize",
+          "from": 8,
+          "to": 30.5
+        },
+        {
+          "key": "angle",
+          "from": 0,
+          "to": -90
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "halftone",
+            "enabled": true,
+            "params": {
+              "dotSize": 30.5,
+              "angle": -90,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 334,
+      "id": "post.pixelate.v2",
+      "group": "post",
+      "type": "pixelate",
+      "variant": 2,
+      "label": "後処理 / ピクセル化（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "size",
+          "from": 8,
+          "to": 48.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "pixelate",
+            "enabled": true,
+            "params": {
+              "size": 48.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 335,
+      "id": "post.heatHaze.v2",
+      "group": "post",
+      "type": "heatHaze",
+      "variant": 2,
+      "label": "後処理 / 陽炎（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.3,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "heatHaze",
+            "enabled": true,
+            "params": {
+              "amount": 0.75,
+              "speed": 0.5,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 336,
+      "id": "post.lightLeak.v2",
+      "group": "post",
+      "type": "lightLeak",
+      "variant": 2,
+      "label": "後処理 / ライトリーク（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "x",
+          "from": 0.85,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "lightLeak",
+            "enabled": true,
+            "params": {
+              "color": "#ff8a3d",
+              "x": 0.25,
+              "y": 0.2,
+              "intensity": 0.6,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 337,
+      "id": "post.vignette.v2",
+      "group": "post",
+      "type": "vignette",
+      "variant": 2,
+      "label": "後処理 / ビネット（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "amount",
+          "from": 0.5,
+          "to": 0.25
+        },
+        {
+          "key": "softness",
+          "from": 0.5,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "post": [
+          {
+            "type": "vignette",
+            "enabled": true,
+            "params": {
+              "amount": 0.25,
+              "softness": 0.25,
+              "enabled": true,
+              "in": 1,
+              "out": 1
+            },
+            "motion": {}
+          }
+        ]
+      }
+    },
+    {
+      "n": 338,
+      "id": "post.sparkles.v2",
+      "group": "post",
+      "type": "sparkles",
+      "variant": 2,
+      "label": "後処理 / スパークル（代表2）",
       "apply": "style",
       "changes": [
         {
           "key": "shape",
-          "from": "circle",
-          "to": "rect"
+          "from": "dot",
+          "to": "star"
+        },
+        {
+          "key": "color",
+          "from": null,
+          "to": "#ff8a3d"
         }
       ],
       "verified": "static",
@@ -12975,26 +12403,13 @@
       "style": {
         "post": [
           {
-            "type": "geometry",
+            "type": "sparkles",
             "enabled": true,
             "params": {
-              "shape": "rect",
-              "sides": 6,
-              "center": {
-                "x": 0.5,
-                "y": 0.5
-              },
-              "size": 0.6,
-              "angle": 0,
-              "spin": 0,
-              "radius": 0.1,
-              "feather": 0.03,
-              "fillOpacity": 0,
-              "strokeOpacity": 0.8,
-              "strokeWidth": 3,
-              "color": null,
-              "colorB": null,
-              "strength": 1,
+              "count": 24,
+              "size": 2,
+              "shape": "star",
+              "color": "#ff8a3d",
               "enabled": true,
               "in": 1,
               "out": 1
@@ -13005,23 +12420,18 @@
       }
     },
     {
-      "n": 357,
-      "id": "post.fisheye.v1",
+      "n": 339,
+      "id": "post.lensFlare.v2",
       "group": "post",
-      "type": "fisheye",
-      "variant": 1,
-      "label": "後処理 / 魚眼（代表1）",
+      "type": "lensFlare",
+      "variant": 2,
+      "label": "後処理 / レンズフレア（代表2）",
       "apply": "style",
       "changes": [
         {
-          "key": "power",
-          "from": 1.2,
-          "to": 0.6
-        },
-        {
-          "key": "lensRadius",
-          "from": 0.7,
-          "to": 1.53
+          "key": "color",
+          "from": null,
+          "to": "#4dc8ff"
         }
       ],
       "verified": "static",
@@ -13030,17 +12440,14 @@
       "style": {
         "post": [
           {
-            "type": "fisheye",
+            "type": "lensFlare",
             "enabled": true,
             "params": {
-              "power": 0.6,
-              "center": {
-                "x": 0.5,
-                "y": 0.5
+              "position": {
+                "x": 0.4,
+                "y": 0.35
               },
-              "lensRadius": 1.53,
-              "aberration": 0.15,
-              "strength": 1,
+              "color": "#4dc8ff",
               "enabled": true,
               "in": 1,
               "out": 1
@@ -13051,7 +12458,7 @@
       }
     },
     {
-      "n": 358,
+      "n": 340,
       "id": "background.solid.v1",
       "group": "background",
       "type": "solid",
@@ -13076,7 +12483,7 @@
       }
     },
     {
-      "n": 359,
+      "n": 341,
       "id": "background.plain.v1",
       "group": "background",
       "type": "plain",
@@ -13101,7 +12508,7 @@
       }
     },
     {
-      "n": 360,
+      "n": 342,
       "id": "background.gradient.v1",
       "group": "background",
       "type": "gradient",
@@ -13129,7 +12536,7 @@
       }
     },
     {
-      "n": 361,
+      "n": 343,
       "id": "background.noiseGradient.v1",
       "group": "background",
       "type": "noiseGradient",
@@ -13161,7 +12568,7 @@
       }
     },
     {
-      "n": 362,
+      "n": 344,
       "id": "background.card.v1",
       "group": "background",
       "type": "card",
@@ -13197,7 +12604,7 @@
       }
     },
     {
-      "n": 363,
+      "n": 345,
       "id": "background.cover.v1",
       "group": "background",
       "type": "cover",
@@ -13227,7 +12634,7 @@
       }
     },
     {
-      "n": 364,
+      "n": 346,
       "id": "background.image.v1",
       "group": "background",
       "type": "image",
@@ -13257,7 +12664,7 @@
       }
     },
     {
-      "n": 365,
+      "n": 347,
       "id": "background.pattern.v1",
       "group": "background",
       "type": "pattern",
@@ -13287,7 +12694,7 @@
       }
     },
     {
-      "n": 366,
+      "n": 348,
       "id": "background.shapes.v1",
       "group": "background",
       "type": "shapes",
@@ -13317,7 +12724,306 @@
       }
     },
     {
-      "n": 367,
+      "n": 349,
+      "id": "background.solid.v2",
+      "group": "background",
+      "type": "solid",
+      "variant": 2,
+      "label": "背景 / 単色（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#4dc8ff"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "solid",
+        "params": {
+          "color": "#4dc8ff"
+        }
+      }
+    },
+    {
+      "n": 350,
+      "id": "background.plain.v2",
+      "group": "background",
+      "type": "plain",
+      "variant": 2,
+      "label": "背景 / ベタ塗り（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "color",
+          "from": null,
+          "to": "#4dc8ff"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "plain",
+        "params": {
+          "color": "#4dc8ff"
+        }
+      }
+    },
+    {
+      "n": 351,
+      "id": "background.gradient.v2",
+      "group": "background",
+      "type": "gradient",
+      "variant": 2,
+      "label": "背景 / グラデーション（8方向）（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "direction",
+          "from": "toBottom",
+          "to": "toLeft"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "gradient",
+        "params": {
+          "colors": null,
+          "direction": "toLeft",
+          "scale": 1.15,
+          "speed": 0.1
+        }
+      }
+    },
+    {
+      "n": 352,
+      "id": "background.noiseGradient.v2",
+      "group": "background",
+      "type": "noiseGradient",
+      "variant": 2,
+      "label": "背景 / ノイズグラデーション（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "colors",
+          "from": null,
+          "to": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
+        },
+        {
+          "key": "scale",
+          "from": 3,
+          "to": 3.4
+        },
+        {
+          "key": "speed",
+          "from": 0.2,
+          "to": 0.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "noiseGradient",
+        "params": {
+          "colors": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ],
+          "scale": 3.4,
+          "speed": 0.5
+        }
+      }
+    },
+    {
+      "n": 353,
+      "id": "background.card.v2",
+      "group": "background",
+      "type": "card",
+      "variant": 2,
+      "label": "背景 / 実績カード（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "dim",
+          "from": 0.35,
+          "to": 0.75
+        },
+        {
+          "key": "blur",
+          "from": 0,
+          "to": 10
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [
+        "カードテーマ未設定時は既定色"
+      ],
+      "clip": {
+        "type": "card",
+        "params": {
+          "dim": 0.75,
+          "blur": 10,
+          "focusBadge": true,
+          "zoom": 1.6,
+          "parallax": 0.1
+        }
+      }
+    },
+    {
+      "n": 354,
+      "id": "background.cover.v2",
+      "group": "background",
+      "type": "cover",
+      "variant": 2,
+      "label": "背景 / 楽曲カバー（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "blur",
+          "from": 0,
+          "to": 10
+        },
+        {
+          "key": "dim",
+          "from": 0.4,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [
+        "カバー元がない場合は単色"
+      ],
+      "clip": {
+        "type": "cover",
+        "params": {
+          "songId": "",
+          "blur": 10,
+          "dim": 0.75,
+          "zoomSpeed": 0.1
+        }
+      }
+    },
+    {
+      "n": 355,
+      "id": "background.image.v2",
+      "group": "background",
+      "type": "image",
+      "variant": 2,
+      "label": "背景 / 画像（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "fit",
+          "from": "cover",
+          "to": "contain"
+        },
+        {
+          "key": "dim",
+          "from": 0.3,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [
+        "画像未設定でも手続きパターンで表示"
+      ],
+      "clip": {
+        "type": "image",
+        "params": {
+          "imageId": "",
+          "fit": "contain",
+          "blur": 0,
+          "dim": 0.25
+        }
+      }
+    },
+    {
+      "n": 356,
+      "id": "background.pattern.v2",
+      "group": "background",
+      "type": "pattern",
+      "variant": 2,
+      "label": "背景 / パターン（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "mode",
+          "from": "grid",
+          "to": "stripes"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "pattern",
+        "params": {
+          "mode": "stripes",
+          "count": 24,
+          "size": 1,
+          "speed": 0.4,
+          "opacity": 0.55,
+          "color": null
+        }
+      }
+    },
+    {
+      "n": 357,
+      "id": "background.shapes.v2",
+      "group": "background",
+      "type": "shapes",
+      "variant": 2,
+      "label": "背景 / 図形（代表2）",
+      "apply": "clip",
+      "changes": [
+        {
+          "key": "kind",
+          "from": "shapes",
+          "to": "waveform"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "clip": {
+        "type": "shapes",
+        "params": {
+          "kind": "waveform",
+          "set": "circles",
+          "count": 10,
+          "speed": 0.8,
+          "opacity": 0.45,
+          "color": null
+        }
+      }
+    },
+    {
+      "n": 358,
       "id": "bgShape.none.v1",
       "group": "bgShape",
       "type": "none",
@@ -13362,7 +13068,7 @@
       }
     },
     {
-      "n": 368,
+      "n": 359,
       "id": "bgShape.square.v1",
       "group": "bgShape",
       "type": "square",
@@ -13407,7 +13113,97 @@
       }
     },
     {
-      "n": 369,
+      "n": 360,
+      "id": "bgShape.none.v2",
+      "group": "bgShape",
+      "type": "none",
+      "variant": 2,
+      "label": "文字背景 / なし（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "vary",
+          "from": "none",
+          "to": "cycle"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "none",
+          "enabled": true,
+          "params": {
+            "rotateWithLetter": true,
+            "scaleWithLetter": true,
+            "opacity": 1,
+            "skipSpaces": true,
+            "skipRate": 0,
+            "fgAutoContrast": false,
+            "fgColors": [],
+            "vary": "cycle",
+            "varyColors": [],
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 361,
+      "id": "bgShape.square.v2",
+      "group": "bgShape",
+      "type": "square",
+      "variant": 2,
+      "label": "文字背景 / 四角（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "vary",
+          "from": "none",
+          "to": "cycle"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "square",
+          "enabled": true,
+          "params": {
+            "rotateWithLetter": true,
+            "scaleWithLetter": true,
+            "opacity": 1,
+            "skipSpaces": true,
+            "skipRate": 0,
+            "fgAutoContrast": false,
+            "fgColors": [],
+            "vary": "cycle",
+            "varyColors": [],
+            "stroke": 0,
+            "fill": 1,
+            "trimStart": 0,
+            "trimEnd": 1,
+            "trimOffset": 0,
+            "dashOn": 0,
+            "dashOff": 0,
+            "dashOffset": 0
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 362,
       "id": "bgFill.gradientSweep.v1",
       "group": "bgFill",
       "type": "gradientSweep",
@@ -13448,7 +13244,7 @@
       }
     },
     {
-      "n": 370,
+      "n": 363,
       "id": "bgFill.rainbowFlow.v1",
       "group": "bgFill",
       "type": "rainbowFlow",
@@ -13491,7 +13287,7 @@
       }
     },
     {
-      "n": 371,
+      "n": 364,
       "id": "bgFill.holographic.v1",
       "group": "bgFill",
       "type": "holographic",
@@ -13538,7 +13334,7 @@
       }
     },
     {
-      "n": 372,
+      "n": 365,
       "id": "bgFill.chrome.v1",
       "group": "bgFill",
       "type": "chrome",
@@ -13579,7 +13375,7 @@
       }
     },
     {
-      "n": 373,
+      "n": 366,
       "id": "bgFill.goldFoil.v1",
       "group": "bgFill",
       "type": "goldFoil",
@@ -13621,7 +13417,7 @@
       }
     },
     {
-      "n": 374,
+      "n": 367,
       "id": "bgFill.fire.v1",
       "group": "bgFill",
       "type": "fire",
@@ -13668,7 +13464,7 @@
       }
     },
     {
-      "n": 375,
+      "n": 368,
       "id": "bgFill.caustics.v1",
       "group": "bgFill",
       "type": "caustics",
@@ -13711,7 +13507,7 @@
       }
     },
     {
-      "n": 376,
+      "n": 369,
       "id": "bgFill.marble.v1",
       "group": "bgFill",
       "type": "marble",
@@ -13759,7 +13555,7 @@
       }
     },
     {
-      "n": 377,
+      "n": 370,
       "id": "bgFill.glass.v1",
       "group": "bgFill",
       "type": "glass",
@@ -13801,7 +13597,7 @@
       }
     },
     {
-      "n": 378,
+      "n": 371,
       "id": "bgFill.textureFill.v1",
       "group": "bgFill",
       "type": "textureFill",
@@ -13846,7 +13642,7 @@
       }
     },
     {
-      "n": 379,
+      "n": 372,
       "id": "bgFill.karaokeWipe.v1",
       "group": "bgFill",
       "type": "karaokeWipe",
@@ -13888,7 +13684,7 @@
       }
     },
     {
-      "n": 380,
+      "n": 373,
       "id": "bgFill.ink.v1",
       "group": "bgFill",
       "type": "ink",
@@ -13929,6 +13725,361 @@
             "scale": 3.3,
             "threshold": 0.75,
             "softness": 0.08
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 374,
+      "id": "bgFill.gradientSweep.v2",
+      "group": "bgFill",
+      "type": "gradientSweep",
+      "variant": 2,
+      "label": "文字背景の塗り / グラデーションスイープ（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "speed",
+          "from": 0.3,
+          "to": 1.5
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "gradientSweep",
+          "enabled": true,
+          "params": {
+            "angle": 0,
+            "speed": 1.5
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 375,
+      "id": "bgFill.rainbowFlow.v2",
+      "group": "bgFill",
+      "type": "rainbowFlow",
+      "variant": 2,
+      "label": "文字背景の塗り / レインボーフロー（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "saturation",
+          "from": 0.7,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "rainbowFlow",
+          "enabled": true,
+          "params": {
+            "saturation": 0.75,
+            "lightness": 0.6,
+            "speed": 0.5,
+            "perLetter": false
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 376,
+      "id": "bgFill.holographic.v2",
+      "group": "bgFill",
+      "type": "holographic",
+      "variant": 2,
+      "label": "文字背景の塗り / ホログラフィック（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "iridescence",
+          "from": 0.6,
+          "to": 0.75
+        },
+        {
+          "key": "fresnel",
+          "from": 0.4,
+          "to": 0.75
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "holographic",
+          "enabled": true,
+          "params": {
+            "iridescence": 0.75,
+            "fresnel": 0.75,
+            "speed": 0.3
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 377,
+      "id": "bgFill.chrome.v2",
+      "group": "bgFill",
+      "type": "chrome",
+      "variant": 2,
+      "label": "文字背景の塗り / クローム（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "envColors",
+          "from": null,
+          "to": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
+        },
+        {
+          "key": "sharpness",
+          "from": 0.6,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "chrome",
+          "enabled": true,
+          "params": {
+            "envColors": [
+              {
+                "pos": 0,
+                "color": "#ff8a3d"
+              },
+              {
+                "pos": 1,
+                "color": "#4dc8ff"
+              }
+            ],
+            "sharpness": 0.25
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 378,
+      "id": "bgFill.goldFoil.v2",
+      "group": "bgFill",
+      "type": "goldFoil",
+      "variant": 2,
+      "label": "文字背景の塗り / 金箔（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "colors",
+          "from": null,
+          "to": [
+            {
+              "pos": 0,
+              "color": "#ff8a3d"
+            },
+            {
+              "pos": 1,
+              "color": "#4dc8ff"
+            }
+          ]
+        },
+        {
+          "key": "sparkle",
+          "from": 0.4,
+          "to": 0.25
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "goldFoil",
+          "enabled": true,
+          "params": {
+            "grain": 0.5,
+            "sparkle": 0.25,
+            "colors": [
+              {
+                "pos": 0,
+                "color": "#ff8a3d"
+              },
+              {
+                "pos": 1,
+                "color": "#4dc8ff"
+              }
+            ]
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 379,
+      "id": "bgFill.fire.v2",
+      "group": "bgFill",
+      "type": "fire",
+      "variant": 2,
+      "label": "文字背景の塗り / 炎（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "scale",
+          "from": 1,
+          "to": 2
+        },
+        {
+          "key": "speed",
+          "from": 1,
+          "to": 1.05
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "fire",
+          "enabled": true,
+          "params": {
+            "scale": 2,
+            "speed": 1.05,
+            "colors": null
+          },
+          "motion": {}
+        }
+      }
+    },
+    {
+      "n": 380,
+      "id": "bgFill.caustics.v2",
+      "group": "bgFill",
+      "type": "caustics",
+      "variant": 2,
+      "label": "文字背景の塗り / コースティクス（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "colorA",
+          "from": null,
+          "to": "#ff8a3d"
+        },
+        {
+          "key": "colorB",
+          "from": null,
+          "to": "#ff8a3d"
+        }
+      ],
+      "verified": "static",
+      "score": null,
+      "notes": [],
+      "style": {
+        "bgShape": {
+          "type": "rounded",
+          "params": {
+            "unit": "cell",
+            "width": 1.15,
+            "height": 1.15,
+            "opacity": 0.9,
+            "skipSpaces": true
+          },
+          "enabled": true
+        },
+        "bgFill": {
+          "type": "caustics",
+          "enabled": true,
+          "params": {
+            "scale": 2,
+            "speed": 0.4,
+            "colorA": "#ff8a3d",
+            "colorB": "#ff8a3d"
           },
           "motion": {}
         }

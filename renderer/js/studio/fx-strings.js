@@ -276,12 +276,23 @@
       scramble: 'Mezcla de letras', glitchIn: 'Glitch de entrada', neonFlicker: 'Parpadeo de neón',
       strokeDrawOn: 'Trazo progresivo', particlesAssemble: 'Ensamblaje de partículas', shatterRebuild: 'Fragmentar y reconstruir',
       morphFromPrevious: 'Morph desde el anterior', noiseDissolveIn: 'Disolución con ruido',
+      appear: 'Aparición', wipe: 'Barrido', blind: 'Persiana', box: 'Recuadro', checkerboard: 'Damero',
+      split: 'División', peekIn: 'Aparición parcial', riseUp: 'Elevación', spiralIn: 'Espiral de entrada',
+      radialIn: 'Entrada radial', floatIn: 'Flotación de entrada', boomerang: 'Bumerán',
+      slideBlur: 'Deslizar con desenfoque', lightReveal: 'Revelado de luz', jaggyIn: 'Dentado de entrada',
+      maskReveal: 'Revelado con máscara', depthBlurIn: 'Desenfoque 3D', mosaicBreak: 'Ruptura de mosaico',
+      fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela',
     },
     exit: {
       fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
       gravityFall: 'Caída por gravedad', dissolve: 'Disolución', wipe: 'Barrido', typewriterReverse: 'Máquina de escribir inversa',
       shrinkToCenter: 'Encoger al centro', particlesDisperse: 'Dispersión de partículas', melt: 'Derretir',
-      burnAway: 'Consumir por fuego', strokeErase: 'Borrado de trazo',
+      burnAway: 'Consumir por fuego', strokeErase: 'Borrado de trazo', vanish: 'Desvanecer',
+      floatOut: 'Flotación de salida', splitOut: 'División de salida', stripeShrink: 'Franja que encoge',
+      rotateOut: 'Rotación de salida', floatUp: 'Flotación arriba', floatDown: 'Flotación abajo',
+      shrinkDir: 'Encogido direccional', spiralOut: 'Espiral de salida', radialOut: 'Salida radial',
+      warpOut: 'Salida deformada', evaporate: 'Evaporar', mosaicBreak: 'Ruptura de mosaico',
+      fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela',
     },
     hold: {
       none: 'Ninguno', floatBob: 'Flotación', sineWave: 'Onda senoidal', jitter: 'Vibración', pulse: 'Pulso', opacityPulse: 'Pulso de opacidad',
@@ -399,13 +410,23 @@
       waveRise: 'Vague montante', elasticPop: 'Pop élastique', scramble: 'Brouillage', glitchIn: 'Glitch d’entrée',
       neonFlicker: 'Scintillement néon', strokeDrawOn: 'Tracé progressif', particlesAssemble: 'Assemblage de particules',
       shatterRebuild: 'Briser et reconstruire', morphFromPrevious: 'Morph depuis le précédent',
-      noiseDissolveIn: 'Dissolution par bruit',
+      noiseDissolveIn: 'Dissolution par bruit', appear: 'Apparition', wipe: 'Balayage', blind: 'Store',
+      box: 'Boîte', checkerboard: 'Damier', split: 'Division', peekIn: 'Apparition partielle', riseUp: 'Montée',
+      spiralIn: 'Spirale d’entrée', radialIn: 'Entrée radiale', floatIn: 'Flottement d’entrée', boomerang: 'Boomerang',
+      slideBlur: 'Glissement flouté', lightReveal: 'Révélation par la lumière', jaggyIn: 'Crénelé d’entrée',
+      maskReveal: 'Révélation au masque', depthBlurIn: 'Flou 3D', mosaicBreak: 'Rupture mosaïque',
+      fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent', windNoBreak: 'Dérive de vent', cloth: 'Tissu',
     },
     exit: {
       fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
       gravityFall: 'Chute gravitaire', dissolve: 'Dissolution', wipe: 'Balayage', typewriterReverse: 'Machine à écrire inversée',
       shrinkToCenter: 'Rétrécir au centre', particlesDisperse: 'Dispersion de particules', melt: 'Fonte', burnAway: 'Combustion',
-      strokeErase: 'Effacement du tracé',
+      strokeErase: 'Effacement du tracé', vanish: 'Disparition', floatOut: 'Flottement de sortie',
+      splitOut: 'Division de sortie', stripeShrink: 'Bande rétrécie', rotateOut: 'Rotation de sortie',
+      floatUp: 'Flottement vers le haut', floatDown: 'Flottement vers le bas', shrinkDir: 'Rétrécissement directionnel',
+      spiralOut: 'Spirale de sortie', radialOut: 'Sortie radiale', warpOut: 'Sortie déformée', evaporate: 'Évaporation',
+      mosaicBreak: 'Rupture mosaïque', fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent',
+      windNoBreak: 'Dérive de vent', cloth: 'Tissu',
     },
     hold: {
       none: 'Aucun', floatBob: 'Flottement', sineWave: 'Onde sinusoïdale', jitter: 'Tremblement', pulse: 'Pulsation', opacityPulse: "Pulsation d'opacité",
@@ -523,13 +544,23 @@
       scatterIn: 'Разлёт при входе', waveRise: 'Волновой подъём', elasticPop: 'Упругий скачок', scramble: 'Перемешивание',
       glitchIn: 'Глитч при входе', neonFlicker: 'Мерцание неона', strokeDrawOn: 'Рисование обводки',
       particlesAssemble: 'Сборка из частиц', shatterRebuild: 'Разрушение и сборка', morphFromPrevious: 'Морфинг из прошлого бита',
-      noiseDissolveIn: 'Растворение шумом',
+      noiseDissolveIn: 'Растворение шумом', appear: 'Появление', wipe: 'Шторка', blind: 'Жалюзи', box: 'Рамка',
+      checkerboard: 'Шахматная доска', split: 'Разделение', peekIn: 'Выглядывание', riseUp: 'Подъём',
+      spiralIn: 'Спираль при входе', radialIn: 'Радиальный вход', floatIn: 'Всплытие', boomerang: 'Бумеранг',
+      slideBlur: 'Сдвиг с размытием', lightReveal: 'Появление из света', jaggyIn: 'Пиксельный вход',
+      maskReveal: 'Появление маской', depthBlurIn: '3D-размытие', mosaicBreak: 'Мозаичное разрушение',
+      fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром', windNoBreak: 'Дрейф ветра', cloth: 'Ткань',
     },
     exit: {
       fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
       gravityFall: 'Падение', dissolve: 'Диссолюция', wipe: 'Шторка', typewriterReverse: 'Печатная машинка наоборот',
       shrinkToCenter: 'Сжатие к центру', particlesDisperse: 'Разлёт частиц', melt: 'Таяние', burnAway: 'Выгорание',
-      strokeErase: 'Стирание обводки',
+      strokeErase: 'Стирание обводки', vanish: 'Исчезновение', floatOut: 'Уплывание', splitOut: 'Разделение при выходе',
+      stripeShrink: 'Сжатие полосой', rotateOut: 'Вращение при выходе', floatUp: 'Всплытие вверх',
+      floatDown: 'Погружение вниз', shrinkDir: 'Направленное сжатие', spiralOut: 'Спираль при выходе',
+      radialOut: 'Радиальный выход', warpOut: 'Деформированный выход', evaporate: 'Испарение',
+      mosaicBreak: 'Мозаичное разрушение', fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром',
+      windNoBreak: 'Дрейф ветра', cloth: 'Ткань',
     },
     hold: {
       none: 'Нет', floatBob: 'Покачивание', sineWave: 'Синусоида', jitter: 'Дрожание', pulse: 'Пульсация', opacityPulse: 'Пульс прозрачности',
@@ -1497,14 +1528,15 @@
   const ADD_SHADER_EN = {
     types: {
       post: { dither: 'Dither', fade: 'Fade (shader)', scanline: 'Scanlines', stealth: 'Stealth cloak', geometry: 'Geometry' },
-      enter: { dither: 'Dither in', scanline: 'Scanline in', stealth: 'Stealth cloak in', geometry: 'Geometry in' },
-      hold: { dither: 'Dither', scanline: 'Scanline', stealth: 'Stealth cloak', geometry: 'Geometry', fade: 'Fade' },
-      exit: { dither: 'Dither out', scanline: 'Scanline out', stealth: 'Stealth cloak out', geometry: 'Geometry out' },
+      enter: { dither: 'Dither in', scanline: 'Scanline in', stealth: 'Stealth cloak in', geometry: 'Geometry in', mosaicBreak: 'Mosaic break in', fogBreak: 'Fog break in', windBreak: 'Wind break in', windNoBreak: 'Wind drift in', cloth: 'Cloth in' },
+      hold: { dither: 'Dither', scanline: 'Scanline', stealth: 'Stealth cloak', geometry: 'Geometry', fade: 'Fade', mosaicBreak: 'Mosaic break', fogBreak: 'Fog break', windBreak: 'Wind break', windNoBreak: 'Wind drift', cloth: 'Cloth' },
+      exit: { dither: 'Dither out', scanline: 'Scanline out', stealth: 'Stealth cloak out', geometry: 'Geometry out', mosaicBreak: 'Mosaic break out', fogBreak: 'Fog break out', windBreak: 'Wind break out', windNoBreak: 'Wind drift out', cloth: 'Cloth out' },
     },
     params: {
       levels: 'Levels', sides: 'Sides', split: 'Split', cloak: 'Cloak', shimmer: 'Shimmer',
       flicker: 'Flicker', rollHeight: 'Roll bar', strokeOpacity: 'Stroke opacity', strokeWidth: 'Stroke width',
       dipColor: 'Dip color', grain: 'Grain', edge: 'Edge', drift: 'Drift',
+      soft: 'Softness', cells: 'Cells', cell: 'Cell size', scatter: 'Scatter', slope: 'Slope', arc: 'Arc height',
     },
     values: {
       bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Noise', cross: 'Cross',
@@ -1516,14 +1548,15 @@
   const ADD_SHADER_JA = {
     types: {
       post: { dither: 'ディザ', fade: 'フェード（シェーダ）', scanline: '走査線', stealth: 'ステルス・クローク', geometry: 'ジオメトリ' },
-      enter: { dither: 'ディザイン', scanline: '走査線イン', stealth: 'ステルス・クロークイン', geometry: 'ジオメトリイン' },
-      hold: { dither: 'ディザ', scanline: '走査線', stealth: 'ステルス・クローク', geometry: 'ジオメトリ', fade: 'フェード' },
-      exit: { dither: 'ディザアウト', scanline: '走査線アウト', stealth: 'ステルス・クロークアウト', geometry: 'ジオメトリアウト' },
+      enter: { dither: 'ディザイン', scanline: '走査線イン', stealth: 'ステルス・クロークイン', geometry: 'ジオメトリイン', mosaicBreak: 'モザイク分解イン', fogBreak: '霧分解イン', windBreak: '風分解イン', windNoBreak: '風なびきイン', cloth: '布なびきイン' },
+      hold: { dither: 'ディザ', scanline: '走査線', stealth: 'ステルス・クローク', geometry: 'ジオメトリ', fade: 'フェード', mosaicBreak: 'モザイク分解', fogBreak: '霧分解', windBreak: '風分解', windNoBreak: '風なびき', cloth: '布なびき' },
+      exit: { dither: 'ディザアウト', scanline: '走査線アウト', stealth: 'ステルス・クロークアウト', geometry: 'ジオメトリアウト', mosaicBreak: 'モザイク分解アウト', fogBreak: '霧分解アウト', windBreak: '風分解アウト', windNoBreak: '風なびきアウト', cloth: '布なびきアウト' },
     },
     params: {
       levels: '階調数', sides: '辺数', split: '分離量', cloak: 'クローク', shimmer: 'シマー',
       flicker: 'ちらつき', rollHeight: 'ロールバー', strokeOpacity: '線の不透明度', strokeWidth: '線の太さ',
       dipColor: '遷移色', grain: '粒度', edge: '縁の幅', drift: '漂い',
+      soft: '柔らかさ', cells: 'セル数', cell: 'セルサイズ', scatter: '散らばり', slope: '傾斜', arc: '弧の高さ',
     },
     values: {
       bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'ノイズ', cross: 'クロス',
@@ -1535,14 +1568,15 @@
   const ADD_SHADER_ES = {
     types: {
       post: { dither: 'Tramado', fade: 'Fundido (sombreador)', scanline: 'Líneas de barrido', stealth: 'Ocultación furtiva', geometry: 'Geometría' },
-      enter: { dither: 'Tramado de entrada', scanline: 'Barrido de entrada', stealth: 'Ocultación de entrada', geometry: 'Geometría de entrada' },
-      hold: { dither: 'Tramado', scanline: 'Barrido', stealth: 'Ocultación furtiva', geometry: 'Geometría', fade: 'Fundido' },
-      exit: { dither: 'Tramado de salida', scanline: 'Barrido de salida', stealth: 'Ocultación de salida', geometry: 'Geometría de salida' },
+      enter: { dither: 'Tramado de entrada', scanline: 'Barrido de entrada', stealth: 'Ocultación de entrada', geometry: 'Geometría de entrada', mosaicBreak: 'Ruptura de mosaico', fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela' },
+      hold: { dither: 'Tramado', scanline: 'Barrido', stealth: 'Ocultación furtiva', geometry: 'Geometría', fade: 'Fundido', mosaicBreak: 'Ruptura de mosaico', fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela' },
+      exit: { dither: 'Tramado de salida', scanline: 'Barrido de salida', stealth: 'Ocultación de salida', geometry: 'Geometría de salida', mosaicBreak: 'Ruptura de mosaico', fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela' },
     },
     params: {
       levels: 'Niveles', sides: 'Lados', split: 'Separación', cloak: 'Ocultación', shimmer: 'Brillo tenue',
       flicker: 'Parpadeo', rollHeight: 'Barra de rodadura', strokeOpacity: 'Opacidad del trazo', strokeWidth: 'Grosor del trazo',
       dipColor: 'Color de transición', grain: 'Grano', edge: 'Borde', drift: 'Deriva',
+      soft: 'Suavidad', cells: 'Celdas', cell: 'Tamaño de celda', scatter: 'Dispersión', slope: 'Inclinación', arc: 'Altura del arco',
     },
     values: {
       bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Ruido', cross: 'Cruzado',
@@ -1554,14 +1588,15 @@
   const ADD_SHADER_FR = {
     types: {
       post: { dither: 'Tramage', fade: 'Fondu (shader)', scanline: 'Lignes de balayage', stealth: 'Dissimulation furtive', geometry: 'Géométrie' },
-      enter: { dither: 'Tramage entrant', scanline: 'Balayage entrant', stealth: 'Dissimulation entrante', geometry: 'Géométrie entrante' },
-      hold: { dither: 'Tramage', scanline: 'Balayage', stealth: 'Dissimulation furtive', geometry: 'Géométrie', fade: 'Fondu' },
-      exit: { dither: 'Tramage sortant', scanline: 'Balayage sortant', stealth: 'Dissimulation sortante', geometry: 'Géométrie sortante' },
+      enter: { dither: 'Tramage entrant', scanline: 'Balayage entrant', stealth: 'Dissimulation entrante', geometry: 'Géométrie entrante', mosaicBreak: 'Rupture mosaïque', fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent', windNoBreak: 'Dérive de vent', cloth: 'Tissu' },
+      hold: { dither: 'Tramage', scanline: 'Balayage', stealth: 'Dissimulation furtive', geometry: 'Géométrie', fade: 'Fondu', mosaicBreak: 'Rupture mosaïque', fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent', windNoBreak: 'Dérive de vent', cloth: 'Tissu' },
+      exit: { dither: 'Tramage sortant', scanline: 'Balayage sortant', stealth: 'Dissimulation sortante', geometry: 'Géométrie sortante', mosaicBreak: 'Rupture mosaïque', fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent', windNoBreak: 'Dérive de vent', cloth: 'Tissu' },
     },
     params: {
       levels: 'Niveaux', sides: 'Côtés', split: 'Séparation', cloak: 'Dissimulation', shimmer: 'Scintillement',
       flicker: 'Papillotement', rollHeight: 'Barre de défilement', strokeOpacity: 'Opacité du trait', strokeWidth: 'Épaisseur du trait',
       dipColor: 'Couleur de transition', grain: 'Grain', edge: 'Bord', drift: 'Dérive',
+      soft: 'Douceur', cells: 'Cellules', cell: 'Taille de cellule', scatter: 'Dispersion', slope: 'Pente', arc: 'Hauteur de l’arc',
     },
     values: {
       bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Bruit', cross: 'Croisé',
@@ -1573,14 +1608,15 @@
   const ADD_SHADER_RU = {
     types: {
       post: { dither: 'Дизеринг', fade: 'Затухание (шейдер)', scanline: 'Строки развёртки', stealth: 'Скрытность', geometry: 'Геометрия' },
-      enter: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия' },
-      hold: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия', fade: 'Затухание' },
-      exit: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия' },
+      enter: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия', mosaicBreak: 'Мозаичное разрушение', fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром', windNoBreak: 'Дрейф ветра', cloth: 'Ткань' },
+      hold: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия', fade: 'Затухание', mosaicBreak: 'Мозаичное разрушение', fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром', windNoBreak: 'Дрейф ветра', cloth: 'Ткань' },
+      exit: { dither: 'Дизеринг', scanline: 'Развёртка', stealth: 'Скрытие', geometry: 'Геометрия', mosaicBreak: 'Мозаичное разрушение', fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром', windNoBreak: 'Дрейф ветра', cloth: 'Ткань' },
     },
     params: {
       levels: 'Уровни', sides: 'Стороны', split: 'Разделение', cloak: 'Маскировка', shimmer: 'Мерцание',
       flicker: 'Дрожание', rollHeight: 'Полоса прокрутки', strokeOpacity: 'Непрозрачность обводки', strokeWidth: 'Толщина обводки',
       dipColor: 'Цвет перехода', grain: 'Зерно', edge: 'Край', drift: 'Дрейф',
+      soft: 'Мягкость', cells: 'Ячейки', cell: 'Размер ячейки', scatter: 'Разброс', slope: 'Наклон', arc: 'Высота дуги',
     },
     values: {
       bayer2: 'Bayer 2×2', bayer4: 'Bayer 4×4', bayer8: 'Bayer 8×8', noise: 'Шум', cross: 'Крест',
