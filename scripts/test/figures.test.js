@@ -664,3 +664,147 @@ test('figures respond to ADSR envelope with finite shapes and scale changes', ()
   // At least one shape should be different with ADSR applied
   assert.ok(differ || earlyWithAdsr.shapes.length !== earlyWithoutAdsr.shapes.length, 'ADSR should affect the shapes at early time');
 });
+
+// ---------------------------------------------------------------------------
+// text-anchored motifs (frame / underline / brackets): scaled about the text
+// box and fitted back on screen, so they never leave the frame
+
+test('frame stays on screen with a low text box, big beats, accent and a pan', () => {
+  const lowBox = { x0: 400, y0: 940, x1: 1520, y1: 1000 };
+  for (const motif of ['frame', 'underlineSweep', 'bracketsPop']) {
+    const spec = {
+      type: 'figure',
+      params: {
+        motif, density: 0.5, camera: 'pan', seed: 5, colors: ['#ff0000', '#00ff00'],
+        beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: true, size: 1.4 }],
+      },
+    };
+    for (let t = 0.1; t < 3; t += 0.2) {
+      const list = figures.drawList(spec, { time: t, frame: FRAME, clip: { key: 'fig_frame', start: 0, end: 3 }, seed: 5, colors: ['#ff0000', '#00ff00'], textBox: lowBox });
+      assert.ok(list.shapes.length > 0, `${motif} draws nothing at ${t}`);
+      for (const shape of list.shapes) {
+        if (shape.kind === 'capsule') {
+          for (const [x, y] of [[shape.x0, shape.y0], [shape.x1, shape.y1]]) {
+            assert.ok(x >= 0 && x <= FRAME.width && y >= 0 && y <= FRAME.height, `${motif} capsule off screen at ${t}: ${x},${y}`);
+          }
+        }
+      }
+    }
+  }
+});
+
+// ---------------------------------------------------------------------------
+// line style / caps: decoration, width jitter and end caps on finished pixels
+
+test('dashed draws a pattern on capsules and rings, with whole periods', () => {
+  const beats = [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: false }];
+  const at = { time: 1.5, frame: FRAME, clip: { key: 'fig_dash', start: 0, end: 3 }, seed: 1, colors: ['#ff0000', '#00ff00'] };
+  const capsules = figures.drawList({ type: 'figure', params: { motif: 'burst', density: 0.5, colors: ['#ff0000', '#00ff00'], beats, lineStyle: 'dashed' } }, at).shapes;
+  assert.ok(capsules.length > 0);
+  assert.ok(capsules.every((shape) => shape.kind === 'capsule' && shape.pattern === 1), 'every burst capsule carries pattern 1');
+  const rings = figures.drawList({ type: 'figure', params: { motif: 'rings', density: 0.5, colors: ['#ff0000', '#00ff00'], beats, lineStyle: 'dashed' } }, at).shapes;
+  assert.ok(rings.length > 0 && rings.every((shape) => shape.kind === 'ring'));
+  for (const ring of rings) {
+    assert.equal(ring.pattern, 1);
+    const cycles = (2 * Math.PI * ring.r) / ring.patternParams[0];
+    assert.ok(Math.abs(cycles - Math.round(cycles)) < 1e-9, `ring period does not tile: ${cycles}`);
+  }
+  // a stub shorter than 4% of the short edge keeps its plain line
+  const stub = figures.drawList({ type: 'figure', params: { motif: 'burst', radius: 0.3, density: 0.5, colors: ['#ff0000'], lineStyle: 'dashed', beats: [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: false, size: 0.3 }] } }, at).shapes;
+  assert.ok(stub.length > 0);
+  assert.ok(stub.every((shape) => shape.pattern == null), 'short stubs stay plain');
+});
+
+test('arrow adds one head per capsule, square grows the line by its width', () => {
+  const beats = [{ start: 0, end: 3, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 1, accent: false }];
+  const at = { time: 1.5, frame: FRAME, clip: { key: 'fig_cap', start: 0, end: 3 }, seed: 2, colors: ['#ff0000', '#00ff00'] };
+  const base = { motif: 'scratches', density: 0.5, colors: ['#ff0000', '#00ff00'], beats };
+  const plain = figures.drawList({ type: 'figure', params: { ...base } }, at).shapes;
+  const headed = figures.drawList({ type: 'figure', params: { ...base, lineCap: 'arrow' } }, at).shapes;
+  const plainCaps = plain.filter((shape) => shape.kind === 'capsule');
+  assert.ok(plainCaps.length > 0);
+  assert.equal(headed.filter((shape) => shape.kind === 'convex').length, plainCaps.length, 'one arrow head per capsule');
+  const length = (shapes) => shapes.filter((shape) => shape.kind === 'capsule').reduce((sum, shape) => sum + Math.hypot(shape.x1 - shape.x0, shape.y1 - shape.y0), 0);
+  const widths = plainCaps.reduce((sum, shape) => sum + shape.width, 0);
+  const squared = figures.drawList({ type: 'figure', params: { ...base, lineCap: 'square' } }, at).shapes;
+  assert.ok(Math.abs(length(squared) - length(plain) - widths) < 1e-6, 'square extends each end by half the width');
+});
+
+test('a clip without the new params draws exactly the neutral clip', () => {
+  const beats = [{ start: 0, end: 3, move: { in: 'pop', hold: 'spin', out: 'fade' }, variant: 0, accent: true }];
+  const at = { time: 1.2, frame: FRAME, clip: { key: 'fig_compat', start: 0, end: 3 }, seed: 8, colors: ['#ff0000', '#00ff00'] };
+  for (const motif of ['burst', 'scratches', 'rings', 'kdTree', 'starfield']) {
+    const bare = { motif, density: 0.5, colors: ['#ff0000', '#00ff00'], beats };
+    const neutral = { ...bare, lineStyle: 'solid', density: 0.5, inDur: undefined, outDur: undefined };
+    assert.deepEqual(figures.drawList({ type: 'figure', params: neutral }, at), figures.drawList({ type: 'figure', params: bare }, at), `${motif} changed without new params`);
+    for (const shape of figures.drawList({ type: 'figure', params: bare }, at).shapes) {
+      assert.equal(shape.pattern, undefined, `${motif} carries a pattern without lineStyle`);
+      assert.equal(shape.cap, undefined, `${motif} carries a cap without lineCap`);
+    }
+  }
+  // density 0.5 is the identity for the geo / scene families
+  const dense = { motif: 'voronoi', seed: 7, rand: 1, colors: ['#ff0000', '#00ff00'], beats };
+  const half = figures.drawList({ type: 'figure', params: { ...dense, density: 0.5 } }, at).shapes;
+  const none = figures.drawList({ type: 'figure', params: { ...dense } }, at).shapes;
+  assert.deepEqual(half, none, 'density 0.5 must match density unset');
+});
+
+// ---------------------------------------------------------------------------
+// density reaches the scene / geo families
+
+test('density grows kdTree, voronoi, circlePack and starfield monotonically', () => {
+  const at = { time: 3, frame: FRAME, clip: { key: 'fig_dens', start: 0, end: 6 }, seed: 1, colors: ['#ff0000', '#00ff00'] };
+  for (const motif of ['kdTree', 'voronoi', 'circlePack', 'starfield']) {
+    const counts = [0.15, 0.5, 1].map((density) => figures.drawList({
+      type: 'figure',
+      params: { motif, seed: 7, rand: 1, density, colors: ['#ff0000', '#00ff00'], beats: [{ start: 0, end: 6, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: true }] },
+    }, at).shapes.length);
+    assert.ok(counts[0] <= counts[1] && counts[1] <= counts[2], `${motif} counts ${counts.join(',')}`);
+    assert.ok(counts[0] < counts[2], `${motif} density changes nothing: ${counts.join(',')}`);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// ease / windows: linear entrance and explicit in / out durations
+
+test('linear inEase enters linearly and inDur sets the window', () => {
+  // slabWipe: its x is linear in the entrance, so the easing reads directly
+  const beats = [{ start: 0, end: 4, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: false }];
+  const at = (time) => ({ time, frame: FRAME, clip: { key: 'fig_ease', start: 0, end: 4 }, seed: 1, colors: ['#ff0000'] });
+  const spec = (extra) => ({ type: 'figure', params: { motif: 'slabWipe', density: 0.5, colors: ['#ff0000'], beats, ...extra } });
+  const linear = [0.1, 0.2, 0.3].map((t) => figures.drawList(spec({ inEase: 'linear', inDur: 1 }), at(t)).shapes[0].x);
+  assert.ok(Math.abs((linear[1] - linear[0]) - (linear[2] - linear[1])) < 1e-6, `entrance is not linear: ${linear.join(',')}`);
+  const curved = [0.1, 0.2, 0.3].map((t) => figures.drawList(spec({}), at(t)).shapes[0].x);
+  assert.ok(Math.abs((curved[1] - curved[0]) - (curved[2] - curved[1])) > 1e-6, 'the default entrance reads linear too');
+  // an explicit 1 s window is half open at 0.5 s
+  const info = figures.beatAt(beats, 0.5, 'burst', null, { inDur: 1 });
+  assert.equal(info.inProgress, 0.5);
+});
+
+test('generate saves the new params without moving the old draws', () => {
+  const strip = (params) => {
+    const next = { ...params };
+    for (const key of ['inEase', 'outEase', 'holdEase', 'cameraEase', 'inDur', 'outDur', 'lineStyle', 'lineCap', 'weightVar']) delete next[key];
+    return next;
+  };
+  for (const axes of [undefined, { weird: 1, energy: 0.5 }]) {
+    const base = { span: SPAN, seed: 5, id: 'fig_new', axes };
+    const plain = figures.generate(base);
+    const pinned = figures.generate({
+      ...base,
+      inEase: 'backOut', outEase: 'cubicIn', holdEase: 'linear', cameraEase: 'cubicInOut',
+      inDur: 1.2, outDur: 0.6, lineStyle: 'dashed', lineCap: 'arrow', weightVar: 0.6,
+    });
+    assert.equal(pinned.params.inEase, 'backOut');
+    assert.equal(pinned.params.outEase, 'cubicIn');
+    assert.equal(pinned.params.holdEase, 'linear');
+    assert.equal(pinned.params.cameraEase, 'cubicInOut');
+    assert.equal(pinned.params.inDur, 1.2);
+    assert.equal(pinned.params.outDur, 0.6);
+    assert.equal(pinned.params.lineStyle, 'dashed');
+    assert.equal(pinned.params.lineCap, 'arrow');
+    assert.equal(pinned.params.weightVar, 0.6);
+    // the new streams leave every old draw where it was
+    assert.deepEqual(strip(pinned.params), strip(plain.params));
+  }
+});
