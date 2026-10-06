@@ -131,7 +131,7 @@ SA.glShaders = (() => {
   // around the bbox centre, halfSize = a_bbox); codes >= 20 warp the whole
   // block, evaluated around the block centre stored in blk.xy and measured
   // against blk.zw (half the block bbox).
-  vec2 deformOne(vec2 p, vec4 d, vec2 halfSize, vec4 blk) {
+  vec2 deformOne(vec2 p, vec4 d, vec2 halfSize, vec4 blk, float perspective) {
     if (d.x < 0.5 || abs(d.y) < 0.0001) return p;
     float code = d.x;
     float amount = d.y;
@@ -204,7 +204,7 @@ SA.glShaders = (() => {
         float z;
         if (axisX > 0.5) { z = p.y * sz; p.y *= cz; }
         else { z = p.x * sz; p.x *= cz; }
-        p *= u_perspective / (u_perspective + z);
+        p *= perspective / (perspective + z);
       } else {                                // swirl (radial twist wave)
         float angle = radians(amount) * sin(time * TAU - r * PI * max(param, 0.1));
         float c = cos(angle);
@@ -265,10 +265,10 @@ SA.glShaders = (() => {
 
   // Up to three deformation slots per letter: row 3 of the state texture first,
   // then the extra slots in rows 5 and 6.
-  vec2 applyDeformStack(vec2 p, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize) {
-    p = deformOne(p, s3, halfSize, s7);
-    p = deformOne(p, s5, halfSize, s7);
-    p = deformOne(p, s6, halfSize, s7);
+  vec2 applyDeformStack(vec2 p, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize, float perspective) {
+    p = deformOne(p, s3, halfSize, s7, perspective);
+    p = deformOne(p, s5, halfSize, s7, perspective);
+    p = deformOne(p, s6, halfSize, s7, perspective);
     return p;
   }
 
@@ -564,7 +564,7 @@ SA.glShaders = (() => {
     v_bbox = a_bbox;
     vec2 soft = latticeDisp(u_state, int(a_letter + 0.5), a_pos / max(a_bbox, vec2(1.0))) * a_bbox;
     vec2 p = (a_pos + soft) * vec2(s0.w, s1.x);
-    p = applyDeformStack(p, s3, s5, s6, s7, a_bbox);
+    p = applyDeformStack(p, s3, s5, s6, s7, a_bbox, u_perspective);
     p = letterTransform(p, s0, s1, s2, true, false, u_perspective);
     vec2 clip = (p / u_resolution) * 2.0 - 1.0;
     gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
@@ -2705,7 +2705,7 @@ SA.glShaders = (() => {
   float deformType(vec4 s3) { return s3.x; }
   vec2 applyTransform(vec2 p, vec4 s0, vec4 s1, vec4 s2, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize) {
     p += latticeDisp(u_state, int(a_letter + 0.5), p / max(halfSize, vec2(1.0))) * halfSize;
-    p = applyDeformStack(p, s3, s5, s6, s7, halfSize);
+    p = applyDeformStack(p, s3, s5, s6, s7, halfSize, u_perspective);
     p.x += p.y * s1.y;
     float angle = radians(s0.z);
     float c = cos(angle);
@@ -2753,7 +2753,7 @@ SA.glShaders = (() => {
   }
   vec2 applyTransform(vec2 p, vec4 s0, vec4 s1, vec4 s2, vec4 s3, vec4 s5, vec4 s6, vec4 s7, vec2 halfSize) {
     p += latticeDisp(u_state, int(a_letter + 0.5), p / max(halfSize, vec2(1.0))) * halfSize;
-    p = applyDeformStack(p, s3, s5, s6, s7, halfSize);
+    p = applyDeformStack(p, s3, s5, s6, s7, halfSize, u_perspective);
     p.x += p.y * s1.y;
     float angle = radians(s0.z);
     float c = cos(angle);
