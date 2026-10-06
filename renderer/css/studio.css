@@ -2900,6 +2900,18 @@ body {
   line-height: 1.3;
 }
 
+/* Inspector combobox: black background / white foreground (including the opened list). */
+.inspector-panel select {
+  background-color: #000;
+  color: #fff;
+  color-scheme: dark;
+}
+
+.inspector-panel select option {
+  background-color: #000;
+  color: #fff;
+}
+
 .inspector-panel .ctrl-text {
   min-height: 16px;
   line-height: 1.3;
