@@ -1572,7 +1572,7 @@ SA.lyricsEngine = (() => {
       } else if (!fills.length) {
         // derive the shape colour from the text colour: complementary hue and
         // much lower brightness, so background shapes never match the lyrics
-        let fill = palette[3] || palette[2] || '#eef2ff';
+        let fill = palette[8] || palette[4] || '#eef2ff';
         const textHex = textColorHex(style);
         if (textHex) {
           const hsv = SA.color.rgbToHsv(SA.color.parse(textHex));
@@ -2279,17 +2279,16 @@ SA.lyricsEngine = (() => {
 
     const BG_AMOUNT_KEY = { splatter: 'spikes', scratch: 'count', paper: 'jag', blob: 'wobble', star: 'points' };
     // The background reads its colours through the fixed roles (TEXT_BG /
-    // TEXT_EDGE) so the beat colour schemes keep text-on-background contrast;
-    // the ornaments keep the legacy raw indices.
+    // TEXT_EDGE) so the beat colour schemes keep text-on-background contrast.
     const ORN_COLOR_SET = {
-      fill: { kind: 'palette', index: 3 },
-      fill2: { kind: 'palette', index: 5 },
-      stroke: { kind: 'palette', index: 4 },
-      glow: { kind: 'palette', index: 3 },
+      fill: { kind: 'palette', index: 8 },
+      fill2: { kind: 'palette', index: 9 },
+      stroke: { kind: 'palette', index: 6 },
+      glow: { kind: 'palette', index: 8 },
     };
 
-    function roleRef(slot, legacy, colors) {
-      const index = SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(colors, slot) : legacy;
+    function roleRef(slot, _legacy, colors) {
+      const index = SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(colors, slot) : slot;
       return { kind: 'palette', index };
     }
 
@@ -2515,8 +2514,8 @@ SA.lyricsEngine = (() => {
       if (params.cursorColor) {
         const rgba = SA.color.toRgba(params.cursorColor, null, { palette: style.palette || null });
         if (rgba) color = SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
-      } else if (palette[2]) {
-        color = palette[2];
+      } else if (palette[4]) {
+        color = palette[4];
       }
       drawPrimitives([
         { kind: 'rect', x: cx - width / 2, y: cy - height / 2, w: width, h: height, radius: 0, color, opacity: letterState.opacity, angle },

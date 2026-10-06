@@ -269,15 +269,18 @@
           const swatch = document.createElement('button');
           swatch.type = 'button';
           swatch.className = 'ctrl-swatch';
-          swatch.style.background = layer.color || '#101826';
+          if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, layer.color || '#101826');
+          else swatch.style.background = layer.color || '#101826';
           swatch.addEventListener('click', () => {
             SA.colors.openPicker({
               value: layer.color || '#101826',
               anchor: swatch,
               onChange(value) {
-                const hex = typeof value === 'string' ? value : value && value.value;
+                const hex = (SA.colors.pickerValueToHex && SA.colors.pickerValueToHex(value))
+                  || (typeof value === 'string' ? value : value && value.value);
                 SA.store.commands.setLayer(layer.id, { color: hex });
-                swatch.style.background = hex || '#101826';
+                if (SA.colors.paintSwatch) SA.colors.paintSwatch(swatch, hex || '#101826');
+                else swatch.style.background = hex || '#101826';
               },
             });
           });

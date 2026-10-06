@@ -2496,7 +2496,9 @@ SA.inspector = (() => {
       fieldRow(
         t('studio.track.chromaColor'),
         SA.controls.colorControl(chroma.color, (next) => {
-          const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+          const value = (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function')
+            ? SA.colors.pickerValueToHex(next)
+            : (typeof next === 'string' ? next : next && next.value ? next.value : null);
           if (value) write({ color: value });
         })
       )
@@ -2579,6 +2581,9 @@ SA.inspector = (() => {
   }
 
   function sheetColorValue(next) {
+    if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function') {
+      return SA.colors.pickerValueToHex(next);
+    }
     if (typeof next === 'string') return next;
     if (next && typeof next === 'object' && typeof next.value === 'string') return next.value;
     return null;
@@ -3031,12 +3036,60 @@ SA.inspector = (() => {
       const control = SA.controls.paramControl('filler', param, value == null ? param.default : value, onChange);
       return fieldRow(fillerParamLabel(param.key), control);
     }
-    if (param.kind === 'color' || param.kind === 'text') {
+    if (param.kind === 'color') {
+      const HEX6_OR_8 = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i;
+      const initial = value == null ? (param.default || '#ffffff') : String(value);
+      const wrap = document.createElement('div');
+      wrap.className = 'ctrl-color';
+      const swatch = document.createElement('button');
+      swatch.type = 'button';
+      swatch.className = 'ctrl-swatch';
+      const paint = (hex) => {
+        if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, hex);
+        else swatch.style.background = hex;
+      };
+      paint(HEX6_OR_8.test(initial) ? initial : '#ffffff');
+      swatch.title = initial;
       const input = document.createElement('input');
-      input.type = param.kind === 'color' ? 'color' : 'text';
-      if (param.kind === 'text') input.className = 'ctrl-text';
+      input.type = 'text';
+      input.className = 'ctrl-hex';
+      input.value = HEX6_OR_8.test(initial) ? initial : (param.default || '#ffffff');
+      input.addEventListener('keydown', (event) => event.stopPropagation());
+      input.addEventListener('change', () => {
+        const next = input.value.trim();
+        if (!HEX6_OR_8.test(next)) {
+          input.value = value == null ? (param.default || '#ffffff') : String(value);
+          return;
+        }
+        paint(next);
+        onChange(next);
+      });
+      swatch.addEventListener('click', () => {
+        if (typeof SA === 'undefined' || !SA.colors) {
+          input.focus();
+          return;
+        }
+        SA.colors.openPicker({
+          value: HEX6_OR_8.test(input.value.trim()) ? input.value.trim() : '#ffffff',
+          anchor: swatch,
+          onChange(next) {
+            const stored = (SA.colors.pickerValueToHex && SA.colors.pickerValueToHex(next))
+              || (typeof next === 'string' ? next : (next && next.value) || input.value);
+            input.value = stored;
+            paint(stored);
+            onChange(stored);
+          },
+        });
+      });
+      wrap.appendChild(swatch);
+      wrap.appendChild(input);
+      return fieldRow(fillerParamLabel(param.key), wrap);
+    }
+    if (param.kind === 'text') {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'ctrl-text';
       input.value = value == null ? (param.default || '') : String(value);
-      if (param.kind === 'color' && !/^#[0-9a-f]{6}$/i.test(input.value)) input.value = param.default || '#ffffff';
       input.addEventListener('change', () => onChange(input.value));
       return fieldRow(fillerParamLabel(param.key), input);
     }
@@ -3059,7 +3112,9 @@ SA.inspector = (() => {
       for (let index = 0; index < 2; index += 1) {
         const fallback = paletteColors[index === 0 ? 0 : 1] || paletteColors[0] || '#000000';
         const control = SA.controls.colorControl(current[index] || fallback, (next) => {
-          const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+          const value = (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function')
+            ? SA.colors.pickerValueToHex(next)
+            : (typeof next === 'string' ? next : next && next.value ? next.value : null);
           if (!value) return;
           const colors = [current[0] || paletteColors[0] || '#000000', current[1] || paletteColors[1] || fallback];
           colors[index] = value;
@@ -3860,7 +3915,8 @@ SA.inspector = (() => {
         const swatch = document.createElement('button');
         swatch.type = 'button';
         swatch.className = 'palette-dot palette-dot-edit';
-        swatch.style.background = hex;
+        if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, hex);
+        else swatch.style.background = hex;
         swatch.title = `${hex} — ${t('studio.inspector.paletteEdit')}`;
         swatch.addEventListener('click', () => {
           const key = `palette|${sel.path}|${index}|${Date.now()}`;
@@ -3868,7 +3924,9 @@ SA.inspector = (() => {
             value: hex,
             anchor: swatch,
             onChange(next) {
-              const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+              const value = (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function')
+                ? SA.colors.pickerValueToHex(next)
+                : (typeof next === 'string' ? next : next && next.value ? next.value : null);
               if (!value || !scope) return;
               // read the palette again: earlier picks of this drag already moved it
               const latest = resolvedStyle().palette || effective;

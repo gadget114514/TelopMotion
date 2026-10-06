@@ -185,7 +185,7 @@
         out.push(fill.value);
       }
     }
-    if (!out.length && palette[2]) out.push(palette[2]);
+    if (!out.length && palette[4]) out.push(palette[4]);
     return out;
   }
 
@@ -215,9 +215,8 @@
     if (vary) return vary.slice();
     // without a background the text sits on the implicit backdrop (palette 0)
     if (!bgShapeActive(style)) return [palette[0] || '#000000'];
-    // the engine paints the background through the TEXT_BG role (7); a legacy
-    // short palette falls back to the old background number (3)
-    return [palette[7] || palette[3] || palette[0] || '#000000'];
+    // the engine paints the background through the TEXT_BG role (7)
+    return [palette[7] || palette[0] || '#000000'];
   }
 
   function instanceList(style, group) {
@@ -711,7 +710,7 @@
     if (!copy) return copy;
     const context = ctx || {};
     if (figureOverlap(copy, context) <= FIGURE_OVERLAP + 1e-9) return spec;
-    const textColors = context.textColors || (context.palette && context.palette[2] ? [context.palette[2]] : ['#eef2ff']);
+    const textColors = context.textColors || (context.palette && context.palette[4] ? [context.palette[4]] : ['#eef2ff']);
     const params = copy.params || (copy.params = {});
     if (typeof params.color === 'string') {
       params.color = color.separateFrom(params.color, textColors, 3) || params.color;

@@ -35,6 +35,8 @@
   // `style.palette` is #1; `style.paletteSet.extra` holds #2..#max. `max` is the
   // palette count at weird 1, `change` the chance the next beat moves to
   // another palette and `invert` the chance the beat's roles are inverted.
+  // Every palette stores exactly SIZE colours, one per slot. There are no
+  // derived colours: a short palette is invalid and reads as missing.
   const PALETTE_SET_DEFAULTS = Object.freeze({ max: 5, change: 0.5, invert: 0.2 });
 
   // The theme's palette set with its defaults; `extra` is returned unfiltered
@@ -50,23 +52,18 @@
     };
   }
 
-  // Colours of palette #index (0 = style.palette); null when missing / too
-  // short. A copy is returned so a caller can never mutate the stored palette.
-  // A short extra under a full 10-role base is read through the same upgrade
-  // get() applies, so recolor lines the two palettes up slot by slot instead
-  // of mixing a 10-colour source with a 6-colour target.
+  // Colours of palette #index (0 = style.palette); null when missing or not a
+  // full 10-colour palette. A copy is returned so a caller can never mutate
+  // the stored palette.
   function setColors(style, index) {
     const palette = style && style.palette;
     if (index == null || !Number.isFinite(Number(index))) return null;
     const k = Math.max(0, Math.floor(Number(index)));
-    if (k === 0) return palette && Array.isArray(palette.colors) && palette.colors.length ? palette.colors.slice() : null;
+    if (k === 0) return palette && Array.isArray(palette.colors) && palette.colors.length >= SIZE ? palette.colors.slice(0, SIZE) : null;
     const set = (style && style.paletteSet) || {};
     const entry = Array.isArray(set.extra) ? set.extra[k - 1] : null;
-    if (!entry || !Array.isArray(entry.colors) || entry.colors.length < 6) return null;
-    const colors = entry.colors.slice();
-    const base = palette && Array.isArray(palette.colors) ? palette.colors : [];
-    if (base.length >= SIZE && colors.length < SIZE) return upgradeColors(colors);
-    return colors;
+    if (!entry || !Array.isArray(entry.colors) || entry.colors.length < SIZE) return null;
+    return entry.colors.slice(0, SIZE);
   }
 
   // The colour schemes the mid C/D planes are built from. `angles` rotate the
@@ -143,7 +140,8 @@
   }
 
   // The luminance counterpart of a text colour: a light text gets a dark
-  // background and the other way round.
+  // background and the other way round. Used only when generating a fresh
+  // 10-colour palette; stored palettes are never derived at read time.
   function luminanceOpposite(hex, level) {
     try {
       const hsv = color.rgbToHsv(color.parse(hex));
@@ -195,14 +193,12 @@
     return { ...palette, colors: upgradeColors(palette.colors), roles: 2 };
   }
 
-  // A colour of a slot: the stored colour, or a derived one for a short
-  // legacy palette. A palette shorter than SIZE is upgraded first, so a
-  // legacy index 4 (the old stroke) is never mistaken for TEXT_FILL.
+  // A colour of a slot: the stored colour, or null when the palette is not a
+  // full 10-colour palette. Short palettes are invalid and never derived.
   function get(colors, slot) {
     const list = Array.isArray(colors) ? colors : [];
-    if (list.length >= SIZE) return list[slot] == null ? null : list[slot];
-    const upgraded = upgradeColors(list);
-    return upgraded[slot] == null ? null : upgraded[slot];
+    if (list.length < SIZE) return null;
+    return list[slot] == null ? null : list[slot];
   }
 
   // --- beat colour schemes -----------------------------------------------------
@@ -214,10 +210,10 @@
   //   'TMBD' = text <-> background
   //   'BTMD' = text <-> backdrop
   //
-  // The colours themselves are derived from the inherited palette, so a theme
+  // The colours themselves are stored per slot, so a theme
   // edit or a palette re-roll still reaches every beat. The hero text colour H
-  // follows the swap it shares a slot with (legacy) or keeps its own slot (10
-  // roles) and is only moved when the contrast contract demands it.
+  // keeps its own slot (TEXT_FILL2) and is only moved when the contrast
+  // contract demands it.
   const SCHEME_BASE = 'BMTD';
   const SCHEME_INVERT = 'TMBD';
   const SCHEME_ROLES = ['B', 'M', 'T', 'D'];
@@ -225,13 +221,8 @@
 
   // The four schemes swap these roles; every other role keeps the slot table.
   // [source B, source M, source T, source D]
-  function roleSlots(colors) {
-    const legacy = !Array.isArray(colors) || colors.length < SIZE;
-    if (legacy) {
-      // bg, bg2, text, accent, stroke, accent2[, spare]: the backdrop sits on
-      // the accent family and the hero shares the accent slot
-      return { B: 0, B2: 1, M: 3, M2: 5, T: 2, D: 4, H: 3 };
-    }
+  // Every palette is a full 10-colour palette, so the mapping is fixed.
+  function roleSlots() {
     return {
       B: SLOT.MID_A,
       B2: SLOT.MID_B,
@@ -276,31 +267,25 @@
   }
 
   // The repaired palette must hold the pairs the renderer relies on. `move` is
-  // the role the repair is allowed to nudge; the text (T) is never moved. A
-  // legacy palette has no hero slot of its own (H reads the M slot, exactly
-  // what the compositions' fill2 does), so a separate 3:1 hero-on-background
-  // demand would over-constrain every swap: the M-B neighbour pair below
-  // already keeps the hero apart from the background there.
-  function schemePairs(weirdRaw, colors) {
-    const pairs = [
+  // the role the repair is allowed to nudge; the text (T) is never moved.
+  function schemePairs(weirdRaw) {
+    return [
       { a: 'T', b: 'B', ratio: ratioFor('text', weirdRaw), move: 'B' },
       { a: 'T', b: 'M', ratio: ratioFor('backdrop', weirdRaw), move: 'M' },
+      { a: 'H', b: 'B', ratio: 3, move: 'H' },
+      { a: 'D', b: 'T', ratio: ratioFor('soft', weirdRaw), move: 'D' },
+      { a: 'M', b: 'B', ratio: ratioFor('neighbour', weirdRaw), move: 'M' },
     ];
-    if (Array.isArray(colors) && colors.length >= SIZE) pairs.push({ a: 'H', b: 'B', ratio: 3, move: 'H' });
-    pairs.push({ a: 'D', b: 'T', ratio: ratioFor('soft', weirdRaw), move: 'D' });
-    pairs.push({ a: 'M', b: 'B', ratio: ratioFor('neighbour', weirdRaw), move: 'M' });
-    return pairs;
   }
 
   function applyScheme(colors, id, weirdRaw) {
-    if (!Array.isArray(colors) || colors.length < 6) return null;
+    if (!Array.isArray(colors) || colors.length < SIZE) return null;
     if (typeof id !== 'string' || id.length !== 4) return null;
-    const slots = roleSlots(colors);
+    const slots = roleSlots();
     for (const role of id.split('')) if (!SCHEME_ROLES.includes(role)) return null;
-    // the role slots index the stored array directly (a legacy palette must
-    // keep its own colours; get() would upgrade it to derived slots)
+    // the role slots index the stored array directly
     const at = (index) => (index == null || index < 0 || index >= colors.length ? null : colors[index]);
-    const next = colors.slice();
+    const next = colors.slice(0, SIZE);
     for (let i = 0; i < SCHEME_TARGETS.length; i += 1) {
       const target = SCHEME_TARGETS[i];
       const value = at(slots[id[i]]);
@@ -309,11 +294,13 @@
     }
     next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B]);
     next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M]);
-    if (colors.length >= SIZE) next[SLOT.TEXT_BG] = luminanceOpposite(next[SLOT.TEXT_FILL]);
+    // TEXT_BG follows the text through the same HSV carry as the other second
+    // roles, so no colour is ever synthesised from thin air.
+    next[SLOT.TEXT_BG] = carry(at(slots.T), at(SLOT.TEXT_BG), next[slots.T]);
     // contrast contract: at most two repair rounds, then the pairs must hold.
     // A repair that moves a colour's lightness by more than 0.35 loses the
     // character of the original permutation, so the draw is rejected instead.
-    const pairs = schemePairs(weirdRaw, colors);
+    const pairs = schemePairs(weirdRaw);
     const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
     const before = new Map();
     const moved = new Set();
@@ -373,8 +360,8 @@
   const SCHEME_CALM = ['TMBD', 'MBTD', 'TBMD'];
 
   function schemes(colors, weirdRaw, range) {
-    if (!Array.isArray(colors) || colors.length < 6) return [];
-    const slots = roleSlots(colors);
+    if (!Array.isArray(colors) || colors.length < SIZE) return [];
+    const slots = roleSlots();
     const out = [];
     const seen = new Set();
     const calm = range != null && Number.isFinite(Number(range)) && Number(range) < 0.5;
@@ -396,25 +383,10 @@
     return get(colors, slot);
   }
 
-  // Rewrites the legacy palette references of a style tree (palette refs and
-  // gradient stops only). Idempotent when the indices are already slots.
+  // Every stored palette already carries slot indices, so references pass
+  // through unchanged. Old projects are migrated to slots on load.
   function remapRefs(value) {
-    const walk = (node) => {
-      if (Array.isArray(node)) return node.map(walk);
-      if (!node || typeof node !== 'object') return node;
-      // a gradient stop carries paletteIndex, a palette reference its index
-      if (node.kind === 'palette' && node.index != null) {
-        const mapped = LEGACY_INDEX[node.index];
-        return { ...node, index: mapped == null ? node.index : mapped };
-      }
-      const out = {};
-      for (const [key, entry] of Object.entries(node)) {
-        if (key === 'paletteIndex' && entry != null && LEGACY_INDEX[entry] != null) out[key] = LEGACY_INDEX[entry];
-        else out[key] = walk(entry);
-      }
-      return out;
-    };
-    return walk(value);
+    return value;
   }
 
   // True when every TEXT slot of `candidate` clears the contrast contract
@@ -441,13 +413,10 @@
   // Moves the non-text members of the failing pairs until the contract holds.
   // `repairContrast(colors, weirdRaw)` (moods.repairContrast) is used for the
   // text-fill pair when provided; the rest only move the mid / figure colours.
+  // The palette must already hold SIZE colours; short palettes are left alone.
   function repairPalette(colors, weirdRaw, repairContrast) {
     const list = Array.isArray(colors) ? colors : [];
-    if (list.length < SIZE) {
-      const upgraded = upgradeColors(list);
-      list.length = 0;
-      list.push(...upgraded);
-    }
+    if (list.length < SIZE) return list;
     if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw));
     const move = (index, fixed, target) => {
       let next = color.ensureContrast(list[index], fixed, target);
@@ -572,13 +541,10 @@
     SCHEMES,
     SCHEME_IDS,
     CONTRAST,
-    LEGACY_INDEX,
     ratioFor,
     contrast,
     get,
     slotOf,
-    upgradeColors,
-    upgradePalette,
     remapRefs,
     compatible,
     repairPalette,

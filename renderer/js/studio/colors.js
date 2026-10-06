@@ -6,12 +6,12 @@ SA.colors = (() => {
   const LS_RECENT = 'sa.colors.recent';
   const LS_PALETTES = 'sa.palettes';
   const BUILTIN_PALETTES = [
-    { id: 'sunoDark', name: 'Suno Dark', builtin: true, colors: ['#0b0d12', '#151924', '#1b2130', '#252c3d', '#8d96ab', '#e9ecf4', '#ff8a3d', '#ff4d8d'] },
-    { id: 'neon', name: 'Neon', builtin: true, colors: ['#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#f9f002'] },
-    { id: 'pastel', name: 'Pastel', builtin: true, colors: ['#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4', '#e6d9ff', '#ffdcc4'] },
-    { id: 'mono', name: 'Mono', builtin: true, colors: ['#0b0d12', '#2c3242', '#59617a', '#8d96ab', '#c3cad8', '#eef1f8'] },
-    { id: 'gold', name: 'Gold', builtin: true, colors: ['#2b1d05', '#7a4f12', '#cd7f32', '#ffc247', '#ffe9a8', '#fff8e0'] },
-    { id: 'category', name: 'Category', builtin: true, colors: ['#4d8dff', '#5fd44d', '#ff5c8a', '#ffc247', '#b06bff', '#4dc8ff', '#ff5cd0', '#7c8cff', '#2ee6c0'] },
+    { id: 'sunoDark', name: 'Suno Dark', builtin: true, colors: ['#0b0d12', '#151924', '#1b2130', '#252c3d', '#8d96ab', '#e9ecf4', '#ff8a3d', '#ff4d8d', '#0b0d12', '#151924'] },
+    { id: 'neon', name: 'Neon', builtin: true, colors: ['#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#f9f002', '#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff'] },
+    { id: 'pastel', name: 'Pastel', builtin: true, colors: ['#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4', '#e6d9ff', '#ffdcc4', '#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4'] },
+    { id: 'mono', name: 'Mono', builtin: true, colors: ['#0b0d12', '#2c3242', '#59617a', '#8d96ab', '#c3cad8', '#eef1f8', '#0b0d12', '#2c3242', '#59617a', '#8d96ab'] },
+    { id: 'gold', name: 'Gold', builtin: true, colors: ['#2b1d05', '#7a4f12', '#cd7f32', '#ffc247', '#ffe9a8', '#fff8e0', '#2b1d05', '#7a4f12', '#cd7f32', '#ffc247'] },
+    { id: 'category', name: 'Category', builtin: true, colors: ['#4d8dff', '#5fd44d', '#ff5c8a', '#ffc247', '#b06bff', '#4dc8ff', '#ff5cd0', '#7c8cff', '#2ee6c0', '#4d8dff'] },
   ];
 
   let popover = null;
@@ -83,7 +83,45 @@ SA.colors = (() => {
 
   function updateFromHex(hex) {
     const rgba = SA.color.parse(hex);
-    return { hex: SA.color.toHex({ ...rgba, a: 1 }), rgba, hsv: SA.color.rgbToHsv(rgba) };
+    return { hex: SA.color.toHex(rgba), rgba, hsv: SA.color.rgbToHsv(rgba) };
+  }
+
+  // A picker result ({ kind:'solid', value, alpha } or a plain hex string)
+  // becomes the plain hex string the palette / layer / clip stores: the alpha
+  // rides in the hex itself (`#RRGGBBAA`) so every plain-string slot keeps it.
+  function pickerValueToHex(value) {
+    if (typeof value === 'string') return value;
+    if (value && typeof value.value === 'string') {
+      const raw = SA.color.parse(value.value);
+      const alpha = value.alpha == null ? raw.a : Number(value.alpha);
+      if (alpha == null || !(alpha < 1)) return value.value;
+      return SA.color.toHex({ ...raw, a: alpha });
+    }
+    return null;
+  }
+
+  // Paints a swatch button with a checkerboard behind translucent colours so
+  // the alpha stays visible instead of blending into the panel.
+  function paintSwatch(el, color) {
+    if (!el) return;
+    el.style.background = '';
+    el.style.backgroundColor = '';
+    el.style.backgroundImage = '';
+    el.style.backgroundSize = '';
+    el.style.backgroundPosition = '';
+    let alpha = 1;
+    try {
+      alpha = SA.color.parse(color).a;
+    } catch {
+      alpha = 1;
+    }
+    if (alpha != null && alpha < 1) {
+      el.style.backgroundImage = `linear-gradient(0deg, ${color}, ${color}), repeating-conic-gradient(#3a4050 0% 25%, #22262f 0% 50%)`;
+      el.style.backgroundSize = 'auto, 8px 8px';
+      el.style.backgroundPosition = '0 0, 50% 50%';
+    } else {
+      el.style.background = color;
+    }
   }
 
   // --- color picker ------------------------------------------------------------
@@ -173,7 +211,8 @@ SA.colors = (() => {
 
     function refresh() {
       const rgba = SA.color.hsvToRgb(hsv);
-      hex = SA.color.toHex({ ...rgba, a: 1 });
+      rgba.a = alphaValue;
+      hex = SA.color.toHex(rgba);
       hexInput.value = hex;
       rgbLabel.textContent = `${Math.round(rgba.r * 255)}, ${Math.round(rgba.g * 255)}, ${Math.round(rgba.b * 255)} · α ${alphaValue.toFixed(2)}`;
       drawSv();
@@ -213,12 +252,16 @@ SA.colors = (() => {
     hexInput.addEventListener('change', () => {
       const parsed = updateFromHex(hexInput.value);
       hsv = parsed.hsv;
+      alphaValue = parsed.rgba.a == null ? 1 : parsed.rgba.a;
+      alpha.value = String(alphaValue);
       refresh();
     });
     for (const entry of recents()) {
       const swatch = swatchButton(entry, () => {
         const parsed = updateFromHex(entry);
         hsv = parsed.hsv;
+        alphaValue = parsed.rgba.a == null ? 1 : parsed.rgba.a;
+        alpha.value = String(alphaValue);
         refresh();
       });
       recentRow.appendChild(swatch);
@@ -229,6 +272,8 @@ SA.colors = (() => {
           swatchButton(color, () => {
             const parsed = updateFromHex(color);
             hsv = parsed.hsv;
+            alphaValue = parsed.rgba.a == null ? 1 : parsed.rgba.a;
+            alpha.value = String(alphaValue);
             refresh();
           })
         );
@@ -238,6 +283,8 @@ SA.colors = (() => {
       const swatch = swatchButton(entry.tint, () => {
         const parsed = updateFromHex(entry.tint);
         hsv = parsed.hsv;
+        alphaValue = parsed.rgba.a == null ? 1 : parsed.rgba.a;
+        alpha.value = String(alphaValue);
         refresh();
       });
       swatch.title = name;
@@ -260,8 +307,12 @@ SA.colors = (() => {
     });
     buttons.insertBefore(eyedrop, cancel);
     apply.addEventListener('click', () => {
-      pushRecent(hex);
-      const value = opts.gradientStop ? hex : { kind: 'solid', value: hex, alpha: alphaValue };
+      const rgba = SA.color.hsvToRgb(hsv);
+      rgba.a = alphaValue;
+      const rgbHex = SA.color.toHex({ ...rgba, a: 1 });
+      const fullHex = SA.color.toHex(rgba);
+      pushRecent(fullHex);
+      const value = opts.gradientStop ? fullHex : { kind: 'solid', value: rgbHex, alpha: alphaValue };
       if (opts.onChange) opts.onChange(value);
       closePopover();
     });
@@ -334,7 +385,7 @@ SA.colors = (() => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'color-swatch';
-    button.style.background = color;
+    paintSwatch(button, color);
     button.title = color;
     button.addEventListener('click', onClick);
     return button;
@@ -436,9 +487,12 @@ SA.colors = (() => {
           selected = index;
           openPicker({
             value: stop.color,
+            alpha: stop.alpha,
             gradientStop: true,
             onChange(hexValue) {
-              stop.color = hexValue;
+              const parsed = SA.color.parse(hexValue);
+              stop.color = SA.color.toHex({ ...parsed, a: 1 });
+              stop.alpha = parsed.a == null ? 1 : parsed.a;
               renderBar();
             },
           });
@@ -541,5 +595,7 @@ SA.colors = (() => {
     paletteDialog,
     closePopover,
     recents,
+    pickerValueToHex,
+    paintSwatch,
   };
 })();

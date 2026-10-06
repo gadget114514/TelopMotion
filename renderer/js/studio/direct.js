@@ -56,18 +56,18 @@
   function accentsOf(colors) {
     const palette = Array.isArray(colors) ? colors : [];
     const bgColor = SA.color.parse(palette[0] || '#000000');
-    const accentIdx = [3, 5, 6, 2].filter((i) => palette[i] && SA.color.contrastRatio(SA.color.parse(palette[i]), bgColor) >= 3);
+    const accentIdx = [4, 5, 6, 8, 9].filter((i) => palette[i] && SA.color.contrastRatio(SA.color.parse(palette[i]), bgColor) >= 3);
     return { accentIdx, accentHexes: accentIdx.map((i) => palette[i]) };
   }
 
-  // The text / hero colours of a palette through the role table (legacy aware):
+  // The text / hero colours of a palette through the role table:
   // the backdrop planes must separate from both.
   function textColorsOf(colors) {
     const roles = SA.paletteRoles;
     if (roles && typeof roles.get === 'function') {
       return [roles.get(colors, roles.SLOT.TEXT_FILL), roles.get(colors, roles.SLOT.TEXT_FILL2)].filter(Boolean);
     }
-    return [(colors || [])[2], (colors || [])[3]].filter(Boolean);
+    return [(colors || [])[4], (colors || [])[5]].filter(Boolean);
   }
 
   // The profile's figure colours: two steps of the backdrop planes, kept 1.5+
@@ -1236,23 +1236,21 @@
     decoGlow: 'neonGlow',
   };
 
-  function roleHex(colors, name, legacy) {
+  function roleHex(colors, name) {
     const roles = SA.paletteRoles;
     if (roles && typeof roles.get === 'function' && roles.SLOT && roles.SLOT[name] != null) return roles.get(colors, roles.SLOT[name]);
-    return (colors || [])[legacy];
+    return null;
   }
 
-  // A live palette reference to a role: the fixed slot on a full 10-role
-  // palette, the legacy index on a short one. A stored reference follows every
-  // palette re-roll / dice at render time, so the decoration keeps the edge
-  // role instead of the colour the palette happened to hold at generation.
-  // `fallback` is used when the palette is too short to carry the role.
-  function roleRef(colors, name, legacy, fallback) {
+  // A live palette reference to a role: the fixed 10-slot index. A stored
+  // reference follows every palette re-roll / dice at render time, so the
+  // decoration keeps the edge role instead of the colour the palette happened
+  // to hold at generation. `fallback` is used when the palette is missing.
+  function roleRef(colors, name, _legacy, fallback) {
     const list = Array.isArray(colors) ? colors : [];
     const roles = SA.paletteRoles;
     const slot = roles && roles.SLOT ? roles.SLOT[name] : null;
     if (slot != null && roles.SIZE && list.length >= roles.SIZE) return { kind: 'palette', index: slot };
-    if (list.length > legacy) return { kind: 'palette', index: legacy };
     return fallback;
   }
 
@@ -1285,12 +1283,12 @@
     if (!dark) weights.decoGlow = 0;
     const keys = genParams.DECO_KEYS.filter((key) => weights[key] != null);
     const type = genParams.pickWeighted(random, weights, keys);
-    const textBg = roleHex(colors, 'TEXT_BG', 7) || '#000000';
-    const textEdge = roleHex(colors, 'TEXT_EDGE', 6) || textBg;
-    const textFill2 = roleHex(colors, 'TEXT_FILL2', 5) || '#ffffff';
+    const textBg = roleHex(colors, 'TEXT_BG') || '#000000';
+    const textEdge = roleHex(colors, 'TEXT_EDGE') || textBg;
+    const textFill2 = roleHex(colors, 'TEXT_FILL2') || '#ffffff';
     // the outline wears the palette's edge role live, so a palette re-roll or
     // dice moves the rendered edge instead of leaving the frozen tone
-    const edgeRef = roleRef(colors, 'TEXT_EDGE', 4, textEdge);
+    const edgeRef = roleRef(colors, 'TEXT_EDGE', 0, textEdge);
     if (!type || type === 'decoNone') {
       // the separation guarantee: two or more planes behind the text need an
       // outline, unless the profile pinned decoNone on purpose
@@ -1387,10 +1385,9 @@
     const list = Array.isArray(colors) ? colors : (colors && Array.isArray(colors.colors) ? colors.colors : []);
     if (list.length < 2 || !SA.fx || typeof SA.fx.paramDefaults !== 'function') return null;
     const bg = SA.color.parse(list[0] || '#000000');
-    // the text roles first (fill, fill2), then the accent colours a short palette
-    // keeps at 5 / 6; every one has to clear the legibility floor on its own
-    const long = list.length >= 10;
-    const candidates = long ? [4, 5, 6] : [2, 3, 5, 6];
+    // the text roles first (fill, fill2), then the figure accents; every one
+    // has to clear the legibility floor on its own
+    const candidates = [4, 5, 6, 8, 9];
     const readable = candidates.filter((i) => list[i] && SA.color.contrastRatio(SA.color.parse(list[i]), bg) >= 4.5);
     if (readable.length < 2) return null;
     const first = readable[0];
@@ -2544,7 +2541,7 @@
     p.size = Math.round((Number(p.size) || 1) * pick([0.6, 0.85, 1, 1.3, 1.8]) * 100) / 100;
     p.speed = Math.round((Number(p.speed) || 0.4) * pick([0.5, 1, 1.5, 2.2]) * 100) / 100;
     p.opacity = Math.round(Math.max(0.2, Math.min(0.9, (Number(p.opacity) || 0.6) * pick([0.6, 0.85, 1, 1.2]))) * 100) / 100;
-    const colors = (palette || []).filter((hex) => typeof hex === 'string' && /^#[0-9a-f]{6}$/i.test(hex));
+    const colors = (palette || []).filter((hex) => typeof hex === 'string' && /^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(hex));
     if (colors.length) {
       p.color = pick(colors);
       if (random() < 0.4) {
@@ -3303,7 +3300,7 @@
         // the planes were separated from the cue's own body colour; a beat
         // colour scheme moves the text roles, so the scheme-free anchor is the
         // cue text while a scheme is in play
-        const cueTexts = roles && typeof roles.get === 'function' ? [roles.get(cueColors, roles.SLOT.TEXT_FILL)].filter(Boolean) : [cueColors[2]].filter(Boolean);
+        const cueTexts = roles && typeof roles.get === 'function' ? [roles.get(cueColors, roles.SLOT.TEXT_FILL)].filter(Boolean) : [cueColors[4]].filter(Boolean);
         for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
           const path = `cue:${cue.id}/beat:${beat.id}`;
           const bad = () => {
@@ -3349,8 +3346,8 @@
           }
           // (2) the cue's foreground returns to the plain text role
           const cueBag = projectDoc.cueStyles[cue.id] || (projectDoc.cueStyles[cue.id] = {});
-          const ref = (slot, legacy) => (SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(cueColors, slot) : legacy);
-          bag.color = { fill: { kind: 'palette', index: ref(4, 2) }, fill2: { kind: 'palette', index: ref(5, 3) } };
+          const ref = (slot) => (SA.compositions && typeof SA.compositions.paletteRefIndex === 'function' ? SA.compositions.paletteRefIndex(cueColors, slot) : slot);
+          bag.color = { fill: { kind: 'palette', index: ref(4) }, fill2: { kind: 'palette', index: ref(5) } };
           delete cueBag.fill;
           if (!bad()) continue;
           // (3) a separation outline as the last resort, in the palette's edge
@@ -3362,7 +3359,7 @@
           const stack = Array.isArray(cueBag.edge) ? cueBag.edge.slice() : [];
           if (!stack.some((entry) => entry && entry.type === 'outline')) {
             const roleFallback = roles && typeof roles.get === 'function' ? roles.get(cueColors, roles.SLOT.TEXT_EDGE) || '#000000' : '#000000';
-            const color = roleRef(cueColors, 'TEXT_EDGE', 4, roleFallback);
+            const color = roleRef(cueColors, 'TEXT_EDGE', 0, roleFallback);
             stack.unshift({ type: 'outline', params: { width: 3.5, color }, enabled: true });
           }
           cueBag.edge = stack;

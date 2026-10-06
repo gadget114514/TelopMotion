@@ -9,7 +9,7 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 5;
+  const VERSION = 6;
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
@@ -594,30 +594,29 @@
         return null;
       }
     };
-    const refFor = (colors, name, legacy) => (colors.length >= roles.SIZE ? { kind: 'palette', index: roles.SLOT[name] } : { kind: 'palette', index: legacy });
-    // [param key, the role the frozen literal matched, the role it becomes, the
-    // legacy index of the target role on a short palette]
+    const refFor = (colors, name) => ({ kind: 'palette', index: roles.SLOT[name] });
+    // [param key, the role the frozen literal matched, the role it becomes]
     const instanceRoles = {
-      outline: [['color', 'TEXT_BG', 'TEXT_EDGE', 4]],
-      multiLine: [['colorA', 'TEXT_BG', 'TEXT_EDGE', 4], ['colorB', 'TEXT_FILL2', 'TEXT_FILL2', 3]],
-      extrude: [['colorNear', 'TEXT_EDGE', 'TEXT_EDGE', 4]],
+      outline: [['color', 'TEXT_BG', 'TEXT_EDGE']],
+      multiLine: [['colorA', 'TEXT_BG', 'TEXT_EDGE'], ['colorB', 'TEXT_FILL2', 'TEXT_FILL2']],
+      extrude: [['colorNear', 'TEXT_EDGE', 'TEXT_EDGE']],
     };
     const rewriteInstance = (instance, colors) => {
       if (!isPlainObject(instance) || !isPlainObject(instance.params)) return;
       const targets = instanceRoles[instance.type];
       if (!targets) return;
-      for (const [key, matchRole, targetRole, legacy] of targets) {
+      for (const [key, matchRole, targetRole] of targets) {
         const expected = roleHexOf(colors, matchRole);
         const value = instance.params[key];
         if (expected && typeof value === 'string' && value.toLowerCase() === expected) {
-          instance.params[key] = refFor(colors, targetRole, legacy);
+          instance.params[key] = refFor(colors, targetRole);
         }
       }
     };
     const rewriteBag = (bag, path) => {
       if (!isPlainObject(bag) || !Array.isArray(bag.edge) || !bag.edge.length) return;
       const colors = paletteAt(path);
-      if (colors.length < 5) return;
+      if (colors.length < 10) return;
       for (const instance of bag.edge) rewriteInstance(instance, colors);
     };
     rewriteBag(project.style, '');
@@ -714,6 +713,107 @@
     return project;
   }
 
+  // Version 6: every palette stores the 10 fixed slots. Short palettes are
+  // expanded once (the old derived slots are materialised) and old palette
+  // indices (0..6) are remapped to slots, so the runtime never derives.
+  const V6_LEGACY_INDEX = { 0: 0, 1: 1, 2: 4, 3: 5, 4: 6, 5: 5, 6: 9 };
+
+  function v6ExpandColors(colors) {
+    const list = Array.isArray(colors) ? colors.slice() : [];
+    if (list.length >= 10) return list.slice(0, 10);
+    // one-time materialisation of the old derived slots (bg, bg2, text,
+    // accent, stroke, accent2[, spare] -> 10 slots)
+    const a = list[0] || '#101018';
+    const b = list[1] || a;
+    const edge = list[4] || a;
+    const accent2 = list[5] || list[3] || b;
+    const text = list[2] || '#eef2ff';
+    // derive the same way the old runtime did, then store the result
+    const shiftHex = (hex, h, s, v) => {
+      try {
+        const roles = paletteRolesModule();
+        if (roles && typeof roles.shift === 'function') return roles.shift(hex, h, s, v);
+      } catch { /* fall through */ }
+      return hex;
+    };
+    const luminance = (hex) => {
+      try {
+        const roles = paletteRolesModule();
+        if (roles && typeof roles.luminanceOpposite === 'function') return roles.luminanceOpposite(hex);
+      } catch { /* fall through */ }
+      return hex;
+    };
+    const deriveC = shiftHex(a, 24, 0.9, 0.14);
+    const deriveD = shiftHex(b, -20, 0.85, -0.08);
+    return [
+      a,
+      b,
+      deriveC,
+      deriveD,
+      text,
+      list[3] || '#ff8a3d',
+      edge,
+      luminance(text),
+      accent2,
+      shiftHex(accent2, 180, 0.9, 0),
+    ];
+  }
+
+  function v6RemapRefs(value) {
+    const walk = (node) => {
+      if (Array.isArray(node)) return node.map(walk);
+      if (!node || typeof node !== 'object') return node;
+      if (node.kind === 'palette' && node.index != null) {
+        const mapped = V6_LEGACY_INDEX[node.index];
+        return { ...node, index: mapped == null ? node.index : mapped };
+      }
+      const out = {};
+      for (const [key, entry] of Object.entries(node)) {
+        if (key === 'paletteIndex' && entry != null && V6_LEGACY_INDEX[entry] != null) out[key] = V6_LEGACY_INDEX[entry];
+        else out[key] = walk(entry);
+      }
+      return out;
+    };
+    return walk(value);
+  }
+
+  function migrateToV6(project) {
+    const fixPalette = (palette) => {
+      if (!palette || !Array.isArray(palette.colors) || !palette.colors.length) return;
+      palette.colors = v6ExpandColors(palette.colors);
+      palette.roles = 2;
+    };
+    if (project.style && project.style.palette) fixPalette(project.style.palette);
+    if (project.style && project.style.paletteSet && Array.isArray(project.style.paletteSet.extra)) {
+      for (const entry of project.style.paletteSet.extra) fixPalette(entry);
+    }
+    for (const bag of Object.values(project.cueStyles || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    for (const bag of Object.values(project.beatStyles || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    for (const bag of Object.values(project.beatKindStyle || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    if (Array.isArray(project.palettes)) {
+      for (const entry of project.palettes) fixPalette(entry);
+    }
+    if (project.styleMode && Array.isArray(project.styleMode.usePalettes)) {
+      for (const entry of project.styleMode.usePalettes) fixPalette(entry);
+    }
+    const remapBag = (bag) => {
+      if (!bag || typeof bag !== 'object') return bag;
+      return v6RemapRefs(bag);
+    };
+    if (project.style) project.style = remapBag(project.style);
+    for (const [id, bag] of Object.entries(project.cueStyles || {})) project.cueStyles[id] = remapBag(bag);
+    for (const [id, bag] of Object.entries(project.beatStyles || {})) project.beatStyles[id] = remapBag(bag);
+    for (const [id, bag] of Object.entries(project.beatKindStyle || {})) project.beatKindStyle[id] = remapBag(bag);
+    for (const [key, bag] of Object.entries(project.overrides || {})) project.overrides[key] = remapBag(bag);
+    return project;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -731,6 +831,7 @@
     if (version < 3) migrateToV3(merged);
     if (version < 4) migrateToV4(merged);
     if (version < 5) migrateToV5(merged);
+    if (version < 6) migrateToV6(merged);
     ensureManagedTracks(merged);
     normalizeLayers(merged);
     merged.version = VERSION;

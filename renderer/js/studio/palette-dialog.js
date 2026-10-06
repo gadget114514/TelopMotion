@@ -15,10 +15,14 @@ window.SA = window.SA || {};
         scopeBeat: 'this beat',
         roleBackground: 'Background',
         roleBackground2: 'Background 2',
+        roleMid: 'Mid',
+        roleMid2: 'Mid 2',
         roleText: 'Text',
         roleAccent: 'Accent',
         roleEdge: 'Edge',
-        roleExtra: 'Extra {n}',
+        roleTextBg: 'Text background',
+        roleFig: 'Figure',
+        roleFig2: 'Figure 2',
         name: 'Name',
         addColor: 'Add colour',
         rerollColor: 'Re-roll this colour',
@@ -61,10 +65,14 @@ window.SA = window.SA || {};
         scopeBeat: 'このビート',
         roleBackground: '背景',
         roleBackground2: '背景2',
+        roleMid: '中景',
+        roleMid2: '中景2',
         roleText: '文字',
         roleAccent: 'アクセント',
         roleEdge: '縁',
-        roleExtra: '追加 {n}',
+        roleTextBg: '文字背景',
+        roleFig: '図形',
+        roleFig2: '図形2',
         name: '名前',
         addColor: '色を追加',
         rerollColor: 'この色を引き直す',
@@ -107,10 +115,14 @@ window.SA = window.SA || {};
         scopeBeat: 'este beat',
         roleBackground: 'Fondo',
         roleBackground2: 'Fondo 2',
+        roleMid: 'Medio',
+        roleMid2: 'Medio 2',
         roleText: 'Texto',
         roleAccent: 'Acento',
         roleEdge: 'Borde',
-        roleExtra: 'Extra {n}',
+        roleTextBg: 'Fondo de texto',
+        roleFig: 'Figura',
+        roleFig2: 'Figura 2',
         name: 'Nombre',
         addColor: 'Añadir color',
         rerollColor: 'Volver a sortear este color',
@@ -153,10 +165,14 @@ window.SA = window.SA || {};
         scopeBeat: 'ce beat',
         roleBackground: 'Fond',
         roleBackground2: 'Fond 2',
+        roleMid: 'Moyen',
+        roleMid2: 'Moyen 2',
         roleText: 'Texte',
         roleAccent: 'Accent',
         roleEdge: 'Bord',
-        roleExtra: 'Supplément {n}',
+        roleTextBg: 'Fond de texte',
+        roleFig: 'Figure',
+        roleFig2: 'Figure 2',
         name: 'Nom',
         addColor: 'Ajouter une couleur',
         rerollColor: 'Retirer cette couleur au sort',
@@ -199,10 +215,14 @@ window.SA = window.SA || {};
         scopeBeat: 'этот beat',
         roleBackground: 'Фон',
         roleBackground2: 'Фон 2',
+        roleMid: 'Средний',
+        roleMid2: 'Средний 2',
         roleText: 'Текст',
         roleAccent: 'Акцент',
         roleEdge: 'Обводка',
-        roleExtra: 'Дополнительный {n}',
+        roleTextBg: 'Фон текста',
+        roleFig: 'Фигура',
+        roleFig2: 'Фигура 2',
         name: 'Название',
         addColor: 'Добавить цвет',
         rerollColor: 'Пересобрать этот цвет',
@@ -245,7 +265,7 @@ SA.paletteDialog = (() => {
   const HEX = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i;
   const KINDS = ['background', 'backdrop', 'figure', 'filler'];
   const KIND_LABEL = { background: 'palette.targetBackground', backdrop: 'palette.targetBackdrop', figure: 'palette.targetFigure', filler: 'palette.targetFiller' };
-  const MAX_COLORS = 12;
+  const SLOT_COUNT = 10;
 
   let active = null;
 
@@ -291,10 +311,53 @@ SA.paletteDialog = (() => {
   function roleLabel(index) {
     if (index === 0) return t('palette.roleBackground');
     if (index === 1) return t('palette.roleBackground2');
-    if (index === 2) return t('palette.roleText');
-    if (index === 3) return t('palette.roleAccent');
-    if (index === 4) return t('palette.roleEdge');
-    return t('palette.roleExtra', { n: index });
+    if (index === 2) return t('palette.roleMid');
+    if (index === 3) return t('palette.roleMid2');
+    if (index === 4) return t('palette.roleText');
+    if (index === 5) return t('palette.roleAccent');
+    if (index === 6) return t('palette.roleEdge');
+    if (index === 7) return t('palette.roleTextBg');
+    if (index === 8) return t('palette.roleFig');
+    if (index === 9) return t('palette.roleFig2');
+    return `P${index + 1}`;
+  }
+
+  function alphaOf(hex) {
+    try {
+      const parsed = SA.color.parse(hex);
+      return parsed.a == null ? 1 : parsed.a;
+    } catch {
+      return 1;
+    }
+  }
+
+  function withAlpha(hex, alpha) {
+    if (alpha == null || !(alpha < 1)) return hex;
+    try {
+      return SA.color.toHex({ ...SA.color.parse(hex), a: alpha });
+    } catch {
+      return hex;
+    }
+  }
+
+  // The shared picker returns `{ kind:'solid', value, alpha }` (or a plain
+  // string for gradient stops); palette slots are plain strings, so the alpha
+  // is folded into `#RRGGBBAA`.
+  function pickerHex(value) {
+    if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function') {
+      return SA.colors.pickerValueToHex(value);
+    }
+    if (typeof value === 'string') return value;
+    if (value && typeof value.value === 'string') {
+      const alpha = value.alpha == null ? alphaOf(value.value) : Number(value.alpha);
+      return withAlpha(value.value, alpha);
+    }
+    return null;
+  }
+
+  function paintSwatch(el, hex) {
+    if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(el, hex);
+    else el.style.background = hex;
   }
 
   // The edge role of the palette being edited: its re-rolls sweep the light
@@ -309,18 +372,21 @@ SA.paletteDialog = (() => {
     const random = SA.rng.rngFor(Math.floor(Math.random() * 900000) + 1000, 'palette-dialog', index);
     const options = isEdgeIndex(index, colors) ? { edgeIndex: 0 } : null;
     const jittered = SA.moods.jitterPalette(random, { colors: [hex] }, mode.axes, 2.5, null, options);
-    return (jittered && jittered.colors && jittered.colors[0]) || hex;
+    const out = (jittered && jittered.colors && jittered.colors[0]) || hex;
+    return withAlpha(out, alphaOf(hex));
   }
 
   // The big-jump sibling of jitterOne: a plain random RGB, no axes or role.
-  function rerollOne() {
+  // The previous alpha rides along so a translucent slot stays translucent.
+  function rerollOne(hex) {
     const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
-    return `#${channel()}${channel()}${channel()}`;
+    return withAlpha(`#${channel()}${channel()}${channel()}`, alphaOf(hex));
   }
 
   // The nearest value of `hex` (lighter or darker, whichever moves less) that
-  // clears `target` against `bg`; hue and saturation stay.
+  // clears `target` against `bg`; hue and saturation stay, alpha is kept.
   function fixContrastOne(hex, bg, target) {
+    const alpha = alphaOf(hex);
     const front = SA.color.parse(hex);
     const back = SA.color.parse(bg);
     if (SA.color.contrastRatio(front, back) >= target) return hex;
@@ -332,10 +398,10 @@ SA.paletteDialog = (() => {
         const v = Math.min(1, Math.max(0, hsv.v + direction * step * 0.05));
         const candidate = SA.color.hsvToRgb({ h: hsv.h, s: hsv.s, v, a: 1 });
         const ratio = SA.color.contrastRatio(candidate, back);
-        if (ratio >= target) return SA.color.toHex(candidate);
+        if (ratio >= target) return withAlpha(SA.color.toHex(candidate), alpha);
         if (ratio > bestRatio) {
           bestRatio = ratio;
-          best = SA.color.toHex(candidate);
+          best = withAlpha(SA.color.toHex(candidate), alpha);
         }
       }
     }
@@ -427,13 +493,16 @@ SA.paletteDialog = (() => {
     return node;
   }
 
-  // A reusable palette editor for a plain `{ colors }` draft: role rows with
-  // swatches, hex inputs, re-roll, add / remove and the contrast readout. Every
-  // mutation calls `onChange(palette)` and the component rebuilds itself, so
-  // the palette dialog and the theme editor can both host it.
+  // A reusable palette editor for a plain `{ colors }` draft: exactly the 10
+  // fixed slots with swatches, hex inputs, re-roll and the contrast readout.
+  // Every mutation calls `onChange(palette)` and the component rebuilds
+  // itself, so the palette dialog and the theme editor can both host it.
   function editorNode(palette, onChange) {
     const wrap = document.createElement('div');
     wrap.className = 'palette-editor';
+    if (!Array.isArray(palette.colors)) palette.colors = [];
+    while (palette.colors.length < SLOT_COUNT) palette.colors.push('#888888');
+    palette.colors = palette.colors.slice(0, SLOT_COUNT);
     const notify = () => {
       if (typeof onChange === 'function') onChange(palette);
     };
@@ -445,23 +514,24 @@ SA.paletteDialog = (() => {
     };
     const rebuild = () => {
       wrap.innerHTML = '';
-      palette.colors.forEach((hex, index) => {
+      palette.colors.slice(0, SLOT_COUNT).forEach((hex, index) => {
         const row = document.createElement('div');
         row.className = 'palette-edit-row';
         const label = document.createElement('span');
         label.className = 'palette-role';
-        label.textContent = roleLabel(index);
+        label.textContent = `${roleLabel(index)} · P${index + 1}`;
         row.appendChild(label);
         const swatch = button('', () => {
           SA.colors.openPicker({
             value: hex,
             anchor: swatch,
             onChange(value) {
-              setColor(index, typeof value === 'string' ? value : value && value.value);
+              const next = pickerHex(value);
+              if (next) setColor(index, next);
             },
           });
         }, 'color-swatch');
-        swatch.style.background = hex;
+        paintSwatch(swatch, hex);
         swatch.title = hex;
         row.appendChild(swatch);
         const input = document.createElement('input');
@@ -480,7 +550,7 @@ SA.paletteDialog = (() => {
         reroll.classList.add('btn', 'btn-mini');
         reroll.title = t('palette.rerollColor');
         row.appendChild(reroll);
-        const jump = button('🎲', () => setColor(index, rerollOne()));
+        const jump = button('🎲', () => setColor(index, rerollOne(hex)));
         jump.classList.add('btn', 'btn-mini');
         jump.title = t('palette.rerollColorWide');
         row.appendChild(jump);
@@ -491,30 +561,8 @@ SA.paletteDialog = (() => {
         }, 'btn btn-mini');
         fix.title = t('palette.contrastFix');
         row.appendChild(fix);
-        if (index >= 5) {
-          const remove = button('✕', () => {
-            palette.colors.splice(index, 1);
-            notify();
-            rebuild();
-          });
-          remove.classList.add('btn', 'btn-mini');
-          remove.title = t('palette.removeColor');
-          row.appendChild(remove);
-        }
         wrap.appendChild(row);
       });
-      const addRow = document.createElement('div');
-      addRow.className = 'palette-edit-row palette-edit-add';
-      addRow.appendChild(
-        button(t('palette.addColor'), () => {
-          if (palette.colors.length >= MAX_COLORS) return;
-          const last = palette.colors[palette.colors.length - 1] || '#ffffff';
-          palette.colors.push(jitterOne(last, palette.colors.length, palette.colors));
-          notify();
-          rebuild();
-        })
-      );
-      wrap.appendChild(addRow);
       const nameRow = document.createElement('div');
       nameRow.className = 'field';
       const nameLabel = document.createElement('span');
@@ -529,11 +577,12 @@ SA.paletteDialog = (() => {
       nameRow.appendChild(nameLabel);
       nameRow.appendChild(nameInput);
       wrap.appendChild(nameRow);
-      // text against background readability, the same 4.5 floor as the generator
+      // text against background readability, the same 4.5 floor as the generator:
+      // TEXT_FILL (4) vs MID_A (0)
       const colors = palette.colors;
       let ratio = null;
-      if (colors[0] && colors[2] && HEX.test(colors[0]) && HEX.test(colors[2])) {
-        ratio = SA.color.contrastRatio(SA.color.parse(colors[2]), SA.color.parse(colors[0]));
+      if (colors[0] && colors[4] && HEX.test(colors[0]) && HEX.test(colors[4])) {
+        ratio = SA.color.contrastRatio(SA.color.parse(colors[4]), SA.color.parse(colors[0]));
       }
       const contrast = document.createElement('div');
       contrast.className = 'palette-contrast';
@@ -570,9 +619,9 @@ SA.paletteDialog = (() => {
       if (candidate.id === active.draft.id) card.classList.add('is-selected');
       const strip = document.createElement('span');
       strip.className = 'palette-card-strip';
-      for (const color of candidate.colors.slice(0, 6)) {
+      for (const color of candidate.colors.slice(0, SLOT_COUNT)) {
         const dot = document.createElement('i');
-        dot.style.background = color;
+        paintSwatch(dot, color);
         strip.appendChild(dot);
       }
       const name = document.createElement('span');
@@ -677,7 +726,7 @@ SA.paletteDialog = (() => {
       id: active.draft.id || `p_${Math.random().toString(16).slice(2, 8)}`,
       name: active.draft.name || t('palette.title'),
       builtin: false,
-      colors: active.draft.colors.slice(0, MAX_COLORS),
+      colors: active.draft.colors.slice(0, SLOT_COUNT),
     };
     const custom = SA.colors.customPalettes().filter((item) => item.id !== entry.id);
     custom.push(entry);
@@ -702,7 +751,7 @@ SA.paletteDialog = (() => {
       for (const entry of incoming) {
         if (!entry || !entry.name || !Array.isArray(entry.colors)) continue;
         const id = entry.id || `p_${Math.random().toString(16).slice(2, 8)}`;
-        const next = { id, name: entry.name, builtin: false, colors: entry.colors.slice(0, MAX_COLORS) };
+        const next = { id, name: entry.name, builtin: false, colors: entry.colors.slice(0, SLOT_COUNT) };
         const index = custom.findIndex((item) => item.id === id);
         if (index >= 0) custom[index] = next;
         else custom.push(next);
@@ -747,7 +796,12 @@ SA.paletteDialog = (() => {
     if (!root || !doc || !target || !SA.store.commands.paletteCandidates) return;
     close(true);
     const original = currentPalette(doc, target);
-    const draft = original || { id: `theme_${Date.now().toString(16)}`, name: 'palette', colors: ['#101018', '#1b2130', '#f5f7ff', '#6d8cff', '#2a3348', '#9db2ff'] };
+    const fallback = SA.moods && typeof SA.moods.generatePalette === 'function'
+      ? SA.moods.generatePalette(Math.random, (doc.styleMode && doc.styleMode.axes) || {}, 'palette').colors.slice(0, SLOT_COUNT)
+      : ['#101018', '#1b2130', '#2a3348', '#3a4356', '#f5f7ff', '#6d8cff', '#2a3348', '#101018', '#9db2ff', '#ffd7a8'];
+    const draft = original && Array.isArray(original.colors) && original.colors.length >= SLOT_COUNT
+      ? { ...original, colors: original.colors.slice(0, SLOT_COUNT) }
+      : { id: `theme_${Date.now().toString(16)}`, name: 'palette', colors: fallback };
     active = {
       root,
       scope: scope || 'project',

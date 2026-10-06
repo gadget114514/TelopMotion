@@ -230,23 +230,71 @@ SA.controls = (() => {
     const stopColor = (stop) => {
       if (!stop) return '#ffffff';
       if (stop.paletteIndex != null && paletteColors.length) return paletteColors[Math.abs(Math.floor(stop.paletteIndex)) % paletteColors.length];
-      return typeof stop.color === 'string' && /^#/.test(stop.color) ? stop.color : '#ffffff';
+      if (typeof stop.color === 'string' && /^#/.test(stop.color)) {
+        if (stop.alpha != null && stop.alpha < 1) {
+          try {
+            return SA.color.toHex({ ...SA.color.parse(stop.color), a: Number(stop.alpha) });
+          } catch {
+            return stop.color;
+          }
+        }
+        return stop.color;
+      }
+      return '#ffffff';
+    };
+    const fullHexOf = (raw, alpha) => {
+      try {
+        const parsed = SA.color.parse(raw);
+        const a = alpha == null ? parsed.a : Number(alpha);
+        if (a == null || !(a < 1)) return SA.color.toHex({ ...parsed, a: 1 });
+        return SA.color.toHex({ ...parsed, a });
+      } catch {
+        return typeof raw === 'string' ? raw : '#ffffff';
+      }
     };
     const resolveParts = (next) => {
       if (next && typeof next === 'object' && next.kind === 'palette') {
         const index = Math.abs(Math.floor(next.index || 0));
         const resolved = paletteColors.length ? paletteColors[index % paletteColors.length] : null;
-        return { hex: resolved || '#ffffff', ref: `P${index + 1}` };
+        const hex = resolved || '#ffffff';
+        let alpha = 1;
+        try {
+          alpha = SA.color.parse(hex).a == null ? 1 : SA.color.parse(hex).a;
+        } catch {
+          alpha = 1;
+        }
+        return { hex, alpha, ref: `P${index + 1}` };
       }
       if (next && typeof next === 'object' && next.kind === 'category') {
-        return { hex: '#ff8a3d', ref: opts.categoryLabel || 'Cat' };
+        return { hex: '#ff8a3d', alpha: 1, ref: opts.categoryLabel || 'Cat' };
       }
       if (next && typeof next === 'object' && next.kind === 'gradient') {
         const colors = (next.stops || []).map(stopColor);
-        return { hex: colors[0] || '#ffffff', ref: null, gradient: colors.length > 1 ? colors : null };
+        return { hex: colors[0] || '#ffffff', alpha: 1, ref: null, gradient: colors.length > 1 ? colors : null };
+      }
+      if (next && typeof next === 'object' && (next.kind === 'solid' || next.value != null || next.color != null)) {
+        const raw = next.value || next.color;
+        if (typeof raw === 'string' && /^#/.test(raw)) {
+          const alpha = next.alpha == null ? (() => { try { return SA.color.parse(raw).a; } catch { return 1; } })() : Number(next.alpha);
+          return { hex: fullHexOf(raw, alpha), alpha: alpha == null ? 1 : alpha, ref: null };
+        }
+        return { hex: '#ffffff', alpha: 1, ref: null };
       }
       const inner = next && typeof next === 'object' ? next.value || next.color : next;
-      return { hex: typeof inner === 'string' && /^#/.test(inner) ? inner : '#ffffff', ref: null };
+      if (typeof inner === 'string' && /^#/.test(inner)) {
+        let alpha = 1;
+        try {
+          alpha = SA.color.parse(inner).a == null ? 1 : SA.color.parse(inner).a;
+        } catch {
+          alpha = 1;
+        }
+        return { hex: fullHexOf(inner, alpha), alpha, ref: null };
+      }
+      return { hex: '#ffffff', alpha: 1, ref: null };
+    };
+    const paintSwatch = (el, hex) => {
+      if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(el, hex);
+      else el.style.background = hex;
     };
     const swatchBackground = (resolved) =>
       resolved.gradient
@@ -256,7 +304,8 @@ SA.controls = (() => {
     const swatch = document.createElement('button');
     swatch.type = 'button';
     swatch.className = 'ctrl-swatch';
-    swatch.style.background = swatchBackground(parts);
+    if (parts.gradient) swatch.style.background = swatchBackground(parts);
+    else paintSwatch(swatch, parts.hex);
     const input = document.createElement('input');
     input.type = 'text';
     input.className = 'ctrl-hex';
@@ -264,7 +313,10 @@ SA.controls = (() => {
     input.addEventListener('keydown', (event) => event.stopPropagation());
     const paint = (next) => {
       parts = resolveParts(next);
-      swatch.style.background = swatchBackground(parts);
+      if (parts.gradient) {
+        swatch.style.backgroundImage = '';
+        swatch.style.background = swatchBackground(parts);
+      } else paintSwatch(swatch, parts.hex);
       input.value = parts.ref || parts.hex;
     };
     const commitHex = () => {
@@ -280,6 +332,7 @@ SA.controls = (() => {
       }
       SA.colors.openPicker({
         value: parts.hex,
+        alpha: parts.alpha,
         anchor: swatch,
         slots: paletteColors,
         slotLabel: opts.slotLabel,
@@ -289,9 +342,8 @@ SA.controls = (() => {
           paint(next);
         },
         onChange(next) {
-          const hexValue = typeof next === 'string' ? next : next && next.value ? next.value : '#ffffff';
           onChange(next);
-          paint(typeof next === 'string' ? next : { ...next, value: hexValue });
+          paint(next);
         },
       });
     });
@@ -331,25 +383,64 @@ SA.controls = (() => {
     return wrap;
   }
 
-  // A list of hex colors (used by the background variation palette).
+  // A list of hex colors (used by the background variation palette and the
+  // clone colours). Each entry is a plain `#RRGGBB` / `#RRGGBBAA` string
+  // edited through the shared swatch picker, so the alpha rides along.
+  const HEX6_OR_8 = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i;
   function colorsControl(value, onChange) {
     const wrap = document.createElement('div');
     wrap.className = 'ctrl-colors';
     let list = Array.isArray(value) ? [...value] : [];
     const commit = () => onChange([...list]);
+    const paintChip = (el, hex) => {
+      if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(el, hex);
+      else el.style.background = hex;
+    };
+    const toStoredHex = (next, fallback) => {
+      if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.pickerValueToHex === 'function') {
+        return SA.colors.pickerValueToHex(next) || fallback;
+      }
+      if (typeof next === 'string') return next;
+      return (next && next.value) || fallback;
+    };
     const render = () => {
       wrap.innerHTML = '';
       list.forEach((hex, index) => {
         const item = document.createElement('span');
         item.className = 'ctrl-color-chip';
-        const input = document.createElement('input');
-        input.type = 'color';
-        input.value = /^#[0-9a-f]{6}$/i.test(hex) ? hex : '#ffffff';
-        input.addEventListener('input', () => {
-          list[index] = input.value;
-          commit();
+        const swatch = document.createElement('button');
+        swatch.type = 'button';
+        swatch.className = 'ctrl-swatch';
+        paintChip(swatch, HEX6_OR_8.test(hex) ? hex : '#ffffff');
+        swatch.title = hex;
+        swatch.addEventListener('click', () => {
+          if (typeof SA === 'undefined' || !SA.colors) return;
+          SA.colors.openPicker({
+            value: HEX6_OR_8.test(hex) ? hex : '#ffffff',
+            anchor: swatch,
+            onChange(next) {
+              list[index] = toStoredHex(next, list[index] || '#ffffff');
+              commit();
+              render();
+            },
+          });
         });
+        item.appendChild(swatch);
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'ctrl-hex';
+        input.value = hex;
         input.addEventListener('keydown', (event) => event.stopPropagation());
+        input.addEventListener('change', () => {
+          const next = input.value.trim();
+          if (!HEX6_OR_8.test(next)) {
+            input.value = list[index];
+            return;
+          }
+          list[index] = next;
+          commit();
+          render();
+        });
         item.appendChild(input);
         const remove = document.createElement('button');
         remove.type = 'button';

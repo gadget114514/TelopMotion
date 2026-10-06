@@ -875,7 +875,9 @@
   // gives a dark background with bright text, mid gives a tinted mid tone, high
   // gives a light background with dark text. Text contrast is always repaired
   // to at least 4.5:1.
-  function paletteColors(family, axes) {
+  // The 6 intermediate roles (bg, bg2, text, accent, stroke, accent2) are only
+  // the seed for the 10-slot palette below; every stored palette holds 10.
+  function basePaletteColors(family, axes) {
     const brightness = clamp01(axes.brightness);
     let bgV;
     let bgS;
@@ -986,7 +988,8 @@
 
   function paletteFor(axes, random, allowed) {
     const family = paletteFamilyFor(axes, random, allowed);
-    return { id: family.id, name: family.id, colors: paletteColors(family, axes) };
+    const built = paletteColors10(family, axes, random);
+    return { id: family.id, name: family.id, colors: built.colors, scheme: built.scheme, roles: 2 };
   }
 
   // --- fixed palette slots (10 colours) ---------------------------------------
@@ -1074,7 +1077,7 @@
   }
 
   function paletteColors10(family, axes, random) {
-    const base = paletteColors(family, axes);
+    const base = basePaletteColors(family, axes);
     const scheme = schemeFor(random, axes);
     const angles = paletteRoles.SCHEMES[scheme] || paletteRoles.SCHEMES.tonal;
     const bgHsv = color.rgbToHsv(color.parse(base[0]));
@@ -1090,9 +1093,14 @@
   }
 
   function paletteFor10(axes, random, allowed) {
-    const family = paletteFamilyFor(axes, random, allowed);
-    const built = paletteColors10(family, axes, random);
-    return { id: family.id, name: family.id, colors: built.colors, scheme: built.scheme, roles: 2 };
+    return paletteFor(axes, random, allowed);
+  }
+
+  // Every stored palette holds the 10 fixed slots. The old 6/7-colour
+  // generators are gone; paletteColors/paletteFor are the 10-colour versions
+  // and paletteColors10/paletteFor10 stay as aliases.
+  function paletteColors(family, axes, random) {
+    return paletteColors10(family, axes, random);
   }
 
   // A member of the palette set: the same slots with a relationship-preserving
@@ -1143,6 +1151,7 @@
   function shiftColor(hex, hueShift, satScale, lightScale) {
     const rgba = color.parse(hex);
     const hsv = color.rgbToHsv(rgba);
+    const alpha = rgba.a == null ? 1 : rgba.a;
     const next = {
       // rgbToHsv / hsvToRgb use degrees
       h: hsv.h + hueShift * 360,
@@ -1150,43 +1159,64 @@
       v: clamp01(hsv.v * lightScale),
       a: 1,
     };
-    return color.toHex({ ...color.hsvToRgb(next), a: 1 });
+    return color.toHex({ ...color.hsvToRgb(next), a: alpha });
   }
 
   function repairContrast(colors, min, options) {
-    if (!Array.isArray(colors) || colors.length < 3) return colors;
+    if (!Array.isArray(colors) || colors.length < paletteRoles.SIZE) return colors;
+    const TEXT = paletteRoles.SLOT.TEXT_FILL;
+    const BG = paletteRoles.SLOT.MID_A;
+    const BG2 = paletteRoles.SLOT.MID_B;
     const target = min == null ? 4.5 : min;
     // `keepText` (a weird profile) tries the background first: the drawn text
     // colour survives and only a background that cannot clear the floor moves
     // the text itself. The default order is the classic one.
     const keepText = !!(options && options.keepText);
     let ratio = 0;
+    // Contrast moves only the RGB; a translucent slot keeps its alpha.
+    const alphaOf = (hex) => {
+      try {
+        const parsed = color.parse(hex);
+        return parsed.a == null ? 1 : parsed.a;
+      } catch {
+        return 1;
+      }
+    };
+    const withAlpha = (hex, alpha) => {
+      if (alpha == null || !(alpha < 1)) return hex;
+      try {
+        return color.toHex({ ...color.parse(hex), a: alpha });
+      } catch {
+        return hex;
+      }
+    };
 
     const shrinkText = () => {
-      colors[2] = color.ensureContrast(colors[2], colors[0] || '#000000', target);
-      const bg = color.parse(colors[0] || '#000000');
-      ratio = color.contrastRatio(color.parse(colors[2]), bg);
+      const textAlpha = alphaOf(colors[TEXT]);
+      colors[TEXT] = withAlpha(color.ensureContrast(colors[TEXT], colors[BG] || '#000000', target), textAlpha);
+      const bg = color.parse(colors[BG] || '#000000');
+      ratio = color.contrastRatio(color.parse(colors[TEXT]), bg);
       if (ratio < target) {
         // ensureContrast only moves the value; a fully saturated colour (a weird
         // palette can produce one) may already sit at v = 1 and miss the target,
         // so it is desaturated towards white or black as a last resort. The target
         // itself climbs with the weird axis (4.5 -> 7), so the floor climbs too.
-        const hsv = color.rgbToHsv(color.parse(colors[2]));
+        const hsv = color.rgbToHsv(color.parse(colors[TEXT]));
         const white = { h: hsv.h, s: 0, v: 1, a: 1 };
         const black = { h: hsv.h, s: hsv.s, v: 0, a: 1 };
         const end = color.contrastRatio(color.hsvToRgb(white), bg) >= color.contrastRatio(color.hsvToRgb(black), bg) ? white : black;
-        let best = colors[2];
+        let best = colors[TEXT];
         for (let step = 1; step <= 20; step += 1) {
           const t = step / 20;
           const candidate = color.hsvToRgb({ h: hsv.h, s: hsv.s + (end.s - hsv.s) * t, v: hsv.v + (end.v - hsv.v) * t, a: 1 });
           const next = color.contrastRatio(candidate, bg);
           if (next > ratio) {
             ratio = next;
-            best = color.toHex(candidate);
+            best = withAlpha(color.toHex(candidate), textAlpha);
           }
           if (next >= target) break;
         }
-        colors[2] = best;
+        colors[TEXT] = best;
       }
     };
 
@@ -1197,10 +1227,12 @@
       // hue survives; a very light or very dark background also loses
       // saturation) until the target clears. weird 0 never enters this branch
       // in the classic order: the 4.5 target is always reachable.
-      const textHsv = color.rgbToHsv(color.parse(colors[2]));
-      const bgHsv = color.rgbToHsv(color.parse(colors[0] || '#000000'));
+      const bgAlpha = alphaOf(colors[BG]);
+      const secondAlpha = colors[BG2] ? alphaOf(colors[BG2]) : 1;
+      const textHsv = color.rgbToHsv(color.parse(colors[TEXT]));
+      const bgHsv = color.rgbToHsv(color.parse(colors[BG] || '#000000'));
       const direction = textHsv.v >= 0.5 ? -1 : 1; // light text darkens the bg, dark text lightens it
-      let best = colors[0];
+      let best = colors[BG];
       let bestRatio = ratio;
       let v = bgHsv.v;
       let s = bgHsv.s;
@@ -1211,24 +1243,24 @@
         const atEdge = direction > 0 ? v >= 1 - 1e-9 : v <= 1e-9;
         if (atEdge) s *= 0.85;
         const candidate = color.hsvToRgb({ h: bgHsv.h, s, v, a: 1 });
-        const next = color.contrastRatio(candidate, color.parse(colors[2]));
+        const next = color.contrastRatio(candidate, color.parse(colors[TEXT]));
         if (next > bestRatio) {
           bestRatio = next;
-          best = color.toHex(candidate);
+          best = withAlpha(color.toHex(candidate), bgAlpha);
         }
       }
       const resolved = color.rgbToHsv(color.parse(best));
-      colors[0] = best;
+      colors[BG] = best;
       ratio = bestRatio;
-      if (colors[1]) {
+      if (colors[BG2]) {
         // the secondary background keeps its offset from the first
-        const second = color.rgbToHsv(color.parse(colors[1]));
-        colors[1] = color.toHex({ ...color.hsvToRgb({ h: second.h, s: second.s, v: clamp01(second.v + (resolved.v - bgHsv.v)), a: 1 }), a: 1 });
+        const second = color.rgbToHsv(color.parse(colors[BG2]));
+        colors[BG2] = withAlpha(color.toHex({ ...color.hsvToRgb({ h: second.h, s: second.s, v: clamp01(second.v + (resolved.v - bgHsv.v)), a: 1 }), a: 1 }), secondAlpha);
       }
     };
 
     if (keepText) {
-      ratio = color.contrastRatio(color.parse(colors[2]), color.parse(colors[0] || '#000000'));
+      ratio = color.contrastRatio(color.parse(colors[TEXT]), color.parse(colors[BG] || '#000000'));
       moveBackground();
       if (ratio < target) {
         shrinkText();
@@ -1252,7 +1284,9 @@
     }, 0);
   }
 
-  // a random palette that keeps the mood's character: derived from a matching family
+  // a random palette that keeps the mood's character: derived from a matching family.
+  // Every stored palette holds the 10 fixed slots; the jitter below moves all
+  // ten together and the slot repair keeps the contrast contract.
   function generatePalette(random, axes, name, allowed) {
     const w = textWeirdOf(axes);
     const s = smartOf(axes);
@@ -1269,25 +1303,22 @@
     // The gain reuses the light draw, so the random stream is unchanged.
     const edgeGain = 1 + ((lightScale - 0.94) / 0.12) * 0.9;
     const colors = base.colors.map((hex, index) => {
-      if (index === 4) return shiftColor(hex, hueShift, satScale, edgeGain);
-      return shiftColor(hex, hueShift * (index === 2 ? 0.3 : 1), satScale, lightScale);
+      if (index === paletteRoles.SLOT.TEXT_EDGE) return shiftColor(hex, hueShift, satScale, edgeGain);
+      return shiftColor(hex, hueShift * (index === paletteRoles.SLOT.TEXT_FILL ? 0.3 : 1), satScale, lightScale);
     });
-    colors.push(shiftColor(colors[3], 0.04 + random() * 0.08, 1, 1.08));
     if (w > 0 && random() < w * narrow) {
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
-      for (const i of [3, 5, 6]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
+      for (const i of [paletteRoles.SLOT.TEXT_FILL2, paletteRoles.SLOT.FIG_A, paletteRoles.SLOT.FIG_B]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
-    repairContrast(colors, weirdMod.paletteContrast(weirdOf(axes)), { keepText: w > 0 });
-    return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors };
+    repairSlotPalette(colors, normalizeAxes(axes));
+    return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors, scheme: base.scheme, roles: 2 };
   }
 
   // The auto palettes of the theme's set: `count` palettes total including the
   // base #1, so the returned list fills `count - 1 - existing.length` slots.
   // Each one is the best of three draws — the candidate furthest from the base
-  // and every palette already in play. When the base carries the 10 role slots
-  // the candidate is repaired onto the same slots, so recolor reaches the
-  // text-background slots a 6-colour palette leaves behind. Entries carry
-  // `auto: true`: the next run replaces them.
+  // and every palette already in play. Every candidate already carries the 10
+  // slots. Entries carry `auto: true`: the next run replaces them.
   function paletteSetFor(random, axes, baseColors, existing, count, allowed) {
     const out = [];
     const kept = Array.isArray(existing) ? existing : [];
@@ -1295,7 +1326,6 @@
     const want = Math.max(0, Math.floor(Number(count) || 0) - 1 - kept.length);
     if (!want || !base.length || typeof generatePalette !== 'function') return out;
     const avoid = [base].concat(kept.map((entry) => (entry && entry.colors) || []).filter((colors) => colors.length));
-    const weird = weirdOf(axes);
     for (let i = 0; i < want; i += 1) {
       let best = null;
       let bestScore = -1;
@@ -1309,26 +1339,21 @@
         }
       }
       if (!best) break;
-      let colors = best.colors.slice();
-      if (base.length >= paletteRoles.SIZE) {
-        colors = paletteRoles.repairPalette(paletteRoles.upgradeColors(colors), weird, repairContrast);
-      }
+      const colors = paletteRoles.repairPalette(best.colors.slice(), weirdOf(axes), repairContrast);
       out.push({ id: best.id, name: best.name, colors, auto: true });
       avoid.push(colors);
     }
     return out;
   }
 
-  // The edge role of a palette array: the fixed TEXT_EDGE slot on a full
-  // 10-role palette, the legacy stroke 4 on a short one, -1 when the array is
-  // too short to carry an edge slot.
+  // The edge role of a palette array: the fixed TEXT_EDGE slot, -1 when the
+  // array is not a full 10-colour palette.
   function edgeIndexOf(colors) {
     const list = Array.isArray(colors) ? colors : [];
-    if (list.length < 5) return -1;
     if (paletteRoles && Number.isFinite(paletteRoles.SIZE) && list.length >= paletteRoles.SIZE) {
       return paletteRoles.SLOT ? paletteRoles.SLOT.TEXT_EDGE : 6;
     }
-    return 4;
+    return -1;
   }
 
   // The edge is a decoration role: its light level is free to travel the wide
@@ -1354,17 +1379,37 @@
   function jitterPalette(random, palette, axes, spread, hueSpread, options) {
     const colors = (palette && palette.colors) || [];
     if (!colors.length) return generatePalette(random, normalizeAxes({}));
+    // Single-colour nudges (the palette dialog's per-swatch ↻) have no
+    // background to contrast against, so they skip the slot repair.
+    if (colors.length === 1) {
+      const k1 = spread == null || !(Number(spread) > 0) ? 1 : Number(spread);
+      const hue1 = hueSpread == null || !(Number(hueSpread) > 0) ? 0.06 * k1 : Number(hueSpread);
+      const hueShift1 = (random() * 2 - 1) * hue1;
+      const satScale1 = 1 + (0.9 + random() * 0.3 - 1) * k1;
+      const lightScale1 = 1 + (0.94 + random() * 0.16 - 1) * k1;
+      const edgeIndex1 = options && Number.isInteger(options.edgeIndex) ? options.edgeIndex : -1;
+      const single = colors.map((hex, index) => {
+        const shifted = shiftColor(hex, hueShift1, satScale1, lightScale1);
+        return index === edgeIndex1 ? sweepEdge(random, shifted) : shifted;
+      });
+      return {
+        id: `theme_${Math.floor(random() * 1e9).toString(16)}`,
+        name: palette.name || 'palette',
+        colors: single,
+      };
+    }
     const k = spread == null || !(Number(spread) > 0) ? 1 : Number(spread);
     const hue = hueSpread == null || !(Number(hueSpread) > 0) ? 0.06 * k : Number(hueSpread);
     const hueShift = (random() * 2 - 1) * hue;
     const satScale = 1 + (0.9 + random() * 0.3 - 1) * k;
     const lightScale = 1 + (0.94 + random() * 0.16 - 1) * k;
     const edgeIndex = options && Number.isInteger(options.edgeIndex) ? options.edgeIndex : -1;
+    const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
     const next = colors.map((hex, index) => {
-      const shifted = shiftColor(hex, hueShift * (index === 2 ? 0.25 : 1), satScale, lightScale);
+      const shifted = shiftColor(hex, hueShift * (index === TEXT_FILL ? 0.25 : 1), satScale, lightScale);
       return index === edgeIndex ? sweepEdge(random, shifted) : shifted;
     });
-    repairContrast(next, weirdMod.paletteContrast(weirdOf(axes)));
+    if (next.length >= paletteRoles.SIZE) repairSlotPalette(next, normalizeAxes(axes));
     return {
       id: `theme_${Math.floor(random() * 1e9).toString(16)}`,
       name: palette.name || 'palette',
@@ -1384,15 +1429,18 @@
   }
 
   // A per-cue palette for the weird axis: the same roles with the hue moved and
-  // the accents swapped, still readable on the background.
+  // the accents swapped, still readable on the background. 10 slots only.
   function weirdPalette(random, palette, w) {
     const colors = (palette && palette.colors) || [];
-    if (!colors.length || !(w > 0)) return null;
+    if (colors.length < paletteRoles.SIZE || !(w > 0)) return null;
+    const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
+    const TEXT_FILL2 = paletteRoles.SLOT.TEXT_FILL2;
+    const FIG_A = paletteRoles.SLOT.FIG_A;
     const hue = (random() * 2 - 1) * 0.5 * w;
     const sat = 1 + random() * 0.4 * w;
-    const next = colors.map((hex, i) => shiftColor(hex, hue * (i === 2 ? 0.3 : 1), sat, 0.95 + random() * 0.1));
-    if (next.length >= 6 && random() < 0.5 * w) [next[3], next[5]] = [next[5], next[3]];
-    repairContrast(next, 4.5 + 2.5 * w);
+    const next = colors.map((hex, i) => shiftColor(hex, hue * (i === TEXT_FILL ? 0.3 : 1), sat, 0.95 + random() * 0.1));
+    if (random() < 0.5 * w) [next[TEXT_FILL2], next[FIG_A]] = [next[FIG_A], next[TEXT_FILL2]];
+    repairSlotPalette(next, normalizeAxes({ weird: w }));
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: palette.name || 'palette', colors: next };
   }
 
@@ -1469,6 +1517,12 @@
   }
 
   function colorSetFor(random, palette, axes) {
+    const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
+    const TEXT_FILL2 = paletteRoles.SLOT.TEXT_FILL2;
+    const TEXT_EDGE = paletteRoles.SLOT.TEXT_EDGE;
+    const FIG_A = paletteRoles.SLOT.FIG_A;
+    const FIG_B = paletteRoles.SLOT.FIG_B;
+    const MID_A = paletteRoles.SLOT.MID_A;
     const gradient = random() < 0.5;
     const base = {
       fill: gradient
@@ -1477,20 +1531,20 @@
             type: 'linear',
             angle: Math.round(random() * 360),
             stops: [
-              { pos: 0, paletteIndex: 2 },
-              { pos: 1, paletteIndex: 3 },
+              { pos: 0, paletteIndex: TEXT_FILL },
+              { pos: 1, paletteIndex: TEXT_FILL2 },
             ],
           }
-        : { kind: 'palette', index: 2 },
-      stroke: { kind: 'palette', index: 4 },
+        : { kind: 'palette', index: TEXT_FILL },
+      stroke: { kind: 'palette', index: TEXT_EDGE },
     };
     const w = textWeirdOf(axes);
     if (!(w > 0) || random() >= w) return base;
-    // B6 / H5: the fill may leave the text role and the 2 -> 3 gradient, as
-    // long as every colour it uses still clears the legibility floor (4.5)
+    // B6 / H5: the fill may leave the text role, as long as every colour it
+    // uses still clears the legibility floor (4.5)
     const colors = (palette && palette.colors) || [];
-    const bg = color.parse(colors[0] || '#000000');
-    const readable = [2, 3, 5, 6].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 4.5);
+    const bg = color.parse(colors[MID_A] || '#000000');
+    const readable = [TEXT_FILL, TEXT_FILL2, TEXT_EDGE, FIG_A, FIG_B].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 4.5);
     if (!readable.length) return base;
     let fill;
     if (readable.length >= 2 && random() < 0.55) {
@@ -1510,7 +1564,7 @@
     } else fill = { kind: 'palette', index: pick(random, readable) };
     return {
       fill,
-      stroke: { kind: 'palette', index: pick(random, [0, 4, 3, 5].filter((i) => colors[i])) },
+      stroke: { kind: 'palette', index: pick(random, [MID_A, TEXT_EDGE, TEXT_FILL2, FIG_A].filter((i) => colors[i])) },
     };
   }
 
@@ -1595,9 +1649,10 @@
   // the complement, saturation bends and the value spread widens. w=0 keeps the
   // caller's exact two colours, so the classic output is untouched.
   function weirdClipColors(random, palette, w) {
-    const source = Array.isArray(palette) && palette.length ? palette : ['#8f8f8f'];
+    const source = Array.isArray(palette) && palette.length >= paletteRoles.SIZE ? palette : ['#8f8f8f'];
     const width = clamp01(w);
-    const pickSource = (index) => source[(3 + index) % source.length] || source[source.length - 1];
+    const baseSlot = paletteRoles.SLOT.FIG_A;
+    const pickSource = (index) => source[(baseSlot + index) % source.length] || source[source.length - 1];
     const count = 2 + Math.floor(random() * (width > 0.5 ? 3 : 2)); // 2..4
     const hueShift = (random() * 2 - 1) * 180 * width;
     const satScale = bend(1, 0.9, width);
@@ -1634,7 +1689,8 @@
   };
 
   function splitColors(palette, n, w, random, axes) {
-    const source = Array.isArray(palette) && palette.length ? palette : ['#222222', '#111111', '#eeeeee', '#ff9900', '#333333', '#ffcc00'];
+    const fallback = ['#222222', '#111111', '#eeeeee', '#ff9900', '#333333', '#ffcc00', '#888888', '#101018', '#ff8a3d', '#9db2ff'];
+    const source = Array.isArray(palette) && palette.length >= paletteRoles.SIZE ? palette : fallback;
     const width = clamp01(w);
     const s = smartOf(axes);
     const candidates =
@@ -1645,7 +1701,9 @@
           : ['tonal', 'analogous', 'complementary', 'triad'];
     const scheme = s > 0 ? smartness.pickWeighted(random, 'splitScheme', candidates, s) : pick(random, candidates);
     const count = Math.max(2, Math.min(6, Math.round(n) || 3));
-    const order = [3, 5, 6, 2, 0, 4];
+    // mid planes first, then the figure accents: every split plane stays off
+    // the text roles.
+    const order = [paletteRoles.SLOT.MID_C, paletteRoles.SLOT.MID_D, paletteRoles.SLOT.FIG_A, paletteRoles.SLOT.FIG_B, paletteRoles.SLOT.MID_A, paletteRoles.SLOT.MID_B];
     const hues = SPLIT_SCHEME_HUES[scheme];
     const values = [1, 0.72, 0.5, 0.62, 0.86, 0.4];
     const colors = [];
@@ -1974,7 +2032,7 @@
         );
         const type = Object.keys(sub).length ? weightedFromTraits(sub, null, random, axes, 'background') : null;
         if (type) {
-          const params = sampleParams(random, 'background', type, axes, [colors[3], colors[5] || colors[3]]);
+          const params = sampleParams(random, 'background', type, axes, [colors[paletteRoles.SLOT.FIG_A], colors[paletteRoles.SLOT.FIG_B]]);
           if (typeof params.speed === 'number') params.speed = clampParam('background', type, 'speed', params.speed * (1 + w));
           // the four corners are one colour family, never a rainbow smear
           if (type === 'gradient4') {
@@ -2058,7 +2116,7 @@
         colors: weirdClipColors(random, paletteColors, w),
       };
     }
-    return { spec: { type, params }, colors: w > 0 ? weirdClipColors(random, paletteColors, w) : [colors[3], colors[5] || colors[3]] };
+    return { spec: { type, params }, colors: w > 0 ? weirdClipColors(random, paletteColors, w) : [colors[paletteRoles.SLOT.FIG_A], colors[paletteRoles.SLOT.FIG_B]] };
   }
 
   // Re-rolls a timeline clip inside the project's axes (used by the inspector
@@ -2140,7 +2198,7 @@
     if (kind === 'background') colors = [to[0], to[1] || to[0]];
     else if (opts.planes && planeList) colors = accentColors(planeList);
     else if (w > 0) colors = weirdClipColors(random, to, w);
-    else colors = [to[3] || to[to.length - 1], to[5] || to[3] || to[to.length - 1]];
+    else colors = [to[paletteRoles.SLOT.FIG_A] || to[to.length - 1], to[paletteRoles.SLOT.FIG_B] || to[paletteRoles.SLOT.FIG_A] || to[to.length - 1]];
     return { spec, colors };
   }
 
@@ -2360,7 +2418,10 @@
     const params = shape.params || (shape.params = {});
     if (params.unit !== 'cell') return;
     if (params.opacity != null && params.opacity < 0.5) return;
-    const bgColors = Array.isArray(params.varyColors) && params.varyColors.length ? params.varyColors : [palette[7] || palette[3] || '#888888'];
+    const TEXT_BG = paletteRoles.SLOT.TEXT_BG;
+    const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
+    const TEXT_EDGE = paletteRoles.SLOT.TEXT_EDGE;
+    const bgColors = Array.isArray(params.varyColors) && params.varyColors.length ? params.varyColors : [palette[TEXT_BG] || '#888888'];
     const fill = style.color && style.color.fill;
     const fgHex = colorRefHex(fill, palette);
     if (!fgHex) return;
@@ -2373,7 +2434,7 @@
     const active = clamp01(rawW) > 0 || clamp01(rawFear) > 0;
     const floor = active ? 4.5 : 3;
     if (worst >= floor) return;
-    const options = [2, 4];
+    const options = [TEXT_FILL, TEXT_EDGE];
     let best = null;
     let bestRatio = worst;
     for (const index of options) {
@@ -2546,12 +2607,16 @@
     if (colorScatter > 0 && vary === 'none') vary = 'random';
     params.vary = vary;
     const colorMode = (config && config.colors) || 'accent';
+    const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
+    const TEXT_EDGE = paletteRoles.SLOT.TEXT_EDGE;
+    const TEXT_FILL2 = paletteRoles.SLOT.TEXT_FILL2;
+    const FIG_A = paletteRoles.SLOT.FIG_A;
     const varyColors =
       colorMode === 'text'
-        ? [palette[2], palette[4]].filter(Boolean)
+        ? [palette[TEXT_FILL], palette[TEXT_EDGE]].filter(Boolean)
         : colorMode === 'mixed'
-          ? [palette[3], palette[5], palette[2]].filter(Boolean)
-          : [palette[3], palette[5] || palette[3]].filter(Boolean);
+          ? [palette[FIG_A], palette[TEXT_FILL2], palette[TEXT_FILL]].filter(Boolean)
+          : [palette[FIG_A], palette[TEXT_FILL2] || palette[FIG_A]].filter(Boolean);
     if (colorScatter > 0) {
       // more scatter = more palette colours in the draw
       const count = Math.min(palette.length, 2 + Math.round(colorScatter * 4));
@@ -2566,21 +2631,19 @@
     // the same seed keeps its picture.
     const isBackground = shape === 'square' && adjusted === 'enclose';
     const shapeKey = isBackground ? 'bgShape' : 'ornShape';
-    // The engine paints the background through the TEXT_BG / TEXT_EDGE roles;
-    // a legacy short palette falls back to the old background numbers (3 / 4),
-    // exactly like the renderer.
-    const roleOr = (slot, legacy) => {
+    // The engine paints the background through the TEXT_BG / TEXT_EDGE roles.
+    const roleOr = (slot) => {
       const colors = Array.isArray(palette) ? palette : [];
       if (paletteRoles && colors.length >= paletteRoles.SIZE && typeof paletteRoles.get === 'function') {
-        return paletteRoles.get(colors, slot) || colors[legacy];
+        return paletteRoles.get(colors, slot);
       }
-      return colors[legacy];
+      return colors[slot];
     };
     if (isBackground) {
       // the background data carries no free geometry: the engine draws exactly
       // one letter-box square per letter, so the box always matches the glyph.
       // Its per-letter colours stay in the TEXT_BG family.
-      const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7, 3), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6, 4)].filter(Boolean);
+      const bgVaries = [roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_BG : 7), roleOr(paletteRoles ? paletteRoles.SLOT.TEXT_EDGE : 6)].filter(Boolean);
       style.bgShape = {
         type: 'square',
         params: { color: null, skipSpaces: true, scale: params.scale, maxScale: params.maxScale, vary: params.vary, varyColors: bgVaries.length ? bgVaries : [] },
@@ -2792,19 +2855,15 @@
     const style = {};
     const palette = generatePalette(random, axes, null, genre && genre.palettes);
     style.palette = palette;
-    // effect colors come from the readable part of the palette (text / accent),
-    // plus one contrast tone for shadows and extruded edges only. The edge is a
-    // swept colour role now, so the tone is the luminance opposite of the text:
-    // dark under a light text, light under a dark one.
+    // effect colors come from the readable text / figure roles, plus the
+    // stored text-background tone for shadows and extruded edges.
     const visible = (hex) => color.rgbToHsv(color.parse(hex)).v >= 0.25;
-    const brightPool = [palette.colors[2], palette.colors[3], palette.colors[5] || palette.colors[3]].filter(Boolean);
+    const brightPool = [palette.colors[paletteRoles.SLOT.TEXT_FILL], palette.colors[paletteRoles.SLOT.TEXT_FILL2], palette.colors[paletteRoles.SLOT.FIG_A]].filter(Boolean);
     let bright = brightPool.filter(visible);
     if (!bright.length) bright = brightPool;
-    const dark = paletteRoles && typeof paletteRoles.luminanceOpposite === 'function'
-      ? paletteRoles.luminanceOpposite(palette.colors[2])
-      : palette.colors[4] || palette.colors[0];
+    const dark = palette.colors[paletteRoles.SLOT.TEXT_BG] || palette.colors[paletteRoles.SLOT.MID_A];
     // H4: the accents join every colour pool once the axis is on
-    const colors = { bright, dark, accents: [palette.colors[3], palette.colors[5], palette.colors[6]].filter(Boolean) };
+    const colors = { bright, dark, accents: [palette.colors[paletteRoles.SLOT.TEXT_FILL2], palette.colors[paletteRoles.SLOT.FIG_A], palette.colors[paletteRoles.SLOT.TEXT_EDGE]].filter(Boolean) };
     style.color = colorSetFor(random, palette, axes);
     // one hero effect per theme; genre profiles may override the weighting
     const hero = genre && genre.hero ? pickGenreHero(genre, random) : pickHero(random, axes);
@@ -2936,7 +2995,7 @@
     rerollColor,
     recolor,
     paletteFor,
-    paletteColors,
+    basePaletteColors,
     rerollClipSpec,
     rerollClipColors,
     sampleClipParams,

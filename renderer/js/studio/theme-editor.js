@@ -404,14 +404,16 @@ SA.themeEditor = (() => {
       const swatch = document.createElement('button');
       swatch.type = 'button';
       swatch.className = 'palette-dot palette-dot-edit';
-      swatch.style.background = hex;
+      if (SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, hex);
+      else swatch.style.background = hex;
       swatch.title = `${hex} — ${t('studio.inspector.paletteEdit')}`;
       swatch.addEventListener('click', () => {
         SA.colors.openPicker({
           value: hex,
           anchor: swatch,
           onChange(next) {
-            const value = typeof next === 'string' ? next : next && next.value ? next.value : null;
+            const value = (SA.colors.pickerValueToHex && SA.colors.pickerValueToHex(next))
+              || (typeof next === 'string' ? next : next && next.value ? next.value : null);
             if (!value) return;
             entry.colors[colorIndex] = value;
             delete entry.auto;
@@ -537,8 +539,7 @@ SA.themeEditor = (() => {
     addRow.className = 'insp-actions';
     const add = smallButton(t('studio.themeEditor.paletteAdd'), () => {
       const next = SA.moods.generatePalette(Math.random, draft.axes);
-      let colors = next.colors.slice();
-      if (SA.paletteRoles && (draft.palette.colors || []).length >= SA.paletteRoles.SIZE) colors = SA.paletteRoles.upgradeColors(colors);
+      const colors = next.colors.slice(0, SA.paletteRoles.SIZE);
       set.extra.push({ id: next.id, name: next.name, colors });
       render();
     });
@@ -561,7 +562,7 @@ SA.themeEditor = (() => {
       card.className = 'use-palette-card';
       const strip = document.createElement('span');
       strip.className = 'use-palette-strip';
-      for (const color of (entry.colors || []).slice(0, 6)) {
+      for (const color of (entry.colors || []).slice(0, 10)) {
         const dot = document.createElement('i');
         dot.style.background = color;
         strip.appendChild(dot);
@@ -914,7 +915,7 @@ SA.themeEditor = (() => {
     const currentTab = draft ? draft.tab : 'axis';
     const defaultPalette = SA.moods && typeof SA.moods.generatePalette === 'function'
       ? SA.moods.generatePalette(Math.random, axes, 'theme')
-      : { id: 'p_default', name: 'Default', colors: ['#ffffff', '#000000', '#222222', '#ffaa00', '#00aaff'] };
+      : { id: 'p_default', name: 'Default', colors: ['#101018', '#1b2130', '#2a3348', '#3a4356', '#f5f7ff', '#6d8cff', '#2a3348', '#101018', '#9db2ff', '#ffd7a8'] };
     draft = {
       id: null,
       name: t('studio.themes.untitled'),
