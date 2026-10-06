@@ -677,7 +677,7 @@ SA.inspector = (() => {
     // the colours of the selected level: a line / word / letter edits its beat
     const colorScope = sel.beatId ? { cueId: sel.cueId, beatId: sel.beatId } : { cueId: sel.cueId };
     const colorBox = group('studio.inspector.palette', '◑');
-    drawButton(colorBox, '🎨', 'studio.inspector.paletteReroll', () => SA.store.commands.rerollPalette(colorScope));
+    drawButton(colorBox, '◐', 'studio.inspector.paletteReroll', () => SA.store.commands.rerollPalette(colorScope));
 
     container.appendChild(bar);
   }
@@ -915,7 +915,7 @@ SA.inspector = (() => {
     summaryActions(body, [
       ['🎲', 'studio.inspector.rerollBeat', () => SA.store.commands.rerollBeat(sel.cueId, beat.id)],
       ['🔀', 'studio.inspector.varyBeat', () => SA.store.commands.varyBeat(sel.cueId, beat.id)],
-      ['◐', 'studio.inspector.rerollBeatColors', () => {
+      ['◐', 'studio.inspector.recolorBeat', () => {
         const palette = SA.store.commands.rerollPalette({ cueId: sel.cueId, beatId: beat.id });
         if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
       }],
@@ -2830,7 +2830,7 @@ SA.inspector = (() => {
       ['✂', 'studio.timeline.splitClip', () => SA.store.commands.splitClip(clip.id, SA.store.state.playhead)],
       ['🎲', 'studio.inspector.reroll', () => { SA.store.commands.rerollClip(clip.id); reportClipOp({ start: clip.start, end: clip.end }); }],
       ['🔀', 'studio.inspector.varyClip', () => { SA.store.commands.varyClip(clip.id); reportClipOp({ start: clip.start, end: clip.end }); }],
-      ['🎨', 'studio.generate.rerollColors', () => {
+      ['◐', 'studio.generate.rerollColors', () => {
         const kind = SA.project.trackKindOf(SA.store.state.project, clip.trackId);
         SA.store.commands.rerollColors({ kinds: [kind], clipIds: [clip.id], perClip: true });
       }],
