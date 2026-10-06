@@ -1,9 +1,10 @@
 window.SA = window.SA || {};
 
-// Settings -> Song: what the piece is called, who made it and how fast it
-// beats. The name is what the first filler (the intro gap) shows as its credits
-// and what the credits element / end card fall back on; the tempo is the grid
-// every cue is cut into beats on and every filler gap is divided bar by bar on.
+// Settings -> Song: what the piece is called, who made it, in which typeface
+// each renders, and how fast it beats. The name is what the first filler (the
+// intro gap) shows as its credits and what the credits element / end card fall
+// back on; the tempo is the grid every cue is cut into beats on and every
+// filler gap is divided bar by bar on.
 SA.songDialog = (() => {
   'use strict';
 
@@ -39,6 +40,47 @@ SA.songDialog = (() => {
     return input;
   }
 
+  // The typeface picker for the title / author: the project font set first
+  // (or only it in exclusive mode), then every bundled and loaded typeface.
+  // '' renders in the main typeface.
+  function fontChoices() {
+    try {
+      if (SA.controls && typeof SA.controls.fontChoices === 'function') return SA.controls.fontChoices();
+    } catch {
+      /* fall through to the builtins */
+    }
+    try {
+      if (SA.lyricsFont && typeof SA.lyricsFont.choices === 'function') return SA.lyricsFont.choices();
+    } catch {
+      /* fall through to the builtins */
+    }
+    return (SA.lyricsFont && SA.lyricsFont.builtins ? SA.lyricsFont.builtins() : []).map((entry) => ({ value: entry.id, label: entry.family }));
+  }
+
+  function fontSelect(value) {
+    const select = document.createElement('select');
+    const current = value == null ? '' : String(value);
+    const auto = document.createElement('option');
+    auto.value = '';
+    auto.textContent = t('song.fontAuto');
+    select.appendChild(auto);
+    const choices = fontChoices();
+    for (const choice of choices) {
+      const option = document.createElement('option');
+      option.value = choice.value;
+      option.textContent = choice.label;
+      select.appendChild(option);
+    }
+    if (current && !choices.some((choice) => choice.value === current)) {
+      const missing = document.createElement('option');
+      missing.value = current;
+      missing.textContent = current;
+      select.appendChild(missing);
+    }
+    select.value = current;
+    return select;
+  }
+
   // The tempo measured from the loaded audio, shown as the placeholder of the
   // BPM field: it is what the app used before, so the user can adopt it.
   function detectedBpm() {
@@ -72,6 +114,10 @@ SA.songDialog = (() => {
     if (detected > 0) bpmInput.placeholder = String(detected);
     body.appendChild(field(t('song.name'), titleInput));
     body.appendChild(field(t('song.author'), authorInput));
+    const titleFontSelect = fontSelect(song.titleFontId);
+    const authorFontSelect = fontSelect(song.authorFontId);
+    body.appendChild(field(t('song.titleFont'), titleFontSelect));
+    body.appendChild(field(t('song.authorFont'), authorFontSelect));
     body.appendChild(field(t('song.bpm'), bpmInput));
     const lengthInput = numberInput(song.length);
     lengthInput.max = '36000';
@@ -110,7 +156,7 @@ SA.songDialog = (() => {
     apply.className = 'btn btn-primary';
     apply.textContent = t('layers.apply');
     apply.addEventListener('click', () => {
-      SA.store.commands.setSong({ title: titleInput.value, author: authorInput.value, bpm: Number(bpmInput.value) || 0, length: Number(lengthInput.value) || 0 });
+      SA.store.commands.setSong({ title: titleInput.value, author: authorInput.value, titleFontId: titleFontSelect.value || '', authorFontId: authorFontSelect.value || '', bpm: Number(bpmInput.value) || 0, length: Number(lengthInput.value) || 0 });
       close();
       if (SA.studio && SA.studio.toast) SA.studio.toast('song.applied');
     });

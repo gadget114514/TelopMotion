@@ -1421,10 +1421,44 @@ SA.lyricsEngine = (() => {
       return { size, color };
     }
 
+    // The typeface one credit line renders in: the song's title / author choice
+    // for a line built from that placeholder, '' (the main typeface) otherwise.
+    // A line mixing both falls back to the main typeface, so neither wins.
+    function creditFontIdFor(roles) {
+      const list = Array.isArray(roles) ? roles : [];
+      const title = list.includes('title');
+      const artist = list.includes('artist');
+      if (title && !artist) return (state.project && state.project.song && state.project.song.titleFontId) || '';
+      if (artist && !title) return (state.project && state.project.song && state.project.song.authorFontId) || '';
+      return '';
+    }
+
+    function creditFontIdsFor(entry, lines) {
+      const roles = (entry && entry.lineRoles) || null;
+      if (!roles) {
+        // elements built before lineRoles existed: resolve through the current
+        // template the same way expandTemplateDetailed does
+        try {
+          if (SA.credits && SA.credits.settingsFor && SA.credits.expandTemplateDetailed) {
+            const detailed = SA.credits.expandTemplateDetailed(state.project, SA.credits.settingsFor(state.project), {});
+            return lines.map((_, index) => {
+              const entryRoles = detailed[index] && detailed[index].roles;
+              return creditFontIdFor(entryRoles) || null;
+            });
+          }
+        } catch {
+          /* fall through to the main typeface */
+        }
+        return lines.map(() => null);
+      }
+      return lines.map((_, index) => creditFontIdFor(roles[index]) || null);
+    }
+
     function centeredTexts(lines, options) {
       const opts = options || {};
       const size = opts.size || state.height * 0.06;
       const lineHeight = size * (opts.lineHeight || 1.3);
+      const fontIds = Array.isArray(opts.fontIds) ? opts.fontIds : null;
       const texts = [];
       const total = lines.length;
       for (let i = 0; i < total; i += 1) {
@@ -1436,6 +1470,7 @@ SA.lyricsEngine = (() => {
           size,
           color: opts.color || '#eef2ff',
           opacity: opts.opacity == null ? 1 : opts.opacity,
+          fontId: (fontIds && fontIds[i]) || opts.fontId || null,
         });
       }
       return texts;
@@ -1444,7 +1479,8 @@ SA.lyricsEngine = (() => {
     function creditElementTexts(element) {
       const style = creditStyleFor(element.mode, element.mode === 'end' ? 0.075 : 0.06);
       const lines = element.lines && element.lines.length ? element.lines : String(element.text || '').split(/\r?\n/);
-      return centeredTexts(lines, { size: style.size, color: style.color, y: state.height * (element.mode === 'end' ? 0.5 : 0.42) });
+      const fontIds = creditFontIdsFor(element, lines);
+      return centeredTexts(lines, { size: style.size, color: style.color, y: state.height * (element.mode === 'end' ? 0.5 : 0.42), fontIds });
     }
 
     function alwaysOnTexts(entry) {
@@ -1455,6 +1491,7 @@ SA.lyricsEngine = (() => {
       const y = position === 'bottomLeft' || position === 'bottomRight' ? state.height * 0.94 : position === 'lowerThird' ? state.height * 0.8 : state.height * (entry.y != null && position === 'custom' ? entry.y : 0.07);
       const align = position === 'topLeft' || position === 'bottomLeft' || position === 'lowerThird' ? 'left' : 'right';
       const lines = entry.lines && entry.lines.length ? entry.lines : String(entry.text || '').split(/\r?\n/);
+      const fontIds = creditFontIdsFor(entry, lines);
       const texts = [];
       const lineHeight = size * 1.25;
       for (let i = 0; i < lines.length; i += 1) {
@@ -1467,6 +1504,7 @@ SA.lyricsEngine = (() => {
           color: style.color,
           opacity: entry.opacity == null ? 0.85 : entry.opacity,
           align,
+          fontId: fontIds[i] || null,
         });
       }
       return texts;
@@ -1968,10 +2006,14 @@ SA.lyricsEngine = (() => {
       if (spec.type === 'credits') {
         if (!activeCredit(t) && SA.credits) {
           const settings = SA.credits.settingsFor(project);
-          const lines = SA.credits.expandTemplate(project, settings, {});
+          const detailed = SA.credits.expandTemplateDetailed
+            ? SA.credits.expandTemplateDetailed(project, settings, {})
+            : SA.credits.expandTemplate(project, settings, {}).map((text) => ({ text, roles: [] }));
+          const lines = detailed.map((entry) => entry.text);
+          const fontIds = detailed.map((entry) => creditFontIdFor(entry.roles) || null);
           const style = creditStyleFor('element', 0.06);
           pipeline.beginLayer();
-          drawTexts(centeredTexts(lines, { size: style.size, color: style.color, opacity: envelope }));
+          drawTexts(centeredTexts(lines, { size: style.size, color: style.color, opacity: envelope, fontIds }));
           pipeline.commitLayer(1);
         }
         return;
@@ -1995,9 +2037,17 @@ SA.lyricsEngine = (() => {
       // animated text layers draw on top of the shapes
       for (let i = 0; i < anims.length; i += 1) {
         const params = (anims[i] && anims[i].params) || {};
+        const raw = String(params.text == null ? '' : params.text).trim();
+        // a layer showing only the title (or only the artist) follows the
+        // typeface chosen for it in Settings → Song
+        let animFont = '';
+        if (raw === '{title}') animFont = (project.song && project.song.titleFontId) || '';
+        else if (raw === '{artist}') animFont = (project.song && project.song.authorFontId) || '';
+        const animStyle = textAnimStyle(params);
+        if (animFont) animStyle.text = { ...(animStyle.text || {}), fontId: animFont };
         drawTextAnim(
           SA.fillerRender.expandTokens(params.text, context),
-          textAnimStyle(params),
+          animStyle,
           clip.start,
           clip.end,
           t,

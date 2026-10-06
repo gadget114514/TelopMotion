@@ -831,13 +831,13 @@ test('setSong writes the title and the author, and the first filler shows them',
   store.commands.setSong({ title: 'Neon Rain', author: 'Aoi', bpm: 0 });
   const doc = store.state.project;
   // `length` (0 = end with the last cue) came with the song-length field
-  assert.deepEqual(doc.song, { title: 'Neon Rain', author: 'Aoi', bpm: 0, length: 0 });
+  assert.deepEqual(doc.song, { title: 'Neon Rain', author: 'Aoi', titleFontId: '', authorFontId: '', bpm: 0, length: 0 });
   const settings = globalThis.SA.fillers.settingsFor(doc);
   const intro = globalThis.SA.fillers.gaps(doc.script.cues, 23, settings).find((gap) => gap.kind === 'intro');
   assert.equal(intro.spec.params.list[0].type, 'credits', 'the first filler names the song');
   assert.deepEqual(globalThis.SA.credits.expandTemplate(doc, globalThis.SA.credits.settingsFor(doc), {}), ['Neon Rain', 'Aoi']);
   store.undo();
-  assert.deepEqual(store.state.project.song, { title: '', author: '', bpm: 0, length: 0 });
+  assert.deepEqual(store.state.project.song, { title: '', author: '', titleFontId: '', authorFontId: '', bpm: 0, length: 0 });
 });
 
 test('setSong re-times the beats and re-cuts the automatic filler clips on the bar grid', () => {

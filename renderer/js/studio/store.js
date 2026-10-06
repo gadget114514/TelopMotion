@@ -3059,8 +3059,8 @@ SA.store = (() => {
     },
     // What the song is: the title and the author it is credited under, and the
     // tempo every beat grid follows. The name shows in the first filler (and in
-    // the credits element / end card); the tempo cuts the cues into beats and
-    // divides the filler gaps bar by bar.
+    // the credits element / end card) in its own typeface ('' = the main one);
+    // the tempo cuts the cues into beats and divides the filler gaps bar by bar.
     setSong(patch, options) {
       const opts = options || {};
       dispatch({
@@ -3073,6 +3073,8 @@ SA.store = (() => {
           projectDoc.song = {
             title: next.title == null ? '' : String(next.title),
             author: next.author == null ? '' : String(next.author),
+            titleFontId: next.titleFontId == null ? '' : String(next.titleFontId),
+            authorFontId: next.authorFontId == null ? '' : String(next.authorFontId),
             bpm: SA.project.normalizeBpm(next.bpm),
             length: SA.project.normalizeSongLength(next.length),
           };

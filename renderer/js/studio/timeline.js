@@ -24,7 +24,7 @@ SA.timeline = (() => {
   const LAYER_SWITCH_KINDS = ['figure', 'filler'];
   const LAYER_SWITCH_COLORS = { foreground: '#c86bff', background: '#ffd166' };
   const LAYER_SWITCH_FILLS = { foreground: 'rgba(200, 107, 255, 0.28)', background: 'rgba(255, 209, 102, 0.28)' };
-  const CLIP_BEAT_KINDS = ['figure', 'backdrop'];
+  const CLIP_BEAT_KINDS = ['figure', 'backdrop', 'filler'];
 
   const el = {};
   let ctx = null;

@@ -285,12 +285,21 @@ const preview = (() => {
       const id = style && style.text && style.text.fontId;
       if (id) ids.add(resolve(id));
     };
+    const addId = (id) => {
+      if (id) ids.add(resolve(id));
+    };
     for (const id of SA.fontSet ? SA.fontSet.fontIds(SA.lyricsFont.getFontSet()) : []) ids.add(id);
     const styles = [doc.style];
     for (const style of Object.values(doc.cueStyles || {})) styles.push(style);
     for (const style of Object.values(doc.beatStyles || {})) styles.push(style);
     for (const style of Object.values(doc.beatKindStyle || {})) styles.push(style);
     for (const style of styles) add(style);
+    // the song's own typefaces (Settings → Song): the credits render the title
+    // and the author in them, so they have to be loaded like any style font
+    if (doc.song) {
+      addId(doc.song.titleFontId);
+      addId(doc.song.authorFontId);
+    }
     if (styles.some(usesFontVariation)) {
       const cues = doc.script ? doc.script.cues || [] : [];
       variationFontIds(ids, cues.map((cue) => cue.text || '').join('\n'));
@@ -360,7 +369,18 @@ const preview = (() => {
     if (missingKey && missingKey !== lastMissingFonts && SA.studio && SA.studio.toast) SA.studio.toast('fonts.missing', { names: missingKey });
     lastMissingFonts = missingKey;
     const cues = doc.script ? doc.script.cues || [] : [];
-    const text = cues.map((cue) => cue.text || '').join('\n');
+    // the credits name the song outside the cues, so their text decides the
+    // CJK fallback the same way the lyrics do
+    let creditsText = '';
+    try {
+      if (SA.credits && SA.credits.settingsFor && SA.credits.expandTemplate) {
+        creditsText = SA.credits.expandTemplate(doc, SA.credits.settingsFor(doc), {}).join('\n');
+      }
+    } catch {
+      creditsText = '';
+    }
+    const songText = doc.song ? [doc.song.title, doc.song.author].filter(Boolean).join('\n') : '';
+    const text = [cues.map((cue) => cue.text || '').join('\n'), creditsText, songText].filter(Boolean).join('\n');
     const textStyle = (doc.style && doc.style.text) || {};
     const fontIds = collectFontIds(doc);
     if (!fontIds.length) fontIds.push(textStyle.fontId || 'NotoSans-Regular');

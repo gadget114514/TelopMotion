@@ -36,7 +36,7 @@ function projectWith(extra) {
 
 test('a new document has an empty song block and 0 BPM (follow the audio)', () => {
   const doc = projectModule.create({});
-  assert.deepEqual(doc.song, { title: '', author: '', bpm: 0, length: 0 });
+  assert.deepEqual(doc.song, { title: '', author: '', titleFontId: '', authorFontId: '', bpm: 0, length: 0 });
   assert.equal(projectModule.bpmOf(doc), 0);
 });
 
@@ -45,7 +45,7 @@ test('migrate fills the song block in for a document saved without one', () => {
   delete old.song;
   const migrated = projectModule.migrate(JSON.parse(JSON.stringify(old)));
   assert.equal(migrated.ok, true);
-  assert.deepEqual(migrated.project.song, { title: '', author: '', bpm: 0, length: 0 });
+  assert.deepEqual(migrated.project.song, { title: '', author: '', titleFontId: '', authorFontId: '', bpm: 0, length: 0 });
 });
 
 test('migrate keeps a typed song and drops a junk tempo', () => {
@@ -58,7 +58,7 @@ test('migrate keeps a typed song and drops a junk tempo', () => {
 
 test('songOf reads the name and the tempo, tempoOf falls back to the audio', () => {
   const doc = projectWith({ song: { title: 'Neon Rain', author: 'Aoi', bpm: 128 } });
-  assert.deepEqual(projectModule.songOf(doc), { title: 'Neon Rain', author: 'Aoi', bpm: 128, length: 0 });
+  assert.deepEqual(projectModule.songOf(doc), { title: 'Neon Rain', author: 'Aoi', titleFontId: '', authorFontId: '', bpm: 128, length: 0 });
   assert.equal(projectModule.tempoOf(doc, 96), 128, 'the informed tempo wins over the audio one');
   assert.equal(projectModule.tempoOf(projectWith(), 96), 96, 'no informed tempo: the audio one');
   assert.equal(projectModule.tempoOf(projectWith(), 0), 120, 'neither: the engine default');
@@ -190,4 +190,37 @@ test('profile data still wins over the song fields, and a custom text still wins
   const empty = credits.settingsFor({ ...withProfile, credits: { title: { source: 'custom', text: '' }, artist: { source: 'custom', text: '' } } });
   assert.equal(credits.titleText(withProfile, empty), 'Neon Rain');
   assert.equal(credits.artistText(withProfile, empty), 'Aoi');
+});
+
+test('the song block carries a typeface per name, and the detailed template maps lines to them', () => {
+  const doc = projectWith({ song: { title: 'Neon Rain', author: 'Aoi', titleFontId: 'DelaGothicOne-Regular', authorFontId: 'KleeOne-Regular' } });
+  assert.equal(projectModule.songOf(doc).titleFontId, 'DelaGothicOne-Regular');
+  assert.equal(projectModule.songOf(doc).authorFontId, 'KleeOne-Regular');
+  assert.equal(credits.titleFontIdOf(doc), 'DelaGothicOne-Regular');
+  assert.equal(credits.authorFontIdOf(doc), 'KleeOne-Regular');
+  assert.equal(credits.fontIdForRole(doc, 'title'), 'DelaGothicOne-Regular');
+  assert.equal(credits.fontIdForRole(doc, 'artist'), 'KleeOne-Regular');
+  assert.equal(credits.fontIdForRole(doc, 'other'), '');
+  const settings = credits.settingsFor(doc);
+  const detailed = credits.expandTemplateDetailed(doc, settings, { year: 2026 });
+  assert.deepEqual(detailed.map((entry) => entry.text), ['Neon Rain', 'Aoi']);
+  assert.deepEqual(detailed.map((entry) => entry.roles), [['title'], ['artist']]);
+  // a reordered template keeps the roles on their lines
+  const swapped = credits.settingsFor({ ...doc, credits: { template: '{artist} / {title}' } });
+  const oneLine = credits.expandTemplateDetailed(doc, swapped, {});
+  assert.deepEqual(oneLine[0].roles.sort(), ['artist', 'title']);
+  // the credit elements carry the roles alongside the lines
+  const elements = credits.elements(doc, {});
+  assert.ok(elements.length > 0);
+  for (const element of elements) {
+    assert.deepEqual(element.lines, ['Neon Rain', 'Aoi']);
+    assert.deepEqual(element.lineRoles, [['title'], ['artist']]);
+  }
+  // old documents without the fields read as the main typeface
+  const legacy = projectWith({ song: { title: 'Neon Rain', author: 'Aoi' } });
+  assert.equal(credits.titleFontIdOf(legacy), '');
+  assert.equal(projectModule.songOf(legacy).titleFontId, '');
+  const normalized = projectModule.normalizeSong({ song: { title: 'Neon Rain' } });
+  assert.equal(normalized.titleFontId, '');
+  assert.equal(normalized.authorFontId, '');
 });

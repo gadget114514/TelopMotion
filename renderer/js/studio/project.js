@@ -72,9 +72,11 @@
       meta: { title: 'Untitled', createdAt: null, updatedAt: null, lang: 'en' },
       // The song's own identity and tempo: what the user types in Settings →
       // Song. `title` / `author` name the piece (the credits read them when no
-      // profile data is loaded, and the first filler shows them), `bpm` is the
+      // profile data is loaded, and the first filler shows them), `titleFontId`
+      // / `authorFontId` name the typefaces the title and the author render in
+      // ('' = the main typeface), `bpm` is the
       // tempo every beat grid follows (0 = follow the loaded audio instead).
-      song: { title: '', author: '', bpm: 0, length: 0 },
+      song: { title: '', author: '', titleFontId: '', authorFontId: '', bpm: 0, length: 0 },
       output: {
         aspect: '16:9',
         fps: 30,
@@ -290,6 +292,8 @@
     return {
       title: String(song.title == null ? '' : song.title),
       author: String(song.author == null ? '' : song.author),
+      titleFontId: String(song.titleFontId == null ? '' : song.titleFontId),
+      authorFontId: String(song.authorFontId == null ? '' : song.authorFontId),
       bpm: bpmOf(project),
       length: songLengthOf(project),
     };
@@ -329,6 +333,8 @@
     doc.song = {
       title: song.title == null ? '' : String(song.title),
       author: song.author == null ? '' : String(song.author),
+      titleFontId: song.titleFontId == null ? '' : String(song.titleFontId),
+      authorFontId: song.authorFontId == null ? '' : String(song.authorFontId),
       bpm: normalizeBpm(song.bpm),
       length: normalizeSongLength(song.length),
     };
@@ -890,9 +896,9 @@
     project.output = { ...project.output, aspect, ...next };
   }
 
-  // The clip-beat spans of a figure / backdrop clip, in seconds. A figure clip
-  // owns its sub-beats (spec.params.beats); a backdrop clip uses its stored
-  // segments, or else is cut at the lyric beats it overlaps (the same rule as
+  // The clip-beat spans of a figure / backdrop / filler clip, in seconds. A figure clip
+  // owns its sub-beats (spec.params.beats); a backdrop or filler clip uses its
+  // stored segments, or else is cut at the lyric beats it overlaps (the same rule as
   // figures.subBeats: edges at beat starts, spans under 0.12 s dropped).
   function clipBeatSpans(project, clip) {
     if (!clip) return [];
@@ -901,7 +907,7 @@
       const beats = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.beats) ? clip.spec.params.beats : [];
       return beats.map((beat, index) => ({ index, start: Number(beat.start), end: Number(beat.end), own: !!(beat.colors || beat.colorLock) }));
     }
-    if (kind !== 'backdrop') return [];
+    if (kind !== 'backdrop' && kind !== 'filler') return [];
     if (Array.isArray(clip.segments) && clip.segments.length) {
       return clip.segments
         .map((seg, index) => ({ index, start: Math.max(clip.start, seg.start), end: Math.min(clip.end, seg.end), own: !!seg.spec }))

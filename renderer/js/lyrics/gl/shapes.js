@@ -610,8 +610,9 @@ void main() {
       const source = String(opts.text == null ? '' : opts.text);
       if (!source.trim()) return false;
       const size = Math.max(1, opts.size || 64);
-      const style = { align: opts.align || 'center', direction: opts.direction || 'horizontal', lineHeight: opts.lineHeight || 1.25 };
-      const key = `${source}|${size}|${style.align}|${style.direction}|${style.lineHeight}`;
+      const fontId = opts.fontId || null;
+      const style = { align: opts.align || 'center', direction: opts.direction || 'horizontal', lineHeight: opts.lineHeight || 1.25, fontId };
+      const key = `${source}|${size}|${style.align}|${style.direction}|${style.lineHeight}|${fontId || ''}`;
       let entry = textCache.get(key);
       if (!entry) {
         const mesh = textMesh(source, size, style);

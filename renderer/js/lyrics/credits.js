@@ -67,7 +67,31 @@
     return String((project && project.song && project.song[field]) || '');
   }
 
+  // The typeface Settings → Song chose for the title / author ('' = the main
+  // typeface). Kept as raw ids; the renderer resolves them against the font set.
+  function titleFontIdOf(project) {
+    return String((project && project.song && project.song.titleFontId) || '');
+  }
+
+  function authorFontIdOf(project) {
+    return String((project && project.song && project.song.authorFontId) || '');
+  }
+
+  function fontIdForRole(project, role) {
+    if (role === 'title') return titleFontIdOf(project);
+    if (role === 'artist') return authorFontIdOf(project);
+    return '';
+  }
+
   function expandTemplate(project, settings, context) {
+    return expandTemplateDetailed(project, settings, context).map((entry) => entry.text);
+  }
+
+  // Like expandTemplate, but each line also names which placeholders it was
+  // built from ('title' / 'artist' / 'extra' / 'other'), so the renderer can
+  // draw the title and the author in their own typefaces even when the user
+  // reordered the template.
+  function expandTemplateDetailed(project, settings, context) {
     const values = {
       title: titleText(project, settings),
       artist: artistText(project, settings),
@@ -75,13 +99,19 @@
       extra: settings.extra.text || '',
       year: String(context && context.year ? context.year : new Date().getFullYear()),
     };
-    return String(settings.template || '{title}\n{artist}')
+    const expand = (raw) => String(raw == null ? '' : raw)
       .replace(/\{title\}/g, values.title)
       .replace(/\{artist\}/g, values.artist)
       .replace(/\{handle\}/g, values.handle)
       .replace(/\{extra\}/g, values.extra)
-      .replace(/\{year\}/g, values.year)
-      .split('\n');
+      .replace(/\{year\}/g, values.year);
+    return String(settings.template || '{title}\n{artist}').split('\n').map((raw) => {
+      const roles = [];
+      if (/\{title\}/.test(raw)) roles.push('title');
+      if (/\{artist\}|\{handle\}/.test(raw)) roles.push('artist');
+      if (/\{extra\}|\{year\}/.test(raw)) roles.push('extra');
+      return { text: expand(raw), roles };
+    });
   }
 
   function elements(project, options) {
@@ -90,7 +120,9 @@
     const cues = (project && project.script && project.script.cues) || [];
     const lastCueEnd = cues.reduce((max, cue) => Math.max(max, cue.end || 0), 0);
     const result = [];
-    const lines = expandTemplate(project, settings, opts);
+    const detailed = expandTemplateDetailed(project, settings, opts);
+    const lines = detailed.map((entry) => entry.text);
+    const lineRoles = detailed.map((entry) => entry.roles);
     const text = lines.join('\n');
     const mode = settings.modes;
     if (mode.element.enabled && mode.element.at !== 'time') {
@@ -102,6 +134,7 @@
         end: Math.max(0.5, mode.element.duration || 4),
         text,
         lines,
+        lineRoles,
         style: settings.styles.element || null,
       });
     } else if (mode.element.enabled) {
@@ -114,6 +147,7 @@
         end: start + Math.max(0.5, mode.element.duration || 4),
         text,
         lines,
+        lineRoles,
         style: settings.styles.element || null,
       });
     }
@@ -128,6 +162,7 @@
         end: start + duration,
         text,
         lines,
+        lineRoles,
         card: mode.end.style || 'endCard',
         style: settings.styles.end || null,
       });
@@ -150,7 +185,8 @@
     const from = mode.from || 0;
     const to = mode.to == null ? Infinity : mode.to;
     if (time < from || time > to) return null;
-    const lines = expandTemplate(project, settings, {});
+    const detailed = expandTemplateDetailed(project, settings, {});
+    const lines = detailed.map((entry) => entry.text);
     return {
       id: 'credit:always',
       mode: 'always',
@@ -159,6 +195,7 @@
       end: to,
       text: lines.join('\n'),
       lines,
+      lineRoles: detailed.map((entry) => entry.roles),
       position: mode.position,
       x: mode.x,
       y: mode.y,
@@ -169,5 +206,5 @@
     };
   }
 
-  return { DEFAULTS, settingsFor, expandTemplate, titleText, artistText, elements, extendsDuration, alwaysOn };
+  return { DEFAULTS, settingsFor, expandTemplate, expandTemplateDetailed, titleText, artistText, titleFontIdOf, authorFontIdOf, fontIdForRole, elements, extendsDuration, alwaysOn };
 });

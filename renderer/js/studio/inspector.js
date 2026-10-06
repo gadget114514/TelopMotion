@@ -598,6 +598,13 @@ SA.inspector = (() => {
     if (kind === 'cue') SA.store.setSelection([rawPath], 'cue');
   }
 
+  // Seek the preview playhead (the timeline cursor) to an absolute time.
+  // Every beat row's cursor-move button (`◎` / `studio.beat.gotoBeat`) uses
+  // this, for cue beats as well as figure / backdrop / filler clip beats.
+  function gotoTime(time) {
+    if (typeof SA !== 'undefined' && SA.preview && typeof SA.preview.seek === 'function') SA.preview.seek(Number(time) || 0);
+  }
+
   function cycleLevel(direction) {
     const sel = selectionInfo();
     if (sel.kind === 'none') return;
@@ -851,6 +858,17 @@ SA.inspector = (() => {
         jump.textContent = `${index + 1} · ${t(`studio.beat.${beat.kind}`)}`;
         jump.addEventListener('click', () => selectAt(`cue:${sel.cueId}/beat:${beat.id}`));
         list.appendChild(jump);
+        const go = document.createElement('button');
+        go.type = 'button';
+        go.className = 'btn btn-mini';
+        go.textContent = '◎';
+        go.title = t('studio.beat.gotoBeat');
+        go.setAttribute('aria-label', t('studio.beat.gotoBeat'));
+        go.addEventListener('click', () => {
+          selectAt(`cue:${sel.cueId}/beat:${beat.id}`);
+          gotoTime(beat.start);
+        });
+        list.appendChild(go);
       });
       body.appendChild(list);
     }
@@ -934,6 +952,7 @@ SA.inspector = (() => {
       head.appendChild(node);
     };
     button(beat.pinned ? 'studio.beat.unpin' : 'studio.beat.pin', () => SA.store.commands.setBeatPinned(sel.cueId, beat.id, !beat.pinned));
+    button('studio.beat.gotoBeat', () => gotoTime(beat.start));
     button('studio.beat.splitAtPlayhead', () => SA.store.commands.splitBeat(sel.cueId, beat.id, SA.store.state.playhead));
     button('studio.beat.mergeNext', () => SA.store.commands.mergeBeats(sel.cueId, beat.id));
     button('studio.beat.restructureCue', () => SA.store.commands.restructureCue(sel.cueId));
@@ -3415,6 +3434,41 @@ SA.inspector = (() => {
       });
     }
 
+    // filler beats: the clip cut at the lyric beats it overlaps (the same
+    // rule as backdrop clips), each row with a cursor-move button (`◎`)
+    {
+      const spans = SA.project.clipBeatSpans(doc, clip);
+      if (spans.length) {
+        const beatsTitle = document.createElement('div');
+        beatsTitle.className = 'insp-section-title';
+        beatsTitle.textContent = `${t('studio.inspector.beat')} · ${spans.length}`;
+        body.appendChild(beatsTitle);
+        const selectedBeat = selectionInfo().clipBeat;
+        spans.forEach((span) => {
+          const beatRow = document.createElement('div');
+          beatRow.className = `insp-actions${selectedBeat === span.index ? ' is-selected' : ''}`;
+          const label = document.createElement('button');
+          label.type = 'button';
+          label.className = 'btn btn-mini insp-beat-label';
+          label.textContent = `#${span.index + 1} ${Number(span.start).toFixed(2)}–${Number(span.end).toFixed(2)}s`;
+          label.addEventListener('click', () => SA.store.setSelection([`clip:${clip.id}/beat:${span.index}`], 'clip'));
+          beatRow.appendChild(label);
+          const go = document.createElement('button');
+          go.type = 'button';
+          go.className = 'btn btn-mini';
+          go.textContent = '◎';
+          go.title = t('studio.beat.gotoBeat');
+          go.setAttribute('aria-label', t('studio.beat.gotoBeat'));
+          go.addEventListener('click', () => {
+            SA.store.setSelection([`clip:${clip.id}/beat:${span.index}`], 'clip');
+            gotoTime(span.start);
+          });
+          beatRow.appendChild(go);
+          body.appendChild(beatRow);
+        });
+      }
+    }
+
     appendClipCommon(body, doc, clip);
   }
 
@@ -3472,6 +3526,10 @@ SA.inspector = (() => {
             node.addEventListener('click', run);
             beatRow.appendChild(node);
           };
+          subBtn('◎', 'studio.beat.gotoBeat', () => {
+            SA.store.setSelection([`clip:${clip.id}/beat:${subIndex}`], 'clip');
+            gotoTime(sub.start);
+          });
           subBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollFigureBeat(clip.id, subIndex), 'figureBeat'));
           subBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyFigureBeat(clip.id, subIndex), 'figureBeat'));
           subBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorFigureBeat(clip.id, subIndex), 'figureBeat'));
@@ -3598,6 +3656,10 @@ SA.inspector = (() => {
             node.addEventListener('click', run);
             segRow.appendChild(node);
           };
+          segBtn('◎', 'studio.beat.gotoBeat', () => {
+            SA.store.setSelection([`clip:${clip.id}/beat:${span.index}`], 'clip');
+            gotoTime(span.start);
+          });
           segBtn('↻', 'studio.inspector.rerollBeat', () => reportClipOp(SA.store.commands.rerollClipSegment(clip.id, span.index), 'clipLayer'));
           segBtn('≋', 'studio.inspector.varyBeat', () => reportClipOp(SA.store.commands.varyClipSegment(clip.id, span.index), 'clipLayer'));
           segBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorClipSegment(clip.id, span.index), 'clipLayer'));
