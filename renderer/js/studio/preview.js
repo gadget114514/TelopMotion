@@ -547,6 +547,15 @@ const preview = (() => {
     audioPeaks = null;
     audioDuration = 0;
     audioDecode = null;
+    audioBuffer = null;
+    audioAnalysis = null;
+    if (renderer && typeof renderer.setAudio === 'function') {
+      try {
+        renderer.setAudio(null);
+      } catch {
+        /* preview-only: never break the source switch */
+      }
+    }
     if (audio) {
       try {
         audio.pause();
@@ -812,6 +821,7 @@ const preview = (() => {
     getAudioAnalysis: () => audioAnalysis,
     getAudioDuration: () => audioDuration,
     setAudioSource,
+    clearAudio: () => setAudioSource(null, null),
     importAudio,
     captureRGBA,
     debugError: () => (renderer && typeof renderer.debugError === 'function' ? renderer.debugError() : 0),

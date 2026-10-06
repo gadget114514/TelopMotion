@@ -1838,6 +1838,10 @@ body {
   color: var(--accent);
 }
 
+.media-tabs .btn.has-media {
+  border-color: var(--accent);
+}
+
 .media-pane {
   display: flex;
   flex-direction: column;
@@ -2031,6 +2035,46 @@ body {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.insp-cue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.insp-cue-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.insp-cue-item.is-disabled {
+  opacity: 0.55;
+}
+
+.insp-cue-time {
+  flex: none;
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.insp-cue-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insp-cue-count {
+  flex: none;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .ctrl-colors {

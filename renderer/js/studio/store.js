@@ -2457,6 +2457,27 @@ SA.store = (() => {
         },
       });
     },
+    // File menu / media pane "video reset": drop every imported video and
+    // every sheet that plays one, in a single undo step. Tracks stay.
+    clearVideos() {
+      dispatch({
+        label: 'clear videos',
+        areas: ['media', 'layers', 'keyframes'],
+        do(project) {
+          project.media = project.media || {};
+          project.media.videos = [];
+          const removed = new Set(
+            (project.layers || []).filter((entry) => entry && entry.type === 'video').map((entry) => entry.id)
+          );
+          if (removed.size) {
+            project.layers = (project.layers || []).filter((entry) => entry && !removed.has(entry.id));
+            if (project.keyframes) {
+              for (const id of removed) delete project.keyframes[`layer:${id}`];
+            }
+          }
+        },
+      });
+    },
     // fontSet: { exclusive, fonts: [{ id, fontClass }] }; mediaFonts: the
     // user font metadata the set refers to (the bytes live in the library).
     setFontSet(fontSet, mediaFonts) {

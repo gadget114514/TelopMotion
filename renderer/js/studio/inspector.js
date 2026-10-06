@@ -2112,6 +2112,84 @@ SA.inspector = (() => {
     body.appendChild(actions);
   }
 
+  // A subtitle track: its own switches plus the cue list on the track.
+  // A click on a cue selects it, so the inspector then shows the cue detail
+  // (renderCueSection and the beat / style sections below it).
+  function renderSubtitleTrackSection(container, doc, track) {
+    const body = section(container, 'track', trackDisplayName(track) || t('studio.track.subtitle'));
+    const nameLabel = SA.i18n.lang() === 'ja' ? '名前' : 'Name';
+    const nameControl = SA.controls.textControl(track.name || '', (value) => {
+      SA.store.commands.updateTrack(track.id, { name: String(value) }, { coalesceKey: `track:${track.id}:name` });
+    });
+    row(body, 'track.name', nameLabel, nameControl, { noKey: true, noReset: true });
+    const visibleControl = SA.controls.boolControl(!(track.hidden || track.enabled === false), (value) => {
+      SA.store.commands.updateTrack(track.id, { hidden: !value, enabled: value });
+    });
+    row(body, 'track.visible', t('studio.inspector.enabled'), visibleControl, { noKey: true, noReset: true });
+    const textControl = SA.controls.boolControl(!track.textHidden, (value) => {
+      SA.store.commands.updateTrack(track.id, { textHidden: !value });
+    });
+    row(body, 'track.textVisible', t('studio.inspector.textTrackVisible'), textControl, { noKey: true, noReset: true });
+    const bgControl = SA.controls.boolControl(!track.bgHidden, (value) => {
+      SA.store.commands.updateTrack(track.id, { bgHidden: !value });
+    });
+    row(body, 'track.bgVisible', t('studio.inspector.bgTrackVisible'), bgControl, { noKey: true, noReset: true });
+    const graphicsControl = SA.controls.boolControl(!track.graphicsHidden, (value) => {
+      SA.store.commands.updateTrack(track.id, { graphicsHidden: !value });
+    });
+    const graphicsLabel = t('studio.inspector.graphicsTrackVisible');
+    row(body, 'track.graphicsVisible', graphicsLabel === 'studio.inspector.graphicsTrackVisible' ? (SA.i18n.lang() === 'ja' ? 'グラフィクスを表示' : 'Show graphics') : graphicsLabel, graphicsControl, { noKey: true, noReset: true });
+
+    const cues = ((doc && doc.script && doc.script.cues) || [])
+      .filter((cue) => cue && (cue.trackId || 'sub1') === track.id)
+      .sort((a, b) => (a.start || 0) - (b.start || 0));
+    const listBody = section(container, 'trackCues', `${t('studio.panel.cues')} (${cues.length})`);
+    if (!cues.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.timeline.empty');
+      listBody.appendChild(empty);
+      return;
+    }
+    const list = document.createElement('div');
+    list.className = 'insp-cue-list';
+    const formatTime = (value) => {
+      if (SA.preview && typeof SA.preview.formatClock === 'function') {
+        try {
+          return SA.preview.formatClock(value || 0);
+        } catch {
+          /* fall through */
+        }
+      }
+      return `${Number(value || 0).toFixed(2)}s`;
+    };
+    for (const cue of cues) {
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      const firstLine = String(cue.text || (beats[0] && beats[0].text) || '').split('\n')[0].trim();
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = `btn btn-mini insp-cue-item${cue.disabled ? ' is-disabled' : ''}`;
+      const time = document.createElement('span');
+      time.className = 'insp-cue-time';
+      time.textContent = formatTime(cue.start);
+      item.appendChild(time);
+      const label = document.createElement('span');
+      label.className = 'insp-cue-text';
+      label.textContent = firstLine || `${t('studio.inspector.cue')} ${formatTime(cue.start)}`;
+      item.appendChild(label);
+      if (beats.length > 1) {
+        const count = document.createElement('span');
+        count.className = 'insp-cue-count';
+        count.textContent = t('studio.inspector.beatCount', { n: beats.length });
+        item.appendChild(count);
+      }
+      item.title = `${formatTime(cue.start)} → ${formatTime(cue.end)}${firstLine ? ` · ${firstLine}` : ''}`;
+      item.addEventListener('click', () => selectAt(`cue:${cue.id}`));
+      list.appendChild(item);
+    }
+    listBody.appendChild(list);
+  }
+
   // The background track owns the frame base colour: the stage behind the
   // clips and the layers. Unset = transparent; the chroma key green is a
   // preset. The track's own checkbox hides the colour with its clips/layers.
@@ -2120,6 +2198,10 @@ SA.inspector = (() => {
     const sel = selectionInfo();
     const track = ((doc && doc.tracks) || []).find((entry) => entry.id === sel.trackId);
     if (!track) return;
+    if (track.kind === 'subtitle') {
+      renderSubtitleTrackSection(container, doc, track);
+      return;
+    }
     if (track.kind === 'video') {
       renderVideoTrackSection(container, doc, track);
       return;

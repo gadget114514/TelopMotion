@@ -65,6 +65,8 @@ SA.menu = (() => {
         { key: 'studio.file.importLyrics', action: 'importLyrics' },
         { key: 'studio.file.importAudio', action: 'importAudio' },
         { key: 'studio.file.importVideo', action: 'importVideo' },
+        { key: 'studio.file.removeAudio', action: 'removeAudio' },
+        { key: 'studio.file.clearVideos', action: 'clearVideos' },
         { key: 'studio.file.recent', items: recentItems },
       ],
     },

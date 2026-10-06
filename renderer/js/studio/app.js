@@ -48,7 +48,9 @@
     };
     el.videoImport = document.getElementById('media-video-import');
     el.videoList = document.getElementById('media-video-list');
+    el.videoClear = document.getElementById('media-video-clear');
     el.audioImport = document.getElementById('media-audio-import');
+    el.audioRemove = document.getElementById('media-audio-remove');
     el.audioCanvas = document.getElementById('media-audio-canvas');
     el.audioMeta = document.getElementById('media-audio-meta');
     el.canvas = document.getElementById('preview-canvas');
@@ -298,6 +300,28 @@
     el.aspect.textContent = doc ? doc.output.aspect : '16:9';
     el.duration.textContent = formatClock(duration());
     el.bpm.textContent = tempoLabel();
+    // attached-state badges: without them an old 6-minute audio / video
+    // silently stretches the duration and the cause is invisible.
+    const audioOn = hasAttachedAudio();
+    const audioName = (SA.preview && SA.preview.getAudioName && SA.preview.getAudioName()) || (doc && doc.media && doc.media.audio && doc.media.audio.name) || '';
+    const videoCount = doc && doc.media && Array.isArray(doc.media.videos) ? doc.media.videos.length : 0;
+    const videoLayerCount = doc && Array.isArray(doc.layers) ? doc.layers.filter((entry) => entry && entry.type === 'video').length : 0;
+    if (el.mediaTabs && el.mediaTabs.audio) {
+      el.mediaTabs.audio.textContent = audioOn ? `${t('studio.media.tabAudio')} ●` : t('studio.media.tabAudio');
+      el.mediaTabs.audio.classList.toggle('has-media', audioOn);
+      el.mediaTabs.audio.title = audioOn && audioName ? audioName : t('studio.media.noAudio');
+    }
+    if (el.mediaTabs && el.mediaTabs.video) {
+      const total = videoCount + videoLayerCount;
+      el.mediaTabs.video.textContent = total > 0 ? `${t('studio.media.tabVideo')} (${total})` : t('studio.media.tabVideo');
+      el.mediaTabs.video.classList.toggle('has-media', total > 0);
+    }
+    if (SA.menu && typeof SA.menu.setStatus === 'function') {
+      const parts = [];
+      if (audioOn) parts.push(`♪ ${audioName || t('studio.media.tabAudio')}`);
+      if (videoCount > 0 || videoLayerCount > 0) parts.push(`🎬 ${videoCount + videoLayerCount}`);
+      SA.menu.setStatus(parts.join(' · '));
+    }
     renderVideoList();
     if (!el.mediaPanes.audio.hidden) renderMediaAudio();
   }
@@ -1267,6 +1291,54 @@
     }
   }
 
+  function hasAttachedAudio() {
+    const doc = project();
+    return !!((SA.preview && SA.preview.hasAudio && SA.preview.hasAudio()) || (doc && doc.media && doc.media.audio));
+  }
+
+  function hasAttachedVideo() {
+    const doc = project();
+    if (!doc) return false;
+    if ((doc.media && doc.media.videos && doc.media.videos.length) || false) return true;
+    return (doc.layers || []).some((entry) => entry && entry.type === 'video');
+  }
+
+  // File menu / media pane "audio reset": drop the session audio and the
+  // saved audio entry so the duration no longer follows the old file.
+  function removeAudio() {
+    if (!hasAttachedAudio()) {
+      toast('studio.toast.cancelled');
+      return;
+    }
+    if (SA.preview && typeof SA.preview.clearAudio === 'function') SA.preview.clearAudio();
+    else if (SA.preview) SA.preview.setAudioSource(null, null);
+    const doc = project();
+    if (doc && doc.media && doc.media.audio && SA.store && SA.store.commands) {
+      SA.store.commands.removeMedia('audio', 'audio');
+    }
+    setMediaTab('audio');
+    refreshAudioVisual();
+    if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+    renderAll();
+    toast('studio.toast.audioRemoved');
+  }
+
+  // File menu / media pane "video reset": drop every imported video and
+  // every sheet playing one (one undo step, tracks stay).
+  function clearVideos() {
+    if (!hasAttachedVideo()) {
+      toast('studio.toast.cancelled');
+      return;
+    }
+    if (SA.store && SA.store.commands && typeof SA.store.commands.clearVideos === 'function') {
+      SA.store.commands.clearVideos();
+    }
+    setMediaTab('video');
+    if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+    renderAll();
+    toast('studio.toast.videosCleared');
+  }
+
   function fitAudio() {
     const cues = project() ? project().script.cues : [];
     const audioDuration = SA.preview.getAudioDuration();
@@ -1949,6 +2021,8 @@
     el.mediaTabs.audio.addEventListener('click', () => setMediaTab('audio'));
     el.videoImport.addEventListener('click', importVideoMedia);
     el.audioImport.addEventListener('click', importAudio);
+    if (el.videoClear) el.videoClear.addEventListener('click', clearVideos);
+    if (el.audioRemove) el.audioRemove.addEventListener('click', removeAudio);
     if (el.mediaPanes && el.mediaPanes.audio) {
       el.mediaPanes.audio.addEventListener('dragover', (event) => {
         event.preventDefault();
@@ -2151,6 +2225,8 @@
       importLyrics,
       importAudio,
       importVideo: importVideoMedia,
+      removeAudio,
+      clearVideos,
       distributeCues,
       randomStyle: () => runRandomize('project', {}),
       randomStyleCues: () => runRandomize('cues', {}),
@@ -2358,6 +2434,6 @@
     }
   }
 
-  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, importVideo: importVideoMedia, addVideoLayer };
+  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, removeAudio, importVideo: importVideoMedia, clearVideos, addVideoLayer };
   startup();
 })();
