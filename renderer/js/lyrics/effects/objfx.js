@@ -98,5 +98,45 @@
     },
   });
 
+  fx.register({
+    group: 'hold',
+    type: 'colorShift',
+    tags: ['color', 'pro'],
+    pack: 'pro',
+    stackable: true,
+    cost: 1,
+    params: [
+      { key: 'driver', kind: 'select', options: ['speed', 'distance', 'progress'], default: 'distance' },
+      { key: 'palette', kind: 'select', options: ['hueCycle', 'gradient', 'beatPalette'], default: 'hueCycle' },
+      { key: 'colorA', kind: 'color', default: '#ff3b6b' },
+      { key: 'colorB', kind: 'color', default: '#3bd1ff' },
+      { key: 'cycles', kind: 'number', min: 0.1, max: 6, step: 0.05, default: 1 },
+      { key: 'phase', kind: 'number', min: 0, max: 1, step: 0.01, default: 0 },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+      { key: 'mix', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.85 },
+      { key: 'affect', kind: 'select', options: ['fill', 'fill+edge'], default: 'fill' },
+      ...selectParams(),
+      ...motionParams({ release: 0.3 }),
+    ],
+    cpu() {},
+    motionFx(params) {
+      return {
+        kind: 'colorShift',
+        driver: params.driver || 'distance',
+        palette: params.palette || 'hueCycle',
+        colorA: params.colorA || '#ff3b6b',
+        colorB: params.colorB || '#3bd1ff',
+        cycles: params.cycles == null ? 1 : Number(params.cycles),
+        phase: params.phase == null ? 0 : Number(params.phase),
+        spread: params.spread == null ? 0.3 : Number(params.spread),
+        mix: params.mix == null ? 0.85 : Number(params.mix),
+        sensitivity: params.sensitivity == null ? 1 : Number(params.sensitivity),
+        release: params.release == null ? 0.3 : Number(params.release),
+        select: params.select || 'all',
+        selParams: { ...params },
+      };
+    },
+  });
+
   return fx;
 });
