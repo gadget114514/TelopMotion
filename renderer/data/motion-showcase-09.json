@@ -10,6 +10,8 @@
   "song": {
     "title": "",
     "author": "",
+    "titleFontId": "",
+    "authorFontId": "",
     "bpm": 0,
     "length": 0
   },
