@@ -107,8 +107,8 @@
     { group: 'hold', primitive: 'motionFlicker', type: 'speedStrobe', params: { wave: 'strobe', rate: 12, depth: 0.7, duty: 0.5, release: 0.15 } },
     { group: 'hold', primitive: 'motionEcho', type: 'rainbowEcho', params: { count: 5, spacing: 0.06, colorA: '#ff3b6b', colorB: '#3b6bff', opacity: 0.6, decay: 0.35 } },
     { group: 'hold', primitive: 'strokeTrail', type: 'neonTrail', params: { count: 4, spacing: 0.05, width: 2, colorA: '#00e5ff', colorB: '#ff00c8', opacity: 0.9, blend: 'add' } },
-    { group: 'hold', primitive: 'timeDisplacement', type: 'shearDrag', params: { unit: 'letter', map: 'alongVelocity', maxLag: 0.15, amount: 1 } },
-    { group: 'hold', primitive: 'motionBend', type: 'rubberLead', params: { leadSide: 'auto', leadWidth: 0.3, stiffness: 0.25, damping: 0.08, inertia: 1.4 } },
+    { group: 'hold', primitive: 'timeDisplacement', type: 'shearDrag', params: { unit: 'letter', map: 'alongVelocity', maxLag: 0.25, amount: 1 } },
+    { group: 'hold', primitive: 'motionBend', type: 'rubberLead', params: { leadSide: 'auto', leadWidth: 0.45, stiffness: 0.14, damping: 0.05, inertia: 2.2, maxStretch: 1.1, rotLag: 0.85 } },
   ];
 
   const registered = [];

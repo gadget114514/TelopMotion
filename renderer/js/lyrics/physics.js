@@ -250,7 +250,7 @@
     const unitX = Math.max(EPS, num(unit.x, 1));
     const unitY = Math.max(EPS, num(unit.y, 1));
     const gravity = num(cfg.gravity, 0);
-    const inertia = clamp(cfg.inertia, 0, 1);
+    const inertia = clamp(cfg.inertia, 0, 3);
     const damping = clamp01(num(cfg.damping, 0.05));
     const kickAmount = num(external.kick, 0) * num(cfg.beatKick, 0);
     const time = sim.t;
@@ -346,22 +346,25 @@
     // weight rises smoothly from 0 to 1 over the leading `width` of the depth.
     if (cfg.lead) {
       const lead = cfg.lead;
-      const vel = external.vel || {};
-      const gate = num(external.velGate, 1);
-      let dir = sim.leadDir || null;
-      if (gate >= 0.02) {
-        const vx = num(vel.x, 0);
-        const vy = num(vel.y, 0);
-        const len = Math.hypot(vx, vy);
-        if (len > 1e-9) {
-          dir = [vx / len, vy / len];
-          sim.leadDir = dir;
+      const side = lead.side || 'auto';
+      const fixed = { left: [-1, 0], right: [1, 0], top: [0, -1], bottom: [0, 1] }[side];
+      let dir = fixed || null;
+      if (!dir) {
+        const vel = external.vel || {};
+        const gate = num(external.velGate, 1);
+        dir = sim.leadDir || null;
+        if (gate >= 0.02) {
+          const vx = num(vel.x, 0);
+          const vy = num(vel.y, 0);
+          const len = Math.hypot(vx, vy);
+          if (len > 1e-9) {
+            dir = [vx / len, vy / len];
+            sim.leadDir = dir;
+          }
         }
       }
       if (!dir) {
-        const side = lead.side || 'auto';
-        const fixed = { left: [-1, 0], right: [1, 0], top: [0, -1], bottom: [0, 1] }[side];
-        dir = fixed || [1, 0];
+        dir = [1, 0];
       }
       const width = Math.max(0.1, Math.min(0.8, num(lead.width, 0.3)));
       const lo = 1 - 2 * width;

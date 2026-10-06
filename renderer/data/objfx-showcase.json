@@ -1309,8 +1309,16 @@
           "type": "drift",
           "enabled": true,
           "params": {
-            "vx": 0.35,
+            "vx": 0.7,
             "vy": 0
+          }
+        },
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.03,
+            "speed": 0.8
           }
         },
         {
@@ -1319,7 +1327,7 @@
           "params": {
             "unit": "letter",
             "map": "linearX",
-            "maxLag": 0.15,
+            "maxLag": 0.25,
             "invert": false,
             "noiseScale": 1.5,
             "amount": 1,
@@ -1388,8 +1396,16 @@
           "type": "drift",
           "enabled": true,
           "params": {
-            "vx": 0.35,
+            "vx": 0.7,
             "vy": 0
+          }
+        },
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.03,
+            "speed": 0.8
           }
         },
         {
@@ -1398,7 +1414,7 @@
           "params": {
             "unit": "letter",
             "map": "alongVelocity",
-            "maxLag": 0.15,
+            "maxLag": 0.25,
             "invert": false,
             "noiseScale": 1.5,
             "amount": 1,
@@ -1467,8 +1483,16 @@
           "type": "drift",
           "enabled": true,
           "params": {
-            "vx": 0.35,
+            "vx": 0.7,
             "vy": 0
+          }
+        },
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.03,
+            "speed": 0.8
           }
         },
         {
@@ -1477,7 +1501,7 @@
           "params": {
             "unit": "block",
             "map": "linearX",
-            "maxLag": 0.2,
+            "maxLag": 0.3,
             "invert": false,
             "noiseScale": 1.5,
             "amount": 1,
@@ -1518,12 +1542,12 @@
         "enabled": true,
         "params": {
           "dir": "left",
-          "distance": 0.35
+          "distance": 0.5
         },
         "motion": {
           "in": {
-            "duration": 1.2,
-            "ease": "cubicOut"
+            "duration": 0.8,
+            "ease": "expoOut"
           }
         }
       },
@@ -1532,12 +1556,12 @@
         "enabled": true,
         "params": {
           "dir": "right",
-          "distance": 0.3
+          "distance": 0.45
         },
         "motion": {
           "out": {
-            "duration": 0.8,
-            "ease": "cubicIn"
+            "duration": 0.6,
+            "ease": "expoIn"
           }
         }
       },
@@ -1546,8 +1570,16 @@
           "type": "drift",
           "enabled": true,
           "params": {
-            "vx": 0.35,
+            "vx": 0.8,
             "vy": 0
+          }
+        },
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.04,
+            "speed": 0.9
           }
         },
         {
@@ -1555,12 +1587,12 @@
           "enabled": true,
           "params": {
             "leadSide": "auto",
-            "leadWidth": 0.3,
-            "stiffness": 0.25,
-            "damping": 0.08,
-            "inertia": 1.4,
-            "maxStretch": 0.9,
-            "rotLag": 0.5
+            "leadWidth": 0.45,
+            "stiffness": 0.14,
+            "damping": 0.05,
+            "inertia": 2.2,
+            "maxStretch": 1.1,
+            "rotLag": 0.85
           }
         }
       ]
@@ -1588,12 +1620,12 @@
         "enabled": true,
         "params": {
           "dir": "left",
-          "distance": 0.35
+          "distance": 0.5
         },
         "motion": {
           "in": {
-            "duration": 1.2,
-            "ease": "cubicOut"
+            "duration": 0.8,
+            "ease": "expoOut"
           }
         }
       },
@@ -1602,12 +1634,12 @@
         "enabled": true,
         "params": {
           "dir": "right",
-          "distance": 0.3
+          "distance": 0.45
         },
         "motion": {
           "out": {
-            "duration": 0.8,
-            "ease": "cubicIn"
+            "duration": 0.6,
+            "ease": "expoIn"
           }
         }
       },
@@ -1616,8 +1648,16 @@
           "type": "drift",
           "enabled": true,
           "params": {
-            "vx": 0.35,
+            "vx": 0.8,
             "vy": 0
+          }
+        },
+        {
+          "type": "floatBob",
+          "enabled": true,
+          "params": {
+            "amp": 0.04,
+            "speed": 0.9
           }
         },
         {
@@ -1625,12 +1665,12 @@
           "enabled": true,
           "params": {
             "leadSide": "left",
-            "leadWidth": 0.3,
-            "stiffness": 0.25,
-            "damping": 0.08,
-            "inertia": 1.4,
-            "maxStretch": 0.9,
-            "rotLag": 0.5
+            "leadWidth": 0.45,
+            "stiffness": 0.14,
+            "damping": 0.05,
+            "inertia": 2.2,
+            "maxStretch": 1.1,
+            "rotLag": 0.85
           }
         }
       ]

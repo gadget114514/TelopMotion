@@ -81,13 +81,13 @@ const VARIANTS = {
     { id: 'add', label: '加算', params: { count: 4, spacing: 0.05, width: 2, colorA: '#00e5ff', colorB: '#ff00c8', opacity: 0.8, blend: 'add' } },
   ],
   timeDisplacement: [
-    { id: 'shear', label: 'せん断', params: { unit: 'letter', map: 'linearX', maxLag: 0.15 } },
-    { id: 'velocity', label: '進行方向', params: { unit: 'letter', map: 'alongVelocity', maxLag: 0.15 } },
-    { id: 'block', label: '行', params: { unit: 'block', map: 'linearX', maxLag: 0.2 } },
+    { id: 'shear', label: 'せん断', params: { unit: 'letter', map: 'linearX', maxLag: 0.25 } },
+    { id: 'velocity', label: '進行方向', params: { unit: 'letter', map: 'alongVelocity', maxLag: 0.25 } },
+    { id: 'block', label: '行', params: { unit: 'block', map: 'linearX', maxLag: 0.3 } },
   ],
   motionBend: [
-    { id: 'auto', label: '自動', params: { leadSide: 'auto', leadWidth: 0.3, stiffness: 0.25, damping: 0.08, inertia: 1.4 } },
-    { id: 'left', label: '左固定', params: { leadSide: 'left', leadWidth: 0.3, stiffness: 0.25, damping: 0.08, inertia: 1.4 } },
+    { id: 'auto', label: '自動', params: { leadSide: 'auto', leadWidth: 0.45, stiffness: 0.14, damping: 0.05, inertia: 2.2, maxStretch: 1.1, rotLag: 0.85 } },
+    { id: 'left', label: '左固定', params: { leadSide: 'left', leadWidth: 0.45, stiffness: 0.14, damping: 0.05, inertia: 2.2, maxStretch: 1.1, rotLag: 0.85 } },
   ],
 };
 
@@ -114,6 +114,15 @@ const STATIC_ANIMATION = { type: 'simultaneous', enabled: true, params: {}, moti
 const MOVE_ENTER = { type: 'slide', enabled: true, params: { dir: 'left', distance: 0.35 }, motion: { in: { duration: 1.2, ease: 'cubicOut' } } };
 const MOVE_EXIT = { type: 'slide', enabled: true, params: { dir: 'right', distance: 0.3 }, motion: { out: { duration: 0.8, ease: 'cubicIn' } } };
 const DRIFT_HOLD = { type: 'drift', enabled: true, params: { vx: 0.35, vy: 0 } };
+// deform showcase drives: a constant drift alone has ~zero acceleration, so
+// the bend lattice stays flat. Both get a stronger drift plus a vertical bob
+// for continuous acceleration; bend additionally gets snappy expo slides.
+const BEND_ENTER = { type: 'slide', enabled: true, params: { dir: 'left', distance: 0.5 }, motion: { in: { duration: 0.8, ease: 'expoOut' } } };
+const BEND_EXIT = { type: 'slide', enabled: true, params: { dir: 'right', distance: 0.45 }, motion: { out: { duration: 0.6, ease: 'expoIn' } } };
+const BEND_DRIFT = { type: 'drift', enabled: true, params: { vx: 0.8, vy: 0 } };
+const BEND_BOB = { type: 'floatBob', enabled: true, params: { amp: 0.04, speed: 0.9 } };
+const DISP_DRIFT = { type: 'drift', enabled: true, params: { vx: 0.7, vy: 0 } };
+const DISP_BOB = { type: 'floatBob', enabled: true, params: { amp: 0.03, speed: 0.8 } };
 
 function clone(value) {
   return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -135,9 +144,28 @@ function holdParams(type, variant) {
 }
 
 // the body style of one cue: the reviewed hold over a drifting hold (the
-// motion it reacts to), a moving slide enter and exit, and the section colour
+// motion it reacts to), a moving slide enter and exit, and the section colour.
+// displacement / bend get the stronger drives above so the deform shows.
 function styleFor(type, variant) {
   const look = SECTION_LOOK[type];
+  if (type === 'motionBend') {
+    return {
+      color: { fill: { kind: 'solid', value: look.fill, alpha: 1 } },
+      animation: clone(STATIC_ANIMATION),
+      enter: clone(BEND_ENTER),
+      exit: clone(BEND_EXIT),
+      hold: [clone(BEND_DRIFT), clone(BEND_BOB), { type, enabled: true, params: holdParams(type, variant) }],
+    };
+  }
+  if (type === 'timeDisplacement') {
+    return {
+      color: { fill: { kind: 'solid', value: look.fill, alpha: 1 } },
+      animation: clone(STATIC_ANIMATION),
+      enter: clone(MOVE_ENTER),
+      exit: clone(MOVE_EXIT),
+      hold: [clone(DISP_DRIFT), clone(DISP_BOB), { type, enabled: true, params: holdParams(type, variant) }],
+    };
+  }
   return {
     color: { fill: { kind: 'solid', value: look.fill, alpha: 1 } },
     animation: clone(STATIC_ANIMATION),
