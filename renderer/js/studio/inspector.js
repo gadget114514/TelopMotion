@@ -345,6 +345,92 @@ SA.inspector = (() => {
     return node;
   }
 
+  // Two x/y-style numbers side by side in one row: each cell keeps its own
+  // control, keyframe button and reset button, so `transform.x` and
+  // `transform.y` (or scaleX/scaleY, tiltX/tiltY, ...) stay independently
+  // keyframable while sharing one line of vertical space.
+  // specs: [{ propPath, sub, control, noKey, noReset }]
+  function pairRow(container, label, specs, options) {
+    const opts = options || {};
+    const node = document.createElement('div');
+    node.className = 'ctrl-row is-pair';
+    const labelNode = document.createElement('label');
+    labelNode.className = 'ctrl-label';
+    labelNode.textContent = label;
+    node.appendChild(labelNode);
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-pair';
+    for (const spec of specs) {
+      const cell = document.createElement('span');
+      cell.className = 'ctrl-pair-cell';
+      const tag = document.createElement('span');
+      tag.className = 'ctrl-pair-tag';
+      tag.textContent = spec.sub;
+      cell.appendChild(tag);
+      cell.appendChild(spec.control);
+      wrap.appendChild(cell);
+    }
+    node.appendChild(wrap);
+    const btns = document.createElement('span');
+    btns.className = 'ctrl-pair-btns';
+    node.appendChild(btns);
+    for (const spec of specs) {
+      if (!opts.noKey && !spec.noKey) {
+        appendKeyButton(btns, spec.propPath);
+        if (btns.lastChild) btns.lastChild.title += ` (${spec.sub})`;
+      }
+      if (!opts.noReset && !spec.noReset) {
+        appendReset(btns, spec.propPath);
+        if (btns.lastChild && btns.lastChild.classList.contains('btn-reset')) btns.lastChild.title += ` (${spec.sub})`;
+      }
+    }
+    if (!opts.noReset && specs.some((spec) => !spec.noReset && isSetAtScope(spec.propPath))) node.classList.add('is-set');
+    container.appendChild(node);
+    return node;
+  }
+
+  // Consecutive descriptor params that form an x/y-style pair share one row
+  // (offsetX/Y, edgeX/Y, selEaseHigh/Low, a numeric from/to range).
+  const PARAM_PAIR_DEFS = [
+    { keys: ['offsetX', 'offsetY'], subs: ['X', 'Y'] },
+    { keys: ['edgeX', 'edgeY'], subs: ['X', 'Y'] },
+    { keys: ['selEaseHigh', 'selEaseLow'], subs: ['High', 'Low'] },
+    { keys: ['from', 'to'], subs: ['From', 'To'], kinds: ['number', 'int'] },
+  ];
+
+  function paramPairAt(list, index) {
+    const first = list[index];
+    if (!first) return null;
+    for (const def of PARAM_PAIR_DEFS) {
+      if (first.key !== def.keys[0]) continue;
+      const second = list[index + 1];
+      if (!second || second.key !== def.keys[1]) continue;
+      if (def.kinds && (!def.kinds.includes(first.kind) || !def.kinds.includes(second.kind))) continue;
+      return { first, second, def };
+    }
+    return null;
+  }
+
+  // Walk a descriptor's params, pairing x/y-style neighbours into one row.
+  // single(param) renders one param row; pair(first, second, def) renders the
+  // shared row and skips the second param.
+  function eachParam(descriptor, single, pair) {
+    const list = SA.controls.paramEntries(descriptor);
+    for (let i = 0; i < list.length; i += 1) {
+      const match = paramPairAt(list, i);
+      if (match && typeof pair === 'function') {
+        pair(match.first, match.second, match.def);
+        i += 1;
+      } else {
+        single(list[i]);
+      }
+    }
+  }
+
+  function paramPairLabel(first, second) {
+    return `${SA.controls.labelFor(first.key)} / ${SA.controls.labelFor(second.key)}`;
+  }
+
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const TEXT_GROUPS = ['text', 'fill', 'edge', 'repeat', 'clones'];
 
@@ -696,11 +782,13 @@ SA.inspector = (() => {
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: cue.start }, cue.start, (value) => {
       SA.store.commands.moveCue(sel.cueId, value, { coalesceKey: `cue:${sel.cueId}:start` });
     });
-    row(body, 'cue.start', t('studio.inspector.start'), startControl);
     const endControl = SA.controls.numberControl({ min: 0, step: 0.05, default: cue.end }, cue.end, (value) => {
       SA.store.commands.trimCue(sel.cueId, 'end', value, { coalesceKey: `cue:${sel.cueId}:end` });
     });
-    row(body, 'cue.end', t('studio.inspector.end'), endControl);
+    pairRow(body, `${t('studio.inspector.start')} / ${t('studio.inspector.end')}`, [
+      { propPath: 'cue.start', sub: t('studio.inspector.start'), control: startControl },
+      { propPath: 'cue.end', sub: t('studio.inspector.end'), control: endControl },
+    ]);
     const kindSelect = SA.controls.selectControl({}, (cue.meta && cue.meta.kind) || 'custom', (value) => {
       SA.store.dispatch({
         label: 'cue meta',
@@ -792,31 +880,44 @@ SA.inspector = (() => {
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: beat.start }, beat.start, (value) => {
       SA.store.commands.moveBeatEdge(sel.cueId, beat.id, 'start', value, { coalesceKey: `beat:${beat.id}:start` });
     });
-    row(body, `beat:${beat.id}:start`, t('studio.inspector.start'), startControl, { noKey: true, noReset: true });
     const endControl = SA.controls.numberControl({ min: 0, step: 0.05, default: beat.end }, beat.end, (value) => {
       SA.store.commands.moveBeatEdge(sel.cueId, beat.id, 'end', value, { coalesceKey: `beat:${beat.id}:end` });
     });
-    row(body, `beat:${beat.id}:end`, t('studio.inspector.end'), endControl, { noKey: true, noReset: true });
+    pairRow(body, `${t('studio.inspector.start')} / ${t('studio.inspector.end')}`, [
+      { propPath: `beat:${beat.id}:start`, sub: t('studio.inspector.start'), control: startControl },
+      { propPath: `beat:${beat.id}:end`, sub: t('studio.inspector.end'), control: endControl },
+    ], { noKey: true, noReset: true });
   }
 
   function renderTransform(container) {
     const body = section(container, 'transform', t('studio.inspector.transform'));
-    const fields = [
-      ['transform.x', 'x'],
-      ['transform.y', 'y'],
-      ['transform.rotate', 'rotate'],
-      ['transform.scale', 'scale'],
-      ['transform.tiltX', 'tiltX'],
-      ['transform.tiltY', 'tiltY'],
-      ['transform.opacity', 'opacity'],
-    ];
-    const defaults = { x: 0, y: 0, rotate: 0, scale: 1, tiltX: 0, tiltY: 0, opacity: 1 };
-    for (const [propPath, label] of fields) {
+    const single = (propPath, label, param, fallback) => {
       const value = readEffective(propPath);
-      const param = { min: propPath === 'transform.opacity' ? 0 : propPath === 'transform.scale' ? 0 : null, max: propPath === 'transform.opacity' ? 1 : null, step: 0.01, default: defaults[label] };
-      const control = SA.controls.numberControl(param, value == null ? defaults[label] : value, (next) => writeProp(propPath, next));
-      row(body, propPath, SA.controls.prettify(label), control);
-    }
+      const control = SA.controls.numberControl(param, value == null ? fallback : value, (next) => writeProp(propPath, next));
+      row(body, propPath, label, control);
+    };
+    const cell = (propPath, fallback, param) => {
+      const value = readEffective(propPath);
+      return SA.controls.numberControl(param, value == null ? fallback : value, (next) => writeProp(propPath, next));
+    };
+    // position X / Y in one row
+    pairRow(body, `${SA.controls.prettify('x')} / ${SA.controls.prettify('y')}`, [
+      { propPath: 'transform.x', sub: 'X', control: cell('transform.x', 0, { step: 0.01, default: 0 }) },
+      { propPath: 'transform.y', sub: 'Y', control: cell('transform.y', 0, { step: 0.01, default: 0 }) },
+    ]);
+    single('transform.rotate', SA.controls.prettify('rotate'), { step: 0.01, default: 0 }, 0);
+    // the uniform scale stays for older projects (the engine multiplies
+    // scale * scaleX * scaleY); the per-axis pair below is the decomposed one
+    single('transform.scale', SA.controls.prettify('scale'), { min: 0, step: 0.01, default: 1 }, 1);
+    pairRow(body, `${SA.controls.prettify('scaleX')} / ${SA.controls.prettify('scaleY')}`, [
+      { propPath: 'transform.scaleX', sub: 'X', control: cell('transform.scaleX', 1, { min: 0, step: 0.01, default: 1 }) },
+      { propPath: 'transform.scaleY', sub: 'Y', control: cell('transform.scaleY', 1, { min: 0, step: 0.01, default: 1 }) },
+    ]);
+    pairRow(body, `${SA.controls.prettify('tiltX')} / ${SA.controls.prettify('tiltY')}`, [
+      { propPath: 'transform.tiltX', sub: 'X', control: cell('transform.tiltX', 0, { step: 0.01, default: 0 }) },
+      { propPath: 'transform.tiltY', sub: 'Y', control: cell('transform.tiltY', 0, { step: 0.01, default: 0 }) },
+    ]);
+    single('transform.opacity', SA.controls.prettify('opacity'), { min: 0, max: 1, step: 0.01, default: 1 }, 1);
   }
 
   function renderTextSection(container) {
@@ -1095,16 +1196,19 @@ SA.inspector = (() => {
       const descriptor = SA.fx.get(phase, motion.type);
       const defaults = SA.fx.paramDefaults(phase, motion.type);
       const params = { ...defaults, ...(motion.params || {}) };
-      for (const param of SA.controls.paramEntries(descriptor)) {
-        const control = SA.controls.paramControl(
-          phase,
-          param,
-          params[param.key],
-          (value) => update({ params: { ...params, [param.key]: value } }, `motion:${motion.id}:${param.key}`),
-          { palette: style.palette || null, slotLabel: t('studio.inspector.palette') }
-        );
-        box.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
-      }
+      const buildControl = (param) => SA.controls.paramControl(
+        phase,
+        param,
+        params[param.key],
+        (value) => update({ params: { ...params, [param.key]: value } }, `motion:${motion.id}:${param.key}`),
+        { palette: style.palette || null, slotLabel: t('studio.inspector.palette') }
+      );
+      eachParam(descriptor,
+        (param) => box.appendChild(fieldRow(SA.controls.labelFor(param.key), buildControl(param))),
+        (first, second, def) => {
+          const { row: node } = fieldRowPair(paramPairLabel(first, second), [first, second].map((param, k) => ({ sub: def.subs[k], control: buildControl(param) })));
+          box.appendChild(node);
+        });
       body.appendChild(box);
     });
     const add = document.createElement('button');
@@ -1168,9 +1272,19 @@ SA.inspector = (() => {
       };
       headActions(head, clone.enabled !== false, (value) => update({ enabled: value }), () => writeProp('clones', list.filter((entry, i) => i !== index)));
       box.appendChild(head);
+      // dx / dy share one row
+      {
+        const cells = [
+          { field: 'dx', sub: 'X', value: clone.dx == null ? 0 : clone.dx, param: { step: 0.01, default: 0 } },
+          { field: 'dy', sub: 'Y', value: clone.dy == null ? 0 : clone.dy, param: { step: 0.01, default: 0 } },
+        ].map((entry) => ({
+          sub: entry.sub,
+          control: SA.controls.numberControl(entry.param, entry.value, (next) => update({ [entry.field]: next }, `${key}:${entry.field}`)),
+        }));
+        const { row: pair } = fieldRowPair(`${t('studio.clones.dx')} / ${t('studio.clones.dy')}`, cells);
+        box.appendChild(pair);
+      }
       const fields = [
-        ['dx', clone.dx == null ? 0 : clone.dx, { step: 0.01, default: 0 }],
-        ['dy', clone.dy == null ? 0 : clone.dy, { step: 0.01, default: 0 }],
         ['scale', clone.scale == null ? 1 : clone.scale, { min: 0.05, step: 0.05, default: 1 }],
         ['rotate', clone.rotate == null ? 0 : clone.rotate, { step: 1, default: 0 }],
         ['opacity', clone.opacity == null ? 0.5 : clone.opacity, { min: 0, max: 1, step: 0.05, default: 0.5 }],
@@ -1409,15 +1523,23 @@ SA.inspector = (() => {
     }
     const descriptor = SA.fx.get(group, instance && instance.type);
     const params = (instance && instance.params) || {};
-    for (const param of SA.controls.paramEntries(descriptor)) {
+    const paletteOpts = { palette: style.palette || null, slotLabel: t('studio.inspector.palette') };
+    const singleParam = (param) => {
       const value = params[param.key] != null ? params[param.key] : param.default;
       const propPath = `${group}.params.${param.key}`;
-      const control = SA.controls.paramControl(group, param, value, (next) => writeProp(propPath, next), {
-        palette: style.palette || null,
-        slotLabel: t('studio.inspector.palette'),
-      });
+      const control = SA.controls.paramControl(group, param, value, (next) => writeProp(propPath, next), paletteOpts);
       row(body, propPath, SA.controls.labelFor(param.key), control);
-    }
+    };
+    const pairParams = (first, second, def) => {
+      const specs = [first, second].map((param, k) => {
+        const value = params[param.key] != null ? params[param.key] : param.default;
+        const propPath = `${group}.params.${param.key}`;
+        const control = SA.controls.paramControl(group, param, value, (next) => writeProp(propPath, next), paletteOpts);
+        return { propPath, sub: def.subs[k], control };
+      });
+      pairRow(body, paramPairLabel(first, second), specs);
+    };
+    eachParam(descriptor, singleParam, pairParams);
     if (MOTION_GROUPS.includes(group)) renderMotion(container, group, instance);
     void typeRow;
   }
@@ -1463,10 +1585,11 @@ SA.inspector = (() => {
       box.appendChild(head);
       const descriptor = SA.fx.get(group, instance.type);
       const params = instance.params || {};
-      for (const param of SA.controls.paramEntries(descriptor)) {
-        // the header checkbox is the one on / off switch of a stack entry; the
-        // layer's own `enabled` parameter would be a second, confusing one
-        if (group === 'post' && param.key === 'enabled') continue;
+      // the header checkbox is the one on / off switch of a stack entry; the
+      // layer's own `enabled` parameter would be a second, confusing one
+      const visible = { ...(descriptor || {}), params: ((descriptor && descriptor.params) || []).filter((param) => !(group === 'post' && param.key === 'enabled')) };
+      const paletteOpts = { palette: style.palette || null, slotLabel: t('studio.inspector.palette') };
+      const singleParam = (param) => {
         const value = params[param.key] != null ? params[param.key] : param.default;
         const propPath = `${group}.${index}.params.${param.key}`;
         const control = SA.controls.paramControl(
@@ -1477,10 +1600,29 @@ SA.inspector = (() => {
             const nextList = list.map((entry, i) => (i === index ? { ...entry, params: { ...(entry.params || {}), [param.key]: next } } : entry));
             writeProp(group, nextList, { coalesceKey: `${group}:${index}:${param.key}` });
           },
-          { palette: style.palette || null, slotLabel: t('studio.inspector.palette') }
+          paletteOpts
         );
         row(box, propPath, SA.controls.labelFor(param.key), control);
-      }
+      };
+      const pairParams = (first, second, def) => {
+        const specs = [first, second].map((param, k) => {
+          const value = params[param.key] != null ? params[param.key] : param.default;
+          const propPath = `${group}.${index}.params.${param.key}`;
+          const control = SA.controls.paramControl(
+            group,
+            param,
+            value,
+            (next) => {
+              const nextList = list.map((entry, i) => (i === index ? { ...entry, params: { ...(entry.params || {}), [param.key]: next } } : entry));
+              writeProp(group, nextList, { coalesceKey: `${group}:${index}:${param.key}` });
+            },
+            paletteOpts
+          );
+          return { propPath, sub: def.subs[k], control };
+        });
+        pairRow(box, paramPairLabel(first, second), specs);
+      };
+      eachParam(visible, singleParam, pairParams);
       body.appendChild(box);
     });
     const add = document.createElement('button');
@@ -1571,8 +1713,10 @@ SA.inspector = (() => {
       const setScope = (patch) => update(list.map((item, i) => (i === index ? { ...item, scope: { ...scope, ...patch } } : item)));
       row(box, `scoped.${index}.kind`, t('studio.inspector.scopeKind'), SA.controls.selectControl({}, scope.kind || 'all', (next) => setScope({ kind: next }), SCOPE_KINDS.map((kind) => ({ value: kind, label: t(SCOPE_KIND_LABELS[kind]) }))));
       if (scope.kind === 'range') {
-        row(box, `scoped.${index}.from`, t('studio.inspector.scopeFrom'), SA.controls.numberControl(numberParam('from', 0, 999, 1, 0), scope.from == null ? 0 : scope.from, (next) => setScope({ from: next }), { noSlider: true }));
-        row(box, `scoped.${index}.to`, t('studio.inspector.scopeTo'), SA.controls.numberControl(numberParam('to', 0, 999, 1, 0), scope.to == null ? '' : scope.to, (next) => setScope({ to: next }), { noSlider: true }));
+        pairRow(box, `${t('studio.inspector.scopeFrom')} / ${t('studio.inspector.scopeTo')}`, [
+          { propPath: `scoped.${index}.from`, sub: t('studio.inspector.scopeFrom'), control: SA.controls.numberControl(numberParam('from', 0, 999, 1, 0), scope.from == null ? 0 : scope.from, (next) => setScope({ from: next }), { noSlider: true }) },
+          { propPath: `scoped.${index}.to`, sub: t('studio.inspector.scopeTo'), control: SA.controls.numberControl(numberParam('to', 0, 999, 1, 0), scope.to == null ? '' : scope.to, (next) => setScope({ to: next }), { noSlider: true }) },
+        ]);
       } else if (scope.kind === 'word') {
         row(box, `scoped.${index}.words`, t('studio.inspector.scopeWords'), SA.controls.textControl((scope.words || []).join(','), (next) => {
           const words = String(next).split(',').map((value) => Number(value.trim())).filter((value) => Number.isFinite(value));
@@ -1622,13 +1766,25 @@ SA.inspector = (() => {
       // rather than the bare parameter default of 1
       const descriptor = SA.fx.get(entry.group || 'hold', entry.type);
       const params = (SA.fx.withDefaults({ type: entry.type, params: entry.params, enabled: true }, entry.group || 'hold') || {}).params || entry.params || {};
-      for (const param of SA.controls.paramEntries(descriptor)) {
+      const paletteOpts = { palette: style.palette || null, slotLabel: t('studio.inspector.palette') };
+      const singleParam = (param) => {
         const value = params[param.key] != null ? params[param.key] : param.default;
         const control = SA.controls.paramControl(entry.group || 'hold', param, value, (next) => {
           update(list.map((item, i) => (i === index ? { ...item, params: { ...(item.params || {}), [param.key]: next } } : item)));
-        }, { palette: style.palette || null, slotLabel: t('studio.inspector.palette') });
+        }, paletteOpts);
         row(box, `scoped.${index}.params.${param.key}`, SA.controls.labelFor(param.key), control, { noKey: true });
-      }
+      };
+      const pairParams = (first, second, def) => {
+        const specs = [first, second].map((param, k) => {
+          const value = params[param.key] != null ? params[param.key] : param.default;
+          const control = SA.controls.paramControl(entry.group || 'hold', param, value, (next) => {
+            update(list.map((item, i) => (i === index ? { ...item, params: { ...(item.params || {}), [param.key]: next } } : item)));
+          }, paletteOpts);
+          return { propPath: `scoped.${index}.params.${param.key}`, sub: def.subs[k], control, noKey: true };
+        });
+        pairRow(box, paramPairLabel(first, second), specs);
+      };
+      eachParam(descriptor, singleParam, pairParams);
       body.appendChild(box);
     });
     // The blue / white request in one click: two alternating pairs, each one a
@@ -2065,13 +2221,18 @@ SA.inspector = (() => {
       numberField(current.delay, { step: 0.05, default: 0 }, (value) => write({ delay: value }))));
     body.appendChild(fieldRow(t('layers.ease'), SA.controls.easeControl(current.ease, (value) => write({ ease: value }))));
     const descriptor = SA.fx && SA.fx.get ? SA.fx.get(group, current.type) : null;
-    for (const param of (descriptor && descriptor.params) || []) {
+    const buildControl = (param) => {
       const value = current.params && current.params[param.key] != null ? current.params[param.key] : param.default;
-      body.appendChild(fieldRow(SA.controls.labelFor(param.key),
-        SA.controls.paramControl(group, param, value, (next) => {
-          write({ params: { ...(current.params || {}), [param.key]: next } });
-        })));
-    }
+      return SA.controls.paramControl(group, param, value, (next) => {
+        write({ params: { ...(current.params || {}), [param.key]: next } });
+      });
+    };
+    eachParam(descriptor || { params: [] },
+      (param) => body.appendChild(fieldRow(SA.controls.labelFor(param.key), buildControl(param))),
+      (first, second, def) => {
+        const { row: node } = fieldRowPair(paramPairLabel(first, second), [first, second].map((param, k) => ({ sub: def.subs[k], control: buildControl(param) })));
+        body.appendChild(node);
+      });
   }
 
   function appendSheetFilter(body, layer) {
@@ -2128,11 +2289,10 @@ SA.inspector = (() => {
       SA.controls.selectControl({}, layer.fit || 'stretch', (value) => {
         writeSheet(layer.id, { fit: value });
       }, sheetFitOptions())));
-    body.appendChild(fieldRow(t('layers.start'),
-      numberField(layer.start == null ? 0 : layer.start, { min: 0, step: 0.1, default: 0 }, (value) => {
-        writeSheet(layer.id, { start: Math.max(0, value || 0) }, `sheet:${layer.id}:timing`);
-      })));
-    body.appendChild(fieldRow(t('layers.end'), (() => {
+    const layerStartControl = numberField(layer.start == null ? 0 : layer.start, { min: 0, step: 0.1, default: 0 }, (value) => {
+      writeSheet(layer.id, { start: Math.max(0, value || 0) }, `sheet:${layer.id}:timing`);
+    });
+    const layerEndWrap = (() => {
       const wrap = document.createElement('div');
       wrap.className = 'layer-source';
       wrap.appendChild(numberField(layer.end, { min: 0, step: 0.1, default: 0 }, (value) => {
@@ -2146,7 +2306,14 @@ SA.inspector = (() => {
       infinite.addEventListener('click', () => writeSheet(layer.id, { end: null }));
       wrap.appendChild(infinite);
       return wrap;
-    })()));
+    })();
+    {
+      const { row: pair } = fieldRowPair(`${t('layers.start')} / ${t('layers.end')}`, [
+        { sub: t('layers.start'), control: layerStartControl },
+        { sub: t('layers.end'), control: layerEndWrap },
+      ]);
+      body.appendChild(pair);
+    }
     body.appendChild(fieldRow(t('layers.radius'),
       numberField(layer.radius == null ? 0 : layer.radius, { min: 0, max: 0.5, step: 0.02, default: 0 }, (value) => {
         writeSheet(layer.id, { radius: Math.max(0, Math.min(0.5, value)) }, `sheet:${layer.id}:radius`);
@@ -2199,7 +2366,8 @@ SA.inspector = (() => {
 
   // Editable transform / anchor / crop rows for the selected layer. Values
   // show the keyframe evaluation at the playhead; a prop with any track is
-  // marked is-keyed, and edits write keyframes when a track exists.
+  // marked is-keyed, and edits write keyframes when a track exists. X/Y-style
+  // pairs share one row (position, scaleX/Y, anchor, crop L/R and T/B).
   function appendLayerKeyframeRows(body, id) {
     const ctx = layerKeyContext();
     if (!ctx || ctx.layer.id !== id) return;
@@ -2214,17 +2382,38 @@ SA.inspector = (() => {
       appendKeyButton(node, prop);
       body.appendChild(node);
     };
+    const addPair = (label, specs) => {
+      const cells = specs.map(([prop, sub, param]) => ({
+        sub,
+        control: numberField(layerValueAt(ctx, prop), { ...(param || {}), default: LAYER_PROP_DEFAULTS[prop] }, (next) => {
+          setLayerProp(ctx, prop, next);
+        }),
+      }));
+      const { row: node, btns } = fieldRowPair(label, cells);
+      specs.forEach(([prop, sub]) => {
+        if (hasTrack(prop)) node.classList.add('is-keyed');
+        appendKeyButton(btns, prop);
+        if (btns.lastChild) btns.lastChild.title += ` (${sub})`;
+      });
+      body.appendChild(node);
+    };
     appendLayerSubhead(body, t('layers.transformHeading'));
-    addRow('transform.x', t('layers.x'), { step: 0.01 });
-    addRow('transform.y', t('layers.y'), { step: 0.01 });
+    addPair(`${t('layers.x')} / ${t('layers.y')}`, [
+      ['transform.x', 'X', { step: 0.01 }],
+      ['transform.y', 'Y', { step: 0.01 }],
+    ]);
     addRow('transform.rotate', t('layers.rotate'), { step: 1 });
     addRow('transform.scale', t('layers.scale'), { step: 0.05, min: 0 });
-    addRow('transform.scaleX', t('layers.scaleX'), { step: 0.05 });
-    addRow('transform.scaleY', t('layers.scaleY'), { step: 0.05 });
+    addPair(`${t('layers.scaleX')} / ${t('layers.scaleY')}`, [
+      ['transform.scaleX', 'X', { step: 0.05 }],
+      ['transform.scaleY', 'Y', { step: 0.05 }],
+    ]);
     addRow('opacity', t('layers.opacity'), { step: 0.05, min: 0, max: 1 });
     appendLayerSubhead(body, t('layers.anchor'));
-    addRow('transform.anchorX', t('layers.anchorX'), { step: 0.05, min: 0, max: 1 });
-    addRow('transform.anchorY', t('layers.anchorY'), { step: 0.05, min: 0, max: 1 });
+    addPair(`${t('layers.anchorX')} / ${t('layers.anchorY')}`, [
+      ['transform.anchorX', 'X', { step: 0.05, min: 0, max: 1 }],
+      ['transform.anchorY', 'Y', { step: 0.05, min: 0, max: 1 }],
+    ]);
     const presets = document.createElement('div');
     presets.className = 'layer-order';
     for (const [labelKey, ax, ay] of [
@@ -2244,10 +2433,14 @@ SA.inspector = (() => {
     }
     body.appendChild(presets);
     appendLayerSubhead(body, t('layers.crop'));
-    addRow('crop.l', t('layers.cropLeft'), { step: 0.01, min: 0, max: 0.95 });
-    addRow('crop.t', t('layers.cropTop'), { step: 0.01, min: 0, max: 0.95 });
-    addRow('crop.r', t('layers.cropRight'), { step: 0.01, min: 0, max: 0.95 });
-    addRow('crop.b', t('layers.cropBottom'), { step: 0.01, min: 0, max: 0.95 });
+    addPair(`${t('layers.cropLeft')} / ${t('layers.cropRight')}`, [
+      ['crop.l', t('layers.cropLeft'), { step: 0.01, min: 0, max: 0.95 }],
+      ['crop.r', t('layers.cropRight'), { step: 0.01, min: 0, max: 0.95 }],
+    ]);
+    addPair(`${t('layers.cropTop')} / ${t('layers.cropBottom')}`, [
+      ['crop.t', t('layers.cropTop'), { step: 0.01, min: 0, max: 0.95 }],
+      ['crop.b', t('layers.cropBottom'), { step: 0.01, min: 0, max: 0.95 }],
+    ]);
   }
 
   function fieldRow(labelText, control) {
@@ -2259,6 +2452,35 @@ SA.inspector = (() => {
     row.appendChild(label);
     row.appendChild(control);
     return row;
+  }
+
+  // Two layer/clone numbers side by side in one row. `cells` carries one
+  // `{ sub, control }` per cell; the caller appends key buttons into the
+  // returned `btns` span (layer rows) or leaves it empty (plain rows).
+  function fieldRowPair(labelText, cells) {
+    const row = document.createElement('div');
+    row.className = 'ctrl-row is-pair';
+    const label = document.createElement('span');
+    label.className = 'ctrl-label';
+    label.textContent = labelText;
+    row.appendChild(label);
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-pair';
+    for (const cell of cells) {
+      const holder = document.createElement('span');
+      holder.className = 'ctrl-pair-cell';
+      const tag = document.createElement('span');
+      tag.className = 'ctrl-pair-tag';
+      tag.textContent = cell.sub;
+      holder.appendChild(tag);
+      holder.appendChild(cell.control);
+      wrap.appendChild(holder);
+    }
+    row.appendChild(wrap);
+    const btns = document.createElement('span');
+    btns.className = 'ctrl-pair-btns';
+    row.appendChild(btns);
+    return { row, btns };
   }
 
   function fillerParamLabel(key) {
@@ -2400,11 +2622,16 @@ SA.inspector = (() => {
     const startControl = SA.controls.numberControl({ min: 0, step: 0.05, default: clip.start }, clip.start, (value) => {
       SA.store.commands.trimClip(clip.id, 'start', value, { coalesceKey: `clip:${clip.id}:start` });
     });
-    body.appendChild(fieldRow(t('studio.inspector.start'), startControl));
     const endControl = SA.controls.numberControl({ min: 0, step: 0.05, default: clip.end }, clip.end, (value) => {
       SA.store.commands.trimClip(clip.id, 'end', value, { coalesceKey: `clip:${clip.id}:end` });
     });
-    body.appendChild(fieldRow(t('studio.inspector.end'), endControl));
+    {
+      const { row: pair } = fieldRowPair(`${t('studio.inspector.start')} / ${t('studio.inspector.end')}`, [
+        { sub: t('studio.inspector.start'), control: startControl },
+        { sub: t('studio.inspector.end'), control: endControl },
+      ]);
+      body.appendChild(pair);
+    }
 
     // split / reroll / vary / recolour / delete as glyph buttons in the
     // section header, like the cue / beat sections

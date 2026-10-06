@@ -79,6 +79,7 @@
     params: [
       { key: 'amount', kind: 'number', min: 0, max: 0.5, step: 0.005, default: 0.06, random: [0.02, 0.15] },
       { key: 'bpm', kind: 'number', min: 40, max: 240, step: 1, default: 120 },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'both'], default: 'both' },
     ],
     cpu(state, h, env, params, rng, info) {
       const amount = params.amount == null ? 0.06 : params.amount;
@@ -90,8 +91,9 @@
         bpm = Number(params.bpm);
       }
       const scale = 1 + amount * (0.5 + 0.5 * Math.cos(TAU * (bpm / 60) * h)) * env;
-      state.scaleX *= scale;
-      state.scaleY *= scale;
+      const axis = params.axis === 'x' ? 'x' : params.axis === 'y' ? 'y' : 'both';
+      if (axis === 'x' || axis === 'both') state.scaleX *= scale;
+      if (axis === 'y' || axis === 'both') state.scaleY *= scale;
     },
   });
 
@@ -293,6 +295,7 @@
     params: [
       { key: 'amount', kind: 'number', min: 0, max: 0.2, step: 0.005, default: 0.06, random: [0.04, 0.08] },
       { key: 'bpm', kind: 'text', default: '72' },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'both'], default: 'both' },
     ],
     cpu(state, h, env, params, rng, info) {
       const amount = params.amount == null ? 0.06 : params.amount;
@@ -306,8 +309,9 @@
       const time = info && info.local != null ? info.local : h;
       const phase = (((time * bpm) / 60) % 1 + 1) % 1;
       const scale = 1 + amount * (bump(phase, 0, 0.1) + 0.6 * bump(phase, 0.18, 0.1)) * env;
-      state.scaleX *= scale;
-      state.scaleY *= scale;
+      const axis = params.axis === 'x' ? 'x' : params.axis === 'y' ? 'y' : 'both';
+      if (axis === 'x' || axis === 'both') state.scaleX *= scale;
+      if (axis === 'y' || axis === 'both') state.scaleY *= scale;
     },
   });
 

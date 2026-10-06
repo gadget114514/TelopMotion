@@ -440,7 +440,7 @@ Layout is special: the `in` progress moves letters from the start formation to t
 
 **propPath** examples:
 - `transform.x`, `transform.y` (px @ output resolution)
-- `transform.rotate` (deg), `transform.scale`, `transform.tiltX`, `transform.tiltY`, `transform.opacity`
+- `transform.rotate` (deg), `transform.scale` (uniform; multiplied with the axes below), `transform.scaleX`, `transform.scaleY`, `transform.tiltX`, `transform.tiltY`, `transform.opacity`
 - `text.size`
 - `enter.type`, `enter.params.distance`, `enter.motion.in.ease`
 - `fill.type`
@@ -889,7 +889,7 @@ fade, slide, zoomOut, blurOut, explode (pieces fly outward from the block center
 | floatBob | amp, speed | y += amp·sin(2π·speed·h + i·0.4) |
 | sineWave | amp, freq, speed | phase depends on the letter's x |
 | jitter | amp, rate | noise offsets changed at `rate` Hz |
-| pulse | amount, bpm | scale 1 + amount·(½ + ½cos) |
+| pulse | amount, bpm, axis (x/y/both) | scale 1 + amount·(½ + ½cos) on the chosen axes |
 | kenBurns | zoom, pan | slow zoom and pan of the whole block over the hold |
 | drift | vx, vy | constant velocity |
 | sway | angle, speed | rotation |
