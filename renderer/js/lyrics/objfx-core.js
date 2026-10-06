@@ -170,6 +170,151 @@
     state.opacity = Math.max(minOpacity * base, base * (1 - k));
   }
 
+    const k = depth * amount * sel * w;
+    const base = state.opacity == null ? 1 : state.opacity;
+    const minOpacity = Math.max(0, Math.min(0.8, cfg.minOpacity == null ? 0.2 : cfg.minOpacity));
+    state.opacity = Math.max(minOpacity * base, base * (1 - k));
+  }
+
+  // --- colorShift (§4.2) ------------------------------------------------------
+
+  function hexToRgb(hex) {
+    if (typeof hex !== 'string') return null;
+    let s = hex.trim().replace(/^#/, '');
+    if (/^[0-9a-fA-F]{3}$/.test(s)) s = s.split('').map((c) => c + c).join('');
+    if (/^[0-9a-fA-F]{8}$/.test(s)) s = s.slice(0, 6);
+    if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+    return [parseInt(s.slice(0, 2), 16) / 255, parseInt(s.slice(2, 4), 16) / 255, parseInt(s.slice(4, 6), 16) / 255];
+  }
+
+  function rgbToHsl(r, g, b) {
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const l = (max + min) / 2;
+    if (max === min) return [0, 0, l];
+    const d = max - min;
+    const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    let h = 0;
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+    return [h, s, l];
+  }
+
+  function hslToRgb(h, s, l) {
+    const hue = ((h % 1) + 1) % 1;
+    if (s === 0) return [l, l, l];
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    const channel = (t) => {
+      const tt = ((t % 1) + 1) % 1;
+      if (tt < 1 / 6) return p + (q - p) * 6 * tt;
+      if (tt < 1 / 2) return q;
+      if (tt < 2 / 3) return p + (q - p) * (2 / 3 - tt) * 6;
+      return p;
+    };
+    return [channel(hue + 1 / 3), channel(hue), channel(hue - 1 / 3)];
+  }
+
+  function mixRgb(a, b, t) {
+    return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+  }
+
+  function triWave(x) {
+    const f = ((x % 1) + 1) % 1;
+    return f < 0.5 ? f * 2 : 2 - f * 2;
+  }
+
+  // Distance travelled in shortSide units, integrated at 1/60 s with 0.25 s
+  // checkpoints kept in `checkpoints` (a Map owned by the caller, e.g. on the
+  // scene). Scrubbing backwards rewinds to the nearest earlier checkpoint, so
+  // the value stays a pure function of t.
+  const DIST_DT = 1 / 60;
+  const DIST_SNAP = 0.25;
+
+  function distanceAt(src, i, t, checkpoints, maxT, shortSide) {
+    const target = Math.max(0, Math.min(maxT == null ? t : maxT, t));
+    let entry = checkpoints.get(i);
+    if (!entry) {
+      entry = { checks: [{ t: 0, d: 0 }] };
+      checkpoints.set(i, entry);
+    }
+    while (entry.checks.length > 1 && entry.checks[entry.checks.length - 1].t > target + 1e-9) entry.checks.pop();
+    let base = entry.checks[entry.checks.length - 1];
+    if (!base || base.t > target + 1e-9) {
+      base = { t: 0, d: 0 };
+      entry.checks = [base];
+    }
+    let prev = src(i, base.t);
+    let d = base.d;
+    let next = base.t + DIST_DT;
+    let nextSnap = (Math.floor((base.t + 1e-9) / DIST_SNAP) + 1) * DIST_SNAP;
+    while (next <= target + 1e-9) {
+      const at = Math.min(next, target);
+      const p = src(i, at);
+      const dx = ((p.x || 0) - (prev.x || 0)) / Math.max(1, shortSide || 1);
+      const dy = ((p.y || 0) - (prev.y || 0)) / Math.max(1, shortSide || 1);
+      d += Math.hypot(dx, dy);
+      prev = p;
+      if (next >= nextSnap - 1e-9) {
+        entry.checks.push({ t: next, d });
+        nextSnap += DIST_SNAP;
+      }
+      next += DIST_DT;
+      if (entry.checks.length > 4000) {
+        entry.checks = entry.checks.filter((_, index) => index % 2 === 0);
+      }
+    }
+    return d;
+  }
+
+  // Map the input phase to an output colour. `base` is the fill's base RGB,
+  // `stops` the beat palette (arrays of [r,g,b]).
+  function tintFor(palette, phase, base, stops, colorA, colorB) {
+    const phi = ((phase % 1) + 1) % 1;
+    if (palette === 'gradient') {
+      const a = colorA || [1, 0.23, 0.42];
+      const b = colorB || [0.23, 0.82, 1];
+      return mixRgb(a, b, triWave(phi));
+    }
+    if (palette === 'beatPalette' && Array.isArray(stops) && stops.length) {
+      const n = stops.length;
+      if (n === 1) return stops[0].slice();
+      const pos = phi * n;
+      const k = Math.floor(pos) % n;
+      return mixRgb(stops[k], stops[(k + 1) % n], pos - Math.floor(pos));
+    }
+    const hsl = rgbToHsl(base[0], base[1], base[2]);
+    return hslToRgb(hsl[0] + phi, hsl[1], hsl[2]);
+  }
+
+  // ColorShift (§4.2): the travelled / speed / progress phase picks a colour
+  // that the fill shader mixes over the glyph. Writes state.tint = {r,g,b,m}.
+  function applyColorShift(state, i, t, cfg, ctx) {
+    const mix = Math.max(0, Math.min(1, cfg.mix == null ? 0.85 : cfg.mix));
+    if (!(mix > 0)) return;
+    const sel = selectWeight(cfg.select, cfg, i, ctx.N, ctx.helpers);
+    if (!(sel > 0)) return;
+    const cycles = cfg.cycles == null ? 1 : cfg.cycles;
+    let phi;
+    if (cfg.driver === 'speed') {
+      const v = velocityAt(ctx.velocitySrc || ctx.transformAt, i, t, cfg.h, 0, cfg.maxT);
+      phi = speedNorm(v, ctx.shortSide) * cycles;
+    } else if (cfg.driver === 'progress') {
+      phi = (ctx.progress == null ? 0 : ctx.progress) * cycles;
+    } else {
+      phi = distanceAt(ctx.velocitySrc || ctx.transformAt, i, t, ctx.checkpoints, cfg.maxT, ctx.shortSide) * cycles;
+    }
+    const rank = ctx.helpers && ctx.helpers.rank01 ? ctx.helpers.rank01(i) : (ctx.N > 1 ? i / (ctx.N - 1) : 0);
+    const phiI = phi + (cfg.phase || 0) + (cfg.spread == null ? 0.3 : cfg.spread) * rank;
+    const amount = motionAmount(ctx.velocitySrc || ctx.transformAt, i, t, cfg, ctx.shortSide);
+    let m = mix * Math.max(amount, cfg.driver === 'distance' ? 1 : 0) * sel;
+    if (ctx.colorMix > 0) m *= 0.5; // keep keyword accents readable
+    if (!(m > 0.001)) return;
+    const rgb = tintFor(cfg.palette || 'hueCycle', phiI, ctx.base, ctx.stops, ctx.colorA, ctx.colorB);
+    state.tint = { r: rgb[0], g: rgb[1], b: rgb[2], m: Math.min(1, m) };
+  }
+
   return {
     VELOCITY_H,
     clamp01,
@@ -180,5 +325,11 @@
     selectWeight,
     applyTimeDelay,
     applyFlicker,
+    hexToRgb,
+    rgbToHsl,
+    hslToRgb,
+    distanceAt,
+    tintFor,
+    applyColorShift,
   };
 });
