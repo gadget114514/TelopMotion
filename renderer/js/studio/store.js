@@ -3660,8 +3660,10 @@ SA.store = (() => {
       const own = state.project.beatStyles && state.project.beatStyles[beatId];
       const current = own && own.colorScheme;
       const pool = candidates.filter((entry) => entry.id !== current);
-      const list = pool.length ? pool : candidates;
-      const pick = list[Math.min(list.length - 1, Math.floor(Math.random() * list.length))];
+      // re-drawing the order that is already on screen would change nothing:
+      // report no other choice instead of a silent no-op dispatch
+      if (!pool.length) return null;
+      const pick = pool[Math.min(pool.length - 1, Math.floor(Math.random() * pool.length))];
       if (!pick) return null;
       dispatch({
         label: 'reroll beat colours',

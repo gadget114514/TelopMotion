@@ -3818,21 +3818,36 @@ SA.inspector = (() => {
       schemeText.className = 'insp-inherit';
       schemeText.textContent = `${t('studio.inspector.scheme')}: ${label}`;
       schemeRow.appendChild(schemeText);
-      const invertible = !!(roles && parentColors.length && roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird));
+      const isInverted = !!(roles && schemeId && schemeId === roles.SCHEME_INVERT);
+      const invertible = !!(roles && parentColors.length && (isInverted || roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird)));
       const invertButton = document.createElement('button');
       invertButton.type = 'button';
       invertButton.className = 'btn btn-mini';
       invertButton.textContent = t('studio.inspector.invertBeatScheme');
       invertButton.disabled = !invertible;
-      invertButton.title = !ownBeat.colorLegacy && invertible ? t('studio.inspector.colorLegacy') : '';
+      if (!parentColors.length) invertButton.title = t('palette.none');
+      else if (!invertible) invertButton.title = t('palette.contrastWarn');
+      else if (!ownBeat.colorLegacy) invertButton.title = t('studio.inspector.colorLegacy');
       invertButton.addEventListener('click', () => SA.store.commands.invertBeatScheme(scope.cueId, scope.beatId));
-      const candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined) : [];
+      // the store falls back to the full scheme set when the calm range has
+      // fewer than two candidates, so the button uses the same fallback;
+      // otherwise it would stay disabled while the command could still work
+      let candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined) : [];
+      if (candidates.length < 2) {
+        const full = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird) : [];
+        if (full.length > candidates.length) candidates = full;
+      }
+      // only another role order counts: re-drawing the order that is already
+      // on screen would change nothing and look broken
+      const otherCandidates = candidates.filter((entry) => entry && entry.id !== schemeId);
       const rerollButton = document.createElement('button');
       rerollButton.type = 'button';
       rerollButton.className = 'btn btn-mini';
       rerollButton.textContent = t('studio.inspector.rerollBeatScheme');
-      rerollButton.disabled = !candidates.length;
-      rerollButton.title = !ownBeat.colorLegacy && candidates.length ? t('studio.inspector.colorLegacy') : '';
+      rerollButton.disabled = !otherCandidates.length;
+      if (!parentColors.length) rerollButton.title = t('palette.none');
+      else if (!otherCandidates.length) rerollButton.title = t('palette.contrastWarn');
+      else if (!ownBeat.colorLegacy) rerollButton.title = t('studio.inspector.colorLegacy');
       rerollButton.addEventListener('click', () => SA.store.commands.rerollBeatScheme(scope.cueId, scope.beatId));
       schemeRow.appendChild(invertButton);
       schemeRow.appendChild(rerollButton);
