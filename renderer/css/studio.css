@@ -653,6 +653,25 @@ body {
   display: none;
 }
 
+.debug-window {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-soft);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.debug-window .console-list {
+  min-height: 0;
+}
+
+.console-count {
+  color: #5d6785;
+  font-variant-numeric: tabular-nums;
+}
+
 .console-head {
   display: flex;
   align-items: center;

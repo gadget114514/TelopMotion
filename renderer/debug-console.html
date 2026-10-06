@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'" />
+<title>Debug console</title>
+<link rel="stylesheet" href="css/studio.css" />
+</head>
+<body class="debug-window">
+  <div class="console-head">
+    <span class="console-title">Debug console</span>
+    <span id="debug-count" class="console-count"></span>
+    <button id="debug-clear" type="button" class="btn btn-mini">Clear</button>
+  </div>
+  <div id="debug-list" class="console-list"></div>
+  <script src="js/debug-window.js"></script>
+</body>
+</html>

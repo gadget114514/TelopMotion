@@ -33,6 +33,21 @@ contextBridge.exposeInMainWorld('sunoApi', {
   openExternal: (url) => ipcRenderer.invoke('app:open-external', { url }),
   openDevTools: (mode) => ipcRenderer.invoke('devtools:open', { mode: mode || 'right' }),
   toggleDevTools: () => ipcRenderer.invoke('devtools:toggle'),
+  debugOpen: () => ipcRenderer.invoke('debug:open'),
+  debugToggle: () => ipcRenderer.invoke('debug:toggle'),
+  debugLog: (entry) => ipcRenderer.invoke('debug:log', entry),
+  debugHistory: () => ipcRenderer.invoke('debug:history'),
+  debugClear: () => ipcRenderer.invoke('debug:clear'),
+  onDebugLog: (callback) => {
+    const listener = (_event, payload) => callback(payload);
+    ipcRenderer.on('debug:log', listener);
+    return () => ipcRenderer.removeListener('debug:log', listener);
+  },
+  onDebugClear: (callback) => {
+    const listener = () => callback();
+    ipcRenderer.on('debug:clear', listener);
+    return () => ipcRenderer.removeListener('debug:clear', listener);
+  },
   onProgress: (callback) => {
     const listener = (_event, payload) => callback(payload);
     ipcRenderer.on('suno:progress', listener);

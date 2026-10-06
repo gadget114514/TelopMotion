@@ -38,9 +38,15 @@ SA.debugConsole = (() => {
   }
 
   function push(level, text) {
-    entries.push({ level, text: String(text), time: stamp() });
+    const entry = { level, text: String(text), time: stamp() };
+    entries.push(entry);
     if (entries.length > MAX) entries.length = MAX;
     render();
+    try {
+      if (SA.platform && typeof SA.platform.sendDebugLog === 'function') SA.platform.sendDebugLog(entry);
+    } catch {
+      /* forwarding must never break logging */
+    }
   }
 
   function render() {
@@ -120,6 +126,23 @@ SA.debugConsole = (() => {
   function clear() {
     entries.length = 0;
     render();
+    try {
+      if (SA.platform && typeof SA.platform.notifyDebugClear === 'function') SA.platform.notifyDebugClear();
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function openWindow() {
+    try {
+      if (SA.platform && SA.platform.isElectron && typeof SA.platform.openDebugWindow === 'function') {
+        SA.platform.openDebugWindow();
+        return true;
+      }
+    } catch {
+      /* fall through to the in-app panel */
+    }
+    return setOpen(true);
   }
 
   function init() {
@@ -142,5 +165,5 @@ SA.debugConsole = (() => {
     render();
   }
 
-  return { init, push, toggle, setOpen, isOpen, clear, entries };
+  return { init, push, toggle, setOpen, isOpen, clear, entries, openWindow };
 })();

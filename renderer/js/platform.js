@@ -488,6 +488,26 @@ SA.platform = (() => {
     return Promise.resolve(false);
   }
 
+  function openDebugWindow() {
+    if (isElectron && bridge && typeof bridge.debugOpen === 'function') return bridge.debugOpen().catch(() => false);
+    return Promise.resolve(false);
+  }
+
+  function toggleDebugWindow() {
+    if (isElectron && bridge && typeof bridge.debugToggle === 'function') return bridge.debugToggle().catch(() => false);
+    return Promise.resolve(false);
+  }
+
+  function sendDebugLog(entry) {
+    if (isElectron && bridge && typeof bridge.debugLog === 'function') return bridge.debugLog(entry).catch(() => false);
+    return Promise.resolve(false);
+  }
+
+  function notifyDebugClear() {
+    if (isElectron && bridge && typeof bridge.debugClear === 'function') return bridge.debugClear().catch(() => false);
+    return Promise.resolve(false);
+  }
+
   return {
     isElectron,
     isDataset,
@@ -514,5 +534,9 @@ SA.platform = (() => {
     onProgress,
     openDevTools,
     toggleDevTools,
+    openDebugWindow,
+    toggleDebugWindow,
+    sendDebugLog,
+    notifyDebugClear,
   };
 })();

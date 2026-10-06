@@ -41,6 +41,41 @@ const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
 const ASSET_ROOTS = ['fonts', 'vendor', 'data'];
 const streams = new Map();
 
+// Separate debug-console window (an OS-level window, not the in-app panel)
+let debugWin = null;
+const debugHistory = [];
+const DEBUG_HISTORY_MAX = 400;
+
+function openDebugWindow() {
+  if (debugWin && !debugWin.isDestroyed()) {
+    if (debugWin.isMinimized()) debugWin.restore();
+    debugWin.focus();
+    debugWin.show();
+    return debugWin;
+  }
+  debugWin = new BrowserWindow({
+    width: 520,
+    height: 720,
+    minWidth: 320,
+    minHeight: 240,
+    backgroundColor: '#0b0d12',
+    autoHideMenuBar: true,
+    title: 'Debug console',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: true,
+      spellcheck: false,
+    },
+  });
+  debugWin.on('closed', () => {
+    debugWin = null;
+  });
+  debugWin.loadFile(path.join(__dirname, 'renderer', 'debug-console.html'));
+  return debugWin;
+}
+
 async function fetchImageDataUrl(rawUrl) {
   if (typeof rawUrl !== 'string') {
     throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
@@ -298,6 +333,53 @@ function registerIpc() {
       if (!win) return fail(Object.assign(new Error('no-window'), { code: 'no-window' }));
       if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
       else win.webContents.openDevTools({ mode: 'right' });
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('debug:open', () => {
+    try {
+      openDebugWindow();
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('debug:toggle', () => {
+    try {
+      if (debugWin && !debugWin.isDestroyed()) debugWin.close();
+      else openDebugWindow();
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('debug:log', (_event, payload) => {
+    try {
+      const entry = {
+        level: ['log', 'info', 'warn', 'error'].includes(payload && payload.level) ? payload.level : 'log',
+        text: String((payload && payload.text) || ''),
+        time: String((payload && payload.time) || ''),
+      };
+      debugHistory.push(entry);
+      if (debugHistory.length > DEBUG_HISTORY_MAX) debugHistory.splice(0, debugHistory.length - DEBUG_HISTORY_MAX);
+      if (debugWin && !debugWin.isDestroyed()) debugWin.webContents.send('debug:log', entry);
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('debug:history', () => ok(debugHistory.slice()));
+
+  ipcMain.handle('debug:clear', () => {
+    try {
+      debugHistory.length = 0;
+      if (debugWin && !debugWin.isDestroyed()) debugWin.webContents.send('debug:clear');
       return ok(true);
     } catch (error) {
       return fail(error);

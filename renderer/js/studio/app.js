@@ -1969,6 +1969,10 @@
   }
 
   function toggleConsole() {
+    if (SA.platform && SA.platform.isElectron && SA.debugConsole && typeof SA.debugConsole.openWindow === 'function') {
+      SA.debugConsole.openWindow();
+      return true;
+    }
     const open = SA.debugConsole.toggle();
     applyLayout();
     if (SA.preview) SA.preview.render();
