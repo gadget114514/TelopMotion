@@ -73,18 +73,18 @@ test('the built parts match the committed files (deterministic build)', () => {
   );
 });
 
-test('the Help submenu offers the 16 parts and the play-all run in all five languages', () => {
+test('the Help menu opens the picker dialog with the 16 parts and the play-all run', () => {
   const menu = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'menu.js'), 'utf8');
-  assert.match(menu, /key: 'studio\.help\.motionShowcase', items: /);
-  assert.match(menu, /key: 'studio\.help\.motionShowcaseAll', action: 'motionShowcaseAll'/);
-  for (let at = 1; at <= 16; at += 1) {
-    const part = String(at).padStart(2, '0');
-    assert.ok(menu.includes(`action: 'motionShowcase', args: ['${part}']`), `part ${part} leaf`);
-  }
+  assert.match(menu, /key: 'studio\.help\.motionShowcase', action: 'motionShowcaseDialog'/);
+  assert.ok(!menu.includes("action: 'motionShowcase', args:"), 'no per-part submenu leaves remain');
   const app = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'app.js'), 'utf8');
   assert.match(app, /motionShowcase: motionShowcaseProject/);
+  assert.match(app, /motionShowcaseDialog,/);
   assert.match(app, /motionShowcaseAll: motionShowcaseAllProject/);
   assert.match(app, /data\/motion-showcase-\$\{/);
+  // the dialog builds one button per part plus the play-all run
+  assert.match(app, /motion-showcase-grid/);
+  assert.match(app, /for \(let at = 1; at <= 16; at \+= 1\)/);
   // the play-all run restores the loop mode, pauses on teardown and can be
   // stopped from its dialog, with Escape, or by taking over the transport
   assert.match(app, /motionShowcaseAllProject/);

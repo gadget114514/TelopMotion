@@ -1206,6 +1206,41 @@
     }
   }
 
+  // the motion showcase picker: a dialog with the play-all run and one
+  // button per part (replaces the old 16-level submenu)
+  function motionShowcaseDialog() {
+    el.dialogRoot.innerHTML = '';
+    const dialog = document.createElement('div');
+    dialog.className = 'dialog';
+    dialog.innerHTML = `<h3>${t('studio.help.motionShowcase')}</h3><div class="motion-showcase-grid" data-field="parts"></div>
+      <div class="dialog-actions">
+        <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
+        <button type="button" class="btn btn-primary" data-action="all">${t('studio.help.motionShowcaseAll')}</button>
+      </div>`;
+    const grid = dialog.querySelector('[data-field="parts"]');
+    for (let at = 1; at <= 16; at += 1) {
+      const part = String(at).padStart(2, '0');
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'btn btn-mini';
+      cell.textContent = part;
+      cell.addEventListener('click', () => {
+        el.dialogRoot.hidden = true;
+        motionShowcaseProject(part);
+      });
+      grid.appendChild(cell);
+    }
+    el.dialogRoot.appendChild(dialog);
+    el.dialogRoot.hidden = false;
+    dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
+      el.dialogRoot.hidden = true;
+    });
+    dialog.querySelector('[data-action="all"]').addEventListener('click', () => {
+      el.dialogRoot.hidden = true;
+      motionShowcaseAllProject();
+    });
+  }
+
   let motionAutoRunning = false;
   let motionAutoStop = false;
   let motionAutoRoot = null;
@@ -2233,6 +2268,7 @@
       shaderShowcase: shaderShowcaseProject,
       objfxShowcase: objfxShowcaseProject,
       motionShowcase: motionShowcaseProject,
+      motionShowcaseDialog,
       motionShowcaseAll: motionShowcaseAllProject,
       saveProject,
       saveProjectAs,

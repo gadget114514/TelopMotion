@@ -1001,6 +1001,17 @@ body {
   font-size: 12px;
 }
 
+/* motion showcase picker: 16 part buttons in a grid */
+.motion-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.motion-showcase-grid .btn-mini {
+  padding: 4px 0;
+}
+
 .theme-list {
   display: flex;
   flex-direction: column;
