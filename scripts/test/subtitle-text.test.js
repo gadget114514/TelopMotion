@@ -38,6 +38,9 @@ test('the engine renders subtitle text conditionally and skips glyph passes when
   assert.ok(source.includes('if (maskNeeded) {\n          pipeline.letterBlur'), 'pipeline.letterBlur is not conditioned on maskNeeded');
   assert.ok(source.includes('if (variation) {\n          pipeline.knockout();'), 'pipeline.knockout does not run with the text hidden');
   assert.ok(source.includes('textOn ? pipeline.sdf() : null'), 'sdfTarget is not conditioned on textOn');
+  // edges (outline, shadow, glow ...) paint on and around the glyphs, so
+  // they follow Text FG with the text body, not the Graphics switch
+  assert.ok(source.includes('const edges = textOn'), 'edges do not follow Text FG');
 });
 
 test('migrate normalises textHidden to a boolean and keeps it absent by default', () => {

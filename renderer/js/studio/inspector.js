@@ -491,9 +491,11 @@ SA.inspector = (() => {
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const TEXT_GROUPS = ['text', 'fill', 'edge', 'repeat', 'clones'];
   // groups hidden by the track's graphics switch (`graphicsHidden`): the
-  // text-attached extras (fill effects, edges, repeats, clones, strike and
-  // the ornaments). The base glyphs stay, so `text` itself is not listed.
-  const GRAPHICS_GROUPS = ['fill', 'edge', 'strike', 'repeat', 'clones', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  // text-attached extras (fill effects, repeats, strike and the ornaments).
+  // Edges follow Text FG with the glyphs; clones follow Text FG while their
+  // copies land apart from the glyphs. The base glyphs stay, so `text`
+  // itself is not listed.
+  const GRAPHICS_GROUPS = ['fill', 'strike', 'repeat', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
 
   function section(container, key, title) {
     const node = document.createElement('details');

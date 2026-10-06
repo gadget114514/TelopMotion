@@ -94,7 +94,8 @@ test('the graphics switch covers every graphic: frame posts and text-attached ex
   assert.ok(engine.includes('if (textOn && graphicsOn)'), 'repeats / clones are not on the graphics switch');
   assert.ok(engine.includes('textOn && graphicsOn ? buildStrike'), 'strike is not on the graphics switch');
   assert.ok(engine.includes('if (graphicsOn) drawScopedDecor'), 'scoped decor is not on the graphics switch');
-  assert.ok(engine.includes('const edges = graphicsOn'), 'edges are not on the graphics switch');
+  // edges paint on and around the glyphs, so they follow Text FG instead
+  assert.equal(engine.includes('const edges = graphicsOn'), false, 'edges must not be on the graphics switch');
   // every post (frame-wide and text-target) is skipped when off
   assert.ok(engine.includes('if (!graphicsOn) continue;'), 'posts are not skipped when graphics are off');
   const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');

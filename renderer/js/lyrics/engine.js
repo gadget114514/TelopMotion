@@ -613,6 +613,56 @@ SA.lyricsEngine = (() => {
       };
     }
 
+    // Whether a clone copy lands on the glyphs: the clone box (the text box
+    // scaled about the frame centre, shifted by the static offset, expanded
+    // by the per-letter spread bound) is tested against the text box. Static
+    // values only — motion is ignored so an animated clone keeps its
+    // category instead of popping between Text FG and Graphics.
+    function cloneOverlapsText(active, clone) {
+      const scene = active && active.scene;
+      const result = active && active.result;
+      const n = (scene && scene.letters && scene.letters.length) || 0;
+      if (!n || !result || !result.letters) return true;
+      const width = Math.max(1, state.width);
+      const height = Math.max(1, state.height);
+      const short = Math.max(1, Math.min(width, height));
+      const box = repeatBox(scene, result);
+      const scale = Number(clone && clone.scale) || 1;
+      const ccx = width / 2 + (box.cx - width / 2) * scale;
+      const ccy = height / 2 + (box.cy - height / 2) * scale;
+      let hw = (Math.max(1, box.w) * Math.abs(scale)) / 2;
+      let hh = (Math.max(1, box.h) * Math.abs(scale)) / 2;
+      const rot = (((Number(clone && clone.rotate) || 0) * Math.PI) / 180) || 0;
+      if (rot !== 0) {
+        const cos = Math.abs(Math.cos(rot));
+        const sin = Math.abs(Math.sin(rot));
+        const nw = hw * 2 * cos + hh * 2 * sin;
+        const nh = hw * 2 * sin + hh * 2 * cos;
+        hw = nw / 2;
+        hh = nh / 2;
+      }
+      const ox = (Number(clone && clone.dx) || 0) * short;
+      const oy = (Number(clone && clone.dy) || 0) * short;
+      let spread = 0;
+      const per = clone && clone.perLetter;
+      if (per && per.enabled !== false) {
+        const bound = (range) => {
+          if (Array.isArray(range)) return Math.max(Math.abs(Number(range[0]) || 0), Math.abs(Number(range[1]) || 0));
+          return Math.abs(Number(range) || 0);
+        };
+        spread = Math.max(bound(per.dx), bound(per.dy)) * short;
+      }
+      const x0 = ccx + ox - hw - spread;
+      const x1 = ccx + ox + hw + spread;
+      const y0 = ccy + oy - hh - spread;
+      const y1 = ccy + oy + hh + spread;
+      const mx0 = box.cx - box.w / 2;
+      const mx1 = box.cx + box.w / 2;
+      const my0 = box.cy - box.h / 2;
+      const my1 = box.cy + box.h / 2;
+      return x0 < mx1 && mx0 < x1 && y0 < my1 && my0 < y1;
+    }
+
     // --- repeat group (style.repeat) -------------------------------------------
     // Bounding box of the current letter states in pixels; the repeat layout is
     // expressed relative to its centre.
@@ -2684,14 +2734,17 @@ SA.lyricsEngine = (() => {
         let sdfTarget = textOn ? pipeline.sdf() : null;
         const strike = textOn && graphicsOn ? buildStrike(active, t, colorSet, project) : { under: [], over: [] };
         // clones: the same string drawn several times behind the main text with
-        // per-copy offset / scale / rotation / color / opacity / motion
-        if (textOn && graphicsOn) {
+        // per-copy offset / scale / rotation / color / opacity / motion. A
+        // clone apart from the glyphs reads as extra text (Text FG); an
+        // overlapping one is decoration (Graphics).
+        if (textOn) {
           const clones = Array.isArray(style.clones) ? style.clones : [];
           for (let cloneIndex = 0; cloneIndex < clones.length; cloneIndex += 1) {
             const clone = clones[cloneIndex];
             if (!clone || clone.enabled === false) continue;
             const env = cloneEnvelope(clone, t, beat);
             if (env <= 0) continue;
+            if (!graphicsOn && cloneOverlapsText(active, clone)) continue;
             if (clone.perLetter && clone.perLetter.enabled !== false && SA.letterVary) {
               const restored = drawLetterClone(active, clone, cloneIndex, t, colorSet, fillInstance, category, progress, variant, colorOverride, sdfTarget);
               if (restored) sdfTarget = restored;
@@ -2713,12 +2766,14 @@ SA.lyricsEngine = (() => {
             );
             pipeline.commitLayer((clone.opacity == null ? 0.5 : Number(clone.opacity)) * env, transform);
           }
-          pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
-          pipeline.representation(scene, result.letters, 'pieces', variant);
-          pipeline.representation(scene, result.letters, 'particles', variant);
-          pipeline.representation(scene, result.letters, 'sand', variant);
-          pipeline.representation(scene, result.letters, 'dust', variant);
-          if (strike.under.length) drawPrimitives(strike.under);
+          if (graphicsOn) {
+            pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
+            pipeline.representation(scene, result.letters, 'pieces', variant);
+            pipeline.representation(scene, result.letters, 'particles', variant);
+            pipeline.representation(scene, result.letters, 'sand', variant);
+            pipeline.representation(scene, result.letters, 'dust', variant);
+            if (strike.under.length) drawPrimitives(strike.under);
+          }
         }
         const edgeContext = {
           colorSet: colorSet.arrays,
@@ -2733,7 +2788,9 @@ SA.lyricsEngine = (() => {
           category: beat.meta && beat.meta.category,
           sdfTexture: sdfTarget ? sdfTarget.texture : null,
         };
-        const edges = graphicsOn
+        // edges (outline, shadow, glow ...) paint on and around the glyphs,
+        // so they follow Text FG (the text body), not the Graphics switch
+        const edges = textOn
           ? (style.edge || [])
               .filter((instance) => instance && instance.enabled !== false)
               .flatMap((instance) =>
@@ -2779,7 +2836,7 @@ SA.lyricsEngine = (() => {
             }
           }
         }
-        if (graphicsOn) {
+        if (textOn) {
           for (const instance of style.edge || []) {
             if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
           }

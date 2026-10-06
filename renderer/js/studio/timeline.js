@@ -177,7 +177,6 @@ SA.timeline = (() => {
     const on = (instance) => !!instance && instance.enabled !== false;
     const orn = style.ornShape;
     if (orn && orn.type && orn.type !== 'none' && on(orn)) return true;
-    if ((style.edge || []).some(on)) return true;
     const repeat = style.repeat;
     if (repeat && repeat.type && repeat.type !== 'none' && on(repeat)) return true;
     if ((style.clones || []).some(on)) return true;

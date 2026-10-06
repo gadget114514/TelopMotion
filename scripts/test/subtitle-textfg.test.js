@@ -37,6 +37,17 @@ test('the rows are labelled Text FG, Text BG and Graphics', () => {
   assert.equal(timeline.includes("'fg-track'"), false, 'the text graphics row must be gone');
 });
 
+test('apart clones follow Text FG, overlapping clones stay on Graphics', () => {
+  const engine = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
+  assert.ok(engine.includes('function cloneOverlapsText(active, clone)'), 'the overlap helper is missing');
+  assert.ok(
+    engine.includes('if (!graphicsOn && cloneOverlapsText(active, clone)) continue;'),
+    'overlapping clones are not gated on the graphics switch'
+  );
+  // the clones loop runs with the text on; only overlapping copies need graphics
+  assert.ok(engine.includes('if (textOn) {\n          const clones'), 'the clones loop still needs the graphics switch');
+});
+
 test('the knockout runs with the text hidden and only shape passes are knocked out', () => {
   const engine = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
   // mask + knockout no longer depend on the text switch ...
