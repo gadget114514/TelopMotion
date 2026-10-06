@@ -1,0 +1,2251 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion モーション見本 10/16",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "mo10_01",
+        "start": 0,
+        "end": 3,
+        "text": "243. ランダム順表示 (Random Order Appear) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 243,
+          "presetId": "te_111",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_02",
+        "start": 3,
+        "end": 6,
+        "text": "244. 中央から外へ (Center Out) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 244,
+          "presetId": "te_112",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_03",
+        "start": 6,
+        "end": 9,
+        "text": "245. 外から中央へ (Outside In) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 245,
+          "presetId": "te_113",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_04",
+        "start": 9,
+        "end": 12,
+        "text": "246. 大文字小文字切替 (Case Toggle) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 246,
+          "presetId": "te_332",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_05",
+        "start": 12,
+        "end": 15,
+        "text": "247. ランダムフォント (Random Font Mix) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 247,
+          "presetId": "te_333",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_06",
+        "start": 15,
+        "end": 18,
+        "text": "248. サイズ強弱 (Dynamic Font Scale) · breathing\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 248,
+          "presetId": "te_334",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo10_07",
+        "start": 18,
+        "end": 21,
+        "text": "249. ベースラインシフト (Baseline Shift) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 249,
+          "presetId": "te_335",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_08",
+        "start": 21,
+        "end": 24,
+        "text": "250. 文字ごとバラバラ (Scattered Letters) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 250,
+          "presetId": "te_336",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_09",
+        "start": 24,
+        "end": 27,
+        "text": "251. 文字拡散 (Character Scatter) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 251,
+          "presetId": "te_337",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_10",
+        "start": 27,
+        "end": 30,
+        "text": "252. 文字収束 (Character Convergence) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 252,
+          "presetId": "te_338",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_11",
+        "start": 30,
+        "end": 33,
+        "text": "253. 文字落下 (Character Gravity Fall) · jelly\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 253,
+          "presetId": "te_339",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "jelly"
+        }
+      },
+      {
+        "id": "mo10_12",
+        "start": 33,
+        "end": 36,
+        "text": "254. ランダムシャッフル (Random Shuffle) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 254,
+          "presetId": "te_97",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_13",
+        "start": 36,
+        "end": 39,
+        "text": "255. デコード (Decode) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 255,
+          "presetId": "te_98",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_14",
+        "start": 39,
+        "end": 42,
+        "text": "256. スクランブル (Scramble) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 256,
+          "presetId": "te_99",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_15",
+        "start": 42,
+        "end": 45,
+        "text": "257. リリックモーション (Lyric Motion) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 257,
+          "presetId": "te_242",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_16",
+        "start": 45,
+        "end": 48,
+        "text": "258. キネティックタイポグラフィ (Kinetic Typography) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 258,
+          "presetId": "te_243",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_17",
+        "start": 48,
+        "end": 51,
+        "text": "259. タイポグラフィモーション (Typography Motion) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 259,
+          "presetId": "te_244",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_18",
+        "start": 51,
+        "end": 54,
+        "text": "260. ワードプレス (Word Press) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 260,
+          "presetId": "te_245",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_19",
+        "start": 54,
+        "end": 57,
+        "text": "261. ビート同期 (Beat Sync) · pulse\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 261,
+          "presetId": "te_246",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "pulse"
+        }
+      },
+      {
+        "id": "mo10_20",
+        "start": 57,
+        "end": 60,
+        "text": "262. オーディオリアクティブ (Audio Reactive) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 262,
+          "presetId": "te_247",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_21",
+        "start": 60,
+        "end": 63,
+        "text": "263. スペクトラム連動 (Audio Spectrum) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 263,
+          "presetId": "te_248",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_22",
+        "start": 63,
+        "end": 66,
+        "text": "264. イコライザーバー (Equalizer Bars) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 264,
+          "presetId": "te_249",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_23",
+        "start": 66,
+        "end": 69,
+        "text": "265. ワードスマッシュ (Word Smash) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 265,
+          "presetId": "te_250",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_24",
+        "start": 69,
+        "end": 72,
+        "text": "266. スマッシュカット (Smash Cut) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 266,
+          "presetId": "te_251",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_25",
+        "start": 72,
+        "end": 75,
+        "text": "267. テキストスタック (Text Stack) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 267,
+          "presetId": "te_252",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      },
+      {
+        "id": "mo10_26",
+        "start": 75,
+        "end": 78,
+        "text": "268. テキストパターン (Text Pattern) · floatBob\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 268,
+          "presetId": "te_253",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "floatBob"
+        }
+      }
+    ],
+    "sourceName": "motion-showcase-10.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "mo10_01": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_01",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_02": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_02",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_03": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_03",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_04": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_04",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_05": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_05",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_06": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_06",
+          "phase": "hold",
+          "type": "breathing",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amount": 0.03
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_07": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_07",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_08": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_08",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_09": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_09",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_10": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_10",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_11": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_11",
+          "phase": "hold",
+          "type": "jelly",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amount": 0.12,
+            "freq": 2
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_12": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_12",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_13": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_13",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_14": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_14",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_15": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_15",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_16": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_16",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_17": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_17",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_18": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_18",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_19": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_19",
+          "phase": "hold",
+          "type": "pulse",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120,
+            "axis": "both"
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_20": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_20",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_21": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_21",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_22": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_22",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_23": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_23",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_24": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_24",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_25": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_25",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_26": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_26",
+          "phase": "hold",
+          "type": "floatBob",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amp": 0.02,
+            "speed": 0.5
+          },
+          "enabled": true
+        }
+      ]
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "mo10_01": [
+      {
+        "id": "mo10_01:single0",
+        "cueId": "mo10_01",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 3,
+        "text": "243. ランダム順表示 (Random Order Appear\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "243. ランダム順表示 (Random Order Appear",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8399999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_02": [
+      {
+        "id": "mo10_02:single0",
+        "cueId": "mo10_02",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "244. 中央から外へ (Center Out) ·\nfloatBobあいうえお Aiueo 0123",
+        "lines": [
+          "244. 中央から外へ (Center Out) ·",
+          "floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_03": [
+      {
+        "id": "mo10_03:single0",
+        "cueId": "mo10_03",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 9,
+        "text": "245. 外から中央へ (Outside In) ·\nfloatBobあいうえお Aiueo 0123",
+        "lines": [
+          "245. 外から中央へ (Outside In) ·",
+          "floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_04": [
+      {
+        "id": "mo10_04:single0",
+        "cueId": "mo10_04",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "246. 大文字小文字切替 (Case Toggle\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "246. 大文字小文字切替 (Case Toggle",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_05": [
+      {
+        "id": "mo10_05:single0",
+        "cueId": "mo10_05",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 15,
+        "text": "247. ランダムフォント (Random Font\nMix) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "247. ランダムフォント (Random Font",
+          "Mix) · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_06": [
+      {
+        "id": "mo10_06:single0",
+        "cueId": "mo10_06",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 18,
+        "text": "248. サイズ強弱 (Dynamic Font Scale\n) · breathingあいうえお Aiueo 0123",
+        "lines": [
+          "248. サイズ強弱 (Dynamic Font Scale",
+          ") · breathingあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.96,
+        "pinned": false
+      }
+    ],
+    "mo10_07": [
+      {
+        "id": "mo10_07:single0",
+        "cueId": "mo10_07",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "249. ベースラインシフト (Baseline\nShift) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "249. ベースラインシフト (Baseline",
+          "Shift) · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8799999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_08": [
+      {
+        "id": "mo10_08:single0",
+        "cueId": "mo10_08",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "250. 文字ごとバラバラ (Scattered Letters\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "250. 文字ごとバラバラ (Scattered Letters",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8399999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_09": [
+      {
+        "id": "mo10_09:single0",
+        "cueId": "mo10_09",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 27,
+        "text": "251. 文字拡散 (Character Scatter)\n · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "251. 文字拡散 (Character Scatter)",
+          " · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_10": [
+      {
+        "id": "mo10_10:single0",
+        "cueId": "mo10_10",
+        "kind": "single",
+        "index": 0,
+        "start": 27,
+        "end": 30,
+        "text": "252. 文字収束 (Character Convergence\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "252. 文字収束 (Character Convergence",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_11": [
+      {
+        "id": "mo10_11:single0",
+        "cueId": "mo10_11",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 33,
+        "text": "253. 文字落下 (Character Gravity\nFall) · jellyあいうえお Aiueo 0123",
+        "lines": [
+          "253. 文字落下 (Character Gravity",
+          "Fall) · jellyあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "mo10_12": [
+      {
+        "id": "mo10_12:single0",
+        "cueId": "mo10_12",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "254. ランダムシャッフル (Random Shuffle\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "254. ランダムシャッフル (Random Shuffle",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8599999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_13": [
+      {
+        "id": "mo10_13:single0",
+        "cueId": "mo10_13",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 39,
+        "text": "255. デコード (Decode) · floatBob\nあいうえお Aiueo 0123",
+        "lines": [
+          "255. デコード (Decode) · floatBob",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_14": [
+      {
+        "id": "mo10_14:single0",
+        "cueId": "mo10_14",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "256. スクランブル (Scramble) ·\nfloatBobあいうえお Aiueo 0123",
+        "lines": [
+          "256. スクランブル (Scramble) ·",
+          "floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_15": [
+      {
+        "id": "mo10_15:single0",
+        "cueId": "mo10_15",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 45,
+        "text": "257. リリックモーション (Lyric Motion\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "257. リリックモーション (Lyric Motion",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_16": [
+      {
+        "id": "mo10_16:page1",
+        "cueId": "mo10_16",
+        "kind": "page",
+        "index": 1,
+        "start": 45,
+        "end": 46.102918586789556,
+        "text": "258. キネティックタイポグラフィ (",
+        "lines": [
+          "258. キネティックタイポグラフィ ("
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo10_16:page2",
+        "cueId": "mo10_16",
+        "kind": "page",
+        "index": 2,
+        "start": 46.102918586789556,
+        "end": 48,
+        "text": "Kinetic Typography) · floatBob\nあいうえお Aiueo 0123",
+        "lines": [
+          "Kinetic Typography) · floatBob",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo10_17": [
+      {
+        "id": "mo10_17:single0",
+        "cueId": "mo10_17",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 51,
+        "text": "259. タイポグラフィモーション (Typography\nMotion) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "259. タイポグラフィモーション (Typography",
+          "Motion) · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8399999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_18": [
+      {
+        "id": "mo10_18:single0",
+        "cueId": "mo10_18",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "260. ワードプレス (Word Press) ·\nfloatBobあいうえお Aiueo 0123",
+        "lines": [
+          "260. ワードプレス (Word Press) ·",
+          "floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_19": [
+      {
+        "id": "mo10_19:single0",
+        "cueId": "mo10_19",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "261. ビート同期 (Beat Sync) ·\npulseあいうえお Aiueo 0123",
+        "lines": [
+          "261. ビート同期 (Beat Sync) ·",
+          "pulseあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_20": [
+      {
+        "id": "mo10_20:single0",
+        "cueId": "mo10_20",
+        "kind": "single",
+        "index": 0,
+        "start": 57,
+        "end": 60,
+        "text": "262. オーディオリアクティブ (Audio\nReactive) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "262. オーディオリアクティブ (Audio",
+          "Reactive) · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo10_21": [
+      {
+        "id": "mo10_21:single0",
+        "cueId": "mo10_21",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "263. スペクトラム連動 (Audio Spectrum\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "263. スペクトラム連動 (Audio Spectrum",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_22": [
+      {
+        "id": "mo10_22:single0",
+        "cueId": "mo10_22",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "264. イコライザーバー (Equalizer Bars\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "264. イコライザーバー (Equalizer Bars",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.9199999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_23": [
+      {
+        "id": "mo10_23:single0",
+        "cueId": "mo10_23",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 69,
+        "text": "265. ワードスマッシュ (Word Smash)\n · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "265. ワードスマッシュ (Word Smash)",
+          " · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_24": [
+      {
+        "id": "mo10_24:single0",
+        "cueId": "mo10_24",
+        "kind": "single",
+        "index": 0,
+        "start": 69,
+        "end": 72,
+        "text": "266. スマッシュカット (Smash Cut)\n · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "266. スマッシュカット (Smash Cut)",
+          " · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_25": [
+      {
+        "id": "mo10_25:single0",
+        "cueId": "mo10_25",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 75,
+        "text": "267. テキストスタック (Text Stack)\n · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "267. テキストスタック (Text Stack)",
+          " · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo10_26": [
+      {
+        "id": "mo10_26:single0",
+        "cueId": "mo10_26",
+        "kind": "single",
+        "index": 0,
+        "start": 75,
+        "end": 78,
+        "text": "268. テキストパターン (Text Pattern\n) · floatBobあいうえお Aiueo 0123",
+        "lines": [
+          "268. テキストパターン (Text Pattern",
+          ") · floatBobあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.96,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {
+    "mo10_16": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ]
+  },
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "Motion 10/16"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

@@ -26,7 +26,8 @@ SA.glPasses = (() => {
   // (wind, gravity, grain size, pile flag) or the dust parameters
   // (windX, windY, size, turbulence). Row 24 carries spread / strength, row 25
   // the dissolve mode / direction / bias (see DISSOLVE_ROW).
-  const STATE_ROWS = 26;
+  const STATE_ROWS = 27;
+  const TINT_ROW = 26; // objeffects colorShift: per-letter tint (r, g, b, mix)
   const SAND_ROW = 23;
   const SAND_ROW2 = 24; // spread, strength
   const DISSOLVE_ROW = 25; // mode, dir.x, dir.y, bias
@@ -54,10 +55,10 @@ SA.glPasses = (() => {
       (code >= 20 ? block : letter).push({ code, item });
     }
     if (!letter.length && !block.length) return null;
-    // twist / twistBlock are degrees, so 12deg must not outrank an amount of 0.3
+    // twist / twistBlock / twist3D are degrees, so 12deg must not outrank an amount of 0.3
     const magnitude = (entry) => {
       const amount = Math.abs(Number(entry.item.amount) || 0);
-      return entry.code === 3 || entry.code === 30 ? amount / 90 : amount;
+      return entry.code === 3 || entry.code === 30 || entry.code === 18 ? amount / 90 : amount;
     };
     const byAmount = (a, b) => magnitude(b) - magnitude(a);
     letter.sort(byAmount);
@@ -163,6 +164,12 @@ SA.glPasses = (() => {
       data[at(4) + 1] = state.reprProgress == null ? 1 : state.reprProgress;
       data[at(4) + 2] = state.colorMix || 0;
       data[at(4) + 3] = (i % 97) / 97;
+      // the motion-reactive tint (objeffects colorShift): absent letters write 0
+      const tint = state.tint || null;
+      data[at(TINT_ROW)] = tint ? tint.r || 0 : 0;
+      data[at(TINT_ROW) + 1] = tint ? tint.g || 0 : 0;
+      data[at(TINT_ROW) + 2] = tint ? tint.b || 0 : 0;
+      data[at(TINT_ROW) + 3] = tint ? tint.m || 0 : 0;
     }
   }
 
@@ -209,6 +216,7 @@ SA.glPasses = (() => {
   function meshAttributes(gl, scene) {
     const positions = [];
     const indices = [];
+    const letterRanges = [];
     const colors = new Uint8Array(scene.letters.length * 4);
     const meshes = [];
     for (let i = 0; i < scene.letters.length; i += 1) {
@@ -229,7 +237,9 @@ SA.glPasses = (() => {
         positions.push(source[j] * scale - cx, source[j + 1] * scale - cy, i, halfW, halfH);
       }
       const localIndices = fill.indices;
+      const start = indices.length;
       for (let j = 0; j < localIndices.length; j += 1) indices.push(base + localIndices[j]);
+      letterRanges.push({ start, count: indices.length - start });
       const color = letter.color || { r: 1, g: 1, b: 1, a: 1 };
       colors[i * 4] = Math.round(clamp01(color.r) * 255);
       colors[i * 4 + 1] = Math.round(clamp01(color.g) * 255);
@@ -238,7 +248,7 @@ SA.glPasses = (() => {
       meshes.push(mesh);
     }
     const emInfo = packEmInfo(scene.letters, meshes);
-    return { positions, indices, colors, emInfo };
+    return { positions, indices, colors, emInfo, letterRanges };
   }
 
   function makeVao(gl, positions, indices, extra) {
@@ -270,10 +280,11 @@ SA.glPasses = (() => {
   }
 
   function buildMeshBatch(gl, scene) {
-    const { positions, indices, colors, emInfo } = meshAttributes(gl, scene);
+    const { positions, indices, colors, emInfo, letterRanges } = meshAttributes(gl, scene);
     const batch = makeVao(gl, positions, indices, { stride: 20 });
     batch.colors = colors;
     batch.emInfo = emInfo;
+    batch.letterRanges = letterRanges;
     emInfoByScene.set(scene, emInfo);
     return batch;
   }
@@ -830,6 +841,8 @@ SA.glPasses = (() => {
     // Uploads the per-letter state and draws the mesh into the currently bound
     // target. The caller owns the framebuffer, viewport, clear and blend state,
     // so several scenes can stack into one target without clearing in between.
+    // Letters carrying a non-zero drawOrder (textenter2 §4.7) paint in
+    // (drawOrder, index) order; without it the single indexed draw is kept.
     function drawTextMesh(batchSet, batch, states, colorOverride) {
       uploadState(states, batchSet.mesh || batch, colorOverride);
       gl.useProgram(programs.text.program);
@@ -838,7 +851,25 @@ SA.glPasses = (() => {
       gl.uniform2f(programs.text.uniforms.u_resolution, width, height);
       gl.uniform1f(programs.text.uniforms.u_perspective, 1200);
       gl.bindVertexArray(batch.vao);
-      gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
+      let ordered = null;
+      const reverse = states && states._reverseDraw === true;
+      for (let i = 0; i < states.length; i += 1) {
+        if ((states[i] && states[i].drawOrder) || reverse) {
+          ordered = true;
+          break;
+        }
+      }
+      if (!ordered || !batch.letterRanges) {
+        gl.drawElements(gl.TRIANGLES, batch.count, gl.UNSIGNED_INT, 0);
+      } else {
+        const seq = states.map((state, index) => ({ order: (state && state.drawOrder) || 0, index }));
+        seq.sort((a, b) => (a.order - b.order) || (reverse ? b.index - a.index : a.index - b.index));
+        for (const entry of seq) {
+          const range = batch.letterRanges[entry.index];
+          if (!range || !range.count) continue;
+          gl.drawElements(gl.TRIANGLES, range.count, gl.UNSIGNED_INT, range.start * 4);
+        }
+      }
       gl.bindVertexArray(null);
       gl.activeTexture(gl.TEXTURE0);
     }
@@ -1364,7 +1395,7 @@ SA.glPasses = (() => {
       dispose,
       targets: () => targets,
       debugError: () => gl.getError(),
-      _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS },
+      _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS, TINT_ROW },
     };
   }
 
@@ -1460,6 +1491,6 @@ SA.glPasses = (() => {
     DEFORM_CODES,
     REP_CODES,
     // pure helpers, exposed for the unit tests (no GL context needed)
-    _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS },
+    _test: { deformSlots, packStateRows, packEmInfo, STATE_ROWS, BG_STATE_ROWS, TINT_ROW },
   };
 })();

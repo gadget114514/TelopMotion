@@ -4763,8 +4763,9 @@
           "type": "pulse",
           "enabled": true,
           "params": {
-            "amount": 0.06,
-            "bpm": 190
+            "amount": 0.15,
+            "bpm": 120,
+            "axis": "x"
           },
           "motion": {}
         }
@@ -5226,7 +5227,8 @@
           "enabled": true,
           "params": {
             "amount": 0.08,
-            "bpm": "72"
+            "bpm": "72",
+            "axis": "x"
           },
           "motion": {}
         }

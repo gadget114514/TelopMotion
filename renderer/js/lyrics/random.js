@@ -153,6 +153,22 @@
     };
   }
 
+  // textenter2 §2.3: a weird look separates the scale origin from the motion
+  // origin; a tame look shares it (and draws no extra randomness, so tame
+  // draws stay byte-identical to the pre-pivot pool).
+  function applyEnterOrigin(params, descriptor, random, context) {
+    if (!descriptor || !Array.isArray(descriptor.params) || !descriptor.params.some((param) => param.key === 'pivot')) return;
+    const weirdLevel = context && Number.isFinite(context.weird) ? context.weird : 0;
+    if (weirdLevel >= 0.5) {
+      const anchors = ['tl', 't', 'tr', 'l', 'c', 'r', 'bl', 'b', 'br', 'baseline'].filter((anchor) => anchor !== (params.pivotAnchor || 'c'));
+      params.scaleOriginSeparate = true;
+      params.scaleOrigin = params.pivot || 'letter';
+      params.scaleOriginAnchor = anchors[Math.floor(random() * anchors.length)];
+    } else {
+      params.scaleOriginSeparate = false;
+    }
+  }
+
   function instanceFor(group, descriptor, base, random, intensity, colors, context) {
     if (group === 'repeat') return repeatInstance(descriptor, random, context);
     const params = {};
@@ -164,6 +180,7 @@
           : 0;
       params[param.key] = sampleParam(param, random, intensity, colors, variety);
     }
+    applyEnterOrigin(params, descriptor, random, context);
     const entry = { type: descriptor.type, params, enabled: true };
     if (SINGLE_GROUPS.includes(group)) {
       entry.motion = sampleMotion(group, descriptor, base && base.motion, random, intensity);
@@ -581,6 +598,7 @@
     randomize,
     vary,
     apply,
+    applyEnterOrigin,
     countLetters,
     sampleParam,
     pickType,

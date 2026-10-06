@@ -454,6 +454,58 @@
     state.represent = 'dust';
     state.dust = dust;
   }
+  // encodeWarpParam(0, 0) in warp.js: a block warp with no extra distortion
+  const NEUTRAL_WARP_PARAM = 5050;
+
+  // The wind's force at time t, felt by a letter `order` (0 upwind .. 1
+  // downwind) along the line: |wind| is the base strength, `gust` how far it
+  // swings. Three incommensurate sines are the turbulence, a sharp periodic
+  // pulse is the gust front; both travel downwind, so a gust crosses the line.
+  function windForce(t, order, params) {
+    const base = Math.abs(num(params.wind, 0.8));
+    const gust = clamp01(num(params.gust, 0.5));
+    const speed = Math.max(0.05, num(params.speed, 0.8));
+    const tt = t * speed - order * 0.35;
+    const turbulence = 0.55 * Math.sin(TAU * 0.23 * tt) + 0.3 * Math.sin(TAU * 0.61 * tt + 1.7) + 0.15 * Math.sin(TAU * 1.37 * tt + 4.1);
+    const front = Math.pow(Math.max(0, Math.sin(TAU * 0.17 * tt)), 6);
+    return base * Math.max(0, 1 + gust * (0.6 * turbulence + 1.4 * front));
+  }
+  // the force as a 0..~1 deformation scale (soft-saturating, so a storm of 3
+  // bends hard but never folds the glyph inside out)
+  function windBend(force) {
+    return Math.tanh(force * 0.9);
+  }
+  // Anisotropic rotated scatter in x/y space: two independent draws in
+  // -1..1, scaled per axis by scatterX / scatterY, rotated by scatterAngle
+  // (degrees), then scaled by the overall scatter strength. The defaults
+  // (1, 1, 0) give the draws back untouched, so existing looks are unchanged.
+  function scatterVec(ox, oy, params, W, kx, ky) {
+    const t = ((params.scatterAngle == null ? 0 : params.scatterAngle) * Math.PI) / 180;
+    const ax = ox * (params.scatterX == null ? 1 : params.scatterX);
+    const ay = oy * (params.scatterY == null ? 1 : params.scatterY);
+    const c = Math.cos(t);
+    const s = Math.sin(t);
+    const m = params.scatter == null ? 0.4 : params.scatter;
+    return [(ax * c - ay * s) * m * W * kx, (ax * s + ay * c) * m * W * ky];
+  }
+  // the shared cloth sheet: one block-scale wave plus per-letter pliability,
+  // with the fold orientation following the wave slope and a fake shading
+  // (dark lee slopes, lit windward slopes). No x/y drift here, so enter at
+  // p=1 and exit at p=0 keep the clean landing the break tests require.
+  function clothSheet(state, ph, D, h, speed, w, i, sign, shade) {
+    const slope = Math.cos(ph);
+    const sh = shade == null ? 1 : shade;
+    state.deform.push({ type: 'waveBlock', amount: 1.4 * D, time: ph, param: NEUTRAL_WARP_PARAM });
+    state.deform.push({ type: 'flag', amount: 1.2 * D, time: h * speed * 2 - w * 4 });
+    state.deform.push({ type: 'wobbleWarp', amount: 0.15 * D, scale: 2, time: h * speed, seed: i });
+    state.rot += sign * 22 * D * slope;
+    state.tiltY = (state.tiltY || 0) + 40 * D * slope;
+    state.tiltX = (state.tiltX || 0) + 12 * D * Math.sin(ph);
+    state.opacity *= 1 - 0.28 * D * Math.max(0, -slope) * sh;
+    const lit = Math.max(0, slope);
+    state.flash = Math.max(state.flash || 0, 0.35 * D * lit * lit * lit * sh);
+    void h;
+  }
   const FAMILIES = [
     {
       name: 'dither',
@@ -525,7 +577,10 @@
       tags: ['shader', 'dissolve'],
       params: [
         { key: 'cell', kind: 'number', min: 2, max: 32, step: 1, default: 8, random: [4, 16] },
-        { key: 'scatter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4 },
+        { key: 'scatter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4, random: [0, 0.8] },
+        { key: 'scatterX', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterY', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterAngle', kind: 'number', min: -180, max: 180, step: 5, default: 0, random: [-90, 90] },
         { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.6, section: 'loop' },
         { key: 'dust', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.8 },
       ],
@@ -536,9 +591,9 @@
         const step = Math.ceil((1 - k) * 6) / 6;
         const cell = params.cell == null ? 8 : params.cell;
         state.dissolve = { scale: cell, progress: k, edge: 0.18, mode: 1 };
-        const s = (params.scatter == null ? 0.4 : params.scatter) * W * 0.06 * step;
-        state.x += (rng() * 2 - 1) * s;
-        state.y += (rng() * 2 - 1) * s;
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.06 * step, 0.06 * step);
+        state.x += sc[0];
+        state.y += sc[1];
         state.scaleX *= 1 + 0.25 * step;
         state.scaleY *= 1 + 0.25 * step;
         if (k > 0) state.flash = Math.max(state.flash || 0, 0.6 * step);
@@ -554,7 +609,9 @@
           state.dissolve = { scale: params.cell == null ? 8 : params.cell, progress: 1 - 0.45 * b, edge: 0.25, mode: 1 };
           const fr = Math.floor(h * 24);
           const i = info ? num(info.i, 0) : 0;
-          state.x += (hash1(fr * 7 + i) * 2 - 1) * (params.scatter == null ? 0.4 : params.scatter) * W * 0.03 * b;
+          const sc = scatterVec(hash1(fr * 7 + i) * 2 - 1, hash1(fr * 13 + i * 3) * 2 - 1, params, W, 0.03 * b, 0.03 * b);
+          state.x += sc[0];
+          state.y += sc[1];
           state.flash = Math.max(state.flash || 0, 0.5 * b);
           emitDust(state, 1 - 0.45 * b, { amount: params.dust == null ? 0.8 : params.dust, windX: 0, windY: 0.15, size: 4.5, turbulence: 0.2, spread: 0.9 });
         }
@@ -566,7 +623,9 @@
         const k = cascade(p, w, 0.5);
         const step = Math.ceil(k * 6) / 6;
         state.dissolve = { scale: params.cell == null ? 8 : params.cell, progress: 1 - k, edge: 0.18, mode: 1 };
-        state.x += (rng() * 2 - 1) * (params.scatter == null ? 0.4 : params.scatter) * W * 0.06 * step;
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.06 * step, 0.06 * step);
+        state.x += sc[0];
+        state.y += sc[1];
         state.y += W * 0.05 * k * k;
         state.flash = Math.max(state.flash || 0, 2 * k * (1 - k));
         emitDust(state, 1 - k, { amount: params.dust == null ? 0.8 : params.dust, windX: 0, windY: 0.15, size: 4.5, turbulence: 0.2, spread: 0.9 });
@@ -578,6 +637,10 @@
       params: [
         { key: 'soft', kind: 'number', min: 0, max: 40, step: 0.5, default: 12 },
         { key: 'rise', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0.1 },
+        { key: 'scatter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4, random: [0, 0.8] },
+        { key: 'scatterX', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterY', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterAngle', kind: 'number', min: -180, max: 180, step: 5, default: 0, random: [-90, 90] },
         { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.35, section: 'loop' },
         { key: 'dust', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.6 },
       ],
@@ -591,10 +654,13 @@
         state.opacity *= kk;
         state.y += (params.rise == null ? 0.1 : params.rise) * W * 0.6 * (1 - kk);
         state.scaleX *= 1 + 0.18 * (1 - kk);
+        // scatter: the letters drift off their line while the fog lifts
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.06 * (1 - kk), 0.06 * (1 - kk));
+        state.x += sc[0];
+        state.y += sc[1];
         const progress = Math.min(1, k * 1.2);
         state.dissolve = { scale: 3, progress, edge: 0.5, mode: 2 };
         emitDust(state, progress, { amount: params.dust == null ? 0.6 : params.dust, windX: 0.05, windY: -0.35, size: 1.6, turbulence: 1.0, spread: 0.3 });
-        void rng;
       },
       hold: (state, h, env, params, rng, info) => {
         const W = shortSideOf(info);
@@ -607,6 +673,12 @@
         state.opacity *= 1 - 0.35 * s * e;
         state.y -= (params.rise == null ? 0.1 : params.rise) * W * 0.08 * s * e;
         state.x += Math.sin(TAU * h * speed * 0.5 + num(info ? info.i : 0, 0)) * W * 0.006 * e;
+        // scatter: a per-letter jitter riding the same swell, so 0 stays calm
+        const fr = Math.floor(h * 24);
+        const i = info ? num(info.i, 0) : 0;
+        const sc = scatterVec(hash1(fr * 7 + i) * 2 - 1, hash1(fr * 13 + i * 3) * 2 - 1, params, W, 0.03 * s * e, 0.03 * s * e);
+        state.x += sc[0];
+        state.y += sc[1];
         const progress = 1 - 0.25 * s * e;
         state.dissolve = { scale: 2.5, progress, edge: 0.4, mode: 2 };
         emitDust(state, progress, { amount: params.dust == null ? 0.6 : params.dust, windX: 0.05, windY: -0.35, size: 1.6, turbulence: 1.0, spread: 0.3 });
@@ -622,9 +694,12 @@
         state.y -= (params.rise == null ? 0.1 : params.rise) * W * 0.8 * k;
         state.scaleX *= 1 + 0.25 * k;
         state.scaleY *= 1 + 0.1 * k;
+        // scatter: the letters come apart as the fog takes them
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.08 * k, 0.05 * k);
+        state.x += sc[0];
+        state.y += sc[1];
         state.dissolve = { scale: 3, progress: 1 - k, edge: 0.5, mode: 2 };
         emitDust(state, 1 - k, { amount: params.dust == null ? 0.6 : params.dust, windX: 0.05, windY: -0.35, size: 1.6, turbulence: 1.0, spread: 0.3 });
-        void rng;
       },
     },
     {
@@ -634,6 +709,10 @@
         { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.5, random: [-0.8, 0.8] },
         { key: 'grain', kind: 'number', min: 1, max: 12, step: 0.1, default: 3 },
         { key: 'lift', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+        { key: 'scatter', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4, random: [0, 0.8] },
+        { key: 'scatterX', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterY', kind: 'number', min: 0, max: 2, step: 0.01, default: 1, random: [0, 1.6] },
+        { key: 'scatterAngle', kind: 'number', min: -180, max: 180, step: 5, default: 0, random: [-90, 90] },
         { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.8, section: 'loop' },
         { key: 'dust', kind: 'number', min: 0, max: 1, step: 0.01, default: 1 },
       ],
@@ -648,6 +727,10 @@
         state.x -= sign * mag * W * 0.9 * r * r;
         state.y -= lift * W * 0.25 * Math.sin(r * Math.PI) * (0.75 + 0.5 * rng());
         state.rot -= sign * 40 * r * (0.5 + rng());
+        // scatter: loose letters torn off the line while flying in
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.15 * r * r, 0.1 * r);
+        state.x += sc[0];
+        state.y += sc[1];
         state.dissolve = { scale: params.grain == null ? 3 : params.grain, progress: k, edge: 0.2, dir: { x: sign, y: 0 }, bias: 0.7 };
         state.opacity *= clamp01(k * 2);
         emitDust(state, k, { amount: params.dust == null ? 1 : params.dust, windX: sign * mag * 1.2, windY: -lift * 0.4, size: 2.4, turbulence: 0.5, spread: 0.15 });
@@ -663,12 +746,15 @@
         state.x += sign * mag * W * 0.03 * g;
         state.rot += sign * 6 * g;
         state.y -= lift * W * 0.01 * g;
+        // scatter: the hold shivers off the line while a gust passes
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.02 * g, 0.02 * g);
+        state.x += sc[0];
+        state.y += sc[1];
         if (g > 0.6) {
           const progress = 1 - 0.18 * ((g - 0.6) / 0.4);
           state.dissolve = { scale: params.grain == null ? 3 : params.grain, progress, edge: 0.2, dir: { x: sign, y: 0 }, bias: 0.8 };
           emitDust(state, progress, { amount: params.dust == null ? 1 : params.dust, windX: sign * mag * 1.2, windY: -lift * 0.4, size: 2.4, turbulence: 0.5, spread: 0.15 });
         }
-        void rng;
       },
       exit: (state, p, params, rng, info) => {
         const W = shortSideOf(info);
@@ -681,6 +767,10 @@
         state.y -= lift * W * 0.35 * k * (0.6 + 0.8 * rng());
         state.rot += sign * 90 * k * k * (0.4 + 0.8 * rng());
         state.scaleX *= 1 + 0.2 * k;
+        // scatter: the letters come apart as the wind takes them
+        const sc = scatterVec(rng() * 2 - 1, rng() * 2 - 1, params, W, 0.15 * k * k, 0.1 * k);
+        state.x += sc[0];
+        state.y += sc[1];
         state.dissolve = { scale: params.grain == null ? 3 : params.grain, progress: 1 - k, edge: 0.22, dir: { x: sign, y: 0 }, bias: 0.75 };
         emitDust(state, 1 - k, { amount: params.dust == null ? 1 : params.dust, windX: sign * mag * 1.2, windY: -lift * 0.4, size: 2.4, turbulence: 0.5, spread: 0.15 });
       },
@@ -689,22 +779,24 @@
       name: 'windNoBreak',
       tags: ['shader', 'wind'],
       params: [
-        { key: 'wind', kind: 'number', min: -1, max: 1, step: 0.01, default: 0.5, random: [-0.8, 0.8] },
+        { key: 'wind', kind: 'number', min: -3, max: 3, step: 0.05, default: 0.8, random: [-1.5, 1.5] },
+        { key: 'gust', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
         { key: 'rise', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0.08 },
         { key: 'speed', kind: 'number', min: 0.05, max: 4, step: 0.05, default: 0.8, section: 'loop' },
       ],
       enter: (state, p, params, rng, info) => {
         const W = shortSideOf(info);
         const sign = windSign(params);
-        const mag = Math.abs(num(params.wind, 0.5));
         const o = upwindOrder(info, sign);
         const k = cascade(p, 1 - o, 0.4);
         const r = 1 - k;
-        state.x -= sign * mag * W * 0.6 * r * r;
+        const speed = params.speed == null ? 0.8 : params.speed;
+        const F = windForce(p * 2, o, params);
+        const B = windBend(F);
+        state.x -= sign * W * (0.25 + 0.35 * B) * r * r;
         // damped oscillation into place: the lean overshoots, then settles
-        const lean = mag * 0.5 * (r * r - 0.25 * Math.sin(k * TAU) * (1 - k));
-        state.skewX -= sign * lean;
-        state.rot -= sign * 8 * r;
+        state.skewX -= sign * (0.75 * B * r + 0.25 * B * Math.sin(k * TAU) * (1 - k));
+        state.deform.push({ type: 'waveBlock', amount: (0.35 + 0.9 * B) * (0.3 + 0.7 * r), time: -sign * TAU * (p * 2) * speed * 0.6, param: NEUTRAL_WARP_PARAM });
         state.y -= (params.rise == null ? 0.08 : params.rise) * W * r;
         state.opacity *= clamp01(k * 1.6);
         void rng;
@@ -712,27 +804,34 @@
       hold: (state, h, env, params, rng, info) => {
         const W = shortSideOf(info);
         const sign = windSign(params);
-        const mag = Math.abs(num(params.wind, 0.5));
         const o = upwindOrder(info, sign);
         const speed = params.speed == null ? 0.8 : params.speed;
-        const s = Math.sin(TAU * h * speed - o * TAU * 0.9) * 0.5 + 0.5;
         const e = clamp01(env);
-        state.skewX -= sign * mag * (0.12 + 0.18 * s) * e;
-        state.x += sign * mag * W * 0.02 * s * e;
-        state.y -= (params.rise == null ? 0.08 : params.rise) * W * 0.1 * s * e;
-        state.deform.push({ type: 'shearWave', amount: 0.25 * mag * (0.5 + 0.5 * s) * e, time: h * speed * 2, param: 1.2 });
+        const F = windForce(h, o, params) * e;
+        const B = windBend(F);
+        state.deform.push({ type: 'waveBlock', amount: (0.35 + 0.9 * B) * e, time: -sign * TAU * h * speed * 0.6, param: NEUTRAL_WARP_PARAM });
+        state.skewX -= sign * 0.75 * B;
+        state.deform.push({ type: 'bend', amount: sign * 0.35 * B, time: 0 });
+        state.deform.push({ type: 'shearWave', amount: 0.6 * B, time: h * speed * 3 - o * 2, param: 1.5 });
+        state.x += sign * W * 0.04 * B;
+        state.y -= (params.rise == null ? 0.08 : params.rise) * W * 0.3 * B;
+        state.rot += sign * 10 * B * Math.sin(TAU * h * speed * 1.3 - o * 3);
+        state.tiltY = (state.tiltY || 0) + sign * 18 * B * Math.sin(TAU * h * speed * 0.9 - o * 2.4);
         void rng;
       },
       exit: (state, p, params, rng, info) => {
         const W = shortSideOf(info);
         const sign = windSign(params);
-        const mag = Math.abs(num(params.wind, 0.5));
         const o = upwindOrder(info, sign);
+        const speed = params.speed == null ? 0.8 : params.speed;
         const k = cascade(p, o, 0.4);
-        state.x += sign * mag * W * 0.9 * k * k;
+        const F = windForce(p * 2, o, params) * (1 + 2 * k);
+        const B = windBend(F);
+        state.x += sign * W * (0.5 + 0.8 * B) * k * k;
         state.y -= (params.rise == null ? 0.08 : params.rise) * W * 1.2 * k;
-        state.skewX -= sign * mag * 0.6 * k;
-        state.rot += sign * 12 * k;
+        state.skewX -= sign * 0.85 * B;
+        state.rot += sign * 25 * k * k;
+        state.deform.push({ type: 'waveBlock', amount: 0.35 + 1.1 * B, time: -sign * TAU * (p * 2) * speed * 0.6, param: NEUTRAL_WARP_PARAM });
         state.opacity *= 1 - smooth(k);
         state.blur = Math.max(state.blur || 0, 6 * k);
         void rng;
@@ -742,46 +841,69 @@
       name: 'cloth',
       tags: ['shader', 'deform', 'wind'],
       params: [
-        { key: 'amount', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.12 },
+        { key: 'amount', kind: 'number', min: 0, max: 1.5, step: 0.01, default: 0.6 },
+        { key: 'wind', kind: 'number', min: -3, max: 3, step: 0.05, default: 1.0, random: [-1.5, 1.5] },
+        { key: 'gust', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
         { key: 'speed', kind: 'number', min: 0.1, max: 4, step: 0.05, default: 0.9 },
       ],
       enter: (state, p, params, rng, info) => {
         const W = shortSideOf(info);
         const w = waveOf(info);
-        const A = params.amount == null ? 0.12 : params.amount;
+        const sign = windSign(params);
+        const o = upwindOrder(info, sign);
+        const i = info ? num(info.i, 0) : 0;
+        const A = params.amount == null ? 0.6 : params.amount;
+        const speed = params.speed == null ? 0.9 : params.speed;
         const k = cascade(p, w, 0.5);
         const r = 1 - k;
         state.wipeMode = 0;
         state.wipeSoft = 0.15;
         state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, smooth(k));
-        state.deform.push({ type: 'flag', amount: A * 4 * (0.4 + r), time: p * 6 - w * 4 });
+        const D = A * (0.5 + 1.0 * r);
+        const hh = p * 3;
+        const ph = TAU * (hh * speed * 0.8) - sign * (w * 2 - 1) * Math.PI * 1.5;
+        // shading peaks mid-wipe and clears at both ends, so the landed letter is clean
+        clothSheet(state, ph, D, hh, speed, w, i, sign, k * r * 4);
         state.y += A * W * 0.3 * Math.sin(p * TAU * 1.5 - w * TAU) * r;
         state.opacity *= clamp01(k * 3);
         void rng;
+        void o;
       },
       hold: (state, h, env, params, rng, info) => {
         const W = shortSideOf(info);
         const w = waveOf(info);
+        const sign = windSign(params);
+        const o = upwindOrder(info, sign);
         const i = info ? num(info.i, 0) : 0;
-        const A = params.amount == null ? 0.12 : params.amount;
+        const A = params.amount == null ? 0.6 : params.amount;
         const speed = params.speed == null ? 0.9 : params.speed;
-        const ph = TAU * h * speed - w * TAU * 1.2;
         const e = clamp01(env);
-        state.y += A * W * 0.25 * Math.sin(ph) * e;
-        state.rot += A * 40 * Math.cos(ph) * e;
-        state.deform.push({ type: 'flag', amount: A * 4 * e, time: h * speed * 2 - w * 4 });
-        state.deform.push({ type: 'wobbleWarp', amount: A * 0.3 * e, scale: 2, time: h * speed, seed: i });
+        const F = windForce(h, o, params) * e;
+        const B = windBend(F);
+        const D = A * (0.4 + 0.8 * B);
+        const ph = TAU * (h * speed * 0.8) - sign * (w * 2 - 1) * Math.PI * 1.5;
+        clothSheet(state, ph, D, h, speed, w, i, sign);
+        state.x += sign * W * 0.03 * B;
         void rng;
       },
       exit: (state, p, params, rng, info) => {
         const W = shortSideOf(info);
         const w = waveOf(info);
-        const A = params.amount == null ? 0.12 : params.amount;
+        const sign = windSign(params);
+        const o = upwindOrder(info, sign);
+        const i = info ? num(info.i, 0) : 0;
+        const A = params.amount == null ? 0.6 : params.amount;
+        const speed = params.speed == null ? 0.9 : params.speed;
         const k = cascade(p, w, 0.5);
-        state.deform.push({ type: 'flag', amount: A * 4 * (1 + 2 * k), time: p * 8 - w * 4 });
+        const F = windForce(p * 3, o, params) * (1 + 2.5 * k);
+        const D = A * (0.4 + 0.8 * windBend(F)) * (1 + 1.5 * k);
+        const hh = p * 3;
+        const ph = TAU * (hh * speed * 0.8) - sign * (w * 2 - 1) * Math.PI * 1.5;
+        // no shading on the resting letter; it joins the blowaway
+        clothSheet(state, ph, D, hh, speed, w, i, sign, smooth(k));
         state.y -= W * 0.5 * k * k;
-        state.x += W * 0.15 * k * k;
-        state.rot += 30 * k * k * (rng() - 0.3);
+        state.x += sign * W * 0.25 * k * k;
+        state.rot += sign * 40 * k * k * (rng() - 0.3);
         state.opacity *= 1 - smooth(k);
       },
     },

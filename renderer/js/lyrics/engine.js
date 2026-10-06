@@ -951,13 +951,15 @@ SA.lyricsEngine = (() => {
       const shifted = result.letters.map((letterState, i) => {
         const v = plan[i];
         const source = letterState || {};
+        // textenter2 §3.2 #7 converge: cloneSpread 1 → spread out, 0 → main look
+        const spread = source.cloneSpread == null ? 1 : Math.max(0, Math.min(1, Number(source.cloneSpread)));
         return {
           ...source,
-          x: (source.x || 0) + v.dx * short,
-          y: (source.y || 0) + v.dy * short,
-          rot: (source.rot || 0) + v.rotate,
-          skew: (source.skew || 0) - Math.tan((v.skew * Math.PI) / 180),
-          opacity: (source.opacity == null ? 1 : source.opacity) * v.opacity,
+          x: (source.x || 0) + v.dx * short * spread,
+          y: (source.y || 0) + v.dy * short * spread,
+          rot: (source.rot || 0) + v.rotate * spread,
+          skew: (source.skew || 0) - Math.tan((v.skew * spread * Math.PI) / 180),
+          opacity: (source.opacity == null ? 1 : source.opacity) * (1 - (1 - v.opacity) * spread),
         };
       });
       const baseColors = cloneColors(colorSet.arrays, clone, style, project);

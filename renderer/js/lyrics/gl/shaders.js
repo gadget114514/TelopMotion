@@ -193,6 +193,18 @@ SA.glShaders = (() => {
         p.y *= 1.0 + s;
       } else if (code < 16.5) {               // skew
         p.x += p.y * amount * sin(time * TAU);
+      } else if (code < 17.5) {               // twist3D (textenter2 #15, letter pivot)
+        // amount = twist angle (deg), param = axisCode (0: X axis, 1: Y axis).
+        // f is the -1..1 position along the axis, ai the local rotation.
+        float axisX = param < 0.5 ? 1.0 : 0.0;
+        float f = axisX > 0.5 ? p.x / halfW : p.y / halfH;
+        float ai = radians(amount * f * 0.5);
+        float cz = cos(ai);
+        float sz = sin(ai);
+        float z;
+        if (axisX > 0.5) { z = p.y * sz; p.y *= cz; }
+        else { z = p.x * sz; p.x *= cz; }
+        p *= u_perspective / (u_perspective + z);
       } else {                                // swirl (radial twist wave)
         float angle = radians(amount) * sin(time * TAU - r * PI * max(param, 0.1));
         float c = cos(angle);
@@ -1019,6 +1031,9 @@ SA.glShaders = (() => {
     vec4 letterState = texelFetch(u_state, ivec2(int(id + 0.5), 4), 0);
     float mixAmount = clamp(letterState.z, 0.0, 1.0);
     if (mixAmount > 0.001) color = mix(color, u_colorB, mixAmount);
+    // the motion-reactive tint (objeffects colorShift, state row 26)
+    vec4 motionTint = texelFetch(u_state, ivec2(int(id + 0.5), 26), 0);
+    if (motionTint.a > 0.001) color.rgb = mix(color.rgb, motionTint.rgb, clamp(motionTint.a, 0.0, 1.0));
     fragColor = vec4(color.rgb * color.a * mask, color.a * mask);
   }`;
 

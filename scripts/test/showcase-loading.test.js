@@ -53,6 +53,20 @@ test('every Help showcase loader delegates to the shared loader', () => {
   assert.deepEqual(directReads, [], `direct asset reads bypass the dialog: ${directReads}`);
 });
 
+test('the motion showcase parts load through the shared loader', () => {
+  const app = appSource();
+  assert.match(app, /async function motionShowcaseProject\(part\)/);
+  assert.match(app, /async function motionShowcaseAllProject\(\)/);
+  assert.match(app, /openShowcaseAsset\(`data\/motion-showcase-\$\{String\(at\)\.padStart\(2, '0'\)\}\.json`\)/);
+  assert.match(app, /`data\/motion-showcase-\$\{id\}\.json`/);
+  assert.match(app, /await openShowcaseAsset\(file\)/);
+  for (let at = 1; at <= 16; at += 1) {
+    const part = String(at).padStart(2, '0');
+    const file = path.join(ROOT, 'renderer', 'data', `motion-showcase-${part}.json`);
+    assert.ok(fs.existsSync(file), `${file} is generated`);
+  }
+});
+
 test('the opening label exists in all five languages', () => {
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};

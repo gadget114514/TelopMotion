@@ -113,7 +113,16 @@ SA.canvas2dFallback = (() => {
         }
         if (!result.active) continue;
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
-        for (let i = 0; i < scene.letters.length; i += 1) {
+        const order = scene.letters.map((letter, i) => i);
+        const reverse = result.letters && result.letters._reverseDraw === true;
+        if (order.some((i) => (result.letters[i] && result.letters[i].drawOrder) || reverse)) {
+          order.sort((a, b) => {
+            const oa = (result.letters[a] && result.letters[a].drawOrder) || 0;
+            const ob = (result.letters[b] && result.letters[b].drawOrder) || 0;
+            return (oa - ob) || (reverse ? b - a : a - b);
+          });
+        }
+        for (const i of order) {
           const letter = scene.letters[i];
           const letterState = result.letters[i] || { x: letter.local.cx, y: letter.local.cy, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1 };
           const mesh = SA.lyricsScene.meshOf(letter);

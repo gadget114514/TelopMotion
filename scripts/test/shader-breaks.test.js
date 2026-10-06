@@ -109,6 +109,32 @@ test('the three break families emit dust mid-phase and only mid-phase', () => {
   }
 });
 
+test('fogBreak and windBreak scatter: 0 stays tight, 1 comes apart', () => {
+  for (const type of ['fogBreak', 'windBreak']) {
+    const plain = run('exit', type, 0.5, 3, { scatter: 0 });
+    const scattered = run('exit', type, 0.5, 3, { scatter: 1 });
+    const distance = Math.hypot(scattered.x - plain.x, scattered.y - plain.y);
+    assert.ok(distance > 0.5, `${type} scatter has no effect (${distance})`);
+    // even fully scattered, the phase edges stay clean
+    const entered = run('enter', type, 1, 3, { scatter: 1 });
+    assert.ok(Math.abs(entered.x) < 1e-9 && Math.abs(entered.y) < 1e-9, `${type} scattered enter x/y ${entered.x},${entered.y}`);
+    assert.equal(entered.opacity, 1, `${type} scattered enter opacity`);
+    const exited = run('exit', type, 0, 3, { scatter: 1 });
+    assert.ok(Math.abs(exited.x) < 1e-9 && Math.abs(exited.y) < 1e-9, `${type} scattered exit x/y ${exited.x},${exited.y}`);
+    assert.equal(exited.opacity, 1, `${type} scattered exit opacity`);
+  }
+});
+
+test('scatter spreads per axis and rotates with scatterAngle', () => {
+  // mosaic enter has no deterministic drift, so the scatter reads directly
+  const flat = run('enter', 'mosaicBreak', 0.5, 3, { scatter: 1, scatterX: 1, scatterY: 0, scatterAngle: 0 });
+  assert.equal(flat.y, 0, 'scatterY 0 must silence the y axis');
+  assert.notEqual(flat.x, 0, 'scatterX 1 must spread on x');
+  const turned = run('enter', 'mosaicBreak', 0.5, 3, { scatter: 1, scatterX: 1, scatterY: 0, scatterAngle: 90 });
+  assert.ok(Math.abs(turned.x) < 1e-9, `angle 90 must move the spread off x (${turned.x})`);
+  assert.equal(turned.y, flat.x, 'angle 90 must carry the x spread onto y');
+});
+
 test('packStateRows carries dust without touching the em-info slot', () => {
   global.SA = global.SA || {};
   global.window = global.window || { SA: global.SA };

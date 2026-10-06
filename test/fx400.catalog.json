@@ -6494,13 +6494,18 @@
       "apply": "style",
       "changes": [
         {
-          "key": "bpm",
-          "from": 120,
-          "to": 190
+          "key": "axis",
+          "from": "both",
+          "to": "x"
+        },
+        {
+          "key": "amount",
+          "from": 0.06,
+          "to": 0.15
         }
       ],
       "verified": "motion",
-      "score": 0.175,
+      "score": 0.287,
       "notes": [],
       "style": {
         "hold": [
@@ -6508,8 +6513,9 @@
             "type": "pulse",
             "enabled": true,
             "params": {
-              "amount": 0.06,
-              "bpm": 190
+              "amount": 0.15,
+              "bpm": 120,
+              "axis": "x"
             },
             "motion": {}
           }
@@ -6876,6 +6882,11 @@
       "apply": "style",
       "changes": [
         {
+          "key": "axis",
+          "from": "both",
+          "to": "x"
+        },
+        {
           "key": "amount",
           "from": 0.06,
           "to": 0.08
@@ -6891,7 +6902,8 @@
             "enabled": true,
             "params": {
               "amount": 0.08,
-              "bpm": "72"
+              "bpm": "72",
+              "axis": "x"
             },
             "motion": {}
           }

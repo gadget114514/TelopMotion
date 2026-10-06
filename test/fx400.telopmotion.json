@@ -3,8 +3,8 @@
   "version": 5,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-05T22:55:46.272Z",
-    "updatedAt": "2026-10-05T22:55:46.272Z",
+    "createdAt": "2026-10-06T03:10:23.221Z",
+    "updatedAt": "2026-10-06T03:10:23.221Z",
     "lang": "ja"
   },
   "song": {
@@ -6432,8 +6432,9 @@
           "type": "pulse",
           "enabled": true,
           "params": {
-            "amount": 0.06,
-            "bpm": 190
+            "amount": 0.15,
+            "bpm": 120,
+            "axis": "x"
           },
           "motion": {}
         }
@@ -6607,7 +6608,8 @@
           "enabled": true,
           "params": {
             "amount": 0.08,
-            "bpm": "72"
+            "bpm": "72",
+            "axis": "x"
           },
           "motion": {}
         }

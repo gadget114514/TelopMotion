@@ -46,6 +46,7 @@
     stretch: 15,
     skew: 16,
     swirl: 17,
+    twist3D: 18,
   };
   const BLOCK_CODES = {
     arc: 20,

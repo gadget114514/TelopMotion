@@ -1459,6 +1459,36 @@ SA.inspector = (() => {
     return value && value.type ? value : SA.fx.defaultsFor(group);
   }
 
+  // textenter2 §3.3/§4.5: choosing an enter type with a companion writes the
+  // sidecar groups that are still unset. Only cue/beat/project scope; the
+  // scoped (substring) companions are added by hand in the scoped section.
+  function applyCompanion(group, type) {
+    if (!SA.fx.companionOf) return;
+    const companion = SA.fx.companionOf(group, type);
+    if (!companion) return;
+    const sel = selectionInfo();
+    if (sel.kind === 'letter' || sel.kind === 'word' || sel.kind === 'line') return;
+    const style = scopeContainer();
+    for (const [cGroup, value] of Object.entries(companion)) {
+      const current = style[cGroup];
+      if (Array.isArray(current)) {
+        const entries = Array.isArray(value) ? value : [value];
+        let changed = false;
+        const next = [...current];
+        for (const item of entries) {
+          if (!item || !item.type) continue;
+          if (next.some((entry) => entry && entry.type === item.type)) continue;
+          next.push(JSON.parse(JSON.stringify(item)));
+          changed = true;
+        }
+        if (changed) writeProp(cGroup, next);
+      } else {
+        if (current && current.type && current.type !== 'none') continue;
+        writeProp(cGroup, JSON.parse(JSON.stringify(value)));
+      }
+    }
+  }
+
   function renderGroup(container, group) {
     const style = resolvedStyle();
     const explicit = style[group] && style[group].type ? style[group] : null;
@@ -1471,6 +1501,7 @@ SA.inspector = (() => {
       const current = explicit || {};
       const merged = next === '__inherit' ? null : { ...current, type: next, params: { ...(current.params || {}) }, motion: { ...(current.motion || {}) } };
       writeProp(group, merged, { coalesceKey: `${group}:type` });
+      if (next !== '__inherit') applyCompanion(group, next);
     }, entries);
     const typeRow = row(body, group, t('studio.inspector.type'), typeControl);
     if (explicit) {

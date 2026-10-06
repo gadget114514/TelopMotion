@@ -1,0 +1,2213 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion モーション見本 16/16",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "mo16_01",
+        "start": 0,
+        "end": 3,
+        "text": "399. melt · melt\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 399,
+          "presetId": "melt",
+          "group": "exit",
+          "phase": "exit",
+          "type": "melt"
+        }
+      },
+      {
+        "id": "mo16_02",
+        "start": 3,
+        "end": 6,
+        "text": "400. scanOut · scanline\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 400,
+          "presetId": "scanOut",
+          "group": "exit",
+          "phase": "exit",
+          "type": "scanline"
+        }
+      },
+      {
+        "id": "mo16_03",
+        "start": 6,
+        "end": 9,
+        "text": "401. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 401,
+          "presetId": "shrinkOut",
+          "group": "exit",
+          "phase": "exit",
+          "type": "shrinkToCenter"
+        }
+      },
+      {
+        "id": "mo16_04",
+        "start": 9,
+        "end": 12,
+        "text": "402. stealthOut · stealth\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 402,
+          "presetId": "stealthOut",
+          "group": "exit",
+          "phase": "exit",
+          "type": "stealth"
+        }
+      },
+      {
+        "id": "mo16_05",
+        "start": 12,
+        "end": 15,
+        "text": "403. wipe · wipe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 403,
+          "presetId": "wipe",
+          "group": "exit",
+          "phase": "exit",
+          "type": "wipe"
+        }
+      },
+      {
+        "id": "mo16_06",
+        "start": 15,
+        "end": 18,
+        "text": "404. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 404,
+          "presetId": "zoomOut",
+          "group": "exit",
+          "phase": "exit",
+          "type": "zoomOut"
+        }
+      },
+      {
+        "id": "mo16_07",
+        "start": 18,
+        "end": 21,
+        "text": "405. ズームアウト (Zoom Out) · zoomOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 405,
+          "presetId": "te_12",
+          "group": "exit",
+          "phase": "exit",
+          "type": "zoomOut"
+        }
+      },
+      {
+        "id": "mo16_08",
+        "start": 21,
+        "end": 24,
+        "text": "406. スライドアウト (Slide Out) · slide\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 406,
+          "presetId": "te_14",
+          "group": "exit",
+          "phase": "exit",
+          "type": "slide"
+        }
+      },
+      {
+        "id": "mo16_09",
+        "start": 24,
+        "end": 27,
+        "text": "407. ワイプアウト (Wipe Out) · wipe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 407,
+          "presetId": "te_16",
+          "group": "exit",
+          "phase": "exit",
+          "type": "wipe"
+        }
+      },
+      {
+        "id": "mo16_10",
+        "start": 27,
+        "end": 30,
+        "text": "408. フェードアウト (Fade Out) · fade\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 408,
+          "presetId": "te_2",
+          "group": "exit",
+          "phase": "exit",
+          "type": "fade"
+        }
+      },
+      {
+        "id": "mo16_11",
+        "start": 30,
+        "end": 33,
+        "text": "409. アイリスアウト (Iris Out) · wipe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 409,
+          "presetId": "te_21",
+          "group": "exit",
+          "phase": "exit",
+          "type": "wipe"
+        }
+      },
+      {
+        "id": "mo16_12",
+        "start": 33,
+        "end": 36,
+        "text": "410. ブラーアウト (Blur Out) · blurOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 410,
+          "presetId": "te_23",
+          "group": "exit",
+          "phase": "exit",
+          "type": "blurOut"
+        }
+      },
+      {
+        "id": "mo16_13",
+        "start": 36,
+        "end": 39,
+        "text": "411. ドロップアウト (Drop Out) · gravityFall\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 411,
+          "presetId": "te_27",
+          "group": "exit",
+          "phase": "exit",
+          "type": "gravityFall"
+        }
+      },
+      {
+        "id": "mo16_14",
+        "start": 39,
+        "end": 42,
+        "text": "412. パンチアウト (Punch Out) · shrinkToCenter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 412,
+          "presetId": "te_281",
+          "group": "exit",
+          "phase": "exit",
+          "type": "shrinkToCenter"
+        }
+      },
+      {
+        "id": "mo16_15",
+        "start": 42,
+        "end": 45,
+        "text": "413. フリップアウト (Flip Out) · creepOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 413,
+          "presetId": "te_32",
+          "group": "exit",
+          "phase": "exit",
+          "type": "creepOut"
+        }
+      },
+      {
+        "id": "mo16_16",
+        "start": 45,
+        "end": 48,
+        "text": "414. スピンアウト (Spin Out) · creepOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 414,
+          "presetId": "te_34",
+          "group": "exit",
+          "phase": "exit",
+          "type": "creepOut"
+        }
+      },
+      {
+        "id": "mo16_17",
+        "start": 48,
+        "end": 51,
+        "text": "415. ロールアウト (Roll Out) · creepOut\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 415,
+          "presetId": "te_36",
+          "group": "exit",
+          "phase": "exit",
+          "type": "creepOut"
+        }
+      },
+      {
+        "id": "mo16_18",
+        "start": 51,
+        "end": 54,
+        "text": "416. カーテンクローズ (Curtain Close) · wipe\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 416,
+          "presetId": "te_41",
+          "group": "exit",
+          "phase": "exit",
+          "type": "wipe"
+        }
+      },
+      {
+        "id": "mo16_19",
+        "start": 54,
+        "end": 57,
+        "text": "417. モザイクアウト (Mosaic Out) · dissolve\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 417,
+          "presetId": "te_45",
+          "group": "exit",
+          "phase": "exit",
+          "type": "dissolve"
+        }
+      },
+      {
+        "id": "mo16_20",
+        "start": 57,
+        "end": 60,
+        "text": "418. ポップアウト (Pop Out) · shrinkToCenter\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 418,
+          "presetId": "te_5",
+          "group": "exit",
+          "phase": "exit",
+          "type": "shrinkToCenter"
+        }
+      },
+      {
+        "id": "mo16_21",
+        "start": 60,
+        "end": 63,
+        "text": "419. バウンスアウト (Bounce Out) · gravityFall\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 419,
+          "presetId": "te_7",
+          "group": "exit",
+          "phase": "exit",
+          "type": "gravityFall"
+        }
+      },
+      {
+        "id": "mo16_22",
+        "start": 63,
+        "end": 66,
+        "text": "420. シャッター (Shatter) · explode\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 420,
+          "presetId": "te_171",
+          "group": "exit",
+          "phase": "exit",
+          "type": "explode"
+        }
+      },
+      {
+        "id": "mo16_23",
+        "start": 66,
+        "end": 69,
+        "text": "421. シャッタリング (Shattering Debris) · fade\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 421,
+          "presetId": "te_172",
+          "group": "exit",
+          "phase": "exit",
+          "type": "fade"
+        }
+      },
+      {
+        "id": "mo16_24",
+        "start": 69,
+        "end": 72,
+        "text": "422. 爆発 (Explosion) · explode\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 422,
+          "presetId": "te_173",
+          "group": "exit",
+          "phase": "exit",
+          "type": "explode"
+        }
+      },
+      {
+        "id": "mo16_25",
+        "start": 72,
+        "end": 75,
+        "text": "423. ひび割れ (Fracturing / Cracks) · explode\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 423,
+          "presetId": "te_174",
+          "group": "exit",
+          "phase": "exit",
+          "type": "explode"
+        }
+      },
+      {
+        "id": "mo16_26",
+        "start": 75,
+        "end": 78,
+        "text": "424. 崩れ落ち (Collapse / Tumble) · gravityFall\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 424,
+          "presetId": "te_175",
+          "group": "exit",
+          "phase": "exit",
+          "type": "gravityFall"
+        }
+      }
+    ],
+    "sourceName": "motion-showcase-16.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSans-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": []
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "mo16_01": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_01",
+          "phase": "exit",
+          "type": "melt",
+          "from": "end",
+          "delay": -0.8,
+          "duration": 0.8,
+          "ease": "linear",
+          "params": {
+            "drip": 0.7
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_02": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_02",
+          "phase": "exit",
+          "type": "scanline",
+          "from": "end",
+          "delay": -0.7,
+          "duration": 0.7,
+          "ease": "linear",
+          "params": {
+            "lines": 8,
+            "bandWidth": 0.3,
+            "depth": 0.85,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_03": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_03",
+          "phase": "exit",
+          "type": "shrinkToCenter",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_04": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_04",
+          "phase": "exit",
+          "type": "stealth",
+          "from": "end",
+          "delay": -0.7,
+          "duration": 0.7,
+          "ease": "easeInCubic",
+          "params": {
+            "split": 6,
+            "glow": 0.8,
+            "speed": 1
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_05": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_05",
+          "phase": "exit",
+          "type": "wipe",
+          "from": "end",
+          "delay": -0.6,
+          "duration": 0.6,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "left"
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_06": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_06",
+          "phase": "exit",
+          "type": "zoomOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "to": 0.3
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_07": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_07",
+          "phase": "exit",
+          "type": "zoomOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "to": 0.3
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_08": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_08",
+          "phase": "exit",
+          "type": "slide",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "down",
+            "distance": 0.3
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_09": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_09",
+          "phase": "exit",
+          "type": "wipe",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "left"
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_10": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_10",
+          "phase": "exit",
+          "type": "fade",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "softness": 0,
+            "glow": 0
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_11": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_11",
+          "phase": "exit",
+          "type": "wipe",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "left"
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_12": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_12",
+          "phase": "exit",
+          "type": "blurOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "radius": 14
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_13": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_13",
+          "phase": "exit",
+          "type": "gravityFall",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "gravity": 2.4,
+            "spin": 160
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_14": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_14",
+          "phase": "exit",
+          "type": "shrinkToCenter",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_15": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_15",
+          "phase": "exit",
+          "type": "creepOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "shift": 0.15
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_16": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_16",
+          "phase": "exit",
+          "type": "creepOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "shift": 0.15
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_17": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_17",
+          "phase": "exit",
+          "type": "creepOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "shift": 0.15
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_18": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_18",
+          "phase": "exit",
+          "type": "wipe",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "left"
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_19": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_19",
+          "phase": "exit",
+          "type": "dissolve",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "scale": 10,
+            "edge": 0.16
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_20": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_20",
+          "phase": "exit",
+          "type": "shrinkToCenter",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_21": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_21",
+          "phase": "exit",
+          "type": "gravityFall",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "gravity": 2.4,
+            "spin": 160
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_22": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_22",
+          "phase": "exit",
+          "type": "explode",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "spread": 0.6,
+            "spin": 220
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_23": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_23",
+          "phase": "exit",
+          "type": "fade",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "softness": 0,
+            "glow": 0
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_24": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_24",
+          "phase": "exit",
+          "type": "explode",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "spread": 0.6,
+            "spin": 220
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_25": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_25",
+          "phase": "exit",
+          "type": "explode",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "spread": 0.6,
+            "spin": 220
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo16_26": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo16_26",
+          "phase": "exit",
+          "type": "gravityFall",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {
+            "gravity": 2.4,
+            "spin": 160
+          },
+          "enabled": true
+        }
+      ]
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "mo16_01": [
+      {
+        "id": "mo16_01:single0",
+        "cueId": "mo16_01",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 3,
+        "text": "399. melt · melt\nあいうえお Aiueo 0123",
+        "lines": [
+          "399. melt · melt",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_02": [
+      {
+        "id": "mo16_02:single0",
+        "cueId": "mo16_02",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "400. scanOut · scanline\nあいうえお Aiueo 0123",
+        "lines": [
+          "400. scanOut · scanline",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_03": [
+      {
+        "id": "mo16_03:single0",
+        "cueId": "mo16_03",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 9,
+        "text": "401. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "lines": [
+          "401. shrinkOut · shrinkToCenter",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_04": [
+      {
+        "id": "mo16_04:single0",
+        "cueId": "mo16_04",
+        "kind": "single",
+        "index": 0,
+        "start": 9,
+        "end": 12,
+        "text": "402. stealthOut · stealth\nあいうえお Aiueo 0123",
+        "lines": [
+          "402. stealthOut · stealth",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_05": [
+      {
+        "id": "mo16_05:single0",
+        "cueId": "mo16_05",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 15,
+        "text": "403. wipe · wipe\nあいうえお Aiueo 0123",
+        "lines": [
+          "403. wipe · wipe",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_06": [
+      {
+        "id": "mo16_06:single0",
+        "cueId": "mo16_06",
+        "kind": "single",
+        "index": 0,
+        "start": 15,
+        "end": 18,
+        "text": "404. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "lines": [
+          "404. zoomOut · zoomOut",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_07": [
+      {
+        "id": "mo16_07:single0",
+        "cueId": "mo16_07",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "405. ズームアウト (Zoom Out) ·\nzoomOutあいうえお Aiueo 0123",
+        "lines": [
+          "405. ズームアウト (Zoom Out) ·",
+          "zoomOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_08": [
+      {
+        "id": "mo16_08:single0",
+        "cueId": "mo16_08",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "406. スライドアウト (Slide Out) ·\nslideあいうえお Aiueo 0123",
+        "lines": [
+          "406. スライドアウト (Slide Out) ·",
+          "slideあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_09": [
+      {
+        "id": "mo16_09:single0",
+        "cueId": "mo16_09",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 27,
+        "text": "407. ワイプアウト (Wipe Out) ·\nwipeあいうえお Aiueo 0123",
+        "lines": [
+          "407. ワイプアウト (Wipe Out) ·",
+          "wipeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_10": [
+      {
+        "id": "mo16_10:single0",
+        "cueId": "mo16_10",
+        "kind": "single",
+        "index": 0,
+        "start": 27,
+        "end": 30,
+        "text": "408. フェードアウト (Fade Out) ·\nfadeあいうえお Aiueo 0123",
+        "lines": [
+          "408. フェードアウト (Fade Out) ·",
+          "fadeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_11": [
+      {
+        "id": "mo16_11:single0",
+        "cueId": "mo16_11",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 33,
+        "text": "409. アイリスアウト (Iris Out) ·\nwipeあいうえお Aiueo 0123",
+        "lines": [
+          "409. アイリスアウト (Iris Out) ·",
+          "wipeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_12": [
+      {
+        "id": "mo16_12:single0",
+        "cueId": "mo16_12",
+        "kind": "single",
+        "index": 0,
+        "start": 33,
+        "end": 36,
+        "text": "410. ブラーアウト (Blur Out) ·\nblurOutあいうえお Aiueo 0123",
+        "lines": [
+          "410. ブラーアウト (Blur Out) ·",
+          "blurOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_13": [
+      {
+        "id": "mo16_13:single0",
+        "cueId": "mo16_13",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 39,
+        "text": "411. ドロップアウト (Drop Out) ·\ngravityFallあいうえお Aiueo 0123",
+        "lines": [
+          "411. ドロップアウト (Drop Out) ·",
+          "gravityFallあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_14": [
+      {
+        "id": "mo16_14:single0",
+        "cueId": "mo16_14",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "412. パンチアウト (Punch Out) ·\nshrinkToCenterあいうえお Aiueo 0123",
+        "lines": [
+          "412. パンチアウト (Punch Out) ·",
+          "shrinkToCenterあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "mo16_15": [
+      {
+        "id": "mo16_15:single0",
+        "cueId": "mo16_15",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 45,
+        "text": "413. フリップアウト (Flip Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "lines": [
+          "413. フリップアウト (Flip Out) ·",
+          "creepOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_16": [
+      {
+        "id": "mo16_16:single0",
+        "cueId": "mo16_16",
+        "kind": "single",
+        "index": 0,
+        "start": 45,
+        "end": 48,
+        "text": "414. スピンアウト (Spin Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "lines": [
+          "414. スピンアウト (Spin Out) ·",
+          "creepOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_17": [
+      {
+        "id": "mo16_17:single0",
+        "cueId": "mo16_17",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 51,
+        "text": "415. ロールアウト (Roll Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "lines": [
+          "415. ロールアウト (Roll Out) ·",
+          "creepOutあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_18": [
+      {
+        "id": "mo16_18:single0",
+        "cueId": "mo16_18",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "416. カーテンクローズ (Curtain\nClose) · wipeあいうえお Aiueo 0123",
+        "lines": [
+          "416. カーテンクローズ (Curtain",
+          "Close) · wipeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "mo16_19": [
+      {
+        "id": "mo16_19:single0",
+        "cueId": "mo16_19",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "417. モザイクアウト (Mosaic Out) ·\ndissolveあいうえお Aiueo 0123",
+        "lines": [
+          "417. モザイクアウト (Mosaic Out) ·",
+          "dissolveあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_20": [
+      {
+        "id": "mo16_20:single0",
+        "cueId": "mo16_20",
+        "kind": "single",
+        "index": 0,
+        "start": 57,
+        "end": 60,
+        "text": "418. ポップアウト (Pop Out) ·\nshrinkToCenterあいうえお Aiueo 0123",
+        "lines": [
+          "418. ポップアウト (Pop Out) ·",
+          "shrinkToCenterあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "mo16_21": [
+      {
+        "id": "mo16_21:single0",
+        "cueId": "mo16_21",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 63,
+        "text": "419. バウンスアウト (Bounce Out) ·\ngravityFallあいうえお Aiueo 0123",
+        "lines": [
+          "419. バウンスアウト (Bounce Out) ·",
+          "gravityFallあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_22": [
+      {
+        "id": "mo16_22:single0",
+        "cueId": "mo16_22",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "420. シャッター (Shatter) ·\nexplodeあいうえお Aiueo 0123",
+        "lines": [
+          "420. シャッター (Shatter) ·",
+          "explodeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_23": [
+      {
+        "id": "mo16_23:single0",
+        "cueId": "mo16_23",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 69,
+        "text": "421. シャッタリング (Shattering\nDebris) · fadeあいうえお Aiueo 0123",
+        "lines": [
+          "421. シャッタリング (Shattering",
+          "Debris) · fadeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ],
+    "mo16_24": [
+      {
+        "id": "mo16_24:single0",
+        "cueId": "mo16_24",
+        "kind": "single",
+        "index": 0,
+        "start": 69,
+        "end": 72,
+        "text": "422. 爆発 (Explosion) · explode\nあいうえお Aiueo 0123",
+        "lines": [
+          "422. 爆発 (Explosion) · explode",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "mo16_25": [
+      {
+        "id": "mo16_25:single0",
+        "cueId": "mo16_25",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 75,
+        "text": "423. ひび割れ (Fracturing / Cracks\n) · explodeあいうえお Aiueo 0123",
+        "lines": [
+          "423. ひび割れ (Fracturing / Cracks",
+          ") · explodeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.98,
+        "pinned": false
+      }
+    ],
+    "mo16_26": [
+      {
+        "id": "mo16_26:single0",
+        "cueId": "mo16_26",
+        "kind": "single",
+        "index": 0,
+        "start": 75,
+        "end": 78,
+        "text": "424. 崩れ落ち (Collapse / Tumble) ·\ngravityFallあいうえお Aiueo 0123",
+        "lines": [
+          "424. 崩れ落ち (Collapse / Tumble) ·",
+          "gravityFallあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.94,
+        "pinned": false
+      }
+    ]
+  },
+  "beatStyles": {},
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "Motion 16/16"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

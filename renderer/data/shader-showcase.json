@@ -411,6 +411,9 @@
         "params": {
           "cell": 8,
           "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.6,
           "dust": 0.8
         },
@@ -428,6 +431,10 @@
           "wind": 0.5,
           "grain": 3,
           "lift": 0.3,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.8,
           "dust": 1
         },
@@ -443,7 +450,8 @@
           "type": "windNoBreak",
           "enabled": true,
           "params": {
-            "wind": 0.5,
+            "wind": 0.8,
+            "gust": 0.5,
             "rise": 0.08,
             "speed": 0.8
           }
@@ -474,6 +482,9 @@
         "params": {
           "cell": 8,
           "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.6,
           "dust": 0.8
         },
@@ -490,6 +501,9 @@
         "params": {
           "cell": 8,
           "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.6,
           "dust": 0.8
         },
@@ -507,6 +521,9 @@
           "params": {
             "cell": 8,
             "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.6,
             "dust": 0.8
           }
@@ -537,6 +554,9 @@
         "params": {
           "cell": 8,
           "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.6,
           "dust": 0.8
         },
@@ -606,6 +626,9 @@
           "params": {
             "cell": 8,
             "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.6,
             "dust": 0.8
           }
@@ -647,6 +670,9 @@
         "params": {
           "cell": 8,
           "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.6,
           "dust": 0.8
         },
@@ -682,6 +708,10 @@
         "params": {
           "soft": 12,
           "rise": 0.1,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.35,
           "dust": 0.6
         },
@@ -698,6 +728,10 @@
         "params": {
           "soft": 12,
           "rise": 0.1,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.35,
           "dust": 0.6
         },
@@ -715,6 +749,10 @@
           "params": {
             "soft": 12,
             "rise": 0.1,
+            "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.35,
             "dust": 0.6
           }
@@ -745,6 +783,10 @@
         "params": {
           "soft": 12,
           "rise": 0.1,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.35,
           "dust": 0.6
         },
@@ -814,6 +856,10 @@
           "params": {
             "soft": 12,
             "rise": 0.1,
+            "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.35,
             "dust": 0.6
           }
@@ -855,6 +901,10 @@
         "params": {
           "soft": 12,
           "rise": 0.1,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.35,
           "dust": 0.6
         },
@@ -891,6 +941,10 @@
           "wind": 0.5,
           "grain": 3,
           "lift": 0.3,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.8,
           "dust": 1
         },
@@ -908,6 +962,10 @@
           "wind": 0.5,
           "grain": 3,
           "lift": 0.3,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.8,
           "dust": 1
         },
@@ -926,6 +984,10 @@
             "wind": 0.5,
             "grain": 3,
             "lift": 0.3,
+            "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.8,
             "dust": 1
           }
@@ -957,6 +1019,10 @@
           "wind": 0.5,
           "grain": 3,
           "lift": 0.3,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.8,
           "dust": 1
         },
@@ -1027,6 +1093,10 @@
             "wind": 0.5,
             "grain": 3,
             "lift": 0.3,
+            "scatter": 0.4,
+            "scatterX": 1,
+            "scatterY": 1,
+            "scatterAngle": 0,
             "speed": 0.8,
             "dust": 1
           }
@@ -1069,6 +1139,10 @@
           "wind": 0.5,
           "grain": 3,
           "lift": 0.3,
+          "scatter": 0.4,
+          "scatterX": 1,
+          "scatterY": 1,
+          "scatterAngle": 0,
           "speed": 0.8,
           "dust": 1
         },
@@ -1102,7 +1176,8 @@
         "type": "windNoBreak",
         "enabled": true,
         "params": {
-          "wind": 0.5,
+          "wind": 0.8,
+          "gust": 0.5,
           "rise": 0.08,
           "speed": 0.8
         },
@@ -1117,7 +1192,8 @@
         "type": "windNoBreak",
         "enabled": true,
         "params": {
-          "wind": 0.5,
+          "wind": 0.8,
+          "gust": 0.5,
           "rise": 0.08,
           "speed": 0.8
         },
@@ -1133,7 +1209,8 @@
           "type": "windNoBreak",
           "enabled": true,
           "params": {
-            "wind": 0.5,
+            "wind": 0.8,
+            "gust": 0.5,
             "rise": 0.08,
             "speed": 0.8
           }
@@ -1162,7 +1239,8 @@
         "type": "windNoBreak",
         "enabled": true,
         "params": {
-          "wind": 0.5,
+          "wind": 0.8,
+          "gust": 0.5,
           "rise": 0.08,
           "speed": 0.8
         },
@@ -1230,7 +1308,8 @@
           "type": "windNoBreak",
           "enabled": true,
           "params": {
-            "wind": 0.5,
+            "wind": 0.8,
+            "gust": 0.5,
             "rise": 0.08,
             "speed": 0.8
           }
@@ -1270,7 +1349,8 @@
         "type": "windNoBreak",
         "enabled": true,
         "params": {
-          "wind": 0.5,
+          "wind": 0.8,
+          "gust": 0.5,
           "rise": 0.08,
           "speed": 0.8
         },
@@ -1304,7 +1384,9 @@
         "type": "cloth",
         "enabled": true,
         "params": {
-          "amount": 0.12,
+          "amount": 0.6,
+          "wind": 1,
+          "gust": 0.5,
           "speed": 0.9
         },
         "motion": {
@@ -1318,7 +1400,9 @@
         "type": "cloth",
         "enabled": true,
         "params": {
-          "amount": 0.12,
+          "amount": 0.6,
+          "wind": 1,
+          "gust": 0.5,
           "speed": 0.9
         },
         "motion": {
@@ -1333,7 +1417,9 @@
           "type": "cloth",
           "enabled": true,
           "params": {
-            "amount": 0.12,
+            "amount": 0.6,
+            "wind": 1,
+            "gust": 0.5,
             "speed": 0.9
           }
         }
@@ -1361,7 +1447,9 @@
         "type": "cloth",
         "enabled": true,
         "params": {
-          "amount": 0.12,
+          "amount": 0.6,
+          "wind": 1,
+          "gust": 0.5,
           "speed": 0.9
         },
         "motion": {
@@ -1428,7 +1516,9 @@
           "type": "cloth",
           "enabled": true,
           "params": {
-            "amount": 0.12,
+            "amount": 0.6,
+            "wind": 1,
+            "gust": 0.5,
             "speed": 0.9
           }
         }
@@ -1467,7 +1557,9 @@
         "type": "cloth",
         "enabled": true,
         "params": {
-          "amount": 0.12,
+          "amount": 0.6,
+          "wind": 1,
+          "gust": 0.5,
           "speed": 0.9
         },
         "motion": {

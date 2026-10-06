@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'), require('./adsr'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'), require('./adsr'), require('./objfx-core'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData, root.SA.adsr);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData, root.SA.adsr, root.SA.objfxCore);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData, adsrApi) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData, adsrApi, objfxCore) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -218,9 +218,9 @@
       }
       state.rot += rotate;
       const scale = transform.scale == null ? 1 : num(transform.scale, 1);
-      if (transform.scaleX != null) state.scaleX *= num(transform.scaleX, 1);
+      if (transform.scaleX != null) state.scaleX *= scale * num(transform.scaleX, 1);
       else state.scaleX *= scale;
-      if (transform.scaleY != null) state.scaleY *= num(transform.scaleY, 1);
+      if (transform.scaleY != null) state.scaleY *= scale * num(transform.scaleY, 1);
       else state.scaleY *= scale;
       if (transform.opacity != null) state.opacity *= num(transform.opacity, 1);
       state.tiltX += num(transform.tiltX);
@@ -235,9 +235,9 @@
     state.y += num(transform.y);
     state.rot += num(transform.rotate);
     const scale = transform.scale == null ? 1 : num(transform.scale, 1);
-    if (transform.scaleX != null) state.scaleX *= num(transform.scaleX, 1);
+    if (transform.scaleX != null) state.scaleX *= scale * num(transform.scaleX, 1);
     else state.scaleX *= scale;
-    if (transform.scaleY != null) state.scaleY *= num(transform.scaleY, 1);
+    if (transform.scaleY != null) state.scaleY *= scale * num(transform.scaleY, 1);
     else state.scaleY *= scale;
     if (transform.opacity != null) state.opacity *= num(transform.opacity, 1);
     state.tiltX += num(transform.tiltX);
@@ -404,7 +404,9 @@
         // gets its own per-run info below, so its effects measure around the
         // substring instead of the whole beat (and the block deformations it
         // pushes move around the substring's centre).
-        scopedDefs.push({ group: raw.group, instance, mask, scope: raw.scope || null, local: raw.local === true });
+        scopedDefs.push({ group: raw.group, instance, mask, scope: raw.scope || null, local: raw.local === true,
+          stagger: raw.stagger && typeof raw.stagger === 'object' ? { ...raw.stagger } : null,
+          drawOrder: Number.isFinite(Number(raw.drawOrder)) ? Number(raw.drawOrder) : 0 });
       }
     }
     const scopedAt = (index, group) => scopedDefs.find((entry) => entry.group === group && entry.mask[index]) || null;
@@ -662,7 +664,10 @@
     // acceleration that drives the soft body.
     function rigidAt(index, beatLocal) {
       const letter = letters[index];
-      const offset = offsets[index];
+      let offset = offsets[index];
+      // textenter2 §4.3: a scoped enter may carry its own stagger, measured by
+      // rank inside its local run instead of the beat stagger.
+      let scopedRank = null;
       const letterRandom = {
         enter: rng.rngFor(seed, letter.path, 'enter'),
         exit: rng.rngFor(seed, letter.path, 'exit'),
@@ -673,6 +678,34 @@
       // a scoped enter / exit replaces the base instance for this letter
       const enterOverride = scopedAt(index, 'enter');
       const exitOverride = scopedAt(index, 'exit');
+      if (enterOverride && enterOverride.stagger) {
+        const st = enterOverride.stagger;
+        const each = Number(st.each) || 0;
+        if (each === 0) {
+          offset = 0;
+        } else {
+          const geometry = runsOf(enterOverride);
+          const r = geometry.runOf[index];
+          if (r >= 0) {
+            const run = geometry.runs[r];
+            const rank = run.rank.get(index) || 0;
+            scopedRank = rank;
+            const max = Math.max(1, run.count - 1);
+            const ease = easing.get(st.ease || 'linear');
+            offset = each * max * ease(max ? rank / max : 0);
+          } else {
+            offset = 0;
+          }
+        }
+      }
+      // textenter2 §4.7: user-defined paint order; larger draws later (on top).
+      let drawOrder = 0;
+      for (const def of scopedDefs) {
+        if (def.mask[index] && Number.isFinite(Number(def.drawOrder)) && Number(def.drawOrder) !== 0) {
+          drawOrder = Math.max(drawOrder, Number(def.drawOrder));
+          if (Number(def.drawOrder) < 0) drawOrder = Math.min(drawOrder, Number(def.drawOrder));
+        }
+      }
       const enterInstance = enterOverride ? enterOverride.instance : enter;
       const exitInstance = exitOverride ? exitOverride.instance : exit;
       const enterDefLocal = enterInstance === enter ? enterDef : motionDef(enterInstance, 'enter', duration);
@@ -731,6 +764,7 @@
         reprProgress: clamp01(pe),
         colorMix: 0,
         fx: {},
+        drawOrder,
         local,
         pe,
         px,
@@ -1101,13 +1135,14 @@
       }
     }
 
-    for (let index = 0; index < N; index += 1) {
+    // Steps after rigidAt, before physics (objeffects §3.1): reflow, custom
+    // motions, follow, overrides, keyword, style transform, keyframe deltas.
+    // The main loop calls it for the live state; transformAt reuses it to
+    // rebuild the rigid motion at past times for motion-reactive holds.
+    function applyPostRigid(index, rigid, state, reflow) {
       const letter = letters[index];
-      const rigid = rigidAt(index, t - beat.start);
-      const state = rigid.state;
       const local = rigid.local;
       const pe = rigid.pe;
-      const px = rigid.px;
       const base = rigid.base;
       const keyframeDeltas = rigid.keyframeDeltas;
       // the reflow the local runs pushed onto this letter (C)
@@ -1115,29 +1150,18 @@
         state.x += reflow[index * 2];
         state.y += reflow[index * 2 + 1];
       }
-      const soft = evaluatePhysics(index, letter, rigid);
-      if (soft) {
-        state.x += soft.dx;
-        state.y += soft.dy;
-        state.rot += soft.rot;
-        if (soft.lattice) {
-          state.softLattice = soft.lattice;
-          state.physActive = soft.active;
-          state.physHalf = { x: soft.halfW, y: soft.halfH };
-        }
-      }
 
       // Custom animations added by hand from the Motion gallery. Each entry
       // runs its own effect over its own window, on top of the built-in ones.
-      for (const motion of customMotions) {
-        if (!motion || !motion.type || motion.enabled === false) continue;
-        const phase = motion.phase === 'exit' ? 'exit' : motion.phase === 'hold' ? 'hold' : 'enter';
-        const entry = fx.get(phase, motion.type);
+      for (const custom of customMotions) {
+        if (!custom || !custom.type || custom.enabled === false) continue;
+        const phase = custom.phase === 'exit' ? 'exit' : custom.phase === 'hold' ? 'hold' : 'enter';
+        const entry = fx.get(phase, custom.type);
         if (!entry || !entry.cpu) continue;
-        const motionDuration = Math.max(0.001, num(motion.duration, 0.6));
-        const motionDelay = num(motion.delay, 0);
-        const startAt = (motion.from === 'end' ? duration : 0) + motionDelay;
-        const motionRng = rng.rngFor(seed, `${beat.id || scene.beatId}|${motion.id || motion.type}`, phase);
+        const motionDuration = Math.max(0.001, num(custom.duration, 0.6));
+        const motionDelay = num(custom.delay, 0);
+        const startAt = (custom.from === 'end' ? duration : 0) + motionDelay;
+        const motionRng = rng.rngFor(seed, `${beat.id || scene.beatId}|${custom.id || custom.type}`, phase);
         const info = {
           i: index,
           N,
@@ -1161,13 +1185,13 @@
           if (localHold < 0 || localHold > motionDuration) continue;
           const fade = Math.min(0.15, motionDuration / 2);
           const env = clamp01(localHold / Math.max(0.001, fade)) * (1 - clamp01((localHold - (motionDuration - fade)) / Math.max(0.001, fade)));
-          entry.cpu(state, localHold, env, motion.params || {}, motionRng, { ...info, env });
+          entry.cpu(state, localHold, env, custom.params || {}, motionRng, { ...info, env });
         } else {
           const localPhase = local - startAt;
           if (localPhase < 0) continue;
           const progress = clamp01(localPhase / motionDuration);
-          const easeFn = easing.get(motion.ease || (phase === 'enter' ? 'easeOutCubic' : 'easeInCubic'));
-          entry.cpu(state, easeFn(progress), motion.params || {}, motionRng, info);
+          const easeFn = easing.get(custom.ease || (phase === 'enter' ? 'easeOutCubic' : 'easeInCubic'));
+          entry.cpu(state, easeFn(progress), custom.params || {}, motionRng, info);
         }
       }
 
@@ -1193,14 +1217,184 @@
         state.colorMix = Math.max(state.colorMix || 0, KEYWORD_LOOK.colorMix * s);
         const w = clamp01((s - 0.5) * 2);               // wobble only in the upper half
         if (w > 0) {
-          const phase = rng.rngFor(seed, `${beat.id || scene.beatId}|kw${r}`, 'hold')();
-          const wave = Math.sin(TAU * (local * KEYWORD_LOOK.wobbleRate + phase));
+          const kwPhase = rng.rngFor(seed, `${beat.id || scene.beatId}|kw${r}`, 'hold')();
+          const wave = Math.sin(TAU * (local * KEYWORD_LOOK.wobbleRate + kwPhase));
           state.rot += wave * KEYWORD_LOOK.wobbleDeg * w;
           state.y -= Math.abs(wave) * KEYWORD_LOOK.wobbleLift * (letter.size || 96) * w;
         }
       }
       applyStyleTransform(state, style.transform);
       applyKeyframeDeltas(state, keyframeDeltas);
+    }
+
+    // Motion-reactive holds (objeffects §3): transformAt rebuilds the rigid
+    // motion (formation + enter/hold/exit + post-rigid, no physics, no objfx)
+    // at any beat-local time; the per-frame cache is shared by the delay,
+    // velocity and release evaluations of one frame.
+    const objfxCache = new Map();
+    function transformAt(index, beatLocal) {
+      const key = `${index}|${Math.round(beatLocal * 1e6)}`;
+      let hit = objfxCache.get(key);
+      if (!hit) {
+        const rebuilt = rigidAt(index, beatLocal);
+        applyPostRigid(index, rebuilt, rebuilt.state, reflow);
+        const point = rebuilt.state;
+        hit = {
+          x: point.x || 0, y: point.y || 0, rot: point.rot || 0,
+          scaleX: point.scaleX == null ? 1 : point.scaleX,
+          scaleY: point.scaleY == null ? 1 : point.scaleY,
+          opacity: point.opacity == null ? 1 : point.opacity,
+        };
+        if (objfxCache.size > 4096) objfxCache.clear();
+        objfxCache.set(key, hit);
+      }
+      return hit;
+    }
+
+    function objfxHash(i, salt) {
+      const value = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+      return value - Math.floor(value);
+    }
+
+    function objfxUnitRank(i, unit) {
+      if (unit === 'word') {
+        const order = [];
+        for (let k = 0; k < N; k += 1) {
+          const key = `${letters[k].lineIdx == null ? 0 : letters[k].lineIdx}:${letters[k].wordIdx == null ? 0 : letters[k].wordIdx}`;
+          if (!order.includes(key)) order.push(key);
+        }
+        const self = `${letters[i].lineIdx == null ? 0 : letters[i].lineIdx}:${letters[i].wordIdx == null ? 0 : letters[i].wordIdx}`;
+        return { rank: order.indexOf(self), count: order.length };
+      }
+      if (unit === 'line') {
+        const order = [];
+        for (let k = 0; k < N; k += 1) {
+          const key = letters[k].lineIdx == null ? 0 : letters[k].lineIdx;
+          if (!order.includes(key)) order.push(key);
+        }
+        const self = letters[i].lineIdx == null ? 0 : letters[i].lineIdx;
+        return { rank: order.indexOf(self), count: order.length };
+      }
+      return { rank: i, count: N };
+    }
+
+    function objfxUnitFirst(i, unit) {
+      if (unit === 'word') {
+        const key = `${letters[i].lineIdx == null ? 0 : letters[i].lineIdx}:${letters[i].wordIdx == null ? 0 : letters[i].wordIdx}`;
+        for (let k = 0; k < N; k += 1) {
+          const other = `${letters[k].lineIdx == null ? 0 : letters[k].lineIdx}:${letters[k].wordIdx == null ? 0 : letters[k].wordIdx}`;
+          if (other === key) return k;
+        }
+        return i;
+      }
+      if (unit === 'line') {
+        const line = letters[i].lineIdx == null ? 0 : letters[i].lineIdx;
+        for (let k = 0; k < N; k += 1) {
+          if ((letters[k].lineIdx == null ? 0 : letters[k].lineIdx) === line) return k;
+        }
+        return i;
+      }
+      return i;
+    }
+
+    const objfxSelCache = new Map();
+    function objfxSelection(cfg) {
+      const key = `${cfg.kind}|${cfg.select}|${JSON.stringify(cfg.selParams || {})}`;
+      let hit = objfxSelCache.get(key);
+      if (!hit) {
+        const helpers = {
+          unitRank: objfxUnitRank,
+          hash01: objfxHash,
+          inScope: () => true,
+        };
+        const weights = new Array(N);
+        for (let k = 0; k < N; k += 1) {
+          weights[k] = objfxCore ? objfxCore.selectWeight(cfg.select, cfg.selParams || {}, k, N, helpers) : 1;
+        }
+        const picked = [];
+        for (let k = 0; k < N; k += 1) if (weights[k] > 0) picked.push(k);
+        hit = { weights, picked };
+        if (objfxSelCache.size > 64) objfxSelCache.clear();
+        objfxSelCache.set(key, hit);
+      }
+      return hit;
+    }
+
+    // Application order (§3.3): timeDelay, then flicker. Skipped entirely
+    // when options.objfx === false (legibility sampling, echo re-evaluation).
+    function applyObjfx(index, rigid, state) {
+      if (!objfxCore || options.objfx === false) return;
+      const beatLocal = t - beat.start;
+      const items = [];
+      for (const hold of rigid.holdList) {
+        if (!hold || !hold.entry || typeof hold.entry.motionFx !== 'function') continue;
+        if (hold.instance && hold.instance.enabled === false) continue;
+        const cfg = hold.entry.motionFx(hold.params || {});
+        if (cfg) items.push(cfg);
+      }
+      if (!items.length) return;
+      items.sort((a, b) => (a.kind === 'timeDelay' ? 0 : 1) - (b.kind === 'timeDelay' ? 0 : 1));
+      for (const cfg of items) {
+        if (cfg.kind === 'timeDelay') {
+          const sel = objfxSelection(cfg);
+          const rep = objfxUnitFirst(index, cfg.unit || 'letter');
+          let w = sel.weights[rep] || 0;
+          if (w <= 0) continue;
+          if (cfg.selParams && cfg.selParams.grade && sel.picked.length > 1) {
+            w *= sel.picked.indexOf(rep) / (sel.picked.length - 1);
+            if (!(w > 0)) continue;
+          }
+          const lag = Math.max(0, cfg.lag || 0) * w;
+          if (!(lag > 1e-6)) continue;
+          objfxCore.applyTimeDelay(state, index, beatLocal, { lag, props: cfg.props }, { transformAt });
+        } else if (cfg.kind === 'motionFlicker') {
+          const sel = objfxSelection(cfg);
+          let w = sel.weights[index] || 0;
+          if (!(w > 0)) continue;
+          if (cfg.selParams && cfg.selParams.grade && sel.picked.length > 1) {
+            w *= sel.picked.indexOf(index) / (sel.picked.length - 1);
+            if (!(w > 0)) continue;
+          }
+          const gate = w;
+          const helpers = {
+            unitRank: objfxUnitRank,
+            hash01: objfxHash,
+            inScope: () => gate > 0,
+            rank01: (k) => (N > 1 ? k / (N - 1) : 0),
+          };
+          objfxCore.applyFlicker(state, index, beatLocal,
+            { ...cfg, select: 'scope', depth: (cfg.depth == null ? 0.7 : cfg.depth) * gate }, {
+              transformAt,
+              velocitySrc: transformAt,
+              shortSide,
+              N,
+              helpers,
+            });
+        }
+      }
+    }
+
+    for (let index = 0; index < N; index += 1) {
+      const letter = letters[index];
+      const rigid = rigidAt(index, t - beat.start);
+      const state = rigid.state;
+      const local = rigid.local;
+      const pe = rigid.pe;
+      const px = rigid.px;
+      applyPostRigid(index, rigid, state, reflow);
+      const soft = evaluatePhysics(index, letter, rigid);
+      if (soft) {
+        state.x += soft.dx;
+        state.y += soft.dy;
+        state.rot += soft.rot;
+        if (soft.lattice) {
+          state.softLattice = soft.lattice;
+          state.physActive = soft.active;
+          state.physHalf = { x: soft.halfW, y: soft.halfH };
+        }
+      }
+
+      applyObjfx(index, rigid, state);
       // a composition hero keeps its own colour: the fill shader mixes the
       // letter toward colorB when its colorMix is set (the GL path for the
       // hero span's palette colour; the 2D fallback reads letter.color).
@@ -1249,6 +1443,11 @@
       });
       envelopes.guardVisible = guarded.visible;
       envelopes.guarded = guarded.corrected;
+    }
+
+    // textenter2 §4.7: beat-wide reverse paint order (right letter on top).
+    if (style && style.text && style.text.drawOrder === 'reverse') {
+      states._reverseDraw = true;
     }
 
     return {

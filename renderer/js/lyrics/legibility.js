@@ -353,7 +353,7 @@
       const time = beat.start + (span * (i + 0.5)) / SAMPLES;
       let result;
       try {
-        result = motion.evaluateBeat({ ...scene, style }, time, { frame, seed: context.seed == null ? 42 : context.seed, beat, skipPhysics: true });
+        result = motion.evaluateBeat({ ...scene, style }, time, { frame, seed: context.seed == null ? 42 : context.seed, beat, skipPhysics: true, objfx: false });
       } catch {
         return { ok: true, seconds: Infinity, share: 1, fullSeconds: Infinity };
       }

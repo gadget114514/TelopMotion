@@ -890,6 +890,7 @@ fade, slide, zoomOut, blurOut, explode (pieces fly outward from the block center
 | sineWave | amp, freq, speed | phase depends on the letter's x |
 | jitter | amp, rate | noise offsets changed at `rate` Hz |
 | pulse | amount, bpm, axis (x/y/both) | scale 1 + amount·(½ + ½cos) on the chosen axes |
+| heartbeat | amount, bpm, axis (x/y/both) | two-beat scale bump on the chosen axes |
 | kenBurns | zoom, pan | slow zoom and pan of the whole block over the hold |
 | drift | vx, vy | constant velocity |
 | sway | angle, speed | rotation |

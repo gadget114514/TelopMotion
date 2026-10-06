@@ -1175,6 +1175,123 @@
     }
   }
 
+  // the motion gallery's own showcase: 16 sequential parts, one cue per
+  // motion preset (`style.motions`, the same entry the gallery writes). The
+  // part ids are language-independent, so no re-labelling is needed (same
+  // shape as the font showcase).
+  function motionShowcaseFile(part) {
+    const id = String(part == null ? '' : part).padStart(2, '0');
+    if (!/^(0[1-9]|1[0-6])$/.test(id)) return null;
+    return `data/motion-showcase-${id}.json`;
+  }
+
+  async function motionShowcaseProject(part) {
+    const file = motionShowcaseFile(part);
+    if (!file) return;
+    try {
+      await openShowcaseAsset(file);
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
+  let motionAutoRunning = false;
+  let motionAutoStop = false;
+  let motionAutoRoot = null;
+
+  function motionAutoDialog(current, total) {
+    if (current == null) {
+      if (motionAutoRoot) motionAutoRoot.hidden = true;
+      return;
+    }
+    if (!motionAutoRoot) {
+      motionAutoRoot = document.createElement('div');
+      motionAutoRoot.className = 'dialog-backdrop';
+      motionAutoRoot.innerHTML = `
+      <div class="dialog" role="alertdialog" aria-busy="true">
+        <h3 data-field="title"></h3>
+        <div class="busy-status" data-field="status" aria-live="polite"></div>
+        <div class="dialog-actions"><button type="button" class="btn" data-field="stop"></button></div>
+      </div>`;
+      motionAutoRoot.querySelector('[data-field="stop"]').addEventListener('click', () => {
+        motionAutoStop = true;
+      });
+      document.body.appendChild(motionAutoRoot);
+    }
+    motionAutoRoot.querySelector('[data-field="title"]').textContent = t('studio.motionShowcase.autoTitle');
+    motionAutoRoot.querySelector('[data-field="status"]').textContent = `${current}/${total}`;
+    motionAutoRoot.querySelector('[data-field="stop"]').textContent = t('studio.motionShowcase.stop');
+    motionAutoRoot.hidden = false;
+  }
+
+  // one part plays until the preview reaches its end; a user pause or seek
+  // hands control back and ends the run, like the stop button does.
+  function motionPartDone() {
+    return new Promise((resolve) => {
+      const total = SA.preview.duration();
+      const started = performance.now();
+      const timer = setInterval(() => {
+        if (motionAutoStop) {
+          clearInterval(timer);
+          resolve(false);
+          return;
+        }
+        if (!SA.preview.isPlaying()) {
+          clearInterval(timer);
+          resolve(SA.store.state.playhead >= total - 0.05);
+          return;
+        }
+        if (performance.now() - started > (total + 30) * 1000) {
+          clearInterval(timer);
+          resolve(false);
+        }
+      }, 200);
+    });
+  }
+
+  // Help → Motion showcase → Play all: loads part 01–16 in order and plays
+  // each through. The stop button (or Escape, or taking over the transport)
+  // interrupts the run and leaves the current part open.
+  async function motionShowcaseAllProject() {
+    if (motionAutoRunning) return;
+    motionAutoRunning = true;
+    motionAutoStop = false;
+    const wasLoop = SA.preview.isLoop();
+    SA.preview.setLoop(false);
+    const onKey = (event) => {
+      if (event.key === 'Escape') motionAutoStop = true;
+    };
+    document.addEventListener('keydown', onKey);
+    try {
+      for (let at = 1; at <= 16; at += 1) {
+        if (motionAutoStop) break;
+        motionAutoDialog(at, 16);
+        let opened = false;
+        try {
+          opened = await openShowcaseAsset(`data/motion-showcase-${String(at).padStart(2, '0')}.json`);
+        } catch {
+          toast('studio.toast.invalidProject');
+          break;
+        }
+        if (!opened || motionAutoStop) break;
+        SA.preview.seek(0);
+        SA.preview.play();
+        if (!(await motionPartDone())) break;
+      }
+    } finally {
+      document.removeEventListener('keydown', onKey);
+      try {
+        SA.preview.pause();
+      } catch {
+        /* the run is over: never fail on teardown */
+      }
+      SA.preview.setLoop(wasLoop);
+      motionAutoDialog(null);
+      motionAutoRunning = false;
+      motionAutoStop = false;
+    }
+  }
+
   async function saveProject() {
     const doc = project();
     if (!doc) return;
@@ -2103,6 +2220,8 @@
       letterFxShowcase: letterFxShowcaseProject,
       textShowcase: textShowcaseProject,
       shaderShowcase: shaderShowcaseProject,
+      motionShowcase: motionShowcaseProject,
+      motionShowcaseAll: motionShowcaseAllProject,
       saveProject,
       saveProjectAs,
       undo: undoEdit,

@@ -78,11 +78,19 @@
       // descriptor's cpu is a no-op when the hook is present (motion.js runs
       // the lattice instead of the cpu).
       physics: typeof descriptor.physics === 'function' ? descriptor.physics : null,
+      // `motionFx(params)` provides the motion-reactive config (objeffects);
+      // like physics, the descriptor's cpu is a no-op and motion.js applies
+      // the config after the keyframe deltas.
+      motionFx: typeof descriptor.motionFx === 'function' ? descriptor.motionFx : null,
       // `spread(h, env, params, info)` reports how much wider / narrower this
       // effect makes a substring (`{ x, y }` growth factors, 0 = unchanged).
       // motion.js uses it to reflow the letters outside a `local` scoped run, so
       // a stretched substring pushes its line aside instead of overlapping it.
       spread: typeof descriptor.spread === 'function' ? descriptor.spread : null,
+      // `companion` holds the sidecar style groups written together with this
+      // type (textenter2 §3.3): e.g. plateIn writes bgShape+bgMotion, chromaIn
+      // writes post.rgbShift. Kept as data; inspector/showcase expand it.
+      companion: descriptor.companion ? JSON.parse(JSON.stringify(descriptor.companion)) : null,
       // `pack` groups the extended primitives and presets so
       // the earlier catalogs keep the exact type list they were built on.
       pack: descriptor.pack || null,
@@ -128,6 +136,8 @@
       costOf: source.costOf,
       physics: source.physics,
       spread: source.spread,
+      motionFx: source.motionFx,
+      companion: descriptor.companion || source.companion,
       pack: descriptor.pack || 'pro',
       preset: { primitive: descriptor.primitive, params },
     });
@@ -284,6 +294,14 @@
     return cost;
   }
 
+  // The sidecar style groups of an effect type (textenter2 §3.3). Returns a
+  // deep copy, or null when the type has no companion.
+  function companionOf(group, type) {
+    const entry = get(group, type);
+    if (!entry || !entry.companion) return null;
+    return JSON.parse(JSON.stringify(entry.companion));
+  }
+
   return {
     DEFAULT_MOTION,
     GROUP_DEFAULTS,
@@ -300,6 +318,7 @@
     defaultsFor,
     withDefaults,
     costOf,
+    companionOf,
     types,
     groups,
     aliases,
