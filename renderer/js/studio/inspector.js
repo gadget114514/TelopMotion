@@ -3456,12 +3456,11 @@ SA.inspector = (() => {
     if (!scope && sel.beatId) scope = { cueId: sel.cueId, beatId: sel.beatId };
     const scopeLabel = t(scope === 'project' ? 'studio.inspector.paletteScopeProject' : scope && scope.beatId ? 'studio.inspector.paletteScopeBeat' : 'studio.inspector.paletteScopeCue');
     const doc = project();
-    const own = scope === 'project' ? doc.style : scope && scope.beatId ? doc.beatStyles[scope.beatId] : scope ? doc.cueStyles[scope.cueId] : null;
+    const own = scope === 'project' ? doc.style : scope && scope.beatId ? (doc.beatStyles && doc.beatStyles[scope.beatId]) || null : scope ? (doc.cueStyles && doc.cueStyles[scope.cueId]) || null : null;
     const ownPalette = !!(own && own.palette);
-    // the role schemes belong to the classic colour mode only: a beat on the
-    // palette set (the default) never uses them
+    // entering a scheme switches the beat to the classic colour mode, so the
+    // buttons stay enabled on palette-set (default) beats too
     const ownBeat = (scope && scope.beatId && doc.beatStyles && doc.beatStyles[scope.beatId]) || {};
-    const beatLegacy = !scope || !scope.beatId || !!ownBeat.colorLegacy;
     const nameNode = document.createElement('div');
     nameNode.className = 'insp-inherit';
     const paletteName = effective ? `${effective.name || effective.id}` : t('studio.inspector.paletteNone');
@@ -3495,14 +3494,16 @@ SA.inspector = (() => {
       invertButton.type = 'button';
       invertButton.className = 'btn btn-mini';
       invertButton.textContent = t('studio.inspector.invertBeatScheme');
-      invertButton.disabled = !invertible || !beatLegacy;
+      invertButton.disabled = !invertible;
+      invertButton.title = !ownBeat.colorLegacy && invertible ? t('studio.inspector.colorLegacy') : '';
       invertButton.addEventListener('click', () => SA.store.commands.invertBeatScheme(scope.cueId, scope.beatId));
       const candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined) : [];
       const rerollButton = document.createElement('button');
       rerollButton.type = 'button';
       rerollButton.className = 'btn btn-mini';
       rerollButton.textContent = t('studio.inspector.rerollBeatScheme');
-      rerollButton.disabled = !candidates.length || !beatLegacy;
+      rerollButton.disabled = !candidates.length;
+      rerollButton.title = !ownBeat.colorLegacy && candidates.length ? t('studio.inspector.colorLegacy') : '';
       rerollButton.addEventListener('click', () => SA.store.commands.rerollBeatScheme(scope.cueId, scope.beatId));
       schemeRow.appendChild(invertButton);
       schemeRow.appendChild(rerollButton);

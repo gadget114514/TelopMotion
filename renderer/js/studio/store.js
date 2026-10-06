@@ -3511,6 +3511,8 @@ SA.store = (() => {
     },
     // The beat colour schemes: the same palette in another role order. The
     // command only writes the id; the colours derive at resolve time.
+    // Entering a scheme switches the beat to the classic colour mode, so the
+    // buttons also work on palette-set (default) beats.
     invertBeatScheme(cueId, beatId) {
       if (!state.project || typeof SA === 'undefined' || !SA.paletteRoles) return null;
       const weird = beatSchemeWeird();
@@ -3526,7 +3528,11 @@ SA.store = (() => {
         label: 'invert beat colours',
         areas: ['style'],
         do(projectDoc) {
+          projectDoc.beatStyles = projectDoc.beatStyles || {};
           const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          bag.colorLegacy = true;
+          delete bag.paletteIndex;
+          delete bag.paletteInvert;
           if (next) bag.colorScheme = next;
           else delete bag.colorScheme;
         },
@@ -3555,7 +3561,11 @@ SA.store = (() => {
         label: 'reroll beat colours',
         areas: ['style'],
         do(projectDoc) {
+          projectDoc.beatStyles = projectDoc.beatStyles || {};
           const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});
+          bag.colorLegacy = true;
+          delete bag.paletteIndex;
+          delete bag.paletteInvert;
           bag.colorScheme = pick.id;
         },
       });
