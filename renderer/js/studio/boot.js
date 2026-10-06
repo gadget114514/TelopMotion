@@ -19,11 +19,13 @@ SA.boot = (() => {
   let fill = null;
   let detailEl = null;
   let percentEl = null;
+  let elapsedEl = null;
   let value = 0;
   let shown = 0; // what the bar draws once the current jump lands
   let creep = null;
   let started = 0;
   let finished = false;
+  let elapsedTimer = null;
 
   function now() {
     return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
@@ -36,13 +38,38 @@ SA.boot = (() => {
     status = document.getElementById('boot-status');
     bar = document.getElementById('boot-bar');
     fill = document.getElementById('boot-fill');
-    // detail / percent are optional: older markup and unit tests only have
-    // the status + bar, so every use below guards for a missing node
+    // detail / percent / elapsed are optional: older markup and unit tests
+    // only have the status + bar, so every use below guards for a missing node
     detailEl = document.getElementById('boot-detail');
     percentEl = document.getElementById('boot-percent');
+    elapsedEl = document.getElementById('boot-elapsed');
     started = now();
     renderPercent();
+    renderElapsed();
+    tickElapsed();
     return true;
+  }
+
+  // wall-clock seconds since the overlay appeared. A setTimeout chain (not an
+  // interval) so the contrived clocks in the unit tests stay in charge.
+  function renderElapsed() {
+    if (elapsedEl) elapsedEl.textContent = `${Math.floor((now() - started) / 1000)}s`;
+  }
+
+  function tickElapsed() {
+    if (elapsedTimer != null || finished) return;
+    const step = () => {
+      elapsedTimer = null;
+      if (finished) return;
+      renderElapsed();
+      elapsedTimer = setTimeout(step, 250);
+    };
+    elapsedTimer = setTimeout(step, 250);
+  }
+
+  function stopElapsed() {
+    if (elapsedTimer != null && typeof clearTimeout === 'function') clearTimeout(elapsedTimer);
+    elapsedTimer = null;
   }
 
   function renderPercent() {
@@ -113,6 +140,7 @@ SA.boot = (() => {
   function finish() {
     if (finished) return;
     finished = true;
+    stopElapsed();
     if (!nodes()) return;
     root.classList.remove('is-busy');
     value = 100;

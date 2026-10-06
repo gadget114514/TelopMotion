@@ -42,6 +42,8 @@ test('studio.html ships the boot overlay before the app scripts', () => {
   assert.match(HTML, /id="boot"/);
   assert.match(HTML, /id="boot-status"[^>]*data-i18n="studio\.boot\.loading"/);
   assert.match(HTML, /id="boot-bar"[^>]*role="progressbar"/);
+  assert.match(HTML, /id="boot-elapsed"/);
+  assert.match(HTML, /class="boot-spinner"/);
   const bootScript = HTML.indexOf('js/studio/boot.js');
   const appScript = HTML.indexOf('js/studio/app.js');
   assert.ok(bootScript > 0 && appScript > bootScript, 'boot.js must load before app.js');
@@ -110,6 +112,31 @@ test('boot progress is monotonic, clamps and finishes', (t) => {
 
   boot.set(50); // finished: further updates are ignored
   assert.equal(boot.progress(), 100);
+});
+
+test('boot shows elapsed seconds while starting', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const nodes = {
+    boot: fakeElement(),
+    'boot-status': fakeElement(),
+    'boot-bar': fakeElement(),
+    'boot-fill': fakeElement(),
+    'boot-elapsed': fakeElement(),
+  };
+  globalThis.document = { getElementById: (id) => nodes[id] || null };
+  globalThis.SA = globalThis.SA || {};
+  globalThis.SA.i18n = { t: (key) => key };
+  delete require.cache[require.resolve('../../renderer/js/studio/boot.js')];
+  require('../../renderer/js/studio/boot.js');
+  const boot = globalThis.SA.boot;
+
+  boot.set(10);
+  assert.equal(nodes['boot-elapsed'].textContent, '0s');
+  t.mock.timers.tick(1250); // the chain keeps running while unfinished
+  boot.finish();
+  const frozen = nodes['boot-elapsed'].textContent;
+  t.mock.timers.tick(5000); // finished: the elapsed clock stops
+  assert.equal(nodes['boot-elapsed'].textContent, frozen);
 });
 
 test('boot bar creeps toward the next step on the compositor', (t) => {
