@@ -44,10 +44,35 @@ SA.boot = (() => {
     percentEl = document.getElementById('boot-percent');
     elapsedEl = document.getElementById('boot-elapsed');
     started = now();
+    adoptEarly();
     renderPercent();
     renderElapsed();
     tickElapsed();
     return true;
+  }
+
+  // boot-early.js (the first script in studio.html) creeps the overlay while
+  // the classic scripts load: adopt its value so the bar never jumps back,
+  // then stop its timer and take over from here.
+  function adoptEarly() {
+    try {
+      if (typeof window !== 'undefined' && window.__saBootEarlyTimer != null) {
+        if (typeof clearInterval === 'function') clearInterval(window.__saBootEarlyTimer);
+        window.__saBootEarlyTimer = null;
+      }
+      const early = typeof window !== 'undefined' ? Number(window.__saBootEarlyValue) : NaN;
+      if (Number.isFinite(early) && early > 0) {
+        const clamped = Math.max(0, Math.min(100, Math.round(early)));
+        if (clamped > value) value = clamped;
+        if (clamped > shown) {
+          shown = clamped;
+          if (fill) fill.style.transform = `scaleX(${shown / 100})`;
+        }
+        if (bar) bar.setAttribute('aria-valuenow', String(value));
+      }
+    } catch {
+      /* early progress is best-effort */
+    }
   }
 
   // wall-clock seconds since the overlay appeared. A setTimeout chain (not an
@@ -62,9 +87,27 @@ SA.boot = (() => {
       elapsedTimer = null;
       if (finished) return;
       renderElapsed();
+      syncCreepDisplay();
       elapsedTimer = setTimeout(step, 250);
     };
     elapsedTimer = setTimeout(step, 250);
+  }
+
+  // Long steps (fonts: 72 -> 94 over 20 s) creep the bar on the compositor
+  // while `value` stays at the step: mirror the creep into the % label so
+  // the number also moves every couple of seconds. `progress()` still
+  // reports the step itself, and the fill never moves backwards so neither
+  // does the label.
+  function syncCreepDisplay() {
+    if (finished || !percentEl) return;
+    let display = value;
+    try {
+      display = Math.max(value, Math.round(currentShown()));
+    } catch {
+      display = value;
+    }
+    const current = parseInt(percentEl.textContent, 10);
+    if (!Number.isFinite(current) || display > current) percentEl.textContent = `${display}%`;
   }
 
   function stopElapsed() {

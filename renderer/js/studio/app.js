@@ -2415,6 +2415,8 @@
       // asset read; a failed load resolves on its own.
       if (boot.busy) boot.busy(true);
       const deadline = Date.now() + 30000;
+      const settleStart = Date.now();
+      let lastNudge = 0;
       let pass = 0;
       let fonts = SA.preview && SA.preview.whenFontsReady ? SA.preview.whenFontsReady() : null;
       while (fonts) {
@@ -2433,6 +2435,14 @@
           try {
             const elapsed = ((Date.now() - (deadline - 30000)) / 1000).toFixed(0);
             boot.detail(`settle ${pass} …${elapsed}s`);
+            // the creep from step(72 -> 94) ends after ~20 s: keep nudging
+            // the bar about +1% every 2 s while we are still waiting so the
+            // overlay never looks frozen (capped at 95, step(96) follows).
+            const nowMs = Date.now();
+            if (nowMs - lastNudge >= 2000) {
+              lastNudge = nowMs;
+              boot.set(Math.min(95, 92 + Math.floor((nowMs - settleStart) / 2000)), 'studio.boot.fonts', 96, 2500);
+            }
           } catch {
             /* ignore */
           }
