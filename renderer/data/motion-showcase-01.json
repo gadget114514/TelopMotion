@@ -267,7 +267,7 @@
         "id": "mo01_16",
         "start": 45,
         "end": 48,
-        "text": "16. waveIn · waveRise\nあいうえお Aiueo 0123",
+        "text": "16. waveIn · waveRise [amp:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
@@ -282,7 +282,7 @@
         "id": "mo01_17",
         "start": 48,
         "end": 51,
-        "text": "17. zoomIn · zoomIn\nあいうえお Aiueo 0123",
+        "text": "17. zoomIn · zoomIn [from:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "01",
@@ -1171,10 +1171,10 @@
           "type": "waveRise",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
-          "ease": "easeOutCubic",
+          "duration": 0.9,
+          "ease": "linear",
           "params": {
-            "amp": 0.12
+            "amp": 0.2
           },
           "enabled": true
         }
@@ -1215,10 +1215,10 @@
           "type": "zoomIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "from": 0.4
+            "from": 0.2
           },
           "enabled": true
         }
@@ -1973,9 +1973,9 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "16. waveIn · waveRise\nあいうえお Aiueo 0123",
+        "text": "16. waveIn · waveRise [amp:0.2]\nあいうえお Aiueo 0123",
         "lines": [
-          "16. waveIn · waveRise",
+          "16. waveIn · waveRise [amp:0.2]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1990,9 +1990,9 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "17. zoomIn · zoomIn\nあいうえお Aiueo 0123",
+        "text": "17. zoomIn · zoomIn [from:0.2]\nあいうえお Aiueo 0123",
         "lines": [
-          "17. zoomIn · zoomIn",
+          "17. zoomIn · zoomIn [from:0.2]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
