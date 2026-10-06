@@ -1222,12 +1222,30 @@ SA.store = (() => {
     return report;
   }
 
-  function clampSegments(segments, start, end) {
+  // Moves everything a clip keeps in absolute seconds along with it: the
+  // backdrop segments and a figure clip's sub-beats (simBeats stay relative
+  // to the clip head, so they need no shift).
+  function shiftClipTimes(clip, delta) {
+    if (!clip || !delta) return;
+    const round3 = (value) => Math.round(value * 1000) / 1000;
+    if (Array.isArray(clip.segments)) clip.segments = clip.segments.map((seg) => ({ ...seg, start: round3(seg.start + delta), end: round3(seg.end + delta) }));
+    const params = clip.spec && clip.spec.params;
+    if (params && Array.isArray(params.beats) && clip.spec.type === 'figure') {
+      clip.spec = { ...clip.spec, params: { ...params, beats: params.beats.map((beat) => ({ ...beat, start: round3(beat.start + delta), end: round3(beat.end + delta) })) } };
+    }
+  }
+
+  // Fits stored segments to [start, end]: cut to the range, and an edge the
+  // segments no longer reach (the clip grew) is cut at the lyric beats again.
+  // Without any segment carrying a spec the segments go away (undefined).
+  function fitSegments(projectDoc, segments, start, end) {
     if (!Array.isArray(segments)) return segments;
     const kept = segments
       .map((seg) => ({ ...seg, start: Math.max(start, seg.start), end: Math.min(end, seg.end) }))
       .filter((seg) => seg.end - seg.start > 1e-3);
-    return kept.some((seg) => seg.spec) ? kept : undefined;
+    if (!kept.some((seg) => seg.spec)) return undefined;
+    const fill = (from, to) => (to - from > 1e-3 ? SA.project.lyricBeatSpans(projectDoc, from, to).map((span) => ({ start: span.start, end: span.end })) : []);
+    return [...fill(start, kept[0].start), ...kept, ...fill(kept[kept.length - 1].end, end)];
   }
 
   // Backdrop segment ops ("clip beats" cut at the lyric beats): the first op
@@ -1239,12 +1257,13 @@ SA.store = (() => {
     const clip = findClip(clipId);
     if (!clip || SA.project.trackKindOf(state.project, clip.trackId) !== 'backdrop') return null;
     const spans = SA.project.clipBeatSpans(state.project, clip);
-    if (!spans[index]) return null;
+    const span = spans.find((entry) => entry.index === index);
+    if (!span) return null;
     const mode = modeAxes();
     let palette = null;
     let from = null;
     if (op === 'recolor') {
-      const cue = (state.project.script.cues || []).find((entry) => spans[index].start >= entry.start - 1e-4 && spans[index].start < entry.end);
+      const cue = (state.project.script.cues || []).find((entry) => span.start >= entry.start - 1e-4 && span.start < entry.end);
       from = paletteColorsAt(state.project, cue ? `cue:${cue.id}` : '');
       palette = drawPalette(from);
       if (!palette) return null;
@@ -2808,7 +2827,7 @@ SA.store = (() => {
           target.start = Math.max(0, start);
           target.end = target.start + span;
           const delta = target.start - previousStart;
-          if (Array.isArray(target.segments)) target.segments = target.segments.map((seg) => ({ ...seg, start: seg.start + delta, end: seg.end + delta }));
+          shiftClipTimes(target, delta);
           delete target.auto;
         },
       });
@@ -2849,9 +2868,10 @@ SA.store = (() => {
           if (!target) return;
           if (edge === 'start') target.start = Math.max(0, Math.min(time, target.end - 0.1));
           else target.end = Math.max(target.start + 0.1, time);
-          const clamped = clampSegments(target.segments, target.start, target.end);
-          if (clamped === undefined) delete target.segments;
-          else if (Array.isArray(target.segments)) target.segments = clamped;
+          const base = options && Array.isArray(options.baseSegments) ? clone(options.baseSegments) : target.segments;
+          const fitted = fitSegments(projectDoc, base, target.start, target.end);
+          if (fitted === undefined) delete target.segments;
+          else if (Array.isArray(base)) target.segments = fitted;
           delete target.auto;
         },
       });
@@ -2871,10 +2891,10 @@ SA.store = (() => {
           second.start = time;
           projectDoc.clips.push(second);
           target.end = time;
-          const secondClamped = clampSegments(second.segments, time, second.end);
+          const secondClamped = fitSegments(projectDoc, second.segments, time, second.end);
           if (secondClamped === undefined) delete second.segments;
           else if (Array.isArray(second.segments)) second.segments = secondClamped;
-          const firstClamped = clampSegments(target.segments, target.start, time);
+          const firstClamped = fitSegments(projectDoc, target.segments, target.start, time);
           if (firstClamped === undefined) delete target.segments;
           else if (Array.isArray(target.segments)) target.segments = firstClamped;
           delete target.auto;
@@ -2907,10 +2927,7 @@ SA.store = (() => {
           copy.id = newId;
           copy.start = start;
           copy.end = start + span;
-          if (Array.isArray(copy.segments)) {
-            const delta = start - clip.start;
-            copy.segments = copy.segments.map((seg) => ({ ...seg, start: seg.start + delta, end: seg.end + delta }));
-          }
+          shiftClipTimes(copy, start - clip.start);
           delete copy.auto; // the copy is a hand-made clip
           projectDoc.clips.push(copy);
         },
@@ -3394,6 +3411,50 @@ SA.store = (() => {
       if (!palette) return null;
       commands.setPalette(scope, palette, { label: 'reroll palette', force: !!(opts && opts.force) });
       return palette;
+    },
+    // Recolor every child beat of a cue, in one history entry.
+    // mode 'each' (default): each beat draws its own fresh palette.
+    // mode 'same': one palette is drawn once and the same colours are set
+    // on every child beat. The cue's own palette is left untouched.
+    recolorCueBeats(cueId, opts) {
+      const cue = findCue(cueId);
+      if (!cue || !state.project || typeof SA === 'undefined' || !SA.moods) return null;
+      const mode = (opts && opts.mode) || 'each';
+      const beats = ((state.project.beats && state.project.beats[cueId]) || []).slice();
+      if (!beats.length) return null;
+      const clean = (palette) => {
+        const rest = clone(palette);
+        delete rest.auto;
+        delete rest.scheme;
+        return rest;
+      };
+      let shared = null;
+      const perBeat = new Map();
+      if (mode === 'same') {
+        shared = drawPalette(paletteColorsAt(state.project, `cue:${cueId}`));
+        if (!shared) return null;
+        shared = clean(shared);
+      } else {
+        for (const beat of beats) {
+          const from = paletteColorsAt(state.project, `cue:${cueId}/beat:${beat.id}`);
+          const palette = drawPalette(from);
+          if (palette) perBeat.set(beat.id, clean(palette));
+        }
+        if (!perBeat.size) return null;
+      }
+      dispatch({
+        label: mode === 'same' ? 'recolor cue beats same' : 'recolor cue beats',
+        areas: ['style', 'project'],
+        do(projectDoc) {
+          for (const beat of (projectDoc.beats && projectDoc.beats[cueId]) || []) {
+            const target = { kind: 'beat', cueId, beatId: beat.id, path: `cue:${cueId}/beat:${beat.id}` };
+            const picked = mode === 'same' ? shared : perBeat.get(beat.id);
+            if (!picked || !Array.isArray(picked.colors) || !picked.colors.length) continue;
+            applyPalette(projectDoc, target, picked, { clips: false });
+          }
+        },
+      });
+      return mode === 'same' ? shared : [...perBeat.values()];
     },
     // back to the parent's palette: the scope's colours move back onto it
     resetPalette(scope) {

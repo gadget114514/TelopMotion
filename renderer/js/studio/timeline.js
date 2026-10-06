@@ -2777,6 +2777,8 @@ SA.timeline = (() => {
       add(t('studio.timeline.splitCue'), () => SA.store.commands.splitCue(cueId, SA.store.state.playhead));
       add(t('studio.timeline.mergeCue'), () => SA.store.commands.mergeCues(cueId));
       add(t('studio.inspector.rerollCue'), () => SA.store.commands.rerollCue(cueId));
+      add(t('studio.inspector.recolorCueBeats'), () => SA.store.commands.recolorCueBeats(cueId, { mode: 'each' }));
+      add(t('studio.inspector.recolorCueBeatsSame'), () => SA.store.commands.recolorCueBeats(cueId, { mode: 'same' }));
       add(t('studio.inspector.copyStyle'), () => {
         const ok = SA.store.commands.copyStyle(`cue:${cueId}`);
         SA.studio.toast(ok ? 'studio.toast.styleCopied' : 'studio.toast.error');

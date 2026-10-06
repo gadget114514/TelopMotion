@@ -2,7 +2,7 @@
   "name": "telop-motion",
   "productName": "TelopMotion",
   "version": "1.0.20261006",
-  "description": "Achievement showcase for Suno profiles",
+  "description": "Desktop app for lyric videos",
   "main": "main.js",
   "author": "gadget114514",
   "license": "MIT",
@@ -10,7 +10,6 @@
   "scripts": {
     "start": "electron .",
     "dist": "electron-builder --win",
-    "scrape": "node scripts/scrape.js",
     "fx400": "node scripts/fx400.js",
     "fx800": "node scripts/fx800.js",
     "showcase": "node scripts/showcase.js",
@@ -47,7 +46,6 @@
     "files": [
       "main.js",
       "preload.js",
-      "lib/**/*",
       "renderer/**/*",
       "package.json"
     ],

@@ -817,10 +817,20 @@ SA.inspector = (() => {
     if (!cue) return;
     const body = section(container, 'cue', t('studio.inspector.cue'));
     // the whole cue: a fresh enter / exit pair plus a new size ladder (🎲),
-    // or a light pass over its beats that keeps the structure (🔀)
+    // or a light pass over its beats that keeps the structure (🔀);
+    // ◐ recolors each child beat on its own, ◑ recolors once and sets
+    // the same colours on every child beat
     summaryActions(body, [
       ['🎲', 'studio.inspector.rerollCue', () => SA.store.commands.rerollCue(sel.cueId)],
       ['🔀', 'studio.inspector.varyCue', () => SA.store.commands.varyCue(sel.cueId)],
+      ['◐', 'studio.inspector.recolorCueBeats', () => {
+        const result = SA.store.commands.recolorCueBeats(sel.cueId, { mode: 'each' });
+        if (result && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: Array.isArray(result) ? String(result.length) : '' });
+      }],
+      ['◑', 'studio.inspector.recolorCueBeatsSame', () => {
+        const palette = SA.store.commands.recolorCueBeats(sel.cueId, { mode: 'same' });
+        if (palette && SA.studio && SA.studio.toast) SA.studio.toast('studio.toast.colorsRerolled', { theme: palette.name || palette.id || '' });
+      }],
       ['📋', 'studio.inspector.copyStyle', () => copyStyleAt(`cue:${sel.cueId}`)],
       ['📑', 'studio.inspector.pasteStyle', () => pasteStyleAt(`cue:${sel.cueId}`)],
       ['🗑', 'studio.beat.deleteCue', () => SA.store.commands.deleteCue(sel.cueId)],
@@ -2730,6 +2740,10 @@ SA.inspector = (() => {
     if (param.kind === 'select') {
       const select = selectControl(value == null ? param.default : value, param.options || [], optionLabel, onChange);
       return fieldRow(fillerParamLabel(param.key), select);
+    }
+    if (param.kind === 'stroke' && typeof SA !== 'undefined' && SA.controls) {
+      const control = SA.controls.paramControl('filler', param, value == null ? param.default : value, onChange);
+      return fieldRow(fillerParamLabel(param.key), control);
     }
     if (param.kind === 'color' || param.kind === 'text') {
       const input = document.createElement('input');

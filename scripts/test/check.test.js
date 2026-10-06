@@ -16,10 +16,10 @@ function fixture() {
     fs.writeFileSync(full, body);
     return full;
   };
-  const good = write('lib/good.js', "'use strict';\nmodule.exports = 1;\n");
+  const good = write('scripts/good.js', "'use strict';\nmodule.exports = 1;\n");
   const goodRenderer = write('renderer/js/good.js', 'window.SA = window.SA || {};\n');
   const goodScript = write('scripts/tool.js', "'use strict';\n");
-  const bad = write('lib/bad.js', 'const = ;\n');
+  const bad = write('scripts/bad.js', 'const = ;\n');
   const vendor = write('renderer/js/vendor/ignored.js', 'const = ;\n');
   write('renderer/js/notes.txt', 'not javascript');
   return { root, good, goodRenderer, goodScript, bad, vendor };

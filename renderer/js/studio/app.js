@@ -15,7 +15,6 @@
   let statefulEnabled = false;
   let welcomeDismissed = false;
   let toastTimer = null;
-  let evaluationCache = { dataset: null, evaluation: null };
   let lastVersions = {};
 
   function t(key, vars) {
@@ -83,14 +82,6 @@
 
   function project() {
     return store.state.project;
-  }
-
-  function evaluation() {
-    const data = project() && project().dataset;
-    if (!data) return null;
-    if (evaluationCache.dataset === data && evaluationCache.evaluation) return evaluationCache.evaluation;
-    evaluationCache = { dataset: data, evaluation: SA.achievements.evaluate(data) };
-    return evaluationCache.evaluation;
   }
 
   function duration() {
@@ -723,131 +714,6 @@
         if (SA.textflow) SA.textflow.apply(projectDoc);
       },
     });
-  }
-
-  function generateScriptDialog() {
-    const doc = project();
-    if (!doc || !doc.dataset) {
-      toast('studio.toast.needData');
-      return;
-    }
-    const options = doc.script.options || {};
-    const reveal = options.reveal || {};
-    const stats = options.stats || {};
-    const topSongs = options.topSongs || {};
-    const timing = options.timing || {};
-    const overflow = (doc.output && doc.output.overflow) || 'compress';
-    el.dialogRoot.innerHTML = '';
-    const dialog = document.createElement('div');
-    dialog.className = 'dialog';
-    dialog.innerHTML = `
-      <h3>${t('studio.dialog.script.title')}</h3>
-      <label><input type="checkbox" data-field="intro" ${options.intro === false ? '' : 'checked'} />${t('studio.dialog.script.intro')}</label>
-      <label><input type="checkbox" data-field="reveal" ${reveal.enabled === false ? '' : 'checked'} />${t('studio.dialog.script.reveal')}</label>
-      <div class="field"><span>${t('studio.dialog.script.which')}</span>
-        <select data-field="which">
-          <option value="unlocked"${reveal.which !== 'all' ? ' selected' : ''}>${t('studio.dialog.script.unlocked')}</option>
-          <option value="all"${reveal.which === 'all' ? ' selected' : ''}>${t('studio.dialog.script.all')}</option>
-        </select>
-      </div>
-      <label><input type="checkbox" data-field="stats" ${stats.enabled === false ? '' : 'checked'} />${t('studio.dialog.script.stats')}</label>
-      <label><input type="checkbox" data-field="topSongs" ${topSongs.enabled === false ? '' : 'checked'} />${t('studio.dialog.script.topSongs')}</label>
-      <div class="field"><span>${t('studio.dialog.script.count')}</span><input type="number" min="0" max="10" value="${topSongs.n == null ? 3 : topSongs.n}" data-field="topCount" /></div>
-      <label><input type="checkbox" data-field="completion" ${options.completion === false ? '' : 'checked'} />${t('studio.dialog.script.completion')}</label>
-      <label><input type="checkbox" data-field="outro" ${options.outro === false ? '' : 'checked'} />${t('studio.dialog.script.outro')}</label>
-      <div class="field"><span>${t('studio.dialog.script.perCue')}</span><input type="number" min="0.5" max="10" step="0.1" value="${timing.perCue == null ? 2.8 : timing.perCue}" data-field="perCue" /></div>
-      <div class="field"><span>${t('studio.dialog.script.gap')}</span><input type="number" min="0" max="2" step="0.05" value="${timing.gap == null ? 0.3 : timing.gap}" data-field="gap" /></div>
-      <div class="field"><span>${t('studio.dialog.script.maxDuration')}</span><input type="number" min="0" step="1" value="${doc.output.maxDuration == null ? '' : doc.output.maxDuration}" data-field="maxDuration" /></div>
-      <div class="field"><span>${t('studio.dialog.script.overflow')}</span>
-        <select data-field="overflow">
-          <option value="compress"${overflow === 'compress' ? ' selected' : ''}>${t('studio.dialog.script.overflowCompress')}</option>
-          <option value="drop"${overflow === 'drop' ? ' selected' : ''}>${t('studio.dialog.script.overflowDrop')}</option>
-          <option value="cut"${overflow === 'cut' ? ' selected' : ''}>${t('studio.dialog.script.overflowCut')}</option>
-        </select>
-      </div>
-      <div class="dialog-actions">
-        <button type="button" class="btn" data-action="cancel">${t('studio.dialog.script.cancel')}</button>
-        <button type="button" class="btn btn-primary" data-action="generate">${t('studio.dialog.script.generate')}</button>
-      </div>`;
-    el.dialogRoot.appendChild(dialog);
-    el.dialogRoot.hidden = false;
-    const field = (name) => dialog.querySelector(`[data-field="${name}"]`);
-    dialog.querySelector('[data-action="cancel"]').addEventListener('click', () => {
-      el.dialogRoot.hidden = true;
-    });
-    dialog.querySelector('[data-action="generate"]').addEventListener('click', async () => {
-      const maxDurationValue = field('maxDuration').value.trim();
-      el.dialogRoot.hidden = true;
-      let cues = [];
-      const done = await withBusy('studio.busy.script', async (step) => {
-        await step('studio.busy.apply', 0.3);
-        // output + script + fit-to-duration are one user action: one undo step
-        store.beginTransaction('generate script');
-        try {
-          store.commands.setOutput({
-            maxDuration: maxDurationValue === '' ? null : Number(maxDurationValue) || null,
-            overflow: field('overflow').value,
-          });
-          const nextOptions = {
-            intro: field('intro').checked,
-            reveal: { enabled: field('reveal').checked, which: field('which').value, order: (reveal.order || 'grid') },
-            stats: { enabled: field('stats').checked, items: stats.items || undefined },
-            topSongs: { enabled: field('topSongs').checked, n: Number(field('topCount').value) || 0, by: topSongs.by || ['plays', 'likes'] },
-            completion: field('completion').checked,
-            outro: field('outro').checked,
-            timing: { perCue: Number(field('perCue').value) || 2.8, gap: Number(field('gap').value) || 0, introLen: timing.introLen || 3.5, outroLen: timing.outroLen || 3 },
-          };
-          cues = SA.scriptGen.build(evaluation(), doc.dataset, nextOptions, i18n.t, SA.format);
-          store.commands.generateScript(cues, nextOptions);
-          const generatedDoc = project();
-          if (generatedDoc && generatedDoc.output && generatedDoc.output.maxDuration && SA.duration) {
-            store.dispatch({
-              label: 'fit to max duration',
-              areas: ['script'],
-              do(projectDoc) {
-                SA.duration.fit(projectDoc);
-              },
-            });
-          }
-        } finally {
-          store.endTransaction();
-        }
-        return true;
-      }).catch(() => {
-        toast('studio.toast.error');
-        return false;
-      });
-      if (done) toast('studio.toast.scriptGenerated', { n: cues.length });
-    });
-  }
-
-  async function saveImage(aspect, type) {
-    const doc = project();
-    if (!doc || !doc.dataset) {
-      toast('studio.toast.needData');
-      return;
-    }
-    try {
-      const profile = doc.dataset.profile || {};
-      const avatar = await platform.loadImage(profile.avatar, profile.displayName || profile.handle);
-      const blob = await SA.card.renderToBlob({
-        dataset: doc.dataset,
-        evaluation: evaluation(),
-        aspect,
-        theme: SA.card.theme(doc),
-        images: { avatar },
-        lang: i18n.lang(),
-        generatedAt: new Date().toISOString(),
-        type,
-        quality: 0.92,
-      });
-      const extension = type === 'image/png' ? 'png' : 'jpg';
-      const result = await platform.saveFile({ blob, name: `suno-${aspect.replace(':', 'x')}.${extension}`, mime: type });
-      if (!result || result.canceled) toast('studio.toast.cancelled');
-      else toast('studio.toast.imageSaved', { path: result.filePath });
-    } catch {
-      toast('studio.toast.error');
-    }
   }
 
   async function openProject() {
@@ -1946,12 +1812,6 @@
     welcomeDismissed = false;
     SA.io.newProject({ lang: i18n.lang() });
     toast('studio.toast.newProject');
-  }
-
-  function openAchievements() {
-    const doc = project();
-    if (SA.platform && SA.platform.openHome) SA.platform.openHome(doc ? doc.dataset : null, i18n.lang());
-    else window.location.href = 'index.html';
   }
 
   function setAspect(aspect) {

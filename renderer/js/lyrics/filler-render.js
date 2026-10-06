@@ -1126,7 +1126,7 @@
       { key: 'radius', kind: 'number', min: 0.3, max: 1.2, step: 0.05, default: 1 },
       { key: 'aspect', kind: 'number', min: 0.5, max: 2, step: 0.05, default: 1 },
       { key: 'spinRate', kind: 'number', min: 0, max: 2, step: 0.05, default: 1 },
-      { key: 'stroke', kind: 'select', options: ['hair', 'thin', 'med', 'bold', 'heavy'], default: 'med' },
+      { key: 'stroke', kind: 'stroke', options: ['hair', 'thin', 'med', 'bold', 'heavy'], min: 0.1, max: 256, step: 0.1, default: 'med' },
       { key: 'lineStyle', kind: 'select', options: ['auto', ...((figures && figures.LINE_STYLES) || ['solid'])], default: 'auto' },
       { key: 'lineCap', kind: 'select', options: (figures && figures.LINE_CAPS) || ['round'], default: 'round' },
       { key: 'weightVar', kind: 'number', min: 0, max: 1, step: 0.05, default: 0 },

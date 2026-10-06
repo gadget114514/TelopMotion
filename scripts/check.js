@@ -5,7 +5,7 @@ const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 
 const ROOT = path.resolve(__dirname, '..');
-const DIRS = ['lib', 'scripts', 'renderer/js'];
+const DIRS = ['scripts', 'renderer/js'];
 const ROOT_FILES = ['main.js', 'preload.js'];
 const SKIP_DIRS = new Set(['vendor', 'node_modules', '.git']);
 

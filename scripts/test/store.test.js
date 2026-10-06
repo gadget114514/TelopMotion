@@ -1162,6 +1162,50 @@ test('move / split / trim shift and clamp the backdrop segments', () => {
   assert.equal(store.state.project.clips.find((entry) => entry.id === 'bd1').segments, undefined);
 });
 
+test('moveClip and duplicateClip shift the figure sub-beats', () => {
+  clipBeatFixture();
+  store.commands.moveClip('fig1', 2);
+  let fig = store.state.project.clips.find((clip) => clip.id === 'fig1');
+  assert.equal(fig.start, 2);
+  assert.deepEqual(fig.spec.params.beats.map((beat) => [beat.start, beat.end]), [[2, 4], [4, 6]]);
+  const copyId = store.commands.duplicateClip('fig1');
+  const copy = store.state.project.clips.find((clip) => clip.id === copyId);
+  assert.equal(copy.start, 6);
+  assert.deepEqual(copy.spec.params.beats.map((beat) => [beat.start, beat.end]), [[6, 8], [8, 10]]);
+});
+
+test('trimming a backdrop longer re-cuts the grown edge at the lyric beats', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  store.commands.varyClipSegment('bd1', 1);
+  store.commands.trimClip('bd1', 'end', 6);
+  const clip = store.state.project.clips.find((entry) => entry.id === 'bd1');
+  assert.equal(clip.end, 6);
+  assert.equal(clip.segments.length, 3);
+  assert.ok(clip.segments[1].spec, 'the varied segment keeps its spec');
+  assert.deepEqual([clip.segments[2].start, clip.segments[2].end], [4, 6]);
+  assert.equal(clip.segments[2].spec, undefined, 'the grown edge is a plain span');
+});
+
+test('trimClip with baseSegments keeps the own spec across a shrink-and-grow drag', () => {
+  clipBeatFixture();
+  store.state.project.beats.c1 = [
+    { id: 'c1:b0', cueId: 'c1', start: 0, end: 2, kind: 'page', text: 'a' },
+    { id: 'c1:b1', cueId: 'c1', start: 2, end: 4, kind: 'page', text: 'b' },
+  ];
+  store.commands.varyClipSegment('bd1', 1);
+  const base = JSON.parse(JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'bd1').segments));
+  store.commands.trimClip('bd1', 'end', 1, { baseSegments: base });
+  store.commands.trimClip('bd1', 'end', 4, { baseSegments: base });
+  const clip = store.state.project.clips.find((entry) => entry.id === 'bd1');
+  assert.equal(clip.end, 4);
+  assert.equal(clip.segments.length, 2);
+  assert.ok(clip.segments[1].spec, 'the varied segment survives the drag');
+});
+
 test('resetClipSegment drops the last own look and removes the segments', () => {
   clipBeatFixture();
   store.state.project.beats.c1 = [

@@ -2,7 +2,7 @@
 
 > English version: [README.md](README.md) ｜ 日本語版（このファイル）
 
-**歌詞動画**のためのデスクトップアプリで、サブモードとして Suno 実績カード生成機能を備えています。アプリは **Studio** で起動します：歌詞をインポート（SRT / LRC / JSON）し、ビートに再構成し、WebGL2 シェーダーでベクターテキストを描画し、すべてのグループをアニメーションさせ、動画として書き出します。**Suno プロフィール JSON は任意**です — データなしでプロジェクトを開始することも、実績ショーケース用の *File → TelopMotion (static image)…* を開くこともできます。
+**歌詞動画**のためのデスクトップアプリです。アプリは **Studio** で起動します：歌詞をインポート（SRT / LRC / JSON）し、ビートに再構成し、WebGL2 シェーダーでベクターテキストを描画し、すべてのグループをアニメーションさせ、動画として書き出します。データなしでプロジェクトを開始して手動で構築することも、歌詞をインポートして始めることもできます。
 
 ![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-1025%20passed-brightgreen)
 
@@ -19,24 +19,18 @@
 - **ページレイアウトエンジン**: 雑誌風・ファッション誌風・新聞風・twoColumn・原稿用紙・xCard・chatBubble・cafeMenu・score・poster など出版スタイルのレイアウトプリセット 20 種。自動リージョンフロー、背景デコ、ペーパースタイリング付き
 - **検索可能なテキストエフェクトカタログ**: 日英の名前・説明で検索できる 376 以上の厳選テキストエフェクト、手続き型シェイプ装飾、0.1×〜10× に拡縮可能なフレームグラフィック、動的フォント変形
 - **テーマ・ディレクション操作**: 楽曲セクションに追従する AI 支援の自動演出、スケールランダム化用テーマダイアログ、weird 閾値（`>= 0.6`）付きリピート拡縮、独立した背景クロック、分類済み 800 ルックのランタイムプール
-- **実績カード（サブ）**: 32 の実績をロック／アンロック状態とライブ進捗バーで表示。16:9（1920x1080）と 9:16（1080x1920）のカードを JPG / PNG でワンクリック保存。Studio の Output メニューまたは実績ページから保存
 - **歌詞のインポートとエクスポート**: SRT（タグ、`{fx:}`、スパン）、LRC（メタデータ、オフセット、複数タグ、インストゥルメンタルマーカー、拡張ワードタグ）、JSON（配列、`cues`、Whisper `segments`、秒 / ms / 時刻文字列）
-- **凝縮パネルレイアウト**: 1920x1080 向けに調整 — 32 のバッジすべてをスクロールなしで表示
-- **プロフィール統計**: 曲数、総再生数、いいね、コメント、カタログ長、フォロワー
-- **ソート・検索可能な楽曲リスト**: インライン音声プレビューと Suno へのリンク付き
 - **5 言語対応**: 英語、日本語、スペイン語、フランス語、ロシア語（自動検出・切り替え可能）
-- **プロフィールごとのローカルキャッシュ**: 次回起動時は即時読み込み、その後バックグラウンドで更新
-- **すべてのネットワークアクセスは Electron メインプロセスで実行**: CORS 問題なし、プロキシ不要
 
 ## Studio 概要
 
 ![Studio overview](snapshot/studio-overview.png)
 
-アプリは直接 Studio で起動します。Suno データは任意です：**Start without data** をクリックするか、歌詞をインポート（SRT / LRC / JSON）するか、Suno プロフィール JSON をインポートして実績からスクリプトを生成します。実績カードページはサブモード（*File → TelopMotion (static image)…*）で、現在のプロジェクトを失わずに Studio に戻せます。
+アプリは直接 Studio で起動します。**Start without data** をクリックして手動でプロジェクトを構築するか、歌詞をインポート（SRT / LRC / JSON）して始めます。
 
 Studio は歌詞を映像プロジェクトに変換します：
 
-- **Media**（左）: プロフィールデータとビートが追従するテンポ（info タブ）、サムネイル付き映像インポートと背景／前景レイヤー操作（video タブ）、トラック読み込み後の波形・スペクトログラム付き音声タブ（audio タブ）
+- **Media**（左）: プロジェクト情報とビートが追従するテンポ（info タブ）、サムネイル付き映像インポートと背景／前景レイヤー操作（video タブ）、トラック読み込み後の波形・スペクトログラム付き音声タブ（audio タブ）
 - **Preview**（中央）: 出力解像度でのレンダリング結果。オーバーレイに選択ハンドル、ガイド、`path` レイアウト点を表示し、音声と映像レイヤーの同時再生に対応
 - **プレビュー品質**（*Settings → Quality*、auto / full / half / quarter）: シーンは実際にレンダリングされるフレームサイズでレイアウトされるため、品質を下げると異なるスケールではなく、同じ絵を小さく高速に描画します（720p / 1440p の映像書き出しや 2D フォールバックも同じ規則）
 - **Inspector**（右）: キュー／ビートのテキストとタイミング、有効／無効スイッチ、ヘッダーの削除ボタン、テキストスタイル、トランスフォーム、ページレイアウトダイアログ、モーションプリセット検索ダイアログ、テキスト背景／フレームグラフィック操作、各エフェクトグループのパラメータとモーション（in / out イージング、スタッガー、ループ）、カラー、◆ キーフレームボタン
@@ -131,16 +125,12 @@ Animation · Layout · Page · Enter · Exit · Hold · Location · Fill · Edge
 - **レイヤー**: 背景・前景レイヤー（単色、アルファ付き画像、映像レイヤー）。不透明度、ブレンドモード（normal / add / multiply / screen）、フィット（cover / contain / stretch / actual）、角丸、トランスフォーム（位置／拡縮／回転）付き。Settings → Layers… で編集
 - **プロジェクト**: `.telopmotion.json`
 - **歌詞**: SRT（`{fx:}` タグあり／なし）、LRC、JSON（Output → Export lyrics）
-- **実績カード**: 16:9 JPG / PNG、9:16 JPG / PNG（Output メニュー）
 
 ## Web 版（GitHub Pages）
 
 同じ `renderer/` フォルダを静的サイトとして配信します。Web ビルドでは：
 
-- `studio.html` を直接開けばプロフィール JSON なしで動作します：データなしで開始するか、歌詞をインポート（SRT / LRC / JSON）します。プロジェクトファイルと自動保存は IndexedDB に格納されます。
-- Suno への**ネットワーク fetch はありません** — 実績ページ（`index.html`）は JSON インポートのみ
-- JSON ファイルはデスクトップアプリ（Load 後に *Export profile data*）か下記 CLI スクレイパーで取得します
-- 実績ページに JSON をドロップしてバッジを構築します。**Open Studio** でデータを Studio に引き継ぎます
+- `studio.html` を直接開けば動作します：データなしで開始するか、歌詞をインポート（SRT / LRC / JSON）します。プロジェクトファイルと自動保存は IndexedDB に格納されます。
 
 ### Pages 設定
 
@@ -164,7 +154,7 @@ npm install
 npm start
 ```
 
-アプリは Studio で開きます。*File → Import lyrics (SRT / LRC / JSON)…* で歌詞をインポートするか、**Start without data** を押して手動でプロジェクトを構築します。実績カードを使うには *File → TelopMotion (static image)…* を開き、`suno.com/@handle` 形式（または `@handle` のみ）のプロフィール URL を貼って Load を押します。**Open Studio** でプロフィールデータを Studio に戻せます。
+アプリは Studio で開きます。*File → Import lyrics (SRT / LRC / JSON)…* で歌詞をインポートするか、**Start without data** を押して手動でプロジェクトを構築します。
 
 ## Windows インストーラーのビルド
 
@@ -179,45 +169,12 @@ npm run dist
 
 ビルドは無署名のため、Windows SmartScreen の警告が出る場合があります。`dist/win-unpacked/` に展開済みアプリが入ります。スモークテスト（`SA_SMOKE=1 SA_SMOKE_LYRICS=1 "dist\win-unpacked\TelopMotion.exe"`）でパッケージ済みバンドルからフォントとベンダーファイルが読み込まれることを検証します。
 
-## コマンドラインスクレイパー
-
-同じ fetch コアを GUI なしで利用できます：
-
-```bash
-node scripts/scrape.js --handle @suno --out suno.json
-node scripts/scrape.js --handle https://suno.com/@suno --max-pages 5 --compact
-```
-
-一括書き出しに便利です。JSON は後からアプリにインポートできます。
-
-## 実績
-
-| カテゴリ | バッジ |
-| --- | --- |
-| Catalog | First Note、Getting Started、Prolific、Centurion、Legend |
-| Plays | First Thousand、Ten Thousand、Hundred Thousand、Millionaire |
-| Likes | First Like、Appreciated、Adored、Beloved |
-| Song Tiers | Hit、Chart Topper、Viral、Anthem |
-| Superlatives | Most Played、Muse、Conversation Starter |
-| Time | Anniversary、Marathon Month、Creator Streak、Early Bird、Night Owl |
-| Diversity | Genre Hopper、Model Collector、Contestant |
-| Community | Followed、Rising Star、Influencer |
-| Hidden Gems | Hidden Gem |
-
-## 仕組み
-
-- メインプロセスが Suno の公開プロフィールエンドポイント（`studio-api.prod.suno.com/api/profiles/{handle}`）を呼び出し、20 曲／ページでページングし、丁寧な遅延と HTTP 429 時の指数バックオフを行います。
-- データは正規化され `%APPDATA%/TelopMotion/cache/` にキャッシュされ、サンドボックス化レンダラーに `contextBridge` IPC API 経由で渡されます。
-- レンダラーは素の HTML / CSS / JS で、厳格な CSP を持ち、独自のネットワークアクセスはありません。
-
 ## プロジェクト構成
 
 ```
 doc/                    アーキテクチャ・設計ドキュメント：page-layout、text-layer、repeat、textdecor2、app-design
 main.js                 Electron メインプロセス：ウィンドウ、IPC、ダイアログ、キャッシュ、自動保存、asset:read
 preload.js              レンダラーに公開する contextBridge API
-lib/suno-core.js        取得・ページング・正規化（CLI と共有）
-scripts/scrape.js       コマンドラインスクレイパー
 scripts/demo30.js       DEMO 30：ルック試聴用の 30 秒ショーケースリール
 scripts/distinct-count.js 知覚的に異なるエフェクト署名のカウント
 scripts/fx400.js        FX 400：代表エフェクトの決定的カタログ＋テストプロジェクト
@@ -229,8 +186,8 @@ scripts/check.js        lib/、scripts/、renderer/js/、main.js、preload.js �
 scripts/vendor.js       opentype / earcut / mp4-muxer / webm-muxer を renderer/vendor にコピー
 scripts/test/           単体テストスイート（node --test で 91 テストファイル、1025 テスト）
 demo/                   生成デモプロジェクト、キューリスト、索引、プレビューシート
-renderer/               UI：index.html（実績カード、サブ）、studio.html（Studio、メイン）、css/、js/
-renderer/js/            共有：format、platform、suno、srt、lrc、lyrics-json、lyrics-file、script-gen、color、achievements
+renderer/               UI：studio.html（Studio）、css/、js/
+renderer/js/            共有：format、platform、srt、lrc、lyrics-json、lyrics-file、color
 renderer/js/lyrics/     歌詞エンジン：font、geometry、textflow、layout、page-layout、page-scene、motion、scene、engine、looks、shape-ops、pattern-variants、text-effects-data
 renderer/js/lyrics/effects/  グループ別エフェクト記述子＋ CPU 実装（animation、layout、page、enter、exit、hold、location、fill、edge、post、background、color、text-bg、vary、repeat）
 renderer/js/lyrics/gl/  WebGL2：context、shaders、SDF、passes、layers
@@ -247,7 +204,7 @@ npm run check                       # 全スクリプトの構文チェック（
 npm test                            # 単体テストスイート（91 テストファイルで 1025 テスト）
 npm run demo30                      # 30 秒ショーケースリール生成（scripts/demo30.js）
 npm run distinct                    # 知覚的に異なるエフェクト署名のカウント
-SA_SMOKE=1 npx electron .           # @suno 取得、バッジ描画、5 言語チェック
+SA_SMOKE=1 npx electron .           # 起動チェック：Studio がコンソールエラーなしで読み込まれること
 SA_SMOKE=1 SA_SMOKE_LYRICS=1 npx electron .   # フォント、ベクターテキスト、穴、音声同期、WebGL フォールバック
 SA_SMOKE=1 SA_SMOKE_BEATS=1 npx electron .    # SRT 再構成：ページ、リピート、リキャップ、孤児
 SA_SMOKE=1 SA_SMOKE_MOTION=1 npx electron .   # フォーメーション、enter / exit / hold タイプ、変形
@@ -345,12 +302,6 @@ Studio の *Random look* ボタン（Generate メニュー、タイムライン 
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — 日英名・カテゴリ・説明付き 376 以上のテキストエフェクトカタログ
 - [doc/repeat-design.md](doc/repeat-design.md) — リピート配置設計と固有署名カウント
 - [doc/app-design.md](doc/app-design.md) — Studio・歌詞動画エンジン全体アーキテクチャ
-
-## 注意
-
-- Suno の API は非公式で変更される可能性があります。結合は `lib/suno-core.js` に隔離されています。
-- 本プロジェクトは非公式で、Suno とは無関係です。
-- 公開プロフィールデータのみ読み取ります。アカウント、トークン、認証情報は使いません。
 
 ## ライセンス
 

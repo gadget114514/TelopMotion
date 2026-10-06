@@ -81,6 +81,54 @@ SA.controls = (() => {
 
   // --- numbers -----------------------------------------------------------------
 
+  // Figure line width: a preset name (hair..heavy) or a free multiplier
+  // 0.1..256. The select keeps the old presets, the number + slider edit the
+  // resolved factor; a preset pick stores the name, a numeric edit stores the
+  // number so old projects keep drawing identically.
+  function strokeControl(param, value, onChange) {
+    const presets = (typeof SA !== 'undefined' && SA.figures && SA.figures.STROKES) || { hair: 0.4, thin: 0.7, med: 1.3, bold: 2.2, heavy: 3.2 };
+    const min = param.min != null ? param.min : 0.1;
+    const max = param.max != null ? param.max : 256;
+    const step = param.step != null ? param.step : 0.1;
+    const isPreset = typeof value === 'string' && presets[value] != null;
+    let factor = isPreset ? presets[value] : Number(value);
+    if (!Number.isFinite(factor)) factor = presets[param.default] != null ? presets[param.default] : 1;
+    factor = Math.max(min, Math.min(max, factor));
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-stroke';
+    const select = document.createElement('select');
+    const presetOptions = param.options && param.options.length ? param.options : Object.keys(presets);
+    for (const name of presetOptions) {
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = valueLabel(name);
+      select.appendChild(option);
+    }
+    const custom = document.createElement('option');
+    custom.value = '__custom';
+    custom.textContent = `${valueLabel('custom')} (${factor})`;
+    select.appendChild(custom);
+    select.value = isPreset ? String(value) : '__custom';
+    select.addEventListener('keydown', (event) => event.stopPropagation());
+    select.addEventListener('change', () => {
+      if (select.value === '__custom') {
+        onChange(Math.round(factor * 100) / 100);
+        return;
+      }
+      onChange(select.value);
+    });
+    wrap.appendChild(select);
+    const numericParam = { min, max, step, default: factor };
+    const number = numberControl(numericParam, factor, (next) => {
+      const clamped = Math.max(min, Math.min(max, Number(next)));
+      const rounded = Math.round(clamped * 100) / 100;
+      custom.textContent = `${valueLabel('custom')} (${rounded})`;
+      onChange(rounded);
+    });
+    wrap.appendChild(number);
+    return wrap;
+  }
+
   function numberControl(param, value, onChange, options) {
     const opts = options || {};
     const wrap = document.createElement('div');
@@ -432,6 +480,7 @@ SA.controls = (() => {
   const CONTROL_FOR = {
     number: (param, value, onChange) => numberControl(param, value, onChange),
     int: (param, value, onChange) => numberControl(param, value, (next) => onChange(Math.round(next))),
+    stroke: (param, value, onChange) => strokeControl(param, value, onChange),
     select: (param, value, onChange) =>
       selectControl(param, value, onChange, (param.options || []).map((option) => ({ value: option, label: valueLabel(option) }))),
     bool: (param, value, onChange) => boolControl(value, onChange),

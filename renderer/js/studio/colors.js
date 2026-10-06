@@ -521,100 +521,6 @@ SA.colors = (() => {
     if (typeof SA.paletteDialog !== 'undefined' && SA.paletteDialog) SA.paletteDialog.open('project');
   }
 
-  // --- card theme --------------------------------------------------------------
-
-  function themeDialog() {
-    const root = document.getElementById('dialog-root');
-    const doc = project();
-    if (!root || !doc) return;
-    const theme = SA.card.theme(doc);
-    const fields = ['bg', 'bgSoft', 'card', 'card2', 'line', 'text', 'muted', 'accent', 'accent2'];
-    root.innerHTML = '';
-    const dialog = document.createElement('div');
-    dialog.className = 'dialog dialog-wide';
-    dialog.innerHTML = `<h3>${t('color.cardTheme')}</h3>`;
-    const grid = document.createElement('div');
-    grid.className = 'theme-grid';
-    const preview = document.createElement('canvas');
-    preview.width = 320;
-    preview.height = 180;
-    preview.className = 'theme-preview';
-    const state = { ...theme, tiers: { ...theme.tiers } };
-    const drawPreview = () => {
-      const ctx = preview.getContext('2d');
-      ctx.fillStyle = state.bg;
-      ctx.fillRect(0, 0, preview.width, preview.height);
-      ctx.fillStyle = state.card;
-      ctx.fillRect(12, 14, preview.width - 24, preview.height - 28);
-      ctx.fillStyle = state.accent;
-      ctx.fillRect(12, 14, preview.width - 24, 6);
-      ctx.fillStyle = state.text;
-      ctx.font = '600 18px sans-serif';
-      ctx.fillText('TelopMotion', 24, 58);
-      ctx.font = '12px sans-serif';
-      ctx.fillStyle = state.muted;
-      ctx.fillText('@handle · 32 achievements', 24, 78);
-      ctx.fillStyle = state.card2;
-      ctx.fillRect(24, 96, 80, 60);
-      ctx.fillStyle = state.accent2;
-      ctx.fillRect(116, 96, 80, 60);
-      ctx.fillStyle = state.line;
-      ctx.fillRect(208, 96, 80, 60);
-    };
-    for (const field of fields) {
-      const row = document.createElement('div');
-      row.className = 'ctrl-row';
-      const label = document.createElement('label');
-      label.className = 'ctrl-label';
-      label.textContent = field;
-      const swatch = swatchButton(state[field], () => {
-        openPicker({
-          value: state[field],
-          anchor: swatch,
-          onChange(value) {
-            state[field] = typeof value === 'string' ? value : value.value;
-            swatch.style.background = state[field];
-            drawPreview();
-          },
-        });
-      });
-      row.appendChild(label);
-      row.appendChild(swatch);
-      grid.appendChild(row);
-    }
-    const actions = document.createElement('div');
-    actions.className = 'dialog-actions';
-    const cancel = document.createElement('button');
-    cancel.type = 'button';
-    cancel.className = 'btn btn-mini';
-    cancel.textContent = t('color.cancel');
-    cancel.addEventListener('click', () => {
-      root.hidden = true;
-    });
-    const apply = document.createElement('button');
-    apply.type = 'button';
-    apply.className = 'btn btn-primary btn-mini';
-    apply.textContent = t('color.apply');
-    apply.addEventListener('click', () => {
-      SA.store.dispatch({
-        label: 'card theme',
-        areas: ['style'],
-        do(projectDoc) {
-          projectDoc.cardTheme = { ...state, tiers: { ...state.tiers } };
-        },
-      });
-      root.hidden = true;
-    });
-    actions.appendChild(cancel);
-    actions.appendChild(apply);
-    dialog.appendChild(grid);
-    dialog.appendChild(preview);
-    dialog.appendChild(actions);
-    root.appendChild(dialog);
-    root.hidden = false;
-    drawPreview();
-  }
-
   // A palette of plain random RGB colours: no axes, roles or contrast repair.
   function randomPalette(size) {
     const channel = () => Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
@@ -633,7 +539,6 @@ SA.colors = (() => {
     openPicker,
     openGradient,
     paletteDialog,
-    themeDialog,
     closePopover,
     recents,
   };

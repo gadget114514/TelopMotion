@@ -2,7 +2,7 @@
 
 > 日本語版: [README.ja.md](README.ja.md) ｜ English (this file)
 
-A desktop app for **lyric videos**. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. **Suno profile JSON is optional** — start a project without any data, or open *File → TelopMotion (static image)…* for the achievement showcase.
+A desktop app for **lyric videos**. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. Start a project without any data and build it by hand, or import lyrics to get going.
 
 ![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-1025%20passed-brightgreen)
 
@@ -19,24 +19,18 @@ A desktop app for **lyric videos**. The app opens in the **Studio**: import lyri
 - **Page layout engine**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
 - **Searchable text effects catalog**: 376+ curated text effects searchable by name and description in English and Japanese, procedural shape decorations, scalable frame graphics (0.1×–10×), and dynamic font deformations
 - **Theme & directing controls**: AI-assisted automatic direction following song sections, theme dialogue controls for scale randomization, repeat scaling with weird threshold (`>= 0.6`), independent background clocks, and a classified 800-look runtime pool
-- **Achievement card (secondary)**: 32 achievements with locked/unlocked states and live progress bars, one-click cards in 16:9 (1920x1080) and 9:16 (1080x1920) as JPG or PNG, saved from the Studio's Output menu or the achievement page
 - **Lyrics import & export**: SRT (tags, `{fx:}`, spans), LRC (metadata, offset, multiple tags, instrumental markers, enhanced word tags), and JSON (arrays, `cues`, Whisper `segments`, seconds/ms/time strings)
-- **Condensed panel layout**: tuned for 1920x1080 — all 32 badges visible without scrolling
-- **Profile stats**: songs, total plays, likes, comments, catalog length, followers
-- **Sortable, searchable song list**: with inline audio preview and links to Suno
 - **Five languages**: English, Japanese, Spanish, French, Russian (auto-detected, switchable)
-- **Local cache per profile**: instant load on next launch, then refreshes in the background
-- **All network access happens in the Electron main process**: no CORS issues and no proxy needed
 
 ## Studio overview
 
 ![Studio overview](snapshot/studio-overview.png)
 
-The app opens directly in the Studio. Suno data is optional: click **Start without data**, import lyrics (SRT / LRC / JSON), or import a Suno profile JSON to generate a script from the achievements. The achievement card page is a secondary mode (*File → TelopMotion (static image)…*), and it can open the Studio again without losing the current project.
+The app opens directly in the Studio. Click **Start without data** to build a project by hand, or import lyrics (SRT / LRC / JSON) to get going.
 
 The Studio turns lyrics into a video project:
 
-- **Media** (left): profile data and the tempo the beats follow (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
+- **Media** (left): project info and the tempo the beats follow (info tab), video imports with thumbnails and background/foreground layer actions (video tab), and the audio tab with waveform and spectrogram once a track is loaded
 - **Preview** (center): the rendered frame at output resolution; the overlay shows selection handles, guides and the `path` layout points, with simultaneous audio and video layer playback
 - **Preview quality** (*Settings → Quality*, auto/full/half/quarter): the scene is laid out at the size of the frame actually rendered, so a reduced quality draws the same picture smaller and faster instead of a differently-scaled one (the same rule covers video exports at 720p/1440p and the 2D fallback)
 - **Inspector** (right): cue/beat text and timing, enable/disable switches, delete buttons in headers, text style, transform, page layout dialog, motion presets search dialog, text background / frame graphics controls, every effect group with its parameters and motion (in/out easing, stagger, loop), colors, and ◆ keyframe buttons
@@ -131,16 +125,12 @@ One SRT cue becomes **beats**: split into pages that fit the safe area (with lan
 - **Layers**: background and foreground layers (solid colours, images with alpha, and video layers), each with opacity, blend mode (normal/add/multiply/screen), fit (cover/contain/stretch/actual), corner radius and transform (position/scale/rotation); edit them in Settings → Layers…
 - **Project**: `.telopmotion.json`
 - **Lyrics**: SRT (with or without `{fx:}` tags), LRC and JSON (Output → Export lyrics)
-- **Achievement card**: 16:9 JPG/PNG and 9:16 JPG/PNG (Output menu)
 
 ## Web version (GitHub Pages)
 
 The same `renderer/` folder is served as a static site. In the web build:
 
-- Opening `studio.html` directly works without any profile JSON: start without data or import lyrics (SRT / LRC / JSON). Project files and autosave live in IndexedDB.
-- There is **no network fetch to Suno** — the achievement page (`index.html`) only imports JSON
-- Get a JSON file with the desktop app (Load, then *Export profile data*) or with the CLI scraper below
-- Drop the JSON on the achievement page to build the badges; **Open Studio** hands the data over to the Studio
+- Opening `studio.html` directly works: start without data or import lyrics (SRT / LRC / JSON). Project files and autosave live in IndexedDB.
 
 ### Pages setup
 
@@ -164,7 +154,7 @@ npm install
 npm start
 ```
 
-The app opens in the Studio. Import lyrics with *File → Import lyrics (SRT / LRC / JSON)…*, or press **Start without data** to build a project by hand. To use the achievement card, open *File → TelopMotion (static image)…*, paste a profile URL in the format `suno.com/@handle` (or just `@handle`) and press Load; **Open Studio** brings the profile data back into the Studio.
+The app opens in the Studio. Import lyrics with *File → Import lyrics (SRT / LRC / JSON)…*, or press **Start without data** to build a project by hand.
 
 ## Building Windows installers
 
@@ -179,45 +169,12 @@ Outputs to `dist/`:
 
 Builds are unsigned, so Windows SmartScreen may show a warning. `dist/win-unpacked/` contains the unpacked app; the smoke tests (`SA_SMOKE=1 SA_SMOKE_LYRICS=1 "dist\win-unpacked\TelopMotion.exe"`) verify that fonts and vendor files load from the packaged bundle.
 
-## Command-line scraper
-
-The same fetch core is available without the GUI:
-
-```bash
-node scripts/scrape.js --handle @suno --out suno.json
-node scripts/scrape.js --handle https://suno.com/@suno --max-pages 5 --compact
-```
-
-Useful for bulk exports; the JSON can be imported into the app later.
-
-## Achievements
-
-| Category | Badges |
-| --- | --- |
-| Catalog | First Note, Getting Started, Prolific, Centurion, Legend |
-| Plays | First Thousand, Ten Thousand, Hundred Thousand, Millionaire |
-| Likes | First Like, Appreciated, Adored, Beloved |
-| Song Tiers | Hit, Chart Topper, Viral, Anthem |
-| Superlatives | Most Played, Muse, Conversation Starter |
-| Time | Anniversary, Marathon Month, Creator Streak, Early Bird, Night Owl |
-| Diversity | Genre Hopper, Model Collector, Contestant |
-| Community | Followed, Rising Star, Influencer |
-| Hidden Gems | Hidden Gem |
-
-## How it works
-
-- The main process calls Suno's public profile endpoint (`studio-api.prod.suno.com/api/profiles/{handle}`), paginating 20 songs per page with polite delays and exponential backoff on HTTP 429.
-- Data is normalized, cached under `%APPDATA%/TelopMotion/cache/`, and passed to the sandboxed renderer over a `contextBridge` IPC API.
-- The renderer is plain HTML/CSS/JS with a strict CSP and no network access of its own.
-
 ## Project layout
 
 ```
 doc/                    Architecture & design docs: page-layout, text-layer, repeat, textdecor2, app-design
 main.js                 Electron main process: window, IPC, dialogs, cache, autosave, asset:read
 preload.js              contextBridge API exposed to the renderer
-lib/suno-core.js        Fetching, pagination, normalization (shared with the CLI)
-scripts/scrape.js       Command-line scraper
 scripts/demo30.js       DEMO 30: 30-second showcase reels for auditioning looks
 scripts/distinct-count.js Counts perceptually distinct effect signatures
 scripts/fx400.js        FX 400: deterministic catalog of representative effects + test project
@@ -229,8 +186,8 @@ scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js,
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
 scripts/test/           Unit test suite (91 test files, 1025 tests via node --test)
 demo/                   Generated demo projects, cue lists, indexes and preview sheets
-renderer/               UI: index.html (achievement card, secondary), studio.html (Studio, main), css/, js/
-renderer/js/            Shared: format, platform, suno, srt, lrc, lyrics-json, lyrics-file, script-gen, color, achievements
+renderer/               UI: studio.html (Studio), css/, js/
+renderer/js/            Shared: format, platform, srt, lrc, lyrics-json, lyrics-file, color
 renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, page-layout, page-scene, motion, scene, engine, looks, shape-ops, pattern-variants, text-effects-data
 renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group (animation, layout, page, enter, exit, hold, location, fill, edge, post, background, color, text-bg, vary, repeat)
 renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes, layers
@@ -247,7 +204,7 @@ npm run check                       # syntax check every script (223 files ok)
 npm test                            # unit test suite (1025 tests across 91 test files)
 npm run demo30                      # build 30-second showcase reels (scripts/demo30.js)
 npm run distinct                    # count perceptually distinct effect signatures
-SA_SMOKE=1 npx electron .           # fetch @suno, render badges, check the 5 languages
+SA_SMOKE=1 npx electron .           # boot check: Studio loads with no console errors
 SA_SMOKE=1 SA_SMOKE_LYRICS=1 npx electron .   # fonts, vector text, holes, audio sync, WebGL fallback
 SA_SMOKE=1 SA_SMOKE_BEATS=1 npx electron .    # SRT restructuring: pages, repeats, recap, orphans
 SA_SMOKE=1 SA_SMOKE_MOTION=1 npx electron .   # formations, enter/exit/hold types, deform
@@ -345,12 +302,6 @@ Comprehensive architecture, design, and effect documentation:
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — Catalog of 376+ text effects with Japanese and English names, categories, and descriptions
 - [doc/repeat-design.md](doc/repeat-design.md) — Repeat arrangement design and distinct signature count
 - [doc/app-design.md](doc/app-design.md) — Overall Studio and lyric video engine architecture
-
-## Notes
-
-- Suno's API is undocumented and may change; all coupling is isolated in `lib/suno-core.js`.
-- This project is unofficial and not affiliated with Suno.
-- Only public profile data is read; no accounts, tokens, or credentials are used.
 
 ## License
 

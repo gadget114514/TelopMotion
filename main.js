@@ -246,7 +246,9 @@ function registerIpc() {
   ipcMain.handle('home:open', async (event, payload) => {
     try {
       const win = BrowserWindow.fromWebContents(event.sender);
-      await win.loadFile(path.join(__dirname, 'renderer', 'index.html'), { query: { home: '1' } });
+      // The standalone achievements page (renderer/index.html) was removed;
+      // home opens the Studio like studio:open does.
+      await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
       win.webContents.send('studio:data', { data: payload && payload.dataset, lang: payload && payload.lang });
       return ok(true);
     } catch (error) {

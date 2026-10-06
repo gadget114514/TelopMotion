@@ -87,6 +87,17 @@
   const OUTS = ['shrink', 'fade', 'burstOut'];
   const SYNCS = ['beat', 'free', 'text'];
   const STROKES = { hair: 0.4, thin: 0.7, med: 1.3, bold: 2.2, heavy: 3.2 };
+  // the free line-width multiplier: a preset name above or a number 0.1..256.
+  // 1 is the historic motif draw, 256 turns a hairline into a full-bleed slab.
+  const STROKE_MIN = 0.1;
+  const STROKE_MAX = 256;
+  function strokeFactor(value) {
+    if (value == null || value === '') return 1;
+    if (STROKES[value] != null) return STROKES[value];
+    const number = Number(value);
+    if (!Number.isFinite(number)) return 1;
+    return Math.max(STROKE_MIN, Math.min(STROKE_MAX, number));
+  }
   const TAU = Math.PI * 2;
   // line decoration vocabulary: style -> [pattern code, ratio]. The codes are
   // gl/shaders.js pattern words (the same table the proc decorations draw from).
@@ -100,8 +111,8 @@
   const LINE_CAPS = ['round', 'butt', 'square', 'dot', 'arrow'];
 
   // Optional per-clip tuning (the filler params): count 3..24, radius 0.3..1.2,
-  // aspect 0.5..2, spinRate 0..2, stroke thin / med / bold. Unset values keep
-  // the historic draw of the motif.
+  // aspect 0.5..2, spinRate 0..2, stroke preset name or 0.1..256. Unset values
+  // keep the historic draw of the motif.
   function tuningOf(params) {
     const p = params || {};
     const number = (value, fallback) => (value == null || value === '' ? fallback : num(value, fallback));
@@ -110,7 +121,7 @@
       radius: Math.max(0.3, Math.min(1.2, number(p.radius, 1))),
       aspect: Math.max(0.5, Math.min(2, number(p.aspect, 1))),
       spinRate: Math.max(0, Math.min(2, number(p.spinRate, 1))),
-      stroke: STROKES[p.stroke] == null ? 1 : STROKES[p.stroke],
+      stroke: strokeFactor(p.stroke),
     };
   }
 
@@ -379,7 +390,11 @@
     if (opts.enabled != null) params.enabled = Boolean(opts.enabled);
     else if (opts.disabled != null) params.enabled = !opts.disabled;
     // optional motif tuning (the filler editor writes these)
-    if (opts.stroke != null) params.stroke = STROKES[opts.stroke] != null ? opts.stroke : 'med';
+    if (opts.stroke != null && opts.stroke !== '') {
+      if (STROKES[opts.stroke] != null) params.stroke = opts.stroke;
+      else if (Number.isFinite(Number(opts.stroke))) params.stroke = round(strokeFactor(opts.stroke), 2);
+      else params.stroke = 'med';
+    }
     for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
       if (opts[key] != null && Number.isFinite(Number(opts[key]))) params[key] = Number(opts[key]);
     }
@@ -2770,7 +2785,9 @@
     if (info.adsr && info.adsrLevel != null && info.adsrLevel > 0) {
       scale *= 1 + info.adsr.punch * Math.max(0, info.adsrLevel - info.adsr.sustain);
     }
-    const state = { box, opacity, scale, rotation, pulse, drift, variant, tuning, spinRate: spinHold ? tuning.spinRate : 1, morphPhase: null };
+    // geometry is built at stroke 1: the single scaleStroke pass below carries
+    // the full multiplier, so a param value reads as-is (256 means 256x).
+    const state = { box, opacity, scale, rotation, pulse, drift, variant, tuning: { ...tuning, stroke: 1 }, spinRate: spinHold ? tuning.spinRate : 1, morphPhase: null };
     const morphHold = beat.move.hold === 'morph';
     let shapes;
     if (morphHold) {
@@ -3016,5 +3033,5 @@
   }
 
   return { MOTIFS, BOLD_MOTIFS, PROC, SCENE_MOTIFS, GEO_MOTIFS, FIELD_MOTIFS, SIM_MOTIFS, setStatefulAllowed, isStatefulAllowed, CAMERAS_2D, procKey,
- procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, LINE_STYLES, LINE_CAPS, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
+ procTooSimilar, procGenome, embedFigure, figureDistance, EMBED_KEYS, PROC_PLAIN_LAYER, PROC_LISTS: { layouts: PROC_LAYOUTS, kinds: PROC_KINDS, warps: PROC_WARPS, roles: PROC_ROLES, sizeRules: PROC_SIZE_RULES, colorRules: PROC_COLOR_RULES, motions: PROC_MOTIONS, sizeDists: PROC_SIZE_DISTS, aligns: PROC_ALIGNS, outlines: PROC_OUTLINES, symmetries: PROC_SYMMETRIES }, randomTier, INS, HOLDS, OUTS, SYNCS, STROKES, STROKE_MIN, STROKE_MAX, strokeFactor, LINE_STYLES, LINE_CAPS, SHAPE_COUNT_MAX, generate, shapeRangeOf, drawShapeCount, blank, drawList, subBeats, beatAt, transformShapes, tuningOf };
 });

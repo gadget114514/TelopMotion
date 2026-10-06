@@ -98,7 +98,7 @@ Use these terms in code (identifiers), UI (i18n keys), docs, and commits. Don't 
 ### Rendering and output
 | Term | 日本語 | Definition |
 |---|---|---|
-| **Layer** | レイヤー | A media layer in the `background` or `foreground` zone (video, image, card, solid, noise), §7.11. |
+| **Layer** | レイヤー | A media layer in the `background` or `foreground` zone (video, image, card, solid, noise), §7.11. Display strings call it a *sheet* (Settings → Sheets…, Add sheet); the project model (`project.layers`), `layer:<id>` keyframe paths and store commands keep the `layer` name. |
 | **Lyrics layer** | 歌詞レイヤー | The transparent layer where Beats, Fillers and Credits are drawn. |
 | **Pass** | パス | One GPU rendering step: text, SDF, fill, edge, post, bloom, composite. |
 | **Target** (post) | 対象 | `text` (only the lyrics layer) or `frame` (the whole frame). |
@@ -111,12 +111,11 @@ Use these terms in code (identifiers), UI (i18n keys), docs, and commits. Don't 
 ### Application
 | Term | 日本語 | Definition |
 |---|---|---|
-| **Achievements page** | 実績ページ | The existing `index.html` view. |
 | **Studio** | スタジオ | The editor page `studio.html`, §10. |
 | **Menu bar, Media panel, Preview, Transport, Inspector, Timeline** | メニューバー、メディアパネル、プレビュー、トランスポート、インスペクター、タイムライン | The Studio's areas (§10.2–10.7). Transport = play/pause/seek controls. |
 | **Track / Clip / Lane** | トラック／クリップ／レーン | Timeline row / block on a row (cue, beat, filler, credit, layer) / per-property keyframe row. |
 | **Project** | プロジェクト | The `.telopmotion.json` document, §4.5. |
-| **Handoff** | 受け渡し | Passing the dataset from the Achievements page to the Studio. |
+| **Handoff** | 受け渡し | Passing a dataset into the Studio (`studio:open` IPC in Electron, IndexedDB `handoff` on web). |
 | **Platform** | プラットフォーム | `SA.platform`: the Electron or web adapter, §5.1. |
 | **Electron build / Web build** | Electron版／Web版 | The same `renderer/`, run in Electron or served from GitHub Pages. |
 
@@ -126,16 +125,12 @@ Use these terms in code (identifiers), UI (i18n keys), docs, and commits. Don't 
 
 | File | What it is / what to know |
 |---|---|
-| `main.js` | Electron main process. IPC handlers: `suno:fetch`, `suno:clip`, `cache:list/load/remove/export/import`, `snapshot:save`, `app:open-external`. `renderSnapshotJpeg()` opens a hidden 1920×1080 window on `renderer/snapshot.html` and runs `capturePage`. The `SA_SMOKE*` environment variables run self-tests. A `webRequest` hook adds `Referer: https://suno.com/` for `*.suno.ai` and `*.cloudfront.net`. |
+| `main.js` | Electron main process. Window loads `renderer/studio.html`. IPC handlers: `file:open/save`, `file:stream-*`, `image:fetch`, `asset:read`, `studio:open`, `home:open`, `studio:autosave-*`, `recent:*`, `app:info/open-external`, `devtools:*`, `debug:*`. The `SA_SMOKE*` environment variables run self-tests. |
 | `preload.js` | Exposes `window.sunoApi` through `contextBridge`. The renderer runs sandboxed, with `contextIsolation`. |
-| `lib/suno-core.js` | Node fetch core, shared with `scripts/scrape.js`. Produces the **Dataset** (§4.1). |
-| `renderer/index.html` | Main UI. CSP meta: `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' https: data:; media-src https:; font-src 'self'; connect-src 'none'; …`. Loads `js/config.js, i18n.js, achievements.js, suno.js, app.js`. |
-| `renderer/js/app.js` | UI controller. `init()` **returns early if `window.sunoApi` is missing**; this must change for the web build. Exposes `window.SA.app = { init, openProfile, refresh, currentData }`. Has format helpers `fmtInt`, `fmtNum`, `fmtDate`, `fmtDuration`, `fmtClock`. |
-| `renderer/js/achievements.js` | `SA.achievements.evaluate(dataset)` returns the **Evaluation** (§4.2). `SA.achievements.categories` lists 9 categories. There are 32 badges, each with `tier` ∈ white/bronze/silver/gold. |
+| `index.html` (root) | Redirects to `renderer/studio.html` (keeps the hash), so GitHub Pages and branch deployments serve the Studio. |
+| `renderer/js/studio/app.js` | Studio shell controller: menus, actions, shortcuts, dialogs, welcome screen. Exposes `window.SA.studio`. |
 | `renderer/js/i18n.js` | `SA.i18n = { languages, t(key, vars), tPlural(key, n, vars), set(code), lang(), locale(), detect() }`. `DICT` is nested by language, and `{var}` placeholders are filled in. |
-| `renderer/js/suno.js` | `SA.data`: a promise wrapper over `window.sunoApi` that unwraps `{ok, data | error:{code, message}}`. |
-| `renderer/js/snapshot.js`, `renderer/snapshot.html`, `renderer/css/snapshot.css` | DOM version of the 1920×1080 card. **These are the visual reference for the canvas card.** Header: avatar, name, verified, handle, description, 6 stat tiles, completion ring. Grid: 32 badges. Footer: generated date, "unofficial". |
-| `renderer/js/config.js` | `SA.config = { version, songUrl(id), profileUrl(handle) }`. |
+| `renderer/js/config.js` | `SA.config = { version, keywordEmphasis }`. |
 | `package.json` | `npm start`, `npm run dist` (electron-builder, Windows NSIS + portable, `files` includes `renderer/**/*`), `npm run check` (a list of `node --check` calls). |
 
 **Colors from `snapshot.css`:**
@@ -183,12 +178,12 @@ SA.foo = (() => {
   return { /* api */ };
 });
 ```
-The pure modules are: `easing`, `tween`, `rng`, `color`, `srt`, `script-gen`, `layout`, `motion`, `geometry`, `effects/registry`, and `project`. They must not touch the DOM, `window`, or WebGL.
+The pure modules are: `easing`, `tween`, `rng`, `color`, `srt`, `layout`, `motion`, `geometry`, `effects/registry`, and `project`. They must not touch the DOM, `window`, or WebGL.
 
 **Other conventions:**
 - 2-space indent, single quotes, semicolons, `const`/`let`, no classes unless they clearly help. Small named functions, following the existing style.
 - Errors are coded, like `Object.assign(new Error('msg'), { code: 'x' })`, and IPC replies use the `{ok, data|error}` shape (see `main.js` `ok`/`fail`).
-- Replace the `check` script with `scripts/check.js`, which runs `node --check` over every `.js` in `lib/`, `scripts/`, and `renderer/js/`, and skips `renderer/vendor/`.
+- Replace the `check` script with `scripts/check.js`, which runs `node --check` over every `.js` in `scripts/` and `renderer/js/`, and skips `renderer/vendor/`.
 - Tests use Node's built-in runner: `node --test "scripts/test/**/*.test.js"`. Add `"test": "node --test \"scripts/test/**/*.test.js\""` to `package.json` (a plain directory argument is broken on Node 24 + Windows).
 
 ---
@@ -1085,11 +1080,11 @@ The layers on a video track are `slot: 'video'` with `trackId`, so several video
 - **Preview** shows a checkerboard behind transparent areas (View → Transparency grid).
 
 **UI:**
-- Media panel: a **Video** tab (import .mp4/.webm/.mov if the browser can decode it), with thumbnails from a frame at 1 s. Each entry adds itself as a background layer, a foreground layer, or onto a video track.
-- Drag media onto the timeline's **Background**, **Foreground**, or **Video** track, or use the right-click menu "Set as background/foreground".
-- Timeline: **Foreground layers** rows above the cue track, and **Background layers** rows below it. Clips can be dragged, trimmed and reordered, with lock and eye toggles.
+- Media panel: a **Video** tab (import .mp4/.webm/.mov if the browser can decode it), with thumbnails from a frame at 1 s. Each entry adds itself as a background sheet, a foreground sheet, or onto a video track.
+- Drag media onto the timeline's **Background**, **Foreground**, or **Video** track, or use the "As background" / "As foreground" actions.
+- Timeline: **Foreground sheet** rows above the cue track, and **Background sheet** rows below it. Clips can be dragged, trimmed and reordered, with lock and eye toggles.
 - Timeline toolbar: **+ Video** adds a video track. Its header shows `· CK` while the key is on, and its right-click menu toggles the key and moves the track up / down past any other kind — that move is what decides what draws behind the video.
-- Inspector: select a layer (in the timeline or by clicking the preview with Alt) → Layer sections: Source, Time (start/end/trim/speed/loop), Fit and Transform, Opacity and Blend, Filters, Motion in/out.
+- Inspector: select a sheet (in the timeline or by clicking the preview with Alt) → Sheets sections: Source, Time (start/end/trim/speed/loop), Fit and Transform, Opacity and Blend, Filters, Motion in/out.
 - Inspector: select a video track → its Chroma key section (on/off, key colour, similarity, smoothness, spill) plus an Add video… picker over the imported media.
 
 ### 7.12 Color group
@@ -1140,7 +1135,7 @@ An SRT has stretches with no text: before the first line, between lines, and aft
   longGap: { threshold: 8, spec: FillerSpec },                                 // different filler for long instrumental breaks
   clips: { [gapKey]: FillerSpec & { pinned: true } }                           // manual per-gap edits; gapKey = prevCueId+'>'+nextCueId
 }
-FillerSpec = { type, params, motion: MotionDef, color: ColorSet, layer: 'lyrics'|'foreground', showCredits: bool }
+FillerSpec = { type, params }
 ```
 
 **Filler types** (all written in-house; the `in`/`out` of the MotionDef fade or animate the filler in and out of the gap):
