@@ -281,7 +281,7 @@
         "id": "mo15_17",
         "start": 48,
         "end": 51,
-        "text": "389. blurOut · blurOut\nあいうえお Aiueo 0123",
+        "text": "389. ブラーアウト (Blur Out) · blurOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -296,7 +296,7 @@
         "id": "mo15_18",
         "start": 51,
         "end": 54,
-        "text": "390. burn · burnAway\nあいうえお Aiueo 0123",
+        "text": "390. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -311,7 +311,7 @@
         "id": "mo15_19",
         "start": 54,
         "end": 57,
-        "text": "391. dissolve · dissolve\nあいうえお Aiueo 0123",
+        "text": "391. ディゾルブ (Dissolve) · dissolve\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -326,7 +326,7 @@
         "id": "mo15_20",
         "start": 57,
         "end": 60,
-        "text": "392. ditherOut · dither\nあいうえお Aiueo 0123",
+        "text": "392. ディザアウト (Dither Out) · dither\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -341,7 +341,7 @@
         "id": "mo15_21",
         "start": 60,
         "end": 63,
-        "text": "393. explode · explode\nあいうえお Aiueo 0123",
+        "text": "393. エクスプロード (Explode) · explode\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -356,7 +356,7 @@
         "id": "mo15_22",
         "start": 63,
         "end": 66,
-        "text": "394. fadeGlowOut · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
+        "text": "394. フェードグローアウト (Fade Glow Out) · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -371,7 +371,7 @@
         "id": "mo15_23",
         "start": 66,
         "end": 69,
-        "text": "395. fadeOut · fade\nあいうえお Aiueo 0123",
+        "text": "395. フェードアウト (Fade Out) · fade\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -386,7 +386,7 @@
         "id": "mo15_24",
         "start": 69,
         "end": 72,
-        "text": "396. flyOut · slide\nあいうえお Aiueo 0123",
+        "text": "396. フライアウト (Fly Out) · slide\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -401,7 +401,7 @@
         "id": "mo15_25",
         "start": 72,
         "end": 75,
-        "text": "397. geometryOut · geometry\nあいうえお Aiueo 0123",
+        "text": "397. ジオメトリーアウト (Geometry Out) · geometry\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -416,7 +416,7 @@
         "id": "mo15_26",
         "start": 75,
         "end": 78,
-        "text": "398. melt · melt\nあいうえお Aiueo 0123",
+        "text": "398. メルト (Melt) · melt\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
@@ -2147,10 +2147,10 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "389. blurOut · blurOut\nあいうえお Aiueo 0123",
+        "text": "389. ブラーアウト (Blur Out) ·\nblurOutあいうえお Aiueo 0123",
         "lines": [
-          "389. blurOut · blurOut",
-          "あいうえお Aiueo 0123"
+          "389. ブラーアウト (Blur Out) ·",
+          "blurOutあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2164,9 +2164,9 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "390. burn · burnAway\nあいうえお Aiueo 0123",
+        "text": "390. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
         "lines": [
-          "390. burn · burnAway",
+          "390. バーン (Burn) · burnAway",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2181,10 +2181,10 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "391. dissolve · dissolve\nあいうえお Aiueo 0123",
+        "text": "391. ディゾルブ (Dissolve) ·\ndissolveあいうえお Aiueo 0123",
         "lines": [
-          "391. dissolve · dissolve",
-          "あいうえお Aiueo 0123"
+          "391. ディゾルブ (Dissolve) ·",
+          "dissolveあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2198,10 +2198,10 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "392. ditherOut · dither\nあいうえお Aiueo 0123",
+        "text": "392. ディザアウト (Dither Out) ·\nditherあいうえお Aiueo 0123",
         "lines": [
-          "392. ditherOut · dither",
-          "あいうえお Aiueo 0123"
+          "392. ディザアウト (Dither Out) ·",
+          "ditherあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2215,10 +2215,10 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "393. explode · explode\nあいうえお Aiueo 0123",
+        "text": "393. エクスプロード (Explode) ·\nexplodeあいうえお Aiueo 0123",
         "lines": [
-          "393. explode · explode",
-          "あいうえお Aiueo 0123"
+          "393. エクスプロード (Explode) ·",
+          "explodeあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2226,18 +2226,32 @@
     ],
     "mo15_22": [
       {
-        "id": "mo15_22:single0",
+        "id": "mo15_22:page1",
         "cueId": "mo15_22",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 63,
-        "end": 66,
-        "text": "394. fadeGlowOut · fade [softness:\n0.6 glow:0.4]あいうえお Aiueo 0123",
+        "end": 64.19828408007626,
+        "text": "394. フェードグローアウト (Fade Glow Out)",
         "lines": [
-          "394. fadeGlowOut · fade [softness:",
-          "0.6 glow:0.4]あいうえお Aiueo 0123"
+          "394. フェードグローアウト (Fade Glow Out)"
         ],
-        "fontScale": 0.96,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_22:page2",
+        "cueId": "mo15_22",
+        "kind": "page",
+        "index": 2,
+        "start": 64.19828408007626,
+        "end": 66,
+        "text": " · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · fade [softness:0.6 glow:0.4]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2249,10 +2263,10 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "395. fadeOut · fade\nあいうえお Aiueo 0123",
+        "text": "395. フェードアウト (Fade Out) ·\nfadeあいうえお Aiueo 0123",
         "lines": [
-          "395. fadeOut · fade",
-          "あいうえお Aiueo 0123"
+          "395. フェードアウト (Fade Out) ·",
+          "fadeあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2266,10 +2280,10 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "396. flyOut · slide\nあいうえお Aiueo 0123",
+        "text": "396. フライアウト (Fly Out) ·\nslideあいうえお Aiueo 0123",
         "lines": [
-          "396. flyOut · slide",
-          "あいうえお Aiueo 0123"
+          "396. フライアウト (Fly Out) ·",
+          "slideあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2283,12 +2297,12 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "397. geometryOut · geometry\nあいうえお Aiueo 0123",
+        "text": "397. ジオメトリーアウト (Geometry Out\n) · geometryあいうえお Aiueo 0123",
         "lines": [
-          "397. geometryOut · geometry",
-          "あいうえお Aiueo 0123"
+          "397. ジオメトリーアウト (Geometry Out",
+          ") · geometryあいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
@@ -2300,9 +2314,9 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "398. melt · melt\nあいうえお Aiueo 0123",
+        "text": "398. メルト (Melt) · melt\nあいうえお Aiueo 0123",
         "lines": [
-          "398. melt · melt",
+          "398. メルト (Melt) · melt",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2325,6 +2339,12 @@
       }
     ],
     "mo15_16": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo15_22": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"

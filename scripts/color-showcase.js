@@ -112,7 +112,7 @@ function secondsFor(section) {
 }
 
 function schemeSpecFor(scheme) {
-  const colors = PLANE_COLORS.slice();
+  const colors = schemeColorsFor(scheme);
   return {
     spec: {
       type: 'split',
@@ -128,6 +128,29 @@ function schemeSpecFor(scheme) {
     },
     colors,
   };
+}
+
+// Per-scheme plane colours from one base hue. split.js paints the `colors`
+// list in order and never reads `scheme`, so passing the same base list for
+// every scheme renders six identical cues. Derive the three planes with the
+// palette-roles hue angles instead (same source as moods.splitColors).
+function schemeColorsFor(scheme) {
+  const base = PLANE_COLORS[1] || PLANE_COLORS[0];
+  const shift = paletteRolesMod && typeof paletteRolesMod.shift === 'function'
+    ? paletteRolesMod.shift
+    : null;
+  if (!shift) return PLANE_COLORS.slice();
+  try {
+    if (scheme === 'analogous') return [base, shift(base, 30, 1, 0.08), shift(base, -30, 1, -0.06)];
+    if (scheme === 'complementary') return [base, shift(base, 180, 1, 0.05), shift(base, 150, 0.9, 0.12)];
+    if (scheme === 'triad') return [base, shift(base, 120, 1, 0.05), shift(base, 240, 1, -0.05)];
+    if (scheme === 'splitComplementary') return [base, shift(base, 150, 1, 0.08), shift(base, 210, 1, -0.04)];
+    if (scheme === 'neutralAccent') return [shift(base, 0, 0.12, 0.05), shift(base, 0, 0.1, -0.06), shift(base, 180, 0.9, 0.1)];
+    // tonal: same hue, stepped lightness so the three planes still separate
+    return [base, shift(base, 0, 0.9, 0.12), shift(base, 0, 0.85, -0.1)];
+  } catch {
+    return PLANE_COLORS.slice();
+  }
 }
 
 // One palette per family: a deterministic draw pinned to the neutral axes,

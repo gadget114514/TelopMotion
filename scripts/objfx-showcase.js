@@ -123,6 +123,12 @@ const BEND_DRIFT = { type: 'drift', enabled: true, params: { vx: 0.8, vy: 0 } };
 const BEND_BOB = { type: 'floatBob', enabled: true, params: { amp: 0.04, speed: 0.9 } };
 const DISP_DRIFT = { type: 'drift', enabled: true, params: { vx: 0.7, vy: 0 } };
 const DISP_BOB = { type: 'floatBob', enabled: true, params: { amp: 0.03, speed: 0.8 } };
+// velocity map follows the velocity direction while linearX follows the X
+// position, so a purely horizontal drift reads identically (mirrored lag
+// field, same magnitudes after recentering). The velocity cue alone gets a
+// stronger vertical bob so its velocity vector turns diagonal and the two
+// lattices diverge.
+const DISP_BOB_VELOCITY = { type: 'floatBob', enabled: true, params: { amp: 0.05, speed: 1.0 } };
 
 function clone(value) {
   return value == null ? value : JSON.parse(JSON.stringify(value));
@@ -158,12 +164,13 @@ function styleFor(type, variant) {
     };
   }
   if (type === 'timeDisplacement') {
+    const bob = variant && variant.id === 'velocity' ? clone(DISP_BOB_VELOCITY) : clone(DISP_BOB);
     return {
       color: { fill: { kind: 'solid', value: look.fill, alpha: 1 } },
       animation: clone(STATIC_ANIMATION),
       enter: clone(MOVE_ENTER),
       exit: clone(MOVE_EXIT),
-      hold: [clone(DISP_DRIFT), clone(DISP_BOB), { type, enabled: true, params: holdParams(type, variant) }],
+      hold: [clone(DISP_DRIFT), bob, { type, enabled: true, params: holdParams(type, variant) }],
     };
   }
   return {

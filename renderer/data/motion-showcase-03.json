@@ -356,7 +356,7 @@
         "id": "mo03_22",
         "start": 63,
         "end": 66,
-        "text": "76. bob · floatBob\nあいうえお Aiueo 0123",
+        "text": "76. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -371,7 +371,7 @@
         "id": "mo03_23",
         "start": 66,
         "end": 69,
-        "text": "77. breathe · breathing\nあいうえお Aiueo 0123",
+        "text": "77. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -386,7 +386,7 @@
         "id": "mo03_24",
         "start": 69,
         "end": 72,
-        "text": "78. ditherLoop · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
+        "text": "78. ディザループ (Dither Loop) · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -401,7 +401,7 @@
         "id": "mo03_25",
         "start": 72,
         "end": 75,
-        "text": "79. drift · drift\nあいうえお Aiueo 0123",
+        "text": "79. ドリフト (Drift) · drift\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -416,7 +416,7 @@
         "id": "mo03_26",
         "start": 75,
         "end": 78,
-        "text": "80. fadeBreathe · fade [softness:0.8 glow:0.2]\nあいうえお Aiueo 0123",
+        "text": "80. フェードブレス (Fade Breathe) · fade [softness:0.8 glow:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -431,7 +431,7 @@
         "id": "mo03_27",
         "start": 78,
         "end": 81,
-        "text": "81. geometryLoop · geometry [shape:hexagon feather:0.08 spin:30]\nあいうえお Aiueo 0123",
+        "text": "81. ジオメトリーループ (Geometry Loop) · geometry [shape:hexagon feather:0.08 spin:30]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
@@ -2231,9 +2231,9 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "76. bob · floatBob\nあいうえお Aiueo 0123",
+        "text": "76. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
         "lines": [
-          "76. bob · floatBob",
+          "76. ボブ (Bob) · floatBob",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2248,9 +2248,9 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "77. breathe · breathing\nあいうえお Aiueo 0123",
+        "text": "77. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
         "lines": [
-          "77. breathe · breathing",
+          "77. ブレス (Breathe) · breathing",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2259,18 +2259,32 @@
     ],
     "mo03_24": [
       {
-        "id": "mo03_24:single0",
+        "id": "mo03_24:page1",
         "cueId": "mo03_24",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 69,
-        "end": 72,
-        "text": "78. ditherLoop · dither [levels:3\njitter:0.4 speed:3]あいうえお Aiueo 0123",
+        "end": 70.10225303292894,
+        "text": "78. ディザループ (Dither Loop)",
         "lines": [
-          "78. ditherLoop · dither [levels:3",
-          "jitter:0.4 speed:3]あいうえお Aiueo 0123"
+          "78. ディザループ (Dither Loop)"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_24:page2",
+        "cueId": "mo03_24",
+        "kind": "page",
+        "index": 2,
+        "start": 70.10225303292894,
+        "end": 72,
+        "text": " · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · dither [levels:3 jitter:0.4 speed:3]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2282,9 +2296,9 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "79. drift · drift\nあいうえお Aiueo 0123",
+        "text": "79. ドリフト (Drift) · drift\nあいうえお Aiueo 0123",
         "lines": [
-          "79. drift · drift",
+          "79. ドリフト (Drift) · drift",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2293,18 +2307,32 @@
     ],
     "mo03_26": [
       {
-        "id": "mo03_26:single0",
+        "id": "mo03_26:page1",
         "cueId": "mo03_26",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 75,
-        "end": 78,
-        "text": "80. fadeBreathe · fade [softness:\n0.8 glow:0.2]あいうえお Aiueo 0123",
+        "end": 76.154296875,
+        "text": "80. フェードブレス (Fade Breathe)",
         "lines": [
-          "80. fadeBreathe · fade [softness:",
-          "0.8 glow:0.2]あいうえお Aiueo 0123"
+          "80. フェードブレス (Fade Breathe)"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_26:page2",
+        "cueId": "mo03_26",
+        "kind": "page",
+        "index": 2,
+        "start": 76.154296875,
+        "end": 78,
+        "text": " · fade [softness:0.8 glow:0.2]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · fade [softness:0.8 glow:0.2]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2315,10 +2343,11 @@
         "kind": "page",
         "index": 1,
         "start": 78,
-        "end": 79.27272727272727,
-        "text": "81. geometryLoop · geometry [shape",
+        "end": 79.90450054884742,
+        "text": "81. ジオメトリーループ (Geometry Loop)\n · geometry [shape:hexagon feather:0.",
         "lines": [
-          "81. geometryLoop · geometry [shape"
+          "81. ジオメトリーループ (Geometry Loop)",
+          " · geometry [shape:hexagon feather:0."
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2328,11 +2357,11 @@
         "cueId": "mo03_27",
         "kind": "page",
         "index": 2,
-        "start": 79.27272727272727,
+        "start": 79.90450054884742,
         "end": 81,
-        "text": ":hexagon feather:0.08 spin:30]\nあいうえお Aiueo 0123",
+        "text": "08 spin:30]\nあいうえお Aiueo 0123",
         "lines": [
-          ":hexagon feather:0.08 spin:30]",
+          "08 spin:30]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2361,6 +2390,24 @@
       }
     ],
     "mo03_21": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo03_24": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo03_26": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo03_27": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"

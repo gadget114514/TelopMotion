@@ -197,7 +197,7 @@ function plan(pictures) {
   push('spin', 'transform.rotate', '0° → 360°', pictures.paper, {}, { 'transform.rotate': keyTrack(0, 360) });
   push('spin', 'transform.scale', '0.15 → 0.55', pictures.star, {}, { 'transform.scale': keyTrack(0.15, 0.55) });
   push('spin', 'transform.scaleX/scaleY', 'X 0.5 → 1.6 / Y 1.6 → 0.5', pictures.ball, {}, { 'transform.scaleX': keyTrack(0.5, 1.6), 'transform.scaleY': keyTrack(1.6, 0.5) });
-  push('anchor', 'transform.anchorX/anchorY', '中央 (0.5, 0.5) で一回転', pictures.paper, { anchorX: 0.5, anchorY: 0.5 }, { 'transform.rotate': keyTrack(0, 360) });
+  push('anchor', 'transform.anchorX/anchorY', '右端 (1, 0.5) で一回転', pictures.paper, { anchorX: 1, anchorY: 0.5 }, { 'transform.rotate': keyTrack(0, 360) });
   push('anchor', 'transform.anchorX/anchorY', '左上 (0, 0) で一回転', pictures.paper, { anchorX: 0, anchorY: 0 }, { 'transform.rotate': keyTrack(0, 360) });
   push('fade', 'opacity', '1 → 0', pictures.star, {}, { opacity: keyTrack(1, 0) });
   push('crop', 'crop.l', '左 0 → 0.55', pictures.ball, {}, { 'crop.l': keyTrack(0, 0.55) });

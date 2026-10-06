@@ -371,7 +371,7 @@ function buildShowcase(options) {
       // page cues paint their own paper from the ink, so they keep the light
       // text; every other cue gets dark text on a bright ornament (see
       // decorColorFor) so the shape under review actually reads
-      style: slot.style ? { ...decorColorFor(slot.index), ...clone(slot.style) } : clone(slot.style),
+      style: slot.style ? { ...decorColorFor(slot.index), ...clone(slot.style) } : (slot.pageType ? { page: { type: slot.pageType, params: {} } } : null),
       pageType: slot.pageType,
     });
     t = end;

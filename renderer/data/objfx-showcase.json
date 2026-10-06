@@ -1404,8 +1404,8 @@
           "type": "floatBob",
           "enabled": true,
           "params": {
-            "amp": 0.03,
-            "speed": 0.8
+            "amp": 0.05,
+            "speed": 1
           }
         },
         {

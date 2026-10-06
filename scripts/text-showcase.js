@@ -150,11 +150,32 @@ function styleFor(section, type, variant) {
   return style;
 }
 
+// Demo colours for background types whose registry defaults are empty.
+// `solid` / `plain` default to null (theme bg), the gradients to null stops
+// and `pattern` / `shapes` to a null line colour: with bare defaults the
+// cues would all read as the same dark plate. `cover` / `image` need real
+// media assets and intentionally keep their empty ids.
+const BG_DEMO_PARAMS = {
+  solid: { color: '#2e4a7d' },
+  plain: { color: '#3a5f9e' },
+  gradient: { colors: ['#23365f', '#3a5f9e', '#8a6b33'] },
+  noiseGradient: { colors: ['#1c2b4d', '#2e4a7d', '#4d7dd1'] },
+  pattern: { color: '#8d96ab' },
+  shapes: { color: '#ff8a3d' },
+};
+
 function clipSpecFor(section, type) {
   if (section !== 'background') return null;
   if (type === 'none') return null;
   const resolved = fx.withDefaults({ type, params: {} }, 'background');
-  return { type, params: clone(resolved ? resolved.params : {}) };
+  const params = clone(resolved ? resolved.params : {});
+  const demo = BG_DEMO_PARAMS[type];
+  if (demo) {
+    for (const [key, value] of Object.entries(demo)) {
+      if (params[key] == null || params[key] === '') params[key] = clone(value);
+    }
+  }
+  return { type, params };
 }
 
 function cueId(index) {
@@ -485,6 +506,7 @@ module.exports = {
   FILL_COLOR,
   FILL_COLOR2,
   CATEGORY_FOR_FILL,
+  BG_DEMO_PARAMS,
   styleFor,
   clipSpecFor,
   clonesFor,

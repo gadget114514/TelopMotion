@@ -20425,7 +20425,7 @@
       "spec": {
         "type": "solid",
         "params": {
-          "color": null
+          "color": "#2e4a7d"
         }
       },
       "opacity": 1,
@@ -20441,7 +20441,7 @@
       "spec": {
         "type": "solid",
         "params": {
-          "color": null
+          "color": "#2e4a7d"
         }
       },
       "opacity": 1,
@@ -20457,7 +20457,7 @@
       "spec": {
         "type": "solid",
         "params": {
-          "color": null
+          "color": "#2e4a7d"
         }
       },
       "opacity": 1,
@@ -20473,7 +20473,7 @@
       "spec": {
         "type": "solid",
         "params": {
-          "color": null
+          "color": "#2e4a7d"
         }
       },
       "opacity": 1,
@@ -20489,7 +20489,7 @@
       "spec": {
         "type": "plain",
         "params": {
-          "color": null
+          "color": "#3a5f9e"
         }
       },
       "opacity": 1,
@@ -20505,7 +20505,7 @@
       "spec": {
         "type": "plain",
         "params": {
-          "color": null
+          "color": "#3a5f9e"
         }
       },
       "opacity": 1,
@@ -20521,7 +20521,7 @@
       "spec": {
         "type": "plain",
         "params": {
-          "color": null
+          "color": "#3a5f9e"
         }
       },
       "opacity": 1,
@@ -20537,7 +20537,7 @@
       "spec": {
         "type": "plain",
         "params": {
-          "color": null
+          "color": "#3a5f9e"
         }
       },
       "opacity": 1,
@@ -20553,7 +20553,11 @@
       "spec": {
         "type": "gradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#23365f",
+            "#3a5f9e",
+            "#8a6b33"
+          ],
           "direction": "toBottom",
           "scale": 1.15,
           "speed": 0.1,
@@ -20573,7 +20577,11 @@
       "spec": {
         "type": "gradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#23365f",
+            "#3a5f9e",
+            "#8a6b33"
+          ],
           "direction": "toBottom",
           "scale": 1.15,
           "speed": 0.1,
@@ -20593,7 +20601,11 @@
       "spec": {
         "type": "gradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#23365f",
+            "#3a5f9e",
+            "#8a6b33"
+          ],
           "direction": "toBottom",
           "scale": 1.15,
           "speed": 0.1,
@@ -20613,7 +20625,11 @@
       "spec": {
         "type": "gradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#23365f",
+            "#3a5f9e",
+            "#8a6b33"
+          ],
           "direction": "toBottom",
           "scale": 1.15,
           "speed": 0.1,
@@ -20633,7 +20649,11 @@
       "spec": {
         "type": "noiseGradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#1c2b4d",
+            "#2e4a7d",
+            "#4d7dd1"
+          ],
           "scale": 3,
           "speed": 0.2,
           "glow": null
@@ -20652,7 +20672,11 @@
       "spec": {
         "type": "noiseGradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#1c2b4d",
+            "#2e4a7d",
+            "#4d7dd1"
+          ],
           "scale": 3,
           "speed": 0.2,
           "glow": null
@@ -20671,7 +20695,11 @@
       "spec": {
         "type": "noiseGradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#1c2b4d",
+            "#2e4a7d",
+            "#4d7dd1"
+          ],
           "scale": 3,
           "speed": 0.2,
           "glow": null
@@ -20690,7 +20718,11 @@
       "spec": {
         "type": "noiseGradient",
         "params": {
-          "colors": null,
+          "colors": [
+            "#1c2b4d",
+            "#2e4a7d",
+            "#4d7dd1"
+          ],
           "scale": 3,
           "speed": 0.2,
           "glow": null
@@ -20946,7 +20978,7 @@
           "size": 1,
           "speed": 0.4,
           "opacity": 0.55,
-          "color": null
+          "color": "#8d96ab"
         }
       },
       "opacity": 1,
@@ -20967,7 +20999,7 @@
           "size": 1,
           "speed": 0.4,
           "opacity": 0.55,
-          "color": null
+          "color": "#8d96ab"
         }
       },
       "opacity": 1,
@@ -20988,7 +21020,7 @@
           "size": 1,
           "speed": 0.4,
           "opacity": 0.55,
-          "color": null
+          "color": "#8d96ab"
         }
       },
       "opacity": 1,
@@ -21009,7 +21041,7 @@
           "size": 1,
           "speed": 0.4,
           "opacity": 0.55,
-          "color": null
+          "color": "#8d96ab"
         }
       },
       "opacity": 1,
@@ -21030,7 +21062,7 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
+          "color": "#ff8a3d"
         }
       },
       "opacity": 1,
@@ -21051,7 +21083,7 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
+          "color": "#ff8a3d"
         }
       },
       "opacity": 1,
@@ -21072,7 +21104,7 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
+          "color": "#ff8a3d"
         }
       },
       "opacity": 1,
@@ -21093,7 +21125,7 @@
           "count": 10,
           "speed": 0.8,
           "opacity": 0.45,
-          "color": null
+          "color": "#ff8a3d"
         }
       },
       "opacity": 1,

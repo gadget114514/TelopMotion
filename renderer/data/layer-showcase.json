@@ -106,13 +106,13 @@
         "id": "lk_006",
         "start": 25,
         "end": 30,
-        "text": "6. transform.anchorX/anchorY（中央 (0.5, 0.5) で一回転）\n切り絵キーフレーム見本 Sample",
+        "text": "6. transform.anchorX/anchorY（右端 (1, 0.5) で一回転）\n切り絵キーフレーム見本 Sample",
         "meta": {
           "kind": "layer-showcase",
           "index": 6,
           "section": "anchor",
           "value": "transform.anchorX/anchorY",
-          "detail": "中央 (0.5, 0.5) で一回転"
+          "detail": "右端 (1, 0.5) で一回転"
         }
       },
       {
@@ -387,30 +387,16 @@
     ],
     "lk_006": [
       {
-        "id": "lk_006:page1",
+        "id": "lk_006:single0",
         "cueId": "lk_006",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 25,
-        "end": 27.604456824512535,
-        "text": "6. transform.anchorX/anchorY（中央 (0.",
-        "lines": [
-          "6. transform.anchorX/anchorY（中央 (0."
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "lk_006:page2",
-        "cueId": "lk_006",
-        "kind": "page",
-        "index": 2,
-        "start": 27.604456824512535,
         "end": 30,
-        "text": "5, 0.5) で一回転）\n切り絵キーフレーム見本 Sample",
+        "text": "6. transform.anchorX/anchorY（右端 (1, 0.\n5) で一回転）切り絵キーフレーム見本 Sample",
         "lines": [
-          "5, 0.5) で一回転）",
-          "切り絵キーフレーム見本 Sample"
+          "6. transform.anchorX/anchorY（右端 (1, 0.",
+          "5) で一回転）切り絵キーフレーム見本 Sample"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -913,7 +899,7 @@
       "end": 30,
       "transform": {
         "scale": 0.3,
-        "anchorX": 0.5,
+        "anchorX": 1,
         "anchorY": 0.5
       },
       "filter": {

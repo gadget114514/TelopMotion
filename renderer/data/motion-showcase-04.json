@@ -41,7 +41,7 @@
         "id": "mo04_01",
         "start": 0,
         "end": 3,
-        "text": "82. growShrink · pulse [amount:0.18 bpm:90]\nあいうえお Aiueo 0123",
+        "text": "82. 伸縮 (Grow Shrink) · pulse [amount:0.18 bpm:90]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -56,7 +56,7 @@
         "id": "mo04_02",
         "start": 3,
         "end": 6,
-        "text": "83. jelly · jelly\nあいうえお Aiueo 0123",
+        "text": "83. ゼリー (Jelly) · jelly\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -71,7 +71,7 @@
         "id": "mo04_03",
         "start": 6,
         "end": 9,
-        "text": "84. opacityPulse · opacityPulse\nあいうえお Aiueo 0123",
+        "text": "84. 点滅 (Blink) · opacityPulse\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -86,7 +86,7 @@
         "id": "mo04_04",
         "start": 9,
         "end": 12,
-        "text": "85. pulse · pulse\nあいうえお Aiueo 0123",
+        "text": "85. パルス (Pulse) · pulse\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -101,7 +101,7 @@
         "id": "mo04_05",
         "start": 12,
         "end": 15,
-        "text": "86. scanLoop · scanline [lines:10 bandWidth:0.25 depth:0.8]\nあいうえお Aiueo 0123",
+        "text": "86. スキャンループ (Scan Loop) · scanline [lines:10 bandWidth:0.25 depth:0.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -116,7 +116,7 @@
         "id": "mo04_06",
         "start": 15,
         "end": 18,
-        "text": "87. shake · jitter\nあいうえお Aiueo 0123",
+        "text": "87. シェイク (Shake) · jitter\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -131,7 +131,7 @@
         "id": "mo04_07",
         "start": 18,
         "end": 21,
-        "text": "88. stealthLoop · stealth [split:8 glow:0.6 speed:1.5]\nあいうえお Aiueo 0123",
+        "text": "88. ステルスループ (Stealth Loop) · stealth [split:8 glow:0.6 speed:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -146,7 +146,7 @@
         "id": "mo04_08",
         "start": 21,
         "end": 24,
-        "text": "89. sway · sway\nあいうえお Aiueo 0123",
+        "text": "89. スウェイ (Sway) · sway\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -161,7 +161,7 @@
         "id": "mo04_09",
         "start": 24,
         "end": 27,
-        "text": "90. twist · twist\nあいうえお Aiueo 0123",
+        "text": "90. ツイスト (Twist) · twist\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -176,7 +176,7 @@
         "id": "mo04_10",
         "start": 27,
         "end": 30,
-        "text": "91. wave · sineWave\nあいうえお Aiueo 0123",
+        "text": "91. ウェーブ (Wave) · sineWave\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "04",
@@ -1768,12 +1768,12 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "82. growShrink · pulse [amount:0\n.18 bpm:90]あいうえお Aiueo 0123",
+        "text": "82. 伸縮 (Grow Shrink) · pulse [amount\n:0.18 bpm:90]あいうえお Aiueo 0123",
         "lines": [
-          "82. growShrink · pulse [amount:0",
-          ".18 bpm:90]あいうえお Aiueo 0123"
+          "82. 伸縮 (Grow Shrink) · pulse [amount",
+          ":0.18 bpm:90]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1785,9 +1785,9 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "83. jelly · jelly\nあいうえお Aiueo 0123",
+        "text": "83. ゼリー (Jelly) · jelly\nあいうえお Aiueo 0123",
         "lines": [
-          "83. jelly · jelly",
+          "83. ゼリー (Jelly) · jelly",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1802,9 +1802,9 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "84. opacityPulse · opacityPulse\nあいうえお Aiueo 0123",
+        "text": "84. 点滅 (Blink) · opacityPulse\nあいうえお Aiueo 0123",
         "lines": [
-          "84. opacityPulse · opacityPulse",
+          "84. 点滅 (Blink) · opacityPulse",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1819,9 +1819,9 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "85. pulse · pulse\nあいうえお Aiueo 0123",
+        "text": "85. パルス (Pulse) · pulse\nあいうえお Aiueo 0123",
         "lines": [
-          "85. pulse · pulse",
+          "85. パルス (Pulse) · pulse",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1835,10 +1835,10 @@
         "kind": "page",
         "index": 1,
         "start": 12,
-        "end": 13.202970297029703,
-        "text": "86. scanLoop · scanline [lines",
+        "end": 13.202643171806168,
+        "text": "86. スキャンループ (Scan Loop) · scanline",
         "lines": [
-          "86. scanLoop · scanline [lines"
+          "86. スキャンループ (Scan Loop) · scanline"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1848,11 +1848,11 @@
         "cueId": "mo04_05",
         "kind": "page",
         "index": 2,
-        "start": 13.202970297029703,
+        "start": 13.202643171806168,
         "end": 15,
-        "text": ":10 bandWidth:0.25 depth:0.8]\nあいうえお Aiueo 0123",
+        "text": "[lines:10 bandWidth:0.25 depth:0.8]\nあいうえお Aiueo 0123",
         "lines": [
-          ":10 bandWidth:0.25 depth:0.8]",
+          "[lines:10 bandWidth:0.25 depth:0.8]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1867,9 +1867,9 @@
         "index": 0,
         "start": 15,
         "end": 18,
-        "text": "87. shake · jitter\nあいうえお Aiueo 0123",
+        "text": "87. シェイク (Shake) · jitter\nあいうえお Aiueo 0123",
         "lines": [
-          "87. shake · jitter",
+          "87. シェイク (Shake) · jitter",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1878,18 +1878,32 @@
     ],
     "mo04_07": [
       {
-        "id": "mo04_07:single0",
+        "id": "mo04_07:page1",
         "cueId": "mo04_07",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 18,
-        "end": 21,
-        "text": "88. stealthLoop · stealth [split:8 glow\n:0.6 speed:1.5]あいうえお Aiueo 0123",
+        "end": 19.11855670103093,
+        "text": "88. ステルスループ (Stealth Loop)",
         "lines": [
-          "88. stealthLoop · stealth [split:8 glow",
-          ":0.6 speed:1.5]あいうえお Aiueo 0123"
+          "88. ステルスループ (Stealth Loop)"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo04_07:page2",
+        "cueId": "mo04_07",
+        "kind": "page",
+        "index": 2,
+        "start": 19.11855670103093,
+        "end": 21,
+        "text": " · stealth [split:8 glow:0.6 speed:1.5]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · stealth [split:8 glow:0.6 speed:1.5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1901,9 +1915,9 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "89. sway · sway\nあいうえお Aiueo 0123",
+        "text": "89. スウェイ (Sway) · sway\nあいうえお Aiueo 0123",
         "lines": [
-          "89. sway · sway",
+          "89. スウェイ (Sway) · sway",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1918,9 +1932,9 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "90. twist · twist\nあいうえお Aiueo 0123",
+        "text": "90. ツイスト (Twist) · twist\nあいうえお Aiueo 0123",
         "lines": [
-          "90. twist · twist",
+          "90. ツイスト (Twist) · twist",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1935,9 +1949,9 @@
         "index": 0,
         "start": 27,
         "end": 30,
-        "text": "91. wave · sineWave\nあいうえお Aiueo 0123",
+        "text": "91. ウェーブ (Wave) · sineWave\nあいうえお Aiueo 0123",
         "lines": [
-          "91. wave · sineWave",
+          "91. ウェーブ (Wave) · sineWave",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2320,6 +2334,12 @@
   },
   "beatStyles": {},
   "beatWarnings": {
+    "mo04_07": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
     "mo04_14": [
       {
         "code": "tooFast",

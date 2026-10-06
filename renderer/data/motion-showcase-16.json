@@ -41,7 +41,7 @@
         "id": "mo16_01",
         "start": 0,
         "end": 3,
-        "text": "399. scanOut · scanline\nあいうえお Aiueo 0123",
+        "text": "399. スキャンアウト (Scan Out) · scanline\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -56,7 +56,7 @@
         "id": "mo16_02",
         "start": 3,
         "end": 6,
-        "text": "400. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "text": "400. シュリンクアウト (Shrink Out) · shrinkToCenter\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -71,7 +71,7 @@
         "id": "mo16_03",
         "start": 6,
         "end": 9,
-        "text": "401. stealthOut · stealth [glow:0.8]\nあいうえお Aiueo 0123",
+        "text": "401. ステルスアウト (Stealth Out) · stealth [glow:0.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -86,7 +86,7 @@
         "id": "mo16_04",
         "start": 9,
         "end": 12,
-        "text": "402. wipe · wipe\nあいうえお Aiueo 0123",
+        "text": "402. ワイプ (Wipe) · wipe\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -101,7 +101,7 @@
         "id": "mo16_05",
         "start": 12,
         "end": 15,
-        "text": "403. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "text": "403. ズームアウト (Zoom Out) · zoomOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -1672,10 +1672,10 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "399. scanOut · scanline\nあいうえお Aiueo 0123",
+        "text": "399. スキャンアウト (Scan Out) ·\nscanlineあいうえお Aiueo 0123",
         "lines": [
-          "399. scanOut · scanline",
-          "あいうえお Aiueo 0123"
+          "399. スキャンアウト (Scan Out) ·",
+          "scanlineあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1689,12 +1689,12 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "400. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "text": "400. シュリンクアウト (Shrink Out) ·\nshrinkToCenterあいうえお Aiueo 0123",
         "lines": [
-          "400. shrinkOut · shrinkToCenter",
-          "あいうえお Aiueo 0123"
+          "400. シュリンクアウト (Shrink Out) ·",
+          "shrinkToCenterあいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.94,
         "pinned": false
       }
     ],
@@ -1706,12 +1706,12 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "401. stealthOut · stealth [glow:\n0.8]あいうえお Aiueo 0123",
+        "text": "401. ステルスアウト (Stealth Out) ·\nstealth [glow:0.8]あいうえお Aiueo 0123",
         "lines": [
-          "401. stealthOut · stealth [glow:",
-          "0.8]あいうえお Aiueo 0123"
+          "401. ステルスアウト (Stealth Out) ·",
+          "stealth [glow:0.8]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1723,9 +1723,9 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "402. wipe · wipe\nあいうえお Aiueo 0123",
+        "text": "402. ワイプ (Wipe) · wipe\nあいうえお Aiueo 0123",
         "lines": [
-          "402. wipe · wipe",
+          "402. ワイプ (Wipe) · wipe",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1740,10 +1740,10 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "403. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "text": "403. ズームアウト (Zoom Out) ·\nzoomOutあいうえお Aiueo 0123",
         "lines": [
-          "403. zoomOut · zoomOut",
-          "あいうえお Aiueo 0123"
+          "403. ズームアウト (Zoom Out) ·",
+          "zoomOutあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
