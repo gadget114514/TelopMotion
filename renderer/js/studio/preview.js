@@ -35,6 +35,9 @@ const preview = (() => {
   let audioDecode = null;
   let audioBuffer = null;
   let audioAnalysis = null;
+  // every source switch bumps this: a decode / metadata event that finishes
+  // after a clear (or a re-import) must not resurrect the old audio length
+  let audioGen = 0;
   let lastVersion = {};
   let lastPlayhead = 0;
 
@@ -535,6 +538,8 @@ const preview = (() => {
   // --- audio -------------------------------------------------------------------
 
   function setAudioSource(url, name) {
+    audioGen += 1;
+    const gen = audioGen;
     if (audioUrl && audioUrl !== url) {
       try {
         URL.revokeObjectURL(audioUrl);
@@ -570,28 +575,30 @@ const preview = (() => {
       return;
     }
     if (typeof Audio !== 'undefined') {
-      audio = new Audio();
-      audio.preload = 'auto';
-      audio.src = url;
-      if (Number.isFinite(audio.duration) && audio.duration > 0) {
-        audioDuration = audio.duration;
+      const element = new Audio();
+      element.preload = 'auto';
+      element.src = url;
+      audio = element;
+      if (Number.isFinite(element.duration) && element.duration > 0) {
+        audioDuration = element.duration;
       }
-      audio.addEventListener('loadedmetadata', () => {
-        if (Number.isFinite(audio.duration) && audio.duration > 0) {
+      element.addEventListener('loadedmetadata', () => {
+        if (element !== audio || gen !== audioGen) return;
+        if (Number.isFinite(element.duration) && element.duration > 0) {
           if (!audioDuration || audioDuration === 0) {
-            audioDuration = audio.duration;
+            audioDuration = element.duration;
           }
           updateTransport();
           if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
         }
       });
-      audio.addEventListener('ended', () => {
+      element.addEventListener('ended', () => {
         if (!loop) {
           pause();
         }
       });
     }
-    decodePeaks(url).catch(() => {});
+    decodePeaks(url, gen).catch(() => {});
     if (playing && audio) {
       try {
         audio.currentTime = SA.store.state.playhead;
@@ -606,8 +613,9 @@ const preview = (() => {
     if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
   }
 
-  function decodePeaks(url) {
+  function decodePeaks(url, gen) {
     if (audioDecode) return audioDecode;
+    const owner = gen == null ? audioGen : gen;
     audioDecode = (async () => {
       const response = await fetch(url);
       const buffer = await response.arrayBuffer();
@@ -616,6 +624,9 @@ const preview = (() => {
       const context = new AudioContextClass();
       try {
         const decoded = await context.decodeAudioData(buffer.slice(0));
+        // cleared (or replaced) while decoding: drop the stale result so
+        // the old file length cannot resurrect the duration afterwards
+        if (owner !== audioGen) return null;
         audioBuffer = decoded;
         audioDuration = decoded.duration;
         const block = 512;

@@ -1339,6 +1339,22 @@
     toast('studio.toast.videosCleared');
   }
 
+  // File menu "reset media": drop the audio / videos and shrink every
+  // overhang back to the song, so the duration lands on the song length
+  // (or the lyrics end when no length is set).
+  function resetMedia() {
+    if (SA.preview && typeof SA.preview.clearAudio === 'function') SA.preview.clearAudio();
+    else if (SA.preview) SA.preview.setAudioSource(null, null);
+    if (SA.store && SA.store.commands && typeof SA.store.commands.resetMedia === 'function') {
+      SA.store.commands.resetMedia();
+    }
+    setMediaTab('info');
+    refreshAudioVisual();
+    if (SA.timeline && typeof SA.timeline.draw === 'function') SA.timeline.draw();
+    renderAll();
+    toast('studio.toast.mediaReset');
+  }
+
   function fitAudio() {
     const cues = project() ? project().script.cues : [];
     const audioDuration = SA.preview.getAudioDuration();
@@ -2227,6 +2243,7 @@
       importVideo: importVideoMedia,
       removeAudio,
       clearVideos,
+      resetMedia,
       distributeCues,
       randomStyle: () => runRandomize('project', {}),
       randomStyleCues: () => runRandomize('cues', {}),
@@ -2434,6 +2451,6 @@
     }
   }
 
-  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, removeAudio, importVideo: importVideoMedia, clearVideos, addVideoLayer };
+  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, removeAudio, importVideo: importVideoMedia, clearVideos, resetMedia, addVideoLayer };
   startup();
 })();

@@ -2478,6 +2478,60 @@ SA.store = (() => {
         },
       });
     },
+    // File menu "reset media": drop the session audio entry, every video /
+    // video sheet, and shrink every clip / layer overhanging the song back
+    // to it (lyrics end, or the song length when it runs longer), all in one
+    // undo step. Afterwards the duration lands on the song / lyrics length.
+    resetMedia() {
+      const doc = state.project;
+      if (!doc) return;
+      const cues = (doc.script && doc.script.cues) || [];
+      const cueEnd = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+      const songLen = SA.project && typeof SA.project.songLengthOf === 'function'
+        ? SA.project.songLengthOf(doc)
+        : Number(doc.song && doc.song.length) || 0;
+      const total = Math.max(cueEnd, songLen);
+      dispatch({
+        label: 'reset media',
+        areas: ['media', 'layers', 'keyframes', 'project'],
+        do(projectDoc) {
+          projectDoc.media = projectDoc.media || {};
+          projectDoc.media.audio = null;
+          projectDoc.media.videos = [];
+          const dropLayers = new Set(
+            (projectDoc.layers || [])
+              .filter((entry) => entry && entry.type === 'video' && !entry.locked)
+              .map((entry) => entry.id)
+          );
+          if (total > 0) {
+            // clips fully past the song go away, straddlers are cut to it
+            const dropClips = new Set();
+            for (const clip of projectDoc.clips || []) {
+              if (!clip || clip.locked) continue;
+              if ((Number(clip.start) || 0) >= total - 1e-4) dropClips.add(clip.id);
+              else if (Number(clip.end) > total) {
+                clip.end = Math.max((Number(clip.start) || 0) + 0.05, total);
+                const fitted = fitSegments(projectDoc, clip.segments, clip.start, clip.end);
+                if (fitted === undefined) delete clip.segments;
+                else if (Array.isArray(clip.segments)) clip.segments = fitted;
+              }
+            }
+            if (dropClips.size) projectDoc.clips = (projectDoc.clips || []).filter((clip) => clip && !dropClips.has(clip.id));
+            for (const layer of projectDoc.layers || []) {
+              if (!layer || layer.locked || dropLayers.has(layer.id)) continue;
+              if ((Number(layer.start) || 0) >= total - 1e-4) dropLayers.add(layer.id);
+              else if (Number.isFinite(layer.end) && layer.end > total) layer.end = total;
+            }
+          }
+          if (dropLayers.size) {
+            projectDoc.layers = (projectDoc.layers || []).filter((entry) => entry && !dropLayers.has(entry.id));
+            if (projectDoc.keyframes) {
+              for (const id of dropLayers) delete projectDoc.keyframes[`layer:${id}`];
+            }
+          }
+        },
+      });
+    },
     // fontSet: { exclusive, fonts: [{ id, fontClass }] }; mediaFonts: the
     // user font metadata the set refers to (the bytes live in the library).
     setFontSet(fontSet, mediaFonts) {
