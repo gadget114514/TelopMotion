@@ -2190,6 +2190,186 @@ SA.inspector = (() => {
     listBody.appendChild(list);
   }
 
+  function trackTimeLabel(value) {
+    if (SA.preview && typeof SA.preview.formatClock === 'function') {
+      try {
+        return SA.preview.formatClock(value || 0);
+      } catch {
+        /* fall through */
+      }
+    }
+    return `${Number(value || 0).toFixed(2)}s`;
+  }
+
+  function appendTrackCueList(listBody, doc) {
+    const cues = ((doc && doc.script && doc.script.cues) || [])
+      .filter((cue) => cue)
+      .sort((a, b) => (a.start || 0) - (b.start || 0));
+    if (!cues.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.timeline.empty');
+      listBody.appendChild(empty);
+      return;
+    }
+    const list = document.createElement('div');
+    list.className = 'insp-cue-list';
+    for (const cue of cues) {
+      const beats = (doc.beats && doc.beats[cue.id]) || [];
+      const firstLine = String(cue.text || (beats[0] && beats[0].text) || '').split('\n')[0].trim();
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = `btn btn-mini insp-cue-item${cue.disabled ? ' is-disabled' : ''}`;
+      const time = document.createElement('span');
+      time.className = 'insp-cue-time';
+      time.textContent = trackTimeLabel(cue.start);
+      item.appendChild(time);
+      const label = document.createElement('span');
+      label.className = 'insp-cue-text';
+      label.textContent = firstLine || `${t('studio.inspector.cue')} ${trackTimeLabel(cue.start)}`;
+      item.appendChild(label);
+      if (beats.length > 1) {
+        const count = document.createElement('span');
+        count.className = 'insp-cue-count';
+        count.textContent = t('studio.inspector.beatCount', { n: beats.length });
+        item.appendChild(count);
+      }
+      item.title = `${trackTimeLabel(cue.start)} → ${trackTimeLabel(cue.end)}${firstLine ? ` · ${firstLine}` : ''}`;
+      item.addEventListener('click', () => selectAt(`cue:${cue.id}`));
+      list.appendChild(item);
+    }
+    listBody.appendChild(list);
+  }
+
+  function layerTypeName(layer) {
+    if (!layer) return '';
+    if (layer.type === 'solid') return t('layers.typeSolid');
+    if (layer.type === 'video') return t('layers.typeVideo');
+    if (layer.type === 'scene3d') return t('layers.typeScene3d');
+    return t('layers.typeImage');
+  }
+
+  // Foreground / background layer slots: the slot overview. The timeline
+  // selects these with `track:<id>` just like any other track; the inspector
+  // then shows what lives in the slot (the sheets), the project cues for
+  // quick jumps, and the media that can feed new sheets.
+  function renderLayerSlotSection(container, doc, track) {
+    const slot = track.kind;
+    const slotTitle = slot === 'foreground' ? t('layers.slotForeground') : t('layers.slotBackground');
+    const body = section(container, 'track', trackDisplayName(track) || slotTitle);
+    const slotLayers = ((doc && doc.layers) || []).filter((layer) => layer && (layer.slot || 'background') === slot);
+    const allOn = slotLayers.length ? slotLayers.every((layer) => layer.enabled !== false) : !track.hidden;
+    const visibleControl = SA.controls.boolControl(slot === 'background' ? !track.hidden && allOn : allOn, (value) => {
+      const next = ((doc && doc.layers) || []).map((layer) => (
+        layer && (layer.slot || 'background') === slot ? { ...layer, enabled: value } : layer
+      ));
+      SA.store.commands.setLayers(next);
+      if (slot === 'background') SA.store.commands.updateTrack(track.id, { hidden: !value });
+    });
+    row(body, 'track.visible', t('studio.inspector.enabled'), visibleControl, { noKey: true, noReset: true });
+
+    // sheets placed in this slot: pick one to edit it, toggle it, or add more
+    const layersBody = section(container, 'slotLayers', `${t('layers.title')} (${slotLayers.length})`);
+    if (!slotLayers.length) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('layers.empty');
+      layersBody.appendChild(empty);
+    }
+    slotLayers.forEach((layer) => {
+      const line = document.createElement('div');
+      line.className = 'ctrl-row';
+      const pick = document.createElement('button');
+      pick.type = 'button';
+      pick.className = 'btn btn-mini insp-cue-item';
+      const label = document.createElement('span');
+      label.className = 'insp-cue-text';
+      const span = layer.end == null
+        ? `${trackTimeLabel(layer.start)} → ∞`
+        : `${trackTimeLabel(layer.start)} → ${trackTimeLabel(layer.end)}`;
+      label.textContent = `${layerTypeName(layer)} · ${span}${layer.enabled === false ? ` · ${t('layers.hidden')}` : ''}${layer.locked ? ` · ${t('layers.lockedBadge')}` : ''}`;
+      pick.appendChild(label);
+      pick.title = t('layers.edit');
+      pick.addEventListener('click', () => SA.store.setSelection([`layer:${layer.id}`], 'layer'));
+      line.appendChild(pick);
+      const toggle = document.createElement('button');
+      toggle.type = 'button';
+      toggle.className = 'btn btn-mini';
+      toggle.textContent = layer.enabled === false ? t('layers.show') : t('layers.hide');
+      toggle.addEventListener('click', () => SA.store.commands.setLayer(layer.id, { enabled: layer.enabled === false }));
+      line.appendChild(toggle);
+      layersBody.appendChild(line);
+    });
+    const layerActions = document.createElement('div');
+    layerActions.className = 'layer-order';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'btn btn-mini';
+    add.textContent = `+ ${t('layers.add')}`;
+    add.addEventListener('click', () => {
+      const layer = SA.layersDialog.defaults(slot);
+      SA.store.commands.addLayer(layer);
+      SA.store.setSelection([`layer:${layer.id}`], 'layer');
+    });
+    const edit = document.createElement('button');
+    edit.type = 'button';
+    edit.className = 'btn btn-mini';
+    edit.textContent = t('layers.edit');
+    edit.addEventListener('click', () => SA.layersDialog.open());
+    layerActions.appendChild(add);
+    layerActions.appendChild(edit);
+    layersBody.appendChild(layerActions);
+
+    // every cue, for quick jumps into the cue detail
+    const cuesBody = section(container, 'slotCues', `${t('studio.panel.cues')} (${((doc && doc.script && doc.script.cues) || []).length})`);
+    appendTrackCueList(cuesBody, doc);
+
+    // media that can feed new sheets in this slot
+    const videos = ((doc && doc.media && doc.media.videos) || []).filter((entry) => entry);
+    const audio = doc && doc.media && doc.media.audio;
+    const mediaBody = section(container, 'slotMedia', t('studio.panel.media'));
+    if (!videos.length && !audio) {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.media.noVideos');
+      mediaBody.appendChild(empty);
+      return;
+    }
+    if (audio) {
+      const line = document.createElement('div');
+      line.className = 'ctrl-row';
+      const label = document.createElement('span');
+      label.className = 'ctrl-label';
+      label.textContent = t('studio.media.tabAudio');
+      line.appendChild(label);
+      const name = document.createElement('span');
+      name.className = 'insp-cue-text';
+      name.textContent = audio.name || 'audio';
+      line.appendChild(name);
+      mediaBody.appendChild(line);
+    }
+    videos.forEach((entry) => {
+      const line = document.createElement('div');
+      line.className = 'ctrl-row';
+      const label = document.createElement('span');
+      label.className = 'ctrl-label';
+      label.textContent = entry.name || 'video';
+      line.appendChild(label);
+      const use = document.createElement('button');
+      use.type = 'button';
+      use.className = 'btn btn-mini';
+      use.textContent = `+ ${slotTitle}`;
+      use.title = t(slot === 'foreground' ? 'studio.media.asForeground' : 'studio.media.asBackground');
+      use.addEventListener('click', () => {
+        const layer = { ...SA.layersDialog.defaults(slot), type: 'video', src: entry.src, fit: 'cover', color: '#ffffff' };
+        SA.store.commands.addLayer(layer);
+        SA.store.setSelection([`layer:${layer.id}`], 'layer');
+      });
+      line.appendChild(use);
+      mediaBody.appendChild(line);
+    });
+  }
+
   // The background track owns the frame base colour: the stage behind the
   // clips and the layers. Unset = transparent; the chroma key green is a
   // preset. The track's own checkbox hides the colour with its clips/layers.
@@ -2198,7 +2378,12 @@ SA.inspector = (() => {
     const sel = selectionInfo();
     const track = ((doc && doc.tracks) || []).find((entry) => entry.id === sel.trackId);
     if (!track) return;
-    if (track.kind === 'subtitle') {
+    if (track.kind === 'foreground' || track.kind === 'background') {
+      renderLayerSlotSection(container, doc, track);
+      if (track.kind === 'foreground') return;
+      // the background slot doubles as the frame base colour owner: its
+      // colour controls follow the slot overview instead of replacing it
+    } else if (track.kind === 'subtitle') {
       renderSubtitleTrackSection(container, doc, track);
       return;
     }
