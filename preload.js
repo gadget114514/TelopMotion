@@ -31,6 +31,8 @@ contextBridge.exposeInMainWorld('sunoApi', {
   recentAdd: (entry) => ipcRenderer.invoke('recent:add', entry),
   appInfo: () => ipcRenderer.invoke('app:info'),
   openExternal: (url) => ipcRenderer.invoke('app:open-external', { url }),
+  openDevTools: (mode) => ipcRenderer.invoke('devtools:open', { mode: mode || 'right' }),
+  toggleDevTools: () => ipcRenderer.invoke('devtools:toggle'),
   onProgress: (callback) => {
     const listener = (_event, payload) => callback(payload);
     ipcRenderer.on('suno:progress', listener);

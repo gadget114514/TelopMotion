@@ -279,6 +279,30 @@ function registerIpc() {
     shell.openExternal(url);
     return ok(true);
   });
+
+  ipcMain.handle('devtools:open', (event, payload) => {
+    try {
+      const win = BrowserWindow.fromWebContents(event.sender);
+      if (!win) return fail(Object.assign(new Error('no-window'), { code: 'no-window' }));
+      const mode = (payload && payload.mode) || 'right';
+      win.webContents.openDevTools({ mode });
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('devtools:toggle', (event) => {
+    try {
+      const win = BrowserWindow.fromWebContents(event.sender);
+      if (!win) return fail(Object.assign(new Error('no-window'), { code: 'no-window' }));
+      if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
+      else win.webContents.openDevTools({ mode: 'right' });
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
 }
 
 function createWindow() {

@@ -2918,6 +2918,7 @@ SA.lyricsEngine = (() => {
       });
 
       const fonts = state.assets.fonts || [];
+      const view = state.view || {};
       for (const beat of orderedBeats) {
         const textTrackId = cueTrackId(beat);
         const baseStyle = SA.project && SA.project.resolveStyle ? SA.project.resolveStyle(project, `cue:${beat.cueId}/beat:${beat.id}`) : {};

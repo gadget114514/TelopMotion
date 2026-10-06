@@ -1976,6 +1976,11 @@
     return open;
   }
 
+  function openDevTools() {
+    if (SA.platform && typeof SA.platform.openDevTools === 'function') return SA.platform.openDevTools();
+    return Promise.resolve(false);
+  }
+
   function setLanguage(code) {
     i18n.set(code);
     try {
@@ -2206,6 +2211,11 @@
         SA.exportDialog.open();
         return;
       }
+      if ((mod && event.shiftKey && event.key.toLowerCase() === 'i') || event.key === 'F12') {
+        event.preventDefault();
+        openDevTools();
+        return;
+      }
       if (event.key === ' ') {
         event.preventDefault();
         togglePlay();
@@ -2316,6 +2326,7 @@
       toggleSubtitleOnly,
       isSubtitleOnly: () => !!store.state.view.subtitleOnly,
       toggleConsole,
+      openDevTools,
       isConsoleOpen: () => SA.debugConsole.isOpen(),
       isAutoKeyOn: () => !!store.state.view.autoKey,
       toggleAutosave,

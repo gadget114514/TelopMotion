@@ -169,6 +169,7 @@ SA.menu = (() => {
         { key: 'studio.view.autoKey', action: 'toggleAutoKey', checked: () => handlers.isAutoKeyOn && handlers.isAutoKeyOn() },
         itemSeparator(),
         { key: 'studio.view.debugConsole', action: 'toggleConsole', checked: () => handlers.isConsoleOpen && handlers.isConsoleOpen() },
+        { raw: 'DevTools (Right)', action: 'openDevTools', shortcut: 'Ctrl+Shift+I' },
       ],
     },
     {

@@ -478,6 +478,16 @@ SA.platform = (() => {
     return () => {};
   }
 
+  function openDevTools() {
+    if (isElectron && bridge && typeof bridge.openDevTools === 'function') return bridge.openDevTools('right').catch(() => false);
+    return Promise.resolve(false);
+  }
+
+  function toggleDevTools() {
+    if (isElectron && bridge && typeof bridge.toggleDevTools === 'function') return bridge.toggleDevTools().catch(() => false);
+    return Promise.resolve(false);
+  }
+
   return {
     isElectron,
     isDataset,
@@ -502,5 +512,7 @@ SA.platform = (() => {
     recent,
     openExternal,
     onProgress,
+    openDevTools,
+    toggleDevTools,
   };
 })();
