@@ -41,26 +41,11 @@
         "id": "mo16_01",
         "start": 0,
         "end": 3,
-        "text": "399. melt · melt\nあいうえお Aiueo 0123",
+        "text": "399. scanOut · scanline\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
           "index": 399,
-          "presetId": "melt",
-          "group": "exit",
-          "phase": "exit",
-          "type": "melt"
-        }
-      },
-      {
-        "id": "mo16_02",
-        "start": 3,
-        "end": 6,
-        "text": "400. scanOut · scanline\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "16",
-          "index": 400,
           "presetId": "scanOut",
           "group": "exit",
           "phase": "exit",
@@ -68,14 +53,14 @@
         }
       },
       {
-        "id": "mo16_03",
-        "start": 6,
-        "end": 9,
-        "text": "401. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "id": "mo16_02",
+        "start": 3,
+        "end": 6,
+        "text": "400. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
-          "index": 401,
+          "index": 400,
           "presetId": "shrinkOut",
           "group": "exit",
           "phase": "exit",
@@ -83,14 +68,14 @@
         }
       },
       {
-        "id": "mo16_04",
-        "start": 9,
-        "end": 12,
-        "text": "402. stealthOut · stealth\nあいうえお Aiueo 0123",
+        "id": "mo16_03",
+        "start": 6,
+        "end": 9,
+        "text": "401. stealthOut · stealth [glow:0.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
-          "index": 402,
+          "index": 401,
           "presetId": "stealthOut",
           "group": "exit",
           "phase": "exit",
@@ -98,14 +83,14 @@
         }
       },
       {
-        "id": "mo16_05",
-        "start": 12,
-        "end": 15,
-        "text": "403. wipe · wipe\nあいうえお Aiueo 0123",
+        "id": "mo16_04",
+        "start": 9,
+        "end": 12,
+        "text": "402. wipe · wipe\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
-          "index": 403,
+          "index": 402,
           "presetId": "wipe",
           "group": "exit",
           "phase": "exit",
@@ -113,18 +98,34 @@
         }
       },
       {
-        "id": "mo16_06",
-        "start": 15,
-        "end": 18,
-        "text": "404. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "id": "mo16_05",
+        "start": 12,
+        "end": 15,
+        "text": "403. zoomOut · zoomOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
-          "index": 404,
+          "index": 403,
           "presetId": "zoomOut",
           "group": "exit",
           "phase": "exit",
           "type": "zoomOut"
+        }
+      },
+      {
+        "id": "mo16_06",
+        "start": 15,
+        "end": 18,
+        "text": "404. バックスペース (Backspace) · fade-in → backspace ×stagger\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "16",
+          "index": 404,
+          "presetId": "te_103",
+          "group": "exit",
+          "phase": "exit",
+          "type": "typewriterReverse",
+          "staged": "backspace"
         }
       },
       {
@@ -146,7 +147,7 @@
         "id": "mo16_08",
         "start": 21,
         "end": 24,
-        "text": "406. スライドアウト (Slide Out) · slide\nあいうえお Aiueo 0123",
+        "text": "406. スライドアウト (Slide Out) · slide [distance:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -161,7 +162,7 @@
         "id": "mo16_09",
         "start": 24,
         "end": 27,
-        "text": "407. ワイプアウト (Wipe Out) · wipe\nあいうえお Aiueo 0123",
+        "text": "407. ワイプアウト (Wipe Out) · wipe [dir:right]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -191,7 +192,7 @@
         "id": "mo16_11",
         "start": 30,
         "end": 33,
-        "text": "409. アイリスアウト (Iris Out) · wipe\nあいうえお Aiueo 0123",
+        "text": "409. アイリスアウト (Iris Out) · radialOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -199,14 +200,14 @@
           "presetId": "te_21",
           "group": "exit",
           "phase": "exit",
-          "type": "wipe"
+          "type": "radialOut"
         }
       },
       {
         "id": "mo16_12",
         "start": 33,
         "end": 36,
-        "text": "410. ブラーアウト (Blur Out) · blurOut\nあいうえお Aiueo 0123",
+        "text": "410. ブラーアウト (Blur Out) · blurOut [radius:16]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -221,7 +222,7 @@
         "id": "mo16_13",
         "start": 36,
         "end": 39,
-        "text": "411. ドロップアウト (Drop Out) · gravityFall\nあいうえお Aiueo 0123",
+        "text": "411. ドロップアウト (Drop Out) · gravityFall [gravity:3 spin:90]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -251,7 +252,7 @@
         "id": "mo16_15",
         "start": 42,
         "end": 45,
-        "text": "413. フリップアウト (Flip Out) · creepOut\nあいうえお Aiueo 0123",
+        "text": "413. フリップアウト (Flip Out) · rotateOut [angle:-90]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -259,14 +260,14 @@
           "presetId": "te_32",
           "group": "exit",
           "phase": "exit",
-          "type": "creepOut"
+          "type": "rotateOut"
         }
       },
       {
         "id": "mo16_16",
         "start": 45,
         "end": 48,
-        "text": "414. スピンアウト (Spin Out) · creepOut\nあいうえお Aiueo 0123",
+        "text": "414. スピンアウト (Spin Out) · rotateOut [angle:180]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -274,14 +275,14 @@
           "presetId": "te_34",
           "group": "exit",
           "phase": "exit",
-          "type": "creepOut"
+          "type": "rotateOut"
         }
       },
       {
         "id": "mo16_17",
         "start": 48,
         "end": 51,
-        "text": "415. ロールアウト (Roll Out) · creepOut\nあいうえお Aiueo 0123",
+        "text": "415. ロールアウト (Roll Out) · rotateOut [angle:120]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -289,7 +290,7 @@
           "presetId": "te_36",
           "group": "exit",
           "phase": "exit",
-          "type": "creepOut"
+          "type": "rotateOut"
         }
       },
       {
@@ -311,7 +312,7 @@
         "id": "mo16_19",
         "start": 54,
         "end": 57,
-        "text": "417. モザイクアウト (Mosaic Out) · dissolve\nあいうえお Aiueo 0123",
+        "text": "417. モザイクアウト (Mosaic Out) · dissolve [scale:6 edge:0.25]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -341,7 +342,7 @@
         "id": "mo16_21",
         "start": 60,
         "end": 63,
-        "text": "419. バウンスアウト (Bounce Out) · gravityFall\nあいうえお Aiueo 0123",
+        "text": "419. バウンスアウト (Bounce Out) · gravityFall [gravity:2.5 spin:180]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -356,7 +357,7 @@
         "id": "mo16_22",
         "start": 63,
         "end": 66,
-        "text": "420. シャッター (Shatter) · explode\nあいうえお Aiueo 0123",
+        "text": "420. シャッター (Shatter) · explode [spread:0.8 spin:300]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -371,7 +372,7 @@
         "id": "mo16_23",
         "start": 66,
         "end": 69,
-        "text": "421. シャッタリング (Shattering Debris) · fade\nあいうえお Aiueo 0123",
+        "text": "421. シャッタリング (Shattering Debris) · dissolve\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -379,14 +380,14 @@
           "presetId": "te_172",
           "group": "exit",
           "phase": "exit",
-          "type": "fade"
+          "type": "dissolve"
         }
       },
       {
         "id": "mo16_24",
         "start": 69,
         "end": 72,
-        "text": "422. 爆発 (Explosion) · explode\nあいうえお Aiueo 0123",
+        "text": "422. 爆発 (Explosion) · explode [spread:1 spin:360]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -401,7 +402,7 @@
         "id": "mo16_25",
         "start": 72,
         "end": 75,
-        "text": "423. ひび割れ (Fracturing / Cracks) · explode\nあいうえお Aiueo 0123",
+        "text": "423. ひび割れ (Fracturing / Cracks) · explode [spread:0.4 spin:120]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -416,7 +417,7 @@
         "id": "mo16_26",
         "start": 75,
         "end": 78,
-        "text": "424. 崩れ落ち (Collapse / Tumble) · gravityFall\nあいうえお Aiueo 0123",
+        "text": "424. 崩れ落ち (Collapse / Tumble) · gravityFall [gravity:3.5 spin:60]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "16",
@@ -482,13 +483,16 @@
         {
           "id": "m_mo16_01",
           "phase": "exit",
-          "type": "melt",
+          "type": "scanline",
           "from": "end",
-          "delay": -0.8,
-          "duration": 0.8,
+          "delay": -0.7,
+          "duration": 0.7,
           "ease": "linear",
           "params": {
-            "drip": 0.7
+            "lines": 8,
+            "bandWidth": 0.3,
+            "depth": 0.85,
+            "speed": 1
           },
           "enabled": true
         }
@@ -526,17 +530,12 @@
         {
           "id": "m_mo16_02",
           "phase": "exit",
-          "type": "scanline",
+          "type": "shrinkToCenter",
           "from": "end",
-          "delay": -0.7,
-          "duration": 0.7,
-          "ease": "linear",
-          "params": {
-            "lines": 8,
-            "bandWidth": 0.3,
-            "depth": 0.85,
-            "speed": 1
-          },
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
+          "params": {},
           "enabled": true
         }
       ]
@@ -573,12 +572,16 @@
         {
           "id": "m_mo16_03",
           "phase": "exit",
-          "type": "shrinkToCenter",
+          "type": "stealth",
           "from": "end",
-          "delay": -0.5,
-          "duration": 0.5,
+          "delay": -0.7,
+          "duration": 0.7,
           "ease": "easeInCubic",
-          "params": {},
+          "params": {
+            "split": 6,
+            "glow": 0.8,
+            "speed": 1
+          },
           "enabled": true
         }
       ]
@@ -615,15 +618,13 @@
         {
           "id": "m_mo16_04",
           "phase": "exit",
-          "type": "stealth",
+          "type": "wipe",
           "from": "end",
-          "delay": -0.7,
-          "duration": 0.7,
+          "delay": -0.6,
+          "duration": 0.6,
           "ease": "easeInCubic",
           "params": {
-            "split": 6,
-            "glow": 0.8,
-            "speed": 1
+            "dir": "left"
           },
           "enabled": true
         }
@@ -661,50 +662,6 @@
         {
           "id": "m_mo16_05",
           "phase": "exit",
-          "type": "wipe",
-          "from": "end",
-          "delay": -0.6,
-          "duration": 0.6,
-          "ease": "easeInCubic",
-          "params": {
-            "dir": "left"
-          },
-          "enabled": true
-        }
-      ]
-    },
-    "mo16_06": {
-      "animation": {
-        "type": "simultaneous",
-        "enabled": true,
-        "params": {}
-      },
-      "enter": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "in": {
-            "duration": 0.4,
-            "ease": "cubicOut"
-          }
-        }
-      },
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.4,
-            "ease": "cubicIn"
-          }
-        }
-      },
-      "motions": [
-        {
-          "id": "m_mo16_06",
-          "phase": "exit",
           "type": "zoomOut",
           "from": "end",
           "delay": -0.5,
@@ -716,6 +673,38 @@
           "enabled": true
         }
       ]
+    },
+    "mo16_06": {
+      "animation": {
+        "type": "stagger",
+        "enabled": true,
+        "params": {
+          "each": 0.08
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "linear"
+          }
+        }
+      },
+      "exit": {
+        "type": "typewriterReverse",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 1.6,
+            "ease": "linear"
+          }
+        }
+      },
+      "motions": []
     },
     "mo16_07": {
       "animation": {
@@ -800,7 +789,7 @@
           "ease": "easeInCubic",
           "params": {
             "dir": "down",
-            "distance": 0.3
+            "distance": 0.35
           },
           "enabled": true
         }
@@ -841,10 +830,10 @@
           "type": "wipe",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.6,
           "ease": "easeInCubic",
           "params": {
-            "dir": "left"
+            "dir": "right"
           },
           "enabled": true
         }
@@ -927,13 +916,13 @@
         {
           "id": "m_mo16_11",
           "phase": "exit",
-          "type": "wipe",
+          "type": "radialOut",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.6,
           "ease": "easeInCubic",
           "params": {
-            "dir": "left"
+            "spread": 1
           },
           "enabled": true
         }
@@ -977,7 +966,7 @@
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "radius": 14
+            "radius": 16
           },
           "enabled": true
         }
@@ -1018,11 +1007,11 @@
           "type": "gravityFall",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "gravity": 2.4,
-            "spin": 160
+            "gravity": 3,
+            "spin": 90
           },
           "enabled": true
         }
@@ -1102,13 +1091,13 @@
         {
           "id": "m_mo16_15",
           "phase": "exit",
-          "type": "creepOut",
+          "type": "rotateOut",
           "from": "end",
           "delay": -0.5,
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "shift": 0.15
+            "angle": -90
           },
           "enabled": true
         }
@@ -1146,13 +1135,13 @@
         {
           "id": "m_mo16_16",
           "phase": "exit",
-          "type": "creepOut",
+          "type": "rotateOut",
           "from": "end",
           "delay": -0.5,
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "shift": 0.15
+            "angle": 180
           },
           "enabled": true
         }
@@ -1190,13 +1179,13 @@
         {
           "id": "m_mo16_17",
           "phase": "exit",
-          "type": "creepOut",
+          "type": "rotateOut",
           "from": "end",
           "delay": -0.5,
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "shift": 0.15
+            "angle": 120
           },
           "enabled": true
         }
@@ -1281,11 +1270,11 @@
           "type": "dissolve",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "scale": 10,
-            "edge": 0.16
+            "scale": 6,
+            "edge": 0.25
           },
           "enabled": true
         }
@@ -1368,11 +1357,11 @@
           "type": "gravityFall",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "gravity": 2.4,
-            "spin": 160
+            "gravity": 2.5,
+            "spin": 180
           },
           "enabled": true
         }
@@ -1416,8 +1405,8 @@
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "spread": 0.6,
-            "spin": 220
+            "spread": 0.8,
+            "spin": 300
           },
           "enabled": true
         }
@@ -1455,14 +1444,14 @@
         {
           "id": "m_mo16_23",
           "phase": "exit",
-          "type": "fade",
+          "type": "dissolve",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "softness": 0,
-            "glow": 0
+            "scale": 10,
+            "edge": 0.16
           },
           "enabled": true
         }
@@ -1503,11 +1492,11 @@
           "type": "explode",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "spread": 0.6,
-            "spin": 220
+            "spread": 1,
+            "spin": 360
           },
           "enabled": true
         }
@@ -1548,11 +1537,11 @@
           "type": "explode",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "spread": 0.6,
-            "spin": 220
+            "spread": 0.4,
+            "spin": 120
           },
           "enabled": true
         }
@@ -1593,11 +1582,11 @@
           "type": "gravityFall",
           "from": "end",
           "delay": -0.5,
-          "duration": 0.5,
+          "duration": 0.8,
           "ease": "easeInCubic",
           "params": {
-            "gravity": 2.4,
-            "spin": 160
+            "gravity": 3.5,
+            "spin": 60
           },
           "enabled": true
         }
@@ -1683,9 +1672,9 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "399. melt · melt\nあいうえお Aiueo 0123",
+        "text": "399. scanOut · scanline\nあいうえお Aiueo 0123",
         "lines": [
-          "399. melt · melt",
+          "399. scanOut · scanline",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1700,9 +1689,9 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "400. scanOut · scanline\nあいうえお Aiueo 0123",
+        "text": "400. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
         "lines": [
-          "400. scanOut · scanline",
+          "400. shrinkOut · shrinkToCenter",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1717,10 +1706,10 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "401. shrinkOut · shrinkToCenter\nあいうえお Aiueo 0123",
+        "text": "401. stealthOut · stealth [glow:\n0.8]あいうえお Aiueo 0123",
         "lines": [
-          "401. shrinkOut · shrinkToCenter",
-          "あいうえお Aiueo 0123"
+          "401. stealthOut · stealth [glow:",
+          "0.8]あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1734,9 +1723,9 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "402. stealthOut · stealth\nあいうえお Aiueo 0123",
+        "text": "402. wipe · wipe\nあいうえお Aiueo 0123",
         "lines": [
-          "402. stealthOut · stealth",
+          "402. wipe · wipe",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1751,9 +1740,9 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "403. wipe · wipe\nあいうえお Aiueo 0123",
+        "text": "403. zoomOut · zoomOut\nあいうえお Aiueo 0123",
         "lines": [
-          "403. wipe · wipe",
+          "403. zoomOut · zoomOut",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -1768,12 +1757,12 @@
         "index": 0,
         "start": 15,
         "end": 18,
-        "text": "404. zoomOut · zoomOut\nあいうえお Aiueo 0123",
+        "text": "404. バックスペース (Backspace) · fade-in\n→ backspace ×staggerあいうえお Aiueo 0123",
         "lines": [
-          "404. zoomOut · zoomOut",
-          "あいうえお Aiueo 0123"
+          "404. バックスペース (Backspace) · fade-in",
+          "→ backspace ×staggerあいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1802,12 +1791,12 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "406. スライドアウト (Slide Out) ·\nslideあいうえお Aiueo 0123",
+        "text": "406. スライドアウト (Slide Out) · slide\n[distance:0.35]あいうえお Aiueo 0123",
         "lines": [
-          "406. スライドアウト (Slide Out) ·",
-          "slideあいうえお Aiueo 0123"
+          "406. スライドアウト (Slide Out) · slide",
+          "[distance:0.35]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1819,12 +1808,12 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "407. ワイプアウト (Wipe Out) ·\nwipeあいうえお Aiueo 0123",
+        "text": "407. ワイプアウト (Wipe Out) · wipe\n[dir:right]あいうえお Aiueo 0123",
         "lines": [
-          "407. ワイプアウト (Wipe Out) ·",
-          "wipeあいうえお Aiueo 0123"
+          "407. ワイプアウト (Wipe Out) · wipe",
+          "[dir:right]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.96,
         "pinned": false
       }
     ],
@@ -1853,10 +1842,10 @@
         "index": 0,
         "start": 30,
         "end": 33,
-        "text": "409. アイリスアウト (Iris Out) ·\nwipeあいうえお Aiueo 0123",
+        "text": "409. アイリスアウト (Iris Out) ·\nradialOutあいうえお Aiueo 0123",
         "lines": [
           "409. アイリスアウト (Iris Out) ·",
-          "wipeあいうえお Aiueo 0123"
+          "radialOutあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1870,29 +1859,43 @@
         "index": 0,
         "start": 33,
         "end": 36,
-        "text": "410. ブラーアウト (Blur Out) ·\nblurOutあいうえお Aiueo 0123",
+        "text": "410. ブラーアウト (Blur Out) · blurOut\n[radius:16]あいうえお Aiueo 0123",
         "lines": [
-          "410. ブラーアウト (Blur Out) ·",
-          "blurOutあいうえお Aiueo 0123"
+          "410. ブラーアウト (Blur Out) · blurOut",
+          "[radius:16]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
     "mo16_13": [
       {
-        "id": "mo16_13:single0",
+        "id": "mo16_13:page1",
         "cueId": "mo16_13",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 36,
-        "end": 39,
-        "text": "411. ドロップアウト (Drop Out) ·\ngravityFallあいうえお Aiueo 0123",
+        "end": 37.113518605746584,
+        "text": "411. ドロップアウト (Drop Out)",
         "lines": [
-          "411. ドロップアウト (Drop Out) ·",
-          "gravityFallあいうえお Aiueo 0123"
+          "411. ドロップアウト (Drop Out)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo16_13:page2",
+        "cueId": "mo16_13",
+        "kind": "page",
+        "index": 2,
+        "start": 37.113518605746584,
+        "end": 39,
+        "text": " · gravityFall [gravity:3 spin:90]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · gravityFall [gravity:3 spin:90]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1921,12 +1924,12 @@
         "index": 0,
         "start": 42,
         "end": 45,
-        "text": "413. フリップアウト (Flip Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "text": "413. フリップアウト (Flip Out) · rotateOut\n[angle:-90]あいうえお Aiueo 0123",
         "lines": [
-          "413. フリップアウト (Flip Out) ·",
-          "creepOutあいうえお Aiueo 0123"
+          "413. フリップアウト (Flip Out) · rotateOut",
+          "[angle:-90]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1938,12 +1941,12 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "414. スピンアウト (Spin Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "text": "414. スピンアウト (Spin Out) · rotateOut\n[angle:180]あいうえお Aiueo 0123",
         "lines": [
-          "414. スピンアウト (Spin Out) ·",
-          "creepOutあいうえお Aiueo 0123"
+          "414. スピンアウト (Spin Out) · rotateOut",
+          "[angle:180]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1955,12 +1958,12 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "415. ロールアウト (Roll Out) ·\ncreepOutあいうえお Aiueo 0123",
+        "text": "415. ロールアウト (Roll Out) · rotateOut\n[angle:120]あいうえお Aiueo 0123",
         "lines": [
-          "415. ロールアウト (Roll Out) ·",
-          "creepOutあいうえお Aiueo 0123"
+          "415. ロールアウト (Roll Out) · rotateOut",
+          "[angle:120]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1983,18 +1986,32 @@
     ],
     "mo16_19": [
       {
-        "id": "mo16_19:single0",
+        "id": "mo16_19:page1",
         "cueId": "mo16_19",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 54,
-        "end": 57,
-        "text": "417. モザイクアウト (Mosaic Out) ·\ndissolveあいうえお Aiueo 0123",
+        "end": 55.14524043179588,
+        "text": "417. モザイクアウト (Mosaic Out)",
         "lines": [
-          "417. モザイクアウト (Mosaic Out) ·",
-          "dissolveあいうえお Aiueo 0123"
+          "417. モザイクアウト (Mosaic Out)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo16_19:page2",
+        "cueId": "mo16_19",
+        "kind": "page",
+        "index": 2,
+        "start": 55.14524043179588,
+        "end": 57,
+        "text": " · dissolve [scale:6 edge:0.25]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · dissolve [scale:6 edge:0.25]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2017,18 +2034,32 @@
     ],
     "mo16_21": [
       {
-        "id": "mo16_21:single0",
+        "id": "mo16_21:page1",
         "cueId": "mo16_21",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 60,
-        "end": 63,
-        "text": "419. バウンスアウト (Bounce Out) ·\ngravityFallあいうえお Aiueo 0123",
+        "end": 61.11832740213523,
+        "text": "419. バウンスアウト (Bounce Out)",
         "lines": [
-          "419. バウンスアウト (Bounce Out) ·",
-          "gravityFallあいうえお Aiueo 0123"
+          "419. バウンスアウト (Bounce Out)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo16_21:page2",
+        "cueId": "mo16_21",
+        "kind": "page",
+        "index": 2,
+        "start": 61.11832740213523,
+        "end": 63,
+        "text": " · gravityFall [gravity:2.5 spin:180]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · gravityFall [gravity:2.5 spin:180]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2040,12 +2071,12 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "420. シャッター (Shatter) ·\nexplodeあいうえお Aiueo 0123",
+        "text": "420. シャッター (Shatter) · explode [\nspread:0.8 spin:300]あいうえお Aiueo 0123",
         "lines": [
-          "420. シャッター (Shatter) ·",
-          "explodeあいうえお Aiueo 0123"
+          "420. シャッター (Shatter) · explode [",
+          "spread:0.8 spin:300]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2057,12 +2088,12 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "421. シャッタリング (Shattering\nDebris) · fadeあいうえお Aiueo 0123",
+        "text": "421. シャッタリング (Shattering Debris\n) · dissolveあいうえお Aiueo 0123",
         "lines": [
-          "421. シャッタリング (Shattering",
-          "Debris) · fadeあいうえお Aiueo 0123"
+          "421. シャッタリング (Shattering Debris",
+          ") · dissolveあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.94,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
@@ -2074,52 +2105,111 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "422. 爆発 (Explosion) · explode\nあいうえお Aiueo 0123",
+        "text": "422. 爆発 (Explosion) · explode [spread\n:1 spin:360]あいうえお Aiueo 0123",
         "lines": [
-          "422. 爆発 (Explosion) · explode",
-          "あいうえお Aiueo 0123"
+          "422. 爆発 (Explosion) · explode [spread",
+          ":1 spin:360]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
     "mo16_25": [
       {
-        "id": "mo16_25:single0",
+        "id": "mo16_25:page1",
         "cueId": "mo16_25",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 72,
-        "end": 75,
-        "text": "423. ひび割れ (Fracturing / Cracks\n) · explodeあいうえお Aiueo 0123",
+        "end": 73.19268635724332,
+        "text": "423. ひび割れ (Fracturing / Cracks)",
         "lines": [
-          "423. ひび割れ (Fracturing / Cracks",
-          ") · explodeあいうえお Aiueo 0123"
+          "423. ひび割れ (Fracturing / Cracks)"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo16_25:page2",
+        "cueId": "mo16_25",
+        "kind": "page",
+        "index": 2,
+        "start": 73.19268635724332,
+        "end": 75,
+        "text": " · explode [spread:0.4 spin:120]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · explode [spread:0.4 spin:120]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo16_26": [
       {
-        "id": "mo16_26:single0",
+        "id": "mo16_26:page1",
         "cueId": "mo16_26",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 75,
-        "end": 78,
-        "text": "424. 崩れ落ち (Collapse / Tumble) ·\ngravityFallあいうえお Aiueo 0123",
+        "end": 76.15579227696405,
+        "text": "424. 崩れ落ち (Collapse / Tumble)",
         "lines": [
-          "424. 崩れ落ち (Collapse / Tumble) ·",
-          "gravityFallあいうえお Aiueo 0123"
+          "424. 崩れ落ち (Collapse / Tumble)"
         ],
-        "fontScale": 0.94,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo16_26:page2",
+        "cueId": "mo16_26",
+        "kind": "page",
+        "index": 2,
+        "start": 76.15579227696405,
+        "end": 78,
+        "text": " · gravityFall [gravity:3.5 spin:60]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · gravityFall [gravity:3.5 spin:60]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ]
   },
   "beatStyles": {},
-  "beatWarnings": {},
+  "beatWarnings": {
+    "mo16_13": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo16_19": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo16_21": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo16_25": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo16_26": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ]
+  },
   "orphanBeats": {},
   "orphans": {},
   "textFlow": {},

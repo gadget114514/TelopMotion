@@ -37,7 +37,7 @@ test('the 424 presets split into 16 parts of 26–27 cues', () => {
   }
 });
 
-test('every preset gets exactly one cue with its own custom motion', () => {
+test('every preset gets exactly one cue with its own motion (custom or staged base)', () => {
   const b = built();
   const seen = new Map();
   for (const part of b.parts) {
@@ -50,9 +50,18 @@ test('every preset gets exactly one cue with its own custom motion', () => {
       seen.set(entry.presetId, entry);
       const style = part.project.cueStyles[entry.cueId];
       assert.ok(style, `missing cue style for ${entry.cueId}`);
-      assert.equal(Array.isArray(style.motions) && style.motions.length, 1, `${entry.cueId} carries one motion`);
-      assert.equal(style.motions[0].type, entry.type);
-      assert.equal(style.motions[0].phase, entry.phase);
+      const staged = showcase.stagedStyle(entry);
+      if (staged) {
+        // sequential demos carry the effect as base enter/exit + stagger
+        assert.equal(style.motions.length, 0, `${entry.cueId} staged has no custom motion`);
+        assert.equal(style.animation.type, 'stagger', `${entry.cueId} staged staggers`);
+        if (staged.staged === 'typing') assert.equal(style.enter.type, 'typewriter', `${entry.cueId} types on base enter`);
+        if (staged.staged === 'backspace') assert.equal(style.exit.type, 'typewriterReverse', `${entry.cueId} deletes on base exit`);
+      } else {
+        assert.equal(Array.isArray(style.motions) && style.motions.length, 1, `${entry.cueId} carries one motion`);
+        assert.equal(style.motions[0].type, entry.type);
+        assert.equal(style.motions[0].phase, entry.phase);
+      }
     }
   }
   assert.equal(seen.size, motionPresets().length);

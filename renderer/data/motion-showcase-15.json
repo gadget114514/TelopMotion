@@ -41,131 +41,116 @@
         "id": "mo15_01",
         "start": 0,
         "end": 3,
-        "text": "373. 氷 (Frost & Ice) · floatBob\nあいうえお Aiueo 0123",
+        "text": "373. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 373,
-          "presetId": "te_363",
+          "presetId": "te_364",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "shiver"
         }
       },
       {
         "id": "mo15_02",
         "start": 3,
         "end": 6,
-        "text": "374. 凍結 (Freeze Over) · floatBob\nあいうえお Aiueo 0123",
+        "text": "374. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 374,
-          "presetId": "te_364",
+          "presetId": "te_366",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "jelly"
         }
       },
       {
         "id": "mo15_03",
         "start": 6,
         "end": 9,
-        "text": "375. バルーン (Inflatable Balloon) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "375. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 375,
-          "presetId": "te_366",
+          "presetId": "te_367",
           "group": "emphasis",
           "phase": "hold",
-          "type": "wobbleWarp"
+          "type": "jelly"
         }
       },
       {
         "id": "mo15_04",
         "start": 9,
         "end": 12,
-        "text": "376. ぷっくり (Puffy 3D / Gel) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "376. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 376,
-          "presetId": "te_367",
+          "presetId": "te_368",
           "group": "emphasis",
           "phase": "hold",
-          "type": "wobbleWarp"
+          "type": "breathing"
         }
       },
       {
         "id": "mo15_05",
         "start": 12,
         "end": 15,
-        "text": "377. クレイ (Claymation / Plasticine) · floatBob\nあいうえお Aiueo 0123",
+        "text": "377. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 377,
-          "presetId": "te_368",
+          "presetId": "te_369",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo15_06",
         "start": 15,
         "end": 18,
-        "text": "378. ペーパークラフト (Papercraft Cutout) · floatBob\nあいうえお Aiueo 0123",
+        "text": "378. 刺繍 (Stitched Embroidery) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 378,
-          "presetId": "te_369",
+          "presetId": "te_370",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo15_07",
         "start": 18,
         "end": 21,
-        "text": "379. 刺繍 (Stitched Embroidery) · floatBob\nあいうえお Aiueo 0123",
+        "text": "379. ニット (Knitted Wool) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 379,
-          "presetId": "te_370",
+          "presetId": "te_371",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo15_08",
         "start": 21,
         "end": 24,
-        "text": "380. ニット (Knitted Wool) · floatBob\nあいうえお Aiueo 0123",
+        "text": "380. ネオンサイン (Neon Signboard) · opacityPulse [min:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 380,
-          "presetId": "te_371",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "floatBob"
-        }
-      },
-      {
-        "id": "mo15_09",
-        "start": 24,
-        "end": 27,
-        "text": "381. ネオンサイン (Neon Signboard) · opacityPulse\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "15",
-          "index": 381,
           "presetId": "te_372",
           "group": "emphasis",
           "phase": "hold",
@@ -173,14 +158,14 @@
         }
       },
       {
-        "id": "mo15_10",
-        "start": 27,
-        "end": 30,
-        "text": "382. 電球看板 (Marquee Bulbs) · marquee\nあいうえお Aiueo 0123",
+        "id": "mo15_09",
+        "start": 24,
+        "end": 27,
+        "text": "381. 電球看板 (Marquee Bulbs) · marquee [speed:0.15]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 382,
+          "index": 381,
           "presetId": "te_373",
           "group": "emphasis",
           "phase": "hold",
@@ -188,60 +173,75 @@
         }
       },
       {
+        "id": "mo15_10",
+        "start": 27,
+        "end": 30,
+        "text": "382. LED電光掲示板 (LED Electronic Board) · opacityPulse [min:0.4 period:0.8 speed:1]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "15",
+          "index": 382,
+          "presetId": "te_374",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "opacityPulse"
+        }
+      },
+      {
         "id": "mo15_11",
         "start": 30,
         "end": 33,
-        "text": "383. LED電光掲示板 (LED Electronic Board) · floatBob\nあいうえお Aiueo 0123",
+        "text": "383. ドットマトリクス (Dot Matrix) · jitter [amp:0.005 rate:20]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 383,
-          "presetId": "te_374",
+          "presetId": "te_375",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "jitter"
         }
       },
       {
         "id": "mo15_12",
         "start": 33,
         "end": 36,
-        "text": "384. ドットマトリクス (Dot Matrix) · floatBob\nあいうえお Aiueo 0123",
+        "text": "384. 7セグメント (7-Segment Display) · opacityPulse [min:0.55 period:1.5 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 384,
-          "presetId": "te_375",
+          "presetId": "te_376",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "opacityPulse"
         }
       },
       {
         "id": "mo15_13",
         "start": 36,
         "end": 39,
-        "text": "385. 7セグメント (7-Segment Display) · floatBob\nあいうえお Aiueo 0123",
+        "text": "385. テキストオンパス (Text on Path) · pathFollow [speed:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 385,
-          "presetId": "te_376",
+          "presetId": "te_80",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "pathFollow"
         }
       },
       {
         "id": "mo15_14",
         "start": 39,
         "end": 42,
-        "text": "386. テキストオンパス (Text on Path) · pathFollow\nあいうえお Aiueo 0123",
+        "text": "386. アーチ (Arch) · pathFollow [speed:0.06]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 386,
-          "presetId": "te_80",
+          "presetId": "te_81",
           "group": "emphasis",
           "phase": "hold",
           "type": "pathFollow"
@@ -251,56 +251,41 @@
         "id": "mo15_15",
         "start": 42,
         "end": 45,
-        "text": "387. アーチ (Arch) · pathFollow\nあいうえお Aiueo 0123",
+        "text": "387. サークルテキスト (Circular Text) · orbit2D [radius:0.05 speed:0.4 spread:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 387,
-          "presetId": "te_81",
+          "presetId": "te_82",
           "group": "emphasis",
           "phase": "hold",
-          "type": "pathFollow"
+          "type": "orbit2D"
         }
       },
       {
         "id": "mo15_16",
         "start": 45,
         "end": 48,
-        "text": "388. サークルテキスト (Circular Text) · pathFollow\nあいうえお Aiueo 0123",
+        "text": "388. スパイラル (Spiral) · orbit2D [radius:0.06 spread:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 388,
-          "presetId": "te_82",
+          "presetId": "te_83",
           "group": "emphasis",
           "phase": "hold",
-          "type": "pathFollow"
+          "type": "orbit2D"
         }
       },
       {
         "id": "mo15_17",
         "start": 48,
         "end": 51,
-        "text": "389. スパイラル (Spiral) · floatBob\nあいうえお Aiueo 0123",
+        "text": "389. blurOut · blurOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 389,
-          "presetId": "te_83",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "floatBob"
-        }
-      },
-      {
-        "id": "mo15_18",
-        "start": 51,
-        "end": 54,
-        "text": "390. blurOut · blurOut\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "15",
-          "index": 390,
           "presetId": "blurOut",
           "group": "exit",
           "phase": "exit",
@@ -308,14 +293,14 @@
         }
       },
       {
-        "id": "mo15_19",
-        "start": 54,
-        "end": 57,
-        "text": "391. burn · burnAway\nあいうえお Aiueo 0123",
+        "id": "mo15_18",
+        "start": 51,
+        "end": 54,
+        "text": "390. burn · burnAway\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 391,
+          "index": 390,
           "presetId": "burn",
           "group": "exit",
           "phase": "exit",
@@ -323,14 +308,14 @@
         }
       },
       {
-        "id": "mo15_20",
-        "start": 57,
-        "end": 60,
-        "text": "392. dissolve · dissolve\nあいうえお Aiueo 0123",
+        "id": "mo15_19",
+        "start": 54,
+        "end": 57,
+        "text": "391. dissolve · dissolve\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 392,
+          "index": 391,
           "presetId": "dissolve",
           "group": "exit",
           "phase": "exit",
@@ -338,14 +323,14 @@
         }
       },
       {
-        "id": "mo15_21",
-        "start": 60,
-        "end": 63,
-        "text": "393. ditherOut · dither\nあいうえお Aiueo 0123",
+        "id": "mo15_20",
+        "start": 57,
+        "end": 60,
+        "text": "392. ditherOut · dither\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 393,
+          "index": 392,
           "presetId": "ditherOut",
           "group": "exit",
           "phase": "exit",
@@ -353,14 +338,14 @@
         }
       },
       {
-        "id": "mo15_22",
-        "start": 63,
-        "end": 66,
-        "text": "394. explode · explode\nあいうえお Aiueo 0123",
+        "id": "mo15_21",
+        "start": 60,
+        "end": 63,
+        "text": "393. explode · explode\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 394,
+          "index": 393,
           "presetId": "explode",
           "group": "exit",
           "phase": "exit",
@@ -368,15 +353,30 @@
         }
       },
       {
+        "id": "mo15_22",
+        "start": 63,
+        "end": 66,
+        "text": "394. fadeGlowOut · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "15",
+          "index": 394,
+          "presetId": "fadeGlowOut",
+          "group": "exit",
+          "phase": "exit",
+          "type": "fade"
+        }
+      },
+      {
         "id": "mo15_23",
         "start": 66,
         "end": 69,
-        "text": "395. fadeGlowOut · fade\nあいうえお Aiueo 0123",
+        "text": "395. fadeOut · fade\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 395,
-          "presetId": "fadeGlowOut",
+          "presetId": "fadeOut",
           "group": "exit",
           "phase": "exit",
           "type": "fade"
@@ -386,26 +386,11 @@
         "id": "mo15_24",
         "start": 69,
         "end": 72,
-        "text": "396. fadeOut · fade\nあいうえお Aiueo 0123",
+        "text": "396. flyOut · slide\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
           "index": 396,
-          "presetId": "fadeOut",
-          "group": "exit",
-          "phase": "exit",
-          "type": "fade"
-        }
-      },
-      {
-        "id": "mo15_25",
-        "start": 72,
-        "end": 75,
-        "text": "397. flyOut · slide\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "15",
-          "index": 397,
           "presetId": "flyOut",
           "group": "exit",
           "phase": "exit",
@@ -413,18 +398,33 @@
         }
       },
       {
-        "id": "mo15_26",
-        "start": 75,
-        "end": 78,
-        "text": "398. geometryOut · geometry\nあいうえお Aiueo 0123",
+        "id": "mo15_25",
+        "start": 72,
+        "end": 75,
+        "text": "397. geometryOut · geometry\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 398,
+          "index": 397,
           "presetId": "geometryOut",
           "group": "exit",
           "phase": "exit",
           "type": "geometry"
+        }
+      },
+      {
+        "id": "mo15_26",
+        "start": 75,
+        "end": 78,
+        "text": "398. melt · melt\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "15",
+          "index": 398,
+          "presetId": "melt",
+          "group": "exit",
+          "phase": "exit",
+          "type": "melt"
         }
       }
     ],
@@ -482,14 +482,14 @@
         {
           "id": "m_mo15_01",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.3,
+            "interval": 5
           },
           "enabled": true
         }
@@ -527,14 +527,14 @@
         {
           "id": "m_mo15_02",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.12,
+            "freq": 1.5
           },
           "enabled": true
         }
@@ -572,15 +572,14 @@
         {
           "id": "m_mo15_03",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 2,
-            "speed": 0.8
+            "amount": 0.18,
+            "freq": 1
           },
           "enabled": true
         }
@@ -618,15 +617,13 @@
         {
           "id": "m_mo15_04",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 2,
-            "speed": 0.8
+            "amount": 0.025
           },
           "enabled": true
         }
@@ -664,14 +661,13 @@
         {
           "id": "m_mo15_05",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -709,14 +705,13 @@
         {
           "id": "m_mo15_06",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.015
           },
           "enabled": true
         }
@@ -754,14 +749,13 @@
         {
           "id": "m_mo15_07",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -799,14 +793,15 @@
         {
           "id": "m_mo15_08",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "min": 0.4,
+            "period": 1.6,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -844,15 +839,13 @@
         {
           "id": "m_mo15_09",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "marquee",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 1.6,
-            "speed": 0.8
+            "speed": 0.15
           },
           "enabled": true
         }
@@ -890,13 +883,15 @@
         {
           "id": "m_mo15_10",
           "phase": "hold",
-          "type": "marquee",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 0.25
+            "min": 0.4,
+            "period": 0.8,
+            "speed": 1
           },
           "enabled": true
         }
@@ -934,14 +929,14 @@
         {
           "id": "m_mo15_11",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amp": 0.005,
+            "rate": 20
           },
           "enabled": true
         }
@@ -979,14 +974,15 @@
         {
           "id": "m_mo15_12",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "min": 0.55,
+            "period": 1.5,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -1024,14 +1020,27 @@
         {
           "id": "m_mo15_13",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "pathFollow",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "points": [
+              {
+                "x": 0.2,
+                "y": 0.5
+              },
+              {
+                "x": 0.5,
+                "y": 0.42
+              },
+              {
+                "x": 0.8,
+                "y": 0.5
+              }
+            ],
+            "speed": 0.08
           },
           "enabled": true
         }
@@ -1072,7 +1081,7 @@
           "type": "pathFollow",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 2,
           "ease": "linear",
           "params": {
             "points": [
@@ -1089,7 +1098,7 @@
                 "y": 0.5
               }
             ],
-            "speed": 0.1
+            "speed": 0.06
           },
           "enabled": true
         }
@@ -1127,27 +1136,17 @@
         {
           "id": "m_mo15_15",
           "phase": "hold",
-          "type": "pathFollow",
+          "type": "orbit2D",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "points": [
-              {
-                "x": 0.2,
-                "y": 0.5
-              },
-              {
-                "x": 0.5,
-                "y": 0.42
-              },
-              {
-                "x": 0.8,
-                "y": 0.5
-              }
-            ],
-            "speed": 0.1
+            "radius": 0.05,
+            "speed": 0.4,
+            "spread": 0.08,
+            "tilt": 0,
+            "spin": false
           },
           "enabled": true
         }
@@ -1185,27 +1184,17 @@
         {
           "id": "m_mo15_16",
           "phase": "hold",
-          "type": "pathFollow",
+          "type": "orbit2D",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "points": [
-              {
-                "x": 0.2,
-                "y": 0.5
-              },
-              {
-                "x": 0.5,
-                "y": 0.42
-              },
-              {
-                "x": 0.8,
-                "y": 0.5
-              }
-            ],
-            "speed": 0.1
+            "radius": 0.06,
+            "speed": 0.5,
+            "spread": 0.12,
+            "tilt": 0,
+            "spin": false
           },
           "enabled": true
         }
@@ -1242,15 +1231,14 @@
       "motions": [
         {
           "id": "m_mo15_17",
-          "phase": "hold",
-          "type": "floatBob",
-          "from": "start",
-          "delay": 0,
-          "duration": 1.2,
-          "ease": "linear",
+          "phase": "exit",
+          "type": "blurOut",
+          "from": "end",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "radius": 14
           },
           "enabled": true
         }
@@ -1288,13 +1276,15 @@
         {
           "id": "m_mo15_18",
           "phase": "exit",
-          "type": "blurOut",
+          "type": "burnAway",
           "from": "end",
-          "delay": -0.5,
-          "duration": 0.5,
-          "ease": "easeInCubic",
+          "delay": -0.7,
+          "duration": 0.7,
+          "ease": "linear",
           "params": {
-            "radius": 14
+            "scale": 10,
+            "emberColor": null,
+            "charColor": null
           },
           "enabled": true
         }
@@ -1332,15 +1322,14 @@
         {
           "id": "m_mo15_19",
           "phase": "exit",
-          "type": "burnAway",
+          "type": "dissolve",
           "from": "end",
-          "delay": -0.7,
-          "duration": 0.7,
+          "delay": -0.6,
+          "duration": 0.6,
           "ease": "linear",
           "params": {
             "scale": 10,
-            "emberColor": null,
-            "charColor": null
+            "edge": 0.16
           },
           "enabled": true
         }
@@ -1378,14 +1367,15 @@
         {
           "id": "m_mo15_20",
           "phase": "exit",
-          "type": "dissolve",
+          "type": "dither",
           "from": "end",
           "delay": -0.6,
           "duration": 0.6,
           "ease": "linear",
           "params": {
-            "scale": 10,
-            "edge": 0.16
+            "levels": 4,
+            "jitter": 0.3,
+            "speed": 2
           },
           "enabled": true
         }
@@ -1423,15 +1413,14 @@
         {
           "id": "m_mo15_21",
           "phase": "exit",
-          "type": "dither",
+          "type": "explode",
           "from": "end",
           "delay": -0.6,
           "duration": 0.6,
-          "ease": "linear",
+          "ease": "easeInCubic",
           "params": {
-            "levels": 4,
-            "jitter": 0.3,
-            "speed": 2
+            "spread": 0.6,
+            "spin": 220
           },
           "enabled": true
         }
@@ -1469,14 +1458,14 @@
         {
           "id": "m_mo15_22",
           "phase": "exit",
-          "type": "explode",
+          "type": "fade",
           "from": "end",
           "delay": -0.6,
           "duration": 0.6,
-          "ease": "easeInCubic",
+          "ease": "easeInOutCubic",
           "params": {
-            "spread": 0.6,
-            "spin": 220
+            "softness": 0.6,
+            "glow": 0.4
           },
           "enabled": true
         }
@@ -1516,12 +1505,12 @@
           "phase": "exit",
           "type": "fade",
           "from": "end",
-          "delay": -0.6,
-          "duration": 0.6,
-          "ease": "easeInOutCubic",
+          "delay": -0.5,
+          "duration": 0.5,
+          "ease": "easeInCubic",
           "params": {
-            "softness": 0.6,
-            "glow": 0.4
+            "softness": 0,
+            "glow": 0
           },
           "enabled": true
         }
@@ -1559,14 +1548,14 @@
         {
           "id": "m_mo15_24",
           "phase": "exit",
-          "type": "fade",
+          "type": "slide",
           "from": "end",
           "delay": -0.5,
           "duration": 0.5,
           "ease": "easeInCubic",
           "params": {
-            "softness": 0,
-            "glow": 0
+            "dir": "down",
+            "distance": 0.3
           },
           "enabled": true
         }
@@ -1604,14 +1593,16 @@
         {
           "id": "m_mo15_25",
           "phase": "exit",
-          "type": "slide",
+          "type": "geometry",
           "from": "end",
-          "delay": -0.5,
-          "duration": 0.5,
+          "delay": -0.7,
+          "duration": 0.7,
           "ease": "easeInCubic",
           "params": {
-            "dir": "down",
-            "distance": 0.3
+            "shape": "circle",
+            "feather": 0.05,
+            "spin": 0,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1649,16 +1640,13 @@
         {
           "id": "m_mo15_26",
           "phase": "exit",
-          "type": "geometry",
+          "type": "melt",
           "from": "end",
-          "delay": -0.7,
-          "duration": 0.7,
-          "ease": "easeInCubic",
+          "delay": -0.8,
+          "duration": 0.8,
+          "ease": "linear",
           "params": {
-            "shape": "circle",
-            "feather": 0.05,
-            "spin": 0,
-            "speed": 0.6
+            "drip": 0.7
           },
           "enabled": true
         }
@@ -1744,12 +1732,12 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "373. 氷 (Frost & Ice) · floatBob\nあいうえお Aiueo 0123",
+        "text": "373. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
         "lines": [
-          "373. 氷 (Frost & Ice) · floatBob",
-          "あいうえお Aiueo 0123"
+          "373. 凍結 (Freeze Over) · shiver [amount",
+          ":0.3 interval:5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1761,12 +1749,12 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "374. 凍結 (Freeze Over) ·\nfloatBobあいうえお Aiueo 0123",
+        "text": "374. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
         "lines": [
-          "374. 凍結 (Freeze Over) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "374. バルーン (Inflatable Balloon) ·",
+          "jelly [freq:1.5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -1778,63 +1766,105 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "375. バルーン (Inflatable Balloon)\n · wobbleWarpあいうえお Aiueo 0123",
+        "text": "375. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
         "lines": [
-          "375. バルーン (Inflatable Balloon)",
-          " · wobbleWarpあいうえお Aiueo 0123"
+          "375. ぷっくり (Puffy 3D / Gel) · jelly [",
+          "amount:0.18 freq:1]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo15_04": [
       {
-        "id": "mo15_04:single0",
+        "id": "mo15_04:page1",
         "cueId": "mo15_04",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 9,
-        "end": 12,
-        "text": "376. ぷっくり (Puffy 3D / Gel) ·\nwobbleWarpあいうえお Aiueo 0123",
+        "end": 10.318840579710145,
+        "text": "376. クレイ (Claymation / Plasticine)",
         "lines": [
-          "376. ぷっくり (Puffy 3D / Gel) ·",
-          "wobbleWarpあいうえお Aiueo 0123"
+          "376. クレイ (Claymation / Plasticine)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_04:page2",
+        "cueId": "mo15_04",
+        "kind": "page",
+        "index": 2,
+        "start": 10.318840579710145,
+        "end": 12,
+        "text": " · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.025]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo15_05": [
       {
-        "id": "mo15_05:single0",
+        "id": "mo15_05:page1",
         "cueId": "mo15_05",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 12,
-        "end": 15,
-        "text": "377. クレイ (Claymation / Plasticine\n) · floatBobあいうえお Aiueo 0123",
+        "end": 13.314356435643564,
+        "text": "377. ペーパークラフト (Papercraft Cutout)",
         "lines": [
-          "377. クレイ (Claymation / Plasticine",
-          ") · floatBobあいうえお Aiueo 0123"
+          "377. ペーパークラフト (Papercraft Cutout)"
         ],
-        "fontScale": 0.9199999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_05:page2",
+        "cueId": "mo15_05",
+        "kind": "page",
+        "index": 2,
+        "start": 13.314356435643564,
+        "end": 15,
+        "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.02]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo15_06": [
       {
-        "id": "mo15_06:single0",
+        "id": "mo15_06:page1",
         "cueId": "mo15_06",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 15,
-        "end": 18,
-        "text": "378. ペーパークラフト (Papercraft Cutout\n) · floatBobあいうえお Aiueo 0123",
+        "end": 16.210796915167094,
+        "text": "378. 刺繍 (Stitched Embroidery)",
         "lines": [
-          "378. ペーパークラフト (Papercraft Cutout",
-          ") · floatBobあいうえお Aiueo 0123"
+          "378. 刺繍 (Stitched Embroidery)"
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_06:page2",
+        "cueId": "mo15_06",
+        "kind": "page",
+        "index": 2,
+        "start": 16.210796915167094,
+        "end": 18,
+        "text": " · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.015]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1846,29 +1876,43 @@
         "index": 0,
         "start": 18,
         "end": 21,
-        "text": "379. 刺繍 (Stitched Embroidery) ·\nfloatBobあいうえお Aiueo 0123",
+        "text": "379. ニット (Knitted Wool) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "379. 刺繍 (Stitched Embroidery) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "379. ニット (Knitted Wool) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
     "mo15_08": [
       {
-        "id": "mo15_08:single0",
+        "id": "mo15_08:page1",
         "cueId": "mo15_08",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 21,
-        "end": 24,
-        "text": "380. ニット (Knitted Wool) ·\nfloatBobあいうえお Aiueo 0123",
+        "end": 22.219251336898395,
+        "text": "380. ネオンサイン (Neon Signboard)",
         "lines": [
-          "380. ニット (Knitted Wool) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "380. ネオンサイン (Neon Signboard)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_08:page2",
+        "cueId": "mo15_08",
+        "kind": "page",
+        "index": 2,
+        "start": 22.219251336898395,
+        "end": 24,
+        "text": " · opacityPulse [min:0.4]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · opacityPulse [min:0.4]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1880,80 +1924,138 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "381. ネオンサイン (Neon Signboard) ·\nopacityPulseあいうえお Aiueo 0123",
+        "text": "381. 電球看板 (Marquee Bulbs) · marquee\n[speed:0.15]あいうえお Aiueo 0123",
         "lines": [
-          "381. ネオンサイン (Neon Signboard) ·",
-          "opacityPulseあいうえお Aiueo 0123"
+          "381. 電球看板 (Marquee Bulbs) · marquee",
+          "[speed:0.15]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.9199999999999999,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
     "mo15_10": [
       {
-        "id": "mo15_10:single0",
+        "id": "mo15_10:page1",
         "cueId": "mo15_10",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 27,
-        "end": 30,
-        "text": "382. 電球看板 (Marquee Bulbs) ·\nmarqueeあいうえお Aiueo 0123",
+        "end": 28.803760282021152,
+        "text": "382. LED電光掲示板 (LED Electronic\nBoard) · opacityPulse [min:0.",
         "lines": [
-          "382. 電球看板 (Marquee Bulbs) ·",
-          "marqueeあいうえお Aiueo 0123"
+          "382. LED電光掲示板 (LED Electronic",
+          "Board) · opacityPulse [min:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_10:page2",
+        "cueId": "mo15_10",
+        "kind": "page",
+        "index": 2,
+        "start": 28.803760282021152,
+        "end": 30,
+        "text": "4 period:0.8 speed:1]\nあいうえお Aiueo 0123",
+        "lines": [
+          "4 period:0.8 speed:1]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo15_11": [
       {
-        "id": "mo15_11:single0",
+        "id": "mo15_11:page1",
         "cueId": "mo15_11",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 30,
-        "end": 33,
-        "text": "383. LED電光掲示板 (LED Electronic\nBoard) · floatBobあいうえお Aiueo 0123",
+        "end": 31.164812942366027,
+        "text": "383. ドットマトリクス (Dot Matrix)",
         "lines": [
-          "383. LED電光掲示板 (LED Electronic",
-          "Board) · floatBobあいうえお Aiueo 0123"
+          "383. ドットマトリクス (Dot Matrix)"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_11:page2",
+        "cueId": "mo15_11",
+        "kind": "page",
+        "index": 2,
+        "start": 31.164812942366027,
+        "end": 33,
+        "text": " · jitter [amp:0.005 rate:20]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · jitter [amp:0.005 rate:20]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo15_12": [
       {
-        "id": "mo15_12:single0",
+        "id": "mo15_12:page1",
         "cueId": "mo15_12",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 33,
-        "end": 36,
-        "text": "384. ドットマトリクス (Dot Matrix)\n · floatBobあいうえお Aiueo 0123",
+        "end": 34.708333333333336,
+        "text": "384. 7セグメント (7-Segment Display)\n · opacityPulse [min:0.",
         "lines": [
-          "384. ドットマトリクス (Dot Matrix)",
-          " · floatBobあいうえお Aiueo 0123"
+          "384. 7セグメント (7-Segment Display)",
+          " · opacityPulse [min:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_12:page2",
+        "cueId": "mo15_12",
+        "kind": "page",
+        "index": 2,
+        "start": 34.708333333333336,
+        "end": 36,
+        "text": "55 period:1.5 speed:0.7]\nあいうえお Aiueo 0123",
+        "lines": [
+          "55 period:1.5 speed:0.7]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo15_13": [
       {
-        "id": "mo15_13:single0",
+        "id": "mo15_13:page1",
         "cueId": "mo15_13",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 36,
-        "end": 39,
-        "text": "385. 7セグメント (7-Segment Display\n) · floatBobあいうえお Aiueo 0123",
+        "end": 37.20316622691293,
+        "text": "385. テキストオンパス (Text on Path)",
         "lines": [
-          "385. 7セグメント (7-Segment Display",
-          ") · floatBobあいうえお Aiueo 0123"
+          "385. テキストオンパス (Text on Path)"
         ],
-        "fontScale": 0.96,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_13:page2",
+        "cueId": "mo15_13",
+        "kind": "page",
+        "index": 2,
+        "start": 37.20316622691293,
+        "end": 39,
+        "text": " · pathFollow [speed:0.08]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · pathFollow [speed:0.08]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1965,46 +2067,75 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "386. テキストオンパス (Text on Path)\n · pathFollowあいうえお Aiueo 0123",
+        "text": "386. アーチ (Arch) · pathFollow [\nspeed:0.06]あいうえお Aiueo 0123",
         "lines": [
-          "386. テキストオンパス (Text on Path)",
-          " · pathFollowあいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.94,
-        "pinned": false
-      }
-    ],
-    "mo15_15": [
-      {
-        "id": "mo15_15:single0",
-        "cueId": "mo15_15",
-        "kind": "single",
-        "index": 0,
-        "start": 42,
-        "end": 45,
-        "text": "387. アーチ (Arch) · pathFollow\nあいうえお Aiueo 0123",
-        "lines": [
-          "387. アーチ (Arch) · pathFollow",
-          "あいうえお Aiueo 0123"
+          "386. アーチ (Arch) · pathFollow [",
+          "speed:0.06]あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
       }
     ],
+    "mo15_15": [
+      {
+        "id": "mo15_15:page1",
+        "cueId": "mo15_15",
+        "kind": "page",
+        "index": 1,
+        "start": 42,
+        "end": 43.63803680981595,
+        "text": "387. サークルテキスト (Circular Text)\n · orbit2D [radius:0.",
+        "lines": [
+          "387. サークルテキスト (Circular Text)",
+          " · orbit2D [radius:0."
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_15:page2",
+        "cueId": "mo15_15",
+        "kind": "page",
+        "index": 2,
+        "start": 43.63803680981595,
+        "end": 45,
+        "text": "05 speed:0.4 spread:0.08]\nあいうえお Aiueo 0123",
+        "lines": [
+          "05 speed:0.4 spread:0.08]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
     "mo15_16": [
       {
-        "id": "mo15_16:single0",
+        "id": "mo15_16:page1",
         "cueId": "mo15_16",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 45,
-        "end": 48,
-        "text": "388. サークルテキスト (Circular Text\n) · pathFollowあいうえお Aiueo 0123",
+        "end": 46.17972350230415,
+        "text": "388. スパイラル (Spiral) · orbit",
         "lines": [
-          "388. サークルテキスト (Circular Text",
-          ") · pathFollowあいうえお Aiueo 0123"
+          "388. スパイラル (Spiral) · orbit"
         ],
-        "fontScale": 0.94,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo15_16:page2",
+        "cueId": "mo15_16",
+        "kind": "page",
+        "index": 2,
+        "start": 46.17972350230415,
+        "end": 48,
+        "text": "2D [radius:0.06 spread:0.12]\nあいうえお Aiueo 0123",
+        "lines": [
+          "2D [radius:0.06 spread:0.12]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2016,10 +2147,10 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "389. スパイラル (Spiral) ·\nfloatBobあいうえお Aiueo 0123",
+        "text": "389. blurOut · blurOut\nあいうえお Aiueo 0123",
         "lines": [
-          "389. スパイラル (Spiral) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "389. blurOut · blurOut",
+          "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2033,9 +2164,9 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "390. blurOut · blurOut\nあいうえお Aiueo 0123",
+        "text": "390. burn · burnAway\nあいうえお Aiueo 0123",
         "lines": [
-          "390. blurOut · blurOut",
+          "390. burn · burnAway",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2050,9 +2181,9 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "391. burn · burnAway\nあいうえお Aiueo 0123",
+        "text": "391. dissolve · dissolve\nあいうえお Aiueo 0123",
         "lines": [
-          "391. burn · burnAway",
+          "391. dissolve · dissolve",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2067,9 +2198,9 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "392. dissolve · dissolve\nあいうえお Aiueo 0123",
+        "text": "392. ditherOut · dither\nあいうえお Aiueo 0123",
         "lines": [
-          "392. dissolve · dissolve",
+          "392. ditherOut · dither",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2084,9 +2215,9 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "393. ditherOut · dither\nあいうえお Aiueo 0123",
+        "text": "393. explode · explode\nあいうえお Aiueo 0123",
         "lines": [
-          "393. ditherOut · dither",
+          "393. explode · explode",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2101,12 +2232,12 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "394. explode · explode\nあいうえお Aiueo 0123",
+        "text": "394. fadeGlowOut · fade [softness:\n0.6 glow:0.4]あいうえお Aiueo 0123",
         "lines": [
-          "394. explode · explode",
-          "あいうえお Aiueo 0123"
+          "394. fadeGlowOut · fade [softness:",
+          "0.6 glow:0.4]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.96,
         "pinned": false
       }
     ],
@@ -2118,9 +2249,9 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "395. fadeGlowOut · fade\nあいうえお Aiueo 0123",
+        "text": "395. fadeOut · fade\nあいうえお Aiueo 0123",
         "lines": [
-          "395. fadeGlowOut · fade",
+          "395. fadeOut · fade",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2135,9 +2266,9 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "396. fadeOut · fade\nあいうえお Aiueo 0123",
+        "text": "396. flyOut · slide\nあいうえお Aiueo 0123",
         "lines": [
-          "396. fadeOut · fade",
+          "396. flyOut · slide",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2152,9 +2283,9 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "397. flyOut · slide\nあいうえお Aiueo 0123",
+        "text": "397. geometryOut · geometry\nあいうえお Aiueo 0123",
         "lines": [
-          "397. flyOut · slide",
+          "397. geometryOut · geometry",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2169,9 +2300,9 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "398. geometryOut · geometry\nあいうえお Aiueo 0123",
+        "text": "398. melt · melt\nあいうえお Aiueo 0123",
         "lines": [
-          "398. geometryOut · geometry",
+          "398. melt · melt",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2180,7 +2311,26 @@
     ]
   },
   "beatStyles": {},
-  "beatWarnings": {},
+  "beatWarnings": {
+    "mo15_10": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo15_11": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo15_16": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ]
+  },
   "orphanBeats": {},
   "orphans": {},
   "textFlow": {},

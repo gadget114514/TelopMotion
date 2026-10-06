@@ -59,12 +59,16 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 2.4,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_4",
@@ -130,9 +134,12 @@
     "type": "gravityFall",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "gravity": 2.5,
+      "spin": 180
+    }
   },
   {
     "id": "te_8",
@@ -144,12 +151,15 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.18,
+      "freq": 1.5
+    }
   },
   {
     "id": "te_9",
@@ -181,9 +191,11 @@
     "type": "zoomIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "from": 1.8
+    }
   },
   {
     "id": "te_11",
@@ -198,9 +210,11 @@
     "type": "zoomIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "from": 0.2
+    }
   },
   {
     "id": "te_12",
@@ -217,7 +231,9 @@
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "to": 0.3
+    }
   },
   {
     "id": "te_13",
@@ -232,9 +248,12 @@
     "type": "slide",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "left",
+      "distance": 0.35
+    }
   },
   {
     "id": "te_14",
@@ -251,7 +270,10 @@
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "dir": "down",
+      "distance": 0.35
+    }
   },
   {
     "id": "te_15",
@@ -263,12 +285,16 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "wipe",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "left",
+      "soft": 0.05,
+      "fade": false
+    }
   },
   {
     "id": "te_16",
@@ -283,9 +309,11 @@
     "type": "wipe",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.6,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "dir": "right"
+    }
   },
   {
     "id": "te_17",
@@ -297,12 +325,16 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "maskReveal",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "right",
+      "soft": 0.15,
+      "slope": 0.3
+    }
   },
   {
     "id": "te_18",
@@ -314,12 +346,16 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "blind",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "count": 6,
+      "dir": "horizontal",
+      "soft": 0.08
+    }
   },
   {
     "id": "te_19",
@@ -331,12 +367,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "split",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "axis": "horizontal",
+      "distance": 0.35
+    }
   },
   {
     "id": "te_20",
@@ -348,12 +387,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "circleIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "spread": 0.7,
+      "circleScale": 1.5
+    }
   },
   {
     "id": "te_21",
@@ -365,12 +407,14 @@
     "categoryJa": "消去",
     "group": "exit",
     "phase": "exit",
-    "type": "wipe",
+    "type": "radialOut",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.6,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "spread": 1
+    }
   },
   {
     "id": "te_22",
@@ -387,7 +431,9 @@
     "delay": 0,
     "duration": 0.6,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "radius": 14
+    }
   },
   {
     "id": "te_23",
@@ -404,7 +450,9 @@
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "radius": 16
+    }
   },
   {
     "id": "te_24",
@@ -416,12 +464,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "blurIn",
+    "type": "depthBlurIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "blur": 14,
+      "from": 1.6
+    }
   },
   {
     "id": "te_25",
@@ -433,12 +484,14 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_26",
@@ -453,9 +506,11 @@
     "type": "dropBounce",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "height": 0.7
+    }
   },
   {
     "id": "te_27",
@@ -470,9 +525,12 @@
     "type": "gravityFall",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "gravity": 3,
+      "spin": 90
+    }
   },
   {
     "id": "te_28",
@@ -484,12 +542,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "riseUp",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "distance": 0.25,
+      "fade": true
+    }
   },
   {
     "id": "te_29",
@@ -506,7 +567,10 @@
     "delay": 0,
     "duration": 0.6,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "down",
+      "distance": 0.3
+    }
   },
   {
     "id": "te_30",
@@ -518,12 +582,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "dropBounce",
+    "type": "slide",
     "from": "start",
     "delay": 0,
     "duration": 0.6,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "up",
+      "distance": 0.3
+    }
   },
   {
     "id": "te_31",
@@ -538,9 +605,12 @@
     "type": "flip3D",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "axis": "y",
+      "angle": 90
+    }
   },
   {
     "id": "te_32",
@@ -552,12 +622,14 @@
     "categoryJa": "消去",
     "group": "exit",
     "phase": "exit",
-    "type": "creepOut",
+    "type": "rotateOut",
     "from": "end",
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "angle": -90
+    }
   },
   {
     "id": "te_33",
@@ -572,9 +644,11 @@
     "type": "rotateIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "angle": 180
+    }
   },
   {
     "id": "te_34",
@@ -586,12 +660,14 @@
     "categoryJa": "消去",
     "group": "exit",
     "phase": "exit",
-    "type": "creepOut",
+    "type": "rotateOut",
     "from": "end",
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "angle": 180
+    }
   },
   {
     "id": "te_35",
@@ -606,9 +682,11 @@
     "type": "rotateIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "angle": 240
+    }
   },
   {
     "id": "te_36",
@@ -620,12 +698,14 @@
     "categoryJa": "消去",
     "group": "exit",
     "phase": "exit",
-    "type": "creepOut",
+    "type": "rotateOut",
     "from": "end",
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "angle": 120
+    }
   },
   {
     "id": "te_37",
@@ -637,12 +717,14 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "fade",
+    "type": "rotateIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "angle": 30
+    }
   },
   {
     "id": "te_38",
@@ -657,9 +739,11 @@
     "type": "rotateIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.5,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "angle": 120
+    }
   },
   {
     "id": "te_39",
@@ -671,12 +755,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.25,
+      "vy": 0
+    }
   },
   {
     "id": "te_40",
@@ -688,12 +775,16 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "blind",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "count": 8,
+      "dir": "vertical",
+      "soft": 0.1
+    }
   },
   {
     "id": "te_41",
@@ -710,7 +801,9 @@
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "dir": "left"
+    }
   },
   {
     "id": "te_42",
@@ -722,12 +815,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "fade",
+    "type": "stretch",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "axis": "x",
+      "amount": 2
+    }
   },
   {
     "id": "te_43",
@@ -742,9 +838,11 @@
     "type": "scatterIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "spread": 0.3
+    }
   },
   {
     "id": "te_44",
@@ -759,9 +857,11 @@
     "type": "scatterIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "spread": 0.55
+    }
   },
   {
     "id": "te_45",
@@ -776,9 +876,12 @@
     "type": "dissolve",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "scale": 6,
+      "edge": 0.25
+    }
   },
   {
     "id": "te_46",
@@ -790,12 +893,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "dissolve",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 1,
+      "intensity": 0.3
+    }
   },
   {
     "id": "te_47",
@@ -810,9 +916,11 @@
     "type": "neonFlicker",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.9,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "flickers": 5
+    }
   },
   {
     "id": "te_48",
@@ -829,7 +937,9 @@
     "delay": 0,
     "duration": 0.6,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "flickers": 4
+    }
   },
   {
     "id": "te_49",
@@ -846,7 +956,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.1,
+      "period": 0.8,
+      "speed": 1
+    }
   },
   {
     "id": "te_50",
@@ -863,7 +977,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0,
+      "period": 1.2,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_51",
@@ -880,7 +998,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.2,
+      "period": 0.6,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_52",
@@ -897,7 +1019,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "bpm": 120,
+      "axis": "both"
+    }
   },
   {
     "id": "te_53",
@@ -909,12 +1035,14 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "pulse",
+    "type": "heartbeat",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.07
+    }
   },
   {
     "id": "te_54",
@@ -926,12 +1054,15 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "freq": 1.5
+    }
   },
   {
     "id": "te_55",
@@ -943,12 +1074,15 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "freq": 2
+    }
   },
   {
     "id": "te_56",
@@ -960,12 +1094,15 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "freq": 2.5
+    }
   },
   {
     "id": "te_57",
@@ -982,7 +1119,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.008,
+      "rate": 14
+    }
   },
   {
     "id": "te_58",
@@ -999,7 +1139,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.005,
+      "rate": 22
+    }
   },
   {
     "id": "te_59",
@@ -1016,7 +1159,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06,
+      "scale": 2,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_60",
@@ -1033,7 +1180,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "scale": 3,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_61",
@@ -1050,7 +1201,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 4,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_62",
@@ -1067,7 +1221,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "freq": 2
+    }
   },
   {
     "id": "te_63",
@@ -1084,7 +1241,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.2,
+      "freq": 1.2
+    }
   },
   {
     "id": "te_64",
@@ -1101,7 +1261,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "freq": 2.5
+    }
   },
   {
     "id": "te_65",
@@ -1118,7 +1281,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 18,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_66",
@@ -1135,7 +1301,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.02,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_67",
@@ -1152,7 +1321,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_68",
@@ -1169,7 +1341,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.015,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_69",
@@ -1186,7 +1361,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 4,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_70",
@@ -1203,7 +1381,9 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.035
+    }
   },
   {
     "id": "te_71",
@@ -1215,12 +1395,15 @@
     "categoryJa": "常時動作",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 6,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_72",
@@ -1232,12 +1415,15 @@
     "categoryJa": "常時動作",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "orbit3D",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 20,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_73",
@@ -1254,7 +1440,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 14,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_74",
@@ -1271,7 +1460,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_75",
@@ -1288,7 +1481,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.045,
+      "freq": 0.006,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_76",
@@ -1305,7 +1502,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.035,
+      "freq": 0.008,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_77",
@@ -1322,7 +1523,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.025,
+      "freq": 0.003,
+      "speed": 1
+    }
   },
   {
     "id": "te_78",
@@ -1337,9 +1542,11 @@
     "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.12
+    }
   },
   {
     "id": "te_79",
@@ -1354,9 +1561,11 @@
     "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.1
+    }
   },
   {
     "id": "te_80",
@@ -1371,9 +1580,11 @@
     "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.08
+    }
   },
   {
     "id": "te_81",
@@ -1388,9 +1599,11 @@
     "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.06
+    }
   },
   {
     "id": "te_82",
@@ -1402,12 +1615,18 @@
     "categoryJa": "配置",
     "group": "emphasis",
     "phase": "hold",
-    "type": "pathFollow",
+    "type": "orbit2D",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "radius": 0.05,
+      "speed": 0.4,
+      "spread": 0.08,
+      "tilt": 0,
+      "spin": false
+    }
   },
   {
     "id": "te_83",
@@ -1419,12 +1638,18 @@
     "categoryJa": "配置",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "orbit2D",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "radius": 0.06,
+      "speed": 0.5,
+      "spread": 0.12,
+      "tilt": 0,
+      "spin": false
+    }
   },
   {
     "id": "te_84",
@@ -1439,9 +1664,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.25
+    }
   },
   {
     "id": "te_85",
@@ -1456,9 +1683,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.35
+    }
   },
   {
     "id": "te_86",
@@ -1473,9 +1702,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.18
+    }
   },
   {
     "id": "te_87",
@@ -1487,12 +1718,15 @@
     "categoryJa": "移動",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": -0.08
+    }
   },
   {
     "id": "te_88",
@@ -1507,9 +1741,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.3
+    }
   },
   {
     "id": "te_89",
@@ -1524,9 +1760,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.22
+    }
   },
   {
     "id": "te_90",
@@ -1541,9 +1779,11 @@
     "type": "floatBob",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.35
+    }
   },
   {
     "id": "te_91",
@@ -1555,12 +1795,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "orbit3D",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 20,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_92",
@@ -1575,9 +1818,11 @@
     "type": "floatBob",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.5
+    }
   },
   {
     "id": "te_93",
@@ -1589,12 +1834,16 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 0.5,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_94",
@@ -1606,12 +1855,16 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "bpm": 120,
+      "axis": "both"
+    }
   },
   {
     "id": "te_95",
@@ -1623,12 +1876,16 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "bpm": 100,
+      "axis": "both"
+    }
   },
   {
     "id": "te_96",
@@ -1640,12 +1897,16 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "bpm": 140,
+      "axis": "both"
+    }
   },
   {
     "id": "te_97",
@@ -1657,12 +1918,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.012,
+      "rate": 10
+    }
   },
   {
     "id": "te_98",
@@ -1674,12 +1938,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.01,
+      "rate": 14
+    }
   },
   {
     "id": "te_99",
@@ -1691,12 +1958,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.014,
+      "rate": 8
+    }
   },
   {
     "id": "te_100",
@@ -1711,9 +1981,14 @@
     "type": "typewriter",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "cursor": false,
+      "cursorShape": "bar",
+      "blink": 0.5,
+      "cursorAfter": "blink"
+    }
   },
   {
     "id": "te_101",
@@ -1728,9 +2003,14 @@
     "type": "typewriter",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "cursor": true,
+      "cursorShape": "bar",
+      "blink": 0.4,
+      "cursorAfter": "blink"
+    }
   },
   {
     "id": "te_102",
@@ -1745,9 +2025,14 @@
     "type": "typewriter",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 1,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "cursor": true,
+      "cursorShape": "block",
+      "blink": 0.7,
+      "cursorAfter": "hide"
+    }
   },
   {
     "id": "te_103",
@@ -1757,13 +2042,13 @@
     "descJa": "文字が一文字ずつ削除される",
     "categoryEn": "Typing",
     "categoryJa": "タイピング",
-    "group": "entrance",
-    "phase": "enter",
-    "type": "fade",
-    "from": "start",
-    "delay": 0,
-    "duration": 0.6,
-    "ease": "easeOutCubic",
+    "group": "exit",
+    "phase": "exit",
+    "type": "typewriterReverse",
+    "from": "end",
+    "delay": -0.8,
+    "duration": 0.8,
+    "ease": "easeInCubic",
     "params": {}
   },
   {
@@ -1779,9 +2064,14 @@
     "type": "typewriter",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "cursor": true,
+      "cursorShape": "underscore",
+      "blink": 0.3,
+      "cursorAfter": "stay"
+    }
   },
   {
     "id": "te_105",
@@ -1793,12 +2083,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.15,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_106",
@@ -1810,12 +2104,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 1.2,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_107",
@@ -1827,12 +2125,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.08,
+      "vy": 0
+    }
   },
   {
     "id": "te_108",
@@ -1844,12 +2145,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.14,
+      "freq": 2.2
+    }
   },
   {
     "id": "te_109",
@@ -1861,12 +2165,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "bpm": 110,
+      "axis": "both"
+    }
   },
   {
     "id": "te_110",
@@ -1883,7 +2191,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 28,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_111",
@@ -1895,12 +2206,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.014,
+      "rate": 20
+    }
   },
   {
     "id": "te_112",
@@ -1912,12 +2226,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.045,
+      "freq": 0.005,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_113",
@@ -1929,12 +2247,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.045,
+      "freq": 0.005,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_114",
@@ -1946,12 +2268,16 @@
     "categoryJa": "単語・行単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 1.5,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_115",
@@ -1963,12 +2289,16 @@
     "categoryJa": "単語・行単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.25,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_116",
@@ -1980,12 +2310,15 @@
     "categoryJa": "単語・行単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.1,
+      "vy": 0
+    }
   },
   {
     "id": "te_117",
@@ -1997,12 +2330,16 @@
     "categoryJa": "単語・行単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.05,
+      "freq": 0.006,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_118",
@@ -2014,12 +2351,16 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_119",
@@ -2031,12 +2372,16 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_120",
@@ -2048,12 +2393,16 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_121",
@@ -2068,9 +2417,11 @@
     "type": "zoomIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "from": 1.6
+    }
   },
   {
     "id": "te_122",
@@ -2085,9 +2436,11 @@
     "type": "zoomIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "from": 2
+    }
   },
   {
     "id": "te_123",
@@ -2104,7 +2457,9 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.045
+    }
   },
   {
     "id": "te_124",
@@ -2121,7 +2476,9 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.055
+    }
   },
   {
     "id": "te_125",
@@ -2133,12 +2490,16 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jelly",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.16,
+      "bpm": 100,
+      "axis": "x"
+    }
   },
   {
     "id": "te_126",
@@ -2150,12 +2511,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "twist",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 16
+    }
   },
   {
     "id": "te_127",
@@ -2167,12 +2530,15 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "orbit3D",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 24,
+      "speed": 0.35
+    }
   },
   {
     "id": "te_128",
@@ -2189,7 +2555,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 30,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_129",
@@ -2206,7 +2575,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 25,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_130",
@@ -2223,7 +2595,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 25,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_131",
@@ -2240,7 +2615,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 45,
+      "speed": 0.35
+    }
   },
   {
     "id": "te_132",
@@ -2252,12 +2630,18 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "kenBurns",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "zoom": 0.22,
+      "pan": {
+        "x": 0,
+        "y": 0
+      }
+    }
   },
   {
     "id": "te_133",
@@ -2269,12 +2653,18 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "kenBurns",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "zoom": 0.3,
+      "pan": {
+        "x": 0,
+        "y": 0
+      }
+    }
   },
   {
     "id": "te_134",
@@ -2286,12 +2676,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_135",
@@ -2308,7 +2700,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 9,
+      "speed": 0.35
+    }
   },
   {
     "id": "te_136",
@@ -2320,12 +2715,15 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": -0.1
+    }
   },
   {
     "id": "te_137",
@@ -2337,12 +2735,15 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.07,
+      "vy": -0.02
+    }
   },
   {
     "id": "te_138",
@@ -2354,12 +2755,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_139",
@@ -2371,12 +2774,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_140",
@@ -2388,12 +2793,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_141",
@@ -2410,7 +2817,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 2,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_142",
@@ -2427,7 +2838,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.45,
+      "period": 1.8,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_143",
@@ -2444,7 +2859,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.35,
+      "period": 0.9,
+      "speed": 1
+    }
   },
   {
     "id": "te_144",
@@ -2456,12 +2875,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_145",
@@ -2473,12 +2894,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_146",
@@ -2490,12 +2913,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_147",
@@ -2512,7 +2937,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.6,
+      "period": 2.5,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_148",
@@ -2529,7 +2958,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_149",
@@ -2546,7 +2979,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.45,
+      "period": 1.6,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_150",
@@ -2563,7 +3000,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1.2,
+      "speed": 1
+    }
   },
   {
     "id": "te_151",
@@ -2580,7 +3021,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.2,
+      "period": 0.7,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_152",
@@ -2597,7 +3042,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 1,
+      "speed": 1
+    }
   },
   {
     "id": "te_153",
@@ -2614,7 +3063,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1.4,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_154",
@@ -2626,12 +3079,16 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.7,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_155",
@@ -2643,12 +3100,16 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.65,
+      "period": 1.8,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_156",
@@ -2660,12 +3121,16 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.7,
+      "period": 2.2,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_157",
@@ -2677,12 +3142,14 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_158",
@@ -2694,12 +3161,14 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "box",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "soft": 0.06
+    }
   },
   {
     "id": "te_159",
@@ -2714,9 +3183,12 @@
     "type": "slide",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "left",
+      "distance": 0.5
+    }
   },
   {
     "id": "te_160",
@@ -2728,12 +3200,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_161",
@@ -2750,7 +3224,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1.2,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_162",
@@ -2762,12 +3240,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04
+    }
   },
   {
     "id": "te_163",
@@ -2784,7 +3264,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 0.8,
+      "speed": 1.1
+    }
   },
   {
     "id": "te_164",
@@ -2801,7 +3285,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.45,
+      "period": 1.4,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_165",
@@ -2813,12 +3301,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.05,
+      "vy": -0.05
+    }
   },
   {
     "id": "te_166",
@@ -2830,12 +3321,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 1,
+      "interval": 1.2
+    }
   },
   {
     "id": "te_167",
@@ -2847,12 +3341,16 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "bpm": 90,
+      "axis": "both"
+    }
   },
   {
     "id": "te_168",
@@ -2864,12 +3362,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "dissolve",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 1.2,
+      "intensity": 0.35
+    }
   },
   {
     "id": "te_169",
@@ -2881,12 +3382,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "dissolve",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 1.8,
+      "intensity": 0.5
+    }
   },
   {
     "id": "te_170",
@@ -2898,12 +3402,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "dissolve",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 1.5,
+      "intensity": 0.45
+    }
   },
   {
     "id": "te_171",
@@ -2920,7 +3427,10 @@
     "delay": -0.5,
     "duration": 0.5,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "spread": 0.8,
+      "spin": 300
+    }
   },
   {
     "id": "te_172",
@@ -2932,12 +3442,15 @@
     "categoryJa": "破壊",
     "group": "exit",
     "phase": "exit",
-    "type": "fade",
+    "type": "dissolve",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "scale": 10,
+      "edge": 0.16
+    }
   },
   {
     "id": "te_173",
@@ -2952,9 +3465,12 @@
     "type": "explode",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "spread": 1,
+      "spin": 360
+    }
   },
   {
     "id": "te_174",
@@ -2969,9 +3485,12 @@
     "type": "explode",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.7,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "spread": 0.4,
+      "spin": 120
+    }
   },
   {
     "id": "te_175",
@@ -2986,9 +3505,12 @@
     "type": "gravityFall",
     "from": "end",
     "delay": -0.5,
-    "duration": 0.5,
+    "duration": 0.8,
     "ease": "easeInCubic",
-    "params": {}
+    "params": {
+      "gravity": 3.5,
+      "spin": 60
+    }
   },
   {
     "id": "te_176",
@@ -3000,12 +3522,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.06,
+      "vy": 0.12
+    }
   },
   {
     "id": "te_177",
@@ -3017,12 +3542,15 @@
     "categoryJa": "パーティクル",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.02,
+      "vy": 0.08
+    }
   },
   {
     "id": "te_178",
@@ -3034,12 +3562,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "scale": 3,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_179",
@@ -3051,12 +3583,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "scale": 2.5,
+      "speed": 1.4
+    }
   },
   {
     "id": "te_180",
@@ -3068,12 +3604,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.03,
+      "vy": -0.08
+    }
   },
   {
     "id": "te_181",
@@ -3085,12 +3624,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.02,
+      "vy": -0.06
+    }
   },
   {
     "id": "te_182",
@@ -3102,12 +3644,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.01,
+      "vy": -0.04
+    }
   },
   {
     "id": "te_183",
@@ -3119,12 +3664,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.04,
+      "freq": 0.005,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_184",
@@ -3136,12 +3685,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.04,
+      "freq": 0.005,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_185",
@@ -3153,12 +3706,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "scale": 4,
+      "speed": 1.6
+    }
   },
   {
     "id": "te_186",
@@ -3175,7 +3732,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.006,
+      "rate": 16
+    }
   },
   {
     "id": "te_187",
@@ -3187,12 +3747,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.55,
+      "period": 0.5,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_188",
@@ -3209,7 +3773,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.008,
+      "rate": 24
+    }
   },
   {
     "id": "te_189",
@@ -3221,12 +3788,15 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.7,
+      "interval": 2.5
+    }
   },
   {
     "id": "te_190",
@@ -3243,7 +3813,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.02,
+      "rate": 10
+    }
   },
   {
     "id": "te_191",
@@ -3255,12 +3828,15 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.006,
+      "rate": 30
+    }
   },
   {
     "id": "te_192",
@@ -3272,12 +3848,15 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.004,
+      "rate": 26
+    }
   },
   {
     "id": "te_193",
@@ -3294,7 +3873,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.025,
+      "rate": 6
+    }
   },
   {
     "id": "te_194",
@@ -3306,12 +3888,15 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.9,
+      "interval": 1.5
+    }
   },
   {
     "id": "te_195",
@@ -3328,7 +3913,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.015,
+      "rate": 18
+    }
   },
   {
     "id": "te_196",
@@ -3345,7 +3933,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "rate": 8
+    }
   },
   {
     "id": "te_197",
@@ -3357,12 +3948,16 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "scale": 2,
+      "speed": 1
+    }
   },
   {
     "id": "te_198",
@@ -3374,12 +3969,15 @@
     "categoryJa": "グリッチ・ノイズ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.01,
+      "rate": 12
+    }
   },
   {
     "id": "te_199",
@@ -3396,7 +3994,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.05,
+      "period": 0.4,
+      "speed": 1.5
+    }
   },
   {
     "id": "te_200",
@@ -3408,12 +4010,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 3,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_201",
@@ -3425,12 +4031,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.004,
+      "rate": 28
+    }
   },
   {
     "id": "te_202",
@@ -3442,12 +4051,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.04,
+      "vy": 0
+    }
   },
   {
     "id": "te_203",
@@ -3459,12 +4071,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_204",
@@ -3476,12 +4090,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.5,
+      "interval": 3
+    }
   },
   {
     "id": "te_205",
@@ -3493,12 +4110,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_206",
@@ -3510,12 +4129,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_207",
@@ -3527,12 +4148,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.65,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_208",
@@ -3544,12 +4169,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "sway",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.6,
+      "interval": 2
+    }
   },
   {
     "id": "te_209",
@@ -3561,12 +4189,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.02,
+      "rate": 4
+    }
   },
   {
     "id": "te_210",
@@ -3578,12 +4209,16 @@
     "categoryJa": "3D",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.6,
+      "period": 3,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_211",
@@ -3595,12 +4230,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_212",
@@ -3612,12 +4249,14 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.08
+    }
   },
   {
     "id": "te_213",
@@ -3629,12 +4268,14 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.05
+    }
   },
   {
     "id": "te_214",
@@ -3649,9 +4290,11 @@
     "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.14
+    }
   },
   {
     "id": "te_215",
@@ -3663,12 +4306,14 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.12
+    }
   },
   {
     "id": "te_216",
@@ -3680,12 +4325,14 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.06
+    }
   },
   {
     "id": "te_217",
@@ -3697,12 +4344,16 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.02,
+      "freq": 0.004,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_218",
@@ -3714,12 +4365,15 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.005,
+      "rate": 15
+    }
   },
   {
     "id": "te_219",
@@ -3731,12 +4385,15 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.01,
+      "rate": 9
+    }
   },
   {
     "id": "te_220",
@@ -3748,12 +4405,15 @@
     "categoryJa": "描画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.4,
+      "interval": 3
+    }
   },
   {
     "id": "te_221",
@@ -3770,7 +4430,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 5,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_222",
@@ -3782,12 +4445,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.018,
+      "rate": 7
+    }
   },
   {
     "id": "te_223",
@@ -3799,12 +4465,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.7,
+      "interval": 1.2
+    }
   },
   {
     "id": "te_224",
@@ -3816,12 +4485,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.2,
+      "freq": 1
+    }
   },
   {
     "id": "te_225",
@@ -3838,7 +4510,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.2,
+      "period": 0.6,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_226",
@@ -3850,12 +4526,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "freq": 2
+    }
   },
   {
     "id": "te_227",
@@ -3867,12 +4546,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "freq": 2.5
+    }
   },
   {
     "id": "te_228",
@@ -3884,12 +4566,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.16,
+      "freq": 1.8
+    }
   },
   {
     "id": "te_229",
@@ -3906,7 +4591,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.3,
+      "period": 0.9,
+      "speed": 1
+    }
   },
   {
     "id": "te_230",
@@ -3923,7 +4612,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.015,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_231",
@@ -3940,7 +4632,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.02,
+      "speed": 0.35
+    }
   },
   {
     "id": "te_232",
@@ -3952,12 +4647,15 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": -0.05
+    }
   },
   {
     "id": "te_233",
@@ -3969,12 +4667,14 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_234",
@@ -3991,7 +4691,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06,
+      "bpm": 120,
+      "axis": "both"
+    }
   },
   {
     "id": "te_235",
@@ -4008,7 +4712,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06,
+      "bpm": 140,
+      "axis": "both"
+    }
   },
   {
     "id": "te_236",
@@ -4025,7 +4733,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "bpm": 160,
+      "axis": "both"
+    }
   },
   {
     "id": "te_237",
@@ -4037,12 +4749,16 @@
     "categoryJa": "カラオケ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "pulse",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1.2,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_238",
@@ -4054,12 +4770,15 @@
     "categoryJa": "カラオケ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.18,
+      "freq": 2
+    }
   },
   {
     "id": "te_239",
@@ -4076,7 +4795,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "bpm": 100,
+      "axis": "both"
+    }
   },
   {
     "id": "te_240",
@@ -4088,12 +4811,14 @@
     "categoryJa": "カラオケ",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_241",
@@ -4110,7 +4835,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.35,
+      "period": 1,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_242",
@@ -4122,12 +4851,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.035,
+      "freq": 0.005,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_243",
@@ -4139,12 +4872,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.05,
+      "freq": 0.007,
+      "speed": 1
+    }
   },
   {
     "id": "te_244",
@@ -4156,12 +4893,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_245",
@@ -4173,12 +4914,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "bpm": 130,
+      "axis": "both"
+    }
   },
   {
     "id": "te_246",
@@ -4190,12 +4935,14 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "pulse",
+    "type": "heartbeat",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.09
+    }
   },
   {
     "id": "te_247",
@@ -4207,12 +4954,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "bpm": 140,
+      "axis": "both"
+    }
   },
   {
     "id": "te_248",
@@ -4224,12 +4975,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.04,
+      "freq": 0.008,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_249",
@@ -4241,12 +4996,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "bpm": 150,
+      "axis": "both"
+    }
   },
   {
     "id": "te_250",
@@ -4258,12 +5017,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "bpm": 160,
+      "axis": "both"
+    }
   },
   {
     "id": "te_251",
@@ -4275,12 +5038,15 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.9,
+      "interval": 1
+    }
   },
   {
     "id": "te_252",
@@ -4292,12 +5058,14 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04
+    }
   },
   {
     "id": "te_253",
@@ -4309,12 +5077,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.006,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_254",
@@ -4326,12 +5098,14 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.25
+    }
   },
   {
     "id": "te_255",
@@ -4343,12 +5117,16 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 1.8,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_256",
@@ -4360,12 +5138,15 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 4,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_257",
@@ -4377,12 +5158,15 @@
     "categoryJa": "歌詞動画",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": -0.1,
+      "vy": 0
+    }
   },
   {
     "id": "te_258",
@@ -4394,12 +5178,15 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.15,
+      "vy": 0
+    }
   },
   {
     "id": "te_259",
@@ -4411,12 +5198,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.35,
+      "period": 2.8,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_260",
@@ -4428,12 +5219,16 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "maskReveal",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "dir": "left",
+      "soft": 0.12,
+      "slope": 0.3
+    }
   },
   {
     "id": "te_261",
@@ -4445,12 +5240,14 @@
     "categoryJa": "マスク",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.15
+    }
   },
   {
     "id": "te_262",
@@ -4462,12 +5259,16 @@
     "categoryJa": "マスク",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_263",
@@ -4479,12 +5280,15 @@
     "categoryJa": "マスク",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.05,
+      "vy": 0
+    }
   },
   {
     "id": "te_264",
@@ -4496,12 +5300,14 @@
     "categoryJa": "マスク",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_265",
@@ -4513,12 +5319,16 @@
     "categoryJa": "マスク",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.45,
+      "period": 1.6,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_266",
@@ -4530,12 +5340,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.55,
+      "period": 2.2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_267",
@@ -4547,12 +5361,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.55,
+      "period": 2.4,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_268",
@@ -4564,12 +5382,14 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_269",
@@ -4581,12 +5401,16 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05,
+      "bpm": 110,
+      "axis": "both"
+    }
   },
   {
     "id": "te_270",
@@ -4598,12 +5422,15 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": -0.08,
+      "vy": 0
+    }
   },
   {
     "id": "te_271",
@@ -4618,9 +5445,12 @@
     "type": "strokeDrawOn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.8,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "width": 5,
+      "fillDelay": 0.5
+    }
   },
   {
     "id": "te_272",
@@ -4632,12 +5462,15 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "stretch",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "axis": "x",
+      "amount": 1.8
+    }
   },
   {
     "id": "te_273",
@@ -4649,12 +5482,14 @@
     "categoryJa": "出現",
     "group": "entrance",
     "phase": "enter",
-    "type": "slide",
+    "type": "box",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.7,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "soft": 0.1
+    }
   },
   {
     "id": "te_274",
@@ -4671,7 +5506,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 35,
+      "speed": 1
+    }
   },
   {
     "id": "te_275",
@@ -4683,12 +5521,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 7,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_276",
@@ -4700,12 +5541,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 6,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_277",
@@ -4717,12 +5561,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 5,
+      "speed": 0.45
+    }
   },
   {
     "id": "te_278",
@@ -4739,7 +5586,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "tilt": 15,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_279",
@@ -4751,12 +5601,15 @@
     "categoryJa": "切り替え",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.1,
+      "vy": 0
+    }
   },
   {
     "id": "te_280",
@@ -4771,9 +5624,11 @@
     "type": "zoomIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.45,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "from": 0.1
+    }
   },
   {
     "id": "te_281",
@@ -4805,9 +5660,12 @@
     "type": "fade",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.3,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "softness": 0,
+      "glow": 0
+    }
   },
   {
     "id": "te_283",
@@ -4819,12 +5677,15 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "freq": 2
+    }
   },
   {
     "id": "te_284",
@@ -4836,12 +5697,14 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_285",
@@ -4853,12 +5716,14 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04
+    }
   },
   {
     "id": "te_286",
@@ -4870,12 +5735,14 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05
+    }
   },
   {
     "id": "te_287",
@@ -4892,7 +5759,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.2,
+      "freq": 1.2
+    }
   },
   {
     "id": "te_288",
@@ -4904,12 +5774,15 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jitter",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.16,
+      "freq": 1.8
+    }
   },
   {
     "id": "te_289",
@@ -4921,12 +5794,15 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": -0.05,
+      "vy": 0
+    }
   },
   {
     "id": "te_290",
@@ -4938,12 +5814,15 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.08,
+      "vy": 0
+    }
   },
   {
     "id": "te_291",
@@ -4955,12 +5834,16 @@
     "categoryJa": "イージング",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.03,
+      "freq": 0.004,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_292",
@@ -4972,12 +5855,16 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "bpm": 140,
+      "axis": "both"
+    }
   },
   {
     "id": "te_293",
@@ -4989,12 +5876,18 @@
     "categoryJa": "強調",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "orbit2D",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "radius": 0.05,
+      "speed": 0.8,
+      "spread": 0.1,
+      "tilt": 0,
+      "spin": false
+    }
   },
   {
     "id": "te_294",
@@ -5011,7 +5904,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 2,
+      "speed": 1.2
+    }
   },
   {
     "id": "te_295",
@@ -5023,12 +5919,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.02,
+      "vy": 0
+    }
   },
   {
     "id": "te_296",
@@ -5040,12 +5939,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "sway",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.003,
+      "rate": 30
+    }
   },
   {
     "id": "te_297",
@@ -5057,12 +5959,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.15
+    }
   },
   {
     "id": "te_298",
@@ -5074,12 +5979,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.12
+    }
   },
   {
     "id": "te_299",
@@ -5091,12 +5999,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_300",
@@ -5108,12 +6020,16 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04,
+      "bpm": 80,
+      "axis": "both"
+    }
   },
   {
     "id": "te_301",
@@ -5125,12 +6041,16 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04,
+      "bpm": 90,
+      "axis": "both"
+    }
   },
   {
     "id": "te_302",
@@ -5142,12 +6062,14 @@
     "categoryJa": "数値",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.2
+    }
   },
   {
     "id": "te_303",
@@ -5159,12 +6081,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sway",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 3,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_304",
@@ -5181,7 +6106,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 2,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_305",
@@ -5198,7 +6126,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 2,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_306",
@@ -5213,9 +6144,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.3
+    }
   },
   {
     "id": "te_307",
@@ -5230,9 +6163,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.45
+    }
   },
   {
     "id": "te_308",
@@ -5244,12 +6179,15 @@
     "categoryJa": "漫画・TV風",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "freq": 2.2
+    }
   },
   {
     "id": "te_309",
@@ -5264,9 +6202,11 @@
     "type": "dropBounce",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.4,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "height": 0.35
+    }
   },
   {
     "id": "te_310",
@@ -5281,9 +6221,11 @@
     "type": "dropBounce",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.45,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "height": 0.25
+    }
   },
   {
     "id": "te_311",
@@ -5295,12 +6237,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_312",
@@ -5312,12 +6256,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_313",
@@ -5334,7 +6280,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 1,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_314",
@@ -5346,12 +6296,15 @@
     "categoryJa": "基本技法",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.05,
+      "vy": -0.03
+    }
   },
   {
     "id": "te_315",
@@ -5363,12 +6316,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "twist",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 10
+    }
   },
   {
     "id": "te_316",
@@ -5380,12 +6335,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "twist",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": -12
+    }
   },
   {
     "id": "te_317",
@@ -5397,12 +6354,16 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "scale": 3,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_318",
@@ -5419,7 +6380,9 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 20
+    }
   },
   {
     "id": "te_319",
@@ -5436,7 +6399,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "scale": 2,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_320",
@@ -5453,7 +6420,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "scale": 1.5,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_321",
@@ -5470,7 +6441,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "scale": 3,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_322",
@@ -5487,7 +6462,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.14,
+      "scale": 2.5,
+      "speed": 0.7
+    }
   },
   {
     "id": "te_323",
@@ -5499,12 +6478,16 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "scale": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_324",
@@ -5516,12 +6499,15 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "freq": 1.2
+    }
   },
   {
     "id": "te_325",
@@ -5533,12 +6519,16 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.09,
+      "scale": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_326",
@@ -5550,12 +6540,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.04
+    }
   },
   {
     "id": "te_327",
@@ -5567,12 +6559,15 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.8,
+      "interval": 2
+    }
   },
   {
     "id": "te_328",
@@ -5584,12 +6579,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "pathFollow",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.06
+    }
   },
   {
     "id": "te_329",
@@ -5601,12 +6598,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.05
+    }
   },
   {
     "id": "te_330",
@@ -5618,12 +6617,14 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06
+    }
   },
   {
     "id": "te_331",
@@ -5635,12 +6636,16 @@
     "categoryJa": "変形",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 0.8,
+      "speed": 1
+    }
   },
   {
     "id": "te_332",
@@ -5652,12 +6657,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.5,
+      "period": 1,
+      "speed": 0.9
+    }
   },
   {
     "id": "te_333",
@@ -5669,12 +6678,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.008,
+      "rate": 20
+    }
   },
   {
     "id": "te_334",
@@ -5691,7 +6703,9 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06
+    }
   },
   {
     "id": "te_335",
@@ -5703,12 +6717,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.05,
+      "freq": 0.003,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_336",
@@ -5720,12 +6738,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.015,
+      "rate": 12
+    }
   },
   {
     "id": "te_337",
@@ -5737,12 +6758,16 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "sineWave",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.06,
+      "freq": 0.005,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_338",
@@ -5754,12 +6779,14 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08
+    }
   },
   {
     "id": "te_339",
@@ -5771,12 +6798,15 @@
     "categoryJa": "文字単位",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jelly",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.15
+    }
   },
   {
     "id": "te_340",
@@ -5788,12 +6818,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "jelly",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.12
+    }
   },
   {
     "id": "te_341",
@@ -5810,7 +6843,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.15,
+      "freq": 1.5
+    }
   },
   {
     "id": "te_342",
@@ -5822,12 +6858,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": -0.08,
+      "vy": 0
+    }
   },
   {
     "id": "te_343",
@@ -5839,12 +6878,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "sway",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.18,
+      "vy": -0.02
+    }
   },
   {
     "id": "te_344",
@@ -5856,12 +6898,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.25,
+      "vy": 0
+    }
   },
   {
     "id": "te_345",
@@ -5878,7 +6923,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 10,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_346",
@@ -5890,12 +6938,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.14,
+      "freq": 1.6
+    }
   },
   {
     "id": "te_347",
@@ -5912,7 +6963,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "angle": 8,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_348",
@@ -5924,12 +6978,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0.08,
+      "vy": 0.04
+    }
   },
   {
     "id": "te_349",
@@ -5941,12 +6998,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.8,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.2
+    }
   },
   {
     "id": "te_350",
@@ -5963,7 +7023,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.18,
+      "freq": 1
+    }
   },
   {
     "id": "te_351",
@@ -5975,12 +7038,15 @@
     "categoryJa": "物理",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "drift",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 1.6,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "vx": 0,
+      "vy": 0.1
+    }
   },
   {
     "id": "te_352",
@@ -5992,12 +7058,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.08,
+      "scale": 2.5,
+      "speed": 0.5
+    }
   },
   {
     "id": "te_353",
@@ -6009,12 +7079,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.06,
+      "scale": 3,
+      "speed": 0.4
+    }
   },
   {
     "id": "te_354",
@@ -6026,12 +7100,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "wobbleWarp",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.1,
+      "scale": 2,
+      "speed": 0.6
+    }
   },
   {
     "id": "te_355",
@@ -6048,7 +7126,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.5,
+      "interval": 3
+    }
   },
   {
     "id": "te_356",
@@ -6065,7 +7146,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.7,
+      "interval": 2.5
+    }
   },
   {
     "id": "te_357",
@@ -6082,7 +7166,10 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.6,
+      "interval": 3.5
+    }
   },
   {
     "id": "te_358",
@@ -6094,12 +7181,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_359",
@@ -6111,12 +7200,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_360",
@@ -6128,12 +7219,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_361",
@@ -6145,12 +7238,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.03
+    }
   },
   {
     "id": "te_362",
@@ -6162,12 +7257,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_363",
@@ -6179,12 +7276,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_364",
@@ -6196,12 +7295,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "shiver",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.3,
+      "interval": 5
+    }
   },
   {
     "id": "te_365",
@@ -6216,9 +7318,12 @@
     "type": "noiseDissolveIn",
     "from": "start",
     "delay": 0,
-    "duration": 0.6,
+    "duration": 0.9,
     "ease": "easeOutCubic",
-    "params": {}
+    "params": {
+      "scale": 14,
+      "edgeWidth": 0.12
+    }
   },
   {
     "id": "te_366",
@@ -6230,12 +7335,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "wobbleWarp",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.12,
+      "freq": 1.5
+    }
   },
   {
     "id": "te_367",
@@ -6247,12 +7355,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "wobbleWarp",
+    "type": "jelly",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.18,
+      "freq": 1
+    }
   },
   {
     "id": "te_368",
@@ -6264,12 +7375,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.025
+    }
   },
   {
     "id": "te_369",
@@ -6281,12 +7394,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_370",
@@ -6298,12 +7413,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.015
+    }
   },
   {
     "id": "te_371",
@@ -6315,12 +7432,14 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "breathing",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amount": 0.02
+    }
   },
   {
     "id": "te_372",
@@ -6337,7 +7456,11 @@
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 1.6,
+      "speed": 0.8
+    }
   },
   {
     "id": "te_373",
@@ -6352,9 +7475,11 @@
     "type": "marquee",
     "from": "start",
     "delay": 0,
-    "duration": 1.2,
+    "duration": 2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "speed": 0.15
+    }
   },
   {
     "id": "te_374",
@@ -6366,12 +7491,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.4,
+      "period": 0.8,
+      "speed": 1
+    }
   },
   {
     "id": "te_375",
@@ -6383,12 +7512,15 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "jitter",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "amp": 0.005,
+      "rate": 20
+    }
   },
   {
     "id": "te_376",
@@ -6400,12 +7532,16 @@
     "categoryJa": "質感",
     "group": "emphasis",
     "phase": "hold",
-    "type": "floatBob",
+    "type": "opacityPulse",
     "from": "start",
     "delay": 0,
     "duration": 1.2,
     "ease": "linear",
-    "params": {}
+    "params": {
+      "min": 0.55,
+      "period": 1.5,
+      "speed": 0.7
+    }
   }
 ];
 

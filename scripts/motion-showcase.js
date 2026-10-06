@@ -113,8 +113,16 @@ function partition(slots) {
   return parts;
 }
 
+// Showcase params: the registry defaults under the preset's own params —
+// the same entry SA.inspector.addMotion writes. The catalog carries the real
+// values, so the showcase stays faithful and never invents its own.
+function showcaseParams(slot) {
+  const phase = slot.phase === 'exit' ? 'exit' : slot.phase === 'hold' ? 'hold' : 'enter';
+  return { ...(fx.paramDefaults(phase, slot.type) || {}), ...(slot.params || {}) };
+}
+
 // the same entry SA.inspector.addMotion writes: the registry defaults under
-// the preset params, over its own window.
+// the preset params, over its own window (plus showcase diversification).
 function motionEntry(slot, cueId) {
   const phase = slot.phase === 'exit' ? 'exit' : slot.phase === 'hold' ? 'hold' : 'enter';
   return {
@@ -125,7 +133,7 @@ function motionEntry(slot, cueId) {
     delay: slot.delay,
     duration: slot.duration,
     ease: slot.ease,
-    params: { ...(fx.paramDefaults(phase, slot.type) || {}), ...(slot.params || {}) },
+    params: showcaseParams(slot),
     enabled: true,
   };
 }
@@ -134,10 +142,65 @@ function cueIdOf(part, offset) {
   return `mo${part}_${String(offset + 1).padStart(2, '0')}`;
 }
 
-function cueText(slot) {
+// Sequential demos: the typing family and backspace need the effect as the
+// base enter/exit with a stagger animation. A custom motion runs one progress
+// for every letter, so as a custom motion typing is blank-then-pop and
+// backspace never deletes (cues 15/18/21/22). The engine also draws the
+// typewriter caret only for a base enter of type typewriter (engine.js).
+const TYPING_ENTER = {
+  typewriter: { each: 0.09, params: { cursor: false, cursorShape: 'bar', blink: 0.5, cursorAfter: 'blink' } },
+  te_100: { each: 0.07, params: { cursor: false, cursorShape: 'bar', blink: 0.5, cursorAfter: 'blink' } },
+  te_101: { each: 0.07, params: { cursor: true, cursorShape: 'bar', blink: 0.4, cursorAfter: 'blink' } },
+  te_102: { each: 0.1, params: { cursor: true, cursorShape: 'block', blink: 0.7, cursorAfter: 'hide' } },
+  te_104: { each: 0.07, params: { cursor: true, cursorShape: 'underscore', blink: 0.3, cursorAfter: 'stay' } },
+};
+const BACKSPACE_ID = 'te_103';
+const BACKSPACE_EACH = 0.08;
+
+function stagedStyle(slot) {
+  const typing = TYPING_ENTER[slot.presetId];
+  if (typing) {
+    return {
+      staged: 'typing',
+      animation: { type: 'stagger', enabled: true, params: { each: typing.each } },
+      enter: { type: 'typewriter', enabled: true, params: { ...typing.params }, motion: { in: { duration: 0.35, ease: 'linear' } } },
+      exit: clone(STATIC_EXIT),
+      motions: [],
+    };
+  }
+  if (slot.presetId === BACKSPACE_ID) {
+    return {
+      staged: 'backspace',
+      animation: { type: 'stagger', enabled: true, params: { each: BACKSPACE_EACH } },
+      enter: { type: 'fade', enabled: true, params: {}, motion: { in: { duration: 0.25, ease: 'linear' } } },
+      exit: { type: 'typewriterReverse', enabled: true, params: {}, motion: { out: { duration: 1.6, ease: 'linear' } } },
+      motions: [],
+    };
+  }
+  return null;
+}
+
+function paramDigest(params, phase, type) {
+  const keys = Object.keys(params || {});
+  if (!keys.length) return '';
+  const defaults = (typeof fx.paramDefaults === 'function' && fx.paramDefaults(phase, type)) || {};
+  const shown = keys.filter((key) => params[key] !== defaults[key]).slice(0, 3);
+  if (!shown.length) return '';
+  return ` [${shown.map((key) => `${key}:${params[key]}`).join(' ')}]`;
+}
+
+function cueText(slot, display) {
   const label = slot.labelJa || slot.labelEn || slot.presetId;
   const sub = slot.labelJa && slot.labelEn && slot.labelEn !== slot.labelJa ? ` (${slot.labelEn})` : '';
-  return `${slot.index}. ${label}${sub} · ${slot.type}\n${SAMPLE}`;
+  const phase = slot.phase === 'exit' ? 'exit' : slot.phase === 'hold' ? 'hold' : 'enter';
+  if (display && display.staged === 'typing') {
+    return `${slot.index}. ${label}${sub} · typewriter ×stagger${paramDigest(display.enter.params, 'enter', 'typewriter')}\n${SAMPLE}`;
+  }
+  if (display && display.staged === 'backspace') {
+    return `${slot.index}. ${label}${sub} · fade-in → backspace ×stagger\n${SAMPLE}`;
+  }
+  // the set values ride in the title (non-default params only)
+  return `${slot.index}. ${label}${sub} · ${slot.type}${paramDigest(display.params, phase, slot.type)}\n${SAMPLE}`;
 }
 
 function buildPart(partEntry) {
@@ -150,11 +213,14 @@ function buildPart(partEntry) {
     const id = cueIdOf(part, offset);
     const start = round(t);
     const end = round(t + MOTION_SECONDS);
+    const staged = stagedStyle(slot);
+    const entry = motionEntry(slot, id);
+    const display = staged || { params: entry.params };
     cues.push({
       id,
       start,
       end,
-      text: cueText(slot),
+      text: cueText(slot, display),
       meta: {
         kind: 'motion-showcase',
         part,
@@ -163,14 +229,17 @@ function buildPart(partEntry) {
         group: slot.group,
         phase: slot.phase,
         type: slot.type,
+        ...(staged ? { staged: staged.staged } : {}),
       },
     });
-    cueStyles[id] = {
-      animation: clone(STATIC_ANIMATION),
-      enter: clone(STATIC_ENTER),
-      exit: clone(STATIC_EXIT),
-      motions: [motionEntry(slot, id)],
-    };
+    cueStyles[id] = staged
+      ? { animation: staged.animation, enter: staged.enter, exit: staged.exit, motions: staged.motions }
+      : {
+        animation: clone(STATIC_ANIMATION),
+        enter: clone(STATIC_ENTER),
+        exit: clone(STATIC_EXIT),
+        motions: [entry],
+      };
     entries.push({ ...slot, part, cueId: id, start, end });
     t = end;
   });
@@ -229,6 +298,7 @@ function indexMarkdown(built) {
   lines.push('モーションギャラリーのプリセットを1キューずつ並べた見本です。各キューは同じサンプル文に1モーションだけを載せています（`cueStyles.motions`）。424件を16ファイルに分け、1ファイルが約80秒です。');
   lines.push('');
   lines.push('- 1モーション = 1キュー（3秒）、1ファイル = 26〜27キュー');
+  lines.push('- cue名末尾の `[key:value …]` は設定値（デフォルト以外）。タイピング系5件は base enter の typewriter＋stagger、バックスペースは base exit の typewriterReverse＋stagger で順次動作を見せている');
   lines.push('- 開くには Studio の *Help → モーション見本 → Motion 01/16 … 16/16*、または *File → Open project…* を使います');
   lines.push('- すべて通しで見るには *Help → モーション見本 → すべて連続再生* を使います（中断可）');
   lines.push('');
@@ -383,6 +453,10 @@ module.exports = {
   MD_PATH,
   plan,
   partition,
+  showcaseParams,
+  stagedStyle,
+  TYPING_ENTER,
+  BACKSPACE_ID,
   motionEntry,
   cueText,
   buildPart,

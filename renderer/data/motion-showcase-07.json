@@ -41,71 +41,56 @@
         "id": "mo07_01",
         "start": 0,
         "end": 3,
-        "text": "163. スキュー (Skew) · floatBob\nあいうえお Aiueo 0123",
+        "text": "163. ライン分割 (Line Slice / Offset) · twist [angle:10]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 163,
-          "presetId": "te_126",
+          "presetId": "te_315",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "twist"
         }
       },
       {
         "id": "mo07_02",
         "start": 3,
         "end": 6,
-        "text": "164. ライン分割 (Line Slice / Offset) · floatBob\nあいうえお Aiueo 0123",
+        "text": "164. スプリット (Split) · twist [angle:-12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 164,
-          "presetId": "te_315",
+          "presetId": "te_316",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "twist"
         }
       },
       {
         "id": "mo07_03",
         "start": 6,
         "end": 9,
-        "text": "165. スプリット (Split) · floatBob\nあいうえお Aiueo 0123",
+        "text": "165. スライスリビール (Slice Reveal) · wobbleWarp [amount:0.08 scale:3 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 165,
-          "presetId": "te_316",
+          "presetId": "te_317",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "wobbleWarp"
         }
       },
       {
         "id": "mo07_04",
         "start": 9,
         "end": 12,
-        "text": "166. スライスリビール (Slice Reveal) · floatBob\nあいうえお Aiueo 0123",
+        "text": "166. ツイスト (Twist) · twist [angle:20]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 166,
-          "presetId": "te_317",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "floatBob"
-        }
-      },
-      {
-        "id": "mo07_05",
-        "start": 12,
-        "end": 15,
-        "text": "167. ツイスト (Twist) · twist\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "07",
-          "index": 167,
           "presetId": "te_318",
           "group": "emphasis",
           "phase": "hold",
@@ -113,15 +98,30 @@
         }
       },
       {
+        "id": "mo07_05",
+        "start": 12,
+        "end": 15,
+        "text": "167. ベンド (Bend) · wobbleWarp [amount:0.08 speed:0.7]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "07",
+          "index": 167,
+          "presetId": "te_319",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "wobbleWarp"
+        }
+      },
+      {
         "id": "mo07_06",
         "start": 15,
         "end": 18,
-        "text": "168. ベンド (Bend) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "168. バルジ (Bulge) · wobbleWarp [amount:0.12 scale:1.5 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 168,
-          "presetId": "te_319",
+          "presetId": "te_320",
           "group": "emphasis",
           "phase": "hold",
           "type": "wobbleWarp"
@@ -131,12 +131,12 @@
         "id": "mo07_07",
         "start": 18,
         "end": 21,
-        "text": "169. バルジ (Bulge) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "169. ピンチ (Pinch) · wobbleWarp [amount:0.1 scale:3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 169,
-          "presetId": "te_320",
+          "presetId": "te_321",
           "group": "emphasis",
           "phase": "hold",
           "type": "wobbleWarp"
@@ -146,12 +146,12 @@
         "id": "mo07_08",
         "start": 21,
         "end": 24,
-        "text": "170. ピンチ (Pinch) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "170. ワープ (Spatial Warp) · wobbleWarp [amount:0.14 scale:2.5 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 170,
-          "presetId": "te_321",
+          "presetId": "te_322",
           "group": "emphasis",
           "phase": "hold",
           "type": "wobbleWarp"
@@ -161,12 +161,12 @@
         "id": "mo07_09",
         "start": 24,
         "end": 27,
-        "text": "171. ワープ (Spatial Warp) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "171. モーフィング (Morphing) · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 171,
-          "presetId": "te_322",
+          "presetId": "te_323",
           "group": "emphasis",
           "phase": "hold",
           "type": "wobbleWarp"
@@ -176,147 +176,147 @@
         "id": "mo07_10",
         "start": 27,
         "end": 30,
-        "text": "172. モーフィング (Morphing) · floatBob\nあいうえお Aiueo 0123",
+        "text": "172. テキストモーフ (Text Morph) · jelly [amount:0.1 freq:1.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 172,
-          "presetId": "te_323",
+          "presetId": "te_324",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "jelly"
         }
       },
       {
         "id": "mo07_11",
         "start": 30,
         "end": 33,
-        "text": "173. テキストモーフ (Text Morph) · floatBob\nあいうえお Aiueo 0123",
+        "text": "173. シェイプチェンジ (Shape Change) · wobbleWarp [amount:0.09 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 173,
-          "presetId": "te_324",
+          "presetId": "te_325",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "wobbleWarp"
         }
       },
       {
         "id": "mo07_12",
         "start": 33,
         "end": 36,
-        "text": "174. シェイプチェンジ (Shape Change) · floatBob\nあいうえお Aiueo 0123",
+        "text": "174. アイコン変化 (Icon Transition) · breathing [amount:0.04]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 174,
-          "presetId": "te_325",
+          "presetId": "te_326",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo07_13",
         "start": 36,
         "end": 39,
-        "text": "175. アイコン変化 (Icon Transition) · floatBob\nあいうえお Aiueo 0123",
+        "text": "175. 分解・再構成 (Disassemble & Reassemble) · shiver [amount:0.8 interval:2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 175,
-          "presetId": "te_326",
+          "presetId": "te_327",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "shiver"
         }
       },
       {
         "id": "mo07_14",
         "start": 39,
         "end": 42,
-        "text": "176. 分解・再構成 (Disassemble & Reassemble) · floatBob\nあいうえお Aiueo 0123",
+        "text": "176. ストロークアニメ (Stroke Weight Animation) · pathFollow [speed:0.06]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 176,
-          "presetId": "te_327",
+          "presetId": "te_328",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "pathFollow"
         }
       },
       {
         "id": "mo07_15",
         "start": 42,
         "end": 45,
-        "text": "177. ストロークアニメ (Stroke Weight Animation) · floatBob\nあいうえお Aiueo 0123",
+        "text": "177. ウェイト変化 (Weight Shift) · breathing [amount:0.05]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 177,
-          "presetId": "te_328",
+          "presetId": "te_329",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo07_16",
         "start": 45,
         "end": 48,
-        "text": "178. ウェイト変化 (Weight Shift) · floatBob\nあいうえお Aiueo 0123",
+        "text": "178. 可変フォント (Variable Font) · breathing [amount:0.06]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 178,
-          "presetId": "te_329",
+          "presetId": "te_330",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "breathing"
         }
       },
       {
         "id": "mo07_17",
         "start": 48,
         "end": 51,
-        "text": "179. 可変フォント (Variable Font) · floatBob\nあいうえお Aiueo 0123",
+        "text": "179. フォントチェンジ (Font Cycle) · opacityPulse [min:0.5 period:0.8 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 179,
-          "presetId": "te_330",
+          "presetId": "te_331",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "opacityPulse"
         }
       },
       {
         "id": "mo07_18",
         "start": 51,
         "end": 54,
-        "text": "180. フォントチェンジ (Font Cycle) · floatBob\nあいうえお Aiueo 0123",
+        "text": "180. グラデーション流れ (Flowing Gradient) · opacityPulse [min:0.5 period:2 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 180,
-          "presetId": "te_331",
+          "presetId": "te_148",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "opacityPulse"
         }
       },
       {
         "id": "mo07_19",
         "start": 54,
         "end": 57,
-        "text": "181. グラデーション流れ (Flowing Gradient) · opacityPulse\nあいうえお Aiueo 0123",
+        "text": "181. レインボー (Rainbow) · opacityPulse [min:0.45]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 181,
-          "presetId": "te_148",
+          "presetId": "te_149",
           "group": "emphasis",
           "phase": "hold",
           "type": "opacityPulse"
@@ -326,12 +326,12 @@
         "id": "mo07_20",
         "start": 57,
         "end": 60,
-        "text": "182. レインボー (Rainbow) · opacityPulse\nあいうえお Aiueo 0123",
+        "text": "182. カラーサイクル (Color Cycle) · opacityPulse [min:0.4 period:1.2 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 182,
-          "presetId": "te_149",
+          "presetId": "te_150",
           "group": "emphasis",
           "phase": "hold",
           "type": "opacityPulse"
@@ -341,27 +341,27 @@
         "id": "mo07_21",
         "start": 60,
         "end": 63,
-        "text": "183. カラーサイクル (Color Cycle) · opacityPulse\nあいうえお Aiueo 0123",
+        "text": "183. ふわふわ (Float Gently) · floatBob\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 183,
-          "presetId": "te_150",
+          "presetId": "te_66",
           "group": "emphasis",
           "phase": "hold",
-          "type": "opacityPulse"
+          "type": "floatBob"
         }
       },
       {
         "id": "mo07_22",
         "start": 63,
         "end": 66,
-        "text": "184. ふわふわ (Float Gently) · floatBob\nあいうえお Aiueo 0123",
+        "text": "184. フロート (Float) · floatBob [amp:0.03 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 184,
-          "presetId": "te_66",
+          "presetId": "te_67",
           "group": "emphasis",
           "phase": "hold",
           "type": "floatBob"
@@ -371,12 +371,12 @@
         "id": "mo07_23",
         "start": 66,
         "end": 69,
-        "text": "185. フロート (Float) · floatBob\nあいうえお Aiueo 0123",
+        "text": "185. ホバー (Hover) · floatBob [amp:0.015 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 185,
-          "presetId": "te_67",
+          "presetId": "te_68",
           "group": "emphasis",
           "phase": "hold",
           "type": "floatBob"
@@ -386,26 +386,11 @@
         "id": "mo07_24",
         "start": 69,
         "end": 72,
-        "text": "186. ホバー (Hover) · floatBob\nあいうえお Aiueo 0123",
+        "text": "186. ゆらゆら (Sway Gently) · sway [angle:4 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 186,
-          "presetId": "te_68",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "floatBob"
-        }
-      },
-      {
-        "id": "mo07_25",
-        "start": 72,
-        "end": 75,
-        "text": "187. ゆらゆら (Sway Gently) · sway\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "07",
-          "index": 187,
           "presetId": "te_69",
           "group": "emphasis",
           "phase": "hold",
@@ -413,14 +398,14 @@
         }
       },
       {
-        "id": "mo07_26",
-        "start": 75,
-        "end": 78,
-        "text": "188. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
+        "id": "mo07_25",
+        "start": 72,
+        "end": 75,
+        "text": "187. ブレス (Breathe) · breathing [amount:0.035]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
-          "index": 188,
+          "index": 187,
           "presetId": "te_70",
           "group": "emphasis",
           "phase": "hold",
@@ -428,18 +413,33 @@
         }
       },
       {
+        "id": "mo07_26",
+        "start": 75,
+        "end": 78,
+        "text": "188. スウィング (Swing) · sway [angle:6 speed:0.9]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "07",
+          "index": 188,
+          "presetId": "te_71",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "sway"
+        }
+      },
+      {
         "id": "mo07_27",
         "start": 78,
         "end": 81,
-        "text": "189. スウィング (Swing) · floatBob\nあいうえお Aiueo 0123",
+        "text": "189. コンスタントスピン (Constant Spin) · orbit3D [tilt:20 speed:0.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "07",
           "index": 189,
-          "presetId": "te_71",
+          "presetId": "te_72",
           "group": "emphasis",
           "phase": "hold",
-          "type": "floatBob"
+          "type": "orbit3D"
         }
       }
     ],
@@ -497,14 +497,13 @@
         {
           "id": "m_mo07_01",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "twist",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "angle": 10
           },
           "enabled": true
         }
@@ -542,14 +541,13 @@
         {
           "id": "m_mo07_02",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "twist",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "angle": -12
           },
           "enabled": true
         }
@@ -587,14 +585,15 @@
         {
           "id": "m_mo07_03",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.08,
+            "scale": 3,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -632,14 +631,13 @@
         {
           "id": "m_mo07_04",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "twist",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "angle": 20
           },
           "enabled": true
         }
@@ -677,13 +675,15 @@
         {
           "id": "m_mo07_05",
           "phase": "hold",
-          "type": "twist",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "angle": 12
+            "amount": 0.08,
+            "scale": 2,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -727,9 +727,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 2,
-            "speed": 0.8
+            "amount": 0.12,
+            "scale": 1.5,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -773,8 +773,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 2,
+            "amount": 0.1,
+            "scale": 3,
             "speed": 0.8
           },
           "enabled": true
@@ -819,9 +819,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 2,
-            "speed": 0.8
+            "amount": 0.14,
+            "scale": 2.5,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -865,9 +865,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
+            "amount": 0.1,
             "scale": 2,
-            "speed": 0.8
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -905,14 +905,14 @@
         {
           "id": "m_mo07_10",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.1,
+            "freq": 1.2
           },
           "enabled": true
         }
@@ -950,14 +950,15 @@
         {
           "id": "m_mo07_11",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.09,
+            "scale": 2,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -995,14 +996,13 @@
         {
           "id": "m_mo07_12",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.04
           },
           "enabled": true
         }
@@ -1040,14 +1040,14 @@
         {
           "id": "m_mo07_13",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.8,
+            "interval": 2
           },
           "enabled": true
         }
@@ -1085,14 +1085,27 @@
         {
           "id": "m_mo07_14",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "pathFollow",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "points": [
+              {
+                "x": 0.2,
+                "y": 0.5
+              },
+              {
+                "x": 0.5,
+                "y": 0.42
+              },
+              {
+                "x": 0.8,
+                "y": 0.5
+              }
+            ],
+            "speed": 0.06
           },
           "enabled": true
         }
@@ -1130,14 +1143,13 @@
         {
           "id": "m_mo07_15",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.05
           },
           "enabled": true
         }
@@ -1175,14 +1187,13 @@
         {
           "id": "m_mo07_16",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amount": 0.06
           },
           "enabled": true
         }
@@ -1220,14 +1231,15 @@
         {
           "id": "m_mo07_17",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "min": 0.5,
+            "period": 0.8,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1265,14 +1277,15 @@
         {
           "id": "m_mo07_18",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "min": 0.5,
+            "period": 2,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1316,7 +1329,7 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
+            "min": 0.45,
             "period": 1.6,
             "speed": 0.8
           },
@@ -1362,9 +1375,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 1.6,
-            "speed": 0.8
+            "min": 0.4,
+            "period": 1.2,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1402,15 +1415,14 @@
         {
           "id": "m_mo07_21",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "floatBob",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 1.6,
-            "speed": 0.8
+            "amp": 0.02,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -1454,8 +1466,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amp": 0.03,
+            "speed": 0.4
           },
           "enabled": true
         }
@@ -1499,8 +1511,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "amp": 0.015,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1538,14 +1550,14 @@
         {
           "id": "m_mo07_24",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "sway",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "angle": 4,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1583,14 +1595,13 @@
         {
           "id": "m_mo07_25",
           "phase": "hold",
-          "type": "sway",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "angle": 3,
-            "speed": 0.7
+            "amount": 0.035
           },
           "enabled": true
         }
@@ -1628,13 +1639,14 @@
         {
           "id": "m_mo07_26",
           "phase": "hold",
-          "type": "breathing",
+          "type": "sway",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.03
+            "angle": 6,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -1672,14 +1684,14 @@
         {
           "id": "m_mo07_27",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "orbit3D",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "tilt": 20,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -1765,12 +1777,12 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "163. スキュー (Skew) · floatBob\nあいうえお Aiueo 0123",
+        "text": "163. ライン分割 (Line Slice / Offset) ·\ntwist [angle:10]あいうえお Aiueo 0123",
         "lines": [
-          "163. スキュー (Skew) · floatBob",
-          "あいうえお Aiueo 0123"
+          "163. ライン分割 (Line Slice / Offset) ·",
+          "twist [angle:10]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1782,29 +1794,44 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "164. ライン分割 (Line Slice / Offset\n) · floatBobあいうえお Aiueo 0123",
+        "text": "164. スプリット (Split) · twist [\nangle:-12]あいうえお Aiueo 0123",
         "lines": [
-          "164. ライン分割 (Line Slice / Offset",
-          ") · floatBobあいうえお Aiueo 0123"
+          "164. スプリット (Split) · twist [",
+          "angle:-12]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.9199999999999999,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "mo07_03": [
       {
-        "id": "mo07_03:single0",
+        "id": "mo07_03:page1",
         "cueId": "mo07_03",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 6,
-        "end": 9,
-        "text": "165. スプリット (Split) ·\nfloatBobあいうえお Aiueo 0123",
+        "end": 7.734864300626304,
+        "text": "165. スライスリビール (Slice Reveal)\n · wobbleWarp [amount:0.",
         "lines": [
-          "165. スプリット (Split) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "165. スライスリビール (Slice Reveal)",
+          " · wobbleWarp [amount:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_03:page2",
+        "cueId": "mo07_03",
+        "kind": "page",
+        "index": 2,
+        "start": 7.734864300626304,
+        "end": 9,
+        "text": "08 scale:3 speed:0.7]\nあいうえお Aiueo 0123",
+        "lines": [
+          "08 scale:3 speed:0.7]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1816,12 +1843,12 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "166. スライスリビール (Slice Reveal\n) · floatBobあいうえお Aiueo 0123",
+        "text": "166. ツイスト (Twist) · twist [\nangle:20]あいうえお Aiueo 0123",
         "lines": [
-          "166. スライスリビール (Slice Reveal",
-          ") · floatBobあいうえお Aiueo 0123"
+          "166. ツイスト (Twist) · twist [",
+          "angle:20]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.96,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -1833,29 +1860,43 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "167. ツイスト (Twist) · twist\nあいうえお Aiueo 0123",
+        "text": "167. ベンド (Bend) · wobbleWarp [amount\n:0.08 speed:0.7]あいうえお Aiueo 0123",
         "lines": [
-          "167. ツイスト (Twist) · twist",
-          "あいうえお Aiueo 0123"
+          "167. ベンド (Bend) · wobbleWarp [amount",
+          ":0.08 speed:0.7]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
     "mo07_06": [
       {
-        "id": "mo07_06:single0",
+        "id": "mo07_06:page1",
         "cueId": "mo07_06",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 15,
-        "end": 18,
-        "text": "168. ベンド (Bend) · wobbleWarp\nあいうえお Aiueo 0123",
+        "end": 16.192686357243318,
+        "text": "168. バルジ (Bulge) · wobbleWarp [",
         "lines": [
-          "168. ベンド (Bend) · wobbleWarp",
+          "168. バルジ (Bulge) · wobbleWarp ["
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_06:page2",
+        "cueId": "mo07_06",
+        "kind": "page",
+        "index": 2,
+        "start": 16.192686357243318,
+        "end": 18,
+        "text": "amount:0.12 scale:1.5 speed:0.6]\nあいうえお Aiueo 0123",
+        "lines": [
+          "amount:0.12 scale:1.5 speed:0.6]",
           "あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1867,46 +1908,74 @@
         "index": 0,
         "start": 18,
         "end": 21,
-        "text": "169. バルジ (Bulge) · wobbleWarp\nあいうえお Aiueo 0123",
+        "text": "169. ピンチ (Pinch) · wobbleWarp [amount\n:0.1 scale:3]あいうえお Aiueo 0123",
         "lines": [
-          "169. バルジ (Bulge) · wobbleWarp",
-          "あいうえお Aiueo 0123"
+          "169. ピンチ (Pinch) · wobbleWarp [amount",
+          ":0.1 scale:3]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo07_08": [
       {
-        "id": "mo07_08:single0",
+        "id": "mo07_08:page1",
         "cueId": "mo07_08",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 21,
-        "end": 24,
-        "text": "170. ピンチ (Pinch) · wobbleWarp\nあいうえお Aiueo 0123",
+        "end": 22.26872246696035,
+        "text": "170. ワープ (Spatial Warp) · wobbleWarp",
         "lines": [
-          "170. ピンチ (Pinch) · wobbleWarp",
+          "170. ワープ (Spatial Warp) · wobbleWarp"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_08:page2",
+        "cueId": "mo07_08",
+        "kind": "page",
+        "index": 2,
+        "start": 22.26872246696035,
+        "end": 24,
+        "text": "[amount:0.14 scale:2.5 speed:0.7]\nあいうえお Aiueo 0123",
+        "lines": [
+          "[amount:0.14 scale:2.5 speed:0.7]",
           "あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_09": [
       {
-        "id": "mo07_09:single0",
+        "id": "mo07_09:page1",
         "cueId": "mo07_09",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 24,
-        "end": 27,
-        "text": "171. ワープ (Spatial Warp) ·\nwobbleWarpあいうえお Aiueo 0123",
+        "end": 25.09665597801191,
+        "text": "171. モーフィング (Morphing)",
         "lines": [
-          "171. ワープ (Spatial Warp) ·",
-          "wobbleWarpあいうえお Aiueo 0123"
+          "171. モーフィング (Morphing)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_09:page2",
+        "cueId": "mo07_09",
+        "kind": "page",
+        "index": 2,
+        "start": 25.09665597801191,
+        "end": 27,
+        "text": " · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · wobbleWarp [amount:0.1 speed:0.6]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1918,63 +1987,106 @@
         "index": 0,
         "start": 27,
         "end": 30,
-        "text": "172. モーフィング (Morphing) ·\nfloatBobあいうえお Aiueo 0123",
+        "text": "172. テキストモーフ (Text Morph) · jelly [\namount:0.1 freq:1.2]あいうえお Aiueo 0123",
         "lines": [
-          "172. モーフィング (Morphing) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "172. テキストモーフ (Text Morph) · jelly [",
+          "amount:0.1 freq:1.2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_11": [
       {
-        "id": "mo07_11:single0",
+        "id": "mo07_11:page1",
         "cueId": "mo07_11",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 30,
-        "end": 33,
-        "text": "173. テキストモーフ (Text Morph) ·\nfloatBobあいうえお Aiueo 0123",
+        "end": 31.143107989464443,
+        "text": "173. シェイプチェンジ (Shape Change)",
         "lines": [
-          "173. テキストモーフ (Text Morph) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "173. シェイプチェンジ (Shape Change)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_11:page2",
+        "cueId": "mo07_11",
+        "kind": "page",
+        "index": 2,
+        "start": 31.143107989464443,
+        "end": 33,
+        "text": " · wobbleWarp [amount:0.09 speed:0.6]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · wobbleWarp [amount:0.09 speed:0.6]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_12": [
       {
-        "id": "mo07_12:single0",
+        "id": "mo07_12:page1",
         "cueId": "mo07_12",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 33,
-        "end": 36,
-        "text": "174. シェイプチェンジ (Shape Change\n) · floatBobあいうえお Aiueo 0123",
+        "end": 34.2265625,
+        "text": "174. アイコン変化 (Icon Transition)",
         "lines": [
-          "174. シェイプチェンジ (Shape Change",
-          ") · floatBobあいうえお Aiueo 0123"
+          "174. アイコン変化 (Icon Transition)"
         ],
-        "fontScale": 0.96,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_12:page2",
+        "cueId": "mo07_12",
+        "kind": "page",
+        "index": 2,
+        "start": 34.2265625,
+        "end": 36,
+        "text": " · breathing [amount:0.04]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.04]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_13": [
       {
-        "id": "mo07_13:single0",
+        "id": "mo07_13:page1",
         "cueId": "mo07_13",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 36,
-        "end": 39,
-        "text": "175. アイコン変化 (Icon Transition\n) · floatBobあいうえお Aiueo 0123",
+        "end": 37.86211079660332,
+        "text": "175. 分解・再構成 (Disassemble & \nReassemble) · shiver [amount:0.",
         "lines": [
-          "175. アイコン変化 (Icon Transition",
-          ") · floatBobあいうえお Aiueo 0123"
+          "175. 分解・再構成 (Disassemble & ",
+          "Reassemble) · shiver [amount:0."
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_13:page2",
+        "cueId": "mo07_13",
+        "kind": "page",
+        "index": 2,
+        "start": 37.86211079660332,
+        "end": 39,
+        "text": "8 interval:2]\nあいうえお Aiueo 0123",
+        "lines": [
+          "8 interval:2]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1985,10 +2097,10 @@
         "kind": "page",
         "index": 1,
         "start": 39,
-        "end": 40.174425126191814,
-        "text": "176. 分解・再構成 (Disassemble",
+        "end": 40.147570218457425,
+        "text": "176. ストロークアニメ (Stroke Weight",
         "lines": [
-          "176. 分解・再構成 (Disassemble"
+          "176. ストロークアニメ (Stroke Weight"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1998,11 +2110,11 @@
         "cueId": "mo07_14",
         "kind": "page",
         "index": 2,
-        "start": 40.174425126191814,
+        "start": 40.147570218457425,
         "end": 42,
-        "text": "& Reassemble) · floatBob\nあいうえお Aiueo 0123",
+        "text": "Animation) · pathFollow [speed:0.06]\nあいうえお Aiueo 0123",
         "lines": [
-          "& Reassemble) · floatBob",
+          "Animation) · pathFollow [speed:0.06]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2016,10 +2128,10 @@
         "kind": "page",
         "index": 1,
         "start": 42,
-        "end": 43.122028526148966,
-        "text": "177. ストロークアニメ (Stroke",
+        "end": 43.18206086492258,
+        "text": "177. ウェイト変化 (Weight Shift)",
         "lines": [
-          "177. ストロークアニメ (Stroke"
+          "177. ウェイト変化 (Weight Shift)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2029,11 +2141,11 @@
         "cueId": "mo07_15",
         "kind": "page",
         "index": 2,
-        "start": 43.122028526148966,
+        "start": 43.18206086492258,
         "end": 45,
-        "text": "Weight Animation) · floatBob\nあいうえお Aiueo 0123",
+        "text": " · breathing [amount:0.05]\nあいうえお Aiueo 0123",
         "lines": [
-          "Weight Animation) · floatBob",
+          " · breathing [amount:0.05]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2042,52 +2154,96 @@
     ],
     "mo07_16": [
       {
-        "id": "mo07_16:single0",
+        "id": "mo07_16:page1",
         "cueId": "mo07_16",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 45,
-        "end": 48,
-        "text": "178. ウェイト変化 (Weight Shift)\n · floatBobあいうえお Aiueo 0123",
+        "end": 46.191715347849176,
+        "text": "178. 可変フォント (Variable Font)",
         "lines": [
-          "178. ウェイト変化 (Weight Shift)",
-          " · floatBobあいうえお Aiueo 0123"
+          "178. 可変フォント (Variable Font)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_16:page2",
+        "cueId": "mo07_16",
+        "kind": "page",
+        "index": 2,
+        "start": 46.191715347849176,
+        "end": 48,
+        "text": " · breathing [amount:0.06]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.06]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_17": [
       {
-        "id": "mo07_17:single0",
+        "id": "mo07_17:page1",
         "cueId": "mo07_17",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 48,
-        "end": 51,
-        "text": "179. 可変フォント (Variable Font)\n · floatBobあいうえお Aiueo 0123",
+        "end": 49.69396551724138,
+        "text": "179. フォントチェンジ (Font Cycle)\n · opacityPulse [min:0.",
         "lines": [
-          "179. 可変フォント (Variable Font)",
-          " · floatBobあいうえお Aiueo 0123"
+          "179. フォントチェンジ (Font Cycle)",
+          " · opacityPulse [min:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_17:page2",
+        "cueId": "mo07_17",
+        "kind": "page",
+        "index": 2,
+        "start": 49.69396551724138,
+        "end": 51,
+        "text": "5 period:0.8 speed:1]\nあいうえお Aiueo 0123",
+        "lines": [
+          "5 period:0.8 speed:1]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo07_18": [
       {
-        "id": "mo07_18:single0",
+        "id": "mo07_18:page1",
         "cueId": "mo07_18",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 51,
-        "end": 54,
-        "text": "180. フォントチェンジ (Font Cycle)\n · floatBobあいうえお Aiueo 0123",
+        "end": 52.77327935222672,
+        "text": "180. グラデーション流れ (Flowing\nGradient) · opacityPulse [min:0.",
         "lines": [
-          "180. フォントチェンジ (Font Cycle)",
-          " · floatBobあいうえお Aiueo 0123"
+          "180. グラデーション流れ (Flowing",
+          "Gradient) · opacityPulse [min:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_18:page2",
+        "cueId": "mo07_18",
+        "kind": "page",
+        "index": 2,
+        "start": 52.77327935222672,
+        "end": 54,
+        "text": "5 period:2 speed:0.6]\nあいうえお Aiueo 0123",
+        "lines": [
+          "5 period:2 speed:0.6]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2099,10 +2255,10 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "181. グラデーション流れ (Flowing Gradient\n) · opacityPulseあいうえお Aiueo 0123",
+        "text": "181. レインボー (Rainbow) · opacityPulse\n[min:0.45]あいうえお Aiueo 0123",
         "lines": [
-          "181. グラデーション流れ (Flowing Gradient",
-          ") · opacityPulseあいうえお Aiueo 0123"
+          "181. レインボー (Rainbow) · opacityPulse",
+          "[min:0.45]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
         "pinned": false
@@ -2110,18 +2266,33 @@
     ],
     "mo07_20": [
       {
-        "id": "mo07_20:single0",
+        "id": "mo07_20:page1",
         "cueId": "mo07_20",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 57,
-        "end": 60,
-        "text": "182. レインボー (Rainbow) ·\nopacityPulseあいうえお Aiueo 0123",
+        "end": 58.69396551724138,
+        "text": "182. カラーサイクル (Color Cycle)\n · opacityPulse [min:0.",
         "lines": [
-          "182. レインボー (Rainbow) ·",
-          "opacityPulseあいうえお Aiueo 0123"
+          "182. カラーサイクル (Color Cycle)",
+          " · opacityPulse [min:0."
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_20:page2",
+        "cueId": "mo07_20",
+        "kind": "page",
+        "index": 2,
+        "start": 58.69396551724138,
+        "end": 60,
+        "text": "4 period:1.2 speed:1]\nあいうえお Aiueo 0123",
+        "lines": [
+          "4 period:1.2 speed:1]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2133,12 +2304,12 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "183. カラーサイクル (Color Cycle) ·\nopacityPulseあいうえお Aiueo 0123",
+        "text": "183. ふわふわ (Float Gently) ·\nfloatBobあいうえお Aiueo 0123",
         "lines": [
-          "183. カラーサイクル (Color Cycle) ·",
-          "opacityPulseあいうえお Aiueo 0123"
+          "183. ふわふわ (Float Gently) ·",
+          "floatBobあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.96,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2150,12 +2321,12 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "184. ふわふわ (Float Gently) ·\nfloatBobあいうえお Aiueo 0123",
+        "text": "184. フロート (Float) · floatBob [amp\n:0.03 speed:0.4]あいうえお Aiueo 0123",
         "lines": [
-          "184. ふわふわ (Float Gently) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "184. フロート (Float) · floatBob [amp",
+          ":0.03 speed:0.4]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -2167,12 +2338,12 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "185. フロート (Float) · floatBob\nあいうえお Aiueo 0123",
+        "text": "185. ホバー (Hover) · floatBob [amp:\n0.015 speed:0.6]あいうえお Aiueo 0123",
         "lines": [
-          "185. フロート (Float) · floatBob",
-          "あいうえお Aiueo 0123"
+          "185. ホバー (Hover) · floatBob [amp:",
+          "0.015 speed:0.6]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -2184,12 +2355,12 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "186. ホバー (Hover) · floatBob\nあいうえお Aiueo 0123",
+        "text": "186. ゆらゆら (Sway Gently) · sway [\nangle:4 speed:0.6]あいうえお Aiueo 0123",
         "lines": [
-          "186. ホバー (Hover) · floatBob",
-          "あいうえお Aiueo 0123"
+          "186. ゆらゆら (Sway Gently) · sway [",
+          "angle:4 speed:0.6]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -2201,12 +2372,12 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "187. ゆらゆら (Sway Gently) ·\nswayあいうえお Aiueo 0123",
+        "text": "187. ブレス (Breathe) · breathing [\namount:0.035]あいうえお Aiueo 0123",
         "lines": [
-          "187. ゆらゆら (Sway Gently) ·",
-          "swayあいうえお Aiueo 0123"
+          "187. ブレス (Breathe) · breathing [",
+          "amount:0.035]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.94,
         "pinned": false
       }
     ],
@@ -2218,35 +2389,73 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "188. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
+        "text": "188. スウィング (Swing) · sway [angle\n:6 speed:0.9]あいうえお Aiueo 0123",
         "lines": [
-          "188. ブレス (Breathe) · breathing",
-          "あいうえお Aiueo 0123"
+          "188. スウィング (Swing) · sway [angle",
+          ":6 speed:0.9]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
     "mo07_27": [
       {
-        "id": "mo07_27:single0",
+        "id": "mo07_27:page1",
         "cueId": "mo07_27",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 78,
-        "end": 81,
-        "text": "189. スウィング (Swing) ·\nfloatBobあいうえお Aiueo 0123",
+        "end": 79.19532391622016,
+        "text": "189. コンスタントスピン (Constant Spin)",
         "lines": [
-          "189. スウィング (Swing) ·",
-          "floatBobあいうえお Aiueo 0123"
+          "189. コンスタントスピン (Constant Spin)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo07_27:page2",
+        "cueId": "mo07_27",
+        "kind": "page",
+        "index": 2,
+        "start": 79.19532391622016,
+        "end": 81,
+        "text": " · orbit3D [tilt:20 speed:0.8]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · orbit3D [tilt:20 speed:0.8]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ]
   },
   "beatStyles": {},
   "beatWarnings": {
+    "mo07_06": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo07_09": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo07_11": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo07_13": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
     "mo07_14": [
       {
         "code": "tooFast",
@@ -2254,6 +2463,18 @@
       }
     ],
     "mo07_15": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo07_16": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo07_27": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
