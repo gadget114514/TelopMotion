@@ -1011,10 +1011,10 @@
     if (kind !== 'backdrop' && kind !== 'filler') return [];
     if (Array.isArray(clip.segments) && clip.segments.length) {
       return clip.segments
-        .map((seg, index) => ({ index, start: Math.max(clip.start, seg.start), end: Math.min(clip.end, seg.end), own: !!seg.spec }))
+        .map((seg, index) => ({ index, start: Math.max(clip.start, seg.start), end: Math.min(clip.end, seg.end), own: !!seg.spec, disabled: !!(seg.disabled || seg.enabled === false) }))
         .filter((seg) => seg.end - seg.start > 1e-3);
     }
-    return lyricBeatSpans(project, clip.start, clip.end).map((span, index) => ({ index, ...span, own: false }));
+    return lyricBeatSpans(project, clip.start, clip.end).map((span, index) => ({ index, ...span, own: false, disabled: false }));
   }
 
   function lyricBeatSpans(project, start, end) {

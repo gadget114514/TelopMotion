@@ -829,6 +829,13 @@
     const depth = clamp01(num(params.depth, 0));
     const short = Math.min(frame.width, frame.height);
     let layer = 0;
+    // the drop shadow is a darkened plane colour, never pure black: `shadow`
+    // pins it, empty follows the plane so no palette-blind black appears.
+    const shadowFor = (planeColor) => {
+      const pinned = params && typeof params.shadow === 'string' && params.shadow ? params.shadow : null;
+      if (pinned) return pinned;
+      return darkenHex(planeColor, 0.45);
+    };
     for (const region of regions) {
       if (!region.painted) continue;
       if (depth > 0 && layer > 0) {
@@ -836,7 +843,7 @@
         shapes.push({
           kind: 'convex',
           points: region.points.map((point) => ({ x: point.x + offset, y: point.y + offset * 1.4 })),
-          color: '#000000',
+          color: shadowFor(region.color),
           opacity: opacity * 0.3 * depth,
           plane: true,
         });
@@ -1021,6 +1028,10 @@
     const type = source.type || 'none';
     const params = source.params || {};
     if (type === 'none') return { shapes: [], texts: [] };
+    // per-layer on/off: `enabled:false` (or `disabled:true`) draws nothing.
+    // `figures` keeps its own check as well; the generic gate covers
+    // `pattern` / `split` / `particles` and every combo part via comboParts.
+    if (params.disabled || params.enabled === false) return { shapes: [], texts: [] };
     const layer = layerOf(type);
     if (layer && ctx && ctx.layers && ctx.layers[layer] === false) return { shapes: [], texts: [] };
     if (type === 'countdown') return countdownShapes(params, ctx);
@@ -1087,6 +1098,7 @@
       { key: 'color', kind: 'color', default: '#ff8a3d' },
     ],
     pattern: [
+      { key: 'enabled', kind: 'bool', default: true },
       { key: 'mode', kind: 'select', options: ['grid', 'dots', 'stripes', 'rings', 'triangles', 'diamonds', 'hexes', 'rain', 'checks', 'polka', 'sineCurve', 'waves', 'randomFill'], default: 'grid' },
       { key: 'count', kind: 'int', min: 4, max: 120, step: 1, default: 24 },
       { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
@@ -1097,6 +1109,8 @@
       { key: 'holeSize', kind: 'number', min: 0.1, max: 0.9, step: 0.05, default: 0.4 },
       { key: 'accent', kind: 'color', default: '' },
       { key: 'accentEvery', kind: 'int', min: 2, max: 12, step: 1, default: 5 },
+      // automatic contrast against the lyrics: off keeps the chosen colour
+      { key: 'separate', kind: 'bool', default: true },
     ],
     particles: [
       { key: 'count', kind: 'int', min: 1, max: 120, step: 1, default: 24 },
@@ -1105,6 +1119,7 @@
       { key: 'color', kind: 'color', default: '#d6dbe9' },
     ],
     split: [
+      { key: 'enabled', kind: 'bool', default: true },
       { key: 'layout', kind: 'select', options: ['halves', 'diagonal', 'thirds', 'bands', 'quads', 'grid', 'chevron', 'radial', 'mondrian', 'frame', 'shards'], default: 'halves' },
       { key: 'parts', kind: 'int', min: 2, max: 8, step: 1, default: 3 },
       { key: 'angle', kind: 'number', min: -90, max: 90, step: 1, default: 0 },
@@ -1116,6 +1131,11 @@
       { key: 'amp', kind: 'number', min: 0, max: 0.4, step: 0.005, default: 0.05 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1 },
       { key: 'depth', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
+      // the drop-shadow colour for `depth`: empty = auto (a darkened plane
+      // colour, never the palette-blind pure black). Set it to pin the shadow.
+      { key: 'shadow', kind: 'color', default: '', optional: true },
+      // automatic contrast against the lyrics: off keeps the chosen colours
+      { key: 'separate', kind: 'bool', default: true },
     ],
     figures: [
       { key: 'enabled', kind: 'bool', default: true },

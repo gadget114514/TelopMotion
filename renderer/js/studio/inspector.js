@@ -3540,6 +3540,43 @@ SA.inspector = (() => {
     body.appendChild(summary);
 
     const spec = clip.spec || { type: 'none', params: {} };
+    // project palette for colour picks: backdrop / filler colours must come
+    // from inside the palette (no palette-blind black). A free hex would
+    // reintroduce off-palette colours, so colour params use a palette select.
+    const paletteColors = (doc.style && doc.style.palette && Array.isArray(doc.style.palette.colors) ? doc.style.palette.colors : []).filter((hex) => typeof hex === 'string' && /^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(hex));
+    const paletteColorControl = (currentValue, allowEmpty, onPick) => {
+      const select = document.createElement('select');
+      const norm = (hex) => (typeof hex === 'string' ? hex.toLowerCase() : '');
+      const current = currentValue == null ? '' : String(currentValue);
+      if (allowEmpty) {
+        const auto = document.createElement('option');
+        auto.value = '';
+        auto.textContent = 'auto';
+        select.appendChild(auto);
+      }
+      paletteColors.forEach((hex, index) => {
+        const option = document.createElement('option');
+        option.value = hex;
+        option.textContent = `P${index + 1} ${hex}`;
+        select.appendChild(option);
+      });
+      if (current && !allowEmpty && !paletteColors.some((hex) => norm(hex) === norm(current))) {
+        const custom = document.createElement('option');
+        custom.value = current;
+        custom.textContent = `${current} (custom)`;
+        select.appendChild(custom);
+      }
+      if (current && allowEmpty && current && !paletteColors.some((hex) => norm(hex) === norm(current))) {
+        const custom = document.createElement('option');
+        custom.value = current;
+        custom.textContent = `${current} (custom)`;
+        select.appendChild(custom);
+      }
+      select.value = current;
+      if (!allowEmpty && !select.value && paletteColors.length) select.value = paletteColors[0];
+      select.addEventListener('change', () => onPick(select.value));
+      return select;
+    };
     // the animation tracks draw their own content: the inspector edits the
     // motif parameters or the clip's own text instead of the filler type list
     if (kind === 'figure') {
@@ -3639,6 +3676,20 @@ SA.inspector = (() => {
     const params = { ...defaults, ...(spec.params || {}) };
     for (const param of SA.controls.paramEntries(descriptor)) {
       const value = params[param.key] != null ? params[param.key] : param.default;
+      // colour params on backdrop / filler clips come from the palette only:
+      // a free hex would reintroduce off-palette (near-black) colours.
+      if (!fxBackground && param.kind === 'color' && paletteColors.length) {
+        const allowEmpty = param.default === '' || value === '';
+        const control = paletteColorControl(value == null ? (allowEmpty ? '' : paletteColors[0]) : String(value), allowEmpty, (next) => {
+          SA.store.commands.updateClip(
+            clip.id,
+            { spec: { ...spec, params: { ...params, [param.key]: next } } },
+            { coalesceKey: `clip:${clip.id}:${param.key}` }
+          );
+        });
+        body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+        continue;
+      }
       const control = SA.controls.paramControl(fxBackground ? 'background' : kind, param, value, (next) => {
         SA.store.commands.updateClip(
           clip.id,
@@ -3650,14 +3701,33 @@ SA.inspector = (() => {
     }
 
     // combo beats: one row per layer with reroll / vary / recolor (split
-    // planes are structural and only take recolor)
+    // planes are structural and only take recolor) + direct param editors so
+    // a computed colour (e.g. an auto-separated near-black) can be pinned
+    // from the inspector instead of only re-rolled.
     if (SA.fillerRender && typeof SA.fillerRender.layersOf === 'function') {
       const comboLayers = SA.fillerRender.layersOf(spec);
       if (Array.isArray(comboLayers) && comboLayers.length > 1) {
+        // top-level auto-contrast for the whole combo (engine + stage follow it)
+        if (spec.type === 'combo' && !fxBackground) {
+          const sepValue = spec.params && spec.params.separate !== false;
+          const sepControl = SA.controls.boolControl(sepValue, (next) => {
+            SA.store.commands.updateClip(
+              clip.id,
+              { spec: { ...spec, params: { ...(spec.params || {}), separate: next } } },
+              { coalesceKey: `clip:${clip.id}:separate` }
+            );
+          });
+          body.appendChild(fieldRow(SA.controls.labelFor('separate'), sepControl));
+        }
         const layersTitle = document.createElement('div');
         layersTitle.className = 'insp-section-title';
         layersTitle.textContent = `${t('filler.layers')} · ${comboLayers.length}`;
         body.appendChild(layersTitle);
+        const updateComboLayer = (layerIndex, patch) => {
+          const list = (spec.params && Array.isArray(spec.params.list) ? spec.params.list : []).map((entry) => JSON.parse(JSON.stringify(entry || {})));
+          list[layerIndex] = { ...(list[layerIndex] || {}), params: { ...((list[layerIndex] || {}).params || {}), ...patch } };
+          SA.store.commands.updateClip(clip.id, { spec: { ...spec, params: { ...(spec.params || {}), list } } });
+        };
         comboLayers.forEach((comboLayer, layerIndex) => {
           const layerRow = document.createElement('div');
           layerRow.className = 'insp-actions';
@@ -3681,6 +3751,75 @@ SA.inspector = (() => {
           }
           comboBtn('◐', 'studio.inspector.recolorBeat', () => reportClipOp(SA.store.commands.recolorClipLayer(clip.id, layerIndex), 'clipLayer'));
           body.appendChild(layerRow);
+          // direct editors for the layer params (colour / shadow / enabled /
+          // separate included): colours come from the palette only, so a
+          // computed off-palette black stays overridable but never reintroduced.
+          if (!fxBackground && comboLayer && comboLayer.type && SA.fillerRender) {
+            const layerParams = SA.fillerRender.paramsOf(comboLayer.type) || [];
+            const layerDefaults = SA.fillerRender.paramDefaults(comboLayer.type) || {};
+            const current = { ...layerDefaults, ...((comboLayer && comboLayer.params) || {}) };
+            for (const param of layerParams) {
+              const value = current[param.key] != null ? current[param.key] : param.default;
+              if (param.kind === 'color' && paletteColors.length) {
+                const allowEmpty = param.default === '' || value === '';
+                const control = paletteColorControl(value == null ? (allowEmpty ? '' : paletteColors[0]) : String(value), allowEmpty, (next) => {
+                  updateComboLayer(layerIndex, { [param.key]: next });
+                });
+                body.appendChild(fieldRow(`${layerIndex + 1} · ${SA.controls.labelFor(param.key)}`, control));
+                continue;
+              }
+              const control = SA.controls.paramControl(kind, param, value, (next) => {
+                updateComboLayer(layerIndex, { [param.key]: next });
+              });
+              body.appendChild(fieldRow(`${layerIndex + 1} · ${SA.controls.labelFor(param.key)}`, control));
+            }
+            // split planes carry a colour array (`params.colors`) which has no
+            // PARAMS entry: each stop is a palette pick + add / remove stops.
+            if (comboLayer.type === 'split') {
+              const colors = Array.isArray((comboLayer.params || {}).colors) ? (comboLayer.params.colors || []).slice() : [];
+              colors.forEach((hex, colorIndex) => {
+                const currentHex = typeof hex === 'string' ? hex : paletteColors[0] || '#ffffff';
+                const control = paletteColors.length
+                  ? paletteColorControl(currentHex, false, (next) => {
+                    const nextColors = colors.slice();
+                    nextColors[colorIndex] = next || currentHex;
+                    updateComboLayer(layerIndex, { colors: nextColors });
+                  })
+                  : SA.controls.colorControl(currentHex, (next) => {
+                    const value = (SA.colors && SA.colors.pickerValueToHex) ? SA.colors.pickerValueToHex(next) : next;
+                    if (!value) return;
+                    const nextColors = colors.slice();
+                    nextColors[colorIndex] = typeof value === 'string' ? value : (value && value.value) || currentHex;
+                    updateComboLayer(layerIndex, { colors: nextColors });
+                  });
+                const rowLabel = `${layerIndex + 1} · ${t('studio.inspector.colors')} ${colorIndex + 1}`;
+                body.appendChild(fieldRow(rowLabel, control));
+              });
+              const colorsRow = document.createElement('div');
+              colorsRow.className = 'insp-actions';
+              const addColor = document.createElement('button');
+              addColor.type = 'button';
+              addColor.className = 'btn btn-mini';
+              addColor.textContent = '+';
+              addColor.title = t('filler.addLayer');
+              addColor.addEventListener('click', () => {
+                updateComboLayer(layerIndex, { colors: [...colors, paletteColors[0] || '#ffffff'] });
+              });
+              colorsRow.appendChild(addColor);
+              if (colors.length > 1) {
+                const delColor = document.createElement('button');
+                delColor.type = 'button';
+                delColor.className = 'btn btn-mini';
+                delColor.textContent = '−';
+                delColor.title = t('studio.inspector.delete');
+                delColor.addEventListener('click', () => {
+                  updateComboLayer(layerIndex, { colors: colors.slice(0, -1) });
+                });
+                colorsRow.appendChild(delColor);
+              }
+              body.appendChild(colorsRow);
+            }
+          }
         });
       }
     }
@@ -3696,6 +3835,16 @@ SA.inspector = (() => {
         spans.forEach((span) => {
           const segRow = document.createElement('div');
           segRow.className = `insp-actions${selectedBeat === span.index ? ' is-selected' : ''}`;
+          if (span.disabled) segRow.style.opacity = '0.55';
+          const enabledBox = document.createElement('input');
+          enabledBox.type = 'checkbox';
+          enabledBox.checked = !span.disabled;
+          enabledBox.title = t('studio.inspector.enabled');
+          enabledBox.setAttribute('aria-label', t('studio.inspector.enabled'));
+          enabledBox.addEventListener('change', () => {
+            SA.store.commands.setClipSegmentDisabled(clip.id, span.index, !enabledBox.checked);
+          });
+          segRow.appendChild(enabledBox);
           const segLabel = document.createElement('button');
           segLabel.type = 'button';
           segLabel.className = 'btn btn-mini insp-beat-label';

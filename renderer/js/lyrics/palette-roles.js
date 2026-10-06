@@ -124,6 +124,91 @@
     }
   }
 
+  // --- nearest-palette snap (no computed colours) ---------------------------
+  // Policy: basically never synthesise a new hex; adopt the palette entry
+  // closest to the computed ideal. Distance is perceptual (Oklab); alpha is
+  // ignored for the distance and the computed target's alpha is kept.
+  const HEX_ANY = /^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+
+  function alphaOfHex(hex) {
+    try {
+      const parsed = color.parse(hex);
+      return parsed.a == null ? 1 : parsed.a;
+    } catch {
+      return 1;
+    }
+  }
+
+  function withAlphaHex(hex, alpha) {
+    if (alpha == null || !(alpha < 1)) return hex;
+    try {
+      return color.toHex({ ...color.parse(hex), a: alpha });
+    } catch {
+      return hex;
+    }
+  }
+
+  function oklabDistance(aHex, bHex) {
+    try {
+      const a = color.rgbToOklab(color.parse(aHex));
+      const b = color.rgbToOklab(color.parse(bHex));
+      const dL = a.L - b.L;
+      const da = a.a - b.a;
+      const db = a.b - b.b;
+      return dL * dL + da * da + db * db;
+    } catch {
+      return Infinity;
+    }
+  }
+
+  // Index of the palette entry closest to `targetHex`, or -1 when the pool
+  // holds no hex string.
+  function nearestIndex(targetHex, paletteColors, exclude) {
+    const list = Array.isArray(paletteColors) ? paletteColors : [];
+    let best = -1;
+    let bestDistance = Infinity;
+    for (let i = 0; i < list.length; i += 1) {
+      const hex = list[i];
+      if (typeof hex !== 'string' || !HEX_ANY.test(hex)) continue;
+      if (exclude && exclude.has(i)) continue;
+      const distance = oklabDistance(targetHex, hex);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = i;
+      }
+    }
+    return best;
+  }
+
+  // The palette entry closest to the computed `targetHex` (alpha preserved
+  // from the target), or null when the pool is empty.
+  function snapToPalette(targetHex, paletteColors, exclude) {
+    const index = nearestIndex(targetHex, paletteColors, exclude);
+    if (index < 0) return null;
+    return withAlphaHex(paletteColors[index], alphaOfHex(targetHex));
+  }
+
+  // Closest palette entry to `targetHex` that clears `ratio` against
+  // `fixedHex`, or null when no entry clears it.
+  function nearestMeeting(targetHex, paletteColors, fixedHex, ratio, exclude) {
+    const list = Array.isArray(paletteColors) ? paletteColors : [];
+    let best = -1;
+    let bestDistance = Infinity;
+    for (let i = 0; i < list.length; i += 1) {
+      const hex = list[i];
+      if (typeof hex !== 'string' || !HEX_ANY.test(hex)) continue;
+      if (exclude && exclude.has(i)) continue;
+      if (contrast(hex, fixedHex) < ratio - 1e-6) continue;
+      const distance = oklabDistance(targetHex, hex);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = i;
+      }
+    }
+    if (best < 0) return null;
+    return withAlphaHex(list[best], alphaOfHex(targetHex));
+  }
+
   function shift(hex, hueShift, satScale, valueDelta) {
     try {
       const hsv = color.rgbToHsv(color.parse(hex));
@@ -249,10 +334,13 @@
 
   // A secondary colour (bg2 / mid2) keeps its HSV distance from its main role:
   // the hue step, the saturation ratio and the lightness gap are measured on
-  // the source pair and applied to the new main colour.
-  function carry(mainFrom, secondaryFrom, mainTo) {
+  // the source pair and applied to the new main colour. When a palette pool
+  // is given, the computed ideal is snapped to its closest entry so no new
+  // hex leaves this function.
+  function carry(mainFrom, secondaryFrom, mainTo, pool) {
     if (mainFrom == null || mainTo == null) return secondaryFrom;
     if (secondaryFrom == null) return mainTo;
+    let ideal;
     try {
       const a = color.rgbToHsv(color.parse(mainFrom));
       const b = color.rgbToHsv(color.parse(secondaryFrom));
@@ -260,10 +348,15 @@
       if (hue > 180) hue -= 360;
       else if (hue < -180) hue += 360;
       const satScale = a.s > 0.02 ? b.s / a.s : 1;
-      return shift(mainTo, hue, satScale, b.v - a.v);
+      ideal = shift(mainTo, hue, satScale, b.v - a.v);
     } catch {
       return secondaryFrom;
     }
+    if (Array.isArray(pool) && pool.length) {
+      const snapped = snapToPalette(ideal, pool);
+      if (snapped) return snapped;
+    }
+    return ideal;
   }
 
   // The repaired palette must hold the pairs the renderer relies on. `move` is
@@ -292,14 +385,17 @@
       if (value == null) return null;
       next[slots[target]] = value;
     }
-    next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B]);
-    next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M]);
+    next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B], colors);
+    next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M], colors);
     // TEXT_BG follows the text through the same HSV carry as the other second
     // roles, so no colour is ever synthesised from thin air.
-    next[SLOT.TEXT_BG] = carry(at(slots.T), at(SLOT.TEXT_BG), next[slots.T]);
+    next[SLOT.TEXT_BG] = carry(at(slots.T), at(SLOT.TEXT_BG), next[slots.T], colors);
     // contrast contract: at most two repair rounds, then the pairs must hold.
     // A repair that moves a colour's lightness by more than 0.35 loses the
     // character of the original permutation, so the draw is rejected instead.
+    // Repairs prefer a palette entry: the computed ideal is snapped to the
+    // closest colour of the source palette that clears the target; only when
+    // no entry clears it does the computed hex survive (the "basically" fallback).
     const pairs = schemePairs(weirdRaw);
     const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
     const before = new Map();
@@ -317,7 +413,8 @@
       const fixed = next[slots[fixedRole]];
       let value = color.ensureContrast(next[index], fixed, target);
       if (contrast(value, fixed) < target - 1e-6) value = color.separateFrom(value, [fixed], target) || value;
-      next[index] = value;
+      const snapped = nearestMeeting(value, colors, fixed, target);
+      next[index] = snapped || value;
     };
     for (let round = 0; round < 2; round += 1) {
       for (const pair of pairs) {
@@ -414,14 +511,18 @@
   // `repairContrast(colors, weirdRaw)` (moods.repairContrast) is used for the
   // text-fill pair when provided; the rest only move the mid / figure colours.
   // The palette must already hold SIZE colours; short palettes are left alone.
+  // Each move prefers the closest colour of the original palette that clears
+  // the target; the computed hex is only kept when no entry clears it.
   function repairPalette(colors, weirdRaw, repairContrast) {
     const list = Array.isArray(colors) ? colors : [];
     if (list.length < SIZE) return list;
+    const pool = list.slice(0, SIZE);
     if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw));
     const move = (index, fixed, target) => {
       let next = color.ensureContrast(list[index], fixed, target);
       if (contrast(next, fixed) < target - 1e-6) next = color.separateFrom(next, [fixed], target) || next;
-      list[index] = next;
+      const snapped = nearestMeeting(next, pool, fixed, target);
+      list[index] = snapped || next;
     };
     // four passes: the background / figure side moves first, then the mid
     // pair, and the text fill itself as the last resort (a mid-grey text
@@ -501,7 +602,10 @@
       s: clamp01(ref.s > 0.05 ? next.s * (own.s / ref.s) : own.s),
       v: clamp01(ref.v > 0.05 ? next.v * (own.v / ref.v) : own.v + (next.v - ref.v)),
     });
-    return color.toHex({ ...rgb, a: alpha });
+    const ideal = color.toHex({ ...rgb, a: alpha });
+    // no computed colours: adopt the palette entry closest to the ideal.
+    const snapped = snapToPalette(ideal, to);
+    return snapped || ideal;
   }
 
   // returns a copy of `value` with every hex colour moved from one palette to
@@ -562,5 +666,9 @@
     hsvDistance,
     remapColor,
     recolor,
+    nearestIndex,
+    snapToPalette,
+    nearestMeeting,
+    oklabDistance,
   };
 });

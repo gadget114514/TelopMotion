@@ -23,6 +23,16 @@ window.SA = window.SA || {};
         roleTextBg: 'Text background',
         roleFig: 'Figure',
         roleFig2: 'Figure 2',
+        roleHint0: 'P1 main background (MID_A)',
+        roleHint1: 'P2 second background (MID_B)',
+        roleHint2: 'P3 backdrop plane C (MID_C)',
+        roleHint3: 'P4 backdrop plane D (MID_D)',
+        roleHint4: 'P5 main text (TEXT_FILL)',
+        roleHint5: 'P6 accent / hero text (TEXT_FILL2)',
+        roleHint6: 'P7 edge / outline (TEXT_EDGE)',
+        roleHint7: 'P8 text background (TEXT_BG)',
+        roleHint8: 'P9 figure 1 (FIG_A)',
+        roleHint9: 'P10 figure 2 (FIG_B)',
         name: 'Name',
         addColor: 'Add colour',
         rerollColor: 'Re-roll this colour',
@@ -73,6 +83,16 @@ window.SA = window.SA || {};
         roleTextBg: '文字背景',
         roleFig: '図形',
         roleFig2: '図形2',
+        roleHint0: 'P1 メイン背景（MID_A）',
+        roleHint1: 'P2 サブ背景（MID_B）',
+        roleHint2: 'P3 中景プレーンC（MID_C）',
+        roleHint3: 'P4 中景プレーンD（MID_D）',
+        roleHint4: 'P5 メイン文字（TEXT_FILL）',
+        roleHint5: 'P6 アクセント・主役文字（TEXT_FILL2）',
+        roleHint6: 'P7 縁・輪郭（TEXT_EDGE）',
+        roleHint7: 'P8 文字背景（TEXT_BG）',
+        roleHint8: 'P9 図形1（FIG_A）',
+        roleHint9: 'P10 図形2（FIG_B）',
         name: '名前',
         addColor: '色を追加',
         rerollColor: 'この色を引き直す',
@@ -123,6 +143,16 @@ window.SA = window.SA || {};
         roleTextBg: 'Fondo de texto',
         roleFig: 'Figura',
         roleFig2: 'Figura 2',
+        roleHint0: 'P1 fondo principal (MID_A)',
+        roleHint1: 'P2 fondo secundario (MID_B)',
+        roleHint2: 'P3 plano medio C (MID_C)',
+        roleHint3: 'P4 plano medio D (MID_D)',
+        roleHint4: 'P5 texto principal (TEXT_FILL)',
+        roleHint5: 'P6 texto acento/héroe (TEXT_FILL2)',
+        roleHint6: 'P7 borde/contorno (TEXT_EDGE)',
+        roleHint7: 'P8 fondo de texto (TEXT_BG)',
+        roleHint8: 'P9 figura 1 (FIG_A)',
+        roleHint9: 'P10 figura 2 (FIG_B)',
         name: 'Nombre',
         addColor: 'Añadir color',
         rerollColor: 'Volver a sortear este color',
@@ -173,6 +203,16 @@ window.SA = window.SA || {};
         roleTextBg: 'Fond de texte',
         roleFig: 'Figure',
         roleFig2: 'Figure 2',
+        roleHint0: 'P1 fond principal (MID_A)',
+        roleHint1: 'P2 fond secondaire (MID_B)',
+        roleHint2: 'P3 plan moyen C (MID_C)',
+        roleHint3: 'P4 plan moyen D (MID_D)',
+        roleHint4: 'P5 texte principal (TEXT_FILL)',
+        roleHint5: 'P6 texte accent/héros (TEXT_FILL2)',
+        roleHint6: 'P7 bord/contour (TEXT_EDGE)',
+        roleHint7: 'P8 fond de texte (TEXT_BG)',
+        roleHint8: 'P9 figure 1 (FIG_A)',
+        roleHint9: 'P10 figure 2 (FIG_B)',
         name: 'Nom',
         addColor: 'Ajouter une couleur',
         rerollColor: 'Retirer cette couleur au sort',
@@ -223,6 +263,16 @@ window.SA = window.SA || {};
         roleTextBg: 'Фон текста',
         roleFig: 'Фигура',
         roleFig2: 'Фигура 2',
+        roleHint0: 'P1 главный фон (MID_A)',
+        roleHint1: 'P2 второй фон (MID_B)',
+        roleHint2: 'P3 средняя плоскость C (MID_C)',
+        roleHint3: 'P4 средняя плоскость D (MID_D)',
+        roleHint4: 'P5 главный текст (TEXT_FILL)',
+        roleHint5: 'P6 акцент/герой-текст (TEXT_FILL2)',
+        roleHint6: 'P7 обводка/контур (TEXT_EDGE)',
+        roleHint7: 'P8 фон текста (TEXT_BG)',
+        roleHint8: 'P9 фигура 1 (FIG_A)',
+        roleHint9: 'P10 фигура 2 (FIG_B)',
         name: 'Название',
         addColor: 'Добавить цвет',
         rerollColor: 'Пересобрать этот цвет',
@@ -385,27 +435,44 @@ SA.paletteDialog = (() => {
 
   // The nearest value of `hex` (lighter or darker, whichever moves less) that
   // clears `target` against `bg`; hue and saturation stay, alpha is kept.
-  function fixContrastOne(hex, bg, target) {
+  // No computed colours when a palette pool is given: the ideal is snapped to
+  // the closest draft entry that clears the target.
+  function fixContrastOne(hex, bg, target, pool) {
     const alpha = alphaOf(hex);
     const front = SA.color.parse(hex);
     const back = SA.color.parse(bg);
     if (SA.color.contrastRatio(front, back) >= target) return hex;
-    const hsv = SA.color.rgbToHsv(front);
-    let best = hex;
-    let bestRatio = SA.color.contrastRatio(front, back);
-    for (let step = 1; step <= 20; step += 1) {
-      for (const direction of [-1, 1]) {
-        const v = Math.min(1, Math.max(0, hsv.v + direction * step * 0.05));
-        const candidate = SA.color.hsvToRgb({ h: hsv.h, s: hsv.s, v, a: 1 });
-        const ratio = SA.color.contrastRatio(candidate, back);
-        if (ratio >= target) return withAlpha(SA.color.toHex(candidate), alpha);
-        if (ratio > bestRatio) {
-          bestRatio = ratio;
-          best = withAlpha(SA.color.toHex(candidate), alpha);
+    const ideal = (() => {
+      const hsv = SA.color.rgbToHsv(front);
+      let best = hex;
+      let bestRatio = SA.color.contrastRatio(front, back);
+      for (let step = 1; step <= 20; step += 1) {
+        for (const direction of [-1, 1]) {
+          const v = Math.min(1, Math.max(0, hsv.v + direction * step * 0.05));
+          const candidate = SA.color.hsvToRgb({ h: hsv.h, s: hsv.s, v, a: 1 });
+          const ratio = SA.color.contrastRatio(candidate, back);
+          if (ratio >= target) return withAlpha(SA.color.toHex(candidate), alpha);
+          if (ratio > bestRatio) {
+            bestRatio = ratio;
+            best = withAlpha(SA.color.toHex(candidate), alpha);
+          }
         }
       }
+      return best;
+    })();
+    if (Array.isArray(pool) && pool.length && SA.paletteRoles) {
+      try {
+        if (typeof SA.paletteRoles.nearestMeeting === 'function') {
+          const snapped = SA.paletteRoles.nearestMeeting(ideal, pool, bg, target);
+          if (snapped) return snapped;
+        }
+        if (typeof SA.paletteRoles.snapToPalette === 'function') {
+          const snapped = SA.paletteRoles.snapToPalette(ideal, pool);
+          if (snapped) return snapped;
+        }
+      } catch { /* fall through to the computed ideal */ }
     }
-    return best;
+    return ideal;
   }
 
   // Contrast correction of one palette entry: the background (index 0) moves
@@ -416,7 +483,7 @@ SA.paletteDialog = (() => {
     if (index === 0) {
       if (SA.moods && typeof SA.moods.repairContrast === 'function') SA.moods.repairContrast(colors, 4.5);
     } else {
-      colors[index] = fixContrastOne(colors[index], colors[0], 4.5);
+      colors[index] = fixContrastOne(colors[index], colors[0], 4.5, colors);
     }
     return colors;
   }
@@ -520,6 +587,8 @@ SA.paletteDialog = (() => {
         const label = document.createElement('span');
         label.className = 'palette-role';
         label.textContent = `${roleLabel(index)} · P${index + 1}`;
+        const slotHint = t(`palette.roleHint${index}`);
+        if (slotHint !== `palette.roleHint${index}`) label.title = slotHint;
         row.appendChild(label);
         const swatch = button('', () => {
           SA.colors.openPicker({

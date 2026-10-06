@@ -1267,13 +1267,14 @@ SA.store = (() => {
 
   // Fits stored segments to [start, end]: cut to the range, and an edge the
   // segments no longer reach (the clip grew) is cut at the lyric beats again.
-  // Without any segment carrying a spec the segments go away (undefined).
+  // Without any segment carrying a spec or a disabled flag the segments go
+  // away (undefined).
   function fitSegments(projectDoc, segments, start, end) {
     if (!Array.isArray(segments)) return segments;
     const kept = segments
       .map((seg) => ({ ...seg, start: Math.max(start, seg.start), end: Math.min(end, seg.end) }))
       .filter((seg) => seg.end - seg.start > 1e-3);
-    if (!kept.some((seg) => seg.spec)) return undefined;
+    if (!kept.some((seg) => seg.spec || seg.disabled || seg.enabled === false)) return undefined;
     const fill = (from, to) => (to - from > 1e-3 ? SA.project.lyricBeatSpans(projectDoc, from, to).map((span) => ({ start: span.start, end: span.end })) : []);
     return [...fill(start, kept[0].start), ...kept, ...fill(kept[kept.length - 1].end, end)];
   }
@@ -3445,7 +3446,7 @@ SA.store = (() => {
     varyClipSegment(clipId, index) { return clipSegmentOp(clipId, index, 'vary'); },
     recolorClipSegment(clipId, index) { return clipSegmentOp(clipId, index, 'recolor'); },
     // drops one segment's own look (the clip spec shows through again); with no
-    // segment left carrying a spec, the segments go away entirely
+    // segment left carrying a spec or a disabled flag, the segments go away entirely
     resetClipSegment(clipId, index) {
       const clip = findClip(clipId);
       if (!clip || !Array.isArray(clip.segments) || !clip.segments[index]) return;
@@ -3458,9 +3459,51 @@ SA.store = (() => {
           if (!seg) return;
           delete seg.spec;
           delete seg.colors;
-          if (!target.segments.some((entry) => entry.spec)) delete target.segments;
+          if (!target.segments.some((entry) => entry.spec || entry.disabled || entry.enabled === false)) delete target.segments;
         },
       });
+    },
+    // backdrop beat on/off: one row of the inspector's beat list. The first
+    // toggle materializes the implicit lyric-cut spans as clip.segments, then
+    // the one segment carries `disabled`. Absent = enabled, so enabling the
+    // last customized segment drops the segments entirely.
+    setClipSegmentDisabled(clipId, index, disabled) {
+      const clip = findClip(clipId);
+      if (!clip) return;
+      if (typeof SA !== 'undefined' && SA.project && typeof SA.project.trackKindOf === 'function') {
+        if (SA.project.trackKindOf(state.project, clip.trackId) !== 'backdrop') return;
+      }
+      const spans = SA.project.clipBeatSpans(state.project, clip);
+      const span = spans.find((entry) => entry.index === index);
+      if (!span) return;
+      if (!!span.disabled === !!disabled) return;
+      dispatch({
+        label: 'toggle clip segment',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          if (!target) return;
+          if (!Array.isArray(target.segments) || !target.segments.length) {
+            target.segments = SA.project.clipBeatSpans(projectDoc, target).map((entry) => ({ start: entry.start, end: entry.end }));
+          }
+          const seg = target.segments[index];
+          if (!seg) return;
+          if (disabled) {
+            seg.disabled = true;
+            if ('enabled' in seg) delete seg.enabled;
+          } else {
+            delete seg.disabled;
+            if ('enabled' in seg) delete seg.enabled;
+          }
+          if (!target.segments.some((entry) => entry.spec || entry.disabled || entry.enabled === false)) delete target.segments;
+          delete target.auto;
+        },
+      });
+    },
+    setClipSegmentEnabled(clipId, index, enabled) {
+      const clip = typeof findClip === 'function' ? findClip(clipId) : null;
+      if (!clip) return;
+      commands.setClipSegmentDisabled(clipId, index, !enabled);
     },
     // a palette for the project, a cue ({ cueId }) or a beat ({ cueId, beatId });
     // the literal colours of that scope move with it. With {force:true} on a

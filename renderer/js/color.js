@@ -372,6 +372,9 @@
   // clears `target` against all of them: the value is stepped both ways and
   // the smallest change that works wins, so the hue and most of the character
   // survive. When no brightness clears it, the best minimum ratio is kept.
+  // Lightening also drops saturation so a vivid colour can reach near-white
+  // (the old 0.3 floor kept vivid pinks pink and forced the dark side to win,
+  // which read as palette-blind black on stage).
   function separateFrom(fg, others, target) {
     const minimum = target == null ? 3 : target;
     const list = (others || []).map((entry) => (typeof entry === 'string' ? parse(entry) : entry)).filter(Boolean);
@@ -386,7 +389,7 @@
         const value = hsv.v + direction * step * 0.025;
         if (value < 0 || value > 1) continue;
         // a very light colour also loses saturation so it can reach near-white
-        const saturation = direction > 0 && value > 0.85 ? hsv.s * Math.max(0.3, 1 - (value - 0.85) * 4) : hsv.s;
+        const saturation = direction > 0 && value > 0.85 ? hsv.s * Math.max(0.04, 1 - (value - 0.85) * 6) : hsv.s;
         const candidate = hsvToRgb({ h: hsv.h, s: saturation, v: value, a: 1 });
         const ratio = worst(candidate);
         if (ratio >= minimum) return toHex({ ...candidate, a: 1 });

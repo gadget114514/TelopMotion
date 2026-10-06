@@ -229,9 +229,16 @@ SA.lyricsEngine = (() => {
   }
 
   // A backdrop clip with per-beat segments: the segment under t lends its own
-  // spec / colours. The derived clip is cached per segment object so the stage
-  // palette cache (a WeakMap keyed on the clip) keeps hitting frame to frame.
+  // spec / colours. A segment carrying `disabled` (or `enabled === false`)
+  // mutes the backdrop for its span. The derived clip is cached per segment
+  // object so the stage palette cache (a WeakMap keyed on the clip) keeps
+  // hitting frame to frame.
   const segmentClipCache = new WeakMap();
+  function segmentDisabledAt(clip, t) {
+    const segments = clip && Array.isArray(clip.segments) ? clip.segments : null;
+    if (!segments) return false;
+    return segments.some((entry) => entry && (entry.disabled || entry.enabled === false) && t >= entry.start && t < entry.end);
+  }
   function segmentClipAt(clip, t) {
     const segments = clip && Array.isArray(clip.segments) ? clip.segments : null;
     if (!segments) return clip;
@@ -1558,6 +1565,27 @@ SA.lyricsEngine = (() => {
 
     // Animated shapes for backdrop / filler clips. Returns the whole colour
     // list the clip may cycle through (the first entry is the primary one).
+    // No computed colours: a derived ideal is snapped to the closest palette
+    // entry (falling back to the ideal only when the palette is empty).
+    function snapShapeToPalette(ideal, pool, texts, target) {
+      if (!ideal || !Array.isArray(pool) || !pool.length) return ideal;
+      const roles = SA.paletteRoles;
+      if (roles && typeof roles.nearestMeeting === 'function' && Array.isArray(texts) && texts.length) {
+        for (const fixed of texts) {
+          try {
+            const snapped = roles.nearestMeeting(ideal, pool, fixed, target);
+            if (snapped) return snapped;
+          } catch { /* fall through */ }
+        }
+      }
+      if (roles && typeof roles.snapToPalette === 'function') {
+        try {
+          const snapped = roles.snapToPalette(ideal, pool);
+          if (snapped) return snapped;
+        } catch { /* fall through */ }
+      }
+      return ideal;
+    }
     function clipShapeColor(spec, colors, style) {
       const params = (spec && spec.params) || {};
       const list = Array.isArray(colors) && colors.length ? colors : [];
@@ -1571,7 +1599,8 @@ SA.lyricsEngine = (() => {
         if (rgba) fills = [SA.color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 })];
       } else if (!fills.length) {
         // derive the shape colour from the text colour: complementary hue and
-        // much lower brightness, so background shapes never match the lyrics
+        // much lower brightness, so background shapes never match the lyrics.
+        // The ideal is snapped to the palette instead of being painted raw.
         let fill = palette[8] || palette[4] || '#eef2ff';
         const textHex = textColorHex(style);
         if (textHex) {
@@ -1582,15 +1611,24 @@ SA.lyricsEngine = (() => {
             v: Math.max(0.16, Math.min(0.5, hsv.v * 0.5)),
             a: 1,
           };
-          fill = SA.color.toHex({ ...SA.color.hsvToRgb(contrast), a: 1 });
+          const ideal = SA.color.toHex({ ...SA.color.hsvToRgb(contrast), a: 1 });
+          fill = snapShapeToPalette(ideal, palette, null, 0) || ideal;
         }
         fills = [fill];
       }
       // guarantee a minimum contrast between the shapes and every colour the
       // lyrics are drawn in (all gradient stops, not only the first: the usual
-      // text gradient ends on the accent, which is the backdrop's own colour)
+      // text gradient ends on the accent, which is the backdrop's own colour).
+      // `separate:false` pins the chosen colours (inspector) and skips the
+      // automatic step, so a computed near-black never overrides the user.
       const textColors = textColorList(style);
-      if (textColors.length) fills = fills.map((fill) => SA.color.separateFrom(fill, textColors, backdropContrast(state.project)));
+      if (params.separate !== false && textColors.length) {
+        const target = backdropContrast(state.project);
+        fills = fills.map((fill) => {
+          const ideal = SA.color.separateFrom(fill, textColors, target);
+          return snapShapeToPalette(ideal || fill, palette, textColors, target) || ideal || fill;
+        });
+      }
       return fills.length ? fills : ['#eef2ff'];
     }
 
@@ -1632,10 +1670,12 @@ SA.lyricsEngine = (() => {
 
     // Is any active clip on a mask-capable track (backdrop / figure / filler)
     // and still opted in? Hidden tracks are already dropped by activeClips.
+    // A backdrop beat switched off via its segment does not count.
     function maskTargetsActive(project, t) {
       for (const kind of ['backdrop', 'figure', 'filler']) {
         for (const clip of activeClips(project, kind)) {
           if (t < clip.start - 1e-4 || t > clip.end + 1e-4) continue;
+          if (kind === 'backdrop' && segmentDisabledAt(clip, t)) continue;
           if (clipEnvelope(t, clip) <= 0) continue;
           if (!trackTextMaskOn(trackById(project, clip.trackId))) continue;
           return true;
@@ -2632,7 +2672,10 @@ SA.lyricsEngine = (() => {
           if (backgroundTrack && singleIds.has(backgroundTrack.id)) drawBackgroundLayers();
           else if (!backgroundTrack) drawBackgroundLayers();
         } else if (kind === 'backdrop') {
-          for (const clip of activeClips(project, 'backdrop', singleIds)) drawShapeClip(segmentClipAt(clip, t), t, duration, stage, stageWeird, maskFor(clip));
+          for (const clip of activeClips(project, 'backdrop', singleIds)) {
+            if (segmentDisabledAt(clip, t)) continue;
+            drawShapeClip(segmentClipAt(clip, t), t, duration, stage, stageWeird, maskFor(clip));
+          }
         } else if (kind === 'filler') {
           renderFillerClips(t, duration, stage, stageWeird, maskFor, singleIds);
         } else if (kind === 'figure') {
@@ -3232,5 +3275,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, segmentClipAt, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, segmentClipAt, segmentDisabledAt, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
 })();

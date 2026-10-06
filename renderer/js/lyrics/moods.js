@@ -1771,14 +1771,34 @@
   // Moves one plane colour away from the text when the contrast floor fails.
   // The full text set (body + hero) is tried first; when no colour can satisfy
   // both, the body colour (the legibility contract's own anchor) decides.
-  function separatePlane(hex, texts, target) {
+  // No computed colours: the separated ideal is snapped to the closest entry
+  // of `pool` (the source palette) when one is given.
+  function separatePlane(hex, texts, target, pool) {
     if (!texts.length || !(target > 0)) return hex;
+    const snapOne = (ideal) => {
+      if (!ideal || !Array.isArray(pool) || !pool.length) return ideal;
+      if (paletteRoles && typeof paletteRoles.nearestMeeting === 'function') {
+        for (const fixed of texts) {
+          try {
+            const snapped = paletteRoles.nearestMeeting(ideal, pool, fixed, target);
+            if (snapped) return snapped;
+          } catch { /* fall through */ }
+        }
+      }
+      if (paletteRoles && typeof paletteRoles.snapToPalette === 'function') {
+        try {
+          const snapped = paletteRoles.snapToPalette(ideal, pool);
+          if (snapped) return snapped;
+        } catch { /* fall through */ }
+      }
+      return ideal;
+    };
     const worst = (candidate, list) => (list || texts).reduce((min, text) => Math.min(min, color.contrastRatio(color.parse(candidate), color.parse(text))), Infinity);
     const attempt = (candidate, list) => {
       if (worst(candidate, list) >= target - 1e-6) return candidate;
       const separated = color.separateFrom(candidate, list, target);
       let best = separated && worst(separated, list) > worst(candidate, list) ? separated : candidate;
-      if (worst(best, list) >= target - 1e-6) return best;
+      if (worst(best, list) >= target - 1e-6) return snapOne(best);
       // the separation could not reach the floor: move the lightness towards
       // the background side of the text until it does (or the value ends)
       let hsv = color.rgbToHsv(color.parse(best));
@@ -1789,7 +1809,7 @@
         const next = color.toHex({ ...color.hsvToRgb(hsv), a: 1 });
         if (worst(next, list) > worst(best, list)) best = next;
       }
-      return best;
+      return snapOne(best);
     };
     let best = attempt(hex, texts);
     if (worst(best) < target - 1e-6 && texts.length > 1) {
@@ -1839,7 +1859,7 @@
     }
     const target = weirdMod.backdropContrast(rawW);
     const texts = (Array.isArray(textColors) ? textColors : []).filter((hex) => typeof hex === 'string' && hex);
-    return out.map((hex) => separatePlane(hex, texts, target));
+    return out.map((hex) => separatePlane(hex, texts, target, source));
   }
 
   // The accent layer above the planes: two steps of the plane colours, so the

@@ -109,19 +109,46 @@ SA.themeEditor = (() => {
 
   // --- common widgets ----------------------------------------------------------
 
+  // Hover text for the palette tab: every visible label carries a `title`
+  // so the meaning is one hover away. Missing keys fall back to '' (no
+  // tooltip) so other tabs keep their current behaviour.
+  const HEADING_HINT = {
+    'studio.themeEditor.palette': 'studio.themeEditor.hint.palette',
+    'studio.themeEditor.paletteSet': 'studio.themeEditor.hint.paletteSet',
+    'studio.themeEditor.usePalettes.title': 'studio.themeEditor.hint.usePalettesTitle',
+  };
+  const GROUP_HINT = {
+    color: 'studio.themeEditor.hint.groupColor',
+    planes: 'studio.themeEditor.hint.groupPlanes',
+  };
+
+  function hintText(key) {
+    const value = t(key);
+    return value === key ? '' : value;
+  }
+
   function heading(container, key, className) {
     const node = document.createElement('div');
     node.className = className || 'insp-section-title';
     node.textContent = t(key);
+    const hintKey = HEADING_HINT[key];
+    if (hintKey) {
+      const hint = hintText(hintKey);
+      if (hint) node.title = hint;
+    }
     container.appendChild(node);
     return node;
   }
 
-  function smallButton(label, onClick, primary) {
+  function smallButton(label, onClick, primary, title) {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = primary ? 'btn btn-mini btn-primary' : 'btn btn-mini';
     button.textContent = label;
+    if (title) {
+      const hint = title.indexOf('studio.') === 0 ? hintText(title) : title;
+      if (hint) button.title = hint;
+    }
     button.addEventListener('click', onClick);
     return button;
   }
@@ -136,10 +163,12 @@ SA.themeEditor = (() => {
     const current = pinned ? draft.params[def.key] : auto;
     const row = document.createElement('div');
     row.className = `param-row param-${def.kind}`;
-    row.title = t(`studio.themeEditor.kind.${def.kind}`);
+    const paramHint = hintText(`studio.themeEditor.hint.${def.key}`);
+    row.title = paramHint || t(`studio.themeEditor.kind.${def.kind}`);
     const label = document.createElement('span');
     label.className = 'param-label';
     label.textContent = t(`studio.themeEditor.param.${def.key}`);
+    if (paramHint) label.title = paramHint;
     row.appendChild(label);
     const input = document.createElement('input');
     input.type = 'range';
@@ -148,6 +177,7 @@ SA.themeEditor = (() => {
     input.step = String(def.step);
     input.value = String(current);
     input.dataset.param = def.key;
+    if (paramHint) input.title = paramHint;
     row.appendChild(input);
     const value = document.createElement('span');
     value.className = 'param-value';
@@ -208,7 +238,11 @@ SA.themeEditor = (() => {
       group.defs.push(def);
     }
     for (const group of groups) {
-      if (GROUP_LABEL[group.id]) heading(container, GROUP_LABEL[group.id], 'insp-section-title');
+      if (GROUP_LABEL[group.id]) {
+        const head = heading(container, GROUP_LABEL[group.id], 'insp-section-title');
+        const groupHint = GROUP_HINT[group.id] ? hintText(GROUP_HINT[group.id]) : '';
+        if (groupHint) head.title = groupHint;
+      }
       const keys = SA.genParams.keysOf(group.id);
       const nodes = new Map();
       for (const def of group.defs) {
@@ -397,6 +431,8 @@ SA.themeEditor = (() => {
     const label = document.createElement('span');
     label.className = 'palette-role';
     label.textContent = `#${index + 2}`;
+    const extraHint = hintText('studio.themeEditor.hint.extraPalette');
+    if (extraHint) label.title = extraHint;
     row.appendChild(label);
     const swatches = document.createElement('span');
     swatches.className = 'palette-swatches';
@@ -476,7 +512,7 @@ SA.themeEditor = (() => {
         const next = SA.colors.randomPalette((draft.palette.colors || []).length);
         draft.palette = { id: next.id, name: next.name, colors: next.colors };
         render();
-      })
+      }, false, 'studio.themeEditor.hint.paletteRandom')
     );
     actions.appendChild(
       smallButton(`↻ ${t('studio.themeEditor.paletteSpin')}`, () => {
@@ -484,20 +520,23 @@ SA.themeEditor = (() => {
         const jittered = SA.moods.jitterPalette(Math.random, draft.palette, draft.axes, 2.5, null, { edgeIndex });
         if (jittered && Array.isArray(jittered.colors)) draft.palette = { ...draft.palette, colors: jittered.colors.slice() };
         render();
-      })
+      }, false, 'studio.themeEditor.hint.paletteSpin')
     );
-    actions.appendChild(
-      SA.controls.selectControl({}, '', (value) => {
-        if (!value) return;
-        const entry = SA.colors.allPalettes().find((item) => item.id === value);
-        if (!entry) return;
-        draft.palette = { id: entry.id, name: entry.name, colors: [...entry.colors] };
-        render();
-      }, [
-        { value: '', label: t('studio.themeEditor.paletteFrom') },
-        ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name })),
-      ])
-    );
+    const fromSelect = SA.controls.selectControl({}, '', (value) => {
+      if (!value) return;
+      const entry = SA.colors.allPalettes().find((item) => item.id === value);
+      if (!entry) return;
+      draft.palette = { id: entry.id, name: entry.name, colors: [...entry.colors] };
+      render();
+    }, [
+      { value: '', label: t('studio.themeEditor.paletteFrom') },
+      ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name })),
+    ]);
+    if (fromSelect && fromSelect.title !== undefined) {
+      const fromHint = hintText('studio.themeEditor.hint.paletteFrom');
+      if (fromHint) fromSelect.title = fromHint;
+    }
+    actions.appendChild(fromSelect);
     wrap.appendChild(actions);
 
     // the palette set: #1 above plus up to `max - 1` extra palettes, the
@@ -513,6 +552,12 @@ SA.themeEditor = (() => {
       row.className = 'axis-row';
       const label = document.createElement('span');
       label.textContent = t(labelKey);
+      const rowHintKey = key === 'max' ? 'studio.themeEditor.hint.paletteMax' : key === 'change' ? 'studio.themeEditor.hint.paletteChange' : key === 'invert' ? 'studio.themeEditor.hint.paletteInvert' : '';
+      const rowHint = rowHintKey ? hintText(rowHintKey) : '';
+      if (rowHint) {
+        label.title = rowHint;
+        row.title = rowHint;
+      }
       row.appendChild(label);
       row.appendChild(
         SA.controls.numberControl(def, set[key], (value) => {
@@ -542,7 +587,7 @@ SA.themeEditor = (() => {
       const colors = next.colors.slice(0, SA.paletteRoles.SIZE);
       set.extra.push({ id: next.id, name: next.name, colors });
       render();
-    });
+    }, false, 'studio.themeEditor.hint.paletteAdd');
     add.disabled = set.extra.length >= set.max - 1;
     addRow.appendChild(add);
     wrap.appendChild(addRow);
@@ -553,6 +598,8 @@ SA.themeEditor = (() => {
       const empty = document.createElement('div');
       empty.className = 'insp-inherit';
       empty.textContent = t('studio.themeEditor.usePalettes.empty');
+      const poolHint = hintText('studio.themeEditor.hint.usePalettesTitle');
+      if (poolHint) empty.title = poolHint;
       wrap.appendChild(empty);
     }
     const cards = document.createElement('div');
@@ -560,6 +607,7 @@ SA.themeEditor = (() => {
     draft.usePalettes.forEach((entry, index) => {
       const card = document.createElement('div');
       card.className = 'use-palette-card';
+      card.title = (entry.colors || []).join(', ');
       const strip = document.createElement('span');
       strip.className = 'use-palette-strip';
       for (const color of (entry.colors || []).slice(0, 10)) {
@@ -587,7 +635,7 @@ SA.themeEditor = (() => {
       smallButton(t('studio.themeEditor.usePalettes.addCurrent'), () => {
         draft.usePalettes.push({ id: draft.palette.id, name: draft.palette.name, colors: draft.palette.colors.slice() });
         render();
-      })
+      }, false, 'studio.themeEditor.hint.usePalettesTitle')
     );
     useActions.appendChild(
       smallButton(t('studio.themeEditor.usePalettes.addCandidates'), () => {
@@ -596,7 +644,7 @@ SA.themeEditor = (() => {
           draft.usePalettes.push({ id: next.id, name: next.name, colors: next.colors });
         }
         render();
-      })
+      }, false, 'studio.themeEditor.hint.usePalettesTitle')
     );
     useActions.appendChild(
       SA.controls.selectControl({}, '', (value) => {
@@ -783,6 +831,10 @@ SA.themeEditor = (() => {
       tab.type = 'button';
       tab.className = `btn btn-mini theme-tab${draft.tab === id ? ' is-active' : ''}`;
       tab.textContent = t(`studio.themeEditor.tab.${id}`);
+      if (id === 'palette') {
+        const tabHint = hintText('studio.themeEditor.hint.tab');
+        if (tabHint) tab.title = tabHint;
+      }
       tab.addEventListener('click', () => {
         draft.tab = id;
         render();

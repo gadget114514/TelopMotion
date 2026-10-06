@@ -111,6 +111,98 @@
     }
   }
 
+  // No computed colours: a repaired literal adopts the palette entry closest
+  // to the computed ideal (Oklab distance, target alpha kept). Falls back to
+  // the ideal only when the pool holds no hex.
+  function oklabDistanceHex(aHex, bHex) {
+    try {
+      const a = color.rgbToOklab(color.parse(aHex));
+      const b = color.rgbToOklab(color.parse(bHex));
+      const dL = a.L - b.L;
+      const da = a.a - b.a;
+      const db = a.b - b.b;
+      return dL * dL + da * da + db * db;
+    } catch {
+      return Infinity;
+    }
+  }
+
+  function alphaOfHex(hex) {
+    try {
+      const parsed = color.parse(hex);
+      return parsed.a == null ? 1 : parsed.a;
+    } catch {
+      return 1;
+    }
+  }
+
+  function withAlphaHex(hex, alpha) {
+    if (alpha == null || !(alpha < 1)) return hex;
+    try {
+      return color.toHex({ ...color.parse(hex), a: alpha });
+    } catch {
+      return hex;
+    }
+  }
+
+  function snapIdealToPalette(idealHex, pool) {
+    const list = Array.isArray(pool) ? pool : [];
+    let best = null;
+    let bestDistance = Infinity;
+    for (const hex of list) {
+      if (typeof hex !== 'string' || !/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(hex)) continue;
+      const distance = oklabDistanceHex(idealHex, hex);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = hex;
+      }
+    }
+    if (!best) return null;
+    return withAlphaHex(best, alphaOfHex(idealHex));
+  }
+
+  function snapMeetingToPalette(idealHex, pool, fixedHex, ratio) {
+    const list = Array.isArray(pool) ? pool : [];
+    let best = null;
+    let bestDistance = Infinity;
+    for (const hex of list) {
+      if (typeof hex !== 'string') continue;
+      if (contrast(hex, fixedHex) < ratio - 1e-6) continue;
+      const distance = oklabDistanceHex(idealHex, hex);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = hex;
+      }
+    }
+    if (!best) return null;
+    return withAlphaHex(best, alphaOfHex(idealHex));
+  }
+
+  function snapMeetingAllToPalette(idealHex, pool, fixedList, ratio) {
+    const list = Array.isArray(pool) ? pool : [];
+    const fixed = (Array.isArray(fixedList) ? fixedList : []).filter((hex) => typeof hex === 'string');
+    let best = null;
+    let bestDistance = Infinity;
+    for (const hex of list) {
+      if (typeof hex !== 'string') continue;
+      if (fixed.length && Math.min(...fixed.map((other) => contrast(hex, other))) < ratio - 1e-6) continue;
+      const distance = oklabDistanceHex(idealHex, hex);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        best = hex;
+      }
+    }
+    if (!best) return null;
+    return withAlphaHex(best, alphaOfHex(idealHex));
+  }
+
+  function palettePoolOf(ctx, fallback) {
+    if (ctx && Array.isArray(ctx.palette)) return ctx.palette;
+    if (ctx && ctx.palette && Array.isArray(ctx.palette.colors)) return ctx.palette.colors;
+    if (ctx && Array.isArray(ctx.colors)) return ctx.colors;
+    return Array.isArray(fallback) ? fallback : [];
+  }
+
   // the readable end of the tag-gated vocabulary: the union of the weird and
   // fear allow lists the generators already use
   function readableTags() {
@@ -567,7 +659,9 @@
         return part;
       }
       if (part.kind === 'solid' && typeof part.value === 'string' && contrast(part.value, backgrounds[0] || '#000000') < MIN_CONTRAST) {
-        return { ...part, value: color.ensureContrast(part.value, backgrounds[0] || '#000000', MIN_CONTRAST) };
+        const ideal = color.ensureContrast(part.value, backgrounds[0] || '#000000', MIN_CONTRAST);
+        const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+        return { ...part, value: snapped || ideal };
       }
       return part;
     };
@@ -577,7 +671,9 @@
         const stops = fill.stops.map((stop) => {
           if (!stop || stop.paletteIndex == null) {
             if (stop && typeof stop.color === 'string' && contrast(stop.color, backgrounds[0] || '#000000') < MIN_CONTRAST) {
-              return { ...stop, color: color.ensureContrast(stop.color, backgrounds[0] || '#000000', MIN_CONTRAST) };
+              const ideal = color.ensureContrast(stop.color, backgrounds[0] || '#000000', MIN_CONTRAST);
+              const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+              return { ...stop, color: snapped || ideal };
             }
             return stop;
           }
@@ -597,7 +693,11 @@
         const value = instance.params[key];
         if (typeof value === 'string' && /^#/.test(value)) {
           const worst = backgrounds.reduce((min, bg) => Math.min(min, contrast(value, bg)), Infinity);
-          if (worst < MIN_CONTRAST && key === 'color') instance.params[key] = color.ensureContrast(value, backgrounds[0] || '#000000', MIN_CONTRAST);
+          if (worst < MIN_CONTRAST && key === 'color') {
+            const ideal = color.ensureContrast(value, backgrounds[0] || '#000000', MIN_CONTRAST);
+            const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+            instance.params[key] = snapped || ideal;
+          }
         }
       }
     }
@@ -711,12 +811,18 @@
     const context = ctx || {};
     if (figureOverlap(copy, context) <= FIGURE_OVERLAP + 1e-9) return spec;
     const textColors = context.textColors || (context.palette && context.palette[4] ? [context.palette[4]] : ['#eef2ff']);
+    const pool = palettePoolOf(context, context.colors);
+    const snapFigure = (hex) => {
+      if (typeof hex !== 'string') return hex;
+      const ideal = color.separateFrom(hex, textColors, 3) || hex;
+      return snapMeetingAllToPalette(ideal, pool, textColors, 3) || snapIdealToPalette(ideal, pool) || ideal;
+    };
     const params = copy.params || (copy.params = {});
     if (typeof params.color === 'string') {
-      params.color = color.separateFrom(params.color, textColors, 3) || params.color;
+      params.color = snapFigure(params.color);
     }
     if (Array.isArray(params.colors)) {
-      params.colors = params.colors.map((hex) => (typeof hex === 'string' ? color.separateFrom(hex, textColors, 3) : hex));
+      params.colors = params.colors.map((hex) => (typeof hex === 'string' ? snapFigure(hex) : hex));
     }
     if (figureOverlap(copy, context) > FIGURE_OVERLAP + 1e-9) {
       params.opacity = Math.min(params.opacity == null ? 1 : Number(params.opacity), FIGURE_FALLBACK_OPACITY);

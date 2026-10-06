@@ -71,7 +71,8 @@
   }
 
   // The profile's figure colours: two steps of the backdrop planes, kept 1.5+
-  // apart from the planes and at the backdrop floor from the text.
+  // apart from the planes and at the backdrop floor from the text. No computed
+  // colours: shifted / separated ideals are snapped back to the plane list.
   function figureColors(planes, textColors, rawW) {
     const list = (Array.isArray(planes) ? planes : []).filter((hex) => typeof hex === 'string' && hex);
     if (!list.length) return null;
@@ -83,12 +84,22 @@
         return hex;
       }
     };
+    const snapToList = (ideal) => {
+      const roles = SA.paletteRoles;
+      if (roles && typeof roles.snapToPalette === 'function') {
+        try {
+          const snapped = roles.snapToPalette(ideal, list);
+          if (snapped) return snapped;
+        } catch { /* fall through */ }
+      }
+      return ideal;
+    };
     const target = SA.weird && typeof SA.weird.backdropContrast === 'function' ? SA.weird.backdropContrast(rawW) : 3.5;
-    const separate = (hex, others, floor) => (SA.moods && typeof SA.moods.separatePlane === 'function' ? SA.moods.separatePlane(hex, others, floor) : hex);
+    const separate = (hex, others, floor, pool) => (SA.moods && typeof SA.moods.separatePlane === 'function' ? SA.moods.separatePlane(hex, others, floor, pool || list) : hex);
     const texts = (Array.isArray(textColors) ? textColors : []).filter(Boolean);
     return [
-      separate(separate(shiftV(list[0], 0.12), list, 1.5), texts, target),
-      separate(separate(shiftV(list[1 % list.length], -0.12), list, 1.5), texts, target),
+      snapToList(separate(separate(shiftV(list[0], 0.12), list, 1.5), texts, target)),
+      snapToList(separate(separate(shiftV(list[1 % list.length], -0.12), list, 1.5), texts, target)),
     ];
   }
 

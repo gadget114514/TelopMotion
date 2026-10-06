@@ -89,8 +89,29 @@
   // The split planes of a clip need a readable step from the live text colour:
   // they are drawn behind the lyrics and the swap can put the old text colour
   // on them (the same separation the theme shapes get, filler-render has none).
-  function separateSplits(value, text, target) {
+  // No computed colours: the separated ideal is snapped to the closest entry
+  // of `pool` (the live palette) that clears the target; only when no entry
+  // clears it does the computed hex survive.
+  function separateSplits(value, text, target, pool) {
     if (!value || typeof value !== 'object' || !Array.isArray(text) || !text.length) return value;
+    const snapOne = (hex) => {
+      if (typeof hex !== 'string') return hex;
+      const ideal = color.separateFrom(hex, text, target);
+      if (!ideal || !Array.isArray(pool) || !pool.length) return ideal;
+      if (roles && typeof roles.nearestMeeting === 'function') {
+        // nearestMeeting takes a single fixed colour; try each text colour and
+        // keep the first that clears its own target, else the closest overall.
+        for (const fixed of text) {
+          const snapped = roles.nearestMeeting(ideal, pool, fixed, target);
+          if (snapped) return snapped;
+        }
+      }
+      if (roles && typeof roles.snapToPalette === 'function') {
+        const snapped = roles.snapToPalette(ideal, pool);
+        if (snapped) return snapped;
+      }
+      return ideal;
+    };
     const walk = (node) => {
       if (Array.isArray(node)) return node.map(walk);
       if (!node || typeof node !== 'object') return node;
@@ -99,7 +120,7 @@
       if (node.type === 'split' && node.params && Array.isArray(node.params.colors) && node.params.colors.length) {
         out.params = {
           ...out.params,
-          colors: out.params.colors.map((hex) => (typeof hex === 'string' ? color.separateFrom(hex, text, target) : hex)),
+          colors: out.params.colors.map(snapOne),
         };
       }
       return out;
@@ -154,7 +175,9 @@
     const cached = cache.get(clip);
     if (cached && cached.key === key) return cached.result;
     const colors = Array.isArray(clip.colors) ? roles.recolor(clip.colors, source, to) : clip.colors;
-    const spec = clip.spec ? separateSplits(recolorUnlocked(clip.spec, source, to), stage.text, roles.ratioFor('backdrop', rawW)) : clip.spec;
+    const recolored = clip.spec ? recolorUnlocked(clip.spec, source, to) : clip.spec;
+    const separateOff = recolored && recolored.params && recolored.params.separate === false;
+    const spec = clip.spec ? (separateOff ? recolored : separateSplits(recolored, stage.text, roles.ratioFor('backdrop', rawW), to)) : clip.spec;
     const result = { spec, colors };
     cache.set(clip, { key, result });
     return result;
