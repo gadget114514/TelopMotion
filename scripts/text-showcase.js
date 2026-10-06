@@ -50,6 +50,10 @@ const MD_PATH = path.join(ROOT, 'demo', 'text-showcase.md');
 const SAMPLE = 'あいうえお Aiueo 123';
 const LABEL_COLOR = '#e9edf8';
 const FILL_COLOR = '#f4f7ff';
+// fill2 for the fill walk: a contrasting orange so two-colour fills
+// (gradientSweep / categoryColor fallback / caustics / karaokeWipe /
+// splitTone / patterns) read as gradients instead of collapsing to solid
+const FILL_COLOR2 = '#ff7a2e';
 
 // every type list is read live (all packs), so a new registration fails
 // loudly in the test instead of silently missing its cue
@@ -64,6 +68,10 @@ const VARIANT_JA = { base: '単体', double: '二重', dx: '横並列', dy: '縦
 // walks read as the same vocabulary
 const SPREAD_X = [-0.14, 0, 0.14];
 const SPREAD_Y = [-0.12, 0, 0.12];
+// categoryColor is the only fill that reads the beat category instead of
+// fill/fill2: without one it falls back to the same white→orange ramp as
+// gradientSweep. Pin it to `catalog` (blue→purple) so the two read apart.
+const CATEGORY_FOR_FILL = { categoryColor: 'catalog' };
 // the double-text offset: one clone behind the main string, close enough to
 // read as a double exposure, far enough to see both layers
 const DOUBLE_DX = 0.035;
@@ -115,7 +123,11 @@ function clonesFor(variant) {
 
 function baseStyleFor(section, type) {
   const base = {
-    color: { fill: { kind: 'solid', value: section === 'edge' ? FILL_COLOR : FILL_COLOR, alpha: 1 } },
+    color: {
+      fill: { kind: 'solid', value: FILL_COLOR, alpha: 1 },
+      // the fill walk needs two colours; solid ignores fill2
+      ...(section === 'fill' ? { fill2: { kind: 'solid', value: FILL_COLOR2, alpha: 1 } } : {}),
+    },
     animation: clone(STATIC_ANIMATION),
     enter: clone(STATIC_ENTER),
     exit: clone(STATIC_EXIT),
@@ -209,6 +221,11 @@ function buildShowcase(options) {
       meta: {
         kind: 'text-showcase', index: slot.index, section: slot.section,
         type: slot.type, variant: slot.variant, value: slot.value, detail: slot.detail,
+        // beat.meta.category flows to the fill pass (engine beatForCue);
+        // categoryColor needs it or it collapses to the fill/fill2 ramp
+        ...(CATEGORY_FOR_FILL[slot.type] && slot.section === 'fill'
+          ? { category: CATEGORY_FOR_FILL[slot.type] }
+          : {}),
       },
     });
     if (slot.clipSpec) {
@@ -465,6 +482,9 @@ module.exports = {
   SECTIONS,
   SPREAD_X,
   SPREAD_Y,
+  FILL_COLOR,
+  FILL_COLOR2,
+  CATEGORY_FOR_FILL,
   styleFor,
   clipSpecFor,
   clonesFor,
