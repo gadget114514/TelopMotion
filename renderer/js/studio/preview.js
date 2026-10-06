@@ -20,8 +20,8 @@ const preview = (() => {
   let fontRequest = 0;
   let fontsPromise = Promise.resolve();
   let rafId = null;
-  const requestFrame = typeof requestAnimationFrame === 'function' ? requestAnimationFrame : (cb) => setTimeout(cb, 1000 / 60);
-  const cancelFrame = typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame : (id) => clearTimeout(id);
+  const requestFrame = typeof requestAnimationFrame === 'function' ? (cb) => requestAnimationFrame(cb) : (cb) => setTimeout(cb, 1000 / 60);
+  const cancelFrame = typeof cancelAnimationFrame === 'function' ? (id) => cancelAnimationFrame(id) : (id) => clearTimeout(id);
   let playing = false;
   let playAnchor = 0;
   let playFrom = 0;
