@@ -13,6 +13,8 @@ const roles = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles
 const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
 
 const LEGACY = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+const TEN = ['#101018', '#202838', '#2a3348', '#3a4356', '#eef2ff', '#ff8a3d', '#05060a', '#0b0d12', '#ffc247', '#9db2ff'];
+const TEN2 = ['#201020', '#302838', '#3a4356', '#4a5568', '#fff2ef', '#ffaa33', '#10100a', '#140f14', '#ffd247', '#8db2ff'];
 
 test('the slot table is complete and frozen', () => {
   assert.deepEqual(roles.MID_SLOTS, [0, 1, 2, 3]);
@@ -38,49 +40,30 @@ test('ratioFor climbs with the weird axis', () => {
   assert.equal(roles.ratioFor('neighbour', 1), 1.15);
 });
 
-test('upgrade maps a legacy 6-colour palette onto the slots and is idempotent', () => {
-  const upgraded = roles.upgradePalette({ id: 'p', name: 'p', colors: LEGACY });
-  assert.equal(upgraded.roles, 2);
-  assert.equal(upgraded.colors.length, 10);
-  assert.equal(upgraded.colors[0], LEGACY[0]);
-  assert.equal(upgraded.colors[1], LEGACY[1]);
-  assert.equal(upgraded.colors[4], LEGACY[2]);
-  assert.equal(upgraded.colors[5], LEGACY[3]);
-  assert.equal(upgraded.colors[6], LEGACY[4]);
-  assert.equal(upgraded.colors[8], LEGACY[5]);
-  assert.notEqual(upgraded.colors[2], undefined);
-  assert.notEqual(upgraded.colors[9], undefined);
-  const again = roles.upgradePalette(upgraded);
-  assert.equal(again, upgraded, 'idempotent by the roles marker');
+test('every palette stores exactly the 10 slots, no derived colours', () => {
+  assert.equal(roles.get(TEN, roles.SLOT.MID_A), TEN[0]);
+  assert.equal(roles.get(TEN, roles.SLOT.TEXT_FILL), TEN[4]);
+  assert.equal(roles.get(TEN, roles.SLOT.FIG_A), TEN[8]);
+  assert.equal(roles.get(TEN, roles.SLOT.FIG_B), TEN[9]);
+  // a short palette is invalid and reads as missing
+  assert.equal(roles.get(LEGACY, roles.SLOT.MID_A), null);
+  assert.equal(roles.get(LEGACY, roles.SLOT.TEXT_FILL), null);
+  assert.equal(roles.get([], roles.SLOT.MID_A), null);
 });
 
-test('get derives a missing slot from a short palette', () => {
-  assert.equal(roles.get(LEGACY, roles.SLOT.MID_A), LEGACY[0]);
-  assert.equal(roles.get(LEGACY, roles.SLOT.TEXT_FILL), LEGACY[2]);
-  const fig = roles.get(LEGACY, roles.SLOT.FIG_A);
-  assert.equal(fig, LEGACY[5]);
-  assert.notEqual(roles.get(LEGACY, roles.SLOT.MID_C), null);
-});
-
-test('remapRefs rewrites palette refs and gradient stops only', () => {
+test('remapRefs passes slot indices through unchanged', () => {
   const style = {
-    color: { fill: { kind: 'palette', index: 2 }, stroke: { kind: 'palette', index: 4 } },
-    gradient: { kind: 'gradient', stops: [{ pos: 0, paletteIndex: 0 }, { pos: 1, paletteIndex: 3 }] },
+    color: { fill: { kind: 'palette', index: 4 }, stroke: { kind: 'palette', index: 6 } },
+    gradient: { kind: 'gradient', stops: [{ pos: 0, paletteIndex: 0 }, { pos: 1, paletteIndex: 5 }] },
     name: 'index 2 in a string',
     size: 4,
   };
   const out = roles.remapRefs(style);
-  assert.deepEqual(out.color.fill, { kind: 'palette', index: roles.SLOT.TEXT_FILL });
-  assert.deepEqual(out.color.stroke, { kind: 'palette', index: roles.SLOT.TEXT_EDGE });
-  assert.deepEqual(out.gradient.stops, [{ pos: 0, paletteIndex: roles.SLOT.MID_A }, { pos: 1, paletteIndex: roles.SLOT.TEXT_FILL2 }]);
-  assert.equal(out.name, 'index 2 in a string');
-  assert.equal(out.size, 4);
-  // the source is untouched
-  assert.equal(style.color.fill.index, 2);
+  assert.equal(out, style, 'identity for slot palettes');
 });
 
 test('repairPalette makes every pair hold, then compatible() agrees', () => {
-  const palette = roles.upgradePalette({ colors: LEGACY }).colors;
+  const palette = TEN.slice();
   roles.repairPalette(palette, 0, null);
   for (const [a, b, kind] of roles.CONTRAST) {
     const ratio = roles.contrast(palette[a], palette[b]);
@@ -105,12 +88,11 @@ test('the luminance opposite keeps the text readable', () => {
 test('the moved recolor matches moods.recolor', () => {
   const moods = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'moods.js'));
   const style = {
-    color: { fill: { kind: 'palette', index: 2 }, stroke: { kind: 'solid', value: LEGACY[4] } },
-    edge: [{ type: 'outline', params: { color: LEGACY[2] } }],
+    color: { fill: { kind: 'palette', index: 4 }, stroke: { kind: 'solid', value: TEN[6] } },
+    edge: [{ type: 'outline', params: { color: TEN[4] } }],
   };
-  const to = ['#201020', '#302838', '#fff2ef', '#ffaa33', '#10100a', '#ffd247'];
-  assert.deepEqual(roles.recolor(style, LEGACY, to), moods.recolor(style, LEGACY, to));
-  assert.deepEqual(roles.recolor(style, [], to), style);
+  assert.deepEqual(roles.recolor(style, TEN, TEN2), moods.recolor(style, TEN, TEN2));
+  assert.deepEqual(roles.recolor(style, [], TEN2), style);
 });
 
 

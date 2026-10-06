@@ -46,10 +46,12 @@ const projectModule = SA.project;
 
 const FIXTURE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'direct-w0.json'), 'utf8'));
 
-// text <-> background: a dark ground, a light text and a mid accent
-const SWAP_BG = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
-// text <-> backdrop: a light ground, a light text and a near-black accent
-const SWAP_MID = ['#b0b0b0', '#a8a8a8', '#f0f0f0', '#151515', '#c0c0c0', '#d0d0d0'];
+// text <-> background: 10 fixed slots (mid A/B/C/D, text, accent, edge,
+// text-bg, figure A/B). Generated once via paletteFor10 seed 1, which yields
+// viable schemes under the new 10-slot contract.
+const SWAP_BG = ['#210b24', '#3e1837', '#1a240b', '#040a06', '#fff0d4', '#d13f94', '#86285f', '#1f1d1b', '#662b26', '#266166'];
+// text <-> backdrop: a second 10-slot palette (seed 3)
+const SWAP_MID = ['#241a0b', '#0a0904', '#0b1524', '#102e31', '#d8ffd4', '#d1a53f', '#866a28', '#1b1f1b', '#4f6626', '#4c3080'];
 
 function contractPairs(palette, weirdRaw) {
   const pairs = [
