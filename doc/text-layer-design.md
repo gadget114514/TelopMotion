@@ -101,6 +101,7 @@ Post 効果は `target` で 2 つに分かれる（`postTarget` `post.js:99`）�
 - **自動演出**: `applyGenreBackground`（`moods.js:2369`）は `bgShape` に色・`vary`・`skipSpaces` だけを書く（`moods.js:2467-2477`）。`square × enclose` の判定と乱数の引き方は変えていないので、同じ seed の絵は従来どおり再現される。
 - **上限**: `capBackground`（`text-bg.js:234`）は装飾の安全網として残す。セルの上限は装飾 1.25、em は「テキストボックス + 0.6 em」（`engine.js:1705-1709`）。背景は 1 セルなので上限には当たらない。背景側の `cell` は 2.5 のままにして、`bgMotion` の `pop` / `stamp` などの動きスケールを潰させない。
 - **安全性**: 背景は字より下の層にあり、字の部分は `knockout` でくり抜かれる（§2-4）。大きさを変えても字を覆い隠さない。`bgHidden`（トラックの背景オフ）は従来どおり背景だけを止め、装飾は残る（`engine.js:1917-1919`）。
+- **3 つの行スイッチ**: 字幕トラックは Text Foreground（字本体、`textHidden`）・Text BG（定義背景、`bgHidden`）・Text Graphics（装飾と字付きエクストラ、`fgHidden`）の 3 行で ON/OFF する。`knockout` は Text Foreground がオフでも行われ、背景は字形の穴を保つ。knockout される処理は形状パスだけで、Text BG（`bgShape`）か Text Graphics（`ornShape`）に属する。
 
 ---
 

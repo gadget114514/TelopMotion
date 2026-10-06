@@ -185,6 +185,56 @@ SA.timeline = (() => {
     return spans;
   }
 
+  // Beats whose resolved look carries text foreground graphics (see
+  // SA.lyricsEngine.subtitleForegroundOn): ornaments, edges, repeats,
+  // clones, strike, scoped fill/edge and text-target posts. Resolved once per
+  // project version.
+  let foregroundSpanCache = { version: -1, spans: new Map() };
+  function hasForegroundGraphics(style) {
+    if (!style) return false;
+    const on = (instance) => !!instance && instance.enabled !== false;
+    const orn = style.ornShape;
+    if (orn && orn.type && orn.type !== 'none' && on(orn)) return true;
+    if ((style.edge || []).some(on)) return true;
+    const repeat = style.repeat;
+    if (repeat && repeat.type && repeat.type !== 'none' && on(repeat)) return true;
+    if ((style.clones || []).some(on)) return true;
+    const strike = style.strike;
+    if (strike && strike.type && strike.type !== 'none' && on(strike)) return true;
+    if ((style.scoped || []).some((entry) => entry && entry.enabled !== false && (entry.group === 'fill' || entry.group === 'edge') && entry.type)) return true;
+    if (SA.fx && SA.fx.isGraphicsPost) {
+      if ((style.post || []).some((instance) => on(instance) && !(instance.params && instance.params.enabled === false) && !SA.fx.isGraphicsPost(instance))) return true;
+    }
+    return false;
+  }
+  function foregroundSpans(doc, cue) {
+    const version = SA.store.state.version && SA.store.state.version.project;
+    if (foregroundSpanCache.version !== version) foregroundSpanCache = { version, spans: new Map() };
+    if (foregroundSpanCache.spans.has(cue.id)) return foregroundSpanCache.spans.get(cue.id);
+    const spans = [];
+    for (const beat of beatsFor(doc, cue)) {
+      const style = SA.project.resolveStyle(doc, `cue:${cue.id}/beat:${beat.id}`);
+      if (hasForegroundGraphics(style)) spans.push({ start: beat.start, end: beat.end });
+    }
+    foregroundSpanCache.spans.set(cue.id, spans);
+    return spans;
+  }
+
+  // Beats carrying the glyph body itself: every beat, since the text exists
+  // wherever beats exist. Resolved once per project version.
+  let textForegroundSpanCache = { version: -1, spans: new Map() };
+  function textForegroundSpans(doc, cue) {
+    const version = SA.store.state.version && SA.store.state.version.project;
+    if (textForegroundSpanCache.version !== version) textForegroundSpanCache = { version, spans: new Map() };
+    if (textForegroundSpanCache.spans.has(cue.id)) return textForegroundSpanCache.spans.get(cue.id);
+    const spans = [];
+    for (const beat of beatsFor(doc, cue)) {
+      spans.push({ start: beat.start, end: beat.end });
+    }
+    textForegroundSpanCache.spans.set(cue.id, spans);
+    return spans;
+  }
+
   // Beats whose resolved look carries a text background (a `bgShape` other
   // than none), the same test the engine draws by. Resolved once per project
   // version.
@@ -452,9 +502,15 @@ SA.timeline = (() => {
         y += ROW_H;
         for (const cue of cues) cueRects.set(cue.id, rows[rows.length - 1]);
         if (trackFolded(track.id)) continue;
-        // the track's two switch rows sit directly under its cues: the text
-        // background (the shapes behind the glyphs) ...
+        // the track's three switch rows sit directly under its cues: the text
+        // foreground (the glyph body) ...
+        rows.push({ type: 'text-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
+        y += LAYER_H;
+        // ... the text background (the shapes behind the glyphs) ...
         rows.push({ type: 'bg-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
+        y += LAYER_H;
+        // ... the text graphics (ornaments, edges, repeats, text posts ...) ...
+        rows.push({ type: 'fg-track', y, h: LAYER_H, trackId: track.id, track, cues, depth: 1 });
         y += LAYER_H;
         // ... and the graphics: the frame-wide posts its look carries (see
         // SA.fx.isGraphicsPost)
@@ -1058,6 +1114,76 @@ SA.timeline = (() => {
         rounded(x, y + 1.5, width, height, 4);
         ctx.fill();
         ctx.strokeStyle = hidden ? '#3a4050' : '#c8a0ff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  // The subtitle track's text foreground row: the glyph body itself. Its
+  // checkbox is the track's `textHidden` flag; the style data is never
+  // touched. The background keeps its glyph-shaped holes (knockout) even
+  // with the text hidden.
+  function drawTextBodyTrack(size, doc, row) {
+    const hidden = trackHidden(row.track) || !!(row.track && row.track.textHidden);
+    drawTrackHeader(row, t('studio.track.textForeground'), {
+      tooltip: `${trackTitle(row.track)} ${t('studio.track.textForeground')}`,
+      color: '#e8ebf3',
+      hidden,
+      removable: false,
+      checkType: 'track-text-check',
+    });
+    const y = row.y;
+    const height = LAYER_H - 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
+    ctx.clip();
+    for (const cue of row.cues) {
+      for (const span of textForegroundSpans(doc, cue)) {
+        const x = xOf(span.start);
+        const width = Math.max(2, (span.end - span.start) * pxPerSecond);
+        if (x + width < LABEL_W || x > size.width) continue;
+        ctx.fillStyle = hidden ? 'rgba(30, 34, 44, 0.6)' : 'rgba(232, 235, 243, 0.28)';
+        rounded(x, y + 1.5, width, height, 4);
+        ctx.fill();
+        ctx.strokeStyle = hidden ? '#3a4050' : '#e8ebf3';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
+  // The subtitle track's text graphics row: the text-attached extras its
+  // look carries (ornaments, edges, repeats, clones, text-target posts ...).
+  // Its checkbox is the track's `fgHidden` flag; the style data is never
+  // touched.
+  function drawTextGraphicsTrack(size, doc, row) {
+    const hidden = trackHidden(row.track) || !!(row.track && row.track.fgHidden);
+    drawTrackHeader(row, t('studio.track.textGraphics'), {
+      tooltip: `${trackTitle(row.track)} ${t('studio.track.textGraphics')}`,
+      color: '#8ad8ff',
+      hidden,
+      removable: false,
+      checkType: 'track-fg-check',
+    });
+    const y = row.y;
+    const height = LAYER_H - 3;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(LABEL_W, RULER_H, Math.max(0, size.width - LABEL_W), size.height - RULER_H);
+    ctx.clip();
+    for (const cue of row.cues) {
+      for (const span of foregroundSpans(doc, cue)) {
+        const x = xOf(span.start);
+        const width = Math.max(2, (span.end - span.start) * pxPerSecond);
+        if (x + width < LABEL_W || x > size.width) continue;
+        ctx.fillStyle = hidden ? 'rgba(30, 34, 44, 0.6)' : 'rgba(138, 216, 255, 0.28)';
+        rounded(x, y + 1.5, width, height, 4);
+        ctx.fill();
+        ctx.strokeStyle = hidden ? '#3a4050' : '#8ad8ff';
         ctx.lineWidth = 1;
         ctx.stroke();
       }
@@ -1708,6 +1834,8 @@ SA.timeline = (() => {
     for (const row of rows) {
       if (row.type === 'cue-track') drawCueTrack(size, doc, row);
       else if (row.type === 'bg-track') drawBackgroundTrack(size, doc, row);
+      else if (row.type === 'text-track') drawTextBodyTrack(size, doc, row);
+      else if (row.type === 'fg-track') drawTextGraphicsTrack(size, doc, row);
       else if (row.type === 'graphics-track') drawGraphicsTrack(size, doc, row);
       else if (row.type === 'keys-header') drawKeysHeader(row);
       else if (row.type === 'layer-track') drawLayerTrack(size, row);
@@ -1878,6 +2006,16 @@ SA.timeline = (() => {
       if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { graphicsHidden: !track.graphicsHidden });
       drag = null;
       draw();
+    } else if (hit.type === 'track-text-check') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { textHidden: !track.textHidden });
+      drag = null;
+      draw();
+    } else if (hit.type === 'track-fg-check') {
+      const track = trackList().find((entry) => entry.id === hit.trackId);
+      if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { fgHidden: !track.fgHidden });
+      drag = null;
+      draw();
     } else if (hit.type === 'track-bg') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (track && track.kind === 'subtitle') SA.store.commands.updateTrack(hit.trackId, { bgHidden: !track.bgHidden });
@@ -1968,7 +2106,7 @@ SA.timeline = (() => {
     let cursor = 'default';
     if (hit.type === 'cue-edge' || hit.type === 'clip-edge' || hit.type === 'divider' || hit.type === 'layer-edge' || hit.type === 'ruler' || hit.type === 'audio') cursor = 'ew-resize';
     else if (hit.type === 'cue' || hit.type === 'beat' || hit.type === 'layer' || hit.type === 'clip' || hit.type === 'clip-beat' || hit.type === 'credit') cursor = 'pointer';
-    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
+    else if (hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-fg-check' || hit.type === 'track-text-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-header') cursor = 'pointer';
     if (target.style.cursor !== cursor) target.style.cursor = cursor;
   }
 
@@ -2577,7 +2715,7 @@ SA.timeline = (() => {
       positionMenu(event);
       return;
     }
-    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down') {
+    if (hit.type === 'track-header' || hit.type === 'track-twisty' || hit.type === 'track-collapse' || hit.type === 'track-check' || hit.type === 'track-graphics-check' || hit.type === 'track-fg-check' || hit.type === 'track-text-check' || hit.type === 'track-bg' || hit.type === 'track-layer-check' || hit.type === 'track-remove' || hit.type === 'track-move-up' || hit.type === 'track-move-down') {
       const track = trackList().find((entry) => entry.id === hit.trackId);
       if (!track) return;
       if (track.kind === 'subtitle') {
@@ -2587,6 +2725,7 @@ SA.timeline = (() => {
         });
         add(track.textHidden ? t('studio.track.showText') : t('studio.track.hideText'), () => SA.store.commands.updateTrack(track.id, { textHidden: !track.textHidden }));
         add(track.bgHidden ? t('studio.track.showBackground') : t('studio.track.hideBackground'), () => SA.store.commands.updateTrack(track.id, { bgHidden: !track.bgHidden }));
+        add(track.fgHidden ? t('studio.track.showForeground') : t('studio.track.hideForeground'), () => SA.store.commands.updateTrack(track.id, { fgHidden: !track.fgHidden }));
         add(track.graphicsHidden ? t('studio.track.showGraphics') : t('studio.track.hideGraphics'), () => SA.store.commands.updateTrack(track.id, { graphicsHidden: !track.graphicsHidden }));
       } else if (track.kind === 'filler') {
         add(t('studio.timeline.regenerateFillers'), () => SA.store.commands.regenerateFillers());

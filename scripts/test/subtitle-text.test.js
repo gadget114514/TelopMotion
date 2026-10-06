@@ -31,9 +31,12 @@ test('the engine renders subtitle text conditionally and skips glyph passes when
   assert.ok(source.includes('textActiveBeats'), 'the textActiveBeats filter is missing');
   assert.ok(source.includes('buildFrameTextMask(textActiveBeats'), 'buildFrameTextMask does not use textActiveBeats');
   assert.ok(source.includes('textHiddenTracks.has(active.trackId)'), 'track textHidden check missing in loop');
-  assert.ok(source.includes('if (textOn) {\n          pipeline.text'), 'pipeline.text is not conditioned on textOn');
-  assert.ok(source.includes('if (textOn) {\n          pipeline.letterBlur'), 'pipeline.letterBlur is not conditioned on textOn');
-  assert.ok(source.includes('if (textOn) pipeline.knockout()'), 'pipeline.knockout is not conditioned on textOn');
+  // the knockout mask is built even with the text body hidden (Text
+  // Foreground off), so the background keeps its glyph-shaped holes
+  assert.ok(source.includes('const maskNeeded = textOn || !!variation'), 'the mask is not built when the text is hidden');
+  assert.ok(source.includes('if (maskNeeded) {\n          pipeline.text'), 'pipeline.text is not conditioned on maskNeeded');
+  assert.ok(source.includes('if (maskNeeded) {\n          pipeline.letterBlur'), 'pipeline.letterBlur is not conditioned on maskNeeded');
+  assert.ok(source.includes('if (variation) {\n          pipeline.knockout();'), 'pipeline.knockout does not run with the text hidden');
   assert.ok(source.includes('textOn ? pipeline.sdf() : null'), 'sdfTarget is not conditioned on textOn');
 });
 
