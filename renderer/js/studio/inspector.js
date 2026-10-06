@@ -390,11 +390,13 @@ SA.inspector = (() => {
   }
 
   // Consecutive descriptor params that form an x/y-style pair share one row
-  // (offsetX/Y, edgeX/Y, selEaseHigh/Low, a numeric from/to range).
+  // (offsetX/Y, edgeX/Y, selEaseHigh/Low, a numeric from/to range, and the
+  // textenter2 tilted-axis start scale with its link toggle).
   const PARAM_PAIR_DEFS = [
     { keys: ['offsetX', 'offsetY'], subs: ['X', 'Y'] },
     { keys: ['edgeX', 'edgeY'], subs: ['X', 'Y'] },
     { keys: ['selEaseHigh', 'selEaseLow'], subs: ['High', 'Low'] },
+    { keys: ['scaleFromX', 'scaleFromY'], subs: ['X', 'Y'], chain: true },
     { keys: ['from', 'to'], subs: ['From', 'To'], kinds: ['number', 'int'] },
   ];
 
@@ -429,6 +431,61 @@ SA.inspector = (() => {
 
   function paramPairLabel(first, second) {
     return `${SA.controls.labelFor(first.key)} / ${SA.controls.labelFor(second.key)}`;
+  }
+
+  // A chained x/y pair (textenter2 §2.2 scaleFrom): two tagged number inputs
+  // with a link toggle between them. Linked edits write both params, so the
+  // tilted axis stays invisible (uniform start scale). makeControl builds one
+  // number input, setParam writes one param, propPathFor names the track.
+  // Each param carries its resolved `current` value.
+  function chainPairRow(container, label, first, second, subs, makeControl, setParam, propPathFor) {
+    const params = [first, second];
+    let linked = params[0].current === params[1].current;
+    const node = document.createElement('div');
+    node.className = 'ctrl-row is-pair';
+    const labelNode = document.createElement('label');
+    labelNode.className = 'ctrl-label';
+    labelNode.textContent = label;
+    node.appendChild(labelNode);
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-pair';
+    node.appendChild(wrap);
+    const link = document.createElement('button');
+    link.type = 'button';
+    link.className = 'btn btn-mini';
+    const paint = () => {
+      link.textContent = linked ? '🔗' : '↔';
+      link.title = t(linked ? 'studio.inspector.unlinkPair' : 'studio.inspector.linkPair');
+    };
+    link.addEventListener('click', () => {
+      linked = !linked;
+      if (linked) setParam(params[1].key, params[0].current);
+      paint();
+    });
+    params.forEach((param, k) => {
+      const cell = document.createElement('span');
+      cell.className = 'ctrl-pair-cell';
+      const tag = document.createElement('span');
+      tag.className = 'ctrl-pair-tag';
+      tag.textContent = subs[k];
+      cell.appendChild(tag);
+      cell.appendChild(makeControl(param, param.current, (next) => {
+        setParam(param.key, next);
+        if (linked) setParam(params[1 - k].key, next);
+      }));
+      wrap.appendChild(cell);
+      if (k === 0) wrap.appendChild(link);
+    });
+    const btns = document.createElement('span');
+    btns.className = 'ctrl-pair-btns';
+    node.appendChild(btns);
+    for (const param of params) {
+      appendKeyButton(btns, propPathFor(param.key));
+      appendReset(btns, propPathFor(param.key));
+    }
+    container.appendChild(node);
+    paint();
+    return node;
   }
 
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
@@ -858,6 +915,17 @@ SA.inspector = (() => {
     button('studio.beat.splitAtPlayhead', () => SA.store.commands.splitBeat(sel.cueId, beat.id, SA.store.state.playhead));
     button('studio.beat.mergeNext', () => SA.store.commands.mergeBeats(sel.cueId, beat.id));
     button('studio.beat.restructureCue', () => SA.store.commands.restructureCue(sel.cueId));
+    // textenter2 §4.6: full-split the enter into per-letter / per-word scoped
+    // entries, or drop the split entries again
+    const beatBag = (doc.beatStyles || {})[beat.id] || {};
+    const splitScoped = (beatBag.scoped || []).some((entry) => entry && entry.split === true)
+      || (beatBag.post || []).some((entry) => entry && entry.split === true);
+    if (splitScoped) {
+      button('studio.beat.unsplitEnter', () => SA.store.commands.unsplitEnter(sel.cueId, beat.id));
+    } else {
+      button('studio.beat.splitEnterLetter', () => SA.store.commands.splitEnter(sel.cueId, beat.id, 'letter'));
+      button('studio.beat.splitEnterWord', () => SA.store.commands.splitEnter(sel.cueId, beat.id, 'word'));
+    }
     // jump to the neighbouring beat inside the same cue
     const beatList = (doc.beats[sel.cueId] || []).length ? doc.beats[sel.cueId] : cue && SA.lyricsEngine ? [SA.lyricsEngine.beatForCue(cue)].filter(Boolean) : [];
     const beatIndex = beatList.findIndex((entry) => entry && entry.id === beat.id);
@@ -1562,6 +1630,14 @@ SA.inspector = (() => {
       row(body, propPath, SA.controls.labelFor(param.key), control);
     };
     const pairParams = (first, second, def) => {
+      if (def.chain) {
+        const enriched = [first, second].map((param) => ({ ...param, current: params[param.key] != null ? params[param.key] : param.default }));
+        chainPairRow(body, paramPairLabel(first, second), enriched[0], enriched[1], def.subs,
+          (param, value, onChange) => SA.controls.paramControl(group, param, value, onChange, paletteOpts),
+          (key, next) => writeProp(`${group}.params.${key}`, next),
+          (key) => `${group}.params.${key}`);
+        return;
+      }
       const specs = [first, second].map((param, k) => {
         const value = params[param.key] != null ? params[param.key] : param.default;
         const propPath = `${group}.params.${param.key}`;
@@ -1688,7 +1764,7 @@ SA.inspector = (() => {
   // replace the base instance for the covered letters, hold adds to the stack,
   // fill / edge draw a scoped overlay mask in the engine.
 
-  const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge', 'bgFill', 'bgShape', 'text'];
+  const SCOPED_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge', 'bgFill', 'bgShape', 'bgMotion', 'text'];
   const SCOPE_KINDS = ['all', 'range', 'word', 'keyword', 'span', 'nth', 'slice'];
   const SCOPE_KIND_LABELS = {
     all: 'studio.inspector.scopeAll',
@@ -1806,6 +1882,39 @@ SA.inspector = (() => {
       if (entry.group === 'enter' || entry.group === 'exit' || entry.group === 'hold') {
         row(box, `scoped.${index}.local`, t('studio.inspector.scopedLocal'), SA.controls.boolControl(entry.local === true, (value) => update(list.map((item, i) => (i === index ? { ...item, local: value } : item)))));
       }
+      // textenter2 §4.3: the substring's own stagger (rank order inside the
+      // run). Unset = the beat stagger offsets.
+      if (entry.group === 'enter') {
+        const stagger = entry.stagger || {};
+        const setStagger = (patch) => {
+          const next = { order: 'ltr', ease: 'linear', ...(entry.stagger || {}), ...patch };
+          update(list.map((item, i) => {
+            if (i !== index) return item;
+            if (!(Number(next.each) > 0)) {
+              const cleared = { ...item };
+              delete cleared.stagger;
+              return cleared;
+            }
+            return { ...item, stagger: next };
+          }));
+        };
+        pairRow(box, `${t('studio.inspector.order')} / ${t('studio.inspector.each')}`, [
+          {
+            propPath: `scoped.${index}.stagger.order`, sub: t('studio.inspector.order'),
+            control: SA.controls.selectControl({}, stagger.order || 'ltr', (next) => setStagger({ order: next }), ['ltr', 'rtl', 'center-out', 'random'].map((value) => ({ value, label: SA.controls.valueLabel(value) }))),
+            noKey: true,
+          },
+          {
+            propPath: `scoped.${index}.stagger.each`, sub: t('studio.inspector.each'),
+            control: SA.controls.numberControl({ min: 0, step: 0.005, default: 0 }, stagger.each == null ? 0 : stagger.each, (next) => setStagger({ each: next })),
+            noKey: true,
+          },
+        ], { noKey: true, noReset: true });
+      }
+      // textenter2 §4.7: user paint order (larger paints later = on top)
+      row(box, `scoped.${index}.drawOrder`, t('studio.inspector.drawOrder'), SA.controls.numberControl({ min: -99, max: 99, step: 1, default: 0 }, entry.drawOrder == null ? 0 : entry.drawOrder, (next) => {
+        update(list.map((item, i) => (i === index ? { ...item, drawOrder: Math.round(Number(next) || 0) } : item)));
+      }), { noKey: true });
 
       // the effect parameters (the same rows as a stack group). A preset's own
       // defaults are resolved first, so picking `spanEveryThird` shows its 1.45
@@ -1821,6 +1930,16 @@ SA.inspector = (() => {
         row(box, `scoped.${index}.params.${param.key}`, SA.controls.labelFor(param.key), control, { noKey: true });
       };
       const pairParams = (first, second, def) => {
+        if (def.chain) {
+          const enriched = [first, second].map((param) => ({ ...param, current: params[param.key] != null ? params[param.key] : param.default }));
+          chainPairRow(box, paramPairLabel(first, second), enriched[0], enriched[1], def.subs,
+            (param, value, onChange) => SA.controls.paramControl(entry.group || 'hold', param, value, onChange, paletteOpts),
+            (key, next) => {
+              update(list.map((item, i) => (i === index ? { ...item, params: { ...(item.params || {}), [key]: next } } : item)));
+            },
+            (key) => `scoped.${index}.params.${key}`);
+          return;
+        }
         const specs = [first, second].map((param, k) => {
           const value = params[param.key] != null ? params[param.key] : param.default;
           const control = SA.controls.paramControl(entry.group || 'hold', param, value, (next) => {

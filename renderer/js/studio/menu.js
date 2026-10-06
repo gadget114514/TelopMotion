@@ -191,7 +191,7 @@ SA.menu = (() => {
         { key: 'studio.help.letterFxShowcase', action: 'letterFxShowcase' },
         { key: 'studio.help.textShowcase', action: 'textShowcase' },
         { key: 'studio.help.shaderShowcase', action: 'shaderShowcase' },
-        { key: 'studio.help.motionShowcase', items: () => [
+        { key: 'studio.help.objfxShowcase', action: 'objfxShowcase' },        { key: 'studio.help.motionShowcase', items: () => [
           { key: 'studio.help.motionShowcaseAll', action: 'motionShowcaseAll' },
           itemSeparator(),
           { raw: 'Motion 01/16', action: 'motionShowcase', args: ['01'] },

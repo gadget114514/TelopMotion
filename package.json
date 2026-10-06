@@ -15,6 +15,7 @@
     "fx800": "node scripts/fx800.js",
     "showcase": "node scripts/showcase.js",
     "shader-showcase": "node scripts/shader-showcase.js",
+    "objfx-showcase": "node scripts/objfx-showcase.js",
     "figure-showcase": "node scripts/figure-showcase.js",
     "font-showcase": "node scripts/font-showcase.js",
     "backdrop-showcase": "node scripts/backdrop-showcase.js",

@@ -1,0 +1,3304 @@
+{
+  "format": "telopmotion",
+  "version": 5,
+  "meta": {
+    "title": "TelopMotion モーションFX見本",
+    "createdAt": "2026-01-01T00:00:00.000Z",
+    "updatedAt": "2026-01-01T00:00:00.000Z",
+    "lang": "ja"
+  },
+  "song": {
+    "title": "",
+    "author": "",
+    "bpm": 0,
+    "length": 0
+  },
+  "output": {
+    "aspect": "16:9",
+    "fps": 30,
+    "width": 1920,
+    "height": 1080,
+    "durationMode": "cues",
+    "range": null,
+    "maxDuration": null,
+    "overflow": "compress",
+    "audioFadeOut": 1.5
+  },
+  "dataset": null,
+  "media": {
+    "audio": null,
+    "images": [],
+    "videos": [],
+    "fonts": []
+  },
+  "palettes": [],
+  "categoryColors": {},
+  "cardTheme": {},
+  "script": {
+    "options": {},
+    "cues": [
+      {
+        "id": "ox_001",
+        "start": 0,
+        "end": 6,
+        "text": "モーションFX 7種\nMOTION FX",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 1,
+          "section": "intro",
+          "phase": "intro",
+          "type": null,
+          "variant": null,
+          "value": "intro",
+          "detail": "モーションFX 7種"
+        }
+      },
+      {
+        "id": "ox_002",
+        "start": 6,
+        "end": 12,
+        "text": "2. 時間遅延 timeDelay · 文字ごと\n遅れて追いかける",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 2,
+          "section": "timeDelay",
+          "phase": "letter",
+          "type": "timeDelay",
+          "variant": "letter",
+          "value": "timeDelay/letter",
+          "detail": "時間遅延・文字ごと"
+        }
+      },
+      {
+        "id": "ox_003",
+        "start": 12,
+        "end": 18,
+        "text": "3. 時間遅延 timeDelay · 語ごと\n遅れて追いかける",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 3,
+          "section": "timeDelay",
+          "phase": "word",
+          "type": "timeDelay",
+          "variant": "word",
+          "value": "timeDelay/word",
+          "detail": "時間遅延・語ごと"
+        }
+      },
+      {
+        "id": "ox_004",
+        "start": 18,
+        "end": 24,
+        "text": "4. 時間遅延 timeDelay · 帯\n遅れて追いかける",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 4,
+          "section": "timeDelay",
+          "phase": "region",
+          "type": "timeDelay",
+          "variant": "region",
+          "value": "timeDelay/region",
+          "detail": "時間遅延・帯"
+        }
+      },
+      {
+        "id": "ox_005",
+        "start": 24,
+        "end": 30,
+        "text": "5. カラーシフト colorShift · 距離・色相\n動けば色が巡る",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 5,
+          "section": "colorShift",
+          "phase": "distance",
+          "type": "colorShift",
+          "variant": "distance",
+          "value": "colorShift/distance",
+          "detail": "カラーシフト・距離・色相"
+        }
+      },
+      {
+        "id": "ox_006",
+        "start": 30,
+        "end": 36,
+        "text": "6. カラーシフト colorShift · 速度・勾配\n動けば色が巡る",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 6,
+          "section": "colorShift",
+          "phase": "speed",
+          "type": "colorShift",
+          "variant": "speed",
+          "value": "colorShift/speed",
+          "detail": "カラーシフト・速度・勾配"
+        }
+      },
+      {
+        "id": "ox_007",
+        "start": 36,
+        "end": 42,
+        "text": "7. フリッカー motionFlicker · ランダム\n動く間だけ瞬く",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 7,
+          "section": "motionFlicker",
+          "phase": "random",
+          "type": "motionFlicker",
+          "variant": "random",
+          "value": "motionFlicker/random",
+          "detail": "フリッカー・ランダム"
+        }
+      },
+      {
+        "id": "ox_008",
+        "start": 42,
+        "end": 48,
+        "text": "8. フリッカー motionFlicker · ストロボ\n動く間だけ瞬く",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 8,
+          "section": "motionFlicker",
+          "phase": "strobe",
+          "type": "motionFlicker",
+          "variant": "strobe",
+          "value": "motionFlicker/strobe",
+          "detail": "フリッカー・ストロボ"
+        }
+      },
+      {
+        "id": "ox_009",
+        "start": 48,
+        "end": 54,
+        "text": "9. エコー motionEcho · 残像\n過去の位置に影",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 9,
+          "section": "motionEcho",
+          "phase": "trail",
+          "type": "motionEcho",
+          "variant": "trail",
+          "value": "motionEcho/trail",
+          "detail": "エコー・残像"
+        }
+      },
+      {
+        "id": "ox_010",
+        "start": 54,
+        "end": 60,
+        "text": "10. エコー motionEcho · 加算\n過去の位置に影",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 10,
+          "section": "motionEcho",
+          "phase": "add",
+          "type": "motionEcho",
+          "variant": "add",
+          "value": "motionEcho/add",
+          "detail": "エコー・加算"
+        }
+      },
+      {
+        "id": "ox_011",
+        "start": 60,
+        "end": 66,
+        "text": "11. 塗りと線 strokeTrail · 線の影\n線だけがついてくる",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 11,
+          "section": "strokeTrail",
+          "phase": "line",
+          "type": "strokeTrail",
+          "variant": "line",
+          "value": "strokeTrail/line",
+          "detail": "塗りと線・線の影"
+        }
+      },
+      {
+        "id": "ox_012",
+        "start": 66,
+        "end": 72,
+        "text": "12. 塗りと線 strokeTrail · 加算\n線だけがついてくる",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 12,
+          "section": "strokeTrail",
+          "phase": "add",
+          "type": "strokeTrail",
+          "variant": "add",
+          "value": "strokeTrail/add",
+          "detail": "塗りと線・加算"
+        }
+      },
+      {
+        "id": "ox_013",
+        "start": 72,
+        "end": 78,
+        "text": "13. 時間置換 timeDisplacement · せん断\n軸がずれてねじれる",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 13,
+          "section": "timeDisplacement",
+          "phase": "shear",
+          "type": "timeDisplacement",
+          "variant": "shear",
+          "value": "timeDisplacement/shear",
+          "detail": "時間置換・せん断"
+        }
+      },
+      {
+        "id": "ox_014",
+        "start": 78,
+        "end": 84,
+        "text": "14. 時間置換 timeDisplacement · 進行方向\n軸がずれてねじれる",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 14,
+          "section": "timeDisplacement",
+          "phase": "velocity",
+          "type": "timeDisplacement",
+          "variant": "velocity",
+          "value": "timeDisplacement/velocity",
+          "detail": "時間置換・進行方向"
+        }
+      },
+      {
+        "id": "ox_015",
+        "start": 84,
+        "end": 90,
+        "text": "15. 時間置換 timeDisplacement · 行\n軸がずれてねじれる",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 15,
+          "section": "timeDisplacement",
+          "phase": "block",
+          "type": "timeDisplacement",
+          "variant": "block",
+          "value": "timeDisplacement/block",
+          "detail": "時間置換・行"
+        }
+      },
+      {
+        "id": "ox_016",
+        "start": 90,
+        "end": 96,
+        "text": "16. ベンド motionBend · 自動\n先頭が引っ張るゴム",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 16,
+          "section": "motionBend",
+          "phase": "auto",
+          "type": "motionBend",
+          "variant": "auto",
+          "value": "motionBend/auto",
+          "detail": "ベンド・自動"
+        }
+      },
+      {
+        "id": "ox_017",
+        "start": 96,
+        "end": 102,
+        "text": "17. ベンド motionBend · 左固定\n先頭が引っ張るゴム",
+        "meta": {
+          "kind": "objfx-showcase",
+          "index": 17,
+          "section": "motionBend",
+          "phase": "left",
+          "type": "motionBend",
+          "variant": "left",
+          "value": "motionBend/left",
+          "detail": "ベンド・左固定"
+        }
+      }
+    ],
+    "sourceName": "objfx-showcase.json"
+  },
+  "style": {
+    "text": {
+      "fontId": "NotoSansJP-Regular",
+      "size": 96,
+      "weight": 400,
+      "letterSpacing": 0,
+      "lineHeight": 1.2,
+      "align": "center",
+      "maxWidth": 0.9
+    },
+    "hold": [],
+    "edge": [],
+    "post": [],
+    "color": {
+      "fill": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      },
+      "stroke": {
+        "kind": "solid",
+        "value": "#e9edf8",
+        "alpha": 1
+      }
+    }
+  },
+  "styleMode": {
+    "order": "cycle",
+    "seed": 12345,
+    "locked": []
+  },
+  "cueStyles": {
+    "ox_001": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        }
+      ]
+    },
+    "ox_002": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#7cc4ff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDelay",
+          "enabled": true,
+          "params": {
+            "unit": "letter",
+            "select": "oddEven",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false,
+            "lag": 0.15,
+            "props": "pos",
+            "band": "top",
+            "bandSize": 0.5,
+            "feather": 0.4
+          }
+        }
+      ]
+    },
+    "ox_003": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#7cc4ff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDelay",
+          "enabled": true,
+          "params": {
+            "unit": "word",
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false,
+            "lag": 0.2,
+            "props": "pos",
+            "band": "top",
+            "bandSize": 0.5,
+            "feather": 0.4
+          }
+        }
+      ]
+    },
+    "ox_004": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#7cc4ff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDelay",
+          "enabled": true,
+          "params": {
+            "unit": "region",
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false,
+            "lag": 0.2,
+            "props": "pos",
+            "band": "top",
+            "bandSize": 0.5,
+            "feather": 0.4
+          }
+        }
+      ]
+    },
+    "ox_005": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e07cff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "colorShift",
+          "enabled": true,
+          "params": {
+            "driver": "distance",
+            "palette": "hueCycle",
+            "colorA": "#ff3b6b",
+            "colorB": "#3bd1ff",
+            "cycles": 1,
+            "phase": 0,
+            "spread": 0.3,
+            "mix": 0.85,
+            "affect": "fill",
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false,
+            "sensitivity": 1,
+            "release": 0.3
+          }
+        }
+      ]
+    },
+    "ox_006": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e07cff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "colorShift",
+          "enabled": true,
+          "params": {
+            "driver": "speed",
+            "palette": "gradient",
+            "colorA": "#ff3b6b",
+            "colorB": "#3bd1ff",
+            "cycles": 1,
+            "phase": 0,
+            "spread": 0.3,
+            "mix": 0.85,
+            "affect": "fill",
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false,
+            "sensitivity": 1,
+            "release": 0.3
+          }
+        }
+      ]
+    },
+    "ox_007": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ffe47c",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionFlicker",
+          "enabled": true,
+          "params": {
+            "wave": "random",
+            "rate": 12,
+            "depth": 0.7,
+            "minOpacity": 0.2,
+            "duty": 0.5,
+            "spread": 0.5,
+            "sensitivity": 1,
+            "release": 0.15,
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false
+          }
+        }
+      ]
+    },
+    "ox_008": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ffe47c",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionFlicker",
+          "enabled": true,
+          "params": {
+            "wave": "strobe",
+            "rate": 8,
+            "depth": 0.8,
+            "minOpacity": 0.2,
+            "duty": 0.5,
+            "spread": 0.5,
+            "sensitivity": 1,
+            "release": 0.15,
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false
+          }
+        }
+      ]
+    },
+    "ox_009": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff7c8a",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionEcho",
+          "enabled": true,
+          "params": {
+            "count": 3,
+            "spacing": 0.06,
+            "colorA": "#ff3b6b",
+            "colorB": "#3b6bff",
+            "opacity": 0.6,
+            "decay": 0.35,
+            "scaleDecay": 0,
+            "blend": "normal",
+            "behind": true,
+            "minGap": 0.08
+          }
+        }
+      ]
+    },
+    "ox_010": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ff7c8a",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionEcho",
+          "enabled": true,
+          "params": {
+            "count": 5,
+            "spacing": 0.05,
+            "colorA": "#ff3b6b",
+            "colorB": "#3b6bff",
+            "opacity": 0.5,
+            "decay": 0.3,
+            "scaleDecay": 0,
+            "blend": "add",
+            "behind": true,
+            "minGap": 0.08
+          }
+        }
+      ]
+    },
+    "ox_011": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#4de8ff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "strokeTrail",
+          "enabled": true,
+          "params": {
+            "count": 4,
+            "spacing": 0.05,
+            "width": 2,
+            "colorA": "#00e5ff",
+            "colorB": "#ff00c8",
+            "opacity": 0.9,
+            "decay": 0.25,
+            "widthDecay": 0.3,
+            "dash": 0,
+            "blend": "normal",
+            "behind": true,
+            "minGap": 0.08
+          }
+        }
+      ]
+    },
+    "ox_012": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#4de8ff",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "strokeTrail",
+          "enabled": true,
+          "params": {
+            "count": 4,
+            "spacing": 0.05,
+            "width": 2,
+            "colorA": "#00e5ff",
+            "colorB": "#ff00c8",
+            "opacity": 0.8,
+            "decay": 0.25,
+            "widthDecay": 0.3,
+            "dash": 0,
+            "blend": "add",
+            "behind": true,
+            "minGap": 0.08
+          }
+        }
+      ]
+    },
+    "ox_013": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#8df07c",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDisplacement",
+          "enabled": true,
+          "params": {
+            "unit": "letter",
+            "map": "linearX",
+            "maxLag": 0.15,
+            "invert": false,
+            "noiseScale": 1.5,
+            "amount": 1,
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false
+          }
+        }
+      ]
+    },
+    "ox_014": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#8df07c",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDisplacement",
+          "enabled": true,
+          "params": {
+            "unit": "letter",
+            "map": "alongVelocity",
+            "maxLag": 0.15,
+            "invert": false,
+            "noiseScale": 1.5,
+            "amount": 1,
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false
+          }
+        }
+      ]
+    },
+    "ox_015": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#8df07c",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "timeDisplacement",
+          "enabled": true,
+          "params": {
+            "unit": "block",
+            "map": "linearX",
+            "maxLag": 0.2,
+            "invert": false,
+            "noiseScale": 1.5,
+            "amount": 1,
+            "select": "all",
+            "n": 2,
+            "offset": 0,
+            "oddEven": "odd",
+            "units": "letter",
+            "from": 0,
+            "to": 1,
+            "fraction": 0.5,
+            "seed": 7,
+            "grade": false
+          }
+        }
+      ]
+    },
+    "ox_016": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ffb547",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionBend",
+          "enabled": true,
+          "params": {
+            "leadSide": "auto",
+            "leadWidth": 0.3,
+            "stiffness": 0.25,
+            "damping": 0.08,
+            "inertia": 1.4,
+            "maxStretch": 0.9,
+            "rotLag": 0.5
+          }
+        }
+      ]
+    },
+    "ox_017": {
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#ffb547",
+          "alpha": 1
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "left",
+          "distance": 0.35
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "slide",
+        "enabled": true,
+        "params": {
+          "dir": "right",
+          "distance": 0.3
+        },
+        "motion": {
+          "out": {
+            "duration": 0.8,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": [
+        {
+          "type": "drift",
+          "enabled": true,
+          "params": {
+            "vx": 0.35,
+            "vy": 0
+          }
+        },
+        {
+          "type": "motionBend",
+          "enabled": true,
+          "params": {
+            "leadSide": "left",
+            "leadWidth": 0.3,
+            "stiffness": 0.25,
+            "damping": 0.08,
+            "inertia": 1.4,
+            "maxStretch": 0.9,
+            "rotLag": 0.5
+          }
+        }
+      ]
+    }
+  },
+  "beatKindStyle": {
+    "page": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "recap": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.45,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.35,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      },
+      "post": [
+        {
+          "type": "lightSweep",
+          "params": {},
+          "enabled": true
+        }
+      ]
+    },
+    "repeat": {
+      "enter": {
+        "motion": {
+          "in": {
+            "duration": 0.3,
+            "delay": 0,
+            "ease": "easeOutCubic"
+          },
+          "out": {
+            "duration": 0.25,
+            "delay": 0,
+            "ease": "easeInCubic"
+          }
+        }
+      }
+    },
+    "emphasis": {
+      "hold": [
+        {
+          "type": "pulse",
+          "params": {
+            "amount": 0.06,
+            "bpm": 120
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "single": {}
+  },
+  "beats": {
+    "ox_001": [
+      {
+        "id": "ox_001:title",
+        "cueId": "ox_001",
+        "kind": "single",
+        "index": 0,
+        "start": 0,
+        "end": 6,
+        "text": "モーションFX 7種",
+        "lines": [
+          "モーションFX 7種"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_001:body",
+        "cueId": "ox_001",
+        "kind": "single",
+        "index": 1,
+        "start": 0,
+        "end": 6,
+        "text": "MOTION FX",
+        "lines": [
+          "MOTION FX"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_002": [
+      {
+        "id": "ox_002:title",
+        "cueId": "ox_002",
+        "kind": "single",
+        "index": 0,
+        "start": 6,
+        "end": 12,
+        "text": "2. 時間遅延 timeDelay · 文字ごと",
+        "lines": [
+          "2. 時間遅延 timeDelay · 文字ごと"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_002:body",
+        "cueId": "ox_002",
+        "kind": "single",
+        "index": 1,
+        "start": 6,
+        "end": 12,
+        "text": "遅れて追いかける",
+        "lines": [
+          "遅れて追いかける"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_003": [
+      {
+        "id": "ox_003:title",
+        "cueId": "ox_003",
+        "kind": "single",
+        "index": 0,
+        "start": 12,
+        "end": 18,
+        "text": "3. 時間遅延 timeDelay · 語ごと",
+        "lines": [
+          "3. 時間遅延 timeDelay · 語ごと"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_003:body",
+        "cueId": "ox_003",
+        "kind": "single",
+        "index": 1,
+        "start": 12,
+        "end": 18,
+        "text": "遅れて追いかける",
+        "lines": [
+          "遅れて追いかける"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_004": [
+      {
+        "id": "ox_004:title",
+        "cueId": "ox_004",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 24,
+        "text": "4. 時間遅延 timeDelay · 帯",
+        "lines": [
+          "4. 時間遅延 timeDelay · 帯"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_004:body",
+        "cueId": "ox_004",
+        "kind": "single",
+        "index": 1,
+        "start": 18,
+        "end": 24,
+        "text": "遅れて追いかける",
+        "lines": [
+          "遅れて追いかける"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_005": [
+      {
+        "id": "ox_005:title",
+        "cueId": "ox_005",
+        "kind": "single",
+        "index": 0,
+        "start": 24,
+        "end": 30,
+        "text": "5. カラーシフト colorShift · 距離・色相",
+        "lines": [
+          "5. カラーシフト colorShift · 距離・色相"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_005:body",
+        "cueId": "ox_005",
+        "kind": "single",
+        "index": 1,
+        "start": 24,
+        "end": 30,
+        "text": "動けば色が巡る",
+        "lines": [
+          "動けば色が巡る"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_006": [
+      {
+        "id": "ox_006:title",
+        "cueId": "ox_006",
+        "kind": "single",
+        "index": 0,
+        "start": 30,
+        "end": 36,
+        "text": "6. カラーシフト colorShift · 速度・勾配",
+        "lines": [
+          "6. カラーシフト colorShift · 速度・勾配"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_006:body",
+        "cueId": "ox_006",
+        "kind": "single",
+        "index": 1,
+        "start": 30,
+        "end": 36,
+        "text": "動けば色が巡る",
+        "lines": [
+          "動けば色が巡る"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_007": [
+      {
+        "id": "ox_007:title",
+        "cueId": "ox_007",
+        "kind": "single",
+        "index": 0,
+        "start": 36,
+        "end": 42,
+        "text": "7. フリッカー motionFlicker · ランダム",
+        "lines": [
+          "7. フリッカー motionFlicker · ランダム"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_007:body",
+        "cueId": "ox_007",
+        "kind": "single",
+        "index": 1,
+        "start": 36,
+        "end": 42,
+        "text": "動く間だけ瞬く",
+        "lines": [
+          "動く間だけ瞬く"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_008": [
+      {
+        "id": "ox_008:title",
+        "cueId": "ox_008",
+        "kind": "single",
+        "index": 0,
+        "start": 42,
+        "end": 48,
+        "text": "8. フリッカー motionFlicker · ストロボ",
+        "lines": [
+          "8. フリッカー motionFlicker · ストロボ"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_008:body",
+        "cueId": "ox_008",
+        "kind": "single",
+        "index": 1,
+        "start": 42,
+        "end": 48,
+        "text": "動く間だけ瞬く",
+        "lines": [
+          "動く間だけ瞬く"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_009": [
+      {
+        "id": "ox_009:title",
+        "cueId": "ox_009",
+        "kind": "single",
+        "index": 0,
+        "start": 48,
+        "end": 54,
+        "text": "9. エコー motionEcho · 残像",
+        "lines": [
+          "9. エコー motionEcho · 残像"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_009:body",
+        "cueId": "ox_009",
+        "kind": "single",
+        "index": 1,
+        "start": 48,
+        "end": 54,
+        "text": "過去の位置に影",
+        "lines": [
+          "過去の位置に影"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_010": [
+      {
+        "id": "ox_010:title",
+        "cueId": "ox_010",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 60,
+        "text": "10. エコー motionEcho · 加算",
+        "lines": [
+          "10. エコー motionEcho · 加算"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_010:body",
+        "cueId": "ox_010",
+        "kind": "single",
+        "index": 1,
+        "start": 54,
+        "end": 60,
+        "text": "過去の位置に影",
+        "lines": [
+          "過去の位置に影"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_011": [
+      {
+        "id": "ox_011:title",
+        "cueId": "ox_011",
+        "kind": "single",
+        "index": 0,
+        "start": 60,
+        "end": 66,
+        "text": "11. 塗りと線 strokeTrail · 線の影",
+        "lines": [
+          "11. 塗りと線 strokeTrail · 線の影"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_011:body",
+        "cueId": "ox_011",
+        "kind": "single",
+        "index": 1,
+        "start": 60,
+        "end": 66,
+        "text": "線だけがついてくる",
+        "lines": [
+          "線だけがついてくる"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_012": [
+      {
+        "id": "ox_012:title",
+        "cueId": "ox_012",
+        "kind": "single",
+        "index": 0,
+        "start": 66,
+        "end": 72,
+        "text": "12. 塗りと線 strokeTrail · 加算",
+        "lines": [
+          "12. 塗りと線 strokeTrail · 加算"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_012:body",
+        "cueId": "ox_012",
+        "kind": "single",
+        "index": 1,
+        "start": 66,
+        "end": 72,
+        "text": "線だけがついてくる",
+        "lines": [
+          "線だけがついてくる"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_013": [
+      {
+        "id": "ox_013:title",
+        "cueId": "ox_013",
+        "kind": "single",
+        "index": 0,
+        "start": 72,
+        "end": 78,
+        "text": "13. 時間置換 timeDisplacement · せん断",
+        "lines": [
+          "13. 時間置換 timeDisplacement · せん断"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_013:body",
+        "cueId": "ox_013",
+        "kind": "single",
+        "index": 1,
+        "start": 72,
+        "end": 78,
+        "text": "軸がずれてねじれる",
+        "lines": [
+          "軸がずれてねじれる"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_014": [
+      {
+        "id": "ox_014:title",
+        "cueId": "ox_014",
+        "kind": "single",
+        "index": 0,
+        "start": 78,
+        "end": 84,
+        "text": "14. 時間置換 timeDisplacement · 進行方向",
+        "lines": [
+          "14. 時間置換 timeDisplacement · 進行方向"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_014:body",
+        "cueId": "ox_014",
+        "kind": "single",
+        "index": 1,
+        "start": 78,
+        "end": 84,
+        "text": "軸がずれてねじれる",
+        "lines": [
+          "軸がずれてねじれる"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_015": [
+      {
+        "id": "ox_015:title",
+        "cueId": "ox_015",
+        "kind": "single",
+        "index": 0,
+        "start": 84,
+        "end": 90,
+        "text": "15. 時間置換 timeDisplacement · 行",
+        "lines": [
+          "15. 時間置換 timeDisplacement · 行"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_015:body",
+        "cueId": "ox_015",
+        "kind": "single",
+        "index": 1,
+        "start": 84,
+        "end": 90,
+        "text": "軸がずれてねじれる",
+        "lines": [
+          "軸がずれてねじれる"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_016": [
+      {
+        "id": "ox_016:title",
+        "cueId": "ox_016",
+        "kind": "single",
+        "index": 0,
+        "start": 90,
+        "end": 96,
+        "text": "16. ベンド motionBend · 自動",
+        "lines": [
+          "16. ベンド motionBend · 自動"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_016:body",
+        "cueId": "ox_016",
+        "kind": "single",
+        "index": 1,
+        "start": 90,
+        "end": 96,
+        "text": "先頭が引っ張るゴム",
+        "lines": [
+          "先頭が引っ張るゴム"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ],
+    "ox_017": [
+      {
+        "id": "ox_017:title",
+        "cueId": "ox_017",
+        "kind": "single",
+        "index": 0,
+        "start": 96,
+        "end": 102,
+        "text": "17. ベンド motionBend · 左固定",
+        "lines": [
+          "17. ベンド motionBend · 左固定"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      },
+      {
+        "id": "ox_017:body",
+        "cueId": "ox_017",
+        "kind": "single",
+        "index": 1,
+        "start": 96,
+        "end": 102,
+        "text": "先頭が引っ張るゴム",
+        "lines": [
+          "先頭が引っ張るゴム"
+        ],
+        "fontScale": 1,
+        "pinned": true
+      }
+    ]
+  },
+  "beatStyles": {
+    "ox_001:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_002:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_003:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_004:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_005:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_006:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_007:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_008:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_009:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_010:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_011:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_012:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_013:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_014:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_015:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_016:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    },
+    "ox_017:title": {
+      "location": {
+        "type": "upperThird",
+        "params": {}
+      },
+      "text": {
+        "size": 34
+      },
+      "color": {
+        "fill": {
+          "kind": "solid",
+          "value": "#e9edf8",
+          "alpha": 0.85
+        }
+      },
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "stagger": {
+            "each": 0.05
+          }
+        }
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "hold": []
+    }
+  },
+  "beatWarnings": {},
+  "orphanBeats": {},
+  "orphans": {},
+  "textFlow": {},
+  "overrides": {},
+  "keyframes": {},
+  "markers": [
+    {
+      "t": 0,
+      "label": "モーションFX 7種 (intro)"
+    },
+    {
+      "t": 6,
+      "label": "時間遅延 (timeDelay)"
+    },
+    {
+      "t": 24,
+      "label": "カラーシフト (colorShift)"
+    },
+    {
+      "t": 36,
+      "label": "フリッカー (motionFlicker)"
+    },
+    {
+      "t": 48,
+      "label": "エコー (motionEcho)"
+    },
+    {
+      "t": 60,
+      "label": "塗りと線 (strokeTrail)"
+    },
+    {
+      "t": 72,
+      "label": "時間置換 (timeDisplacement)"
+    },
+    {
+      "t": 90,
+      "label": "ベンド (motionBend)"
+    }
+  ],
+  "layers": [],
+  "tracks": [
+    {
+      "id": "fg",
+      "kind": "foreground",
+      "name": "前景"
+    },
+    {
+      "id": "sub1",
+      "kind": "subtitle",
+      "name": "字幕1"
+    },
+    {
+      "id": "fig",
+      "kind": "figure",
+      "name": "図形"
+    },
+    {
+      "id": "filler",
+      "kind": "filler",
+      "name": "フィラー"
+    },
+    {
+      "id": "mid",
+      "kind": "backdrop",
+      "name": "後景"
+    },
+    {
+      "id": "bg",
+      "kind": "background",
+      "name": "背景"
+    }
+  ],
+  "clips": [
+    {
+      "id": "clip_ox_intro",
+      "trackId": "bg",
+      "start": 0,
+      "end": 6,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0b0d14"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_timeDelay",
+      "trackId": "bg",
+      "start": 6,
+      "end": 24,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#0d1520"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_colorShift",
+      "trackId": "bg",
+      "start": 24,
+      "end": 36,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#1c0f22"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_motionFlicker",
+      "trackId": "bg",
+      "start": 36,
+      "end": 48,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#191910"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_motionEcho",
+      "trackId": "bg",
+      "start": 48,
+      "end": 60,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#220f14"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_strokeTrail",
+      "trackId": "bg",
+      "start": 60,
+      "end": 72,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#062024"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_timeDisplacement",
+      "trackId": "bg",
+      "start": 72,
+      "end": 90,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#101a10"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    },
+    {
+      "id": "clip_ox_motionBend",
+      "trackId": "bg",
+      "start": 90,
+      "end": 102,
+      "spec": {
+        "type": "solid",
+        "params": {
+          "color": "#201408"
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": null
+    }
+  ],
+  "fillers": {
+    "enabled": true,
+    "minGap": 1.5,
+    "margin": 0.25,
+    "byKind": {},
+    "longGap": {
+      "threshold": 8,
+      "spec": null
+    },
+    "clips": {}
+  },
+  "credits": {
+    "title": {
+      "source": "song",
+      "songId": null,
+      "text": ""
+    },
+    "artist": {
+      "source": "profile",
+      "text": "",
+      "showHandle": true
+    },
+    "extra": {
+      "text": ""
+    },
+    "template": "{title}\n{artist}",
+    "modes": {
+      "element": {
+        "enabled": true,
+        "at": "start",
+        "time": 0,
+        "duration": 4
+      },
+      "always": {
+        "enabled": false
+      },
+      "end": {
+        "enabled": true,
+        "duration": 5,
+        "style": "endCard",
+        "afterLastCue": true
+      }
+    },
+    "styles": {}
+  }
+}

@@ -399,6 +399,36 @@ SA.controls = (() => {
 
   // --- generic descriptor form -------------------------------------------------
 
+  // Nine-point origin picker (textenter2 §2.3): tl/t/tr/l/c/r/bl/b/br plus a
+  // baseline button. Used for pivotAnchor / scaleOriginAnchor.
+  function anchorGridControl(value, onChange) {
+    const wrap = document.createElement('div');
+    wrap.className = 'ctrl-anchor-grid';
+    const current = value || 'c';
+    const grid = document.createElement('div');
+    grid.className = 'ctrl-anchor-cells';
+    for (const key of ['tl', 't', 'tr', 'l', 'c', 'r', 'bl', 'b', 'br']) {
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = `btn btn-mini${key === current ? ' is-active' : ''}`;
+      cell.textContent = key === 'c' ? '＋' : '·';
+      cell.title = key;
+      cell.setAttribute('aria-label', key);
+      cell.addEventListener('click', () => onChange(key));
+      grid.appendChild(cell);
+    }
+    wrap.appendChild(grid);
+    const base = document.createElement('button');
+    base.type = 'button';
+    base.className = `btn btn-mini${current === 'baseline' ? ' is-active' : ''}`;
+    base.textContent = '―';
+    base.title = 'baseline';
+    base.setAttribute('aria-label', 'baseline');
+    base.addEventListener('click', () => onChange('baseline'));
+    wrap.appendChild(base);
+    return wrap;
+  }
+
   const CONTROL_FOR = {
     number: (param, value, onChange) => numberControl(param, value, onChange),
     int: (param, value, onChange) => numberControl(param, value, (next) => onChange(Math.round(next))),
@@ -429,6 +459,11 @@ SA.controls = (() => {
   }
 
   function paramControl(group, param, value, onChange, options) {
+    // textenter2 §2.3: the pivot anchor renders as a 3x3 point grid plus a
+    // baseline button instead of a dropdown, wherever it appears
+    if (param && (param.key === 'pivotAnchor' || param.key === 'scaleOriginAnchor') && param.kind === 'select') {
+      return anchorGridControl(value, onChange);
+    }
     const builder = CONTROL_FOR[param.kind] || CONTROL_FOR.text;
     return builder(param, value, onChange, options);
   }

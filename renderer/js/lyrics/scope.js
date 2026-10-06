@@ -331,5 +331,56 @@
     return !!(mask && mask[index]);
   }
 
-  return { scopeKey, scopeMask, maskFor, maskForText, codePointsOf, lineDataOf, isSkippable, isCovered };
+  // Full-split slices (textenter2 §4.6): partition the beat text into gapless,
+  // non-overlapping grapheme ranges for scoped enter entries. Offsets count
+  // raw letters (slices must run with skipSpaces:false to match). Whitespace
+  // joins the neighbouring word so no letter is left uncovered; `ranges` lets
+  // the caller pass custom [start, end) pairs instead (custom unit).
+  function splitSlices(text, unit, ranges) {
+    const chars = [];
+    for (const line of String(text == null ? '' : text).split(/\r\n|\r|\n/)) {
+      for (const char of Array.from(line)) chars.push(char);
+    }
+    if (Array.isArray(ranges) && ranges.length) {
+      const out = [];
+      for (const range of ranges) {
+        const start = Math.max(0, Math.min(chars.length, Math.floor(Number(range[0]) || 0)));
+        const end = Math.max(start, Math.min(chars.length, Math.floor(Number(range[1]) || 0)));
+        if (end > start) out.push({ offset: start, length: end - start });
+      }
+      return out;
+    }
+    if (!chars.length) return [];
+    if (unit !== 'word') return chars.map((_, index) => ({ offset: index, length: 1 }));
+    const out = [];
+    let i = 0;
+    while (i < chars.length) {
+      if (/\s/.test(chars[i])) {
+        // leading whitespace attaches to the word that follows it
+        let k = i;
+        while (k < chars.length && /\s/.test(chars[k])) k++;
+        if (k >= chars.length) {
+          if (out.length) out[out.length - 1].length = chars.length - out[out.length - 1].offset;
+          else out.push({ offset: 0, length: chars.length });
+          break;
+        }
+        let m = k;
+        while (m < chars.length && !/\s/.test(chars[m])) m++;
+        let e = m;
+        while (e < chars.length && /\s/.test(chars[e])) e++;
+        out.push({ offset: i, length: e - i });
+        i = e;
+      } else {
+        let j = i;
+        while (j < chars.length && !/\s/.test(chars[j])) j++;
+        let k = j;
+        while (k < chars.length && /\s/.test(chars[k])) k++;
+        out.push({ offset: i, length: k - i });
+        i = k;
+      }
+    }
+    return out;
+  }
+
+  return { scopeKey, scopeMask, maskFor, maskForText, codePointsOf, lineDataOf, isSkippable, isCovered, splitSlices };
 });

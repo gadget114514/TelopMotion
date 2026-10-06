@@ -2258,7 +2258,20 @@ SA.lyricsEngine = (() => {
       const features = analysis && SA.audioAnalysis ? SA.audioAnalysis.features(analysis) : null;
       const bpm = tempoBpm(features);
       const motion = SA.fx.withDefaults(style[motionKey], motionKey);
-      const bg = SA.textBg.evaluateBg(shape, motion, entries, variation, null, local, {
+      // textenter2 §4.5: a scoped motion for the same family (e.g. a split
+      // plateIn companion) drives the pass when it covers a letter
+      let passMotion = motion;
+      if (isBg && Array.isArray(style.scoped)) {
+        const scoped = style.scoped.find((entry) => entry && entry.enabled !== false && entry.group === 'bgMotion' && entry.type && entry.type !== 'follow');
+        if (scoped && SA.scope && typeof SA.scope.scopeMask === 'function') {
+          const mask = SA.scope.scopeMask(scene, scoped.scope || null);
+          if (mask && mask.some(Boolean)) {
+            const resolved = SA.fx.withDefaults({ type: scoped.type, params: scoped.params, enabled: true }, 'bgMotion');
+            if (resolved && resolved.type) passMotion = resolved;
+          }
+        }
+      }
+      const bg = SA.textBg.evaluateBg(shape, passMotion, entries, variation, null, local, {
         seed: (project.styleMode && project.styleMode.seed) || 12345,
         bpm,
         beatEnv: () => 0.5,
@@ -3054,7 +3067,7 @@ SA.lyricsEngine = (() => {
   // the vary key already writes, so no new draw path is needed: the background
   // fill pass tints each letter by `entry.color` (maskTint) and the shape quad
   // reads `entry.visible` / `entry.opacity`. Later entries win.
-  const SCOPED_BG = ['bgFill', 'bgShape'];
+  const SCOPED_BG = ['bgFill', 'bgShape', 'bgMotion'];
   function scopedBgEntries(style) {
     const list = Array.isArray(style && style.scoped) ? style.scoped : [];
     const out = [];

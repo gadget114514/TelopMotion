@@ -1175,6 +1175,17 @@
     }
   }
 
+  // the motion-reactive holds' own showcase: the seven objeffects, one
+  // section per type. The ids are language-independent, so no re-labelling
+  // is needed.
+  async function objfxShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/objfx-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   // the motion gallery's own showcase: 16 sequential parts, one cue per
   // motion preset (`style.motions`, the same entry the gallery writes). The
   // part ids are language-independent, so no re-labelling is needed (same
@@ -2220,6 +2231,7 @@
       letterFxShowcase: letterFxShowcaseProject,
       textShowcase: textShowcaseProject,
       shaderShowcase: shaderShowcaseProject,
+      objfxShowcase: objfxShowcaseProject,
       motionShowcase: motionShowcaseProject,
       motionShowcaseAll: motionShowcaseAllProject,
       saveProject,

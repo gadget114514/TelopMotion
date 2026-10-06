@@ -164,6 +164,8 @@ test('removeTrack removes the last subtitle track with its cues', () => {
 // --- palettes per scope ------------------------------------------------------
 
 globalThis.SA.color = require('../../renderer/js/color.js');
+globalThis.SA.fx = fx;
+globalThis.SA.scope = require('../../renderer/js/lyrics/scope.js');
 const OLD = ['#101018', '#202838', '#ffffff', '#ff0000', '#000000'];
 const NEW = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008'];
 
@@ -1170,4 +1172,38 @@ test('resetClipSegment drops the last own look and removes the segments', () => 
   assert.ok(store.state.project.clips.find((clip) => clip.id === 'bd1').segments[0].spec);
   store.commands.resetClipSegment('bd1', 0);
   assert.equal(store.state.project.clips.find((clip) => clip.id === 'bd1').segments, undefined);
+});
+
+test('splitEnter covers the beat gaplessly, unsplitEnter restores', () => {
+  store.load(fixture());
+  store.commands.splitEnter('c1', 'c1:page0', 'letter');
+  const bag = store.state.project.beatStyles['c1:page0'];
+  assert.ok(bag && Array.isArray(bag.scoped), 'scoped entries were written');
+  const enters = bag.scoped.filter((entry) => entry.group === 'enter');
+  // 'hello' is 5 letters: 5 gapless slices
+  assert.equal(enters.length, 5);
+  let cursor = 0;
+  for (const entry of enters) {
+    assert.equal(entry.scope.kind, 'slice');
+    assert.equal(entry.scope.offset, cursor);
+    assert.equal(entry.local, true);
+    assert.equal(entry.split, true);
+    assert.ok(entry.stagger && entry.stagger.each > 0, 'substring stagger');
+    cursor += entry.scope.length;
+  }
+  assert.equal(cursor, 5);
+  store.commands.unsplitEnter('c1', 'c1:page0');
+  const after = store.state.project.beatStyles['c1:page0'];
+  assert.ok(!after || !after.scoped || !after.scoped.some((entry) => entry && entry.split === true), 'split entries are gone');
+  store.undo();
+  const redone = store.state.project.beatStyles['c1:page0'];
+  assert.ok(redone.scoped.some((entry) => entry && entry.split === true), 'undo brings the split back');
+});
+
+test('splitEnter word unit groups words with their spaces', () => {
+  store.load(fixture());
+  store.commands.splitEnter('c1', 'c1:page0', 'word');
+  const enters = store.state.project.beatStyles['c1:page0'].scoped.filter((entry) => entry.group === 'enter');
+  assert.equal(enters.length, 1);
+  assert.equal(enters[0].scope.length, 5);
 });

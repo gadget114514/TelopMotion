@@ -1970,6 +1970,104 @@ SA.store = (() => {
         },
       });
     },
+    // textenter2 §4.6: split the beat text into gapless scoped enter entries
+    // (one per letter / word / custom range), each starting as a copy of the
+    // beat's own enter. Companion groups ride along with the same scope.
+    splitEnter(cueId, beatId, unit, ranges) {
+      const beat = findBeat(state.project, cueId, beatId);
+      if (!beat || !beat.text) return;
+      const scopeApi = (typeof SA !== 'undefined' && SA.scope) || null;
+      const slices = scopeApi && typeof scopeApi.splitSlices === 'function'
+        ? scopeApi.splitSlices(beat.text, unit === 'word' ? 'word' : 'letter', ranges)
+        : [{ offset: 0, length: Array.from(beat.text.replace(/\r\n|\r|\n/g, '')).length }];
+      if (!slices.length) return;
+      const doc = state.project;
+      const bag = ((doc.beatStyles || {})[beatId] || {});
+      const cueBag = ((doc.cueStyles || {})[cueId] || {});
+      const base = bag.enter || cueBag.enter || doc.style.enter || { type: 'fade', params: {} };
+      const baseMotion = clone(base.motion || { in: { duration: 0.5, delay: 0, ease: 'easeOutCubic' } });
+      const fxApi = (typeof SA !== 'undefined' && SA.fx) || null;
+      const companion = fxApi && typeof fxApi.companionOf === 'function' ? fxApi.companionOf('enter', base.type) : null;
+      const entries = [];
+      const postEntries = [];
+      for (const slice of slices) {
+        const scope = { kind: 'slice', anchor: 'text', from: 'start', offset: slice.offset, length: slice.length, skipSpaces: false };
+        entries.push({
+          group: 'enter',
+          type: base.type,
+          params: clone(base.params || {}),
+          scope: { ...scope },
+          local: true,
+          stagger: { order: 'ltr', each: 0.05, ease: 'linear' },
+          motion: clone(baseMotion),
+          drawOrder: 0,
+          split: true,
+        });
+        if (companion) {
+          for (const [cGroup, value] of Object.entries(companion)) {
+            if (cGroup === 'repeat') continue; // repeat has no scope support (§7)
+            const items = Array.isArray(value) ? value : [value];
+            for (const item of items) {
+              if (!item || !item.type) continue;
+              const params = clone(item.params || {});
+              if (cGroup === 'post') {
+                // shapeLayer scopes through its own span range (no scoped-post
+                // pass exists); rgbShift cannot be masked, so it stays out of
+                // the split and the cpu-side jitter carries the look
+                if (item.type !== 'shapeLayer') continue;
+                params.followText = 'span';
+                params.spanFrom = slice.offset;
+                params.spanTo = slice.offset + slice.length - 1;
+                postEntries.push({ group: 'post', type: item.type, params, enabled: true, split: true });
+                continue;
+              }
+              entries.push({
+                group: cGroup,
+                type: item.type,
+                params,
+                scope: { ...scope },
+                local: true,
+                motion: clone(baseMotion),
+                drawOrder: 0,
+                split: true,
+              });
+            }
+          }
+        }
+      }
+      dispatch({
+        label: 'split enter',
+        areas: ['style'],
+        do(project) {
+          project.beatStyles[beatId] = project.beatStyles[beatId] || {};
+          const bagNext = project.beatStyles[beatId];
+          const kept = Array.isArray(bagNext.scoped) ? bagNext.scoped.filter((entry) => !entry || entry.split !== true) : [];
+          bagNext.scoped = [...kept, ...clone(entries)];
+          if (postEntries.length) {
+            const post = Array.isArray(bagNext.post) ? bagNext.post.filter((entry) => !entry || entry.split !== true) : [];
+            bagNext.post = [...post, ...clone(postEntries)];
+          }
+        },
+      });
+    },
+    unsplitEnter(cueId, beatId) {
+      const beat = findBeat(state.project, cueId, beatId);
+      if (!beat) return;
+      const bag = (state.project.beatStyles || {})[beatId];
+      const hasScoped = bag && Array.isArray(bag.scoped) && bag.scoped.some((entry) => entry && entry.split === true);
+      const hasPost = bag && Array.isArray(bag.post) && bag.post.some((entry) => entry && entry.split === true);
+      if (!hasScoped && !hasPost) return;
+      dispatch({
+        label: 'unsplit enter',
+        areas: ['style'],
+        do(project) {
+          const target = project.beatStyles[beatId];
+          if (!target) return;
+          if (Array.isArray(target.scoped)) target.scoped = target.scoped.filter((entry) => !entry || entry.split !== true);
+          if (Array.isArray(target.post)) target.post = target.post.filter((entry) => !entry || entry.split !== true);
+        },
+      });
+    },
     mergeBeats(cueId, beatId) {
       const beat = findBeat(state.project, cueId, beatId);
       if (!beat) return;

@@ -12,6 +12,7 @@ require('../../renderer/js/lyrics/effects/hold.js');
 require('../../renderer/js/lyrics/effects/location.js');
 const motion = require('../../renderer/js/lyrics/motion.js');
 const random = require('../../renderer/js/lyrics/random.js');
+const scopeApi = require('../../renderer/js/lyrics/scope.js');
 
 const FRAME = { width: 1920, height: 1080 };
 const SIZE = 96;
@@ -284,8 +285,7 @@ test('scoped drawOrder lands on the letter state', () => {
   assert.equal(letters[0].drawOrder, 0);
 });
 
-test('weird origin: tame shares the pivot, weird separates it', () => {
-  const descriptor = fx.get('enter', 'twistIn');
+test('weird origin: tame shares the pivot, weird separates it', () => {  const descriptor = fx.get('enter', 'twistIn');
   assert.ok(descriptor.params.some((param) => param.key === 'pivot'), 'pivot param exists');
   // tame: shared origin, and no randomness is consumed
   let calls = 0;
@@ -304,4 +304,29 @@ test('weird origin: tame shares the pivot, weird separates it', () => {
   const plain = {};
   random.applyEnterOrigin(plain, fx.get('enter', 'fade'), () => 0, { weird: 1 });
   assert.deepEqual(plain, {});
+});
+
+test('splitSlices covers the text gaplessly', () => {
+  const letters = scopeApi.splitSlices('ABCDE', 'letter');
+  assert.deepEqual(letters, [
+    { offset: 0, length: 1 }, { offset: 1, length: 1 }, { offset: 2, length: 1 },
+    { offset: 3, length: 1 }, { offset: 4, length: 1 },
+  ]);
+  const words = scopeApi.splitSlices('hi you', 'word');
+  assert.deepEqual(words, [{ offset: 0, length: 3 }, { offset: 3, length: 3 }]);
+  const cjk = scopeApi.splitSlices('あいう', 'letter');
+  assert.equal(cjk.length, 3);
+  // every letter is covered exactly once, in order
+  const covers = [[letters, 5], [words, 6]];
+  for (const [slices, total] of covers) {
+    let cursor = 0;
+    for (const slice of slices) {
+      assert.equal(slice.offset, cursor);
+      cursor += slice.length;
+    }
+    assert.equal(cursor, total);
+  }
+  const custom = scopeApi.splitSlices('ABCDE', 'letter', [[1, 3]]);
+  assert.deepEqual(custom, [{ offset: 1, length: 2 }]);
+  assert.deepEqual(scopeApi.splitSlices('', 'letter'), []);
 });

@@ -1438,6 +1438,25 @@ body {
   gap: 4px;
 }
 
+/* textenter2 origin picker: 3x3 point grid plus a baseline button */
+.ctrl-anchor-grid {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ctrl-anchor-cells {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.ctrl-anchor-cells .btn-mini {
+  padding: 0 5px;
+  line-height: 1.5;
+}
+
 .ctrl-label {
   color: var(--muted);
   font-size: 12px;
