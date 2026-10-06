@@ -2,7 +2,7 @@
 
 > 日本語版: [README.ja.md](README.ja.md) ｜ English (this file)
 
-A desktop app for **lyric videos**, with a Suno achievement card generator as a secondary mode. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. **Suno profile JSON is optional** — start a project without any data, or open *File → TelopMotion (static image)…* for the achievement showcase.
+A desktop app for **lyric videos**. The app opens in the **Studio**: import lyrics (SRT, LRC or JSON), restructure them into beats, render vector text with WebGL2 shaders, animate every group, and export a video. **Suno profile JSON is optional** — start a project without any data, or open *File → TelopMotion (static image)…* for the achievement showcase.
 
 ![Electron](https://img.shields.io/badge/Electron-44-47848f) ![Platform](https://img.shields.io/badge/platform-Windows-0078d4) ![License](https://img.shields.io/badge/license-MIT-green) ![Tests](https://img.shields.io/badge/tests-1025%20passed-brightgreen)
 
