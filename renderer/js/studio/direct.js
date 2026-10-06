@@ -2483,14 +2483,21 @@
     });
   }
 
-  function backdropClips(projectDoc, ctx) {
+  function backdropClips(projectDoc, ctx, totalArg) {
     const midTrack = trackIdFor(projectDoc, 'backdrop');
     if (!midTrack) return;
     const cues = (projectDoc.script && projectDoc.script.cues) || [];
     // a weird song always gets its mid layer; the density axis still gates the
     // classic draw (w=0 unchanged)
     if (!(ctx.wb > 0 || ctx.axes.density > 0.45)) return;
-    const total = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const cueEnd = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    // The song length the user wrote (0 = end with the last cue). A length past
+    // the last cue is filled: the last backdrop clip spans to it, and the
+    // filler gaps cover the outro. Without a length the song ends at the lyrics.
+    const songLen = SA.project && typeof SA.project.songLengthOf === 'function'
+      ? SA.project.songLengthOf(projectDoc)
+      : Number(projectDoc && projectDoc.song && projectDoc.song.length) || 0;
+    const total = Math.max(cueEnd, Number(totalArg) || 0, Number(songLen) || 0);
     let avoid = null;
     cues.forEach((cue, index) => {
       // run draws the specs before the readability pass (so the plane colours
@@ -3372,7 +3379,7 @@
     );
     projectDoc.clips = (projectDoc.clips || []).filter((clip) => !(managed.has(clip.trackId) && clip.auto));
     backgroundClip(projectDoc, ctx, total);
-    backdropClips(projectDoc, ctx);
+    backdropClips(projectDoc, ctx, total);
     fillerClips(projectDoc, ctx, total);
     figureClips(projectDoc, ctx);
   }

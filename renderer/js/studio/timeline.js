@@ -2266,7 +2266,7 @@ SA.timeline = (() => {
         id: `cue_${Math.random().toString(16).slice(2, 10)}`,
         start: time,
         end: time + 2.8,
-        text: t('studio.timeline.newCueText'),
+        text: '',
         spans: [],
         fx: {},
         meta: { kind: 'custom' },
@@ -2934,7 +2934,7 @@ SA.timeline = (() => {
       spec: {
         type: 'textAnim',
         params: {
-          text: t('studio.timeline.newText'),
+          text: '',
           style: {
             text: { fontId: textStyle.fontId || 'NotoSans-Regular', size: Math.max(48, Math.round((textStyle.size || 96) * 1.1)), lineHeight: 1.2, maxWidth: 0.9, align: 'center' },
             location: { type: 'center', params: {} },

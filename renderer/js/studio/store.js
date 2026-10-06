@@ -1649,8 +1649,8 @@ SA.store = (() => {
             index,
             start,
             end,
-            text: 'New line',
-            lines: ['New line'],
+            text: '',
+            lines: [''],
             fontScale: 1,
             pinned: true,
           });
@@ -2974,9 +2974,45 @@ SA.store = (() => {
           };
           if (SA.project.bpmOf(projectDoc) === before.bpm && SA.project.songLengthOf(projectDoc) === before.length) return;
           if (SA.project.bpmOf(projectDoc) !== before.bpm) retimeBeats(projectDoc);
+          // The song length the user wrote (0 = end with the last cue). A length
+          // past the last cue is filled with fillers/backdrop up to it; without
+          // one the song ends at the lyrics. Auto clips follow the new total so
+          // a stale length never leaves the backdrop longer than the song.
+          const cues = (projectDoc.script && projectDoc.script.cues) || [];
+          const cueEnd = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+          const newTotal = Math.max(cueEnd, SA.project.songLengthOf(projectDoc));
+          const kindOf = (trackId) => (SA.project.trackKindOf ? SA.project.trackKindOf(projectDoc, trackId) : null);
+          for (const clip of projectDoc.clips || []) {
+            if (!clip || !clip.auto) continue;
+            const kind = kindOf(clip.trackId);
+            if (kind === 'background') {
+              if (newTotal > 0) clip.end = newTotal;
+            }
+          }
+          if (SA.project.songLengthOf(projectDoc) !== before.length) {
+            const autoMid = (projectDoc.clips || [])
+              .filter((clip) => clip && clip.auto && kindOf(clip.trackId) === 'backdrop')
+              .sort((a, b) => (Number(a.start) || 0) - (Number(b.start) || 0));
+            // clips fully past the new end go away; the one straddling it is
+            // trimmed, and the last one spans out to a longer song length.
+            projectDoc.clips = (projectDoc.clips || []).filter((clip) => {
+              if (!clip || !clip.auto || kindOf(clip.trackId) !== 'backdrop') return true;
+              return (Number(clip.start) || 0) < newTotal - 1e-4;
+            });
+            for (const clip of projectDoc.clips || []) {
+              if (!clip || !clip.auto || kindOf(clip.trackId) !== 'backdrop') continue;
+              if (Number(clip.end) > newTotal) clip.end = Math.max((Number(clip.start) || 0) + 0.05, newTotal);
+            }
+            const remaining = (projectDoc.clips || [])
+              .filter((clip) => clip && clip.auto && kindOf(clip.trackId) === 'backdrop')
+              .sort((a, b) => (Number(a.start) || 0) - (Number(b.start) || 0));
+            const last = remaining[remaining.length - 1];
+            if (last && newTotal > 0 && Number(last.end) < newTotal) last.end = newTotal;
+            void autoMid;
+          }
           // the automatic direction divides its own gaps; those clips are the
           // ones the new tempo re-cuts (hand-made filler clips stay as they are)
-          const auto = (projectDoc.clips || []).filter((clip) => clip.auto && SA.project.trackKindOf(projectDoc, clip.trackId) === 'filler');
+          const auto = (projectDoc.clips || []).filter((clip) => clip.auto && kindOf(clip.trackId) === 'filler');
           if (!auto.length) return;
           projectDoc.clips = (projectDoc.clips || []).filter((clip) => !auto.includes(clip));
           for (const gap of fillerGaps(projectDoc)) projectDoc.clips.push(fillerClip(projectDoc, gap, true));
