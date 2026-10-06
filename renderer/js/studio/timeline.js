@@ -3138,8 +3138,8 @@ SA.timeline = (() => {
     if (el.fit) el.fit.addEventListener('click', fit);
     if (el.theme) el.theme.addEventListener('click', () => SA.themes.dialog());
     if (el.addTextTrack) {
-      // the button adds a subtitle track cues can be typed on
-      el.addTextTrack.title = t('studio.timeline.addTextTrackHint');
+      // the button adds a subtitle track cues can be typed on (tooltip comes
+      // from data-i18n-title="studio.timeline.addTextTrackHint" in studio.html)
       el.addTextTrack.addEventListener('click', () => addSubtitleTrack());
     }
     if (el.addFigureTrack) {

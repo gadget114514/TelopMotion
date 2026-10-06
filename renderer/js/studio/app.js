@@ -209,7 +209,10 @@
   function applyStaticText() {
     document.documentElement.lang = i18n.lang();
     for (const node of document.querySelectorAll('[data-i18n]')) node.textContent = t(node.dataset.i18n);
-    for (const node of document.querySelectorAll('[data-i18n-title]')) node.title = t(node.dataset.i18nTitle);
+    for (const node of document.querySelectorAll('[data-i18n-title]')) {
+      node.title = t(node.dataset.i18nTitle);
+      if (node instanceof HTMLElement && (node.tagName === 'BUTTON' || node.hasAttribute('aria-label'))) node.setAttribute('aria-label', node.title);
+    }
     document.title = t('studio.title');
   }
 

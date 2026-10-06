@@ -411,8 +411,23 @@ body {
 .timeline-head {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
+}
+
+.timeline-head .btn-icon {
+  min-width: 28px;
+  padding: 3px 6px;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.timeline-sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 2px 4px;
+  background: var(--line);
 }
 
 .btn-mini {
@@ -427,10 +442,11 @@ body {
   gap: 6px;
   color: var(--muted);
   font-size: 12px;
+  margin-left: auto;
 }
 
 .timeline-zoom input[type='range'] {
-  width: 160px;
+  width: 110px;
 }
 
 .timeline-prop {
