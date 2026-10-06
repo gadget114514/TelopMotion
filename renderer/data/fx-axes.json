@@ -25,7 +25,7 @@
   "source": "moods.TRAITS + smartness.RATINGS + scripts/fx-axes-overrides.json",
   "method": "energy/softness/weird は既存の性格表から、smartness は評価表から自動取り込み。speed/density/brightness/fear は手書き上書き、無い型はタグ・動きの不規則さ（9フレーム標本）・暗色塗り・遅い脈動から推定。各軸は 4bit に量子化して 1 個の 32bit 整数へパック。",
   "counts": {
-    "types": 525,
+    "types": 539,
     "groups": 25,
     "overridden": 692
   },
@@ -213,6 +213,13 @@
       "quiver": 1753778313,
       "jellyFollow": 1485342855,
       "beatBounce": 1216907401,
+      "timeDelay": 680036488,
+      "motionFlicker": 2290649222,
+      "colorShift": 680036488,
+      "timeDisplacement": 680036488,
+      "motionBend": 680036488,
+      "motionEcho": 680032392,
+      "strokeTrail": 680036488,
       "warpArc": 2290649219,
       "warpArch": 2290649219,
       "warpBulge": 2290649219,
@@ -241,7 +248,14 @@
       "trackBreath": 965249155,
       "trackBeat": 881363081,
       "stretchBreathX": 1216907400,
-      "stretchBeatY": 680036488
+      "stretchBeatY": 680036488,
+      "lagTail": 680036488,
+      "chromaWalk": 680036488,
+      "speedStrobe": 2022213766,
+      "rainbowEcho": 680229000,
+      "neonTrail": 680233096,
+      "shearDrag": 680036488,
+      "rubberLead": 680036488
     },
     "location": {
       "center": 688425832,

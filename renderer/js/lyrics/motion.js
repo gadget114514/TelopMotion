@@ -995,9 +995,11 @@
             : blockBottom + num(cfg.floor, 0) * em;
       const maxT = Math.max(0.01, duration + exitDef.out.duration + 0.5);
       const needAccel = num(cfg.inertia, 0) > 0;
+      const needSamples = needAccel || !!cfg.lead;
       // the rigid base only has to be re-sampled per step when its acceleration
-      // feeds the lattice; otherwise the current frame's base is enough
-      const staticBase = needAccel ? null : { x: rigid.state.x, y: rigid.state.y, rot: rigid.state.rot };
+      // feeds the lattice (or the lead direction follows its velocity);
+      // otherwise the current frame's base is enough
+      const staticBase = needSamples ? null : { x: rigid.state.x, y: rigid.state.y, rot: rigid.state.rot };
       const samples = [];
       let lastStep = -1;
       const sampleAt = (simT, sim) => {
@@ -1020,18 +1022,32 @@
         let ax = 0;
         let ay = 0;
         let arot = 0;
-        if (needAccel) {
+        let vx = 0;
+        let vy = 0;
+        let vrot = 0;
+        if (needSamples) {
           const s0 = samples.find((sample) => Math.abs(sample.t - (simT - PHYSICS_DT)) < 1e-6);
-          const s1 = samples.find((sample) => Math.abs(sample.t - (simT - PHYSICS_DT * 2)) < 1e-6);
-          if (s0 && s1) {
-            const dt2 = PHYSICS_DT * PHYSICS_DT;
-            ax = (current.x - 2 * s0.x + s1.x) / dt2;
-            ay = (current.y - 2 * s0.y + s1.y) / dt2;
-            arot = (current.rot - 2 * s0.rot + s1.rot) / dt2;
+          if (needAccel) {
+            const s1 = samples.find((sample) => Math.abs(sample.t - (simT - PHYSICS_DT * 2)) < 1e-6);
+            if (s0 && s1) {
+              const dt2 = PHYSICS_DT * PHYSICS_DT;
+              ax = (current.x - 2 * s0.x + s1.x) / dt2;
+              ay = (current.y - 2 * s0.y + s1.y) / dt2;
+              arot = (current.rot - 2 * s0.rot + s1.rot) / dt2;
+            }
+          }
+          if (s0) {
+            vx = (current.x - s0.x) / PHYSICS_DT;
+            vy = (current.y - s0.y) / PHYSICS_DT;
+            vrot = (current.rot - s0.rot) / PHYSICS_DT;
           }
         }
         const drive = {
           accel: { x: ax, y: ay, rot: arot },
+          // lead velocity for motionBend (normalized by the letter half size;
+          // velGate in shortSide units decides when the direction is trusted)
+          vel: { x: vx / halfW, y: vy / halfH, rot: vrot },
+          velGate: Math.hypot(vx, vy) / Math.max(1, shortSide),
           unit: { x: halfW, y: halfH },
           gravity: num(cfg.gravity, 0),
           kick: onsets && cfg.beatKick ? physics.kickAt(onsets, simT, PHYSICS_DT) * num(cfg.beatKick, 0) : 0,
@@ -1298,6 +1314,42 @@
     }
 
     const objfxSelCache = new Map();
+
+    // Letter half extents for the grid effects (advance/size, else the scene
+    // local box, else a fixed fallback). The grid divides by these, so they
+    // must never be 0.
+    function objfxHalf(index) {
+      const letter = letters[index] || {};
+      const adv = Number(letter.advance);
+      const size = Number(letter.size);
+      const local = letter.local || {};
+      const w = Number.isFinite(adv) && adv > 0 ? adv : Number(local.w) > 0 ? Number(local.w) : 48;
+      const h = Number.isFinite(size) && size > 0 ? size : Number(local.h) > 0 ? Number(local.h) : 48;
+      return { hx: Math.max(1, w / 2), hy: Math.max(1, h / 2) };
+    }
+
+    // Grid composition (§5-1): bend (physics) first, then displacement, then
+    // region delay — added onto a copy (the physics lattice is cache-shared),
+    // clamped once per node to the stretch limit (0.8 until the O5 maxStretch).
+    function objfxLatticeFor(state) {
+      if (state.softLattice && state.softLattice.length >= 50) {
+        return Float32Array.from(state.softLattice);
+      }
+      return new Float32Array(50);
+    }
+
+    function objfxClampLattice(grid) {
+      for (let k = 0; k < 25; k += 1) {
+        const x = grid[k * 2];
+        const y = grid[k * 2 + 1];
+        const len = Math.hypot(x, y);
+        if (len > 0.8) {
+          grid[k * 2] = (x / len) * 0.8;
+          grid[k * 2 + 1] = (y / len) * 0.8;
+        }
+      }
+    }
+
     function objfxSelection(cfg) {
       const key = `${cfg.kind}|${cfg.select}|${JSON.stringify(cfg.selParams || {})}`;
       let hit = objfxSelCache.get(key);
@@ -1320,8 +1372,70 @@
       return hit;
     }
 
-    // Application order (§3.3): timeDelay, then flicker. Skipped entirely
-    // when options.objfx === false (legibility sampling, echo re-evaluation).
+    // Base fill colour for the hueCycle palette (§4.2): resolved from the
+    // beat style without the GPU (solid / first gradient stop / palette slot /
+    // badge category tint, falling back to white).
+    function objfxBaseColor() {
+      const color = (style && style.color) || {};
+      const fill = color.fill;
+      const parsed = (value) => (objfxCore && typeof value === 'string' ? objfxCore.hexToRgb(value) : null);
+      if (fill && typeof fill === 'object') {
+        if (fill.kind === 'gradient' && Array.isArray(fill.stops) && fill.stops.length) {
+          const stop = fill.stops[0] || {};
+          return parsed(stop.color) || [1, 1, 1];
+        }
+        if (fill.kind === 'palette' && project && Array.isArray(project.palettes)) {
+          const palette = project.palettes.find((entry) => entry && entry.id === fill.paletteId) || project.palettes[0];
+          const slot = palette && Array.isArray(palette.colors) ? palette.colors[fill.index || 0] : null;
+          const hex = typeof slot === 'string' ? slot : slot && slot.color;
+          return parsed(hex) || [1, 1, 1];
+        }
+        if (fill.kind === 'category' && project && project.categoryColors) {
+          const cue = project.script && Array.isArray(project.script.cues)
+            ? project.script.cues.find((entry) => entry && entry.id === (letters[0] && letters[0].cueId))
+            : null;
+          const category = cue && cue.meta && cue.meta.category;
+          const tint = category && project.categoryColors[category] ? project.categoryColors[category].tint : null;
+          return parsed(tint) || [1, 1, 1];
+        }
+        if (fill.kind === 'solid' || typeof fill.value === 'string') {
+          return parsed(fill.value) || [1, 1, 1];
+        }
+      }
+      if (typeof fill === 'string') return parsed(fill) || [1, 1, 1];
+      return [1, 1, 1];
+    }
+
+    function objfxPaletteStops() {
+      if (!project || !Array.isArray(project.palettes)) return [];
+      const list = [];
+      for (const palette of project.palettes) {
+        if (!palette || !Array.isArray(palette.colors)) continue;
+        for (const slot of palette.colors) {
+          const hex = typeof slot === 'string' ? slot : slot && slot.color;
+          const rgb = objfxCore && typeof hex === 'string' ? objfxCore.hexToRgb(hex) : null;
+          if (rgb) list.push(rgb);
+        }
+        if (list.length) break;
+      }
+      return list;
+    }
+
+    function objfxCheckpoints() {
+      if (!scene.__objfxDist) scene.__objfxDist = new Map();
+      const key = beat.id || scene.beatId || 'beat';
+      let map = scene.__objfxDist.get(key);
+      if (!map) {
+        map = new Map();
+        if (scene.__objfxDist.size > 8) scene.__objfxDist.clear();
+        scene.__objfxDist.set(key, map);
+      }
+      return map;
+    }
+
+    // Application order (§3.3): timeDelay, then colorShift, then flicker.
+    // Skipped entirely when options.objfx === false (legibility sampling,
+    // echo re-evaluation).
     function applyObjfx(index, rigid, state) {
       if (!objfxCore || options.objfx === false) return;
       const beatLocal = t - beat.start;
@@ -1333,20 +1447,78 @@
         if (cfg) items.push(cfg);
       }
       if (!items.length) return;
-      items.sort((a, b) => (a.kind === 'timeDelay' ? 0 : 1) - (b.kind === 'timeDelay' ? 0 : 1));
+      const order = { timeDelay: 0, timeDisplacement: 1, colorShift: 2, motionFlicker: 3 };
+      items.sort((a, b) => (order[a.kind] == null ? 9 : order[a.kind]) - (order[b.kind] == null ? 9 : order[b.kind]));
+      let objfxGrid = null;
+      let objfxGridTouched = false;
+      const needGrid = () => {
+        if (!objfxGrid) objfxGrid = objfxLatticeFor(state);
+        return objfxGrid;
+      };
       for (const cfg of items) {
         if (cfg.kind === 'timeDelay') {
-          const sel = objfxSelection(cfg);
+          const timeSel = objfxSelection(cfg);
+          if ((cfg.unit || 'letter') === 'region') {
+            const w = timeSel.weights[index] || 0;
+            if (!(w > 0)) continue;
+            let graded = w;
+            if (cfg.selParams && cfg.selParams.grade && timeSel.picked.length > 1) {
+              graded = w * (timeSel.picked.indexOf(index) / (timeSel.picked.length - 1));
+              if (!(graded > 0)) continue;
+            }
+            const lag = Math.max(0, cfg.lag || 0);
+            if (!(lag > 1e-6)) continue;
+            const half = objfxHalf(index);
+            if (objfxCore.displaceRegion(needGrid(), index, beatLocal, {
+              lag, band: cfg.band, bandSize: cfg.bandSize, feather: cfg.feather,
+            }, { transformAt, hx: half.hx, hy: half.hy, weight: graded })) {
+              objfxGridTouched = true;
+            }
+            continue;
+          }
           const rep = objfxUnitFirst(index, cfg.unit || 'letter');
-          let w = sel.weights[rep] || 0;
+          let w = timeSel.weights[rep] || 0;
           if (w <= 0) continue;
-          if (cfg.selParams && cfg.selParams.grade && sel.picked.length > 1) {
-            w *= sel.picked.indexOf(rep) / (sel.picked.length - 1);
+          if (cfg.selParams && cfg.selParams.grade && timeSel.picked.length > 1) {
+            w *= timeSel.picked.indexOf(rep) / (timeSel.picked.length - 1);
             if (!(w > 0)) continue;
           }
           const lag = Math.max(0, cfg.lag || 0) * w;
           if (!(lag > 1e-6)) continue;
           objfxCore.applyTimeDelay(state, index, beatLocal, { lag, props: cfg.props }, { transformAt });
+        } else if (cfg.kind === 'timeDisplacement') {
+          const dispSel = objfxSelection(cfg);
+          const w = dispSel.weights[index] || 0;
+          if (!(w > 0)) continue;
+          let graded = w;
+          if (cfg.selParams && cfg.selParams.grade && dispSel.picked.length > 1) {
+            graded = w * (dispSel.picked.indexOf(index) / (dispSel.picked.length - 1));
+            if (!(graded > 0)) continue;
+          }
+          if ((cfg.unit || 'letter') === 'block') {
+            // block position from the layout (formation) point, not the live
+            // state: drift and holds must not shift the lag map itself
+            const base = rigid.base || { x: 0, y: 0 };
+            const bx = blockHalf && blockHalf.x ? base.x / blockHalf.x : 0;
+            const by = blockHalf && blockHalf.y ? base.y / blockHalf.y : 0;
+            const u = Math.max(-1, Math.min(1, bx));
+            const v = Math.max(-1, Math.min(1, by));
+            let s = objfxCore.lagMapValue(cfg.map, u, v, null, cfg.noiseScale, cfg.seed);
+            if (cfg.invert) s = 1 - s;
+            const lag = Math.max(0, cfg.maxLag || 0) * s * graded;
+            if (!(lag > 1e-6)) continue;
+            objfxCore.applyTimeDelay(state, index, beatLocal, { lag, props: 'pos' }, { transformAt });
+            continue;
+          }
+          const half = objfxHalf(index);
+          if (objfxCore.displaceGrid(needGrid(), index, beatLocal, {
+            map: cfg.map, maxLag: cfg.maxLag, invert: cfg.invert,
+            noiseScale: cfg.noiseScale, seed: cfg.seed, amount: cfg.amount,
+          }, {
+            transformAt, hx: half.hx, hy: half.hy, weight: graded,
+          })) {
+            objfxGridTouched = true;
+          }
         } else if (cfg.kind === 'motionFlicker') {
           const sel = objfxSelection(cfg);
           let w = sel.weights[index] || 0;
@@ -1370,7 +1542,41 @@
               N,
               helpers,
             });
+        } else if (cfg.kind === 'colorShift') {
+          const sel = objfxSelection(cfg);
+          let w = sel.weights[index] || 0;
+          if (!(w > 0)) continue;
+          if (cfg.selParams && cfg.selParams.grade && sel.picked.length > 1) {
+            w *= sel.picked.indexOf(index) / (sel.picked.length - 1);
+            if (!(w > 0)) continue;
+          }
+          const helpers = {
+            unitRank: objfxUnitRank,
+            hash01: objfxHash,
+            inScope: () => true,
+            rank01: (k) => (N > 1 ? k / (N - 1) : 0),
+          };
+          objfxCore.applyColorShift(state, index, beatLocal,
+            { ...cfg, select: 'scope', mix: (cfg.mix == null ? 0.85 : cfg.mix) * w }, {
+              transformAt,
+              velocitySrc: transformAt,
+              shortSide,
+              N,
+              helpers,
+              maxT: duration,
+              progress: rigid.pe,
+              colorMix: state.colorMix || 0,
+              base: objfxBaseColor(),
+              stops: objfxPaletteStops(),
+              colorA: objfxCore.hexToRgb(cfg.colorA),
+              colorB: objfxCore.hexToRgb(cfg.colorB),
+              checkpoints: objfxCheckpoints(),
+            });
         }
+      }
+      if (objfxGridTouched && objfxGrid) {
+        objfxClampLattice(objfxGrid);
+        state.softLattice = objfxGrid;
       }
     }
 
@@ -1450,11 +1656,24 @@
       states._reverseDraw = true;
     }
 
+    // objeffects §4.4/4.5: past-position shadow trails for the engine to draw.
+    // Beat-level holds only (scoped trail holds ride the letter states above).
+    const motionTrails = [];
+    for (const instance of holds || []) {
+      if (!instance || instance.enabled === false) continue;
+      const entry = fx.get('hold', instance.type);
+      if (!entry || typeof entry.motionFx !== 'function') continue;
+      const cfg = entry.motionFx(instance.params || {});
+      if (cfg && (cfg.kind === 'motionEcho' || cfg.kind === 'strokeTrail')) {
+        motionTrails.push({ type: cfg.kind === 'motionEcho' ? 'echo' : 'stroke', cfg });
+      }
+    }
+
     return {
       active: true,
       envelopes,
       letters: states,
-      meta: { beatId: beat.id, kind: beat.kind, anchor: { x: anchorX, y: anchorY } },
+      meta: { beatId: beat.id, kind: beat.kind, anchor: { x: anchorX, y: anchorY }, trails: motionTrails },
     };
   }
 

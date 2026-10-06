@@ -170,12 +170,6 @@
     state.opacity = Math.max(minOpacity * base, base * (1 - k));
   }
 
-    const k = depth * amount * sel * w;
-    const base = state.opacity == null ? 1 : state.opacity;
-    const minOpacity = Math.max(0, Math.min(0.8, cfg.minOpacity == null ? 0.2 : cfg.minOpacity));
-    state.opacity = Math.max(minOpacity * base, base * (1 - k));
-  }
-
   // --- colorShift (§4.2) ------------------------------------------------------
 
   function hexToRgb(hex) {
@@ -297,22 +291,233 @@
     if (!(sel > 0)) return;
     const cycles = cfg.cycles == null ? 1 : cfg.cycles;
     let phi;
+    let travelled = 0;
     if (cfg.driver === 'speed') {
       const v = velocityAt(ctx.velocitySrc || ctx.transformAt, i, t, cfg.h, 0, cfg.maxT);
       phi = speedNorm(v, ctx.shortSide) * cycles;
     } else if (cfg.driver === 'progress') {
       phi = (ctx.progress == null ? 0 : ctx.progress) * cycles;
     } else {
-      phi = distanceAt(ctx.velocitySrc || ctx.transformAt, i, t, ctx.checkpoints, cfg.maxT, ctx.shortSide) * cycles;
+      travelled = distanceAt(ctx.velocitySrc || ctx.transformAt, i, t, ctx.checkpoints, cfg.maxT, ctx.shortSide);
+      phi = travelled * cycles;
     }
     const rank = ctx.helpers && ctx.helpers.rank01 ? ctx.helpers.rank01(i) : (ctx.N > 1 ? i / (ctx.N - 1) : 0);
     const phiI = phi + (cfg.phase || 0) + (cfg.spread == null ? 0.3 : cfg.spread) * rank;
     const amount = motionAmount(ctx.velocitySrc || ctx.transformAt, i, t, cfg, ctx.shortSide);
     let m = mix * Math.max(amount, cfg.driver === 'distance' ? 1 : 0) * sel;
+    // a letter that never travelled stays untinted, even on the distance
+    // driver (the still-beat invariant); a touch of travel opens the gate
+    if (cfg.driver === 'distance') m *= smoothstep(0, 0.01, travelled);
     if (ctx.colorMix > 0) m *= 0.5; // keep keyword accents readable
     if (!(m > 0.001)) return;
     const rgb = tintFor(cfg.palette || 'hueCycle', phiI, ctx.base, ctx.stops, ctx.colorA, ctx.colorB);
     state.tint = { r: rgb[0], g: rgb[1], b: rgb[2], m: Math.min(1, m) };
+  }
+
+  // --- timeDisplacement (§4.6) --------------------------------------------------
+
+  function hash2(x, y, seed) {
+    const value = Math.sin(x * 127.1 + y * 311.7 + seed * 74.7) * 43758.5453;
+    return value - Math.floor(value);
+  }
+
+  function valueNoise2(u, v, scale, seed) {
+    const x = (u * 0.5 + 0.5) * scale;
+    const y = (v * 0.5 + 0.5) * scale;
+    const x0 = Math.floor(x);
+    const y0 = Math.floor(y);
+    const fx = x - x0;
+    const fy = y - y0;
+    const sx = fx * fx * (3 - 2 * fx);
+    const sy = fy * fy * (3 - 2 * fy);
+    const a = hash2(x0, y0, seed);
+    const b = hash2(x0 + 1, y0, seed);
+    const c = hash2(x0, y0 + 1, seed);
+    const d = hash2(x0 + 1, y0 + 1, seed);
+    return a + (b - a) * sx + (c - a) * sy + (a - b - c + d) * sx * sy;
+  }
+
+  // Lag map s(u, v) in 0..1 (§4.6). velLocal is the screen velocity rotated
+  // into the letter frame (unit vector or null when still).
+  function lagMapValue(map, u, v, velLocal, noiseScale, seed) {
+    if (map === 'linearY') return (v + 1) / 2;
+    if (map === 'radial') return Math.hypot(u, v) / Math.SQRT2;
+    if (map === 'noise') return valueNoise2(u, v, noiseScale == null ? 1.5 : noiseScale, seed == null ? 3 : seed);
+    if (map === 'alongVelocity') {
+      if (!velLocal) return 0.5;
+      return (1 - (u * velLocal.x + v * velLocal.y)) / 2;
+    }
+    return (u + 1) / 2; // linearX
+  }
+
+  function rotPoint(x, y, deg) {
+    const r = (deg * Math.PI) / 180;
+    const cos = Math.cos(r);
+    const sin = Math.sin(r);
+    return { x: x * cos - y * sin, y: x * sin + y * cos };
+  }
+
+  // Letter-unit grid displacement (§4.6): 25 nodes, lag quantized to 5 steps
+  // (5 transformAt calls, linear blend between neighbours). Writes normalized
+  // offsets into `grid` (Float32Array(50), += amount * delta). The centre node
+  // is subtracted at the end, so a pure translation reads as a shear about a
+  // stationary centre (§7: 平行移動だけなら、せん断（中心は不動）).
+  function displaceGrid(grid, i, t, cfg, ctx) {
+    const src = ctx.transformAt;
+    const maxLag = Math.max(0, cfg.maxLag || 0);
+    if (!(maxLag > 1e-6)) return false;
+    const hx = Math.max(1, ctx.hx || 24);
+    const hy = Math.max(1, ctx.hy || 24);
+    const now = src(i, t);
+    const rotN = -(now.rot || 0);
+    const sxN = now.scaleX == null ? 1 : now.scaleX;
+    const syN = now.scaleY == null ? 1 : now.scaleY;
+    // local velocity direction for the alongVelocity map
+    let velLocal = null;
+    if (cfg.map === 'alongVelocity') {
+      const v = velocityAt(src, i, t, cfg.h, 0, cfg.maxT);
+      const rl = rotPoint(v.vx || 0, v.vy || 0, rotN);
+      const len = Math.hypot(rl.x, rl.y);
+      if (len > 1e-9) velLocal = { x: rl.x / len, y: rl.y / len };
+    }
+    // quantized trajectory samples: Q(j/4 * maxLag back)
+    const samples = [];
+    for (let j = 0; j <= 4; j += 1) {
+      samples.push(src(i, t - (maxLag * j) / 4));
+    }
+    const at = (lag) => {
+      const f = Math.min(4, Math.max(0, (lag / maxLag) * 4));
+      const j = Math.min(3, Math.floor(f));
+      const u = f - j;
+      const a = samples[j];
+      const b = samples[j + 1];
+      return {
+        x: a.x + (b.x - a.x) * u,
+        y: a.y + (b.y - a.y) * u,
+        rot: (a.rot || 0) + ((b.rot || 0) - (a.rot || 0)) * u,
+        scaleX: (a.scaleX == null ? 1 : a.scaleX) + ((b.scaleX == null ? 1 : b.scaleX) - (a.scaleX == null ? 1 : a.scaleX)) * u,
+        scaleY: (a.scaleY == null ? 1 : a.scaleY) + ((b.scaleY == null ? 1 : b.scaleY) - (a.scaleY == null ? 1 : a.scaleY)) * u,
+      };
+    };
+    const place = (tr, u, v) => {
+      const rot = rotPoint(u * hx * (tr.scaleX == null ? 1 : tr.scaleX), v * hy * (tr.scaleY == null ? 1 : tr.scaleY), tr.rot || 0);
+      return { x: (tr.x || 0) + rot.x, y: (tr.y || 0) + rot.y };
+    };
+    let touched = false;
+    let peak = 0;
+    for (let k = 0; k < 25; k += 1) {
+      const u = (k % 5) / 2 - 1;
+      const v = Math.floor(k / 5) / 2 - 1;
+      let s = lagMapValue(cfg.map, u, v, velLocal, cfg.noiseScale, cfg.seed);
+      if (cfg.invert) s = 1 - s;
+      const lag = maxLag * s * (ctx.weight == null ? 1 : ctx.weight);
+      if (!(lag > 1e-6)) continue;
+      const past = at(lag);
+      const q0 = place(now, u, v);
+      const q1 = place(past, u, v);
+      const d = rotPoint(q1.x - q0.x, q1.y - q0.y, rotN);
+      const amount = cfg.amount == null ? 1 : cfg.amount;
+      const dx = (d.x / Math.max(1e-6, sxN * hx)) * amount;
+      const dy = (d.y / Math.max(1e-6, syN * hy)) * amount;
+      if (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9) continue;
+      grid[k * 2] += dx;
+      grid[k * 2 + 1] += dy;
+      peak = Math.max(peak, Math.abs(dx), Math.abs(dy));
+      touched = true;
+    }
+    if (touched) {
+      // recenter on the middle node: translation becomes shear, the centre
+      // stays put (pure translation reads as shear, not drift)
+      const cx = grid[12 * 2];
+      const cy = grid[12 * 2 + 1];
+      if (Math.abs(cx) > 1e-12 || Math.abs(cy) > 1e-12) {
+        for (let k = 0; k < 25; k += 1) {
+          grid[k * 2] -= cx;
+          grid[k * 2 + 1] -= cy;
+        }
+      }
+      peak = 0;
+      for (let k = 0; k < 25; k += 1) {
+        peak = Math.max(peak, Math.abs(grid[k * 2]), Math.abs(grid[k * 2 + 1]));
+      }
+      if (!(peak > 1e-9)) {
+        for (let k = 0; k < 25; k += 1) {
+          grid[k * 2] = 0;
+          grid[k * 2 + 1] = 0;
+        }
+        return false;
+      }
+    }
+    return touched;
+  }
+
+  // Region band weight (§4.1 region): band side of size bandSize with feather.
+  function regionWeight(band, bandSize, feather, u, v) {
+    const size = Math.max(0.1, Math.min(0.9, bandSize == null ? 0.5 : bandSize));
+    const f = Math.max(0, Math.min(1, feather == null ? 0.4 : feather));
+    const edge = 1 - size * 2; // band occupies u/v in [edge..1] mapped below
+    let d;
+    if (band === 'bottom') d = v;
+    else if (band === 'left') d = -u;
+    else if (band === 'right') d = u;
+    else d = -v; // top
+    const width = Math.max(1e-6, f * 2);
+    const x = (d - edge) / width + 0.5;
+    const t = Math.max(0, Math.min(1, x));
+    return t * t * (3 - 2 * t);
+  }
+
+  // Region delay (§4.1 region + §5-1): the band's rigid lag spread over the
+  // grid with a feathered weight. The band stays rigid (parallel shift), only
+  // the feather seam stretches.
+  function displaceRegion(grid, i, t, cfg, ctx) {
+    const src = ctx.transformAt;
+    const lag = Math.max(0, cfg.lag || 0);
+    if (!(lag > 1e-6)) return false;
+    const hx = Math.max(1, ctx.hx || 24);
+    const hy = Math.max(1, ctx.hy || 24);
+    const P0 = src(i, t);
+    const PL = src(i, t - lag);
+    const rotN = -(P0.rot || 0);
+    const delta = rotPoint((PL.x || 0) - (P0.x || 0), (PL.y || 0) - (P0.y || 0), rotN);
+    const sx = P0.scaleX == null ? 1 : P0.scaleX;
+    const sy = P0.scaleY == null ? 1 : P0.scaleY;
+    const nx = delta.x / Math.max(1e-6, sx * hx);
+    const ny = delta.y / Math.max(1e-6, sy * hy);
+    if (Math.abs(nx) < 1e-9 && Math.abs(ny) < 1e-9) return false;
+    let touched = false;
+    for (let k = 0; k < 25; k += 1) {
+      const u = (k % 5) / 2 - 1;
+      const v = Math.floor(k / 5) / 2 - 1;
+      const w = regionWeight(cfg.band, cfg.bandSize, cfg.feather, u, v) * (ctx.weight == null ? 1 : ctx.weight);
+      if (!(w > 0)) continue;
+      grid[k * 2] += nx * w;
+      grid[k * 2 + 1] += ny * w;
+      touched = true;
+    }
+    return touched;
+  }
+
+  // --- motion trails (§4.4/4.5) ----------------------------------------------------
+  // Per-letter shadow fade: the copy vanishes where it still sits on the body
+  // (still beat → no shadow doubling under translucent glyphs).
+  function trailLetterFade(dx, dy, em, minGap) {
+    const d = Math.hypot(dx || 0, dy || 0) / Math.max(1e-6, em || 1);
+    const lo = Math.max(0, minGap == null ? 0.08 : minGap);
+    if (lo <= 0) return d > 0 ? 1 : 0;
+    return smoothstep(lo, 2 * lo, d);
+  }
+
+  // Copy factors for the k-th shadow (k = 1 is the newest): opacity decay,
+  // scale shrink and the colorA → colorB position.
+  function trailCopy(cfg, k, count) {
+    const decay = Math.max(0, Math.min(1, cfg.decay == null ? 0.35 : cfg.decay));
+    return {
+      opacityMul: Math.pow(1 - decay, Math.max(0, k - 1)),
+      scaleMul: 1 - (cfg.scaleDecay == null ? 0 : cfg.scaleDecay) * k,
+      widthMul: Math.pow(1 - (cfg.widthDecay == null ? 0 : cfg.widthDecay), Math.max(0, k - 1)),
+      colorT: count <= 1 ? 0 : (k - 1) / (count - 1),
+    };
   }
 
   return {
@@ -331,5 +536,12 @@
     distanceAt,
     tintFor,
     applyColorShift,
+    lagMapValue,
+    valueNoise2,
+    displaceGrid,
+    regionWeight,
+    displaceRegion,
+    trailLetterFade,
+    trailCopy,
   };
 });

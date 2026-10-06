@@ -3,8 +3,8 @@
   "version": 5,
   "meta": {
     "title": "FX 400 代表効果テスト",
-    "createdAt": "2026-10-06T03:10:23.221Z",
-    "updatedAt": "2026-10-06T03:10:23.221Z",
+    "createdAt": "2026-10-06T05:25:50.035Z",
+    "updatedAt": "2026-10-06T05:25:50.035Z",
     "lang": "ja"
   },
   "song": {
@@ -4956,6 +4956,581 @@
     },
     "fx_082": {
       "enter": {
+        "type": "charGrowIn",
+        "enabled": true,
+        "params": {
+          "from": 0,
+          "overshoot": 1.25,
+          "peak": 0.65,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_083": {
+      "enter": {
+        "type": "stretchYIn",
+        "enabled": true,
+        "params": {
+          "amount": 1.4,
+          "thin": 0.35,
+          "split": 0.45,
+          "rise": 0.06,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_084": {
+      "enter": {
+        "type": "stretchXIn",
+        "enabled": true,
+        "params": {
+          "amount": 1.4,
+          "thin": 0.35,
+          "split": 0.45,
+          "slide": 0.06,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_085": {
+      "enter": {
+        "type": "plateIn",
+        "enabled": true,
+        "params": {
+          "plateLead": 0.25,
+          "from": 0.6,
+          "pivot": "line",
+          "pivotAnchor": "t",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_086": {
+      "enter": {
+        "type": "rubberIn",
+        "enabled": true,
+        "params": {
+          "amp": 0.6,
+          "damping": 4,
+          "freq": 3,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_087": {
+      "enter": {
+        "type": "chromaIn",
+        "enabled": true,
+        "params": {
+          "split": 0.04,
+          "jitter": 0.5,
+          "angle": 0,
+          "pivot": "letter",
+          "pivotAnchor": "tr",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_088": {
+      "enter": {
+        "type": "multiIn",
+        "enabled": true,
+        "params": {
+          "arrange": "stack",
+          "layout": "stackV",
+          "copies": 2,
+          "cascade": 0.35,
+          "copyOpacity": "fade",
+          "gap": "normal",
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_089": {
+      "enter": {
+        "type": "leanIn",
+        "enabled": true,
+        "params": {
+          "angle": -25,
+          "skew": 20,
+          "distance": 0.08,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_090": {
+      "enter": {
+        "type": "tiltSettleIn",
+        "enabled": true,
+        "params": {
+          "tilt": 8,
+          "appear": 0.55,
+          "alternate": false,
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_091": {
+      "enter": {
+        "type": "shakeIn",
+        "enabled": true,
+        "params": {
+          "amp": 0.02,
+          "rotAmp": 6,
+          "freq": 10,
+          "pivot": "line",
+          "pivotAnchor": "t",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_092": {
+      "enter": {
+        "type": "circleIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.6,
+          "circleScale": 1.3,
+          "shapeUnit": "block",
+          "pivot": "block",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_093": {
+      "enter": {
+        "type": "circleBurstIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.6,
+          "circleScale": 1.3,
+          "burstDelay": 0.15,
+          "shapeUnit": "block",
+          "pivot": "block",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_094": {
+      "enter": {
+        "type": "varyDeformIn",
+        "enabled": true,
+        "params": {
+          "recipes": "stretchY,stretchX,rubber,lean,flip,spin",
+          "mode": "cycle",
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_095": {
+      "enter": {
+        "type": "blinkVaryIn",
+        "enabled": true,
+        "params": {
+          "minHz": 3,
+          "maxHz": 9,
+          "duty": 0.4,
+          "dim": 0.05,
+          "pivot": "line",
+          "pivotAnchor": "t",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_096": {
+      "enter": {
+        "type": "twistIn",
+        "enabled": true,
+        "params": {
+          "axis": "y",
+          "angle": 180,
+          "direction": "forward",
+          "phase": "in",
+          "peak": 0.4,
+          "bounce": 0.3,
+          "backface": "dim",
+          "depth": 1,
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_097": {
+      "enter": {
+        "type": "spinPartIn",
+        "enabled": true,
+        "params": {
+          "axis": "x",
+          "turns": 1,
+          "direction": "forward",
+          "phase": "in",
+          "peak": 0.5,
+          "settle": 0.2,
+          "backface": "show",
+          "depth": 1,
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.55,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_098": {
+      "enter": {
         "type": "fade",
         "enabled": true,
         "params": {
@@ -4970,7 +5545,7 @@
         }
       }
     },
-    "fx_083": {
+    "fx_099": {
       "enter": {
         "type": "typewriter",
         "enabled": true,
@@ -4989,7 +5564,7 @@
         }
       }
     },
-    "fx_084": {
+    "fx_100": {
       "enter": {
         "type": "slide",
         "enabled": true,
@@ -5005,7 +5580,7 @@
         }
       }
     },
-    "fx_085": {
+    "fx_101": {
       "enter": {
         "type": "dropBounce",
         "enabled": true,
@@ -5020,7 +5595,7 @@
         }
       }
     },
-    "fx_086": {
+    "fx_102": {
       "enter": {
         "type": "zoomIn",
         "enabled": true,
@@ -5035,7 +5610,7 @@
         }
       }
     },
-    "fx_087": {
+    "fx_103": {
       "enter": {
         "type": "blurIn",
         "enabled": true,
@@ -5050,7 +5625,7 @@
         }
       }
     },
-    "fx_088": {
+    "fx_104": {
       "enter": {
         "type": "flip3D",
         "enabled": true,
@@ -5066,7 +5641,7 @@
         }
       }
     },
-    "fx_089": {
+    "fx_105": {
       "enter": {
         "type": "rotateIn",
         "enabled": true,
@@ -5081,7 +5656,7 @@
         }
       }
     },
-    "fx_090": {
+    "fx_106": {
       "enter": {
         "type": "scatterIn",
         "enabled": true,
@@ -5096,7 +5671,7 @@
         }
       }
     },
-    "fx_091": {
+    "fx_107": {
       "enter": {
         "type": "waveRise",
         "enabled": true,
@@ -5111,7 +5686,7 @@
         }
       }
     },
-    "fx_092": {
+    "fx_108": {
       "enter": {
         "type": "elasticPop",
         "enabled": true,
@@ -5124,7 +5699,7 @@
         }
       }
     },
-    "fx_093": {
+    "fx_109": {
       "enter": {
         "type": "scramble",
         "enabled": true,
@@ -5140,7 +5715,7 @@
         }
       }
     },
-    "fx_094": {
+    "fx_110": {
       "enter": {
         "type": "glitchIn",
         "enabled": true,
@@ -5155,7 +5730,7 @@
         }
       }
     },
-    "fx_095": {
+    "fx_111": {
       "enter": {
         "type": "neonFlicker",
         "enabled": true,
@@ -5170,7 +5745,7 @@
         }
       }
     },
-    "fx_096": {
+    "fx_112": {
       "enter": {
         "type": "flickerIn",
         "enabled": true,
@@ -5185,7 +5760,7 @@
         }
       }
     },
-    "fx_097": {
+    "fx_113": {
       "enter": {
         "type": "strokeDrawOn",
         "enabled": true,
@@ -5201,7 +5776,7 @@
         }
       }
     },
-    "fx_098": {
+    "fx_114": {
       "enter": {
         "type": "particlesAssemble",
         "enabled": true,
@@ -5218,7 +5793,7 @@
         }
       }
     },
-    "fx_099": {
+    "fx_115": {
       "enter": {
         "type": "sandGather",
         "enabled": true,
@@ -5238,7 +5813,7 @@
         }
       }
     },
-    "fx_100": {
+    "fx_116": {
       "enter": {
         "type": "shatterRebuild",
         "enabled": true,
@@ -5254,7 +5829,7 @@
         }
       }
     },
-    "fx_101": {
+    "fx_117": {
       "enter": {
         "type": "morphFromPrevious",
         "enabled": true,
@@ -5269,7 +5844,7 @@
         }
       }
     },
-    "fx_102": {
+    "fx_118": {
       "enter": {
         "type": "appear",
         "enabled": true,
@@ -5282,7 +5857,7 @@
         }
       }
     },
-    "fx_103": {
+    "fx_119": {
       "enter": {
         "type": "wipe",
         "enabled": true,
@@ -5299,7 +5874,7 @@
         }
       }
     },
-    "fx_104": {
+    "fx_120": {
       "enter": {
         "type": "blind",
         "enabled": true,
@@ -5316,7 +5891,7 @@
         }
       }
     },
-    "fx_105": {
+    "fx_121": {
       "enter": {
         "type": "box",
         "enabled": true,
@@ -5331,7 +5906,7 @@
         }
       }
     },
-    "fx_106": {
+    "fx_122": {
       "enter": {
         "type": "checkerboard",
         "enabled": true,
@@ -5347,7 +5922,7 @@
         }
       }
     },
-    "fx_107": {
+    "fx_123": {
       "enter": {
         "type": "stretch",
         "enabled": true,
@@ -5363,7 +5938,7 @@
         }
       }
     },
-    "fx_108": {
+    "fx_124": {
       "enter": {
         "type": "split",
         "enabled": true,
@@ -5379,7 +5954,7 @@
         }
       }
     },
-    "fx_109": {
+    "fx_125": {
       "enter": {
         "type": "peekIn",
         "enabled": true,
@@ -5395,7 +5970,7 @@
         }
       }
     },
-    "fx_110": {
+    "fx_126": {
       "enter": {
         "type": "riseUp",
         "enabled": true,
@@ -5411,7 +5986,7 @@
         }
       }
     },
-    "fx_111": {
+    "fx_127": {
       "enter": {
         "type": "spiralIn",
         "enabled": true,
@@ -5427,7 +6002,7 @@
         }
       }
     },
-    "fx_112": {
+    "fx_128": {
       "enter": {
         "type": "radialIn",
         "enabled": true,
@@ -5442,7 +6017,7 @@
         }
       }
     },
-    "fx_113": {
+    "fx_129": {
       "enter": {
         "type": "floatIn",
         "enabled": true,
@@ -5458,7 +6033,7 @@
         }
       }
     },
-    "fx_114": {
+    "fx_130": {
       "enter": {
         "type": "boomerang",
         "enabled": true,
@@ -5474,7 +6049,7 @@
         }
       }
     },
-    "fx_115": {
+    "fx_131": {
       "enter": {
         "type": "slideBlur",
         "enabled": true,
@@ -5491,7 +6066,7 @@
         }
       }
     },
-    "fx_116": {
+    "fx_132": {
       "enter": {
         "type": "lightReveal",
         "enabled": true,
@@ -5506,7 +6081,7 @@
         }
       }
     },
-    "fx_117": {
+    "fx_133": {
       "enter": {
         "type": "jaggyIn",
         "enabled": true,
@@ -5522,7 +6097,7 @@
         }
       }
     },
-    "fx_118": {
+    "fx_134": {
       "enter": {
         "type": "maskReveal",
         "enabled": true,
@@ -5539,7 +6114,7 @@
         }
       }
     },
-    "fx_119": {
+    "fx_135": {
       "enter": {
         "type": "depthBlurIn",
         "enabled": true,
@@ -5555,7 +6130,582 @@
         }
       }
     },
-    "fx_120": {
+    "fx_136": {
+      "enter": {
+        "type": "charGrowIn",
+        "enabled": true,
+        "params": {
+          "from": 0,
+          "overshoot": 1.25,
+          "peak": 0.65,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_137": {
+      "enter": {
+        "type": "stretchYIn",
+        "enabled": true,
+        "params": {
+          "amount": 1.4,
+          "thin": 0.35,
+          "split": 0.45,
+          "rise": 0.06,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_138": {
+      "enter": {
+        "type": "stretchXIn",
+        "enabled": true,
+        "params": {
+          "amount": 1.4,
+          "thin": 0.35,
+          "split": 0.45,
+          "slide": 0.06,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_139": {
+      "enter": {
+        "type": "plateIn",
+        "enabled": true,
+        "params": {
+          "plateLead": 0.25,
+          "from": 0.6,
+          "pivot": "block",
+          "pivotAnchor": "t",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_140": {
+      "enter": {
+        "type": "rubberIn",
+        "enabled": true,
+        "params": {
+          "amp": 0.6,
+          "damping": 4,
+          "freq": 3,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_141": {
+      "enter": {
+        "type": "chromaIn",
+        "enabled": true,
+        "params": {
+          "split": 0.04,
+          "jitter": 0.5,
+          "angle": 0,
+          "pivot": "line",
+          "pivotAnchor": "tr",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.7,
+            "ease": "elasticOut"
+          }
+        }
+      }
+    },
+    "fx_142": {
+      "enter": {
+        "type": "multiIn",
+        "enabled": true,
+        "params": {
+          "arrange": "converge",
+          "layout": "stackV",
+          "copies": 2,
+          "cascade": 0.35,
+          "copyOpacity": "fade",
+          "gap": "normal",
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.7,
+            "ease": "elasticOut"
+          }
+        }
+      }
+    },
+    "fx_143": {
+      "enter": {
+        "type": "leanIn",
+        "enabled": true,
+        "params": {
+          "angle": -25,
+          "skew": 20,
+          "distance": 0.08,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_144": {
+      "enter": {
+        "type": "tiltSettleIn",
+        "enabled": true,
+        "params": {
+          "tilt": 8,
+          "appear": 0.55,
+          "alternate": false,
+          "pivot": "line",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_145": {
+      "enter": {
+        "type": "shakeIn",
+        "enabled": true,
+        "params": {
+          "amp": 0.02,
+          "rotAmp": 6,
+          "freq": 10,
+          "pivot": "letter",
+          "pivotAnchor": "tr",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_146": {
+      "enter": {
+        "type": "circleIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.6,
+          "circleScale": 1.3,
+          "shapeUnit": "char",
+          "pivot": "block",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_147": {
+      "enter": {
+        "type": "circleBurstIn",
+        "enabled": true,
+        "params": {
+          "spread": 0.6,
+          "circleScale": 1.3,
+          "burstDelay": 0.15,
+          "shapeUnit": "char",
+          "pivot": "block",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_148": {
+      "enter": {
+        "type": "varyDeformIn",
+        "enabled": true,
+        "params": {
+          "recipes": "stretchY,stretchX,rubber,lean,flip,spin",
+          "mode": "random",
+          "pivot": "letter",
+          "pivotAnchor": "tl",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_149": {
+      "enter": {
+        "type": "blinkVaryIn",
+        "enabled": true,
+        "params": {
+          "minHz": 3,
+          "maxHz": 9,
+          "duty": 0.4,
+          "dim": 0.05,
+          "pivot": "block",
+          "pivotAnchor": "t",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_150": {
+      "enter": {
+        "type": "twistIn",
+        "enabled": true,
+        "params": {
+          "axis": "z",
+          "angle": 180,
+          "direction": "forward",
+          "phase": "in",
+          "peak": 0.4,
+          "bounce": 0.3,
+          "backface": "dim",
+          "depth": 1,
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 1.2,
+            "ease": "backOut"
+          }
+        }
+      }
+    },
+    "fx_151": {
+      "enter": {
+        "type": "spinPartIn",
+        "enabled": true,
+        "params": {
+          "axis": "y",
+          "turns": 1,
+          "direction": "forward",
+          "phase": "in",
+          "peak": 0.5,
+          "settle": 0.2,
+          "backface": "show",
+          "depth": 1,
+          "pivot": "letter",
+          "pivotAnchor": "c",
+          "pivotOffset": {
+            "x": 0,
+            "y": 0
+          },
+          "pivotZ": 0,
+          "scaleFromX": 1,
+          "scaleFromY": 1,
+          "scaleAxis": 0,
+          "scaleEase": "easeOutCubic",
+          "scaleOriginSeparate": false,
+          "scaleOrigin": "letter",
+          "scaleOriginAnchor": "c",
+          "scaleOriginOffset": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        "motion": {
+          "in": {
+            "duration": 0.25,
+            "ease": "cubicOut"
+          }
+        }
+      }
+    },
+    "fx_152": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -5571,7 +6721,7 @@
         }
       }
     },
-    "fx_121": {
+    "fx_153": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -5587,7 +6737,7 @@
         }
       }
     },
-    "fx_122": {
+    "fx_154": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -5602,7 +6752,7 @@
         }
       }
     },
-    "fx_123": {
+    "fx_155": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -5617,7 +6767,7 @@
         }
       }
     },
-    "fx_124": {
+    "fx_156": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -5633,7 +6783,7 @@
         }
       }
     },
-    "fx_125": {
+    "fx_157": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -5649,7 +6799,7 @@
         }
       }
     },
-    "fx_126": {
+    "fx_158": {
       "exit": {
         "type": "dissolve",
         "enabled": true,
@@ -5665,7 +6815,7 @@
         }
       }
     },
-    "fx_127": {
+    "fx_159": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -5680,7 +6830,7 @@
         }
       }
     },
-    "fx_128": {
+    "fx_160": {
       "exit": {
         "type": "typewriterReverse",
         "enabled": true,
@@ -5693,7 +6843,7 @@
         }
       }
     },
-    "fx_129": {
+    "fx_161": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5706,7 +6856,7 @@
         }
       }
     },
-    "fx_130": {
+    "fx_162": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5722,7 +6872,7 @@
         }
       }
     },
-    "fx_131": {
+    "fx_163": {
       "exit": {
         "type": "sandCrumble",
         "enabled": true,
@@ -5742,7 +6892,7 @@
         }
       }
     },
-    "fx_132": {
+    "fx_164": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5757,7 +6907,7 @@
         }
       }
     },
-    "fx_133": {
+    "fx_165": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5774,7 +6924,7 @@
         }
       }
     },
-    "fx_134": {
+    "fx_166": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5789,7 +6939,7 @@
         }
       }
     },
-    "fx_135": {
+    "fx_167": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -5804,7 +6954,7 @@
         }
       }
     },
-    "fx_136": {
+    "fx_168": {
       "exit": {
         "type": "vanish",
         "enabled": true,
@@ -5817,7 +6967,7 @@
         }
       }
     },
-    "fx_137": {
+    "fx_169": {
       "exit": {
         "type": "floatOut",
         "enabled": true,
@@ -5833,7 +6983,7 @@
         }
       }
     },
-    "fx_138": {
+    "fx_170": {
       "exit": {
         "type": "splitOut",
         "enabled": true,
@@ -5848,7 +6998,7 @@
         }
       }
     },
-    "fx_139": {
+    "fx_171": {
       "exit": {
         "type": "stripeShrink",
         "enabled": true,
@@ -5863,7 +7013,7 @@
         }
       }
     },
-    "fx_140": {
+    "fx_172": {
       "exit": {
         "type": "rotateOut",
         "enabled": true,
@@ -5878,7 +7028,7 @@
         }
       }
     },
-    "fx_141": {
+    "fx_173": {
       "exit": {
         "type": "floatUp",
         "enabled": true,
@@ -5893,7 +7043,7 @@
         }
       }
     },
-    "fx_142": {
+    "fx_174": {
       "exit": {
         "type": "floatDown",
         "enabled": true,
@@ -5908,7 +7058,7 @@
         }
       }
     },
-    "fx_143": {
+    "fx_175": {
       "exit": {
         "type": "shrinkDir",
         "enabled": true,
@@ -5923,7 +7073,7 @@
         }
       }
     },
-    "fx_144": {
+    "fx_176": {
       "exit": {
         "type": "spiralOut",
         "enabled": true,
@@ -5939,7 +7089,7 @@
         }
       }
     },
-    "fx_145": {
+    "fx_177": {
       "exit": {
         "type": "radialOut",
         "enabled": true,
@@ -5954,7 +7104,7 @@
         }
       }
     },
-    "fx_146": {
+    "fx_178": {
       "exit": {
         "type": "warpOut",
         "enabled": true,
@@ -5969,7 +7119,7 @@
         }
       }
     },
-    "fx_147": {
+    "fx_179": {
       "exit": {
         "type": "evaporate",
         "enabled": true,
@@ -5985,7 +7135,7 @@
         }
       }
     },
-    "fx_148": {
+    "fx_180": {
       "exit": {
         "type": "fade",
         "enabled": true,
@@ -6001,7 +7151,7 @@
         }
       }
     },
-    "fx_149": {
+    "fx_181": {
       "exit": {
         "type": "slide",
         "enabled": true,
@@ -6017,7 +7167,7 @@
         }
       }
     },
-    "fx_150": {
+    "fx_182": {
       "exit": {
         "type": "zoomOut",
         "enabled": true,
@@ -6032,7 +7182,7 @@
         }
       }
     },
-    "fx_151": {
+    "fx_183": {
       "exit": {
         "type": "blurOut",
         "enabled": true,
@@ -6047,7 +7197,7 @@
         }
       }
     },
-    "fx_152": {
+    "fx_184": {
       "exit": {
         "type": "explode",
         "enabled": true,
@@ -6063,7 +7213,7 @@
         }
       }
     },
-    "fx_153": {
+    "fx_185": {
       "exit": {
         "type": "gravityFall",
         "enabled": true,
@@ -6079,7 +7229,7 @@
         }
       }
     },
-    "fx_154": {
+    "fx_186": {
       "exit": {
         "type": "wipe",
         "enabled": true,
@@ -6094,7 +7244,7 @@
         }
       }
     },
-    "fx_155": {
+    "fx_187": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -6107,7 +7257,7 @@
         }
       }
     },
-    "fx_156": {
+    "fx_188": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -6123,7 +7273,7 @@
         }
       }
     },
-    "fx_157": {
+    "fx_189": {
       "exit": {
         "type": "sandCrumble",
         "enabled": true,
@@ -6143,7 +7293,7 @@
         }
       }
     },
-    "fx_158": {
+    "fx_190": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -6158,7 +7308,7 @@
         }
       }
     },
-    "fx_159": {
+    "fx_191": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -6175,7 +7325,7 @@
         }
       }
     },
-    "fx_160": {
+    "fx_192": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -6190,7 +7340,7 @@
         }
       }
     },
-    "fx_161": {
+    "fx_193": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -6205,7 +7355,7 @@
         }
       }
     },
-    "fx_162": {
+    "fx_194": {
       "exit": {
         "type": "vanish",
         "enabled": true,
@@ -6218,7 +7368,7 @@
         }
       }
     },
-    "fx_163": {
+    "fx_195": {
       "exit": {
         "type": "floatOut",
         "enabled": true,
@@ -6234,7 +7384,7 @@
         }
       }
     },
-    "fx_164": {
+    "fx_196": {
       "exit": {
         "type": "splitOut",
         "enabled": true,
@@ -6249,7 +7399,7 @@
         }
       }
     },
-    "fx_165": {
+    "fx_197": {
       "exit": {
         "type": "stripeShrink",
         "enabled": true,
@@ -6264,7 +7414,7 @@
         }
       }
     },
-    "fx_166": {
+    "fx_198": {
       "exit": {
         "type": "rotateOut",
         "enabled": true,
@@ -6279,7 +7429,7 @@
         }
       }
     },
-    "fx_167": {
+    "fx_199": {
       "exit": {
         "type": "floatUp",
         "enabled": true,
@@ -6294,7 +7444,7 @@
         }
       }
     },
-    "fx_168": {
+    "fx_200": {
       "exit": {
         "type": "floatDown",
         "enabled": true,
@@ -6309,7 +7459,7 @@
         }
       }
     },
-    "fx_169": {
+    "fx_201": {
       "exit": {
         "type": "shrinkDir",
         "enabled": true,
@@ -6324,7 +7474,7 @@
         }
       }
     },
-    "fx_170": {
+    "fx_202": {
       "exit": {
         "type": "spiralOut",
         "enabled": true,
@@ -6340,7 +7490,7 @@
         }
       }
     },
-    "fx_171": {
+    "fx_203": {
       "exit": {
         "type": "radialOut",
         "enabled": true,
@@ -6355,7 +7505,7 @@
         }
       }
     },
-    "fx_172": {
+    "fx_204": {
       "exit": {
         "type": "warpOut",
         "enabled": true,
@@ -6370,7 +7520,7 @@
         }
       }
     },
-    "fx_173": {
+    "fx_205": {
       "exit": {
         "type": "evaporate",
         "enabled": true,
@@ -6386,7 +7536,7 @@
         }
       }
     },
-    "fx_174": {
+    "fx_206": {
       "hold": [
         {
           "type": "floatBob",
@@ -6399,7 +7549,7 @@
         }
       ]
     },
-    "fx_175": {
+    "fx_207": {
       "hold": [
         {
           "type": "sineWave",
@@ -6413,7 +7563,7 @@
         }
       ]
     },
-    "fx_176": {
+    "fx_208": {
       "hold": [
         {
           "type": "jitter",
@@ -6426,7 +7576,7 @@
         }
       ]
     },
-    "fx_177": {
+    "fx_209": {
       "hold": [
         {
           "type": "pulse",
@@ -6440,7 +7590,7 @@
         }
       ]
     },
-    "fx_178": {
+    "fx_210": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6454,7 +7604,7 @@
         }
       ]
     },
-    "fx_179": {
+    "fx_211": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6470,7 +7620,7 @@
         }
       ]
     },
-    "fx_180": {
+    "fx_212": {
       "hold": [
         {
           "type": "drift",
@@ -6483,7 +7633,7 @@
         }
       ]
     },
-    "fx_181": {
+    "fx_213": {
       "hold": [
         {
           "type": "marquee",
@@ -6495,7 +7645,7 @@
         }
       ]
     },
-    "fx_182": {
+    "fx_214": {
       "hold": [
         {
           "type": "jelly",
@@ -6508,7 +7658,7 @@
         }
       ]
     },
-    "fx_183": {
+    "fx_215": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6522,7 +7672,7 @@
         }
       ]
     },
-    "fx_184": {
+    "fx_216": {
       "hold": [
         {
           "type": "twist",
@@ -6534,7 +7684,7 @@
         }
       ]
     },
-    "fx_185": {
+    "fx_217": {
       "hold": [
         {
           "type": "breathing",
@@ -6546,7 +7696,7 @@
         }
       ]
     },
-    "fx_186": {
+    "fx_218": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6559,7 +7709,7 @@
         }
       ]
     },
-    "fx_187": {
+    "fx_219": {
       "hold": [
         {
           "type": "orbit2D",
@@ -6575,7 +7725,7 @@
         }
       ]
     },
-    "fx_188": {
+    "fx_220": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6601,7 +7751,7 @@
         }
       ]
     },
-    "fx_189": {
+    "fx_221": {
       "hold": [
         {
           "type": "heartbeat",
@@ -6615,7 +7765,7 @@
         }
       ]
     },
-    "fx_190": {
+    "fx_222": {
       "hold": [
         {
           "type": "shiver",
@@ -6628,7 +7778,7 @@
         }
       ]
     },
-    "fx_191": {
+    "fx_223": {
       "hold": [
         {
           "type": "dissolve",
@@ -6641,7 +7791,7 @@
         }
       ]
     },
-    "fx_192": {
+    "fx_224": {
       "hold": [
         {
           "type": "floatBob",
@@ -6654,7 +7804,7 @@
         }
       ]
     },
-    "fx_193": {
+    "fx_225": {
       "hold": [
         {
           "type": "sineWave",
@@ -6668,7 +7818,7 @@
         }
       ]
     },
-    "fx_194": {
+    "fx_226": {
       "hold": [
         {
           "type": "jitter",
@@ -6681,7 +7831,7 @@
         }
       ]
     },
-    "fx_195": {
+    "fx_227": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6695,7 +7845,7 @@
         }
       ]
     },
-    "fx_196": {
+    "fx_228": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6711,7 +7861,7 @@
         }
       ]
     },
-    "fx_197": {
+    "fx_229": {
       "hold": [
         {
           "type": "drift",
@@ -6724,7 +7874,7 @@
         }
       ]
     },
-    "fx_198": {
+    "fx_230": {
       "hold": [
         {
           "type": "marquee",
@@ -6736,7 +7886,7 @@
         }
       ]
     },
-    "fx_199": {
+    "fx_231": {
       "hold": [
         {
           "type": "jelly",
@@ -6749,7 +7899,7 @@
         }
       ]
     },
-    "fx_200": {
+    "fx_232": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6763,7 +7913,7 @@
         }
       ]
     },
-    "fx_201": {
+    "fx_233": {
       "hold": [
         {
           "type": "twist",
@@ -6775,7 +7925,7 @@
         }
       ]
     },
-    "fx_202": {
+    "fx_234": {
       "hold": [
         {
           "type": "breathing",
@@ -6787,7 +7937,7 @@
         }
       ]
     },
-    "fx_203": {
+    "fx_235": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6800,7 +7950,7 @@
         }
       ]
     },
-    "fx_204": {
+    "fx_236": {
       "hold": [
         {
           "type": "orbit2D",
@@ -6816,7 +7966,7 @@
         }
       ]
     },
-    "fx_205": {
+    "fx_237": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6842,7 +7992,7 @@
         }
       ]
     },
-    "fx_206": {
+    "fx_238": {
       "hold": [
         {
           "type": "shiver",
@@ -6855,7 +8005,7 @@
         }
       ]
     },
-    "fx_207": {
+    "fx_239": {
       "hold": [
         {
           "type": "dissolve",
@@ -6868,7 +8018,7 @@
         }
       ]
     },
-    "fx_208": {
+    "fx_240": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -6884,7 +8034,7 @@
         "motion": {}
       }
     },
-    "fx_209": {
+    "fx_241": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -6900,7 +8050,7 @@
         "motion": {}
       }
     },
-    "fx_210": {
+    "fx_242": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -6916,7 +8066,7 @@
         "motion": {}
       }
     },
-    "fx_211": {
+    "fx_243": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -6932,7 +8082,7 @@
         "motion": {}
       }
     },
-    "fx_212": {
+    "fx_244": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -6948,7 +8098,7 @@
         "motion": {}
       }
     },
-    "fx_213": {
+    "fx_245": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -6964,7 +8114,7 @@
         "motion": {}
       }
     },
-    "fx_214": {
+    "fx_246": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -6980,7 +8130,7 @@
         "motion": {}
       }
     },
-    "fx_215": {
+    "fx_247": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -6996,7 +8146,7 @@
         "motion": {}
       }
     },
-    "fx_216": {
+    "fx_248": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -7012,7 +8162,7 @@
         "motion": {}
       }
     },
-    "fx_217": {
+    "fx_249": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7030,7 +8180,7 @@
         "motion": {}
       }
     },
-    "fx_218": {
+    "fx_250": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -7046,7 +8196,7 @@
         "motion": {}
       }
     },
-    "fx_219": {
+    "fx_251": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -7062,7 +8212,7 @@
         "motion": {}
       }
     },
-    "fx_220": {
+    "fx_252": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -7078,7 +8228,7 @@
         "motion": {}
       }
     },
-    "fx_221": {
+    "fx_253": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -7094,7 +8244,7 @@
         "motion": {}
       }
     },
-    "fx_222": {
+    "fx_254": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -7110,7 +8260,7 @@
         "motion": {}
       }
     },
-    "fx_223": {
+    "fx_255": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -7126,7 +8276,7 @@
         "motion": {}
       }
     },
-    "fx_224": {
+    "fx_256": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -7142,7 +8292,7 @@
         "motion": {}
       }
     },
-    "fx_225": {
+    "fx_257": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -7158,7 +8308,7 @@
         "motion": {}
       }
     },
-    "fx_226": {
+    "fx_258": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -7174,7 +8324,7 @@
         "motion": {}
       }
     },
-    "fx_227": {
+    "fx_259": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -7192,7 +8342,7 @@
         "motion": {}
       }
     },
-    "fx_228": {
+    "fx_260": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7203,7 +8353,7 @@
         "motion": {}
       }
     },
-    "fx_229": {
+    "fx_261": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7216,7 +8366,7 @@
         "motion": {}
       }
     },
-    "fx_230": {
+    "fx_262": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7228,7 +8378,7 @@
         "motion": {}
       }
     },
-    "fx_231": {
+    "fx_263": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7239,7 +8389,7 @@
         "motion": {}
       }
     },
-    "fx_232": {
+    "fx_264": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7251,7 +8401,7 @@
         "motion": {}
       }
     },
-    "fx_233": {
+    "fx_265": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7263,7 +8413,7 @@
         "motion": {}
       }
     },
-    "fx_234": {
+    "fx_266": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7276,7 +8426,7 @@
         "motion": {}
       }
     },
-    "fx_235": {
+    "fx_267": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7289,7 +8439,7 @@
         "motion": {}
       }
     },
-    "fx_236": {
+    "fx_268": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7301,7 +8451,7 @@
         "motion": {}
       }
     },
-    "fx_237": {
+    "fx_269": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7316,7 +8466,7 @@
         "motion": {}
       }
     },
-    "fx_238": {
+    "fx_270": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7328,7 +8478,7 @@
         "motion": {}
       }
     },
-    "fx_239": {
+    "fx_271": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7340,7 +8490,7 @@
         "motion": {}
       }
     },
-    "fx_240": {
+    "fx_272": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7351,7 +8501,7 @@
         "motion": {}
       }
     },
-    "fx_241": {
+    "fx_273": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7364,7 +8514,7 @@
         "motion": {}
       }
     },
-    "fx_242": {
+    "fx_274": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7376,7 +8526,7 @@
         "motion": {}
       }
     },
-    "fx_243": {
+    "fx_275": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7396,7 +8546,7 @@
         "motion": {}
       }
     },
-    "fx_244": {
+    "fx_276": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7417,7 +8567,7 @@
         "motion": {}
       }
     },
-    "fx_245": {
+    "fx_277": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7429,7 +8579,7 @@
         "motion": {}
       }
     },
-    "fx_246": {
+    "fx_278": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7442,7 +8592,7 @@
         "motion": {}
       }
     },
-    "fx_247": {
+    "fx_279": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7464,7 +8614,7 @@
         "motion": {}
       }
     },
-    "fx_248": {
+    "fx_280": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7476,7 +8626,7 @@
         "motion": {}
       }
     },
-    "fx_249": {
+    "fx_281": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7491,7 +8641,7 @@
         "motion": {}
       }
     },
-    "fx_250": {
+    "fx_282": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7503,7 +8653,7 @@
         "motion": {}
       }
     },
-    "fx_251": {
+    "fx_283": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7515,7 +8665,7 @@
         "motion": {}
       }
     },
-    "fx_252": {
+    "fx_284": {
       "edge": [
         {
           "type": "outline",
@@ -7535,7 +8685,7 @@
         }
       ]
     },
-    "fx_253": {
+    "fx_285": {
       "edge": [
         {
           "type": "neonGlow",
@@ -7550,7 +8700,7 @@
         }
       ]
     },
-    "fx_254": {
+    "fx_286": {
       "edge": [
         {
           "type": "innerGlow",
@@ -7564,7 +8714,7 @@
         }
       ]
     },
-    "fx_255": {
+    "fx_287": {
       "edge": [
         {
           "type": "bevel",
@@ -7579,7 +8729,7 @@
         }
       ]
     },
-    "fx_256": {
+    "fx_288": {
       "edge": [
         {
           "type": "extrude",
@@ -7594,7 +8744,7 @@
         }
       ]
     },
-    "fx_257": {
+    "fx_289": {
       "edge": [
         {
           "type": "longShadow",
@@ -7609,7 +8759,7 @@
         }
       ]
     },
-    "fx_258": {
+    "fx_290": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7627,7 +8777,7 @@
         }
       ]
     },
-    "fx_259": {
+    "fx_291": {
       "edge": [
         {
           "type": "drip",
@@ -7642,7 +8792,7 @@
         }
       ]
     },
-    "fx_260": {
+    "fx_292": {
       "edge": [
         {
           "type": "outline",
@@ -7662,7 +8812,7 @@
         }
       ]
     },
-    "fx_261": {
+    "fx_293": {
       "edge": [
         {
           "type": "neonGlow",
@@ -7677,7 +8827,7 @@
         }
       ]
     },
-    "fx_262": {
+    "fx_294": {
       "edge": [
         {
           "type": "innerGlow",
@@ -7691,7 +8841,7 @@
         }
       ]
     },
-    "fx_263": {
+    "fx_295": {
       "edge": [
         {
           "type": "bevel",
@@ -7706,7 +8856,7 @@
         }
       ]
     },
-    "fx_264": {
+    "fx_296": {
       "edge": [
         {
           "type": "extrude",
@@ -7721,7 +8871,7 @@
         }
       ]
     },
-    "fx_265": {
+    "fx_297": {
       "edge": [
         {
           "type": "longShadow",
@@ -7736,7 +8886,7 @@
         }
       ]
     },
-    "fx_266": {
+    "fx_298": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7754,7 +8904,7 @@
         }
       ]
     },
-    "fx_267": {
+    "fx_299": {
       "edge": [
         {
           "type": "drip",
@@ -7769,7 +8919,7 @@
         }
       ]
     },
-    "fx_268": {
+    "fx_300": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -7787,7 +8937,7 @@
         }
       ]
     },
-    "fx_269": {
+    "fx_301": {
       "post": [
         {
           "type": "rgbShift",
@@ -7804,7 +8954,7 @@
         }
       ]
     },
-    "fx_270": {
+    "fx_302": {
       "post": [
         {
           "type": "scanTear",
@@ -7821,7 +8971,7 @@
         }
       ]
     },
-    "fx_271": {
+    "fx_303": {
       "post": [
         {
           "type": "vhsTracking",
@@ -7838,7 +8988,7 @@
         }
       ]
     },
-    "fx_272": {
+    "fx_304": {
       "post": [
         {
           "type": "dataSmear",
@@ -7855,7 +9005,7 @@
         }
       ]
     },
-    "fx_273": {
+    "fx_305": {
       "post": [
         {
           "type": "digitalNoise",
@@ -7871,7 +9021,7 @@
         }
       ]
     },
-    "fx_274": {
+    "fx_306": {
       "post": [
         {
           "type": "glitchSlice",
@@ -7888,7 +9038,7 @@
         }
       ]
     },
-    "fx_275": {
+    "fx_307": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -7905,7 +9055,7 @@
         }
       ]
     },
-    "fx_276": {
+    "fx_308": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -7922,7 +9072,7 @@
         }
       ]
     },
-    "fx_277": {
+    "fx_309": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -7937,7 +9087,7 @@
         }
       ]
     },
-    "fx_278": {
+    "fx_310": {
       "post": [
         {
           "type": "burnDissolve",
@@ -7954,7 +9104,7 @@
         }
       ]
     },
-    "fx_279": {
+    "fx_311": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -7970,7 +9120,7 @@
         }
       ]
     },
-    "fx_280": {
+    "fx_312": {
       "post": [
         {
           "type": "particleDissolve",
@@ -7986,7 +9136,7 @@
         }
       ]
     },
-    "fx_281": {
+    "fx_313": {
       "post": [
         {
           "type": "shockwave",
@@ -8007,7 +9157,7 @@
         }
       ]
     },
-    "fx_282": {
+    "fx_314": {
       "post": [
         {
           "type": "zoomBlur",
@@ -8026,7 +9176,7 @@
         }
       ]
     },
-    "fx_283": {
+    "fx_315": {
       "post": [
         {
           "type": "motionBlur",
@@ -8043,7 +9193,7 @@
         }
       ]
     },
-    "fx_284": {
+    "fx_316": {
       "post": [
         {
           "type": "echoTrail",
@@ -8061,7 +9211,7 @@
         }
       ]
     },
-    "fx_285": {
+    "fx_317": {
       "post": [
         {
           "type": "godRays",
@@ -8082,7 +9232,7 @@
         }
       ]
     },
-    "fx_286": {
+    "fx_318": {
       "post": [
         {
           "type": "lightSweep",
@@ -8100,7 +9250,7 @@
         }
       ]
     },
-    "fx_287": {
+    "fx_319": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -8116,7 +9266,7 @@
         }
       ]
     },
-    "fx_288": {
+    "fx_320": {
       "post": [
         {
           "type": "mirror",
@@ -8132,7 +9282,7 @@
         }
       ]
     },
-    "fx_289": {
+    "fx_321": {
       "post": [
         {
           "type": "pixelSort",
@@ -8149,7 +9299,7 @@
         }
       ]
     },
-    "fx_290": {
+    "fx_322": {
       "post": [
         {
           "type": "lensDistortion",
@@ -8166,7 +9316,7 @@
         }
       ]
     },
-    "fx_291": {
+    "fx_323": {
       "post": [
         {
           "type": "colorGrade",
@@ -8184,7 +9334,7 @@
         }
       ]
     },
-    "fx_292": {
+    "fx_324": {
       "post": [
         {
           "type": "displacementMap",
@@ -8200,7 +9350,7 @@
         }
       ]
     },
-    "fx_293": {
+    "fx_325": {
       "post": [
         {
           "type": "bloom",
@@ -8217,7 +9367,7 @@
         }
       ]
     },
-    "fx_294": {
+    "fx_326": {
       "post": [
         {
           "type": "chromaticAberration",
@@ -8234,7 +9384,7 @@
         }
       ]
     },
-    "fx_295": {
+    "fx_327": {
       "post": [
         {
           "type": "crt",
@@ -8251,7 +9401,7 @@
         }
       ]
     },
-    "fx_296": {
+    "fx_328": {
       "post": [
         {
           "type": "filmGrain",
@@ -8267,7 +9417,7 @@
         }
       ]
     },
-    "fx_297": {
+    "fx_329": {
       "post": [
         {
           "type": "halftone",
@@ -8283,7 +9433,7 @@
         }
       ]
     },
-    "fx_298": {
+    "fx_330": {
       "post": [
         {
           "type": "pixelate",
@@ -8298,7 +9448,7 @@
         }
       ]
     },
-    "fx_299": {
+    "fx_331": {
       "post": [
         {
           "type": "heatHaze",
@@ -8314,7 +9464,7 @@
         }
       ]
     },
-    "fx_300": {
+    "fx_332": {
       "post": [
         {
           "type": "lightLeak",
@@ -8332,7 +9482,7 @@
         }
       ]
     },
-    "fx_301": {
+    "fx_333": {
       "post": [
         {
           "type": "vignette",
@@ -8348,7 +9498,7 @@
         }
       ]
     },
-    "fx_302": {
+    "fx_334": {
       "post": [
         {
           "type": "sparkles",
@@ -8366,7 +9516,7 @@
         }
       ]
     },
-    "fx_303": {
+    "fx_335": {
       "post": [
         {
           "type": "lensFlare",
@@ -8385,7 +9535,7 @@
         }
       ]
     },
-    "fx_304": {
+    "fx_336": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -8403,7 +9553,7 @@
         }
       ]
     },
-    "fx_305": {
+    "fx_337": {
       "post": [
         {
           "type": "rgbShift",
@@ -8420,7 +9570,7 @@
         }
       ]
     },
-    "fx_306": {
+    "fx_338": {
       "post": [
         {
           "type": "scanTear",
@@ -8437,7 +9587,7 @@
         }
       ]
     },
-    "fx_307": {
+    "fx_339": {
       "post": [
         {
           "type": "vhsTracking",
@@ -8454,7 +9604,7 @@
         }
       ]
     },
-    "fx_308": {
+    "fx_340": {
       "post": [
         {
           "type": "dataSmear",
@@ -8471,7 +9621,7 @@
         }
       ]
     },
-    "fx_309": {
+    "fx_341": {
       "post": [
         {
           "type": "digitalNoise",
@@ -8487,7 +9637,7 @@
         }
       ]
     },
-    "fx_310": {
+    "fx_342": {
       "post": [
         {
           "type": "glitchSlice",
@@ -8504,7 +9654,7 @@
         }
       ]
     },
-    "fx_311": {
+    "fx_343": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -8521,7 +9671,7 @@
         }
       ]
     },
-    "fx_312": {
+    "fx_344": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -8538,7 +9688,7 @@
         }
       ]
     },
-    "fx_313": {
+    "fx_345": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -8553,7 +9703,7 @@
         }
       ]
     },
-    "fx_314": {
+    "fx_346": {
       "post": [
         {
           "type": "burnDissolve",
@@ -8570,7 +9720,7 @@
         }
       ]
     },
-    "fx_315": {
+    "fx_347": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -8586,7 +9736,7 @@
         }
       ]
     },
-    "fx_316": {
+    "fx_348": {
       "post": [
         {
           "type": "particleDissolve",
@@ -8602,7 +9752,7 @@
         }
       ]
     },
-    "fx_317": {
+    "fx_349": {
       "post": [
         {
           "type": "shockwave",
@@ -8623,7 +9773,7 @@
         }
       ]
     },
-    "fx_318": {
+    "fx_350": {
       "post": [
         {
           "type": "zoomBlur",
@@ -8642,7 +9792,7 @@
         }
       ]
     },
-    "fx_319": {
+    "fx_351": {
       "post": [
         {
           "type": "motionBlur",
@@ -8659,7 +9809,7 @@
         }
       ]
     },
-    "fx_320": {
+    "fx_352": {
       "post": [
         {
           "type": "echoTrail",
@@ -8677,7 +9827,7 @@
         }
       ]
     },
-    "fx_321": {
+    "fx_353": {
       "post": [
         {
           "type": "godRays",
@@ -8698,7 +9848,7 @@
         }
       ]
     },
-    "fx_322": {
+    "fx_354": {
       "post": [
         {
           "type": "lightSweep",
@@ -8716,7 +9866,7 @@
         }
       ]
     },
-    "fx_323": {
+    "fx_355": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -8732,7 +9882,7 @@
         }
       ]
     },
-    "fx_324": {
+    "fx_356": {
       "post": [
         {
           "type": "mirror",
@@ -8748,7 +9898,7 @@
         }
       ]
     },
-    "fx_325": {
+    "fx_357": {
       "post": [
         {
           "type": "pixelSort",
@@ -8765,243 +9915,7 @@
         }
       ]
     },
-    "fx_326": {
-      "post": [
-        {
-          "type": "lensDistortion",
-          "enabled": true,
-          "params": {
-            "k1": 0.5,
-            "k2": -0.5,
-            "chroma": 0.2,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_327": {
-      "post": [
-        {
-          "type": "colorGrade",
-          "enabled": true,
-          "params": {
-            "lift": 0,
-            "saturation": 1,
-            "posterize": 0,
-            "duotone": "#4dc8ff",
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_328": {
-      "post": [
-        {
-          "type": "displacementMap",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "scroll": 1.5,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_329": {
-      "post": [
-        {
-          "type": "bloom",
-          "enabled": true,
-          "params": {
-            "threshold": 0.75,
-            "intensity": 0.5,
-            "radius": 0.5,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_330": {
-      "post": [
-        {
-          "type": "chromaticAberration",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "radial": 0,
-            "angle": 0,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_331": {
-      "post": [
-        {
-          "type": "crt",
-          "enabled": true,
-          "params": {
-            "scanlines": 0.75,
-            "curvature": 0.75,
-            "vignette": 0.3,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_332": {
-      "post": [
-        {
-          "type": "filmGrain",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "size": 3.125,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_333": {
-      "post": [
-        {
-          "type": "halftone",
-          "enabled": true,
-          "params": {
-            "dotSize": 30.5,
-            "angle": -90,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_334": {
-      "post": [
-        {
-          "type": "pixelate",
-          "enabled": true,
-          "params": {
-            "size": 48.5,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_335": {
-      "post": [
-        {
-          "type": "heatHaze",
-          "enabled": true,
-          "params": {
-            "amount": 0.75,
-            "speed": 0.5,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_336": {
-      "post": [
-        {
-          "type": "lightLeak",
-          "enabled": true,
-          "params": {
-            "color": "#ff8a3d",
-            "x": 0.25,
-            "y": 0.2,
-            "intensity": 0.6,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_337": {
-      "post": [
-        {
-          "type": "vignette",
-          "enabled": true,
-          "params": {
-            "amount": 0.25,
-            "softness": 0.25,
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_338": {
-      "post": [
-        {
-          "type": "sparkles",
-          "enabled": true,
-          "params": {
-            "count": 24,
-            "size": 2,
-            "shape": "star",
-            "color": "#ff8a3d",
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_339": {
-      "post": [
-        {
-          "type": "lensFlare",
-          "enabled": true,
-          "params": {
-            "position": {
-              "x": 0.4,
-              "y": 0.35
-            },
-            "color": "#4dc8ff",
-            "enabled": true,
-            "in": 1,
-            "out": 1
-          },
-          "motion": {}
-        }
-      ]
-    },
-    "fx_358": {
+    "fx_367": {
       "bgShape": {
         "type": "none",
         "enabled": true,
@@ -9027,7 +9941,7 @@
         "motion": {}
       }
     },
-    "fx_359": {
+    "fx_368": {
       "bgShape": {
         "type": "square",
         "enabled": true,
@@ -9053,59 +9967,7 @@
         "motion": {}
       }
     },
-    "fx_360": {
-      "bgShape": {
-        "type": "none",
-        "enabled": true,
-        "params": {
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "fgColors": [],
-          "vary": "cycle",
-          "varyColors": [],
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_361": {
-      "bgShape": {
-        "type": "square",
-        "enabled": true,
-        "params": {
-          "rotateWithLetter": true,
-          "scaleWithLetter": true,
-          "opacity": 1,
-          "skipSpaces": true,
-          "skipRate": 0,
-          "fgAutoContrast": false,
-          "fgColors": [],
-          "vary": "cycle",
-          "varyColors": [],
-          "stroke": 0,
-          "fill": 1,
-          "trimStart": 0,
-          "trimEnd": 1,
-          "trimOffset": 0,
-          "dashOn": 0,
-          "dashOff": 0,
-          "dashOffset": 0
-        },
-        "motion": {}
-      }
-    },
-    "fx_362": {
+    "fx_369": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9127,7 +9989,7 @@
         "motion": {}
       }
     },
-    "fx_363": {
+    "fx_370": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9151,7 +10013,7 @@
         "motion": {}
       }
     },
-    "fx_364": {
+    "fx_371": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9174,7 +10036,7 @@
         "motion": {}
       }
     },
-    "fx_365": {
+    "fx_372": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9196,7 +10058,7 @@
         "motion": {}
       }
     },
-    "fx_366": {
+    "fx_373": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9219,7 +10081,7 @@
         "motion": {}
       }
     },
-    "fx_367": {
+    "fx_374": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9242,7 +10104,7 @@
         "motion": {}
       }
     },
-    "fx_368": {
+    "fx_375": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9266,7 +10128,7 @@
         "motion": {}
       }
     },
-    "fx_369": {
+    "fx_376": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9290,7 +10152,7 @@
         "motion": {}
       }
     },
-    "fx_370": {
+    "fx_377": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9313,7 +10175,7 @@
         "motion": {}
       }
     },
-    "fx_371": {
+    "fx_378": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9339,7 +10201,7 @@
         "motion": {}
       }
     },
-    "fx_372": {
+    "fx_379": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9362,7 +10224,7 @@
         "motion": {}
       }
     },
-    "fx_373": {
+    "fx_380": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -9381,185 +10243,6 @@
           "scale": 3.3,
           "threshold": 0.75,
           "softness": 0.08
-        },
-        "motion": {}
-      }
-    },
-    "fx_374": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "gradientSweep",
-        "enabled": true,
-        "params": {
-          "angle": 0,
-          "speed": 1.5
-        },
-        "motion": {}
-      }
-    },
-    "fx_375": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "rainbowFlow",
-        "enabled": true,
-        "params": {
-          "saturation": 0.75,
-          "lightness": 0.6,
-          "speed": 0.5,
-          "perLetter": false
-        },
-        "motion": {}
-      }
-    },
-    "fx_376": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "holographic",
-        "enabled": true,
-        "params": {
-          "iridescence": 0.75,
-          "fresnel": 0.75,
-          "speed": 0.3
-        },
-        "motion": {}
-      }
-    },
-    "fx_377": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "chrome",
-        "enabled": true,
-        "params": {
-          "envColors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "sharpness": 0.25
-        },
-        "motion": {}
-      }
-    },
-    "fx_378": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "goldFoil",
-        "enabled": true,
-        "params": {
-          "grain": 0.5,
-          "sparkle": 0.25,
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        "motion": {}
-      }
-    },
-    "fx_379": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "fire",
-        "enabled": true,
-        "params": {
-          "scale": 2,
-          "speed": 1.05,
-          "colors": null
-        },
-        "motion": {}
-      }
-    },
-    "fx_380": {
-      "bgShape": {
-        "type": "rounded",
-        "params": {
-          "unit": "cell",
-          "width": 1.15,
-          "height": 1.15,
-          "opacity": 0.9,
-          "skipSpaces": true
-        },
-        "enabled": true
-      },
-      "bgFill": {
-        "type": "caustics",
-        "enabled": true,
-        "params": {
-          "scale": 2,
-          "speed": 0.4,
-          "colorA": "#ff8a3d",
-          "colorB": "#ff8a3d"
         },
         "motion": {}
       }
@@ -17030,8 +17713,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 677.88,
-      "end": 680.12,
+      "start": 713.88,
+      "end": 716.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17046,8 +17729,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 679.88,
-      "end": 682.12,
+      "start": 715.88,
+      "end": 718.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17062,8 +17745,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 681.88,
-      "end": 684.12,
+      "start": 717.88,
+      "end": 720.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17081,8 +17764,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 683.88,
-      "end": 686.12,
+      "start": 719.88,
+      "end": 722.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17099,8 +17782,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 685.88,
-      "end": 688.12,
+      "start": 721.88,
+      "end": 724.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17119,8 +17802,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 687.88,
-      "end": 690.12,
+      "start": 723.88,
+      "end": 726.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17138,8 +17821,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 689.88,
-      "end": 692.12,
+      "start": 725.88,
+      "end": 728.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17157,8 +17840,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 691.88,
-      "end": 694.12,
+      "start": 727.88,
+      "end": 730.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17178,190 +17861,12 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 693.88,
-      "end": 696.12,
+      "start": 729.88,
+      "end": 732.12,
       "spec": {
         "type": "shapes",
         "params": {
           "kind": "particles",
-          "set": "circles",
-          "count": 10,
-          "speed": 0.8,
-          "opacity": 0.45,
-          "color": null
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_9",
-      "trackId": "bg",
-      "start": 695.88,
-      "end": 698.12,
-      "spec": {
-        "type": "solid",
-        "params": {
-          "color": "#4dc8ff"
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_10",
-      "trackId": "bg",
-      "start": 697.88,
-      "end": 700.12,
-      "spec": {
-        "type": "plain",
-        "params": {
-          "color": "#4dc8ff"
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_11",
-      "trackId": "bg",
-      "start": 699.88,
-      "end": 702.12,
-      "spec": {
-        "type": "gradient",
-        "params": {
-          "colors": null,
-          "direction": "toLeft",
-          "scale": 1.15,
-          "speed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_12",
-      "trackId": "bg",
-      "start": 701.88,
-      "end": 704.12,
-      "spec": {
-        "type": "noiseGradient",
-        "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 3.4,
-          "speed": 0.5
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_13",
-      "trackId": "bg",
-      "start": 703.88,
-      "end": 706.12,
-      "spec": {
-        "type": "card",
-        "params": {
-          "dim": 0.75,
-          "blur": 10,
-          "focusBadge": true,
-          "zoom": 1.6,
-          "parallax": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_14",
-      "trackId": "bg",
-      "start": 705.88,
-      "end": 708.12,
-      "spec": {
-        "type": "cover",
-        "params": {
-          "songId": "",
-          "blur": 10,
-          "dim": 0.75,
-          "zoomSpeed": 0.1
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_15",
-      "trackId": "bg",
-      "start": 707.88,
-      "end": 710.12,
-      "spec": {
-        "type": "image",
-        "params": {
-          "imageId": "",
-          "fit": "contain",
-          "blur": 0,
-          "dim": 0.25
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_16",
-      "trackId": "bg",
-      "start": 709.88,
-      "end": 712.12,
-      "spec": {
-        "type": "pattern",
-        "params": {
-          "mode": "stripes",
-          "count": 24,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.55,
-          "color": null
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.12,
-      "fadeOut": 0.12,
-      "colors": null
-    },
-    {
-      "id": "clip_bg_17",
-      "trackId": "bg",
-      "start": 711.88,
-      "end": 714.12,
-      "spec": {
-        "type": "shapes",
-        "params": {
-          "kind": "waveform",
           "set": "circles",
           "count": 10,
           "speed": 0.8,

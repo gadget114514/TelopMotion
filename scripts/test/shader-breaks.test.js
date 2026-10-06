@@ -141,7 +141,7 @@ test('packStateRows carries dust without touching the em-info slot', () => {
   require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'gl', 'passes.js'));
   const passes = global.window.SA.glPasses || global.SA.glPasses;
   const pack = passes._test.packStateRows;
-  const data = new Float32Array(26 * 4);
+  const data = new Float32Array(passes._test.STATE_ROWS * 4);
   pack([{ dust: { windX: 0.6, windY: -0.2, size: 2.4, turbulence: 0.5, spread: 0.15, amount: 1 } }], data, 1);
   const near = (got, want) => assert.ok(Math.abs(got - want) < 1e-6, `expected ${want}, got ${got}`);
   [0.6, -0.2, 2.4, 0.5].forEach((want, k) => near(data[23 * 4 + k], want));

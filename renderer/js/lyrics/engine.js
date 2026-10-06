@@ -1081,6 +1081,119 @@ SA.lyricsEngine = (() => {
       return pipeline.sdf();
     }
 
+    // Motion trails (objeffects §4.4/4.5): past-position shadows. Echo draws
+    // the old glyphs as a solid tinted fill, strokeTrail as edge-only lines.
+    // Copies paint oldest-first into their own layers; the body mask is
+    // restored afterwards for the edges and posts that follow.
+    function drawMotionTrail(active, trail, t, ctx) {
+      const { beat, scene, result, style } = active;
+      const { beats, variant, colorSet, fillInstance, category, progress, colorOverride, project } = ctx;
+      if (!SA.objfxCore || !pipeline) return null;
+      const cfg = trail.cfg;
+      const n = scene.letters.length;
+      if (!n || !result.letters.length) return null;
+      const em = Math.max(8, Number(scene.size) || 96);
+      const colorCtx = { palette: style.palette || null, palettes: project ? project.palettes || [] : [] };
+      const rgbaA = SA.color.toRgba(cfg.colorA, [1, 0.23, 0.42, 1], colorCtx);
+      const rgbaB = SA.color.toRgba(cfg.colorB, trail.type === 'echo' ? [0.23, 0.42, 1, 1] : [1, 0, 0.78, 1], colorCtx);
+      const mixc = (tt) => [0, 1, 2, 3].map((k) => rgbaA[k] + (rgbaB[k] - rgbaA[k]) * tt);
+      const toBytes = (rgba) => [
+        Math.round(Math.max(0, Math.min(1, rgba[0])) * 255),
+        Math.round(Math.max(0, Math.min(1, rgba[1])) * 255),
+        Math.round(Math.max(0, Math.min(1, rgba[2])) * 255),
+        Math.round(Math.max(0, Math.min(1, rgba[3] == null ? 1 : rgba[3])) * 255),
+      ];
+      const toHex = (rgba) => `#${toBytes(rgba).slice(0, 3).map((v) => v.toString(16).padStart(2, '0')).join('')}`;
+      const maxDistance = Math.max(state.width, state.height) * 0.1;
+      const sharedFill = {
+        category,
+        time: t,
+        palette: style.palette || null,
+        palettes: project ? project.palettes || [] : [],
+        categoryColors: project ? project.categoryColors || {} : {},
+        progress,
+      };
+      const blend = cfg.blend === 'add' ? 'add' : undefined;
+      let drew = false;
+      let masked = false;
+      for (let k = cfg.count; k >= 1; k -= 1) {
+        const past = evaluateBeatState(project, beat, scene, t - k * cfg.spacing, beats, { objfx: false });
+        if (!past || !past.active || !past.letters.length) continue;
+        const copy = SA.objfxCore.trailCopy(cfg, k, cfg.count);
+        const copyOpacity = (cfg.opacity == null ? 0.6 : cfg.opacity) * copy.opacityMul;
+        if (!(copyOpacity > 0.001)) continue;
+        const rgba = mixc(copy.colorT);
+        let peak = 0;
+        const states = past.letters.map((ps, i) => {
+          const cur = result.letters[i] || {};
+          const fade = SA.objfxCore.trailLetterFade((ps.x || 0) - (cur.x || 0), (ps.y || 0) - (cur.y || 0), em, cfg.minGap);
+          if (fade > peak) peak = fade;
+          const out = {
+            ...ps,
+            opacity: (ps.opacity == null ? 1 : ps.opacity) * fade,
+          };
+          if (trail.type === 'echo') {
+            out.scaleX = (ps.scaleX == null ? 1 : ps.scaleX) * copy.scaleMul;
+            out.scaleY = (ps.scaleY == null ? 1 : ps.scaleY) * copy.scaleMul;
+          }
+          return out;
+        });
+        if (!(peak > 0.001)) continue; // still sitting on the body: no shadow
+        if (trail.type === 'echo') {
+          const override = new Uint8Array(n * 4);
+          const bytes = toBytes(rgba);
+          for (let i = 0; i < n; i += 1) {
+            override[i * 4] = bytes[0];
+            override[i * 4 + 1] = bytes[1];
+            override[i * 4 + 2] = bytes[2];
+            override[i * 4 + 3] = bytes[3];
+          }
+          pipeline.text(scene, states, variant, override);
+          pipeline.beginLayer();
+          pipeline.fill(
+            SA.fx.fillUniforms({ type: 'solid', params: {} }, { ...sharedFill, colors: { fill: rgba } })
+          );
+          pipeline.commitLayer(copyOpacity, null, blend);
+        } else {
+          pipeline.text(scene, states, variant);
+          masked = true;
+          const sdf = pipeline.sdf();
+          if (!sdf) continue;
+          pipeline.beginLayer();
+          const uniforms = SA.fx.edgeUniforms(
+            {
+              type: 'outline',
+              params: {
+                width: Math.max(0.5, cfg.width * copy.widthMul),
+                color: toHex(rgba),
+                softness: 0.35,
+                pattern: cfg.dash > 0.01 ? 'dashed' : 'solid',
+                dashLength: 14,
+              },
+            },
+            {
+              colorSet: colorSet.arrays,
+              maxDistance,
+              width: state.width,
+              height: state.height,
+              time: t,
+              palette: style.palette || null,
+              palettes: project ? project.palettes || [] : [],
+              sdfTexture: sdf.texture,
+            }
+          );
+          if (uniforms) pipeline.edge(uniforms);
+          pipeline.commitLayer(copyOpacity, null, blend);
+        }
+        drew = true;
+      }
+      if (!drew && !masked) return null;
+      // restore the body mask for the edges and posts that follow
+      pipeline.text(scene, result.letters, variant, colorOverride);
+      pipeline.letterBlur(scene, result.letters);
+      return pipeline.sdf();
+    }
+
     function needsPrevious(scene) {
       const style = (scene && scene.style) || {};
       const from = style.layout && style.layout.params && style.layout.params.from;
@@ -1123,7 +1236,7 @@ SA.lyricsEngine = (() => {
       return worst;
     }
 
-    function evaluateBeatState(project, beat, scene, t, activeList) {
+    function evaluateBeatState(project, beat, scene, t, activeList, opts) {
       const seed = (project.styleMode && project.styleMode.seed) || 12345;
       const frameSize = { width: state.width, height: state.height };
       const later = activeList.filter((entry) => entry.start > beat.start + 1e-4 && t <= entry.end + 1e-4).length;
@@ -1139,6 +1252,9 @@ SA.lyricsEngine = (() => {
         analysis: state.analysis,
         audioFeatures: state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null,
       };
+      // motion-trail re-evaluation skips the motion-reactive holds (the shadow
+      // follows the plain trajectory); physics stays in by design
+      if (opts && opts.objfx === false) ctx.objfx = false;
       // A camera post changes what part of the frame is visible: the CPU side
       // uses its worst case so the frame guard can keep the lyrics on screen.
       const camera = cameraWorstCase(scene.style);
@@ -2527,6 +2643,15 @@ SA.lyricsEngine = (() => {
             ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
             : null;
         if (textOn) {
+          // motion trails behind the body paint first, so repeats and the
+          // glyphs cover them (objeffects §4.4/4.5)
+          const behindTrails = (result.meta && result.meta.trails) || [];
+          if (behindTrails.length) {
+            const trailCtx = { beats, variant, colorSet, fillInstance, category, progress, colorOverride, project };
+            for (const trail of behindTrails) {
+              if (trail && trail.cfg && trail.cfg.behind !== false) drawMotionTrail(active, trail, t, trailCtx);
+            }
+          }
           // repeat: arranged copies of the string behind the main text. Variant
           // typefaces re-render the mask, so the sdf is created afterwards.
           drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
@@ -2615,6 +2740,17 @@ SA.lyricsEngine = (() => {
           }
           if (strike.over.length) drawPrimitives(strike.over);
           drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
+          // motion trails in front paint after the body and edges
+          const frontTrails = (result.meta && result.meta.trails) || [];
+          if (frontTrails.some((trail) => trail && trail.cfg && trail.cfg.behind === false)) {
+            const trailCtx = { beats, variant, colorSet, fillInstance, category, progress, colorOverride, project };
+            for (const trail of frontTrails) {
+              if (trail && trail.cfg && trail.cfg.behind === false) {
+                const restored = drawMotionTrail(active, trail, t, trailCtx);
+                if (restored) sdfTarget = restored;
+              }
+            }
+          }
         }
         for (const instance of style.edge || []) {
           if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;

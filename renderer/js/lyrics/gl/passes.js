@@ -1272,10 +1272,11 @@ SA.glPasses = (() => {
       targets.postB = scene;
     }
 
-    function commitLayer(opacity, transform) {
+    function commitLayer(opacity, transform, blend) {
       const t = transform || {};
       gl.enable(gl.BLEND);
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+      // objeffects motion trails: 'add' composites the shadow with ONE, ONE
+      gl.blendFunc(gl.ONE, blend === 'add' ? gl.ONE : gl.ONE_MINUS_SRC_ALPHA);
       bind(targets.scene, null);
       gl.activeTexture(gl.TEXTURE0);
       gl.bindTexture(gl.TEXTURE_2D, targets.layer.texture);

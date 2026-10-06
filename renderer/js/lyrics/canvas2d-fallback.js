@@ -113,6 +113,59 @@ SA.canvas2dFallback = (() => {
         }
         if (!result.active) continue;
         const entry = { cueId: beat.cueId, beatId: beat.id, letters: [] };
+        // objeffects motion trails (echo only; stroke trails need an SDF):
+        // past-position shadows in a single colour, behind or in front
+        const drawEchoTrails = (position) => {
+          const trails = (result.meta && result.meta.trails) || [];
+          if (!SA.motion || !SA.objfxCore || !SA.color) return;
+          for (const trail of trails) {
+            if (!trail || trail.type !== 'echo' || !trail.cfg) continue;
+            const cfg = trail.cfg;
+            const isBehind = cfg.behind !== false;
+            if ((position === 'behind') !== isBehind) continue;
+            const rgbaA = SA.color.toRgba(cfg.colorA, [1, 0.23, 0.42, 1], {});
+            const rgbaB = SA.color.toRgba(cfg.colorB, [0.23, 0.42, 1, 1], {});
+            for (let k = cfg.count; k >= 1; k -= 1) {
+              const past = SA.motion.evaluateBeat(scene, t - k * cfg.spacing, {
+                project,
+                beat,
+                frame: { width: state.width, height: state.height },
+                seed: (project.styleMode && project.styleMode.seed) || 12345,
+                objfx: false,
+              });
+              if (!past || !past.active || !past.letters.length) continue;
+              const copy = SA.objfxCore.trailCopy(cfg, k, cfg.count);
+              const copyAlpha = (cfg.opacity == null ? 0.6 : cfg.opacity) * copy.opacityMul;
+              if (!(copyAlpha > 0.003)) continue;
+              const rgba = [0, 1, 2].map((c) => rgbaA[c] + (rgbaB[c] - rgbaA[c]) * copy.colorT);
+              const em = Math.max(8, Number(scene.size) || 96);
+              for (const i of order) {
+                const ps = past.letters[i];
+                const cur = result.letters[i] || {};
+                if (!ps) continue;
+                const fade = SA.objfxCore.trailLetterFade((ps.x || 0) - (cur.x || 0), (ps.y || 0) - (cur.y || 0), em, cfg.minGap);
+                if (!(fade > 0.001)) continue;
+                const letter = scene.letters[i];
+                const mesh = SA.lyricsScene.meshOf(letter);
+                pathForLetter(letter);
+                const centerX = ((mesh.bbox.x0 + mesh.bbox.x1) / 2) * (mesh.scale || 1);
+                const centerY = ((mesh.bbox.y0 + mesh.bbox.y1) / 2) * (mesh.scale || 1);
+                ctx.save();
+                ctx.translate(ps.x, ps.y);
+                ctx.rotate(((ps.rot || 0) * Math.PI) / 180);
+                ctx.scale(
+                  (ps.scaleX == null ? 1 : ps.scaleX) * copy.scaleMul,
+                  (ps.scaleY == null ? 1 : ps.scaleY) * copy.scaleMul
+                );
+                ctx.translate(-centerX, -centerY);
+                ctx.globalAlpha = Math.max(0, Math.min(1, (ps.opacity == null ? 1 : ps.opacity) * fade * copyAlpha));
+                ctx.fillStyle = `rgb(${Math.round(rgba[0] * 255)}, ${Math.round(rgba[1] * 255)}, ${Math.round(rgba[2] * 255)})`;
+                ctx.fill(letter.path2d);
+                ctx.restore();
+              }
+            }
+          }
+        };
         const order = scene.letters.map((letter, i) => i);
         const reverse = result.letters && result.letters._reverseDraw === true;
         if (order.some((i) => (result.letters[i] && result.letters[i].drawOrder) || reverse)) {
@@ -122,6 +175,7 @@ SA.canvas2dFallback = (() => {
             return (oa - ob) || (reverse ? b - a : a - b);
           });
         }
+        drawEchoTrails('behind');
         for (const i of order) {
           const letter = scene.letters[i];
           const letterState = result.letters[i] || { x: letter.local.cx, y: letter.local.cy, rot: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1 };
@@ -158,6 +212,7 @@ SA.canvas2dFallback = (() => {
             center: { x: letterState.x, y: letterState.y },
           });
         }
+        drawEchoTrails('front');
         frame.cues.push(entry);
       }
       return frame;

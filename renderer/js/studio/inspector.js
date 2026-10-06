@@ -1592,6 +1592,21 @@ SA.inspector = (() => {
     const graphicsOff = group === 'post' && !!(selectedSubtitleTrack() || {}).graphicsHidden;
     const list = Array.isArray(style[group]) ? style[group] : [];
     const body = section(container, group, t(GROUP_LABELS[group]));
+    // objeffects §5-2: only the first physics hold simulates; a second one
+    // (softBody/gravityHang/motionBend stacked) is inert — say so in place.
+    if (group === 'hold') {
+      const physCount = list.filter((entry) => {
+        if (!entry || entry.enabled === false) return false;
+        const descriptor = SA.fx.get('hold', entry.type);
+        return descriptor && typeof descriptor.physics === 'function';
+      }).length;
+      if (physCount >= 2) {
+        const warn = document.createElement('div');
+        warn.className = 'insp-orphans';
+        warn.textContent = t('studio.inspector.physicsStack');
+        body.appendChild(warn);
+      }
+    }
     list.forEach((instance, index) => {
       const box = document.createElement('div');
       box.className = 'insp-stack-item';

@@ -272,8 +272,11 @@
         fx -= (inertia * ax) / unitX;
         fy -= (inertia * ay) / unitY;
         // rotational inertia: the tangential acceleration of the offset point
-        fx += inertia * ar * (-v * unitY) / unitX;
-        fy += inertia * ar * (u * unitX) / unitY;
+        // (scaled by the lead rotLag for motionBend: the tail whips around
+        // the pinned leading edge)
+        const rotLag = cfg.lead ? num(cfg.lead.rotLag, 0.5) : 1;
+        fx += inertia * ar * rotLag * (-v * unitY) / unitX;
+        fy += inertia * ar * rotLag * (u * unitX) / unitY;
       }
       if (kickAmount > 0) {
         const len = Math.hypot(u, v) || 1;
@@ -336,6 +339,43 @@
       }
     }
 
+    // lead pins the front edge of the lattice to its rest position
+    // (objeffects motionBend): the head follows the rigid frame at once while
+    // inertia leaves the tail behind, then the springs catch up. `side` is a
+    // unit direction in the letter frame (auto = the current velocity); the
+    // weight rises smoothly from 0 to 1 over the leading `width` of the depth.
+    if (cfg.lead) {
+      const lead = cfg.lead;
+      const vel = external.vel || {};
+      const gate = num(external.velGate, 1);
+      let dir = sim.leadDir || null;
+      if (gate >= 0.02) {
+        const vx = num(vel.x, 0);
+        const vy = num(vel.y, 0);
+        const len = Math.hypot(vx, vy);
+        if (len > 1e-9) {
+          dir = [vx / len, vy / len];
+          sim.leadDir = dir;
+        }
+      }
+      if (!dir) {
+        const side = lead.side || 'auto';
+        const fixed = { left: [-1, 0], right: [1, 0], top: [0, -1], bottom: [0, 1] }[side];
+        dir = fixed || [1, 0];
+      }
+      const width = Math.max(0.1, Math.min(0.8, num(lead.width, 0.3)));
+      const lo = 1 - 2 * width;
+      for (let k = 0; k < count; k += 1) {
+        const idx = k * 2;
+        const dot = rest[idx] * dir[0] + rest[idx + 1] * dir[1];
+        let w = (dot - lo) / Math.max(1e-6, 1 - lo);
+        w = w <= 0 ? 0 : w >= 1 ? 1 : w * w * (3 - 2 * w);
+        if (!(w > 0)) continue;
+        nodes[idx] += (rest[idx] - nodes[idx]) * w;
+        nodes[idx + 1] += (rest[idx + 1] - nodes[idx + 1]) * w;
+      }
+    }
+
     // 4. shapeTarget: pull towards the CPU warp target
     if (internal.shape) {
       const follow = 1 - Math.exp(-Math.max(0.001, num(cfg.stiffness, 0.7)) * 6 * dt);
@@ -366,7 +406,9 @@
       }
     }
 
-    // 6. safety: clamp the displacement and recover from NaN
+    // 6. safety: clamp the displacement and recover from NaN. motionBend may
+    // raise the limit through cfg.maxStretch (rubber needs more than 0.8).
+    const stretchLimit = cfg.maxStretch > 0 ? cfg.maxStretch : MAX_DISPLACEMENT;
     let maximum = 0;
     for (let kk = 0; kk < count; kk += 1) {
       const idx = kk * 2;
@@ -377,14 +419,14 @@
         resetSim(sim);
         return;
       }
-      if (length > MAX_DISPLACEMENT) {
-        const scale = MAX_DISPLACEMENT / length;
+      if (length > stretchLimit) {
+        const scale = stretchLimit / length;
         dx *= scale;
         dy *= scale;
         nodes[idx] = rest[idx] + dx;
         nodes[idx + 1] = rest[idx + 1] + dy;
       }
-      const clamped = Math.min(length, MAX_DISPLACEMENT);
+      const clamped = Math.min(length, stretchLimit);
       if (clamped > maximum) maximum = clamped;
     }
     sim.lastMax = maximum;

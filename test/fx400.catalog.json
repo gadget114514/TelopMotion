@@ -3,7 +3,7 @@
   "version": 2,
   "seed": 400400,
   "total": 400,
-  "typeCount": 223,
+  "typeCount": 239,
   "sample": "今日はとてもいい天気ですね、散歩でもしましょうか",
   "verification": {
     "motion": [
@@ -43,8 +43,8 @@
     },
     {
       "group": "enter",
-      "types": 40,
-      "entries": 78
+      "types": 56,
+      "entries": 110
     },
     {
       "group": "exit",
@@ -74,22 +74,22 @@
     {
       "group": "post",
       "types": 36,
-      "entries": 72
+      "entries": 58
     },
     {
       "group": "background",
       "types": 10,
-      "entries": 18
+      "entries": 9
     },
     {
       "group": "bgShape",
       "types": 2,
-      "entries": 4
+      "entries": 2
     },
     {
       "group": "bgFill",
       "types": 14,
-      "entries": 19
+      "entries": 12
     },
     {
       "group": "bgEdge",
@@ -2948,6 +2948,955 @@
     },
     {
       "n": 82,
+      "id": "enter.charGrowIn.v1",
+      "group": "enter",
+      "type": "charGrowIn",
+      "variant": 1,
+      "label": "登場 / 一文字ずつ拡大（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 2.629,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "charGrowIn",
+          "enabled": true,
+          "params": {
+            "from": 0,
+            "overshoot": 1.25,
+            "peak": 0.65,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 83,
+      "id": "enter.stretchYIn.v1",
+      "group": "enter",
+      "type": "stretchYIn",
+      "variant": 1,
+      "label": "登場 / 縦伸びイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.064,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretchYIn",
+          "enabled": true,
+          "params": {
+            "amount": 1.4,
+            "thin": 0.35,
+            "split": 0.45,
+            "rise": 0.06,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 84,
+      "id": "enter.stretchXIn.v1",
+      "group": "enter",
+      "type": "stretchXIn",
+      "variant": 1,
+      "label": "登場 / 横伸びイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 2.629,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretchXIn",
+          "enabled": true,
+          "params": {
+            "amount": 1.4,
+            "thin": 0.35,
+            "split": 0.45,
+            "slide": 0.06,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 85,
+      "id": "enter.plateIn.v1",
+      "group": "enter",
+      "type": "plateIn",
+      "variant": 1,
+      "label": "登場 / 背景付きイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "t"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.715,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "plateIn",
+          "enabled": true,
+          "params": {
+            "plateLead": 0.25,
+            "from": 0.6,
+            "pivot": "line",
+            "pivotAnchor": "t",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 86,
+      "id": "enter.rubberIn.v1",
+      "group": "enter",
+      "type": "rubberIn",
+      "variant": 1,
+      "label": "登場 / ゴムイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.073,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "rubberIn",
+          "enabled": true,
+          "params": {
+            "amp": 0.6,
+            "damping": 4,
+            "freq": 3,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 87,
+      "id": "enter.chromaIn.v1",
+      "group": "enter",
+      "type": "chromaIn",
+      "variant": 1,
+      "label": "登場 / 色ずれイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tr"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.408,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "chromaIn",
+          "enabled": true,
+          "params": {
+            "split": 0.04,
+            "jitter": 0.5,
+            "angle": 0,
+            "pivot": "letter",
+            "pivotAnchor": "tr",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 88,
+      "id": "enter.multiIn.v1",
+      "group": "enter",
+      "type": "multiIn",
+      "variant": 1,
+      "label": "登場 / 複数並びイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.206,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "multiIn",
+          "enabled": true,
+          "params": {
+            "arrange": "stack",
+            "layout": "stackV",
+            "copies": 2,
+            "cascade": 0.35,
+            "copyOpacity": "fade",
+            "gap": "normal",
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 89,
+      "id": "enter.leanIn.v1",
+      "group": "enter",
+      "type": "leanIn",
+      "variant": 1,
+      "label": "登場 / 傾きイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.045,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "leanIn",
+          "enabled": true,
+          "params": {
+            "angle": -25,
+            "skew": 20,
+            "distance": 0.08,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 90,
+      "id": "enter.tiltSettleIn.v1",
+      "group": "enter",
+      "type": "tiltSettleIn",
+      "variant": 1,
+      "label": "登場 / 出て傾く（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.419,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "tiltSettleIn",
+          "enabled": true,
+          "params": {
+            "tilt": 8,
+            "appear": 0.55,
+            "alternate": false,
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 91,
+      "id": "enter.shakeIn.v1",
+      "group": "enter",
+      "type": "shakeIn",
+      "variant": 1,
+      "label": "登場 / 震えイン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "t"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.484,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "shakeIn",
+          "enabled": true,
+          "params": {
+            "amp": 0.02,
+            "rotAmp": 6,
+            "freq": 10,
+            "pivot": "line",
+            "pivotAnchor": "t",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 92,
+      "id": "enter.circleIn.v1",
+      "group": "enter",
+      "type": "circleIn",
+      "variant": 1,
+      "label": "登場 / 中央円イン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.639,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "circleIn",
+          "enabled": true,
+          "params": {
+            "spread": 0.6,
+            "circleScale": 1.3,
+            "shapeUnit": "block",
+            "pivot": "block",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 93,
+      "id": "enter.circleBurstIn.v1",
+      "group": "enter",
+      "type": "circleBurstIn",
+      "variant": 1,
+      "label": "登場 / 円＋放射イン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.639,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "circleBurstIn",
+          "enabled": true,
+          "params": {
+            "spread": 0.6,
+            "circleScale": 1.3,
+            "burstDelay": 0.15,
+            "shapeUnit": "block",
+            "pivot": "block",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 94,
+      "id": "enter.varyDeformIn.v1",
+      "group": "enter",
+      "type": "varyDeformIn",
+      "variant": 1,
+      "label": "登場 / 文字ごと変形イン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "mode",
+          "from": "random",
+          "to": "cycle"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.763,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "varyDeformIn",
+          "enabled": true,
+          "params": {
+            "recipes": "stretchY,stretchX,rubber,lean,flip,spin",
+            "mode": "cycle",
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 95,
+      "id": "enter.blinkVaryIn.v1",
+      "group": "enter",
+      "type": "blinkVaryIn",
+      "variant": 1,
+      "label": "登場 / 文字ごと点滅（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "t"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.55s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.72,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "blinkVaryIn",
+          "enabled": true,
+          "params": {
+            "minHz": 3,
+            "maxHz": 9,
+            "duty": 0.4,
+            "dim": 0.05,
+            "pivot": "line",
+            "pivotAnchor": "t",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 96,
+      "id": "enter.twistIn.v1",
+      "group": "enter",
+      "type": "twistIn",
+      "variant": 1,
+      "label": "登場 / ねじれ・もどし（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "axis",
+          "from": "x",
+          "to": "y"
+        },
+        {
+          "key": "phase",
+          "from": "inOut",
+          "to": "in"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 17.657,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "twistIn",
+          "enabled": true,
+          "params": {
+            "axis": "y",
+            "angle": 180,
+            "direction": "forward",
+            "phase": "in",
+            "peak": 0.4,
+            "bounce": 0.3,
+            "backface": "dim",
+            "depth": 1,
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 97,
+      "id": "enter.spinPartIn.v1",
+      "group": "enter",
+      "type": "spinPartIn",
+      "variant": 1,
+      "label": "登場 / 部分回転イン（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "axis",
+          "from": "y",
+          "to": "x"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.414,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "spinPartIn",
+          "enabled": true,
+          "params": {
+            "axis": "x",
+            "turns": 1,
+            "direction": "forward",
+            "phase": "in",
+            "peak": 0.5,
+            "settle": 0.2,
+            "backface": "show",
+            "depth": 1,
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 98,
       "id": "enter.fade.v2",
       "group": "enter",
       "type": "fade",
@@ -2982,7 +3931,7 @@
       }
     },
     {
-      "n": 83,
+      "n": 99,
       "id": "enter.typewriter.v2",
       "group": "enter",
       "type": "typewriter",
@@ -3025,7 +3974,7 @@
       }
     },
     {
-      "n": 84,
+      "n": 100,
       "id": "enter.slide.v2",
       "group": "enter",
       "type": "slide",
@@ -3065,7 +4014,7 @@
       }
     },
     {
-      "n": 85,
+      "n": 101,
       "id": "enter.dropBounce.v2",
       "group": "enter",
       "type": "dropBounce",
@@ -3104,7 +4053,7 @@
       }
     },
     {
-      "n": 86,
+      "n": 102,
       "id": "enter.zoomIn.v2",
       "group": "enter",
       "type": "zoomIn",
@@ -3138,7 +4087,7 @@
       }
     },
     {
-      "n": 87,
+      "n": 103,
       "id": "enter.blurIn.v2",
       "group": "enter",
       "type": "blurIn",
@@ -3172,7 +4121,7 @@
       }
     },
     {
-      "n": 88,
+      "n": 104,
       "id": "enter.flip3D.v2",
       "group": "enter",
       "type": "flip3D",
@@ -3217,7 +4166,7 @@
       }
     },
     {
-      "n": 89,
+      "n": 105,
       "id": "enter.rotateIn.v2",
       "group": "enter",
       "type": "rotateIn",
@@ -3251,7 +4200,7 @@
       }
     },
     {
-      "n": 90,
+      "n": 106,
       "id": "enter.scatterIn.v2",
       "group": "enter",
       "type": "scatterIn",
@@ -3290,7 +4239,7 @@
       }
     },
     {
-      "n": 91,
+      "n": 107,
       "id": "enter.waveRise.v2",
       "group": "enter",
       "type": "waveRise",
@@ -3324,7 +4273,7 @@
       }
     },
     {
-      "n": 92,
+      "n": 108,
       "id": "enter.elasticPop.v2",
       "group": "enter",
       "type": "elasticPop",
@@ -3356,7 +4305,7 @@
       }
     },
     {
-      "n": 93,
+      "n": 109,
       "id": "enter.scramble.v2",
       "group": "enter",
       "type": "scramble",
@@ -3401,7 +4350,7 @@
       }
     },
     {
-      "n": 94,
+      "n": 110,
       "id": "enter.glitchIn.v2",
       "group": "enter",
       "type": "glitchIn",
@@ -3435,7 +4384,7 @@
       }
     },
     {
-      "n": 95,
+      "n": 111,
       "id": "enter.neonFlicker.v2",
       "group": "enter",
       "type": "neonFlicker",
@@ -3474,7 +4423,7 @@
       }
     },
     {
-      "n": 96,
+      "n": 112,
       "id": "enter.flickerIn.v2",
       "group": "enter",
       "type": "flickerIn",
@@ -3508,7 +4457,7 @@
       }
     },
     {
-      "n": 97,
+      "n": 113,
       "id": "enter.strokeDrawOn.v2",
       "group": "enter",
       "type": "strokeDrawOn",
@@ -3548,7 +4497,7 @@
       }
     },
     {
-      "n": 98,
+      "n": 114,
       "id": "enter.particlesAssemble.v2",
       "group": "enter",
       "type": "particlesAssemble",
@@ -3589,7 +4538,7 @@
       }
     },
     {
-      "n": 99,
+      "n": 115,
       "id": "enter.sandGather.v2",
       "group": "enter",
       "type": "sandGather",
@@ -3638,7 +4587,7 @@
       }
     },
     {
-      "n": 100,
+      "n": 116,
       "id": "enter.shatterRebuild.v2",
       "group": "enter",
       "type": "shatterRebuild",
@@ -3678,7 +4627,7 @@
       }
     },
     {
-      "n": 101,
+      "n": 117,
       "id": "enter.morphFromPrevious.v2",
       "group": "enter",
       "type": "morphFromPrevious",
@@ -3717,7 +4666,7 @@
       }
     },
     {
-      "n": 102,
+      "n": 118,
       "id": "enter.appear.v2",
       "group": "enter",
       "type": "appear",
@@ -3749,7 +4698,7 @@
       }
     },
     {
-      "n": 103,
+      "n": 119,
       "id": "enter.wipe.v2",
       "group": "enter",
       "type": "wipe",
@@ -3795,7 +4744,7 @@
       }
     },
     {
-      "n": 104,
+      "n": 120,
       "id": "enter.blind.v2",
       "group": "enter",
       "type": "blind",
@@ -3841,7 +4790,7 @@
       }
     },
     {
-      "n": 105,
+      "n": 121,
       "id": "enter.box.v2",
       "group": "enter",
       "type": "box",
@@ -3875,7 +4824,7 @@
       }
     },
     {
-      "n": 106,
+      "n": 122,
       "id": "enter.checkerboard.v2",
       "group": "enter",
       "type": "checkerboard",
@@ -3915,7 +4864,7 @@
       }
     },
     {
-      "n": 107,
+      "n": 123,
       "id": "enter.stretch.v2",
       "group": "enter",
       "type": "stretch",
@@ -3955,7 +4904,7 @@
       }
     },
     {
-      "n": 108,
+      "n": 124,
       "id": "enter.split.v2",
       "group": "enter",
       "type": "split",
@@ -3995,7 +4944,7 @@
       }
     },
     {
-      "n": 109,
+      "n": 125,
       "id": "enter.peekIn.v2",
       "group": "enter",
       "type": "peekIn",
@@ -4030,7 +4979,7 @@
       }
     },
     {
-      "n": 110,
+      "n": 126,
       "id": "enter.riseUp.v2",
       "group": "enter",
       "type": "riseUp",
@@ -4070,7 +5019,7 @@
       }
     },
     {
-      "n": 111,
+      "n": 127,
       "id": "enter.spiralIn.v2",
       "group": "enter",
       "type": "spiralIn",
@@ -4110,7 +5059,7 @@
       }
     },
     {
-      "n": 112,
+      "n": 128,
       "id": "enter.radialIn.v2",
       "group": "enter",
       "type": "radialIn",
@@ -4149,7 +5098,7 @@
       }
     },
     {
-      "n": 113,
+      "n": 129,
       "id": "enter.floatIn.v2",
       "group": "enter",
       "type": "floatIn",
@@ -4189,7 +5138,7 @@
       }
     },
     {
-      "n": 114,
+      "n": 130,
       "id": "enter.boomerang.v2",
       "group": "enter",
       "type": "boomerang",
@@ -4229,7 +5178,7 @@
       }
     },
     {
-      "n": 115,
+      "n": 131,
       "id": "enter.slideBlur.v2",
       "group": "enter",
       "type": "slideBlur",
@@ -4270,7 +5219,7 @@
       }
     },
     {
-      "n": 116,
+      "n": 132,
       "id": "enter.lightReveal.v2",
       "group": "enter",
       "type": "lightReveal",
@@ -4304,7 +5253,7 @@
       }
     },
     {
-      "n": 117,
+      "n": 133,
       "id": "enter.jaggyIn.v2",
       "group": "enter",
       "type": "jaggyIn",
@@ -4349,7 +5298,7 @@
       }
     },
     {
-      "n": 118,
+      "n": 134,
       "id": "enter.maskReveal.v2",
       "group": "enter",
       "type": "maskReveal",
@@ -4390,7 +5339,7 @@
       }
     },
     {
-      "n": 119,
+      "n": 135,
       "id": "enter.depthBlurIn.v2",
       "group": "enter",
       "type": "depthBlurIn",
@@ -4430,7 +5379,1031 @@
       }
     },
     {
-      "n": 120,
+      "n": 136,
+      "id": "enter.charGrowIn.v2",
+      "group": "enter",
+      "type": "charGrowIn",
+      "variant": 2,
+      "label": "登場 / 一文字ずつ拡大（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 3.243,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "charGrowIn",
+          "enabled": true,
+          "params": {
+            "from": 0,
+            "overshoot": 1.25,
+            "peak": 0.65,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 137,
+      "id": "enter.stretchYIn.v2",
+      "group": "enter",
+      "type": "stretchYIn",
+      "variant": 2,
+      "label": "登場 / 縦伸びイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 2.245,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretchYIn",
+          "enabled": true,
+          "params": {
+            "amount": 1.4,
+            "thin": 0.35,
+            "split": 0.45,
+            "rise": 0.06,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 138,
+      "id": "enter.stretchXIn.v2",
+      "group": "enter",
+      "type": "stretchXIn",
+      "variant": 2,
+      "label": "登場 / 横伸びイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 3.235,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "stretchXIn",
+          "enabled": true,
+          "params": {
+            "amount": 1.4,
+            "thin": 0.35,
+            "split": 0.45,
+            "slide": 0.06,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 139,
+      "id": "enter.plateIn.v2",
+      "group": "enter",
+      "type": "plateIn",
+      "variant": 2,
+      "label": "登場 / 背景付きイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "t"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.715,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "plateIn",
+          "enabled": true,
+          "params": {
+            "plateLead": 0.25,
+            "from": 0.6,
+            "pivot": "block",
+            "pivotAnchor": "t",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 140,
+      "id": "enter.rubberIn.v2",
+      "group": "enter",
+      "type": "rubberIn",
+      "variant": 2,
+      "label": "登場 / ゴムイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.767,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "rubberIn",
+          "enabled": true,
+          "params": {
+            "amp": 0.6,
+            "damping": 4,
+            "freq": 3,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 141,
+      "id": "enter.chromaIn.v2",
+      "group": "enter",
+      "type": "chromaIn",
+      "variant": 2,
+      "label": "登場 / 色ずれイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tr"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.7s/elasticOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.5,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "chromaIn",
+          "enabled": true,
+          "params": {
+            "split": 0.04,
+            "jitter": 0.5,
+            "angle": 0,
+            "pivot": "line",
+            "pivotAnchor": "tr",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "ease": "elasticOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 142,
+      "id": "enter.multiIn.v2",
+      "group": "enter",
+      "type": "multiIn",
+      "variant": 2,
+      "label": "登場 / 複数並びイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "arrange",
+          "from": "stack",
+          "to": "converge"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.7s/elasticOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.422,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "multiIn",
+          "enabled": true,
+          "params": {
+            "arrange": "converge",
+            "layout": "stackV",
+            "copies": 2,
+            "cascade": 0.35,
+            "copyOpacity": "fade",
+            "gap": "normal",
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "ease": "elasticOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 143,
+      "id": "enter.leanIn.v2",
+      "group": "enter",
+      "type": "leanIn",
+      "variant": 2,
+      "label": "登場 / 傾きイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.911,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "leanIn",
+          "enabled": true,
+          "params": {
+            "angle": -25,
+            "skew": 20,
+            "distance": 0.08,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 144,
+      "id": "enter.tiltSettleIn.v2",
+      "group": "enter",
+      "type": "tiltSettleIn",
+      "variant": 2,
+      "label": "登場 / 出て傾く（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "line"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.012,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "tiltSettleIn",
+          "enabled": true,
+          "params": {
+            "tilt": 8,
+            "appear": 0.55,
+            "alternate": false,
+            "pivot": "line",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 145,
+      "id": "enter.shakeIn.v2",
+      "group": "enter",
+      "type": "shakeIn",
+      "variant": 2,
+      "label": "登場 / 震えイン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tr"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.456,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "shakeIn",
+          "enabled": true,
+          "params": {
+            "amp": 0.02,
+            "rotAmp": 6,
+            "freq": 10,
+            "pivot": "letter",
+            "pivotAnchor": "tr",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 146,
+      "id": "enter.circleIn.v2",
+      "group": "enter",
+      "type": "circleIn",
+      "variant": 2,
+      "label": "登場 / 中央円イン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "shapeUnit",
+          "from": "block",
+          "to": "char"
+        },
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.639,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "circleIn",
+          "enabled": true,
+          "params": {
+            "spread": 0.6,
+            "circleScale": 1.3,
+            "shapeUnit": "char",
+            "pivot": "block",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 147,
+      "id": "enter.circleBurstIn.v2",
+      "group": "enter",
+      "type": "circleBurstIn",
+      "variant": 2,
+      "label": "登場 / 円＋放射イン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "shapeUnit",
+          "from": "block",
+          "to": "char"
+        },
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.639,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "circleBurstIn",
+          "enabled": true,
+          "params": {
+            "spread": 0.6,
+            "circleScale": 1.3,
+            "burstDelay": 0.15,
+            "shapeUnit": "char",
+            "pivot": "block",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 148,
+      "id": "enter.varyDeformIn.v2",
+      "group": "enter",
+      "type": "varyDeformIn",
+      "variant": 2,
+      "label": "登場 / 文字ごと変形イン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "tl"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.764,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "varyDeformIn",
+          "enabled": true,
+          "params": {
+            "recipes": "stretchY,stretchX,rubber,lean,flip,spin",
+            "mode": "random",
+            "pivot": "letter",
+            "pivotAnchor": "tl",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 149,
+      "id": "enter.blinkVaryIn.v2",
+      "group": "enter",
+      "type": "blinkVaryIn",
+      "variant": 2,
+      "label": "登場 / 文字ごと点滅（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "pivot",
+          "from": "letter",
+          "to": "block"
+        },
+        {
+          "key": "pivotAnchor",
+          "from": "c",
+          "to": "t"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 0.72,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "blinkVaryIn",
+          "enabled": true,
+          "params": {
+            "minHz": 3,
+            "maxHz": 9,
+            "duty": 0.4,
+            "dim": 0.05,
+            "pivot": "block",
+            "pivotAnchor": "t",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 150,
+      "id": "enter.twistIn.v2",
+      "group": "enter",
+      "type": "twistIn",
+      "variant": 2,
+      "label": "登場 / ねじれ・もどし（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "axis",
+          "from": "x",
+          "to": "z"
+        },
+        {
+          "key": "phase",
+          "from": "inOut",
+          "to": "in"
+        },
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "1.2s/backOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.861,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "twistIn",
+          "enabled": true,
+          "params": {
+            "axis": "z",
+            "angle": 180,
+            "direction": "forward",
+            "phase": "in",
+            "peak": 0.4,
+            "bounce": 0.3,
+            "backface": "dim",
+            "depth": 1,
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 1.2,
+              "ease": "backOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 151,
+      "id": "enter.spinPartIn.v2",
+      "group": "enter",
+      "type": "spinPartIn",
+      "variant": 2,
+      "label": "登場 / 部分回転イン（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "motion.in",
+          "from": "(既定)",
+          "to": "0.25s/cubicOut"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.414,
+      "notes": [],
+      "style": {
+        "enter": {
+          "type": "spinPartIn",
+          "enabled": true,
+          "params": {
+            "axis": "y",
+            "turns": 1,
+            "direction": "forward",
+            "phase": "in",
+            "peak": 0.5,
+            "settle": 0.2,
+            "backface": "show",
+            "depth": 1,
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "cubicOut"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 152,
       "id": "exit.fade.v1",
       "group": "exit",
       "type": "fade",
@@ -4470,7 +6443,7 @@
       }
     },
     {
-      "n": 121,
+      "n": 153,
       "id": "exit.slide.v1",
       "group": "exit",
       "type": "slide",
@@ -4505,7 +6478,7 @@
       }
     },
     {
-      "n": 122,
+      "n": 154,
       "id": "exit.zoomOut.v1",
       "group": "exit",
       "type": "zoomOut",
@@ -4533,7 +6506,7 @@
       }
     },
     {
-      "n": 123,
+      "n": 155,
       "id": "exit.blurOut.v1",
       "group": "exit",
       "type": "blurOut",
@@ -4572,7 +6545,7 @@
       }
     },
     {
-      "n": 124,
+      "n": 156,
       "id": "exit.explode.v1",
       "group": "exit",
       "type": "explode",
@@ -4601,7 +6574,7 @@
       }
     },
     {
-      "n": 125,
+      "n": 157,
       "id": "exit.gravityFall.v1",
       "group": "exit",
       "type": "gravityFall",
@@ -4630,7 +6603,7 @@
       }
     },
     {
-      "n": 126,
+      "n": 158,
       "id": "exit.dissolve.v1",
       "group": "exit",
       "type": "dissolve",
@@ -4670,7 +6643,7 @@
       }
     },
     {
-      "n": 127,
+      "n": 159,
       "id": "exit.wipe.v1",
       "group": "exit",
       "type": "wipe",
@@ -4704,7 +6677,7 @@
       }
     },
     {
-      "n": 128,
+      "n": 160,
       "id": "exit.typewriterReverse.v1",
       "group": "exit",
       "type": "typewriterReverse",
@@ -4736,7 +6709,7 @@
       }
     },
     {
-      "n": 129,
+      "n": 161,
       "id": "exit.shrinkToCenter.v1",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -4768,7 +6741,7 @@
       }
     },
     {
-      "n": 130,
+      "n": 162,
       "id": "exit.particlesDisperse.v1",
       "group": "exit",
       "type": "particlesDisperse",
@@ -4797,7 +6770,7 @@
       }
     },
     {
-      "n": 131,
+      "n": 163,
       "id": "exit.sandCrumble.v1",
       "group": "exit",
       "type": "sandCrumble",
@@ -4846,7 +6819,7 @@
       }
     },
     {
-      "n": 132,
+      "n": 164,
       "id": "exit.melt.v1",
       "group": "exit",
       "type": "melt",
@@ -4874,7 +6847,7 @@
       }
     },
     {
-      "n": 133,
+      "n": 165,
       "id": "exit.burnAway.v1",
       "group": "exit",
       "type": "burnAway",
@@ -4920,7 +6893,7 @@
       }
     },
     {
-      "n": 134,
+      "n": 166,
       "id": "exit.strokeErase.v1",
       "group": "exit",
       "type": "strokeErase",
@@ -4959,7 +6932,7 @@
       }
     },
     {
-      "n": 135,
+      "n": 167,
       "id": "exit.creepOut.v1",
       "group": "exit",
       "type": "creepOut",
@@ -4998,7 +6971,7 @@
       }
     },
     {
-      "n": 136,
+      "n": 168,
       "id": "exit.vanish.v1",
       "group": "exit",
       "type": "vanish",
@@ -5030,7 +7003,7 @@
       }
     },
     {
-      "n": 137,
+      "n": 169,
       "id": "exit.floatOut.v1",
       "group": "exit",
       "type": "floatOut",
@@ -5059,7 +7032,7 @@
       }
     },
     {
-      "n": 138,
+      "n": 170,
       "id": "exit.splitOut.v1",
       "group": "exit",
       "type": "splitOut",
@@ -5093,7 +7066,7 @@
       }
     },
     {
-      "n": 139,
+      "n": 171,
       "id": "exit.stripeShrink.v1",
       "group": "exit",
       "type": "stripeShrink",
@@ -5127,7 +7100,7 @@
       }
     },
     {
-      "n": 140,
+      "n": 172,
       "id": "exit.rotateOut.v1",
       "group": "exit",
       "type": "rotateOut",
@@ -5166,7 +7139,7 @@
       }
     },
     {
-      "n": 141,
+      "n": 173,
       "id": "exit.floatUp.v1",
       "group": "exit",
       "type": "floatUp",
@@ -5194,7 +7167,7 @@
       }
     },
     {
-      "n": 142,
+      "n": 174,
       "id": "exit.floatDown.v1",
       "group": "exit",
       "type": "floatDown",
@@ -5222,7 +7195,7 @@
       }
     },
     {
-      "n": 143,
+      "n": 175,
       "id": "exit.shrinkDir.v1",
       "group": "exit",
       "type": "shrinkDir",
@@ -5256,7 +7229,7 @@
       }
     },
     {
-      "n": 144,
+      "n": 176,
       "id": "exit.spiralOut.v1",
       "group": "exit",
       "type": "spiralOut",
@@ -5285,7 +7258,7 @@
       }
     },
     {
-      "n": 145,
+      "n": 177,
       "id": "exit.radialOut.v1",
       "group": "exit",
       "type": "radialOut",
@@ -5313,7 +7286,7 @@
       }
     },
     {
-      "n": 146,
+      "n": 178,
       "id": "exit.warpOut.v1",
       "group": "exit",
       "type": "warpOut",
@@ -5341,7 +7314,7 @@
       }
     },
     {
-      "n": 147,
+      "n": 179,
       "id": "exit.evaporate.v1",
       "group": "exit",
       "type": "evaporate",
@@ -5381,7 +7354,7 @@
       }
     },
     {
-      "n": 148,
+      "n": 180,
       "id": "exit.fade.v2",
       "group": "exit",
       "type": "fade",
@@ -5426,7 +7399,7 @@
       }
     },
     {
-      "n": 149,
+      "n": 181,
       "id": "exit.slide.v2",
       "group": "exit",
       "type": "slide",
@@ -5461,7 +7434,7 @@
       }
     },
     {
-      "n": 150,
+      "n": 182,
       "id": "exit.zoomOut.v2",
       "group": "exit",
       "type": "zoomOut",
@@ -5500,7 +7473,7 @@
       }
     },
     {
-      "n": 151,
+      "n": 183,
       "id": "exit.blurOut.v2",
       "group": "exit",
       "type": "blurOut",
@@ -5534,7 +7507,7 @@
       }
     },
     {
-      "n": 152,
+      "n": 184,
       "id": "exit.explode.v2",
       "group": "exit",
       "type": "explode",
@@ -5574,7 +7547,7 @@
       }
     },
     {
-      "n": 153,
+      "n": 185,
       "id": "exit.gravityFall.v2",
       "group": "exit",
       "type": "gravityFall",
@@ -5614,7 +7587,7 @@
       }
     },
     {
-      "n": 154,
+      "n": 186,
       "id": "exit.wipe.v2",
       "group": "exit",
       "type": "wipe",
@@ -5653,7 +7626,7 @@
       }
     },
     {
-      "n": 155,
+      "n": 187,
       "id": "exit.shrinkToCenter.v2",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -5685,7 +7658,7 @@
       }
     },
     {
-      "n": 156,
+      "n": 188,
       "id": "exit.particlesDisperse.v2",
       "group": "exit",
       "type": "particlesDisperse",
@@ -5725,7 +7698,7 @@
       }
     },
     {
-      "n": 157,
+      "n": 189,
       "id": "exit.sandCrumble.v2",
       "group": "exit",
       "type": "sandCrumble",
@@ -5774,7 +7747,7 @@
       }
     },
     {
-      "n": 158,
+      "n": 190,
       "id": "exit.melt.v2",
       "group": "exit",
       "type": "melt",
@@ -5813,7 +7786,7 @@
       }
     },
     {
-      "n": 159,
+      "n": 191,
       "id": "exit.burnAway.v2",
       "group": "exit",
       "type": "burnAway",
@@ -5859,7 +7832,7 @@
       }
     },
     {
-      "n": 160,
+      "n": 192,
       "id": "exit.strokeErase.v2",
       "group": "exit",
       "type": "strokeErase",
@@ -5898,7 +7871,7 @@
       }
     },
     {
-      "n": 161,
+      "n": 193,
       "id": "exit.creepOut.v2",
       "group": "exit",
       "type": "creepOut",
@@ -5937,7 +7910,7 @@
       }
     },
     {
-      "n": 162,
+      "n": 194,
       "id": "exit.vanish.v2",
       "group": "exit",
       "type": "vanish",
@@ -5969,7 +7942,7 @@
       }
     },
     {
-      "n": 163,
+      "n": 195,
       "id": "exit.floatOut.v2",
       "group": "exit",
       "type": "floatOut",
@@ -6009,7 +7982,7 @@
       }
     },
     {
-      "n": 164,
+      "n": 196,
       "id": "exit.splitOut.v2",
       "group": "exit",
       "type": "splitOut",
@@ -6048,7 +8021,7 @@
       }
     },
     {
-      "n": 165,
+      "n": 197,
       "id": "exit.stripeShrink.v2",
       "group": "exit",
       "type": "stripeShrink",
@@ -6087,7 +8060,7 @@
       }
     },
     {
-      "n": 166,
+      "n": 198,
       "id": "exit.rotateOut.v2",
       "group": "exit",
       "type": "rotateOut",
@@ -6126,7 +8099,7 @@
       }
     },
     {
-      "n": 167,
+      "n": 199,
       "id": "exit.floatUp.v2",
       "group": "exit",
       "type": "floatUp",
@@ -6165,7 +8138,7 @@
       }
     },
     {
-      "n": 168,
+      "n": 200,
       "id": "exit.floatDown.v2",
       "group": "exit",
       "type": "floatDown",
@@ -6204,7 +8177,7 @@
       }
     },
     {
-      "n": 169,
+      "n": 201,
       "id": "exit.shrinkDir.v2",
       "group": "exit",
       "type": "shrinkDir",
@@ -6243,7 +8216,7 @@
       }
     },
     {
-      "n": 170,
+      "n": 202,
       "id": "exit.spiralOut.v2",
       "group": "exit",
       "type": "spiralOut",
@@ -6283,7 +8256,7 @@
       }
     },
     {
-      "n": 171,
+      "n": 203,
       "id": "exit.radialOut.v2",
       "group": "exit",
       "type": "radialOut",
@@ -6322,7 +8295,7 @@
       }
     },
     {
-      "n": 172,
+      "n": 204,
       "id": "exit.warpOut.v2",
       "group": "exit",
       "type": "warpOut",
@@ -6361,7 +8334,7 @@
       }
     },
     {
-      "n": 173,
+      "n": 205,
       "id": "exit.evaporate.v2",
       "group": "exit",
       "type": "evaporate",
@@ -6406,7 +8379,7 @@
       }
     },
     {
-      "n": 174,
+      "n": 206,
       "id": "hold.floatBob.v1",
       "group": "hold",
       "type": "floatBob",
@@ -6432,7 +8405,7 @@
       }
     },
     {
-      "n": 175,
+      "n": 207,
       "id": "hold.sineWave.v1",
       "group": "hold",
       "type": "sineWave",
@@ -6459,7 +8432,7 @@
       }
     },
     {
-      "n": 176,
+      "n": 208,
       "id": "hold.jitter.v1",
       "group": "hold",
       "type": "jitter",
@@ -6485,7 +8458,7 @@
       }
     },
     {
-      "n": 177,
+      "n": 209,
       "id": "hold.pulse.v1",
       "group": "hold",
       "type": "pulse",
@@ -6523,7 +8496,7 @@
       }
     },
     {
-      "n": 178,
+      "n": 210,
       "id": "hold.opacityPulse.v1",
       "group": "hold",
       "type": "opacityPulse",
@@ -6550,7 +8523,7 @@
       }
     },
     {
-      "n": 179,
+      "n": 211,
       "id": "hold.kenBurns.v1",
       "group": "hold",
       "type": "kenBurns",
@@ -6585,7 +8558,7 @@
       }
     },
     {
-      "n": 180,
+      "n": 212,
       "id": "hold.drift.v1",
       "group": "hold",
       "type": "drift",
@@ -6611,7 +8584,7 @@
       }
     },
     {
-      "n": 181,
+      "n": 213,
       "id": "hold.marquee.v1",
       "group": "hold",
       "type": "marquee",
@@ -6642,7 +8615,7 @@
       }
     },
     {
-      "n": 182,
+      "n": 214,
       "id": "hold.jelly.v1",
       "group": "hold",
       "type": "jelly",
@@ -6679,7 +8652,7 @@
       }
     },
     {
-      "n": 183,
+      "n": 215,
       "id": "hold.wobbleWarp.v1",
       "group": "hold",
       "type": "wobbleWarp",
@@ -6717,7 +8690,7 @@
       }
     },
     {
-      "n": 184,
+      "n": 216,
       "id": "hold.twist.v1",
       "group": "hold",
       "type": "twist",
@@ -6742,7 +8715,7 @@
       }
     },
     {
-      "n": 185,
+      "n": 217,
       "id": "hold.breathing.v1",
       "group": "hold",
       "type": "breathing",
@@ -6773,7 +8746,7 @@
       }
     },
     {
-      "n": 186,
+      "n": 218,
       "id": "hold.orbit3D.v1",
       "group": "hold",
       "type": "orbit3D",
@@ -6799,7 +8772,7 @@
       }
     },
     {
-      "n": 187,
+      "n": 219,
       "id": "hold.orbit2D.v1",
       "group": "hold",
       "type": "orbit2D",
@@ -6828,7 +8801,7 @@
       }
     },
     {
-      "n": 188,
+      "n": 220,
       "id": "hold.pathFollow.v1",
       "group": "hold",
       "type": "pathFollow",
@@ -6873,7 +8846,7 @@
       }
     },
     {
-      "n": 189,
+      "n": 221,
       "id": "hold.heartbeat.v1",
       "group": "hold",
       "type": "heartbeat",
@@ -6911,7 +8884,7 @@
       }
     },
     {
-      "n": 190,
+      "n": 222,
       "id": "hold.shiver.v1",
       "group": "hold",
       "type": "shiver",
@@ -6943,7 +8916,7 @@
       }
     },
     {
-      "n": 191,
+      "n": 223,
       "id": "hold.dissolve.v1",
       "group": "hold",
       "type": "dissolve",
@@ -6980,7 +8953,7 @@
       }
     },
     {
-      "n": 192,
+      "n": 224,
       "id": "hold.floatBob.v2",
       "group": "hold",
       "type": "floatBob",
@@ -7012,7 +8985,7 @@
       }
     },
     {
-      "n": 193,
+      "n": 225,
       "id": "hold.sineWave.v2",
       "group": "hold",
       "type": "sineWave",
@@ -7045,7 +9018,7 @@
       }
     },
     {
-      "n": 194,
+      "n": 226,
       "id": "hold.jitter.v2",
       "group": "hold",
       "type": "jitter",
@@ -7077,7 +9050,7 @@
       }
     },
     {
-      "n": 195,
+      "n": 227,
       "id": "hold.opacityPulse.v2",
       "group": "hold",
       "type": "opacityPulse",
@@ -7110,7 +9083,7 @@
       }
     },
     {
-      "n": 196,
+      "n": 228,
       "id": "hold.kenBurns.v2",
       "group": "hold",
       "type": "kenBurns",
@@ -7145,7 +9118,7 @@
       }
     },
     {
-      "n": 197,
+      "n": 229,
       "id": "hold.drift.v2",
       "group": "hold",
       "type": "drift",
@@ -7177,7 +9150,7 @@
       }
     },
     {
-      "n": 198,
+      "n": 230,
       "id": "hold.marquee.v2",
       "group": "hold",
       "type": "marquee",
@@ -7202,7 +9175,7 @@
       }
     },
     {
-      "n": 199,
+      "n": 231,
       "id": "hold.jelly.v2",
       "group": "hold",
       "type": "jelly",
@@ -7234,7 +9207,7 @@
       }
     },
     {
-      "n": 200,
+      "n": 232,
       "id": "hold.wobbleWarp.v2",
       "group": "hold",
       "type": "wobbleWarp",
@@ -7267,7 +9240,7 @@
       }
     },
     {
-      "n": 201,
+      "n": 233,
       "id": "hold.twist.v2",
       "group": "hold",
       "type": "twist",
@@ -7298,7 +9271,7 @@
       }
     },
     {
-      "n": 202,
+      "n": 234,
       "id": "hold.breathing.v2",
       "group": "hold",
       "type": "breathing",
@@ -7323,7 +9296,7 @@
       }
     },
     {
-      "n": 203,
+      "n": 235,
       "id": "hold.orbit3D.v2",
       "group": "hold",
       "type": "orbit3D",
@@ -7360,7 +9333,7 @@
       }
     },
     {
-      "n": 204,
+      "n": 236,
       "id": "hold.orbit2D.v2",
       "group": "hold",
       "type": "orbit2D",
@@ -7395,7 +9368,7 @@
       }
     },
     {
-      "n": 205,
+      "n": 237,
       "id": "hold.pathFollow.v2",
       "group": "hold",
       "type": "pathFollow",
@@ -7434,7 +9407,7 @@
       }
     },
     {
-      "n": 206,
+      "n": 238,
       "id": "hold.shiver.v2",
       "group": "hold",
       "type": "shiver",
@@ -7471,7 +9444,7 @@
       }
     },
     {
-      "n": 207,
+      "n": 239,
       "id": "hold.dissolve.v2",
       "group": "hold",
       "type": "dissolve",
@@ -7503,7 +9476,7 @@
       }
     },
     {
-      "n": 208,
+      "n": 240,
       "id": "location.center.v1",
       "group": "location",
       "type": "center",
@@ -7538,7 +9511,7 @@
       }
     },
     {
-      "n": 209,
+      "n": 241,
       "id": "location.lowerThird.v1",
       "group": "location",
       "type": "lowerThird",
@@ -7567,7 +9540,7 @@
       }
     },
     {
-      "n": 210,
+      "n": 242,
       "id": "location.upperThird.v1",
       "group": "location",
       "type": "upperThird",
@@ -7596,7 +9569,7 @@
       }
     },
     {
-      "n": 211,
+      "n": 243,
       "id": "location.left.v1",
       "group": "location",
       "type": "left",
@@ -7631,7 +9604,7 @@
       }
     },
     {
-      "n": 212,
+      "n": 244,
       "id": "location.right.v1",
       "group": "location",
       "type": "right",
@@ -7666,7 +9639,7 @@
       }
     },
     {
-      "n": 213,
+      "n": 245,
       "id": "location.karaoke.v1",
       "group": "location",
       "type": "karaoke",
@@ -7701,7 +9674,7 @@
       }
     },
     {
-      "n": 214,
+      "n": 246,
       "id": "location.stacked.v1",
       "group": "location",
       "type": "stacked",
@@ -7730,7 +9703,7 @@
       }
     },
     {
-      "n": 215,
+      "n": 247,
       "id": "location.randomSafe.v1",
       "group": "location",
       "type": "randomSafe",
@@ -7759,7 +9732,7 @@
       }
     },
     {
-      "n": 216,
+      "n": 248,
       "id": "location.badgeAnchored.v1",
       "group": "location",
       "type": "badgeAnchored",
@@ -7796,7 +9769,7 @@
       }
     },
     {
-      "n": 217,
+      "n": 249,
       "id": "location.custom.v1",
       "group": "location",
       "type": "custom",
@@ -7833,7 +9806,7 @@
       }
     },
     {
-      "n": 218,
+      "n": 250,
       "id": "location.center.v2",
       "group": "location",
       "type": "center",
@@ -7868,7 +9841,7 @@
       }
     },
     {
-      "n": 219,
+      "n": 251,
       "id": "location.lowerThird.v2",
       "group": "location",
       "type": "lowerThird",
@@ -7903,7 +9876,7 @@
       }
     },
     {
-      "n": 220,
+      "n": 252,
       "id": "location.upperThird.v2",
       "group": "location",
       "type": "upperThird",
@@ -7938,7 +9911,7 @@
       }
     },
     {
-      "n": 221,
+      "n": 253,
       "id": "location.left.v2",
       "group": "location",
       "type": "left",
@@ -7973,7 +9946,7 @@
       }
     },
     {
-      "n": 222,
+      "n": 254,
       "id": "location.right.v2",
       "group": "location",
       "type": "right",
@@ -8008,7 +9981,7 @@
       }
     },
     {
-      "n": 223,
+      "n": 255,
       "id": "location.karaoke.v2",
       "group": "location",
       "type": "karaoke",
@@ -8043,7 +10016,7 @@
       }
     },
     {
-      "n": 224,
+      "n": 256,
       "id": "location.stacked.v2",
       "group": "location",
       "type": "stacked",
@@ -8078,7 +10051,7 @@
       }
     },
     {
-      "n": 225,
+      "n": 257,
       "id": "location.randomSafe.v2",
       "group": "location",
       "type": "randomSafe",
@@ -8113,7 +10086,7 @@
       }
     },
     {
-      "n": 226,
+      "n": 258,
       "id": "location.badgeAnchored.v2",
       "group": "location",
       "type": "badgeAnchored",
@@ -8150,7 +10123,7 @@
       }
     },
     {
-      "n": 227,
+      "n": 259,
       "id": "location.custom.v2",
       "group": "location",
       "type": "custom",
@@ -8187,7 +10160,7 @@
       }
     },
     {
-      "n": 228,
+      "n": 260,
       "id": "fill.gradientSweep.v1",
       "group": "fill",
       "type": "gradientSweep",
@@ -8217,7 +10190,7 @@
       }
     },
     {
-      "n": 229,
+      "n": 261,
       "id": "fill.rainbowFlow.v1",
       "group": "fill",
       "type": "rainbowFlow",
@@ -8249,7 +10222,7 @@
       }
     },
     {
-      "n": 230,
+      "n": 262,
       "id": "fill.holographic.v1",
       "group": "fill",
       "type": "holographic",
@@ -8285,7 +10258,7 @@
       }
     },
     {
-      "n": 231,
+      "n": 263,
       "id": "fill.chrome.v1",
       "group": "fill",
       "type": "chrome",
@@ -8315,7 +10288,7 @@
       }
     },
     {
-      "n": 232,
+      "n": 264,
       "id": "fill.goldFoil.v1",
       "group": "fill",
       "type": "goldFoil",
@@ -8346,7 +10319,7 @@
       }
     },
     {
-      "n": 233,
+      "n": 265,
       "id": "fill.fire.v1",
       "group": "fill",
       "type": "fire",
@@ -8382,7 +10355,7 @@
       }
     },
     {
-      "n": 234,
+      "n": 266,
       "id": "fill.caustics.v1",
       "group": "fill",
       "type": "caustics",
@@ -8414,7 +10387,7 @@
       }
     },
     {
-      "n": 235,
+      "n": 267,
       "id": "fill.marble.v1",
       "group": "fill",
       "type": "marble",
@@ -8451,7 +10424,7 @@
       }
     },
     {
-      "n": 236,
+      "n": 268,
       "id": "fill.glass.v1",
       "group": "fill",
       "type": "glass",
@@ -8482,7 +10455,7 @@
       }
     },
     {
-      "n": 237,
+      "n": 269,
       "id": "fill.textureFill.v1",
       "group": "fill",
       "type": "textureFill",
@@ -8518,7 +10491,7 @@
       }
     },
     {
-      "n": 238,
+      "n": 270,
       "id": "fill.karaokeWipe.v1",
       "group": "fill",
       "type": "karaokeWipe",
@@ -8549,7 +10522,7 @@
       }
     },
     {
-      "n": 239,
+      "n": 271,
       "id": "fill.ink.v1",
       "group": "fill",
       "type": "ink",
@@ -8585,7 +10558,7 @@
       }
     },
     {
-      "n": 240,
+      "n": 272,
       "id": "fill.gradientSweep.v2",
       "group": "fill",
       "type": "gradientSweep",
@@ -8615,7 +10588,7 @@
       }
     },
     {
-      "n": 241,
+      "n": 273,
       "id": "fill.rainbowFlow.v2",
       "group": "fill",
       "type": "rainbowFlow",
@@ -8647,7 +10620,7 @@
       }
     },
     {
-      "n": 242,
+      "n": 274,
       "id": "fill.holographic.v2",
       "group": "fill",
       "type": "holographic",
@@ -8683,7 +10656,7 @@
       }
     },
     {
-      "n": 243,
+      "n": 275,
       "id": "fill.chrome.v2",
       "group": "fill",
       "type": "chrome",
@@ -8736,7 +10709,7 @@
       }
     },
     {
-      "n": 244,
+      "n": 276,
       "id": "fill.goldFoil.v2",
       "group": "fill",
       "type": "goldFoil",
@@ -8790,7 +10763,7 @@
       }
     },
     {
-      "n": 245,
+      "n": 277,
       "id": "fill.fire.v2",
       "group": "fill",
       "type": "fire",
@@ -8826,7 +10799,7 @@
       }
     },
     {
-      "n": 246,
+      "n": 278,
       "id": "fill.caustics.v2",
       "group": "fill",
       "type": "caustics",
@@ -8863,7 +10836,7 @@
       }
     },
     {
-      "n": 247,
+      "n": 279,
       "id": "fill.marble.v2",
       "group": "fill",
       "type": "marble",
@@ -8923,7 +10896,7 @@
       }
     },
     {
-      "n": 248,
+      "n": 280,
       "id": "fill.glass.v2",
       "group": "fill",
       "type": "glass",
@@ -8959,7 +10932,7 @@
       }
     },
     {
-      "n": 249,
+      "n": 281,
       "id": "fill.textureFill.v2",
       "group": "fill",
       "type": "textureFill",
@@ -8995,7 +10968,7 @@
       }
     },
     {
-      "n": 250,
+      "n": 282,
       "id": "fill.karaokeWipe.v2",
       "group": "fill",
       "type": "karaokeWipe",
@@ -9031,7 +11004,7 @@
       }
     },
     {
-      "n": 251,
+      "n": 283,
       "id": "fill.ink.v2",
       "group": "fill",
       "type": "ink",
@@ -9067,7 +11040,7 @@
       }
     },
     {
-      "n": 252,
+      "n": 284,
       "id": "edge.outline.v1",
       "group": "edge",
       "type": "outline",
@@ -9106,7 +11079,7 @@
       }
     },
     {
-      "n": 253,
+      "n": 285,
       "id": "edge.neonGlow.v1",
       "group": "edge",
       "type": "neonGlow",
@@ -9140,7 +11113,7 @@
       }
     },
     {
-      "n": 254,
+      "n": 286,
       "id": "edge.innerGlow.v1",
       "group": "edge",
       "type": "innerGlow",
@@ -9173,7 +11146,7 @@
       }
     },
     {
-      "n": 255,
+      "n": 287,
       "id": "edge.bevel.v1",
       "group": "edge",
       "type": "bevel",
@@ -9207,7 +11180,7 @@
       }
     },
     {
-      "n": 256,
+      "n": 288,
       "id": "edge.extrude.v1",
       "group": "edge",
       "type": "extrude",
@@ -9241,7 +11214,7 @@
       }
     },
     {
-      "n": 257,
+      "n": 289,
       "id": "edge.longShadow.v1",
       "group": "edge",
       "type": "longShadow",
@@ -9275,7 +11248,7 @@
       }
     },
     {
-      "n": 258,
+      "n": 290,
       "id": "edge.dropShadow.v1",
       "group": "edge",
       "type": "dropShadow",
@@ -9312,7 +11285,7 @@
       }
     },
     {
-      "n": 259,
+      "n": 291,
       "id": "edge.drip.v1",
       "group": "edge",
       "type": "drip",
@@ -9346,7 +11319,7 @@
       }
     },
     {
-      "n": 260,
+      "n": 292,
       "id": "edge.outline.v2",
       "group": "edge",
       "type": "outline",
@@ -9385,7 +11358,7 @@
       }
     },
     {
-      "n": 261,
+      "n": 293,
       "id": "edge.neonGlow.v2",
       "group": "edge",
       "type": "neonGlow",
@@ -9424,7 +11397,7 @@
       }
     },
     {
-      "n": 262,
+      "n": 294,
       "id": "edge.innerGlow.v2",
       "group": "edge",
       "type": "innerGlow",
@@ -9462,7 +11435,7 @@
       }
     },
     {
-      "n": 263,
+      "n": 295,
       "id": "edge.bevel.v2",
       "group": "edge",
       "type": "bevel",
@@ -9496,7 +11469,7 @@
       }
     },
     {
-      "n": 264,
+      "n": 296,
       "id": "edge.extrude.v2",
       "group": "edge",
       "type": "extrude",
@@ -9530,7 +11503,7 @@
       }
     },
     {
-      "n": 265,
+      "n": 297,
       "id": "edge.longShadow.v2",
       "group": "edge",
       "type": "longShadow",
@@ -9569,7 +11542,7 @@
       }
     },
     {
-      "n": 266,
+      "n": 298,
       "id": "edge.dropShadow.v2",
       "group": "edge",
       "type": "dropShadow",
@@ -9606,7 +11579,7 @@
       }
     },
     {
-      "n": 267,
+      "n": 299,
       "id": "edge.drip.v2",
       "group": "edge",
       "type": "drip",
@@ -9645,7 +11618,7 @@
       }
     },
     {
-      "n": 268,
+      "n": 300,
       "id": "post.glitchBlocks.v1",
       "group": "post",
       "type": "glitchBlocks",
@@ -9687,7 +11660,7 @@
       }
     },
     {
-      "n": 269,
+      "n": 301,
       "id": "post.rgbShift.v1",
       "group": "post",
       "type": "rgbShift",
@@ -9728,7 +11701,7 @@
       }
     },
     {
-      "n": 270,
+      "n": 302,
       "id": "post.scanTear.v1",
       "group": "post",
       "type": "scanTear",
@@ -9769,7 +11742,7 @@
       }
     },
     {
-      "n": 271,
+      "n": 303,
       "id": "post.vhsTracking.v1",
       "group": "post",
       "type": "vhsTracking",
@@ -9810,7 +11783,7 @@
       }
     },
     {
-      "n": 272,
+      "n": 304,
       "id": "post.dataSmear.v1",
       "group": "post",
       "type": "dataSmear",
@@ -9851,7 +11824,7 @@
       }
     },
     {
-      "n": 273,
+      "n": 305,
       "id": "post.digitalNoise.v1",
       "group": "post",
       "type": "digitalNoise",
@@ -9891,7 +11864,7 @@
       }
     },
     {
-      "n": 274,
+      "n": 306,
       "id": "post.glitchSlice.v1",
       "group": "post",
       "type": "glitchSlice",
@@ -9932,7 +11905,7 @@
       }
     },
     {
-      "n": 275,
+      "n": 307,
       "id": "post.noiseDissolve.v1",
       "group": "post",
       "type": "noiseDissolve",
@@ -9968,7 +11941,7 @@
       }
     },
     {
-      "n": 276,
+      "n": 308,
       "id": "post.directionalDissolve.v1",
       "group": "post",
       "type": "directionalDissolve",
@@ -10004,7 +11977,7 @@
       }
     },
     {
-      "n": 277,
+      "n": 309,
       "id": "post.pixelDissolve.v1",
       "group": "post",
       "type": "pixelDissolve",
@@ -10038,7 +12011,7 @@
       }
     },
     {
-      "n": 278,
+      "n": 310,
       "id": "post.burnDissolve.v1",
       "group": "post",
       "type": "burnDissolve",
@@ -10074,7 +12047,7 @@
       }
     },
     {
-      "n": 279,
+      "n": 311,
       "id": "post.halftoneDissolve.v1",
       "group": "post",
       "type": "halftoneDissolve",
@@ -10114,7 +12087,7 @@
       }
     },
     {
-      "n": 280,
+      "n": 312,
       "id": "post.particleDissolve.v1",
       "group": "post",
       "type": "particleDissolve",
@@ -10154,7 +12127,7 @@
       }
     },
     {
-      "n": 281,
+      "n": 313,
       "id": "post.shockwave.v1",
       "group": "post",
       "type": "shockwave",
@@ -10199,7 +12172,7 @@
       }
     },
     {
-      "n": 282,
+      "n": 314,
       "id": "post.zoomBlur.v1",
       "group": "post",
       "type": "zoomBlur",
@@ -10237,7 +12210,7 @@
       }
     },
     {
-      "n": 283,
+      "n": 315,
       "id": "post.motionBlur.v1",
       "group": "post",
       "type": "motionBlur",
@@ -10273,7 +12246,7 @@
       }
     },
     {
-      "n": 284,
+      "n": 316,
       "id": "post.echoTrail.v1",
       "group": "post",
       "type": "echoTrail",
@@ -10310,7 +12283,7 @@
       }
     },
     {
-      "n": 285,
+      "n": 317,
       "id": "post.godRays.v1",
       "group": "post",
       "type": "godRays",
@@ -10355,7 +12328,7 @@
       }
     },
     {
-      "n": 286,
+      "n": 318,
       "id": "post.lightSweep.v1",
       "group": "post",
       "type": "lightSweep",
@@ -10392,7 +12365,7 @@
       }
     },
     {
-      "n": 287,
+      "n": 319,
       "id": "post.kaleidoscope.v1",
       "group": "post",
       "type": "kaleidoscope",
@@ -10427,7 +12400,7 @@
       }
     },
     {
-      "n": 288,
+      "n": 320,
       "id": "post.mirror.v1",
       "group": "post",
       "type": "mirror",
@@ -10462,7 +12435,7 @@
       }
     },
     {
-      "n": 289,
+      "n": 321,
       "id": "post.pixelSort.v1",
       "group": "post",
       "type": "pixelSort",
@@ -10503,7 +12476,7 @@
       }
     },
     {
-      "n": 290,
+      "n": 322,
       "id": "post.lensDistortion.v1",
       "group": "post",
       "type": "lensDistortion",
@@ -10544,7 +12517,7 @@
       }
     },
     {
-      "n": 291,
+      "n": 323,
       "id": "post.colorGrade.v1",
       "group": "post",
       "type": "colorGrade",
@@ -10581,7 +12554,7 @@
       }
     },
     {
-      "n": 292,
+      "n": 324,
       "id": "post.displacementMap.v1",
       "group": "post",
       "type": "displacementMap",
@@ -10621,7 +12594,7 @@
       }
     },
     {
-      "n": 293,
+      "n": 325,
       "id": "post.bloom.v1",
       "group": "post",
       "type": "bloom",
@@ -10662,7 +12635,7 @@
       }
     },
     {
-      "n": 294,
+      "n": 326,
       "id": "post.chromaticAberration.v1",
       "group": "post",
       "type": "chromaticAberration",
@@ -10698,7 +12671,7 @@
       }
     },
     {
-      "n": 295,
+      "n": 327,
       "id": "post.crt.v1",
       "group": "post",
       "type": "crt",
@@ -10739,7 +12712,7 @@
       }
     },
     {
-      "n": 296,
+      "n": 328,
       "id": "post.filmGrain.v1",
       "group": "post",
       "type": "filmGrain",
@@ -10779,7 +12752,7 @@
       }
     },
     {
-      "n": 297,
+      "n": 329,
       "id": "post.halftone.v1",
       "group": "post",
       "type": "halftone",
@@ -10819,7 +12792,7 @@
       }
     },
     {
-      "n": 298,
+      "n": 330,
       "id": "post.pixelate.v1",
       "group": "post",
       "type": "pixelate",
@@ -10853,7 +12826,7 @@
       }
     },
     {
-      "n": 299,
+      "n": 331,
       "id": "post.heatHaze.v1",
       "group": "post",
       "type": "heatHaze",
@@ -10888,7 +12861,7 @@
       }
     },
     {
-      "n": 300,
+      "n": 332,
       "id": "post.lightLeak.v1",
       "group": "post",
       "type": "lightLeak",
@@ -10925,7 +12898,7 @@
       }
     },
     {
-      "n": 301,
+      "n": 333,
       "id": "post.vignette.v1",
       "group": "post",
       "type": "vignette",
@@ -10960,7 +12933,7 @@
       }
     },
     {
-      "n": 302,
+      "n": 334,
       "id": "post.sparkles.v1",
       "group": "post",
       "type": "sparkles",
@@ -10997,7 +12970,7 @@
       }
     },
     {
-      "n": 303,
+      "n": 335,
       "id": "post.lensFlare.v1",
       "group": "post",
       "type": "lensFlare",
@@ -11035,7 +13008,7 @@
       }
     },
     {
-      "n": 304,
+      "n": 336,
       "id": "post.glitchBlocks.v2",
       "group": "post",
       "type": "glitchBlocks",
@@ -11077,7 +13050,7 @@
       }
     },
     {
-      "n": 305,
+      "n": 337,
       "id": "post.rgbShift.v2",
       "group": "post",
       "type": "rgbShift",
@@ -11118,7 +13091,7 @@
       }
     },
     {
-      "n": 306,
+      "n": 338,
       "id": "post.scanTear.v2",
       "group": "post",
       "type": "scanTear",
@@ -11159,7 +13132,7 @@
       }
     },
     {
-      "n": 307,
+      "n": 339,
       "id": "post.vhsTracking.v2",
       "group": "post",
       "type": "vhsTracking",
@@ -11200,7 +13173,7 @@
       }
     },
     {
-      "n": 308,
+      "n": 340,
       "id": "post.dataSmear.v2",
       "group": "post",
       "type": "dataSmear",
@@ -11241,7 +13214,7 @@
       }
     },
     {
-      "n": 309,
+      "n": 341,
       "id": "post.digitalNoise.v2",
       "group": "post",
       "type": "digitalNoise",
@@ -11281,7 +13254,7 @@
       }
     },
     {
-      "n": 310,
+      "n": 342,
       "id": "post.glitchSlice.v2",
       "group": "post",
       "type": "glitchSlice",
@@ -11322,7 +13295,7 @@
       }
     },
     {
-      "n": 311,
+      "n": 343,
       "id": "post.noiseDissolve.v2",
       "group": "post",
       "type": "noiseDissolve",
@@ -11363,7 +13336,7 @@
       }
     },
     {
-      "n": 312,
+      "n": 344,
       "id": "post.directionalDissolve.v2",
       "group": "post",
       "type": "directionalDissolve",
@@ -11404,7 +13377,7 @@
       }
     },
     {
-      "n": 313,
+      "n": 345,
       "id": "post.pixelDissolve.v2",
       "group": "post",
       "type": "pixelDissolve",
@@ -11438,7 +13411,7 @@
       }
     },
     {
-      "n": 314,
+      "n": 346,
       "id": "post.burnDissolve.v2",
       "group": "post",
       "type": "burnDissolve",
@@ -11479,7 +13452,7 @@
       }
     },
     {
-      "n": 315,
+      "n": 347,
       "id": "post.halftoneDissolve.v2",
       "group": "post",
       "type": "halftoneDissolve",
@@ -11519,7 +13492,7 @@
       }
     },
     {
-      "n": 316,
+      "n": 348,
       "id": "post.particleDissolve.v2",
       "group": "post",
       "type": "particleDissolve",
@@ -11559,7 +13532,7 @@
       }
     },
     {
-      "n": 317,
+      "n": 349,
       "id": "post.shockwave.v2",
       "group": "post",
       "type": "shockwave",
@@ -11609,7 +13582,7 @@
       }
     },
     {
-      "n": 318,
+      "n": 350,
       "id": "post.zoomBlur.v2",
       "group": "post",
       "type": "zoomBlur",
@@ -11647,7 +13620,7 @@
       }
     },
     {
-      "n": 319,
+      "n": 351,
       "id": "post.motionBlur.v2",
       "group": "post",
       "type": "motionBlur",
@@ -11683,7 +13656,7 @@
       }
     },
     {
-      "n": 320,
+      "n": 352,
       "id": "post.echoTrail.v2",
       "group": "post",
       "type": "echoTrail",
@@ -11725,7 +13698,7 @@
       }
     },
     {
-      "n": 321,
+      "n": 353,
       "id": "post.godRays.v2",
       "group": "post",
       "type": "godRays",
@@ -11770,7 +13743,7 @@
       }
     },
     {
-      "n": 322,
+      "n": 354,
       "id": "post.lightSweep.v2",
       "group": "post",
       "type": "lightSweep",
@@ -11812,7 +13785,7 @@
       }
     },
     {
-      "n": 323,
+      "n": 355,
       "id": "post.kaleidoscope.v2",
       "group": "post",
       "type": "kaleidoscope",
@@ -11847,7 +13820,7 @@
       }
     },
     {
-      "n": 324,
+      "n": 356,
       "id": "post.mirror.v2",
       "group": "post",
       "type": "mirror",
@@ -11882,7 +13855,7 @@
       }
     },
     {
-      "n": 325,
+      "n": 357,
       "id": "post.pixelSort.v2",
       "group": "post",
       "type": "pixelSort",
@@ -11923,554 +13896,7 @@
       }
     },
     {
-      "n": 326,
-      "id": "post.lensDistortion.v2",
-      "group": "post",
-      "type": "lensDistortion",
-      "variant": 2,
-      "label": "後処理 / レンズ歪み（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "k1",
-          "from": 0.15,
-          "to": 0.5
-        },
-        {
-          "key": "k2",
-          "from": 0,
-          "to": -0.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "lensDistortion",
-            "enabled": true,
-            "params": {
-              "k1": 0.5,
-              "k2": -0.5,
-              "chroma": 0.2,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 327,
-      "id": "post.colorGrade.v2",
-      "group": "post",
-      "type": "colorGrade",
-      "variant": 2,
-      "label": "後処理 / カラーグレード（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "duotone",
-          "from": null,
-          "to": "#4dc8ff"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "colorGrade",
-            "enabled": true,
-            "params": {
-              "lift": 0,
-              "saturation": 1,
-              "posterize": 0,
-              "duotone": "#4dc8ff",
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 328,
-      "id": "post.displacementMap.v2",
-      "group": "post",
-      "type": "displacementMap",
-      "variant": 2,
-      "label": "後処理 / 変位マップ（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.3,
-          "to": 0.75
-        },
-        {
-          "key": "scroll",
-          "from": 0.2,
-          "to": 1.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "displacementMap",
-            "enabled": true,
-            "params": {
-              "amount": 0.75,
-              "scroll": 1.5,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 329,
-      "id": "post.bloom.v2",
-      "group": "post",
-      "type": "bloom",
-      "variant": 2,
-      "label": "後処理 / ブルーム（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "threshold",
-          "from": 0.6,
-          "to": 0.75
-        },
-        {
-          "key": "intensity",
-          "from": 0.7,
-          "to": 0.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "bloom",
-            "enabled": true,
-            "params": {
-              "threshold": 0.75,
-              "intensity": 0.5,
-              "radius": 0.5,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 330,
-      "id": "post.chromaticAberration.v2",
-      "group": "post",
-      "type": "chromaticAberration",
-      "variant": 2,
-      "label": "後処理 / 色収差（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.4,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "chromaticAberration",
-            "enabled": true,
-            "params": {
-              "amount": 0.75,
-              "radial": 0,
-              "angle": 0,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 331,
-      "id": "post.crt.v2",
-      "group": "post",
-      "type": "crt",
-      "variant": 2,
-      "label": "後処理 / CRT（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "scanlines",
-          "from": 0.2,
-          "to": 0.75
-        },
-        {
-          "key": "curvature",
-          "from": 0.1,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "crt",
-            "enabled": true,
-            "params": {
-              "scanlines": 0.75,
-              "curvature": 0.75,
-              "vignette": 0.3,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 332,
-      "id": "post.filmGrain.v2",
-      "group": "post",
-      "type": "filmGrain",
-      "variant": 2,
-      "label": "後処理 / フィルムグレイン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.2,
-          "to": 0.75
-        },
-        {
-          "key": "size",
-          "from": 1,
-          "to": 3.125
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "filmGrain",
-            "enabled": true,
-            "params": {
-              "amount": 0.75,
-              "size": 3.125,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 333,
-      "id": "post.halftone.v2",
-      "group": "post",
-      "type": "halftone",
-      "variant": 2,
-      "label": "後処理 / ハーフトーン（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "dotSize",
-          "from": 8,
-          "to": 30.5
-        },
-        {
-          "key": "angle",
-          "from": 0,
-          "to": -90
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "halftone",
-            "enabled": true,
-            "params": {
-              "dotSize": 30.5,
-              "angle": -90,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 334,
-      "id": "post.pixelate.v2",
-      "group": "post",
-      "type": "pixelate",
-      "variant": 2,
-      "label": "後処理 / ピクセル化（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "size",
-          "from": 8,
-          "to": 48.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "pixelate",
-            "enabled": true,
-            "params": {
-              "size": 48.5,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 335,
-      "id": "post.heatHaze.v2",
-      "group": "post",
-      "type": "heatHaze",
-      "variant": 2,
-      "label": "後処理 / 陽炎（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.3,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "heatHaze",
-            "enabled": true,
-            "params": {
-              "amount": 0.75,
-              "speed": 0.5,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 336,
-      "id": "post.lightLeak.v2",
-      "group": "post",
-      "type": "lightLeak",
-      "variant": 2,
-      "label": "後処理 / ライトリーク（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "color",
-          "from": null,
-          "to": "#ff8a3d"
-        },
-        {
-          "key": "x",
-          "from": 0.85,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "lightLeak",
-            "enabled": true,
-            "params": {
-              "color": "#ff8a3d",
-              "x": 0.25,
-              "y": 0.2,
-              "intensity": 0.6,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 337,
-      "id": "post.vignette.v2",
-      "group": "post",
-      "type": "vignette",
-      "variant": 2,
-      "label": "後処理 / ビネット（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "amount",
-          "from": 0.5,
-          "to": 0.25
-        },
-        {
-          "key": "softness",
-          "from": 0.5,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "vignette",
-            "enabled": true,
-            "params": {
-              "amount": 0.25,
-              "softness": 0.25,
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 338,
-      "id": "post.sparkles.v2",
-      "group": "post",
-      "type": "sparkles",
-      "variant": 2,
-      "label": "後処理 / スパークル（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "shape",
-          "from": "dot",
-          "to": "star"
-        },
-        {
-          "key": "color",
-          "from": null,
-          "to": "#ff8a3d"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "sparkles",
-            "enabled": true,
-            "params": {
-              "count": 24,
-              "size": 2,
-              "shape": "star",
-              "color": "#ff8a3d",
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 339,
-      "id": "post.lensFlare.v2",
-      "group": "post",
-      "type": "lensFlare",
-      "variant": 2,
-      "label": "後処理 / レンズフレア（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "color",
-          "from": null,
-          "to": "#4dc8ff"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "post": [
-          {
-            "type": "lensFlare",
-            "enabled": true,
-            "params": {
-              "position": {
-                "x": 0.4,
-                "y": 0.35
-              },
-              "color": "#4dc8ff",
-              "enabled": true,
-              "in": 1,
-              "out": 1
-            },
-            "motion": {}
-          }
-        ]
-      }
-    },
-    {
-      "n": 340,
+      "n": 358,
       "id": "background.solid.v1",
       "group": "background",
       "type": "solid",
@@ -12495,7 +13921,7 @@
       }
     },
     {
-      "n": 341,
+      "n": 359,
       "id": "background.plain.v1",
       "group": "background",
       "type": "plain",
@@ -12520,7 +13946,7 @@
       }
     },
     {
-      "n": 342,
+      "n": 360,
       "id": "background.gradient.v1",
       "group": "background",
       "type": "gradient",
@@ -12548,7 +13974,7 @@
       }
     },
     {
-      "n": 343,
+      "n": 361,
       "id": "background.noiseGradient.v1",
       "group": "background",
       "type": "noiseGradient",
@@ -12580,7 +14006,7 @@
       }
     },
     {
-      "n": 344,
+      "n": 362,
       "id": "background.card.v1",
       "group": "background",
       "type": "card",
@@ -12616,7 +14042,7 @@
       }
     },
     {
-      "n": 345,
+      "n": 363,
       "id": "background.cover.v1",
       "group": "background",
       "type": "cover",
@@ -12646,7 +14072,7 @@
       }
     },
     {
-      "n": 346,
+      "n": 364,
       "id": "background.image.v1",
       "group": "background",
       "type": "image",
@@ -12676,7 +14102,7 @@
       }
     },
     {
-      "n": 347,
+      "n": 365,
       "id": "background.pattern.v1",
       "group": "background",
       "type": "pattern",
@@ -12706,7 +14132,7 @@
       }
     },
     {
-      "n": 348,
+      "n": 366,
       "id": "background.shapes.v1",
       "group": "background",
       "type": "shapes",
@@ -12736,306 +14162,7 @@
       }
     },
     {
-      "n": 349,
-      "id": "background.solid.v2",
-      "group": "background",
-      "type": "solid",
-      "variant": 2,
-      "label": "背景 / 単色（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "color",
-          "from": null,
-          "to": "#4dc8ff"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "solid",
-        "params": {
-          "color": "#4dc8ff"
-        }
-      }
-    },
-    {
-      "n": 350,
-      "id": "background.plain.v2",
-      "group": "background",
-      "type": "plain",
-      "variant": 2,
-      "label": "背景 / ベタ塗り（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "color",
-          "from": null,
-          "to": "#4dc8ff"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "plain",
-        "params": {
-          "color": "#4dc8ff"
-        }
-      }
-    },
-    {
-      "n": 351,
-      "id": "background.gradient.v2",
-      "group": "background",
-      "type": "gradient",
-      "variant": 2,
-      "label": "背景 / グラデーション（8方向）（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "direction",
-          "from": "toBottom",
-          "to": "toLeft"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "gradient",
-        "params": {
-          "colors": null,
-          "direction": "toLeft",
-          "scale": 1.15,
-          "speed": 0.1
-        }
-      }
-    },
-    {
-      "n": 352,
-      "id": "background.noiseGradient.v2",
-      "group": "background",
-      "type": "noiseGradient",
-      "variant": 2,
-      "label": "背景 / ノイズグラデーション（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "colors",
-          "from": null,
-          "to": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        {
-          "key": "scale",
-          "from": 3,
-          "to": 3.4
-        },
-        {
-          "key": "speed",
-          "from": 0.2,
-          "to": 0.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "noiseGradient",
-        "params": {
-          "colors": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ],
-          "scale": 3.4,
-          "speed": 0.5
-        }
-      }
-    },
-    {
-      "n": 353,
-      "id": "background.card.v2",
-      "group": "background",
-      "type": "card",
-      "variant": 2,
-      "label": "背景 / 実績カード（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "dim",
-          "from": 0.35,
-          "to": 0.75
-        },
-        {
-          "key": "blur",
-          "from": 0,
-          "to": 10
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "カードテーマ未設定時は既定色"
-      ],
-      "clip": {
-        "type": "card",
-        "params": {
-          "dim": 0.75,
-          "blur": 10,
-          "focusBadge": true,
-          "zoom": 1.6,
-          "parallax": 0.1
-        }
-      }
-    },
-    {
-      "n": 354,
-      "id": "background.cover.v2",
-      "group": "background",
-      "type": "cover",
-      "variant": 2,
-      "label": "背景 / 楽曲カバー（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "blur",
-          "from": 0,
-          "to": 10
-        },
-        {
-          "key": "dim",
-          "from": 0.4,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "カバー元がない場合は単色"
-      ],
-      "clip": {
-        "type": "cover",
-        "params": {
-          "songId": "",
-          "blur": 10,
-          "dim": 0.75,
-          "zoomSpeed": 0.1
-        }
-      }
-    },
-    {
-      "n": 355,
-      "id": "background.image.v2",
-      "group": "background",
-      "type": "image",
-      "variant": 2,
-      "label": "背景 / 画像（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "fit",
-          "from": "cover",
-          "to": "contain"
-        },
-        {
-          "key": "dim",
-          "from": 0.3,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [
-        "画像未設定でも手続きパターンで表示"
-      ],
-      "clip": {
-        "type": "image",
-        "params": {
-          "imageId": "",
-          "fit": "contain",
-          "blur": 0,
-          "dim": 0.25
-        }
-      }
-    },
-    {
-      "n": 356,
-      "id": "background.pattern.v2",
-      "group": "background",
-      "type": "pattern",
-      "variant": 2,
-      "label": "背景 / パターン（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "mode",
-          "from": "grid",
-          "to": "stripes"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "pattern",
-        "params": {
-          "mode": "stripes",
-          "count": 24,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.55,
-          "color": null
-        }
-      }
-    },
-    {
-      "n": 357,
-      "id": "background.shapes.v2",
-      "group": "background",
-      "type": "shapes",
-      "variant": 2,
-      "label": "背景 / 図形（代表2）",
-      "apply": "clip",
-      "changes": [
-        {
-          "key": "kind",
-          "from": "shapes",
-          "to": "waveform"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "clip": {
-        "type": "shapes",
-        "params": {
-          "kind": "waveform",
-          "set": "circles",
-          "count": 10,
-          "speed": 0.8,
-          "opacity": 0.45,
-          "color": null
-        }
-      }
-    },
-    {
-      "n": 358,
+      "n": 367,
       "id": "bgShape.none.v1",
       "group": "bgShape",
       "type": "none",
@@ -13080,7 +14207,7 @@
       }
     },
     {
-      "n": 359,
+      "n": 368,
       "id": "bgShape.square.v1",
       "group": "bgShape",
       "type": "square",
@@ -13125,97 +14252,7 @@
       }
     },
     {
-      "n": 360,
-      "id": "bgShape.none.v2",
-      "group": "bgShape",
-      "type": "none",
-      "variant": 2,
-      "label": "文字背景 / なし（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "vary",
-          "from": "none",
-          "to": "cycle"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "none",
-          "enabled": true,
-          "params": {
-            "rotateWithLetter": true,
-            "scaleWithLetter": true,
-            "opacity": 1,
-            "skipSpaces": true,
-            "skipRate": 0,
-            "fgAutoContrast": false,
-            "fgColors": [],
-            "vary": "cycle",
-            "varyColors": [],
-            "stroke": 0,
-            "fill": 1,
-            "trimStart": 0,
-            "trimEnd": 1,
-            "trimOffset": 0,
-            "dashOn": 0,
-            "dashOff": 0,
-            "dashOffset": 0
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 361,
-      "id": "bgShape.square.v2",
-      "group": "bgShape",
-      "type": "square",
-      "variant": 2,
-      "label": "文字背景 / 四角（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "vary",
-          "from": "none",
-          "to": "cycle"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "square",
-          "enabled": true,
-          "params": {
-            "rotateWithLetter": true,
-            "scaleWithLetter": true,
-            "opacity": 1,
-            "skipSpaces": true,
-            "skipRate": 0,
-            "fgAutoContrast": false,
-            "fgColors": [],
-            "vary": "cycle",
-            "varyColors": [],
-            "stroke": 0,
-            "fill": 1,
-            "trimStart": 0,
-            "trimEnd": 1,
-            "trimOffset": 0,
-            "dashOn": 0,
-            "dashOff": 0,
-            "dashOffset": 0
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 362,
+      "n": 369,
       "id": "bgFill.gradientSweep.v1",
       "group": "bgFill",
       "type": "gradientSweep",
@@ -13256,7 +14293,7 @@
       }
     },
     {
-      "n": 363,
+      "n": 370,
       "id": "bgFill.rainbowFlow.v1",
       "group": "bgFill",
       "type": "rainbowFlow",
@@ -13299,7 +14336,7 @@
       }
     },
     {
-      "n": 364,
+      "n": 371,
       "id": "bgFill.holographic.v1",
       "group": "bgFill",
       "type": "holographic",
@@ -13346,7 +14383,7 @@
       }
     },
     {
-      "n": 365,
+      "n": 372,
       "id": "bgFill.chrome.v1",
       "group": "bgFill",
       "type": "chrome",
@@ -13387,7 +14424,7 @@
       }
     },
     {
-      "n": 366,
+      "n": 373,
       "id": "bgFill.goldFoil.v1",
       "group": "bgFill",
       "type": "goldFoil",
@@ -13429,7 +14466,7 @@
       }
     },
     {
-      "n": 367,
+      "n": 374,
       "id": "bgFill.fire.v1",
       "group": "bgFill",
       "type": "fire",
@@ -13476,7 +14513,7 @@
       }
     },
     {
-      "n": 368,
+      "n": 375,
       "id": "bgFill.caustics.v1",
       "group": "bgFill",
       "type": "caustics",
@@ -13519,7 +14556,7 @@
       }
     },
     {
-      "n": 369,
+      "n": 376,
       "id": "bgFill.marble.v1",
       "group": "bgFill",
       "type": "marble",
@@ -13567,7 +14604,7 @@
       }
     },
     {
-      "n": 370,
+      "n": 377,
       "id": "bgFill.glass.v1",
       "group": "bgFill",
       "type": "glass",
@@ -13609,7 +14646,7 @@
       }
     },
     {
-      "n": 371,
+      "n": 378,
       "id": "bgFill.textureFill.v1",
       "group": "bgFill",
       "type": "textureFill",
@@ -13654,7 +14691,7 @@
       }
     },
     {
-      "n": 372,
+      "n": 379,
       "id": "bgFill.karaokeWipe.v1",
       "group": "bgFill",
       "type": "karaokeWipe",
@@ -13696,7 +14733,7 @@
       }
     },
     {
-      "n": 373,
+      "n": 380,
       "id": "bgFill.ink.v1",
       "group": "bgFill",
       "type": "ink",
@@ -13737,361 +14774,6 @@
             "scale": 3.3,
             "threshold": 0.75,
             "softness": 0.08
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 374,
-      "id": "bgFill.gradientSweep.v2",
-      "group": "bgFill",
-      "type": "gradientSweep",
-      "variant": 2,
-      "label": "文字背景の塗り / グラデーションスイープ（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "speed",
-          "from": 0.3,
-          "to": 1.5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "gradientSweep",
-          "enabled": true,
-          "params": {
-            "angle": 0,
-            "speed": 1.5
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 375,
-      "id": "bgFill.rainbowFlow.v2",
-      "group": "bgFill",
-      "type": "rainbowFlow",
-      "variant": 2,
-      "label": "文字背景の塗り / レインボーフロー（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "saturation",
-          "from": 0.7,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "rainbowFlow",
-          "enabled": true,
-          "params": {
-            "saturation": 0.75,
-            "lightness": 0.6,
-            "speed": 0.5,
-            "perLetter": false
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 376,
-      "id": "bgFill.holographic.v2",
-      "group": "bgFill",
-      "type": "holographic",
-      "variant": 2,
-      "label": "文字背景の塗り / ホログラフィック（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "iridescence",
-          "from": 0.6,
-          "to": 0.75
-        },
-        {
-          "key": "fresnel",
-          "from": 0.4,
-          "to": 0.75
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "holographic",
-          "enabled": true,
-          "params": {
-            "iridescence": 0.75,
-            "fresnel": 0.75,
-            "speed": 0.3
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 377,
-      "id": "bgFill.chrome.v2",
-      "group": "bgFill",
-      "type": "chrome",
-      "variant": 2,
-      "label": "文字背景の塗り / クローム（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "envColors",
-          "from": null,
-          "to": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        {
-          "key": "sharpness",
-          "from": 0.6,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "chrome",
-          "enabled": true,
-          "params": {
-            "envColors": [
-              {
-                "pos": 0,
-                "color": "#ff8a3d"
-              },
-              {
-                "pos": 1,
-                "color": "#4dc8ff"
-              }
-            ],
-            "sharpness": 0.25
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 378,
-      "id": "bgFill.goldFoil.v2",
-      "group": "bgFill",
-      "type": "goldFoil",
-      "variant": 2,
-      "label": "文字背景の塗り / 金箔（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "colors",
-          "from": null,
-          "to": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        {
-          "key": "sparkle",
-          "from": 0.4,
-          "to": 0.25
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "goldFoil",
-          "enabled": true,
-          "params": {
-            "grain": 0.5,
-            "sparkle": 0.25,
-            "colors": [
-              {
-                "pos": 0,
-                "color": "#ff8a3d"
-              },
-              {
-                "pos": 1,
-                "color": "#4dc8ff"
-              }
-            ]
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 379,
-      "id": "bgFill.fire.v2",
-      "group": "bgFill",
-      "type": "fire",
-      "variant": 2,
-      "label": "文字背景の塗り / 炎（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "scale",
-          "from": 1,
-          "to": 2
-        },
-        {
-          "key": "speed",
-          "from": 1,
-          "to": 1.05
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "fire",
-          "enabled": true,
-          "params": {
-            "scale": 2,
-            "speed": 1.05,
-            "colors": null
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 380,
-      "id": "bgFill.caustics.v2",
-      "group": "bgFill",
-      "type": "caustics",
-      "variant": 2,
-      "label": "文字背景の塗り / コースティクス（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "colorA",
-          "from": null,
-          "to": "#ff8a3d"
-        },
-        {
-          "key": "colorB",
-          "from": null,
-          "to": "#ff8a3d"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "bgShape": {
-          "type": "rounded",
-          "params": {
-            "unit": "cell",
-            "width": 1.15,
-            "height": 1.15,
-            "opacity": 0.9,
-            "skipSpaces": true
-          },
-          "enabled": true
-        },
-        "bgFill": {
-          "type": "caustics",
-          "enabled": true,
-          "params": {
-            "scale": 2,
-            "speed": 0.4,
-            "colorA": "#ff8a3d",
-            "colorB": "#ff8a3d"
           },
           "motion": {}
         }

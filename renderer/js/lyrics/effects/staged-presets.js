@@ -101,6 +101,14 @@
     { group: 'bgFill', primitive: 'solid', type: 'bgEveryThird', params: { color: '#4dc8ff' }, scope: { kind: 'nth', unit: 'letter', every: 3, offset: 0 } },
     { group: 'bgShape', primitive: 'none', type: 'bgHideEveryOther', params: {}, scope: { kind: 'nth', unit: 'letter', every: 2, offset: 1 } },
     { group: 'bgShape', primitive: 'none', type: 'bgHideEveryThird', params: {}, scope: { kind: 'nth', unit: 'letter', every: 3, offset: 0 } },
+    // objeffects O6: motion-reactive ready-mades (primtives in effects/objfx.js)
+    { group: 'hold', primitive: 'timeDelay', type: 'lagTail', params: { unit: 'line', select: 'all', lag: 0.15, grade: true, props: 'pos' } },
+    { group: 'hold', primitive: 'colorShift', type: 'chromaWalk', params: { driver: 'distance', palette: 'hueCycle', cycles: 1, spread: 0.3, mix: 0.85 } },
+    { group: 'hold', primitive: 'motionFlicker', type: 'speedStrobe', params: { wave: 'strobe', rate: 12, depth: 0.7, duty: 0.5, release: 0.15 } },
+    { group: 'hold', primitive: 'motionEcho', type: 'rainbowEcho', params: { count: 5, spacing: 0.06, colorA: '#ff3b6b', colorB: '#3b6bff', opacity: 0.6, decay: 0.35 } },
+    { group: 'hold', primitive: 'strokeTrail', type: 'neonTrail', params: { count: 4, spacing: 0.05, width: 2, colorA: '#00e5ff', colorB: '#ff00c8', opacity: 0.9, blend: 'add' } },
+    { group: 'hold', primitive: 'timeDisplacement', type: 'shearDrag', params: { unit: 'letter', map: 'alongVelocity', maxLag: 0.15, amount: 1 } },
+    { group: 'hold', primitive: 'motionBend', type: 'rubberLead', params: { leadSide: 'auto', leadWidth: 0.3, stiffness: 0.25, damping: 0.08, inertia: 1.4 } },
   ];
 
   const registered = [];

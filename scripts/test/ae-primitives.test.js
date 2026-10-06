@@ -150,16 +150,22 @@ test('the deformation slots keep a block warp and drop the smallest amount', () 
   const twist = { deform: [letter('twist', 12), letter('bulge', 0.3)] };
   assert.deepEqual(slots(twist).map((entry) => entry.item.type), ['bulge', 'twist']);
   assert.equal(slots({ deform: [] }), null);
-  assert.equal(passes._test.STATE_ROWS, 26);
+  assert.equal(passes._test.STATE_ROWS, 27);
+  assert.equal(passes._test.TINT_ROW, 26);
   // row 25 rides the dissolve mode / direction / bias; unwritten rows read 0
   const pack = passes._test.packStateRows;
-  const row25 = (state) => {
-    const data = new Float32Array(26 * 4);
+  const row = (state, r) => {
+    const data = new Float32Array(27 * 4);
     pack([state], data, 1);
-    return [data[25 * 4], data[25 * 4 + 1], data[25 * 4 + 2], data[25 * 4 + 3]];
+    return [data[r * 4], data[r * 4 + 1], data[r * 4 + 2], data[r * 4 + 3]];
   };
+  const row25 = (state) => row(state, 25);
   const near25 = (got, want) => assert.ok(Math.abs(got - want) < 1e-6, `expected ${want}, got ${got}`);
   const dissolved = row25({ dissolve: { scale: 8, progress: 0.5, edge: 0.2, mode: 1, dir: { x: 1, y: 0 }, bias: 0.7 } });
   [1, 1, 0, 0.7].forEach((want, k) => near25(dissolved[k], want));
   assert.deepEqual(row25({}), [0, 0, 0, 0]);
+  // row 26 carries the motion-reactive tint (r, g, b, mix); absent by default
+  const tinted = row({ tint: { r: 0.5, g: 0.25, b: 1, m: 0.8 } }, 26);
+  [0.5, 0.25, 1, 0.8].forEach((want, k) => assert.ok(Math.abs(tinted[k] - want) < 1e-6, `tint row ${k}: ${tinted[k]}`));
+  assert.deepEqual(row({}, 26), [0, 0, 0, 0]);
 });
