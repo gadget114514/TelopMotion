@@ -38,6 +38,35 @@ SA.store = (() => {
     if (typeof SA !== 'undefined' && SA.textflow && project && project.script) {
       SA.textflow.apply(project);
     }
+    trimAutoSongClips(project);
+  }
+
+  // Cue edits (move / trim / delete / re-import) never resize the generated
+  // clips, so a shortened lyric used to leave its old long backdrop behind and
+  // the timeline stayed stretched. Shrink the auto song clips to the new end
+  // (lyrics end, or the song length when it runs longer); growth is left for
+  // an explicit automatic-direction run, which draws the per-cue backdrops.
+  // Hand-made clips (no `auto`) are never touched.
+  function trimAutoSongClips(projectDoc) {
+    if (!projectDoc || !SA.project || typeof SA.project.songLengthOf !== 'function') return;
+    if (typeof SA.project.trackKindOf !== 'function') return;
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    const cueEnd = cues.reduce((max, cue) => Math.max(max, Number(cue.end) || 0), 0);
+    const total = Math.max(cueEnd, SA.project.songLengthOf(projectDoc));
+    if (!Number.isFinite(total)) return;
+    const SONG_KINDS = ['background', 'backdrop', 'filler', 'figure'];
+    const kindOf = (trackId) => SA.project.trackKindOf(projectDoc, trackId);
+    projectDoc.clips = (projectDoc.clips || []).filter((clip) => {
+      if (!clip || !clip.auto) return true;
+      if (!SONG_KINDS.includes(kindOf(clip.trackId))) return true;
+      if (!(total > 0)) return false;
+      return (Number(clip.start) || 0) < total - 1e-4;
+    });
+    for (const clip of projectDoc.clips || []) {
+      if (!clip || !clip.auto) continue;
+      if (!SONG_KINDS.includes(kindOf(clip.trackId))) continue;
+      if (Number(clip.end) > total) clip.end = Math.max((Number(clip.start) || 0) + 0.05, total);
+    }
   }
 
   // Re-flows one cue's beats (used both by restructureCue and by style edits

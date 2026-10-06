@@ -57,6 +57,9 @@ const preview = (() => {
       }
       if (Array.isArray(doc.clips)) {
         for (const clip of doc.clips) {
+          // auto clips are regenerable: a stale auto backdrop must not stretch
+          // the song past the lyrics / song-length end (manual clips still can)
+          if (clip && clip.auto) continue;
           if (clip && Number.isFinite(clip.end) && clip.end > dur) dur = clip.end;
         }
       }
