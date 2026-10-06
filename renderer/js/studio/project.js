@@ -733,8 +733,12 @@
     for (const track of merged.tracks || []) {
       if (track && track.kind === 'subtitle' && track.textHidden != null) track.textHidden = !!track.textHidden;
       if (track && track.kind === 'subtitle' && track.bgHidden != null) track.bgHidden = !!track.bgHidden;
-      if (track && track.kind === 'subtitle' && track.fgHidden != null) track.fgHidden = !!track.fgHidden;
       if (track && track.kind === 'subtitle' && track.graphicsHidden != null) track.graphicsHidden = !!track.graphicsHidden;
+      // the removed Text Graphics row (`fgHidden`) folds into the Graphics switch
+      if (track && track.kind === 'subtitle' && track.fgHidden != null) {
+        if (track.graphicsHidden == null) track.graphicsHidden = !!track.fgHidden;
+        delete track.fgHidden;
+      }
       // the text mask is a per-track boolean (absent = on), on every track kind
       // that may draw behind the lyrics
       if (track && track.textMask != null) track.textMask = !!track.textMask;

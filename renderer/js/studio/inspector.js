@@ -490,10 +490,10 @@ SA.inspector = (() => {
 
   const BG_GROUPS = ['bgShape', 'bgFill', 'bgEdge', 'bgMotion'];
   const TEXT_GROUPS = ['text', 'fill', 'edge', 'repeat', 'clones'];
-  // groups hidden by the track's foreground switch (`fgHidden`): the
+  // groups hidden by the track's graphics switch (`graphicsHidden`): the
   // text-attached extras (fill effects, edges, repeats, clones, strike and
   // the ornaments). The base glyphs stay, so `text` itself is not listed.
-  const FG_GROUPS = ['fill', 'edge', 'strike', 'repeat', 'clones', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
+  const GRAPHICS_GROUPS = ['fill', 'edge', 'strike', 'repeat', 'clones', 'ornShape', 'ornFill', 'ornEdge', 'ornMotion'];
 
   function section(container, key, title) {
     const node = document.createElement('details');
@@ -511,11 +511,11 @@ SA.inspector = (() => {
       node.classList.add('insp-track-off');
       node.title = t('studio.inspector.textTrackOff');
     }
-    // the foreground groups of a track that hides its text foreground stay
+    // the graphics groups of a track that hides its graphics stay
     // editable but greyed out: only the base glyphs are drawn
-    if (FG_GROUPS.includes(key) && textTrack && textTrack.fgHidden && !node.classList.contains('insp-track-off')) {
+    if (GRAPHICS_GROUPS.includes(key) && textTrack && textTrack.graphicsHidden && !node.classList.contains('insp-track-off')) {
       node.classList.add('insp-track-off');
-      node.title = t('studio.inspector.fgTrackOff');
+      node.title = t('studio.inspector.graphicsTrackOff');
     }
     if (key === 'clip') {
       const doc = project();
@@ -1673,11 +1673,9 @@ SA.inspector = (() => {
 
   function renderStackGroup(container, group) {
     const style = resolvedStyle();
-    // a frame-wide graphic (post) the track's graphics row hides stays editable
+    // a graphic (post) the track's graphics row hides stays editable
     // but greyed out: it is not drawn
     const graphicsOff = group === 'post' && !!(selectedSubtitleTrack() || {}).graphicsHidden;
-    // a text-target post the track's foreground row hides: same treatment
-    const fgPostOff = group === 'post' && !!(selectedSubtitleTrack() || {}).fgHidden;
     const list = Array.isArray(style[group]) ? style[group] : [];
     const body = section(container, group, t(GROUP_LABELS[group]));
     // objeffects §5-2: only the first physics hold simulates; a second one
@@ -1698,13 +1696,9 @@ SA.inspector = (() => {
     list.forEach((instance, index) => {
       const box = document.createElement('div');
       box.className = 'insp-stack-item';
-      if (graphicsOff && SA.fx.isGraphicsPost && SA.fx.isGraphicsPost(instance)) {
+      if (graphicsOff) {
         box.classList.add('insp-track-off');
         box.title = t('studio.inspector.graphicsTrackOff');
-      }
-      if (fgPostOff && SA.fx.isGraphicsPost && !SA.fx.isGraphicsPost(instance)) {
-        box.classList.add('insp-track-off');
-        box.title = t('studio.inspector.fgTrackOff');
       }
       const head = document.createElement('div');
       head.className = 'insp-stack-head';
@@ -3719,21 +3713,6 @@ SA.inspector = (() => {
       row.appendChild(box);
       row.appendChild(text);
       container.appendChild(row);
-      // the track's foreground switch (data kept; the row's checkbox on the
-      // timeline and this checkbox are the same flag)
-      const fgRow = document.createElement('label');
-      fgRow.className = 'insp-inherit';
-      const fgBox = document.createElement('input');
-      fgBox.type = 'checkbox';
-      fgBox.checked = !cueTrack.fgHidden;
-      fgBox.addEventListener('change', () => {
-        SA.store.commands.updateTrack(cueTrack.id, { fgHidden: !fgBox.checked });
-      });
-      const fgText = document.createElement('span');
-      fgText.textContent = ` ${t('studio.inspector.fgTrackVisible')}`;
-      fgRow.appendChild(fgBox);
-      fgRow.appendChild(fgText);
-      container.appendChild(fgRow);
     }
     renderGroups(['fill', 'edge', 'strike', 'repeat']);
     heading('studio.inspector.sectionBg');
@@ -3772,6 +3751,23 @@ SA.inspector = (() => {
       removeKey: 'studio.inspector.ornRemove',
     });
     heading('studio.inspector.sectionOverall');
+    // the subtitle track's graphics switch (data kept; the row's checkbox on
+    // the timeline and this checkbox are the same flag)
+    if (cueTrack && cueTrack.kind === 'subtitle') {
+      const row = document.createElement('label');
+      row.className = 'insp-inherit';
+      const box = document.createElement('input');
+      box.type = 'checkbox';
+      box.checked = !cueTrack.graphicsHidden;
+      box.addEventListener('change', () => {
+        SA.store.commands.updateTrack(cueTrack.id, { graphicsHidden: !box.checked });
+      });
+      const text = document.createElement('span');
+      text.textContent = ` ${t('studio.inspector.graphicsTrackVisible')}`;
+      row.appendChild(box);
+      row.appendChild(text);
+      container.appendChild(row);
+    }
     renderGroups(['post']);
   }
 

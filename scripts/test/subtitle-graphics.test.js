@@ -78,9 +78,50 @@ test('the engine drops the track graphics and the timeline draws their row', () 
   assert.ok(timeline.includes("'track-graphics-check'"), 'the graphics checkbox is missing');
   assert.ok(timeline.includes('graphicsSpans'), 'the graphics spans are missing');
   const i18n = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'i18n.js'), 'utf8');
-  for (const key of ['graphics', 'hideGraphics', 'showGraphics']) {
+  for (const key of ['graphics', 'hideGraphics', 'showGraphics', 'graphicsTrackVisible']) {
     assert.ok(i18n.includes(key), `${key} missing from i18n`);
   }
+});
+
+test('the graphics switch covers every graphic: frame posts and text-attached extras', () => {
+  const engine = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'), 'utf8');
+  // no second foreground flag: the text-attached extras hide with graphicsOn
+  assert.equal(engine.includes('fgHidden'), false, 'the fgHidden flag must be gone');
+  assert.equal(engine.includes('subtitleForegroundOn'), false, 'the foreground helper must be gone');
+  assert.ok(engine.includes('const ornActive = graphicsOn'), 'the ornament pass is not on the graphics switch');
+  assert.ok(engine.includes('if (graphicsOn) drawPageDecor(active, t)'), 'the page decor is not on the graphics switch');
+  assert.ok(engine.includes("type: 'solid', params: {}, motion: {}, enabled: true"), 'the solid fill fallback is missing');
+  assert.ok(engine.includes('if (textOn && graphicsOn)'), 'repeats / clones are not on the graphics switch');
+  assert.ok(engine.includes('textOn && graphicsOn ? buildStrike'), 'strike is not on the graphics switch');
+  assert.ok(engine.includes('if (graphicsOn) drawScopedDecor'), 'scoped decor is not on the graphics switch');
+  assert.ok(engine.includes('const edges = graphicsOn'), 'edges are not on the graphics switch');
+  // every post (frame-wide and text-target) is skipped when off
+  assert.ok(engine.includes('if (!graphicsOn) continue;'), 'posts are not skipped when graphics are off');
+  const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
+  assert.equal(timeline.includes("'fg-track'"), false, 'the text graphics row must be gone');
+  assert.equal(timeline.includes('foregroundSpans'), false, 'the foreground spans must be gone');
+  assert.ok(timeline.includes('hasTextGraphics'), 'the graphics spans do not cover text-attached extras');
+  const inspector = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'inspector.js'), 'utf8');
+  assert.ok(inspector.includes('GRAPHICS_GROUPS'), 'GRAPHICS_GROUPS missing from inspector');
+  assert.ok(inspector.includes('graphicsTrackVisible'), 'graphicsTrackVisible missing from inspector');
+  assert.equal(inspector.includes('fgHidden'), false, 'the fgHidden flag must be gone from the inspector');
+});
+
+test('migrate folds the removed fgHidden flag into graphicsHidden', () => {
+  const doc = project.defaults({});
+  doc.tracks = [
+    { id: 'sub1', kind: 'subtitle', name: '字幕1', fgHidden: 1 },
+    { id: 'sub2', kind: 'subtitle', name: '字幕2', fgHidden: 1, graphicsHidden: false },
+    { id: 'sub3', kind: 'subtitle', name: '字幕3' },
+  ];
+  const migrated = project.migrate(doc);
+  assert.equal(migrated.ok, true);
+  const byId = (id) => migrated.project.tracks.find((track) => track.id === id);
+  assert.equal(byId('sub1').graphicsHidden, true);
+  assert.equal('fgHidden' in byId('sub1'), false);
+  assert.equal(byId('sub2').graphicsHidden, false, 'an explicit graphicsHidden wins');
+  assert.equal('fgHidden' in byId('sub2'), false);
+  assert.equal(byId('sub3').graphicsHidden, undefined);
 });
 
 test('graphicsPostsActive spots the frame graphics that need the text mask', () => {

@@ -72,9 +72,12 @@ SA.lyricsEngine = (() => {
     return !(track && track.bgHidden);
   }
 
-  // the frame-wide graphics a subtitle style carries (light leaks, vignette,
-  // camera moves, shape layers ...) sit on the track's own graphics row:
-  // hidden with it, and dropped by the subtitle-only view
+  // Every graphic a subtitle style carries sits on the track's own graphics
+  // row: the frame-wide posts (light leaks, vignette, camera moves, shape
+  // layers ...) and the text-attached extras (edges, repeats, clones,
+  // strike, ornaments, page decor, text-target posts ...). Hidden with the
+  // track's `graphicsHidden` flag, and dropped by the subtitle-only view.
+  // The style data is never touched; the base glyphs (solid fill) stay.
   function subtitleGraphicsOn(track, view) {
     if (view && view.subtitleOnly === true) return false;
     return !(track && track.graphicsHidden);
@@ -88,15 +91,6 @@ SA.lyricsEngine = (() => {
     if (track && track.textHidden) return false;
     if (style && style.text && style.text.enabled === false) return false;
     return true;
-  }
-
-  // The text foreground graphics a subtitle style carries (edges, repeats,
-  // clones, strike, ornaments, page decor, text-target posts ...) sit on the
-  // track's own text graphics row: hidden with it, the style data is never
-  // touched. The base glyphs (solid fill) stay; only the extras are skipped.
-  function subtitleForegroundOn(track, view) {
-    void view;
-    return !(track && track.fgHidden);
   }
 
   function figureForegroundOn(track, view) {
@@ -2480,14 +2474,11 @@ SA.lyricsEngine = (() => {
       }
       const hiddenTracks = new Set(subtitleTracks.filter((track) => track.hidden).map((track) => track.id));
       const visibleBeats = activeBeats.filter((active) => !hiddenTracks.has(active.trackId));
-      // the track's graphics row: frame-wide posts (light leaks, vignette,
-      // camera moves, shape layers ...) are hidden with it, the style data is
-      // never touched
+      // the track's graphics row: every graphic the style carries
+      // (frame-wide posts and text-attached extras) is hidden with it, the
+      // style data is never touched
       const graphicsHiddenTracks = new Set(subtitleTracks.filter((track) => track.graphicsHidden).map((track) => track.id));
       const textHiddenTracks = new Set(subtitleTracks.filter((track) => track.textHidden).map((track) => track.id));
-      // the track's text graphics row: the text-attached extras (edges, repeats,
-      // clones, ornaments, text-target posts ...) are hidden with it
-      const fgHiddenTracks = new Set(subtitleTracks.filter((track) => track.fgHidden).map((track) => track.id));
       const textActiveBeats = visibleBeats.filter((active) =>
         subtitleTextOn({ textHidden: textHiddenTracks.has(active.trackId) }, view, active.style)
       );
@@ -2588,17 +2579,16 @@ SA.lyricsEngine = (() => {
         const { beat, scene, result, style } = active;
         const graphicsOn = subtitleGraphicsOn({ graphicsHidden: graphicsHiddenTracks.has(active.trackId) }, view);
         const textOn = subtitleTextOn({ textHidden: textHiddenTracks.has(active.trackId) }, view, style);
-        const fgOn = subtitleForegroundOn({ fgHidden: fgHiddenTracks.has(active.trackId) }, view);
         const bgShape = SA.fx.withDefaults(style.bgShape, 'bgShape');
         const ornShape = SA.fx.withDefaults(style.ornShape, 'ornShape');
         // the subtitle background switch only silences the definition
-        // background (the per-letter cell squares); the ornaments are part of
-        // the text graphics row and hide with it
+        // background (the per-letter cell squares); the ornaments hide with
+        // the graphics switch
         const bgOff = !subtitleBackgroundOn({ bgHidden: bgHiddenTracks.has(active.trackId) }, view);
         const bgActive = !bgOff && !!(bgShape && bgShape.type && bgShape.type !== 'none');
-        const ornActive = fgOn && !!(ornShape && ornShape.type && ornShape.type !== 'none');
+        const ornActive = graphicsOn && !!(ornShape && ornShape.type && ornShape.type !== 'none');
         pipeline.beginLayer();
-        if (fgOn) drawPageDecor(active, t);
+        if (graphicsOn) drawPageDecor(active, t);
         // both shape passes draw behind the glyphs and commit as a layer of
         // their own (see doc/text-layer-design.md): the foreground mask knocks
         // the glyphs out of it and the layer reaches the scene before the
@@ -2670,14 +2660,14 @@ SA.lyricsEngine = (() => {
         const progress = Math.min(1, Math.max(0, (t - beat.start) / Math.max(0.001, beat.end - beat.start)));
         // the text graphics row off switch keeps the base glyphs but drops the
         // fill effect: the body falls back to a solid fill in its colours
-        const fillInstance = fgOn
+        const fillInstance = graphicsOn
           ? SA.fx.withDefaults(style.fill, 'fill')
           : { type: 'solid', params: {}, motion: {}, enabled: true };
         const category =
           beat.meta && beat.meta.category
             ? SA.project.mergeDeep(SA.project.DEFAULT_CATEGORY_COLORS, project.categoryColors || {})[beat.meta.category]
             : null;
-        if (textOn && fgOn) {
+        if (textOn && graphicsOn) {
           // motion trails behind the body paint first, so repeats and the
           // glyphs cover them (objeffects §4.4/4.5)
           const behindTrails = (result.meta && result.meta.trails) || [];
@@ -2692,10 +2682,10 @@ SA.lyricsEngine = (() => {
           drawRepeatCopies(active, t, project, colorSet, fillInstance, category, progress, beats, variant, colorOverride);
         }
         let sdfTarget = textOn ? pipeline.sdf() : null;
-        const strike = textOn && fgOn ? buildStrike(active, t, colorSet, project) : { under: [], over: [] };
+        const strike = textOn && graphicsOn ? buildStrike(active, t, colorSet, project) : { under: [], over: [] };
         // clones: the same string drawn several times behind the main text with
         // per-copy offset / scale / rotation / color / opacity / motion
-        if (textOn && fgOn) {
+        if (textOn && graphicsOn) {
           const clones = Array.isArray(style.clones) ? style.clones : [];
           for (let cloneIndex = 0; cloneIndex < clones.length; cloneIndex += 1) {
             const clone = clones[cloneIndex];
@@ -2743,7 +2733,7 @@ SA.lyricsEngine = (() => {
           category: beat.meta && beat.meta.category,
           sdfTexture: sdfTarget ? sdfTarget.texture : null,
         };
-        const edges = fgOn
+        const edges = graphicsOn
           ? (style.edge || [])
               .filter((instance) => instance && instance.enabled !== false)
               .flatMap((instance) =>
@@ -2776,9 +2766,9 @@ SA.lyricsEngine = (() => {
             for (const edge of edges) if (edge.top) pipeline.edge(edge);
           }
           if (strike.over.length) drawPrimitives(strike.over);
-          if (fgOn) drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
+          if (graphicsOn) drawScopedDecor(active, t, colorSet, category, progress, variant, colorOverride);
           // motion trails in front paint after the body and edges
-          const frontTrails = fgOn ? (result.meta && result.meta.trails) || [] : [];
+          const frontTrails = graphicsOn ? (result.meta && result.meta.trails) || [] : [];
           if (frontTrails.some((trail) => trail && trail.cfg && trail.cfg.behind === false)) {
             const trailCtx = { beats, variant, colorSet, fillInstance, category, progress, colorOverride, project };
             for (const trail of frontTrails) {
@@ -2789,7 +2779,7 @@ SA.lyricsEngine = (() => {
             }
           }
         }
-        if (fgOn) {
+        if (graphicsOn) {
           for (const instance of style.edge || []) {
             if (instance && instance.type === 'neonGlow' && (!instance.params || instance.params.bloom !== false)) bloomNeeded = true;
           }
@@ -2797,10 +2787,9 @@ SA.lyricsEngine = (() => {
         const audioFeatures = state.analysis && SA.audioAnalysis ? SA.audioAnalysis.features(state.analysis) : null;
         for (const instance of style.post || []) {
           if (!instance || instance.enabled === false || (instance.params && instance.params.enabled === false)) continue;
-          if (!graphicsOn && SA.fx.isGraphicsPost && SA.fx.isGraphicsPost(instance)) continue;
-          // the foreground row off switch drops the text-target posts (glitch,
-          // dissolves, sparkles ...); the frame-wide ones stay on graphicsOn
-          if (!fgOn && SA.fx.isGraphicsPost && !SA.fx.isGraphicsPost(instance)) continue;
+          // the graphics switch drops every post: the frame-wide ones and
+          // the text-target ones (glitch, dissolves, sparkles ...)
+          if (!graphicsOn) continue;
           const uniforms = SA.fx.postUniforms(instance, {
             envelope: instance.envelope == null ? 1 : instance.envelope,
             progress,
@@ -2823,7 +2812,7 @@ SA.lyricsEngine = (() => {
           }
         }
         const enterInstance = SA.fx.withDefaults(style.enter, 'enter');
-        if (textOn && fgOn && enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
+        if (textOn && graphicsOn && enterInstance && enterInstance.type === 'typewriter') drawTypewriterCursor(scene, result, enterInstance.params, t);
         if (textOn) {
           for (const copy of echoPlan(style.animation, beat, t, state.width, state.height)) pipeline.commitLayer(copy.opacity, copy);
         }
@@ -3137,5 +3126,5 @@ SA.lyricsEngine = (() => {
     return value;
   }
 
-  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, subtitleForegroundOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, segmentClipAt, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
+  return { createEngine, supportsWebGL2: (canvas) => SA.gl.supportsWebGL2(canvas), beatForCue, activeBeats, beatOpacity, subtitleBackgroundOn, subtitleGraphicsOn, subtitleTextOn, trackTextMaskOn, maskRadius, partitionPlanes, graphicsPostsActive, backgroundBaseColor, scopedBgEntries, applyScopedBg, isClipDisabled, activeClips, segmentClipAt, drawSegments, figureForegroundOn, figureBackgroundOn, figureLayerOf, figureLayerOn, figureLayerFlags };
 })();
