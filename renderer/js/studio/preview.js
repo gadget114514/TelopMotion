@@ -451,8 +451,11 @@ const preview = (() => {
       }
     }
     updateTransport();
-    render();
-    rafId = requestFrame(tick);
+    try {
+      render();
+    } finally {
+      rafId = requestFrame(tick);
+    }
   }
 
   function pause() {

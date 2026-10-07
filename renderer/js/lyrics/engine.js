@@ -231,12 +231,14 @@ SA.lyricsEngine = (() => {
   // inside their drawList; this one composes on top and defaults to identity,
   // so clips without a sidecar draw exactly as before. The transform is
   // dependency-free (no figures needed).
-  function applyClipPlacement(shapes, spec) {
+  function applyClipPlacement(shapes, spec, frame) {
     if (!shapes || !shapes.length) return shapes;
     const placer = SA.clipPlacement;
     if (!placer || typeof placer.applyPlacement !== 'function') return shapes;
-    const frame = { width: state.width, height: state.height };
-    return placer.applyPlacement(shapes, placer.fromSpec(spec || {}), frame);
+    const fr = frame && Number.isFinite(frame.width) && Number.isFinite(frame.height)
+      ? frame
+      : { width: 1920, height: 1080 };
+    return placer.applyPlacement(shapes, placer.fromSpec(spec || {}), fr);
   }
 
   // Clips of one track kind, hidden tracks excluded, in start order. `within`
@@ -1831,7 +1833,7 @@ SA.lyricsEngine = (() => {
           bpm: tempoBpm(features),
         });
         if (!primitives.length) return;
-        applyClipPlacement(primitives, spec);
+        applyClipPlacement(primitives, spec, { width: state.width, height: state.height });
         pipeline.beginLayer();
         drawPrimitives(primitives);
         pipeline.commitLayer(layerOpacity);
@@ -1882,7 +1884,7 @@ SA.lyricsEngine = (() => {
       const texts = list.texts || [];
       // the clip-level placement sidecar composes on top of the layer's own
       // params placement (identity by default: old clips draw unchanged)
-      applyClipPlacement(shapes, spec);
+      applyClipPlacement(shapes, spec, { width: state.width, height: state.height });
       // the text mask knocks the layer out under the glyphs. A combo of split
       // planes (drawn first) and an accent texture draws as two layers: the
       // planes stay whole (their colours hold the text contrast), the accents
@@ -1950,7 +1952,7 @@ SA.lyricsEngine = (() => {
       if (!(list.shapes || []).length && !hasField) return;
       // the clip-level placement sidecar (identity by default: old clips draw
       // unchanged). The params-level scale / x / y already ran inside drawList.
-      applyClipPlacement(list.shapes || [], spec);
+      applyClipPlacement(list.shapes || [], spec, { width: state.width, height: state.height });
       // cueStyle 移植 (figure 目立つ要素): 生成時に spec.params へ焼いた
       // fxEnter/fxExit/fxHold (文字前提型を除外済み) をクリップ全体の
       // グループ変形として適用する。figure 独自の beat.move とは独立に重なる。
@@ -2193,7 +2195,7 @@ SA.lyricsEngine = (() => {
       const anims = (list && list.textAnims) || [];
       if (!shapes.length && !texts.length && !anims.length) return;
       // the clip-level placement sidecar (identity by default)
-      applyClipPlacement(shapes, spec);
+      applyClipPlacement(shapes, spec, { width: state.width, height: state.height });
       const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
       const mask = typeof maskFor === 'function' ? maskFor(clip) : !!maskFor;
       if (shapes.length || texts.length) {
