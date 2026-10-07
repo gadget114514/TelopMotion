@@ -179,10 +179,10 @@ SA.themes = (() => {
     return { canceled: false, count };
   }
 
-  // Combined dialog: left = theme list, right = theme editor.
-  // Left Apply applies to the timeline AND loads the theme into the right
-  // editor. Each pane can be hidden so only one side shows.
-  let combined = { selectedId: null, showLeft: true, showRight: true };
+  // Combined dialog: theme list and theme editor share one narrow dialog
+  // via top tabs (list <-> editor). Left Apply applies to the timeline AND
+  // loads the theme into the editor tab.
+  let combined = { selectedId: null, pane: 'list' };
 
   function dialog(initialThemeId) {
     const root = document.getElementById('dialog-root');
@@ -197,22 +197,26 @@ SA.themes = (() => {
     const title = document.createElement('h3');
     title.textContent = `${t('studio.themes.title')} / ${t('studio.themeEditor.title')}`;
     head.appendChild(title);
-    const toggleLeft = document.createElement('button');
-    toggleLeft.type = 'button';
-    toggleLeft.className = 'btn btn-mini';
-    toggleLeft.textContent = t('studio.themes.title');
-    const toggleRight = document.createElement('button');
-    toggleRight.type = 'button';
-    toggleRight.className = 'btn btn-mini';
-    toggleRight.textContent = t('studio.themeEditor.title');
-    head.appendChild(toggleLeft);
-    head.appendChild(toggleRight);
     dialog.appendChild(head);
 
     const hint = document.createElement('p');
     hint.className = 'dialog-hint';
     hint.textContent = t('studio.themes.hint');
     dialog.appendChild(hint);
+
+    const tabs = document.createElement('div');
+    tabs.className = 'theme-tabs theme-combined-tabs';
+    const tabList = document.createElement('button');
+    tabList.type = 'button';
+    tabList.className = 'btn btn-mini theme-tab';
+    tabList.textContent = t('studio.themes.title');
+    const tabEditor = document.createElement('button');
+    tabEditor.type = 'button';
+    tabEditor.className = 'btn btn-mini theme-tab';
+    tabEditor.textContent = t('studio.themeEditor.title');
+    tabs.appendChild(tabList);
+    tabs.appendChild(tabEditor);
+    dialog.appendChild(tabs);
 
     const body = document.createElement('div');
     body.className = 'theme-combined-body';
@@ -234,21 +238,19 @@ SA.themes = (() => {
     dialog.appendChild(body);
 
     const applyLayout = () => {
-      left.hidden = !combined.showLeft;
-      right.hidden = !combined.showRight;
-      dialog.classList.toggle('hide-left', !combined.showLeft);
-      dialog.classList.toggle('hide-right', !combined.showRight);
-      toggleLeft.classList.toggle('is-active', combined.showLeft);
-      toggleRight.classList.toggle('is-active', combined.showRight);
+      left.hidden = combined.pane !== 'list';
+      right.hidden = combined.pane !== 'editor';
+      dialog.classList.toggle('hide-left', combined.pane !== 'list');
+      dialog.classList.toggle('hide-right', combined.pane !== 'editor');
+      tabList.classList.toggle('is-active', combined.pane === 'list');
+      tabEditor.classList.toggle('is-active', combined.pane === 'editor');
     };
-    toggleLeft.addEventListener('click', () => {
-      if (combined.showLeft && !combined.showRight) return;
-      combined.showLeft = !combined.showLeft;
+    tabList.addEventListener('click', () => {
+      combined.pane = 'list';
       applyLayout();
     });
-    toggleRight.addEventListener('click', () => {
-      if (combined.showRight && !combined.showLeft) return;
-      combined.showRight = !combined.showRight;
+    tabEditor.addEventListener('click', () => {
+      combined.pane = 'editor';
       applyLayout();
     });
 
@@ -260,8 +262,8 @@ SA.themes = (() => {
     const loadIntoEditor = (themeId, reveal) => {
       combined.selectedId = themeId || null;
       if (SA.themeEditor && typeof SA.themeEditor.load === 'function') SA.themeEditor.load(themeId || null);
-      if (reveal !== false && !combined.showRight && themeId) {
-        combined.showRight = true;
+      if (reveal !== false) {
+        combined.pane = 'editor';
         applyLayout();
       }
       renderList();
@@ -284,7 +286,9 @@ SA.themes = (() => {
         row.className = `theme-row${combined.selectedId === theme.id ? ' is-active' : ''}`;
         row.addEventListener('click', (event) => {
           if (event.target.closest('button')) return;
-          loadIntoEditor(theme.id);
+          // selecting a row preloads the editor but stays on the list tab
+          // so the list remains browsable; Edit… jumps to the editor tab
+          loadIntoEditor(theme.id, false);
         });
         const badge = document.createElement('span');
         badge.className = 'theme-badge';
@@ -309,7 +313,7 @@ SA.themes = (() => {
           true
         );
         makeButton(row, 'studio.themes.edit', () => {
-          loadIntoEditor(theme.id);
+          loadIntoEditor(theme.id, true);
         });
         if (theme.builtin) {
           makeButton(row, 'studio.themes.duplicate', () => {
@@ -353,7 +357,7 @@ SA.themes = (() => {
       return button;
     };
     miniButton('studio.themes.create', () => {
-      loadIntoEditor(null);
+      loadIntoEditor(null, true);
     }, true);
     miniButton('studio.themes.save', () => {
       const name = window.prompt(t('studio.themes.name'), t('studio.themes.untitled'));
@@ -377,6 +381,7 @@ SA.themes = (() => {
     });
 
     combined.selectedId = initialThemeId || null;
+    combined.pane = initialThemeId ? 'editor' : 'list';
     renderList();
     applyLayout();
 

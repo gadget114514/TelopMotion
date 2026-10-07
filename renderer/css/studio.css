@@ -1948,9 +1948,9 @@ body {
   max-width: calc(100vw - 40px);
 }
 
-/* combined Theme (left) + Edit theme (right) dialog */
+/* combined Theme dialog: list and editor share one narrow dialog via tabs */
 .theme-combined {
-  width: min(1120px, calc(100vw - 40px));
+  width: min(720px, calc(100vw - 40px));
   max-height: calc(100vh - 60px);
 }
 
@@ -1975,21 +1975,18 @@ body {
   white-space: nowrap;
 }
 
-.theme-combined-head .btn.is-active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent) inset;
+.theme-combined-tabs {
+  padding-top: 0;
 }
 
 .theme-combined-body {
-  display: grid;
-  grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
-  gap: 12px;
+  display: block;
   min-height: 0;
 }
 
 .theme-combined.hide-left .theme-combined-body,
 .theme-combined.hide-right .theme-combined-body {
-  grid-template-columns: minmax(0, 1fr);
+  display: block;
 }
 
 .theme-combined-left {
@@ -1998,6 +1995,11 @@ body {
   gap: 8px;
   min-height: 0;
   min-width: 0;
+}
+
+.theme-combined-left[hidden],
+.theme-combined-right[hidden] {
+  display: none;
 }
 
 .theme-combined-left .theme-list {
@@ -2019,6 +2021,7 @@ body {
 .theme-combined-editor {
   overflow: auto;
   min-height: 0;
+  max-height: min(62vh, 560px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -2033,12 +2036,6 @@ body {
 
 .theme-row.is-active {
   border-color: var(--accent);
-}
-
-@media (max-width: 900px) {
-  .theme-combined-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .layer-body {
