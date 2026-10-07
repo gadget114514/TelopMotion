@@ -2388,6 +2388,72 @@ body {
   color: var(--warn, #ffc247);
 }
 
+/* --- preset palette browser (SA.colors.openPresetPicker) ------------------- */
+
+.preset-popover {
+  width: 320px;
+  max-width: 92vw;
+}
+
+.preset-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 2px 0;
+  max-height: min(420px, 52vh);
+  overflow-y: auto;
+}
+
+.preset-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  text-align: left;
+  background: var(--card2, #182030);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.preset-card:hover {
+  border-color: var(--accent);
+}
+
+.preset-card.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.preset-strip {
+  display: inline-flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.preset-strip i {
+  display: block;
+  width: 14px;
+  height: 16px;
+}
+
+.preset-name {
+  flex: 1 1 auto;
+  color: var(--text);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ctrl-bool-row.is-disabled {
   opacity: 0.5;
 }

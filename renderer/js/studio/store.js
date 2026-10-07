@@ -828,9 +828,128 @@ SA.store = (() => {
   }
 
   function applyPalette(projectDoc, target, palette, options) {
-    const from = paletteColorsAt(projectDoc, target.path);
+    const opts = options || {};
     const to = palette.colors.slice();
-    if (from.length) repaintScope(projectDoc, target, from, to, options);
+    // Manual library apply at the project level unifies every cue/beat onto the
+    // new palette: cues/beats with their own palette would otherwise keep the
+    // old colours and the "apply to the whole project" expectation breaks.
+    if (target.kind === 'project' && opts.propagate) {
+      const cues = (projectDoc.script && projectDoc.script.cues) || [];
+      const cueFrom = new Map();
+      const beatFrom = new Map();
+      const ownedCues = new Set();
+      const beatsWithColor = new Set();
+      const BEAT_KEYS = ['palette', 'paletteIndex', 'paletteInvert', 'colorScheme', 'colorLegacy'];
+      for (const cue of cues) {
+        if (!cue || !cue.id) continue;
+        try {
+          cueFrom.set(cue.id, paletteColorsAt(projectDoc, `cue:${cue.id}`));
+        } catch {
+          cueFrom.set(cue.id, []);
+        }
+        const container = (projectDoc.cueStyles || {})[cue.id];
+        if (container && container.palette) ownedCues.add(cue.id);
+        for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          if (!beat || !beat.id) continue;
+          try {
+            beatFrom.set(beat.id, paletteColorsAt(projectDoc, `cue:${cue.id}/beat:${beat.id}`));
+          } catch {
+            beatFrom.set(beat.id, []);
+          }
+          const bag = (projectDoc.beatStyles || {})[beat.id];
+          if (bag && (bag.palette || bag.paletteIndex || bag.paletteInvert || bag.colorScheme || bag.colorLegacy)) {
+            beatsWithColor.add(beat.id);
+          }
+        }
+      }
+      const fromProject = paletteColorsAt(projectDoc, '');
+      const withClips = !(opts && opts.clips === false);
+      // project style itself follows the new palette
+      if (fromProject.length) {
+        const current = projectDoc.style || {};
+        const { palette: _keep, ...rest } = current;
+        const moved = SA.moods.recolor(rest, fromProject, to);
+        projectDoc.style = { ...moved, ...(_keep ? { palette: _keep } : {}) };
+        // cues without their own palette follow the project palette
+        for (const cue of cues) {
+          if (!cue || !cue.id || ownedCues.has(cue.id)) continue;
+          const container = (projectDoc.cueStyles || {})[cue.id];
+          if (container && Object.keys(container).length) {
+            projectDoc.cueStyles[cue.id] = SA.moods.recolor(container, fromProject, to);
+          }
+        }
+        // beats without any colour keys follow their parent; beats with colour
+        // keys are unified below, so they are skipped here to avoid a double move
+        for (const cue of cues) {
+          if (!cue || !cue.id || ownedCues.has(cue.id)) continue;
+          for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+            if (!beat || !beat.id || beatsWithColor.has(beat.id)) continue;
+            const bag = (projectDoc.beatStyles || {})[beat.id];
+            if (bag && Object.keys(bag).length) {
+              const from = beatFrom.get(beat.id) || [];
+              if (from.length) projectDoc.beatStyles[beat.id] = SA.moods.recolor(bag, from, to);
+            }
+          }
+        }
+      }
+      // cues with their own palette: move their literals onto the new palette,
+      // then inherit it (delete) so every cue resolves to the same colours
+      for (const cueId of ownedCues) {
+        const container = (projectDoc.cueStyles || {})[cueId];
+        if (!container) continue;
+        const from = cueFrom.get(cueId) || [];
+        if (from.length) {
+          const { palette: _drop, ...rest } = container;
+          const moved = SA.moods.recolor(rest, from, to);
+          if (!Object.keys(moved).length) delete projectDoc.cueStyles[cueId];
+          else projectDoc.cueStyles[cueId] = moved;
+        } else {
+          delete container.palette;
+          if (!Object.keys(container).length) delete projectDoc.cueStyles[cueId];
+        }
+      }
+      // beats: unify colour keys onto the new palette, recolour skipped beats
+      for (const cue of cues) {
+        if (!cue || !cue.id) continue;
+        const wasOwned = ownedCues.has(cue.id);
+        for (const beat of (projectDoc.beats && projectDoc.beats[cue.id]) || []) {
+          if (!beat || !beat.id) continue;
+          const bag = (projectDoc.beatStyles || {})[beat.id];
+          if (!bag) continue;
+          if (beatsWithColor.has(beat.id)) {
+            const from = beatFrom.get(beat.id) || [];
+            const rest = { ...bag };
+            for (const key of BEAT_KEYS) delete rest[key];
+            let moved = rest;
+            if (from.length && Object.keys(rest).length) moved = SA.moods.recolor(rest, from, to);
+            if (!Object.keys(moved).length) delete projectDoc.beatStyles[beat.id];
+            else projectDoc.beatStyles[beat.id] = moved;
+          } else if (wasOwned && Object.keys(bag).length) {
+            const from = beatFrom.get(beat.id) || [];
+            if (from.length) projectDoc.beatStyles[beat.id] = SA.moods.recolor(bag, from, to);
+          }
+        }
+      }
+      // clips: owned cues follow their old cue palette, the rest follows project
+      if (withClips) {
+        const ownedClipIds = new Set();
+        for (const cueId of ownedCues) {
+          const cueObj = cues.find((entry) => entry && entry.id === cueId);
+          const from = cueFrom.get(cueId) || [];
+          if (!cueObj || !from.length) continue;
+          const list = managedClipsWithin(projectDoc, cueObj.start, cueObj.end);
+          recolorClips(list, from, to);
+          for (const clip of list) ownedClipIds.add(clip.id);
+        }
+        if (fromProject.length) {
+          const allManaged = managedClipsWithin(projectDoc, -Infinity, Infinity);
+          recolorClips(allManaged.filter((clip) => !ownedClipIds.has(clip.id)), fromProject, to);
+        }
+      }
+    } else {
+      const from = paletteColorsAt(projectDoc, target.path);
+      if (from.length) repaintScope(projectDoc, target, from, to, opts);
+    }
     // the stored palette is a plain manual one: the auto marker and the
     // resolved scheme metadata belong to the generator, not to the project file
     const rest = clone(palette);
@@ -3508,7 +3627,10 @@ SA.store = (() => {
     // a palette for the project, a cue ({ cueId }) or a beat ({ cueId, beatId });
     // the literal colours of that scope move with it. With {force:true} on a
     // cue scope the beats' own colour keys are cleared first, so the cue
-    // palette shows through on every beat.
+    // palette shows through on every beat. With {propagate:true} on the project
+    // scope every cue/beat palette is unified onto the new palette, so a manual
+    // "apply a palette" reaches all cues instead of skipping cues that already
+    // own a palette.
     setPalette(scope, palette, options) {
       const target = paletteScope(scope);
       if (!target || !palette || !Array.isArray(palette.colors) || !palette.colors.length || typeof SA === 'undefined' || !SA.moods) return;
@@ -3519,7 +3641,7 @@ SA.store = (() => {
         coalesceKey: opts.coalesceKey,
         do(projectDoc) {
           if (opts.force && target.kind === 'cue') clearBeatColorsForCue(projectDoc, target.cueId);
-          applyPalette(projectDoc, target, palette);
+          applyPalette(projectDoc, target, palette, opts);
         },
       });
     },

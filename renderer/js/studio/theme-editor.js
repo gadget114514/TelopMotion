@@ -511,6 +511,7 @@ SA.themeEditor = (() => {
       smallButton(`🎲 ${t('studio.themeEditor.paletteRandom')}`, () => {
         const next = SA.colors.randomPalette((draft.palette.colors || []).length);
         draft.palette = { id: next.id, name: next.name, colors: next.colors };
+        draft.paletteReplace = true;
         render();
       }, false, 'studio.themeEditor.hint.paletteRandom')
     );
@@ -519,6 +520,7 @@ SA.themeEditor = (() => {
         const edgeIndex = SA.moods && typeof SA.moods.edgeIndexOf === 'function' ? SA.moods.edgeIndexOf(draft.palette.colors) : -1;
         const jittered = SA.moods.jitterPalette(Math.random, draft.palette, draft.axes, 2.5, null, { edgeIndex });
         if (jittered && Array.isArray(jittered.colors)) draft.palette = { ...draft.palette, colors: jittered.colors.slice() };
+        draft.paletteReplace = true;
         render();
       }, false, 'studio.themeEditor.hint.paletteSpin')
     );
@@ -527,6 +529,7 @@ SA.themeEditor = (() => {
       const entry = SA.colors.allPalettes().find((item) => item.id === value);
       if (!entry) return;
       draft.palette = { id: entry.id, name: entry.name, colors: [...entry.colors] };
+      draft.paletteReplace = true;
       render();
     }, [
       { value: '', label: t('studio.themeEditor.paletteFrom') },
@@ -537,6 +540,22 @@ SA.themeEditor = (() => {
       if (fromHint) fromSelect.title = fromHint;
     }
     actions.appendChild(fromSelect);
+    // the visual preset browser next to the library select: ~40 entries are
+    // hard to scan in a dropdown, so this opens the strip + name list
+    actions.appendChild(
+      smallButton(`✦ ${t('studio.inspector.selectPreset')}`, (event) => {
+        if (!SA.colors || typeof SA.colors.openPresetPicker !== 'function') return;
+        SA.colors.openPresetPicker({
+          anchor: event && event.currentTarget ? event.currentTarget : null,
+          selectedId: draft.palette && draft.palette.id,
+          onPick(entry) {
+            draft.palette = { id: entry.id, name: entry.name, colors: [...entry.colors] };
+            draft.paletteReplace = true;
+            render();
+          },
+        });
+      }, false, t('studio.themeEditor.paletteFrom'))
+    );
     wrap.appendChild(actions);
 
     // the palette set: #1 above plus up to `max - 1` extra palettes, the
@@ -657,6 +676,18 @@ SA.themeEditor = (() => {
         { value: '', label: t('studio.themeEditor.usePalettes.addLibrary') },
         ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name })),
       ])
+    );
+    useActions.appendChild(
+      smallButton(`✦ ${t('studio.inspector.selectPreset')}`, (event) => {
+        if (!SA.colors || typeof SA.colors.openPresetPicker !== 'function') return;
+        SA.colors.openPresetPicker({
+          anchor: event && event.currentTarget ? event.currentTarget : null,
+          onPick(entry) {
+            draft.usePalettes.push({ id: entry.id, name: entry.name, colors: [...entry.colors] });
+            render();
+          },
+        });
+      }, false, t('studio.themeEditor.usePalettes.addLibrary'))
     );
     wrap.appendChild(useActions);
 
@@ -873,13 +904,18 @@ SA.themeEditor = (() => {
     if (!doc) return false;
     const profile = profileOf();
     const current = (doc.style && doc.style.palette && doc.style.palette.colors) || [];
-    if (JSON.stringify(current) !== JSON.stringify(draft.palette.colors)) {
+    const paletteReplaced = !!draft.paletteReplace;
+    const colorsDiffer = JSON.stringify(current) !== JSON.stringify(draft.palette.colors);
+    if (paletteReplaced || colorsDiffer) {
       SA.store.commands.setPalette(
         'project',
         { id: draft.palette.id, name: draft.palette.name, colors: draft.palette.colors.slice() },
-        { label: 'apply theme palette' }
+        // manual full replacement unifies every cue; a mere swatch tweak keeps
+        // per-cue variation
+        paletteReplaced ? { label: 'apply theme palette', propagate: true } : { label: 'apply theme palette' }
       );
     }
+    draft.paletteReplace = false;
     SA.store.dispatch({
       label: 'apply profile',
       areas: ['style'],
@@ -978,6 +1014,7 @@ SA.themeEditor = (() => {
       params: {},
       typeWeights: {},
       palette: { id: defaultPalette.id, name: defaultPalette.name, colors: defaultPalette.colors ? defaultPalette.colors.slice() : [] },
+      paletteReplace: false,
       paletteSet: {
         max: 5,
         change: 0.5,
@@ -1028,6 +1065,7 @@ SA.themeEditor = (() => {
       params: { ...(profile.params || mode.params || {}) },
       typeWeights: SA.store.clone(profile.typeWeights || mode.typeWeights || {}),
       palette: { id: currentPalette.id, name: currentPalette.name, colors: currentPalette.colors.slice() },
+      paletteReplace: false,
       paletteSet: {
         max: setInfo.max,
         change: setInfo.change,

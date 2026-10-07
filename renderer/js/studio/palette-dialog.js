@@ -499,6 +499,21 @@ SA.paletteDialog = (() => {
     );
   }
 
+  // manual library/candidate pick: at the project level every cue unifies onto
+  // the palette, at the cue level its beats show through
+  function applyLibraryPalette(entry) {
+    if (!active || !entry || !Array.isArray(entry.colors)) return;
+    active.draft = { id: entry.id, name: entry.name, colors: entry.colors.slice() };
+    const colors = active.draft.colors.filter((hex) => typeof hex === 'string' && HEX.test(hex));
+    if (!colors.length) return;
+    const extra = active.target.kind === 'project' ? { propagate: true } : active.target.kind === 'cue' ? { force: true } : {};
+    SA.store.commands.setPalette(
+      active.scope,
+      { id: active.draft.id, name: active.draft.name, colors },
+      { label: 'apply palette', coalesceKey: `palette-dialog:${active.openId}`, ...extra }
+    );
+  }
+
   function setColor(index, value) {
     if (!active || typeof value !== 'string' || !HEX.test(value)) return;
     active.draft.colors[index] = value;
@@ -681,8 +696,7 @@ SA.paletteDialog = (() => {
     candidates.className = 'palette-cands';
     for (const candidate of active.candidates) {
       const card = button('', () => {
-        active.draft = { ...candidate, colors: candidate.colors.slice() };
-        preview();
+        applyLibraryPalette(candidate);
         render();
       }, 'palette-card');
       if (candidate.id === active.draft.id) card.classList.add('is-selected');
@@ -714,11 +728,25 @@ SA.paletteDialog = (() => {
         if (!value) return;
         const entry = SA.colors.allPalettes().find((item) => item.id === value);
         if (!entry) return;
-        active.draft = { id: entry.id, name: entry.name, colors: entry.colors.slice() };
-        preview();
+        applyLibraryPalette(entry);
         render();
       }, [{ value: '', label: t('palette.fromLibrary') }, ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name }))])
     );
+    // the visual preset browser next to the library select: ~40 entries are
+    // hard to scan in a dropdown, so this opens the strip + name list
+    const presetButton = button(`✦ ${SA.i18n.t('studio.inspector.selectPreset')}`, (event) => {
+      if (!SA.colors || typeof SA.colors.openPresetPicker !== 'function') return;
+      SA.colors.openPresetPicker({
+        anchor: event && event.currentTarget ? event.currentTarget : null,
+        selectedId: active && active.draft ? active.draft.id : null,
+        onPick(entry) {
+          applyLibraryPalette(entry);
+          render();
+        },
+      });
+    });
+    presetButton.title = t('palette.fromLibrary');
+    candidateActions.appendChild(presetButton);
     wrap.appendChild(candidateActions);
 
     const targetsHead = document.createElement('div');

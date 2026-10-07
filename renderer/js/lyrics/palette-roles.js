@@ -334,13 +334,11 @@
 
   // A secondary colour (bg2 / mid2) keeps its HSV distance from its main role:
   // the hue step, the saturation ratio and the lightness gap are measured on
-  // the source pair and applied to the new main colour. When a palette pool
-  // is given, the computed ideal is snapped to its closest entry so no new
-  // hex leaves this function.
-  function carry(mainFrom, secondaryFrom, mainTo, pool) {
+  // the source pair and applied to the new main colour. This defines palette
+  // slots, so the computed carry stays (consumers snap to the palette).
+  function carry(mainFrom, secondaryFrom, mainTo) {
     if (mainFrom == null || mainTo == null) return secondaryFrom;
     if (secondaryFrom == null) return mainTo;
-    let ideal;
     try {
       const a = color.rgbToHsv(color.parse(mainFrom));
       const b = color.rgbToHsv(color.parse(secondaryFrom));
@@ -348,15 +346,10 @@
       if (hue > 180) hue -= 360;
       else if (hue < -180) hue += 360;
       const satScale = a.s > 0.02 ? b.s / a.s : 1;
-      ideal = shift(mainTo, hue, satScale, b.v - a.v);
+      return shift(mainTo, hue, satScale, b.v - a.v);
     } catch {
       return secondaryFrom;
     }
-    if (Array.isArray(pool) && pool.length) {
-      const snapped = snapToPalette(ideal, pool);
-      if (snapped) return snapped;
-    }
-    return ideal;
   }
 
   // The repaired palette must hold the pairs the renderer relies on. `move` is
@@ -385,17 +378,16 @@
       if (value == null) return null;
       next[slots[target]] = value;
     }
-    next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B], colors);
-    next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M], colors);
+    next[slots.B2] = carry(at(slots.B), at(slots.B2), next[slots.B]);
+    next[slots.M2] = carry(at(slots.M), at(slots.M2), next[slots.M]);
     // TEXT_BG follows the text through the same HSV carry as the other second
     // roles, so no colour is ever synthesised from thin air.
-    next[SLOT.TEXT_BG] = carry(at(slots.T), at(SLOT.TEXT_BG), next[slots.T], colors);
+    next[SLOT.TEXT_BG] = carry(at(slots.T), at(SLOT.TEXT_BG), next[slots.T]);
     // contrast contract: at most two repair rounds, then the pairs must hold.
     // A repair that moves a colour's lightness by more than 0.35 loses the
     // character of the original permutation, so the draw is rejected instead.
-    // Repairs prefer a palette entry: the computed ideal is snapped to the
-    // closest colour of the source palette that clears the target; only when
-    // no entry clears it does the computed hex survive (the "basically" fallback).
+    // This defines palette slots, so the computed repair stays (consumers
+    // snap to the palette instead of synthesising their own hex).
     const pairs = schemePairs(weirdRaw);
     const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
     const before = new Map();
@@ -413,8 +405,7 @@
       const fixed = next[slots[fixedRole]];
       let value = color.ensureContrast(next[index], fixed, target);
       if (contrast(value, fixed) < target - 1e-6) value = color.separateFrom(value, [fixed], target) || value;
-      const snapped = nearestMeeting(value, colors, fixed, target);
-      next[index] = snapped || value;
+      next[index] = value;
     };
     for (let round = 0; round < 2; round += 1) {
       for (const pair of pairs) {
@@ -511,18 +502,16 @@
   // `repairContrast(colors, weirdRaw)` (moods.repairContrast) is used for the
   // text-fill pair when provided; the rest only move the mid / figure colours.
   // The palette must already hold SIZE colours; short palettes are left alone.
-  // Each move prefers the closest colour of the original palette that clears
-  // the target; the computed hex is only kept when no entry clears it.
+  // This defines palette slots, so the computed repair stays (consumers snap
+  // to the palette instead of synthesising their own hex).
   function repairPalette(colors, weirdRaw, repairContrast) {
     const list = Array.isArray(colors) ? colors : [];
     if (list.length < SIZE) return list;
-    const pool = list.slice(0, SIZE);
     if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw));
     const move = (index, fixed, target) => {
       let next = color.ensureContrast(list[index], fixed, target);
       if (contrast(next, fixed) < target - 1e-6) next = color.separateFrom(next, [fixed], target) || next;
-      const snapped = nearestMeeting(next, pool, fixed, target);
-      list[index] = snapped || next;
+      list[index] = next;
     };
     // four passes: the background / figure side moves first, then the mid
     // pair, and the text fill itself as the last resort (a mid-grey text
@@ -670,5 +659,7 @@
     snapToPalette,
     nearestMeeting,
     oklabDistance,
+    upgradeColors,
+    upgradePalette,
   };
 });

@@ -405,10 +405,12 @@ test('recolor moves every hex colour onto the new palette and keeps the rest', (
   assert.deepEqual(out.palette.colors, to);
   assert.deepEqual(out.color, style.color); // palette references are untouched
   assert.equal(out.name, 'not #a colour');
-  // an off-palette colour keeps its offset: a darker red becomes a darker green
+  // no computed colours: an off-palette colour adopts the closest palette
+  // entry (a darker red becomes the darker green slot, not a synthesised hex)
+  assert.ok(to.includes(out.fill.params.tint), `${out.fill.params.tint} is a palette entry`);
   const tint = color.rgbToHsv(color.parse(out.fill.params.tint));
   const accent = color.rgbToHsv(color.parse('#00c060'));
-  assert.ok(Math.abs(tint.h - accent.h) < 2, `hue ${tint.h} vs ${accent.h}`);
+  assert.ok(Math.abs(tint.h - accent.h) < 15, `hue ${tint.h} vs ${accent.h}`);
   assert.ok(tint.v < accent.v, 'stays darker than the accent');
   assert.equal(style.edge[0].params.color, '#ff0000'); // the input is not mutated
   // nothing to map from: a plain copy

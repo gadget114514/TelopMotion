@@ -4097,16 +4097,38 @@ SA.inspector = (() => {
 
     const pickRow = document.createElement('div');
     pickRow.className = 'ctrl-row';
+    const applyLibraryEntry = (entry) => {
+      if (!entry || !scope) return;
+      // manual library apply: the whole project unifies onto the palette,
+      // a cue apply clears its beats so the cue shows through everywhere
+      const extra = scope === 'project' ? { propagate: true } : scope && scope.cueId && !scope.beatId ? { force: true } : {};
+      SA.store.commands.setPalette(scope, { id: entry.id, name: entry.name, colors: [...entry.colors] }, { label: 'apply palette', ...extra });
+    };
     pickRow.appendChild(
       SA.controls.selectControl({}, '', (value) => {
         if (!value) return;
-        const entry = SA.colors.allPalettes().find((item) => item.id === value);
-        if (entry && scope) SA.store.commands.setPalette(scope, { id: entry.id, name: entry.name, colors: [...entry.colors] }, { label: 'apply palette' });
+        applyLibraryEntry(SA.colors.allPalettes().find((item) => item.id === value));
       }, [
         { value: '', label: t('studio.inspector.paletteFrom') },
         ...SA.colors.allPalettes().map((entry) => ({ value: entry.id, label: entry.name })),
       ])
     );
+    // the visual preset browser next to the library select: ~40 entries are
+    // hard to scan in a dropdown, so this opens the strip + name list
+    const presetButton = document.createElement('button');
+    presetButton.type = 'button';
+    presetButton.className = 'btn btn-mini';
+    presetButton.textContent = `✦ ${t('studio.inspector.selectPreset')}`;
+    presetButton.title = t('studio.inspector.paletteFrom');
+    presetButton.disabled = !scope;
+    presetButton.addEventListener('click', (event) => {
+      if (!SA.colors || typeof SA.colors.openPresetPicker !== 'function') return;
+      SA.colors.openPresetPicker({
+        anchor: event && event.currentTarget ? event.currentTarget : null,
+        onPick: applyLibraryEntry,
+      });
+    });
+    pickRow.appendChild(presetButton);
     body.appendChild(pickRow);
 
     const actions = document.createElement('div');
