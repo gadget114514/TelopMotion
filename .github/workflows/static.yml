@@ -1,10 +1,11 @@
 # Simple workflow for deploying static content to GitHub Pages
+# stable branch -> site root (/TelopMotion/), main branch -> /TelopMotion/dev/
 name: Deploy static content to Pages
 
 on:
-  # Runs on pushes targeting the default branch
+  # Runs on pushes targeting main (dev) or stable (public)
   push:
-    branches: ["main"]
+    branches: ["main", "stable"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -30,16 +31,25 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout stable (public)
         uses: actions/checkout@v4 # 11d5960a326750d5838078e36cf38b85af677262
-      - name: Setup Pages
-        uses: actions/configure-pages@v5 # 983d7736d9b0ae728b81ab479565c72886d7745b
-      - name: Stage public site (renderer only)
+        with:
+          ref: stable
+          path: stable
+      - name: Checkout main (dev)
+        uses: actions/checkout@v4 # 11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: main
+          path: main
+      - name: Stage public site (stable at root, main at /dev)
         run: |
           rm -rf _site
-          mkdir -p _site
-          cp index.html _site/index.html
-          cp -r renderer _site/renderer
+          mkdir -p _site/dev
+          cp stable/index.html _site/index.html
+          cp -r stable/renderer _site/renderer
+          cp main/index.html _site/dev/index.html
+          cp -r main/renderer _site/dev/renderer
+          touch _site/.nojekyll
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3 # 56afc609e74202658d3ffba0e8f6dda462b719fa
         with:
