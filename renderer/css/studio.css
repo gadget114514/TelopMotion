@@ -85,6 +85,22 @@ body {
   font-weight: 500;
 }
 
+.boot-channel {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #0b0d12;
+  background: #ffb020;
+  border-radius: 4px;
+  padding: 2px 8px;
+}
+
+.boot-channel[hidden] {
+  display: none;
+}
+
 .boot-status {
   min-height: 1.4em;
   color: var(--muted);

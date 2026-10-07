@@ -7,6 +7,20 @@
 // first set() and clears this timer to take over (never jumps backwards).
 (function () {
   'use strict';
+  // Dev-channel marker: the /dev/ deployment (main branch) shares the same
+  // source as stable, so detect the sub-path at runtime and reveal the
+  // DEVELOP badge on the loading overlay. Stable (/) stays unchanged.
+  try {
+    if (typeof location !== 'undefined' && /\/dev(\/|$)/.test(location.pathname)) {
+      var channel = document.getElementById('boot-channel');
+      if (channel) channel.hidden = false;
+      if (typeof document !== 'undefined' && document.title && document.title.indexOf('[DEV]') !== 0) {
+        document.title = '[DEV] ' + document.title;
+      }
+    }
+  } catch (error) {
+    /* best-effort: never break startup */
+  }
   try {
     var fill = document.getElementById('boot-fill');
     var percent = document.getElementById('boot-percent');
