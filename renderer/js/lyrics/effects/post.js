@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../palette-roles'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../palette-roles'), require('../theme-colors'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color, root.SA.paletteRoles);
+    factory(root.SA.fx, root.SA.color, root.SA.paletteRoles, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color, paletteRoles) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, paletteRoles, themeColors) {
   'use strict';
 
   const POST_TYPES = [
@@ -87,6 +87,17 @@
 
   function toRgb(value, fallback, ctx) {
     return color.toRgba(value, fallback, ctx);
+  }
+
+  // The Theme's decorative table for this post's context (palette + weird),
+  // or null when no Theme is in scope (the classic literals stay).
+  function themeOf(ctx) {
+    if (!themeColors || typeof themeColors.themeOf !== 'function') return null;
+    try {
+      return themeColors.themeOf(ctx);
+    } catch {
+      return null;
+    }
   }
 
   // The palette's glow role (P12) for the light effects that ship without an
@@ -243,10 +254,10 @@
             : 120
           : num(bpmOption, 120);
       p4 = [bpm, envelope * num(params.intensity, 0.5), num(params.duty, 0.15), 0];
-      colorA = toRgb(params.color, [1, 1, 1, 1], context);
+      colorA = toRgb(params.color || ((themeOf(context) || {}).flash || null), [1, 1, 1, 1], context);
     } else if (type === 'anamorphicStreak') {
       p4 = [num(params.threshold, 0.6), num(params.length, 0.3), (num(params.angle, 0) * Math.PI) / 180, envelope * num(params.intensity, 0.6)];
-      colorA = toRgb(params.tint, [0.8, 0.88, 1, 1], context);
+      colorA = toRgb(params.tint || ((themeOf(context) || {}).streak || null), [0.8, 0.88, 1, 1], context);
     } else if (type === 'radialWipe') {
       p4 = [
         (num(params.startAngle, 0) * Math.PI) / 180,

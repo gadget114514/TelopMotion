@@ -167,3 +167,25 @@ test('themeEditor dialog actions includes the reset button', () => {
   assert.equal(SA.themeEditor.getDraft().params.testParam, undefined);
   assert.deepEqual(SA.themeEditor.getDraft().params, {});
 });
+
+test('themeEditor carries the decorative colour pins on the draft', () => {
+  SA.store.state.project.styleMode.embedded = { flare: '#112233', ember: ['#111111', '#222222', '#333333', '#444444'] };
+  SA.themeEditor.open(null);
+  assert.deepEqual(SA.themeEditor.getDraft().embedded, {
+    flare: '#112233',
+    ember: ['#111111', '#222222', '#333333', '#444444'],
+  });
+  SA.themeEditor.resetDraft();
+  assert.deepEqual(SA.themeEditor.getDraft().embedded, {});
+  delete SA.store.state.project.styleMode.embedded;
+});
+
+test('themeEditor renders the decorative colours tab without a picker', () => {
+  SA.themeEditor.open(null);
+  SA.themeEditor.getDraft().tab = 'colors';
+  const host = mockElement('div');
+  SA.themeEditor.embed(host, null);
+  const text = JSON.stringify(host);
+  assert.ok(text.includes('palette-set-row'), 'colour rows render');
+  SA.themeEditor.detach();
+});

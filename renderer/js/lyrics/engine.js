@@ -436,6 +436,49 @@ SA.lyricsEngine = (() => {
       state.assets = assets || { fonts: [] };
     }
 
+    // Theme decorative colours for render-time fallbacks (palette + the
+    // project weird axis). Explicit effect params always win; without a full
+    // palette there is no Theme and callers keep their classic literals.
+    // User overrides from the Edit Theme colors tab ride on styleMode.embedded.
+    function themeScope() {
+      const project = state.project;
+      const mode = (project && project.styleMode) || {};
+      return { weird: rawWeirdOf(project), embedded: mode.embedded || null };
+    }
+
+    function themeTableFor(palette) {
+      if (!SA.themeColors) return null;
+      try {
+        return SA.themeColors.themeOf({ palette, ...themeScope() });
+      } catch {
+        return null;
+      }
+    }
+
+    function themeHex(palette, name, fallback) {
+      const table = themeTableFor(palette);
+      const hex = table && table[name];
+      return typeof hex === 'string' && hex ? hex : fallback;
+    }
+
+    // The Theme colour for a filler clip without its own colour: per-type
+    // tone from the Theme table (mono Themes read grey), else near-white.
+    function fillerThemeColor(clip) {
+      const table = themeTableFor(projectPaletteOf());
+      if (table && typeof table.fillerFor === 'function') {
+        try {
+          const hex = table.fillerFor(clip && clip.spec ? clip.spec.type : null);
+          if (typeof hex === 'string' && hex) return hex;
+        } catch { /* fall through to the classic literal */ }
+      }
+      return '#eef2ff';
+    }
+
+    function projectPaletteOf() {
+      const project = state.project;
+      return (project && project.style && project.style.palette) || null;
+    }
+
     function activeBeatsLocal(project, t) {
       return activeBeats(project, t);
     }
@@ -804,6 +847,7 @@ SA.lyricsEngine = (() => {
           time: t,
           palette: activeStyle.palette || null,
           palettes: state.project ? state.project.palettes || [] : [],
+          ...themeScope(),
           sdfTexture: sdfTarget ? sdfTarget.texture : null,
         }
       );
@@ -846,6 +890,7 @@ SA.lyricsEngine = (() => {
             palettes: state.project ? state.project.palettes || [] : [],
             categoryColors: state.project ? state.project.categoryColors || {} : {},
             progress,
+            ...themeScope(),
             sdfTexture: sdf.texture,
           };
           if (entry.group === 'fill') {
@@ -930,6 +975,7 @@ SA.lyricsEngine = (() => {
             palettes: project.palettes || [],
             categoryColors: project.categoryColors || {},
             progress,
+            ...themeScope(),
             sdfTexture: sdf ? sdf.texture : null,
           })
         );
@@ -1106,6 +1152,7 @@ SA.lyricsEngine = (() => {
         palettes: project ? project.palettes || [] : [],
         categoryColors: project ? project.categoryColors || {} : {},
         progress,
+        ...themeScope(),
         letterTint: needTint,
       };
       const maskedFor = (indices) => {
@@ -1179,8 +1226,12 @@ SA.lyricsEngine = (() => {
       if (!n || !result.letters.length) return null;
       const em = Math.max(8, Number(scene.size) || 96);
       const colorCtx = { palette: style.palette || null, palettes: project ? project.palettes || [] : [] };
-      const rgbaA = SA.color.toRgba(cfg.colorA, [1, 0.23, 0.42, 1], colorCtx);
-      const rgbaB = SA.color.toRgba(cfg.colorB, trail.type === 'echo' ? [0.23, 0.42, 1, 1] : [1, 0, 0.78, 1], colorCtx);
+      const trailPair = (() => {
+        const table = themeTableFor(style.palette);
+        return (table && table.fxPairs && table.fxPairs[0]) || null;
+      })();
+      const rgbaA = SA.color.toRgba(cfg.colorA || (trailPair && trailPair[0]) || null, [1, 0.23, 0.42, 1], colorCtx);
+      const rgbaB = SA.color.toRgba(cfg.colorB || (trailPair && trailPair[1]) || null, trail.type === 'echo' ? [0.23, 0.42, 1, 1] : [1, 0, 0.78, 1], colorCtx);
       const mixc = (tt) => [0, 1, 2, 3].map((k) => rgbaA[k] + (rgbaB[k] - rgbaA[k]) * tt);
       const toBytes = (rgba) => [
         Math.round(Math.max(0, Math.min(1, rgba[0])) * 255),
@@ -1197,6 +1248,7 @@ SA.lyricsEngine = (() => {
         palettes: project ? project.palettes || [] : [],
         categoryColors: project ? project.categoryColors || {} : {},
         progress,
+        ...themeScope(),
       };
       const blend = cfg.blend === 'add' ? 'add' : undefined;
       let drew = false;
@@ -1446,7 +1498,7 @@ SA.lyricsEngine = (() => {
       const settings = SA.credits ? SA.credits.settingsFor(state.project) : {};
       const style = (settings.styles && settings.styles[mode]) || {};
       const size = (style.text && style.text.size) || state.height * fallbackSize;
-      let color = '#eef2ff';
+      let color = themeHex(projectPaletteOf(), 'flash', '#eef2ff');
       const fill = style.color && style.color.fill;
       if (typeof fill === 'string') color = fill;
       else if (fill && typeof fill === 'object') color = fill.value || (fill.colors && fill.colors[0]) || color;
@@ -1500,7 +1552,7 @@ SA.lyricsEngine = (() => {
           x: opts.x == null ? state.width / 2 : opts.x,
           y: opts.y == null ? state.height / 2 : opts.y + (i - (total - 1) / 2) * lineHeight,
           size,
-          color: opts.color || '#eef2ff',
+          color: opts.color || themeHex(projectPaletteOf(), 'flash', '#eef2ff'),
           opacity: opts.opacity == null ? 1 : opts.opacity,
           fontId: (fontIds && fontIds[i]) || opts.fontId || null,
         });
@@ -1807,6 +1859,8 @@ SA.lyricsEngine = (() => {
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         color: fill,
         colors: fills,
+        palette: (style && style.palette) || null,
+        ...themeScope(),
         layers: figureLayerFlags(clip ? trackById(state.project, clip.trackId) : null, state.view),
         adsr: clip && clip.adsr ? clip.adsr : null,
       });
@@ -1886,7 +1940,9 @@ SA.lyricsEngine = (() => {
         seed: (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
         textBox: boxes ? boxes.box : null,
         colors: clipShapeColor(spec, recolored ? recolored.colors : clip.colors, style),
-        color: '#c86bff',
+        color: themeHex(style.palette, 'shape', '#c86bff'),
+        palette: (style && style.palette) || null,
+        ...themeScope(),
         bpm: tempoBpm(features),
       });
       if (!list) return;
@@ -1989,7 +2045,7 @@ SA.lyricsEngine = (() => {
             palette: scene.style.palette || null,
             categoryColors: state.project.categoryColors || {},
             time: t,
-            defaultFill: '#eef2ff',
+            defaultFill: themeHex(scene.style.palette, 'flash', '#eef2ff'),
           })
         : { arrays: { fill: [0.93, 0.95, 1, 1], fill2: [0.93, 0.95, 1, 1], stroke: [1, 1, 1, 1] } };
       const fillInstance = SA.fx.withDefaults(scene.style.fill, 'fill');
@@ -2001,6 +2057,7 @@ SA.lyricsEngine = (() => {
           palettes: state.project.palettes || [],
           palette: scene.style.palette || null,
           categoryColors: state.project.categoryColors || {},
+          ...themeScope(),
         })
       );
       pipeline.commitLayer(opacity);
@@ -2057,6 +2114,7 @@ SA.lyricsEngine = (() => {
           time: t,
           camera: sidecarIdentity ? [0, 0, 1, 0] : placer.toCamera(sidecar),
           placeScale: sidecarIdentity ? [1, 1] : placer.toPlaceScale(sidecar),
+          ...themeScope(),
         }),
         card,
         Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope))
@@ -2083,11 +2141,13 @@ SA.lyricsEngine = (() => {
         analysis: state.analysis,
         progress: Math.min(1, Math.max(0, (t - clip.start) / clipDuration)),
         seed: (project.styleMode && project.styleMode.seed) || 12345,
-        color: '#eef2ff',
+        color: fillerThemeColor(clip),
         bpm: tempoBpm(features),
         beats: activeBeats(project, t).map((beat) => ({ start: beat.start, end: beat.end })),
         textBox: boxes ? boxes.box : null,
         colors: Array.isArray(clip.colors) && clip.colors.length ? clip.colors : null,
+        palette: (project.style && project.style.palette) || null,
+        ...themeScope(),
         meta: {
           title: settings && SA.credits.titleText ? SA.credits.titleText(project, settings) : '',
           artist: settings && SA.credits.artistText ? SA.credits.artistText(project, settings) : '',
@@ -2318,16 +2378,25 @@ SA.lyricsEngine = (() => {
     // The shape layer paints in the palette's accent colour unless the post
     // carries a colour of its own.
     function shapeLayerColor(style) {
+      const palette = (style && style.palette) || null;
+      const theme = themeTableFor(palette);
       const resolved = SA.fx.resolveColorSet
         ? SA.fx.resolveColorSet({ fill: { kind: 'palette', index: 3 } }, {
             palettes: (state.project && state.project.palettes) || [],
-            palette: (style && style.palette) || null,
+            palette,
             time: 0,
-            defaultFill: '#ffd166',
+            defaultFill: (theme && theme.flare) || '#ffd166',
           })
         : null;
       const rgba = resolved && resolved.arrays && resolved.arrays.fill;
-      return rgba && rgba.length >= 4 ? [rgba[0], rgba[1], rgba[2], rgba[3] == null ? 1 : rgba[3]] : [1, 0.82, 0.42, 1];
+      if (rgba && rgba.length >= 4) return [rgba[0], rgba[1], rgba[2], rgba[3] == null ? 1 : rgba[3]];
+      if (theme && typeof theme.shape === 'string') {
+        try {
+          const parsed = SA.color.parse(theme.shape);
+          return [parsed.r, parsed.g, parsed.b, parsed.a == null ? 1 : parsed.a];
+        } catch { /* fall through to the classic literal */ }
+      }
+      return [1, 0.82, 0.42, 1];
     }
 
     // The hero span of a composition mixes to fill2 (colorMix). A later colour
@@ -2540,7 +2609,7 @@ SA.lyricsEngine = (() => {
             palettes: project.palettes || [],
             palette: style.palette || null,
             time: t,
-            defaultFill: isBg ? '#101018' : '#ff8a3d',
+            defaultFill: isBg ? '#101018' : themeHex(style.palette, 'shape', '#ff8a3d'),
           })
         : { arrays: { fill: [1, 0.54, 0.24, 1], fill2: [1, 0.54, 0.24, 1], stroke: [1, 1, 1, 1] } };
       // the per-letter colour gate for the fill pass: the vary colours, or a scoped
@@ -2557,6 +2626,7 @@ SA.lyricsEngine = (() => {
           time: t,
           palette: style.palette || null,
           palettes: project.palettes || [],
+          ...themeScope(),
           sdfTexture: bgSdf ? bgSdf.texture : null,
         });
       for (const instance of bgEdges) {
@@ -2573,6 +2643,7 @@ SA.lyricsEngine = (() => {
             progress: Math.min(1, Math.max(0, local / Math.max(0.001, beat.end - beat.start))),
             sdfTexture: bgSdf ? bgSdf.texture : null,
             role: 'bg',
+            ...themeScope(),
             maskTint: hasVaryColor,
           })
         );
@@ -2617,8 +2688,8 @@ SA.lyricsEngine = (() => {
       const cy = (letterState.y || 0) + px * Math.sin(rad) + py * Math.cos(rad);
       const width = Math.max(1, cursorW * scaleX);
       const height = Math.max(1, cursorH * scaleY);
-      let color = '#eef2ff';
       const style = scene.style || {};
+      let color = themeHex(style.palette, 'flash', '#eef2ff');
       const palette = (style.palette && style.palette.colors) || [];
       if (params.cursorColor) {
         const rgba = SA.color.toRgba(params.cursorColor, null, { palette: style.palette || null });
@@ -2864,7 +2935,7 @@ SA.lyricsEngine = (() => {
               categoryColors: project.categoryColors || {},
               category: beat.meta && beat.meta.category,
               time: t,
-              defaultFill: '#eef2ff',
+              defaultFill: themeHex(style.palette, 'flash', '#eef2ff'),
             })
           : { arrays: { fill: [0.93, 0.95, 1, 1], fill2: [0.93, 0.95, 1, 1], stroke: [1, 1, 1, 1] } };
         const maxDistance = Math.max(state.width, state.height) * 0.1;
@@ -2922,6 +2993,7 @@ SA.lyricsEngine = (() => {
                 palettes: project.palettes || [],
                 categoryColors: project.categoryColors || {},
                 progress,
+                ...themeScope(),
                 sdfTexture: sdfTarget ? sdfTarget.texture : null,
               })
             );
@@ -2947,6 +3019,7 @@ SA.lyricsEngine = (() => {
           palettes: project.palettes || [],
           categoryColors: project.categoryColors || {},
           category: beat.meta && beat.meta.category,
+          ...themeScope(),
           sdfTexture: sdfTarget ? sdfTarget.texture : null,
         };
         // edges (outline, shadow, glow ...) paint on and around the glyphs,
@@ -2976,6 +3049,7 @@ SA.lyricsEngine = (() => {
               palettes: project.palettes || [],
               categoryColors: project.categoryColors || {},
               progress,
+              ...themeScope(),
               sdfTexture: sdfTarget ? sdfTarget.texture : null,
               letterTint: hasLetterColor,
             })
@@ -3016,6 +3090,7 @@ SA.lyricsEngine = (() => {
             palettes: project.palettes || [],
             categoryColors: project.categoryColors || {},
             category: beat.meta && beat.meta.category,
+            ...themeScope(),
             sdfTexture: sdfTarget ? sdfTarget.texture : null,
             audioFeatures,
             shapeColor: shapeLayerColor(style),

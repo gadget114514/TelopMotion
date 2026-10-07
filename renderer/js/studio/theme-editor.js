@@ -7,7 +7,7 @@ window.SA = window.SA || {};
 SA.themeEditor = (() => {
   'use strict';
 
-  const TABS = ['axis', 'palette', 'font', 'fx'];
+  const TABS = ['axis', 'palette', 'font', 'fx', 'colors'];
   const AXES = ['speed', 'energy', 'softness', 'density', 'brightness', 'weird', 'smartness', 'fear'];
   const FX_GROUPS = ['enter', 'exit', 'hold', 'fill', 'edge', 'post', 'layout', 'animation'];
   const FX_GROUP_LABEL = {
@@ -108,6 +108,7 @@ SA.themeEditor = (() => {
       params: { ...draft.params },
       typeWeights: SA.store.clone(draft.typeWeights),
       usePalettes: SA.store.clone(draft.usePalettes),
+      embedded: SA.store.clone(draft.embedded || {}),
     };
   }
 
@@ -424,6 +425,255 @@ SA.themeEditor = (() => {
     }
     node.title = t('studio.themeEditor.keywords.hint');
     return node;
+  }
+
+  // --- decorative colours tab --------------------------------------------------
+  // The Theme's embedded colours (fire/metal/chrome ramps, lights, figure
+  // tones, effect pairs, filler tones): auto rows follow the palette and the
+  // weird axis through SA.themeColors; a set row pins that colour on
+  // styleMode.embedded and the render path prefers it over the derived table.
+
+  function autoColorsTable() {
+    if (!SA.themeColors || typeof SA.themeColors.embeddedFor !== 'function') return null;
+    const colors = draft && draft.palette && Array.isArray(draft.palette.colors) ? draft.palette.colors : [];
+    if (!colors.length) return null;
+    try {
+      return SA.themeColors.embeddedFor(colors, (draft.axes && draft.axes.weird) || 0);
+    } catch {
+      return null;
+    }
+  }
+
+  function normalizeHex(value) {
+    if (typeof value !== 'string') return null;
+    const hex = value.trim().toLowerCase();
+    if (/^#[0-9a-f]{6}([0-9a-f]{2})?$/.test(hex)) return hex.slice(0, 7);
+    return null;
+  }
+
+  // Drop overrides identical to the auto table so redundant pins neither
+  // bloat saved documents nor freeze a colour across palette re-rolls.
+  function pruneEmbedded(over, table) {
+    const out = {};
+    if (!over || typeof over !== 'object') return out;
+    const sameList = (key) => {
+      const auto = table && Array.isArray(table[key]) ? table[key] : null;
+      const list = Array.isArray(over[key]) ? over[key] : null;
+      if (!list || !auto || list.length !== auto.length) return false;
+      return list.every((hex, i) => normalizeHex(hex) === auto[i]);
+    };
+    for (const key of ['ember', 'metal', 'chrome', 'stone']) {
+      if (Array.isArray(over[key]) && over[key].length && !sameList(key)) out[key] = over[key].slice();
+    }
+    for (const key of ['flare', 'flash', 'streak', 'shape']) {
+      const hex = normalizeHex(over[key]);
+      if (hex && (!table || table[key] !== hex)) out[key] = hex;
+    }
+    if (Array.isArray(over.figEmbed) && over.figEmbed.length && !sameList('figEmbed')) out.figEmbed = over.figEmbed.slice();
+    if (Array.isArray(over.fxPairs) && over.fxPairs.length === 3) {
+      const auto = table && table.fxPairs;
+      const same = auto && over.fxPairs.every((pair, i) => Array.isArray(pair) && pair.length === 2 &&
+        pair.every((hex, j) => normalizeHex(hex) === (auto[i] && auto[i][j])));
+      if (!same) out.fxPairs = over.fxPairs.map((pair) => pair.slice());
+    }
+    if (over.filler && typeof over.filler === 'object') {
+      const kinds = {};
+      for (const [kind, hex] of Object.entries(over.filler)) {
+        const clean = normalizeHex(hex);
+        if (!clean) continue;
+        const auto = table && typeof table.fillerFor === 'function' ? table.fillerFor(kind) : null;
+        if (auto !== clean) kinds[kind] = clean;
+      }
+      if (Object.keys(kinds).length) out.filler = kinds;
+    }
+    return out;
+  }
+
+  function colorsTab() {
+    const wrap = document.createElement('div');
+    wrap.className = 'theme-colors-tab';
+    heading(wrap, 'studio.themeEditor.colors.title', 'insp-inherit');
+    const note = document.createElement('div');
+    note.className = 'insp-inherit';
+    note.textContent = t('studio.themeEditor.colors.hint');
+    wrap.appendChild(note);
+    const table = autoColorsTable();
+    const over = draft.embedded && typeof draft.embedded === 'object'
+      ? draft.embedded
+      : (draft.embedded = {});
+    const autoList = (key, fallbackCount) => {
+      const list = table && Array.isArray(table[key]) ? table[key] : null;
+      if (list && list.length) return list;
+      return Array.from({ length: fallbackCount }, () => '#888888');
+    };
+    const autoHex = (key) => (table && typeof table[key] === 'string' ? table[key] : '#888888');
+
+    const well = (hex, title, onPick) => {
+      const swatch = document.createElement('button');
+      swatch.type = 'button';
+      swatch.className = 'palette-dot palette-dot-edit';
+      if (SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, hex);
+      else swatch.style.background = hex;
+      swatch.title = title || hex;
+      swatch.addEventListener('click', () => {
+        if (!SA.colors || typeof SA.colors.openPicker !== 'function') return;
+        SA.colors.openPicker({
+          value: hex,
+          anchor: swatch,
+          onChange(next) {
+            const raw = (SA.colors.pickerValueToHex && SA.colors.pickerValueToHex(next))
+              || (typeof next === 'string' ? next : next && next.value ? next.value : null);
+            const value = normalizeHex(raw);
+            if (!value) return;
+            onPick(value);
+            render();
+          },
+        });
+      });
+      return swatch;
+    };
+
+    const listRow = (labelKey, key, count) => {
+      const row = document.createElement('div');
+      row.className = 'palette-set-row';
+      const label = document.createElement('span');
+      label.className = 'palette-role';
+      label.textContent = t(`studio.themeEditor.colors.${labelKey}`);
+      row.appendChild(label);
+      const swatches = document.createElement('span');
+      swatches.className = 'palette-swatches';
+      const auto = autoList(key, count);
+      for (let i = 0; i < count; i += 1) {
+        const fallback = auto[i] || '#888888';
+        const current = Array.isArray(over[key]) ? over[key][i] : null;
+        const shown = normalizeHex(current) || fallback;
+        swatches.appendChild(well(shown, `${shown} · ${t('studio.themeEditor.colors.auto')}: ${fallback}`, (value) => {
+          const next = Array.isArray(over[key]) ? over[key].slice() : [];
+          while (next.length < count) next.push(auto[next.length] || '#888888');
+          next[i] = value;
+          over[key] = next;
+        }));
+      }
+      row.appendChild(swatches);
+      const reset = smallButton('↻', () => {
+        delete over[key];
+        render();
+      });
+      reset.title = t('studio.themeEditor.colors.resetRow');
+      row.appendChild(reset);
+      return row;
+    };
+
+    const singleRow = (labelKey, key) => {
+      const row = document.createElement('div');
+      row.className = 'palette-set-row';
+      const label = document.createElement('span');
+      label.className = 'palette-role';
+      label.textContent = t(`studio.themeEditor.colors.${labelKey}`);
+      row.appendChild(label);
+      const swatches = document.createElement('span');
+      swatches.className = 'palette-swatches';
+      const fallback = autoHex(key);
+      const shown = normalizeHex(over[key]) || fallback;
+      swatches.appendChild(well(shown, `${shown} · ${t('studio.themeEditor.colors.auto')}: ${fallback}`, (value) => {
+        over[key] = value;
+      }));
+      row.appendChild(swatches);
+      const reset = smallButton('↻', () => {
+        delete over[key];
+        render();
+      });
+      reset.title = t('studio.themeEditor.colors.resetRow');
+      row.appendChild(reset);
+      return row;
+    };
+
+    const group = (labelKey) => heading(wrap, `studio.themeEditor.colors.${labelKey}`, 'insp-inherit');
+    group('fire');
+    wrap.appendChild(listRow('fire', 'ember', 4));
+    group('metal');
+    wrap.appendChild(listRow('metal', 'metal', 3));
+    group('chrome');
+    wrap.appendChild(listRow('chrome', 'chrome', 3));
+    wrap.appendChild(listRow('stone', 'stone', 2));
+    group('lights');
+    for (const key of ['flare', 'flash', 'streak', 'shape']) wrap.appendChild(singleRow(key, key));
+    group('figures');
+    wrap.appendChild(listRow('figures', 'figEmbed', 5));
+    group('pairs');
+    for (let i = 0; i < 3; i += 1) {
+      const row = document.createElement('div');
+      row.className = 'palette-set-row';
+      const label = document.createElement('span');
+      label.className = 'palette-role';
+      label.textContent = `${t('studio.themeEditor.colors.pairs')} ${i + 1}`;
+      row.appendChild(label);
+      const swatches = document.createElement('span');
+      swatches.className = 'palette-swatches';
+      const auto = (table && table.fxPairs && table.fxPairs[i]) || ['#888888', '#888888'];
+      const current = Array.isArray(over.fxPairs) ? over.fxPairs[i] : null;
+      for (let j = 0; j < 2; j += 1) {
+        const fallback = auto[j] || '#888888';
+        const shown = (current && normalizeHex(current[j])) || fallback;
+        swatches.appendChild(well(shown, `${shown} · ${t('studio.themeEditor.colors.auto')}: ${fallback}`, (value) => {
+          const next = Array.isArray(over.fxPairs) ? over.fxPairs.map((pair) => pair.slice()) : [];
+          while (next.length < 3) {
+            const seed = (table && table.fxPairs && table.fxPairs[next.length]) || ['#888888', '#888888'];
+            next.push(seed.slice());
+          }
+          next[i][j] = value;
+          over.fxPairs = next;
+        }));
+      }
+      row.appendChild(swatches);
+      const reset = smallButton('↻', () => {
+        if (Array.isArray(over.fxPairs)) {
+          delete over.fxPairs;
+          if (!Object.keys(over).length) draft.embedded = {};
+        }
+        render();
+      });
+      reset.title = t('studio.themeEditor.colors.resetRow');
+      row.appendChild(reset);
+      wrap.appendChild(row);
+    }
+    group('fillers');
+    const kinds = (SA.themeColors && SA.themeColors.FILLER_KINDS) || ['spectrum', 'waveform', 'sineWave', 'particles', 'shapes', 'pattern', 'timer', 'text'];
+    for (const kind of kinds) {
+      const row = document.createElement('div');
+      row.className = 'palette-set-row';
+      const label = document.createElement('span');
+      label.className = 'palette-role';
+      label.textContent = kind;
+      row.appendChild(label);
+      const swatches = document.createElement('span');
+      swatches.className = 'palette-swatches';
+      const fallback = (table && typeof table.fillerFor === 'function' && table.fillerFor(kind)) || '#888888';
+      const shown = (over.filler && normalizeHex(over.filler[kind])) || fallback;
+      swatches.appendChild(well(shown, `${shown} · ${t('studio.themeEditor.colors.auto')}: ${fallback}`, (value) => {
+        over.filler = { ...(over.filler || {}) };
+        over.filler[kind] = value;
+      }));
+      row.appendChild(swatches);
+      const reset = smallButton('↻', () => {
+        if (over.filler) {
+          delete over.filler[kind];
+          if (!Object.keys(over.filler).length) delete over.filler;
+        }
+        render();
+      });
+      reset.title = t('studio.themeEditor.colors.resetRow');
+      row.appendChild(reset);
+      wrap.appendChild(row);
+    }
+    const all = document.createElement('div');
+    all.className = 'insp-actions';
+    all.appendChild(smallButton(t('studio.themeEditor.colors.resetAll'), () => {
+      draft.embedded = {};
+      render();
+    }));
+    wrap.appendChild(all);
+    return wrap;
   }
 
   // The swatch strip of one extra palette of the set: a fixed colour count,
@@ -864,6 +1114,7 @@ SA.themeEditor = (() => {
     if (draft.tab === 'palette') body.appendChild(paletteTab());
     else if (draft.tab === 'font') body.appendChild(fontTab());
     else if (draft.tab === 'fx') body.appendChild(fxTab());
+    else if (draft.tab === 'colors') body.appendChild(colorsTab());
     else body.appendChild(axisTab());
     dialog.appendChild(body);
 
@@ -954,6 +1205,10 @@ SA.themeEditor = (() => {
         };
         if (Object.keys(profile.params).length) mode.params = { ...profile.params };
         else delete mode.params;
+        const prunedEmbedded = pruneEmbedded(draft.embedded, autoColorsTable());
+        if (Object.keys(prunedEmbedded).length) mode.embedded = SA.store.clone(prunedEmbedded);
+        else delete mode.embedded;
+        draft.embedded = prunedEmbedded;
         if (Object.keys(profile.typeWeights).length) mode.typeWeights = SA.store.clone(profile.typeWeights);
         else delete mode.typeWeights;
         if (profile.usePalettes.length) mode.usePalettes = SA.store.clone(profile.usePalettes);
@@ -1051,6 +1306,7 @@ SA.themeEditor = (() => {
         extra: [],
       },
       usePalettes: [],
+      embedded: {},
       keywords: { enabled: true, extra: '', exclude: '' },
       style: null,
       tab: currentTab,
@@ -1100,6 +1356,7 @@ SA.themeEditor = (() => {
         extra: (setInfo.extra || []).map((entry) => SA.store.clone(entry)),
       },
       usePalettes: SA.store.clone(profile.usePalettes || mode.usePalettes || []),
+      embedded: SA.store.clone(profile.embedded || mode.embedded || {}),
       keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
       style: existing && existing.style ? SA.store.clone(existing.style) : null,
       tab: draft && draft.tab ? draft.tab : 'axis',

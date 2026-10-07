@@ -1,11 +1,11 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'), require('./adsr'), require('./objfx-core'));
+    module.exports = factory(require('./rng'), require('./easing'), require('./tween'), require('./layout'), require('./effects/registry'), require('./keywords'), require('./frame-guard'), require('./weird'), require('./physics'), require('./scope'), require('./text-effects-data'), require('./adsr'), require('./objfx-core'), require('./theme-colors'));
   } else {
     root.SA = root.SA || {};
-    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData, root.SA.adsr, root.SA.objfxCore);
+    root.SA.motion = factory(root.SA.rng, root.SA.easing, root.SA.tween, root.SA.layout, root.SA.fx, root.SA.keywords, root.SA.frameGuard, root.SA.weird, root.SA.physics, root.SA.scope, root.SA.textEffectsData, root.SA.adsr, root.SA.objfxCore, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData, adsrApi, objfxCore) {
+})(typeof self !== 'undefined' ? self : this, function (rng, easing, tween, layout, fx, keywords, frameGuard, weird, physics, scope, textEffectsData, adsrApi, objfxCore, themeColors) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -1433,6 +1433,23 @@
       return map;
     }
 
+    // colorShift without explicit colours rides the Theme fx pair (mono
+    // Themes read grey); without a Theme the classic pink/cyan stays.
+    function shiftThemeColors() {
+      if (!themeColors) return null;
+      try {
+        const palette = (style && style.palette) || null;
+        const mode = (project && project.styleMode) || {};
+        const table = themeColors.themeOf({ palette, weird: mode.axes || 0, embedded: mode.embedded || null });
+        const pairs = table && table.fxPairs;
+        if (pairs && pairs[1]) return pairs[1];
+        if (pairs && pairs[0]) return pairs[0];
+        return null;
+      } catch {
+        return null;
+      }
+    }
+
     // Application order (§3.3): timeDelay, then colorShift, then flicker.
     // Skipped entirely when options.objfx === false (legibility sampling,
     // echo re-evaluation).
@@ -1568,8 +1585,8 @@
               colorMix: state.colorMix || 0,
               base: objfxBaseColor(),
               stops: objfxPaletteStops(),
-              colorA: objfxCore.hexToRgb(cfg.colorA),
-              colorB: objfxCore.hexToRgb(cfg.colorB),
+              colorA: objfxCore.hexToRgb(cfg.colorA || (shiftThemeColors() || [])[0] || '#ff3b6b'),
+              colorB: objfxCore.hexToRgb(cfg.colorB || (shiftThemeColors() || [])[1] || '#3bd1ff'),
               checkpoints: objfxCheckpoints(),
             });
         }

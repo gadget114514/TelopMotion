@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'), require('./easing'), require('./clip-placement'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'), require('./easing'), require('./theme-colors'), require('./clip-placement'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim, root.SA.easing, root.SA.clipPlacement);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim, root.SA.easing, root.SA.themeColors, root.SA.clipPlacement);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim, easingApi, clipPlacement) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim, easingApi, themeColors, clipPlacement) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -914,7 +914,17 @@
     if (!own && params.color) return params.color;
     const list = own || (ctx && ctx.colors) || [];
     if (list.length) return list[Math.abs(Math.round(index || 0)) % list.length];
-    return (ctx && ctx.color) || '#c86bff';
+    if (ctx && ctx.color) return ctx.color;
+    // no colour anywhere: the Theme's figure tone (mono Themes read grey),
+    // else the classic purple
+    if (themeColors && typeof themeColors.themeOf === 'function') {
+      try {
+        const table = themeColors.themeOf(ctx);
+        const tones = table && table.figEmbed;
+        if (tones && tones.length) return tones[Math.abs(Math.round(index || 0)) % tones.length];
+      } catch { /* fall through to the classic literal */ }
+    }
+    return '#c86bff';
   }
 
   function frameBox(ctx) {

@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../theme-colors'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color);
+    factory(root.SA.fx, root.SA.color, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, themeColors) {
   'use strict';
 
   // 2 is the fbm-blended soft gradient (`noiseGradient`), 14 the directional
@@ -326,13 +326,18 @@
     let colorB = toRgb(context.theme && context.theme.bgSoft, [0.063, 0.075, 0.106, 1]);
     let colorC = [0.56, 0.72, 1, 1];
     let colorD = [1, 0.91, 0.69, 1];
-    // the scoped (theme / cue / beat) palette drives the background unless the instance overrides it
+    // the scoped (theme / cue / beat) palette drives the background unless the instance overrides it.
+    // short clip palettes grow to the full roles first, so every stop reads
+    // the Theme (mono Themes stay grey) instead of the classic blue/cream.
     const palette = context.palette && Array.isArray(context.palette.colors) ? context.palette.colors : null;
-    if (palette && palette.length) {
-      colorA = toRgb(palette[0], colorA);
-      colorB = toRgb(palette[palette.length > 1 ? 1 : 0], colorB);
-      colorC = toRgb(palette.length > 3 ? palette[3] : palette[palette.length - 1], colorC);
-      colorD = toRgb(palette[2], colorD);
+    const full = palette && palette.length
+      ? (themeColors && typeof themeColors.upgrade === 'function' ? themeColors.upgrade(palette) : palette)
+      : null;
+    if (full && full.length) {
+      colorA = toRgb(full[0], colorA);
+      colorB = toRgb(full[full.length > 1 ? 1 : 0], colorB);
+      colorC = toRgb(full.length > 3 ? full[3] : full[full.length - 1], colorC);
+      colorD = toRgb(full[2] || full[0], colorD);
     }
     let p4 = [num(params.scale, 3), 0, 0, 0];
     let p42 = [0, 0, 0, 0];

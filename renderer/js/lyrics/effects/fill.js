@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../theme-colors'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color);
+    factory(root.SA.fx, root.SA.color, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, themeColors) {
   'use strict';
 
   const TYPES = {
@@ -272,6 +272,28 @@
     return color.toRgba(value, fallback || [1, 1, 1, 1], ctx);
   }
 
+  // The Theme's decorative table for this fill's context (palette + weird),
+  // or null when no Theme is in scope (the classic built-in ramps stay).
+  function themeOf(context) {
+    if (!themeColors || typeof themeColors.themeOf !== 'function') return null;
+    try {
+      return themeColors.themeOf(context);
+    } catch {
+      return null;
+    }
+  }
+
+  function rampArrays(hexes, ctx) {
+    return hexes.map((hex) => {
+      try {
+        const rgba = color.parse(hex);
+        return [rgba.r, rgba.g, rgba.b, rgba.a == null ? 1 : rgba.a];
+      } catch {
+        return [1, 1, 1, 1];
+      }
+    });
+  }
+
   function num(value, fallback) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback;
@@ -312,18 +334,26 @@
         colorB = toRgba(params.envColors[1].color || params.envColors[1], null, context);
         colorC = toRgba(params.envColors[2].color || params.envColors[2], null, context);
       } else {
-        colorA = [0.75, 0.82, 0.95, 1];
-        colorB = [0.35, 0.4, 0.5, 1];
-        colorC = [0.12, 0.13, 0.16, 1];
+        const chromeRamp = (themeOf(context) || {}).chrome;
+        const ramp = chromeRamp ? rampArrays(chromeRamp, context) : null;
+        colorA = ramp ? ramp[0] : [0.75, 0.82, 0.95, 1];
+        colorB = ramp ? ramp[1] : [0.35, 0.4, 0.5, 1];
+        colorC = ramp ? ramp[2] : [0.12, 0.13, 0.16, 1];
       }
     } else if (type === 7) {
-      // goldFoil: deep / mid / hot stops. `colors` overrides the built-in gold;
-      // without one the effect still reads as metal instead of the bare fill
+      // goldFoil: deep / mid / hot stops. `colors` overrides the Theme ramp;
+      // without either the effect still reads as metal instead of the bare fill
       params4 = [num(params.grain, 0.5), num(params.sparkle, 0.4), 0, 0];
+      const metalRamp = (themeOf(context) || {}).metal;
+      const metal = metalRamp ? rampArrays(metalRamp, context) : null;
       if (Array.isArray(params.colors) && params.colors.length >= 2) {
         colorA = toRgba(params.colors[0].color || params.colors[0], colorA, context);
         colorB = toRgba(params.colors[1].color || params.colors[1], colorB, context);
-        colorC = toRgba(params.colors[2] ? params.colors[2].color || params.colors[2] : null, GOLD_HOT, context);
+        colorC = toRgba(params.colors[2] ? params.colors[2].color || params.colors[2] : null, metal ? metal[2] : GOLD_HOT, context);
+      } else if (metal) {
+        colorA = metal[0];
+        colorB = metal[1];
+        colorC = metal[2];
       } else {
         colorA = GOLD_DEEP;
         colorB = GOLD_MID;
@@ -332,10 +362,12 @@
     } else if (type === 8) {
       params4 = [num(params.scale, 1), 0, num(params.speed, 1), 0];
       const fireStops = Array.isArray(params.colors) ? params.colors : null;
-      colorA = fireStops ? toRgba(fireStops[0].color || fireStops[0], FIRE[0], context) : FIRE[0];
-      colorB = fireStops ? toRgba(fireStops[Math.min(1, fireStops.length - 1)].color || fireStops[Math.min(1, fireStops.length - 1)], FIRE[1], context) : FIRE[1];
-      colorC = FIRE[2];
-      colorD = FIRE[3];
+      const emberRamp = (!fireStops && (themeOf(context) || {}).ember) || null;
+      const ember = emberRamp ? rampArrays(emberRamp, context) : FIRE;
+      colorA = fireStops ? toRgba(fireStops[0].color || fireStops[0], ember[0], context) : ember[0];
+      colorB = fireStops ? toRgba(fireStops[Math.min(1, fireStops.length - 1)].color || fireStops[Math.min(1, fireStops.length - 1)], ember[1], context) : ember[1];
+      colorC = ember[2];
+      colorD = ember[3];
     } else if (type === 9) {
       params4 = [num(params.scale, 2), 0, num(params.speed, 0.4), 0];
       if (params.colorA) colorA = toRgba(params.colorA, colorA, context);
@@ -348,8 +380,10 @@
         ? [toRgba(params.colors[0].color || params.colors[0], STONE[0], context),
            toRgba(params.colors[params.colors.length - 1].color || params.colors[params.colors.length - 1], STONE[1], context)]
         : null;
+      const stoneRamp = (!stone && (themeOf(context) || {}).stone) || null;
+      const stoneTheme = stoneRamp ? rampArrays(stoneRamp, context) : null;
       colorA = stone ? stone[0] : colorA;
-      colorB = stone ? stone[1] : STONE[1];
+      colorB = stone ? stone[1] : stoneTheme ? stoneTheme[1] : STONE[1];
     } else if (type === 11) {
       params4 = [num(params.refraction, 0.4), num(params.blur, 0.2), 0, 0];
       if (params.tint) colorA = toRgba(params.tint, colorA, context);

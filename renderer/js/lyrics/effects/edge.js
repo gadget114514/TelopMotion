@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../patterns'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../patterns'), require('../theme-colors'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color, root.SA.patterns);
+    factory(root.SA.fx, root.SA.color, root.SA.patterns, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color, patternLib) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, patternLib, themeColors) {
   'use strict';
 
   const TYPES = { outline: 1, neonGlow: 2, innerGlow: 3, bevel: 4, extrude: 5, longShadow: 6, dropShadow: 7, drip: 8 };
@@ -134,6 +134,17 @@
 
   function toRgba(value, fallback, ctx) {
     return color.toRgba(value, fallback, ctx);
+  }
+
+  // The Theme's decorative table for this edge's context (palette + weird),
+  // or null when no Theme is in scope (the classic literals stay).
+  function themeOf(ctx) {
+    if (!themeColors || typeof themeColors.themeOf !== 'function') return null;
+    try {
+      return themeColors.themeOf(ctx);
+    } catch {
+      return null;
+    }
   }
 
   // --- multi-line edge (P6) ---------------------------------------------------
@@ -268,7 +279,8 @@
       edgeColor = toRgba(params.color, [0, 0, 0, 1], context);
     } else if (type === 8) {
       params4 = [num(params.length, 40), num(params.width, 0.35), num(params.grow, 0.5), 0];
-      edgeColor = toRgba(params.color, toRgba((context.colorSet && context.colorSet.glow) || null, [0.55, 0.05, 0.06, 1], context), context);
+      const dripTheme = ((themeOf(context) || {}).ember || [])[1] || null;
+      edgeColor = toRgba(params.color, toRgba((context.colorSet && context.colorSet.glow) || dripTheme, [0.55, 0.05, 0.06, 1], context), context);
     }
     return {
       u_type: type,

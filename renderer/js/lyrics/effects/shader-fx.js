@@ -14,12 +14,12 @@
 // plain opacity effects, so they are extended in place (enter.js / exit.js) and
 // only `hold.fade` is registered here.
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../theme-colors'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color);
+    factory(root.SA.fx, root.SA.color, root.SA.themeColors);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, themeColors) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -39,6 +39,25 @@
 
   function rgba(value, fallback, ctx) {
     return color.toRgba(value, fallback, ctx);
+  }
+
+  // The Theme's decorative table for this shader's context (palette + weird),
+  // or null when no Theme is in scope (the classic literals stay).
+  function themeOf(ctx) {
+    if (!themeColors || typeof themeColors.themeOf !== 'function') return null;
+    try {
+      return themeColors.themeOf(ctx);
+    } catch {
+      return null;
+    }
+  }
+
+  // A tint fallback through the Theme: explicit param wins, then the Theme
+  // flare (mono Themes read near-white), then the classic literal.
+  function tintOf(value, name, fallback, ctx) {
+    const theme = themeOf(ctx);
+    const hex = (theme && theme[name]) || null;
+    return rgba(value || hex, fallback, ctx);
   }
 
   // --- vocabulary --------------------------------------------------------------
@@ -186,7 +205,7 @@
             clamp01(num(p.duty, 0.45)),
           ],
           u_time: context.time || 0,
-          u_colorA: rgba(p.tint, [0.55, 0.85, 1, 1], context),
+          u_colorA: tintOf(p.tint, 'flare', [0.55, 0.85, 1, 1], context),
         };
       },
     },
@@ -219,7 +238,7 @@
           // u_params.w is the envelope the shader reads; the cloak rides in x
           u_params2: [clamp01(num(p.cloak, 0.6)), clamp01(num(p.shimmer, 0.25)), 0, 0],
           u_time: context.time || 0,
-          u_colorA: rgba(p.tint, [0.55, 0.9, 1, 1], context),
+          u_colorA: tintOf(p.tint, 'flare', [0.55, 0.9, 1, 1], context),
         };
       },
     },
@@ -271,7 +290,7 @@
           u_params4: [rad(p.spin), SHAPE_SPIN_OFFSET[name] || 0, 0, 0],
           u_time: context.time || 0,
           u_colorA: rgba(p.color, [1, 1, 1, 1], context),
-          u_colorB: rgba(p.colorB, [0.6, 0.9, 1, 1], context),
+          u_colorB: tintOf(p.colorB, 'flare', [0.6, 0.9, 1, 1], context),
         };
       },
     },
