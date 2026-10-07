@@ -12,7 +12,7 @@ SA.colors = (() => {
   const BUILTIN_PALETTES = [
     { id: 'sunoDark', name: 'Suno Dark', builtin: true, colors: ['#0b0d12', '#151924', '#1b2130', '#252c3d', '#8d96ab', '#e9ecf4', '#ff8a3d', '#ff4d8d', '#0b0d12', '#151924'] },
     { id: 'neon', name: 'Neon', builtin: true, colors: ['#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff', '#7700ff', '#f9f002', '#0d0221', '#ff2a6d', '#05d9e8', '#d1f7ff'] },
-    { id: 'pastel', name: 'Pastel', builtin: true, colors: ['#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4', '#4a3a73', '#a63e60', '#6b7488', '#e8e1f3', '#ff6b4a', '#2a9db8'] },
+    { id: 'pastel', name: 'Pastel', builtin: true, colors: ['#ffd9e8', '#c8e7ff', '#d9ffd6', '#fff3c4', '#9080b9', '#ec84a6', '#b1bace', '#ffffff', '#ffb190', '#70e3fe'] },
     { id: 'mono', name: 'Mono', builtin: true, colors: ['#0b0d12', '#2c3242', '#59617a', '#8d96ab', '#c3cad8', '#eef1f8', '#0b0d12', '#2c3242', '#59617a', '#8d96ab'] },
     { id: 'gold', name: 'Gold', builtin: true, colors: ['#2b1d05', '#7a4f12', '#cd7f32', '#ffc247', '#ffe9a8', '#fff8e0', '#2b1d05', '#7a4f12', '#cd7f32', '#ffc247'] },
     { id: 'category', name: 'Category', builtin: true, colors: ['#4d8dff', '#5fd44d', '#ff5c8a', '#ffc247', '#b06bff', '#4dc8ff', '#ff5cd0', '#7c8cff', '#2ee6c0', '#4d8dff'] },
