@@ -34,6 +34,37 @@ SA.store = (() => {
     return value == null ? value : JSON.parse(JSON.stringify(value));
   }
 
+  // Lyrics / script replacement drops the old cues wholesale. Anything keyed
+  // by the removed cue ids (beats, per-cue/beat styles, orphans, warnings)
+  // would otherwise linger: later runs keep reading the stale entries and the
+  // file grows with unreachable data (e.g. importing lyrics into a showcase
+  // project kept all 131 walk entries). Timeline clips are left alone on
+  // purpose — hand-made clips survive a re-import.
+  function pruneOrphanScriptData(projectDoc, keepIds) {
+    const keep = new Set(keepIds || []);
+    for (const key of ['beats', 'cueStyles', 'orphanBeats', 'beatWarnings', 'orphans']) {
+      const table = projectDoc && projectDoc[key];
+      if (!table || typeof table !== 'object') continue;
+      for (const id of Object.keys(table)) {
+        if (!keep.has(id)) delete table[id];
+      }
+    }
+    const beats = (projectDoc && projectDoc.beats) || {};
+    const beatIds = new Set();
+    for (const list of Object.values(beats)) {
+      if (!Array.isArray(list)) continue;
+      for (const beat of list) {
+        if (beat && beat.id) beatIds.add(beat.id);
+      }
+    }
+    const styles = projectDoc && projectDoc.beatStyles;
+    if (styles && typeof styles === 'object') {
+      for (const id of Object.keys(styles)) {
+        if (!beatIds.has(id)) delete styles[id];
+      }
+    }
+  }
+
   function restructureProject(project) {
     if (typeof SA !== 'undefined' && SA.textflow && project && project.script) {
       SA.textflow.apply(project);
@@ -1946,6 +1977,7 @@ SA.store = (() => {
           project.script.imported = true;
           if (options && options.name) project.script.sourceName = options.name;
           restructureProject(project);
+          pruneOrphanScriptData(project, (cues || []).map((cue) => cue && cue.id));
         },
       });
       fire('script-imported', { count: (cues || []).length, name: (options && options.name) || null });
@@ -1958,6 +1990,7 @@ SA.store = (() => {
           project.script.cues = clone(cues || []);
           if (options) project.script.options = clone(options);
           restructureProject(project);
+          pruneOrphanScriptData(project, (cues || []).map((cue) => cue && cue.id));
         },
       });
     },

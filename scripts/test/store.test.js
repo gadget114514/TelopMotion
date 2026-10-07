@@ -103,6 +103,31 @@ test('moveClip then undo restores the project exactly', () => {
   assert.deepEqual(snapshot(), before);
 });
 
+test('importSrt drops beat and style data of cues that no longer exist', () => {
+  store.load(fixture());
+  const doc = store.state.project;
+  doc.beats.old = [{ id: 'old:page0', cueId: 'old', start: 0, end: 2, kind: 'page', text: 'old' }];
+  doc.cueStyles.old = { text: { fontId: 'X' } };
+  doc.beatStyles['old:page0'] = { text: { size: 10 } };
+  doc.beatStyles['c1:page0'] = { text: { size: 10 } };
+  doc.orphanBeats.old = [{ id: 'old:o0' }];
+  doc.beatWarnings.old = [{ code: 'x' }];
+  doc.orphans.old = { 'cue:old/beat:old:page0': {} };
+  const before = snapshot();
+  store.commands.importSrt([{ id: 'n1', start: 0, end: 3, text: 'new', trackId: 'sub1' }], { name: 'lyrics.srt' });
+  const after = store.state.project;
+  assert.equal(after.script.sourceName, 'lyrics.srt');
+  assert.ok(after.beats.n1, 'beats are built for the new cue');
+  assert.equal(after.beats.old, undefined);
+  assert.equal(after.cueStyles.old, undefined);
+  assert.equal(after.beatStyles['old:page0'], undefined);
+  assert.equal(after.orphanBeats.old, undefined);
+  assert.equal(after.beatWarnings.old, undefined);
+  assert.equal(after.orphans.old, undefined);
+  assert.equal(store.undo(), true);
+  assert.deepEqual(snapshot(), before);
+});
+
 test('rerollCue changes enter / exit and beat sizes, one undo reverts it', () => {
   store.load(fixture());
   const before = snapshot();
