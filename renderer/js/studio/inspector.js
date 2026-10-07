@@ -3754,6 +3754,23 @@ SA.inspector = (() => {
         });
         body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
       }
+      // cueStyle 移植分 (生成時に焼いた fxEnter/fxExit/fxHold) の表示。
+      // 編集は cue 側で行い、figure は再生成・再抽選で追従する。
+      if (params.fxEnter || params.fxExit || params.fxHold) {
+        const holds = Array.isArray(params.fxHold) ? params.fxHold : (params.fxHold ? [params.fxHold] : []);
+        const styleRow = document.createElement('div');
+        styleRow.className = 'insp-row';
+        const styleLabel = document.createElement('span');
+        styleLabel.className = 'insp-label';
+        styleLabel.textContent = 'cueStyle';
+        const styleValue = document.createElement('span');
+        styleValue.className = 'insp-value';
+        styleValue.textContent = `${(params.fxEnter && params.fxEnter.type) || '-'} / ${(holds[0] && holds[0].type) || '-'} / ${(params.fxExit && params.fxExit.type) || '-'}`;
+        styleValue.title = 'テキストの cueStyle と同一の enter/hold/exit (互換型のみ)';
+        styleRow.appendChild(styleLabel);
+        styleRow.appendChild(styleValue);
+        body.appendChild(styleRow);
+      }
       // the clip beats: one row per sub-beat with reroll / vary / recolor
       const subBeats = Array.isArray(params.beats) ? params.beats : [];
       if (subBeats.length) {

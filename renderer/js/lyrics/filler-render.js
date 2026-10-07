@@ -775,6 +775,30 @@
     // param through
     const source = params && params.beats && params.beats.length ? params : { ...(params || {}), beats: [] };
     const list = figures.drawList({ type: 'figure', params: source }, ctx);
+    // cueStyle 移植 (filler 内 figure): fxEnter/fxExit/fxHold があれば
+    // クリップ全体のグループ変形として適用する (figure トラックと同仕様)。
+    try {
+      const SA = (typeof self !== 'undefined' && self.SA) || (typeof globalThis !== 'undefined' && globalThis.SA) || null;
+      if (SA && SA.fxCompat && SA.fx && (source.fxEnter || source.fxExit || source.fxHold) && ctx && list) {
+        const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
+        const clip = (ctx && ctx.clip) || {};
+        const start = Number(clip.start != null ? clip.start : clip.from) || 0;
+        const end = Number(clip.end != null ? clip.end : clip.to) || (start + 4);
+        const group = SA.fxCompat.evaluateStyleState(
+          { enter: source.fxEnter, exit: source.fxExit, hold: source.fxHold },
+          Number((ctx && ctx.time) || 0),
+          { start, end },
+          frame,
+          (ctx && ctx.seed) || 12345,
+          SA.fx,
+          SA.easing
+        );
+        if (group) {
+          SA.fxCompat.applyGroupStateToShapes(list.shapes || [], group, { x: frame.width / 2, y: frame.height / 2 });
+          if (list.field) list.field.opacity = (list.field.opacity == null ? 1 : list.field.opacity) * Math.max(0, Math.min(1, group.opacity == null ? 1 : group.opacity));
+        }
+      }
+    } catch { /* style 適用の失敗は figure 本体を壊さない */ }
     // an optional clip-level opacity lets a figure sit quiet behind the lyrics
     const quiet = params && params.opacity != null ? clamp01(num(params.opacity, 1)) : 1;
     if (quiet < 1 && list && Array.isArray(list.shapes)) {

@@ -74,6 +74,7 @@ const LABEL_NAMESPACE = {
   density: 'density',
   densityGeo: 'density',
   ease: 'ease',
+  style: 'style',
 };
 
 const AXIS_TITLES = {
@@ -89,7 +90,18 @@ const AXIS_TITLES = {
   density: '密度 (density)',
   densityGeo: '密度・幾何 (densityGeo)',
   ease: 'イージング (ease)',
+  style: 'cueStyle移植 (style)',
 };
+
+// cueStyle 移植 (style) の見本: テキストと同一の enter/exit/hold
+// (互換型のみ。文字前提型は除外) で出入り・保持する。値は `enter/hold/exit`。
+const STYLE_SETS = [
+  { value: 'slide/pulse/floatOut', enter: { type: 'slide', params: { dir: 'up', distance: 0.25 } }, hold: { type: 'pulse', params: { amount: 0.06 } }, exit: { type: 'floatOut', params: { dir: 'up', distance: 0.25 } } },
+  { value: 'zoomIn/drift/shrinkDir', enter: { type: 'zoomIn', params: { from: 0.4 } }, hold: { type: 'drift', params: {} }, exit: { type: 'shrinkDir', params: { dir: 'center' } } },
+  { value: 'elasticPop/pulse/spiralOut', enter: { type: 'elasticPop', params: {} }, hold: { type: 'pulse', params: { amount: 0.08 } }, exit: { type: 'spiralOut', params: { turns: 1.25, radius: 0.5 } } },
+  { value: 'charGrowIn/floatBob/vanish', enter: { type: 'charGrowIn', params: { from: 0, overshoot: 1.25, peak: 0.65, scaleFromX: 1.6, scaleFromY: 1.6 } }, hold: { type: 'floatBob', params: { amp: 0.02, speed: 0.5 } }, exit: { type: 'vanish', params: {} } },
+  { value: 'scatterIn/shiver/rotateOut', enter: { type: 'scatterIn', params: { spread: 0.35 } }, hold: { type: 'shiver', params: {} }, exit: { type: 'rotateOut', params: { angle: 90 } } },
+];
 
 // the pools a clip can carry, read from the module so a new move is picked up
 // without touching this script
@@ -107,9 +119,9 @@ const AXIS_VALUES = {
   density: ['low', 'mid', 'high'],
   densityGeo: ['low', 'mid', 'high'],
   ease: ['linear', 'cubicOut', 'backOut', 'elasticOut', 'bounceOut', 'expoInOut'],
+  style: STYLE_SETS.map((entry) => entry.value),
 };
 
-// the axis sections pin a different reference motif when `burst` hides the axis
 const AXIS_MOTIF = { densityGeo: 'voronoi', lineCap: 'scratches' };
 
 const AXIS_NOTES = {
@@ -125,6 +137,7 @@ const AXIS_NOTES = {
   density: '参照 Motif を固定し、要素の密度だけを変えています（low 0.15 / mid 0.5 / high 1）。',
   densityGeo: '参照 Motif `voronoi` を固定し、幾何図形の密度だけを変えています（low 0.15 / mid 0.5 / high 1）。',
   ease: '登場のイージングだけを変えています（`in: pop, hold: pulse, out: shrink`、1 拍グリッド、in 1.2 秒 / out 0.6 秒）。',
+  style: '参照 Motif を固定し、テキストの cueStyle と同一の enter/exit/hold（互換型のみ。文字前提型は除外）で出入り・保持します。値は `enter/hold/exit`。生成時は cue の enter/exit/hold がそのまま焼かれます。',
 };
 
 function clone(value) {
@@ -313,6 +326,12 @@ function figureSpec(options) {
   if (opts.inDur != null) generateOptions.inDur = opts.inDur;
   if (opts.outDur != null) generateOptions.outDur = opts.outDur;
   const spec = figures.generate(generateOptions);
+  // cueStyle 移植 (style): 生成後に fxEnter/fxExit/fxHold を焼く
+  if (opts.fx) {
+    if (opts.fx.enter) spec.params.fxEnter = { type: opts.fx.enter.type, params: clone(opts.fx.enter.params || {}), motion: { in: { duration: 0.6, delay: 0, ease: 'easeOutCubic' } } };
+    if (opts.fx.exit) spec.params.fxExit = { type: opts.fx.exit.type, params: clone(opts.fx.exit.params || {}), motion: { out: { duration: 0.5, delay: 0, ease: 'easeInCubic' } } };
+    if (opts.fx.hold) spec.params.fxHold = [{ type: opts.fx.hold.type, params: clone(opts.fx.hold.params || {}), motion: {} }];
+  }
   // pin the camera explicitly, so a `none` row is visible in the file too
   if (opts.camera) spec.params.camera = opts.camera;
   // the camera reads `params.seed`; a motif that stores no seed would share one
@@ -323,6 +342,10 @@ function figureSpec(options) {
 
 function cueId(index) {
   return `fig_${String(index + 1).padStart(3, '0')}`;
+}
+
+function styleSetOf(value) {
+  return STYLE_SETS.find((entry) => entry.value === value) || null;
 }
 
 // The walk itself, without any timing: one slot per cue, in playing order. The
@@ -377,6 +400,7 @@ function plan(options) {
           inDur: section.axis === 'ease' ? 1.2 : undefined,
           outDur: section.axis === 'ease' ? 0.6 : undefined,
           beatCount: section.axis === 'ease' ? 1 : undefined,
+          fx: section.axis === 'style' ? styleSetOf(value) : undefined,
         },
       });
     }
@@ -703,6 +727,7 @@ module.exports = {
   AXIS_TITLES,
   AXIS_VALUES,
   AXIS_MOTIF,
+  STYLE_SETS,
   DENSITY_STEPS,
   FIGURE_COLORS,
   FIGURE_LANG,

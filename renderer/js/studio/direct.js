@@ -2676,7 +2676,7 @@
             tempoGrid: true,
             beatSeconds: 60 / (SA.project.tempoOf(projectDoc, ctx.bpm)),
           });
-          return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params } };
+          return { ...(entry || {}), type: 'figures', params: { ...params, ...generated.params, ...themeFigureFx(ctx) } };
         };
         if (asFigures(spec)) {
           spec = regenerate(spec, 0, clipKey);
@@ -2707,6 +2707,74 @@
         colors: null,
       }));
     });
+  }
+
+  // cueStyle 移植用: figure 目立つ要素 (前景) と切り絵シート (layers) が
+  // テキストの enter/exit/hold を使うための互換コピー。文字前提型
+  // (SA.fxCompat の除外表) は落とし、汎用変形のみ残す。存在しない・
+  // 非互換の場合は null (figure 独自 move / layer 既存 motion を維持)。
+  function cloneFxParams(params) {
+    return params == null ? {} : JSON.parse(JSON.stringify(params || {}));
+  }
+
+  function figureFxEnterOf(style) {
+    if (!style || !style.enter || style.enter.enabled === false) return null;
+    if (SA.fxCompat && !SA.fxCompat.isCompatible('enter', style.enter.type)) return null;
+    return { type: style.enter.type, params: cloneFxParams(style.enter.params), motion: cloneFxParams(style.enter.motion) };
+  }
+
+  function figureFxExitOf(style) {
+    if (!style || !style.exit || style.exit.enabled === false) return null;
+    if (SA.fxCompat && !SA.fxCompat.isCompatible('exit', style.exit.type)) return null;
+    return { type: style.exit.type, params: cloneFxParams(style.exit.params), motion: cloneFxParams(style.exit.motion) };
+  }
+
+  function figureFxHoldOf(style) {
+    const list = Array.isArray(style && style.hold) ? style.hold : (style && style.hold ? [style.hold] : []);
+    const kept = list
+      .filter((entry) => entry && entry.enabled !== false && (!SA.fxCompat || SA.fxCompat.isCompatible('hold', entry.type)))
+      .map((entry) => ({ type: entry.type, params: cloneFxParams(entry.params), motion: cloneFxParams(entry.motion) }));
+    return kept.length ? kept : null;
+  }
+
+  // cue に結び付く figure 用 fx: cueStyles[cueId] を第一に、なければ themeStyle。
+  function figureFxFor(projectDoc, cueId, ctx) {
+    const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cueId]) || null;
+    const themeStyle = (ctx && ctx.themeStyle) || null;
+    const style = {};
+    if (cueStyle && (cueStyle.enter || cueStyle.exit || cueStyle.hold)) {
+      style.enter = cueStyle.enter;
+      style.exit = cueStyle.exit;
+      style.hold = cueStyle.hold;
+    } else if (themeStyle) {
+      style.enter = themeStyle.enter;
+      style.exit = themeStyle.exit;
+      style.hold = themeStyle.hold;
+    } else {
+      return {};
+    }
+    const out = {};
+    const enter = figureFxEnterOf(style);
+    const exit = figureFxExitOf(style);
+    const hold = figureFxHoldOf(style);
+    if (enter) out.fxEnter = enter;
+    if (exit) out.fxExit = exit;
+    if (hold) out.fxHold = hold;
+    return out;
+  }
+
+  // filler gap 用 fx: cue に結び付かないため themeStyle から取る。
+  function themeFigureFx(ctx) {
+    const themeStyle = (ctx && ctx.themeStyle) || null;
+    if (!themeStyle) return {};
+    const out = {};
+    const enter = figureFxEnterOf(themeStyle);
+    const exit = figureFxExitOf(themeStyle);
+    const hold = figureFxHoldOf(themeStyle);
+    if (enter) out.fxEnter = enter;
+    if (exit) out.fxExit = exit;
+    if (hold) out.fxHold = hold;
+    return out;
   }
 
   // One figure clip per cue: animated motifs on the figure track (only once the
@@ -2856,6 +2924,18 @@
     }
     ctx.figurePrevMotif = spec && spec.params ? spec.params.motif : null;
     ctx.figurePrevSpec = spec || null;
+    // cueStyle 移植: 目立つ要素 (前景 figure) はテキストと同一の
+    // enter/exit/hold (互換型のみ) で出入り・保持する。生成のたびに
+    // 焼き直すので、Generate/再抽選の対象となる。
+    if (spec && spec.params) {
+      const fx = figureFxFor(projectDoc, cue.id, ctx);
+      if (fx.fxEnter) spec.params.fxEnter = fx.fxEnter;
+      else delete spec.params.fxEnter;
+      if (fx.fxExit) spec.params.fxExit = fx.fxExit;
+      else delete spec.params.fxExit;
+      if (fx.fxHold) spec.params.fxHold = fx.fxHold;
+      else delete spec.params.fxHold;
+    }
     return nextClip(projectDoc, 'clip_fig', {
       trackId: track,
       start: cue.start,
@@ -2876,6 +2956,44 @@
       const clip = figureClipFor(projectDoc, cue, index, ctx);
       if (clip) projectDoc.clips.push(clip);
     });
+  }
+
+  // 切り絵シート (layers) の生成対象化: ロックされていないシートの
+  // motion.in/out をテーマの enter/exit (互換型のみ) で焼き直す。
+  // 手動の duration/delay/ease は維持し、type/params のみ更新する。
+  // 文字前提型の場合はその側を空にし、既存 motion を消さずに残す。
+  function layerMotions(projectDoc, ctx) {
+    if (!(ctx.wb > 0)) return;
+    const layers = (projectDoc && projectDoc.layers) || [];
+    if (!layers.length) return;
+    const themeStyle = (ctx && ctx.themeStyle) || {};
+    const wantIn = figureFxEnterOf(themeStyle);
+    const wantOut = figureFxExitOf(themeStyle);
+    if (!wantIn && !wantOut) return;
+    for (const layer of layers) {
+      if (!layer || layer.locked || layer.enabled === false) continue;
+      layer.motion = layer.motion || {};
+      if (wantIn) {
+        const prev = (layer.motion && layer.motion.in) || {};
+        layer.motion.in = {
+          type: wantIn.type,
+          params: cloneFxParams(wantIn.params),
+          duration: prev.duration != null ? prev.duration : (wantIn.motion && wantIn.motion.in && wantIn.motion.in.duration) || 0.5,
+          delay: prev.delay != null ? prev.delay : (wantIn.motion && wantIn.motion.in && wantIn.motion.in.delay) || 0,
+          ease: prev.ease || (wantIn.motion && wantIn.motion.in && wantIn.motion.in.ease) || 'easeOutCubic',
+        };
+      }
+      if (wantOut) {
+        const prev = (layer.motion && layer.motion.out) || {};
+        layer.motion.out = {
+          type: wantOut.type,
+          params: cloneFxParams(wantOut.params),
+          duration: prev.duration != null ? prev.duration : (wantOut.motion && wantOut.motion.out && wantOut.motion.out.duration) || 0.5,
+          delay: prev.delay != null ? prev.delay : (wantOut.motion && wantOut.motion.out && wantOut.motion.out.delay) || 0,
+          ease: prev.ease || (wantOut.motion && wantOut.motion.out && wantOut.motion.out.ease) || 'easeInCubic',
+        };
+      }
+    }
   }
 
   // The whole run on one project document. Order matters: the text flow is
@@ -3423,6 +3541,7 @@
     backdropClips(projectDoc, ctx, total);
     fillerClips(projectDoc, ctx, total);
     figureClips(projectDoc, ctx);
+    layerMotions(projectDoc, ctx);
   }
 
   return {
@@ -3457,6 +3576,7 @@
     carriesFigures,
     figureClipFor,
     figureClips,
+    layerMotions,
     createSizeLadder,
     createColorLadder,
     createPaletteLadder,

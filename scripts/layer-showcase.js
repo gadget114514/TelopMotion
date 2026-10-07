@@ -8,11 +8,12 @@
 //     writes renderer/data/layer-showcase.json and demo/layer-showcase.md
 //   node scripts/layer-showcase.js list [--section spin]
 //
-// The walk has six sections. `move` slides a cutout on X and Y, `spin` turns
+// The walk has seven sections. `move` slides a cutout on X and Y, `spin` turns
 // and zooms it (uniform and non-uniform scale), `anchor` repeats the same spin
-// with two rotation pivots, `fade` keys opacity, `crop` trims the picture, and
+// with two rotation pivots, `fade` keys opacity, `crop` trims the picture,
 // `combo` stacks position + rotation + scale on one layer with an in/out fade
-// to show the keyframes composing with the motion presets. One cue is five
+// to show the keyframes composing with the motion presets, and `style` walks
+// the cueStyle-ported motions (no keyframes, motion only). One cue is five
 // seconds, the lyric text is the same sample everywhere, and one dark plate
 // sits behind the whole walk so the cutouts read against the same ground.
 //
@@ -171,6 +172,7 @@ const SECTIONS = [
   { id: 'fade', label: '透明度 (fade)', note: '不透明度だけを動かしています。シート直下の opacity がキー対象です。' },
   { id: 'crop', label: '切り抜き (crop)', note: '絵の各辺を割合で削ります。左だけのワイプと、四辺を絞るアイリスを見せます。' },
   { id: 'combo', label: '仕上げ (combo)', note: '位置・回転・拡大を重ねた切り絵に、in/out のフェードを掛けています。キーの評価値にプリセットが重なるのが分かります。' },
+  { id: 'style', label: '様式 (style)', note: 'テキストの cueStyle と同一の enter/exit（互換型のみ。文字前提型は除外）で出入りします。ロックされていないシートは生成のたびに焼き直されます（ロックで保護）。キーフレームなし・motion のみです。' },
 ];
 
 function keyTrack(from, to) {
@@ -221,6 +223,15 @@ function plan(pictures) {
       out: { type: 'fade', duration: 0.5, delay: 0, ease: 'easeInCubic', params: {} },
     }
   );
+  // cueStyle 移植 (style): キーフレームなし・motion のみ。生成時はテーマの
+  // enter/exit (互換型のみ) がそのまま焼かれる見本として、代表 3 組を置く。
+  const styleMotion = (inType, inParams, outType, outParams) => ({
+    in: { type: inType, duration: 0.6, delay: 0, ease: 'easeOutCubic', params: inParams || {} },
+    out: { type: outType, duration: 0.5, delay: 0, ease: 'easeInCubic', params: outParams || {} },
+  });
+  push('style', 'motion.in/out', 'slide で入り floatOut で抜ける', pictures.star, {}, {}, styleMotion('slide', { dir: 'up', distance: 0.25 }, 'floatOut', { dir: 'up', distance: 0.25 }));
+  push('style', 'motion.in/out', 'zoomIn で入り shrinkDir で抜ける', pictures.ball, {}, {}, styleMotion('zoomIn', { from: 0.4 }, 'shrinkDir', { dir: 'center' }));
+  push('style', 'motion.in/out', 'scatterIn で入り spiralOut で抜ける', pictures.paper, {}, {}, styleMotion('scatterIn', { spread: 0.35 }, 'spiralOut', { turns: 1.25, radius: 0.5 }));
   return slots;
 }
 
@@ -381,6 +392,7 @@ function indexMarkdown(built) {
   lines.push(`- 1 キュー＝${CUE_SECONDS} 秒。キーはシート開始からの相対秒で、値は絶対値（静的値を上書き）です`);
   lines.push('- シートは背景スロットの画像（`contain`）で、タイムラインのシートトラック下にキーレーンが出ます');
   lines.push('- 仕上げ（combo）だけ in/out フェード付き：キーの評価値にプリセットが重なるのが分かります');
+  lines.push('- 様式（style）は cueStyle 移植の見本：キーフレームなし・motion のみで、テキストと同一の enter/exit（互換型のみ）で出入りします');
   lines.push('- 開くには Studio の *Help → シート見本*、または *File → Open project…* を使います');
   lines.push('');
   lines.push('| # | セクション | キュー数 | 時間 |');

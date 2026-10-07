@@ -28,7 +28,8 @@
 | 16 | 密度 (density) | 3 | 456–468s |
 | 17 | 密度・幾何 (densityGeo) | 3 | 468–480s |
 | 18 | イージング (ease) | 6 | 480–504s |
-| | **合計** | **143** | **504s** |
+| 19 | cueStyle移植 (style) | 5 | 504–524s |
+| | **合計** | **148** | **524s** |
 
 ## コマンド
 
@@ -307,4 +308,16 @@ gl/fields.js の 16 個の shader フィールドと、gl/sim.js の 4 個のシ
 | 141 | `fig_141` | 492–496s | エラスティックアウト | `elasticOut` |
 | 142 | `fig_142` | 496–500s | バウンスアウト | `bounceOut` |
 | 143 | `fig_143` | 500–504s | 指数インアウト | `expoInOut` |
+
+## 19. cueStyle移植 (style) (style)
+
+参照 Motif を固定し、テキストの cueStyle と同一の enter/exit/hold（互換型のみ。文字前提型は除外）で出入り・保持します。値は `enter/hold/exit`。生成時は cue の enter/exit/hold がそのまま焼かれます。
+
+| # | キュー | 時間 | 名前 | 値 |
+|---:|---|---|---|---|
+| 144 | `fig_144` | 504–508s | slide/pulse/floatOut | `slide/pulse/floatOut` |
+| 145 | `fig_145` | 508–512s | zoomIn/drift/shrinkDir | `zoomIn/drift/shrinkDir` |
+| 146 | `fig_146` | 512–516s | elasticPop/pulse/spiralOut | `elasticPop/pulse/spiralOut` |
+| 147 | `fig_147` | 516–520s | charGrowIn/floatBob/vanish | `charGrowIn/floatBob/vanish` |
+| 148 | `fig_148` | 520–524s | scatterIn/shiver/rotateOut | `scatterIn/shiver/rotateOut` |
 

@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 6,
   "meta": {
     "title": "TelopMotion 図形モーション見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -1753,6 +1753,66 @@
           "index": 143,
           "namespace": "ease",
           "value": "expoInOut"
+        }
+      },
+      {
+        "id": "fig_144",
+        "start": 504,
+        "end": 508,
+        "text": "144. slide/pulse/floatOut / slide/pulse/floatOut",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 144,
+          "namespace": "style",
+          "value": "slide/pulse/floatOut"
+        }
+      },
+      {
+        "id": "fig_145",
+        "start": 508,
+        "end": 512,
+        "text": "145. zoomIn/drift/shrinkDir / zoomIn/drift/shrinkDir",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 145,
+          "namespace": "style",
+          "value": "zoomIn/drift/shrinkDir"
+        }
+      },
+      {
+        "id": "fig_146",
+        "start": 512,
+        "end": 516,
+        "text": "146. elasticPop/pulse/spiralOut / elasticPop/pulse/spiralOut",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 146,
+          "namespace": "style",
+          "value": "elasticPop/pulse/spiralOut"
+        }
+      },
+      {
+        "id": "fig_147",
+        "start": 516,
+        "end": 520,
+        "text": "147. charGrowIn/floatBob/vanish / charGrowIn/floatBob/vanish",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 147,
+          "namespace": "style",
+          "value": "charGrowIn/floatBob/vanish"
+        }
+      },
+      {
+        "id": "fig_148",
+        "start": 520,
+        "end": 524,
+        "text": "148. scatterIn/shiver/rotateOut / scatterIn/shiver/rotateOut",
+        "meta": {
+          "kind": "figure-showcase",
+          "index": 148,
+          "namespace": "style",
+          "value": "scatterIn/shiver/rotateOut"
         }
       }
     ],
@@ -4158,6 +4218,91 @@
         "fontScale": 1,
         "pinned": false
       }
+    ],
+    "fig_144": [
+      {
+        "id": "fig_144:single0",
+        "cueId": "fig_144",
+        "kind": "single",
+        "index": 0,
+        "start": 504,
+        "end": 508,
+        "text": "144. slide/pulse/floatOut\n/ slide/pulse/floatOut",
+        "lines": [
+          "144. slide/pulse/floatOut",
+          "/ slide/pulse/floatOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_145": [
+      {
+        "id": "fig_145:single0",
+        "cueId": "fig_145",
+        "kind": "single",
+        "index": 0,
+        "start": 508,
+        "end": 512,
+        "text": "145. zoomIn/drift/shrinkDir\n/ zoomIn/drift/shrinkDir",
+        "lines": [
+          "145. zoomIn/drift/shrinkDir",
+          "/ zoomIn/drift/shrinkDir"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_146": [
+      {
+        "id": "fig_146:single0",
+        "cueId": "fig_146",
+        "kind": "single",
+        "index": 0,
+        "start": 512,
+        "end": 516,
+        "text": "146. elasticPop/pulse/spiralOut\n/ elasticPop/pulse/spiralOut",
+        "lines": [
+          "146. elasticPop/pulse/spiralOut",
+          "/ elasticPop/pulse/spiralOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_147": [
+      {
+        "id": "fig_147:single0",
+        "cueId": "fig_147",
+        "kind": "single",
+        "index": 0,
+        "start": 516,
+        "end": 520,
+        "text": "147. charGrowIn/floatBob/vanish\n/ charGrowIn/floatBob/vanish",
+        "lines": [
+          "147. charGrowIn/floatBob/vanish",
+          "/ charGrowIn/floatBob/vanish"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fig_148": [
+      {
+        "id": "fig_148:single0",
+        "cueId": "fig_148",
+        "kind": "single",
+        "index": 0,
+        "start": 520,
+        "end": 524,
+        "text": "148. scatterIn/shiver/rotateOut\n/ scatterIn/shiver/rotateOut",
+        "lines": [
+          "148. scatterIn/shiver/rotateOut",
+          "/ scatterIn/shiver/rotateOut"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
     ]
   },
   "beatStyles": {},
@@ -4239,6 +4384,10 @@
     {
       "t": 480,
       "label": "イージング (ease)"
+    },
+    {
+      "t": 504,
+      "label": "cueStyle移植 (style)"
     }
   ],
   "layers": [],
@@ -4279,7 +4428,7 @@
       "id": "clip_fig_plate",
       "trackId": "bg",
       "start": 0,
-      "end": 504,
+      "end": 524,
       "spec": {
         "type": "solid",
         "params": {
@@ -16227,6 +16376,608 @@
           "lineStyle": "solid",
           "lineCap": "round",
           "weightVar": 0
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_144",
+      "trackId": "fig",
+      "start": 504,
+      "end": 508,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 504,
+              "end": 505.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 1.3,
+              "tone": 0
+            },
+            {
+              "start": 505.5,
+              "end": 506.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.17,
+              "tone": 5
+            },
+            {
+              "start": 506.5,
+              "end": 507.5,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.67,
+              "tone": 5
+            },
+            {
+              "start": 507.5,
+              "end": 508,
+              "move": {
+                "in": "scatterIn",
+                "hold": "spin",
+                "out": "burstOut"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 0.94,
+              "tone": 6
+            }
+          ],
+          "camera": "shake",
+          "stroke": "med",
+          "lineStyle": "solid",
+          "lineCap": "round",
+          "weightVar": 0,
+          "fxEnter": {
+            "type": "slide",
+            "params": {
+              "dir": "up",
+              "distance": 0.25
+            },
+            "motion": {
+              "in": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "easeOutCubic"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "floatOut",
+            "params": {
+              "dir": "up",
+              "distance": 0.25
+            },
+            "motion": {
+              "out": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "easeInCubic"
+              }
+            }
+          },
+          "fxHold": [
+            {
+              "type": "pulse",
+              "params": {
+                "amount": 0.06
+              },
+              "motion": {}
+            }
+          ]
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_145",
+      "trackId": "fig",
+      "start": 508,
+      "end": 512,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 508,
+              "end": 509.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 0.7,
+              "tone": 2
+            },
+            {
+              "start": 509.5,
+              "end": 510.5,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 1.1,
+              "tone": 3
+            },
+            {
+              "start": 510.5,
+              "end": 511.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 1.34,
+              "tone": 1
+            },
+            {
+              "start": 511.5,
+              "end": 512,
+              "move": {
+                "in": "pop",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 0.62,
+              "tone": 6
+            }
+          ],
+          "camera": "roll",
+          "stroke": "med",
+          "lineStyle": "solid",
+          "lineCap": "round",
+          "weightVar": 0,
+          "fxEnter": {
+            "type": "zoomIn",
+            "params": {
+              "from": 0.4
+            },
+            "motion": {
+              "in": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "easeOutCubic"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "shrinkDir",
+            "params": {
+              "dir": "center"
+            },
+            "motion": {
+              "out": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "easeInCubic"
+              }
+            }
+          },
+          "fxHold": [
+            {
+              "type": "drift",
+              "params": {},
+              "motion": {}
+            }
+          ]
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_146",
+      "trackId": "fig",
+      "start": 512,
+      "end": 516,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 512,
+              "end": 513.5,
+              "move": {
+                "in": "pop",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.82,
+              "tone": 1
+            },
+            {
+              "start": 513.5,
+              "end": 514.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "spin",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": true,
+              "size": 0.96,
+              "tone": 6
+            },
+            {
+              "start": 514.5,
+              "end": 515.5,
+              "move": {
+                "in": "wipe",
+                "hold": "drift",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.28,
+              "tone": 5
+            },
+            {
+              "start": 515.5,
+              "end": 516,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.26,
+              "tone": 5
+            }
+          ],
+          "camera": "roll",
+          "stroke": "med",
+          "lineStyle": "solid",
+          "lineCap": "round",
+          "weightVar": 0,
+          "fxEnter": {
+            "type": "elasticPop",
+            "params": {},
+            "motion": {
+              "in": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "easeOutCubic"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "spiralOut",
+            "params": {
+              "turns": 1.25,
+              "radius": 0.5
+            },
+            "motion": {
+              "out": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "easeInCubic"
+              }
+            }
+          },
+          "fxHold": [
+            {
+              "type": "pulse",
+              "params": {
+                "amount": 0.08
+              },
+              "motion": {}
+            }
+          ]
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_147",
+      "trackId": "fig",
+      "start": 516,
+      "end": 520,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 516,
+              "end": 517.5,
+              "move": {
+                "in": "wipe",
+                "hold": "morph",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1.05,
+              "tone": 4
+            },
+            {
+              "start": 517.5,
+              "end": 518.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 0.65,
+              "tone": 5
+            },
+            {
+              "start": 518.5,
+              "end": 519.5,
+              "move": {
+                "in": "scatterIn",
+                "hold": "pulse",
+                "out": "burstOut"
+              },
+              "variant": 1,
+              "accent": false,
+              "size": 1.18,
+              "tone": 5
+            },
+            {
+              "start": 519.5,
+              "end": 520,
+              "move": {
+                "in": "draw",
+                "hold": "morph",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.09,
+              "tone": 5
+            }
+          ],
+          "camera": "whip",
+          "stroke": "med",
+          "inEase": "bounceOut",
+          "lineStyle": "solid",
+          "lineCap": "round",
+          "weightVar": 0,
+          "fxEnter": {
+            "type": "charGrowIn",
+            "params": {
+              "from": 0,
+              "overshoot": 1.25,
+              "peak": 0.65,
+              "scaleFromX": 1.6,
+              "scaleFromY": 1.6
+            },
+            "motion": {
+              "in": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "easeOutCubic"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "vanish",
+            "params": {},
+            "motion": {
+              "out": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "easeInCubic"
+              }
+            }
+          },
+          "fxHold": [
+            {
+              "type": "floatBob",
+              "params": {
+                "amp": 0.02,
+                "speed": 0.5
+              },
+              "motion": {}
+            }
+          ]
+        }
+      },
+      "opacity": 0.95,
+      "fadeIn": 0.25,
+      "fadeOut": 0.25,
+      "colors": [
+        "#6f8bff",
+        "#4dd6c1",
+        "#ffd166",
+        "#ff6f91",
+        "#c77dff",
+        "#8ce99a"
+      ]
+    },
+    {
+      "id": "clip_fig_148",
+      "trackId": "fig",
+      "start": 520,
+      "end": 524,
+      "spec": {
+        "type": "figure",
+        "params": {
+          "motif": "burst",
+          "sync": "free",
+          "density": 0.6,
+          "colors": null,
+          "beats": [
+            {
+              "start": 520,
+              "end": 521.5,
+              "move": {
+                "in": "draw",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1,
+              "tone": 1
+            },
+            {
+              "start": 521.5,
+              "end": 522.5,
+              "move": {
+                "in": "wipe",
+                "hold": "drift",
+                "out": "burstOut"
+              },
+              "variant": 2,
+              "accent": false,
+              "size": 1.21,
+              "tone": 5
+            },
+            {
+              "start": 522.5,
+              "end": 523.5,
+              "move": {
+                "in": "pop",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 2,
+              "accent": true,
+              "size": 0.78,
+              "tone": 6
+            },
+            {
+              "start": 523.5,
+              "end": 524,
+              "move": {
+                "in": "wipe",
+                "hold": "pulse",
+                "out": "fade"
+              },
+              "variant": 0,
+              "accent": false,
+              "size": 1.2,
+              "tone": 0
+            }
+          ],
+          "camera": "roll",
+          "stroke": "med",
+          "inEase": "bounceOut",
+          "lineStyle": "solid",
+          "lineCap": "round",
+          "weightVar": 0,
+          "fxEnter": {
+            "type": "scatterIn",
+            "params": {
+              "spread": 0.35
+            },
+            "motion": {
+              "in": {
+                "duration": 0.6,
+                "delay": 0,
+                "ease": "easeOutCubic"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "rotateOut",
+            "params": {
+              "angle": 90
+            },
+            "motion": {
+              "out": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "easeInCubic"
+              }
+            }
+          },
+          "fxHold": [
+            {
+              "type": "shiver",
+              "params": {},
+              "motion": {}
+            }
+          ]
         }
       },
       "opacity": 0.95,

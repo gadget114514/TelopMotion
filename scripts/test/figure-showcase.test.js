@@ -52,7 +52,7 @@ test('every motif in the registry gets its own cue', () => {
 
 test('every motion axis value gets its own cue', () => {
   const b = built();
-  const axes = ['in', 'hold', 'out', 'sync', 'camera', 'procMotion', 'lineStyle', 'lineCap', 'stroke', 'density', 'densityGeo', 'ease'];
+  const axes = ['in', 'hold', 'out', 'sync', 'camera', 'procMotion', 'lineStyle', 'lineCap', 'stroke', 'density', 'densityGeo', 'ease', 'style'];
   for (const axis of axes) {
     const values = showcase.AXIS_VALUES[axis];
     assert.ok(values && values.length, `${axis} has no values`);
@@ -107,6 +107,16 @@ test('the axis cues pin the move / camera and hold the reference motif', () => {
     for (const beat of entry.spec.params.beats) {
       assert.deepEqual([beat.move.in, beat.move.hold, beat.move.out], ['pop', 'pulse', 'shrink'], `ease ${entry.value} beat ${beat.start}`);
     }
+  }
+  for (const entry of b.entries.filter((item) => item.axis === 'style')) {
+    assert.equal(entry.spec.params.motif, showcase.REFERENCE_MOTIF, `style ${entry.value}`);
+    assert.ok(entry.spec.params.fxEnter && entry.spec.params.fxEnter.type, `style ${entry.value} fxEnter`);
+    assert.ok(entry.spec.params.fxExit && entry.spec.params.fxExit.type, `style ${entry.value} fxExit`);
+    assert.ok(Array.isArray(entry.spec.params.fxHold) && entry.spec.params.fxHold.length, `style ${entry.value} fxHold`);
+    const [enter, hold, exit] = String(entry.value).split('/');
+    assert.equal(entry.spec.params.fxEnter.type, enter, `style ${entry.value} enter`);
+    assert.equal(entry.spec.params.fxHold[0].type, hold, `style ${entry.value} hold`);
+    assert.equal(entry.spec.params.fxExit.type, exit, `style ${entry.value} exit`);
   }
 });
 
@@ -308,7 +318,7 @@ test('every figure name the walk prints has a label in all five languages', () =
   assert.equal(showcase.LABEL_NAMESPACE.procMotion, 'proc');
   assert.equal(showcase.LABEL_NAMESPACE.densityGeo, 'density');
   const namespaces = new Set(b.entries.map((entry) => entry.namespace));
-  assert.deepEqual([...namespaces].sort(), ['camera', 'density', 'ease', 'hold', 'in', 'lineCap', 'lineStyle', 'motif', 'out', 'proc', 'stroke', 'sync']);
+  assert.deepEqual([...namespaces].sort(), ['camera', 'density', 'ease', 'hold', 'in', 'lineCap', 'lineStyle', 'motif', 'out', 'proc', 'stroke', 'style', 'sync']);
 
   globalThis.window = globalThis;
   globalThis.SA = globalThis.SA || {};
@@ -344,6 +354,8 @@ test('the cue labels come from the Studio dictionary', () => {
     // the dictionary must answer in the language it was asked for
     i18n.set(code);
     for (const entry of b.entries) {
+      // style 値は `enter/hold/exit` の複合パスのため単独ラベルを持たない (値をそのまま表示)
+      if (entry.axis === 'style') continue;
       const key = `studio.figure.${entry.namespace}.${entry.value}`;
       assert.equal(showcase.nameOf(t, entry.namespace, entry.value), i18n.t(key), `${code} ${entry.value}`);
       assert.notEqual(showcase.nameOf(t, entry.namespace, entry.value), entry.value, `${code}: ${entry.value} fell back to its id`);

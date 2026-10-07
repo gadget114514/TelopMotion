@@ -1111,6 +1111,43 @@ SA.store = (() => {
     }
   }
 
+  // figure 目立つ要素の cueStyle 移植分を焼き直す: auto の figure クリップで
+  // cue 区間に重なるものの fxEnter/fxExit/fxHold を最新の cueStyle
+  // (なければテーマ) から再コピーする。cue 再抽選/バリエーションのたびに
+  // figure も連動させるためのもので、手作りクリップには触らない。
+  function refreshFigureFxForCue(projectDoc, cueId) {
+    const target = (projectDoc.script && projectDoc.script.cues || []).find((entry) => entry.id === cueId);
+    if (!target) return;
+    const compat = (typeof SA !== 'undefined' && SA.fxCompat) || null;
+    const ok = (group, type) => !compat || (typeof compat.isCompatible === 'function' && compat.isCompatible(group, type));
+    const copyParams = (params) => (params == null ? {} : JSON.parse(JSON.stringify(params || {})));
+    const cueStyle = (projectDoc.cueStyles && projectDoc.cueStyles[cueId]) || null;
+    const themeStyle = projectDoc.style || null;
+    const source = (cueStyle && (cueStyle.enter || cueStyle.exit || cueStyle.hold)) ? cueStyle : themeStyle;
+    if (!source) return;
+    const fxEnter = source.enter && source.enter.enabled !== false && ok('enter', source.enter.type)
+      ? { type: source.enter.type, params: copyParams(source.enter.params), motion: copyParams(source.enter.motion) } : null;
+    const fxExit = source.exit && source.exit.enabled !== false && ok('exit', source.exit.type)
+      ? { type: source.exit.type, params: copyParams(source.exit.params), motion: copyParams(source.exit.motion) } : null;
+    const holdList = Array.isArray(source.hold) ? source.hold : (source.hold ? [source.hold] : []);
+    const fxHold = holdList
+      .filter((entry) => entry && entry.enabled !== false && ok('hold', entry.type))
+      .map((entry) => ({ type: entry.type, params: copyParams(entry.params), motion: copyParams(entry.motion) }));
+    const start = Number(target.start) || 0;
+    const end = Number(target.end) || start;
+    for (const clip of projectDoc.clips || []) {
+      if (!clip || !clip.auto || !clip.spec || clip.spec.type !== 'figure') continue;
+      if (!(clip.end > start && clip.start < end)) continue;
+      const params = clip.spec.params || (clip.spec.params = {});
+      if (fxEnter) params.fxEnter = JSON.parse(JSON.stringify(fxEnter));
+      else delete params.fxEnter;
+      if (fxExit) params.fxExit = JSON.parse(JSON.stringify(fxExit));
+      else delete params.fxExit;
+      if (fxHold.length) params.fxHold = JSON.parse(JSON.stringify(fxHold));
+      else delete params.fxHold;
+    }
+  }
+
   // The body of a cue vary (varyCue / varyAll): the cue container keeps its
   // types and only params / motion are re-drawn, every beat steps its
   // variation slot. Without force every beat under the cue is varied the same
@@ -1155,6 +1192,8 @@ SA.store = (() => {
     for (const beat of beats) {
       beat.variation = (Number.isFinite(Number(beat.variation)) ? Number(beat.variation) : 0) + 1;
     }
+    // figure 目立つ要素も連動: cue の enter/exit/hold (params 変動分) を焼き直す
+    refreshFigureFxForCue(projectDoc, cueId);
     if (SA.direct && typeof SA.direct.resizeBeats === 'function' && beats.length) {
       SA.direct.resizeBeats(projectDoc, mode.axes, beats.map((beat) => beat.id), seed, { params: mode.params, curve: mode.curve });
     }
@@ -3316,6 +3355,8 @@ SA.store = (() => {
             enter: generated.enter,
             exit: generated.exit,
           });
+          // figure 目立つ要素も連動: 新しい cue enter/exit を焼き直す
+          refreshFigureFxForCue(projectDoc, cueId);
           if (generated.text) {
             const cueBag = projectDoc.cueStyles[cueId];
             cueBag.text = { ...(cueBag.text || {}), fontId: generated.text.fontId, weight: generated.text.weight };
@@ -3513,6 +3554,12 @@ SA.store = (() => {
               cuts: params.cuts,
               enabled: params.enabled != null ? params.enabled : (target.disabled != null ? !target.disabled : undefined),
             });
+            // cueStyle 移植分は維持する (motif/moves の再抽選であり style 再抽選ではない)
+            if (target.spec && target.spec.params) {
+              if (params.fxEnter) target.spec.params.fxEnter = clone(params.fxEnter);
+              if (params.fxExit) target.spec.params.fxExit = clone(params.fxExit);
+              if (params.fxHold) target.spec.params.fxHold = clone(params.fxHold);
+            }
             return;
           }
           const result = SA.moods.rerollClipSpec(kind, {
@@ -3573,6 +3620,12 @@ SA.store = (() => {
               cuts: params.cuts,
               enabled: params.enabled != null ? params.enabled : (target.disabled != null ? !target.disabled : undefined),
             });
+            // cueStyle 移植分は維持する (motif 固定のバリエーションであり style 再抽選ではない)
+            if (target.spec && target.spec.params) {
+              if (params.fxEnter) target.spec.params.fxEnter = clone(params.fxEnter);
+              if (params.fxExit) target.spec.params.fxExit = clone(params.fxExit);
+              if (params.fxHold) target.spec.params.fxHold = clone(params.fxHold);
+            }
             return;
           }
           if (typeof SA.moods.sampleClipParams !== 'function' || !SA.rng) return;

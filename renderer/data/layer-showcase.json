@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 6,
   "meta": {
     "title": "TelopMotion シート見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -180,6 +180,45 @@
           "section": "combo",
           "value": "x + rotate + scale",
           "detail": "X・回転・拡大＋in/outフェード"
+        }
+      },
+      {
+        "id": "lk_012",
+        "start": 55,
+        "end": 60,
+        "text": "12. motion.in/out（slide で入り floatOut で抜ける）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 12,
+          "section": "style",
+          "value": "motion.in/out",
+          "detail": "slide で入り floatOut で抜ける"
+        }
+      },
+      {
+        "id": "lk_013",
+        "start": 60,
+        "end": 65,
+        "text": "13. motion.in/out（zoomIn で入り shrinkDir で抜ける）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 13,
+          "section": "style",
+          "value": "motion.in/out",
+          "detail": "zoomIn で入り shrinkDir で抜ける"
+        }
+      },
+      {
+        "id": "lk_014",
+        "start": 65,
+        "end": 70,
+        "text": "14. motion.in/out（scatterIn で入り spiralOut で抜ける）\n切り絵キーフレーム見本 Sample",
+        "meta": {
+          "kind": "layer-showcase",
+          "index": 14,
+          "section": "style",
+          "value": "motion.in/out",
+          "detail": "scatterIn で入り spiralOut で抜ける"
         }
       }
     ],
@@ -488,10 +527,96 @@
         "fontScale": 0.8,
         "pinned": false
       }
+    ],
+    "lk_012": [
+      {
+        "id": "lk_012:single0",
+        "cueId": "lk_012",
+        "kind": "single",
+        "index": 0,
+        "start": 55,
+        "end": 60,
+        "text": "12. motion.in/out（slide で入り floatOut\nで抜ける）切り絵キーフレーム見本 Sample",
+        "lines": [
+          "12. motion.in/out（slide で入り floatOut",
+          "で抜ける）切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8199999999999998,
+        "pinned": false
+      }
+    ],
+    "lk_013": [
+      {
+        "id": "lk_013:page1",
+        "cueId": "lk_013",
+        "kind": "page",
+        "index": 1,
+        "start": 60,
+        "end": 61.151233869141954,
+        "text": "13. motion.",
+        "lines": [
+          "13. motion."
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "lk_013:page2",
+        "cueId": "lk_013",
+        "kind": "page",
+        "index": 2,
+        "start": 61.151233869141954,
+        "end": 65,
+        "text": "in/out（zoomIn で入り shrinkDir で抜ける）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "in/out（zoomIn で入り shrinkDir で抜ける）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "lk_014": [
+      {
+        "id": "lk_014:page1",
+        "cueId": "lk_014",
+        "kind": "page",
+        "index": 1,
+        "start": 65,
+        "end": 67.21751412429379,
+        "text": "14. motion.in/out（scatterIn で",
+        "lines": [
+          "14. motion.in/out（scatterIn で"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "lk_014:page2",
+        "cueId": "lk_014",
+        "kind": "page",
+        "index": 2,
+        "start": 67.21751412429379,
+        "end": 70,
+        "text": "入り spiralOut で抜ける）\n切り絵キーフレーム見本 Sample",
+        "lines": [
+          "入り spiralOut で抜ける）",
+          "切り絵キーフレーム見本 Sample"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
     ]
   },
   "beatStyles": {},
-  "beatWarnings": {},
+  "beatWarnings": {
+    "lk_013": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ]
+  },
   "orphanBeats": {},
   "orphans": {},
   "textFlow": {},
@@ -722,7 +847,10 @@
           "ease": "linear"
         }
       ]
-    }
+    },
+    "layer:layer_lk_012": {},
+    "layer:layer_lk_013": {},
+    "layer:layer_lk_014": {}
   },
   "markers": [
     {
@@ -748,6 +876,10 @@
     {
       "t": 50,
       "label": "仕上げ (combo)"
+    },
+    {
+      "t": 55,
+      "label": "様式 (style)"
     }
   ],
   "layers": [
@@ -763,7 +895,7 @@
       "radius": 0,
       "enabled": true,
       "start": 0,
-      "end": 55,
+      "end": 70,
       "transform": {
         "x": 0,
         "y": 0,
@@ -1034,6 +1166,135 @@
           "delay": 0,
           "ease": "easeInCubic",
           "params": {}
+        }
+      }
+    },
+    {
+      "id": "layer_lk_012",
+      "name": "star",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAAC0klEQVR4nO3VUW5TMRCG0S6CJ7bAvtgvKyoCFBFamt4k9v3HnnMkP8ee+aL78gIAAAAAAAAAAABZrz++v/466XvQlACJEiAxl/hESIQAiRIgMW/jEyGnEiBRAiTmo/hEyCkESJQAifksPhEylQCJORqfCJlCgEQJkJh74xMhQwmQKAES82h8ImQIARIlQGKejU+EPEWAxIyKT4Q8RIBECZCY0fGJkLsIkCgBEjMrPhFyiACJEiAxs+MTITcJkCgBEnNWfCLkvwRIzNnxiZB/CJAoARKTik+EG0tHJdaw9KKchn+A9HAcMf6WHozTNLxr6SE5jeO7SA/LaRzftfTgnKbhXUsP0Wkc30V6mKPOl6/fbp70/cR3Q3qoM8PbKcR0J9OlBzwzvJVDTHdxqvSwz4hvpQjTPUSkh35GfCtEmO4gLr2A2fFVjTC991LSy5gdX7UI0/suKb2ULgGm91zazvFViDC932UIUHhxO8aXiDC9x6UJUHwlCFB4cQIUX5wAxRcnQPGVIEDhxXUPMD1/FoxQfJvqEmB6ztxQPULxNbBrgOm5coeKEYqvkWqfYp/eZp5d+MgIR9wlPU/uMGLhoyIceZf0XDlo5NIfDXHGHdJz5aAZyz8a4szfTs+Vg2ZGkDzpuXJAOhIRNpcORIDNpQMRYGPpOETYXDoMATaXDkOAjaWjEGFz6SAE2Fw6CAE2lw5CgI2lYxBhc+kQBNhcOoD07xNUZflV7sHJqi282n2YrOKyK96JSSovufLdGGCFBa9wRx600lJXuisHrbbQ1e7LDasuc9V788bqC1z9/u3tsLwd3tDWTkvb6S0t7LiwHd+0rZ2XtPPbtrH7gnZ/39I6LabTW5fRbSHd3lte10V0fXc5nZfQ+e0lGP4f5hBi6H+ZRYBhv2cmJzHoj5nNCQz3c2Y0kcEeY04TGOp9zAsAAAAAAAAAAAAAAAAAAAAAlvcTsH0zDsXLxAsAAAAASUVORK5CYII=",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 55,
+      "end": 60,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      },
+      "motion": {
+        "in": {
+          "type": "slide",
+          "duration": 0.6,
+          "delay": 0,
+          "ease": "easeOutCubic",
+          "params": {
+            "dir": "up",
+            "distance": 0.25
+          }
+        },
+        "out": {
+          "type": "floatOut",
+          "duration": 0.5,
+          "delay": 0,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "up",
+            "distance": 0.25
+          }
+        }
+      }
+    },
+    {
+      "id": "layer_lk_013",
+      "name": "ball",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAADTElEQVR4nO2SSW4cQRDE6qF+iX/qqz8iAwIk2GqPZumFmRkkwHtVBtcSERERERERERERERERERERERERERERERERERGRIbz9+Pm2R/r90oS9oRmmPM3V0RljOHRoBhkKHZQhBkLHY4yh0KEYYih0GIYYDB2DEYZCB1BFeoc46MGrSu8SAT1ydel9RkOP20V6p3HQg3aV3m0E9IjdpfdrDT3eFOkdW0KPNk16z1bQY02V3rUF9EjTpfctDT1OivTOJTn80L9+f2+BEIywCJdFZ4xG+BU0PEPMjrBMeOEh0h1glIwvMEK6A4TS8RnhbFrEZ4QzaRWfEc7DAGtL93EqLeMzwjkYYA/pTk6hdXxG2JvdB6HDCwxwVIQG2FO6m0MYE58R9sQAe0v3s4tDjkAHFx5g6wgNcIZ0Ry9jgDOkO3qJww5AB2eAPSM0wFnSPT3FoZ+ngzPAfhEe/nk6OuMzwBIWiMAAH8AAZ0p39RCnHcD4Skj3dRcDnC3d111OPYDx4dJ9fcvpBzDAEtKd3eSSAxgfLt3ZTS47gvEZ4P+49BDGZ4BfufwYxmeAf4MdxfAMkD7KrhDpdzeU7m0DfZCnY6Tf11y6tw30QdQA8aOoAWqIdG8b6IOoAeJHUQPUEOneNtAHUQPEj6IGqCHSvW2gD6IGiB9FDVBDpHvbQB9EDRA/igYHuIwwRrqzm9CHUQPEj6MGqMOlO7sJfRg1QPw4GhzgMsLx0n3dhT6QGiB+JA0OcBnhWOmuHoY+lBogfiw1QB0m3dVT0MfS4PiWAY6T7ukl6KNpcHzLAMdId/Qy9OE0PMBlhO2l+9kNfUAND3AZYVvpbg6DPqSGB7iMsJ10L6dAH1WD41sG2Ea6k1Ohj6vB8S0DLC/dxyXQR9bg+D6gj63B8X1AH12D41sGWEa6AxT6+OnS+5eAHiFVevdS0GOkSe9dEnqUFOmdS0OPM1163xbQI02V3rUV9FjTpPdsCT3aFOkdW0OP1116vxHQI3aV3m0c9KBdpHcaDT1udel9IqBHriq9Sxz04FWkd4iHDsDwJC5C+t5yAzoMw5N36FAMTz6h4zE6eYcOyvDkH+jQDE4+MTopiaGJiIiIiIiIiIiIiIiIiIiIiMhj/AH9kDl0RRLYywAAAABJRU5ErkJggg==",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 60,
+      "end": 65,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      },
+      "motion": {
+        "in": {
+          "type": "zoomIn",
+          "duration": 0.6,
+          "delay": 0,
+          "ease": "easeOutCubic",
+          "params": {
+            "from": 0.4
+          }
+        },
+        "out": {
+          "type": "shrinkDir",
+          "duration": 0.5,
+          "delay": 0,
+          "ease": "easeInCubic",
+          "params": {
+            "dir": "center"
+          }
+        }
+      }
+    },
+    {
+      "id": "layer_lk_014",
+      "name": "paper",
+      "slot": "background",
+      "type": "image",
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKAAAACgCAYAAACLz2ctAAACc0lEQVR4nO3SsZHVUBBFQQWBRQrEQtAkQQ4Y+HhgUYW3/NVK5z1Nd9VNYOYcBwAAAAAAAAAAAAAAAAAAAAAAAPCCr9+//bbXV/9ta/Xznrb6n9uoH/X01f9dVv2Yaav/vZT6GVNX/z1XP8AGh1gf3QZHWB/bhkdYH9oGB1gf2QZHWB/XhkdYH9YGB1gf1YZHWB/UBgd45aE+ff4yeiL8D8LbM8S6mw8jvD1DrLv5EOITYUp8e0dY93Oa+PaOsO7nNPHtHWHdz2kCFGBKfP0EKEABVqr4fvz89ahVEdb9nHZ3gHUoq4YowBsCrONYOUIBXhxgHcXqEQrwwgDrGHaIUIACFGDh6gDrCOoJ8A0CFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZgSoABTAhRgSoACTAlQgCkBCjAlQAGmBCjAlAAFmBKgAFMCFGBKgAJMCVCAKQEKMCVAAaYEKMCUAAWYEqAAUwIUYEqAAkwJUIApAQowJUABpgQowJQABZi6OsDJEb5yIwEKUICFOwKcGOGr9xHgxQFOivA9txHgDQFOiPC9dxHgTQE+NcSz9xBgEKGdi0+ACzzvCROgCLeMT4ACFOBZZw8gwi4+AYowjU+AIkzje0SAhwjFV/vIowjx+vAEKMQ0vMcFeFwcoYnvTfVBbXiAhwi3Wd3JZerD2vAADxEuv7qPW9RHtsHxHQJcdnUXt6qPbYPj+6s+ug2O71/1A6au/vtS6mdMW/3vZdWPefrq/26jftTTVv9za/Xzdl39NwAAAAAAAAAAAAAAAAAAAAAAANjLHyCGkZhsI/jZAAAAAElFTkSuQmCC",
+      "fit": "contain",
+      "color": "#ffffff",
+      "opacity": 1,
+      "blend": "normal",
+      "radius": 0,
+      "enabled": true,
+      "start": 65,
+      "end": 70,
+      "transform": {
+        "scale": 0.3
+      },
+      "filter": {
+        "type": "none",
+        "params": {}
+      },
+      "motion": {
+        "in": {
+          "type": "scatterIn",
+          "duration": 0.6,
+          "delay": 0,
+          "ease": "easeOutCubic",
+          "params": {
+            "spread": 0.35
+          }
+        },
+        "out": {
+          "type": "spiralOut",
+          "duration": 0.5,
+          "delay": 0,
+          "ease": "easeInCubic",
+          "params": {
+            "turns": 1.25,
+            "radius": 0.5
+          }
         }
       }
     }

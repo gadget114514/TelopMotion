@@ -1867,13 +1867,35 @@ SA.lyricsEngine = (() => {
       if (!list) return;
       const hasField = Boolean(list.field) && typeof pipeline.drawField === 'function';
       if (!(list.shapes || []).length && !hasField) return;
+      // cueStyle 移植 (figure 目立つ要素): 生成時に spec.params へ焼いた
+      // fxEnter/fxExit/fxHold (文字前提型を除外済み) をクリップ全体の
+      // グループ変形として適用する。figure 独自の beat.move とは独立に重なる。
+      let styleOpacity = 1;
+      if (SA.fxCompat && SA.fx && (params.fxEnter || params.fxExit || params.fxHold)) {
+        try {
+          const group = SA.fxCompat.evaluateStyleState(
+            { enter: params.fxEnter, exit: params.fxExit, hold: params.fxHold },
+            t,
+            { start: clip.start, end: clip.end },
+            { width: state.width, height: state.height },
+            (state.project && state.project.styleMode && state.project.styleMode.seed) || 12345,
+            SA.fx,
+            SA.easing
+          );
+          if (group) {
+            SA.fxCompat.applyGroupStateToShapes(list.shapes || [], group, { x: state.width / 2, y: state.height / 2 });
+            styleOpacity = group.opacity == null ? 1 : Math.max(0, Math.min(1, group.opacity));
+            if (list.field) list.field.opacity = (list.field.opacity == null ? 1 : list.field.opacity) * styleOpacity;
+          }
+        } catch { /* style 適用の失敗は figure 本体を壊さない */ }
+      }
       pipeline.beginLayer();
       // a mathematical field fills the layer first; the shapes (if any) go on top
       if (hasField) pipeline.drawField(list.field, { width: state.width, height: state.height });
       drawPrimitives(list.shapes || []);
       if ((list.texts || []).length) drawTexts(list.texts);
       if (mask) pipeline.maskLayer();
-      pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope)));
+      pipeline.commitLayer(Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope * styleOpacity)));
     }
 
     // The style one textAnim layer renders with: the chosen theme (when the

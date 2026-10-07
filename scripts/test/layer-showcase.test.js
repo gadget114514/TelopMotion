@@ -44,8 +44,9 @@ test('the generated showcase migrates and keeps every cue and layer', () => {
   assert.equal(bySection('fade'), 1);
   assert.equal(bySection('crop'), 2);
   assert.equal(bySection('combo'), 1);
-  assert.equal(b.entries.length, 11);
-  assert.equal(b.total, 11 * showcase.CUE_SECONDS);
+  assert.equal(bySection('style'), 3);
+  assert.equal(b.entries.length, 14);
+  assert.equal(b.total, 14 * showcase.CUE_SECONDS);
 });
 
 test('every cue owns one image layer spanning the cue plus the shared plate', () => {
@@ -129,6 +130,24 @@ test('the keyframes evaluate through the renderer path', () => {
   const anchored = at(topLeft.layerId, topLeft.start + 1);
   assert.equal(anchored.transform.anchorX, 0);
   assert.equal(anchored.transform.anchorY, 0);
+});
+
+test('the style section carries cueStyle-ported motions without keyframes', () => {
+  const b = built();
+  const byId = Object.fromEntries(b.project.layers.map((layer) => [layer.id, layer]));
+  const rows = b.entries.filter((entry) => entry.section === 'style');
+  assert.equal(rows.length, 3);
+  for (const entry of rows) {
+    const layer = byId[entry.layerId];
+    assert.ok(layer && layer.motion && layer.motion.in && layer.motion.out, `${entry.layerId} needs motion.in/out`);
+    assert.deepEqual(entry.tracks, []);
+  }
+  const slide = rows.find((entry) => entry.detail.includes('slide'));
+  assert.equal(byId[slide.layerId].motion.in.type, 'slide');
+  assert.equal(byId[slide.layerId].motion.out.type, 'floatOut');
+  const zoom = rows.find((entry) => entry.detail.includes('zoomIn'));
+  assert.equal(byId[zoom.layerId].motion.in.type, 'zoomIn');
+  assert.equal(byId[zoom.layerId].motion.out.type, 'shrinkDir');
 });
 
 test('every section opens a marker and is listed once', () => {
