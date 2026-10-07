@@ -66,26 +66,43 @@ SA.platform = (() => {
     });
   }
 
-  function fetchProfile(handle) {
-    if (!isElectron) return Promise.reject(unsupported('fetchProfile'));
-    return bridge.fetchProfile(handle).then(unwrap);
+  function fetchProfile() {
+    return Promise.reject(unsupported('fetchProfile'));
   }
 
-  function fetchClip(id) {
-    if (!isElectron) return Promise.reject(unsupported('fetchClip'));
-    return bridge.fetchClip(id).then(unwrap);
+  function fetchClip() {
+    return Promise.reject(unsupported('fetchClip'));
   }
 
   const cache = {
-    list: () => (isElectron ? bridge.cacheList().then(unwrap).catch(() => []) : Promise.resolve([])),
-    load: (handle) => (isElectron ? bridge.cacheLoad(handle).then(unwrap).catch(() => null) : Promise.resolve(null)),
-    remove: (handle) => (isElectron ? bridge.cacheRemove(handle).then(unwrap).catch(() => false) : Promise.resolve(false)),
+    list: () => Promise.resolve([]),
+    load: () => Promise.resolve(null),
+    remove: () => Promise.resolve(false),
   };
 
   const imageCache = new Map();
 
+  function isSafeMediaUrl(url) {
+    if (typeof url !== 'string' || !url) return false;
+    const lower = url.trim().toLowerCase();
+    if (lower.startsWith('javascript:') || lower.startsWith('vbscript:') || lower.startsWith('data:text/html')) return false;
+    if (lower.startsWith('blob:') || lower.startsWith('data:image/') || lower.startsWith('data:video/') || lower.startsWith('data:audio/')) return true;
+    try {
+      const parsed = new URL(url, 'https://local.invalid/');
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') return true;
+      if (parsed.protocol === 'file:' || parsed.protocol === 'blob:' || parsed.protocol === 'data:') return true;
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
   function loadImageElement(src) {
     return new Promise((resolve, reject) => {
+      if (!isSafeMediaUrl(src)) {
+        reject(Object.assign(new Error('blocked-url'), { code: 'blocked-url' }));
+        return;
+      }
       const image = new Image();
       image.crossOrigin = 'anonymous';
       image.decoding = 'async';
@@ -114,7 +131,7 @@ SA.platform = (() => {
   }
 
   async function loadImage(url, label) {
-    if (!url) return null;
+    if (!url || !isSafeMediaUrl(url)) return placeholderImage(label);
     if (imageCache.has(url)) return imageCache.get(url);
     const request = (async () => {
       try {
@@ -132,10 +149,6 @@ SA.platform = (() => {
   }
 
   async function importJson() {
-    if (isElectron) {
-      const result = unwrap(await bridge.cacheImport());
-      return result || { canceled: true };
-    }
     const picked = await pickJsonFile();
     if (picked.canceled) return { canceled: true };
     if (picked.error || !isDataset(picked.data)) {
@@ -463,18 +476,19 @@ SA.platform = (() => {
   async function exportJson(dataset) {
     if (!isDataset(dataset)) throw Object.assign(new Error('nothing-to-export'), { code: 'nothing-to-export' });
     const handle = (dataset.profile && dataset.profile.handle) || 'profile';
-    if (isElectron) return unwrap(await bridge.cacheExport(null, dataset));
     return saveFile({ bytes: new TextEncoder().encode(JSON.stringify(dataset, null, 2)), name: `suno-${handle}.json`, mime: 'application/json' });
   }
 
   function openExternal(url) {
-    if (isElectron) return bridge.openExternal(url).then(unwrap).catch(() => false);
+    if (typeof url !== 'string' || !/^https:\/\/(?:www\.)?suno\.com\//i.test(url)) return Promise.resolve(false);
+    if (isElectron && bridge && typeof bridge.openExternal === 'function') {
+      return bridge.openExternal(url).then(unwrap).catch(() => false);
+    }
     window.open(url, '_blank', 'noopener');
     return Promise.resolve(true);
   }
 
-  function onProgress(callback) {
-    if (isElectron && typeof bridge.onProgress === 'function') return bridge.onProgress(callback);
+  function onProgress() {
     return () => {};
   }
 
@@ -511,6 +525,7 @@ SA.platform = (() => {
   return {
     isElectron,
     isDataset,
+    isSafeMediaUrl,
     fetchProfile,
     fetchClip,
     cache,

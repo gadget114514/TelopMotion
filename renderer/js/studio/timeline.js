@@ -3084,6 +3084,7 @@ SA.timeline = (() => {
         const entry = doc && doc.media && (doc.media.videos || []).find((video) => video.id === id);
         if (entry) {
           event.preventDefault();
+          if (SA.platform && SA.platform.isSafeMediaUrl && !SA.platform.isSafeMediaUrl(entry.src)) return;
           const point = localPoint(event);
           const layer = dropLayerAt(point);
           layer.type = 'video';

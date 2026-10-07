@@ -4347,14 +4347,9 @@ SA.inspector = (() => {
       actions.appendChild(resetButton);
     }
     body.appendChild(actions);
-    // theme editing entry points: current look -> new theme, or the theme list
+    // theme editing entry point: unified Themes dialog (list + editor, modeless)
     const themeActions = document.createElement('div');
     themeActions.className = 'insp-actions';
-    const editTheme = document.createElement('button');
-    editTheme.type = 'button';
-    editTheme.className = 'btn btn-mini';
-    editTheme.textContent = t('studio.settings.editTheme');
-    editTheme.addEventListener('click', () => SA.themeEditor.open(null));
     const themeList = document.createElement('button');
     themeList.type = 'button';
     themeList.className = 'btn btn-mini';
@@ -4368,7 +4363,6 @@ SA.inspector = (() => {
       SA.store.commands.resetTheme();
       SA.studio.toast('studio.toast.themeReset');
     });
-    themeActions.appendChild(editTheme);
     themeActions.appendChild(themeList);
     themeActions.appendChild(resetTheme);
     body.appendChild(themeActions);

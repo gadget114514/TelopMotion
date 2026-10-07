@@ -6,6 +6,82 @@ const path = require('node:path');
 const SMOKE = !!process.env.SA_SMOKE;
 const SUNO_URL_RE = /^https:\/\/(?:www\.)?suno\.com\//i;
 
+// Security limits (DoS / disk-fill hardening)
+const FILE_READ_MAX_BYTES = 200 * 1024 * 1024;
+const FILE_SAVE_MAX_BYTES = 500 * 1024 * 1024;
+const STREAM_WRITE_MAX_BYTES = 64 * 1024 * 1024;
+const AUTOSAVE_MAX_BYTES = 20 * 1024 * 1024;
+const RECENT_ENTRY_MAX_BYTES = 16 * 1024;
+const DEBUG_TEXT_MAX = 4096;
+const STUDIO_DATASET_MAX_BYTES = 20 * 1024 * 1024;
+const DEVTOOLS_MODES = new Set(['right', 'bottom', 'detach']);
+
+const IMAGE_HOST_RE = /(^|\.)(suno\.ai|suno\.com)$/i;
+const IMAGE_ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']);
+const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
+const ASSET_ROOTS = ['fonts', 'vendor', 'data'];
+const streams = new Map(); // id -> { fd, ownerId, filePath }
+const crypto = require('node:crypto');
+
+function isPackagedApp() {
+  try {
+    return app.isPackaged === true;
+  } catch {
+    return false;
+  }
+}
+
+function applyWindowSecurity(win) {
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
+    return { action: 'deny' };
+  });
+  win.webContents.on('will-navigate', (event, url) => {
+    try {
+      const parsed = new URL(url);
+      if (parsed.protocol === 'file:') {
+        // Only allow navigation inside the packaged app directory.
+        const appPath = path.resolve(app.getAppPath());
+        const target = path.resolve(decodeURIComponent(parsed.pathname));
+        // Windows: pathname starts with /C:/... ; path.resolve handles it.
+        if (target === appPath || target.startsWith(`${appPath}${path.sep}`)) return;
+      }
+    } catch {
+      /* fall through to deny */
+    }
+    event.preventDefault();
+    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
+  });
+  // Block webview attachment (defense-in-depth; webviewTag is disabled below).
+  win.webContents.on('will-attach-webview', (event) => {
+    event.preventDefault();
+  });
+}
+
+function denyPermissions() {
+  try {
+    session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
+      callback(false);
+    });
+    if (typeof session.defaultSession.setPermissionCheckHandler === 'function') {
+      session.defaultSession.setPermissionCheckHandler(() => false);
+    }
+  } catch {
+    /* ignore on old Electron */
+  }
+}
+
+function assertStreamOwner(event, record) {
+  if (!record) return false;
+  try {
+    const senderId = event && event.sender && event.sender.id;
+    if (senderId != null && record.ownerId != null && senderId !== record.ownerId) return false;
+  } catch {
+    return false;
+  }
+  return true;
+}
+
 const FIXTURE_CUES = [
   { id: 'c1', start: 0, end: 4, text: 'First line of the song' },
   { id: 'c2', start: 4.5, end: 8, text: 'Second line of the song' },
@@ -36,11 +112,6 @@ function fail(error) {
   return { ok: false, error: { code, message } };
 }
 
-const IMAGE_HOST_RE = /(^|\.)(suno\.ai|suno\.com|cloudfront\.net)$/i;
-const IMAGE_MAX_BYTES = 10 * 1024 * 1024;
-const ASSET_ROOTS = ['fonts', 'vendor', 'data'];
-const streams = new Map();
-
 // Separate debug-console window (an OS-level window, not the in-app panel)
 let debugWin = null;
 const debugHistory = [];
@@ -67,8 +138,12 @@ function openDebugWindow() {
       nodeIntegration: false,
       sandbox: true,
       spellcheck: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      webviewTag: false,
     },
   });
+  applyWindowSecurity(debugWin);
   debugWin.on('closed', () => {
     debugWin = null;
   });
@@ -76,20 +151,67 @@ function openDebugWindow() {
   return debugWin;
 }
 
-async function fetchImageDataUrl(rawUrl) {
-  if (typeof rawUrl !== 'string') {
-    throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
-  }
+function assertImageHost(url) {
   let parsed;
   try {
-    parsed = new URL(rawUrl);
+    parsed = new URL(url);
   } catch {
     throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
   }
   if (parsed.protocol !== 'https:' || !IMAGE_HOST_RE.test(parsed.hostname)) {
     throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
   }
-  const response = await fetch(parsed.href, { headers: { Referer: 'https://suno.com/' } });
+  return parsed;
+}
+
+function sniffImageMime(buffer, declared) {
+  const normalized = String(declared || '').toLowerCase();
+  if (!IMAGE_ALLOWED_MIME.has(normalized)) return null;
+  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
+    return normalized === 'image/jpeg' ? normalized : null;
+  }
+  if (buffer.length >= 8 && buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+    return normalized === 'image/png' ? normalized : null;
+  }
+  if (buffer.length >= 12 && buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP') {
+    return normalized === 'image/webp' ? normalized : null;
+  }
+  if (buffer.length >= 6 && (buffer.toString('ascii', 0, 6) === 'GIF87a' || buffer.toString('ascii', 0, 6) === 'GIF89a')) {
+    return normalized === 'image/gif' ? normalized : null;
+  }
+  if (buffer.length >= 12 && buffer.toString('ascii', 4, 8) === 'ftyp' && buffer.toString('ascii', 8, 12).startsWith('avif')) {
+    return normalized === 'image/avif' ? normalized : null;
+  }
+  return null;
+}
+
+async function fetchImageDataUrl(rawUrl) {
+  if (typeof rawUrl !== 'string' || rawUrl.length > 2048) {
+    throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
+  }
+  let current = assertImageHost(rawUrl).href;
+  let response = null;
+  // Manual redirect chain so every hop is re-validated against the allowlist.
+  for (let hop = 0; hop < 5; hop += 1) {
+    assertImageHost(current);
+    response = await fetch(current, { headers: { Referer: 'https://suno.com/' }, redirect: 'manual' });
+    if (response.status >= 300 && response.status < 400) {
+      const location = response.headers.get('location');
+      if (!location) throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
+      current = new URL(location, current).href;
+      continue;
+    }
+    break;
+  }
+  if (!response || (response.status >= 300 && response.status < 400)) {
+    throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
+  }
+  // Re-validate the final URL after fetch (defense-in-depth for redirect handling).
+  try {
+    assertImageHost(response.url || current);
+  } catch {
+    throw Object.assign(new Error('blocked-url'), { code: 'blocked-url' });
+  }
   if (!response.ok) {
     throw Object.assign(new Error(`image-http-${response.status}`), { code: 'image-fetch-failed' });
   }
@@ -97,8 +219,12 @@ async function fetchImageDataUrl(rawUrl) {
   if (buffer.length > IMAGE_MAX_BYTES) {
     throw Object.assign(new Error('image-too-large'), { code: 'image-too-large' });
   }
-  const contentType = (response.headers.get('content-type') || 'image/jpeg').split(';')[0].trim() || 'image/jpeg';
-  return `data:${contentType};base64,${buffer.toString('base64')}`;
+  const declared = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  const verified = sniffImageMime(buffer, declared);
+  if (!verified) {
+    throw Object.assign(new Error('blocked-image-type'), { code: 'blocked-image-type' });
+  }
+  return `data:${verified};base64,${buffer.toString('base64')}`;
 }
 
 function registerIpc() {
@@ -111,12 +237,19 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
+      const readBounded = (filePath) => {
+        const stat = fs.statSync(filePath);
+        if (!stat.isFile() || stat.size > FILE_READ_MAX_BYTES) {
+          throw Object.assign(new Error('file-too-large'), { code: 'file-too-large' });
+        }
+        return fs.readFileSync(filePath);
+      };
       if (payload && payload.multiple) {
-        const files = result.filePaths.map((filePath) => ({ name: path.basename(filePath), type: '', bytes: new Uint8Array(fs.readFileSync(filePath)), path: filePath }));
+        const files = result.filePaths.map((filePath) => ({ name: path.basename(filePath), type: '', bytes: new Uint8Array(readBounded(filePath)), path: filePath }));
         return ok({ canceled: false, files });
       }
       const filePath = result.filePaths[0];
-      const buffer = fs.readFileSync(filePath);
+      const buffer = readBounded(filePath);
       return ok({ canceled: false, name: path.basename(filePath), type: '', bytes: new Uint8Array(buffer), path: filePath });
     } catch (error) {
       return fail(error);
@@ -129,6 +262,10 @@ function registerIpc() {
       if (!bytes) {
         return fail(Object.assign(new Error('nothing-to-save'), { code: 'nothing-to-save' }));
       }
+      const out = Buffer.from(bytes);
+      if (out.length > FILE_SAVE_MAX_BYTES) {
+        return fail(Object.assign(new Error('file-too-large'), { code: 'file-too-large' }));
+      }
       const owner = BrowserWindow.fromWebContents(event.sender);
       const result = await dialog.showSaveDialog(owner, {
         title: (payload && payload.title) || 'Save file',
@@ -136,7 +273,7 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
-      fs.writeFileSync(result.filePath, Buffer.from(bytes));
+      fs.writeFileSync(result.filePath, out);
       return ok({ canceled: false, filePath: result.filePath });
     } catch (error) {
       return fail(error);
@@ -184,34 +321,49 @@ function registerIpc() {
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
       const fd = fs.openSync(result.filePath, 'w');
-      const id = `stream_${Date.now()}_${Math.random().toString(16).slice(2, 8)}`;
-      streams.set(id, fd);
+      const id = `stream_${Date.now()}_${crypto.randomBytes(16).toString('hex')}`;
+      const ownerId = event && event.sender ? event.sender.id : null;
+      streams.set(id, { fd, ownerId, filePath: result.filePath });
       return ok({ canceled: false, id, filePath: result.filePath });
     } catch (error) {
       return fail(error);
     }
   });
 
-  ipcMain.handle('file:stream-write', (_event, payload) => {
+  ipcMain.handle('file:stream-write', (event, payload) => {
     try {
       const id = payload && payload.id;
-      const fd = streams.get(id);
-      if (fd == null) return fail(Object.assign(new Error('stream-not-open'), { code: 'stream-not-open' }));
+      if (typeof id !== 'string' || id.length > 128) {
+        return fail(Object.assign(new Error('stream-not-open'), { code: 'stream-not-open' }));
+      }
+      const record = streams.get(id);
+      if (!record || !assertStreamOwner(event, record)) {
+        return fail(Object.assign(new Error('stream-not-open'), { code: 'stream-not-open' }));
+      }
       const bytes = Buffer.from(payload.bytes || new Uint8Array(0));
-      const position = payload.position == null ? null : Number(payload.position);
-      const written = position == null ? fs.writeSync(fd, bytes) : fs.writeSync(fd, bytes, 0, bytes.length, position);
+      if (bytes.length > STREAM_WRITE_MAX_BYTES) {
+        return fail(Object.assign(new Error('chunk-too-large'), { code: 'chunk-too-large' }));
+      }
+      let position = null;
+      if (payload.position != null) {
+        position = Number(payload.position);
+        if (!Number.isInteger(position) || position < 0) {
+          return fail(Object.assign(new Error('bad-position'), { code: 'bad-position' }));
+        }
+      }
+      const written = position == null ? fs.writeSync(record.fd, bytes) : fs.writeSync(record.fd, bytes, 0, bytes.length, position);
       return ok(written);
     } catch (error) {
       return fail(error);
     }
   });
 
-  ipcMain.handle('file:stream-close', (_event, payload) => {
+  ipcMain.handle('file:stream-close', (event, payload) => {
     try {
       const id = payload && payload.id;
-      const fd = streams.get(id);
-      if (fd == null) return ok(false);
-      fs.closeSync(fd);
+      const record = typeof id === 'string' ? streams.get(id) : null;
+      if (!record || !assertStreamOwner(event, record)) return ok(false);
+      fs.closeSync(record.fd);
       streams.delete(id);
       return ok(true);
     } catch (error) {
@@ -219,24 +371,45 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('file:stream-abort', (_event, payload) => {
+  ipcMain.handle('file:stream-abort', (event, payload) => {
     try {
       const id = payload && payload.id;
-      const fd = streams.get(id);
-      if (fd == null) return ok(false);
-      fs.closeSync(fd);
-      streams.delete(id);
+      const record = typeof id === 'string' ? streams.get(id) : null;
+      if (!record || !assertStreamOwner(event, record)) return ok(false);
+      try {
+        fs.closeSync(record.fd);
+      } finally {
+        streams.delete(id);
+        try {
+          fs.rmSync(record.filePath, { force: true });
+        } catch {
+          /* partial file cleanup is best-effort */
+        }
+      }
       return ok(true);
     } catch (error) {
       return fail(error);
     }
   });
+
+  function sanitizeStudioPayload(payload) {
+    const lang = payload && typeof payload.lang === 'string' ? payload.lang.slice(0, 8) : undefined;
+    let dataset = payload && payload.dataset;
+    if (dataset != null) {
+      const serialized = JSON.stringify(dataset);
+      if (serialized.length > STUDIO_DATASET_MAX_BYTES) {
+        throw Object.assign(new Error('dataset-too-large'), { code: 'dataset-too-large' });
+      }
+    }
+    return { dataset, lang };
+  }
 
   ipcMain.handle('studio:open', async (event, payload) => {
     try {
       const win = BrowserWindow.fromWebContents(event.sender);
       await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-      win.webContents.send('studio:data', { data: payload && payload.dataset, lang: payload && payload.lang });
+      const clean = sanitizeStudioPayload(payload);
+      win.webContents.send('studio:data', { data: clean.dataset, lang: clean.lang });
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -249,7 +422,8 @@ function registerIpc() {
       // The standalone achievements page (renderer/index.html) was removed;
       // home opens the Studio like studio:open does.
       await win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-      win.webContents.send('studio:data', { data: payload && payload.dataset, lang: payload && payload.lang });
+      const clean = sanitizeStudioPayload(payload);
+      win.webContents.send('studio:data', { data: clean.dataset, lang: clean.lang });
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -260,6 +434,10 @@ function registerIpc() {
     try {
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
       if (!fs.existsSync(file)) return ok(null);
+      const stat = fs.statSync(file);
+      if (stat.size > AUTOSAVE_MAX_BYTES) {
+        return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+      }
       return ok(JSON.parse(fs.readFileSync(file, 'utf8')));
     } catch (error) {
       return fail(error);
@@ -268,8 +446,15 @@ function registerIpc() {
 
   ipcMain.handle('studio:autosave-write', (_event, payload) => {
     try {
+      if (!payload || typeof payload.project !== 'object' || payload.project === null) {
+        return fail(Object.assign(new Error('invalid-project'), { code: 'invalid-project' }));
+      }
+      const serialized = JSON.stringify(payload.project);
+      if (serialized.length > AUTOSAVE_MAX_BYTES) {
+        return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+      }
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
-      fs.writeFileSync(file, JSON.stringify(payload && payload.project));
+      fs.writeFileSync(file, serialized);
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -289,6 +474,14 @@ function registerIpc() {
 
   ipcMain.handle('recent:add', (_event, entry) => {
     try {
+      if (!entry || typeof entry !== 'object' || typeof entry.name !== 'string' || !entry.name) {
+        return fail(Object.assign(new Error('invalid-entry'), { code: 'invalid-entry' }));
+      }
+      const clean = { name: String(entry.name).slice(0, 256) };
+      if (typeof entry.path === 'string') clean.path = entry.path.slice(0, 1024);
+      if (JSON.stringify(clean).length > RECENT_ENTRY_MAX_BYTES) {
+        return fail(Object.assign(new Error('entry-too-large'), { code: 'entry-too-large' }));
+      }
       const file = path.join(app.getPath('userData'), 'recent.json');
       let list = [];
       try {
@@ -297,8 +490,8 @@ function registerIpc() {
         list = [];
       }
       if (!Array.isArray(list)) list = [];
-      list = list.filter((item) => item && (!entry || item.name !== entry.name));
-      list.unshift(entry);
+      list = list.filter((item) => item && item.name !== clean.name);
+      list.unshift(clean);
       fs.writeFileSync(file, JSON.stringify(list.slice(0, 8), null, 2));
       return ok(true);
     } catch (error) {
@@ -319,9 +512,17 @@ function registerIpc() {
 
   ipcMain.handle('devtools:open', (event, payload) => {
     try {
+      // DevTools from the renderer is a dev-only affordance. Block it in
+      // packaged (production) builds to avoid post-XSS privilege escalation.
+      if (isPackagedApp() && !SMOKE) {
+        return fail(Object.assign(new Error('devtools-disabled'), { code: 'devtools-disabled' }));
+      }
       const win = BrowserWindow.fromWebContents(event.sender);
       if (!win) return fail(Object.assign(new Error('no-window'), { code: 'no-window' }));
       const mode = (payload && payload.mode) || 'right';
+      if (!DEVTOOLS_MODES.has(mode)) {
+        return fail(Object.assign(new Error('bad-mode'), { code: 'bad-mode' }));
+      }
       win.webContents.openDevTools({ mode });
       return ok(true);
     } catch (error) {
@@ -331,6 +532,9 @@ function registerIpc() {
 
   ipcMain.handle('devtools:toggle', (event) => {
     try {
+      if (isPackagedApp() && !SMOKE) {
+        return fail(Object.assign(new Error('devtools-disabled'), { code: 'devtools-disabled' }));
+      }
       const win = BrowserWindow.fromWebContents(event.sender);
       if (!win) return fail(Object.assign(new Error('no-window'), { code: 'no-window' }));
       if (win.webContents.isDevToolsOpened()) win.webContents.closeDevTools();
@@ -364,8 +568,8 @@ function registerIpc() {
     try {
       const entry = {
         level: ['log', 'info', 'warn', 'error'].includes(payload && payload.level) ? payload.level : 'log',
-        text: String((payload && payload.text) || ''),
-        time: String((payload && payload.time) || ''),
+        text: String((payload && payload.text) || '').slice(0, DEBUG_TEXT_MAX),
+        time: String((payload && payload.time) || '').slice(0, 128),
       };
       debugHistory.push(entry);
       if (debugHistory.length > DEBUG_HISTORY_MAX) debugHistory.splice(0, debugHistory.length - DEBUG_HISTORY_MAX);
@@ -405,6 +609,9 @@ function createWindow() {
       nodeIntegration: false,
       sandbox: true,
       spellcheck: false,
+      webSecurity: true,
+      allowRunningInsecureContent: false,
+      webviewTag: false,
     },
   });
 
@@ -415,18 +622,8 @@ function createWindow() {
       /* ignore */
     }
   }
+  applyWindowSecurity(win);
   win.loadFile(path.join(__dirname, 'renderer', 'studio.html'));
-
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
-    return { action: 'deny' };
-  });
-
-  win.webContents.on('will-navigate', (event, url) => {
-    if (url.startsWith('file://')) return;
-    event.preventDefault();
-    if (SUNO_URL_RE.test(url)) shell.openExternal(url);
-  });
 
   if (SMOKE) {
     win.webContents.on('console-message', (event, _level, message) => {
@@ -2998,8 +3195,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  denyPermissions();
   session.defaultSession.webRequest.onBeforeSendHeaders(
-    { urls: ['*://*.suno.ai/*', '*://*.cloudfront.net/*'] },
+    { urls: ['*://*.suno.ai/*', '*://*.suno.com/*'] },
     (details, callback) => {
       callback({
         requestHeaders: {
@@ -3023,9 +3221,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-  for (const fd of streams.values()) {
+  for (const record of streams.values()) {
     try {
-      fs.closeSync(fd);
+      fs.closeSync(record && record.fd != null ? record.fd : record);
     } catch {
       /* ignore */
     }

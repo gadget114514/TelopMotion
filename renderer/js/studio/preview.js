@@ -597,6 +597,7 @@ const preview = (() => {
     if (typeof Audio !== 'undefined') {
       const element = new Audio();
       element.preload = 'auto';
+      if (SA.platform && SA.platform.isSafeMediaUrl && !SA.platform.isSafeMediaUrl(url)) return;
       element.src = url;
       audio = element;
       if (Number.isFinite(element.duration) && element.duration > 0) {

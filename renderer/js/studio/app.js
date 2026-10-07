@@ -282,7 +282,7 @@
     const dataset = doc && doc.dataset;
     const profile = dataset && dataset.profile;
     if (profile) {
-      if (profile.avatar) {
+      if (profile.avatar && (!SA.platform || !SA.platform.isSafeMediaUrl || SA.platform.isSafeMediaUrl(profile.avatar))) {
         el.avatar.src = profile.avatar;
         el.avatar.hidden = false;
       } else {
@@ -353,14 +353,15 @@
   }
 
   function videoThumbnail(entry, canvas) {
-    if (entry.thumb) {
+    const safe = (url) => !SA.platform || !SA.platform.isSafeMediaUrl || SA.platform.isSafeMediaUrl(url);
+    if (entry.thumb && safe(entry.thumb)) {
       const image = new Image();
       image.onload = () => drawThumb(canvas, image);
       image.src = entry.thumb;
       return;
     }
     const cached = videoThumbs.get(entry.src);
-    if (cached) {
+    if (cached && safe(cached)) {
       entry.thumb = cached;
       const image = new Image();
       image.onload = () => drawThumb(canvas, image);
@@ -394,8 +395,10 @@
     video.addEventListener('error', () => {
       /* keep the placeholder */
     });
-    video.src = entry.src;
-    video.load();
+    if (safe(entry.src)) {
+      video.src = entry.src;
+      video.load();
+    }
   }
 
   function renderVideoList() {
@@ -2256,7 +2259,7 @@
       fitAudio,
       palettes: () => (SA.paletteDialog ? SA.paletteDialog.open() : SA.colors.paletteDialog()),
       themes: () => SA.themes.dialog(),
-      editTheme: () => SA.themeEditor.open(null),
+      editTheme: () => SA.themes.dialog(),
       layers: () => SA.layersDialog.open(),
       background: () => SA.backgroundDialog.open(),
       audio: () => SA.audioDialog.open(),

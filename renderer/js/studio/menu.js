@@ -139,7 +139,6 @@ SA.menu = (() => {
         itemSeparator(),
         { key: 'studio.settings.song', action: 'song', enabled: () => !!SA.store.state.project },
         { key: 'studio.settings.themes', action: 'themes' },
-        { key: 'studio.settings.editTheme', action: 'editTheme' },
         { key: 'studio.settings.layers', action: 'layers' },
         { key: 'studio.settings.background', action: 'background' },
         { key: 'studio.settings.audio', action: 'audio' },

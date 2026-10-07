@@ -3,13 +3,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('sunoApi', {
-  fetchProfile: (handle) => ipcRenderer.invoke('suno:fetch', { handle }),
-  fetchClip: (id) => ipcRenderer.invoke('suno:clip', { id }),
-  cacheList: () => ipcRenderer.invoke('cache:list'),
-  cacheLoad: (handle) => ipcRenderer.invoke('cache:load', { handle }),
-  cacheRemove: (handle) => ipcRenderer.invoke('cache:remove', { handle }),
-  cacheExport: (handle, data) => ipcRenderer.invoke('cache:export', { handle, data }),
-  cacheImport: () => ipcRenderer.invoke('cache:import'),
   saveFile: (payload) => ipcRenderer.invoke('file:save', payload),
   fileOpen: (payload) => ipcRenderer.invoke('file:open', payload),
   readAsset: (assetPath) => ipcRenderer.invoke('asset:read', { path: assetPath }),
