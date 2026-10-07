@@ -229,16 +229,14 @@ SA.lyricsEngine = (() => {
   // The clip-level placement sidecar (`spec.placement`, clip-placement.js) as
   // a CPU shape transform. Filler / figure params-level placements already ran
   // inside their drawList; this one composes on top and defaults to identity,
-  // so clips without a sidecar draw exactly as before.
+  // so clips without a sidecar draw exactly as before. The transform is
+  // dependency-free (no figures needed).
   function applyClipPlacement(shapes, spec) {
     if (!shapes || !shapes.length) return shapes;
     const placer = SA.clipPlacement;
-    if (!placer || !SA.figures || typeof SA.figures.transformShapes !== 'function') return shapes;
-    const place = placer.fromSpec(spec || {});
-    if (placer.isIdentity(place)) return shapes;
+    if (!placer || typeof placer.applyPlacement !== 'function') return shapes;
     const frame = { width: state.width, height: state.height };
-    SA.figures.transformShapes(shapes, placer.toTransform(place, frame));
-    return shapes;
+    return placer.applyPlacement(shapes, placer.fromSpec(spec || {}), frame);
   }
 
   // Clips of one track kind, hidden tracks excluded, in start order. `within`
@@ -257,7 +255,9 @@ SA.lyricsEngine = (() => {
   // spec / colours. A segment carrying `disabled` (or `enabled === false`)
   // mutes the backdrop for its span. The derived clip is cached per segment
   // object so the stage palette cache (a WeakMap keyed on the clip) keeps
-  // hitting frame to frame.
+  // hitting frame to frame. Store edits mutate clips in place, so the cache
+  // also keys on the segment spec identity: a segment reroll replaces
+  // `seg.spec` on the same object and must not keep drawing the old one.
   const segmentClipCache = new WeakMap();
   function segmentDisabledAt(clip, t) {
     const segments = clip && Array.isArray(clip.segments) ? clip.segments : null;
@@ -270,9 +270,9 @@ SA.lyricsEngine = (() => {
     const seg = segments.find((entry) => entry && entry.spec && t >= entry.start && t < entry.end);
     if (!seg) return clip;
     const cached = segmentClipCache.get(seg);
-    if (cached && cached.clip === clip) return cached.derived;
+    if (cached && cached.clip === clip && cached.spec === seg.spec) return cached.derived;
     const derived = { ...clip, spec: seg.spec, colors: Array.isArray(seg.colors) && seg.colors.length ? seg.colors : clip.colors };
-    segmentClipCache.set(seg, { clip, derived });
+    segmentClipCache.set(seg, { clip, spec: seg.spec, derived });
     return derived;
   }
 

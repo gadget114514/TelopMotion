@@ -217,8 +217,7 @@ test('combo parts place themselves independently', () => {
   assert.ok(meanX(muted.shapes) > 960);
 });
 
-test('transformShapes stretches non-uniformly and tilts', () => {
-  const rect = [{ kind: 'rect', x: 860, y: 490, w: 200, h: 100, color: '#fff', opacity: 1 }];
+test('transformShapes stretches non-uniformly and tilts', () => {  const rect = [{ kind: 'rect', x: 860, y: 490, w: 200, h: 100, color: '#fff', opacity: 1 }];
   figures.transformShapes(rect, { originX: 960, originY: 540, scale: 1, scaleX: 2, scaleY: 0.5, dx: 0, dy: 0, rotate: 0 });
   assert.equal(rect[0].w, 400);
   assert.equal(rect[0].h, 50);
@@ -297,8 +296,7 @@ test('figure sub-beats mute individually', () => {
   assert.deepEqual(switchedOff, { shapes: [], texts: [] });
 });
 
-test('filler segments mute spans like backdrop segments', () => {
-  const clip = {
+test('filler segments mute spans like backdrop segments', () => {  const clip = {
     id: 'fil',
     trackId: 'filler',
     start: 0,
@@ -312,4 +310,64 @@ test('filler segments mute spans like backdrop segments', () => {
   const over = { ...clip, segments: [{ start: 0, end: 4, disabled: true }, { start: 4, end: 8, spec: { type: 'spectrum', params: {} } }] };
   assert.equal(engine.segmentClipAt(over, 6).spec.type, 'spectrum');
   assert.equal(engine.segmentDisabledAt({ spec: { type: 'waveform', params: {} } }, 2), false);
+});
+
+test('clipPlacement.transformShapes matches figures.transformShapes', () => {
+  const mkShapes = () => ([
+    { kind: 'rect', x: 860, y: 490, w: 200, h: 100, color: '#fff', opacity: 1 },
+    { kind: 'circle', x: 1060, y: 540, r: 10, color: '#fff', opacity: 1 },
+    { kind: 'capsule', x0: 100, y0: 540, x1: 500, y1: 540, width: 4, color: '#fff', opacity: 1 },
+    { kind: 'polygon', x: 960, y: 540, r: 30, color: '#fff', opacity: 1 },
+  ]);
+  for (const opts of [
+    { originX: 960, originY: 540, scale: 2, dx: 10, dy: -20, rotate: 0.3 },
+    { originX: 960, originY: 540, scale: 1, scaleX: 2, scaleY: 0.5, dx: 0, dy: 0, rotate: Math.PI / 2 },
+  ]) {
+    const a = mkShapes();
+    const b = mkShapes();
+    figures.transformShapes(a, opts);
+    clipPlacement.transformShapes(b, opts);
+    assert.deepEqual(b, a);
+  }
+});
+
+test('clipPlacement.applyPlacement skips identity and needs no figures module', () => {
+  const shapes = [{ kind: 'rect', x: 860, y: 490, w: 200, h: 100, color: '#fff', opacity: 1 }];
+  clipPlacement.applyPlacement(shapes, clipPlacement.fromParams({}), { width: 1920, height: 1080 });
+  assert.equal(shapes[0].w, 200);
+  assert.equal(shapes[0].x, 860);
+  clipPlacement.applyPlacement(shapes, clipPlacement.fromParams({ x: 0.1 }), { width: 1920, height: 1080 });
+  assert.equal(shapes[0].x, 860 + 192);
+});
+
+test('segmentClipAt drops the cached derive after an in-place segment reroll', () => {
+  const clip = {
+    id: 'seg', trackId: 'mid', start: 0, end: 8,
+    spec: { type: 'waveform', params: { mode: 'line' } },
+    segments: [{ start: 0, end: 8, spec: { type: 'waveform', params: { mode: 'line', amp: 1 } } }],
+  };
+  const first = engine.segmentClipAt(clip, 4);
+  assert.equal(first.spec.params.amp, 1);
+  assert.equal(engine.segmentClipAt(clip, 4), first, 'frame-to-frame cache hits');
+  // clipSegmentOp mutates the same segment object: the next draw must see it
+  clip.segments[0].spec = { type: 'waveform', params: { mode: 'line', amp: 2 } };
+  assert.equal(engine.segmentClipAt(clip, 4).spec.params.amp, 2);
+});
+
+test('recolorClip drops the cached spec after an in-place params edit', () => {
+  const stagePalette = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'stage-palette.js'));
+  const clip = {
+    id: 'rc', trackId: 'mid', start: 0, end: 8,
+    spec: { type: 'waveform', params: { mode: 'line', thickness: 2.5 } },
+    colors: ['#ff0000', '#00ff00'],
+  };
+  const stage = { key: 'k', cue: ['#ff0000', '#00ff00'], to: ['#0000ff', '#ffff00'], text: ['#ffffff'] };
+  const first = stagePalette.recolorClip(clip, stage.cue, stage, 0);
+  assert.ok(first && first.spec);
+  assert.equal(stagePalette.recolorClip(clip, stage.cue, stage, 0), first, 'frame-to-frame cache hits');
+  // updateClip mutates the same clip object with a fresh spec object
+  clip.spec = { type: 'waveform', params: { mode: 'line', thickness: 9 } };
+  const second = stagePalette.recolorClip(clip, stage.cue, stage, 0);
+  assert.notEqual(second, first);
+  assert.equal(second.spec.params.thickness, 9);
 });

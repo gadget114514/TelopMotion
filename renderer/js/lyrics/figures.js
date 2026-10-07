@@ -2892,13 +2892,13 @@
   }
 
   // Maps every shape of a list through one scale / rotate / translate about
-  // (originX, originY). filler-render's clip `animate` uses the same helper, and
-  // a figure's own placement (scale / scaleX / scaleY / x / y / rotation) runs
-  // through it at draw time. `scale` multiplies both axes (the legacy uniform
-  // zoom); `scaleX` / `scaleY` ride on top for the non-uniform stretch. Round
-  // primitives (circle / ring / polygon radii, capsule widths) cannot stretch,
-  // so they grow by the geometric mean and stay circular.
+  // (originX, originY). The canonical implementation lives in clip-placement
+  // (dependency-free); this wrapper keeps the historic entry point and a
+  // local fallback for contexts without the placement module.
   function transformShapes(shapes, options) {
+    if (clipPlacement && typeof clipPlacement.transformShapes === 'function') {
+      return clipPlacement.transformShapes(shapes, options);
+    }
     const opts = options || {};
     const originX = num(opts.originX, 0);
     const originY = num(opts.originY, 0);

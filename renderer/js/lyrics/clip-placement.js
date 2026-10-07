@@ -36,6 +36,70 @@
     return Number.isFinite(parsed) ? parsed : fallback;
   }
 
+  // Maps every shape of a list through one scale / rotate / translate about
+  // (originX, originY). The canonical CPU shape transform: `scale` multiplies
+  // both axes (legacy uniform zoom), `scaleX` / `scaleY` ride on top for the
+  // non-uniform stretch, `rotate` is radians clockwise-positive on screen.
+  // Round primitives (circle / ring / polygon radii, capsule widths) cannot
+  // stretch, so they grow by the geometric mean and stay circular. Living
+  // here (dependency-free) so filler layers and engine clips place themselves
+  // even when figures.js failed to load.
+  function transformShapes(shapes, options) {
+    const opts = options || {};
+    const originX = num(opts.originX, 0);
+    const originY = num(opts.originY, 0);
+    const scaleX = (opts.scale == null ? 1 : num(opts.scale, 1)) * (opts.scaleX == null ? 1 : num(opts.scaleX, 1));
+    const scaleY = (opts.scale == null ? 1 : num(opts.scale, 1)) * (opts.scaleY == null ? 1 : num(opts.scaleY, 1));
+    const mean = Math.sqrt(Math.abs(scaleX * scaleY));
+    const dx = num(opts.dx, 0);
+    const dy = num(opts.dy, 0);
+    const rotate = num(opts.rotate, 0);
+    const cos = Math.cos(rotate);
+    const sin = Math.sin(rotate);
+    const mapPoint = (point) => {
+      const px = (point.x - originX) * scaleX;
+      const py = (point.y - originY) * scaleY;
+      return { x: originX + px * cos - py * sin + dx, y: originY + px * sin + py * cos + dy };
+    };
+    for (const shape of shapes || []) {
+      if (!shape) continue;
+      if (Array.isArray(shape.points)) shape.points = shape.points.map(mapPoint);
+      if (shape.kind === 'rect') {
+        const p0 = mapPoint({ x: shape.x, y: shape.y });
+        const p1 = mapPoint({ x: shape.x + shape.w, y: shape.y + shape.h });
+        shape.x = Math.min(p0.x, p1.x);
+        shape.y = Math.min(p0.y, p1.y);
+        shape.w = Math.abs(p1.x - p0.x);
+        shape.h = Math.abs(p1.y - p0.y);
+      } else if (shape.kind === 'circle' || shape.kind === 'ring' || shape.kind === 'polygon') {
+        const p = mapPoint({ x: shape.x, y: shape.y });
+        shape.x = p.x;
+        shape.y = p.y;
+        if (shape.radius != null) shape.radius *= mean;
+        if (shape.r != null) shape.r *= mean;
+      } else if (shape.kind === 'capsule') {
+        const p0 = mapPoint({ x: shape.x0, y: shape.y0 });
+        const p1 = mapPoint({ x: shape.x1, y: shape.y1 });
+        shape.x0 = p0.x;
+        shape.y0 = p0.y;
+        shape.x1 = p1.x;
+        shape.y1 = p1.y;
+        shape.width = (shape.width || 2) * mean;
+      }
+    }
+    return shapes;
+  }
+
+  // Applies a params-level or sidecar placement to a shape list in place.
+  // Identity placements (every old preset) return the list untouched.
+  function applyPlacement(shapes, placement, frame) {
+    if (!shapes || !shapes.length) return shapes;
+    const place = placement || {};
+    if (isIdentity(place)) return shapes;
+    transformShapes(shapes, toTransform(place, frame || { width: 1920, height: 1080 }));
+    return shapes;
+  }
+
   function params(keys) {
     const wanted = keys == null ? null : new Set(keys);
     return PARAMS.filter((param) => !wanted || wanted.has(param.key)).map((param) => ({ ...param }));
@@ -152,5 +216,7 @@
     toTransform,
     toCamera,
     toPlaceScale,
+    transformShapes,
+    applyPlacement,
   };
 });

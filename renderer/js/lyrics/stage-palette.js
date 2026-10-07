@@ -179,13 +179,16 @@
     const floor = contrastFloor != null ? contrastFloor : stage.contrast;
     const key = `${stage.key}|${source.join(',').toLowerCase()}|${rawW}|${floor == null ? '' : floor}`;
     const cached = cache.get(clip);
-    if (cached && cached.key === key) return cached.result;
+    // store edits mutate the clip in place, so the palette key alone is not
+    // enough: a params edit (amplitude, placement, …) replaces `clip.spec` on
+    // the same object and must invalidate the cached recolor while paused.
+    if (cached && cached.key === key && cached.spec === clip.spec) return cached.result;
     const colors = Array.isArray(clip.colors) ? roles.recolor(clip.colors, source, to) : clip.colors;
     const recolored = clip.spec ? recolorUnlocked(clip.spec, source, to) : clip.spec;
     const separateOff = recolored && recolored.params && recolored.params.separate === false;
     const spec = clip.spec ? (separateOff ? recolored : separateSplits(recolored, stage.text, roles.ratioFor('backdrop', rawW, floor), to)) : clip.spec;
     const result = { spec, colors };
-    cache.set(clip, { key, result });
+    cache.set(clip, { key, spec: clip.spec, result });
     return result;
   }
 

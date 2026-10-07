@@ -1102,16 +1102,16 @@
 
   // Runs the params-level placement of one layer over its shapes. `figures`
   // layers place themselves inside figures.drawList, so the filler only places
-  // the other visual types. Identity placements (the default for every old
-  // preset) return the list untouched.
+  // the other visual types. The transform lives in clip-placement (no figures
+  // dependency), so a layer still moves even when figures.js failed to load.
+  // Identity placements (the default for every old preset) return untouched.
   function applyPlacement(list, params, ctx, type) {
     if (!list || !Array.isArray(list.shapes) || !list.shapes.length) return list;
-    if (!clipPlacement || !figures || typeof figures.transformShapes !== 'function') return list;
+    if (!clipPlacement || typeof clipPlacement.applyPlacement !== 'function') return list;
     if (type === 'figures') return list;
     const place = clipPlacement.fromParams(params || {});
-    if (clipPlacement.isIdentity(place)) return list;
     const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
-    figures.transformShapes(list.shapes, clipPlacement.toTransform(place, frame));
+    clipPlacement.applyPlacement(list.shapes, place, frame);
     return list;
   }
 
