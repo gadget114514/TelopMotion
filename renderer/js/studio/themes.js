@@ -182,77 +182,13 @@ SA.themes = (() => {
   // Combined dialog: left = theme list, right = theme editor.
   // Left Apply applies to the timeline AND loads the theme into the right
   // editor. Each pane can be hidden so only one side shows.
-  // The dialog is modeless: a floating window that leaves the Studio
-  // behind it interactive (preview / timeline keep working while open).
-  let combined = { selectedId: null, showLeft: true, showRight: true, dx: 0, dy: 0 };
-  let modelessWrap = null;
-  let modelessApi = null;
-
-  function isOpen() {
-    return !!(modelessWrap && modelessWrap.parentNode);
-  }
-
-  function closeDialog() {
-    if (SA.themeEditor && typeof SA.themeEditor.detach === 'function') {
-      try {
-        SA.themeEditor.detach();
-      } catch {
-        /* ignore */
-      }
-    }
-    if (typeof document !== 'undefined' && typeof document.removeEventListener === 'function' && closeDialog._onKey) {
-      document.removeEventListener('keydown', closeDialog._onKey);
-      closeDialog._onKey = null;
-    }
-    if (modelessWrap && modelessWrap.parentNode) {
-      try {
-        modelessWrap.parentNode.removeChild(modelessWrap);
-      } catch {
-        /* ignore */
-      }
-    }
-    modelessWrap = null;
-    modelessApi = null;
-  }
-
-  function applyModelessOffset() {
-    if (!modelessWrap) return;
-    const dx = Number(combined.dx) || 0;
-    const dy = Number(combined.dy) || 0;
-    modelessWrap.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-  }
+  let combined = { selectedId: null, showLeft: true, showRight: true };
 
   function dialog(initialThemeId) {
-    if (typeof document === 'undefined' || typeof document.createElement !== 'function') return;
-    // Reopen: bring to front instead of rebuilding, so a draft in progress survives.
-    if (modelessWrap && modelessApi) {
-      if (initialThemeId !== undefined) modelessApi.loadIntoEditor(initialThemeId || null, false);
-      else if (typeof modelessApi.renderList === 'function') modelessApi.renderList();
-      applyModelessOffset();
-      const host = document.body || document.documentElement;
-      if (host && modelessWrap.parentNode !== host) {
-        try {
-          host.appendChild(modelessWrap);
-        } catch {
-          /* ignore */
-        }
-      } else if (host) {
-        // re-append moves it above other modeless siblings
-        try {
-          host.appendChild(modelessWrap);
-        } catch {
-          /* ignore */
-        }
-      }
-      return;
-    }
-    const host = (document.body || document.documentElement);
-    if (!host || typeof host.appendChild !== 'function') return;
+    const root = document.getElementById('dialog-root');
+    if (!root) return;
     if (SA.themeEditor && typeof SA.themeEditor.detach === 'function') SA.themeEditor.detach();
-    const wrap = document.createElement('div');
-    wrap.className = 'theme-modeless';
-    wrap.setAttribute('role', 'dialog');
-    wrap.setAttribute('aria-label', `${t('studio.themes.title')} / ${t('studio.themeEditor.title')}`);
+    root.innerHTML = '';
     const dialog = document.createElement('div');
     dialog.className = 'dialog dialog-wide theme-dialog theme-combined';
 
@@ -317,18 +253,13 @@ SA.themes = (() => {
     });
 
     const closeCombined = () => {
-      closeDialog();
+      if (SA.themeEditor && typeof SA.themeEditor.detach === 'function') SA.themeEditor.detach();
+      root.hidden = true;
     };
 
     const loadIntoEditor = (themeId, reveal) => {
       combined.selectedId = themeId || null;
-      if (SA.themeEditor && typeof SA.themeEditor.load === 'function') {
-        try {
-          SA.themeEditor.load(themeId || null);
-        } catch {
-          /* ignore editor errors */
-        }
-      }
+      if (SA.themeEditor && typeof SA.themeEditor.load === 'function') SA.themeEditor.load(themeId || null);
       if (reveal !== false && !combined.showRight && themeId) {
         combined.showRight = true;
         applyLayout();
@@ -459,53 +390,8 @@ SA.themes = (() => {
     actions.appendChild(closeButton);
     dialog.appendChild(actions);
 
-    wrap.appendChild(dialog);
-    host.appendChild(wrap);
-    modelessWrap = wrap;
-    modelessApi = { renderList, loadIntoEditor, applyLayout };
-    applyModelessOffset();
-
-    // Drag the floating window by its header (buttons stay clickable).
-    head.style.cursor = 'move';
-    head.addEventListener('mousedown', (down) => {
-      if (down.button !== 0) return;
-      if (down.target && typeof down.target.closest === 'function' && down.target.closest('button')) return;
-      const startX = down.clientX;
-      const startY = down.clientY;
-      const baseDx = Number(combined.dx) || 0;
-      const baseDy = Number(combined.dy) || 0;
-      const onMove = (move) => {
-        combined.dx = baseDx + (move.clientX - startX);
-        combined.dy = baseDy + (move.clientY - startY);
-        applyModelessOffset();
-      };
-      const onUp = () => {
-        if (typeof document !== 'undefined' && typeof document.removeEventListener === 'function') {
-          document.removeEventListener('mousemove', onMove);
-          document.removeEventListener('mouseup', onUp);
-        }
-      };
-      if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
-      }
-      if (typeof down.preventDefault === 'function') down.preventDefault();
-    });
-
-    // Escape closes the modeless dialog only when the focus is inside it,
-    // so timeline / inspector shortcuts keep working behind the window.
-    if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
-      const onKey = (event) => {
-        if (!event || event.key !== 'Escape') return;
-        const target = event.target;
-        if (wrap.contains && target && wrap.contains(target)) {
-          if (typeof event.stopPropagation === 'function') event.stopPropagation();
-          closeDialog();
-        }
-      };
-      document.addEventListener('keydown', onKey);
-      closeDialog._onKey = onKey;
-    }
+    root.appendChild(dialog);
+    root.hidden = false;
 
     if (SA.themeEditor && typeof SA.themeEditor.embed === 'function') {
       SA.themeEditor.embed(editorHost, initialThemeId || null, {
@@ -517,5 +403,5 @@ SA.themes = (() => {
     }
   }
 
-  return { list, get, userThemes, capture, currentAxes, apply, save, update, remove, duplicate, exportFile, importFile, dialog, close: closeDialog, isOpen, THEME_GROUPS };
+  return { list, get, userThemes, capture, currentAxes, apply, save, update, remove, duplicate, exportFile, importFile, dialog, THEME_GROUPS };
 })();

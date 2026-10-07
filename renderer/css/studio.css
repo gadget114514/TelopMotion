@@ -1954,6 +1954,13 @@ body {
   max-height: calc(100vh - 60px);
 }
 
+/* the Themes dialog docks to the right side of the screen instead of
+   centering; other dialogs keep using the centered backdrop */
+.dialog-backdrop:has(> .theme-combined) {
+  justify-content: flex-end;
+  padding-right: 24px;
+}
+
 .theme-combined-head {
   display: flex;
   align-items: center;
@@ -2026,36 +2033,6 @@ body {
 
 .theme-row.is-active {
   border-color: var(--accent);
-}
-
-/* Themes dialog is modeless: a floating window over the Studio that leaves
-   the preview / timeline / menus interactive behind it. It sits below the
-   modal backdrop (90) and menus (70) so modals and popups stay on top. */
-.theme-modeless {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 65;
-  display: flex;
-  max-width: calc(100vw - 20px);
-  max-height: calc(100vh - 20px);
-  pointer-events: none;
-}
-
-.theme-modeless .theme-combined {
-  pointer-events: auto;
-  margin: 0;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
-}
-
-.theme-modeless .theme-combined-head {
-  cursor: move;
-  user-select: none;
-}
-
-.theme-modeless .theme-combined-head .btn {
-  cursor: pointer;
 }
 
 @media (max-width: 900px) {

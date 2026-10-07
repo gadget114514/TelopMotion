@@ -4347,7 +4347,7 @@ SA.inspector = (() => {
       actions.appendChild(resetButton);
     }
     body.appendChild(actions);
-    // theme editing entry point: unified Themes dialog (list + editor, modeless)
+    // theme editing entry point: unified Themes dialog (list + editor)
     const themeActions = document.createElement('div');
     themeActions.className = 'insp-actions';
     const themeList = document.createElement('button');
