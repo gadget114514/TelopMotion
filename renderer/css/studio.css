@@ -1834,6 +1834,7 @@ body {
 }
 
 .media-tabs .btn.is-active {
+  background: var(--card);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -2097,6 +2098,7 @@ body {
 }
 
 .mood-chips .btn.is-active {
+  background: var(--card);
   border-color: var(--accent);
   color: var(--accent);
 }
