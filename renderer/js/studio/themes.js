@@ -179,22 +179,93 @@ SA.themes = (() => {
     return { canceled: false, count };
   }
 
-  function dialog() {
+  // Combined dialog: left = theme list, right = theme editor.
+  // Left Apply applies to the timeline AND loads the theme into the right
+  // editor. Each pane can be hidden so only one side shows.
+  let combined = { selectedId: null, showLeft: true, showRight: true };
+
+  function dialog(initialThemeId) {
     const root = document.getElementById('dialog-root');
     if (!root) return;
+    if (SA.themeEditor && typeof SA.themeEditor.detach === 'function') SA.themeEditor.detach();
     root.innerHTML = '';
     const dialog = document.createElement('div');
-    dialog.className = 'dialog';
+    dialog.className = 'dialog dialog-wide theme-dialog theme-combined';
+
+    const head = document.createElement('div');
+    head.className = 'theme-combined-head';
     const title = document.createElement('h3');
-    title.textContent = t('studio.themes.title');
+    title.textContent = `${t('studio.themes.title')} / ${t('studio.themeEditor.title')}`;
+    head.appendChild(title);
+    const toggleLeft = document.createElement('button');
+    toggleLeft.type = 'button';
+    toggleLeft.className = 'btn btn-mini';
+    toggleLeft.textContent = t('studio.themes.title');
+    const toggleRight = document.createElement('button');
+    toggleRight.type = 'button';
+    toggleRight.className = 'btn btn-mini';
+    toggleRight.textContent = t('studio.themeEditor.title');
+    head.appendChild(toggleLeft);
+    head.appendChild(toggleRight);
+    dialog.appendChild(head);
+
     const hint = document.createElement('p');
     hint.className = 'dialog-hint';
     hint.textContent = t('studio.themes.hint');
+    dialog.appendChild(hint);
+
+    const body = document.createElement('div');
+    body.className = 'theme-combined-body';
+    const left = document.createElement('div');
+    left.className = 'theme-combined-left';
     const listNode = document.createElement('div');
     listNode.className = 'theme-list';
-    dialog.appendChild(title);
-    dialog.appendChild(hint);
-    dialog.appendChild(listNode);
+    left.appendChild(listNode);
+    const leftActions = document.createElement('div');
+    leftActions.className = 'dialog-actions theme-combined-left-actions';
+    left.appendChild(leftActions);
+    const right = document.createElement('div');
+    right.className = 'theme-combined-right';
+    const editorHost = document.createElement('div');
+    editorHost.className = 'theme-combined-editor';
+    right.appendChild(editorHost);
+    body.appendChild(left);
+    body.appendChild(right);
+    dialog.appendChild(body);
+
+    const applyLayout = () => {
+      left.hidden = !combined.showLeft;
+      right.hidden = !combined.showRight;
+      dialog.classList.toggle('hide-left', !combined.showLeft);
+      dialog.classList.toggle('hide-right', !combined.showRight);
+      toggleLeft.classList.toggle('is-active', combined.showLeft);
+      toggleRight.classList.toggle('is-active', combined.showRight);
+    };
+    toggleLeft.addEventListener('click', () => {
+      if (combined.showLeft && !combined.showRight) return;
+      combined.showLeft = !combined.showLeft;
+      applyLayout();
+    });
+    toggleRight.addEventListener('click', () => {
+      if (combined.showRight && !combined.showLeft) return;
+      combined.showRight = !combined.showRight;
+      applyLayout();
+    });
+
+    const closeCombined = () => {
+      if (SA.themeEditor && typeof SA.themeEditor.detach === 'function') SA.themeEditor.detach();
+      root.hidden = true;
+    };
+
+    const loadIntoEditor = (themeId, reveal) => {
+      combined.selectedId = themeId || null;
+      if (SA.themeEditor && typeof SA.themeEditor.load === 'function') SA.themeEditor.load(themeId || null);
+      if (reveal !== false && !combined.showRight && themeId) {
+        combined.showRight = true;
+        applyLayout();
+      }
+      renderList();
+    };
 
     const makeButton = (row, key, onClick, primary) => {
       const button = document.createElement('button');
@@ -210,13 +281,18 @@ SA.themes = (() => {
       listNode.innerHTML = '';
       for (const theme of list()) {
         const row = document.createElement('div');
-        row.className = 'theme-row';
+        row.className = `theme-row${combined.selectedId === theme.id ? ' is-active' : ''}`;
+        row.addEventListener('click', (event) => {
+          if (event.target.closest('button')) return;
+          loadIntoEditor(theme.id);
+        });
         const badge = document.createElement('span');
         badge.className = 'theme-badge';
         badge.textContent = theme.builtin ? t('studio.themes.builtin') : t('studio.themes.mine');
         const name = document.createElement('span');
         name.className = 'theme-name';
         name.textContent = theme.name;
+        name.title = theme.name;
         row.appendChild(badge);
         row.appendChild(name);
         makeButton(
@@ -226,18 +302,19 @@ SA.themes = (() => {
             const applied = apply(theme.id);
             if (applied) {
               SA.studio.toast('studio.toast.themeApplied', { name: applied.name });
-              root.hidden = true;
+              // reflect the applied theme in the timeline (above) and the editor
+              loadIntoEditor(theme.id, false);
             }
           },
           true
         );
         makeButton(row, 'studio.themes.edit', () => {
-          root.hidden = true;
-          SA.themeEditor.open(theme.id);
+          loadIntoEditor(theme.id);
         });
         if (theme.builtin) {
           makeButton(row, 'studio.themes.duplicate', () => {
-            duplicate(theme.id);
+            const entry = duplicate(theme.id);
+            if (entry) combined.selectedId = entry.id;
             renderList();
           });
         } else {
@@ -246,7 +323,8 @@ SA.themes = (() => {
             renderList();
           });
           makeButton(row, 'studio.themes.duplicate', () => {
-            duplicate(theme.id);
+            const entry = duplicate(theme.id);
+            if (entry) combined.selectedId = entry.id;
             renderList();
           });
           makeButton(row, 'studio.themes.rename', () => {
@@ -257,76 +335,72 @@ SA.themes = (() => {
           });
           makeButton(row, 'studio.themes.remove', () => {
             remove(theme.id);
+            if (combined.selectedId === theme.id) combined.selectedId = null;
             renderList();
           });
         }
         listNode.appendChild(row);
       }
     };
-    renderList();
 
-    const actions = document.createElement('div');
-    actions.className = 'dialog-actions';
-    const createButton = document.createElement('button');
-    createButton.type = 'button';
-    createButton.className = 'btn btn-mini btn-primary';
-    createButton.textContent = t('studio.themes.create');
-    createButton.addEventListener('click', () => {
-      root.hidden = true;
-      SA.themeEditor.open(null);
-    });
-    const saveButton = document.createElement('button');
-    saveButton.type = 'button';
-    saveButton.className = 'btn btn-mini';
-    saveButton.textContent = t('studio.themes.save');
-    saveButton.addEventListener('click', () => {
+    const miniButton = (key, onClick, primary) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = primary ? 'btn btn-mini btn-primary' : 'btn btn-mini';
+      button.textContent = t(key);
+      button.addEventListener('click', onClick);
+      leftActions.appendChild(button);
+      return button;
+    };
+    miniButton('studio.themes.create', () => {
+      loadIntoEditor(null);
+    }, true);
+    miniButton('studio.themes.save', () => {
       const name = window.prompt(t('studio.themes.name'), t('studio.themes.untitled'));
       if (!name) return;
       const entry = save(name, capture(), currentAxes(), ((project() || {}).styleMode || {}).genre || null);
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
+      combined.selectedId = entry.id;
       renderList();
     });
-    const resetButton = document.createElement('button');
-    resetButton.type = 'button';
-    resetButton.className = 'btn btn-mini';
-    resetButton.textContent = t('studio.themes.reset');
-    resetButton.addEventListener('click', () => {
+    miniButton('studio.themes.reset', () => {
       SA.store.commands.resetTheme();
       SA.studio.toast('studio.toast.themeReset');
-      root.hidden = true;
+      if (SA.themeEditor && typeof SA.themeEditor.load === 'function') SA.themeEditor.load(null);
     });
-    const importButton = document.createElement('button');
-    importButton.type = 'button';
-    importButton.className = 'btn btn-mini';
-    importButton.textContent = t('studio.themes.import');
-    importButton.addEventListener('click', async () => {
+    miniButton('studio.themes.import', async () => {
       const result = await importFile();
       if (!result.canceled) renderList();
     });
-    const exportButton = document.createElement('button');
-    exportButton.type = 'button';
-    exportButton.className = 'btn btn-mini';
-    exportButton.textContent = t('studio.themes.export');
-    exportButton.addEventListener('click', () => {
+    miniButton('studio.themes.export', () => {
       exportFile();
     });
+
+    combined.selectedId = initialThemeId || null;
+    renderList();
+    applyLayout();
+
+    const actions = document.createElement('div');
+    actions.className = 'dialog-actions';
     const closeButton = document.createElement('button');
     closeButton.type = 'button';
     closeButton.className = 'btn btn-primary btn-mini';
     closeButton.textContent = t('studio.themes.close');
-    closeButton.addEventListener('click', () => {
-      root.hidden = true;
-    });
-    actions.appendChild(createButton);
-    actions.appendChild(saveButton);
-    actions.appendChild(resetButton);
-    actions.appendChild(importButton);
-    actions.appendChild(exportButton);
+    closeButton.addEventListener('click', closeCombined);
     actions.appendChild(closeButton);
     dialog.appendChild(actions);
 
     root.appendChild(dialog);
     root.hidden = false;
+
+    if (SA.themeEditor && typeof SA.themeEditor.embed === 'function') {
+      SA.themeEditor.embed(editorHost, initialThemeId || null, {
+        onSaved: (entry) => {
+          if (entry && entry.id) combined.selectedId = entry.id;
+          renderList();
+        },
+      });
+    }
   }
 
   return { list, get, userThemes, capture, currentAxes, apply, save, update, remove, duplicate, exportFile, importFile, dialog, THEME_GROUPS };

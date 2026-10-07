@@ -45,6 +45,10 @@ SA.themeEditor = (() => {
   let sizeBars = [];
   // one entry per weight group on screen: { keys, nodes: Map<key, node> }
   let weightGroups = [];
+  // combined-dialog embedding: when set, render() draws the editor into
+  // embedHost (right pane) instead of building a standalone dialog
+  let embedHost = null;
+  let onSaved = null;
 
   function t(key, vars) {
     return SA.i18n.t(key, vars);
@@ -558,6 +562,16 @@ SA.themeEditor = (() => {
     );
     wrap.appendChild(actions);
 
+    // palette-only apply: its own row so the crowded lottery row stays readable
+    const applyRow = document.createElement('div');
+    applyRow.className = 'insp-actions';
+    applyRow.appendChild(
+      smallButton(t('studio.themeEditor.paletteApplyOnly'), () => {
+        applyPaletteOnly();
+      }, true, 'studio.themeEditor.hint.paletteApplyOnly')
+    );
+    wrap.appendChild(applyRow);
+
     // the palette set: #1 above plus up to `max - 1` extra palettes, the
     // per-beat switch chance and the role-invert chance
     heading(wrap, 'studio.themeEditor.paletteSet');
@@ -791,41 +805,12 @@ SA.themeEditor = (() => {
 
   // --- render ------------------------------------------------------------------
 
-  function render() {
-    if (!root || !draft) return;
-    root.innerHTML = '';
-    root.hidden = false;
-    autoRows = [];
-    sizeBars = [];
-    weightGroups = [];
+  // Editor content shared by the standalone dialog and the combined
+  // Theme-dialog right pane. `embedded` omits the outer .dialog frame and
+  // the Close button (the combined dialog owns them).
+  function buildEditorContent(embedded) {
     const dialog = document.createElement('div');
-    dialog.className = 'dialog dialog-wide theme-editor';
-
-    // genre chips
-    const chips = document.createElement('div');
-    chips.className = 'mood-chips';
-    const genres = (SA.genres && SA.genres.LIST) || [];
-    const genreEntries = [{ id: null, label: t('studio.genres.none') }].concat(
-      genres.map((genre) => ({ id: genre.id, label: t(`studio.genres.${genre.id}`) }))
-    );
-    for (const entry of genreEntries) {
-      const chip = document.createElement('button');
-      chip.type = 'button';
-      chip.className = `btn btn-mini${(draft.genre || null) === entry.id ? ' is-active' : ''}`;
-      chip.textContent = entry.label;
-      chip.title = t(entry.id ? `studio.genres.desc.${entry.id}` : 'studio.genres.desc.none');
-      chip.addEventListener('click', () => {
-        draft.genre = entry.id;
-        const genre = entry.id && SA.genres ? SA.genres.get(entry.id) : null;
-        if (genre) {
-          draft.axes = keepWeird(genre.axes);
-          if (genre.direction) draft.direction = genre.direction;
-        }
-        render();
-      });
-      chips.appendChild(chip);
-    }
-    dialog.appendChild(chips);
+    dialog.className = embedded ? 'theme-editor-inner' : 'dialog dialog-wide theme-editor';
 
     // header: name, seed, new seed
     const tools = document.createElement('div');
@@ -888,16 +873,53 @@ SA.themeEditor = (() => {
     actions.appendChild(smallButton(t('studio.themes.apply'), () => applyDraft(), true));
     actions.appendChild(smallButton(t('studio.themeEditor.save'), () => saveDraft()));
     actions.appendChild(smallButton(t('studio.themeEditor.reset'), () => resetDraft()));
-    actions.appendChild(smallButton(t('studio.themes.close'), () => {
-      root.hidden = true;
-    }));
+    if (!embedded) {
+      actions.appendChild(smallButton(t('studio.themes.close'), () => {
+        if (root) root.hidden = true;
+      }));
+    }
     dialog.appendChild(actions);
 
-    root.appendChild(dialog);
+    return dialog;
+  }
+
+  function render() {
+    if (!draft) return;
+    autoRows = [];
+    sizeBars = [];
+    weightGroups = [];
+    // combined dialog: draw into the right pane, keep the list visible
+    if (embedHost) {
+      embedHost.innerHTML = '';
+      embedHost.appendChild(buildEditorContent(true));
+      refreshAuto();
+      return;
+    }
+    if (!root) return;
+    root.innerHTML = '';
+    root.hidden = false;
+    root.appendChild(buildEditorContent(false));
     refreshAuto();
   }
 
   // --- actions -----------------------------------------------------------------
+
+  // Palette-only apply: the base palette reaches every cue/beat at once
+  // (propagate unifies cue/beat-owned palettes), but nothing is locked:
+  // cues/beats keep inheriting the project palette, so later draws can
+  // still vary them.
+  function applyPaletteOnly() {
+    const doc = project();
+    if (!doc || !draft || !draft.palette || !Array.isArray(draft.palette.colors) || !draft.palette.colors.length) return false;
+    SA.store.commands.setPalette(
+      'project',
+      { id: draft.palette.id, name: draft.palette.name, colors: draft.palette.colors.slice() },
+      { label: 'apply theme palette only', propagate: true }
+    );
+    draft.paletteReplace = false;
+    SA.studio.toast('studio.toast.presetApplied', { name: draft.palette.name || draft.palette.id });
+    return true;
+  }
 
   function applyDraft() {
     const doc = project();
@@ -995,6 +1017,13 @@ SA.themeEditor = (() => {
     if (entry) {
       draft.id = entry.id;
       SA.studio.toast('studio.toast.themeSaved', { name: entry.name });
+      if (typeof onSaved === 'function') {
+        try {
+          onSaved(entry);
+        } catch {
+          /* ignore listener errors */
+        }
+      }
     }
   }
 
@@ -1033,9 +1062,7 @@ SA.themeEditor = (() => {
     render();
   }
 
-  function open(themeId) {
-    root = document.getElementById('dialog-root');
-    if (!root) return;
+  function initDraft(themeId) {
     const existing = themeId ? SA.themes.get(themeId) : null;
     const doc = project();
     const mode = (doc && doc.styleMode) || {};
@@ -1075,11 +1102,44 @@ SA.themeEditor = (() => {
       usePalettes: SA.store.clone(profile.usePalettes || mode.usePalettes || []),
       keywords: { enabled: true, extra: '', exclude: '', ...kwFromDoc(doc) },
       style: existing && existing.style ? SA.store.clone(existing.style) : null,
-      tab: 'axis',
+      tab: draft && draft.tab ? draft.tab : 'axis',
       features: null,
     };
+  }
+
+  function open(themeId) {
+    // unified dialog: the Theme list (left) + editor (right) live together
+    if (SA.themes && typeof SA.themes.dialog === 'function') {
+      SA.themes.dialog(themeId);
+      return;
+    }
+    root = document.getElementById('dialog-root');
+    if (!root) return;
+    embedHost = null;
+    onSaved = null;
+    initDraft(themeId);
     render();
   }
 
-  return { open, getDraft: () => draft, resetDraft };
+  // Reload the editor (standalone or right pane) from another theme / project
+  function load(themeId) {
+    initDraft(themeId);
+    render();
+  }
+
+  // Draw the editor into a host node owned by the combined dialog
+  function embed(host, themeId, opts) {
+    root = document.getElementById('dialog-root');
+    embedHost = host || null;
+    onSaved = opts && typeof opts.onSaved === 'function' ? opts.onSaved : null;
+    initDraft(themeId);
+    render();
+  }
+
+  function detach() {
+    embedHost = null;
+    onSaved = null;
+  }
+
+  return { open, load, embed, detach, getDraft: () => draft, resetDraft, applyDraft, saveDraft };
 })();
