@@ -7,10 +7,10 @@ const project = require('../../renderer/js/studio/project');
 const color = require('../../renderer/js/color');
 const roles = require('../../renderer/js/lyrics/palette-roles');
 
-test('defaults produce a valid version 5 project with tracks', () => {
+test('defaults produce a valid version 7 project with tracks', () => {
   const doc = project.defaults();
   assert.strictEqual(doc.format, 'telopmotion');
-  assert.strictEqual(doc.version, 5);
+  assert.strictEqual(doc.version, project.VERSION);
   assert.strictEqual(doc.output.aspect, '16:9');
   assert.strictEqual(doc.output.width, 1920);
   assert.ok(Array.isArray(doc.script.cues));
@@ -39,7 +39,7 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
   const raw = { format: 'telopmotion', version: 1, custom: { hello: 'world' }, meta: { title: 'Song' } };
   const result = project.migrate(raw);
   assert.strictEqual(result.ok, true);
-  assert.strictEqual(result.project.version, 5);
+  assert.strictEqual(result.project.version, project.VERSION);
   assert.deepStrictEqual(result.project.custom, { hello: 'world' });
   assert.strictEqual(result.project.meta.title, 'Song');
   assert.strictEqual(result.project.output.aspect, '16:9');
@@ -199,6 +199,20 @@ test('migrate rejects other formats and newer versions', () => {
   assert.strictEqual(project.migrate(null).ok, false);
 });
 
+test('migrate to v7 grows a 10-slot palette into spare and glow roles', () => {
+  const ten = ['#0b0d12', '#2c3242', '#59617a', '#8d96ab', '#c3cad8', '#eef1f8', '#0b0d12', '#2c3242', '#59617a', '#8d96ab'];
+  const raw = {
+    format: 'telopmotion',
+    version: 6,
+    style: { palette: { id: 'p', name: 'p', colors: ten } },
+  };
+  const doc = project.migrate(raw).project;
+  assert.strictEqual(doc.version, project.VERSION);
+  assert.strictEqual(doc.style.palette.colors.length, roles.SIZE);
+  assert.strictEqual(doc.style.palette.colors[roles.SLOT.GLOW], ten[5], 'the glow takes the accent role, not yellow');
+  assert.strictEqual(roles.get(doc.style.palette.colors, roles.SLOT.MID_E), doc.style.palette.colors[10]);
+});
+
 test('parsePath understands cue, beat and letter segments', () => {
   const parsed = project.parsePath('cue:c1/beat:c1:page2/line:1/word:3/letter:0');
   assert.strictEqual(parsed.cueId, 'c1');
@@ -269,7 +283,7 @@ test('migrate to v5 re-sorts the old default rows into the old draw order', () =
     ],
   };
   const doc = project.migrate(raw).project;
-  assert.strictEqual(doc.version, 5);
+  assert.strictEqual(doc.version, project.VERSION);
   assert.deepStrictEqual(doc.tracks.map((track) => track.id), ['fg', 'sub1', 'fig', 'filler', 'mid', 'bg']);
 });
 

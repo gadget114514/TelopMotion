@@ -1355,7 +1355,8 @@
       case 'decoDouble':
         return [instanceOf('multiLine', { count: 2, width: 2.5, gap: 3, colorRule: 'alternate', colorA: edgeRef, colorB: textFill2 })];
       case 'decoGlow': {
-        const stack = [instanceOf('outline', { width: 2, color: edgeRef }), instanceOf('neonGlow', {})];
+        const glowRef = roleRef(colors, 'GLOW', 0, textFill2);
+        const stack = [instanceOf('outline', { width: 2, color: edgeRef }), instanceOf('neonGlow', { color: glowRef })];
         SA.moods.tameGlow({ edge: stack }, rawWFor(ctx, cueId));
         return stack;
       }

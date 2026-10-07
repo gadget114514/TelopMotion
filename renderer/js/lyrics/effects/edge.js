@@ -247,7 +247,11 @@
       edgeColor = toRgba(params.color, base, context);
     } else if (type === 2 || type === 3) {
       params4 = [0, toNorm(num(params.radius, 14)), num(params.intensity, 1), 0];
-      edgeColor = toRgba(params.color, type === 2 ? [1, 0.8, 0.4, 1] : [1, 1, 1, 1], context);
+      // no explicit colour: the glow rides the palette (glow role, else the
+      // text fill) so a Mono theme glows near-white instead of the old
+      // hard-coded yellow. An explicit params.color still wins.
+      const paletteGlow = (context.colorSet && (context.colorSet.glow || context.colorSet.fill)) || null;
+      edgeColor = toRgba(params.color, toRgba(paletteGlow, type === 2 ? [1, 0.8, 0.4, 1] : [1, 1, 1, 1], context), context);
     } else if (type === 4) {
       params4 = [((num(params.lightAngle, -60) + 180) * Math.PI) / 180, Math.max(0.4, 1 + num(params.depth, 0.6)), 0, 0];
       edgeColor = toRgba(params.highlight, [1, 1, 1, 1], context);

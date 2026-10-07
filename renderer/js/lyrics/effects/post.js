@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./registry'), require('../../color'), require('../palette-roles'));
   else {
     root.SA = root.SA || {};
-    factory(root.SA.fx, root.SA.color);
+    factory(root.SA.fx, root.SA.color, root.SA.paletteRoles);
   }
-})(typeof self !== 'undefined' ? self : this, function (fx, color) {
+})(typeof self !== 'undefined' ? self : this, function (fx, color, paletteRoles) {
   'use strict';
 
   const POST_TYPES = [
@@ -89,6 +89,24 @@
     return color.toRgba(value, fallback, ctx);
   }
 
+  // The palette's glow role (P12) for the light effects that ship without an
+  // explicit colour: a Mono theme then flares near-white instead of the old
+  // hard-coded warm yellow. Returns the hex or null when no full palette is
+  // in scope (the caller keeps its warm fallback).
+  function paletteGlow(ctx) {
+    const slot = paletteRoles && paletteRoles.SLOT && paletteRoles.SLOT.GLOW != null ? paletteRoles.SLOT.GLOW : 11;
+    const size = paletteRoles && paletteRoles.SIZE ? paletteRoles.SIZE : 12;
+    const context = ctx || {};
+    const local = context.palette && Array.isArray(context.palette.colors) ? context.palette.colors : null;
+    if (local && local.length >= size && typeof local[slot] === 'string') return local[slot];
+    const list = Array.isArray(context.palettes) ? context.palettes : [];
+    for (const entry of list) {
+      const colors = entry && Array.isArray(entry.colors) ? entry.colors : null;
+      if (colors && colors.length >= size && typeof colors[slot] === 'string') return colors[slot];
+    }
+    return null;
+  }
+
   function num(value, fallback) {
     const number = Number(value);
     return Number.isFinite(number) ? number : fallback;
@@ -169,7 +187,7 @@
     else if (type === 'godRays') p4 = [0, 0, 0, envelope * num(params.weight, 1)];
     else if (type === 'lightSweep') {
       p4 = [((num(params.angle, -30) + 180) * Math.PI) / 180, num(params.width, 0.12), num(params.speed, 0.6), envelope];
-      colorA = toRgb(params.color, [1, 0.95, 0.8, 1], context);
+      colorA = toRgb(params.color || paletteGlow(context), [1, 0.95, 0.8, 1], context);
     } else if (type === 'kaleidoscope') p4 = [num(params.segments, 6), ((num(params.rotation, 0) + 180) * Math.PI) / 180, 0, envelope];
     else if (type === 'mirror') p4 = [params.axis === 'y' ? 1 : 0, num(params.offset, 0), 0, envelope];
     else if (type === 'pixelSort') p4 = [num(params.threshold, 0.55), num(params.length, 24), ((num(params.direction, 90) + 180) * Math.PI) / 180, envelope];
@@ -187,18 +205,17 @@
     else if (type === 'pixelate') p4 = [num(params.size, 8), 0, 0, envelope];
     else if (type === 'heatHaze') p4 = [num(params.amount, 0.3), num(params.speed, 0.5), 0, envelope * num(params.amount, 0.3)];
     else if (type === 'lightLeak') {
-      const fallbackColor = [1, 0.6, 0.3, 1];
-      colorA = toRgb(params.color, fallbackColor, context);
+      colorA = toRgb(params.color || paletteGlow(context), [1, 0.6, 0.3, 1], context);
       p4 = [num(params.x, 0.85), num(params.y, 0.2), 0, envelope * num(params.intensity, 0.6)];
     } else if (type === 'vignette') p4 = [num(params.amount, 0.5), 1 - num(params.softness, 0.5), 0, envelope];
     else if (type === 'sparkles') {
       const shapeCode = params.shape === 'star' ? 1 : params.shape === 'heart' ? 2 : 0;
       p4 = [num(params.count, 24), num(params.size, 2), shapeCode, envelope];
-      colorA = toRgb(params.color, [1, 1, 0.9, 1], context);
+      colorA = toRgb(params.color || paletteGlow(context), [1, 1, 0.9, 1], context);
     } else if (type === 'lensFlare') {
       const position = params.position || { x: 0.4, y: 0.35 };
       p4 = [num(position.x, 0.4), num(position.y, 0.35), 0, envelope];
-      colorA = toRgb(params.color, [1, 0.95, 0.85, 1], context);
+      colorA = toRgb(params.color || paletteGlow(context), [1, 0.95, 0.85, 1], context);
     } else if (type === 'waveWarp') {
       const waveform = { sine: 0, triangle: 1, square: 2, saw: 3 }[params.waveform];
       // u_params.z is a direction angle in radians (no 180 offset: the shader

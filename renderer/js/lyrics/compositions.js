@@ -185,7 +185,7 @@
     return value == null ? value : JSON.parse(JSON.stringify(value));
   }
 
-  // Every palette holds the 10 fixed slots, so a slot index is stored as is.
+  // Every palette holds the 12 fixed slots, so a slot index is stored as is.
   function paletteRefIndex(colors, slot) {
     return slot;
   }

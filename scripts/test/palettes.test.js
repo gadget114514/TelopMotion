@@ -28,7 +28,7 @@ test('palettes.json validates and the mirror is in sync', () => {
   assert.deepEqual(mirrorDoc, readJson(), 'mirror must equal the canonical JSON');
 });
 
-test('palettes have unique ids and ten lowercase #rrggbb slots', () => {
+test('palettes have unique ids and twelve lowercase #rrggbb slots', () => {
   const doc = readJson();
   assert.equal(doc.format, 'telopmotion-palettes');
   assert.equal(doc.version, 1);
@@ -38,12 +38,15 @@ test('palettes have unique ids and ten lowercase #rrggbb slots', () => {
     assert.ok(!ids.has(entry.id), `duplicate id ${entry.id}`);
     ids.add(entry.id);
     assert.ok(typeof entry.name === 'string' && entry.name.trim(), `${entry.id} needs a name`);
-    assert.equal(entry.colors.length, 10, `${entry.id} needs 10 slots`);
+    assert.equal(entry.colors.length, 12, `${entry.id} needs 12 slots`);
     for (const color of entry.colors) assert.match(color, /^#[0-9a-f]{6}$/, `${entry.id}: ${color}`);
   }
   const pastel = doc.palettes.find((entry) => entry.id === 'pastel');
   assert.ok(pastel, 'pastel must exist');
-  assert.deepEqual(pastel.colors.slice(4), ['#9080b9', '#ec84a6', '#b1bace', '#ffffff', '#ffb190', '#70e3fe']);
+  assert.deepEqual(pastel.colors.slice(4), ['#9080b9', '#ec84a6', '#b1bace', '#ffffff', '#ffb190', '#70e3fe', '#ccdaff', '#ec84a6']);
+  const mono = doc.palettes.find((entry) => entry.id === 'mono');
+  assert.ok(mono, 'mono must exist');
+  assert.equal(mono.colors[11], mono.colors[5], 'the mono glow takes the accent role, not yellow');
 });
 
 test('studio.html loads the mirror before colors.js', () => {

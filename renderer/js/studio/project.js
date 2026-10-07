@@ -9,7 +9,7 @@
   'use strict';
 
   const FORMAT = 'telopmotion';
-  const VERSION = 6;
+  const VERSION = 7;
   const DEFAULT_TRACKS = [
     { id: 'fg', kind: 'foreground', name: '前景' },
     { id: 'sub1', kind: 'subtitle', name: '字幕1' },
@@ -627,7 +627,7 @@
     const rewriteBag = (bag, path) => {
       if (!isPlainObject(bag) || !Array.isArray(bag.edge) || !bag.edge.length) return;
       const colors = paletteAt(path);
-      if (colors.length < 10) return;
+      if (colors.length < roles.SIZE) return;
       for (const instance of bag.edge) rewriteInstance(instance, colors);
     };
     rewriteBag(project.style, '');
@@ -825,6 +825,49 @@
     return project;
   }
 
+  // Version 7: the palette gains two slots — P11 the spare backdrop plane
+  // (MID_E) and P12 the glow colour (GLOW) — so a Mono theme glows
+  // near-white instead of the old hard-coded yellow. v6 10-slot palettes
+  // grow once (spare steps off MID_B, glow takes the accent); older shorts
+  // go through the v6 materialisation first.
+  function v7ExpandColors(colors) {
+    const roles = paletteRolesModule();
+    if (roles && typeof roles.upgradeColors === 'function') return roles.upgradeColors(colors);
+    const list = Array.isArray(colors) ? colors.slice() : [];
+    if (list.length >= 12) return list.slice(0, 12);
+    if (list.length === 10) return [...list.slice(0, 10), list[1] || list[0] || '#101018', list[5] || list[3] || '#ff8a3d'];
+    while (list.length < 12) list.push(list[list.length - 1] || '#888888');
+    return list.slice(0, 12);
+  }
+
+  function migrateToV7(project) {
+    const fixPalette = (palette) => {
+      if (!palette || !Array.isArray(palette.colors) || !palette.colors.length) return;
+      palette.colors = v7ExpandColors(palette.colors);
+      palette.roles = 2;
+    };
+    if (project.style && project.style.palette) fixPalette(project.style.palette);
+    if (project.style && project.style.paletteSet && Array.isArray(project.style.paletteSet.extra)) {
+      for (const entry of project.style.paletteSet.extra) fixPalette(entry);
+    }
+    for (const bag of Object.values(project.cueStyles || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    for (const bag of Object.values(project.beatStyles || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    for (const bag of Object.values(project.beatKindStyle || {})) {
+      if (bag && bag.palette) fixPalette(bag.palette);
+    }
+    if (Array.isArray(project.palettes)) {
+      for (const entry of project.palettes) fixPalette(entry);
+    }
+    if (project.styleMode && Array.isArray(project.styleMode.usePalettes)) {
+      for (const entry of project.styleMode.usePalettes) fixPalette(entry);
+    }
+    return project;
+  }
+
   function migrate(input) {
     if (!isPlainObject(input)) {
       return { ok: false, error: 'invalid-project', project: null };
@@ -843,6 +886,7 @@
     if (version < 4) migrateToV4(merged);
     if (version < 5) migrateToV5(merged);
     if (version < 6) migrateToV6(merged);
+    if (version < 7) migrateToV7(merged);
     ensureManagedTracks(merged);
     normalizeLayers(merged);
     merged.version = VERSION;

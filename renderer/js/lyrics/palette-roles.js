@@ -7,13 +7,14 @@
 })(typeof self !== 'undefined' ? self : this, function (color) {
   'use strict';
 
-  // The 10 fixed palette slots. Every consumer reads its colour through a slot
+  // The 12 fixed palette slots. Every consumer reads its colour through a slot
   // name, never through a bare number, so which layer gets which colour (and
   // which colours must contrast) is defined in one place.
   //
-  //   mid layer   0..3   planes / clip colours
-  //   text layer  4..7   fill, gradient end, edge, text background
-  //   figures     8..9   two contrasting figure colours
+  //   mid layer   0..3    planes / clip colours
+  //   text layer  4..7    fill, gradient end, edge, text background
+  //   figures     8..9    two contrasting figure colours
+  //   spare/glow  10..11  backdrop spare plane (MID_E) and the glow colour (GLOW)
   const SLOT = {
     MID_A: 0,
     MID_B: 1,
@@ -25,11 +26,15 @@
     TEXT_BG: 7,
     FIG_A: 8,
     FIG_B: 9,
+    MID_E: 10,
+    GLOW: 11,
   };
   const MID_SLOTS = [SLOT.MID_A, SLOT.MID_B, SLOT.MID_C, SLOT.MID_D];
   const TEXT_SLOTS = [SLOT.TEXT_FILL, SLOT.TEXT_FILL2, SLOT.TEXT_EDGE, SLOT.TEXT_BG];
   const FIG_SLOTS = [SLOT.FIG_A, SLOT.FIG_B];
-  const SIZE = 10;
+  const SPARE_SLOTS = [SLOT.MID_E];
+  const GLOW_SLOTS = [SLOT.GLOW];
+  const SIZE = 12;
 
   // --- the theme's palette set ------------------------------------------------
   // `style.palette` is #1; `style.paletteSet.extra` holds #2..#max. `max` is the
@@ -53,7 +58,7 @@
   }
 
   // Colours of palette #index (0 = style.palette); null when missing or not a
-  // full 10-colour palette. A copy is returned so a caller can never mutate
+  // full SIZE-colour palette. A copy is returned so a caller can never mutate
   // the stored palette.
   function setColors(style, index) {
     const palette = style && style.palette;
@@ -96,6 +101,8 @@
     [SLOT.FIG_B, SLOT.TEXT_FILL, 'backdrop'],
     [SLOT.FIG_A, SLOT.MID_A, 'neighbour'],
     [SLOT.FIG_B, SLOT.MID_A, 'neighbour'],
+    [SLOT.MID_E, SLOT.TEXT_FILL, 'backdrop'],
+    [SLOT.MID_E, SLOT.MID_A, 'neighbour'],
   ];
 
   function clamp01(value) {
@@ -251,7 +258,7 @@
 
   // The luminance counterpart of a text colour: a light text gets a dark
   // background and the other way round. Used only when generating a fresh
-  // 10-colour palette; stored palettes are never derived at read time.
+  // SIZE-colour palette; stored palettes are never derived at read time.
   function luminanceOpposite(hex, level) {
     try {
       const hsv = color.rgbToHsv(color.parse(hex));
@@ -271,23 +278,29 @@
   function upgradeColors(colors) {
     const list = Array.isArray(colors) ? colors.slice() : [];
     if (list.length >= SIZE) return list.slice(0, SIZE);
+    // a v6 10-slot palette gains the two new roles: the spare backdrop plane
+    // steps off MID_B and the glow takes the accent role, so a Mono palette
+    // glows near-white instead of the old hard-coded yellow.
+    if (list.length === 10) return [...list.slice(0, 10), shift(list[1] || list[0] || '#101018', 18, 0.92, 0.07), list[5] || list[3] || '#ff8a3d'];
     const a = list[0] || '#101018';
     const b = list[1] || a;
     const edge = list[4] || a;
     const accent2 = list[5] || list[3] || b;
+    const text = list[2] || '#eef2ff';
+    const accent = list[3] || '#ff8a3d';
     const out = [
       a,
       b,
       deriveC(a, b),
       deriveD(b),
-      list[2] || '#eef2ff',
-      list[3] || '#ff8a3d',
+      text,
+      accent,
       edge,
-      luminanceOpposite(list[2] || '#eef2ff'),
+      luminanceOpposite(text),
       accent2,
       shift(accent2, 180, 0.9, 0),
     ];
-    return out;
+    return [...out, shift(out[1], 18, 0.92, 0.07), out[5]];
   }
 
   function deriveC(a, b) {
@@ -304,7 +317,7 @@
   }
 
   // A colour of a slot: the stored colour, or null when the palette is not a
-  // full 10-colour palette. Short palettes are invalid and never derived.
+  // full SIZE-colour palette. Short palettes are invalid and never derived.
   function get(colors, slot) {
     const list = Array.isArray(colors) ? colors : [];
     if (list.length < SIZE) return null;
@@ -331,7 +344,7 @@
 
   // The four schemes swap these roles; every other role keeps the slot table.
   // [source B, source M, source T, source D]
-  // Every palette is a full 10-colour palette, so the mapping is fixed.
+  // Every palette is a full SIZE-colour palette, so the mapping is fixed.
   function roleSlots() {
     return {
       B: SLOT.MID_A,
@@ -341,6 +354,8 @@
       T: SLOT.TEXT_FILL,
       D: SLOT.TEXT_EDGE,
       H: SLOT.TEXT_FILL2,
+      E: SLOT.MID_E,
+      G: SLOT.GLOW,
     };
   }
 
@@ -653,6 +668,8 @@
     MID_SLOTS,
     TEXT_SLOTS,
     FIG_SLOTS,
+    SPARE_SLOTS,
+    GLOW_SLOTS,
     SIZE,
     PALETTE_SET_DEFAULTS,
     paletteSetOf,

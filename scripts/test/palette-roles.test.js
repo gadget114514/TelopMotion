@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-// The 10 fixed palette slots and their contrast contract. `palette-roles` is
+// The 12 fixed palette slots and their contrast contract. `palette-roles` is
 // the single place that says which layer uses which colour; the generators
 // migrate onto it slot by slot.
 
@@ -13,20 +13,24 @@ const roles = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'palette-roles
 const color = require(path.join(ROOT, 'renderer', 'js', 'color.js'));
 
 const LEGACY = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
-const TEN = ['#101018', '#202838', '#2a3348', '#3a4356', '#eef2ff', '#ff8a3d', '#05060a', '#0b0d12', '#ffc247', '#9db2ff'];
-const TEN2 = ['#201020', '#302838', '#3a4356', '#4a5568', '#fff2ef', '#ffaa33', '#10100a', '#140f14', '#ffd247', '#8db2ff'];
+const TEN = ['#101018', '#202838', '#2a3348', '#3a4356', '#eef2ff', '#ff8a3d', '#05060a', '#0b0d12', '#ffc247', '#9db2ff', '#2a3348', '#ff8a3d'];
+const TEN2 = ['#201020', '#302838', '#3a4356', '#4a5568', '#fff2ef', '#ffaa33', '#10100a', '#140f14', '#ffd247', '#8db2ff', '#3a4356', '#ffaa33'];
 
 test('the slot table is complete and frozen', () => {
   assert.deepEqual(roles.MID_SLOTS, [0, 1, 2, 3]);
   assert.deepEqual(roles.TEXT_SLOTS, [4, 5, 6, 7]);
   assert.deepEqual(roles.FIG_SLOTS, [8, 9]);
-  assert.equal(roles.SIZE, 10);
+  assert.deepEqual(roles.SPARE_SLOTS, [10]);
+  assert.deepEqual(roles.GLOW_SLOTS, [11]);
+  assert.equal(roles.SIZE, 12);
   assert.equal(roles.SLOT.TEXT_FILL, 4);
   assert.equal(roles.SLOT.TEXT_BG, 7);
-  assert.equal(new Set(Object.values(roles.SLOT)).size, 10);
+  assert.equal(roles.SLOT.MID_E, 10);
+  assert.equal(roles.SLOT.GLOW, 11);
+  assert.equal(new Set(Object.values(roles.SLOT)).size, 12);
   for (const [a, b, kind] of roles.CONTRAST) {
-    assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS).includes(a), `slot ${a}`);
-    assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS).includes(b), `slot ${b}`);
+    assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS, roles.SPARE_SLOTS).includes(a), `slot ${a}`);
+    assert.ok(roles.MID_SLOTS.concat(roles.TEXT_SLOTS, roles.FIG_SLOTS, roles.SPARE_SLOTS).includes(b), `slot ${b}`);
     assert.ok(['text', 'backdrop', 'soft', 'neighbour'].includes(kind), kind);
   }
 });
@@ -78,14 +82,17 @@ test('repairPalette and compatible honor the pinned floor', () => {
   }
 });
 
-test('every palette stores exactly the 10 slots, no derived colours', () => {
+test('every palette stores exactly the 12 slots, no derived colours', () => {
   assert.equal(roles.get(TEN, roles.SLOT.MID_A), TEN[0]);
   assert.equal(roles.get(TEN, roles.SLOT.TEXT_FILL), TEN[4]);
   assert.equal(roles.get(TEN, roles.SLOT.FIG_A), TEN[8]);
   assert.equal(roles.get(TEN, roles.SLOT.FIG_B), TEN[9]);
+  assert.equal(roles.get(TEN, roles.SLOT.MID_E), TEN[10]);
+  assert.equal(roles.get(TEN, roles.SLOT.GLOW), TEN[11]);
   // a short palette is invalid and reads as missing
   assert.equal(roles.get(LEGACY, roles.SLOT.MID_A), null);
   assert.equal(roles.get(LEGACY, roles.SLOT.TEXT_FILL), null);
+  assert.equal(roles.get(TEN.slice(0, 10), roles.SLOT.MID_A), null);
   assert.equal(roles.get([], roles.SLOT.MID_A), null);
 });
 

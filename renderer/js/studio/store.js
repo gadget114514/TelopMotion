@@ -1025,9 +1025,9 @@ SA.store = (() => {
         return sum + Math.abs(a.r - b.r) + Math.abs(a.g - b.g) + Math.abs(a.b - b.b);
       }, 0);
     };
-    // a plain random RGB palette of 10 slots, the furthest of a few
+    // a plain random RGB palette of SIZE slots, the furthest of a few
     // candidates from the current one so the change is always visible
-    const size = (SA.paletteRoles && SA.paletteRoles.SIZE) || 10;
+    const size = (SA.paletteRoles && SA.paletteRoles.SIZE) || 12;
     let palette = null;
     let best = -1;
     for (let i = 0; i < (tries || 4); i += 1) {
@@ -1124,7 +1124,8 @@ SA.store = (() => {
     const resolved = SA.project.resolveStyle(projectDoc, cuePath);
     const palette = (resolved && resolved.palette && resolved.palette.colors) || (projectDoc.style.palette && projectDoc.style.palette.colors) || [];
     const slot = SA.paletteRoles ? SA.paletteRoles.SLOT : { TEXT_FILL: 4, TEXT_FILL2: 5, FIG_A: 8 };
-    const colors = palette.length >= 10 ? [palette[slot.TEXT_FILL], palette[slot.TEXT_FILL2], palette[slot.FIG_A]].filter(Boolean) : [];
+    const full = SA.paletteRoles && SA.paletteRoles.SIZE ? SA.paletteRoles.SIZE : 12;
+    const colors = palette.length >= full ? [palette[slot.TEXT_FILL], palette[slot.TEXT_FILL2], palette[slot.FIG_A]].filter(Boolean) : [];
     const cueResult = SA.random.vary({
       project: projectDoc,
       paths: [cuePath],
@@ -1273,7 +1274,8 @@ SA.store = (() => {
           if (Boolean(before.accent) !== sub.accent) detail.push(`accent ${sub.accent ? 'on' : 'off'}`);
         }
         if (op === 'recolor') {
-          const colors = palette.colors.length >= 10 ? palette.colors.slice(8, 10) : palette.colors.slice();
+          const full = SA.paletteRoles && SA.paletteRoles.SIZE ? SA.paletteRoles.SIZE : 12;
+          const colors = palette.colors.length >= full ? palette.colors.slice(8, 10) : palette.colors.slice();
           sub.colors = colors.length ? colors : palette.colors.slice();
           // an explicit recolor stays put while a beat colour scheme repaints the stage
           sub.colorLock = true;

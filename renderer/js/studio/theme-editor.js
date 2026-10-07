@@ -643,7 +643,7 @@ SA.themeEditor = (() => {
       card.title = (entry.colors || []).join(', ');
       const strip = document.createElement('span');
       strip.className = 'use-palette-strip';
-      for (const color of (entry.colors || []).slice(0, 10)) {
+      for (const color of (entry.colors || []).slice(0, (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SIZE) || 12)) {
         const dot = document.createElement('i');
         dot.style.background = color;
         strip.appendChild(dot);

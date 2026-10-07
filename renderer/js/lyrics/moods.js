@@ -1005,9 +1005,10 @@
     return { id: family.id, name: family.id, colors: built.colors, scheme: built.scheme, roles: 2 };
   }
 
-  // --- fixed palette slots (10 colours) ---------------------------------------
+  // --- fixed palette slots (12 colours) ---------------------------------------
   // The slot layout is defined in palette-roles: mid A/B/C/D, text fill /
-  // gradient end / edge / text background, figure A/B. C/D sit at the scheme's
+  // gradient end / edge / text background, figure A/B, backdrop spare and
+  // glow. C/D sit at the scheme's complement angles from the background hue,
   // complement angles from the background hue, TEXT_BG is the luminance
   // opposite of TEXT_FILL and FIG_B the hue complement of FIG_A, so contrast
   // is wired by construction; repairPalette only nudges the leftovers.
@@ -1037,7 +1038,7 @@
       const hsv = color.rgbToHsv(color.parse(hex));
       return hsvHex(hsv.h, hsv.s, lightText ? Math.min(hsv.v, limit) : Math.max(hsv.v, 1 - limit));
     };
-    for (const index of [0, 1, 2, 3]) colors[index] = forceSide(colors[index], 0.14);
+    for (const index of [0, 1, 2, 3, 10]) colors[index] = forceSide(colors[index], 0.14);
     // the figures stay on the same side but further from the extrema, so they
     // keep a step against both the text and the mid planes
     for (const index of [8, 9]) {
@@ -1046,6 +1047,7 @@
     }
     colors[1] = color.ensureContrast(colors[1], colors[0], 1.15);
     colors[3] = color.ensureContrast(colors[3], colors[2], 1.15);
+    colors[10] = color.ensureContrast(colors[10], colors[0], 1.15);
     for (const index of [8, 9]) {
       colors[index] = color.ensureContrast(colors[index], colors[4], backdropTarget);
       if (color.contrastRatio(color.parse(colors[index]), color.parse(colors[4])) < backdropTarget - 1e-6) {
@@ -1059,6 +1061,13 @@
       if (color.contrastRatio(color.parse(colors[index]), color.parse(colors[4])) < backdropTarget - 1e-6) {
         colors[index] = color.ensureContrast(colors[index], colors[4], backdropTarget);
       }
+    }
+    // the spare backdrop plane reads against the text (backdrop floor) while
+    // keeping its step against the main background; the glow (11) is a free
+    // decorative role and is never repaired.
+    colors[10] = color.ensureContrast(colors[10], colors[4], backdropTarget);
+    if (color.contrastRatio(color.parse(colors[10]), color.parse(colors[4])) < backdropTarget - 1e-6) {
+      colors[10] = color.separateFrom(colors[10], [colors[4]], backdropTarget) || colors[10];
     }
     colors[7] = paletteRoles.luminanceOpposite(colors[4]);
     colors[7] = color.ensureContrast(colors[7], colors[4], textTarget);
@@ -1100,7 +1109,12 @@
     const figA = base[5] || base[3];
     const figHsv = color.rgbToHsv(color.parse(figA));
     const figB = hsvHex(figHsv.h + 180, figHsv.s, figHsv.v);
-    const colors = [base[0], base[1], midC, midD, base[2], base[3], base[4], paletteRoles.luminanceOpposite(base[2]), figA, figB];
+    // P11 the spare backdrop plane steps off the second background; P12 the
+    // glow takes the accent hue so a Mono theme glows near-white, never the
+    // old hard-coded yellow.
+    const spare = paletteRoles.shift(base[1], 18, 0.92, 0.07);
+    const glow = base[3];
+    const colors = [base[0], base[1], midC, midD, base[2], base[3], base[4], paletteRoles.luminanceOpposite(base[2]), figA, figB, spare, glow];
     repairSlotPalette(colors, axes);
     return { colors, scheme };
   }
@@ -1109,8 +1123,8 @@
     return paletteFor(axes, random, allowed);
   }
 
-  // Every stored palette holds the 10 fixed slots. The old 6/7-colour
-  // generators are gone; paletteColors/paletteFor are the 10-colour versions
+  // Every stored palette holds the 12 fixed slots. The old 6/7-colour
+  // generators are gone; paletteColors/paletteFor are the 12-colour versions
   // and paletteColors10/paletteFor10 stay as aliases.
   function paletteColors(family, axes, random) {
     return paletteColors10(family, axes, random);
@@ -1132,10 +1146,11 @@
       swap(1, 3);
     } else if (kind === 'hueStep') {
       const delta = (random() * 2 - 1) * 30 + (random() < 0.5 ? -45 : 45);
-      for (const index of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) colors[index] = paletteRoles.shift(colors[index], delta, 1, 0);
+      for (const index of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]) colors[index] = paletteRoles.shift(colors[index], delta, 1, 0);
     } else if (kind === 'accentFlip') {
       colors[5] = paletteRoles.shift(colors[5], 180, 0.9, 0);
       colors[7] = paletteRoles.shift(colors[7], 180, 0.9, 0);
+      colors[11] = paletteRoles.shift(colors[11], 180, 0.9, 0);
       swap(8, 9);
     } else {
       const step = kind === 'lift' ? 0.1 : -0.1;
@@ -1298,8 +1313,9 @@
   }
 
   // a random palette that keeps the mood's character: derived from a matching family.
-  // Every stored palette holds the 10 fixed slots; the jitter below moves all
-  // ten together and the slot repair keeps the contrast contract.
+  // Every stored palette holds the 12 fixed slots; the jitter below moves all
+  // twelve together (the glow rides with the accent) and the slot repair
+  // keeps the contrast contract.
   function generatePalette(random, axes, name, allowed, contrastFloor) {
     const w = textWeirdOf(axes);
     const s = smartOf(axes);
@@ -1321,7 +1337,7 @@
     });
     if (w > 0 && random() < w * narrow) {
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
-      for (const i of [paletteRoles.SLOT.TEXT_FILL2, paletteRoles.SLOT.FIG_A, paletteRoles.SLOT.FIG_B]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
+      for (const i of [paletteRoles.SLOT.TEXT_FILL2, paletteRoles.SLOT.FIG_A, paletteRoles.SLOT.FIG_B, paletteRoles.SLOT.GLOW]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
     repairSlotPalette(colors, normalizeAxes(axes), contrastFloor);
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors, scheme: base.scheme, roles: 2 };
@@ -1330,7 +1346,7 @@
   // The auto palettes of the theme's set: `count` palettes total including the
   // base #1, so the returned list fills `count - 1 - existing.length` slots.
   // Each one is the best of three draws — the candidate furthest from the base
-  // and every palette already in play. Every candidate already carries the 10
+  // and every palette already in play. Every candidate already carries the 12
   // slots. Entries carry `auto: true`: the next run replaces them.
   function paletteSetFor(random, axes, baseColors, existing, count, allowed, contrastFloor) {
     const out = [];
@@ -1360,7 +1376,7 @@
   }
 
   // The edge role of a palette array: the fixed TEXT_EDGE slot, -1 when the
-  // array is not a full 10-colour palette.
+  // array is not a full SIZE-colour palette.
   function edgeIndexOf(colors) {
     const list = Array.isArray(colors) ? colors : [];
     if (paletteRoles && Number.isFinite(paletteRoles.SIZE) && list.length >= paletteRoles.SIZE) {
@@ -1442,7 +1458,7 @@
   }
 
   // A per-cue palette for the weird axis: the same roles with the hue moved and
-  // the accents swapped, still readable on the background. 10 slots only.
+  // the accents swapped, still readable on the background. SIZE slots.
   function weirdPalette(random, palette, w) {
     const colors = (palette && palette.colors) || [];
     if (colors.length < paletteRoles.SIZE || !(w > 0)) return null;
@@ -1533,6 +1549,7 @@
     const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
     const TEXT_FILL2 = paletteRoles.SLOT.TEXT_FILL2;
     const TEXT_EDGE = paletteRoles.SLOT.TEXT_EDGE;
+    const GLOW = paletteRoles.SLOT.GLOW;
     const FIG_A = paletteRoles.SLOT.FIG_A;
     const FIG_B = paletteRoles.SLOT.FIG_B;
     const MID_A = paletteRoles.SLOT.MID_A;
@@ -1550,6 +1567,7 @@
           }
         : { kind: 'palette', index: TEXT_FILL },
       stroke: { kind: 'palette', index: TEXT_EDGE },
+      glow: { kind: 'palette', index: GLOW },
     };
     const w = textWeirdOf(axes);
     if (!(w > 0) || random() >= w) return base;
@@ -1579,6 +1597,7 @@
     return {
       fill,
       stroke: { kind: 'palette', index: pick(random, [MID_A, TEXT_EDGE, TEXT_FILL2, FIG_A].filter((i) => colors[i])) },
+      glow: { kind: 'palette', index: GLOW },
     };
   }
 

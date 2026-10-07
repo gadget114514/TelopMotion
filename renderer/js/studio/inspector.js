@@ -69,7 +69,7 @@ SA.inspector = (() => {
   }
 
   function paletteSlotCount() {
-    return (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SIZE) || 10;
+    return (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SIZE) || 12;
   }
 
   function rawPaletteColors(style) {

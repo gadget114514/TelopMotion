@@ -41,8 +41,8 @@ function validate(doc) {
     if (seen.has(entry.id)) fail(`${where}: duplicate id '${entry.id}'`);
     seen.add(entry.id);
     if (typeof entry.name !== 'string' || !entry.name.trim()) fail(`${where} (${entry.id}): name must be a non-empty string`);
-    if (!Array.isArray(entry.colors) || entry.colors.length !== 10) {
-      fail(`${where} (${entry.id}): colors must be an array of 10 hex strings`);
+    if (!Array.isArray(entry.colors) || entry.colors.length !== 12) {
+      fail(`${where} (${entry.id}): colors must be an array of 12 hex strings`);
     }
     entry.colors.forEach((color, slot) => {
       if (typeof color !== 'string' || !HEX_RE.test(color)) {

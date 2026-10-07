@@ -23,6 +23,8 @@ window.SA = window.SA || {};
         roleTextBg: 'Text background',
         roleFig: 'Figure',
         roleFig2: 'Figure 2',
+        roleSpare: 'Spare',
+        roleGlow: 'Glow',
         roleHint0: 'P1 main background (MID_A)',
         roleHint1: 'P2 second background (MID_B)',
         roleHint2: 'P3 backdrop plane C (MID_C)',
@@ -33,6 +35,8 @@ window.SA = window.SA || {};
         roleHint7: 'P8 text background (TEXT_BG)',
         roleHint8: 'P9 figure 1 (FIG_A)',
         roleHint9: 'P10 figure 2 (FIG_B)',
+        roleHint10: 'P11 spare backdrop plane (MID_E)',
+        roleHint11: 'P12 glow (GLOW)',
         name: 'Name',
         addColor: 'Add colour',
         rerollColor: 'Re-roll this colour',
@@ -83,6 +87,8 @@ window.SA = window.SA || {};
         roleTextBg: '文字背景',
         roleFig: '図形',
         roleFig2: '図形2',
+        roleSpare: '予備',
+        roleGlow: 'グロー',
         roleHint0: 'P1 メイン背景（MID_A）',
         roleHint1: 'P2 サブ背景（MID_B）',
         roleHint2: 'P3 中景プレーンC（MID_C）',
@@ -93,6 +99,8 @@ window.SA = window.SA || {};
         roleHint7: 'P8 文字背景（TEXT_BG）',
         roleHint8: 'P9 図形1（FIG_A）',
         roleHint9: 'P10 図形2（FIG_B）',
+        roleHint10: 'P11 予備の中景プレーン（MID_E）',
+        roleHint11: 'P12 グロー（GLOW）',
         name: '名前',
         addColor: '色を追加',
         rerollColor: 'この色を引き直す',
@@ -143,6 +151,8 @@ window.SA = window.SA || {};
         roleTextBg: 'Fondo de texto',
         roleFig: 'Figura',
         roleFig2: 'Figura 2',
+        roleSpare: 'Reserva',
+        roleGlow: 'Brillo',
         roleHint0: 'P1 fondo principal (MID_A)',
         roleHint1: 'P2 fondo secundario (MID_B)',
         roleHint2: 'P3 plano medio C (MID_C)',
@@ -153,6 +163,8 @@ window.SA = window.SA || {};
         roleHint7: 'P8 fondo de texto (TEXT_BG)',
         roleHint8: 'P9 figura 1 (FIG_A)',
         roleHint9: 'P10 figura 2 (FIG_B)',
+        roleHint10: 'P11 plano medio de reserva (MID_E)',
+        roleHint11: 'P12 brillo (GLOW)',
         name: 'Nombre',
         addColor: 'Añadir color',
         rerollColor: 'Volver a sortear este color',
@@ -203,6 +215,8 @@ window.SA = window.SA || {};
         roleTextBg: 'Fond de texte',
         roleFig: 'Figure',
         roleFig2: 'Figure 2',
+        roleSpare: 'Réserve',
+        roleGlow: 'Lueur',
         roleHint0: 'P1 fond principal (MID_A)',
         roleHint1: 'P2 fond secondaire (MID_B)',
         roleHint2: 'P3 plan moyen C (MID_C)',
@@ -213,6 +227,8 @@ window.SA = window.SA || {};
         roleHint7: 'P8 fond de texte (TEXT_BG)',
         roleHint8: 'P9 figure 1 (FIG_A)',
         roleHint9: 'P10 figure 2 (FIG_B)',
+        roleHint10: 'P11 plan moyen de réserve (MID_E)',
+        roleHint11: 'P12 lueur (GLOW)',
         name: 'Nom',
         addColor: 'Ajouter une couleur',
         rerollColor: 'Retirer cette couleur au sort',
@@ -263,6 +279,8 @@ window.SA = window.SA || {};
         roleTextBg: 'Фон текста',
         roleFig: 'Фигура',
         roleFig2: 'Фигура 2',
+        roleSpare: 'Запас',
+        roleGlow: 'Свечение',
         roleHint0: 'P1 главный фон (MID_A)',
         roleHint1: 'P2 второй фон (MID_B)',
         roleHint2: 'P3 средняя плоскость C (MID_C)',
@@ -273,6 +291,8 @@ window.SA = window.SA || {};
         roleHint7: 'P8 фон текста (TEXT_BG)',
         roleHint8: 'P9 фигура 1 (FIG_A)',
         roleHint9: 'P10 фигура 2 (FIG_B)',
+        roleHint10: 'P11 запасная средняя плоскость (MID_E)',
+        roleHint11: 'P12 свечение (GLOW)',
         name: 'Название',
         addColor: 'Добавить цвет',
         rerollColor: 'Пересобрать этот цвет',
@@ -315,7 +335,7 @@ SA.paletteDialog = (() => {
   const HEX = /^#([0-9a-f]{6}|[0-9a-f]{8})$/i;
   const KINDS = ['background', 'backdrop', 'figure', 'filler'];
   const KIND_LABEL = { background: 'palette.targetBackground', backdrop: 'palette.targetBackdrop', figure: 'palette.targetFigure', filler: 'palette.targetFiller' };
-  const SLOT_COUNT = 10;
+  const SLOT_COUNT = 12;
 
   let active = null;
 
@@ -369,6 +389,8 @@ SA.paletteDialog = (() => {
     if (index === 7) return t('palette.roleTextBg');
     if (index === 8) return t('palette.roleFig');
     if (index === 9) return t('palette.roleFig2');
+    if (index === 10) return t('palette.roleSpare');
+    if (index === 11) return t('palette.roleGlow');
     return `P${index + 1}`;
   }
 
@@ -587,7 +609,7 @@ SA.paletteDialog = (() => {
     return node;
   }
 
-  // A reusable palette editor for a plain `{ colors }` draft: exactly the 10
+  // A reusable palette editor for a plain `{ colors }` draft: exactly the 12
   // fixed slots with swatches, hex inputs, re-roll and the contrast readout.
   // Every mutation calls `onChange(palette)` and the component rebuilds
   // itself, so the palette dialog and the theme editor can both host it.

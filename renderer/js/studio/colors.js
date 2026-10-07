@@ -5,8 +5,9 @@ SA.colors = (() => {
 
   const LS_RECENT = 'sa.colors.recent';
   const LS_PALETTES = 'sa.palettes';
-  // The 10 fixed palette slots (see lyrics/palette-roles.js): 0..3 mid
-  // planes, 4..7 text fill / accent / edge / text background, 8..9 figures.
+  // The 12 fixed palette slots (see lyrics/palette-roles.js): 0..3 mid
+  // planes, 4..7 text fill / accent / edge / text background, 8..9 figures,
+  // 10 backdrop spare, 11 glow.
   // The main text (index 4) keeps >= 4.5:1 against the main background
   // (index 0), so every preset reads as-is without a contrast repair.
   // The library lives in renderer/data/palettes.json; the generated UMD
@@ -611,7 +612,7 @@ SA.colors = (() => {
       card.className = `preset-card${opts.selectedId && entry.id === opts.selectedId ? ' is-selected' : ''}`;
       const strip = document.createElement('span');
       strip.className = 'preset-strip';
-      for (const color of (entry.colors || []).slice(0, 10)) {
+      for (const color of (entry.colors || []).slice(0, (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SIZE) || 12)) {
         const dot = document.createElement('i');
         paintSwatch(dot, color);
         dot.title = color;

@@ -46,12 +46,12 @@ const projectModule = SA.project;
 
 const FIXTURE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'direct-w0.json'), 'utf8'));
 
-// text <-> background: 10 fixed slots (mid A/B/C/D, text, accent, edge,
-// text-bg, figure A/B). Generated once via paletteFor10 seed 1, which yields
-// viable schemes under the new 10-slot contract.
-const SWAP_BG = ['#210b24', '#3e1837', '#1a240b', '#040a06', '#fff0d4', '#d13f94', '#86285f', '#1f1d1b', '#662b26', '#266166'];
-// text <-> backdrop: a second 10-slot palette (seed 3)
-const SWAP_MID = ['#241a0b', '#0a0904', '#0b1524', '#102e31', '#d8ffd4', '#d1a53f', '#866a28', '#1b1f1b', '#4f6626', '#4c3080'];
+// text <-> background: 12 fixed slots (mid A/B/C/D, text, accent, edge,
+// text-bg, figure A/B, spare, glow). Generated once via upgradeColors from a
+// 10-slot seed, which yields viable schemes under the 12-slot contract.
+const SWAP_BG = ['#210b24', '#3e1837', '#1a240b', '#040a06', '#fff0d4', '#d13f94', '#86285f', '#1f1d1b', '#662b26', '#266166', '#50233a', '#d13f94'];
+// text <-> backdrop: a second 12-slot palette
+const SWAP_MID = ['#241a0b', '#0a0904', '#0b1524', '#102e31', '#d8ffd4', '#d1a53f', '#866a28', '#1b1f1b', '#4f6626', '#4c3080', '#1a1c0c', '#d1a53f'];
 
 function contractPairs(palette, weirdRaw) {
   const pairs = [
@@ -60,7 +60,7 @@ function contractPairs(palette, weirdRaw) {
     ['D', 'T', roles.ratioFor('soft', weirdRaw)],
     ['M', 'B', roles.ratioFor('neighbour', weirdRaw)],
   ];
-  if (palette.length >= 10) pairs.push(['H', 'B', 3]);
+  if (palette.length >= 12) pairs.push(['H', 'B', 3]);
   return pairs;
 }
 
@@ -101,7 +101,7 @@ test('applyScheme rejects invalid ids and repair-immune palettes', () => {
 
 test('schemes() only returns contract-holding, distinct permutations', () => {
   const ten = SA.moods.paletteFor10({ weird: 0.7, speed: 0.5, energy: 0.5, softness: 0.5, density: 0.5, brightness: 0.5 }, SA.rng.mulberry32(301)).colors;
-  for (const [palette, label] of [[SWAP_BG, 'legacy'], [ten, '10 roles']]) {
+  for (const [palette, label] of [[SWAP_BG, 'legacy'], [ten, '12 roles']]) {
     for (const w of [0, 0.7, 1]) {
       const list = roles.schemes(palette, w);
       assert.ok(list.length >= 1, `${label} w${w} has candidates`);
