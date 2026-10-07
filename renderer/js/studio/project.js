@@ -181,6 +181,17 @@
     return value > 1 ? 1 : value;
   }
 
+  // The theme's pinned text-contrast floor (`styleMode.params.contrast`), or
+  // null when the theme follows the weird axis. Passed through to the
+  // palette-roles scheme functions, which treat null as "derive from weird".
+  function projectContrastOf(doc) {
+    const params = doc && doc.styleMode && doc.styleMode.params;
+    const raw = params ? params.contrast : null;
+    if (raw == null || raw === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(1, Math.min(7, value)) : null;
+  }
+
   // A cue may carry its own auto-drawn palette. Its inherited literal colours
   // move onto that palette before the cue's own style is merged, so the cue
   // and every beat under it paint in the drawn colours.
@@ -208,7 +219,7 @@
     const index = Math.max(0, Math.floor(Number(own.paletteIndex) || 0));
     const entry = index > 0 ? roles.paletteSetOf(doc.style).extra[index - 1] : null;
     let to = index > 0 ? roles.setColors(doc.style, index) || from : from;
-    if (own.paletteInvert) to = roles.applyScheme(to, roles.SCHEME_INVERT, projectWeirdOf(doc)) || to;
+    if (own.paletteInvert) to = roles.applyScheme(to, roles.SCHEME_INVERT, projectWeirdOf(doc), projectContrastOf(doc)) || to;
     if (to === from) return merged;
     const { palette, ...rest } = merged;
     return {
@@ -231,7 +242,7 @@
     const id = own && own.colorScheme;
     if (!id || !merged.palette || !Array.isArray(merged.palette.colors)) return merged;
     const roles = paletteRolesModule();
-    const to = roles && typeof roles.applyScheme === 'function' ? roles.applyScheme(merged.palette.colors, id, projectWeirdOf(doc)) : null;
+    const to = roles && typeof roles.applyScheme === 'function' ? roles.applyScheme(merged.palette.colors, id, projectWeirdOf(doc), projectContrastOf(doc)) : null;
     if (!to) return merged;
     const { palette, ...rest } = merged;
     return {

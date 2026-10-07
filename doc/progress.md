@@ -531,6 +531,7 @@ weird 0.6 の自動演出を Studio で確認したところ、文字が小さ�
 | `bgVaryChance` | chance | 0..1 | `0.3 + 0.7 * a.t` |
 | `bgEdgeChance` | chance | 0..1 | `0.4` |
 | `colorChange` | chance | 0..1 | `weird.colorChange(axes)` |
+| `contrast` | amount | 1..7 | `weird.paletteContrast(axes.weird)`（文字コントラスト下限。未固定時はweird連動の従来通り。固定時は文字/背景ターゲットをまとめて移動し、背景側は「文字−1.5」で連動。pastel等の明るいテーマは低め（例3）に固定） |
 | `paletteSwitchChance` | chance | 0..1 | `a.w` |
 | `paletteInvertChance` | chance | 0..1 | `a.w / 3` |
 | `schemeRange` | amount | 0..1 | `(a.w < 0.8 ? 0.2 : 1)` |

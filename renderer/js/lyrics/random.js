@@ -379,6 +379,7 @@
           direction: axisRun && axisRun.direction,
           genre: mode.genre || null,
           params: moods.resolveParams ? moods.resolveParams(axes, mode.params) : null,
+          paramsSource: (mode && mode.params) || null,
         }).style;
         for (const group of locks) delete style[group];
         if (!locks.has('repeat') && rng.rngFor(seed, target.key, 'repeat')() < 0.3) {
@@ -407,7 +408,7 @@
         const axes = project.styleMode && project.styleMode.axes;
         if (moods.legibilityActive(axes)) {
           const before = mergeDeep(target.base || {}, style);
-          const repaired = moods.repairLegibility(before, axes, target.context, before.palette);
+          const repaired = moods.repairLegibility(before, axes, target.context, before.palette, contrastExtra(project));
           if (repaired && repaired !== before) {
             const next = { ...style };
             for (const key of Object.keys(repaired)) {
@@ -464,6 +465,15 @@
       smartness: smartnessOfProject(project),
       fear: fearOfProject(project),
     };
+  }
+
+  // the theme's pinned text-contrast floor for legibility repairs, or null
+  // when the theme follows the weird axis.
+  function contrastExtra(project) {
+    const raw = project && project.styleMode && project.styleMode.params ? project.styleMode.params.contrast : null;
+    if (raw == null || raw === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? { contrast: Math.max(1, Math.min(7, value)) } : null;
   }
 
   // the sixth axis of the project's look: how far the automatic picks may stray.
@@ -546,7 +556,7 @@
       const axes = project.styleMode && project.styleMode.axes;
       if (moods.legibilityActive(axes)) {
         const before = mergeDeep(base || {}, style);
-        const repaired = moods.repairLegibility(before, axes, context, before.palette);
+        const repaired = moods.repairLegibility(before, axes, context, before.palette, contrastExtra(project));
         if (repaired && repaired !== before) {
           const next = { ...style };
           for (const key of Object.keys(repaired)) {

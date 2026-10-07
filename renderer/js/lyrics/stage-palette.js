@@ -71,6 +71,8 @@
     const base = paletteOf(resolveStyle(project, ''));
     const slots = roles.roleSlots(to);
     const text = [to[slots.T], to[slots.H]].filter((hex) => typeof hex === 'string' && hex);
+    const rawPinned = project && project.styleMode && project.styleMode.params ? project.styleMode.params.contrast : null;
+    const pinned = rawPinned == null || rawPinned === '' ? NaN : Number(rawPinned);
     return {
       beatId: beat.id,
       base,
@@ -83,6 +85,9 @@
       to: to.slice(),
       text,
       key: to.join('|'),
+      // the theme's pinned text-contrast floor (null = the weird axis);
+      // recolorClip derives the backdrop target from it
+      contrast: Number.isFinite(pinned) ? Math.max(1, Math.min(7, pinned)) : null,
     };
   }
 
@@ -164,20 +169,21 @@
   // background track, stage.cue for the rest). Returns `{ spec, colors }` in
   // the live palette; clips already on it come back untouched. The result is
   // cached per clip object so the per-frame walk is paid only on a change.
-  function recolorClip(clip, from, stage, weirdRaw) {
+  function recolorClip(clip, from, stage, weirdRaw, contrastFloor) {
     if (!clip || !stage) return null;
     const source = Array.isArray(from) && from.length ? from : stage.cue;
     const to = stage.to;
     if (!Array.isArray(source) || !source.length || !Array.isArray(to) || !to.length) return null;
     if (sameColors(source, to)) return { spec: clip.spec, colors: clip.colors };
     const rawW = clamp01(weirdRaw);
-    const key = `${stage.key}|${source.join(',').toLowerCase()}|${rawW}`;
+    const floor = contrastFloor != null ? contrastFloor : stage.contrast;
+    const key = `${stage.key}|${source.join(',').toLowerCase()}|${rawW}|${floor == null ? '' : floor}`;
     const cached = cache.get(clip);
     if (cached && cached.key === key) return cached.result;
     const colors = Array.isArray(clip.colors) ? roles.recolor(clip.colors, source, to) : clip.colors;
     const recolored = clip.spec ? recolorUnlocked(clip.spec, source, to) : clip.spec;
     const separateOff = recolored && recolored.params && recolored.params.separate === false;
-    const spec = clip.spec ? (separateOff ? recolored : separateSplits(recolored, stage.text, roles.ratioFor('backdrop', rawW), to)) : clip.spec;
+    const spec = clip.spec ? (separateOff ? recolored : separateSplits(recolored, stage.text, roles.ratioFor('backdrop', rawW, floor), to)) : clip.spec;
     const result = { spec, colors };
     cache.set(clip, { key, result });
     return result;

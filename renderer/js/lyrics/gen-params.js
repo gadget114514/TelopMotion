@@ -134,6 +134,11 @@
     { key: 'bgSizeScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: () => 0.5 },
     { key: 'bgColorScatter', kind: 'amount', tab: 'font', group: 'textBg', min: 0, max: 1, step: 0.05, derive: (a) => 0.3 * a.t },
     // palette / backdrop
+    // the text-contrast floor the readability repairs aim for (4.5 = WCAG AA,
+    // climbing to 7 with the weird axis by default). A light theme such as
+    // pastel can pin it lower (e.g. 3); the backdrop floor follows as text -
+    // 1.5, so one parameter moves both targets together.
+    { key: 'contrast', kind: 'amount', tab: 'palette', group: 'color', min: 1, max: 7, step: 0.1, derive: (a, axes) => weird.paletteContrast(axes && axes.weird) },
     { key: 'colorChange', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a, axes) => weird.colorChange(axes) },
     { key: 'paletteSwitchChance', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a) => a.w },
     { key: 'paletteInvertChance', kind: 'chance', tab: 'palette', group: 'color', min: 0, max: 1, step: 0.05, derive: (a) => a.w / 3 },

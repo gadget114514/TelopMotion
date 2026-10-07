@@ -305,6 +305,7 @@
       context: opts.context,
       typeWeights: opts.typeWeights,
       params: opts.params,
+      paramsSource: opts.paramsSource || null,
     }).style;
     if (generated.palette) style.palette = clone(generated.palette);
     if (!style.color && generated.color) style.color = clone(generated.color);
@@ -316,8 +317,11 @@
     // the profile's zeroed types leave the stacks / single groups
     style = dropWeightedTypes(style, opts.typeWeights);
     // the legibility contract applies to the composed style (the drawn part
-    // plus the generated palette / text); weird 0 / fear 0 is a no-op
-    const repaired = moods.repairLegibility(style, opts.axes, { ...(opts.context || {}), duration: opts.duration }, style.palette);
+    // plus the generated palette / text); weird 0 / fear 0 is a no-op.
+    // The contrast floor comes off the manual source, never the resolved
+    // profile (which always carries the derived fallback).
+    const contrastFloor = moods.contrastPinned ? moods.contrastPinned(opts.paramsSource) : null;
+    const repaired = moods.repairLegibility(style, opts.axes, { ...(opts.context || {}), duration: opts.duration }, style.palette, contrastFloor == null ? null : { contrast: contrastFloor });
     if (repaired && repaired !== style) style = repaired;
     return {
       style,

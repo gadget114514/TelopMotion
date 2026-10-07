@@ -12,10 +12,14 @@ SA.lyricsEngine = (() => {
   // Backdrop shapes stand apart from the lyrics by at least this contrast ratio
   // (WCAG large text); below it the two read as the same colour. The ratio
   // climbs with the raw weird axis (3 -> 5.5), so a weirder backdrop separates
-  // itself more, and it is 3 at weird 0, exactly as before.
+  // itself more, and it is 3 at weird 0, exactly as before. A pinned theme
+  // `contrast` moves it as text - 1.5 instead.
   function backdropContrast(project) {
-    const axes = project && project.styleMode ? project.styleMode.axes : null;
-    return SA.weird ? SA.weird.backdropContrast(axes && axes.weird) : 3;
+    const mode = project && project.styleMode ? project.styleMode : null;
+    const axes = mode ? mode.axes : null;
+    const raw = mode && mode.params ? mode.params.contrast : null;
+    const override = raw == null || raw === '' ? null : Number(raw);
+    return SA.weird ? SA.weird.backdropContrast(axes && axes.weird, Number.isFinite(override) ? Math.max(1, Math.min(7, override)) : null) : 3;
   }
 
   function beatForCue(cue) {

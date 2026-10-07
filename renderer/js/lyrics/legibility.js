@@ -30,6 +30,16 @@
   const STATIC_SECONDS = 0.8;
   const STATIC_SHARE = 0.55;
   const SAMPLES = 40;
+
+  // The theme's pinned text-contrast floor (`repair` context `contrast`), or
+  // the WCAG AA floor when the theme follows the weird axis.
+  function floorOf(ctx) {
+    const raw = ctx && ctx.contrast;
+    if (raw == null || raw === '') return MIN_CONTRAST;
+    const number = Number(raw);
+    if (!Number.isFinite(number)) return MIN_CONTRAST;
+    return Math.max(1, Math.min(7, number));
+  }
   // The fully-displayed hold (the stop) the lyric must keep. The requirement
   // is anchored at weird 0.6, where it is 0.2 s plus 0.05 s per word (a
   // 10-word line wants a 0.7 s stop), and grows as the axis falls below the
@@ -472,6 +482,7 @@
     const reasons = [];
     if (!style) return { ok: true, reasons };
     const context = ctx || {};
+    const floor = floorOf(context);
     const frame = context.frame || { width: 1920, height: 1080 };
     const palette = paletteOf(style, context);
     const targets = textColors(style, context);
@@ -486,7 +497,7 @@
     if (shapeActive && bgOpacity >= 0.5 && !fgAuto && targets.length) {
       for (const bg of backgrounds) {
         for (const text of targets) {
-          if (contrast(text, bg) < MIN_CONTRAST - 1e-6) {
+          if (contrast(text, bg) < floor - 1e-6) {
             reasons.push(`contrast:${text}:${bg}`);
             break;
           }
@@ -496,7 +507,7 @@
     // the text itself against the (implicit) backdrop
     if (!shapeActive && targets.length && palette[0]) {
       for (const text of targets) {
-        if (contrast(text, palette[0]) < MIN_CONTRAST - 1e-6) {
+        if (contrast(text, palette[0]) < floor - 1e-6) {
           reasons.push(`contrast:${text}:${palette[0]}`);
           break;
         }
@@ -617,10 +628,11 @@
   function repairContrastLocal(style, ctx) {
     const palette = paletteOf(style, ctx);
     if (!palette.length) return;
+    const floor = floorOf(ctx);
     const moods = lazy('moods');
     const backgrounds = bgColors(style, ctx);
     if (moods && typeof moods.repairContrast === 'function' && Array.isArray(style.palette && style.palette.colors)) {
-      moods.repairContrast(style.palette.colors, MIN_CONTRAST);
+      moods.repairContrast(style.palette.colors, floor);
     }
     // min contrast of a palette role against every background in play
     const roleRatio = (index) => {
@@ -634,7 +646,7 @@
       let bestRatio = -1;
       for (const index of [2, 3, 5, 6, 4]) {
         const ratio = roleRatio(index);
-        if (ratio >= MIN_CONTRAST) return index;
+        if (ratio >= floor) return index;
         if (ratio > bestRatio) {
           bestRatio = ratio;
           best = index;
@@ -645,7 +657,7 @@
     const shapeActive = bgShapeActive(style);
     const shapeParams = (style.bgShape && style.bgShape.params) || {};
     const declared = textColors(style, ctx);
-    const declaredFails = declared.some((hex) => backgrounds.some((bg) => contrast(hex, bg) < MIN_CONTRAST));
+    const declaredFails = declared.some((hex) => backgrounds.some((bg) => contrast(hex, bg) < floor));
     if (shapeActive && declaredFails && !fgPerLetter(shapeParams)) {
       // the background shape decides the contrast: let the engine pick a
       // readable per-letter foreground instead of flattening the fill
@@ -655,12 +667,12 @@
     const fixFillPart = (part) => {
       if (!part) return part;
       if (part.kind === 'palette') {
-        if (roleRatio(part.index) < MIN_CONTRAST) return { ...part, index: bestRole() };
+        if (roleRatio(part.index) < floor) return { ...part, index: bestRole() };
         return part;
       }
-      if (part.kind === 'solid' && typeof part.value === 'string' && contrast(part.value, backgrounds[0] || '#000000') < MIN_CONTRAST) {
-        const ideal = color.ensureContrast(part.value, backgrounds[0] || '#000000', MIN_CONTRAST);
-        const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+      if (part.kind === 'solid' && typeof part.value === 'string' && contrast(part.value, backgrounds[0] || '#000000') < floor) {
+        const ideal = color.ensureContrast(part.value, backgrounds[0] || '#000000', floor);
+        const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', floor) || snapIdealToPalette(ideal, palette);
         return { ...part, value: snapped || ideal };
       }
       return part;
@@ -670,14 +682,14 @@
       if (fill.kind === 'gradient' && Array.isArray(fill.stops)) {
         const stops = fill.stops.map((stop) => {
           if (!stop || stop.paletteIndex == null) {
-            if (stop && typeof stop.color === 'string' && contrast(stop.color, backgrounds[0] || '#000000') < MIN_CONTRAST) {
-              const ideal = color.ensureContrast(stop.color, backgrounds[0] || '#000000', MIN_CONTRAST);
-              const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+            if (stop && typeof stop.color === 'string' && contrast(stop.color, backgrounds[0] || '#000000') < floor) {
+              const ideal = color.ensureContrast(stop.color, backgrounds[0] || '#000000', floor);
+              const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', floor) || snapIdealToPalette(ideal, palette);
               return { ...stop, color: snapped || ideal };
             }
             return stop;
           }
-          if (roleRatio(stop.paletteIndex) < MIN_CONTRAST) return { ...stop, paletteIndex: bestRole() };
+          if (roleRatio(stop.paletteIndex) < floor) return { ...stop, paletteIndex: bestRole() };
           return stop;
         });
         style.color = { ...style.color, fill: { ...fill, stops } };
@@ -693,9 +705,9 @@
         const value = instance.params[key];
         if (typeof value === 'string' && /^#/.test(value)) {
           const worst = backgrounds.reduce((min, bg) => Math.min(min, contrast(value, bg)), Infinity);
-          if (worst < MIN_CONTRAST && key === 'color') {
-            const ideal = color.ensureContrast(value, backgrounds[0] || '#000000', MIN_CONTRAST);
-            const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', MIN_CONTRAST) || snapIdealToPalette(ideal, palette);
+          if (worst < floor && key === 'color') {
+            const ideal = color.ensureContrast(value, backgrounds[0] || '#000000', floor);
+            const snapped = snapMeetingToPalette(ideal, palette, backgrounds[0] || '#000000', floor) || snapIdealToPalette(ideal, palette);
             instance.params[key] = snapped || ideal;
           }
         }

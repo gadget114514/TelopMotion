@@ -70,10 +70,40 @@
     return [(colors || [])[4], (colors || [])[5]].filter(Boolean);
   }
 
+  // The theme's pinned text-contrast floor for legibility repairs, or null
+  // when the theme follows the weird axis. Only an explicitly pinned value
+  // travels: the resolved profile always carries a derived fallback, and
+  // reusing that would pin every derived value (a section boost re-resolves
+  // from the manual source for exactly this reason).
+  function contrastPinnedValue(manual) {
+    if (!SA.genParams || typeof SA.genParams.isPinned !== 'function') return null;
+    if (!SA.genParams.isPinned({ params: manual || {} }, 'contrast')) return null;
+    const raw = (manual || {}).contrast;
+    if (raw == null || raw === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(1, Math.min(7, value)) : null;
+  }
+
+  function contrastValueFor(ctx) {
+    // the pinned map first (prepare resolves the pinned keys once); the
+    // manual source covers re-roll / hand-built contexts that never ran it
+    const pinned = ctx && ctx.pinned ? ctx.pinned.contrast : null;
+    if (pinned != null && pinned !== '') {
+      const value = Number(pinned);
+      if (Number.isFinite(value)) return Math.max(1, Math.min(7, value));
+    }
+    return contrastPinnedValue(ctx && ctx.paramsSource);
+  }
+
+  function contrastExtraFor(ctx) {
+    const value = contrastValueFor(ctx);
+    return value == null ? null : { contrast: value };
+  }
+
   // The profile's figure colours: two steps of the backdrop planes, kept 1.5+
   // apart from the planes and at the backdrop floor from the text. No computed
   // colours: shifted / separated ideals are snapped back to the plane list.
-  function figureColors(planes, textColors, rawW) {
+  function figureColors(planes, textColors, rawW, contrastFloor) {
     const list = (Array.isArray(planes) ? planes : []).filter((hex) => typeof hex === 'string' && hex);
     if (!list.length) return null;
     const shiftV = (hex, delta) => {
@@ -94,7 +124,7 @@
       }
       return ideal;
     };
-    const target = SA.weird && typeof SA.weird.backdropContrast === 'function' ? SA.weird.backdropContrast(rawW) : 3.5;
+    const target = SA.weird && typeof SA.weird.backdropContrast === 'function' ? SA.weird.backdropContrast(rawW, contrastFloor) : 3.5;
     const separate = (hex, others, floor, pool) => (SA.moods && typeof SA.moods.separatePlane === 'function' ? SA.moods.separatePlane(hex, others, floor, pool || list) : hex);
     const texts = (Array.isArray(textColors) ? textColors : []).filter(Boolean);
     return [
@@ -749,6 +779,7 @@
         emphasis: SA.moods.isEmphasis ? SA.moods.isEmphasis(cue) : false,
         typeWeights: ctx.typeWeights,
         params: paramsFor(ctx, cue.id) || null,
+        paramsSource: ctx.paramsSource || null,
       }).style;
       projectDoc.cueStyles[cue.id] = SA.project.mergeDeep(projectDoc.cueStyles[cue.id] || {}, {
         enter: generated.enter,
@@ -1080,7 +1111,7 @@
   // listed palette furthest from the avoid lists (the base and the previous
   // cue), repaired so the text keeps its contrast. The colours are copied, so
   // a run never mutates the stored library entry.
-  function pickUsePalette(random, usePalettes, avoidLists, rawW) {
+  function pickUsePalette(random, usePalettes, avoidLists, rawW, contrastFloor) {
     const list = (Array.isArray(usePalettes) ? usePalettes : []).filter(
       (entry) => entry && Array.isArray(entry.colors) && entry.colors.filter((hex) => typeof hex === 'string').length
     );
@@ -1098,7 +1129,7 @@
     });
     const colors = best.colors.slice();
     if (SA.moods && typeof SA.moods.repairContrast === 'function') {
-      const contrast = SA.weird && typeof SA.weird.paletteContrast === 'function' ? SA.weird.paletteContrast(rawW) : 4.5;
+      const contrast = SA.weird && typeof SA.weird.paletteContrast === 'function' ? SA.weird.paletteContrast(rawW, contrastFloor) : 4.5;
       SA.moods.repairContrast(colors, contrast, { keepText: true });
     }
     return { id: best.id || 'use-palette', name: best.name || 'palette', colors };
@@ -1142,14 +1173,14 @@
     // the profile's use-palettes replace the on-the-fly generation entirely
     const usePalettes = Array.isArray(ctx.usePalettes) ? ctx.usePalettes : [];
     if (usePalettes.length && typeof pickUsePalette === 'function') {
-      const picked = pickUsePalette(random, usePalettes, avoid, rawW);
+      const picked = pickUsePalette(random, usePalettes, avoid, rawW, p ? p.contrast : null);
       if (picked) return picked;
     }
     const genre = ctx.genre && SA.genres && typeof SA.genres.get === 'function' ? SA.genres.get(ctx.genre) : null;
     let best = null;
     let bestScore = -1;
     for (let i = 0; i < 3; i += 1) {
-      const candidate = SA.moods.generatePalette(random, axes, null, genre && genre.palettes);
+      const candidate = SA.moods.generatePalette(random, axes, null, genre && genre.palettes, p ? p.contrast : null);
       if (!candidate || !Array.isArray(candidate.colors) || !candidate.colors.length) continue;
       const score = Math.min(...avoid.map((colors) => paletteDistance(candidate.colors, colors)));
       if (score > bestScore) {
@@ -2040,6 +2071,7 @@
         context: cueContext,
         typeWeights: ctx.typeWeights,
         params: p,
+        paramsSource: ctx.paramsSource || null,
       }).style;
       if (generated.exit) patch.exit = generated.exit;
       if (generated.enter) {
@@ -2140,7 +2172,7 @@
         if (hold) beatPatch.hold = [hold];
       }
       if (SA.genParams.roll(wr, p.motionChance)) {
-        const g = SA.moods.generate({ axes, seed: stagingSeed(ctx, beatSeed * 7 + 3, cue.id), direction, genre, context: cueContext, typeWeights: ctx.typeWeights, params: p || null }).style;
+        const g = SA.moods.generate({ axes, seed: stagingSeed(ctx, beatSeed * 7 + 3, cue.id), direction, genre, context: cueContext, typeWeights: ctx.typeWeights, params: p || null, paramsSource: ctx.paramsSource || null }).style;
         if (g.enter) beatPatch.enter = g.enter;
         if (g.exit) beatPatch.exit = g.exit;
       }
@@ -2697,7 +2729,7 @@
     // from the planes and the backdrop floor from the text
     if (params) {
       const planes = ctx.backdropPlanes && ctx.backdropPlanes[cue.id];
-      const derived = figureColors(planes, textColorsOf(palette), rawW);
+      const derived = figureColors(planes, textColorsOf(palette), rawW, params ? params.contrast : null);
       if (derived) palette = [...palette.slice(0, 3), derived[0], derived[1]].filter(Boolean);
     }
     const roll = SA.rng.rngFor(seed + index * 313, cue.id, 'figure')();
@@ -3223,7 +3255,7 @@
     // into the cue, so the theme stays shared.
     if (SA.moods.legibilityActive && SA.moods.legibilityActive(ctx.axes)) {
       const writeRepair = (cueId, effective, context) => {
-        const repaired = SA.moods.repairLegibility(effective, ctx.axes, context, effective.palette);
+        const repaired = SA.moods.repairLegibility(effective, ctx.axes, context, effective.palette, contrastExtraFor(ctx));
         if (!repaired || repaired === effective) return;
         const container = cueId ? projectDoc.cueStyles[cueId] || (projectDoc.cueStyles[cueId] = {}) : projectDoc.style;
         for (const key of Object.keys(repaired)) {
@@ -3316,7 +3348,7 @@
           const path = `cue:${cue.id}/beat:${beat.id}`;
           const bad = () => {
             const resolved = SA.project.resolveStyle(projectDoc, path);
-            const report = SA.legibility.check(resolved, { palette: cueColors, motion: false });
+            const report = SA.legibility.check(resolved, { palette: cueColors, motion: false, contrast: contrastValueFor(ctx) });
             if (!report.ok) return true;
             const scheme = resolved.palette && resolved.palette.scheme;
             const texts = scheme ? cueTexts : typeof SA.legibility.textColors === 'function' ? SA.legibility.textColors(resolved, {}) : [];
@@ -3331,7 +3363,7 @@
           const repaired = SA.moods.repairLegibility(original, ctx.axes, {
             ...SA.moods.contextForCue(projectDoc, cue),
             duration: Math.max(0.5, (Number(cue.end) || 0) - (Number(cue.start) || 0)),
-          }, original.palette);
+          }, original.palette, contrastExtraFor(ctx));
           if (repaired && repaired !== original) {
             for (const key of Object.keys(repaired)) {
               if (JSON.stringify(repaired[key]) !== JSON.stringify(original[key])) bag[key] = JSON.parse(JSON.stringify(repaired[key]));

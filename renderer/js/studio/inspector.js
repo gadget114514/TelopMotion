@@ -5,7 +5,7 @@ SA.inspector = (() => {
 
   // the Studio lists every effect pack: the built-ins, the font size pack and
   // the extended primitives
-  const UI_PACKS = { packs: ['font', 'pro'] };
+  const UI_PACKS = { packs: [null, 'font', 'pro'] };
 
   const MOTION_GROUPS = ['animation', 'layout', 'enter', 'exit', 'location', 'fill', 'hold', 'page'];
   const STACK_GROUPS = ['hold', 'edge', 'post', 'bgEdge', 'ornEdge'];
@@ -3820,7 +3820,7 @@ SA.inspector = (() => {
     // group; `shapeLayer` is the user-placeable shape clip built by shape-ops.
     const fxBackground = isBackground || spec.type === 'shapeLayer';
     const usedTypes = isBackground
-      ? SA.fx.list('background', { packs: [null, ...UI_PACKS.packs] }).map((descriptor) => descriptor.type)
+      ? SA.fx.list('background', UI_PACKS).map((descriptor) => descriptor.type)
       : [...new Set(['none'].concat(SA.fillerRender ? SA.fillerRender.types() : []).concat('shapeLayer'))];
     const typeLabelFor = (type) => (isBackground || type === 'shapeLayer' ? SA.controls.typeLabel('background', type) : fillerTypeLabel(type));
     const typeSelect = selectControl(
@@ -4186,7 +4186,7 @@ SA.inspector = (() => {
       schemeText.textContent = `${t('studio.inspector.scheme')}: ${label}`;
       schemeRow.appendChild(schemeText);
       const isInverted = !!(roles && schemeId && schemeId === roles.SCHEME_INVERT);
-      const invertible = !!(roles && parentColors.length && (isInverted || roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird)));
+      const invertible = !!(roles && parentColors.length && (isInverted || roles.applyScheme(parentColors, roles.SCHEME_INVERT, schemeWeird, modeParams ? modeParams.contrast : null)));
       const invertButton = document.createElement('button');
       invertButton.type = 'button';
       invertButton.className = 'btn btn-mini';
@@ -4199,9 +4199,9 @@ SA.inspector = (() => {
       // the store falls back to the full scheme set when the calm range has
       // fewer than two candidates, so the button uses the same fallback;
       // otherwise it would stay disabled while the command could still work
-      let candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined) : [];
+      let candidates = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, modeParams ? modeParams.schemeRange : undefined, modeParams ? modeParams.contrast : null) : [];
       if (candidates.length < 2) {
-        const full = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird) : [];
+        const full = roles && parentColors.length ? roles.schemes(parentColors, schemeWeird, undefined, modeParams ? modeParams.contrast : null) : [];
         if (full.length > candidates.length) candidates = full;
       }
       // only another role order counts: re-drawing the order that is already

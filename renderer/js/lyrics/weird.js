@@ -14,6 +14,8 @@
   //                        raw 0.7 used to (and stays legible)
   //   bg      raw / 0.4    the backdrop reaches its full character at raw 0.4
   //   palette 4.5..7       text-vs-background contrast climbs with the axis
+  //                        (a pinned theme `contrast` overrides it; the
+  //                        backdrop floor follows as text - 1.5)
   //   glow    1..0.55      neon / inner glow shrink as the axis rises
   //   palettes 1..max      the number of theme palettes in rotation (weird 1
   //                        reaches the set's maximum)
@@ -45,12 +47,20 @@
     return Math.min(1, clamp01(value) / BG_REVEAL);
   }
 
-  function paletteContrast(value) {
-    return 4.5 + 2.5 * raw(value);
+  function paletteContrast(value, override) {
+    if (override == null || override === '') return 4.5 + 2.5 * raw(value);
+    const fixed = Number(override);
+    if (!Number.isFinite(fixed)) return 4.5 + 2.5 * raw(value);
+    return Math.max(1, Math.min(7, fixed));
   }
 
-  function backdropContrast(value) {
-    return 3 + 2.5 * raw(value);
+  function backdropContrast(value, override) {
+    // a pinned text floor derives the backdrop floor from it (text - 1.5),
+    // so one theme parameter moves both readability targets together
+    if (override == null || override === '') return 3 + 2.5 * raw(value);
+    const fixed = Number(override);
+    if (!Number.isFinite(fixed)) return 3 + 2.5 * raw(value);
+    return Math.max(1, Math.max(1, Math.min(7, fixed)) - 1.5);
   }
 
   function glowScale(value) {

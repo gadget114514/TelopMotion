@@ -40,6 +40,44 @@ test('ratioFor climbs with the weird axis', () => {
   assert.equal(roles.ratioFor('neighbour', 1), 1.15);
 });
 
+test('a pinned contrast floor moves the text and backdrop targets together', () => {
+  // null / undefined / '' mean "not pinned": the weird axis decides
+  assert.equal(roles.ratioFor('text', 0.6, null), 6);
+  assert.equal(roles.ratioFor('backdrop', 0.6, undefined), 4.5);
+  assert.equal(roles.ratioFor('text', 0.6, ''), 6);
+  // a pastel theme can ask for less than the 4.5 WCAG floor; the backdrop
+  // follows as text - 1.5 while the structural steps never move
+  assert.equal(roles.ratioFor('text', 0.6, 3), 3);
+  assert.equal(roles.ratioFor('backdrop', 0.6, 3), 1.5);
+  assert.equal(roles.ratioFor('text', 0, 3), 3);
+  assert.equal(roles.ratioFor('soft', 0.6, 3), 1.5);
+  assert.equal(roles.ratioFor('neighbour', 0.6, 3), 1.15);
+  // the floor clamps to 1..7; null is not 0 (Number(null) is 0, so the nil
+  // check must come first)
+  assert.equal(roles.contrastFloorOf(null), null);
+  assert.equal(roles.contrastFloorOf(undefined), null);
+  assert.equal(roles.contrastFloorOf(''), null);
+  assert.equal(roles.contrastFloorOf(99), 7);
+  assert.equal(roles.contrastFloorOf(0), 1);
+  assert.equal(roles.backdropFor(3), 1.5);
+  assert.equal(roles.backdropFor(null), null);
+});
+
+test('repairPalette and compatible honor the pinned floor', () => {
+  const soft = TEN.slice();
+  // slot 4 (text) vs slot 0 (mid): clears 4.5 but not the weird-0.6 floor of 6
+  soft[4] = '#8577a3';
+  const ratio = roles.contrast(soft[4], soft[0]);
+  assert.ok(ratio >= 4.5 && ratio < 6, `fixture ratio ${ratio}`);
+  assert.equal(roles.compatible(soft, soft, 0.6), false, 'fails the weird-0.6 floor');
+  assert.equal(roles.compatible(soft, soft, 0.6, 3), true, 'passes the pinned floor');
+  const repaired = roles.repairPalette(soft.slice(), 0.6, null, 3);
+  for (const [a, b, kind] of roles.CONTRAST) {
+    const need = kind === 'text' ? 3 : kind === 'backdrop' ? 1.5 : kind === 'soft' ? 1.5 : 1.15;
+    assert.ok(roles.contrast(repaired[a], repaired[b]) >= need - 1e-6, `${a}->${b} ${kind}`);
+  }
+});
+
 test('every palette stores exactly the 10 slots, no derived colours', () => {
   assert.equal(roles.get(TEN, roles.SLOT.MID_A), TEN[0]);
   assert.equal(roles.get(TEN, roles.SLOT.TEXT_FILL), TEN[4]);

@@ -199,6 +199,27 @@ test('strokeVariety derives from weird and a manual value wins', () => {
   assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0 }, params: { strokeVariety: 1 } }).strokeVariety, 1);
 });
 
+test('contrast derives from weird and a manual value wins', () => {
+  const def = genParams.PARAMS.find((param) => param.key === 'contrast');
+  assert.ok(def, 'contrast is not in the parameter table');
+  assert.equal(def.kind, 'amount');
+  assert.equal(def.group, 'color');
+  assert.equal(def.tab, 'palette');
+  assert.equal(def.min, 1);
+  assert.equal(def.max, 7);
+  for (const weirdValue of [0, 0.3, 0.6, 1]) {
+    const axes = { ...BASE, weird: weirdValue };
+    assert.equal(genParams.derive(axes).contrast, weird.paletteContrast(axes.weird), `derive at ${weirdValue}`);
+  }
+  assert.equal(genParams.derive({ ...BASE, weird: 0 }).contrast, 4.5);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0.6 } }).contrast, 6);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0.6 }, params: { contrast: 3 } }).contrast, 3);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0.6 }, params: { contrast: 99 } }).contrast, 7);
+  assert.equal(genParams.resolve({ axes: { ...BASE, weird: 0.6 }, params: { contrast: 0 } }).contrast, 1);
+  assert.ok(genParams.isPinned({ params: { contrast: 3 } }, 'contrast'));
+  assert.equal(genParams.isPinned({ params: {} }, 'contrast'), false);
+});
+
 test('repeatChance derives from weird and reaches 1 at weird 0.6', () => {
   const def = genParams.PARAMS.find((param) => param.key === 'repeatChance');
   assert.ok(def, 'repeatChance is not in the parameter table');

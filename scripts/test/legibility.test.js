@@ -40,6 +40,22 @@ function plainStyle(overrides) {
   };
 }
 
+test('the contrast floor follows the pinned theme value', () => {
+  // #77668f on #101018 reads 3.68: below the 4.5 default, above a pastel 3.0
+  const soft = plainStyle({ color: { fill: { kind: 'solid', value: '#77668f' } } });
+  const strict = legibility.check(soft, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.equal(strict.ok, false);
+  assert.ok(strict.reasons.some((reason) => reason.startsWith('contrast')));
+  const relaxed = legibility.check(soft, { frame: FRAME, duration: 3, letterCount: 12, contrast: 3 });
+  assert.ok(!relaxed.reasons.some((reason) => reason.startsWith('contrast')), relaxed.reasons.join(' / '));
+  // the repair aims at the pinned floor too: nothing to fix at 3, but the
+  // default floor repaints the fill
+  const kept = legibility.repair(soft, { frame: FRAME, duration: 3, letterCount: 12, contrast: 3 });
+  assert.equal(kept.style.color.fill.value, '#77668f');
+  const fixed = legibility.repair(soft, { frame: FRAME, duration: 3, letterCount: 12 });
+  assert.notEqual(fixed.style.color.fill.value, '#77668f');
+});
+
 test('check reports the contrast, size, tag and background issues it fixes', () => {
   // a dark text on a dark background
   const bad = plainStyle({ color: { fill: { kind: 'solid', value: '#151520' } } });

@@ -620,6 +620,19 @@
     return genParamsMod.resolve({ axes, params: params || {} });
   }
 
+  // The theme's pinned text-contrast floor from a manual param map (never a
+  // resolved profile: resolve always fills the derived fallback, and reusing
+  // that would pin every derived value). Null when the theme follows the
+  // weird axis.
+  function contrastPinned(manualParams) {
+    if (!genParamsMod || typeof genParamsMod.isPinned !== 'function') return null;
+    if (!genParamsMod.isPinned({ params: manualParams || {} }, 'contrast')) return null;
+    const raw = (manualParams || {}).contrast;
+    if (raw == null || raw === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(1, Math.min(7, value)) : null;
+  }
+
   // Numeric parameters stay inside the author's recommended range
   // (`param.random`); without one the author's default is kept. The sixth axis
   // may leave both premises: it widens the range and moves parameters that have
@@ -1009,10 +1022,10 @@
     return random ? pick(random, candidates) : candidates[0];
   }
 
-  function repairSlotPalette(colors, axes) {
+  function repairSlotPalette(colors, axes, contrastFloor) {
     const raw = weirdOf(axes);
-    const textTarget = weirdMod.paletteContrast(raw);
-    const backdropTarget = weirdMod.backdropContrast(raw);
+    const textTarget = weirdMod.paletteContrast(raw, contrastFloor);
+    const backdropTarget = weirdMod.backdropContrast(raw, contrastFloor);
     // the text decides the side: a light text pushes every mid plane dark and
     // the other way round, so every text pair holds by construction whatever
     // the hues are; the small plane steps are then trivial
@@ -1106,7 +1119,7 @@
   // A member of the palette set: the same slots with a relationship-preserving
   // change (rotate the mid pair, step every hue together, flip the accents) so
   // any member's text still contrasts any member's mid planes.
-  function variantPalette(base, kind, random, axes) {
+  function variantPalette(base, kind, random, axes, contrastFloor) {
     const colors = (base && Array.isArray(base.colors) ? base.colors : []).slice(0, paletteRoles.SIZE);
     while (colors.length < paletteRoles.SIZE) colors.push(colors[colors.length - 1] || '#888888');
     const swap = (a, b) => {
@@ -1128,7 +1141,7 @@
       const step = kind === 'lift' ? 0.1 : -0.1;
       for (const index of [0, 1, 2, 3]) colors[index] = paletteRoles.shift(colors[index], 0, 1, step);
     }
-    repairSlotPalette(colors, axes || {});
+    repairSlotPalette(colors, axes || {}, contrastFloor);
     return {
       ...(base || {}),
       id: `${(base && base.id) || 'palette'}_${kind}`,
@@ -1139,12 +1152,12 @@
     };
   }
 
-  function generatePaletteSet(random, axes, n, allowed) {
+  function generatePaletteSet(random, axes, n, allowed, contrastFloor) {
     const count = Math.max(1, Math.min(4, Number(n) || 3));
     const base = paletteFor10(axes, random, allowed);
     const set = [base];
     const kinds = ['swapMid', 'hueStep', 'accentFlip'];
-    for (let i = 1; i < count; i += 1) set.push(variantPalette(base, kinds[(i - 1) % kinds.length], random, axes));
+    for (let i = 1; i < count; i += 1) set.push(variantPalette(base, kinds[(i - 1) % kinds.length], random, axes, contrastFloor));
     return set;
   }
 
@@ -1287,7 +1300,7 @@
   // a random palette that keeps the mood's character: derived from a matching family.
   // Every stored palette holds the 10 fixed slots; the jitter below moves all
   // ten together and the slot repair keeps the contrast contract.
-  function generatePalette(random, axes, name, allowed) {
+  function generatePalette(random, axes, name, allowed, contrastFloor) {
     const w = textWeirdOf(axes);
     const s = smartOf(axes);
     const base = paletteFor(axes, random, allowed);
@@ -1310,7 +1323,7 @@
       const clash = pick(random, [0.33, 0.5, 0.67]) + (random() * 2 - 1) * 0.05;
       for (const i of [paletteRoles.SLOT.TEXT_FILL2, paletteRoles.SLOT.FIG_A, paletteRoles.SLOT.FIG_B]) if (colors[i]) colors[i] = shiftColor(colors[i], clash, 1 + 0.3 * w, 1);
     }
-    repairSlotPalette(colors, normalizeAxes(axes));
+    repairSlotPalette(colors, normalizeAxes(axes), contrastFloor);
     return { id: `theme_${Math.floor(random() * 1e9).toString(16)}`, name: name || base.name, colors, scheme: base.scheme, roles: 2 };
   }
 
@@ -1319,7 +1332,7 @@
   // Each one is the best of three draws — the candidate furthest from the base
   // and every palette already in play. Every candidate already carries the 10
   // slots. Entries carry `auto: true`: the next run replaces them.
-  function paletteSetFor(random, axes, baseColors, existing, count, allowed) {
+  function paletteSetFor(random, axes, baseColors, existing, count, allowed, contrastFloor) {
     const out = [];
     const kept = Array.isArray(existing) ? existing : [];
     const base = Array.isArray(baseColors) && baseColors.length ? baseColors : [];
@@ -1330,7 +1343,7 @@
       let best = null;
       let bestScore = -1;
       for (let attempt = 0; attempt < 3; attempt += 1) {
-        const candidate = generatePalette(random, axes, null, allowed);
+        const candidate = generatePalette(random, axes, null, allowed, contrastFloor);
         if (!candidate || !Array.isArray(candidate.colors) || !candidate.colors.length) continue;
         const score = Math.min(...avoid.map((colors) => paletteDistance(candidate.colors, colors)));
         if (score > bestScore) {
@@ -1339,7 +1352,7 @@
         }
       }
       if (!best) break;
-      const colors = paletteRoles.repairPalette(best.colors.slice(), weirdOf(axes), repairContrast);
+      const colors = paletteRoles.repairPalette(best.colors.slice(), weirdOf(axes), repairContrast, contrastFloor);
       out.push({ id: best.id, name: best.name, colors, auto: true });
       avoid.push(colors);
     }
@@ -1516,7 +1529,7 @@
     return pool.length ? pick(random, pool) : null;
   }
 
-  function colorSetFor(random, palette, axes) {
+  function colorSetFor(random, palette, axes, contrastFloor) {
     const TEXT_FILL = paletteRoles.SLOT.TEXT_FILL;
     const TEXT_FILL2 = paletteRoles.SLOT.TEXT_FILL2;
     const TEXT_EDGE = paletteRoles.SLOT.TEXT_EDGE;
@@ -1541,10 +1554,11 @@
     const w = textWeirdOf(axes);
     if (!(w > 0) || random() >= w) return base;
     // B6 / H5: the fill may leave the text role, as long as every colour it
-    // uses still clears the legibility floor (4.5)
+    // uses still clears the theme's contrast floor (4.5 by default)
     const colors = (palette && palette.colors) || [];
     const bg = color.parse(colors[MID_A] || '#000000');
-    const readable = [TEXT_FILL, TEXT_FILL2, TEXT_EDGE, FIG_A, FIG_B].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= 4.5);
+    const floor = paletteRoles.contrastFloorOf(contrastFloor) != null ? paletteRoles.contrastFloorOf(contrastFloor) : 4.5;
+    const readable = [TEXT_FILL, TEXT_FILL2, TEXT_EDGE, FIG_A, FIG_B].filter((i) => colors[i] && color.contrastRatio(color.parse(colors[i]), bg) >= floor);
     if (!readable.length) return base;
     let fill;
     if (readable.length >= 2 && random() < 0.55) {
@@ -1821,7 +1835,7 @@
     return best;
   }
 
-  function planeColors(palette, n, scheme, textColors, rawW) {
+  function planeColors(palette, n, scheme, textColors, rawW, contrastFloor) {
     const source = Array.isArray(palette) ? palette : palette && Array.isArray(palette.colors) ? palette.colors : [];
     const baseHex = paletteRoles.get(source, paletteRoles.SLOT.MID_A) || source[0] || '#101018';
     const base = color.rgbToHsv(color.parse(baseHex));
@@ -1857,7 +1871,7 @@
       }
       out.push(color.toHex({ ...color.hsvToRgb({ h: (h + 360) % 360, s, v, a: 1 }), a: 1 }));
     }
-    const target = weirdMod.backdropContrast(rawW);
+    const target = weirdMod.backdropContrast(rawW, contrastFloor);
     const texts = (Array.isArray(textColors) ? textColors : []).filter((hex) => typeof hex === 'string' && hex);
     return out.map((hex) => separatePlane(hex, texts, target, source));
   }
@@ -1887,7 +1901,11 @@
     const layout = pick(random, avoidFilter(layouts, avoid && avoid.layout));
     const scheme = planeScheme(random, rawW);
     const textColors = Array.isArray(opts.textColors) ? opts.textColors : [];
-    const colors = planeColors(paletteColors, count, scheme, textColors, rawW);
+    // the theme's pinned contrast floor travels either on the options root
+    // (generate's bgOptions) or inside the resolved plane params (direct's
+    // neighbouring-clip context)
+    const contrastFloor = opts.contrast != null ? opts.contrast : opts.planes && opts.planes.contrast;
+    const colors = planeColors(paletteColors, count, scheme, textColors, rawW, contrastFloor);
     const s = smartOf(axes);
     const motions =
       s > 0
@@ -2172,6 +2190,7 @@
       textColors: opts.textColors,
       rawW: opts.rawW,
       avoid: opts.avoid,
+      contrast: opts.contrast,
     });
   }
 
@@ -2432,7 +2451,7 @@
     return null;
   }
 
-  function enforceReadability(style, palette, random, w, rawW, rawFear) {
+  function enforceReadability(style, palette, random, w, rawW, rawFear, contrastFloor) {
     const shape = style.bgShape;
     if (!shape || !shape.type || shape.type === 'none') return;
     const params = shape.params || (shape.params = {});
@@ -2447,12 +2466,13 @@
     if (!fgHex) return;
     const ratio = (a, b) => color.contrastRatio(color.parse(a), color.parse(b));
     const worst = Math.min(...bgColors.map((hex) => ratio(fgHex, hex || '#000000')));
-    // the minimum the auto-contrast aims for: the legibility floor (4.5) as
-    // soon as an axis that may break readability (weird / fear) is on; the
-    // untouched legacy draw keeps its old 3:1 floor so old catalogs stay
-    // byte-identical
+    // the minimum the auto-contrast aims for: the theme's contrast floor (4.5
+    // by default) as soon as an axis that may break readability (weird / fear)
+    // is on; the untouched legacy draw keeps its old 3:1 floor so old catalogs
+    // stay byte-identical
     const active = clamp01(rawW) > 0 || clamp01(rawFear) > 0;
-    const floor = active ? 4.5 : 3;
+    const pinned = paletteRoles.contrastFloorOf(contrastFloor);
+    const floor = active ? (pinned != null ? pinned : 4.5) : 3;
     if (worst >= floor) return;
     const options = [TEXT_FILL, TEXT_EDGE];
     let best = null;
@@ -2872,8 +2892,12 @@
     // the resolved profile (axes + the user's fixed keys): the stroke-variety
     // draw reads its manual override, while everything else keeps deriving
     const profile = opts.params || null;
+    // the theme's pinned text-contrast floor (null = the weird axis decides);
+    // read off the manual source, never the resolved profile (which always
+    // carries the derived fallback)
+    const contrastFloor = contrastPinned(opts.paramsSource);
     const style = {};
-    const palette = generatePalette(random, axes, null, genre && genre.palettes);
+    const palette = generatePalette(random, axes, null, genre && genre.palettes, contrastFloor);
     style.palette = palette;
     // effect colors come from the readable text / figure roles, plus the
     // stored text-background tone for shadows and extruded edges.
@@ -2884,7 +2908,7 @@
     const dark = palette.colors[paletteRoles.SLOT.TEXT_BG] || palette.colors[paletteRoles.SLOT.MID_A];
     // H4: the accents join every colour pool once the axis is on
     const colors = { bright, dark, accents: [palette.colors[paletteRoles.SLOT.TEXT_FILL2], palette.colors[paletteRoles.SLOT.FIG_A], palette.colors[paletteRoles.SLOT.TEXT_EDGE]].filter(Boolean) };
-    style.color = colorSetFor(random, palette, axes);
+    style.color = colorSetFor(random, palette, axes, contrastFloor);
     // one hero effect per theme; genre profiles may override the weighting
     const hero = genre && genre.hero ? pickGenreHero(genre, random) : pickHero(random, axes);
     // B8: a weird look may carry a second hero family (an edge and a post at once)
@@ -2943,6 +2967,7 @@
     const bgOptions = {};
     if (profile) {
       if (profile.textBgChance != null) bgOptions.chance = profile.textBgChance;
+      if (contrastFloor != null) bgOptions.contrast = contrastFloor;
       if (profile.bgEnclose != null || profile.bgAccent != null || profile.bgUnderlay != null) {
         bgOptions.placement = { bgEnclose: profile.bgEnclose, bgAccent: profile.bgAccent, bgUnderlay: profile.bgUnderlay };
       }
@@ -2958,8 +2983,8 @@
     applyGenreBackground(style, genre, axes, random, palette.colors, forced || hero2 === 'bg', bgOptions);
     if (genre) signature = applySignature(style, genre, random, emphasis, !!opts.ensureSignature, w);
     style.text = textStyleFor(random, axes, context, genre);
-    enforceReadability(style, palette.colors, random, w, weirdOf(axes), fearOf(axes));
-    const finalStyle = repairLegibility(style, axes, context, palette);
+    enforceReadability(style, palette.colors, random, w, weirdOf(axes), fearOf(axes), contrastFloor);
+    const finalStyle = repairLegibility(style, axes, context, palette, contrastFloor != null ? { contrast: contrastFloor } : null);
     return {
       style: finalStyle,
       axes,
@@ -3029,6 +3054,7 @@
     strokeVarietyOf,
     isStrokeKey,
     resolveParams,
+    contrastPinned,
     extremeStroke: genParamsMod && genParamsMod.extremeStroke,
     contextFor,
     contextForCue,

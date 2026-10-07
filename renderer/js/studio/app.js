@@ -1565,7 +1565,7 @@
         const entry = pool.pick({ axes, genre: lookGenre, seed, exclude: opts.exclude, typeWeights });
         if (entry) {
           await step('studio.busy.compose', 0.4);
-          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context, typeWeights, params });
+          const composed = pool.compose(entry, { axes, seed, genre: lookGenre, direction, context, typeWeights, params, paramsSource: params });
           look = composed.look;
           lookClip = composed.clip;
           themeStyle = composed.style;
@@ -1583,7 +1583,7 @@
     }
     if (!themeStyle) {
       await step('studio.busy.compose', 0.4);
-      themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true, typeWeights, params }).style;
+      themeStyle = SA.moods.generate({ axes, seed, direction, genre, context, ensureSignature: true, typeWeights, params, paramsSource: params }).style;
     }
     await step('studio.busy.apply', 0.7);
     const themeName = (themeStyle.palette && (themeStyle.palette.name || themeStyle.palette.id)) || '';

@@ -20,7 +20,7 @@ SA.themeEditor = (() => {
     layout: 'studio.inspector.layout',
     animation: 'studio.inspector.animation',
   };
-  const UI_PACKS = { packs: ['font', 'pro'] };
+  const UI_PACKS = { packs: [null, 'font', 'pro'] };
   // The group headings of the parameter table (`def.group`); a group without a
   // label is rendered without a heading.
   const GROUP_LABEL = {

@@ -686,6 +686,16 @@ SA.store = (() => {
     return value > 1 ? 1 : value;
   }
 
+  // The theme's pinned text-contrast floor for the beat colour schemes, or
+  // null when the theme follows the weird axis.
+  function beatSchemeContrast() {
+    const mode = (state.project && state.project.styleMode) || {};
+    const raw = (mode.params || {}).contrast;
+    if (raw == null || raw === '') return null;
+    const value = Number(raw);
+    return Number.isFinite(value) ? Math.max(1, Math.min(7, value)) : null;
+  }
+
   // --- composition re-rolls -----------------------------------------------------
   // A project directed in composition mode rebuilds one beat's picture through
   // SA.direct.composeBeat. The neighbouring beats' compositions are read back
@@ -3298,7 +3308,8 @@ SA.store = (() => {
           const change = mode.params.sizeChange;
           const context = SA.moods.contextForCue(projectDoc, target);
           const emphasis = SA.moods.isEmphasis ? SA.moods.isEmphasis(target) : false;
-          const generated = SA.moods.generate({ axes: mode.axes, seed, direction: mode.direction, genre: mode.genre, context, emphasis }).style;
+          const manualParams = (state.project && state.project.styleMode && state.project.styleMode.params) || null;
+          const generated = SA.moods.generate({ axes: mode.axes, seed, direction: mode.direction, genre: mode.genre, context, emphasis, paramsSource: manualParams }).style;
           projectDoc.cueStyles[cueId] = SA.project.mergeDeep(projectDoc.cueStyles[cueId] || {}, {
             enter: generated.enter,
             exit: generated.exit,
@@ -3827,7 +3838,7 @@ SA.store = (() => {
       const next = current === roles.SCHEME_INVERT ? null : roles.SCHEME_INVERT;
       if (next) {
         const parent = paletteColorsAt(state.project, `cue:${cueId}`);
-        if (!parent.length || !roles.applyScheme(parent, next, weird)) return null;
+        if (!parent.length || !roles.applyScheme(parent, next, weird, beatSchemeContrast())) return null;
       }
       dispatch({
         label: 'invert beat colours',
@@ -3853,8 +3864,8 @@ SA.store = (() => {
       if (!parent.length) return null;
       // the profile's calm range mutes the automatic draw; a manual re-roll
       // still needs at least two choices, so it falls back to the full set
-      let candidates = roles.schemes(parent, weird, mode.params ? mode.params.schemeRange : undefined);
-      if (candidates.length < 2) candidates = roles.schemes(parent, weird);
+      let candidates = roles.schemes(parent, weird, mode.params ? mode.params.schemeRange : undefined, beatSchemeContrast());
+      if (candidates.length < 2) candidates = roles.schemes(parent, weird, undefined, beatSchemeContrast());
       if (!candidates.length) return null;
       const own = state.project.beatStyles && state.project.beatStyles[beatId];
       const current = own && own.colorScheme;
@@ -3890,7 +3901,7 @@ SA.store = (() => {
       let scheme = null, index = 0, invert = false;
       if (on) {
         const parent = paletteColorsAt(state.project, `cue:${cueId}`);
-        const candidates = parent.length ? roles.schemes(parent, weird) : [];
+        const candidates = parent.length ? roles.schemes(parent, weird, undefined, beatSchemeContrast()) : [];
         if (candidates.length) scheme = candidates[Math.floor(Math.random() * candidates.length)].id;
       } else {
         const set = roles.paletteSetOf(state.project.style);
@@ -3898,7 +3909,7 @@ SA.store = (() => {
         const count = Math.min(1 + set.extra.length, SA.weird ? SA.weird.paletteCount(axes, set.max) : 1);
         index = count > 1 ? Math.floor(Math.random() * count) : 0;
         invert = weird > 0 && Math.random() < set.invert
-          && !!roles.applyScheme(roles.setColors(state.project.style, index) || [], roles.SCHEME_INVERT, weird);
+          && !!roles.applyScheme(roles.setColors(state.project.style, index) || [], roles.SCHEME_INVERT, weird, beatSchemeContrast());
       }
       dispatch({ label: 'beat colour mode', areas: ['style'], do(projectDoc) {
         const bag = projectDoc.beatStyles[beatId] || (projectDoc.beatStyles[beatId] = {});

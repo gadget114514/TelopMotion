@@ -477,13 +477,25 @@ SA.paletteDialog = (() => {
 
   // Contrast correction of one palette entry: the background (index 0) moves
   // the whole palette through repairContrast, any other colour moves against
-  // the background.
+  // the background. The target is the theme's pinned contrast floor when the
+  // project sets one, else the 4.5 WCAG floor.
+  function contrastTarget() {
+    try {
+      const doc = SA.store && SA.store.state ? SA.store.state.project : null;
+      const raw = doc && doc.styleMode && doc.styleMode.params ? doc.styleMode.params.contrast : null;
+      if (raw == null || raw === '') return 4.5;
+      const value = Number(raw);
+      if (Number.isFinite(value)) return Math.max(1, Math.min(7, value));
+    } catch { /* fall through */ }
+    return 4.5;
+  }
+
   function fixContrast(colors, index) {
     if (!Array.isArray(colors) || !colors.length) return colors;
     if (index === 0) {
-      if (SA.moods && typeof SA.moods.repairContrast === 'function') SA.moods.repairContrast(colors, 4.5);
+      if (SA.moods && typeof SA.moods.repairContrast === 'function') SA.moods.repairContrast(colors, contrastTarget());
     } else {
-      colors[index] = fixContrastOne(colors[index], colors[0], 4.5, colors);
+      colors[index] = fixContrastOne(colors[index], colors[0], contrastTarget(), colors);
     }
     return colors;
   }

@@ -104,10 +104,35 @@
     return Math.max(0, Math.min(1, number));
   }
 
-  function ratioFor(kind, weirdRaw) {
-    const w = clamp01(weirdRaw);
-    if (kind === 'text') return 4.5 + 2.5 * w;
-    if (kind === 'backdrop') return 3 + 2.5 * w;
+  // The theme's pinned text-contrast floor (`styleMode.params.contrast`), or
+  // null when the theme follows the weird axis. Kept in 1..7 so a pastel
+  // theme can ask for less than the 4.5 WCAG floor. Note: null/undefined/''
+  // mean "not pinned" (Number(null) is 0, so the nil check must come first).
+  function contrastFloorOf(value) {
+    if (value == null || value === '') return null;
+    const number = Number(value);
+    if (!Number.isFinite(number)) return null;
+    return Math.max(1, Math.min(7, number));
+  }
+
+  // The backdrop floor derived from a text floor (text - 1.5, at least 1),
+  // mirroring the weird-axis relationship (4.5/3 .. 7/5.5).
+  function backdropFor(floor) {
+    const fixed = contrastFloorOf(floor);
+    if (fixed == null) return null;
+    return Math.max(1, fixed - 1.5);
+  }
+
+  function ratioFor(kind, weirdRaw, contrastFloor) {
+    const fixed = contrastFloorOf(contrastFloor);
+    if (fixed != null) {
+      if (kind === 'text') return fixed;
+      if (kind === 'backdrop') return backdropFor(fixed);
+    } else {
+      const w = clamp01(weirdRaw);
+      if (kind === 'text') return 4.5 + 2.5 * w;
+      if (kind === 'backdrop') return 3 + 2.5 * w;
+    }
     // two planes of the same layer only need a readable step: a stronger
     // demand fights the text contrast when both planes must stay dark (or
     // light) under a saturated text colour
@@ -354,17 +379,18 @@
 
   // The repaired palette must hold the pairs the renderer relies on. `move` is
   // the role the repair is allowed to nudge; the text (T) is never moved.
-  function schemePairs(weirdRaw) {
+  // `contrastFloor` is the theme's pinned text floor (null = weird axis).
+  function schemePairs(weirdRaw, contrastFloor) {
     return [
-      { a: 'T', b: 'B', ratio: ratioFor('text', weirdRaw), move: 'B' },
-      { a: 'T', b: 'M', ratio: ratioFor('backdrop', weirdRaw), move: 'M' },
+      { a: 'T', b: 'B', ratio: ratioFor('text', weirdRaw, contrastFloor), move: 'B' },
+      { a: 'T', b: 'M', ratio: ratioFor('backdrop', weirdRaw, contrastFloor), move: 'M' },
       { a: 'H', b: 'B', ratio: 3, move: 'H' },
-      { a: 'D', b: 'T', ratio: ratioFor('soft', weirdRaw), move: 'D' },
-      { a: 'M', b: 'B', ratio: ratioFor('neighbour', weirdRaw), move: 'M' },
+      { a: 'D', b: 'T', ratio: ratioFor('soft', weirdRaw, contrastFloor), move: 'D' },
+      { a: 'M', b: 'B', ratio: ratioFor('neighbour', weirdRaw, contrastFloor), move: 'M' },
     ];
   }
 
-  function applyScheme(colors, id, weirdRaw) {
+  function applyScheme(colors, id, weirdRaw, contrastFloor) {
     if (!Array.isArray(colors) || colors.length < SIZE) return null;
     if (typeof id !== 'string' || id.length !== 4) return null;
     const slots = roleSlots();
@@ -388,7 +414,7 @@
     // character of the original permutation, so the draw is rejected instead.
     // This defines palette slots, so the computed repair stays (consumers
     // snap to the palette instead of synthesising their own hex).
-    const pairs = schemePairs(weirdRaw);
+    const pairs = schemePairs(weirdRaw, contrastFloor);
     const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
     const before = new Map();
     const moved = new Set();
@@ -447,7 +473,7 @@
   // permutation; the parameter is optional and omitting it keeps the 23.
   const SCHEME_CALM = ['TMBD', 'MBTD', 'TBMD'];
 
-  function schemes(colors, weirdRaw, range) {
+  function schemes(colors, weirdRaw, range, contrastFloor) {
     if (!Array.isArray(colors) || colors.length < SIZE) return [];
     const slots = roleSlots();
     const out = [];
@@ -456,7 +482,7 @@
     const ids = calm ? SCHEME_CALM : BEAT_SCHEME_IDS;
     for (const id of ids) {
       if (id === SCHEME_BASE) continue;
-      const next = applyScheme(colors, id, weirdRaw);
+      const next = applyScheme(colors, id, weirdRaw, contrastFloor);
       if (!next) continue;
       if (schemeDistance(colors, next, slots) < 0.15) continue;
       const key = next.join('|').toLowerCase();
@@ -480,7 +506,7 @@
   // True when every TEXT slot of `candidate` clears the contrast contract
   // against every MID slot of `base` — the cue-level palette switch uses this
   // so a beat palette never drops below the readability floor.
-  function compatible(base, candidate, weirdRaw) {
+  function compatible(base, candidate, weirdRaw, contrastFloor) {
     const a = Array.isArray(base) ? base : [];
     const b = Array.isArray(candidate) ? candidate : [];
     if (!a.length || !b.length) return false;
@@ -493,7 +519,7 @@
       if (!leftIsMid && !rightIsMid) continue;
       const text = leftIsText ? get(b, left) : get(b, right);
       const mid = leftIsMid ? get(a, left) : get(a, right);
-      if (contrast(text, mid) < ratioFor(kind, weirdRaw) - 1e-6) return false;
+      if (contrast(text, mid) < ratioFor(kind, weirdRaw, contrastFloor) - 1e-6) return false;
     }
     return true;
   }
@@ -504,10 +530,10 @@
   // The palette must already hold SIZE colours; short palettes are left alone.
   // This defines palette slots, so the computed repair stays (consumers snap
   // to the palette instead of synthesising their own hex).
-  function repairPalette(colors, weirdRaw, repairContrast) {
+  function repairPalette(colors, weirdRaw, repairContrast, contrastFloor) {
     const list = Array.isArray(colors) ? colors : [];
     if (list.length < SIZE) return list;
-    if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw));
+    if (typeof repairContrast === 'function') repairContrast(list, ratioFor('text', weirdRaw, contrastFloor));
     const move = (index, fixed, target) => {
       let next = color.ensureContrast(list[index], fixed, target);
       if (contrast(next, fixed) < target - 1e-6) next = color.separateFrom(next, [fixed], target) || next;
@@ -519,7 +545,7 @@
     for (let pass = 0; pass < 4; pass += 1) {
       let moved = false;
       for (const [left, right, kind] of CONTRAST) {
-        const target = ratioFor(kind, weirdRaw);
+        const target = ratioFor(kind, weirdRaw, contrastFloor);
         if (contrast(list[left], list[right]) >= target - 1e-6) continue;
         if (pass < 2) {
           let moving = left;
@@ -635,6 +661,8 @@
     SCHEME_IDS,
     CONTRAST,
     ratioFor,
+    contrastFloorOf,
+    backdropFor,
     contrast,
     get,
     slotOf,
