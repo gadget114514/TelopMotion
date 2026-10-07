@@ -1,13 +1,13 @@
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
-    const fillerRender = factory(require('./split'), require('./figures'), require('./adsr'));
+    const fillerRender = factory(require('./split'), require('./figures'), require('./adsr'), require('./clip-placement'));
     if (root.SA) root.SA.fillerRender = root.SA.fillerRender || fillerRender;
     module.exports = fillerRender;
   } else {
     root.SA = root.SA || {};
-    root.SA.fillerRender = factory(root.SA.split, root.SA.figures, root.SA.adsr);
+    root.SA.fillerRender = factory(root.SA.split, root.SA.figures, root.SA.adsr, root.SA.clipPlacement);
   }
-})(typeof self !== 'undefined' ? self : this, function (split, figures, adsrApi) {
+})(typeof self !== 'undefined' ? self : this, function (split, figures, adsrApi, clipPlacement) {
   'use strict';
 
   const TAU = Math.PI * 2;
@@ -1058,16 +1058,16 @@
     if (params.disabled || params.enabled === false) return { shapes: [], texts: [] };
     const layer = layerOf(type);
     if (layer && ctx && ctx.layers && ctx.layers[layer] === false) return { shapes: [], texts: [] };
-    if (type === 'countdown') return countdownShapes(params, ctx);
-    if (type === 'waveform') return waveformShapes(params, ctx);
-    if (type === 'spectrum') return spectrumShapes(params, ctx);
-    if (type === 'sineWave') return sineWaveShapes(params, ctx);
-    if (type === 'shapes') return shapesShapes(params, ctx);
-    if (type === 'pattern') return patternShapes(params, ctx);
-    if (type === 'particles') return particlesShapes(params, ctx);
-    if (type === 'split') return splitShapes(params, ctx);
+    if (type === 'countdown') return applyPlacement(countdownShapes(params, ctx), params, ctx, type);
+    if (type === 'waveform') return applyPlacement(waveformShapes(params, ctx), params, ctx, type);
+    if (type === 'spectrum') return applyPlacement(spectrumShapes(params, ctx), params, ctx, type);
+    if (type === 'sineWave') return applyPlacement(sineWaveShapes(params, ctx), params, ctx, type);
+    if (type === 'shapes') return applyPlacement(shapesShapes(params, ctx), params, ctx, type);
+    if (type === 'pattern') return applyPlacement(patternShapes(params, ctx), params, ctx, type);
+    if (type === 'particles') return applyPlacement(particlesShapes(params, ctx), params, ctx, type);
+    if (type === 'split') return applyPlacement(splitShapes(params, ctx), params, ctx, type);
     if (type === 'figures') return figuresShapes(params, ctx);
-    if (type === 'progress') return progressShapes(params, ctx);
+    if (type === 'progress') return applyPlacement(progressShapes(params, ctx), params, ctx, type);
     if (type === 'instrumental') {
       return textOnly(source, ctx, { text: expandTokens(params.text || '♪ Instrumental ♪', ctx), sizeRatio: num(params.size, 0.05), color: colorOf(params, ctx, '#cbd3ff') });
     }
@@ -1088,6 +1088,33 @@
     return { shapes: [], texts: [] };
   }
 
+  // The shared per-layer placement (clip-placement.js): every visual filler
+  // layer carries the same enabled / x / y / scale / scaleX / scaleY /
+  // rotation keys so waveform, spectrum, shapes, pattern, particles, split and
+  // figures are all moved, zoomed and tilted the same way. Types that already
+  // own one of the keys (pattern / split own `enabled`, figures owns
+  // `enabled` / `scale` / `x` / `y`) only gain the missing ones; text layers
+  // keep their own positioning and only gain `enabled`.
+  const PLACE_ALL = clipPlacement && typeof clipPlacement.params === 'function' ? clipPlacement.params() : [];
+  const PLACE_GEOM = clipPlacement && typeof clipPlacement.paramsExcept === 'function' ? clipPlacement.paramsExcept(['enabled']) : [];
+  const PLACE_EXTRA = clipPlacement && typeof clipPlacement.params === 'function' ? clipPlacement.params(['scaleX', 'scaleY', 'rotation']) : [];
+  const PLACE_TOGGLE = clipPlacement && typeof clipPlacement.params === 'function' ? clipPlacement.params(['enabled']) : [];
+
+  // Runs the params-level placement of one layer over its shapes. `figures`
+  // layers place themselves inside figures.drawList, so the filler only places
+  // the other visual types. Identity placements (the default for every old
+  // preset) return the list untouched.
+  function applyPlacement(list, params, ctx, type) {
+    if (!list || !Array.isArray(list.shapes) || !list.shapes.length) return list;
+    if (!clipPlacement || !figures || typeof figures.transformShapes !== 'function') return list;
+    if (type === 'figures') return list;
+    const place = clipPlacement.fromParams(params || {});
+    if (clipPlacement.isIdentity(place)) return list;
+    const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
+    figures.transformShapes(list.shapes, clipPlacement.toTransform(place, frame));
+    return list;
+  }
+
   const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'textAnim', 'combo'];
 
   const PARAMS = {
@@ -1096,30 +1123,35 @@
       { key: 'style', kind: 'select', options: ['digits', 'ring', 'bar', 'dots'], default: 'digits' },
       { key: 'from', kind: 'number', min: 0.2, max: 30, step: 0.5, default: 3 },
       { key: 'showOnlyLast', kind: 'bool', default: false },
+      ...PLACE_TOGGLE,
     ],
     waveform: [
       { key: 'mode', kind: 'select', options: ['line', 'mirror', 'circle'], default: 'line' },
       { key: 'thickness', kind: 'number', min: 0.5, max: 12, step: 0.5, default: 2.5 },
       { key: 'amp', kind: 'number', min: 0.2, max: 3, step: 0.1, default: 1 },
-      { key: 'color', kind: 'color', default: '#4dc8ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
     ],
     spectrum: [
       { key: 'mode', kind: 'select', options: ['bars', 'radial', 'blob'], default: 'bars' },
       { key: 'bars', kind: 'int', min: 8, max: 128, step: 1, default: 48 },
       { key: 'falloff', kind: 'number', min: 0.05, max: 3, step: 0.05, default: 1 },
-      { key: 'color', kind: 'color', default: '#7ce0a4' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
     ],
     sineWave: [
       { key: 'waves', kind: 'int', min: 1, max: 5, step: 1, default: 2 },
       { key: 'amp', kind: 'number', min: 0.1, max: 3, step: 0.1, default: 1 },
       { key: 'speed', kind: 'number', min: 0, max: 4, step: 0.1, default: 1 },
-      { key: 'color', kind: 'color', default: '#9db2ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
     ],
     shapes: [
       { key: 'set', kind: 'select', options: ['circles', 'polygons', 'lines', 'burst', 'grid', 'orbit'], default: 'circles' },
       { key: 'count', kind: 'int', min: 1, max: 48, step: 1, default: 8 },
       { key: 'speed', kind: 'number', min: 0, max: 4, step: 0.1, default: 1 },
-      { key: 'color', kind: 'color', default: '#ff8a3d' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
     ],
     pattern: [
       { key: 'enabled', kind: 'bool', default: true },
@@ -1128,19 +1160,21 @@
       { key: 'size', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
       { key: 'speed', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4 },
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.6 },
-      { key: 'color', kind: 'color', default: '#8d96ab' },
+      { key: 'color', kind: 'color', default: null },
       { key: 'hole', kind: 'select', options: HOLES, default: 'none' },
       { key: 'holeSize', kind: 'number', min: 0.1, max: 0.9, step: 0.05, default: 0.4 },
       { key: 'accent', kind: 'color', default: '' },
       { key: 'accentEvery', kind: 'int', min: 2, max: 12, step: 1, default: 5 },
       // automatic contrast against the lyrics: off keeps the chosen colour
       { key: 'separate', kind: 'bool', default: true },
+      ...PLACE_GEOM,
     ],
     particles: [
       { key: 'count', kind: 'int', min: 1, max: 120, step: 1, default: 24 },
       { key: 'flow', kind: 'select', options: ['rise', 'fall', 'drift', 'vortex'], default: 'rise' },
       { key: 'size', kind: 'number', min: 0.5, max: 12, step: 0.1, default: 2.4 },
-      { key: 'color', kind: 'color', default: '#d6dbe9' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
     ],
     split: [
       { key: 'enabled', kind: 'bool', default: true },
@@ -1160,6 +1194,7 @@
       { key: 'shadow', kind: 'color', default: '', optional: true },
       // automatic contrast against the lyrics: off keeps the chosen colours
       { key: 'separate', kind: 'bool', default: true },
+      ...PLACE_GEOM,
     ],
     figures: [
       { key: 'enabled', kind: 'bool', default: true },
@@ -1184,31 +1219,36 @@
       { key: 'in', kind: 'select', options: ['auto', 'pop', 'draw', 'wipe', 'scatterIn'], default: 'auto' },
       { key: 'hold', kind: 'select', options: ['auto', 'spin', 'pulse', 'drift', 'morph'], default: 'auto' },
       { key: 'out', kind: 'select', options: ['auto', 'shrink', 'fade', 'burstOut'], default: 'auto' },
-      { key: 'color', kind: 'color', default: '#c86bff' },
+      { key: 'color', kind: 'color', default: null },
       { key: 'scale', kind: 'number', min: 0.2, max: 3, step: 0.05, default: 1 },
       { key: 'x', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
       { key: 'y', kind: 'number', min: -0.5, max: 0.5, step: 0.01, default: 0 },
+      ...PLACE_EXTRA,
       { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 1, optional: true },
     ],
     nextLinePreview: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.35 },
-      { key: 'color', kind: 'color', default: '#cbd3ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_TOGGLE,
     ],
     previousLineGhost: [
       { key: 'opacity', kind: 'number', min: 0, max: 1, step: 0.05, default: 0.25 },
-      { key: 'color', kind: 'color', default: '#cbd3ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_TOGGLE,
     ],
     progress: [
       { key: 'style', kind: 'select', options: ['bar', 'ring'], default: 'bar' },
       { key: 'position', kind: 'select', options: ['bottom', 'top'], default: 'bottom' },
-      { key: 'color', kind: 'color', default: '#ffd166' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_TOGGLE,
     ],
     credits: [],
     cardPeek: [],
     instrumental: [
       { key: 'text', kind: 'text', default: '' },
       { key: 'size', kind: 'number', min: 0.02, max: 0.15, step: 0.005, default: 0.05 },
-      { key: 'color', kind: 'color', default: '#cbd3ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_TOGGLE,
     ],
     textAnim: [
       { key: 'text', kind: 'text', default: '{title}' },
@@ -1218,7 +1258,8 @@
       { key: 'exit', kind: 'select', options: ['auto'], default: 'auto' },
       { key: 'size', kind: 'number', min: 0.02, max: 0.25, step: 0.005, default: 0.08 },
       { key: 'y', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
-      { key: 'color', kind: 'color', default: '#eef2ff' },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_TOGGLE,
     ],
     combo: [],
   };

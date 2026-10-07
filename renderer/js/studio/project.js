@@ -1061,7 +1061,7 @@
     const kind = trackKindOf(project, clip.trackId);
     if (kind === 'figure') {
       const beats = clip.spec && clip.spec.params && Array.isArray(clip.spec.params.beats) ? clip.spec.params.beats : [];
-      return beats.map((beat, index) => ({ index, start: Number(beat.start), end: Number(beat.end), own: !!(beat.colors || beat.colorLock) }));
+      return beats.map((beat, index) => ({ index, start: Number(beat.start), end: Number(beat.end), own: !!(beat.colors || beat.colorLock), disabled: !!(beat.disabled || beat.enabled === false) }));
     }
     if (kind !== 'backdrop' && kind !== 'filler') return [];
     if (Array.isArray(clip.segments) && clip.segments.length) {

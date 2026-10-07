@@ -3647,6 +3647,41 @@ SA.store = (() => {
     recolorFigureBeat(clipId, index) {
       return figureSubBeatOp(clipId, index, 'recolor');
     },
+    // Figure sub-beat mute (the figure twin of setClipSegmentDisabled): ticks
+    // `beats[index].disabled`, which figures.drawList skips for its span.
+    // Absent = enabled. A hand edit pins the clip, like the segment toggle.
+    setFigureBeatDisabled(clipId, index, disabled) {
+      const clip = findClip(clipId);
+      if (!clip) return null;
+      const beats = clip.spec && clip.spec.params && clip.spec.params.beats;
+      if (!Array.isArray(beats) || !beats[index]) return null;
+      const current = !!(beats[index].disabled || beats[index].enabled === false);
+      if (current === !!disabled) return { index, disabled: current };
+      dispatch({
+        label: 'toggle figure beat',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+          const list = target && target.spec && target.spec.params && target.spec.params.beats;
+          if (!Array.isArray(list) || !list[index]) return;
+          const next = list.slice();
+          if (disabled) {
+            next[index] = { ...next[index], disabled: true };
+            if ('enabled' in next[index]) delete next[index].enabled;
+          } else {
+            next[index] = { ...next[index] };
+            delete next[index].disabled;
+            if ('enabled' in next[index]) delete next[index].enabled;
+          }
+          target.spec = { ...target.spec, params: { ...target.spec.params, beats: next } };
+          delete target.auto;
+        },
+      });
+      return { index, disabled: !!disabled };
+    },
+    setFigureBeatEnabled(clipId, index, enabled) {
+      return commands.setFigureBeatDisabled(clipId, index, !enabled);
+    },
     // Combo-layer ops ("clip beats" for filler / backdrop combos): reroll
     // draws a fresh layer type, vary keeps the type and re-draws params,
     // recolor moves the layer onto a fresh palette. Split planes are
@@ -3681,15 +3716,16 @@ SA.store = (() => {
         },
       });
     },
-    // backdrop beat on/off: one row of the inspector's beat list. The first
-    // toggle materializes the implicit lyric-cut spans as clip.segments, then
-    // the one segment carries `disabled`. Absent = enabled, so enabling the
-    // last customized segment drops the segments entirely.
+    // backdrop / filler beat on/off: one row of the inspector's beat list. The
+    // first toggle materializes the implicit lyric-cut spans as clip.segments,
+    // then the one segment carries `disabled`. Absent = enabled, so enabling
+    // the last customized segment drops the segments entirely.
     setClipSegmentDisabled(clipId, index, disabled) {
       const clip = findClip(clipId);
       if (!clip) return;
       if (typeof SA !== 'undefined' && SA.project && typeof SA.project.trackKindOf === 'function') {
-        if (SA.project.trackKindOf(state.project, clip.trackId) !== 'backdrop') return;
+        const kind = SA.project.trackKindOf(state.project, clip.trackId);
+        if (kind !== 'backdrop' && kind !== 'filler') return;
       }
       const spans = SA.project.clipBeatSpans(state.project, clip);
       const span = spans.find((entry) => entry.index === index);

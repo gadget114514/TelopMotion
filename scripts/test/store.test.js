@@ -682,6 +682,46 @@ test('rerollClip preserves figure clip disabled state', () => {
   assert.equal(clip.disabled, true);
 });
 
+test('setFigureBeatDisabled mutes one sub-beat and undoes', () => {
+  const doc = fixture();
+  doc.tracks.push({ id: 'fig', kind: 'figure', name: '図形' });
+  doc.beats = { c1: [{ id: 'c1:page0', cueId: 'c1', start: 0, end: 4, kind: 'page', text: 'hello' }] };
+  doc.clips.push({
+    id: 'fig1',
+    trackId: 'fig',
+    start: 0,
+    end: 4,
+    spec: SA.figures.generate({ span: { start: 0, end: 4 }, axes: { weird: 0.5 }, seed: 1, id: 'fig1' }),
+    colors: null,
+  });
+  store.load(doc);
+  const beats = () => store.state.project.clips.find((c) => c.id === 'fig1').spec.params.beats;
+  assert.ok(beats().length > 0);
+  assert.equal(store.commands.setFigureBeatDisabled('fig1', 0, true).disabled, true);
+  assert.equal(beats()[0].disabled, true);
+  const spans = projectModule.clipBeatSpans(store.state.project, store.state.project.clips.find((c) => c.id === 'fig1'));
+  assert.equal(spans[0].disabled, true);
+  assert.equal(store.undo(), true);
+  assert.equal('disabled' in beats()[0], false);
+  assert.equal(store.commands.setFigureBeatDisabled('fig1', 9, true), null);
+});
+
+test('setClipSegmentDisabled mutes filler beats like backdrop beats', () => {
+  const doc = fixture();
+  const fillerTrack = (doc.tracks || []).find((track) => track.kind === 'filler');
+  assert.ok(fillerTrack, 'a filler track exists');
+  doc.clips.push({ id: 'fil1', trackId: fillerTrack.id, start: 0, end: 4, spec: { type: 'waveform', params: { mode: 'line' } } });
+  store.load(doc);
+  const spans = () => projectModule.clipBeatSpans(store.state.project, store.state.project.clips.find((c) => c.id === 'fil1'));
+  assert.ok(spans().length > 0);
+  store.commands.setClipSegmentDisabled('fil1', 0, true);
+  const clip = store.state.project.clips.find((c) => c.id === 'fil1');
+  assert.equal(clip.segments[0].disabled, true);
+  assert.equal(spans()[0].disabled, true);
+  assert.equal(store.undo(), true);
+  assert.equal('segments' in store.state.project.clips.find((c) => c.id === 'fil1'), false);
+});
+
 test('a composition-mode cue re-roll redraws its beats through composeBeat', () => {
   const doc = fixture();
   doc.styleMode.compose = true;

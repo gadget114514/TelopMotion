@@ -3665,6 +3665,16 @@ SA.inspector = (() => {
         spans.forEach((span) => {
           const beatRow = document.createElement('div');
           beatRow.className = `insp-actions${selectedBeat === span.index ? ' is-selected' : ''}`;
+          if (span.disabled) beatRow.style.opacity = '0.55';
+          const enabledBox = document.createElement('input');
+          enabledBox.type = 'checkbox';
+          enabledBox.checked = !span.disabled;
+          enabledBox.title = t('studio.inspector.enabled');
+          enabledBox.setAttribute('aria-label', t('studio.inspector.enabled'));
+          enabledBox.addEventListener('change', () => {
+            SA.store.commands.setClipSegmentDisabled(clip.id, span.index, !enabledBox.checked);
+          });
+          beatRow.appendChild(enabledBox);
           const label = document.createElement('button');
           label.type = 'button';
           label.className = 'btn btn-mini insp-beat-label';
@@ -3782,6 +3792,17 @@ SA.inspector = (() => {
         subBeats.forEach((sub, subIndex) => {
           const beatRow = document.createElement('div');
           beatRow.className = `insp-actions${selectedBeat === subIndex ? ' is-selected' : ''}`;
+          const subDisabled = !!(sub && (sub.disabled || sub.enabled === false));
+          if (subDisabled) beatRow.style.opacity = '0.55';
+          const enabledBox = document.createElement('input');
+          enabledBox.type = 'checkbox';
+          enabledBox.checked = !subDisabled;
+          enabledBox.title = t('studio.inspector.enabled');
+          enabledBox.setAttribute('aria-label', t('studio.inspector.enabled'));
+          enabledBox.addEventListener('change', () => {
+            SA.store.commands.setFigureBeatDisabled(clip.id, subIndex, !enabledBox.checked);
+          });
+          beatRow.appendChild(enabledBox);
           const label = document.createElement('button');
           label.type = 'button';
           label.className = 'btn btn-mini insp-beat-label';
@@ -3878,6 +3899,30 @@ SA.inspector = (() => {
         );
       });
       body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+    }
+
+    // Per-effect placement (clip-placement.js): the same enabled / x / y /
+    // scale / scaleX / scaleY / rotation model the filler layers edit in their
+    // own params. Background shader params already own keys like `scale` (the
+    // gradient ramp), so the placement lives in the `spec.placement` sidecar
+    // instead of colliding with them.
+    if (fxBackground && SA.clipPlacement) {
+      const placeTitle = document.createElement('div');
+      placeTitle.className = 'insp-section-title';
+      placeTitle.textContent = t('studio.inspector.transform');
+      body.appendChild(placeTitle);
+      for (const param of SA.clipPlacement.PARAMS) {
+        const sidecar = spec.placement || {};
+        const value = sidecar[param.key] != null ? sidecar[param.key] : param.default;
+        const control = SA.controls.paramControl('background', { ...param }, value, (next) => {
+          SA.store.commands.updateClip(
+            clip.id,
+            { spec: { ...spec, placement: { ...(spec.placement || {}), [param.key]: next } } },
+            { coalesceKey: `clip:${clip.id}:placement:${param.key}` }
+          );
+        });
+        body.appendChild(fieldRow(SA.controls.labelFor(param.key), control));
+      }
     }
 
     // combo beats: one row per layer with reroll / vary / recolor (split

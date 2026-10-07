@@ -215,9 +215,30 @@ SA.lyricsEngine = (() => {
   function isClipDisabled(clip) {
     if (!clip) return false;
     if (clip.disabled || clip.enabled === false) return true;
+    const spec = clip.spec;
+    if (spec) {
+      if (spec.disabled || spec.enabled === false) return true;
+      const placement = spec.placement;
+      if (placement && (placement.disabled || placement.enabled === false)) return true;
+    }
     const params = clip.spec && clip.spec.params;
     if (params && (params.disabled || params.enabled === false)) return true;
     return false;
+  }
+
+  // The clip-level placement sidecar (`spec.placement`, clip-placement.js) as
+  // a CPU shape transform. Filler / figure params-level placements already ran
+  // inside their drawList; this one composes on top and defaults to identity,
+  // so clips without a sidecar draw exactly as before.
+  function applyClipPlacement(shapes, spec) {
+    if (!shapes || !shapes.length) return shapes;
+    const placer = SA.clipPlacement;
+    if (!placer || !SA.figures || typeof SA.figures.transformShapes !== 'function') return shapes;
+    const place = placer.fromSpec(spec || {});
+    if (placer.isIdentity(place)) return shapes;
+    const frame = { width: state.width, height: state.height };
+    SA.figures.transformShapes(shapes, placer.toTransform(place, frame));
+    return shapes;
   }
 
   // Clips of one track kind, hidden tracks excluded, in start order. `within`
@@ -1758,6 +1779,7 @@ SA.lyricsEngine = (() => {
           bpm: tempoBpm(features),
         });
         if (!primitives.length) return;
+        applyClipPlacement(primitives, spec);
         pipeline.beginLayer();
         drawPrimitives(primitives);
         pipeline.commitLayer(layerOpacity);
@@ -1804,6 +1826,9 @@ SA.lyricsEngine = (() => {
       }
       const shapes = list.shapes || [];
       const texts = list.texts || [];
+      // the clip-level placement sidecar composes on top of the layer's own
+      // params placement (identity by default: old clips draw unchanged)
+      applyClipPlacement(shapes, spec);
       // the text mask knocks the layer out under the glyphs. A combo of split
       // planes (drawn first) and an accent texture draws as two layers: the
       // planes stay whole (their colours hold the text contrast), the accents
@@ -1867,6 +1892,9 @@ SA.lyricsEngine = (() => {
       if (!list) return;
       const hasField = Boolean(list.field) && typeof pipeline.drawField === 'function';
       if (!(list.shapes || []).length && !hasField) return;
+      // the clip-level placement sidecar (identity by default: old clips draw
+      // unchanged). The params-level scale / x / y already ran inside drawList.
+      applyClipPlacement(list.shapes || [], spec);
       // cueStyle 移植 (figure 目立つ要素): 生成時に spec.params へ焼いた
       // fxEnter/fxExit/fxHold (文字前提型を除外済み) をクリップ全体の
       // グループ変形として適用する。figure 独自の beat.move とは独立に重なる。
@@ -1996,6 +2024,12 @@ SA.lyricsEngine = (() => {
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.base, stage, stageWeird) : null;
       const spec = (recolored ? recolored.spec : clip.spec) || {};
       if (!spec.type || spec.type === 'none') return;
+      // per-effect on/off + placement live on the spec (clip-placement.js):
+      // the sidecar defaults to identity, so old clips draw unchanged
+      const placer = SA.clipPlacement;
+      if (placer && !placer.isEnabled(spec)) return;
+      const sidecar = placer ? placer.fromSpec(spec) : null;
+      const sidecarIdentity = !placer || !sidecar || placer.isIdentity(sidecar);
       const style = SA.project.resolveStyle(state.project, '');
       const palette = style && style.palette ? style.palette : projectPalette();
       const colors = recolored
@@ -2021,6 +2055,8 @@ SA.lyricsEngine = (() => {
           focusY: 0,
           palette: colors ? { colors } : stagePalette,
           time: t,
+          camera: sidecarIdentity ? [0, 0, 1, 0] : placer.toCamera(sidecar),
+          placeScale: sidecarIdentity ? [1, 1] : placer.toPlaceScale(sidecar),
         }),
         card,
         Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope))
@@ -2067,8 +2103,13 @@ SA.lyricsEngine = (() => {
       const project = state.project;
       const envelope = clipEnvelope(t, clip);
       if (envelope <= 0) return;
+      // per-beat mute (the filler twin of backdrop segments): a disabled
+      // segment draws nothing for its span; a segment with its own spec lends
+      // it, like segmentClipAt does for backdrops
+      if (segmentDisabledAt(clip, t)) return;
+      const effective = segmentClipAt(clip, t);
       const recolored = stage && SA.stagePalette ? SA.stagePalette.recolorClip(clip, stage.cue, stage, stageWeird) : null;
-      const spec = (recolored ? recolored.spec : clip.spec) || { type: 'none', params: {} };
+      const spec = (recolored ? recolored.spec : effective.spec) || { type: 'none', params: {} };
       if (spec.type === 'credits') {
         if (!activeCredit(t) && SA.credits) {
           const settings = SA.credits.settingsFor(project);
@@ -2085,12 +2126,14 @@ SA.lyricsEngine = (() => {
         return;
       }
       if (!SA.fillerRender) return;
-      const context = fillerClipContext(t, recolored ? { ...clip, spec, colors: recolored.colors } : clip, duration);
+      const context = fillerClipContext(t, recolored ? { ...clip, spec, colors: recolored.colors } : { ...clip, spec }, duration);
       const list = SA.fillerRender.drawList(spec, context);
       const shapes = (list && list.shapes) || [];
       const texts = (list && list.texts) || [];
       const anims = (list && list.textAnims) || [];
       if (!shapes.length && !texts.length && !anims.length) return;
+      // the clip-level placement sidecar (identity by default)
+      applyClipPlacement(shapes, spec);
       const clipOpacity = Math.max(0, Math.min(1, (clip.opacity == null ? 1 : clip.opacity) * envelope));
       const mask = typeof maskFor === 'function' ? maskFor(clip) : !!maskFor;
       if (shapes.length || texts.length) {

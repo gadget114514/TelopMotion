@@ -201,6 +201,7 @@ figure: { motif: { orbit: 'Orbit', burst: 'Burst', bars: 'Bars', rings: 'Rings',
           disabled: 'Disable', color: 'Color', bars: 'Bars', falloff: 'Falloff', waves: 'Waves', speed: 'Speed', set: 'Set', count: 'Count', flow: 'Flow',
           size: 'Size', text: 'Text', position: 'Position', opacity: 'Opacity', layout: 'Layout', parts: 'Parts', angle: 'Angle', offset: 'Offset', coverage: 'Coverage', scheme: 'Scheme', motion: 'Motion', motif: 'Motif', sync: 'Sync', density: 'Density',
           in: 'In', hold: 'Hold', out: 'Out', scale: 'Scale', x: 'X', y: 'Y', theme: 'Theme', enter: 'Enter', exit: 'Exit',
+          enabled: 'Enabled', scaleX: 'Scale X', scaleY: 'Scale Y', rotation: 'Rotation',
         },
         value: {
           digits: 'Digits', ring: 'Ring', bar: 'Bar', dots: 'Dots', line: 'Line', mirror: 'Mirror', circle: 'Circle', bars: 'Bars',
@@ -469,6 +470,7 @@ figure: { motif: { orbit: '軌道', burst: 'バースト', bars: 'バー', rings
           disabled: 'ディセーブル', color: '色', bars: 'バー数', falloff: '減衰', waves: '波の数', speed: '速度', set: 'セット', count: '数', flow: '流れ',
           size: 'サイズ', text: 'テキスト', position: '位置', opacity: '不透明度', layout: 'レイアウト', parts: '分割数', angle: '角度', offset: 'オフセット', coverage: '支配率', scheme: '配色', motion: '動き', motif: 'モチーフ', sync: '同期', density: '密度',
           in: 'イン', hold: 'ホールド', out: 'アウト', scale: '拡大', x: 'X', y: 'Y', theme: 'テーマ', enter: '登場', exit: '退場',
+          enabled: '有効', scaleX: '拡大X', scaleY: '拡大Y', rotation: '回転',
         },
         value: {
           digits: '数字', ring: 'リング', bar: 'バー', dots: 'ドット', line: 'ライン', mirror: 'ミラー', circle: 'サークル', bars: 'バー',
@@ -718,6 +720,7 @@ figure: { motif: { orbit: 'Órbita', burst: 'Estallido', bars: 'Barras', rings: 
           disabled: 'Desactivar', color: 'Color', bars: 'Barras', falloff: 'Caída', waves: 'Ondas', speed: 'Velocidad', set: 'Conjunto', count: 'Cantidad', flow: 'Flujo',
           size: 'Tamaño', text: 'Texto', position: 'Posición', opacity: 'Opacidad', layout: 'Disposición', parts: 'Partes', angle: 'Ángulo', offset: 'Desplazamiento', coverage: 'Cobertura', scheme: 'Esquema', motion: 'Movimiento', motif: 'Motivo', sync: 'Sincronía', density: 'Densidad',
           in: 'In', hold: 'Hold', out: 'Out', scale: 'Scale', x: 'X', y: 'Y', theme: 'Theme', enter: 'Enter', exit: 'Exit',
+          enabled: 'Enabled', scaleX: 'Scale X', scaleY: 'Scale Y', rotation: 'Rotation',
         },
         value: {
           digits: 'Dígitos', ring: 'Anillo', bar: 'Barra', dots: 'Puntos', line: 'Línea', mirror: 'Espejo', circle: 'Círculo', bars: 'Barras',
@@ -967,6 +970,7 @@ figure: { motif: { orbit: 'Orbite', burst: 'Explosion', bars: 'Barres', rings: '
           disabled: 'Désactiver', color: 'Couleur', bars: 'Barres', falloff: 'Atténuation', waves: 'Ondes', speed: 'Vitesse', set: 'Ensemble', count: 'Nombre', flow: 'Flux',
           size: 'Taille', text: 'Texte', position: 'Position', opacity: 'Opacité', layout: 'Disposition', parts: 'Parties', angle: 'Angle', offset: 'Décalage', coverage: 'Couverture', scheme: 'Palette', motion: 'Mouvement', motif: 'Motif', sync: 'Synchro', density: 'Densité',
           in: 'In', hold: 'Hold', out: 'Out', scale: 'Scale', x: 'X', y: 'Y', theme: 'Theme', enter: 'Enter', exit: 'Exit',
+          enabled: 'Enabled', scaleX: 'Scale X', scaleY: 'Scale Y', rotation: 'Rotation',
         },
         value: {
           digits: 'Chiffres', ring: 'Anneau', bar: 'Barre', dots: 'Points', line: 'Ligne', mirror: 'Miroir', circle: 'Cercle', bars: 'Barres',
@@ -1216,6 +1220,7 @@ figure: { motif: { orbit: 'Орбита', burst: 'Взрыв', bars: 'Полос
           disabled: 'Отключить', color: 'Цвет', bars: 'Полосы', falloff: 'Затухание', waves: 'Волны', speed: 'Скорость', set: 'Набор', count: 'Количество', flow: 'Поток',
           size: 'Размер', text: 'Текст', position: 'Позиция', opacity: 'Непрозрачность', layout: 'Раскладка', parts: 'Части', angle: 'Угол', offset: 'Смещение', coverage: 'Покрытие', scheme: 'Схема', motion: 'Движение', motif: 'Мотив', sync: 'Синхронизация', density: 'Плотность',
           in: 'In', hold: 'Hold', out: 'Out', scale: 'Scale', x: 'X', y: 'Y', theme: 'Theme', enter: 'Enter', exit: 'Exit',
+          enabled: 'Enabled', scaleX: 'Scale X', scaleY: 'Scale Y', rotation: 'Rotation',
         },
         value: {
           digits: 'Цифры', ring: 'Кольцо', bar: 'Полоса', dots: 'Точки', line: 'Линия', mirror: 'Зеркало', circle: 'Круг', bars: 'Полосы',

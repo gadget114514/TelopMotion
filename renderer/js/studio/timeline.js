@@ -1308,7 +1308,17 @@ SA.timeline = (() => {
     return SA.controls ? SA.controls.prettify(type) : String(type);
   }
 
+  // One disabled model for clips (clip-placement.js): the engine owns the
+  // check, the timeline mirrors it so dimming and drawing never disagree.
   function isClipDisabled(clip) {
+    if (typeof SA !== 'undefined' && SA.lyricsEngine && typeof SA.lyricsEngine.isClipDisabled === 'function') {
+      return SA.lyricsEngine.isClipDisabled(clip);
+    }
+    if (typeof SA !== 'undefined' && SA.clipPlacement && typeof SA.clipPlacement.isEnabled === 'function') {
+      if (!clip) return false;
+      if (clip.disabled || clip.enabled === false) return true;
+      return !SA.clipPlacement.isEnabled(clip.spec || {});
+    }
     if (!clip) return false;
     if (clip.disabled || clip.enabled === false) return true;
     const params = clip.spec && clip.spec.params;
@@ -1401,10 +1411,10 @@ SA.timeline = (() => {
           const bw = Math.max(1.5, (span.end - span.start) * pxPerSecond - 2);
           if (bx + bw < 0 || bx > size.width) return;
           const selectedBeat = paths.includes(`clip:${clip.id}/beat:${span.index}`);
-          ctx.fillStyle = span.own ? 'rgba(255, 138, 61, 0.26)' : 'rgba(255, 255, 255, 0.10)';
+          ctx.fillStyle = span.disabled ? 'rgba(74, 82, 102, 0.35)' : span.own ? 'rgba(255, 138, 61, 0.26)' : 'rgba(255, 255, 255, 0.10)';
           rounded(bx, y + height * 0.45, bw, height * 0.5, 2);
           ctx.fill();
-          ctx.strokeStyle = selectedBeat ? '#ff8a3d' : 'rgba(255, 255, 255, 0.18)';
+          ctx.strokeStyle = selectedBeat ? '#ff8a3d' : span.disabled ? 'rgba(255, 255, 255, 0.10)' : 'rgba(255, 255, 255, 0.18)';
           ctx.lineWidth = selectedBeat ? 1.4 : 0.8;
           ctx.stroke();
           // pushed after the clip hit so a click on a beat block wins (as on the cue track)

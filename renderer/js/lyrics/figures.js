@@ -1,10 +1,10 @@
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'), require('./easing'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./rng'), require('./smartness'), require('./weird'), require('./fx-axes'), require('./adsr'), require('./scene3d'), require('./figure-geo'), require('./gl/fields'), require('./gl/sim'), require('./easing'), require('./clip-placement'));
   else {
     root.SA = root.SA || {};
-    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim, root.SA.easing);
+    root.SA.figures = factory(root.SA.rng, root.SA.smartness, root.SA.weird, root.SA.fxAxes, root.SA.adsr, root.SA.scene3d, root.SA.figureGeo, root.SA.glFields, root.SA.glSim, root.SA.easing, root.SA.clipPlacement);
   }
-})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim, easingApi) {
+})(typeof self !== 'undefined' ? self : this, function (rng, smartness, weird, fxAxes, adsrApi, scene3d, figureGeo, glFields, glSim, easingApi, clipPlacement) {
   'use strict';
 
   // Animated figure motifs for the `figure` track. A clip is a list of
@@ -2883,20 +2883,26 @@
 
   // Maps every shape of a list through one scale / rotate / translate about
   // (originX, originY). filler-render's clip `animate` uses the same helper, and
-  // a figure's own scale / x / y placement runs through it at draw time.
+  // a figure's own placement (scale / scaleX / scaleY / x / y / rotation) runs
+  // through it at draw time. `scale` multiplies both axes (the legacy uniform
+  // zoom); `scaleX` / `scaleY` ride on top for the non-uniform stretch. Round
+  // primitives (circle / ring / polygon radii, capsule widths) cannot stretch,
+  // so they grow by the geometric mean and stay circular.
   function transformShapes(shapes, options) {
     const opts = options || {};
     const originX = num(opts.originX, 0);
     const originY = num(opts.originY, 0);
-    const scale = opts.scale == null ? 1 : num(opts.scale, 1);
+    const scaleX = (opts.scale == null ? 1 : num(opts.scale, 1)) * (opts.scaleX == null ? 1 : num(opts.scaleX, 1));
+    const scaleY = (opts.scale == null ? 1 : num(opts.scale, 1)) * (opts.scaleY == null ? 1 : num(opts.scaleY, 1));
+    const mean = Math.sqrt(Math.abs(scaleX * scaleY));
     const dx = num(opts.dx, 0);
     const dy = num(opts.dy, 0);
     const rotate = num(opts.rotate, 0);
     const cos = Math.cos(rotate);
     const sin = Math.sin(rotate);
     const mapPoint = (point) => {
-      const px = (point.x - originX) * scale;
-      const py = (point.y - originY) * scale;
+      const px = (point.x - originX) * scaleX;
+      const py = (point.y - originY) * scaleY;
       return { x: originX + px * cos - py * sin + dx, y: originY + px * sin + py * cos + dy };
     };
     for (const shape of shapes || []) {
@@ -2913,8 +2919,8 @@
         const p = mapPoint({ x: shape.x, y: shape.y });
         shape.x = p.x;
         shape.y = p.y;
-        if (shape.radius != null) shape.radius *= scale;
-        if (shape.r != null) shape.r *= scale;
+        if (shape.radius != null) shape.radius *= mean;
+        if (shape.r != null) shape.r *= mean;
       } else if (shape.kind === 'capsule') {
         const p0 = mapPoint({ x: shape.x0, y: shape.y0 });
         const p1 = mapPoint({ x: shape.x1, y: shape.y1 });
@@ -2922,21 +2928,28 @@
         shape.y0 = p0.y;
         shape.x1 = p1.x;
         shape.y1 = p1.y;
-        shape.width = (shape.width || 2) * scale;
+        shape.width = (shape.width || 2) * mean;
       }
     }
     return shapes;
   }
 
-  // The placement params (scale / x / y) map to a transform about the frame
-  // centre; null when the figure sits exactly where it was drawn.
+  // The placement params (scale / scaleX / scaleY / x / y / rotation) map to
+  // a transform about the frame centre; null when the figure sits exactly
+  // where it was drawn. The shared clip-placement model owns the keys so
+  // filler layers and figure clips edit the same values.
   function placementOf(params, ctx) {
-    const scale = params.scale == null ? 1 : num(params.scale, 1);
-    const x = num(params.x, 0);
-    const y = num(params.y, 0);
-    if (scale === 1 && !x && !y) return null;
+    const source = params || {};
+    const place = clipPlacement && typeof clipPlacement.fromParams === 'function'
+      ? clipPlacement.fromParams(source)
+      : { x: num(source.x, 0), y: num(source.y, 0), scale: source.scale == null ? 1 : num(source.scale, 1), scaleX: 1, scaleY: 1, rotation: 0 };
+    const identity = clipPlacement && typeof clipPlacement.isIdentity === 'function'
+      ? clipPlacement.isIdentity(place)
+      : (place.scale === 1 && !place.x && !place.y);
+    if (identity) return null;
     const frame = (ctx && ctx.frame) || { width: 1920, height: 1080 };
-    return { originX: frame.width / 2, originY: frame.height / 2, scale, dx: x * frame.width, dy: y * frame.height, rotate: 0 };
+    if (clipPlacement && typeof clipPlacement.toTransform === 'function') return clipPlacement.toTransform(place, frame);
+    return { originX: frame.width / 2, originY: frame.height / 2, scale: place.scale, dx: place.x * frame.width, dy: place.y * frame.height, rotate: 0 };
   }
 
   // drawList for the figure clip type: resolve the sub-beat and build shapes.
@@ -3003,6 +3016,10 @@
     }
     const info = beatAt(beats, time, params.motif, ctx && ctx.adsr, { inDur: params.inDur, outDur: params.outDur });
     if (!info) return { shapes: [], texts: [] };
+    // per-sub-beat mute (the figure twin of backdrop segments): a disabled
+    // sub-beat draws nothing for its span. The inspector ticks
+    // `beats[i].disabled` via setFigureBeatDisabled.
+    if (info.beat && (info.beat.disabled || info.beat.enabled === false)) return { shapes: [], texts: [] };
     const result = motifShapes(params.motif || 'orbit', params, ctx || {}, info);
     const place = placementOf(params, ctx || {});
     if (place) transformShapes(result.shapes, place);

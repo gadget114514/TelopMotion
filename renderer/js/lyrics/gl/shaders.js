@@ -2307,19 +2307,23 @@ SA.glShaders = (() => {
   uniform int u_mode;       // per-type mode selector
   uniform int u_mode2;      // per-type secondary selector (colour ramp)
   uniform vec4 u_camera;    // offsetX (uv), offsetY (uv), scale, angle (rad)
+  uniform vec2 u_place;     // placement scaleX / scaleY ratios (1 when unused)
   uniform float u_opacity;
   out vec4 fragColor;
   ${COMMON}
 
-  // The background follows the camera: the uv is rotated / scaled / shifted by
-  // the projected camera, scaled by the layer's parallax. At the unit camera
-  // the transform is skipped entirely (existing backgrounds stay untouched).
+  // The background follows the camera and the per-clip placement: the uv is
+  // scaled (uniform, then per-axis), rotated and shifted. At the unit camera
+  // with unit place scales the transform is skipped entirely (existing
+  // backgrounds stay untouched). Scale applies before rotation so a stretched
+  // pattern turns as one piece; the offset rides last in uv units.
   vec2 cameraUv(vec2 uv, float parallax) {
-    if (u_camera.x == 0.0 && u_camera.y == 0.0 && u_camera.z == 1.0 && u_camera.w == 0.0) return uv;
+    if (u_camera.x == 0.0 && u_camera.y == 0.0 && u_camera.z == 1.0 && u_camera.w == 0.0 && u_place.x == 1.0 && u_place.y == 1.0) return uv;
     vec2 p = uv - 0.5;
+    p = vec2(p.x / max(u_camera.z * u_place.x, 0.05), p.y / max(u_camera.z * u_place.y, 0.05));
     float c = cos(u_camera.w);
     float s = sin(u_camera.w);
-    p = mat2(c, -s, s, c) * p / max(u_camera.z, 0.05);
+    p = mat2(c, -s, s, c) * p;
     return p + 0.5 + u_camera.xy * max(parallax, 0.0);
   }
 

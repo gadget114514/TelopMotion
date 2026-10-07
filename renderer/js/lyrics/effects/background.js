@@ -417,6 +417,10 @@
       p42[0] = num(params.fog, 0.6);
     }
     const camera = Array.isArray(context.camera) ? context.camera : [0, 0, 1, 0];
+    // the per-clip placement (clip-placement.js): non-uniform zoom ratios for
+    // the background shader. Identity [1, 1] keeps every existing background
+    // byte-identical; the engine fills it from `spec.placement`.
+    const placeScale = Array.isArray(context.placeScale) ? context.placeScale : [1, 1];
     return {
       u_type: type,
       u_colorA: colorA,
@@ -429,6 +433,7 @@
       u_mode: mode,
       u_mode2: mode2,
       u_camera: camera,
+      u_place: [num(placeScale[0], 1), num(placeScale[1], 1)],
       u_time: context.time || 0,
       cardTexture: context.cardTexture || null,
     };
