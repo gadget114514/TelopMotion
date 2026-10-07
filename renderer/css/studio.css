@@ -1696,6 +1696,7 @@ body {
 }
 
 .palette-dot {
+  position: relative;
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -1713,6 +1714,37 @@ body {
 .palette-dot-edit:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+/* P1..P10 slot numbers on the inspector palette */
+.palette-pnum {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0 2px;
+  font-size: 8px;
+  line-height: 1.2;
+  color: #0b0d12;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* a slot that only exists as a derived colour until it is edited */
+.palette-dot-edit.is-derived {
+  border-style: dashed;
+  opacity: 0.92;
+}
+
+/* jump target from the BACKGROUND FILL section */
+.palette-dot-edit.is-flash {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* the in-place P8 editor inside the bgFill group */
+.insp-palette8 .ctrl-label {
+  white-space: nowrap;
 }
 
 .palette-swatch-item {

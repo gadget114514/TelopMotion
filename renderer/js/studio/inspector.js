@@ -36,6 +36,168 @@ SA.inspector = (() => {
   };
   const CONTROL_GROUPS = ['page', 'animation', 'layout', 'enter', 'exit', 'hold', 'location', 'fill', 'edge', 'post'];
 
+  // BACKGROUND FILL (bgFill) owns no colour param: the solid fill reads the
+  // TEXT_BG role (palette slot 7 = P8). These rows expose that slot in place
+  // so the colour can be edited without hunting through the palette list.
+  if (typeof SA !== 'undefined' && SA.i18n && typeof SA.i18n.registerStrings === 'function') {
+    SA.i18n.registerStrings({
+      en: {
+        studio: {
+          inspector: {
+            bgFillPalette: 'Palette 8 (text background)',
+            bgFillPaletteHint: 'BACKGROUND FILL uses palette 8. Editing here rewrites P8 of this level’s palette (a 7-colour palette is upgraded to 10).',
+            bgFillGoPalette: 'Open palette 8',
+            paletteDerived: 'derived',
+          },
+        },
+      },
+      ja: {
+        studio: {
+          inspector: {
+            bgFillPalette: 'パレット8（文字背景）',
+            bgFillPaletteHint: 'BACKGROUND FILL の色はパレット8です。ここで編集するとこの階層のパレットのP8を書き換えます（7色パレットは10色化されます）。',
+            bgFillGoPalette: 'パレット8を開く',
+            paletteDerived: '導出色',
+          },
+        },
+      },
+    });
+  }
+
+  function textBgSlot() {
+    return (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SLOT && SA.paletteRoles.SLOT.TEXT_BG) || 7;
+  }
+
+  function paletteSlotCount() {
+    return (typeof SA !== 'undefined' && SA.paletteRoles && SA.paletteRoles.SIZE) || 10;
+  }
+
+  function rawPaletteColors(style) {
+    const palette = style && style.palette;
+    return palette && Array.isArray(palette.colors) ? palette.colors : [];
+  }
+
+  function displayPaletteColors(raw) {
+    if (!raw.length) return [];
+    const size = paletteSlotCount();
+    if (raw.length >= size) return raw.slice(0, size);
+    if (typeof SA !== 'undefined' && SA.paletteRoles && typeof SA.paletteRoles.upgradeColors === 'function') {
+      try {
+        return SA.paletteRoles.upgradeColors(raw);
+      } catch {
+        return raw.slice();
+      }
+    }
+    return raw.slice();
+  }
+
+  function currentTextBgHex(style) {
+    const raw = rawPaletteColors(style);
+    if (!raw.length) return null;
+    if (typeof SA !== 'undefined' && SA.paletteRoles && typeof SA.paletteRoles.get === 'function') {
+      try {
+        return SA.paletteRoles.get(raw, textBgSlot());
+      } catch {
+        return null;
+      }
+    }
+    return raw[textBgSlot()] || raw[3] || raw[0] || null;
+  }
+
+  function paletteScopeForSel(sel) {
+    let scope = scopeOf(sel);
+    if (!scope && sel && sel.beatId) scope = { cueId: sel.cueId, beatId: sel.beatId };
+    return scope;
+  }
+
+  function paletteSlotLabel(index) {
+    return `P${index + 1}`;
+  }
+
+  // Write one hex into one palette slot of the selected scope. A short
+  // (legacy 7-colour) palette is upgraded to the 10-slot roles first, so P8
+  // becomes a stored colour instead of a derived one.
+  function writePaletteSlot(scope, slot, hex) {
+    if (!scope || typeof hex !== 'string' || !/^#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(hex)) return false;
+    const style = resolvedStyle();
+    const latest = (style && style.palette) || null;
+    if (!latest || !Array.isArray(latest.colors) || !latest.colors.length) return false;
+    const size = paletteSlotCount();
+    let colors;
+    let roles = latest.roles;
+    if (latest.colors.length >= size) {
+      colors = latest.colors.slice(0, size);
+    } else if (typeof SA !== 'undefined' && SA.paletteRoles && typeof SA.paletteRoles.upgradeColors === 'function') {
+      try {
+        colors = SA.paletteRoles.upgradeColors(latest.colors);
+      } catch {
+        colors = latest.colors.slice();
+      }
+      roles = 2;
+    } else {
+      colors = latest.colors.slice();
+      while (colors.length <= slot) colors.push(colors[colors.length - 1] || '#ffffff');
+    }
+    colors[slot] = hex;
+    const next = { ...latest, colors };
+    if (roles != null) next.roles = roles;
+    if (colors.length >= size && next.roles == null) next.roles = 2;
+    SA.store.commands.setPalette(scope, next, { label: 'edit palette P8' });
+    return true;
+  }
+
+  // The in-place P8 editor rendered inside the bgFill group: the current P8
+  // colour plus a button that jumps to the same swatch in the palette list.
+  function renderBgFillPalette(body) {
+    const style = resolvedStyle();
+    const sel = selectionInfo();
+    const scope = paletteScopeForSel(sel);
+    const slot = textBgSlot();
+    const raw = rawPaletteColors(style);
+    if (!raw.length || !scope) {
+      const hint = document.createElement('div');
+      hint.className = 'insp-inherit';
+      hint.textContent = t('studio.inspector.paletteNone');
+      body.appendChild(hint);
+      return;
+    }
+    const hex = currentTextBgHex(style);
+    const derived = raw.length < paletteSlotCount();
+    const label = `${t('studio.inspector.bgFillPalette')} · ${paletteSlotLabel(slot)}`;
+    const control = SA.controls.colorControl(hex || '#ffffff', (next) => {
+      let value = null;
+      if (typeof next === 'string') value = next;
+      else if (next && typeof next.value === 'string') value = next.value;
+      else if (next && next.kind === 'palette' && Number.isFinite(next.index)) {
+        const ref = raw[Math.abs(Math.floor(next.index)) % raw.length];
+        value = typeof ref === 'string' ? ref : null;
+      }
+      if (value) writePaletteSlot(scope, slot, value);
+    }, { palette: style.palette || null, slotLabel: t('studio.inspector.palette') });
+    const rowNode = row(body, `palette.${slot}`, label, control, { noKey: true, noReset: true });
+    rowNode.classList.add('insp-palette8');
+    const hint = document.createElement('div');
+    hint.className = 'insp-inherit';
+    hint.textContent = `${t('studio.inspector.bgFillPaletteHint')}${derived ? ` (${t('studio.inspector.paletteDerived')})` : ''}`;
+    body.appendChild(hint);
+    const actions = document.createElement('div');
+    actions.className = 'insp-actions';
+    const go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'btn btn-mini';
+    go.textContent = t('studio.inspector.bgFillGoPalette');
+    go.addEventListener('click', () => {
+      const target = document.querySelector(`#inspector-body [data-palette-slot="${slot}"]`);
+      if (!target) return;
+      if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'center' });
+      target.classList.add('is-flash');
+      window.setTimeout(() => target.classList.remove('is-flash'), 1200);
+      if (typeof target.focus === 'function') target.focus({ preventScroll: true });
+    });
+    actions.appendChild(go);
+    body.appendChild(actions);
+  }
+
   const el = {};
   let lastSelection = '';
 
@@ -1688,6 +1850,7 @@ SA.inspector = (() => {
       pairRow(body, paramPairLabel(first, second), specs);
     };
     eachParam(descriptor, singleParam, pairParams);
+    if (group === 'bgFill') renderBgFillPalette(body);
     if (MOTION_GROUPS.includes(group)) renderMotion(container, group, instance);
     void typeRow;
   }
@@ -4060,13 +4223,21 @@ SA.inspector = (() => {
     const swatches = document.createElement('div');
     swatches.className = 'palette-swatches';
     if (effective) {
-      effective.colors.forEach((hex, index) => {
+      const raw = effective.colors;
+      const shown = displayPaletteColors(raw);
+      shown.forEach((hex, index) => {
+        const derived = index >= raw.length;
         const swatch = document.createElement('button');
         swatch.type = 'button';
-        swatch.className = 'palette-dot palette-dot-edit';
+        swatch.className = `palette-dot palette-dot-edit${derived ? ' is-derived' : ''}${index === textBgSlot() ? ' is-textbg' : ''}`;
         if (typeof SA !== 'undefined' && SA.colors && typeof SA.colors.paintSwatch === 'function') SA.colors.paintSwatch(swatch, hex);
         else swatch.style.background = hex;
-        swatch.title = `${hex} — ${t('studio.inspector.paletteEdit')}`;
+        swatch.dataset.paletteSlot = String(index);
+        swatch.title = `${paletteSlotLabel(index)} · ${hex} — ${t('studio.inspector.paletteEdit')}${derived ? ` (${t('studio.inspector.paletteDerived')})` : ''}`;
+        const badge = document.createElement('span');
+        badge.className = 'palette-pnum';
+        badge.textContent = paletteSlotLabel(index);
+        swatch.appendChild(badge);
         swatch.addEventListener('click', () => {
           const key = `palette|${sel.path}|${index}|${Date.now()}`;
           SA.colors.openPicker({
@@ -4079,9 +4250,26 @@ SA.inspector = (() => {
               if (!value || !scope) return;
               // read the palette again: earlier picks of this drag already moved it
               const latest = resolvedStyle().palette || effective;
-              const colors = latest.colors.slice();
+              let colors;
+              let roles = latest.roles;
+              if (latest.colors.length >= paletteSlotCount()) {
+                colors = latest.colors.slice(0, paletteSlotCount());
+              } else if (typeof SA !== 'undefined' && SA.paletteRoles && typeof SA.paletteRoles.upgradeColors === 'function') {
+                try {
+                  colors = SA.paletteRoles.upgradeColors(latest.colors);
+                } catch {
+                  colors = latest.colors.slice();
+                }
+                roles = 2;
+              } else {
+                colors = latest.colors.slice();
+                while (colors.length <= index) colors.push(colors[colors.length - 1] || '#ffffff');
+              }
               colors[index] = value;
-              SA.store.commands.setPalette(scope, { ...latest, colors }, { label: 'edit palette', coalesceKey: key });
+              const nextPalette = { ...latest, colors };
+              if (roles != null) nextPalette.roles = roles;
+              if (colors.length >= paletteSlotCount() && nextPalette.roles == null) nextPalette.roles = 2;
+              SA.store.commands.setPalette(scope, nextPalette, { label: 'edit palette', coalesceKey: key });
             },
           });
         });
