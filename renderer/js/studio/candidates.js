@@ -795,6 +795,8 @@ SA.candidates = (() => {
     const doc = project();
     const cols = [];
     const sigCache = new Map();
+    // one digest of the whole render state for every column's live picture
+    const renderKey = store().commands.renderStateKey();
     for (const cue of (doc.script && doc.script.cues) || []) {
       let sig = sigCache.get(cue.id);
       if (sig === undefined) {
@@ -806,7 +808,7 @@ SA.candidates = (() => {
         const text = String((beat && beat.text) || (cue && cue.text) || '').replace(/\s+/g, ' ').trim();
         // the numbered rows: every card but the adopted one (it has its own slot)
         const rows = entry ? entry.items.filter((item) => item.id !== entry.activeId) : [];
-        const liveKey = store().commands.liveLookKey(cue.id, beat.id);
+        const liveKey = renderKey;
         cols.push({ cueId: cue.id, beatId: beat.id, cue, beat, text, start: Number(beat.start) || 0, sig, entry, rows, liveKey });
       }
     }
@@ -1479,5 +1481,45 @@ SA.candidates = (() => {
     });
   }
 
-  return { init, render: scheduleRender, resolveTarget, setOpen };
+  // Compares what the adopted slot shows with what the real preview engine
+  // draws, for the beats that have a candidate list (same time, same size).
+  // Returns the per-beat mean / max channel difference (0..255).
+  function verifyAdopted(limit) {
+    const out = [];
+    const doc = project();
+    if (!doc || !SA.preview || typeof SA.preview.captureDoc !== 'function' || typeof SA.preview.captureRGBA !== 'function') return out;
+    const diff = (a, b) => {
+      let sum = 0;
+      let max = 0;
+      let n = 0;
+      for (let i = 0; i < a.data.length; i += 4 * 37) {
+        for (let c = 0; c < 3; c += 1) {
+          const d = Math.abs(a.data[i + c] - b.data[i + c]);
+          sum += d;
+          if (d > max) max = d;
+          n += 1;
+        }
+      }
+      return { mean: +(sum / Math.max(1, n)).toFixed(2), max };
+    };
+    let count = 0;
+    for (const cue of (doc.script && doc.script.cues) || []) {
+      for (const beat of beatsOf(doc, cue)) {
+        if (limit && count >= limit) return out;
+        if (!store().commands.candidatesOf(beat.id)) continue;
+        const start = Number(beat.start) || 0;
+        const end = Math.max(Number(beat.end) || start + 1, start + 0.2);
+        const time = start + Math.min((end - start) * 0.6, 1.1);
+        const real = SA.preview.captureRGBA(time);
+        if (!real) continue;
+        const shot = SA.preview.captureDoc(store().commands.scratchForShots(), time, { width: real.width });
+        if (!shot || shot.width !== real.width) continue;
+        out.push({ beatId: beat.id, time: +time.toFixed(2), ...diff(real, shot) });
+        count += 1;
+      }
+    }
+    return out;
+  }
+
+  return { init, render: scheduleRender, resolveTarget, setOpen, verifyAdopted };
 })();

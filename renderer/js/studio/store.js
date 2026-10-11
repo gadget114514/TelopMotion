@@ -47,6 +47,8 @@ SA.store = (() => {
   // in place as `undefined` placeholders so restoring a snapshot keeps the
   // object's key order (JSON string comparisons stay stable) and the live
   // candidate objects are re-attached on undo / redo / cancel.
+  const renderStateMemo = { stamp: null, key: '' };
+
   function candidateFreeClone(projectDoc) {
     if (!projectDoc) return projectDoc;
     const out = {};
@@ -3245,15 +3247,21 @@ SA.store = (() => {
     // --- beat candidates: generate / apply / keep -------------------------------
     // `{ items, activeId }` with activeId derived from the beat's current look
     // (the item whose look matches it), never stored.
-    // A short digest of how the beat looks right now (its own look and the
-    // clips under it): the key of the adopted slot's picture, which must show
-    // the live beat, not whatever a card recorded earlier.
-    liveLookKey(cueId, beatId) {
+    // A digest of everything that decides how the song renders: the whole
+    // project but the candidate lists and their pool. It is the key of the
+    // adopted slot's picture, so that picture is shot again after ANY change
+    // and can never describe an older state than the real playback shows.
+    // Memoised per project version (it is asked once per column).
+    renderStateKey() {
       if (!state.project) return '';
-      const look = liveLookOfBeat(state.project, cueId, beatId);
-      if (!look) return '';
-      const text = JSON.stringify(look);
-      return `${fnv1a32(text).toString(36)}${text.length.toString(36)}`;
+      const stamp = `${JSON.stringify(state.version)}#${state.projectEpoch || 0}`;
+      if (renderStateMemo.stamp === stamp) return renderStateMemo.key;
+      const { beatCandidates: _l, candidatePool: _p, ...rest } = state.project;
+      const text = JSON.stringify(rest);
+      const key = `${fnv1a32(text).toString(36)}${text.length.toString(36)}`;
+      renderStateMemo.stamp = stamp;
+      renderStateMemo.key = key;
+      return key;
     },
     candidatesOf(beatId) {
       const entry = state.project && candidateEntry(state.project, beatId, false);
