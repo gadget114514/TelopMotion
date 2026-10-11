@@ -837,13 +837,30 @@ SA.candidates = (() => {
     const label = col.text.length > 14 ? `${col.text.slice(0, 14)}…` : col.text;
     cell.appendChild(node('div', 'board-beat', label || '—'));
     cell.appendChild(node('div', 'board-time', formatBoardTime(col.start)));
-    const gen = node('button', 'btn btn-mini board-gen', t('studio.media.candBoardGenerate'));
-    gen.addEventListener('click', (event) => {
-      event.stopPropagation();
-      rollbackHover(true);
-      whenIdle(() => reportGenerated(store().commands.generateCandidates(col.cueId, col.beatId, { count, mode, axes }), count));
-    });
-    cell.appendChild(gen);
+    // three icon buttons, the timeline's own icons per beat: generate (redraw
+    // the numbered rows), variation, colour
+    const tools = node('div', 'board-gen-row');
+    const iconButton = (icon, tip, run) => {
+      const button = node('button', 'btn btn-mini board-gen board-icon', icon);
+      button.type = 'button';
+      button.title = tip;
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        rollbackHover(true);
+        whenIdle(run);
+      });
+      return button;
+    };
+    tools.appendChild(iconButton('✨', t('studio.media.candBoardGenerateTip'), () => {
+      reportGenerated(store().commands.generateCandidates(col.cueId, col.beatId, { count, mode, axes }), count);
+    }));
+    tools.appendChild(iconButton('🎲', t('studio.media.candBoardVariationTip'), () => {
+      store().commands.varyBeat(col.cueId, col.beatId);
+    }));
+    tools.appendChild(iconButton('◐', t('studio.media.candBoardColourTip'), () => {
+      store().commands.rerollPalette({ cueId: col.cueId, beatId: col.beatId });
+    }));
+    cell.appendChild(tools);
     return cell;
   }
 

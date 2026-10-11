@@ -3563,3 +3563,17 @@ body {
   color: var(--accent);
   font-weight: 600;
 }
+
+/* the three per-beat icon buttons in a column head */
+.board-gen-row {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+
+.board-gen.board-icon {
+  min-width: 22px;
+  padding: 0 3px;
+  font-size: 11px;
+  line-height: 1.25;
+}
