@@ -429,19 +429,55 @@ test('loading drops a previous candidate that only differs by clip colours', () 
   assert.equal(after.items.some((item) => item.kind === 'original'), true);
 });
 
-test('a whole-song vary / reroll makes the original card follow the new look', () => {
+test('a whole-song variation joins the list right under the original', () => {
   store.load(fixture());
-  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
-  const entry0 = store.commands.candidatesOf(BEAT);
-  const originalBefore = JSON.stringify(entry0.items.find((item) => item.kind === 'original').look);
+  store.commands.generateCandidates('c1', BEAT, { count: 3, mode: 'near' });
+  const before = store.commands.candidatesOf(BEAT);
+  const idsBefore = before.items.map((item) => item.id);
+  const originalBefore = JSON.stringify(before.items[0].look);
   store.commands.varyAll();
   const entry = store.commands.candidatesOf(BEAT);
-  const original = entry.items.find((item) => item.kind === 'original');
-  const live = JSON.stringify(store.state.project.beatStyles[BEAT] || {});
-  assert.notEqual(JSON.stringify(original.look), originalBefore, 'the original card followed the change');
-  assert.equal(JSON.stringify(original.look.beatBag || {}), live);
-  // the other candidates were not touched and nothing was duplicated
-  assert.equal(entry.items.length, entry0.items.length);
+  // the original stays, the new look is row 2, everything else moved down one
+  assert.equal(entry.items[0].kind, 'original');
+  assert.equal(JSON.stringify(entry.items[0].look), originalBefore);
+  assert.equal(entry.items.length, idsBefore.length + 1);
+  assert.deepEqual(entry.items.slice(2).map((item) => item.id), idsBefore.slice(1));
+  assert.equal(JSON.stringify(entry.items[1].look.beatBag || {}), JSON.stringify(store.state.project.beatStyles[BEAT] || {}));
+  assert.equal(store.commands.candidatesOf(BEAT).items[1].id !== idsBefore[1], true);
+});
+
+test('the overflow of a variation goes from the bottom and keeps the kept ones', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'near' });
+  store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'far' });
+  let entry = store.commands.candidatesOf(BEAT);
+  // pin one near the bottom and wear another: both must survive
+  const bottom = entry.items[entry.items.length - 1];
+  const pinned = entry.items[entry.items.length - 2];
+  store.commands.toggleCandidatePin(BEAT, pinned.id);
+  assert.equal(store.commands.candidatesOf(BEAT).items.find((item) => item.id === pinned.id).pinned, true);
+  for (let round = 0; round < 3; round += 1) store.commands.varyAll();
+  entry = store.commands.candidatesOf(BEAT);
+  assert.ok(entry.items.length <= 15);
+  assert.equal(entry.items[0].kind, 'original');
+  assert.equal(entry.items.some((item) => item.id === pinned.id), true, 'a pinned candidate is never pushed out');
+  assert.equal(entry.items.some((item) => item.id === bottom.id), false, 'the bottom one was pushed out');
+  assert.equal(new Set(entry.items.map((item) => item.id)).size, entry.items.length);
+});
+
+test('a colour change also joins the list instead of replacing the original', () => {
+  store.load(fixture());
+  store.state.project.style.palette = {
+    colors: ['#101018', '#f4f1ea', '#ff5a5f', '#ffd166', '#06d6a0', '#118ab2', '#8338ec', '#ef476f', '#3a86ff', '#fb5607', '#ffbe0b', '#2b2d42'],
+  };
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  const before = store.commands.candidatesOf(BEAT);
+  const originalBefore = JSON.stringify(before.items[0].look);
+  const count = before.items.length;
+  store.commands.rerollColors();
+  const entry = store.commands.candidatesOf(BEAT);
+  assert.equal(JSON.stringify(entry.items[0].look), originalBefore);
+  assert.ok(entry.items.length >= count);
 });
 
 test('a beat that wears one of its candidates keeps its original card', () => {

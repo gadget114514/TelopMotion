@@ -475,6 +475,7 @@ SA.store = (() => {
     const beforeCand = state.candidateRev;
     command.do(state.project, state);
     if (command.label && LOOK_RESET_LABELS.has(command.label)) refreshCandidateOriginals(state.project);
+    else if (command.label && LOOK_ADD_LABELS.has(command.label)) addLooksAsCandidates(state.project);
     const after = candidateFreeClone(state.project);
     const changedProject = beforeJson !== JSON.stringify(after);
     const changedCandidates = beforeCand !== state.candidateRev;
@@ -687,14 +688,54 @@ SA.store = (() => {
     return JSON.stringify(core(a)) === JSON.stringify(core(b));
   }
 
-  // A whole-song command (generate, vary, recolour) replaces every beat's look.
+  // Only the timeline's "generate" (auto direct) rebuilds the whole song's looks.
   // The 'original' card of a candidate list is "how the beat looked before the
-  // candidates", so it follows such a change instead of showing a look the song
-  // no longer has. A beat that wears one of its candidates is left alone.
-  const LOOK_RESET_LABELS = new Set([
-    'auto direct', 'vary all', 'vary cue', 'reroll cue', 'reroll colors', 'reroll palette',
-    'vary beat', 'reroll beat', 'generate script',
+  // candidates", so it follows that one command instead of showing a look the
+  // song no longer has. A beat that wears one of its candidates is left alone.
+  const LOOK_RESET_LABELS = new Set(['auto direct']);
+  // A variation or a colour change keeps the original card and joins the list
+  // as a candidate right under it, so the earlier look is still one click away.
+  const LOOK_ADD_LABELS = new Set([
+    'vary all', 'vary cue', 'vary beat', 'reroll cue', 'reroll beat', 'reroll colors', 'reroll palette',
   ]);
+
+  // Puts the beat's new look under the original (row 2); everything below
+  // moves down by one and the overflow goes from the bottom, never the
+  // original, a pinned one or the one now in use.
+  function addLooksAsCandidates(projectDoc) {
+    const all = projectDoc && projectDoc.beatCandidates;
+    if (!all || typeof all !== 'object') return 0;
+    let added = 0;
+    for (const [beatId, entry] of Object.entries(all)) {
+      if (!entry || !Array.isArray(entry.items) || !entry.items.length) continue;
+      const cueId = cueIdOfBeat(projectDoc, beatId);
+      const current = cueId ? liveLookOfBeat(projectDoc, cueId, beatId) : null;
+      if (!current) continue;
+      if (entry.items.some((item) => sameLook(item.look, current))) continue;
+      const item = pushCandidate(projectDoc, entry, current, 'near');
+      entry.items.pop();
+      const at = entry.items[0] && entry.items[0].kind === 'original' ? 1 : 0;
+      entry.items.splice(at, 0, item);
+      while (entry.items.length > CANDIDATE_LIMIT) {
+        let drop = -1;
+        for (let index = entry.items.length - 1; index >= 0; index -= 1) {
+          const other = entry.items[index];
+          if (other.kind !== 'original' && !other.pinned && other.id !== item.id) {
+            drop = index;
+            break;
+          }
+        }
+        if (drop < 0) break;
+        entry.items.splice(drop, 1);
+      }
+      added += 1;
+    }
+    if (added) {
+      pruneCandidatePool(projectDoc);
+      touchCandidates();
+    }
+    return added;
+  }
 
   function refreshCandidateOriginals(projectDoc) {
     const all = projectDoc && projectDoc.beatCandidates;
