@@ -916,6 +916,10 @@ SA.candidates = (() => {
     cell.title = labelOf(active);
     cell.appendChild(boardThumb(col.beatId, active, col.sig));
     cell.appendChild(node('div', 'board-name', t('studio.media.candWornName')));
+    // the adopted card previews like any other card on hover
+    const over = { cueId: col.cueId, beatId: col.beatId, start: col.start, end: Number(col.beat && col.beat.end) || col.start + 1 };
+    cell.addEventListener('mouseenter', () => beginHover(active, over));
+    cell.addEventListener('mouseleave', endHover);
     return cell;
   }
 
@@ -1020,7 +1024,7 @@ SA.candidates = (() => {
         const thumbKey = thumbKeyFor(col.beatId, active, col.sig);
         const url = thumbs.get(thumbKey);
         const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
-        base = `adopt|${col.beatId}|${active.id}|${labelOf(active)}`;
+        base = `adopt|${col.beatId}|${col.cueId}|${col.start}|${active.id}|${labelOf(active)}`;
         sig = `${base}|${state}`;
       }
       place(`adopt:${index}`, sig, () => boardAdoptedCell(col, index, viewTop + BOARD.head), (el) => {
