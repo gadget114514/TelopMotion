@@ -919,6 +919,46 @@ const preview = (() => {
     return true;
   }
 
+  // --- still capture ------------------------------------------------------------
+  // Thumbnails of candidates are shot here: a third engine on a canvas that is
+  // never attached to the page, fed with a scratch copy of the project. The
+  // live project, the main canvas and the transport are not touched, so
+  // nothing on screen changes while the pictures are made.
+  let cap = null; // { engine, doc }
+
+  function captureDoc(doc, time, options) {
+    if (!doc || rendererKind !== 'webgl2' || !SA.lyricsEngine || typeof document === 'undefined') return null;
+    const size = outputSize(doc);
+    const width = Math.max(64, Math.round((options && options.width) || 320));
+    const height = Math.max(36, Math.round((width * size.height) / Math.max(1, size.width)));
+    if (!cap) {
+      const canvas = document.createElement('canvas');
+      const engine = SA.lyricsEngine.createEngine({ canvas, width, height, quality: 'preview' });
+      if (!engine || typeof engine.captureRGBA !== 'function') return null;
+      cap = { engine, doc: null };
+    }
+    const engine = cap.engine;
+    if (SA.textflow) SA.textflow.apply(doc);
+    engine.resize(width, height);
+    if (cap.doc !== doc) {
+      engine.setProject(doc);
+      engine.setAssets({ fonts: fonts || [] });
+      if (typeof engine.setView === 'function') {
+        const view = SA.store.state.view || {};
+        engine.setView({ subtitleOnly: !!view.subtitleOnly, subtitleBackgrounds: view.subtitleBackgrounds !== false });
+      }
+      if (audioAnalysis && typeof engine.setAudio === 'function') engine.setAudio(audioAnalysis);
+      if (typeof engine.preloadLayers === 'function') engine.preloadLayers().catch(() => {});
+      cap.doc = doc;
+    }
+    try {
+      engine.renderFrame(Math.min(Math.max(0, time), Math.max(0, sceneDuration())));
+      return engine.captureRGBA();
+    } catch {
+      return null;
+    }
+  }
+
   function captureRGBA(time) {
     if (!renderer) return null;
     if (typeof time === 'number') renderer.renderFrame(time);
@@ -968,6 +1008,7 @@ const preview = (() => {
     captureRGBA,
     auxPlay,
     auxStop,
+    captureDoc,
     isAuxPlaying: () => !!(aux && aux.run),
     transportRev: () => transportRev,
     debugError: () => (renderer && typeof renderer.debugError === 'function' ? renderer.debugError() : 0),

@@ -42,6 +42,9 @@ SA.candidates = (() => {
       clear() {
         map.clear();
       },
+      delete(key) {
+        map.delete(key);
+      },
       set(key, value) {
         if (map.has(key)) map.delete(key);
         map.set(key, value);
@@ -127,19 +130,13 @@ SA.candidates = (() => {
     return beat ? { cueId: cue.id, beatId: beat.id, cue, beat } : null;
   }
 
-  // What a thumbnail of this cue's beats depends on besides the beat's own
-  // look: the project style, the cue style, the output frame and the clips
-  // (backdrop / filler / figure) under the cue. A content hash, not a length:
-  // a recolour or a re-drawn param usually keeps the text the same size.
-  function signature(cueId) {
+  // A thumbnail is a cached still keyed by the candidate's own look and the
+  // frame shape. Later changes of the project style never rewrite it; a card
+  // whose picture should be redone is refreshed by hand (board right click).
+  function signature() {
     const doc = project();
-    const own = (doc.cueStyles && doc.cueStyles[cueId]) || {};
-    const output = doc.output || {};
-    const cue = ((doc.script && doc.script.cues) || []).find((entry) => entry.id === cueId);
-    const from = cue ? Number(cue.start) || 0 : 0;
-    const to = cue ? Number(cue.end) || from : Infinity;
-    const clips = (doc.clips || []).filter((clip) => (Number(clip.start) || 0) < to && (Number(clip.end) || 0) > from);
-    return hashOf(JSON.stringify([doc.style || {}, own, output.aspect || '', output.width || 0, output.height || 0, clips]));
+    const output = (doc && doc.output) || {};
+    return `${output.aspect || ''}:${output.width || 0}x${output.height || 0}`;
   }
 
   // a content hash, not a length: two looks of the same size must not share a
@@ -425,49 +422,46 @@ SA.candidates = (() => {
     return new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
   }
 
-  // Each missing thumbnail is rendered by applying the look inside one
-  // transaction, shooting one frame in the middle of the beat, and rolling the
-  // whole transaction back. Nothing reaches the history or the document. The
-  // tab and the board share this, only their caches and jobs differ.
+  // Each missing thumbnail is a still: the candidate is worn on a scratch copy
+  // of the project and shot by the offscreen capture engine, then cached by
+  // its look. Nothing of the live project, the main canvas or the history is
+  // touched, so nothing on screen redraws while pictures are made, and a
+  // cached picture is never rewritten.
   async function runShots(jobs, cache, after, shouldStop) {
     if (!jobs.length) return;
     thumbBusy = true;
-    store().beginTransaction('candidate thumbnails', { ephemeral: true });
-    const token = store().transactionToken();
     try {
+      const scratch = store().commands.scratchForShots();
       for (const job of jobs) {
         // the view scrolled away: drop the stale queue, the next render builds
         // a fresh one for the new visible range
         if (shouldStop && shouldStop()) break;
-        // an edit made meanwhile rolled this scratch look back: stop, and do
-        // not file a picture of the user's own state under a candidate
-        if (store().transactionToken() !== token) break;
         // a failed shot is remembered as '' so it is not retried in a loop
         let url = '';
         try {
-          store().runEphemeral(() => store().commands.applyCandidate(job.cueId, job.beatId, job.candidateId));
-          await nextFrame();
-          if (store().transactionToken() !== token) break;
-          const shot = SA.preview.captureRGBA(job.time);
-          if (shot) url = shotToDataUrl(shot);
+          if (scratch && store().commands.wearOnScratch(scratch, job.cueId, job.beatId, job.candidateId)) {
+            const shot = SA.preview.captureDoc(scratch, job.time, { width: THUMB_WIDTH * 2 });
+            if (shot) url = shotToDataUrl(shot);
+          }
         } catch {
           url = '';
         }
         cache.set(job.key, url);
+        // let the page breathe between pictures
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
     } finally {
-      if (store().transactionToken() === token) store().cancelTransaction();
       thumbBusy = false;
       if (after) after();
     }
   }
 
   function canShoot() {
-    return !!(SA.preview && SA.preview.isWebGL2 && SA.preview.isWebGL2()) && !store().state.playing;
+    return !!(SA.preview && SA.preview.isWebGL2 && SA.preview.isWebGL2() && typeof SA.preview.captureDoc === 'function');
   }
 
   async function fillThumbs() {
-    if (thumbBusy || genAll || hover || tour || !target || !isVisible() || !canShoot()) return;
+    if (thumbBusy || genAll || !target || !isVisible() || !canShoot()) return;
     const entry = store().commands.candidatesOf(target.beatId);
     if (!entry) return;
     const sig = signature(target.cueId);
@@ -484,7 +478,7 @@ SA.candidates = (() => {
   // Never while playing or while a hover / tour transaction is open. The queue
   // is tagged with the render generation so a scroll drops it immediately.
   function fillBoardThumbs() {
-    if (!boardOpen || thumbBusy || genAll || hover || tour || !boardModel || !canShoot()) return;
+    if (!boardOpen || thumbBusy || genAll || !boardModel || !canShoot()) return;
     const cols = boardModel.cols;
     if (!cols.length) return;
     const range = visibleRange();
@@ -877,7 +871,12 @@ SA.candidates = (() => {
       cell.classList.add('is-empty');
       return cell;
     }
-    if (item.id === col.entry.activeId) cell.classList.add('is-active');
+    // the frame marks a beat that wears a candidate other than the master
+    // (every beat starts on its master: framing that would only be noise)
+    if (item.id === col.entry.activeId && item.kind !== 'original') {
+      cell.classList.add('is-active');
+      cell.title = t('studio.media.candInUse');
+    }
     cell.appendChild(boardThumb(col.beatId, item, col.sig));
     cell.appendChild(node('div', 'board-name', labelOf(item)));
     // hovering a board cell previews that beat the same way the tab does;
@@ -970,7 +969,7 @@ SA.candidates = (() => {
           const thumbKey = thumbKeyFor(col.beatId, item, col.sig);
           const url = thumbs.get(thumbKey);
           const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
-          base = `${col.beatId}|${col.cueId}|${col.start}|${item.id}|${item.kind}|${labelOf(item)}|${item.id === col.entry.activeId ? 'A' : ''}`;
+          base = `${col.beatId}|${col.cueId}|${col.start}|${item.id}|${item.kind}|${labelOf(item)}|${item.id === col.entry.activeId && item.kind !== 'original' ? 'A' : ''}`;
           sig = `${base}|${state}`;
         }
         place(`cell:${row}:${index}`, sig, () => boardCell(col, index, row), null, base, item ? (el) => {
@@ -1217,6 +1216,17 @@ SA.candidates = (() => {
         store().commands.replaceMaster(col.beatId, picked.id);
       });
       menu.appendChild(replace);
+    }
+    if (picked) {
+      const refresh = node('button', 'menu-item', t('studio.media.candRefreshThumb'));
+      refresh.type = 'button';
+      refresh.addEventListener('click', () => {
+        hideBoardMenu();
+        thumbs.delete(thumbKeyFor(col.beatId, picked, col.sig));
+        boardGen += 1;
+        scheduleBoard();
+      });
+      menu.appendChild(refresh);
     }
     const item = node('button', 'menu-item', t('studio.media.candBoardMoveCursor'));
     item.type = 'button';

@@ -3418,6 +3418,23 @@ SA.store = (() => {
       });
       return applied;
     },
+    // A scratch copy of the project for a batch of thumbnails: the candidate
+    // lists are left out (they are the big part), the clip pool stays so packed
+    // looks resolve. `wearOnScratch` then puts one candidate on one beat of it.
+    scratchForShots() {
+      if (!state.project) return null;
+      const { beatCandidates: _drop, ...rest } = state.project;
+      return clone(rest);
+    },
+    wearOnScratch(scratch, cueId, beatId, candidateId) {
+      if (!scratch || !state.project) return false;
+      const entry = candidateEntry(state.project, beatId, false);
+      const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
+      if (!item) return false;
+      materializeBeat(scratch, cueId, beatId);
+      applyBeatLookDoc(scratch, cueId, beatId, item.look);
+      return true;
+    },
     // A scratch copy of the project with the candidate worn by the beat. The
     // dedicated candidate player renders it on its own canvas and clock, so a
     // preview never touches the live project, the undo history or the main
