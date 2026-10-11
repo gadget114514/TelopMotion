@@ -3515,6 +3515,13 @@ body {
 }
 
 /* candidate player: laid over the main preview, never the main transport */
+/* `.preview-frame canvas { display: block }` outranks the UA [hidden] rule, so
+   a hidden player must be switched off explicitly or it stays on top, frozen */
+.preview-frame .preview-aux[hidden],
+.preview-aux-badge[hidden] {
+  display: none;
+}
+
 .preview-frame .preview-aux {
   position: absolute;
   inset: 0;
