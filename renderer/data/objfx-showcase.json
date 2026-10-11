@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 7,
   "meta": {
     "title": "TelopMotion モーションFX見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -695,8 +695,8 @@
           "params": {
             "driver": "distance",
             "palette": "hueCycle",
-            "colorA": "#ff3b6b",
-            "colorB": "#3bd1ff",
+            "colorA": null,
+            "colorB": null,
             "cycles": 1,
             "phase": 0,
             "spread": 0.3,
@@ -3095,6 +3095,8 @@
       "hold": []
     }
   },
+  "beatCandidates": {},
+  "candidatePool": {},
   "beatWarnings": {},
   "orphanBeats": {},
   "orphans": {},

@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 7,
   "meta": {
     "title": "TelopMotion テキスト見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -20365,6 +20365,8 @@
     ]
   },
   "beatStyles": {},
+  "beatCandidates": {},
+  "candidatePool": {},
   "beatWarnings": {},
   "orphanBeats": {},
   "orphans": {},

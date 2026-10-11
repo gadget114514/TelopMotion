@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 7,
   "meta": {
     "title": "TelopMotion テーマ見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -1532,13 +1532,20 @@
         "name": "blood",
         "colors": [
           "#0b0506",
-          "#291616",
-          "#f4ead8",
-          "#8d1225",
-          "#b0152e",
-          "#995e21",
-          "#985313"
-        ]
+          "#311817",
+          "#240f11",
+          "#000000",
+          "#fffefb",
+          "#910c19",
+          "#de1125",
+          "#1f1f1e",
+          "#664212",
+          "#123666",
+          "#241912",
+          "#910c19"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -1548,11 +1555,11 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ],
           "index": 2
@@ -1560,6 +1567,10 @@
         "stroke": {
           "kind": "palette",
           "index": 3
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -1879,13 +1890,20 @@
         "name": "blood",
         "colors": [
           "#0b0506",
-          "#291616",
-          "#f4ead8",
-          "#8d1225",
-          "#b0152e",
-          "#995e21",
-          "#985313"
-        ]
+          "#311817",
+          "#240f11",
+          "#000000",
+          "#fffefb",
+          "#910c19",
+          "#de1125",
+          "#1f1f1e",
+          "#664212",
+          "#123666",
+          "#241912",
+          "#910c19"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -1895,17 +1913,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2147,7 +2169,7 @@
             "length": 25.251,
             "width": 0.35,
             "grow": 0.449,
-            "color": "#f4ead8"
+            "color": "#fffefb"
           },
           "enabled": true,
           "motion": {
@@ -2281,13 +2303,20 @@
         "name": "blood",
         "colors": [
           "#0b0506",
-          "#291616",
-          "#f4ead8",
-          "#8d1225",
-          "#b0152e",
-          "#995e21",
-          "#985313"
-        ]
+          "#311817",
+          "#240f11",
+          "#000000",
+          "#fffefb",
+          "#910c19",
+          "#de1125",
+          "#1f1f1e",
+          "#664212",
+          "#123666",
+          "#241912",
+          "#910c19"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -2297,17 +2326,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2547,7 +2580,7 @@
             "length": 25.251,
             "width": 0.35,
             "grow": 0.449,
-            "color": "#f4ead8"
+            "color": "#fffefb"
           },
           "enabled": true,
           "motion": {
@@ -2652,14 +2685,21 @@
         "id": "theme_691e9cd",
         "name": "rose",
         "colors": [
-          "#e37fbb",
-          "#d1809d",
-          "#332428",
-          "#501327",
-          "#ff3c81",
-          "#562e1b",
-          "#561715"
-        ]
+          "#db76a3",
+          "#c27384",
+          "#ed80b0",
+          "#ce759c",
+          "#080707",
+          "#641322",
+          "#d72b4d",
+          "#e6d1d1",
+          "#995e2b",
+          "#2b6699",
+          "#db928a",
+          "#4b0f1a"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -2669,17 +2709,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2907,7 +2951,7 @@
             "count": 19.733,
             "size": 3.019,
             "shape": "heart",
-            "color": "#562e1b",
+            "color": "#995e2b",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -2954,14 +2998,21 @@
         "id": "theme_691e9cd",
         "name": "rose",
         "colors": [
-          "#e37fbb",
-          "#d1809d",
-          "#332428",
-          "#501327",
-          "#ff3c81",
-          "#562e1b",
-          "#561715"
-        ]
+          "#db76a3",
+          "#c27384",
+          "#ed80b0",
+          "#ce759c",
+          "#080707",
+          "#641322",
+          "#d72b4d",
+          "#e6d1d1",
+          "#995e2b",
+          "#2b6699",
+          "#db928a",
+          "#4b0f1a"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -2971,17 +3022,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3219,7 +3274,7 @@
         {
           "type": "innerGlow",
           "params": {
-            "color": "#501327",
+            "color": "#641322",
             "radius": 14,
             "intensity": 0.9
           },
@@ -3257,7 +3312,7 @@
             "count": 19.733,
             "size": 3.019,
             "shape": "heart",
-            "color": "#562e1b",
+            "color": "#995e2b",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -3338,14 +3393,21 @@
         "id": "theme_1000b674",
         "name": "night",
         "colors": [
-          "#1d2128",
-          "#272a35",
-          "#cbdff4",
-          "#4b93c9",
-          "#4080b0",
-          "#695ed9",
-          "#5951d9"
-        ]
+          "#191d24",
+          "#08080a",
+          "#171b24",
+          "#010101",
+          "#fafcff",
+          "#468ccf",
+          "#4387c8",
+          "#1e1e1f",
+          "#403380",
+          "#5c6629",
+          "#08080a",
+          "#468ccf"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -3355,17 +3417,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3602,7 +3668,7 @@
         {
           "type": "innerGlow",
           "params": {
-            "color": "#4b93c9",
+            "color": "#468ccf",
             "radius": 14,
             "intensity": 0.9
           },
@@ -3640,7 +3706,7 @@
             "lift": 0,
             "saturation": 1,
             "posterize": 0,
-            "duotone": "#4b93c9",
+            "duotone": "#468ccf",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -3714,14 +3780,21 @@
         "id": "theme_1000b674",
         "name": "neon",
         "colors": [
-          "#b4a1ea",
-          "#b99bd7",
-          "#1c2526",
-          "#154d4e",
-          "#45feff",
-          "#1d2e54",
-          "#172c54"
-        ]
+          "#bba2f1",
+          "#b592ce",
+          "#c1a4ff",
+          "#ae96e3",
+          "#070808",
+          "#134b50",
+          "#30c2cc",
+          "#d1e6e6",
+          "#3f61c6",
+          "#9f8232",
+          "#e6aff0",
+          "#134b50"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -3731,17 +3804,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3942,7 +4019,7 @@
           "type": "outline",
           "params": {
             "width": 4.71,
-            "color": "#154d4e",
+            "color": "#134b50",
             "softness": 0.35,
             "pattern": "hatch",
             "dashLength": 14,
@@ -3983,7 +4060,7 @@
             "length": 40,
             "width": 0.35,
             "grow": 0.5,
-            "color": "#154d4e"
+            "color": "#134b50"
           },
           "enabled": true,
           "motion": {
@@ -4101,9 +4178,9 @@
           "varySize": 0.4,
           "vary": "random",
           "varyColors": [
-            "#154d4e",
-            "#1d2e54",
-            "#1c2526"
+            "#3f61c6",
+            "#134b50",
+            "#070808"
           ],
           "varyRotation": 40,
           "varyOffset": 0.3
@@ -9229,6 +9306,8 @@
     ]
   },
   "beatStyles": {},
+  "beatCandidates": {},
+  "candidatePool": {},
   "beatWarnings": {},
   "orphanBeats": {},
   "orphans": {},

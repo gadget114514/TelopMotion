@@ -1,6 +1,6 @@
 {
   "format": "telopmotion",
-  "version": 5,
+  "version": 7,
   "meta": {
     "title": "TelopMotion 演出見本",
     "createdAt": "2026-01-01T00:00:00.000Z",
@@ -370,7 +370,7 @@
               "to": 11,
               "scale": 2.1,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -420,11 +420,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -450,7 +450,7 @@
               "to": 11,
               "scale": 1.8,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -513,11 +513,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -543,7 +543,7 @@
               "to": 11,
               "scale": 1.6,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -606,11 +606,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -636,7 +636,7 @@
               "to": 11,
               "scale": 1.7,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -699,11 +699,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -726,7 +726,7 @@
               "to": 11,
               "scale": 1.35,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -778,11 +778,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -808,7 +808,7 @@
               "to": 11,
               "scale": 1.6,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -858,11 +858,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -888,7 +888,7 @@
               "to": 11,
               "scale": 1.5,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -938,11 +938,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -972,7 +972,7 @@
               "to": 11,
               "scale": 2.2,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -1024,11 +1024,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -1054,7 +1054,7 @@
               "to": 11,
               "scale": 2.3,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
@@ -1105,11 +1105,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -1132,7 +1132,7 @@
               "to": 11,
               "scale": 1.3,
               "weight": 700,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         }
@@ -1182,11 +1182,11 @@
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "fill2": {
           "kind": "palette",
-          "index": 3
+          "index": 5
         }
       }
     },
@@ -1195,23 +1195,34 @@
         "id": "theme_55aff8f",
         "name": "blood",
         "colors": [
-          "#0b0605",
-          "#2b1d16",
-          "#fdf5df",
-          "#922911",
-          "#cc3917",
-          "#9e8c21",
-          "#9e5812"
-        ]
+          "#0b0405",
+          "#311816",
+          "#23170e",
+          "#000000",
+          "#fffefb",
+          "#86050c",
+          "#92040d",
+          "#1f1f1e",
+          "#62410d",
+          "#0d2e62",
+          "#231811",
+          "#86050c"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -1286,7 +1297,7 @@
         "type": "noiseDissolveIn",
         "params": {
           "scale": 12,
-          "edgeColor": "#9e8c21",
+          "edgeColor": "#62410d",
           "edgeWidth": 0.1
         },
         "enabled": true,
@@ -1418,7 +1429,7 @@
           "type": "outline",
           "params": {
             "width": 2.696,
-            "color": "#9e8c21",
+            "color": "#62410d",
             "softness": 0.35,
             "pattern": "sketch",
             "dashLength": 14,
@@ -1469,8 +1480,8 @@
           "varySize": 0.4,
           "vary": "random",
           "varyColors": [
-            "#922911",
-            "#9e8c21"
+            "#62410d",
+            "#86050c"
           ]
         },
         "enabled": true
@@ -1508,14 +1519,21 @@
         "id": "theme_31fb17d3",
         "name": "sunset",
         "colors": [
-          "#d98e56",
-          "#c7a35e",
-          "#312129",
-          "#4c162d",
-          "#ef468c",
-          "#522b1d",
-          "#521819"
-        ]
+          "#dbaf64",
+          "#dbcd72",
+          "#dcef6d",
+          "#db796a",
+          "#080707",
+          "#581f2b",
+          "#e0516e",
+          "#e6d1d1",
+          "#996940",
+          "#417199",
+          "#cbdb7b",
+          "#4b1b25"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -1525,17 +1543,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -1711,8 +1733,8 @@
         "params": {
           "scale": 2,
           "speed": 0.4,
-          "colorA": "#4c162d",
-          "colorB": "#4c162d"
+          "colorA": "#581f2b",
+          "colorB": "#581f2b"
         },
         "enabled": true,
         "motion": {
@@ -1768,7 +1790,7 @@
             "count": 16.721,
             "size": 2.086,
             "shape": "heart",
-            "color": "#522b1d",
+            "color": "#996940",
             "enabled": true,
             "in": 1,
             "out": 1
@@ -1816,8 +1838,8 @@
           "varySize": 0.4,
           "vary": "none",
           "varyColors": [
-            "#4c162d",
-            "#522b1d"
+            "#996940",
+            "#581f2b"
           ]
         },
         "enabled": true
@@ -1870,23 +1892,34 @@
         "id": "theme_255a5dfe",
         "name": "night",
         "colors": [
-          "#1c1f28",
-          "#262734",
-          "#c9dbf3",
-          "#4775c8",
-          "#3c64ab",
-          "#815bd8",
-          "#6d4dd8"
-        ]
+          "#191c24",
+          "#08080a",
+          "#191724",
+          "#010101",
+          "#fafcff",
+          "#4782cc",
+          "#4178be",
+          "#1e1e1f",
+          "#443380",
+          "#58662a",
+          "#08080a",
+          "#4782cc"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2172,8 +2205,8 @@
           "varySize": 0.4,
           "vary": "random",
           "varyColors": [
-            "#c9dbf3",
-            "#3c64ab"
+            "#fafcff",
+            "#4178be"
           ],
           "lockAspect": false,
           "skipRate": 0.7,
@@ -2231,23 +2264,34 @@
         "id": "theme_20a00486",
         "name": "festival",
         "colors": [
-          "#dadf4d",
-          "#adcc56",
-          "#241b1b",
-          "#e84b24",
-          "#c7401e",
-          "#f5dc3a",
-          "#fb8927"
-        ]
+          "#dc9a4d",
+          "#dbc05d",
+          "#eaf154",
+          "#db5a54",
+          "#080707",
+          "#e5255b",
+          "#b61d49",
+          "#e6d1d1",
+          "#cd6d32",
+          "#2f88be",
+          "#d1db67",
+          "#e5255b"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2528,14 +2572,21 @@
         "id": "theme_23e3f840",
         "name": "night",
         "colors": [
-          "#2a3747",
-          "#25293a",
-          "#d2e2f2",
-          "#3594ce",
-          "#2c7eb1",
-          "#514adf",
-          "#3975de"
-        ]
+          "#151522",
+          "#000000",
+          "#151522",
+          "#000000",
+          "#fbfdff",
+          "#3f5ac6",
+          "#2b3d88",
+          "#1e1e1f",
+          "#4c2d73",
+          "#456025",
+          "#000000",
+          "#3f5ac6"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -2545,17 +2596,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -2727,7 +2782,7 @@
         "params": {
           "refraction": 0.4,
           "blur": 0.2,
-          "tint": "#3594ce"
+          "tint": "#3f5ac6"
         },
         "enabled": true,
         "motion": {
@@ -2770,8 +2825,8 @@
           "varySize": 0.4,
           "vary": "none",
           "varyColors": [
-            "#d2e2f2",
-            "#2c7eb1"
+            "#fbfdff",
+            "#2b3d88"
           ]
         },
         "enabled": true
@@ -2831,14 +2886,21 @@
         "id": "theme_310e4abd",
         "name": "night",
         "colors": [
-          "#27263d",
-          "#272232",
-          "#cdd7eb",
-          "#3648c8",
-          "#273392",
-          "#974bd9",
-          "#553ad8"
-        ]
+          "#171822",
+          "#000000",
+          "#1b1722",
+          "#000000",
+          "#fbfdff",
+          "#4669c7",
+          "#31498d",
+          "#1e1e1f",
+          "#4a3073",
+          "#4b6128",
+          "#000000",
+          "#4669c7"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -2848,17 +2910,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3128,23 +3194,34 @@
         "id": "theme_379bf0b0",
         "name": "pastel",
         "colors": [
-          "#dd9dd6",
-          "#cb97b9",
-          "#241b1f",
-          "#49172b",
-          "#c03d71",
-          "#4f2c1f",
-          "#4f191e"
-        ]
+          "#c49cde",
+          "#b98ec2",
+          "#f4a5ec",
+          "#9f97db",
+          "#080707",
+          "#561a50",
+          "#c43cb6",
+          "#e6d1d1",
+          "#9f3c54",
+          "#399981",
+          "#b589b0",
+          "#4a1645"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3358,7 +3435,7 @@
               "y": 8
             },
             "blur": 10,
-            "color": "#4f2c1f",
+            "color": "#9f3c54",
             "opacity": 0.6
           },
           "enabled": true,
@@ -3432,23 +3509,34 @@
         "id": "theme_adb9fd7",
         "name": "neon",
         "colors": [
-          "#caadf1",
-          "#cba7de",
-          "#182123",
-          "#14444e",
-          "#40dfff",
-          "#1c2554",
-          "#163954"
-        ]
+          "#ba9fe0",
+          "#b090c2",
+          "#e99bf2",
+          "#9198db",
+          "#070708",
+          "#104049",
+          "#29a2b6",
+          "#d1d1e6",
+          "#3c53c2",
+          "#99862f",
+          "#dcabe0",
+          "#104049"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -3736,8 +3824,8 @@
           "varySize": 0.4,
           "vary": "none",
           "varyColors": [
-            "#14444e",
-            "#1c2554"
+            "#3c53c2",
+            "#104049"
           ],
           "opacity": 1
         },
@@ -3791,23 +3879,34 @@
         "id": "theme_18658691",
         "name": "mono",
         "colors": [
-          "#7692d2",
-          "#777dc1",
-          "#1e212c",
-          "#0e1b49",
-          "#2345b4",
-          "#2e164e",
-          "#170f4f"
-        ]
+          "#8993db",
+          "#8c84c2",
+          "#b996ef",
+          "#8ebddb",
+          "#070708",
+          "#27287d",
+          "#4145cd",
+          "#d1d1e6",
+          "#8f48b8",
+          "#4e8032",
+          "#b59adb",
+          "#17184a"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -4050,8 +4149,8 @@
           "params": {
             "depth": 20,
             "angle": 135,
-            "colorNear": "#b2bde6",
-            "colorFar": "#b2bde6"
+            "colorNear": "#d1d1e6",
+            "colorFar": "#d1d1e6"
           },
           "enabled": true,
           "motion": {
@@ -4084,7 +4183,7 @@
           "params": {
             "length": 40,
             "angle": 135,
-            "color": "#0e1b49",
+            "color": "#27287d",
             "fade": 0.7
           },
           "enabled": true,
@@ -4129,23 +4228,34 @@
         "id": "theme_1b6fd72b",
         "name": "gold",
         "colors": [
-          "#543e2d",
-          "#453d28",
-          "#fff3dd",
-          "#da9233",
-          "#eea037",
-          "#c5ec4a",
-          "#d6eb37"
-        ]
+          "#242112",
+          "#090a06",
+          "#242112",
+          "#0a0906",
+          "#fffefb",
+          "#d3d535",
+          "#d2d435",
+          "#1f1f1e",
+          "#386621",
+          "#632a80",
+          "#090a07",
+          "#d3d535"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -4394,23 +4504,34 @@
         "id": "theme_22f75b13",
         "name": "night",
         "colors": [
-          "#2a3248",
-          "#26263b",
-          "#d5e3f6",
-          "#3579d1",
-          "#306dc0",
-          "#6d4ae3",
-          "#5139e2"
-        ]
+          "#161524",
+          "#000000",
+          "#161524",
+          "#000000",
+          "#fbfdff",
+          "#405bd6",
+          "#3f5ad6",
+          "#1e1e1f",
+          "#4e2b73",
+          "#466626",
+          "#000000",
+          "#405bd6"
+        ],
+        "scheme": "tonal",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -4623,7 +4744,7 @@
               "y": 8
             },
             "blur": 10,
-            "color": "#3579d1",
+            "color": "#405bd6",
             "opacity": 0.6
           },
           "enabled": true,
@@ -4668,8 +4789,8 @@
           "varySize": 0.4,
           "vary": "none",
           "varyColors": [
-            "#3579d1",
-            "#6d4ae3"
+            "#4e2b73",
+            "#405bd6"
           ]
         },
         "enabled": true
@@ -4708,14 +4829,21 @@
         "id": "theme_4821c90",
         "name": "warm",
         "colors": [
-          "#433729",
-          "#373224",
-          "#ffefdd",
-          "#db9735",
-          "#e9a037",
-          "#c3ed4c",
-          "#bced39"
-        ]
+          "#241f16",
+          "#0a0a07",
+          "#212416",
+          "#181210",
+          "#fffefb",
+          "#dbb636",
+          "#e9c238",
+          "#1f1f1e",
+          "#476620",
+          "#4f2980",
+          "#0a0a08",
+          "#dbb636"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -4725,17 +4853,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -4950,14 +5082,21 @@
         "id": "theme_4f71e65",
         "name": "night",
         "colors": [
-          "#9490db",
-          "#9d8cc9",
-          "#191d24",
-          "#0f1649",
-          "#2537b3",
-          "#35164e",
-          "#26104f"
-        ]
+          "#a4a7e7",
+          "#a299ce",
+          "#d2aefe",
+          "#90b2ce",
+          "#070708",
+          "#203067",
+          "#4f76f8",
+          "#d1d1e6",
+          "#864fcb",
+          "#668c37",
+          "#a994c2",
+          "#18244d"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
@@ -4967,17 +5106,21 @@
           "stops": [
             {
               "pos": 0,
-              "paletteIndex": 2
+              "paletteIndex": 4
             },
             {
               "pos": 1,
-              "paletteIndex": 3
+              "paletteIndex": 5
             }
           ]
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -5152,8 +5295,8 @@
         "params": {
           "scale": 2,
           "speed": 0.4,
-          "colorA": "#0f1649",
-          "colorB": "#0f1649"
+          "colorA": "#203067",
+          "colorB": "#203067"
         },
         "enabled": true,
         "motion": {
@@ -5224,7 +5367,7 @@
               "y": 8
             },
             "blur": 10,
-            "color": "#b4c6e6",
+            "color": "#d1d1e6",
             "opacity": 0.6
           },
           "enabled": true,
@@ -5269,23 +5412,34 @@
         "id": "theme_ef3f6e7",
         "name": "rose",
         "colors": [
-          "#e29cb3",
-          "#d0989c",
-          "#201618",
-          "#490d10",
-          "#bf222d",
-          "#4f3815",
-          "#4f270e"
-        ]
+          "#eaadba",
+          "#cea19f",
+          "#fcc4ab",
+          "#de9ac9",
+          "#080707",
+          "#591f1b",
+          "#ed5148",
+          "#e6d1d1",
+          "#997e3a",
+          "#3f5ca6",
+          "#c2a698",
+          "#4c1b17"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -5526,7 +5680,7 @@
           "params": {
             "length": 40,
             "angle": 135,
-            "color": "#490d10",
+            "color": "#591f1b",
             "fade": 0.7
           },
           "enabled": true,
@@ -5609,23 +5763,34 @@
         "id": "theme_7bfdfa3",
         "name": "mono",
         "colors": [
-          "#7c9ae0",
-          "#7e83ce",
-          "#20232f",
-          "#0e1b4e",
-          "#2e5cff",
-          "#321654",
-          "#270f54"
-        ]
+          "#8487e2",
+          "#8274b5",
+          "#c493fc",
+          "#77a1c5",
+          "#070708",
+          "#241e83",
+          "#453dff",
+          "#d1d1e6",
+          "#9b3ec2",
+          "#438028",
+          "#b692db",
+          "#16124e"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -5882,23 +6047,34 @@
         "id": "theme_12cbf376",
         "name": "mono",
         "colors": [
-          "#2b2e4f",
-          "#2b2740",
-          "#d0d6ee",
-          "#3838cb",
-          "#2d2ea6",
-          "#ab4cdc",
-          "#6e3cdb"
-        ]
+          "#141722",
+          "#000000",
+          "#191422",
+          "#000000",
+          "#fbfcff",
+          "#4353c8",
+          "#333f98",
+          "#1e1e1f",
+          "#4a2a66",
+          "#426227",
+          "#000000",
+          "#4353c8"
+        ],
+        "scheme": "analogous",
+        "roles": 2
       },
       "color": {
         "fill": {
           "kind": "palette",
-          "index": 2
+          "index": 4
         },
         "stroke": {
           "kind": "palette",
-          "index": 4
+          "index": 6
+        },
+        "glow": {
+          "kind": "palette",
+          "index": 11
         }
       },
       "animation": {
@@ -6074,8 +6250,8 @@
         "params": {
           "scale": 2,
           "speed": 0.4,
-          "colorA": "#3838cb",
-          "colorB": "#ab4cdc"
+          "colorA": "#4353c8",
+          "colorB": "#4a2a66"
         },
         "enabled": true,
         "motion": {
@@ -6107,7 +6283,7 @@
         {
           "type": "innerGlow",
           "params": {
-            "color": "#d0d6ee",
+            "color": "#fbfcff",
             "radius": 14,
             "intensity": 0.9
           },
@@ -6664,6 +6840,8 @@
     ]
   },
   "beatStyles": {},
+  "beatCandidates": {},
+  "candidatePool": {},
   "beatWarnings": {},
   "orphanBeats": {},
   "orphans": {},
