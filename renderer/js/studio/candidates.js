@@ -74,6 +74,7 @@ SA.candidates = (() => {
   let followCol = -1; // the last column highlighted as "now"
   let programmaticScroll = false;
   let wasPlaying = false;
+  let boardHead = null; // the playhead the board last showed
   let toast = () => {};
 
   function beatsOf(doc, cue) {
@@ -788,7 +789,6 @@ SA.candidates = (() => {
     const label = col.text.length > 14 ? `${col.text.slice(0, 14)}…` : col.text;
     cell.appendChild(node('div', 'board-beat', label || '—'));
     cell.appendChild(node('div', 'board-time', formatBoardTime(col.start)));
-    cell.appendChild(node('div', 'board-count', col.entry ? `×${col.entry.items.length}` : '—'));
     const gen = node('button', 'btn btn-mini board-gen', t('studio.media.candBoardGenerate'));
     gen.addEventListener('click', (event) => {
       event.stopPropagation();
@@ -922,7 +922,15 @@ SA.candidates = (() => {
   // changes.
   function updateNow() {
     if (!boardOpen || !boardCanvas || !boardModel) return;
-    const index = store().state.playing ? beatIndexAt(store().state.playhead) : -1;
+    // the beat under the cursor, playing or not: moving the cursor shows which
+    // column of the board it is. While paused a cursor in a gap shows none.
+    const head = store().state.playhead;
+    let index = beatIndexAt(head);
+    if (index >= 0 && !store().state.playing) {
+      const col = boardModel.cols[index];
+      const end = Number(col && col.beat && col.beat.end);
+      if (Number.isFinite(end) && head > end + 1e-4) index = -1;
+    }
     if (index === followCol) return;
     followCol = index;
     for (const stale of boardCanvas.querySelectorAll('.is-now')) stale.classList.remove('is-now');
@@ -1067,6 +1075,57 @@ SA.candidates = (() => {
     boardToolEls = { one, all, mode: modeSelect, count: countSelect };
   }
 
+  // Right click on a cell or a column head: move the cursor to that beat.
+  let boardMenu = null;
+
+  function hideBoardMenu() {
+    if (boardMenu) boardMenu.remove();
+    boardMenu = null;
+    document.removeEventListener('pointerdown', onBoardMenuAway, true);
+    document.removeEventListener('keydown', onBoardMenuKey, true);
+    window.removeEventListener('blur', hideBoardMenu);
+  }
+
+  function onBoardMenuAway(event) {
+    if (boardMenu && !boardMenu.contains(event.target)) hideBoardMenu();
+  }
+
+  function onBoardMenuKey(event) {
+    if (event.key === 'Escape') hideBoardMenu();
+  }
+
+  function onBoardContextMenu(event) {
+    const holder = event.target.closest ? event.target.closest('[data-col]') : null;
+    if (!holder || !boardModel) return;
+    const col = boardModel.cols[Number(holder.dataset.col)];
+    if (!col) return;
+    event.preventDefault();
+    hideBoardMenu();
+    const menu = node('div', 'timeline-menu board-menu');
+    const item = node('button', 'menu-item', t('studio.media.candBoardMoveCursor'));
+    item.type = 'button';
+    item.addEventListener('click', () => {
+      hideBoardMenu();
+      // the cursor goes to the beat's start; a candidate preview must not hold the screen
+      rollbackHover(true);
+      if (SA.preview && typeof SA.preview.seek === 'function') SA.preview.seek(col.start);
+      follow = true;
+    });
+    menu.appendChild(item);
+    menu.style.position = 'fixed';
+    menu.style.left = `${event.clientX}px`;
+    menu.style.top = `${event.clientY}px`;
+    document.body.appendChild(menu);
+    boardMenu = menu;
+    // keep it inside the window
+    const rect = menu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) menu.style.left = `${Math.max(0, window.innerWidth - rect.width - 4)}px`;
+    if (rect.bottom > window.innerHeight) menu.style.top = `${Math.max(0, window.innerHeight - rect.height - 4)}px`;
+    document.addEventListener('pointerdown', onBoardMenuAway, true);
+    document.addEventListener('keydown', onBoardMenuKey, true);
+    window.addEventListener('blur', hideBoardMenu);
+  }
+
   function setupBoardDom() {
     setupBoardTools();
     const body = document.getElementById('board-body');
@@ -1075,6 +1134,7 @@ SA.candidates = (() => {
     boardCanvas = node('div', 'board-canvas');
     boardScroll.appendChild(boardCanvas);
     body.appendChild(boardScroll);
+    boardCanvas.addEventListener('contextmenu', onBoardContextMenu);
     boardScroll.addEventListener('scroll', () => {
       if (!programmaticScroll) follow = false;
       scheduleBoard();
@@ -1140,8 +1200,13 @@ SA.candidates = (() => {
           updateNow();
         } else if (wasPlaying) {
           updateNow();
+        } else if (state.playhead !== boardHead) {
+          // the cursor was moved by hand: show its column, even after a hand scroll
+          follow = true;
+          updateNow();
         }
         wasPlaying = !!state.playing;
+        boardHead = state.playhead;
       }
       // re-render on any change of the project, selection or active beat; the
       // playhead alone only matters for the "beat under the playhead" fallback
