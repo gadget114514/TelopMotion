@@ -809,9 +809,15 @@ test('a project without a section plan re-rolls on the song profile', () => {
   assert.equal(store.undo(), true);
 });
 
+// full 12-slot palettes: a short palette is invalid. The backdrop plane
+// (slot 2) is a mid grey so that the text <-> background swap still clears the
+// contrast contract at weird 0.7.
+const SCHEME_PALETTE = ['#101018', '#202838', '#767676', '#171f24', '#eef2ff', '#ff8a3d', '#05060a', '#1d1e1f', '#ffc247', '#5990ff', '#2d2e4a', '#ff8a3d'];
+const SCHEME_EXTRA = ['#0a1a10', '#12301c', '#1c3e36', '#0d1c0d', '#f0fff0', '#00c060', '#001008', '#1d1f1d', '#9be8c8', '#e8a3c0', '#1c4234', '#00c060'];
+
 test('invertBeatScheme toggles the role order and undoes in one step', () => {
   const doc = fixture();
-  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  doc.style.palette = { id: 'p', name: 'p', colors: SCHEME_PALETTE.slice() };
   doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
   store.load(doc);
   const before = snapshot();
@@ -828,7 +834,7 @@ test('invertBeatScheme toggles the role order and undoes in one step', () => {
 
 test('rerollBeatScheme picks another role order of the same palette', () => {
   const doc = fixture();
-  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
+  doc.style.palette = { id: 'p', name: 'p', colors: SCHEME_PALETTE.slice() };
   doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
   store.load(doc);
   const candidates = globalThis.SA.paletteRoles.schemes(store.state.project.style.palette.colors, 0.7);
@@ -845,8 +851,8 @@ test('rerollBeatScheme picks another role order of the same palette', () => {
 
 test('setBeatColorLegacy switches between the classic and the palette-set modes', () => {
   const doc = fixture();
-  doc.style.palette = { id: 'p', name: 'p', colors: ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'] };
-  doc.style.paletteSet = { max: 5, change: 0.5, invert: 0.2, extra: [{ id: 'p2', name: 'p2', colors: ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008', '#9be8c8'] }] };
+  doc.style.palette = { id: 'p', name: 'p', colors: SCHEME_PALETTE.slice() };
+  doc.style.paletteSet = { max: 5, change: 0.5, invert: 0.2, extra: [{ id: 'p2', name: 'p2', colors: SCHEME_EXTRA.slice() }] };
   doc.styleMode.axes = { ...doc.styleMode.axes, weird: 0.7 };
   store.load(doc);
   const before = snapshot();

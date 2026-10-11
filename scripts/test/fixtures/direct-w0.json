@@ -15,11 +15,16 @@
       "colors": [
         "#4b2c38",
         "#3d272b",
+        "#6f4646",
+        "#291c23",
         "#ffdee5",
         "#d93850",
         "#1f1015",
+        "#1f1c1c",
         "#eb9e4e",
-        "#ea873c"
+        "#5ea3eb",
+        "#4f3835",
+        "#d93850"
       ]
     },
     "color": {
@@ -781,7 +786,7 @@
         "type": "noiseDissolveIn",
         "params": {
           "scale": 12,
-          "edgeColor": "#bb63ee",
+          "edgeColor": "#3e2d8c",
           "edgeWidth": 0.1
         },
         "enabled": true,
@@ -813,8 +818,8 @@
       "exit": {
         "type": "dissolve",
         "params": {
-          "edge": 0.16,
-          "scale": 10
+          "scale": 10,
+          "edge": 0.16
         },
         "enabled": true,
         "motion": {
@@ -912,67 +917,67 @@
   "beatStyles": {
     "c1:page1": {
       "text": {
-        "size": 109
+        "size": 90
       }
     },
     "c1:page2": {
       "text": {
-        "size": 109
+        "size": 90
       }
     },
     "c2:page1": {
       "text": {
-        "size": 187
+        "size": 90
       }
     },
     "c2:page2": {
       "text": {
-        "size": 156
+        "size": 90
       }
     },
     "c3:page1": {
       "text": {
-        "size": 156
+        "size": 90
       }
     },
     "c3:page2": {
       "text": {
-        "size": 49
+        "size": 90
       }
     },
     "c4:page1": {
       "text": {
-        "size": 49
+        "size": 90
       }
     },
     "c4:page2": {
       "text": {
-        "size": 527
+        "size": 90
       }
     },
     "c4:page3": {
       "text": {
-        "size": 288
+        "size": 90
       }
     },
     "c4:page4": {
       "text": {
-        "size": 288
+        "size": 90
       }
     },
     "c5:page1": {
       "text": {
-        "size": 146
+        "size": 90
       }
     },
     "c5:page2": {
       "text": {
-        "size": 170
+        "size": 90
       }
     },
     "c5:page3": {
       "text": {
-        "size": 170
+        "size": 90
       }
     }
   },
@@ -983,11 +988,16 @@
       "colors": [
         "#4b2c38",
         "#3d272b",
+        "#6f4646",
+        "#291c23",
         "#ffdee5",
         "#d93850",
         "#1f1015",
+        "#1f1c1c",
         "#eb9e4e",
-        "#ea873c"
+        "#5ea3eb",
+        "#4f3835",
+        "#d93850"
       ]
     },
     "color": {
@@ -1324,61 +1334,382 @@
     "margin": 0.15,
     "byKind": {
       "intro": {
-        "type": "shapes",
+        "type": "combo",
         "params": {
-          "set": "burst",
-          "count": 22,
-          "speed": 1.1,
-          "opacity": 0.5
+          "list": [
+            {
+              "type": "credits",
+              "params": {}
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "spikes",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              },
+              "presetId": "figures-spikes"
+            }
+          ]
         }
       },
       "interlude": {
-        "type": "particles",
+        "type": "combo",
         "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
+          "list": [
+            {
+              "type": "particles",
+              "params": {
+                "flow": "vortex",
+                "count": 18,
+                "size": 5,
+                "color": "#d6dbe9"
+              },
+              "presetId": "particles-vortex-soft"
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "waves",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              },
+              "presetId": "figures-waves"
+            }
+          ]
+        },
+        "presetId": "particles-vortex-soft"
       },
       "outro": {
-        "type": "pattern",
+        "type": "combo",
         "params": {
-          "mode": "rings",
-          "count": 18,
-          "size": 1.2,
-          "speed": 0.5,
-          "opacity": 0.4
+          "list": [
+            {
+              "type": "credits",
+              "params": {}
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "scratches",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto"
+              },
+              "presetId": "figures-scratches"
+            }
+          ]
         }
       }
     },
     "longGap": {
       "threshold": 5,
       "spec": {
-        "type": "pattern",
+        "type": "figures",
         "params": {
-          "mode": "grid",
-          "count": 36,
-          "size": 1,
-          "speed": 0.4,
-          "opacity": 0.35
-        }
+          "motif": "polyMorph",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "morph",
+          "out": "auto"
+        },
+        "presetId": "figures-polymorph-morph"
       }
     },
     "clips": {}
   },
   "clips": [
     {
+      "id": "clip_bg_0",
+      "trackId": "bg",
+      "start": 0,
+      "end": 26,
+      "spec": {
+        "type": "gradient",
+        "params": {
+          "scale": 1.2,
+          "speed": 0.1
+        }
+      },
+      "opacity": 1,
+      "fadeIn": 0.6,
+      "fadeOut": 0.6,
+      "colors": [
+        "#1c1624",
+        "#000000"
+      ]
+    },
+    {
+      "id": "clip_mid_0",
+      "trackId": "mid",
+      "start": 0.5,
+      "end": 3.5,
+      "spec": {
+        "type": "particles",
+        "params": {
+          "color": null,
+          "flow": "rise",
+          "count": 19,
+          "speed": 1.05,
+          "size": 2.85
+        }
+      },
+      "opacity": 0.9,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": [
+        "#264b66",
+        "#664126"
+      ]
+    },
+    {
+      "id": "clip_mid_1",
+      "trackId": "mid",
+      "start": 4,
+      "end": 7.2,
+      "spec": {
+        "type": "shapes",
+        "params": {
+          "color": null,
+          "mode": "circles",
+          "count": 26,
+          "speed": 1.09
+        }
+      },
+      "opacity": 0.9,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": [
+        "#4f6626",
+        "#4c3080"
+      ]
+    },
+    {
+      "id": "clip_mid_2",
+      "trackId": "mid",
+      "start": 9,
+      "end": 13.2,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "color": null,
+          "mode": "sineCurve",
+          "count": 66,
+          "size": 0.77,
+          "speed": 1.6,
+          "opacity": 0.7
+        }
+      },
+      "opacity": 0.9,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": [
+        "#664126",
+        "#264b66"
+      ]
+    },
+    {
+      "id": "clip_mid_3",
+      "trackId": "mid",
+      "start": 15,
+      "end": 18.4,
+      "spec": {
+        "type": "pattern",
+        "params": {
+          "color": null,
+          "mode": "waves",
+          "count": 66,
+          "size": 0.77,
+          "speed": 0.25,
+          "opacity": 0.35
+        }
+      },
+      "opacity": 0.9,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": [
+        "#664126",
+        "#264b66"
+      ]
+    },
+    {
+      "id": "clip_mid_4",
+      "trackId": "mid",
+      "start": 21,
+      "end": 26,
+      "spec": {
+        "type": "spectrum",
+        "params": {
+          "color": null,
+          "mode": "blob",
+          "bars": 58,
+          "falloff": 1.16
+        }
+      },
+      "opacity": 0.9,
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "colors": [
+        "#2b3673",
+        "#665c26"
+      ]
+    },
+    {
       "id": "clip_filler_0",
       "trackId": "filler",
       "start": 7.3500000000000005,
       "end": 8.85,
       "spec": {
-        "type": "particles",
+        "type": "combo",
         "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
+          "list": [
+            {
+              "type": "pattern",
+              "params": {
+                "mode": "dots",
+                "count": 38,
+                "size": 1.3,
+                "speed": 0.1,
+                "opacity": 0.21,
+                "color": "#5ea3eb",
+                "hole": "band",
+                "holeSize": 0.53
+              }
+            },
+            {
+              "type": "figures",
+              "params": {
+                "motif": "orbit",
+                "sync": "beat",
+                "density": 0.55,
+                "in": "auto",
+                "hold": "auto",
+                "out": "auto",
+                "colors": [
+                  "#291c23",
+                  "#ffdee5",
+                  "#d93850",
+                  "#1f1015",
+                  "#1f1c1c"
+                ],
+                "beats": [
+                  {
+                    "start": 7.35,
+                    "end": 7.85,
+                    "move": {
+                      "in": "pop",
+                      "hold": "drift",
+                      "out": "shrink"
+                    },
+                    "variant": 0,
+                    "accent": true,
+                    "size": 1,
+                    "tone": 0
+                  },
+                  {
+                    "start": 7.85,
+                    "end": 8.35,
+                    "move": {
+                      "in": "pop",
+                      "hold": "drift",
+                      "out": "shrink"
+                    },
+                    "variant": 0,
+                    "accent": true,
+                    "size": 1,
+                    "tone": 0
+                  },
+                  {
+                    "start": 8.35,
+                    "end": 8.85,
+                    "move": {
+                      "in": "pop",
+                      "hold": "drift",
+                      "out": "shrink"
+                    },
+                    "variant": 0,
+                    "accent": true,
+                    "size": 1,
+                    "tone": 0
+                  }
+                ],
+                "shapes": 12,
+                "fxEnter": {
+                  "type": "slide",
+                  "params": {
+                    "dir": "down",
+                    "distance": 0.24
+                  },
+                  "motion": {
+                    "in": {
+                      "duration": 0.5,
+                      "delay": 0,
+                      "ease": "quartOut"
+                    },
+                    "out": {
+                      "duration": 0.35,
+                      "delay": 0,
+                      "ease": "sineInOut"
+                    },
+                    "stagger": {
+                      "each": 0.012,
+                      "order": "ltr",
+                      "ease": "linear",
+                      "unit": "word",
+                      "from": 0.5
+                    },
+                    "loop": {
+                      "period": 0,
+                      "yoyo": true,
+                      "ease": "easeInOutSine"
+                    }
+                  }
+                },
+                "fxExit": {
+                  "type": "particlesDisperse",
+                  "params": {
+                    "count": 16,
+                    "drift": 0.3
+                  },
+                  "motion": {
+                    "in": {
+                      "duration": 0.52,
+                      "delay": 0,
+                      "ease": "sineInOut"
+                    },
+                    "out": {
+                      "duration": 0.47,
+                      "delay": 0,
+                      "ease": "sineInOut"
+                    },
+                    "stagger": {
+                      "each": 0.015,
+                      "order": "ltr",
+                      "ease": "linear",
+                      "unit": "word",
+                      "from": 0.5
+                    },
+                    "loop": {
+                      "period": 0,
+                      "yoyo": true,
+                      "ease": "easeInOutSine"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "presetId": "combo-dots-calm-orbit"
       },
       "opacity": 1,
       "fadeIn": 0.3,
@@ -1391,12 +1722,127 @@
       "start": 13.35,
       "end": 14.85,
       "spec": {
-        "type": "particles",
+        "type": "figures",
         "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
+          "motif": "rings",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "auto",
+          "hold": "pulse",
+          "out": "auto",
+          "colors": [
+            "#291c23",
+            "#ffdee5",
+            "#d93850",
+            "#1f1015",
+            "#1f1c1c"
+          ],
+          "beats": [
+            {
+              "start": 13.35,
+              "end": 13.85,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 13.85,
+              "end": 14.35,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 14.35,
+              "end": 14.85,
+              "move": {
+                "in": "pop",
+                "hold": "pulse",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            }
+          ],
+          "shapes": 42,
+          "fxEnter": {
+            "type": "slide",
+            "params": {
+              "dir": "down",
+              "distance": 0.24
+            },
+            "motion": {
+              "in": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "quartOut"
+              },
+              "out": {
+                "duration": 0.35,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "stagger": {
+                "each": 0.012,
+                "order": "ltr",
+                "ease": "linear",
+                "unit": "word",
+                "from": 0.5
+              },
+              "loop": {
+                "period": 0,
+                "yoyo": true,
+                "ease": "easeInOutSine"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "particlesDisperse",
+            "params": {
+              "count": 16,
+              "drift": 0.3
+            },
+            "motion": {
+              "in": {
+                "duration": 0.52,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "out": {
+                "duration": 0.47,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "stagger": {
+                "each": 0.015,
+                "order": "ltr",
+                "ease": "linear",
+                "unit": "word",
+                "from": 0.5
+              },
+              "loop": {
+                "period": 0,
+                "yoyo": true,
+                "ease": "easeInOutSine"
+              }
+            }
+          }
+        },
+        "presetId": "figures-rings-pulse"
       },
       "opacity": 1,
       "fadeIn": 0.3,
@@ -1409,151 +1855,158 @@
       "start": 18.549999999999997,
       "end": 20.85,
       "spec": {
-        "type": "particles",
+        "type": "figures",
         "params": {
-          "count": 40,
-          "flow": "drift",
-          "size": 3
-        }
+          "motif": "confetti",
+          "sync": "beat",
+          "density": 0.55,
+          "in": "scatterIn",
+          "hold": "auto",
+          "out": "auto",
+          "colors": [
+            "#291c23",
+            "#ffdee5",
+            "#d93850",
+            "#1f1015",
+            "#1f1c1c"
+          ],
+          "beats": [
+            {
+              "start": 18.55,
+              "end": 19.05,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 19.05,
+              "end": 19.55,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 19.55,
+              "end": 20.05,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 20.05,
+              "end": 20.55,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            },
+            {
+              "start": 20.55,
+              "end": 20.85,
+              "move": {
+                "in": "scatterIn",
+                "hold": "drift",
+                "out": "shrink"
+              },
+              "variant": 0,
+              "accent": true,
+              "size": 1,
+              "tone": 0
+            }
+          ],
+          "shapes": 8,
+          "fxEnter": {
+            "type": "slide",
+            "params": {
+              "dir": "down",
+              "distance": 0.24
+            },
+            "motion": {
+              "in": {
+                "duration": 0.5,
+                "delay": 0,
+                "ease": "quartOut"
+              },
+              "out": {
+                "duration": 0.35,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "stagger": {
+                "each": 0.012,
+                "order": "ltr",
+                "ease": "linear",
+                "unit": "word",
+                "from": 0.5
+              },
+              "loop": {
+                "period": 0,
+                "yoyo": true,
+                "ease": "easeInOutSine"
+              }
+            }
+          },
+          "fxExit": {
+            "type": "particlesDisperse",
+            "params": {
+              "count": 16,
+              "drift": 0.3
+            },
+            "motion": {
+              "in": {
+                "duration": 0.52,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "out": {
+                "duration": 0.47,
+                "delay": 0,
+                "ease": "sineInOut"
+              },
+              "stagger": {
+                "each": 0.015,
+                "order": "ltr",
+                "ease": "linear",
+                "unit": "word",
+                "from": 0.5
+              },
+              "loop": {
+                "period": 0,
+                "yoyo": true,
+                "ease": "easeInOutSine"
+              }
+            }
+          }
+        },
+        "presetId": "figures-confetti-scatter"
       },
       "opacity": 1,
       "fadeIn": 0.3,
       "fadeOut": 0.3,
       "colors": null
-    },
-    {
-      "id": "clip_bg_0",
-      "trackId": "bg",
-      "start": 0,
-      "end": 26,
-      "spec": {
-        "type": "noiseGradient",
-        "params": {
-          "scale": 3.24,
-          "speed": 0.42
-        }
-      },
-      "opacity": 1,
-      "fadeIn": 0.6,
-      "fadeOut": 0.6,
-      "colors": [
-        "#382c48",
-        "#34273b"
-      ]
-    },
-    {
-      "id": "clip_mid_0",
-      "trackId": "mid",
-      "start": 0.5,
-      "end": 3.5,
-      "spec": {
-        "type": "pattern",
-        "params": {
-          "color": null,
-          "mode": "checks",
-          "count": 66,
-          "size": 0.77,
-          "speed": 0.5,
-          "opacity": 0.7
-        }
-      },
-      "opacity": 0.9,
-      "fadeIn": 0.4,
-      "fadeOut": 0.4,
-      "colors": [
-        "#3fd1ad",
-        "#54a7e2"
-      ]
-    },
-    {
-      "id": "clip_mid_1",
-      "trackId": "mid",
-      "start": 4,
-      "end": 7.2,
-      "spec": {
-        "type": "pattern",
-        "params": {
-          "color": null,
-          "mode": "polka",
-          "count": 66,
-          "size": 0.77,
-          "speed": 0.9,
-          "opacity": 0.7
-        }
-      },
-      "opacity": 0.9,
-      "fadeIn": 0.4,
-      "fadeOut": 0.4,
-      "colors": [
-        "#d1a53f",
-        "#aee254"
-      ]
-    },
-    {
-      "id": "clip_mid_2",
-      "trackId": "mid",
-      "start": 9,
-      "end": 13.2,
-      "spec": {
-        "type": "particles",
-        "params": {
-          "color": null,
-          "flow": "rise",
-          "count": 20,
-          "speed": 1.17,
-          "size": 2.85
-        }
-      },
-      "opacity": 0.9,
-      "fadeIn": 0.4,
-      "fadeOut": 0.4,
-      "colors": [
-        "#d13f63",
-        "#e28f54"
-      ]
-    },
-    {
-      "id": "clip_mid_3",
-      "trackId": "mid",
-      "start": 15,
-      "end": 18.4,
-      "spec": {
-        "type": "particles",
-        "params": {
-          "color": null,
-          "flow": "rise",
-          "count": 21,
-          "speed": 1.14,
-          "size": 2.85
-        }
-      },
-      "opacity": 0.9,
-      "fadeIn": 0.4,
-      "fadeOut": 0.4,
-      "colors": [
-        "#d13f63",
-        "#e28f54"
-      ]
-    },
-    {
-      "id": "clip_mid_4",
-      "trackId": "mid",
-      "start": 21,
-      "end": 26,
-      "spec": {
-        "type": "waveform",
-        "params": {
-          "color": null,
-          "mode": "circle"
-        }
-      },
-      "opacity": 0.9,
-      "fadeIn": 0.4,
-      "fadeOut": 0.4,
-      "colors": [
-        "#3fb9d1",
-        "#546be2"
-      ]
     }
   ]
 }

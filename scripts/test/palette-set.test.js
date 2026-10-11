@@ -46,9 +46,11 @@ const projectModule = SA.project;
 
 const FIXTURE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'direct-w0.json'), 'utf8'));
 
-// text <-> background: a dark ground, a light text and a mid accent (the
-// color-scheme fixture palette, whose TMBD resolves)
-const SWAP_BG = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
+// text <-> background: a dark ground, a light text and a mid accent. The
+// backdrop plane (slot 2) is a mid grey so that TMBD resolves: after the swap
+// it has to clear the dark text as well as the light one.
+const SWAP_BG = roles.upgradeColors(['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247']);
+SWAP_BG[roles.SLOT.MID_C] = '#767676';
 const EXTRA = roles.upgradeColors(['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008', '#9be8c8']);
 
 // --- weird.paletteCount / paletteSetOf --------------------------------------
@@ -178,15 +180,16 @@ test('a beat palette sits on the cue palette and records it as from', () => {
   assert.deepEqual(resolved.palette.set.from, CUE);
 });
 
-test('a short extra under a 10-role base upgrades to the base role count', () => {
+test('a short extra is invalid: it reads as missing and never derives', () => {
   const raw = ['#0a1a10', '#12301c', '#f0fff0', '#00c060', '#001008', '#9be8c8'];
   const doc = baseDoc();
-  doc.style.palette.colors = roles.upgradeColors(SWAP_BG);
+  doc.style.palette.colors = SWAP_BG.slice();
   doc.style.paletteSet.extra = [{ id: 'two', name: 'two', colors: raw.slice() }];
-  assert.deepEqual(roles.setColors(doc.style, 1), roles.upgradeColors(raw));
+  assert.equal(roles.setColors(doc.style, 1), null);
+  // the beat that points at it keeps the base palette
   const resolved = projectModule.resolveStyle(doc, 'cue:c1/beat:b1');
-  assert.deepEqual(resolved.palette.colors, roles.upgradeColors(raw));
-  assert.equal(resolved.palette.set.from.length, resolved.palette.colors.length, 'both sides carry the same role count');
+  assert.deepEqual(resolved.palette.colors, SWAP_BG);
+  assert.equal(resolved.palette.set, undefined);
 });
 
 // --- stage follow -----------------------------------------------------------
@@ -254,7 +257,9 @@ test('a weird 0 run writes no palette set and no beat palette state', () => {
 
 test('a weird 1 run generates the palette set and moves the beats', () => {
   for (const compose of [true, false]) {
-    const doc = runWith(null, { axes: { weird: 1 }, compose });
+    // the ladder keeps a palette only where the beat still reads on it: a seed
+    // whose drawn fill clears the ground of at least one palette of the set
+    const doc = runWith(null, { axes: { weird: 1 }, compose, seed: 1 });
     const set = doc.style.paletteSet;
     assert.ok(set, `the set is stored (compose ${compose})`);
     assert.equal(set.max, 5);

@@ -48,7 +48,9 @@ test('migrate fills missing fields, keeps unknown fields and bumps the version',
 
 test('migrate re-roles a frozen decoration outline onto the live edge slot', () => {
   const palette = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247'];
-  const frozen = roles.get(palette, roles.SLOT.TEXT_BG);
+  // a legacy palette reads its roles through the same expansion v7 applies
+  const full = roles.upgradeColors(palette);
+  const frozen = roles.get(full, roles.SLOT.TEXT_BG);
   assert.ok(typeof frozen === 'string' && frozen.length, 'the fixture has a text background tone');
   const raw = {
     format: 'telopmotion',
@@ -62,19 +64,19 @@ test('migrate re-roles a frozen decoration outline onto the live edge slot', () 
     },
   };
   const doc = project.migrate(raw).project;
-  assert.deepStrictEqual(doc.style.edge[0].params.color, { kind: 'palette', index: 4 });
+  assert.deepStrictEqual(doc.style.edge[0].params.color, { kind: 'palette', index: roles.SLOT.TEXT_EDGE });
   assert.strictEqual(doc.style.edge[1].params.color, '#000000', 'a non-role colour stays');
   const rgba = color.toRgba(doc.style.edge[0].params.color, null, { palette: doc.style.palette });
   const hex = color.toHex({ r: rgba[0], g: rgba[1], b: rgba[2], a: 1 });
-  assert.strictEqual(hex, roles.get(palette, roles.SLOT.TEXT_EDGE));
+  assert.strictEqual(hex, roles.get(doc.style.palette.colors, roles.SLOT.TEXT_EDGE));
   // the reference follows a re-rolled palette: the rendered edge moves
-  const rerolled = { id: 'q', name: 'q', colors: palette.slice() };
-  rerolled.colors[4] = '#ff00ff';
+  const rerolled = { id: 'q', name: 'q', colors: doc.style.palette.colors.slice() };
+  rerolled.colors[roles.SLOT.TEXT_EDGE] = '#ff00ff';
   const next = color.toRgba(doc.style.edge[0].params.color, null, { palette: rerolled });
   assert.strictEqual(color.toHex({ r: next[0], g: next[1], b: next[2], a: 1 }), '#ff00ff');
   // and the rewrite is a fixed point
   const twice = project.migrate(JSON.parse(JSON.stringify(doc))).project;
-  assert.deepStrictEqual(twice.style.edge[0].params.color, { kind: 'palette', index: 4 });
+  assert.deepStrictEqual(twice.style.edge[0].params.color, { kind: 'palette', index: roles.SLOT.TEXT_EDGE });
 });
 
 test('migrate turns the old style background into a whole-song clip', () => {

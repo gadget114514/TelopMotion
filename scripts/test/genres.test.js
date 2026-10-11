@@ -43,7 +43,7 @@ test('every genre keeps text contrast at 4.5 or better', () => {
     for (let seed = 1; seed <= 50; seed += 1) {
       const style = moods.generate({ genre: genre.id, seed, context: CONTEXT }).style;
       const colors = style.palette.colors;
-      const ratio = color.contrastRatio(color.parse(colors[2]), color.parse(colors[0]));
+      const ratio = color.contrastRatio(color.parse(colors[4]), color.parse(colors[0]));
       assert.ok(ratio >= 4.5, `${genre.id} seed ${seed}: contrast ${ratio.toFixed(2)}`);
     }
   }

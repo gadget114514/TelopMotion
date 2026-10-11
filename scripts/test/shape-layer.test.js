@@ -140,7 +140,8 @@ test('the engine and the studio wire the placeable clip', () => {
   const inspector = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'inspector.js'), 'utf8');
   // the unpacked primitives (`plain` / `solid` / `gradient` / `card` ...) carry
   // no pack, so the list has to ask for `null` next to the UI packs
-  assert.match(inspector, /SA\.fx\.list\('background', \{ packs: \[null,/, 'the clip type list does not offer the extended background types');
+  assert.match(inspector, /UI_PACKS = \{ packs: \[null,/, 'the clip type list does not offer the extended background types');
+  assert.match(inspector, /SA\.fx\.list\('background', UI_PACKS\)/, 'the clip type list does not use the UI packs');
   assert.ok(inspector.includes('type === \'shapeLayer\''), 'the inspector does not treat shapeLayer as an fx clip');
   const timeline = fs.readFileSync(path.join(ROOT, 'renderer', 'js', 'studio', 'timeline.js'), 'utf8');
   assert.ok(timeline.includes('addClipTypeMenu'), 'the timeline has no clip type menu');

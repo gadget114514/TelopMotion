@@ -580,7 +580,7 @@
   // match the role colour resolved for their own scope.
   function migrateToV4(project) {
     const roles = paletteRolesModule();
-    if (!roles || typeof roles.get !== 'function' || !roles.SLOT || !Number.isFinite(roles.SIZE)) return project;
+    if (!roles || !roles.SLOT) return project;
     const snapshot = {
       style: JSON.parse(JSON.stringify(project.style || {})),
       cueStyles: JSON.parse(JSON.stringify(project.cueStyles || {})),
@@ -600,14 +600,13 @@
     };
     const roleHexOf = (colors, name) => {
       if (roles.SLOT[name] == null) return null;
-      try {
-        const hex = roles.get(colors, roles.SLOT[name]);
-        return typeof hex === 'string' ? hex.toLowerCase() : null;
-      } catch {
-        return null;
-      }
+      const hex = colors[roles.SLOT[name]];
+      return typeof hex === 'string' ? hex.toLowerCase() : null;
     };
-    const refFor = (colors, name) => ({ kind: 'palette', index: roles.SLOT[name] });
+    // v6 remaps every stored index from the legacy space, so the reference is
+    // written there (stroke 4, text 2, hero text 3) and lands on the slot
+    const LEGACY_REF = { TEXT_FILL: 2, TEXT_FILL2: 3, TEXT_EDGE: 4 };
+    const refFor = (colors, name) => ({ kind: 'palette', index: LEGACY_REF[name] });
     // [param key, the role the frozen literal matched, the role it becomes]
     const instanceRoles = {
       outline: [['color', 'TEXT_BG', 'TEXT_EDGE']],
@@ -628,8 +627,11 @@
     };
     const rewriteBag = (bag, path) => {
       if (!isPlainObject(bag) || !Array.isArray(bag.edge) || !bag.edge.length) return;
-      const colors = paletteAt(path);
-      if (colors.length < roles.SIZE) return;
+      const stored = paletteAt(path);
+      if (!stored.length) return;
+      // v6 materialises the slots from the stored colours; read the roles
+      // through the same expansion so the frozen literal still matches
+      const colors = v6ExpandColors(stored);
       for (const instance of bag.edge) rewriteInstance(instance, colors);
     };
     rewriteBag(project.style, '');

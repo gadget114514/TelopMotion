@@ -137,17 +137,17 @@ test('build stays inside the text and clears jitter', () => {
   const hero = patch.text.compose.spans[0];
   assert.equal(hero.from, analysis.hero.from);
   assert.equal(hero.to, analysis.hero.to);
-  // no palette was handed in, so the slot indices fall back to the legacy
-  // 7-colour positions (TEXT_FILL 2, TEXT_FILL2 3)
-  assert.equal(hero.paletteIndex, 3);
+  // a palette always holds the fixed slots, so a slot index is stored as is
+  // (TEXT_FILL 4, TEXT_FILL2 5)
+  assert.equal(hero.paletteIndex, 5);
   assert.deepEqual(patch.hold, []);
   assert.deepEqual(patch.transform, { rotate: 0, tiltX: 0, tiltY: 0 });
   assert.equal(patch.text.size, Math.round(0.15 * (1 + 0.3 * 0.4) * 1080));
   // the song post survives, its old shape layer is replaced by the graphic
   assert.ok(patch.post.some((entry) => entry.type === 'vignette'));
   assert.equal(patch.post.filter((entry) => entry.type === 'shapeLayer').length, 0);
-  assert.deepEqual(patch.color, { fill: { kind: 'palette', index: 2 }, fill2: { kind: 'palette', index: 3 } });
-  // with a 10-slot palette the references keep the role indices
+  assert.deepEqual(patch.color, { fill: { kind: 'palette', index: 4 }, fill2: { kind: 'palette', index: 5 } });
+  // with a palette handed in the references keep the same role indices
   const slots = compositions.build(compositions.get('heroCenter'), analysis, {
     seed: 5,
     beatId: 'b1',

@@ -101,7 +101,8 @@ test('a weird run gives the mid track covered split planes and full-span timing'
     const plane = clip.spec.params.list[0];
     assert.equal(plane.type, 'split');
     assert.equal(plane.params.coverage, 1);
-    assert.ok(Array.isArray(plane.params.colors) && plane.params.colors.length >= 2);
+    // the profile draws one to four planes; each carries its own colour
+    assert.ok(Array.isArray(plane.params.colors) && plane.params.colors.length >= 1 && plane.params.colors.length === plane.params.parts);
     assert.equal(clip.opacity, 1);
     assert.equal(clip.fadeIn, 0);
     assert.equal(clip.fadeOut, 0);
@@ -112,9 +113,9 @@ test('a weird run gives the mid track covered split planes and full-span timing'
   const total = Math.max(...doc.script.cues.map((cue) => cue.end));
   const last = mid.reduce((max, clip) => Math.max(max, clip.end), 0);
   assert.equal(last, total);
-  // the mid colours move with weird (they are not the plain [3, 5] pair)
+  // the mid colours move with weird (they are not the theme's own mid pair)
   const palette = ctx.themeStyle.palette.colors;
-  const plain = [palette[3], palette[5] || palette[3]];
+  const plain = [palette[SA.paletteRoles.SLOT.MID_A], palette[SA.paletteRoles.SLOT.MID_B]];
   assert.notDeepEqual(mid[0].colors, plain);
   // a figure clip per cue on the figure track
   const figureTrack = doc.tracks.find((track) => track.kind === 'figure');

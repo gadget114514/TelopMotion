@@ -2410,6 +2410,12 @@
     // lands on the noise gradient unless a drawn look brings its own backdrop
     const FLAT_BG = new Set(['plain', 'solid', 'gradient']);
     const spec = lookClip || (result && result.spec && !FLAT_BG.has(result.spec.type) ? result.spec : { type: 'gradient', params: { scale: 1.2, speed: 0.1 } });
+    // the built-in centre lift fades out with smartness (the same rule the
+    // background roll applies): at 0.5 or more the floor is perfectly even
+    if (!lookClip && spec && spec.params && spec.type === 'gradient' && spec.params.glow == null) {
+      const smart = SA.moods && typeof SA.moods.smartOf === 'function' ? SA.moods.smartOf(axes) : 0;
+      if (smart > 0) spec.params.glow = Math.round(0.22 * Math.max(0, 1 - smart / 0.5) * 1000) / 1000;
+    }
     projectDoc.clips.push(nextClip(projectDoc, 'clip_bg', {
       trackId: bgTrack,
       start: 0,

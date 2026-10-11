@@ -120,10 +120,12 @@ test('the edge role sweeps its light level on a re-roll', () => {
   // edge slot, both the family nudge and the dice sweep the wide band a fresh
   // palette draws (0.4..1.0), while the other colours keep their level
   const v = (hex) => color.rgbToHsv(color.parse(hex)).v;
-  assert.equal(moods.edgeIndexOf(['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247']), 4);
+  // a short palette is invalid and has no edge role; a full 12-slot palette
+  // carries it in the fixed TEXT_EDGE slot
+  assert.equal(moods.edgeIndexOf(['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247']), -1);
   assert.equal(moods.edgeIndexOf(['#101018', '#202838', '#eef2ff', '#ff8a3d']), -1);
-  const ten = ['#101018', '#202838', '#eef2ff', '#ff8a3d', '#05060a', '#ffc247', '#6d8cff', '#2a3348', '#9db2ff', '#ffd7a8'];
-  assert.equal(moods.edgeIndexOf(ten), 6);
+  const full = ['#101018', '#202838', '#1c2238', '#0a0c14', '#eef2ff', '#ff8a3d', '#05060a', '#2a3348', '#9db2ff', '#ffd7a8', '#26304a', '#ff8a3d'];
+  assert.equal(moods.edgeIndexOf(full), 6);
   const dark = '#1a141f';
   let min = 1;
   let max = 0;

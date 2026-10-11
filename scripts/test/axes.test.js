@@ -180,8 +180,9 @@ test('the weird palette raises text saturation and lifts the contrast target', (
     for (let seed = 1; seed <= 30; seed += 1) {
       const style = moods.generate({ axes: { ...PLAIN_AXES, weird }, seed, context: PLAIN_CONTEXT }).style;
       const colors = style.palette.colors;
-      saturation += color.rgbToHsv(color.parse(colors[2])).s;
-      worst = Math.min(worst, color.contrastRatio(color.parse(colors[2]), color.parse(colors[0])));
+      const text = colors[paletteRoles.SLOT.TEXT_FILL];
+      saturation += color.rgbToHsv(color.parse(text)).s;
+      worst = Math.min(worst, color.contrastRatio(color.parse(text), color.parse(colors[paletteRoles.SLOT.MID_A])));
     }
     return { saturation: saturation / 30, worst };
   };
@@ -203,7 +204,7 @@ test('a weird look lets shadows leave the contrast tone', () => {
       const style = moods.generate({ axes: { ...axes, weird }, seed, context: PLAIN_CONTEXT }).style;
       // the shadow pool falls back to the tone opposite the text (the edge is a
       // swept colour role of its own, so it no longer owns the shadow tone)
-      const dark = String(paletteRoles.luminanceOpposite(style.palette.colors[2]) || '').toLowerCase();
+      const dark = String(paletteRoles.luminanceOpposite(style.palette.colors[paletteRoles.SLOT.TEXT_FILL]) || '').toLowerCase();
       for (const edge of style.edge || []) {
         if (!['dropShadow', 'longShadow', 'extrude'].includes(edge.type)) continue;
         if (!edge.params || typeof edge.params.color !== 'string') continue;
@@ -391,10 +392,10 @@ test('weirdPalette shifts the hues and keeps the text readable', () => {
     const palette = moods.generatePalette(rng.mulberry32(seed), PLAIN_AXES);
     const next = moods.weirdPalette(rng.mulberry32(seed + 100), palette, 1);
     assert.ok(next && next.colors.length === palette.colors.length);
-    const before = color.rgbToHsv(color.parse(palette.colors[3]));
-    const after = color.rgbToHsv(color.parse(next.colors[3]));
+    const before = color.rgbToHsv(color.parse(palette.colors[paletteRoles.SLOT.TEXT_FILL2]));
+    const after = color.rgbToHsv(color.parse(next.colors[paletteRoles.SLOT.TEXT_FILL2]));
     if (Math.abs(before.h - after.h) > 5) changed += 1;
-    worst = Math.min(worst, color.contrastRatio(color.parse(next.colors[2]), color.parse(next.colors[0])));
+    worst = Math.min(worst, color.contrastRatio(color.parse(next.colors[paletteRoles.SLOT.TEXT_FILL]), color.parse(next.colors[paletteRoles.SLOT.MID_A])));
   }
   assert.ok(changed >= 15, `hue changed for ${changed}/20 seeds`);
   assert.ok(worst >= 3, `contrast ${worst}`);

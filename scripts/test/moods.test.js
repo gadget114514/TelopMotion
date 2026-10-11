@@ -17,6 +17,7 @@ require('../../renderer/js/lyrics/effects/background.js');
 const moods = require('../../renderer/js/lyrics/moods.js');
 const color = require('../../renderer/js/color.js');
 const rng = require('../../renderer/js/lyrics/rng.js');
+const roles = require('../../renderer/js/lyrics/palette-roles.js');
 
 const SINGLE = ['animation', 'layout', 'enter', 'exit', 'location', 'fill'];
 const STACK = ['hold', 'edge', 'post'];
@@ -264,14 +265,16 @@ test('every generated palette keeps text contrast at 4.5 or better', () => {
     for (let seed = 1; seed <= 100; seed += 1) {
       const style = moods.generate({ axes: preset.axes, seed, context: { letterCount: 10, cjk: false, aspect: '16:9' } }).style;
       const colors = style.palette.colors;
-      const ratio = color.contrastRatio(color.parse(colors[2]), color.parse(colors[0]));
-      assert.ok(ratio >= 4.5, `${preset.id} seed ${seed}: contrast ${ratio.toFixed(2)} (${colors[2]} on ${colors[0]})`);
+      const text = colors[roles.SLOT.TEXT_FILL];
+      const ground = colors[roles.SLOT.MID_A];
+      const ratio = color.contrastRatio(color.parse(text), color.parse(ground));
+      assert.ok(ratio >= 4.5, `${preset.id} seed ${seed}: contrast ${ratio.toFixed(2)} (${text} on ${ground})`);
     }
   }
   for (let seed = 1; seed <= 200; seed += 1) {
     const axes = moods.randomAxes().axes;
     const palette = moods.generatePalette(rng.mulberry32(seed), axes);
-    const ratio = color.contrastRatio(color.parse(palette.colors[2]), color.parse(palette.colors[0]));
+    const ratio = color.contrastRatio(color.parse(palette.colors[roles.SLOT.TEXT_FILL]), color.parse(palette.colors[roles.SLOT.MID_A]));
     assert.ok(ratio >= 4.5, `random seed ${seed}: contrast ${ratio.toFixed(2)}`);
   }
 });
@@ -288,8 +291,9 @@ test('a palette re-roll repaints the text edge across a wide value and hue range
     let maxV = 0;
     for (let seed = 1; seed <= 60; seed += 1) {
       const palette = moods.generatePalette(rng.mulberry32(seed), axes);
-      const edge = color.rgbToHsv(color.parse(palette.colors[4]));
-      assert.ok(edge.v >= 0.4, `brightness ${brightness} seed ${seed}: the text edge ${palette.colors[4]} is still dark`);
+      const edgeHex = palette.colors[roles.SLOT.TEXT_EDGE];
+      const edge = color.rgbToHsv(color.parse(edgeHex));
+      assert.ok(edge.v >= 0.4, `brightness ${brightness} seed ${seed}: the text edge ${edgeHex} is still dark`);
       hues.add(Math.round(edge.h / 24) % 15);
       minV = Math.min(minV, edge.v);
       maxV = Math.max(maxV, edge.v);

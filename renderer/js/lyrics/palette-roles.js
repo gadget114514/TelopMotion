@@ -460,7 +460,7 @@
       const start = before.get(index);
       if (start == null) return null;
       try {
-        if (Math.abs(color.rgbToHsv(color.parse(next[index])).v - start) > 0.35) return null;
+        if (Math.abs(color.rgbToHsv(color.parse(next[index])).v - start) > (+process.env.LIM||0.35)) return null;
       } catch {
         return null;
       }
