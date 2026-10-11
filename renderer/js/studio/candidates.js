@@ -53,6 +53,7 @@ SA.candidates = (() => {
   let mix = null; // { base, take } while the mix editor is open, null otherwise
   let target = null; // { cueId, beatId }
   let hover = null; // { cueId, beatId, candidateId }
+  let hoverAt = null; // { cueId, beatId, start, end } when the hover came from the board (any beat)
   let leaveTimer = null;
   let loopTimer = null;
   let hoverPlay = null; // { restoreHead } when the hover itself started playback
@@ -148,6 +149,7 @@ SA.candidates = (() => {
   // --- hover preview ---------------------------------------------------------
 
   function beatRange() {
+    if (hoverAt) return { start: hoverAt.start, end: Math.max(hoverAt.end, hoverAt.start + 0.2) };
     const beat = target && target.beat;
     const start = Number(beat && beat.start) || 0;
     const end = Number(beat && beat.end) || start + 1;
@@ -168,23 +170,27 @@ SA.candidates = (() => {
     }, 80);
   }
 
-  function beginHover(item) {
-    if (!target || !project()) return;
+  // `over` names another beat (a board cell); without it the hover is on the
+  // selected beat of the Candidates tab.
+  function beginHover(item, over) {
+    const at = over || target;
+    if (!at || !project()) return;
     if (tour) cancelTour();
     if (leaveTimer) {
       clearTimeout(leaveTimer);
       leaveTimer = null;
     }
-    const entry = store().commands.candidatesOf(target.beatId);
-    if (hover && hover.candidateId === item.id) return;
+    const entry = store().commands.candidatesOf(at.beatId);
+    if (hover && hover.candidateId === item.id && hover.beatId === at.beatId) return;
     rollbackHover(false);
+    hoverAt = over ? { cueId: over.cueId, beatId: over.beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
     if (!entry || item.id === entry.activeId) {
       // the active look is already on the beat: only keep the loop going
-      hover = { cueId: target.cueId, beatId: target.beatId, candidateId: item.id, real: false };
+      hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: false };
     } else {
       store().beginTransaction('preview candidate');
-      store().commands.applyCandidate(target.cueId, target.beatId, item.id);
-      hover = { cueId: target.cueId, beatId: target.beatId, candidateId: item.id, real: true };
+      store().commands.applyCandidate(at.cueId, at.beatId, item.id);
+      hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: true };
     }
     const { start } = beatRange();
     const head = store().state.playhead;
@@ -206,6 +212,7 @@ SA.candidates = (() => {
     if (hover && hover.real) store().cancelTransaction();
     hover = null;
     if (!stopPlay) return;
+    hoverAt = null;
     cancelTour();
     stopLoop();
     if (hoverPlay) {
@@ -222,6 +229,10 @@ SA.candidates = (() => {
       leaveTimer = null;
       rollbackHover(true);
       scheduleRender();
+      if (boardOpen) {
+        boardModel = null;
+        scheduleBoard();
+      }
     }, HOVER_LEAVE_MS);
   }
 
@@ -337,16 +348,18 @@ SA.candidates = (() => {
 
   // --- actions ---------------------------------------------------------------
 
-  function commit(item) {
-    if (!target) return;
+  function commit(item, over) {
+    const at = over || target;
+    if (!at) return;
     if (leaveTimer) {
       clearTimeout(leaveTimer);
       leaveTimer = null;
     }
-    const { cueId, beatId } = target;
+    const { cueId, beatId } = at;
     cancelTour();
     // the temporary look goes first, then the real (undoable) apply
     rollbackHover(false);
+    hoverAt = over ? { cueId, beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
     store().commands.applyCandidate(cueId, beatId, item.id);
     const { start } = beatRange();
     if (hoverPlay) {
@@ -858,9 +871,12 @@ SA.candidates = (() => {
     if (item.id === col.entry.activeId) cell.classList.add('is-active');
     cell.appendChild(boardThumb(col.beatId, item, col.sig));
     cell.appendChild(node('div', 'board-name', labelOf(item)));
-    cell.addEventListener('click', () => {
-      store().commands.applyCandidate(col.cueId, col.beatId, item.id);
-    });
+    // hovering a board cell previews that beat the same way the tab does;
+    // the click makes it real (one undo step)
+    const over = { cueId: col.cueId, beatId: col.beatId, start: col.start, end: Number(col.beat && col.beat.end) || col.start + 1 };
+    cell.addEventListener('mouseenter', () => beginHover(item, over));
+    cell.addEventListener('mouseleave', endHover);
+    cell.addEventListener('click', () => commit(item, over));
     return cell;
   }
 
@@ -952,7 +968,7 @@ SA.candidates = (() => {
       boardMarker.hidden = false;
       boardMarker.style.left = `${BOARD.label + index * BOARD.col + Math.floor(BOARD.col / 2)}px`;
     }
-    if (follow) scrollToColumn(index);
+    if (follow && !(hover && hoverAt)) scrollToColumn(index);
   }
 
   function scheduleBoard() {
@@ -1126,7 +1142,11 @@ SA.candidates = (() => {
       // playing the playhead only moves the "now" column
       if (boardOpen) {
         const versionKey = JSON.stringify(state.version);
-        if (versionKey !== boardModelKey) {
+        if (hover && hover.real) {
+          // a hover preview moves the project version on purpose: keep the
+          // cells (and the pointer's target) as they are until it ends
+          if (state.playing) updateNow();
+        } else if (versionKey !== boardModelKey) {
           boardModel = null;
           scheduleBoard();
         } else if (state.playing && !wasPlaying) {
