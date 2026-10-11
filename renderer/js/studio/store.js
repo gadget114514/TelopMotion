@@ -3278,6 +3278,20 @@ SA.store = (() => {
       });
       return applied;
     },
+    // A scratch copy of the project with the candidate worn by the beat. The
+    // dedicated candidate player renders it on its own canvas and clock, so a
+    // preview never touches the live project, the undo history or the main
+    // transport.
+    candidatePreviewDoc(cueId, beatId, candidateId) {
+      if (!state.project || !findCue(cueId)) return null;
+      const doc = clone(state.project);
+      const entry = candidateEntry(doc, beatId, false);
+      const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
+      if (!item) return null;
+      materializeBeat(doc, cueId, beatId);
+      applyBeatLookDoc(doc, cueId, beatId, item.look);
+      return doc;
+    },
     // Builds a candidate by taking some axis groups from other candidates
     // (the "mix"): `base` is the candidate the rest comes from, `take` names a
     // source candidate per axis (color / font / effects / placement). Axes

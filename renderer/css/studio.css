@@ -3513,3 +3513,26 @@ body {
 .board-tools .cand-select {
   font-size: 11px;
 }
+
+/* candidate player: laid over the main preview, never the main transport */
+.preview-frame .preview-aux {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.preview-aux-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  color: #fff;
+  background: rgba(220, 70, 40, 0.92);
+  pointer-events: none;
+}

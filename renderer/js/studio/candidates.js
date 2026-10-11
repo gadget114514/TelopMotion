@@ -55,8 +55,6 @@ SA.candidates = (() => {
   let hover = null; // { cueId, beatId, candidateId }
   let hoverAt = null; // { cueId, beatId, start, end } when the hover came from the board (any beat)
   let leaveTimer = null;
-  let loopTimer = null;
-  let hoverPlay = null; // { restoreHead } when the hover itself started playback
   let tour = null; // { ids, index, timer } while the continuous playback runs
   let thumbBusy = false;
   let renderQueued = false;
@@ -156,18 +154,15 @@ SA.candidates = (() => {
     return { start, end: Math.max(end, start + 0.2) };
   }
 
-  function stopLoop() {
-    if (loopTimer) clearInterval(loopTimer);
-    loopTimer = null;
-  }
-
-  function startLoop() {
-    stopLoop();
-    loopTimer = setInterval(() => {
-      if (!hover || !SA.preview) return;
-      const { start, end } = beatRange();
-      if (store().state.playhead > end + 0.4) SA.preview.seek(Math.max(0, start - PRE_ROLL));
-    }, 80);
+  // The preview plays on the candidate player laid over the main preview: it
+  // has its own canvas and clock and renders a scratch copy of the project, so
+  // hovering never moves the main playhead, starts the main playback or opens
+  // a transaction on the live project.
+  function playCandidate(at, itemId, onEnd) {
+    const doc = store().commands.candidatePreviewDoc(at.cueId, at.beatId, itemId);
+    if (!doc || !SA.preview || typeof SA.preview.auxPlay !== 'function') return false;
+    const { start, end } = beatRange();
+    return SA.preview.auxPlay(doc, { start, end, preRoll: PRE_ROLL, onEnd });
   }
 
   // `over` names another beat (a board cell); without it the hover is on the
@@ -180,47 +175,20 @@ SA.candidates = (() => {
       clearTimeout(leaveTimer);
       leaveTimer = null;
     }
-    const entry = store().commands.candidatesOf(at.beatId);
     if (hover && hover.candidateId === item.id && hover.beatId === at.beatId) return;
-    rollbackHover(false);
     hoverAt = over ? { cueId: over.cueId, beatId: over.beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
-    if (!entry || item.id === entry.activeId) {
-      // the active look is already on the beat: only keep the loop going
-      hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: false };
-    } else {
-      store().beginTransaction('preview candidate');
-      store().commands.applyCandidate(at.cueId, at.beatId, item.id);
-      hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: true };
-    }
-    const { start } = beatRange();
-    const head = store().state.playhead;
-    const { end } = beatRange();
-    const inside = head >= start - 0.6 && head <= end + 0.4;
-    if (!store().state.playing) {
-      if (!hoverPlay) hoverPlay = { restoreHead: head };
-      SA.preview.seek(Math.max(0, start - PRE_ROLL));
-      SA.preview.play();
-    } else if (!inside) {
-      SA.preview.seek(Math.max(0, start - PRE_ROLL));
-    }
-    startLoop();
+    hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: false };
+    playCandidate(at, item.id);
   }
 
-  // Rolls the temporary look back. `stopPlay` also stops a playback the hover
-  // started and puts the playhead where it was.
+  // Ends the temporary preview: the candidate player is hidden, nothing else
+  // was touched. (`stopPlay` is kept for the callers' sake.)
   function rollbackHover(stopPlay) {
-    if (hover && hover.real) store().cancelTransaction();
     hover = null;
     if (!stopPlay) return;
     hoverAt = null;
     cancelTour();
-    stopLoop();
-    if (hoverPlay) {
-      const restore = hoverPlay.restoreHead;
-      hoverPlay = null;
-      if (store().state.playing) SA.preview.pause();
-      SA.preview.seek(restore);
-    }
+    if (SA.preview && typeof SA.preview.auxStop === 'function') SA.preview.auxStop();
   }
 
   function endHover() {
@@ -242,8 +210,6 @@ SA.candidates = (() => {
   // transaction holds the whole tour, so nothing reaches the history; any
   // hand action (hover, click, generate, stop) ends it and rolls it back.
 
-  const TOUR_TICK_MS = 30;
-
   function tourButtonLabel() {
     return tour ? t('studio.media.candTourStop') : t('studio.media.candTour');
   }
@@ -261,18 +227,12 @@ SA.candidates = (() => {
     }
   }
 
-  // Ends the tour: the transaction is rolled back (the beat is as before) and
-  // a playback the tour started is stopped at the old position.
+  // Ends the tour: the candidate player is hidden; the live project and the
+  // main transport were never touched.
   function cancelTour() {
     if (!tour) return;
-    const done = tour;
     tour = null;
-    if (done.timer) clearInterval(done.timer);
-    if (done.tx) store().cancelTransaction();
-    if (done.startedPlay) {
-      if (store().state.playing) SA.preview.pause();
-      SA.preview.seek(done.restoreHead);
-    }
+    if (SA.preview && typeof SA.preview.auxStop === 'function') SA.preview.auxStop();
     markTourCard();
   }
 
@@ -288,24 +248,9 @@ SA.candidates = (() => {
     const at = ids.indexOf(tour.current);
     const nextId = ids[(at < 0 ? 0 : at + 1) % ids.length];
     tour.current = nextId;
-    store().commands.applyCandidate(target.cueId, target.beatId, nextId);
-    const { start } = beatRange();
-    SA.preview.seek(Math.max(0, start - PRE_ROLL));
-    if (!store().state.playing) SA.preview.play();
+    // the player calls back when the beat has played once: the next look takes over
+    playCandidate(target, nextId, tourNext);
     markTourCard();
-  }
-
-  function tourTick() {
-    if (!tour || !target) return;
-    const { end } = beatRange();
-    const head = store().state.playhead;
-    if (store().state.playing) {
-      if (head >= end) tourNext();
-    } else if (head >= end - 0.05) {
-      tourNext(); // the song ended under the beat: carry on from its start
-    } else {
-      stopTour(); // paused by hand
-    }
   }
 
   function startTour() {
@@ -320,20 +265,12 @@ SA.candidates = (() => {
       leaveTimer = null;
     }
     rollbackHover(true);
-    const wasPlaying = !!store().state.playing;
-    tour = {
-      current: null,
-      restoreHead: store().state.playhead,
-      startedPlay: !wasPlaying,
-      tx: store().beginTransaction('candidate tour'),
-      timer: null,
-    };
+    tour = { current: null };
     // the first step shows the candidate that is on the beat now
     const ids = entry.items.map((item) => item.id);
     const activeAt = ids.indexOf(entry.activeId);
     tour.current = ids[(activeAt < 0 ? ids.length - 1 : activeAt - 1 + ids.length) % ids.length];
     tourNext();
-    tour.timer = setInterval(tourTick, TOUR_TICK_MS);
   }
 
   function stopTour() {
@@ -355,20 +292,10 @@ SA.candidates = (() => {
       clearTimeout(leaveTimer);
       leaveTimer = null;
     }
-    const { cueId, beatId } = at;
     cancelTour();
-    // the temporary look goes first, then the real (undoable) apply
-    rollbackHover(false);
-    hoverAt = over ? { cueId, beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
-    store().commands.applyCandidate(cueId, beatId, item.id);
-    const { start } = beatRange();
-    if (hoverPlay) {
-      hoverPlay = null; // keep playing: the chosen look is what the user is watching
-    } else if (!store().state.playing) {
-      SA.preview.seek(Math.max(0, start - PRE_ROLL));
-      SA.preview.play();
-    }
-    startLoop();
+    rollbackHover(true);
+    // one real, undoable apply; the main transport is left as it is
+    store().commands.applyCandidate(at.cueId, at.beatId, item.id);
   }
 
   function generate() {

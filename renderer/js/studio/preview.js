@@ -812,6 +812,103 @@ const preview = (() => {
     window.addEventListener('resize', render);
   }
 
+  // --- candidate player ------------------------------------------------------
+  // A second, independent player laid over the main preview. It has its own
+  // canvas, engine and clock and renders a scratch project, so the main
+  // transport (playhead, play state, audio) is never moved by a candidate
+  // preview. Silent on purpose: nothing mixes with the main playback.
+  let aux = null; // { canvas, badge, renderer, raf, run }
+
+  function auxEnsure() {
+    if (aux || !el.frame) return aux;
+    const canvas = document.createElement('canvas');
+    canvas.className = 'preview-aux';
+    canvas.hidden = true;
+    const badge = document.createElement('div');
+    badge.className = 'preview-aux-badge';
+    badge.hidden = true;
+    el.frame.appendChild(canvas);
+    el.frame.appendChild(badge);
+    aux = { canvas, badge, renderer: null, raf: null, run: null };
+    return aux;
+  }
+
+  function auxRenderer(box, width, height) {
+    if (!box.renderer) {
+      const created = rendererKind === 'webgl2' && SA.lyricsEngine
+        ? SA.lyricsEngine.createEngine({ canvas: box.canvas, width, height, quality: 'preview' })
+        : null;
+      box.renderer = created || (SA.canvas2dFallback
+        ? SA.canvas2dFallback.createRenderer({ canvas: box.canvas, width, height, quality: 'preview' })
+        : null);
+    }
+    return box.renderer;
+  }
+
+  function auxStop() {
+    if (!aux) return;
+    if (aux.raf) cancelFrame(aux.raf);
+    aux.raf = null;
+    aux.run = null;
+    aux.canvas.hidden = true;
+    aux.badge.hidden = true;
+  }
+
+  // options: { start, end, preRoll, onEnd } — loops [start - preRoll, end + 0.4];
+  // `onEnd` replaces the loop (the continuous playback hands the next look in).
+  function auxPlay(doc, options) {
+    const box = auxEnsure();
+    if (!box || !doc) return false;
+    const opts = options || {};
+    const size = outputSize(doc);
+    const factor = Math.max(0.25, Math.min(1, effectiveScale()));
+    const width = Math.round(size.width * factor);
+    const height = Math.round(size.height * factor);
+    const engine = auxRenderer(box, width, height);
+    if (!engine) return false;
+    if (box.raf) cancelFrame(box.raf);
+    if (SA.textflow) SA.textflow.apply(doc);
+    engine.resize(width, height);
+    engine.setProject(doc);
+    engine.setAssets({ fonts: fonts || [] });
+    if (typeof engine.setView === 'function') {
+      const view = SA.store.state.view || {};
+      engine.setView({ subtitleOnly: !!view.subtitleOnly, subtitleBackgrounds: view.subtitleBackgrounds !== false });
+    }
+    if (audioAnalysis && typeof engine.setAudio === 'function') engine.setAudio(audioAnalysis);
+    if (typeof engine.preloadLayers === 'function') engine.preloadLayers().catch(() => {});
+    const begin = Math.max(0, (Number(opts.start) || 0) - (opts.preRoll != null ? opts.preRoll : 0.3));
+    const stop = (Number(opts.end) || begin + 1) + 0.4;
+    const run = { begin, stop, t0: performance.now(), onEnd: opts.onEnd || null };
+    box.run = run;
+    box.canvas.hidden = false;
+    box.badge.textContent = t('studio.media.candPreviewBadge');
+    box.badge.hidden = false;
+    const frame = () => {
+      if (box.run !== run) return;
+      let time = run.begin + ((performance.now() - run.t0) / 1000) * speed;
+      if (time > run.stop) {
+        if (run.onEnd) {
+          run.onEnd();
+          return;
+        }
+        run.t0 = performance.now();
+        time = run.begin;
+      }
+      if (typeof engine.prepareLayers === 'function') {
+        engine.prepareLayers(time, { playback: 'preview', playing: true, speed, hasAudio: false }).catch(() => {});
+      }
+      try {
+        engine.renderFrame(Math.min(time, Math.max(0, sceneDuration())));
+      } catch {
+        /* a bad frame must not kill the preview loop */
+      }
+      box.raf = requestFrame(frame);
+    };
+    frame();
+    return true;
+  }
+
   function captureRGBA(time) {
     if (!renderer) return null;
     if (typeof time === 'number') renderer.renderFrame(time);
@@ -859,6 +956,9 @@ const preview = (() => {
     clearAudio: () => setAudioSource(null, null),
     importAudio,
     captureRGBA,
+    auxPlay,
+    auxStop,
+    isAuxPlaying: () => !!(aux && aux.run),
     debugError: () => (renderer && typeof renderer.debugError === 'function' ? renderer.debugError() : 0),
     engine: () => renderer,
     isWebGL2: () => rendererKind === 'webgl2',
