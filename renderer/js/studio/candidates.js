@@ -405,17 +405,22 @@ SA.candidates = (() => {
   async function runShots(jobs, cache, after, shouldStop) {
     if (!jobs.length) return;
     thumbBusy = true;
-    store().beginTransaction('candidate thumbnails');
+    store().beginTransaction('candidate thumbnails', { ephemeral: true });
+    const token = store().transactionToken();
     try {
       for (const job of jobs) {
         // the view scrolled away: drop the stale queue, the next render builds
         // a fresh one for the new visible range
         if (shouldStop && shouldStop()) break;
+        // an edit made meanwhile rolled this scratch look back: stop, and do
+        // not file a picture of the user's own state under a candidate
+        if (store().transactionToken() !== token) break;
         // a failed shot is remembered as '' so it is not retried in a loop
         let url = '';
         try {
-          store().commands.applyCandidate(job.cueId, job.beatId, job.candidateId);
+          store().runEphemeral(() => store().commands.applyCandidate(job.cueId, job.beatId, job.candidateId));
           await nextFrame();
+          if (store().transactionToken() !== token) break;
           const shot = SA.preview.captureRGBA(job.time);
           if (shot) url = shotToDataUrl(shot);
         } catch {
@@ -424,7 +429,7 @@ SA.candidates = (() => {
         cache.set(job.key, url);
       }
     } finally {
-      store().cancelTransaction();
+      if (store().transactionToken() === token) store().cancelTransaction();
       thumbBusy = false;
       if (after) after();
     }

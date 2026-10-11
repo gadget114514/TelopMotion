@@ -460,6 +460,9 @@ SA.store = (() => {
 
   function dispatch(command) {
     if (!state.project || !command) return;
+    // an edit made while a scratch transaction (thumbnails) is open must not
+    // be rolled back with it: the scratch look goes first
+    if (transaction && transaction.ephemeral && !ephemeralRun) cancelTransaction();
     const areas = command.areas || ['project'];
     if (transaction) {
       // inside a drag / scrub the snapshots are taken once at the boundaries;
@@ -889,12 +892,34 @@ SA.store = (() => {
   // begin takes the snapshot once, dispatch runs without snapshots inside, and
   // end commits a single history entry if anything actually changed.
 
-  function beginTransaction(label) {
+  // An ephemeral transaction is a scratch look (candidate thumbnails): it is
+  // always rolled back and may last seconds. Only the code that opened it may
+  // dispatch into it (through `runEphemeral`); any other edit rolls it back
+  // first and then runs on the real project, so nothing is ever lost to it.
+  let transactionSeq = 0;
+  let ephemeralRun = false;
+
+  function runEphemeral(fn) {
+    const was = ephemeralRun;
+    ephemeralRun = true;
+    try {
+      return fn();
+    } finally {
+      ephemeralRun = was;
+    }
+  }
+
+  function beginTransaction(label, options) {
     if (!state.project) return false;
+    // a real edit session (a drag) never joins a scratch transaction
+    if (transaction && transaction.ephemeral && !(options && options.ephemeral)) cancelTransaction();
     if (!transaction) {
       const before = candidateFreeClone(state.project);
+      transactionSeq += 1;
       transaction = {
         depth: 0,
+        token: transactionSeq,
+        ephemeral: !!(options && options.ephemeral),
         label: label || 'edit',
         areas: [],
         before,
@@ -4905,6 +4930,8 @@ SA.store = (() => {
     beginTransaction,
     endTransaction,
     cancelTransaction,
+    runEphemeral,
+    transactionToken: () => (transaction ? transaction.token : 0),
     undo,
     redo,
     canUndo,

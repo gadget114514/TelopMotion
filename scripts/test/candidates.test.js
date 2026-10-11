@@ -489,3 +489,23 @@ test('a beat that wears one of its candidates keeps its original card', () => {
   store.commands.applyCandidate('c1', BEAT, other.id);
   assert.equal(JSON.stringify(store.commands.candidatesOf(BEAT).items.find((item) => item.kind === 'original').look), originalBefore);
 });
+
+test('an edit made while the thumbnail transaction is open is not rolled back with it', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  store.beginTransaction('candidate thumbnails', { ephemeral: true });
+  const token = store.transactionToken();
+  const other = store.commands.candidatesOf(BEAT).items.find((item) => item.kind !== 'original');
+  store.runEphemeral(() => store.commands.applyCandidate('c1', BEAT, other.id));
+  // the user edits meanwhile
+  store.commands.setBeatText ? 0 : 0;
+  const cueBefore = store.state.project.script.cues[1].start;
+  store.commands.moveCue('c2', 1);
+  assert.notEqual(store.transactionToken(), token, 'the scratch transaction was rolled back first');
+  const moved = store.state.project.script.cues.find((cue) => cue.id === 'c2').start;
+  assert.notEqual(moved, cueBefore, 'the edit is applied');
+  // and the owner finishing its job must not undo it
+  if (store.transactionToken() === token) store.cancelTransaction();
+  assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c2').start, moved);
+  assert.equal(store.canUndo(), true, 'the edit reached the history');
+});
