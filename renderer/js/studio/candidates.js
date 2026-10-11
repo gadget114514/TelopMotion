@@ -123,11 +123,19 @@ SA.candidates = (() => {
     return beat ? { cueId: cue.id, beatId: beat.id, cue, beat } : null;
   }
 
+  // What a thumbnail of this cue's beats depends on besides the beat's own
+  // look: the project style, the cue style, the output frame and the clips
+  // (backdrop / filler / figure) under the cue. A content hash, not a length:
+  // a recolour or a re-drawn param usually keeps the text the same size.
   function signature(cueId) {
     const doc = project();
     const own = (doc.cueStyles && doc.cueStyles[cueId]) || {};
     const output = doc.output || {};
-    return `${JSON.stringify(doc.style || {}).length}:${JSON.stringify(own).length}:${output.aspect || ''}`;
+    const cue = ((doc.script && doc.script.cues) || []).find((entry) => entry.id === cueId);
+    const from = cue ? Number(cue.start) || 0 : 0;
+    const to = cue ? Number(cue.end) || from : Infinity;
+    const clips = (doc.clips || []).filter((clip) => (Number(clip.start) || 0) < to && (Number(clip.end) || 0) > from);
+    return hashOf(JSON.stringify([doc.style || {}, own, output.aspect || '', output.width || 0, output.height || 0, clips]));
   }
 
   // a content hash, not a length: two looks of the same size must not share a

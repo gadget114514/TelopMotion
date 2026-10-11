@@ -428,3 +428,28 @@ test('loading drops a previous candidate that only differs by clip colours', () 
   assert.equal(after.items.some((item) => item.id === 'c99'), false);
   assert.equal(after.items.some((item) => item.kind === 'original'), true);
 });
+
+test('a whole-song vary / reroll makes the original card follow the new look', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  const entry0 = store.commands.candidatesOf(BEAT);
+  const originalBefore = JSON.stringify(entry0.items.find((item) => item.kind === 'original').look);
+  store.commands.varyAll();
+  const entry = store.commands.candidatesOf(BEAT);
+  const original = entry.items.find((item) => item.kind === 'original');
+  const live = JSON.stringify(store.state.project.beatStyles[BEAT] || {});
+  assert.notEqual(JSON.stringify(original.look), originalBefore, 'the original card followed the change');
+  assert.equal(JSON.stringify(original.look.beatBag || {}), live);
+  // the other candidates were not touched and nothing was duplicated
+  assert.equal(entry.items.length, entry0.items.length);
+});
+
+test('a beat that wears one of its candidates keeps its original card', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'far' });
+  const entry = store.commands.candidatesOf(BEAT);
+  const originalBefore = JSON.stringify(entry.items.find((item) => item.kind === 'original').look);
+  const other = entry.items.find((item) => item.kind !== 'original');
+  store.commands.applyCandidate('c1', BEAT, other.id);
+  assert.equal(JSON.stringify(store.commands.candidatesOf(BEAT).items.find((item) => item.kind === 'original').look), originalBefore);
+});

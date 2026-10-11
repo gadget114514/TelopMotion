@@ -474,6 +474,7 @@ SA.store = (() => {
     const beforeJson = JSON.stringify(before);
     const beforeCand = state.candidateRev;
     command.do(state.project, state);
+    if (command.label && LOOK_RESET_LABELS.has(command.label)) refreshCandidateOriginals(state.project);
     const after = candidateFreeClone(state.project);
     const changedProject = beforeJson !== JSON.stringify(after);
     const changedCandidates = beforeCand !== state.candidateRev;
@@ -684,6 +685,37 @@ SA.store = (() => {
       return rest;
     };
     return JSON.stringify(core(a)) === JSON.stringify(core(b));
+  }
+
+  // A whole-song command (generate, vary, recolour) replaces every beat's look.
+  // The 'original' card of a candidate list is "how the beat looked before the
+  // candidates", so it follows such a change instead of showing a look the song
+  // no longer has. A beat that wears one of its candidates is left alone.
+  const LOOK_RESET_LABELS = new Set([
+    'auto direct', 'vary all', 'vary cue', 'reroll cue', 'reroll colors', 'reroll palette',
+    'vary beat', 'reroll beat', 'generate script',
+  ]);
+
+  function refreshCandidateOriginals(projectDoc) {
+    const all = projectDoc && projectDoc.beatCandidates;
+    if (!all || typeof all !== 'object') return 0;
+    let changed = 0;
+    for (const [beatId, entry] of Object.entries(all)) {
+      if (!entry || !Array.isArray(entry.items) || !entry.items.length) continue;
+      const original = entry.items.find((item) => item.kind === 'original');
+      if (!original) continue;
+      const cueId = cueIdOfBeat(projectDoc, beatId);
+      const current = cueId ? liveLookOfBeat(projectDoc, cueId, beatId) : null;
+      if (!current) continue;
+      if (entry.items.some((item) => sameLook(item.look, current) || sameLookCore(item.look, current))) continue;
+      original.look = packLook(projectDoc, current);
+      changed += 1;
+    }
+    if (changed) {
+      pruneCandidatePool(projectDoc);
+      touchCandidates();
+    }
+    return changed;
   }
 
   // Drops the 'previous' candidates that only repeat another candidate's look
