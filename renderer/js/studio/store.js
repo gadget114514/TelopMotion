@@ -395,6 +395,8 @@ SA.store = (() => {
     savedId = null;
     dirtyFlag = false;
     state.candidateRev = 0;
+    // a different document: the candidate UI drops everything it cached
+    state.projectEpoch = (Number(state.projectEpoch) || 0) + 1;
     bump(['project', 'style', 'script', 'overrides', 'keyframes', 'media', 'fillers', 'credits']);
     emit();
   }

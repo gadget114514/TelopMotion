@@ -533,10 +533,17 @@ SA.glPasses = (() => {
   }
 
   function sceneBatches(gl, scene, variant) {
-    let variants = batches.get(scene);
+    // the batches own VAOs / buffers of one GL context: a second engine (the
+    // candidate player) must never pick up the first one's objects
+    let perContext = batches.get(gl);
+    if (!perContext) {
+      perContext = new WeakMap();
+      batches.set(gl, perContext);
+    }
+    let variants = perContext.get(scene);
     if (!variants) {
       variants = new Map();
-      batches.set(scene, variants);
+      perContext.set(scene, variants);
     }
     const key = (variant && variant.key) || '';
     if (variants.has(key)) return variants.get(key);

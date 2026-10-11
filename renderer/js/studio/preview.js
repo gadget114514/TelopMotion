@@ -434,6 +434,7 @@ const preview = (() => {
   }
 
   function play() {
+    auxStop();
     if (playing) return;
     if (SA.store.state.playhead >= sceneDuration() - 1e-4) SA.store.setPlayhead(0);
     playing = true;
@@ -459,6 +460,7 @@ const preview = (() => {
   }
 
   function pause() {
+    auxStop();
     if (!playing) return;
     SA.store.setPlayhead(clockNow());
     playing = false;
@@ -477,6 +479,7 @@ const preview = (() => {
   }
 
   function seek(seconds) {
+    auxStop();
     const next = Math.max(0, Math.min(sceneDuration(), seconds));
     SA.store.setPlayhead(next);
     if (audio) {
@@ -849,9 +852,11 @@ const preview = (() => {
     if (!aux) return;
     if (aux.raf) cancelFrame(aux.raf);
     aux.raf = null;
+    const onStop = aux.run && aux.run.onStop;
     aux.run = null;
     aux.canvas.hidden = true;
     aux.badge.hidden = true;
+    if (onStop) onStop();
   }
 
   // options: { start, end, preRoll, onEnd } — loops [start - preRoll, end + 0.4];
@@ -867,6 +872,7 @@ const preview = (() => {
     const engine = auxRenderer(box, width, height);
     if (!engine) return false;
     if (box.raf) cancelFrame(box.raf);
+    if (box.run) box.run.onStop = null;
     if (SA.textflow) SA.textflow.apply(doc);
     engine.resize(width, height);
     engine.setProject(doc);
@@ -879,7 +885,7 @@ const preview = (() => {
     if (typeof engine.preloadLayers === 'function') engine.preloadLayers().catch(() => {});
     const begin = Math.max(0, (Number(opts.start) || 0) - (opts.preRoll != null ? opts.preRoll : 0.3));
     const stop = (Number(opts.end) || begin + 1) + 0.4;
-    const run = { begin, stop, t0: performance.now(), onEnd: opts.onEnd || null };
+    const run = { begin, stop, t0: performance.now(), onEnd: opts.onEnd || null, onStop: opts.onStop || null };
     box.run = run;
     box.canvas.hidden = false;
     box.badge.textContent = t('studio.media.candPreviewBadge');

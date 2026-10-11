@@ -399,3 +399,12 @@ test('with nothing but kept candidates the draw is limited by the room left', ()
   assert.ok(made <= 15 - kept);
   assert.ok(store.commands.candidatesOf(BEAT).items.length <= 15);
 });
+
+test('loading another project bumps the epoch the candidate UI resets on', () => {
+  store.load(fixture());
+  const first = store.state.projectEpoch;
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  store.load(fixture());
+  assert.equal(store.state.projectEpoch, first + 1);
+  assert.equal(store.commands.candidatesOf(BEAT), null);
+});

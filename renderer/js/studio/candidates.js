@@ -37,6 +37,9 @@ SA.candidates = (() => {
         map.set(key, value);
         return value;
       },
+      clear() {
+        map.clear();
+      },
       set(key, value) {
         if (map.has(key)) map.delete(key);
         map.set(key, value);
@@ -126,8 +129,16 @@ SA.candidates = (() => {
     return `${JSON.stringify(doc.style || {}).length}:${JSON.stringify(own).length}:${output.aspect || ''}`;
   }
 
+  // a content hash, not a length: two looks of the same size must not share a
+  // thumbnail
+  function hashOf(text) {
+    let h = 5381;
+    for (let index = 0; index < text.length; index += 1) h = ((h * 33) ^ text.charCodeAt(index)) >>> 0;
+    return h.toString(36);
+  }
+
   function thumbKeyFor(beatId, item, sig) {
-    return `${beatId}|${item.id}|${item.kind}|${JSON.stringify(item.look).length}|${sig}`;
+    return `${beatId}|${item.id}|${item.kind}|${hashOf(JSON.stringify(item.look))}|${sig}`;
   }
 
   function thumbKey(item, sig) {
@@ -162,7 +173,35 @@ SA.candidates = (() => {
     const doc = store().commands.candidatePreviewDoc(at.cueId, at.beatId, itemId);
     if (!doc || !SA.preview || typeof SA.preview.auxPlay !== 'function') return false;
     const { start, end } = beatRange();
-    return SA.preview.auxPlay(doc, { start, end, preRoll: PRE_ROLL, onEnd });
+    return SA.preview.auxPlay(doc, { start, end, preRoll: PRE_ROLL, onEnd, onStop: playerStopped });
+  }
+
+  // The main transport (play / pause / seek) took the screen back: forget the
+  // hover and the tour so no stale state keeps the buttons "on".
+  function playerStopped() {
+    hover = null;
+    hoverAt = null;
+    stopHoverWatch();
+    if (tour) {
+      tour = null;
+      markTourCard();
+    }
+  }
+
+  // A hovered card can be rebuilt under the pointer (no mouseleave then):
+  // the player must not outlive the hover.
+  let hoverWatch = null;
+  function stopHoverWatch() {
+    if (hoverWatch) clearInterval(hoverWatch);
+    hoverWatch = null;
+  }
+
+  function startHoverWatch() {
+    stopHoverWatch();
+    hoverWatch = setInterval(() => {
+      if (!hover || tour) return;
+      if (!document.querySelector('.cand-card:hover, .board-cell:hover')) endHover();
+    }, 250);
   }
 
   // `over` names another beat (a board cell); without it the hover is on the
@@ -179,6 +218,7 @@ SA.candidates = (() => {
     hoverAt = over ? { cueId: over.cueId, beatId: over.beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
     hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: false };
     playCandidate(at, item.id);
+    startHoverWatch();
   }
 
   // Ends the temporary preview: the candidate player is hidden, nothing else
@@ -187,6 +227,7 @@ SA.candidates = (() => {
     hover = null;
     if (!stopPlay) return;
     hoverAt = null;
+    stopHoverWatch();
     cancelTour();
     if (SA.preview && typeof SA.preview.auxStop === 'function') SA.preview.auxStop();
   }
@@ -1064,7 +1105,23 @@ SA.candidates = (() => {
     el.pane.appendChild(el.body);
     setupBoardDom();
     let lastKey = '';
+    let epoch = store().state.projectEpoch || 0;
     store().subscribe('candidates', (state) => {
+      // another project was loaded (open, new, reload): nothing of the old
+      // one may stay on screen — thumbnails, the board, a running preview
+      if ((state.projectEpoch || 0) !== epoch) {
+        epoch = state.projectEpoch || 0;
+        thumbs.clear();
+        boardModel = null;
+        boardModelKey = null;
+        mix = null;
+        rollbackHover(true);
+        boardGen += 1; // cancels a thumbnail queue of the old project
+        lastKey = '';
+        if (el.body) el.body.textContent = '';
+        if (boardCanvas) boardCanvas.textContent = '';
+        if (boardOpen) scheduleBoard();
+      }
       // board: rebuild the model only when the project / selection moved; while
       // playing the playhead only moves the "now" column
       if (boardOpen) {
