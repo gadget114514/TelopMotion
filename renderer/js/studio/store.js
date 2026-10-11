@@ -477,8 +477,7 @@ SA.store = (() => {
     const beforeJson = JSON.stringify(before);
     const beforeCand = state.candidateRev;
     command.do(state.project, state);
-    if (command.label && LOOK_RESET_LABELS.has(command.label)) refreshCandidateOriginals(state.project);
-    else if (command.label && LOOK_ADD_LABELS.has(command.label)) addLooksAsCandidates(state.project);
+    if (command.label && LOOK_ADD_LABELS.has(command.label)) addLooksAsCandidates(state.project);
     const after = candidateFreeClone(state.project);
     const changedProject = beforeJson !== JSON.stringify(after);
     const changedCandidates = beforeCand !== state.candidateRev;
@@ -692,20 +691,16 @@ SA.store = (() => {
     return JSON.stringify(core(a)) === JSON.stringify(core(b));
   }
 
-  // Only the timeline's "generate" (auto direct) rebuilds the whole song's looks.
-  // The 'original' card of a candidate list is "how the beat looked before the
-  // candidates", so it follows that one command instead of showing a look the
-  // song no longer has. A beat that wears one of its candidates is left alone.
-  const LOOK_RESET_LABELS = new Set(['auto direct']);
-  // A variation or a colour change keeps the original card and joins the list
-  // as a candidate right under it, so the earlier look is still one click away.
+  // A whole-song command (generate, variation, colour, re-roll) changes the
+  // look of every beat. The beat's new look joins its candidate list and is the
+  // adopted one; the card adopted before stays in the list, one click away.
   const LOOK_ADD_LABELS = new Set([
-    'vary all', 'vary cue', 'vary beat', 'reroll cue', 'reroll beat', 'reroll colors', 'reroll palette',
+    'auto direct', 'vary all', 'vary cue', 'vary beat', 'reroll cue', 'reroll beat', 'reroll colors', 'reroll palette',
   ]);
 
-  // Puts the beat's new look under the original (row 2); everything below
-  // moves down by one and the overflow goes from the bottom, never the
-  // original, a pinned one or the one now in use.
+  // Puts the beat's new look first; everything below moves down by one and
+  // the overflow goes from the bottom, never a pinned card or the one now in
+  // use.
   function addLooksAsCandidates(projectDoc) {
     const all = projectDoc && projectDoc.beatCandidates;
     if (!all || typeof all !== 'object') return 0;
@@ -718,13 +713,12 @@ SA.store = (() => {
       if (entry.items.some((item) => sameLook(item.look, current))) continue;
       const item = pushCandidate(projectDoc, entry, current, 'near');
       entry.items.pop();
-      const at = entry.items[0] && entry.items[0].kind === 'original' ? 1 : 0;
-      entry.items.splice(at, 0, item);
+      entry.items.unshift(item);
       while (entry.items.length > CANDIDATE_LIMIT) {
         let drop = -1;
         for (let index = entry.items.length - 1; index >= 0; index -= 1) {
           const other = entry.items[index];
-          if (other.kind !== 'original' && !other.pinned && other.id !== item.id) {
+          if (!other.pinned && other.id !== item.id) {
             drop = index;
             break;
           }
@@ -741,27 +735,6 @@ SA.store = (() => {
     return added;
   }
 
-  function refreshCandidateOriginals(projectDoc) {
-    const all = projectDoc && projectDoc.beatCandidates;
-    if (!all || typeof all !== 'object') return 0;
-    let changed = 0;
-    for (const [beatId, entry] of Object.entries(all)) {
-      if (!entry || !Array.isArray(entry.items) || !entry.items.length) continue;
-      const original = entry.items.find((item) => item.kind === 'original');
-      if (!original) continue;
-      const cueId = cueIdOfBeat(projectDoc, beatId);
-      const current = cueId ? liveLookOfBeat(projectDoc, cueId, beatId) : null;
-      if (!current) continue;
-      if (entry.items.some((item) => sameLook(item.look, current) || sameLookCore(item.look, current))) continue;
-      original.look = packLook(projectDoc, current);
-      changed += 1;
-    }
-    if (changed) {
-      pruneCandidatePool(projectDoc);
-      touchCandidates();
-    }
-    return changed;
-  }
 
   // Drops the 'previous' candidates that only repeat another candidate's look
   // (clip colours aside). The original, pinned and in-use ones always stay.
@@ -774,6 +747,8 @@ SA.store = (() => {
       const activeId = activeCandidateId(projectDoc, beatId, entry);
       const kept = [];
       for (const item of entry.items) {
+        // files from the time of the "master": its card was pinned
+        if (item.kind === 'original' && item.pinned) item.pinned = false;
         const repeat = item.kind === 'previous' && !item.pinned && item.id !== activeId
           && kept.some((other) => sameLookCore(other.look, item.look));
         if (repeat) removed += 1;
@@ -860,7 +835,7 @@ SA.store = (() => {
 
   function pushCandidate(projectDoc, entry, look, kind) {
     entry.seq = (Number(entry.seq) || 0) + 1;
-    const item = { id: `c${entry.seq}`, kind, label: '', pinned: kind === 'original', look: packLook(projectDoc, look) };
+    const item = { id: `c${entry.seq}`, kind, label: '', pinned: false, look: packLook(projectDoc, look) };
     entry.items.push(item);
     return item;
   }
@@ -869,13 +844,13 @@ SA.store = (() => {
   // what a regeneration keeps: the original, the pinned ones and the one on the
   // beat right now. Everything else is dropped to make room for the new draw.
   function isKeptCandidate(item, activeId) {
-    return item.kind === 'original' || !!item.pinned || item.id === activeId;
+    return !!item.pinned || item.id === activeId;
   }
 
   function trimCandidates(projectDoc, beatId, entry) {
     const activeId = activeCandidateId(projectDoc, beatId, entry);
     while (entry.items.length > CANDIDATE_LIMIT) {
-      const index = entry.items.findIndex((item) => item.kind !== 'original' && !item.pinned && item.id !== activeId);
+      const index = entry.items.findIndex((item) => !item.pinned && item.id !== activeId);
       if (index < 0) break;
       entry.items.splice(index, 1);
     }
@@ -3505,39 +3480,6 @@ SA.store = (() => {
       });
       return id;
     },
-    // Makes a candidate the master of its beat. The two swap places, so the
-    // old master is not lost: it takes the candidate's row as a 'previous'
-    // card (removable like any other). The beat itself is not touched.
-    replaceMaster(beatId, candidateId) {
-      if (!state.project) return false;
-      let done = false;
-      dispatch({
-        label: 'replace master',
-        areas: ['project'],
-        do(projectDoc) {
-          const entry = candidateEntry(projectDoc, beatId, false);
-          if (!entry || !Array.isArray(entry.items)) return;
-          const master = entry.items.find((item) => item.kind === 'original');
-          const picked = entry.items.find((item) => item.id === candidateId);
-          if (!master || !picked || picked === master) return;
-          const masterLook = master.look;
-          master.look = picked.look;
-          if (JSON.stringify(masterLook) !== JSON.stringify(master.look)) {
-            picked.look = masterLook;
-            picked.kind = 'previous';
-            picked.pinned = false;
-            picked.label = '';
-          } else {
-            // the same look twice would only be a duplicate
-            entry.items.splice(entry.items.indexOf(picked), 1);
-          }
-          pruneCandidatePool(projectDoc);
-          touchCandidates();
-          done = true;
-        },
-      });
-      return done;
-    },
     // keeps the beat's current look as a candidate of its own
     saveCandidate(cueId, beatId) {
       if (!state.project || !findCue(cueId)) return null;
@@ -3570,7 +3512,8 @@ SA.store = (() => {
           const entry = candidateEntry(projectDoc, beatId, false);
           if (!entry) return;
           const index = entry.items.findIndex((item) => item.id === candidateId);
-          if (index < 0 || entry.items[index].kind === 'original') return; // the original stays
+          // the adopted card is the beat's own look: it is not removable
+          if (index < 0 || entry.items[index].id === activeCandidateId(projectDoc, beatId, entry)) return;
           entry.items.splice(index, 1);
           pruneCandidatePool(projectDoc);
           touchCandidates();
@@ -3584,7 +3527,7 @@ SA.store = (() => {
         do(projectDoc) {
           const entry = candidateEntry(projectDoc, beatId, false);
           const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
-          if (item && item.kind !== 'original') {
+          if (item) {
             item.pinned = !item.pinned;
             touchCandidates();
           }

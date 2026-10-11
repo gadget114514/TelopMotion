@@ -73,14 +73,14 @@ function readIn(object, path) {
 
 const BEAT = 'c1:page0';
 
-test('generating keeps the beat untouched and records the original first', () => {
+test('generating keeps the beat untouched and records its look first (it is the adopted one)', () => {
   store.load(fixture());
   const before = snapshot();
   const made = store.commands.generateCandidates('c1', BEAT, { count: 4, mode: 'mixed' });
   assert.ok(made >= 1);
   const entry = store.commands.candidatesOf(BEAT);
-  assert.equal(entry.items[0].kind, 'original');
-  assert.equal(entry.items[0].pinned, true);
+  assert.equal(entry.items[0].kind, 'original', 'the first card is the look the beat had');
+  assert.equal(entry.items[0].pinned, false, 'nothing is special about it: no master');
   assert.equal(entry.activeId, entry.items[0].id);
   assert.equal(entry.items.length, made + 1);
   // only the candidate list moved (the pool is candidate storage too)
@@ -404,11 +404,11 @@ test('save / load round trip keeps both candidate keys', () => {
   assert.deepEqual(reloaded.candidatePool, raw.candidatePool);
 });
 
-test('regenerating keeps only the original, the pinned and the one in use, and never exceeds 15', () => {
+test('regenerating keeps only the pinned and the one in use, and never exceeds 6 rows + the adopted', () => {
   store.load(fixture());
   store.commands.generateCandidates('c1', BEAT, { count: 6, mode: 'mixed' });
   let entry = store.commands.candidatesOf(BEAT);
-  const first = entry.items.filter((item) => item.kind !== 'original');
+  const first = entry.items.filter((item) => item.id !== entry.activeId);
   assert.ok(first.length >= 3);
   const pinned = first[0];
   const inUse = first[1];
@@ -418,26 +418,25 @@ test('regenerating keeps only the original, the pinned and the one in use, and n
   store.commands.generateCandidates('c1', BEAT, { count: 4, mode: 'near' });
   entry = store.commands.candidatesOf(BEAT);
   const ids = entry.items.map((item) => item.id);
-  assert.ok(entry.items.some((item) => item.kind === 'original'), 'original stays');
   assert.ok(ids.includes(pinned.id), 'pinned stays');
   assert.ok(ids.includes(inUse.id), 'the one in use stays');
   for (const id of dropped) assert.equal(ids.includes(id), false, `${id} was dropped`);
   assert.equal(entry.activeId, inUse.id);
   // repeated draws never pile up past the per-beat limit
   for (let round = 0; round < 6; round += 1) store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'mixed' });
-  assert.ok(store.commands.candidatesOf(BEAT).items.length <= 15);
+  assert.ok(store.commands.candidatesOf(BEAT).items.length <= 7);
 });
 
 test('with nothing but kept candidates the draw is limited by the room left', () => {
   store.load(fixture());
   store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'mixed' });
   const entry = store.commands.candidatesOf(BEAT);
-  for (const item of entry.items.filter((candidate) => candidate.kind !== 'original').slice(0, 12)) {
+  for (const item of entry.items.filter((candidate) => candidate.id !== entry.activeId).slice(0, 12)) {
     store.commands.toggleCandidatePin(BEAT, item.id);
   }
   const kept = store.commands.candidatesOf(BEAT).items.length;
   const made = store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'mixed' });
-  assert.ok(made <= 15 - kept);
+  assert.ok(made <= 7 - kept);
   assert.ok(store.commands.candidatesOf(BEAT).items.length <= 15);
 });
 
@@ -470,43 +469,40 @@ test('loading drops a previous candidate that only differs by clip colours', () 
   assert.equal(after.items.some((item) => item.kind === 'original'), true);
 });
 
-test('a whole-song variation joins the list right under the original', () => {
+test('a whole-song variation joins the list first and is the adopted card', () => {
   store.load(fixture());
   store.commands.generateCandidates('c1', BEAT, { count: 3, mode: 'near' });
   const before = store.commands.candidatesOf(BEAT);
   const idsBefore = before.items.map((item) => item.id);
-  const originalBefore = JSON.stringify(before.items[0].look);
+  const firstLook = JSON.stringify(before.items[0].look);
   store.commands.varyAll();
   const entry = store.commands.candidatesOf(BEAT);
-  // the original stays, the new look is row 2, everything else moved down one
-  assert.equal(entry.items[0].kind, 'original');
-  assert.equal(JSON.stringify(entry.items[0].look), originalBefore);
   assert.equal(entry.items.length, idsBefore.length + 1);
-  assert.deepEqual(entry.items.slice(2).map((item) => item.id), idsBefore.slice(1));
-  assert.equal(JSON.stringify(entry.items[1].look.beatBag || {}), JSON.stringify(store.state.project.beatStyles[BEAT] || {}));
-  assert.equal(store.commands.candidatesOf(BEAT).items[1].id !== idsBefore[1], true);
+  // the new look is the adopted one and heads the list; the rest keep their order
+  assert.equal(JSON.stringify(entry.items[0].look.beatBag || {}), JSON.stringify(store.state.project.beatStyles[BEAT] || {}));
+  assert.equal(entry.activeId, entry.items[0].id);
+  assert.deepEqual(entry.items.slice(1).map((item) => item.id), idsBefore);
+  // the card adopted before is still there, untouched, one click away
+  assert.equal(JSON.stringify(entry.items[1].look), firstLook);
 });
 
 test('the overflow of a variation goes from the bottom and keeps the kept ones', () => {
   store.load(fixture());
-  store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'near' });
-  store.commands.generateCandidates('c1', BEAT, { count: 12, mode: 'far' });
+  store.commands.generateCandidates('c1', BEAT, { count: 6, mode: 'near' });
   let entry = store.commands.candidatesOf(BEAT);
-  // pin one near the bottom and wear another: both must survive
   const bottom = entry.items[entry.items.length - 1];
   const pinned = entry.items[entry.items.length - 2];
   store.commands.toggleCandidatePin(BEAT, pinned.id);
   assert.equal(store.commands.candidatesOf(BEAT).items.find((item) => item.id === pinned.id).pinned, true);
   for (let round = 0; round < 3; round += 1) store.commands.varyAll();
   entry = store.commands.candidatesOf(BEAT);
-  assert.ok(entry.items.length <= 15);
-  assert.equal(entry.items[0].kind, 'original');
+  assert.ok(entry.items.length <= 7, 'the adopted card + six rows');
   assert.equal(entry.items.some((item) => item.id === pinned.id), true, 'a pinned candidate is never pushed out');
   assert.equal(entry.items.some((item) => item.id === bottom.id), false, 'the bottom one was pushed out');
   assert.equal(new Set(entry.items.map((item) => item.id)).size, entry.items.length);
 });
 
-test('a colour change also joins the list instead of replacing the original', () => {
+test('a colour change also joins the list instead of replacing the adopted card', () => {
   store.load(fixture());
   store.state.project.style.palette = {
     colors: ['#101018', '#f4f1ea', '#ff5a5f', '#ffd166', '#06d6a0', '#118ab2', '#8338ec', '#ef476f', '#3a86ff', '#fb5607', '#ffbe0b', '#2b2d42'],
@@ -551,26 +547,3 @@ test('an edit made while the thumbnail transaction is open is not rolled back wi
   assert.equal(store.canUndo(), true, 'the edit reached the history');
 });
 
-test('replacing the master swaps it with the picked candidate and loses nothing', () => {
-  store.load(fixture());
-  store.commands.generateCandidates('c1', BEAT, { count: 3, mode: 'far' });
-  const entry = store.commands.candidatesOf(BEAT);
-  const master = entry.items.find((item) => item.kind === 'original');
-  const picked = entry.items.find((item) => item.kind !== 'original');
-  const masterLook = JSON.stringify(master.look);
-  const pickedLook = JSON.stringify(picked.look);
-  const count = entry.items.length;
-  const beatBefore = JSON.stringify(store.state.project.beatStyles[BEAT] || {});
-  assert.equal(store.commands.replaceMaster(BEAT, picked.id), true);
-  const after = store.commands.candidatesOf(BEAT);
-  assert.equal(after.items.length, count);
-  const newMaster = after.items.find((item) => item.kind === 'original');
-  assert.equal(newMaster.id, master.id, 'the master card keeps its place and id');
-  assert.equal(JSON.stringify(newMaster.look), pickedLook);
-  const old = after.items.find((item) => item.id === picked.id);
-  assert.equal(old.kind, 'previous');
-  assert.equal(JSON.stringify(old.look), masterLook);
-  // the beat on screen is not touched, and it is not an undo step
-  assert.equal(JSON.stringify(store.state.project.beatStyles[BEAT] || {}), beatBefore);
-  assert.equal(store.commands.replaceMaster(BEAT, master.id), false, 'the master itself is a no-op');
-});

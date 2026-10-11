@@ -12,7 +12,7 @@ SA.candidates = (() => {
   const THUMB_WIDTH = 224;
   const HOVER_LEAVE_MS = 90;
   // a hover only starts the preview after it has rested on the card this long
-  const HOVER_START_MS = 2000;
+  const HOVER_START_MS = 200;
   const PRE_ROLL = 0.3;
   const THUMB_CACHE_MAX = 600;
   const BEAT_PATH = /cue:([^/]+)(?:\/beat:([^/]+))?/;
@@ -160,7 +160,7 @@ SA.candidates = (() => {
   function labelOf(item) {
     const n = String(item.id).replace(/\D/g, '');
     if (item.label) return item.label;
-    if (item.kind === 'original') return t('studio.media.candOriginal');
+    if (item.kind === 'original') return t('studio.media.candPrevious', { n });
     if (item.kind === 'far') return t('studio.media.candFar', { n });
     if (item.kind === 'near') return t('studio.media.candNear', { n });
     if (item.kind === 'previous') return t('studio.media.candPrevious', { n });
@@ -381,18 +381,10 @@ SA.candidates = (() => {
     whenIdle(() => reportGenerated(store().commands.generateCandidates(here.cueId, here.beatId, { count, mode, axes }), count));
   }
 
-  // A draw reads the beat's committed look, so it must not run while a
-  // thumbnail transaction has other candidates applied for a moment: wait for
-  // the shots in flight to roll back first.
+  // Thumbnails are shot on a scratch copy now, so a command never has to wait
+  // for the queue: it runs at once and the pictures follow.
   function whenIdle(task) {
-    if (!thumbBusy) return Promise.resolve(task());
-    return new Promise((resolve) => {
-      const wait = () => {
-        if (thumbBusy) setTimeout(wait, 25);
-        else resolve(task());
-      };
-      wait();
-    });
+    return Promise.resolve(task());
   }
 
   function reportGenerated(made, asked) {
@@ -541,7 +533,6 @@ SA.candidates = (() => {
     const out = node('div', 'cand-card');
     out.dataset.id = item.id;
     if (item.id === entry.activeId) out.classList.add('is-active');
-    if (item.kind === 'original') out.classList.add('is-original');
     const thumb = node('div', 'cand-thumb');
     const url = thumbs.get(thumbKey(item, sig));
     if (url) {
@@ -557,7 +548,7 @@ SA.candidates = (() => {
     const row = node('div', 'cand-row');
     row.appendChild(node('span', 'cand-name', labelOf(item)));
     if (item.id === entry.activeId) row.appendChild(node('span', 'cand-badge', '●'));
-    if (item.kind !== 'original') {
+    if (item.id !== entry.activeId) {
       const pin = node('button', `cand-btn${item.pinned ? ' is-on' : ''}`, '★');
       pin.title = t('studio.media.candPin');
       pin.addEventListener('click', (event) => {
@@ -854,11 +845,18 @@ SA.candidates = (() => {
     tools.appendChild(iconButton('✨', t('studio.media.candBoardGenerateTip'), () => {
       reportGenerated(store().commands.generateCandidates(col.cueId, col.beatId, { count, mode, axes }), count);
     }));
+    // the adopted card is never touched: each button fills numbered rows 1-6
+    // with its own kind of change (everything / typeface+effects+placement+
+    // clones / colour only)
     tools.appendChild(iconButton('🎲', t('studio.media.candBoardVariationTip'), () => {
-      store().commands.varyBeat(col.cueId, col.beatId);
+      reportGenerated(store().commands.generateCandidates(col.cueId, col.beatId, {
+        count: 6, mode: 'near', axes: { font: true, effects: true, placement: true, clones: true },
+      }), 6);
     }));
     tools.appendChild(iconButton('◐', t('studio.media.candBoardColourTip'), () => {
-      store().commands.rerollPalette({ cueId: col.cueId, beatId: col.beatId });
+      reportGenerated(store().commands.generateCandidates(col.cueId, col.beatId, {
+        count: 6, mode: 'near', axes: { color: true },
+      }), 6);
     }));
     cell.appendChild(tools);
     return cell;
