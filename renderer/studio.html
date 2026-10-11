@@ -115,7 +115,10 @@
 
   <div id="split-timeline" class="splitter-h"></div>
   <section class="timeline-panel">
-    <div class="panel-title" data-i18n="studio.panel.timeline"></div>
+    <div class="panel-title timeline-title">
+      <span data-i18n="studio.panel.timeline"></span>
+      <button id="timeline-close" class="btn btn-mini btn-icon board-close" data-i18n-title="studio.dock.hide">▾</button>
+    </div>
     <div class="panel-body timeline-body">
       <div class="timeline-head">
         <button id="tl-fit" class="btn btn-mini btn-icon" data-i18n-title="studio.timeline.fit">⤢</button>
@@ -145,6 +148,20 @@
       </div>
     </div>
   </section>
+
+  <div id="split-board" class="splitter-h"></div>
+  <section id="board-panel" class="panel board-panel">
+    <div class="panel-title board-title">
+      <span data-i18n="studio.panel.board"></span>
+      <button id="board-close" class="btn btn-mini btn-icon board-close" data-i18n-title="studio.media.candBoardClose">×</button>
+    </div>
+    <div id="board-body" class="panel-body board-body"></div>
+  </section>
+
+  <div id="dock-bar" class="dock-bar" hidden>
+    <button id="dock-timeline" class="btn btn-mini" data-i18n="studio.dock.showTimeline"></button>
+    <button id="dock-board" class="btn btn-mini" data-i18n="studio.dock.showBoard"></button>
+  </div>
 </div>
 
 <div id="toast" class="toast" hidden></div>

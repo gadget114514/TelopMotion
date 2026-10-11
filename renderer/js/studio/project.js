@@ -107,6 +107,7 @@
       beats: {},
       beatStyles: {},
       beatCandidates: {},
+      candidatePool: {},
       beatWarnings: {},
       orphanBeats: {},
       orphans: {},

@@ -13,8 +13,11 @@
   --media-w: 260px;
   --inspector-w: 340px;
   --timeline-h: 240px;
+  --board-h: 200px;
+  --dock-h: 0px;
   --console-w: 360px;
   --split: 6px;
+  --split-board: 6px;
   --split-console: 6px;
 }
 
@@ -39,7 +42,7 @@ body {
 
 .studio {
   display: grid;
-  grid-template-rows: 32px 1fr var(--split) var(--timeline-h);
+  grid-template-rows: 32px 1fr var(--split) var(--timeline-h) var(--split-board) var(--board-h) var(--dock-h);
   grid-template-columns:
     var(--media-w) var(--split) 1fr var(--split) var(--inspector-w) var(--split-console) var(--console-w);
   height: 100vh;
@@ -230,6 +233,16 @@ body {
   --timeline-h: 0px;
 }
 
+.studio.panel-hidden-board {
+  --board-h: 0px;
+  --split-board: 0px;
+}
+
+.studio.panel-hidden-board #split-board,
+.studio.panel-hidden-board #board-panel {
+  display: none;
+}
+
 .menubar {
   grid-row: 1;
   grid-column: 1 / -1;
@@ -388,6 +401,186 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* Board pane: a second, candidate-oriented timeline of the whole song. */
+.board-panel {
+  grid-row: 6;
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--line);
+  background: var(--bg-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.board-panel .board-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px 4px;
+}
+
+.board-close {
+  line-height: 1;
+  padding: 1px 7px;
+}
+
+.board-panel .board-body {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  display: block;
+}
+
+.board-scroll {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  border-top: 1px solid var(--line-soft);
+  background: var(--bg);
+  scrollbar-gutter: stable;
+}
+
+.board-canvas {
+  position: relative;
+}
+
+.board-cell,
+.board-head,
+.board-label,
+.board-corner {
+  position: absolute;
+  box-sizing: border-box;
+}
+
+.board-head {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line-soft);
+  z-index: 2;
+}
+
+.board-head.is-now {
+  background: rgba(255, 138, 61, 0.18);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.board-beat {
+  font-size: 10px;
+  opacity: 0.85;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.board-time {
+  font-size: 9px;
+  opacity: 0.5;
+}
+
+.board-count {
+  font-size: 9px;
+  opacity: 0.6;
+}
+
+.board-gen {
+  font-size: 9px;
+  padding: 0 4px;
+  line-height: 1.3;
+}
+
+.board-label {
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  opacity: 0.6;
+  background: var(--bg-soft);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-soft);
+  z-index: 2;
+}
+
+.board-corner {
+  background: var(--bg-soft);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  z-index: 3;
+}
+
+.board-cell {
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.board-cell:hover {
+  border-color: var(--accent);
+}
+
+.board-cell.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.board-cell.is-empty {
+  cursor: default;
+  border-color: transparent;
+}
+
+.board-cell.is-now {
+  background: rgba(255, 138, 61, 0.06);
+}
+
+.board-thumb {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  background: #000;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.board-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.board-thumb-wait {
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.board-name {
+  font-size: 9px;
+  text-align: center;
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.board-marker {
+  position: absolute;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0.55;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .timeline-body {
@@ -588,6 +781,10 @@ body {
 
 .splitter-h:hover {
   background: var(--accent);
+}
+
+#split-board {
+  grid-row: 5;
 }
 
 .panel-title {
@@ -3277,16 +3474,42 @@ body {
 .cand-mix-apply { align-self: flex-start; }
 .btn.is-on { border-color: var(--accent); color: var(--accent); }
 
-/* candidate board */
-.cand-board-dialog { max-width: 96vw; }
-.cand-board-body { overflow: auto; max-height: 60vh; padding: 4px; }
-.cand-board-grid { display: grid; gap: 3px; align-items: stretch; }
-.cand-board-corner, .cand-board-rowlabel { font-size: 10px; opacity: 0.6; display: grid; place-items: center; }
-.cand-board-head { display: flex; flex-direction: column; gap: 2px; align-items: center; font-size: 10px; }
-.cand-board-beat { opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
-.cand-board-count { opacity: 0.6; }
-.cand-board-cell { border: 1px solid transparent; border-radius: 4px; padding: 2px; cursor: pointer; }
-.cand-board-cell:hover { border-color: var(--accent); }
-.cand-board-cell.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.cand-board-cell.is-empty { cursor: default; }
-.cand-board-name { font-size: 9px; text-align: center; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cand-card.is-touring { border-color: #ffb454; box-shadow: 0 0 0 2px #ffb454; }
+.cand-tour-btn.is-on { border-color: #ffb454; color: #ffb454; }
+
+/* the timeline title row carries its own hide button, like the board pane */
+.timeline-panel .timeline-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 12px 4px;
+}
+
+/* a thin strip that brings a hidden timeline / board pane back */
+.dock-bar {
+  grid-row: 7;
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border-top: 1px solid var(--line);
+  background: var(--bg-soft);
+}
+
+.dock-bar[hidden] {
+  display: none;
+}
+
+.board-tools {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  margin-right: 8px;
+}
+
+.board-tools .cand-select {
+  font-size: 11px;
+}

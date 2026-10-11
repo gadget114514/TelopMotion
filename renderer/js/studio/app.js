@@ -5,10 +5,10 @@
   const store = SA.store;
   const platform = SA.platform;
   const LS_KEY = 'sa.studio.layout';
-  const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200 };
+  const MIN = { media: 200, inspector: 280, timeline: 140, preview: 150, console: 200, board: 120 };
 
   const el = {};
-  let layout = { mediaW: 260, inspectorW: 340, timelineH: 240, consoleW: 360, panels: { media: true, inspector: true, timeline: true }, preset: 'standard' };
+  let layout = { mediaW: 260, inspectorW: 340, timelineH: 240, boardH: 200, consoleW: 360, panels: { media: true, inspector: true, timeline: true, board: false }, preset: 'standard' };
   let autosaveEnabled = true;
   // stateful figures (simulations): off by default, remembered across sessions
   const LS_STATEFUL = 'sa.stateful';
@@ -78,6 +78,13 @@
     el.splitMedia = document.getElementById('split-media');
     el.splitInspector = document.getElementById('split-inspector');
     el.splitTimeline = document.getElementById('split-timeline');
+    el.splitBoard = document.getElementById('split-board');
+    el.boardPanel = document.getElementById('board-panel');
+    el.boardClose = document.getElementById('board-close');
+    el.timelineClose = document.getElementById('timeline-close');
+    el.dockBar = document.getElementById('dock-bar');
+    el.dockTimeline = document.getElementById('dock-timeline');
+    el.dockBoard = document.getElementById('dock-board');
     el.splitConsole = document.getElementById('split-console');
     el.autoDirect = document.getElementById('tl-auto-direct');
     el.rerollColors = document.getElementById('tl-reroll-colors');
@@ -129,20 +136,47 @@
     }
   }
 
+  // The board pane sits below the timeline and steals height from it, so the
+  // timeline's own maximum has to leave the open board (and its splitter) room.
+  function boardHeight() {
+    return layout.panels.board ? Math.max(MIN.board, layout.boardH || 200) + 6 : 0;
+  }
+
   function maxTimelineHeight() {
-    const chrome = 32 + 6; // menubar + splitter
+    const chrome = 32 + 6 + dockHeight(); // menubar + splitter + dock strip
     const available = Math.max(0, window.innerHeight - chrome);
     const transport = el.transport || document.querySelector('.transport');
     const transportH = transport ? Math.ceil(transport.getBoundingClientRect().height) : 49;
     // keep the transport plus a slice of the stage visible, even in short or narrow windows
     const minPreview = Math.max(MIN.preview, transportH + 48);
-    return Math.max(MIN.timeline, available - minPreview);
+    return Math.max(MIN.timeline, available - minPreview - boardHeight());
+  }
+
+  // the strip that restores a hidden timeline / board pane
+  function dockHeight() {
+    return !layout.panels.timeline || !layout.panels.board ? 24 : 0;
+  }
+
+  function maxBoardHeight() {
+    const chrome = 32 + 6 + dockHeight(); // menubar + splitter + dock strip
+    const available = Math.max(0, window.innerHeight - chrome);
+    const transport = el.transport || document.querySelector('.transport');
+    const transportH = transport ? Math.ceil(transport.getBoundingClientRect().height) : 49;
+    const minPreview = Math.max(MIN.preview, transportH + 48);
+    const timeline = layout.panels.timeline ? Math.max(MIN.timeline, layout.timelineH) + 6 : 0;
+    return Math.max(MIN.board, available - minPreview - timeline);
   }
 
   function applyLayout() {
     el.studio.classList.toggle('panel-hidden-media', !layout.panels.media);
     el.studio.classList.toggle('panel-hidden-inspector', !layout.panels.inspector);
     el.studio.classList.toggle('panel-hidden-timeline', !layout.panels.timeline);
+    el.studio.classList.toggle('panel-hidden-board', !layout.panels.board);
+    const dockOn = dockHeight() > 0;
+    document.documentElement.style.setProperty('--dock-h', `${dockHeight()}px`);
+    if (el.dockBar) el.dockBar.hidden = !dockOn;
+    if (el.dockTimeline) el.dockTimeline.hidden = !!layout.panels.timeline;
+    if (el.dockBoard) el.dockBoard.hidden = !!layout.panels.board;
     const consoleOpen = !!(SA.debugConsole && SA.debugConsole.isOpen());
     el.studio.classList.toggle('console-hidden', !consoleOpen);
     document.documentElement.style.setProperty('--media-w', `${Math.max(0, layout.mediaW)}px`);
@@ -157,17 +191,22 @@
     }
     document.documentElement.style.setProperty('--console-w', `${consoleW}px`);
     document.documentElement.style.setProperty('--timeline-h', `${Math.min(Math.max(MIN.timeline, layout.timelineH), maxTimelineHeight())}px`);
+    if (layout.panels.board) {
+      layout.boardH = Math.min(Math.max(MIN.board, layout.boardH || 200), maxBoardHeight());
+      document.documentElement.style.setProperty('--board-h', `${layout.boardH}px`);
+    }
   }
 
   function setLayout(name) {
     if (name === 'reset') {
-      layout = { mediaW: 260, inspectorW: 340, timelineH: 240, consoleW: 360, panels: { media: true, inspector: true, timeline: true }, preset: 'standard' };
+      // reset closes the board pane; the other presets leave it as it is
+      layout = { mediaW: 260, inspectorW: 340, timelineH: 240, boardH: 200, consoleW: 360, panels: { media: true, inspector: true, timeline: true, board: false }, preset: 'standard' };
     } else if (name === 'wide') {
       layout = { ...layout, preset: 'wide', timelineH: 160, panels: { ...layout.panels, media: false, timeline: true, inspector: true } };
     } else if (name === 'timeline') {
-      layout = { ...layout, preset: 'timeline', timelineH: Math.round(window.innerHeight * 0.45), panels: { media: true, inspector: true, timeline: true } };
+      layout = { ...layout, preset: 'timeline', timelineH: Math.round(window.innerHeight * 0.45), panels: { media: true, inspector: true, timeline: true, board: !!layout.panels.board } };
     } else {
-      layout = { ...layout, preset: 'standard', mediaW: 260, inspectorW: 340, timelineH: 240, panels: { media: true, inspector: true, timeline: true } };
+      layout = { ...layout, preset: 'standard', mediaW: 260, inspectorW: 340, timelineH: 240, panels: { media: true, inspector: true, timeline: true, board: !!layout.panels.board } };
     }
     applyLayout();
     saveLayout();
@@ -182,11 +221,13 @@
       node.setPointerCapture(event.pointerId);
       const startX = event.clientX;
       const startY = event.clientY;
-      const start = { mediaW: layout.mediaW, inspectorW: layout.inspectorW, timelineH: layout.timelineH, consoleW: layout.consoleW || 360 };
+      const start = { mediaW: layout.mediaW, inspectorW: layout.inspectorW, timelineH: layout.timelineH, boardH: layout.boardH || 200, consoleW: layout.consoleW || 360 };
       const onMove = (moveEvent) => {
         if (axis === 'media') layout.mediaW = Math.max(MIN.media, start.mediaW + (moveEvent.clientX - startX));
         else if (axis === 'inspector') layout.inspectorW = Math.max(MIN.inspector, start.inspectorW - (moveEvent.clientX - startX));
         else if (axis === 'console') layout.consoleW = Math.max(MIN.console, start.consoleW - (moveEvent.clientX - startX));
+        // the board is below the timeline: dragging its splitter up grows it
+        else if (axis === 'board') layout.boardH = Math.max(MIN.board, Math.min(maxBoardHeight(), start.boardH + (startY - moveEvent.clientY)));
         else layout.timelineH = Math.max(MIN.timeline, Math.min(maxTimelineHeight(), start.timelineH - (moveEvent.clientY - startY)));
         applyLayout();
       };
@@ -1922,6 +1963,25 @@
     renderPreview();
   }
 
+  // The Board pane (below the timeline). Opening it lays the pane out and lets
+  // the candidate module seed its originals / render; the View menu does not
+  // list it, only the Candidate tab's Board button and the pane's close button
+  // drive it.
+  function setBoard(open) {
+    const next = !!open;
+    if (!!layout.panels.board === next) {
+      if (SA.candidates && typeof SA.candidates.setOpen === 'function') SA.candidates.setOpen(next);
+      return next;
+    }
+    layout.panels.board = next;
+    applyLayout();
+    saveLayout();
+    if (SA.menu && typeof SA.menu.refresh === 'function') SA.menu.refresh();
+    renderPreview();
+    if (SA.candidates && typeof SA.candidates.setOpen === 'function') SA.candidates.setOpen(next);
+    return next;
+  }
+
   function toggleConsole() {
     if (SA.platform && SA.platform.isElectron && SA.debugConsole && typeof SA.debugConsole.openWindow === 'function') {
       SA.debugConsole.openWindow();
@@ -2118,7 +2178,12 @@
     setupSplitter(el.splitMedia, 'media');
     setupSplitter(el.splitInspector, 'inspector');
     setupSplitter(el.splitTimeline, 'timeline');
+    setupSplitter(el.splitBoard, 'board');
     setupSplitter(el.splitConsole, 'console');
+    if (el.boardClose) el.boardClose.addEventListener('click', () => setBoard(false));
+    if (el.timelineClose) el.timelineClose.addEventListener('click', () => togglePanel('timeline'));
+    if (el.dockTimeline) el.dockTimeline.addEventListener('click', () => togglePanel('timeline'));
+    if (el.dockBoard) el.dockBoard.addEventListener('click', () => setBoard(true));
     if (el.autoDirect) {
       el.autoDirect.addEventListener('click', () => autoDirect());
       el.autoDirect.addEventListener('contextmenu', (event) => {
@@ -2419,6 +2484,9 @@
         /* a failed font load resolves on its own; startup continues */
       }
       renderAll();
+      // a layout saved with the Board pane open needs its module told to seed
+      // the originals and draw
+      if (layout.panels.board) setBoard(true);
       // a textflow pass can start a second font request: wait until every
       // request has settled before revealing the app, so parsed metrics are
       // never shown mid-change. The 30 s cap is only a safety net for a hung
@@ -2471,6 +2539,6 @@
     }
   }
 
-  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, removeAudio, importVideo: importVideoMedia, clearVideos, resetMedia, addVideoLayer };
+  window.SA.studio = { startup, renderAll, toast, toggleConsole, autoDirect, rerollColors, setMediaTab, refreshAudioVisual, renderMediaAudio, importAudio, removeAudio, importVideo: importVideoMedia, clearVideos, resetMedia, addVideoLayer, setBoard };
   startup();
 })();

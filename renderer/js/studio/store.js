@@ -14,6 +14,11 @@ SA.store = (() => {
     playing: false,
     view: { zoom: 1, guides: false, snapping: true, autoKey: false, panels: { media: true, inspector: true, timeline: true } },
     version: Object.fromEntries(AREAS.map((area) => [area, 0])),
+    // bumped by every candidate-list mutation: candidate changes are kept out
+    // of the undo snapshots, so the revision is what tells dispatch they
+    // happened (a candidate-only edit must dirty the project without a history
+    // entry).
+    candidateRev: 0,
   };
 
   const listeners = new Set();
@@ -23,6 +28,9 @@ SA.store = (() => {
   let transaction = null;
   let savedId = null;
   let nextEntryId = 1;
+  // candidate-only edits leave the undo stack untouched, so savedId alone
+  // cannot say whether the project is dirty: the flag covers them.
+  let dirtyFlag = false;
 
   // Style clipboard: copy the look of one beat/cue, paste it onto another
   // beat/cue while keeping the destination text and timing. Only style bags
@@ -32,6 +40,31 @@ SA.store = (() => {
 
   function clone(value) {
     return value == null ? value : JSON.parse(JSON.stringify(value));
+  }
+
+  // The undo snapshots must not carry the candidate lists: they are the big
+  // part of the document and a candidate edit is not undoable. The keys stay
+  // in place as `undefined` placeholders so restoring a snapshot keeps the
+  // object's key order (JSON string comparisons stay stable) and the live
+  // candidate objects are re-attached on undo / redo / cancel.
+  function candidateFreeClone(projectDoc) {
+    if (!projectDoc) return projectDoc;
+    const out = {};
+    for (const [key, value] of Object.entries(projectDoc)) {
+      if (key === 'beatCandidates' || key === 'candidatePool') {
+        out[key] = undefined;
+        continue;
+      }
+      out[key] = clone(value);
+    }
+    return out;
+  }
+
+  function attachCandidates(restored, liveCandidates, livePool) {
+    if (!restored) return restored;
+    restored.beatCandidates = liveCandidates;
+    restored.candidatePool = livePool;
+    return restored;
   }
 
   // Lyrics / script replacement drops the old cues wholesale. Anything keyed
@@ -68,6 +101,9 @@ SA.store = (() => {
       for (const id of Object.keys(candidates)) {
         if (!beatIds.has(id)) delete candidates[id];
       }
+      // a dropped cue's candidates may have been the last referrer of a pool
+      // snapshot: prune only what no remaining candidate uses
+      pruneCandidatePool(projectDoc);
     }
   }
 
@@ -357,6 +393,8 @@ SA.store = (() => {
     coalesce = { key: null, time: 0 };
     transaction = null;
     savedId = null;
+    dirtyFlag = false;
+    state.candidateRev = 0;
     bump(['project', 'style', 'script', 'overrides', 'keyframes', 'media', 'fillers', 'credits']);
     emit();
   }
@@ -424,11 +462,23 @@ SA.store = (() => {
       emit();
       return;
     }
-    const before = clone(state.project);
+    const before = candidateFreeClone(state.project);
     const beforeJson = JSON.stringify(before);
+    const beforeCand = state.candidateRev;
     command.do(state.project, state);
-    const after = clone(state.project);
-    if (beforeJson === JSON.stringify(after)) return; // no-op edits stay out of the history
+    const after = candidateFreeClone(state.project);
+    const changedProject = beforeJson !== JSON.stringify(after);
+    const changedCandidates = beforeCand !== state.candidateRev;
+    if (!changedProject && !changedCandidates) return; // no-op edits stay out of the history
+    if (!changedProject && changedCandidates) {
+      // candidate-list edits are not undoable but they still move the project:
+      // notify, dirty it and keep them out of the history
+      dirtyFlag = true;
+      coalesce = { key: null, time: 0 };
+      bump(areas);
+      emit();
+      return;
+    }
     const now = Date.now();
     const selection = selectionSnapshot();
     const mergeable = !!command.coalesceKey && coalesce.key === command.coalesceKey && now - coalesce.time < COALESCE_MS && undoStack.length;
@@ -457,25 +507,111 @@ SA.store = (() => {
   }
 
   // --- beat candidates ---------------------------------------------------------
-  // project.beatCandidates[beatId] = { items: [{ id, kind, label, pinned, look }], activeId, seq }
+  // project.beatCandidates[beatId] = { items: [{ id, kind, label, pinned, look }], seq }
   // A look is everything that makes a beat look the way it does and nothing
   // about its words or timing: the beat style bag, its sub-element overrides
   // and keyframes, the letter variation slot and the font scale. The first
   // item is always the look the beat had before the first generation (kind
   // 'original'); it can be chosen again but never removed.
-  const CANDIDATE_LIMIT = 24;
+  //
+  // The active candidate is never stored: it is the item whose look equals the
+  // beat's current look, derived on read. That keeps an undo of an apply and a
+  // hand-edit consistent without rewriting the list.
+  const CANDIDATE_LIMIT = 15; // per beat
+
+  // Storage is packed: a stored look keeps `clips = { [clipId]: hash }` and the
+  // one snapshot per hash lives in project.candidatePool, so a clip shared by
+  // many looks is stored once (hand-made clips under a beat are the big part of
+  // a look). The hash is two 32-bit FNV-1a digests of the JSON and its length,
+  // hex, so equal snapshots collapse to one pool entry.
+  function fnv1a32(text) {
+    let hash = 0x811c9dc5;
+    for (let index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 0x01000193);
+    }
+    return hash >>> 0;
+  }
+
+  function snapshotHash(snapshot) {
+    const json = JSON.stringify(snapshot);
+    return `${fnv1a32(json).toString(16)}${fnv1a32(`${json}:${json.length}`).toString(16)}`;
+  }
+
+  function ensurePoolSnapshot(projectDoc, snapshot) {
+    const pool = projectDoc.candidatePool || (projectDoc.candidatePool = {});
+    const hash = snapshotHash(snapshot);
+    if (!pool[hash]) pool[hash] = clone(snapshot);
+    return hash;
+  }
+
+  // Packs a look for storage: clip snapshots move into the pool and the look
+  // keeps only their hashes. Already-packed (string) references pass through.
+  function packLook(projectDoc, look) {
+    if (!look || look.clips === undefined) return clone(look);
+    const out = clone(look);
+    const packed = {};
+    for (const [clipId, value] of Object.entries(look.clips)) {
+      if (typeof value === 'string') packed[clipId] = value;
+      else if (value) packed[clipId] = ensurePoolSnapshot(projectDoc, value);
+    }
+    out.clips = packed;
+    return out;
+  }
+
+  // Resolves a packed clip reference through the pool (a hash missing from the
+  // pool — a trimmed or hand-edited file — skips that clip).
+  function resolvePoolSnapshot(projectDoc, reference) {
+    if (reference == null) return null;
+    if (typeof reference !== 'string') return reference;
+    const pool = projectDoc.candidatePool || {};
+    return pool[reference] || null;
+  }
+
+  // Drops the pool entries no stored candidate references any more. Called after
+  // a remove / trim, and when orphan candidates are pruned.
+  function pruneCandidatePool(projectDoc) {
+    const pool = projectDoc && projectDoc.candidatePool;
+    if (!pool || typeof pool !== 'object') return;
+    const used = new Set();
+    for (const entry of Object.values(projectDoc.beatCandidates || {})) {
+      for (const item of (entry && entry.items) || []) {
+        const clips = item && item.look && item.look.clips;
+        if (!clips) continue;
+        for (const reference of Object.values(clips)) {
+          if (typeof reference === 'string') used.add(reference);
+        }
+      }
+    }
+    for (const hash of Object.keys(pool)) if (!used.has(hash)) delete pool[hash];
+  }
 
   function beatLookOf(projectDoc, cueId, beatId) {
     const clip = collectStyleClipboard(projectDoc, beatPathOf(cueId, beatId));
     if (!clip) return null;
     const beat = findBeat(projectDoc, cueId, beatId);
+    // the clips that follow the lyrics' palette (backdrop, filler, figure ...)
+    // under the beat: a palette candidate repaints them, so a look keeps their
+    // colours too, and choosing the original puts them back
+    const clips = {};
+    if (beat) {
+      for (const managed of overlappingManagedClips(projectDoc, Number(beat.start) || 0, Number(beat.end) || 0)) {
+        clips[managed.id] = { spec: clone(managed.spec), colors: clone(managed.colors) };
+      }
+    }
     return {
       beatBag: clip.beatBag,
       overrides: clip.overrides,
       keyframes: clip.keyframes,
       variation: beat && Number(beat.variation) ? Number(beat.variation) : 0,
       fontScale: beat && beat.fontScale != null ? beat.fontScale : null,
+      clips,
     };
+  }
+
+  function overlappingManagedClips(projectDoc, start, end) {
+    const managed = new Set((projectDoc.tracks || []).filter((track) => MANAGED_TRACK_KINDS.includes(track.kind)).map((track) => track.id));
+    return (projectDoc.clips || []).filter((clip) => managed.has(clip.trackId) && clip.start < end - 1e-4 && clip.end > start + 1e-4);
   }
 
   function applyBeatLookDoc(projectDoc, cueId, beatId, look) {
@@ -488,10 +624,46 @@ SA.store = (() => {
     else delete beat.variation;
     if (look.fontScale != null) beat.fontScale = look.fontScale;
     else delete beat.fontScale;
+    // looks stored before the clips were recorded carry none: leave the clips
+    if (look.clips) {
+      for (const [clipId, reference] of Object.entries(look.clips)) {
+        const saved = resolvePoolSnapshot(projectDoc, reference);
+        if (!saved) continue;
+        const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
+        if (!target) continue;
+        if (saved.spec !== undefined) target.spec = clone(saved.spec);
+        if (saved.colors !== undefined) target.colors = clone(saved.colors);
+        else delete target.colors;
+      }
+    }
+  }
+
+  // Looks recorded before the clips were part of a look compare without them.
+  // Stored looks keep their clips packed (hashes) and a live beatLookOf is
+  // unpacked, so the clips are normalised to hashes before the comparison.
+  function normalizedClips(clips) {
+    if (clips === undefined) return undefined;
+    const out = {};
+    for (const [clipId, value] of Object.entries(clips || {})) {
+      out[clipId] = typeof value === 'string' ? value : snapshotHash(value);
+    }
+    return out;
   }
 
   function sameLook(a, b) {
-    return JSON.stringify(a) === JSON.stringify(b);
+    if ((a && a.clips === undefined) || (b && b.clips === undefined)) {
+      const strip = (look) => {
+        if (!look || look.clips === undefined) return look;
+        const { clips: _clips, ...rest } = look;
+        return rest;
+      };
+      return JSON.stringify(strip(a)) === JSON.stringify(strip(b));
+    }
+    const norm = (look) => {
+      const { clips, ...rest } = look;
+      return { ...rest, clips: normalizedClips(clips) };
+    };
+    return JSON.stringify(norm(a)) === JSON.stringify(norm(b));
   }
 
   function candidateEntry(projectDoc, beatId, create) {
@@ -500,33 +672,100 @@ SA.store = (() => {
       projectDoc.beatCandidates = {};
     }
     let entry = projectDoc.beatCandidates[beatId];
-    if (!entry && create) entry = projectDoc.beatCandidates[beatId] = { items: [], activeId: null, seq: 0 };
+    if (!entry && create) entry = projectDoc.beatCandidates[beatId] = { items: [], seq: 0 };
     return entry || null;
   }
 
-  function pushCandidate(entry, look, kind) {
+  // The cue a beat id belongs to: the stored list that holds it, else the id's
+  // own prefix (beat ids are `${cueId}:${kind}${index}`).
+  function cueIdOfBeat(projectDoc, beatId) {
+    if (!projectDoc || !projectDoc.beats) return null;
+    for (const [cueId, list] of Object.entries(projectDoc.beats)) {
+      if (Array.isArray(list) && list.some((beat) => beat && beat.id === beatId)) return cueId;
+    }
+    const at = String(beatId || '').indexOf(':');
+    return at > 0 ? String(beatId).slice(0, at) : null;
+  }
+
+  function liveLookOfBeat(projectDoc, cueId, beatId) {
+    const beat = findBeat(projectDoc, cueId, beatId);
+    if (beat) return beatLookOf(projectDoc, cueId, beatId);
+    const cue = (projectDoc.script && projectDoc.script.cues || []).find((entry) => entry.id === cueId);
+    const synthetic = cue && typeof SA !== 'undefined' && SA.lyricsEngine ? SA.lyricsEngine.beatForCue(cue) : null;
+    if (!synthetic || synthetic.id !== beatId) return beatLookOf(projectDoc, cueId, beatId);
+    // a synthetic beat has no stored style bag: its look is the empty beat look
+    // plus the managed clips under it
+    const clips = {};
+    for (const managed of overlappingManagedClips(projectDoc, Number(synthetic.start) || 0, Number(synthetic.end) || 0)) {
+      clips[managed.id] = { spec: clone(managed.spec), colors: clone(managed.colors) };
+    }
+    return { beatBag: {}, overrides: {}, keyframes: {}, variation: 0, fontScale: null, clips };
+  }
+
+  // The candidate the beat currently wears: the first item whose look equals the
+  // live look, or null when the beat was edited by hand since (the UI then shows
+  // no active cell). Never stored.
+  function activeCandidateId(projectDoc, beatId, entry) {
+    if (!entry || !entry.items.length) return null;
+    const cueId = cueIdOfBeat(projectDoc, beatId);
+    const current = cueId ? liveLookOfBeat(projectDoc, cueId, beatId) : null;
+    if (!current) return entry.items[0].id;
+    const found = entry.items.find((item) => sameLook(item.look, current));
+    return found ? found.id : null;
+  }
+
+  // Every beat of the song in cue order, stored beats or the one synthetic beat
+  // of a cue that has none yet (the same view the board and the candidate tab
+  // use).
+  function allBeatRefs(projectDoc) {
+    const out = [];
+    const cues = (projectDoc.script && projectDoc.script.cues) || [];
+    for (const cue of cues) {
+      let list = (projectDoc.beats && projectDoc.beats[cue.id]) || [];
+      if (!list.length && typeof SA !== 'undefined' && SA.lyricsEngine && SA.lyricsEngine.beatForCue) {
+        const synthetic = SA.lyricsEngine.beatForCue(cue);
+        if (synthetic) list = [synthetic];
+      }
+      for (const beat of list) out.push({ cueId: cue.id, beatId: beat.id });
+    }
+    return out;
+  }
+
+  function touchCandidates() {
+    state.candidateRev = (Number(state.candidateRev) || 0) + 1;
+  }
+
+  function pushCandidate(projectDoc, entry, look, kind) {
     entry.seq = (Number(entry.seq) || 0) + 1;
-    const item = { id: `c${entry.seq}`, kind, label: '', pinned: kind === 'original', look: clone(look) };
+    const item = { id: `c${entry.seq}`, kind, label: '', pinned: kind === 'original', look: packLook(projectDoc, look) };
     entry.items.push(item);
     return item;
   }
 
   // keeps the list bounded: the oldest unpinned, inactive extras go first
-  function trimCandidates(entry) {
+  // what a regeneration keeps: the original, the pinned ones and the one on the
+  // beat right now. Everything else is dropped to make room for the new draw.
+  function isKeptCandidate(item, activeId) {
+    return item.kind === 'original' || !!item.pinned || item.id === activeId;
+  }
+
+  function trimCandidates(projectDoc, beatId, entry) {
+    const activeId = activeCandidateId(projectDoc, beatId, entry);
     while (entry.items.length > CANDIDATE_LIMIT) {
-      const index = entry.items.findIndex((item) => item.kind !== 'original' && !item.pinned && item.id !== entry.activeId);
+      const index = entry.items.findIndex((item) => item.kind !== 'original' && !item.pinned && item.id !== activeId);
       if (index < 0) break;
       entry.items.splice(index, 1);
     }
+    pruneCandidatePool(projectDoc);
   }
 
-  // the first touch records the current look as the original and marks it active
+  // the first touch records the current look as the original
   function ensureCandidateBase(projectDoc, cueId, beatId) {
     materializeBeat(projectDoc, cueId, beatId);
     const entry = candidateEntry(projectDoc, beatId, true);
     if (!entry.items.length) {
       const look = beatLookOf(projectDoc, cueId, beatId);
-      if (look) entry.activeId = pushCandidate(entry, look, 'original').id;
+      if (look) pushCandidate(projectDoc, entry, look, 'original');
     }
     return entry;
   }
@@ -538,12 +777,14 @@ SA.store = (() => {
   function beginTransaction(label) {
     if (!state.project) return false;
     if (!transaction) {
+      const before = candidateFreeClone(state.project);
       transaction = {
         depth: 0,
         label: label || 'edit',
         areas: [],
-        before: clone(state.project),
-        beforeJson: JSON.stringify(state.project),
+        before,
+        beforeJson: JSON.stringify(before),
+        beforeCand: state.candidateRev,
         selectionBefore: selectionSnapshot(),
       };
     }
@@ -557,11 +798,22 @@ SA.store = (() => {
     if (transaction.depth > 0) return false;
     const active = transaction;
     transaction = null;
-    if (active.beforeJson === JSON.stringify(state.project)) return false;
+    const after = candidateFreeClone(state.project);
+    const changedProject = active.beforeJson !== JSON.stringify(after);
+    const changedCandidates = active.beforeCand !== state.candidateRev;
+    if (!changedProject) {
+      // a candidate-only transaction never reaches the history
+      if (!changedCandidates) return false;
+      dirtyFlag = true;
+      coalesce = { key: null, time: 0 };
+      bump(active.areas.length ? active.areas : ['project']);
+      emit();
+      return false;
+    }
     pushEntry({
       label: active.label,
       before: active.before,
-      after: clone(state.project),
+      after,
       areas: active.areas.length ? active.areas : ['project'],
       selectionBefore: active.selectionBefore,
       selectionAfter: selectionSnapshot(),
@@ -576,7 +828,9 @@ SA.store = (() => {
     if (!transaction) return false;
     const active = transaction;
     transaction = null;
-    state.project = active.before;
+    const liveCandidates = state.project.beatCandidates;
+    const livePool = state.project.candidatePool;
+    state.project = attachCandidates(candidateFreeClone(active.before), liveCandidates, livePool);
     restoreSelection(active.selectionBefore);
     bump(AREAS);
     emit();
@@ -590,7 +844,9 @@ SA.store = (() => {
     // a new edit right after a history jump must not coalesce into the entry
     // that happens to sit on top (its key is stale) nor keep a stale redo
     coalesce = { key: null, time: 0 };
-    state.project = clone(entry.before);
+    const liveCandidates = state.project.beatCandidates;
+    const livePool = state.project.candidatePool;
+    state.project = attachCandidates(candidateFreeClone(entry.before), liveCandidates, livePool);
     restoreSelection(entry.selectionBefore);
     bump(AREAS);
     emit();
@@ -603,7 +859,9 @@ SA.store = (() => {
     undoStack.push(entry);
     // same as undo: an edit after redo is a fresh history step
     coalesce = { key: null, time: 0 };
-    state.project = clone(entry.after);
+    const liveCandidates = state.project.beatCandidates;
+    const livePool = state.project.candidatePool;
+    state.project = attachCandidates(candidateFreeClone(entry.after), liveCandidates, livePool);
     restoreSelection(entry.selectionAfter);
     bump(AREAS);
     emit();
@@ -658,6 +916,7 @@ SA.store = (() => {
 
   function markClean() {
     savedId = topEntryId();
+    dirtyFlag = false;
   }
 
   function touch(areas) {
@@ -666,7 +925,7 @@ SA.store = (() => {
   }
 
   function isDirty() {
-    return topEntryId() !== savedId;
+    return dirtyFlag || topEntryId() !== savedId;
   }
 
   function findCue(cueId) {
@@ -1314,9 +1573,9 @@ SA.store = (() => {
   // Each axis owns the beatBag keys a roll of that axis may change. A key no
   // axis owns (text size, background, ornaments…) always travels with the
   // caller's base, so a "colour only" roll never disturbs anything else.
-  const BEAT_AXES = ['color', 'font', 'effects', 'placement'];
+  const BEAT_AXES = ['color', 'font', 'effects', 'placement', 'clones'];
   const BEAT_AXIS_KEYS = {
-    color: BEAT_COLOR_KEYS.map((key) => [key]),
+    color: [...BEAT_COLOR_KEYS.map((key) => [key]), ['color']],
     font: [['text', 'fontId'], ['text', 'weight']],
     placement: [
       ['text', 'align'],
@@ -1327,6 +1586,8 @@ SA.store = (() => {
       ['location'],
     ],
     effects: [['enter'], ['exit'], ['hold'], ['animation'], ['fill'], ['edge'], ['post'], ['repeat']],
+    // the clone family (the string again, in parallel) is its own switch
+    clones: [['clones']],
   };
 
   // Every axis is on when the caller does not narrow the set.
@@ -1389,6 +1650,9 @@ SA.store = (() => {
       }
     }
     out.beatBag = bag;
+    const clipSource = axes.has('color') ? look : baseLook;
+    if (clipSource && clipSource.clips !== undefined) out.clips = clone(clipSource.clips);
+    else delete out.clips;
     return out;
   }
 
@@ -1441,6 +1705,7 @@ SA.store = (() => {
   function mixLookAxes(baseLook, take) {
     const out = clone(baseLook);
     out.beatBag = clone(baseLook.beatBag || {});
+    if (take && take.color && take.color.clips !== undefined) out.clips = clone(take.color.clips);
     for (const axis of BEAT_AXES) {
       const source = take && take[axis];
       if (!source) continue;
@@ -2858,9 +3123,42 @@ SA.store = (() => {
       return styleClipboard ? styleClipboard.srcPath : '';
     },
     // --- beat candidates: generate / apply / keep -------------------------------
+    // `{ items, activeId }` with activeId derived from the beat's current look
+    // (the item whose look matches it), never stored.
     candidatesOf(beatId) {
       const entry = state.project && candidateEntry(state.project, beatId, false);
-      return entry && entry.items.length ? entry : null;
+      if (!entry || !entry.items.length) return null;
+      return { items: entry.items, activeId: activeCandidateId(state.project, beatId, entry), seq: entry.seq };
+    },
+    // Record the beat's current look as candidate 0 for every beat that has no
+    // candidate list yet, in one command. A no-op (no notify, no history) when
+    // nothing is missing; otherwise a candidate-only edit (dirty, no undo).
+    ensureAllOriginals() {
+      if (!state.project) return 0;
+      const refs = allBeatRefs(state.project);
+      const missing = refs.some((ref) => {
+        const entry = candidateEntry(state.project, ref.beatId, false);
+        return !entry || !entry.items.length;
+      });
+      if (!missing) return 0;
+      let made = 0;
+      dispatch({
+        label: 'init candidates',
+        areas: ['project'],
+        do(projectDoc) {
+          for (const ref of refs) {
+            const entry = candidateEntry(projectDoc, ref.beatId, false);
+            if (entry && entry.items.length) continue;
+            const look = liveLookOfBeat(projectDoc, ref.cueId, ref.beatId);
+            if (!look) continue;
+            const target = candidateEntry(projectDoc, ref.beatId, true);
+            pushCandidate(projectDoc, target, look, 'original');
+            made += 1;
+          }
+          if (made) touchCandidates();
+        },
+      });
+      return made;
     },
     // Rolls `count` looks for one beat on scratch copies and appends them to
     // the beat's candidate list. mode: 'near' keeps the effect types (new
@@ -2869,9 +3167,16 @@ SA.store = (() => {
     generateCandidates(cueId, beatId, options) {
       if (!state.project || !findCue(cueId) || typeof SA === 'undefined' || !SA.random || !SA.moods) return 0;
       const opts = options || {};
-      const count = Math.max(1, Math.min(12, Math.floor(Number(opts.count) || 6)));
+      let count = Math.max(1, Math.min(12, Math.floor(Number(opts.count) || 6)));
       const mode = opts.mode === 'near' || opts.mode === 'far' ? opts.mode : 'mixed';
       const axes = axesSetOf(opts.axes);
+      // a new draw replaces the rest: only the kept candidates (original,
+      // pinned, the one in use) stay, and the limit counts them
+      const entryNow = candidateEntry(state.project, beatId, false);
+      const activeNow = entryNow ? activeCandidateId(state.project, beatId, entryNow) : null;
+      const keptNow = entryNow ? entryNow.items.filter((item) => isKeptCandidate(item, activeNow)).length : 0;
+      count = Math.min(count, CANDIDATE_LIMIT - Math.max(1, keptNow));
+      if (count < 1) return 0;
       const base = clone(state.project);
       materializeBeat(base, cueId, beatId);
       const baseLook = beatLookOf(base, cueId, beatId);
@@ -2883,6 +3188,15 @@ SA.store = (() => {
       const colorChoices = axes.has('color') ? colorChoicesOf(base, cueId) : [];
       const colorOf = (look) => JSON.stringify(colorKeysOf(look && look.beatBag));
       const usedColors = new Set(known.map(colorOf));
+      // the colour axis switches the beat's whole palette: nothing is coloured
+      // on its own, the text and the backdrop / filler clips under the beat all
+      // follow the palette
+      const beatTarget = paletteScope({ cueId, beatId });
+      const fromColors = axes.has('color') ? paletteColorsAt(base, beatTarget.path) : [];
+      const baseBeat = findBeat(base, cueId, beatId);
+      const beatSpan = { start: Number(baseBeat && baseBeat.start) || 0, end: Number(baseBeat && baseBeat.end) || 0 };
+      const cloneMaker = axes.has('clones') && SA.direct && typeof SA.direct.clonesFor === 'function' ? SA.direct.clonesFor : null;
+      const seedBase = Math.floor(Math.random() * 900000) + 1000;
       const looks = [];
       for (let index = 0; index < count * 2 && looks.length < count; index += 1) {
         const far = mode === 'far' || (mode === 'mixed' && index % 2 === 1);
@@ -2893,9 +3207,24 @@ SA.store = (() => {
         } catch {
           continue;
         }
+        let paletteDrawn = false;
+        if (axes.has('color')) {
+          const palette = drawPalette(fromColors, 4);
+          if (palette && Array.isArray(palette.colors) && palette.colors.length) {
+            applyPalette(trial, beatTarget, palette, { clips: false });
+            recolorClips(overlappingManagedClips(trial, beatSpan.start, beatSpan.end), fromColors, palette.colors);
+            paletteDrawn = true;
+          }
+        }
         const rolled = beatLookOf(trial, cueId, beatId);
         let look = rolled && restrictLookAxes(baseLook, rolled, axes);
-        if (look && colorChoices.length) {
+        const random = SA.rng.rngFor(seedBase, 'candidate', String(index));
+        // every third candidate carries a clone family of its own
+        if (look && cloneMaker && looks.length % 3 === 1) {
+          look.beatBag = look.beatBag || {};
+          look.beatBag.clones = cloneMaker(random, 0.5 + random() * 0.5);
+        }
+        if (look && !paletteDrawn && colorChoices.length) {
           const fresh = colorChoices.filter((choice) => !usedColors.has(JSON.stringify(choice)));
           const pool = fresh.length ? fresh : colorChoices.filter((choice) => JSON.stringify(choice) !== colorOf(baseLook));
           if (pool.length) {
@@ -2914,8 +3243,11 @@ SA.store = (() => {
         areas: ['project'],
         do(projectDoc) {
           const target = ensureCandidateBase(projectDoc, cueId, beatId);
-          for (const added of looks) pushCandidate(target, added.look, added.kind);
-          trimCandidates(target);
+          const inUse = activeCandidateId(projectDoc, beatId, target);
+          target.items = target.items.filter((item) => isKeptCandidate(item, inUse));
+          for (const added of looks) pushCandidate(projectDoc, target, added.look, added.kind);
+          trimCandidates(projectDoc, beatId, target);
+          touchCandidates();
         },
       });
       return looks.length;
@@ -2936,11 +3268,11 @@ SA.store = (() => {
           if (!item) return;
           const current = beatLookOf(projectDoc, cueId, beatId);
           if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
-            pushCandidate(entry, current, 'previous');
+            pushCandidate(projectDoc, entry, current, 'previous');
           }
           applyBeatLookDoc(projectDoc, cueId, beatId, item.look);
-          entry.activeId = item.id;
-          trimCandidates(entry);
+          trimCandidates(projectDoc, beatId, entry);
+          touchCandidates();
           applied = true;
         },
       });
@@ -2963,7 +3295,8 @@ SA.store = (() => {
           const entry = candidateEntry(projectDoc, beatId, false);
           if (!entry) return;
           const itemOf = (candidateId) => entry.items.find((candidate) => candidate.id === candidateId);
-          const baseItem = itemOf(opts.base) || itemOf(entry.activeId) || entry.items[0];
+          const activeId = activeCandidateId(projectDoc, beatId, entry);
+          const baseItem = itemOf(opts.base) || itemOf(activeId) || entry.items[0];
           if (!baseItem) return;
           const take = {};
           for (const axis of BEAT_AXES) {
@@ -2973,12 +3306,12 @@ SA.store = (() => {
           const look = mixLookAxes(baseItem.look, take);
           const current = beatLookOf(projectDoc, cueId, beatId);
           if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
-            pushCandidate(entry, current, 'previous');
+            pushCandidate(projectDoc, entry, current, 'previous');
           }
-          const item = pushCandidate(entry, look, 'saved');
+          const item = pushCandidate(projectDoc, entry, look, 'saved');
           applyBeatLookDoc(projectDoc, cueId, beatId, look);
-          entry.activeId = item.id;
-          trimCandidates(entry);
+          trimCandidates(projectDoc, beatId, entry);
+          touchCandidates();
           id = item.id;
         },
       });
@@ -2997,12 +3330,12 @@ SA.store = (() => {
           if (!current) return;
           const same = entry.items.find((candidate) => sameLook(candidate.look, current));
           if (same) {
-            entry.activeId = same.id;
             id = same.id;
+            // the list did not change: no revision bump, no notify
             return;
           }
-          const item = pushCandidate(entry, current, 'saved');
-          entry.activeId = item.id;
+          const item = pushCandidate(projectDoc, entry, current, 'saved');
+          touchCandidates();
           id = item.id;
         },
       });
@@ -3018,7 +3351,8 @@ SA.store = (() => {
           const index = entry.items.findIndex((item) => item.id === candidateId);
           if (index < 0 || entry.items[index].kind === 'original') return; // the original stays
           entry.items.splice(index, 1);
-          if (entry.activeId === candidateId) entry.activeId = null;
+          pruneCandidatePool(projectDoc);
+          touchCandidates();
         },
       });
     },
@@ -3029,7 +3363,10 @@ SA.store = (() => {
         do(projectDoc) {
           const entry = candidateEntry(projectDoc, beatId, false);
           const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
-          if (item && item.kind !== 'original') item.pinned = !item.pinned;
+          if (item && item.kind !== 'original') {
+            item.pinned = !item.pinned;
+            touchCandidates();
+          }
         },
       });
     },

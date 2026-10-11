@@ -3566,6 +3566,7 @@
     directCue,
     directBeat,
     composeBeat,
+    clonesFor,
     backgroundClip,
     backdropClipFor,
     backdropClips,
