@@ -877,7 +877,7 @@ const preview = (() => {
     if (!engine) return false;
     if (box.raf) cancelFrame(box.raf);
     if (box.run) box.run.onStop = null;
-    if (SA.textflow) SA.textflow.apply(doc);
+    // (no textflow pass: the doc is a copy of the live, already flowed project)
     engine.resize(width, height);
     engine.setProject(doc);
     engine.setAssets({ fonts: fonts || [] });
@@ -938,7 +938,9 @@ const preview = (() => {
       cap = { engine, doc: null };
     }
     const engine = cap.engine;
-    if (SA.textflow) SA.textflow.apply(doc);
+    // no textflow pass here: the scratch copy comes from the live project,
+    // whose beats are already flowed, and a look never changes the text
+    // structure. (The pass costs ~250 ms per shot over the whole project.)
     engine.resize(width, height);
     if (cap.doc !== doc) {
       engine.setProject(doc);
