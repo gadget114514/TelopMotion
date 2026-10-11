@@ -395,6 +395,12 @@ SA.store = (() => {
     savedId = null;
     dirtyFlag = false;
     state.candidateRev = 0;
+    // an old file may carry 'previous' candidates that repeat another look
+    try {
+      dedupeCandidates(project);
+    } catch {
+      /* a malformed candidate list must not stop the load */
+    }
     // a different document: the candidate UI drops everything it cached
     state.projectEpoch = (Number(state.projectEpoch) || 0) + 1;
     bump(['project', 'style', 'script', 'overrides', 'keyframes', 'media', 'fillers', 'credits']);
@@ -666,6 +672,40 @@ SA.store = (() => {
       return { ...rest, clips: normalizedClips(clips) };
     };
     return JSON.stringify(norm(a)) === JSON.stringify(norm(b));
+  }
+
+  // The look without the backdrop / filler clip snapshots: those follow global
+  // palette changes, so a beat can drift from its recorded look by clip colours
+  // alone. Such a drift is not a look of its own worth keeping.
+  function sameLookCore(a, b) {
+    const core = (look) => {
+      if (!look) return look;
+      const { clips: _clips, ...rest } = look;
+      return rest;
+    };
+    return JSON.stringify(core(a)) === JSON.stringify(core(b));
+  }
+
+  // Drops the 'previous' candidates that only repeat another candidate's look
+  // (clip colours aside). The original, pinned and in-use ones always stay.
+  function dedupeCandidates(projectDoc) {
+    const all = projectDoc && projectDoc.beatCandidates;
+    if (!all || typeof all !== 'object') return 0;
+    let removed = 0;
+    for (const [beatId, entry] of Object.entries(all)) {
+      if (!entry || !Array.isArray(entry.items) || entry.items.length < 2) continue;
+      const activeId = activeCandidateId(projectDoc, beatId, entry);
+      const kept = [];
+      for (const item of entry.items) {
+        const repeat = item.kind === 'previous' && !item.pinned && item.id !== activeId
+          && kept.some((other) => sameLookCore(other.look, item.look));
+        if (repeat) removed += 1;
+        else kept.push(item);
+      }
+      if (kept.length !== entry.items.length) entry.items = kept;
+    }
+    if (removed) pruneCandidatePool(projectDoc);
+    return removed;
   }
 
   function candidateEntry(projectDoc, beatId, create) {
@@ -3269,7 +3309,7 @@ SA.store = (() => {
           const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
           if (!item) return;
           const current = beatLookOf(projectDoc, cueId, beatId);
-          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
+          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current) || sameLookCore(candidate.look, current))) {
             pushCandidate(projectDoc, entry, current, 'previous');
           }
           applyBeatLookDoc(projectDoc, cueId, beatId, item.look);
@@ -3321,7 +3361,7 @@ SA.store = (() => {
           }
           const look = mixLookAxes(baseItem.look, take);
           const current = beatLookOf(projectDoc, cueId, beatId);
-          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
+          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current) || sameLookCore(candidate.look, current))) {
             pushCandidate(projectDoc, entry, current, 'previous');
           }
           const item = pushCandidate(projectDoc, entry, look, 'saved');

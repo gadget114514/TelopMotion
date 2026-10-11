@@ -408,3 +408,23 @@ test('loading another project bumps the epoch the candidate UI resets on', () =>
   assert.equal(store.state.projectEpoch, first + 1);
   assert.equal(store.commands.candidatesOf(BEAT), null);
 });
+
+test('loading drops a previous candidate that only differs by clip colours', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  const doc = snapshot();
+  const entry = doc.beatCandidates[BEAT];
+  const original = entry.items.find((item) => item.kind === 'original');
+  const twin = JSON.parse(JSON.stringify(original));
+  twin.id = 'c99';
+  twin.kind = 'previous';
+  twin.pinned = false;
+  twin.look.clips = { clip1: 'ffffffffffffffff' };
+  entry.items.push(twin);
+  const before = entry.items.length;
+  store.load(doc);
+  const after = store.commands.candidatesOf(BEAT);
+  assert.equal(after.items.length, before - 1);
+  assert.equal(after.items.some((item) => item.id === 'c99'), false);
+  assert.equal(after.items.some((item) => item.kind === 'original'), true);
+});
