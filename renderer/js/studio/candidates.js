@@ -1343,6 +1343,27 @@ SA.candidates = (() => {
       });
       menu.appendChild(adopt);
     }
+    if (holder.classList.contains('board-adopted')) {
+      // the adopted slot: shoot the beat as it is now (one column, or all)
+      const one = node('button', 'menu-item', t('studio.media.candRefreshAdopted'));
+      one.type = 'button';
+      one.addEventListener('click', () => {
+        hideBoardMenu();
+        thumbs.delete(adoptedKeyFor(col));
+        boardGen += 1;
+        scheduleBoard();
+      });
+      menu.appendChild(one);
+      const all = node('button', 'menu-item', t('studio.media.candRefreshAdoptedAll'));
+      all.type = 'button';
+      all.addEventListener('click', () => {
+        hideBoardMenu();
+        for (const column of boardModel ? boardModel.cols : []) thumbs.delete(adoptedKeyFor(column));
+        boardGen += 1;
+        scheduleBoard();
+      });
+      menu.appendChild(all);
+    }
     if (picked) {
       const refresh = node('button', 'menu-item', t('studio.media.candRefreshThumb'));
       refresh.type = 'button';
