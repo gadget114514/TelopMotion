@@ -47,11 +47,9 @@ const projectModule = SA.project;
 const FIXTURE = JSON.parse(fs.readFileSync(path.join(__dirname, 'fixtures', 'direct-w0.json'), 'utf8'));
 
 // text <-> background: 12 fixed slots (mid A/B/C/D, text, accent, edge,
-// text-bg, figure A/B, spare, glow). The backdrop plane (slot 2) sits at a mid
-// grey: after the text <-> background swap it has to hold the contrast against
-// a dark text as well as against the light one it was drawn for, which a dark
-// plane cannot do without losing its character.
-const SWAP_BG = ['#210b24', '#3e1837', '#767676', '#040a06', '#fff0d4', '#d13f94', '#86285f', '#1f1d1b', '#662b26', '#266166', '#50233a', '#d13f94'];
+// text-bg, figure A/B, spare, glow). Generated once via upgradeColors from a
+// 10-slot seed, which yields viable schemes under the 12-slot contract.
+const SWAP_BG = ['#210b24', '#3e1837', '#1a240b', '#040a06', '#fff0d4', '#d13f94', '#86285f', '#1f1d1b', '#662b26', '#266166', '#50233a', '#d13f94'];
 // text <-> backdrop: a second 12-slot palette
 const SWAP_MID = ['#000000', '#0a0904', '#808080', '#102e31', '#d8ffd4', '#d1a53f', '#4a3a10', '#1b1f1b', '#4f6626', '#4c3080', '#1a1c0c', '#d1a53f'];
 
@@ -136,8 +134,8 @@ function styleDoc() {
     },
     beatKindStyle: {},
     beatStyles: { b1: { colorScheme: 'BTMD' }, b2: {} },
-    // a calm theme: the beat schemes swap whole roles, which only holds the
-    // contrast contract at a low weird (the floors rise with it)
+    // a calm theme: the text <-> backdrop swap only holds the contrast
+    // contract at a low weird (the floors rise with it)
     styleMode: { axes: { weird: 0 } },
     overrides: {},
   };
@@ -443,7 +441,9 @@ function stageDoc() {
     cueStyles: { c1: { palette: { id: 'cue1', name: 'cue1', colors: STAGE_CUE, auto: true } }, c2: {} },
     beatKindStyle: {},
     beatStyles: { 'c1:page0': { colorScheme: STAGE_SCHEME.id } },
-    styleMode: { axes: { weird: 0.7 } },
+    // a calm theme: the text <-> backdrop swap only holds the contrast
+    // contract at a low weird (the floors rise with it)
+    styleMode: { axes: { weird: 0 } },
     overrides: {},
     id: STAGE_ID,
   };
@@ -525,4 +525,16 @@ test('a calm scheme range keeps only the readable role swaps', () => {
   const full = roles.schemes(SWAP_BG, 0.7);
   assert.deepEqual(roles.schemes(SWAP_BG, 0.7, 1).map((entry) => entry.id), full.map((entry) => entry.id));
   assert.deepEqual(roles.schemes(SWAP_BG, 0.7, undefined).map((entry) => entry.id), full.map((entry) => entry.id));
+});
+
+test('the text <-> background swap resolves on generated palettes at every weird', () => {
+  for (const weird of [0, 0.5, 0.7, 1]) {
+    for (let seed = 0; seed < 40; seed += 1) {
+      const palette = SA.moods.generatePalette(SA.rng.rngFor(seed, 'tmbd'), { weird }, 'swap');
+      const swapped = roles.applyScheme(palette.colors, roles.SCHEME_INVERT, weird);
+      assert.ok(swapped, `TMBD fails at weird ${weird}, seed ${seed}`);
+      assert.equal(swapped[roles.SLOT.TEXT_FILL], palette.colors[roles.SLOT.MID_A]);
+      assert.equal(swapped[roles.SLOT.MID_A], palette.colors[roles.SLOT.TEXT_FILL]);
+    }
+  }
 });

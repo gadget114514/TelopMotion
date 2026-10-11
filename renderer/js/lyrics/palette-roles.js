@@ -392,6 +392,35 @@
     }
   }
 
+  // The nearest lightness of `hex` (same hue, saturation lowered only when it has to be) whose contrast is
+  // at least `textRatio` against `text` and `groundRatio` against `ground`;
+  // null when no lightness does.
+  function fitPlane(hex, text, ground, textRatio, groundRatio) {
+    let hsv;
+    try {
+      hsv = color.rgbToHsv(color.parse(hex));
+    } catch {
+      return null;
+    }
+    let best = null;
+    let bestGap = Infinity;
+    // lightness first, then desaturate: a saturated blue cannot get light
+    // enough to clear a dark text without washing out
+    for (const keep of [1, 0.75, 0.5, 0.25, 0]) {
+      for (let step = 0; step <= 100; step += 1) {
+        const v = step / 100;
+        const candidate = color.toHex({ ...color.hsvToRgb({ h: hsv.h, s: hsv.s * keep, v, a: 1 }), a: 1 });
+        if (contrast(candidate, text) < textRatio - 1e-6 || contrast(candidate, ground) < groundRatio - 1e-6) continue;
+        const gap = Math.abs(v - hsv.v) + (1 - keep) * 0.5;
+        if (gap < bestGap) {
+          bestGap = gap;
+          best = candidate;
+        }
+      }
+    }
+    return best;
+  }
+
   // The repaired palette must hold the pairs the renderer relies on. `move` is
   // the role the repair is allowed to nudge; the text (T) is never moved.
   // `contrastFloor` is the theme's pinned text floor (null = weird axis).
@@ -433,8 +462,14 @@
     const holds = () => pairs.every(({ a, b, ratio }) => contrast(next[slots[a]], next[slots[b]]) >= ratio - 1e-6);
     const before = new Map();
     const moved = new Set();
+    // How far a repaired colour may travel in lightness. The backdrop plane
+    // sits on the ground side, so a text <-> background swap legitimately
+    // flips it (a dark plane under a light text turns light under the dark
+    // text that replaces it); every other role keeps its character.
+    const limit = new Map();
     const moveSlot = (role, fixedRole, target) => {
       const index = slots[role];
+      limit.set(index, role === 'M' || role === 'H' ? 1 : 0.35);
       if (!moved.has(index)) {
         try {
           before.set(index, color.rgbToHsv(color.parse(next[index])).v);
@@ -442,6 +477,16 @@
           before.set(index, null);
         }
         moved.add(index);
+      }
+      if (role === 'M') {
+        // the plane has to clear the text and keep a step off the ground at
+        // once; repairing the two pairs one after the other just pushes it
+        // back and forth, so search the lightness that holds both
+        const joint = fitPlane(next[index], next[slots.T], next[slots.B], pairs.find((p) => p.b === 'M').ratio, pairs.find((p) => p.a === 'M').ratio);
+        if (joint) {
+          next[index] = joint;
+          return;
+        }
       }
       const fixed = next[slots[fixedRole]];
       let value = color.ensureContrast(next[index], fixed, target);
@@ -460,7 +505,7 @@
       const start = before.get(index);
       if (start == null) return null;
       try {
-        if (Math.abs(color.rgbToHsv(color.parse(next[index])).v - start) > (+process.env.LIM||0.35)) return null;
+        if (Math.abs(color.rgbToHsv(color.parse(next[index])).v - start) > limit.get(index)) return null;
       } catch {
         return null;
       }
