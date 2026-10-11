@@ -3471,6 +3471,39 @@ SA.store = (() => {
       });
       return id;
     },
+    // Makes a candidate the master of its beat. The two swap places, so the
+    // old master is not lost: it takes the candidate's row as a 'previous'
+    // card (removable like any other). The beat itself is not touched.
+    replaceMaster(beatId, candidateId) {
+      if (!state.project) return false;
+      let done = false;
+      dispatch({
+        label: 'replace master',
+        areas: ['project'],
+        do(projectDoc) {
+          const entry = candidateEntry(projectDoc, beatId, false);
+          if (!entry || !Array.isArray(entry.items)) return;
+          const master = entry.items.find((item) => item.kind === 'original');
+          const picked = entry.items.find((item) => item.id === candidateId);
+          if (!master || !picked || picked === master) return;
+          const masterLook = master.look;
+          master.look = picked.look;
+          if (JSON.stringify(masterLook) !== JSON.stringify(master.look)) {
+            picked.look = masterLook;
+            picked.kind = 'previous';
+            picked.pinned = false;
+            picked.label = '';
+          } else {
+            // the same look twice would only be a duplicate
+            entry.items.splice(entry.items.indexOf(picked), 1);
+          }
+          pruneCandidatePool(projectDoc);
+          touchCandidates();
+          done = true;
+        },
+      });
+      return done;
+    },
     // keeps the beat's current look as a candidate of its own
     saveCandidate(cueId, beatId) {
       if (!state.project || !findCue(cueId)) return null;

@@ -840,6 +840,7 @@ SA.candidates = (() => {
   function boardCell(col, index, row) {
     const cell = node('div', 'board-cell');
     cell.dataset.col = String(index);
+    cell.dataset.row = String(row);
     cell.style.left = `${BOARD.label + index * BOARD.col}px`;
     cell.style.top = `${BOARD.head + row * BOARD.row}px`;
     cell.style.width = `${BOARD.col}px`;
@@ -1115,6 +1116,19 @@ SA.candidates = (() => {
     event.preventDefault();
     hideBoardMenu();
     const menu = node('div', 'timeline-menu board-menu');
+    // a candidate cell can also become the master of its beat
+    const row = holder.classList.contains('board-cell') ? holder.dataset.row : null;
+    const picked = row != null && col.entry ? col.entry.items[Number(row)] : null;
+    if (picked && picked.kind !== 'original') {
+      const replace = node('button', 'menu-item', t('studio.media.candReplaceMaster'));
+      replace.type = 'button';
+      replace.addEventListener('click', () => {
+        hideBoardMenu();
+        rollbackHover(true);
+        store().commands.replaceMaster(col.beatId, picked.id);
+      });
+      menu.appendChild(replace);
+    }
     const item = node('button', 'menu-item', t('studio.media.candBoardMoveCursor'));
     item.type = 'button';
     item.addEventListener('click', () => {

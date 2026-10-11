@@ -509,3 +509,27 @@ test('an edit made while the thumbnail transaction is open is not rolled back wi
   assert.equal(store.state.project.script.cues.find((cue) => cue.id === 'c2').start, moved);
   assert.equal(store.canUndo(), true, 'the edit reached the history');
 });
+
+test('replacing the master swaps it with the picked candidate and loses nothing', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 3, mode: 'far' });
+  const entry = store.commands.candidatesOf(BEAT);
+  const master = entry.items.find((item) => item.kind === 'original');
+  const picked = entry.items.find((item) => item.kind !== 'original');
+  const masterLook = JSON.stringify(master.look);
+  const pickedLook = JSON.stringify(picked.look);
+  const count = entry.items.length;
+  const beatBefore = JSON.stringify(store.state.project.beatStyles[BEAT] || {});
+  assert.equal(store.commands.replaceMaster(BEAT, picked.id), true);
+  const after = store.commands.candidatesOf(BEAT);
+  assert.equal(after.items.length, count);
+  const newMaster = after.items.find((item) => item.kind === 'original');
+  assert.equal(newMaster.id, master.id, 'the master card keeps its place and id');
+  assert.equal(JSON.stringify(newMaster.look), pickedLook);
+  const old = after.items.find((item) => item.id === picked.id);
+  assert.equal(old.kind, 'previous');
+  assert.equal(JSON.stringify(old.look), masterLook);
+  // the beat on screen is not touched, and it is not an undo step
+  assert.equal(JSON.stringify(store.state.project.beatStyles[BEAT] || {}), beatBefore);
+  assert.equal(store.commands.replaceMaster(BEAT, master.id), false, 'the master itself is a no-op');
+});
