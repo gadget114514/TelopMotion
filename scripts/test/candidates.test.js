@@ -205,12 +205,53 @@ test('the original cannot be removed; others can; a rolled-back transaction leav
   store.commands.removeCandidate(BEAT, victim.id);
   assert.equal(store.commands.candidatesOf(BEAT).items.some((item) => item.id === victim.id), false);
 
-  const before = JSON.stringify(store.state.project);
+  // (the lists are not part of a rollback: applying swaps two rows, which a
+  // rollback of the look does not undo — only the project itself is compared)
+  const bare = () => {
+    const { beatCandidates: _l, candidatePool: _p, ...rest } = store.state.project;
+    return JSON.stringify(rest);
+  };
+  const before = bare();
   const target = store.commands.candidatesOf(BEAT).items.find((item) => item.kind !== 'original');
   store.beginTransaction('hover');
   store.commands.applyCandidate('c1', BEAT, target.id);
   store.cancelTransaction();
-  assert.equal(JSON.stringify(store.state.project), before);
+  assert.equal(bare(), before);
+});
+
+test('adopting a candidate swaps it with the adopted card and keeps six rows at most', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 6, mode: 'far' });
+  let entry = store.commands.candidatesOf(BEAT);
+  assert.ok(entry.items.length <= 7, `one adopted + six rows (${entry.items.length})`);
+  const master = entry.items.find((item) => item.kind === 'original');
+  const other = entry.items.find((item) => item.kind !== 'original');
+  const otherIndex = entry.items.indexOf(other);
+  const masterIndex = entry.items.indexOf(master);
+  store.commands.applyCandidate('c1', BEAT, other.id);
+  entry = store.commands.candidatesOf(BEAT);
+  // the master (adopted until now) took the picked card's place, and vice versa
+  assert.equal(entry.items.indexOf(master), otherIndex);
+  assert.equal(entry.items.indexOf(other), masterIndex);
+  assert.equal(entry.activeId, other.id);
+});
+
+test('"another candidate" redraws every numbered row but keeps the adopted, pinned and master', () => {
+  store.load(fixture());
+  store.commands.generateCandidates('c1', BEAT, { count: 6, mode: 'far' });
+  let entry = store.commands.candidatesOf(BEAT);
+  const idsBefore = entry.items.map((item) => item.id);
+  const pinned = entry.items.find((item) => item.kind !== 'original');
+  store.commands.toggleCandidatePin(BEAT, pinned.id);
+  store.commands.generateCandidates('c1', BEAT, { count: 6, mode: 'far' });
+  entry = store.commands.candidatesOf(BEAT);
+  assert.ok(entry.items.length <= 7);
+  assert.equal(entry.items.some((item) => item.kind === 'original'), true);
+  assert.equal(entry.items.some((item) => item.id === pinned.id), true);
+  const fresh = entry.items.filter((item) => !idsBefore.includes(item.id));
+  assert.ok(fresh.length >= 1, 'new candidates were drawn');
+  const survivors = entry.items.filter((item) => idsBefore.includes(item.id));
+  assert.deepEqual(survivors.map((item) => item.id).sort(), [pinned.id, entry.items.find((item) => item.kind === 'original').id].sort());
 });
 
 test('generated candidates switch the palette and some carry clones', () => {

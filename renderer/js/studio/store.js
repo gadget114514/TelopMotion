@@ -530,7 +530,8 @@ SA.store = (() => {
   // The active candidate is never stored: it is the item whose look equals the
   // beat's current look, derived on read. That keeps an undo of an apply and a
   // hand-edit consistent without rewriting the list.
-  const CANDIDATE_LIMIT = 15; // per beat
+  // per beat: the adopted card plus 6 numbered candidates
+  const CANDIDATE_LIMIT = 7;
 
   // Storage is packed: a stored look keeps `clips = { [clipId]: hash }` and the
   // one snapshot per hash lives in project.candidatePool, so a clip shared by
@@ -3414,7 +3415,19 @@ SA.store = (() => {
           if (current && !entry.items.some((candidate) => sameLook(candidate.look, current) || sameLookCore(candidate.look, current))) {
             pushCandidate(projectDoc, entry, current, 'previous');
           }
+          // the picked card and the one adopted so far change places: the old
+          // adopted card takes the picked card's row
+          const previousId = activeCandidateId(projectDoc, beatId, entry);
           applyBeatLookDoc(projectDoc, cueId, beatId, item.look);
+          if (previousId && previousId !== item.id) {
+            const from = entry.items.findIndex((candidate) => candidate.id === previousId);
+            const to = entry.items.findIndex((candidate) => candidate.id === item.id);
+            if (from >= 0 && to >= 0) {
+              const swapped = entry.items[from];
+              entry.items[from] = entry.items[to];
+              entry.items[to] = swapped;
+            }
+          }
           trimCandidates(projectDoc, beatId, entry);
           touchCandidates();
           applied = true;

@@ -504,7 +504,7 @@ SA.candidates = (() => {
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       for (let col = range.colStart; col <= range.colEnd; col += 1) {
         const column = cols[col];
-        const item = column.entry && column.entry.items[row];
+        const item = column.rows && column.rows[row];
         if (item) want(column, item);
       }
     }
@@ -681,7 +681,7 @@ SA.candidates = (() => {
     );
     controls.appendChild(
       select(
-        [4, 6, 9, 12].map((n) => [n, `×${n}`]),
+        [2, 4, 6].map((n) => [n, `×${n}`]),
         count,
         (value) => {
           count = Number(value) || 6;
@@ -790,12 +790,14 @@ SA.candidates = (() => {
       for (const beat of beatsOf(doc, cue)) {
         const entry = store().commands.candidatesOf(beat.id);
         const text = String((beat && beat.text) || (cue && cue.text) || '').replace(/\s+/g, ' ').trim();
-        cols.push({ cueId: cue.id, beatId: beat.id, cue, beat, text, start: Number(beat.start) || 0, sig, entry });
+        // the numbered rows: every card but the adopted one (it has its own slot)
+        const rows = entry ? entry.items.filter((item) => item.id !== entry.activeId) : [];
+        cols.push({ cueId: cue.id, beatId: beat.id, cue, beat, text, start: Number(beat.start) || 0, sig, entry, rows });
       }
     }
-    const maxRows = cols.reduce((max, col) => Math.max(max, col.entry ? col.entry.items.length : 0), 0);
+    const maxRows = cols.reduce((max, col) => Math.max(max, col.rows ? col.rows.length : 0), 0);
     boardModelKey = JSON.stringify(store().state.version);
-    return { cols, starts: cols.map((col) => col.start), maxRows: Math.min(15, maxRows) };
+    return { cols, starts: cols.map((col) => col.start), maxRows: Math.min(6, maxRows) };
   }
 
   // The first / last column and row inside the viewport (+1 cell margin).
@@ -910,7 +912,7 @@ SA.candidates = (() => {
     cell.style.top = `${BOARD.top + row * BOARD.row}px`;
     cell.style.width = `${BOARD.col}px`;
     cell.style.height = `${BOARD.row}px`;
-    const item = col.entry && col.entry.items[row];
+    const item = col.rows && col.rows[row];
     if (!item) {
       cell.classList.add('is-empty');
       return cell;
@@ -1023,7 +1025,7 @@ SA.candidates = (() => {
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       for (let index = range.colStart; index <= range.colEnd; index += 1) {
         const col = cols[index];
-        const item = col.entry && col.entry.items[row];
+        const item = col.rows && col.rows[row];
         let sig;
         let base = null;
         if (!item) {
@@ -1225,7 +1227,7 @@ SA.candidates = (() => {
       },
     );
     const countSelect = select(
-      [4, 6, 9, 12].map((n) => [n, `×${n}`]),
+      [2, 4, 6].map((n) => [n, `×${n}`]),
       count,
       (value) => {
         count = Number(value) || 6;
@@ -1269,7 +1271,7 @@ SA.candidates = (() => {
     const menu = node('div', 'timeline-menu board-menu');
     // a candidate cell can be adopted: it goes to the beat, into the adopted slot
     const row = holder.classList.contains('board-cell') ? holder.dataset.row : null;
-    const picked = row != null && col.entry ? col.entry.items[Number(row)] : null;
+    const picked = row != null && col.rows ? col.rows[Number(row)] : null;
     if (picked && picked.id !== col.entry.activeId) {
       const adopt = node('button', 'menu-item', t('studio.media.candAdopt'));
       adopt.type = 'button';
