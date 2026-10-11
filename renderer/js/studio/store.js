@@ -3245,6 +3245,16 @@ SA.store = (() => {
     // --- beat candidates: generate / apply / keep -------------------------------
     // `{ items, activeId }` with activeId derived from the beat's current look
     // (the item whose look matches it), never stored.
+    // A short digest of how the beat looks right now (its own look and the
+    // clips under it): the key of the adopted slot's picture, which must show
+    // the live beat, not whatever a card recorded earlier.
+    liveLookKey(cueId, beatId) {
+      if (!state.project) return '';
+      const look = liveLookOfBeat(state.project, cueId, beatId);
+      if (!look) return '';
+      const text = JSON.stringify(look);
+      return `${fnv1a32(text).toString(36)}${text.length.toString(36)}`;
+    },
     candidatesOf(beatId) {
       const entry = state.project && candidateEntry(state.project, beatId, false);
       if (!entry || !entry.items.length) return null;

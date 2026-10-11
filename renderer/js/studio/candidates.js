@@ -153,6 +153,13 @@ SA.candidates = (() => {
     return `${beatId}|${item.id}|${item.kind}|${hashOf(JSON.stringify(item.look))}|${sig}`;
   }
 
+  // the adopted slot shows the beat as it is NOW: its picture is keyed by the
+  // live look and shot without wearing any card (a card's own record may be
+  // older, e.g. clips recoloured since)
+  function adoptedKeyFor(col) {
+    return `${col.beatId}|live|${col.liveKey}|${col.sig}`;
+  }
+
   function thumbKey(item, sig) {
     return thumbKeyFor(target.beatId, item, sig);
   }
@@ -426,6 +433,8 @@ SA.candidates = (() => {
     thumbBusy = true;
     try {
       const scratch = store().commands.scratchForShots();
+      // the live pictures use a copy no card was ever worn on
+      let liveDoc = null;
       for (const job of jobs) {
         // the view scrolled away: drop the stale queue, the next render builds
         // a fresh one for the new visible range
@@ -433,8 +442,15 @@ SA.candidates = (() => {
         // a failed shot is remembered as '' so it is not retried in a loop
         let url = '';
         try {
-          if (scratch && store().commands.wearOnScratch(scratch, job.cueId, job.beatId, job.candidateId)) {
-            const shot = SA.preview.captureDoc(scratch, job.time, { width: THUMB_WIDTH * 2 });
+          let doc = null;
+          if (job.live) {
+            liveDoc = liveDoc || store().commands.scratchForShots();
+            doc = liveDoc;
+          } else if (scratch && store().commands.wearOnScratch(scratch, job.cueId, job.beatId, job.candidateId)) {
+            doc = scratch;
+          }
+          if (doc) {
+            const shot = SA.preview.captureDoc(doc, job.time, { width: THUMB_WIDTH * 2 });
             if (shot) url = shotToDataUrl(shot);
           }
         } catch {
@@ -487,11 +503,18 @@ SA.candidates = (() => {
       const time = start + Math.min((end - start) * 0.6, 1.1);
       jobs.push({ cueId: column.cueId, beatId: column.beatId, candidateId: item.id, key, time });
     };
-    // the adopted slot is always on screen: its pictures come first
+    // the adopted slot is always on screen: its pictures come first, shot from
+    // the live beat itself (no card worn)
     for (let col = range.colStart; col <= range.colEnd; col += 1) {
       const column = cols[col];
       const active = column.entry && column.entry.items.find((item) => item.id === column.entry.activeId);
-      if (active) want(column, active);
+      if (!active) continue;
+      const key = adoptedKeyFor(column);
+      if (thumbs.has(key) || queued.has(key)) continue;
+      queued.add(key);
+      const start = column.start;
+      const end = Math.max(Number(column.beat.end) || start + 1, start + 0.2);
+      jobs.push({ cueId: column.cueId, beatId: column.beatId, candidateId: null, live: true, key, time: start + Math.min((end - start) * 0.6, 1.1) });
     }
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       for (let col = range.colStart; col <= range.colEnd; col += 1) {
@@ -783,7 +806,8 @@ SA.candidates = (() => {
         const text = String((beat && beat.text) || (cue && cue.text) || '').replace(/\s+/g, ' ').trim();
         // the numbered rows: every card but the adopted one (it has its own slot)
         const rows = entry ? entry.items.filter((item) => item.id !== entry.activeId) : [];
-        cols.push({ cueId: cue.id, beatId: beat.id, cue, beat, text, start: Number(beat.start) || 0, sig, entry, rows });
+        const liveKey = store().commands.liveLookKey(cue.id, beat.id);
+        cols.push({ cueId: cue.id, beatId: beat.id, cue, beat, text, start: Number(beat.start) || 0, sig, entry, rows, liveKey });
       }
     }
     const maxRows = cols.reduce((max, col) => Math.max(max, col.rows ? col.rows.length : 0), 0);
@@ -880,6 +904,22 @@ SA.candidates = (() => {
     return cell;
   }
 
+  function boardAdoptedThumb(col) {
+    const cell = node('div', 'board-thumb');
+    const key = adoptedKeyFor(col);
+    const url = thumbs.get(key);
+    if (url) {
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = '';
+      img.draggable = false;
+      cell.appendChild(img);
+    } else {
+      cell.appendChild(node('span', 'board-thumb-wait', thumbs.has(key) ? '—' : '…'));
+    }
+    return cell;
+  }
+
   function boardThumb(beatId, item, sig) {
     const cell = node('div', 'board-thumb');
     const key = thumbKeyFor(beatId, item, sig);
@@ -914,7 +954,7 @@ SA.candidates = (() => {
       return cell;
     }
     cell.title = labelOf(active);
-    cell.appendChild(boardThumb(col.beatId, active, col.sig));
+    cell.appendChild(boardAdoptedThumb(col));
     cell.appendChild(node('div', 'board-name', t('studio.media.candWornName')));
     // the adopted card previews like any other card on hover
     const over = { cueId: col.cueId, beatId: col.beatId, start: col.start, end: Number(col.beat && col.beat.end) || col.start + 1 };
@@ -1021,16 +1061,16 @@ SA.candidates = (() => {
       let sig = 'hand';
       let base = null;
       if (active) {
-        const thumbKey = thumbKeyFor(col.beatId, active, col.sig);
-        const url = thumbs.get(thumbKey);
-        const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
+        const liveKey = adoptedKeyFor(col);
+        const url = thumbs.get(liveKey);
+        const state = url ? `img:${hashOf(url)}` : thumbs.has(liveKey) ? 'none' : 'wait';
         base = `adopt|${col.beatId}|${col.cueId}|${col.start}|${active.id}|${labelOf(active)}`;
         sig = `${base}|${state}`;
       }
       place(`adopt:${index}`, sig, () => boardAdoptedCell(col, index, viewTop + BOARD.head), (el) => {
         el.style.top = `${viewTop + BOARD.head}px`;
       }, base, active ? (el) => {
-        const fresh = boardThumb(col.beatId, active, col.sig);
+        const fresh = boardAdoptedThumb(col);
         const old = el.querySelector('.board-thumb');
         if (old) old.replaceWith(fresh);
         else el.prepend(fresh);
