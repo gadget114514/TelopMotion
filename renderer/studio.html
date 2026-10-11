@@ -31,6 +31,7 @@
         <button id="media-tab-info" class="btn btn-mini is-active" data-i18n="studio.media.tabInfo"></button>
         <button id="media-tab-video" class="btn btn-mini" data-i18n="studio.media.tabVideo"></button>
         <button id="media-tab-audio" class="btn btn-mini" data-i18n="studio.media.tabAudio"></button>
+        <button id="media-tab-candidates" class="btn btn-mini" data-i18n="studio.media.tabCandidates"></button>
       </div>
       <div id="media-pane-info" class="media-pane">
         <div class="avatar-row">
@@ -53,6 +54,7 @@
         </div>
         <div id="media-video-list" class="media-list"></div>
       </div>
+      <div id="media-pane-candidates" class="media-pane" hidden></div>
       <div id="media-pane-audio" class="media-pane" hidden>
         <canvas id="media-audio-canvas" class="media-audio-canvas"></canvas>
         <div id="media-audio-meta" class="panel-placeholder"></div>
@@ -275,6 +277,10 @@
 <script src="js/studio/fonts-dialog.js"></script>
 <script src="js/studio/credits-dialog.js"></script>
 <script src="js/studio/song-dialog.js"></script>
+<script src="js/studio/ai-strings.js"></script>
+<script src="js/studio/ai-tools.js"></script>
+<script src="js/studio/ai-agent.js"></script>
+<script src="js/studio/ai-assistant.js"></script>
 <script src="js/studio/controls.js"></script>
 <script src="js/studio/inspector.js"></script>
 <script src="js/studio/motion-dialog.js"></script>
@@ -284,6 +290,7 @@
 <script src="js/studio/export-dialog.js"></script>
 <script src="js/studio/debug-console.js"></script>
 <script src="js/studio/boot.js"></script>
+<script src="js/studio/candidates.js"></script>
 <script src="js/studio/app.js"></script>
 </body>
 </html>

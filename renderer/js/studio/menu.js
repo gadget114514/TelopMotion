@@ -111,6 +111,17 @@ SA.menu = (() => {
         { key: 'studio.generate.fitAudio', action: 'fitAudio', enabled: () => !!(SA.store.state.project && SA.store.state.project.script.cues.length && SA.preview.getAudioDuration()) },
       ],
     },
+    // desktop app only: the web build has no menu entry for the assistant at all
+    ...(SA.platform && SA.platform.ai && SA.platform.ai.available
+      ? [{
+        id: 'ai',
+        labelKey: 'studio.menu.ai',
+        items: () => [
+          { key: 'studio.ai.open', action: 'aiAssistant', shortcut: 'Ctrl+Shift+A', enabled: () => !!SA.store.state.project },
+          { key: 'studio.ai.settings', action: 'aiSettings' },
+        ],
+      }]
+      : []),
     {
       id: 'output',
       labelKey: 'studio.menu.output',

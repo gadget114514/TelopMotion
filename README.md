@@ -302,6 +302,7 @@ Comprehensive architecture, design, and effect documentation:
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — Catalog of 376+ text effects with Japanese and English names, categories, and descriptions
 - [doc/repeat-design.md](doc/repeat-design.md) — Repeat arrangement design and distinct signature count
 - [doc/app-design.md](doc/app-design.md) — Overall Studio and lyric video engine architecture
+- [doc/README.claude.md](doc/README.claude.md) — Working with Claude Code: edit `.telopmotion.json` projects with Claude and load them back into the Studio
 
 ## License
 

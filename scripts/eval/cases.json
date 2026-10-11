@@ -1,0 +1,66 @@
+{
+  "note": "Seed cases for the AI Assistant evaluation (npm run ai-eval). Replace / extend them with real prompts: failures here are where the guide and the tools need to grow. Prompts are deliberately loose.",
+  "cases": [
+    {
+      "id": "beat-brighten",
+      "prompt": "このビートをもっと明るくして",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_08", "select": "beat" },
+      "scope": { "cue": "demo30a_08", "beat": "demo30a_08:single0" },
+      "expect": [
+        { "type": "luminance", "dir": "up" },
+        { "type": "unchanged", "element": "cue:demo30a_07/beat:demo30a_07:single0" },
+        { "type": "maxOps", "n": 12 }
+      ]
+    },
+    {
+      "id": "beat-darken",
+      "prompt": "ここ、暗めにしたい",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_06" },
+      "scope": { "cue": "demo30a_06", "beat": "demo30a_06:single0" },
+      "expect": [
+        { "type": "luminance", "dir": "down" },
+        { "type": "unchanged", "element": "cue:demo30a_05/beat:demo30a_05:single0" }
+      ]
+    },
+    {
+      "id": "cue-flashy",
+      "prompt": "このセリフをもっと派手に！",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_02" },
+      "scope": { "cue": "demo30a_02" },
+      "expect": [
+        { "type": "axis", "axis": "energy", "dir": "up" },
+        { "type": "unchanged", "element": "cue:demo30a_03/beat:demo30a_03:single0" }
+      ]
+    },
+    {
+      "id": "cue-calm",
+      "prompt": "落ち着いた雰囲気にしてほしい",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_06" },
+      "scope": { "cue": "demo30a_06" },
+      "expect": [
+        { "type": "axis", "axis": "energy", "dir": "down" },
+        { "type": "unchanged", "element": "cue:demo30a_07/beat:demo30a_07:single0" }
+      ]
+    },
+    {
+      "id": "vague-nice",
+      "prompt": "なんかいい感じにして",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_04" },
+      "scope": { "cue": "demo30a_04" },
+      "expect": [{ "type": "maxOps", "n": 20 }]
+    },
+    {
+      "id": "off-task-translate",
+      "prompt": "歌詞を全部英語に翻訳して",
+      "fixture": "demo/demo30-A.telopmotion.json",
+      "view": { "cue": "demo30a_01" },
+      "scope": { "cue": "demo30a_01" },
+      "expect": [{ "type": "noOps" }]
+    }
+  ]
+}

@@ -63,6 +63,12 @@ SA.store = (() => {
         if (!beatIds.has(id)) delete styles[id];
       }
     }
+    const candidates = projectDoc && projectDoc.beatCandidates;
+    if (candidates && typeof candidates === 'object') {
+      for (const id of Object.keys(candidates)) {
+        if (!beatIds.has(id)) delete candidates[id];
+      }
+    }
   }
 
   function restructureProject(project) {
@@ -441,6 +447,88 @@ SA.store = (() => {
     coalesce = { key: command.coalesceKey || null, time: now };
     bump(areas);
     emit();
+  }
+
+  // Runs a command body against a scratch copy of the project instead of the
+  // live one: no history entry, no notification. Candidate generation rolls
+  // the existing beat commands on clones and keeps only the resulting look.
+  function runOn(doc) {
+    return (command) => command.do(doc, state);
+  }
+
+  // --- beat candidates ---------------------------------------------------------
+  // project.beatCandidates[beatId] = { items: [{ id, kind, label, pinned, look }], activeId, seq }
+  // A look is everything that makes a beat look the way it does and nothing
+  // about its words or timing: the beat style bag, its sub-element overrides
+  // and keyframes, the letter variation slot and the font scale. The first
+  // item is always the look the beat had before the first generation (kind
+  // 'original'); it can be chosen again but never removed.
+  const CANDIDATE_LIMIT = 24;
+
+  function beatLookOf(projectDoc, cueId, beatId) {
+    const clip = collectStyleClipboard(projectDoc, beatPathOf(cueId, beatId));
+    if (!clip) return null;
+    const beat = findBeat(projectDoc, cueId, beatId);
+    return {
+      beatBag: clip.beatBag,
+      overrides: clip.overrides,
+      keyframes: clip.keyframes,
+      variation: beat && Number(beat.variation) ? Number(beat.variation) : 0,
+      fontScale: beat && beat.fontScale != null ? beat.fontScale : null,
+    };
+  }
+
+  function applyBeatLookDoc(projectDoc, cueId, beatId, look) {
+    projectDoc.beatStyles = projectDoc.beatStyles || {};
+    const prefix = beatPathOf(cueId, beatId);
+    applyBeatLook(projectDoc, cueId, beatId, look.beatBag, prefix, prefix, { overrides: look.overrides, keyframes: look.keyframes });
+    const beat = findBeat(projectDoc, cueId, beatId);
+    if (!beat) return;
+    if (look.variation) beat.variation = look.variation;
+    else delete beat.variation;
+    if (look.fontScale != null) beat.fontScale = look.fontScale;
+    else delete beat.fontScale;
+  }
+
+  function sameLook(a, b) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  function candidateEntry(projectDoc, beatId, create) {
+    if (!projectDoc.beatCandidates || typeof projectDoc.beatCandidates !== 'object') {
+      if (!create) return null;
+      projectDoc.beatCandidates = {};
+    }
+    let entry = projectDoc.beatCandidates[beatId];
+    if (!entry && create) entry = projectDoc.beatCandidates[beatId] = { items: [], activeId: null, seq: 0 };
+    return entry || null;
+  }
+
+  function pushCandidate(entry, look, kind) {
+    entry.seq = (Number(entry.seq) || 0) + 1;
+    const item = { id: `c${entry.seq}`, kind, label: '', pinned: kind === 'original', look: clone(look) };
+    entry.items.push(item);
+    return item;
+  }
+
+  // keeps the list bounded: the oldest unpinned, inactive extras go first
+  function trimCandidates(entry) {
+    while (entry.items.length > CANDIDATE_LIMIT) {
+      const index = entry.items.findIndex((item) => item.kind !== 'original' && !item.pinned && item.id !== entry.activeId);
+      if (index < 0) break;
+      entry.items.splice(index, 1);
+    }
+  }
+
+  // the first touch records the current look as the original and marks it active
+  function ensureCandidateBase(projectDoc, cueId, beatId) {
+    materializeBeat(projectDoc, cueId, beatId);
+    const entry = candidateEntry(projectDoc, beatId, true);
+    if (!entry.items.length) {
+      const look = beatLookOf(projectDoc, cueId, beatId);
+      if (look) entry.activeId = pushCandidate(entry, look, 'original').id;
+    }
+    return entry;
   }
 
   // --- transactions (drags) ---------------------------------------------------
@@ -1220,6 +1308,149 @@ SA.store = (() => {
       for (const key of BEAT_COLOR_KEYS) delete bag[key];
       if (!Object.keys(bag).length) delete projectDoc.beatStyles[beat.id];
     }
+  }
+
+  // Candidate axes: a look can be generated, or mixed, one axis at a time.
+  // Each axis owns the beatBag keys a roll of that axis may change. A key no
+  // axis owns (text size, background, ornaments…) always travels with the
+  // caller's base, so a "colour only" roll never disturbs anything else.
+  const BEAT_AXES = ['color', 'font', 'effects', 'placement'];
+  const BEAT_AXIS_KEYS = {
+    color: BEAT_COLOR_KEYS.map((key) => [key]),
+    font: [['text', 'fontId'], ['text', 'weight']],
+    placement: [
+      ['text', 'align'],
+      ['text', 'maxWidth'],
+      ['text', 'letterSpacing'],
+      ['text', 'lineHeight'],
+      ['layout'],
+      ['location'],
+    ],
+    effects: [['enter'], ['exit'], ['hold'], ['animation'], ['fill'], ['edge'], ['post'], ['repeat']],
+  };
+
+  // Every axis is on when the caller does not narrow the set.
+  function axesSetOf(value) {
+    if (Array.isArray(value)) return new Set(value.filter((axis) => BEAT_AXES.includes(axis)));
+    if (value && typeof value === 'object') return new Set(BEAT_AXES.filter((axis) => !!value[axis]));
+    return new Set(BEAT_AXES);
+  }
+
+  function readPath(bag, path) {
+    let node = bag;
+    for (const part of path) {
+      if (!node || typeof node !== 'object') return undefined;
+      node = node[part];
+    }
+    return node;
+  }
+
+  function writePath(bag, path, value) {
+    let node = bag;
+    for (let index = 0; index < path.length - 1; index += 1) {
+      if (!node[path[index]] || typeof node[path[index]] !== 'object') node[path[index]] = {};
+      node = node[path[index]];
+    }
+    node[path[path.length - 1]] = value;
+  }
+
+  function dropPath(bag, path) {
+    const parents = [];
+    let node = bag;
+    for (let index = 0; index < path.length - 1; index += 1) {
+      if (!node || typeof node !== 'object') return;
+      parents.push([node, path[index]]);
+      node = node[path[index]];
+    }
+    if (!node || typeof node !== 'object') return;
+    delete node[path[path.length - 1]];
+    // prune parents that emptied out, so an absent axis stays absent
+    for (let index = parents.length - 1; index >= 0; index -= 1) {
+      const [parent, key] = parents[index];
+      if (parent[key] && typeof parent[key] === 'object' && !Object.keys(parent[key]).length) delete parent[key];
+    }
+  }
+
+  // Keeps only the rolled axes: the beatBag starts from the base look (so every
+  // unselected axis, and every key no axis owns, stays as it is) and the chosen
+  // axes are overwritten from the roll. Everything outside the beatBag (the
+  // variation slot, overrides, keyframes) still comes from the roll, so the
+  // "all axes on" default stays byte-identical to a plain generation.
+  function restrictLookAxes(baseLook, look, axes) {
+    if (axes.size === BEAT_AXES.length) return look;
+    const out = clone(look);
+    const bag = clone((baseLook && baseLook.beatBag) || {});
+    for (const axis of BEAT_AXES) {
+      if (!axes.has(axis)) continue;
+      for (const path of BEAT_AXIS_KEYS[axis]) {
+        const value = readPath(look.beatBag || {}, path);
+        if (value === undefined) dropPath(bag, path);
+        else writePath(bag, path, clone(value));
+      }
+    }
+    out.beatBag = bag;
+    return out;
+  }
+
+  // The beat colour is not drawn by a style roll (reroll / vary leave the
+  // palette keys alone: they come from the direct run's colour ladder), so the
+  // colour axis draws its own. A choice is a complete set of the four colour
+  // keys: a role scheme of the cue palette (classic mode), or a palette of the
+  // theme's set with or without the invert (palette-set mode).
+  const COLOR_DRAW_KEYS = ['paletteIndex', 'paletteInvert', 'colorScheme', 'colorLegacy'];
+  function colorKeysOf(bag) {
+    const out = {};
+    for (const key of COLOR_DRAW_KEYS) if (bag && bag[key] != null && bag[key] !== false && bag[key] !== 0) out[key] = bag[key];
+    return out;
+  }
+
+  function colorChoicesOf(projectDoc, cueId) {
+    const roles = typeof SA !== 'undefined' && SA.paletteRoles;
+    if (!roles) return [];
+    const weird = beatSchemeWeird();
+    const contrast = beatSchemeContrast();
+    const choices = [];
+    const parent = paletteColorsAt(projectDoc, `cue:${cueId}`);
+    const schemes = parent.length && roles.schemes ? roles.schemes(parent, weird, undefined, contrast) : [];
+    for (const entry of schemes) choices.push({ colorScheme: entry.id, colorLegacy: true });
+    if (roles.paletteSetOf) {
+      const set = roles.paletteSetOf(projectDoc.style);
+      const axes = projectDoc.styleMode && projectDoc.styleMode.axes;
+      const count = Math.max(1, Math.min(1 + set.extra.length, SA.weird ? SA.weird.paletteCount(axes, set.max) : 1));
+      for (let index = 0; index < count; index += 1) {
+        choices.push(index ? { paletteIndex: index } : {});
+        if (weird > 0 && roles.applyScheme(roles.setColors(projectDoc.style, index) || [], roles.SCHEME_INVERT, weird, contrast)) {
+          choices.push(index ? { paletteIndex: index, paletteInvert: true } : { paletteInvert: true });
+        }
+      }
+    }
+    return choices;
+  }
+
+  // Overlays one colour choice (never the base's own) on a look's beatBag.
+  function withDrawnColor(look, choice) {
+    const out = clone(look);
+    out.beatBag = out.beatBag || {};
+    for (const key of COLOR_DRAW_KEYS) delete out.beatBag[key];
+    Object.assign(out.beatBag, choice);
+    return out;
+  }
+
+  // Builds a look that takes every chosen axis from the matching source look
+  // and keeps the rest of the base. The core of mixCandidate.
+  function mixLookAxes(baseLook, take) {
+    const out = clone(baseLook);
+    out.beatBag = clone(baseLook.beatBag || {});
+    for (const axis of BEAT_AXES) {
+      const source = take && take[axis];
+      if (!source) continue;
+      for (const path of BEAT_AXIS_KEYS[axis]) {
+        const value = readPath(source.beatBag || {}, path);
+        if (value === undefined) dropPath(out.beatBag, path);
+        else writePath(out.beatBag, path, clone(value));
+      }
+    }
+    return out;
   }
 
   // User-content keys a clip vary must never wipe (layer text, nested lists,
@@ -2626,6 +2857,182 @@ SA.store = (() => {
     styleClipboardPath() {
       return styleClipboard ? styleClipboard.srcPath : '';
     },
+    // --- beat candidates: generate / apply / keep -------------------------------
+    candidatesOf(beatId) {
+      const entry = state.project && candidateEntry(state.project, beatId, false);
+      return entry && entry.items.length ? entry : null;
+    },
+    // Rolls `count` looks for one beat on scratch copies and appends them to
+    // the beat's candidate list. mode: 'near' keeps the effect types (new
+    // params), 'far' re-rolls the whole grammar, 'mixed' alternates. The beat
+    // itself is not touched; only the candidate list grows (one undo).
+    generateCandidates(cueId, beatId, options) {
+      if (!state.project || !findCue(cueId) || typeof SA === 'undefined' || !SA.random || !SA.moods) return 0;
+      const opts = options || {};
+      const count = Math.max(1, Math.min(12, Math.floor(Number(opts.count) || 6)));
+      const mode = opts.mode === 'near' || opts.mode === 'far' ? opts.mode : 'mixed';
+      const axes = axesSetOf(opts.axes);
+      const base = clone(state.project);
+      materializeBeat(base, cueId, beatId);
+      const baseLook = beatLookOf(base, cueId, beatId);
+      const known = [baseLook];
+      const existing = candidateEntry(base, beatId, false);
+      if (existing) for (const item of existing.items) known.push(item.look);
+      // the colour axis draws from the choices the beat does not wear yet,
+      // and a draw already used by a candidate comes up last
+      const colorChoices = axes.has('color') ? colorChoicesOf(base, cueId) : [];
+      const colorOf = (look) => JSON.stringify(colorKeysOf(look && look.beatBag));
+      const usedColors = new Set(known.map(colorOf));
+      const looks = [];
+      for (let index = 0; index < count * 2 && looks.length < count; index += 1) {
+        const far = mode === 'far' || (mode === 'mixed' && index % 2 === 1);
+        const trial = clone(base);
+        try {
+          if (far) commands.rerollBeat(cueId, beatId, trial);
+          else commands.varyBeat(cueId, beatId, trial);
+        } catch {
+          continue;
+        }
+        const rolled = beatLookOf(trial, cueId, beatId);
+        let look = rolled && restrictLookAxes(baseLook, rolled, axes);
+        if (look && colorChoices.length) {
+          const fresh = colorChoices.filter((choice) => !usedColors.has(JSON.stringify(choice)));
+          const pool = fresh.length ? fresh : colorChoices.filter((choice) => JSON.stringify(choice) !== colorOf(baseLook));
+          if (pool.length) {
+            const choice = pool[Math.floor(Math.random() * pool.length)];
+            look = withDrawnColor(look, choice);
+            usedColors.add(JSON.stringify(choice));
+          }
+        }
+        if (!look || known.some((other) => sameLook(other, look))) continue;
+        known.push(look);
+        looks.push({ look, kind: far ? 'far' : 'near' });
+      }
+      if (!looks.length) return 0;
+      dispatch({
+        label: 'generate candidates',
+        areas: ['project'],
+        do(projectDoc) {
+          const target = ensureCandidateBase(projectDoc, cueId, beatId);
+          for (const added of looks) pushCandidate(target, added.look, added.kind);
+          trimCandidates(target);
+        },
+      });
+      return looks.length;
+    },
+    // Puts a candidate on the beat. A look the user reached by hand that no
+    // candidate holds yet is kept first, so choosing never loses anything.
+    // Also used (inside a transaction) for the hover preview.
+    applyCandidate(cueId, beatId, candidateId) {
+      if (!state.project || !findCue(cueId)) return false;
+      let applied = false;
+      dispatch({
+        label: 'apply candidate',
+        areas: ['project', 'style', 'overrides', 'keyframes', 'script'],
+        do(projectDoc) {
+          materializeBeat(projectDoc, cueId, beatId);
+          const entry = candidateEntry(projectDoc, beatId, false);
+          const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
+          if (!item) return;
+          const current = beatLookOf(projectDoc, cueId, beatId);
+          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
+            pushCandidate(entry, current, 'previous');
+          }
+          applyBeatLookDoc(projectDoc, cueId, beatId, item.look);
+          entry.activeId = item.id;
+          trimCandidates(entry);
+          applied = true;
+        },
+      });
+      return applied;
+    },
+    // Builds a candidate by taking some axis groups from other candidates
+    // (the "mix"): `base` is the candidate the rest comes from, `take` names a
+    // source candidate per axis (color / font / effects / placement). Axes
+    // without a source keep the base's. The result is kept as a new 'saved'
+    // candidate and applied, one undo step.
+    mixCandidate(cueId, beatId, options) {
+      const opts = options || {};
+      if (!state.project || !findCue(cueId)) return null;
+      let id = null;
+      dispatch({
+        label: 'mix candidates',
+        areas: ['project', 'style', 'overrides', 'keyframes', 'script'],
+        do(projectDoc) {
+          materializeBeat(projectDoc, cueId, beatId);
+          const entry = candidateEntry(projectDoc, beatId, false);
+          if (!entry) return;
+          const itemOf = (candidateId) => entry.items.find((candidate) => candidate.id === candidateId);
+          const baseItem = itemOf(opts.base) || itemOf(entry.activeId) || entry.items[0];
+          if (!baseItem) return;
+          const take = {};
+          for (const axis of BEAT_AXES) {
+            const source = itemOf(opts.take && opts.take[axis]);
+            if (source && source !== baseItem) take[axis] = source.look;
+          }
+          const look = mixLookAxes(baseItem.look, take);
+          const current = beatLookOf(projectDoc, cueId, beatId);
+          if (current && !entry.items.some((candidate) => sameLook(candidate.look, current))) {
+            pushCandidate(entry, current, 'previous');
+          }
+          const item = pushCandidate(entry, look, 'saved');
+          applyBeatLookDoc(projectDoc, cueId, beatId, look);
+          entry.activeId = item.id;
+          trimCandidates(entry);
+          id = item.id;
+        },
+      });
+      return id;
+    },
+    // keeps the beat's current look as a candidate of its own
+    saveCandidate(cueId, beatId) {
+      if (!state.project || !findCue(cueId)) return null;
+      let id = null;
+      dispatch({
+        label: 'save candidate',
+        areas: ['project'],
+        do(projectDoc) {
+          const entry = ensureCandidateBase(projectDoc, cueId, beatId);
+          const current = beatLookOf(projectDoc, cueId, beatId);
+          if (!current) return;
+          const same = entry.items.find((candidate) => sameLook(candidate.look, current));
+          if (same) {
+            entry.activeId = same.id;
+            id = same.id;
+            return;
+          }
+          const item = pushCandidate(entry, current, 'saved');
+          entry.activeId = item.id;
+          id = item.id;
+        },
+      });
+      return id;
+    },
+    removeCandidate(beatId, candidateId) {
+      dispatch({
+        label: 'remove candidate',
+        areas: ['project'],
+        do(projectDoc) {
+          const entry = candidateEntry(projectDoc, beatId, false);
+          if (!entry) return;
+          const index = entry.items.findIndex((item) => item.id === candidateId);
+          if (index < 0 || entry.items[index].kind === 'original') return; // the original stays
+          entry.items.splice(index, 1);
+          if (entry.activeId === candidateId) entry.activeId = null;
+        },
+      });
+    },
+    toggleCandidatePin(beatId, candidateId) {
+      dispatch({
+        label: 'pin candidate',
+        areas: ['project'],
+        do(projectDoc) {
+          const entry = candidateEntry(projectDoc, beatId, false);
+          const item = entry && entry.items.find((candidate) => candidate.id === candidateId);
+          if (item && item.kind !== 'original') item.pinned = !item.pinned;
+        },
+      });
+    },
     setPalette(palettes) {
       dispatch({
         label: 'palettes',
@@ -3386,11 +3793,11 @@ SA.store = (() => {
     // Re-roll the selected beat's own grammar (animation / enter / exit / hold
     // / fill / edge / post) inside the project axes. The cue and the other
     // beats are untouched; one undo reverts the whole draw.
-    rerollBeat(cueId, beatId) {
+    rerollBeat(cueId, beatId, sandbox) {
       const cue = findCue(cueId);
       if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
       const mode = modeAxes();
-      dispatch({
+      (sandbox ? runOn(sandbox) : dispatch)({
         label: 'reroll beat',
         areas: ['style'],
         do(projectDoc) {
@@ -3459,11 +3866,11 @@ SA.store = (() => {
     // letters re-draw too. The composed picture (compose mode) is kept on
     // purpose, so the look does not change its face; only the size ladder
     // follows. One undo reverts the whole draw.
-    varyBeat(cueId, beatId) {
+    varyBeat(cueId, beatId, sandbox) {
       const cue = findCue(cueId);
       if (!cue || typeof SA === 'undefined' || !SA.random || !SA.moods) return;
       const mode = modeAxes();
-      dispatch({
+      (sandbox ? runOn(sandbox) : dispatch)({
         label: 'vary beat',
         areas: ['style', 'script'],
         do(projectDoc) {

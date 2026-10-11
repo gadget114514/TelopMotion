@@ -522,8 +522,29 @@ SA.platform = (() => {
     return Promise.resolve(false);
   }
 
+  // The AI Assistant exists only in the desktop app: the key and the HTTP call
+  // live in the main process, so the web build has nothing to show for it.
+  const aiAvailable = !!(bridge && typeof bridge.aiRequest === 'function');
+  const ai = {
+    available: aiAvailable,
+    status: async () => (aiAvailable ? unwrap(await bridge.aiStatus()) : { hasKey: false, source: null, canStore: false }),
+    setKey: async (key) => {
+      if (!aiAvailable) throw unsupported('ai');
+      return unwrap(await bridge.aiSetKey(key));
+    },
+    clearKey: async () => {
+      if (!aiAvailable) throw unsupported('ai');
+      return unwrap(await bridge.aiClearKey());
+    },
+    request: async (payload) => {
+      if (!aiAvailable) throw unsupported('ai');
+      return unwrap(await bridge.aiRequest(payload));
+    },
+  };
+
   return {
     isElectron,
+    ai,
     isDataset,
     isSafeMediaUrl,
     fetchProfile,

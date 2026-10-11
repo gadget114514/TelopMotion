@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, ipcMain, dialog, shell, session, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, session, nativeImage, safeStorage } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const SMOKE = !!process.env.SA_SMOKE;
@@ -500,6 +500,102 @@ function registerIpc() {
   });
 
   ipcMain.handle('app:info', () => ok({ version: app.getVersion(), name: app.getName(), electron: process.versions.electron, chrome: process.versions.chrome }));
+
+  // --- AI Assistant -----------------------------------------------------------
+  // The API key lives only in the main process: it is encrypted with the OS
+  // credential store (safeStorage) into userData - outside any project file -
+  // and is never sent to the renderer. The renderer asks for one Messages API
+  // call at a time; the host is fixed to api.anthropic.com.
+  const AI_KEY_FILE = () => path.join(app.getPath('userData'), 'ai-key.bin');
+  const AI_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+  const AI_MODEL_RE = /^claude-[a-z0-9.-]{1,60}$/;
+  const AI_BODY_MAX_BYTES = 12 * 1024 * 1024;
+  const AI_KEY_RE = /^[A-Za-z0-9_-]{20,300}$/;
+
+  function aiReadKey() {
+    try {
+      if (safeStorage.isEncryptionAvailable() && fs.existsSync(AI_KEY_FILE())) {
+        return { key: safeStorage.decryptString(fs.readFileSync(AI_KEY_FILE())), source: 'stored' };
+      }
+    } catch {
+      /* unreadable or from another OS user: treat as not set */
+    }
+    const env = process.env.ANTHROPIC_API_KEY;
+    if (env && AI_KEY_RE.test(env.trim())) return { key: env.trim(), source: 'env' };
+    return { key: null, source: null };
+  }
+
+  ipcMain.handle('ai:status', () => {
+    const { key, source } = aiReadKey();
+    let canStore = false;
+    try {
+      canStore = safeStorage.isEncryptionAvailable();
+    } catch {
+      /* keep false */
+    }
+    return ok({ hasKey: !!key, source, canStore });
+  });
+
+  ipcMain.handle('ai:set-key', (_event, payload) => {
+    const key = payload && typeof payload.key === 'string' ? payload.key.trim() : '';
+    if (!AI_KEY_RE.test(key)) return fail(Object.assign(new Error('invalid-key'), { code: 'invalid-key' }));
+    try {
+      if (!safeStorage.isEncryptionAvailable()) {
+        return fail(Object.assign(new Error('encryption-unavailable'), { code: 'encryption-unavailable' }));
+      }
+      fs.writeFileSync(AI_KEY_FILE(), safeStorage.encryptString(key), { mode: 0o600 });
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('ai:clear-key', () => {
+    try {
+      fs.rmSync(AI_KEY_FILE(), { force: true });
+      return ok(true);
+    } catch (error) {
+      return fail(error);
+    }
+  });
+
+  ipcMain.handle('ai:request', async (_event, payload) => {
+    const { key } = aiReadKey();
+    if (!key) return fail(Object.assign(new Error('no-key'), { code: 'no-key' }));
+    const request = payload && typeof payload === 'object' ? payload : {};
+    if (typeof request.model !== 'string' || !AI_MODEL_RE.test(request.model)) {
+      return fail(Object.assign(new Error('bad-model'), { code: 'bad-model' }));
+    }
+    const body = {
+      model: request.model,
+      max_tokens: Math.min(Math.max(Number(request.max_tokens) || 4096, 256), 16000),
+      system: typeof request.system === 'string' ? request.system.slice(0, 60000) : undefined,
+      messages: Array.isArray(request.messages) ? request.messages : [],
+      tools: Array.isArray(request.tools) ? request.tools : undefined,
+    };
+    const json = JSON.stringify(body);
+    if (json.length > AI_BODY_MAX_BYTES) return fail(Object.assign(new Error('request-too-large'), { code: 'request-too-large' }));
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 120000);
+    try {
+      const response = await fetch(AI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+        body: json,
+        signal: controller.signal,
+      });
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        const message = (data && data.error && data.error.message) || `HTTP ${response.status}`;
+        return fail(Object.assign(new Error(message), { code: `http-${response.status}` }));
+      }
+      return ok(data);
+    } catch (error) {
+      return fail(Object.assign(new Error(error && error.name === 'AbortError' ? 'timeout' : error.message), { code: 'network' }));
+    } finally {
+      clearTimeout(timer);
+    }
+  });
 
   ipcMain.handle('app:open-external', (_event, payload) => {
     const url = payload && payload.url;

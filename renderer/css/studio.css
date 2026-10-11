@@ -3246,3 +3246,47 @@ body {
   gap: 2px;
   margin-top: 3px;
 }
+
+/* candidate tab */
+.cand-body { display: flex; flex-direction: column; gap: 6px; }
+.cand-target { font-size: 12px; font-weight: 600; word-break: break-all; }
+.cand-controls { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.cand-select { font-size: 11px; background: var(--card); color: inherit; border: 1px solid var(--border, #444); border-radius: 4px; padding: 2px 4px; }
+.cand-hint { font-size: 11px; }
+.cand-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+.cand-card { border: 1px solid var(--border, #444); border-radius: 6px; padding: 3px; cursor: pointer; background: var(--card); user-select: none; }
+.cand-card:hover { border-color: var(--accent); }
+.cand-card.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.cand-thumb { aspect-ratio: 16 / 9; display: grid; place-items: center; background: #000; border-radius: 4px; overflow: hidden; }
+.cand-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cand-thumb-wait { font-size: 12px; opacity: 0.6; }
+.cand-row { display: flex; align-items: center; gap: 2px; margin-top: 2px; font-size: 11px; }
+.cand-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cand-badge { color: var(--accent); }
+.cand-btn { border: 0; background: transparent; color: inherit; cursor: pointer; padding: 0 3px; opacity: 0.55; font-size: 12px; }
+.cand-btn:hover, .cand-btn.is-on { opacity: 1; color: var(--accent); }
+.cand-chip { border: 1px solid var(--border, #444); background: transparent; color: inherit; border-radius: 10px; padding: 1px 8px; font-size: 11px; cursor: pointer; opacity: 0.6; }
+.cand-chip:hover { opacity: 1; }
+.cand-chip.is-on { opacity: 1; border-color: var(--accent); color: var(--accent); background: rgba(255, 138, 61, 0.12); }
+.cand-axes { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.cand-axes-label { font-size: 11px; opacity: 0.7; }
+.cand-mix { border: 1px solid var(--border, #444); border-radius: 6px; padding: 6px; display: flex; flex-direction: column; gap: 4px; background: var(--card); }
+.cand-mix-title { font-size: 12px; font-weight: 600; }
+.cand-mix-row { display: flex; align-items: center; gap: 6px; }
+.cand-mix-label { font-size: 11px; opacity: 0.8; min-width: 84px; }
+.cand-mix-apply { align-self: flex-start; }
+.btn.is-on { border-color: var(--accent); color: var(--accent); }
+
+/* candidate board */
+.cand-board-dialog { max-width: 96vw; }
+.cand-board-body { overflow: auto; max-height: 60vh; padding: 4px; }
+.cand-board-grid { display: grid; gap: 3px; align-items: stretch; }
+.cand-board-corner, .cand-board-rowlabel { font-size: 10px; opacity: 0.6; display: grid; place-items: center; }
+.cand-board-head { display: flex; flex-direction: column; gap: 2px; align-items: center; font-size: 10px; }
+.cand-board-beat { opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 90px; }
+.cand-board-count { opacity: 0.6; }
+.cand-board-cell { border: 1px solid transparent; border-radius: 4px; padding: 2px; cursor: pointer; }
+.cand-board-cell:hover { border-color: var(--accent); }
+.cand-board-cell.is-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.cand-board-cell.is-empty { cursor: default; }
+.cand-board-name { font-size: 9px; text-align: center; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

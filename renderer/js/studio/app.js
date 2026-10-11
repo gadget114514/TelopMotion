@@ -40,11 +40,13 @@
       info: document.getElementById('media-tab-info'),
       video: document.getElementById('media-tab-video'),
       audio: document.getElementById('media-tab-audio'),
+      candidates: document.getElementById('media-tab-candidates'),
     };
     el.mediaPanes = {
       info: document.getElementById('media-pane-info'),
       video: document.getElementById('media-pane-video'),
       audio: document.getElementById('media-pane-audio'),
+      candidates: document.getElementById('media-pane-candidates'),
     };
     el.videoImport = document.getElementById('media-video-import');
     el.videoList = document.getElementById('media-video-list');
@@ -338,6 +340,7 @@
     }
     if (name === 'audio') renderMediaAudio();
     if (name === 'video') renderVideoList();
+    if (name === 'candidates' && SA.candidates) SA.candidates.render();
   }
 
   function drawThumb(canvas, image) {
@@ -2038,6 +2041,7 @@
     el.mediaTabs.info.addEventListener('click', () => setMediaTab('info'));
     el.mediaTabs.video.addEventListener('click', () => setMediaTab('video'));
     el.mediaTabs.audio.addEventListener('click', () => setMediaTab('audio'));
+    el.mediaTabs.candidates.addEventListener('click', () => setMediaTab('candidates'));
     el.videoImport.addEventListener('click', importVideoMedia);
     el.audioImport.addEventListener('click', importAudio);
     if (el.videoClear) el.videoClear.addEventListener('click', clearVideos);
@@ -2267,6 +2271,8 @@
       about: aboutDialog,
       credits: () => SA.creditsDialog.open(),
       song: () => SA.songDialog.open(),
+      aiAssistant: () => SA.aiAssistant && SA.aiAssistant.open(),
+      aiSettings: () => SA.aiAssistant && SA.aiAssistant.openSettings(),
       exportSrt,
       exportSrtBeats,
       exportLyrics,
@@ -2345,6 +2351,7 @@
       await step(42, 'studio.boot.preview', 48, 3000, 'timeline');
       SA.inspector.init();
       SA.overlay.init();
+      SA.candidates.init({ tab: el.mediaTabs.candidates, pane: el.mediaPanes.candidates, toast });
       await step(48, 'studio.boot.preview', 54, 3000, 'inspector');
       SA.menu.init({ handlers: menuHandlers() });
       platform.recent.list().then(SA.menu.setRecent).catch(() => {});

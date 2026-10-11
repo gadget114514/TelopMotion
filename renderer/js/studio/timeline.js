@@ -1001,6 +1001,26 @@ SA.timeline = (() => {
           ctx.fillText(label, bx + 4, y + height / 2 - 0.5);
           ctx.restore();
         }
+        // candidate count: a tiny badge in the beat's bottom-right corner
+        const candidateEntry = projectDoc.beatCandidates && projectDoc.beatCandidates[beat.id];
+        const candidateCount = candidateEntry && candidateEntry.items ? candidateEntry.items.length : 0;
+        if (candidateCount > 0 && bw > 16) {
+          const countText = String(candidateCount);
+          ctx.save();
+          ctx.font = '9px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+          const badgeW = ctx.measureText(countText).width + 5;
+          const badgeH = 9;
+          const badgeX = bx + bw - badgeW - 2;
+          const badgeY = y + height - badgeH - 3;
+          ctx.fillStyle = 'rgba(77, 200, 160, 0.85)';
+          rounded(badgeX, badgeY, badgeW, badgeH, 2);
+          ctx.fill();
+          ctx.fillStyle = '#0d1017';
+          ctx.textBaseline = 'middle';
+          ctx.textAlign = 'center';
+          ctx.fillText(countText, badgeX + badgeW / 2, badgeY + badgeH / 2 + 0.5);
+          ctx.restore();
+        }
         hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
         if (beatDisabled) ctx.restore();
         beatIndex += 1;

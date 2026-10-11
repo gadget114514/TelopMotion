@@ -106,6 +106,7 @@
       },
       beats: {},
       beatStyles: {},
+      beatCandidates: {},
       beatWarnings: {},
       orphanBeats: {},
       orphans: {},

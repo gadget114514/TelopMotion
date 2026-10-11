@@ -302,6 +302,7 @@ Studio の *Random look* ボタン（Generate メニュー、タイムライン 
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — 日英名・カテゴリ・説明付き 376 以上のテキストエフェクトカタログ
 - [doc/repeat-design.md](doc/repeat-design.md) — リピート配置設計と固有署名カウント
 - [doc/app-design.md](doc/app-design.md) — Studio・歌詞動画エンジン全体アーキテクチャ
+- [doc/README.claude.ja.md](doc/README.claude.ja.md) — Claude Code との進め方：`.telopmotion.json` を Claude に編集させ、Studio に読み込み直す手順
 
 ## ライセンス
 

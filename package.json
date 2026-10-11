@@ -36,7 +36,8 @@
     "palettes": "node scripts/palettes-build.js",
     "glcheck": "electron scripts/gl-check.js --no-sandbox",
     "test": "node --test \"scripts/test/**/*.test.js\"",
-    "vendor": "node scripts/vendor.js"
+    "vendor": "node scripts/vendor.js",
+    "ai-eval": "node scripts/ai-eval.js"
   },
   "build": {
     "appId": "com.gadget114514.telopmotion",
