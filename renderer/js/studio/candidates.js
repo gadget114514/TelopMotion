@@ -22,6 +22,8 @@ SA.candidates = (() => {
   const AXIS_SOURCE = { color: 'candMixAxisColor', font: 'candMixAxisFont', effects: 'candMixAxisEffects', placement: 'candMixAxisPlacement', clones: 'candMixAxisClones' };
   // the board's virtual grid: a column per beat, a row per candidate index
   const BOARD = { col: 92, row: 74, head: 46, label: 42 };
+  // the numbered rows start under the header and the adopted-slot band
+  BOARD.top = BOARD.head + BOARD.row;
 
   // One capped, LRU in-memory thumbnail cache shared by the tab and the board.
   // Thumbnails are never written to the project; the oldest entry is evicted
@@ -483,17 +485,27 @@ SA.candidates = (() => {
     if (!cols.length) return;
     const range = visibleRange();
     const jobs = [];
+    const queued = new Set();
+    const want = (column, item) => {
+      const key = thumbKeyFor(column.beatId, item, column.sig);
+      if (thumbs.has(key) || queued.has(key)) return;
+      queued.add(key);
+      const start = column.start;
+      const end = Math.max(Number(column.beat.end) || start + 1, start + 0.2);
+      const time = start + Math.min((end - start) * 0.6, 1.1);
+      jobs.push({ cueId: column.cueId, beatId: column.beatId, candidateId: item.id, key, time });
+    };
+    // the adopted slot is always on screen: its pictures come first
+    for (let col = range.colStart; col <= range.colEnd; col += 1) {
+      const column = cols[col];
+      const active = column.entry && column.entry.items.find((item) => item.id === column.entry.activeId);
+      if (active) want(column, active);
+    }
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       for (let col = range.colStart; col <= range.colEnd; col += 1) {
         const column = cols[col];
         const item = column.entry && column.entry.items[row];
-        if (!item) continue;
-        const key = thumbKeyFor(column.beatId, item, column.sig);
-        if (thumbs.has(key)) continue;
-        const start = column.start;
-        const end = Math.max(Number(column.beat.end) || start + 1, start + 0.2);
-        const time = start + Math.min((end - start) * 0.6, 1.1);
-        jobs.push({ cueId: column.cueId, beatId: column.beatId, candidateId: item.id, key, time });
+        if (item) want(column, item);
       }
     }
     if (!jobs.length) return;
@@ -801,8 +813,8 @@ SA.candidates = (() => {
     return {
       colStart: clamp(Math.floor((viewLeft - BOARD.label) / BOARD.col) - 1, 0, lastCol),
       colEnd: clamp(Math.ceil((viewLeft + viewW - BOARD.label) / BOARD.col) + 1, 0, lastCol),
-      rowStart: clamp(Math.floor((viewTop - BOARD.head) / BOARD.row) - 1, 0, lastRow),
-      rowEnd: clamp(Math.ceil((viewTop + viewH - BOARD.head) / BOARD.row) + 1, 0, lastRow),
+      rowStart: clamp(Math.floor((viewTop - BOARD.top) / BOARD.row) - 1, 0, lastRow),
+      rowEnd: clamp(Math.ceil((viewTop + viewH - BOARD.top) / BOARD.row) + 1, 0, lastRow),
     };
   }
 
@@ -833,10 +845,19 @@ SA.candidates = (() => {
     return cell;
   }
 
+  function boardAdoptedLabel(left, top) {
+    const cell = node('div', 'board-label board-adopt-label', t('studio.media.candWornName'));
+    cell.style.left = `${left}px`;
+    cell.style.top = `${top}px`;
+    cell.style.width = `${BOARD.label}px`;
+    cell.style.height = `${BOARD.row}px`;
+    return cell;
+  }
+
   function boardRowLabel(row, left) {
     const cell = node('div', 'board-label', `${row + 1}`);
     cell.style.left = `${left}px`;
-    cell.style.top = `${BOARD.head + row * BOARD.row}px`;
+    cell.style.top = `${BOARD.top + row * BOARD.row}px`;
     cell.style.width = `${BOARD.label}px`;
     cell.style.height = `${BOARD.row}px`;
     return cell;
@@ -858,24 +879,41 @@ SA.candidates = (() => {
     return cell;
   }
 
+  // The adopted slot: a band above row 1 that stays in view. It shows the card
+  // the beat wears now (initially the master); a beat on a hand-made look,
+  // which no card holds, shows a dash. It reuses that card's thumbnail.
+  function boardAdoptedCell(col, index, top) {
+    const cell = node('div', 'board-cell board-adopted');
+    cell.dataset.col = String(index);
+    cell.style.left = `${BOARD.label + index * BOARD.col}px`;
+    cell.style.top = `${top}px`;
+    cell.style.width = `${BOARD.col}px`;
+    cell.style.height = `${BOARD.row}px`;
+    const active = col.entry && col.entry.items.find((item) => item.id === col.entry.activeId);
+    if (!active) {
+      cell.classList.add('is-empty');
+      cell.appendChild(node('div', 'board-thumb', ''));
+      cell.appendChild(node('div', 'board-name', t('studio.media.candAdoptedHand')));
+      return cell;
+    }
+    cell.title = labelOf(active);
+    cell.appendChild(boardThumb(col.beatId, active, col.sig));
+    cell.appendChild(node('div', 'board-name', t('studio.media.candWornName')));
+    return cell;
+  }
+
   function boardCell(col, index, row) {
     const cell = node('div', 'board-cell');
     cell.dataset.col = String(index);
     cell.dataset.row = String(row);
     cell.style.left = `${BOARD.label + index * BOARD.col}px`;
-    cell.style.top = `${BOARD.head + row * BOARD.row}px`;
+    cell.style.top = `${BOARD.top + row * BOARD.row}px`;
     cell.style.width = `${BOARD.col}px`;
     cell.style.height = `${BOARD.row}px`;
     const item = col.entry && col.entry.items[row];
     if (!item) {
       cell.classList.add('is-empty');
       return cell;
-    }
-    // the frame marks a beat that wears a candidate other than the master
-    // (every beat starts on its master: framing that would only be noise)
-    if (item.id === col.entry.activeId && item.kind !== 'original') {
-      cell.classList.add('is-active');
-      cell.title = t('studio.media.candInUse');
     }
     cell.appendChild(boardThumb(col.beatId, item, col.sig));
     cell.appendChild(node('div', 'board-name', labelOf(item)));
@@ -908,7 +946,7 @@ SA.candidates = (() => {
       if (stray.classList && stray.classList.contains('panel-placeholder')) stray.remove();
     }
     boardCanvas.style.width = `${BOARD.label + cols.length * BOARD.col}px`;
-    boardCanvas.style.height = `${BOARD.head + Math.max(1, maxRows) * BOARD.row}px`;
+    boardCanvas.style.height = `${BOARD.top + Math.max(1, maxRows) * BOARD.row}px`;
     const scroll = boardScroll;
     const viewLeft = scroll.scrollLeft;
     const viewTop = scroll.scrollTop;
@@ -952,6 +990,31 @@ SA.candidates = (() => {
         el.style.top = `${viewTop}px`;
       });
     }
+    place('adopt-label', 'adopt-label', () => boardAdoptedLabel(viewLeft, viewTop + BOARD.head), (el) => {
+      el.style.left = `${viewLeft}px`;
+      el.style.top = `${viewTop + BOARD.head}px`;
+    });
+    for (let index = range.colStart; index <= range.colEnd; index += 1) {
+      const col = cols[index];
+      const active = col.entry && col.entry.items.find((item) => item.id === col.entry.activeId);
+      let sig = 'hand';
+      let base = null;
+      if (active) {
+        const thumbKey = thumbKeyFor(col.beatId, active, col.sig);
+        const url = thumbs.get(thumbKey);
+        const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
+        base = `adopt|${col.beatId}|${active.id}|${labelOf(active)}`;
+        sig = `${base}|${state}`;
+      }
+      place(`adopt:${index}`, sig, () => boardAdoptedCell(col, index, viewTop + BOARD.head), (el) => {
+        el.style.top = `${viewTop + BOARD.head}px`;
+      }, base, active ? (el) => {
+        const fresh = boardThumb(col.beatId, active, col.sig);
+        const old = el.querySelector('.board-thumb');
+        if (old) old.replaceWith(fresh);
+        else el.prepend(fresh);
+      } : null);
+    }
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       place(`label:${row}`, `label:${row}`, () => boardRowLabel(row, viewLeft), (el) => {
         el.style.left = `${viewLeft}px`;
@@ -969,7 +1032,7 @@ SA.candidates = (() => {
           const thumbKey = thumbKeyFor(col.beatId, item, col.sig);
           const url = thumbs.get(thumbKey);
           const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
-          base = `${col.beatId}|${col.cueId}|${col.start}|${item.id}|${item.kind}|${labelOf(item)}|${item.id === col.entry.activeId && item.kind !== 'original' ? 'A' : ''}`;
+          base = `${col.beatId}|${col.cueId}|${col.start}|${item.id}|${item.kind}|${labelOf(item)}`;
           sig = `${base}|${state}`;
         }
         place(`cell:${row}:${index}`, sig, () => boardCell(col, index, row), null, base, item ? (el) => {
