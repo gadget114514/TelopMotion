@@ -828,7 +828,11 @@ SA.store = (() => {
     const cueId = cueIdOfBeat(projectDoc, beatId);
     const current = cueId ? liveLookOfBeat(projectDoc, cueId, beatId) : null;
     if (!current) return entry.items[0].id;
-    const found = entry.items.find((item) => sameLook(item.look, current));
+    // an exact match first; else the same look but for the clips (a project
+    // wide recolour moves the backdrop clips away from the recorded snapshot
+    // without the beat having been edited)
+    const found = entry.items.find((item) => sameLook(item.look, current))
+      || entry.items.find((item) => sameLookCore(item.look, current));
     return found ? found.id : null;
   }
 

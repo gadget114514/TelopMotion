@@ -21,7 +21,7 @@ SA.candidates = (() => {
   const AXIS_LABEL = { color: 'candAxesColor', font: 'candAxesFont', effects: 'candAxesEffects', placement: 'candAxesPlacement', clones: 'candAxesClones' };
   const AXIS_SOURCE = { color: 'candMixAxisColor', font: 'candMixAxisFont', effects: 'candMixAxisEffects', placement: 'candMixAxisPlacement', clones: 'candMixAxisClones' };
   // the board's virtual grid: a column per beat, a row per candidate index
-  const BOARD = { col: 92, row: 74, head: 46, label: 42 };
+  const BOARD = { col: 80, row: 58, head: 42, label: 34 };
   // the numbered rows start under the header and the adopted-slot band
   BOARD.top = BOARD.head + BOARD.row;
 

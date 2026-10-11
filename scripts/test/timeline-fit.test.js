@@ -124,13 +124,13 @@ function fixture() {
 }
 
 // Track headers start folded, so every track contributes just its own row: the
-// subtitle track its cue row (26), the others one clip / layer row (22).
-const FOLDED_ROW_H = (track) => (track.kind === 'subtitle' ? 26 : 22);
+// subtitle track its cue row (22), the others one clip / layer row (18).
+const FOLDED_ROW_H = (track) => (track.kind === 'subtitle' ? 22 : 18);
 
 // The y a track's own row starts at, in canvas coordinates (the fixed ruler is
-// 24 tall).
+// 20 tall).
 function trackRowTop(trackId) {
-  let y = 24;
+  let y = 20;
   for (const track of store.state.project.tracks) {
     if (track.id === trackId) return y;
     y += FOLDED_ROW_H(track);
@@ -262,10 +262,10 @@ test('the background track checkbox hides its clips and shows them as a lane', (
   const bg = () => store.state.project.tracks.find((track) => track.kind === 'background');
   // the background track starts folded: the twisty in its header opens the
   // background clip lane under the layer row
-  const bgLayerCenter = trackRowTop('bg') + 11;
-  const clipLaneCenter = bgLayerCenter + 22;
+  const bgLayerCenter = trackRowTop('bg') + 9;
+  const clipLaneCenter = bgLayerCenter + 18;
   const click = (x, y) => {
-    const event = { button: 0, pointerId: 1, clientX: x, clientY: y - 24, currentTarget: canvas, preventDefault() {} };
+    const event = { button: 0, pointerId: 1, clientX: x, clientY: y - 20, currentTarget: canvas, preventDefault() {} };
     down(event);
     up(event);
   };
@@ -333,8 +333,8 @@ test('hovering a truncated row label reveals its full text', () => {
   assert.equal(tip.hidden, true, 'hidden while no label is hovered');
 
   const move = canvas.listeners.pointermove[0];
-  // the subtitle cue row starts at y 46 (ruler 24 + foreground 22), height 26
-  const overLabel = { pointerId: 1, clientX: 75, clientY: 46 + 13 - 24, currentTarget: canvas, preventDefault() {} };
+  // the subtitle cue row starts at y 38 (ruler 20 + foreground 18), height 22
+  const overLabel = { pointerId: 1, clientX: 75, clientY: 38 + 11 - 20, currentTarget: canvas, preventDefault() {} };
   move(overLabel);
   assert.equal(tip.hidden, false, 'the truncated label shows its tooltip');
   assert.equal(tip.textContent, 'studio.track.subtitle 1とても長いテスト名', 'the full label text is shown');

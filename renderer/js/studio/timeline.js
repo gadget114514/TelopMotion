@@ -3,18 +3,20 @@ window.SA = window.SA || {};
 SA.timeline = (() => {
   'use strict';
 
-  const LS_ZOOM = 'sa.studio.timeline.zoom';
-  const ROW_H = 26;
-  const RULER_H = 24;
-  const AUDIO_H = 30;
-  const LANE_H = 22;
-  const LAYER_H = 22;
+  // a new key: the default became 8 px/s, an older stored value must not win
+  const LS_ZOOM = 'sa.studio.timeline.zoom.v2';
+  const DEFAULT_ZOOM = 8;
+  const ROW_H = 22;
+  const RULER_H = 20;
+  const AUDIO_H = 26;
+  const LANE_H = 18;
+  const LAYER_H = 18;
   const LABEL_W = 180;
   // child rows (a track's attribute rows) are indented by this much so the
   // label column reads as a tree under the parent track's header
   const CHILD_INDENT = 18;
   const KEY_SIZE = 5;
-  const MIN_ZOOM = 10;
+  const MIN_ZOOM = 8;
   const MAX_ZOOM = 800;
   const SNAP_PX = 7;
   const TICK_STEPS = [0.1, 0.2, 0.5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
@@ -31,7 +33,7 @@ SA.timeline = (() => {
   let rulerCtx = null;
   let fixedHeight = RULER_H;
   let dpr = 1;
-  let pxPerSecond = 120;
+  let pxPerSecond = DEFAULT_ZOOM;
   let scrollX = 0;
   let hitRegions = [];
   let keyRegions = [];
