@@ -434,6 +434,7 @@ const preview = (() => {
   }
 
   function play() {
+    transportRev += 1;
     auxStop();
     if (playing) return;
     if (SA.store.state.playhead >= sceneDuration() - 1e-4) SA.store.setPlayhead(0);
@@ -460,6 +461,7 @@ const preview = (() => {
   }
 
   function pause() {
+    transportRev += 1;
     auxStop();
     if (!playing) return;
     SA.store.setPlayhead(clockNow());
@@ -479,6 +481,7 @@ const preview = (() => {
   }
 
   function seek(seconds) {
+    transportRev += 1;
     auxStop();
     const next = Math.max(0, Math.min(sceneDuration(), seconds));
     SA.store.setPlayhead(next);
@@ -821,6 +824,7 @@ const preview = (() => {
   // transport (playhead, play state, audio) is never moved by a candidate
   // preview. Silent on purpose: nothing mixes with the main playback.
   let aux = null; // { canvas, badge, renderer, raf, run }
+  let transportRev = 0; // bumped by every play / pause / seek of the main transport
 
   function auxEnsure() {
     if (aux || !el.frame) return aux;
@@ -965,6 +969,7 @@ const preview = (() => {
     auxPlay,
     auxStop,
     isAuxPlaying: () => !!(aux && aux.run),
+    transportRev: () => transportRev,
     debugError: () => (renderer && typeof renderer.debugError === 'function' ? renderer.debugError() : 0),
     engine: () => renderer,
     isWebGL2: () => rendererKind === 'webgl2',

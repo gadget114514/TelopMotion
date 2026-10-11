@@ -11,6 +11,8 @@ SA.candidates = (() => {
 
   const THUMB_WIDTH = 224;
   const HOVER_LEAVE_MS = 90;
+  // a hover only starts the preview after it has rested on the card this long
+  const HOVER_START_MS = 2000;
   const PRE_ROLL = 0.3;
   const THUMB_CACHE_MAX = 600;
   const BEAT_PATH = /cue:([^/]+)(?:\/beat:([^/]+))?/;
@@ -58,6 +60,7 @@ SA.candidates = (() => {
   let hover = null; // { cueId, beatId, candidateId }
   let hoverAt = null; // { cueId, beatId, start, end } when the hover came from the board (any beat)
   let leaveTimer = null;
+  let startTimer = null; // the pending (delayed) start of a hover preview
   let tour = null; // { ids, index, timer } while the continuous playback runs
   let thumbBusy = false;
   let renderQueued = false;
@@ -69,6 +72,7 @@ SA.candidates = (() => {
   let boardScroll = null; // the scrolling element
   let boardCanvas = null; // the absolutely-positioned inner element
   let boardMarker = null; // the playhead column marker
+  const boardNodes = new Map(); // key -> { el, sig }: the reconciled grid
   let boardGen = 0; // bumped per visible-range change to cancel a stale thumb queue
   let follow = true; // follow the playhead until the user scrolls by hand
   let followCol = -1; // the last column highlighted as "now"
@@ -213,8 +217,14 @@ SA.candidates = (() => {
     }, 250);
   }
 
+  function clearStartTimer() {
+    if (startTimer) clearTimeout(startTimer);
+    startTimer = null;
+  }
+
   // `over` names another beat (a board cell); without it the hover is on the
-  // selected beat of the Candidates tab.
+  // selected beat of the Candidates tab. The preview itself starts only after
+  // the pointer has rested on the card for HOVER_START_MS.
   function beginHover(item, over) {
     const at = over || target;
     if (!at || !project()) return;
@@ -224,15 +234,32 @@ SA.candidates = (() => {
       leaveTimer = null;
     }
     if (hover && hover.candidateId === item.id && hover.beatId === at.beatId) return;
+    // another card was playing: it stops now, the new one waits its turn
+    clearStartTimer();
+    if (SA.preview && typeof SA.preview.auxStop === 'function') SA.preview.auxStop();
     hoverAt = over ? { cueId: over.cueId, beatId: over.beatId, start: Number(over.start) || 0, end: Number(over.end) || 0 } : null;
     hover = { cueId: at.cueId, beatId: at.beatId, candidateId: item.id, real: false };
-    playCandidate(at, item.id);
-    startHoverWatch();
+    const rev = SA.preview && typeof SA.preview.transportRev === 'function' ? SA.preview.transportRev() : 0;
+    startTimer = setTimeout(() => {
+      startTimer = null;
+      if (!hover || hover.candidateId !== item.id || hover.beatId !== at.beatId) return;
+      // the main transport was used meanwhile: that screen belongs to it
+      if (SA.preview && typeof SA.preview.transportRev === 'function' && SA.preview.transportRev() !== rev) return;
+      // the card was rebuilt or left without a mouseleave: nothing is hovered
+      if (!document.querySelector('.cand-card:hover, .board-cell:hover')) {
+        hover = null;
+        hoverAt = null;
+        return;
+      }
+      playCandidate(at, item.id);
+      startHoverWatch();
+    }, HOVER_START_MS);
   }
 
   // Ends the temporary preview: the candidate player is hidden, nothing else
   // was touched. (`stopPlay` is kept for the callers' sake.)
   function rollbackHover(stopPlay) {
+    clearStartTimer();
     hover = null;
     if (!stopPlay) return;
     hoverAt = null;
@@ -870,11 +897,16 @@ SA.candidates = (() => {
     store().commands.ensureAllOriginals();
     if (!boardModel) boardModel = buildBoardModel();
     const { cols, maxRows } = boardModel;
-    boardCanvas.textContent = '';
-    boardMarker = null;
     if (!cols.length) {
+      boardCanvas.textContent = '';
+      boardNodes.clear();
+      boardMarker = null;
       boardCanvas.appendChild(node('div', 'panel-placeholder', t('studio.media.candNoBeat')));
       return;
+    }
+    // an empty-board placeholder from before is not one of the reconciled nodes
+    for (const stray of [...boardCanvas.children]) {
+      if (stray.classList && stray.classList.contains('panel-placeholder')) stray.remove();
     }
     boardCanvas.style.width = `${BOARD.label + cols.length * BOARD.col}px`;
     boardCanvas.style.height = `${BOARD.head + Math.max(1, maxRows) * BOARD.row}px`;
@@ -882,29 +914,86 @@ SA.candidates = (() => {
     const viewLeft = scroll.scrollLeft;
     const viewTop = scroll.scrollTop;
     const range = visibleRange();
-    // corner + the sticky header row / label column, re-positioned to the scroll
-    const corner = node('div', 'board-corner');
-    corner.style.left = `${viewLeft}px`;
-    corner.style.top = `${viewTop}px`;
-    corner.style.width = `${BOARD.label}px`;
-    corner.style.height = `${BOARD.head}px`;
-    boardCanvas.appendChild(corner);
+    // The grid is reconciled, not rebuilt: a node whose content signature is
+    // unchanged is left alone (a rebuild of every cell on each thumbnail or
+    // scroll tick is what made the pane flicker). Sticky parts only move.
+    const seen = new Set();
+    const place = (key, sig, build, reposition, base, patch) => {
+      seen.add(key);
+      const hit = boardNodes.get(key);
+      if (hit && hit.sig === sig) {
+        if (reposition) reposition(hit.el);
+        return;
+      }
+      // same card, only its thumbnail moved on: swap the picture, not the cell
+      if (hit && patch && base != null && hit.base === base && hit.el.parentNode) {
+        patch(hit.el);
+        hit.sig = sig;
+        return;
+      }
+      const el = build();
+      if (hit && hit.el.parentNode) hit.el.replaceWith(el);
+      else boardCanvas.appendChild(el);
+      boardNodes.set(key, { el, sig, base });
+    };
+    place('corner', 'corner', () => {
+      const corner = node('div', 'board-corner');
+      corner.style.width = `${BOARD.label}px`;
+      corner.style.height = `${BOARD.head}px`;
+      corner.style.left = `${viewLeft}px`;
+      corner.style.top = `${viewTop}px`;
+      return corner;
+    }, (el) => {
+      el.style.left = `${viewLeft}px`;
+      el.style.top = `${viewTop}px`;
+    });
     for (let index = range.colStart; index <= range.colEnd; index += 1) {
-      boardCanvas.appendChild(boardHeadCell(cols[index], index, viewTop));
+      const col = cols[index];
+      place(`head:${index}`, `${col.beatId}|${col.cueId}|${col.start}|${col.text}|${count}|${mode}`, () => boardHeadCell(col, index, viewTop), (el) => {
+        el.style.top = `${viewTop}px`;
+      });
     }
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
-      boardCanvas.appendChild(boardRowLabel(row, viewLeft));
+      place(`label:${row}`, `label:${row}`, () => boardRowLabel(row, viewLeft), (el) => {
+        el.style.left = `${viewLeft}px`;
+      });
     }
     for (let row = range.rowStart; row <= range.rowEnd; row += 1) {
       for (let index = range.colStart; index <= range.colEnd; index += 1) {
-        boardCanvas.appendChild(boardCell(cols[index], index, row));
+        const col = cols[index];
+        const item = col.entry && col.entry.items[row];
+        let sig;
+        let base = null;
+        if (!item) {
+          sig = 'empty';
+        } else {
+          const thumbKey = thumbKeyFor(col.beatId, item, col.sig);
+          const url = thumbs.get(thumbKey);
+          const state = url ? `img:${hashOf(url)}` : thumbs.has(thumbKey) ? 'none' : 'wait';
+          base = `${col.beatId}|${col.cueId}|${col.start}|${item.id}|${item.kind}|${labelOf(item)}|${item.id === col.entry.activeId ? 'A' : ''}`;
+          sig = `${base}|${state}`;
+        }
+        place(`cell:${row}:${index}`, sig, () => boardCell(col, index, row), null, base, item ? (el) => {
+          const fresh = boardThumb(col.beatId, item, col.sig);
+          const old = el.querySelector('.board-thumb');
+          if (old) old.replaceWith(fresh);
+          else el.prepend(fresh);
+        } : null);
       }
     }
-    boardMarker = node('div', 'board-marker');
+    // whatever left the visible window goes
+    for (const [key, node_] of boardNodes) {
+      if (seen.has(key)) continue;
+      node_.el.remove();
+      boardNodes.delete(key);
+    }
+    if (!boardMarker || !boardMarker.parentNode) {
+      boardMarker = node('div', 'board-marker');
+      boardMarker.hidden = true;
+      boardCanvas.appendChild(boardMarker);
+    }
     boardMarker.style.top = `${viewTop}px`;
     boardMarker.style.height = `${Math.max(scroll.clientHeight, 1)}px`;
-    boardMarker.hidden = true;
-    boardCanvas.appendChild(boardMarker);
     followCol = -1;
     updateNow();
     boardGen += 1;
@@ -1207,13 +1296,19 @@ SA.candidates = (() => {
         lastKey = '';
         if (el.body) el.body.textContent = '';
         if (boardCanvas) boardCanvas.textContent = '';
+        boardNodes.clear();
+        boardMarker = null;
         if (boardOpen) scheduleBoard();
       }
       // board: rebuild the model only when the project / selection moved; while
       // playing the playhead only moves the "now" column
       if (boardOpen) {
         const versionKey = JSON.stringify(state.version);
-        if (hover && hover.real) {
+        if (thumbBusy && store().transactionToken() !== 0) {
+          // our own scratch transaction (a thumbnail shot) moves the version on
+          // purpose and rolls it back: a rebuild per shot is what flickered
+          if (state.playing) updateNow();
+        } else if (hover && hover.real) {
           // a hover preview moves the project version on purpose: keep the
           // cells (and the pointer's target) as they are until it ends
           if (state.playing) updateNow();
