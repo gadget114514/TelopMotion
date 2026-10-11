@@ -1267,18 +1267,18 @@ SA.candidates = (() => {
     event.preventDefault();
     hideBoardMenu();
     const menu = node('div', 'timeline-menu board-menu');
-    // a candidate cell can also become the master of its beat
+    // a candidate cell can be adopted: it goes to the beat, into the adopted slot
     const row = holder.classList.contains('board-cell') ? holder.dataset.row : null;
     const picked = row != null && col.entry ? col.entry.items[Number(row)] : null;
-    if (picked && picked.kind !== 'original') {
-      const replace = node('button', 'menu-item', t('studio.media.candReplaceMaster'));
-      replace.type = 'button';
-      replace.addEventListener('click', () => {
+    if (picked && picked.id !== col.entry.activeId) {
+      const adopt = node('button', 'menu-item', t('studio.media.candAdopt'));
+      adopt.type = 'button';
+      adopt.addEventListener('click', () => {
         hideBoardMenu();
         rollbackHover(true);
-        store().commands.replaceMaster(col.beatId, picked.id);
+        store().commands.applyCandidate(col.cueId, col.beatId, picked.id);
       });
-      menu.appendChild(replace);
+      menu.appendChild(adopt);
     }
     if (picked) {
       const refresh = node('button', 'menu-item', t('studio.media.candRefreshThumb'));
