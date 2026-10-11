@@ -610,7 +610,7 @@ SA.store = (() => {
     // colours too, and choosing the original puts them back
     const clips = {};
     if (beat) {
-      for (const managed of overlappingManagedClips(projectDoc, Number(beat.start) || 0, Number(beat.end) || 0)) {
+      for (const managed of beatOwnedClips(projectDoc, beat)) {
         clips[managed.id] = { spec: clone(managed.spec), colors: clone(managed.colors) };
       }
     }
@@ -624,9 +624,40 @@ SA.store = (() => {
     };
   }
 
+  // The managed clips that belong to this span alone: they lie inside it. A
+  // clip that runs on past the beat (a backdrop under the whole cue or song) is
+  // shared with other beats, so a beat's look must never record or rewrite it:
+  // adopting one beat's palette would recolour every beat under that clip.
   function overlappingManagedClips(projectDoc, start, end) {
     const managed = new Set((projectDoc.tracks || []).filter((track) => MANAGED_TRACK_KINDS.includes(track.kind)).map((track) => track.id));
-    return (projectDoc.clips || []).filter((clip) => managed.has(clip.trackId) && clip.start < end - 1e-4 && clip.end > start + 1e-4);
+    const slack = 0.05;
+    return (projectDoc.clips || []).filter((clip) => managed.has(clip.trackId)
+      && clip.start < end - 1e-4 && clip.end > start + 1e-4
+      && clip.start >= start - slack && clip.end <= end + slack);
+  }
+
+  // Everything that belongs to one beat: the managed clips inside its span plus
+  // the filler that fills the gap right after it (up to the next beat). Those
+  // follow the beat's palette; clips shared with other beats do not.
+  function beatOwnedClips(projectDoc, beat) {
+    const start = Number(beat.start) || 0;
+    const end = Number(beat.end) || 0;
+    const own = overlappingManagedClips(projectDoc, start, end);
+    const fillerTracks = new Set((projectDoc.tracks || []).filter((track) => track.kind === 'filler').map((track) => track.id));
+    if (!fillerTracks.size) return own;
+    let nextStart = Infinity;
+    for (const list of Object.values(projectDoc.beats || {})) {
+      for (const other of list || []) {
+        const at = Number(other.start) || 0;
+        if (other.id !== beat.id && at >= end - 1e-4 && at < nextStart) nextStart = at;
+      }
+    }
+    const have = new Set(own.map((clip) => clip.id));
+    for (const clip of projectDoc.clips || []) {
+      if (!fillerTracks.has(clip.trackId) || have.has(clip.id)) continue;
+      if (clip.start >= end - 0.05 && clip.end <= nextStart + 0.05) own.push(clip);
+    }
+    return own;
   }
 
   function applyBeatLookDoc(projectDoc, cueId, beatId, look) {
@@ -641,7 +672,10 @@ SA.store = (() => {
     else delete beat.fontScale;
     // looks stored before the clips were recorded carry none: leave the clips
     if (look.clips) {
+      const own = new Set(beatOwnedClips(projectDoc, beat).map((clip) => clip.id));
       for (const [clipId, reference] of Object.entries(look.clips)) {
+        // a clip shared with other beats is not this beat's to rewrite
+        if (!own.has(clipId)) continue;
         const saved = resolvePoolSnapshot(projectDoc, reference);
         if (!saved) continue;
         const target = (projectDoc.clips || []).find((entry) => entry.id === clipId);
@@ -3350,7 +3384,8 @@ SA.store = (() => {
           const palette = drawPalette(fromColors, 4);
           if (palette && Array.isArray(palette.colors) && palette.colors.length) {
             applyPalette(trial, beatTarget, palette, { clips: false });
-            recolorClips(overlappingManagedClips(trial, beatSpan.start, beatSpan.end), fromColors, palette.colors);
+            const trialBeat = findBeat(trial, cueId, beatId);
+            recolorClips(trialBeat ? beatOwnedClips(trial, trialBeat) : overlappingManagedClips(trial, beatSpan.start, beatSpan.end), fromColors, palette.colors);
             paletteDrawn = true;
           }
         }

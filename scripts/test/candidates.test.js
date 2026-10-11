@@ -345,18 +345,40 @@ test('ensureAllOriginals records every beat once, is idempotent and skips the hi
 
 test('clip snapshots are packed and shared through the pool', () => {
   const doc = fixture();
-  doc.beats.c2 = [{ id: 'c2:page0', cueId: 'c2', kind: 'page', start: 7, end: 10, text: 'world' }];
+  // two beats of one cue with an identical clip each (same snapshot): the
+  // pool stores that snapshot once
+  doc.beats.c1 = [
+    { id: 'c1:page0', cueId: 'c1', kind: 'page', start: 0, end: 2, text: 'he' },
+    { id: 'c1:page1', cueId: 'c1', kind: 'page', start: 2, end: 4, text: 'llo' },
+  ];
+  doc.clips = [
+    { id: 'clipA', trackId: 'bg', start: 0, end: 2, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null },
+    { id: 'clipB', trackId: 'bg', start: 2, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null },
+  ];
   store.load(doc);
-  // clip1 (background, 0..8) overlaps both beats
-  store.commands.generateCandidates('c1', BEAT, { count: 1, mode: 'near' });
-  store.commands.generateCandidates('c2', 'c2:page0', { count: 1, mode: 'near' });
-  const first = store.commands.candidatesOf(BEAT).items[0].look.clips.clip1;
-  const second = store.commands.candidatesOf('c2:page0').items[0].look.clips.clip1;
+  store.commands.generateCandidates('c1', 'c1:page0', { count: 1, mode: 'near' });
+  store.commands.generateCandidates('c1', 'c1:page1', { count: 1, mode: 'near' });
+  const first = store.commands.candidatesOf('c1:page0').items[0].look.clips.clipA;
+  const second = store.commands.candidatesOf('c1:page1').items[0].look.clips.clipB;
   assert.equal(typeof first, 'string', 'a stored look keeps a hash, not the snapshot');
-  assert.equal(first, second, 'the shared clip is stored once');
+  assert.equal(first, second, 'the same snapshot is stored once');
   const pool = store.state.project.candidatePool;
   assert.equal(Object.keys(pool).length, 1);
   assert.ok(pool[first] && pool[first].spec);
+});
+
+test('a clip shared with other beats is neither recorded in a look nor rewritten by adopting one', () => {
+  store.load(fixture());
+  // clip1 (background, 0..8) runs past the beat (0..4): it is shared
+  store.commands.generateCandidates('c1', BEAT, { count: 3, mode: 'near', axes: { color: true } });
+  const entry = store.commands.candidatesOf(BEAT);
+  for (const item of entry.items) assert.equal(Object.keys(item.look.clips || {}).length, 0, 'no shared clip in any look');
+  const clipBefore = JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'clip1'));
+  const other = entry.items.find((item) => item.id !== entry.activeId);
+  store.commands.applyCandidate('c1', BEAT, other.id);
+  assert.equal(JSON.stringify(store.state.project.clips.find((clip) => clip.id === 'clip1')), clipBefore);
+  // the palette stayed on the beat: no other beat's style moved
+  assert.deepEqual(Object.keys(store.state.project.beatStyles), [BEAT]);
 });
 
 test('candidates survive undo / redo and an undo of an apply restores the look only', () => {
@@ -394,7 +416,10 @@ test('a candidate-only change dirties the project without an undo entry', () => 
 });
 
 test('save / load round trip keeps both candidate keys', () => {
-  store.load(fixture());
+  const doc = fixture();
+  // a clip inside the beat is recorded in its looks (and so lands in the pool)
+  doc.clips = [{ id: 'clip1', trackId: 'bg', start: 0, end: 4, spec: { type: 'solid', params: {} }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: null }];
+  store.load(doc);
   store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
   const raw = JSON.parse(JSON.stringify(store.state.project));
   const reloaded = projectModule.migrate(raw).project;
@@ -547,3 +572,15 @@ test('an edit made while the thumbnail transaction is open is not rolled back wi
   assert.equal(store.canUndo(), true, 'the edit reached the history');
 });
 
+
+test('the filler in the gap right after a beat follows that beat palette (and only that gap)', () => {
+  const doc = fixture();
+  doc.clips = [
+    { id: 'fillerNear', trackId: 'filler', start: 4, end: 7, spec: { type: 'solid', params: { color: '#112233' } }, opacity: 1, fadeIn: 0, fadeOut: 0, colors: ['#112233'] },
+  ];
+  store.load(doc);
+  store.commands.generateCandidates('c1', BEAT, { count: 2, mode: 'near' });
+  const entry = store.commands.candidatesOf(BEAT);
+  // the filler between beat c1 (0-4) and the next beat (7) is part of the beat's look
+  assert.ok(entry.items[0].look.clips && 'fillerNear' in entry.items[0].look.clips, 'the gap filler is recorded');
+});
