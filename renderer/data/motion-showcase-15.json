@@ -43,11 +43,11 @@
         "id": "mo15_01",
         "start": 0,
         "end": 3,
-        "text": "373. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
+        "text": "378. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 373,
+          "index": 378,
           "presetId": "te_364",
           "group": "emphasis",
           "phase": "hold",
@@ -58,11 +58,11 @@
         "id": "mo15_02",
         "start": 3,
         "end": 6,
-        "text": "374. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "379. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 374,
+          "index": 379,
           "presetId": "te_366",
           "group": "emphasis",
           "phase": "hold",
@@ -73,11 +73,11 @@
         "id": "mo15_03",
         "start": 6,
         "end": 9,
-        "text": "375. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
+        "text": "380. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 375,
+          "index": 380,
           "presetId": "te_367",
           "group": "emphasis",
           "phase": "hold",
@@ -88,11 +88,11 @@
         "id": "mo15_04",
         "start": 9,
         "end": 12,
-        "text": "376. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "381. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 376,
+          "index": 381,
           "presetId": "te_368",
           "group": "emphasis",
           "phase": "hold",
@@ -103,11 +103,11 @@
         "id": "mo15_05",
         "start": 12,
         "end": 15,
-        "text": "377. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "382. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 377,
+          "index": 382,
           "presetId": "te_369",
           "group": "emphasis",
           "phase": "hold",
@@ -118,11 +118,11 @@
         "id": "mo15_06",
         "start": 15,
         "end": 18,
-        "text": "378. 刺繍 (Stitched Embroidery) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "text": "383. 刺繍 (Stitched Embroidery) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 378,
+          "index": 383,
           "presetId": "te_370",
           "group": "emphasis",
           "phase": "hold",
@@ -133,11 +133,11 @@
         "id": "mo15_07",
         "start": 18,
         "end": 21,
-        "text": "379. ニット (Knitted Wool) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "384. ニット (Knitted Wool) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 379,
+          "index": 384,
           "presetId": "te_371",
           "group": "emphasis",
           "phase": "hold",
@@ -148,11 +148,11 @@
         "id": "mo15_08",
         "start": 21,
         "end": 24,
-        "text": "380. ネオンサイン (Neon Signboard) · opacityPulse [min:0.4]\nあいうえお Aiueo 0123",
+        "text": "385. ネオンサイン (Neon Signboard) · opacityPulse [min:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 380,
+          "index": 385,
           "presetId": "te_372",
           "group": "emphasis",
           "phase": "hold",
@@ -163,11 +163,11 @@
         "id": "mo15_09",
         "start": 24,
         "end": 27,
-        "text": "381. 電球看板 (Marquee Bulbs) · marquee [speed:0.15]\nあいうえお Aiueo 0123",
+        "text": "386. 電球看板 (Marquee Bulbs) · marquee [speed:0.15]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 381,
+          "index": 386,
           "presetId": "te_373",
           "group": "emphasis",
           "phase": "hold",
@@ -178,11 +178,11 @@
         "id": "mo15_10",
         "start": 27,
         "end": 30,
-        "text": "382. LED電光掲示板 (LED Electronic Board) · opacityPulse [min:0.4 period:0.8 speed:1]\nあいうえお Aiueo 0123",
+        "text": "387. LED電光掲示板 (LED Electronic Board) · opacityPulse [min:0.4 period:0.8 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 382,
+          "index": 387,
           "presetId": "te_374",
           "group": "emphasis",
           "phase": "hold",
@@ -193,11 +193,11 @@
         "id": "mo15_11",
         "start": 30,
         "end": 33,
-        "text": "383. ドットマトリクス (Dot Matrix) · jitter [amp:0.005 rate:20]\nあいうえお Aiueo 0123",
+        "text": "388. ドットマトリクス (Dot Matrix) · jitter [amp:0.005 rate:20]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 383,
+          "index": 388,
           "presetId": "te_375",
           "group": "emphasis",
           "phase": "hold",
@@ -208,11 +208,11 @@
         "id": "mo15_12",
         "start": 33,
         "end": 36,
-        "text": "384. 7セグメント (7-Segment Display) · opacityPulse [min:0.55 period:1.5 speed:0.7]\nあいうえお Aiueo 0123",
+        "text": "389. 7セグメント (7-Segment Display) · opacityPulse [min:0.55 period:1.5 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 384,
+          "index": 389,
           "presetId": "te_376",
           "group": "emphasis",
           "phase": "hold",
@@ -223,11 +223,11 @@
         "id": "mo15_13",
         "start": 36,
         "end": 39,
-        "text": "385. テキストオンパス (Text on Path) · pathFollow [speed:0.08]\nあいうえお Aiueo 0123",
+        "text": "390. テキストオンパス (Text on Path) · pathFollow [speed:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 385,
+          "index": 390,
           "presetId": "te_80",
           "group": "emphasis",
           "phase": "hold",
@@ -238,11 +238,11 @@
         "id": "mo15_14",
         "start": 39,
         "end": 42,
-        "text": "386. アーチ (Arch) · pathFollow [speed:0.06]\nあいうえお Aiueo 0123",
+        "text": "391. アーチ (Arch) · pathFollow [speed:0.06]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 386,
+          "index": 391,
           "presetId": "te_81",
           "group": "emphasis",
           "phase": "hold",
@@ -253,11 +253,11 @@
         "id": "mo15_15",
         "start": 42,
         "end": 45,
-        "text": "387. サークルテキスト (Circular Text) · orbit2D [radius:0.05 speed:0.4 spread:0.08]\nあいうえお Aiueo 0123",
+        "text": "392. サークルテキスト (Circular Text) · orbit2D [radius:0.05 speed:0.4 spread:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 387,
+          "index": 392,
           "presetId": "te_82",
           "group": "emphasis",
           "phase": "hold",
@@ -268,11 +268,11 @@
         "id": "mo15_16",
         "start": 45,
         "end": 48,
-        "text": "388. スパイラル (Spiral) · orbit2D [radius:0.06 spread:0.12]\nあいうえお Aiueo 0123",
+        "text": "393. スパイラル (Spiral) · orbit2D [radius:0.06 spread:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 388,
+          "index": 393,
           "presetId": "te_83",
           "group": "emphasis",
           "phase": "hold",
@@ -283,11 +283,11 @@
         "id": "mo15_17",
         "start": 48,
         "end": 51,
-        "text": "389. ブラーアウト (Blur Out) · blurOut\nあいうえお Aiueo 0123",
+        "text": "394. ブラーアウト (Blur Out) · blurOut\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 389,
+          "index": 394,
           "presetId": "blurOut",
           "group": "exit",
           "phase": "exit",
@@ -298,11 +298,11 @@
         "id": "mo15_18",
         "start": 51,
         "end": 54,
-        "text": "390. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
+        "text": "395. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 390,
+          "index": 395,
           "presetId": "burn",
           "group": "exit",
           "phase": "exit",
@@ -313,11 +313,11 @@
         "id": "mo15_19",
         "start": 54,
         "end": 57,
-        "text": "391. ディゾルブ (Dissolve) · dissolve\nあいうえお Aiueo 0123",
+        "text": "396. ディゾルブ (Dissolve) · dissolve\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 391,
+          "index": 396,
           "presetId": "dissolve",
           "group": "exit",
           "phase": "exit",
@@ -328,11 +328,11 @@
         "id": "mo15_20",
         "start": 57,
         "end": 60,
-        "text": "392. ディザアウト (Dither Out) · dither\nあいうえお Aiueo 0123",
+        "text": "397. ディザアウト (Dither Out) · dither\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 392,
+          "index": 397,
           "presetId": "ditherOut",
           "group": "exit",
           "phase": "exit",
@@ -343,11 +343,11 @@
         "id": "mo15_21",
         "start": 60,
         "end": 63,
-        "text": "393. エクスプロード (Explode) · explode\nあいうえお Aiueo 0123",
+        "text": "398. エクスプロード (Explode) · explode\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 393,
+          "index": 398,
           "presetId": "explode",
           "group": "exit",
           "phase": "exit",
@@ -358,11 +358,11 @@
         "id": "mo15_22",
         "start": 63,
         "end": 66,
-        "text": "394. フェードグローアウト (Fade Glow Out) · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
+        "text": "399. フェードグローアウト (Fade Glow Out) · fade [softness:0.6 glow:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 394,
+          "index": 399,
           "presetId": "fadeGlowOut",
           "group": "exit",
           "phase": "exit",
@@ -373,11 +373,11 @@
         "id": "mo15_23",
         "start": 66,
         "end": 69,
-        "text": "395. フェードアウト (Fade Out) · fade\nあいうえお Aiueo 0123",
+        "text": "400. フェードアウト (Fade Out) · fade\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 395,
+          "index": 400,
           "presetId": "fadeOut",
           "group": "exit",
           "phase": "exit",
@@ -388,11 +388,11 @@
         "id": "mo15_24",
         "start": 69,
         "end": 72,
-        "text": "396. フライアウト (Fly Out) · slide\nあいうえお Aiueo 0123",
+        "text": "401. フライアウト (Fly Out) · slide\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 396,
+          "index": 401,
           "presetId": "flyOut",
           "group": "exit",
           "phase": "exit",
@@ -403,11 +403,11 @@
         "id": "mo15_25",
         "start": 72,
         "end": 75,
-        "text": "397. ジオメトリーアウト (Geometry Out) · geometry\nあいうえお Aiueo 0123",
+        "text": "402. ジオメトリーアウト (Geometry Out) · geometry\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 397,
+          "index": 402,
           "presetId": "geometryOut",
           "group": "exit",
           "phase": "exit",
@@ -418,11 +418,11 @@
         "id": "mo15_26",
         "start": 75,
         "end": 78,
-        "text": "398. メルト (Melt) · melt\nあいうえお Aiueo 0123",
+        "text": "403. メルト (Melt) · melt\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "15",
-          "index": 398,
+          "index": 403,
           "presetId": "melt",
           "group": "exit",
           "phase": "exit",
@@ -1734,9 +1734,9 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "373. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
+        "text": "378. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
         "lines": [
-          "373. 凍結 (Freeze Over) · shiver [amount",
+          "378. 凍結 (Freeze Over) · shiver [amount",
           ":0.3 interval:5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -1751,9 +1751,9 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "374. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
+        "text": "379. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
         "lines": [
-          "374. バルーン (Inflatable Balloon) ·",
+          "379. バルーン (Inflatable Balloon) ·",
           "jelly [freq:1.5]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8999999999999999,
@@ -1768,9 +1768,9 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "375. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
+        "text": "380. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
         "lines": [
-          "375. ぷっくり (Puffy 3D / Gel) · jelly [",
+          "380. ぷっくり (Puffy 3D / Gel) · jelly [",
           "amount:0.18 freq:1]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
@@ -1785,9 +1785,9 @@
         "index": 1,
         "start": 9,
         "end": 10.318840579710145,
-        "text": "376. クレイ (Claymation / Plasticine)",
+        "text": "381. クレイ (Claymation / Plasticine)",
         "lines": [
-          "376. クレイ (Claymation / Plasticine)"
+          "381. クレイ (Claymation / Plasticine)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1816,9 +1816,9 @@
         "index": 1,
         "start": 12,
         "end": 13.314356435643564,
-        "text": "377. ペーパークラフト (Papercraft Cutout)",
+        "text": "382. ペーパークラフト (Papercraft Cutout)",
         "lines": [
-          "377. ペーパークラフト (Papercraft Cutout)"
+          "382. ペーパークラフト (Papercraft Cutout)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1847,9 +1847,9 @@
         "index": 1,
         "start": 15,
         "end": 16.210796915167094,
-        "text": "378. 刺繍 (Stitched Embroidery)",
+        "text": "383. 刺繍 (Stitched Embroidery)",
         "lines": [
-          "378. 刺繍 (Stitched Embroidery)"
+          "383. 刺繍 (Stitched Embroidery)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1878,9 +1878,9 @@
         "index": 0,
         "start": 18,
         "end": 21,
-        "text": "379. ニット (Knitted Wool) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "384. ニット (Knitted Wool) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "379. ニット (Knitted Wool) · breathing",
+          "384. ニット (Knitted Wool) · breathing",
           "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
@@ -1895,9 +1895,9 @@
         "index": 1,
         "start": 21,
         "end": 22.219251336898395,
-        "text": "380. ネオンサイン (Neon Signboard)",
+        "text": "385. ネオンサイン (Neon Signboard)",
         "lines": [
-          "380. ネオンサイン (Neon Signboard)"
+          "385. ネオンサイン (Neon Signboard)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1926,9 +1926,9 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "381. 電球看板 (Marquee Bulbs) · marquee\n[speed:0.15]あいうえお Aiueo 0123",
+        "text": "386. 電球看板 (Marquee Bulbs) · marquee\n[speed:0.15]あいうえお Aiueo 0123",
         "lines": [
-          "381. 電球看板 (Marquee Bulbs) · marquee",
+          "386. 電球看板 (Marquee Bulbs) · marquee",
           "[speed:0.15]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8399999999999999,
@@ -1943,9 +1943,9 @@
         "index": 1,
         "start": 27,
         "end": 28.803760282021152,
-        "text": "382. LED電光掲示板 (LED Electronic\nBoard) · opacityPulse [min:0.",
+        "text": "387. LED電光掲示板 (LED Electronic\nBoard) · opacityPulse [min:0.",
         "lines": [
-          "382. LED電光掲示板 (LED Electronic",
+          "387. LED電光掲示板 (LED Electronic",
           "Board) · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
@@ -1975,9 +1975,9 @@
         "index": 1,
         "start": 30,
         "end": 31.164812942366027,
-        "text": "383. ドットマトリクス (Dot Matrix)",
+        "text": "388. ドットマトリクス (Dot Matrix)",
         "lines": [
-          "383. ドットマトリクス (Dot Matrix)"
+          "388. ドットマトリクス (Dot Matrix)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2006,9 +2006,9 @@
         "index": 1,
         "start": 33,
         "end": 34.708333333333336,
-        "text": "384. 7セグメント (7-Segment Display)\n · opacityPulse [min:0.",
+        "text": "389. 7セグメント (7-Segment Display)\n · opacityPulse [min:0.",
         "lines": [
-          "384. 7セグメント (7-Segment Display)",
+          "389. 7セグメント (7-Segment Display)",
           " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
@@ -2038,9 +2038,9 @@
         "index": 1,
         "start": 36,
         "end": 37.20316622691293,
-        "text": "385. テキストオンパス (Text on Path)",
+        "text": "390. テキストオンパス (Text on Path)",
         "lines": [
-          "385. テキストオンパス (Text on Path)"
+          "390. テキストオンパス (Text on Path)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2069,9 +2069,9 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "386. アーチ (Arch) · pathFollow [\nspeed:0.06]あいうえお Aiueo 0123",
+        "text": "391. アーチ (Arch) · pathFollow [\nspeed:0.06]あいうえお Aiueo 0123",
         "lines": [
-          "386. アーチ (Arch) · pathFollow [",
+          "391. アーチ (Arch) · pathFollow [",
           "speed:0.06]あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2086,9 +2086,9 @@
         "index": 1,
         "start": 42,
         "end": 43.63803680981595,
-        "text": "387. サークルテキスト (Circular Text)\n · orbit2D [radius:0.",
+        "text": "392. サークルテキスト (Circular Text)\n · orbit2D [radius:0.",
         "lines": [
-          "387. サークルテキスト (Circular Text)",
+          "392. サークルテキスト (Circular Text)",
           " · orbit2D [radius:0."
         ],
         "fontScale": 0.8,
@@ -2118,9 +2118,9 @@
         "index": 1,
         "start": 45,
         "end": 46.17972350230415,
-        "text": "388. スパイラル (Spiral) · orbit",
+        "text": "393. スパイラル (Spiral) · orbit",
         "lines": [
-          "388. スパイラル (Spiral) · orbit"
+          "393. スパイラル (Spiral) · orbit"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2149,9 +2149,9 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "389. ブラーアウト (Blur Out) ·\nblurOutあいうえお Aiueo 0123",
+        "text": "394. ブラーアウト (Blur Out) ·\nblurOutあいうえお Aiueo 0123",
         "lines": [
-          "389. ブラーアウト (Blur Out) ·",
+          "394. ブラーアウト (Blur Out) ·",
           "blurOutあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2166,9 +2166,9 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "390. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
+        "text": "395. バーン (Burn) · burnAway\nあいうえお Aiueo 0123",
         "lines": [
-          "390. バーン (Burn) · burnAway",
+          "395. バーン (Burn) · burnAway",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2183,9 +2183,9 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "391. ディゾルブ (Dissolve) ·\ndissolveあいうえお Aiueo 0123",
+        "text": "396. ディゾルブ (Dissolve) ·\ndissolveあいうえお Aiueo 0123",
         "lines": [
-          "391. ディゾルブ (Dissolve) ·",
+          "396. ディゾルブ (Dissolve) ·",
           "dissolveあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2200,9 +2200,9 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "392. ディザアウト (Dither Out) ·\nditherあいうえお Aiueo 0123",
+        "text": "397. ディザアウト (Dither Out) ·\nditherあいうえお Aiueo 0123",
         "lines": [
-          "392. ディザアウト (Dither Out) ·",
+          "397. ディザアウト (Dither Out) ·",
           "ditherあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2217,9 +2217,9 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "393. エクスプロード (Explode) ·\nexplodeあいうえお Aiueo 0123",
+        "text": "398. エクスプロード (Explode) ·\nexplodeあいうえお Aiueo 0123",
         "lines": [
-          "393. エクスプロード (Explode) ·",
+          "398. エクスプロード (Explode) ·",
           "explodeあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2234,9 +2234,9 @@
         "index": 1,
         "start": 63,
         "end": 64.19828408007626,
-        "text": "394. フェードグローアウト (Fade Glow Out)",
+        "text": "399. フェードグローアウト (Fade Glow Out)",
         "lines": [
-          "394. フェードグローアウト (Fade Glow Out)"
+          "399. フェードグローアウト (Fade Glow Out)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2265,9 +2265,9 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "395. フェードアウト (Fade Out) ·\nfadeあいうえお Aiueo 0123",
+        "text": "400. フェードアウト (Fade Out) ·\nfadeあいうえお Aiueo 0123",
         "lines": [
-          "395. フェードアウト (Fade Out) ·",
+          "400. フェードアウト (Fade Out) ·",
           "fadeあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2282,9 +2282,9 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "396. フライアウト (Fly Out) ·\nslideあいうえお Aiueo 0123",
+        "text": "401. フライアウト (Fly Out) ·\nslideあいうえお Aiueo 0123",
         "lines": [
-          "396. フライアウト (Fly Out) ·",
+          "401. フライアウト (Fly Out) ·",
           "slideあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2299,9 +2299,9 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "397. ジオメトリーアウト (Geometry Out\n) · geometryあいうえお Aiueo 0123",
+        "text": "402. ジオメトリーアウト (Geometry Out\n) · geometryあいうえお Aiueo 0123",
         "lines": [
-          "397. ジオメトリーアウト (Geometry Out",
+          "402. ジオメトリーアウト (Geometry Out",
           ") · geometryあいうえお Aiueo 0123"
         ],
         "fontScale": 0.9199999999999999,
@@ -2316,9 +2316,9 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "398. メルト (Melt) · melt\nあいうえお Aiueo 0123",
+        "text": "403. メルト (Melt) · melt\nあいうえお Aiueo 0123",
         "lines": [
-          "398. メルト (Melt) · melt",
+          "403. メルト (Melt) · melt",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,

@@ -78,6 +78,80 @@
 
   fx.register({
     group: 'enter',
+    type: 'anticipation',
+    tags: ['basic', 'lively'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['up', 'down', 'left', 'right'], default: 'up', random: 'any' },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.25, unit: 'frame' },
+      { key: 'pullback', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.12, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const dist = (params.distance == null ? 0.25 : params.distance) * info.shortSide;
+      const pull = (params.pullback == null ? 0.12 : params.pullback) * info.shortSide;
+      const dir = params.dir || 'up';
+      const unit = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[dir] || [0, -1];
+      let offsetScale;
+      if (progress < 0.25) {
+        const u = progress / 0.25;
+        offsetScale = -pull * Math.sin(u * Math.PI * 0.5);
+      } else {
+        const u = (progress - 0.25) / 0.75;
+        const f = easing.get('cubicOut')(u);
+        offsetScale = -pull * (1 - f) + dist * (1 - f);
+      }
+      state.x += unit[0] * offsetScale;
+      state.y += unit[1] * offsetScale;
+      state.opacity *= clamp01(progress * 2);
+    },
+  });
+
+  fx.register({
+    group: 'enter',
+    type: 'irisOpen',
+    tags: ['basic', 'mask'],
+    params: [{ key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.08 }],
+    cpu(state, p, params) {
+      const progress = clamp01(p);
+      state.wipeMode = 4;
+      state.wipeSoft = params.soft == null ? 0.08 : params.soft;
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, progress);
+      state.scaleX *= 0.8 + 0.2 * progress;
+      state.scaleY *= 0.8 + 0.2 * progress;
+      state.opacity *= clamp01(progress * 2);
+    },
+  });
+
+  fx.register({
+    group: 'enter',
+    type: 'doubleBounce',
+    tags: ['basic', 'lively'],
+    params: [
+      { key: 'height', kind: 'number', min: 0, max: 2, step: 0.05, default: 0.4, unit: 'frame' },
+      { key: 'recoilFactor', kind: 'number', min: 0.1, max: 0.8, step: 0.05, default: 0.3 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const height = (params.height == null ? 0.4 : params.height) * info.shortSide;
+      const recoil = params.recoilFactor == null ? 0.3 : params.recoilFactor;
+      const progress = clamp01(p);
+      let offset = 0;
+      if (progress < 0.6) {
+        const u = progress / 0.6;
+        offset = -height * (1 - u * u);
+      } else if (progress < 0.8) {
+        const u = (progress - 0.6) / 0.2;
+        offset = -height * recoil * 4 * u * (1 - u);
+      } else if (progress < 1.0) {
+        const u = (progress - 0.8) / 0.2;
+        offset = -height * recoil * 0.3 * 4 * u * (1 - u);
+      }
+      state.y += offset;
+      state.opacity *= clamp01(progress * 2.5);
+    },
+  });
+
+  fx.register({
+    group: 'enter',
     type: 'zoomIn',
     params: [{ key: 'from', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.4, random: [0, 1] }],
     cpu(state, p, params) {

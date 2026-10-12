@@ -43,42 +43,42 @@
         "id": "mo02_01",
         "start": 0,
         "end": 3,
-        "text": "28. ワイプイン (Wipe In) · wipe\nあいうえお Aiueo 0123",
+        "text": "28. トラッキング拡大 (Tracking Expand) · zoomIn [from:1.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 28,
-          "presetId": "te_15",
+          "presetId": "te_121",
           "group": "entrance",
           "phase": "enter",
-          "type": "wipe"
+          "type": "zoomIn"
         }
       },
       {
         "id": "mo02_02",
         "start": 3,
         "end": 6,
-        "text": "29. ボックスワイプ (Box Wipe) · box\nあいうえお Aiueo 0123",
+        "text": "29. トラッキングイン (Tracking In) · zoomIn [from:2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 29,
-          "presetId": "te_158",
+          "presetId": "te_122",
           "group": "entrance",
           "phase": "enter",
-          "type": "box"
+          "type": "zoomIn"
         }
       },
       {
         "id": "mo02_03",
         "start": 6,
         "end": 9,
-        "text": "30. 帯スライド (Banner Slide) · slide [dir:left distance:0.5]\nあいうえお Aiueo 0123",
+        "text": "30. スライドイン (Slide In) · slide [dir:left distance:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 30,
-          "presetId": "te_159",
+          "presetId": "te_13",
           "group": "entrance",
           "phase": "enter",
           "type": "slide"
@@ -88,11 +88,56 @@
         "id": "mo02_04",
         "start": 9,
         "end": 12,
-        "text": "31. リビール (Reveal) · maskReveal [soft:0.15]\nあいうえお Aiueo 0123",
+        "text": "31. ワイプイン (Wipe In) · wipe\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 31,
+          "presetId": "te_15",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "wipe"
+        }
+      },
+      {
+        "id": "mo02_05",
+        "start": 12,
+        "end": 15,
+        "text": "32. ボックスワイプ (Box Wipe) · box\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "02",
+          "index": 32,
+          "presetId": "te_158",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "box"
+        }
+      },
+      {
+        "id": "mo02_06",
+        "start": 15,
+        "end": 18,
+        "text": "33. 帯スライド (Banner Slide) · slide [dir:left distance:0.5]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "02",
+          "index": 33,
+          "presetId": "te_159",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "slide"
+        }
+      },
+      {
+        "id": "mo02_07",
+        "start": 18,
+        "end": 21,
+        "text": "34. リビール (Reveal) · maskReveal [soft:0.15]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "02",
+          "index": 34,
           "presetId": "te_17",
           "group": "entrance",
           "phase": "enter",
@@ -100,14 +145,14 @@
         }
       },
       {
-        "id": "mo02_05",
-        "start": 12,
-        "end": 15,
-        "text": "32. ブラインド (Blinds) · blind\nあいうえお Aiueo 0123",
+        "id": "mo02_08",
+        "start": 21,
+        "end": 24,
+        "text": "35. ブラインド (Blinds) · blind\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 32,
+          "index": 35,
           "presetId": "te_18",
           "group": "entrance",
           "phase": "enter",
@@ -115,14 +160,14 @@
         }
       },
       {
-        "id": "mo02_06",
-        "start": 15,
-        "end": 18,
-        "text": "33. バーンドア (Barn Door) · split [distance:0.35]\nあいうえお Aiueo 0123",
+        "id": "mo02_09",
+        "start": 24,
+        "end": 27,
+        "text": "36. バーンドア (Barn Door) · split [distance:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 33,
+          "index": 36,
           "presetId": "te_19",
           "group": "entrance",
           "phase": "enter",
@@ -130,14 +175,14 @@
         }
       },
       {
-        "id": "mo02_07",
-        "start": 18,
-        "end": 21,
-        "text": "34. アイリスイン (Iris In) · circleIn [spread:0.7 circleScale:1.5]\nあいうえお Aiueo 0123",
+        "id": "mo02_10",
+        "start": 27,
+        "end": 30,
+        "text": "37. アイリスイン (Iris In) · circleIn [spread:0.7 circleScale:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 34,
+          "index": 37,
           "presetId": "te_20",
           "group": "entrance",
           "phase": "enter",
@@ -145,14 +190,14 @@
         }
       },
       {
-        "id": "mo02_08",
-        "start": 21,
-        "end": 24,
-        "text": "35. ブラーイン (Blur In) · blurIn [radius:14]\nあいうえお Aiueo 0123",
+        "id": "mo02_11",
+        "start": 30,
+        "end": 33,
+        "text": "38. ブラーイン (Blur In) · blurIn [radius:14]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 35,
+          "index": 38,
           "presetId": "te_22",
           "group": "entrance",
           "phase": "enter",
@@ -160,14 +205,14 @@
         }
       },
       {
-        "id": "mo02_09",
-        "start": 24,
-        "end": 27,
-        "text": "36. フォーカスイン (Focus In) · depthBlurIn\nあいうえお Aiueo 0123",
+        "id": "mo02_12",
+        "start": 33,
+        "end": 36,
+        "text": "39. フォーカスイン (Focus In) · depthBlurIn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 36,
+          "index": 39,
           "presetId": "te_24",
           "group": "entrance",
           "phase": "enter",
@@ -175,14 +220,14 @@
         }
       },
       {
-        "id": "mo02_10",
-        "start": 27,
-        "end": 30,
-        "text": "37. ドロップイン (Drop In) · dropBounce [height:0.7]\nあいうえお Aiueo 0123",
+        "id": "mo02_13",
+        "start": 36,
+        "end": 39,
+        "text": "40. ドロップイン (Drop In) · dropBounce [height:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 37,
+          "index": 40,
           "presetId": "te_26",
           "group": "entrance",
           "phase": "enter",
@@ -190,14 +235,14 @@
         }
       },
       {
-        "id": "mo02_11",
-        "start": 30,
-        "end": 33,
-        "text": "38. マスクリビール (Mask Reveal) · maskReveal [dir:left]\nあいうえお Aiueo 0123",
+        "id": "mo02_14",
+        "start": 39,
+        "end": 42,
+        "text": "41. マスクリビール (Mask Reveal) · maskReveal [dir:left]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 38,
+          "index": 41,
           "presetId": "te_260",
           "group": "entrance",
           "phase": "enter",
@@ -205,14 +250,14 @@
         }
       },
       {
-        "id": "mo02_12",
-        "start": 33,
-        "end": 36,
-        "text": "39. アンダーライン展開 (Underline Reveal) · strokeDrawOn [width:5]\nあいうえお Aiueo 0123",
+        "id": "mo02_15",
+        "start": 42,
+        "end": 45,
+        "text": "42. アンダーライン展開 (Underline Reveal) · strokeDrawOn [width:5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 39,
+          "index": 42,
           "presetId": "te_271",
           "group": "entrance",
           "phase": "enter",
@@ -220,14 +265,14 @@
         }
       },
       {
-        "id": "mo02_13",
-        "start": 36,
-        "end": 39,
-        "text": "40. ラインリビール (Line Reveal) · stretch [amount:1.8]\nあいうえお Aiueo 0123",
+        "id": "mo02_16",
+        "start": 45,
+        "end": 48,
+        "text": "43. ラインリビール (Line Reveal) · stretch [amount:1.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 40,
+          "index": 43,
           "presetId": "te_272",
           "group": "entrance",
           "phase": "enter",
@@ -235,14 +280,14 @@
         }
       },
       {
-        "id": "mo02_14",
-        "start": 39,
-        "end": 42,
-        "text": "41. ボックスリビール (Box Reveal) · box [soft:0.1]\nあいうえお Aiueo 0123",
+        "id": "mo02_17",
+        "start": 48,
+        "end": 51,
+        "text": "44. ボックスリビール (Box Reveal) · box [soft:0.1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 41,
+          "index": 44,
           "presetId": "te_273",
           "group": "entrance",
           "phase": "enter",
@@ -250,14 +295,14 @@
         }
       },
       {
-        "id": "mo02_15",
-        "start": 42,
-        "end": 45,
-        "text": "42. ライズアップ (Rise Up) · riseUp [distance:0.25]\nあいうえお Aiueo 0123",
+        "id": "mo02_18",
+        "start": 51,
+        "end": 54,
+        "text": "45. ライズアップ (Rise Up) · riseUp [distance:0.25]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 42,
+          "index": 45,
           "presetId": "te_28",
           "group": "entrance",
           "phase": "enter",
@@ -265,14 +310,14 @@
         }
       },
       {
-        "id": "mo02_16",
-        "start": 45,
-        "end": 48,
-        "text": "43. パンチイン (Punch In) · zoomIn [from:0.1]\nあいうえお Aiueo 0123",
+        "id": "mo02_19",
+        "start": 54,
+        "end": 57,
+        "text": "46. パンチイン (Punch In) · zoomIn [from:0.1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 43,
+          "index": 46,
           "presetId": "te_280",
           "group": "entrance",
           "phase": "enter",
@@ -280,14 +325,14 @@
         }
       },
       {
-        "id": "mo02_17",
-        "start": 48,
-        "end": 51,
-        "text": "44. スナップ (Snap to Grid) · fade\nあいうえお Aiueo 0123",
+        "id": "mo02_20",
+        "start": 57,
+        "end": 60,
+        "text": "47. スナップ (Snap to Grid) · fade\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 44,
+          "index": 47,
           "presetId": "te_282",
           "group": "entrance",
           "phase": "enter",
@@ -295,14 +340,14 @@
         }
       },
       {
-        "id": "mo02_18",
-        "start": 51,
-        "end": 54,
-        "text": "45. せり上がり (Slide Up from Bottom) · slide [dir:down distance:0.3]\nあいうえお Aiueo 0123",
+        "id": "mo02_21",
+        "start": 60,
+        "end": 63,
+        "text": "48. せり上がり (Slide Up from Bottom) · slide [dir:down distance:0.3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 45,
+          "index": 48,
           "presetId": "te_29",
           "group": "entrance",
           "phase": "enter",
@@ -310,14 +355,14 @@
         }
       },
       {
-        "id": "mo02_19",
-        "start": 54,
-        "end": 57,
-        "text": "46. せり下がり (Slide Down from Top) · slide [distance:0.3]\nあいうえお Aiueo 0123",
+        "id": "mo02_22",
+        "start": 63,
+        "end": 66,
+        "text": "49. せり下がり (Slide Down from Top) · slide [distance:0.3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 46,
+          "index": 49,
           "presetId": "te_30",
           "group": "entrance",
           "phase": "enter",
@@ -325,14 +370,14 @@
         }
       },
       {
-        "id": "mo02_20",
-        "start": 57,
-        "end": 60,
-        "text": "47. スタンプ (Rubber Stamp) · dropBounce [height:0.35]\nあいうえお Aiueo 0123",
+        "id": "mo02_23",
+        "start": 66,
+        "end": 69,
+        "text": "50. スタンプ (Rubber Stamp) · dropBounce [height:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 47,
+          "index": 50,
           "presetId": "te_309",
           "group": "entrance",
           "phase": "enter",
@@ -340,14 +385,14 @@
         }
       },
       {
-        "id": "mo02_21",
-        "start": 60,
-        "end": 63,
-        "text": "48. フリップイン (Flip In) · flip3D [axis:y]\nあいうえお Aiueo 0123",
+        "id": "mo02_24",
+        "start": 69,
+        "end": 72,
+        "text": "51. フリップイン (Flip In) · flip3D [axis:y]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 48,
+          "index": 51,
           "presetId": "te_31",
           "group": "entrance",
           "phase": "enter",
@@ -355,14 +400,14 @@
         }
       },
       {
-        "id": "mo02_22",
-        "start": 63,
-        "end": 66,
-        "text": "49. 印鑑 (Hanko Seal / Red Stamp) · dropBounce [height:0.25]\nあいうえお Aiueo 0123",
+        "id": "mo02_25",
+        "start": 72,
+        "end": 75,
+        "text": "52. 印鑑 (Hanko Seal / Red Stamp) · dropBounce [height:0.25]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
-          "index": 49,
+          "index": 52,
           "presetId": "te_310",
           "group": "entrance",
           "phase": "enter",
@@ -370,60 +415,15 @@
         }
       },
       {
-        "id": "mo02_23",
-        "start": 66,
-        "end": 69,
-        "text": "50. スピンイン (Spin In) · rotateIn [angle:180]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "02",
-          "index": 50,
-          "presetId": "te_33",
-          "group": "entrance",
-          "phase": "enter",
-          "type": "rotateIn"
-        }
-      },
-      {
-        "id": "mo02_24",
-        "start": 69,
-        "end": 72,
-        "text": "51. ロールイン (Roll In) · rotateIn [angle:240]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "02",
-          "index": 51,
-          "presetId": "te_35",
-          "group": "entrance",
-          "phase": "enter",
-          "type": "rotateIn"
-        }
-      },
-      {
-        "id": "mo02_25",
-        "start": 72,
-        "end": 75,
-        "text": "52. 解凍 (Thaw Reveal) · noiseDissolveIn [scale:14 edgeWidth:0.12]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "02",
-          "index": 52,
-          "presetId": "te_365",
-          "group": "entrance",
-          "phase": "enter",
-          "type": "noiseDissolveIn"
-        }
-      },
-      {
         "id": "mo02_26",
         "start": 75,
         "end": 78,
-        "text": "53. スイングイン (Swing In) · rotateIn [angle:30]\nあいうえお Aiueo 0123",
+        "text": "53. スピンイン (Spin In) · rotateIn [angle:180]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 53,
-          "presetId": "te_37",
+          "presetId": "te_33",
           "group": "entrance",
           "phase": "enter",
           "type": "rotateIn"
@@ -433,12 +433,12 @@
         "id": "mo02_27",
         "start": 78,
         "end": 81,
-        "text": "54. ホイップイン (Whip In) · rotateIn [angle:120]\nあいうえお Aiueo 0123",
+        "text": "54. ロールイン (Roll In) · rotateIn [angle:240]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "02",
           "index": 54,
-          "presetId": "te_38",
+          "presetId": "te_35",
           "group": "entrance",
           "phase": "enter",
           "type": "rotateIn"
@@ -499,15 +499,13 @@
         {
           "id": "m_mo02_01",
           "phase": "enter",
-          "type": "wipe",
+          "type": "zoomIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "dir": "left",
-            "soft": 0.05,
-            "fade": false
+            "from": 1.6
           },
           "enabled": true
         }
@@ -545,13 +543,13 @@
         {
           "id": "m_mo02_02",
           "phase": "enter",
-          "type": "box",
+          "type": "zoomIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "soft": 0.06
+            "from": 2
           },
           "enabled": true
         }
@@ -596,7 +594,7 @@
           "ease": "easeOutCubic",
           "params": {
             "dir": "left",
-            "distance": 0.5
+            "distance": 0.35
           },
           "enabled": true
         }
@@ -634,15 +632,15 @@
         {
           "id": "m_mo02_04",
           "phase": "enter",
-          "type": "maskReveal",
+          "type": "wipe",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "dir": "right",
-            "soft": 0.15,
-            "slope": 0.3
+            "dir": "left",
+            "soft": 0.05,
+            "fade": false
           },
           "enabled": true
         }
@@ -680,15 +678,13 @@
         {
           "id": "m_mo02_05",
           "phase": "enter",
-          "type": "blind",
+          "type": "box",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "count": 6,
-            "dir": "horizontal",
-            "soft": 0.08
+            "soft": 0.06
           },
           "enabled": true
         }
@@ -726,14 +722,14 @@
         {
           "id": "m_mo02_06",
           "phase": "enter",
-          "type": "split",
+          "type": "slide",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "axis": "horizontal",
-            "distance": 0.35
+            "dir": "left",
+            "distance": 0.5
           },
           "enabled": true
         }
@@ -771,33 +767,15 @@
         {
           "id": "m_mo02_07",
           "phase": "enter",
-          "type": "circleIn",
+          "type": "maskReveal",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "spread": 0.7,
-            "circleScale": 1.5,
-            "shapeUnit": "block",
-            "pivot": "letter",
-            "pivotAnchor": "c",
-            "pivotOffset": {
-              "x": 0,
-              "y": 0
-            },
-            "pivotZ": 0,
-            "scaleFromX": 1,
-            "scaleFromY": 1,
-            "scaleAxis": 0,
-            "scaleEase": "easeOutCubic",
-            "scaleOriginSeparate": false,
-            "scaleOrigin": "letter",
-            "scaleOriginAnchor": "c",
-            "scaleOriginOffset": {
-              "x": 0,
-              "y": 0
-            }
+            "dir": "right",
+            "soft": 0.15,
+            "slope": 0.3
           },
           "enabled": true
         }
@@ -835,13 +813,15 @@
         {
           "id": "m_mo02_08",
           "phase": "enter",
-          "type": "blurIn",
+          "type": "blind",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "radius": 14
+            "count": 6,
+            "dir": "horizontal",
+            "soft": 0.08
           },
           "enabled": true
         }
@@ -879,14 +859,14 @@
         {
           "id": "m_mo02_09",
           "phase": "enter",
-          "type": "depthBlurIn",
+          "type": "split",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "blur": 14,
-            "from": 1.6
+            "axis": "horizontal",
+            "distance": 0.35
           },
           "enabled": true
         }
@@ -924,13 +904,33 @@
         {
           "id": "m_mo02_10",
           "phase": "enter",
-          "type": "dropBounce",
+          "type": "circleIn",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "height": 0.7
+            "spread": 0.7,
+            "circleScale": 1.5,
+            "shapeUnit": "block",
+            "pivot": "letter",
+            "pivotAnchor": "c",
+            "pivotOffset": {
+              "x": 0,
+              "y": 0
+            },
+            "pivotZ": 0,
+            "scaleFromX": 1,
+            "scaleFromY": 1,
+            "scaleAxis": 0,
+            "scaleEase": "easeOutCubic",
+            "scaleOriginSeparate": false,
+            "scaleOrigin": "letter",
+            "scaleOriginAnchor": "c",
+            "scaleOriginOffset": {
+              "x": 0,
+              "y": 0
+            }
           },
           "enabled": true
         }
@@ -968,15 +968,13 @@
         {
           "id": "m_mo02_11",
           "phase": "enter",
-          "type": "maskReveal",
+          "type": "blurIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "dir": "left",
-            "soft": 0.12,
-            "slope": 0.3
+            "radius": 14
           },
           "enabled": true
         }
@@ -1014,14 +1012,14 @@
         {
           "id": "m_mo02_12",
           "phase": "enter",
-          "type": "strokeDrawOn",
+          "type": "depthBlurIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.8,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "width": 5,
-            "fillDelay": 0.5
+            "blur": 14,
+            "from": 1.6
           },
           "enabled": true
         }
@@ -1059,14 +1057,13 @@
         {
           "id": "m_mo02_13",
           "phase": "enter",
-          "type": "stretch",
+          "type": "dropBounce",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "axis": "x",
-            "amount": 1.8
+            "height": 0.7
           },
           "enabled": true
         }
@@ -1104,13 +1101,15 @@
         {
           "id": "m_mo02_14",
           "phase": "enter",
-          "type": "box",
+          "type": "maskReveal",
           "from": "start",
           "delay": 0,
           "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "soft": 0.1
+            "dir": "left",
+            "soft": 0.12,
+            "slope": 0.3
           },
           "enabled": true
         }
@@ -1148,14 +1147,14 @@
         {
           "id": "m_mo02_15",
           "phase": "enter",
-          "type": "riseUp",
+          "type": "strokeDrawOn",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "distance": 0.25,
-            "fade": true
+            "width": 5,
+            "fillDelay": 0.5
           },
           "enabled": true
         }
@@ -1193,13 +1192,14 @@
         {
           "id": "m_mo02_16",
           "phase": "enter",
-          "type": "zoomIn",
+          "type": "stretch",
           "from": "start",
           "delay": 0,
-          "duration": 0.45,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "from": 0.1
+            "axis": "x",
+            "amount": 1.8
           },
           "enabled": true
         }
@@ -1237,14 +1237,13 @@
         {
           "id": "m_mo02_17",
           "phase": "enter",
-          "type": "fade",
+          "type": "box",
           "from": "start",
           "delay": 0,
-          "duration": 0.3,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "softness": 0,
-            "glow": 0
+            "soft": 0.1
           },
           "enabled": true
         }
@@ -1282,14 +1281,14 @@
         {
           "id": "m_mo02_18",
           "phase": "enter",
-          "type": "slide",
+          "type": "riseUp",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "dir": "down",
-            "distance": 0.3
+            "distance": 0.25,
+            "fade": true
           },
           "enabled": true
         }
@@ -1327,14 +1326,13 @@
         {
           "id": "m_mo02_19",
           "phase": "enter",
-          "type": "slide",
+          "type": "zoomIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.45,
           "ease": "easeOutCubic",
           "params": {
-            "dir": "up",
-            "distance": 0.3
+            "from": 0.1
           },
           "enabled": true
         }
@@ -1372,13 +1370,14 @@
         {
           "id": "m_mo02_20",
           "phase": "enter",
-          "type": "dropBounce",
+          "type": "fade",
           "from": "start",
           "delay": 0,
-          "duration": 0.4,
+          "duration": 0.3,
           "ease": "easeOutCubic",
           "params": {
-            "height": 0.35
+            "softness": 0,
+            "glow": 0
           },
           "enabled": true
         }
@@ -1416,14 +1415,14 @@
         {
           "id": "m_mo02_21",
           "phase": "enter",
-          "type": "flip3D",
+          "type": "slide",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "axis": "y",
-            "angle": 90
+            "dir": "down",
+            "distance": 0.3
           },
           "enabled": true
         }
@@ -1461,13 +1460,14 @@
         {
           "id": "m_mo02_22",
           "phase": "enter",
-          "type": "dropBounce",
+          "type": "slide",
           "from": "start",
           "delay": 0,
-          "duration": 0.45,
+          "duration": 0.6,
           "ease": "easeOutCubic",
           "params": {
-            "height": 0.25
+            "dir": "up",
+            "distance": 0.3
           },
           "enabled": true
         }
@@ -1505,13 +1505,13 @@
         {
           "id": "m_mo02_23",
           "phase": "enter",
-          "type": "rotateIn",
+          "type": "dropBounce",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.4,
           "ease": "easeOutCubic",
           "params": {
-            "angle": 180
+            "height": 0.35
           },
           "enabled": true
         }
@@ -1549,13 +1549,14 @@
         {
           "id": "m_mo02_24",
           "phase": "enter",
-          "type": "rotateIn",
+          "type": "flip3D",
           "from": "start",
           "delay": 0,
-          "duration": 0.8,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "angle": 240
+            "axis": "y",
+            "angle": 90
           },
           "enabled": true
         }
@@ -1593,15 +1594,13 @@
         {
           "id": "m_mo02_25",
           "phase": "enter",
-          "type": "noiseDissolveIn",
+          "type": "dropBounce",
           "from": "start",
           "delay": 0,
-          "duration": 0.9,
+          "duration": 0.45,
           "ease": "easeOutCubic",
           "params": {
-            "scale": 14,
-            "edgeColor": null,
-            "edgeWidth": 0.12
+            "height": 0.25
           },
           "enabled": true
         }
@@ -1642,10 +1641,10 @@
           "type": "rotateIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.8,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "angle": 30
+            "angle": 180
           },
           "enabled": true
         }
@@ -1686,10 +1685,10 @@
           "type": "rotateIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.5,
+          "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "angle": 120
+            "angle": 240
           },
           "enabled": true
         }
@@ -1775,12 +1774,12 @@
         "index": 0,
         "start": 0,
         "end": 3,
-        "text": "28. ワイプイン (Wipe In) · wipe\nあいうえお Aiueo 0123",
+        "text": "28. トラッキング拡大 (Tracking Expand) ·\nzoomIn [from:1.6]あいうえお Aiueo 0123",
         "lines": [
-          "28. ワイプイン (Wipe In) · wipe",
-          "あいうえお Aiueo 0123"
+          "28. トラッキング拡大 (Tracking Expand) ·",
+          "zoomIn [from:1.6]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1792,43 +1791,29 @@
         "index": 0,
         "start": 3,
         "end": 6,
-        "text": "29. ボックスワイプ (Box Wipe) ·\nboxあいうえお Aiueo 0123",
+        "text": "29. トラッキングイン (Tracking In) ·\nzoomIn [from:2]あいうえお Aiueo 0123",
         "lines": [
-          "29. ボックスワイプ (Box Wipe) ·",
-          "boxあいうえお Aiueo 0123"
+          "29. トラッキングイン (Tracking In) ·",
+          "zoomIn [from:2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
     "mo02_03": [
       {
-        "id": "mo02_03:page1",
+        "id": "mo02_03:single0",
         "cueId": "mo02_03",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 6,
-        "end": 7.131362094037809,
-        "text": "30. 帯スライド (Banner Slide)",
-        "lines": [
-          "30. 帯スライド (Banner Slide)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo02_03:page2",
-        "cueId": "mo02_03",
-        "kind": "page",
-        "index": 2,
-        "start": 7.131362094037809,
         "end": 9,
-        "text": " · slide [dir:left distance:0.5]\nあいうえお Aiueo 0123",
+        "text": "30. スライドイン (Slide In) · slide [dir:\nleft distance:0.35]あいうえお Aiueo 0123",
         "lines": [
-          " · slide [dir:left distance:0.5]",
-          "あいうえお Aiueo 0123"
+          "30. スライドイン (Slide In) · slide [dir:",
+          "left distance:0.35]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1840,12 +1825,12 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "31. リビール (Reveal) · maskReveal\n[soft:0.15]あいうえお Aiueo 0123",
+        "text": "31. ワイプイン (Wipe In) · wipe\nあいうえお Aiueo 0123",
         "lines": [
-          "31. リビール (Reveal) · maskReveal",
-          "[soft:0.15]あいうえお Aiueo 0123"
+          "31. ワイプイン (Wipe In) · wipe",
+          "あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.98,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -1857,10 +1842,10 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "32. ブラインド (Blinds) · blind\nあいうえお Aiueo 0123",
+        "text": "32. ボックスワイプ (Box Wipe) ·\nboxあいうえお Aiueo 0123",
         "lines": [
-          "32. ブラインド (Blinds) · blind",
-          "あいうえお Aiueo 0123"
+          "32. ボックスワイプ (Box Wipe) ·",
+          "boxあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1868,49 +1853,49 @@
     ],
     "mo02_06": [
       {
-        "id": "mo02_06:single0",
+        "id": "mo02_06:page1",
         "cueId": "mo02_06",
-        "kind": "single",
-        "index": 0,
-        "start": 15,
-        "end": 18,
-        "text": "33. バーンドア (Barn Door) · split [\ndistance:0.35]あいうえお Aiueo 0123",
-        "lines": [
-          "33. バーンドア (Barn Door) · split [",
-          "distance:0.35]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.9199999999999999,
-        "pinned": false
-      }
-    ],
-    "mo02_07": [
-      {
-        "id": "mo02_07:page1",
-        "cueId": "mo02_07",
         "kind": "page",
         "index": 1,
-        "start": 18,
-        "end": 19.24009900990099,
-        "text": "34. アイリスイン (Iris In) · circleIn",
+        "start": 15,
+        "end": 16.131362094037808,
+        "text": "33. 帯スライド (Banner Slide)",
         "lines": [
-          "34. アイリスイン (Iris In) · circleIn"
+          "33. 帯スライド (Banner Slide)"
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo02_07:page2",
-        "cueId": "mo02_07",
+        "id": "mo02_06:page2",
+        "cueId": "mo02_06",
         "kind": "page",
         "index": 2,
-        "start": 19.24009900990099,
-        "end": 21,
-        "text": "[spread:0.7 circleScale:1.5]\nあいうえお Aiueo 0123",
+        "start": 16.131362094037808,
+        "end": 18,
+        "text": " · slide [dir:left distance:0.5]\nあいうえお Aiueo 0123",
         "lines": [
-          "[spread:0.7 circleScale:1.5]",
+          " · slide [dir:left distance:0.5]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo02_07": [
+      {
+        "id": "mo02_07:single0",
+        "cueId": "mo02_07",
+        "kind": "single",
+        "index": 0,
+        "start": 18,
+        "end": 21,
+        "text": "34. リビール (Reveal) · maskReveal\n[soft:0.15]あいうえお Aiueo 0123",
+        "lines": [
+          "34. リビール (Reveal) · maskReveal",
+          "[soft:0.15]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.98,
         "pinned": false
       }
     ],
@@ -1922,10 +1907,10 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "35. ブラーイン (Blur In) · blurIn\n[radius:14]あいうえお Aiueo 0123",
+        "text": "35. ブラインド (Blinds) · blind\nあいうえお Aiueo 0123",
         "lines": [
-          "35. ブラーイン (Blur In) · blurIn",
-          "[radius:14]あいうえお Aiueo 0123"
+          "35. ブラインド (Blinds) · blind",
+          "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1939,91 +1924,77 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "36. フォーカスイン (Focus In) ·\ndepthBlurInあいうえお Aiueo 0123",
+        "text": "36. バーンドア (Barn Door) · split [\ndistance:0.35]あいうえお Aiueo 0123",
         "lines": [
-          "36. フォーカスイン (Focus In) ·",
-          "depthBlurInあいうえお Aiueo 0123"
+          "36. バーンドア (Barn Door) · split [",
+          "distance:0.35]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
     "mo02_10": [
       {
-        "id": "mo02_10:single0",
+        "id": "mo02_10:page1",
         "cueId": "mo02_10",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 27,
-        "end": 30,
-        "text": "37. ドロップイン (Drop In) · dropBounce\n[height:0.7]あいうえお Aiueo 0123",
+        "end": 28.24009900990099,
+        "text": "37. アイリスイン (Iris In) · circleIn",
         "lines": [
-          "37. ドロップイン (Drop In) · dropBounce",
-          "[height:0.7]あいうえお Aiueo 0123"
+          "37. アイリスイン (Iris In) · circleIn"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo02_10:page2",
+        "cueId": "mo02_10",
+        "kind": "page",
+        "index": 2,
+        "start": 28.24009900990099,
+        "end": 30,
+        "text": "[spread:0.7 circleScale:1.5]\nあいうえお Aiueo 0123",
+        "lines": [
+          "[spread:0.7 circleScale:1.5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo02_11": [
       {
-        "id": "mo02_11:page1",
+        "id": "mo02_11:single0",
         "cueId": "mo02_11",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 30,
-        "end": 31.184606804238705,
-        "text": "38. マスクリビール (Mask Reveal)",
-        "lines": [
-          "38. マスクリビール (Mask Reveal)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo02_11:page2",
-        "cueId": "mo02_11",
-        "kind": "page",
-        "index": 2,
-        "start": 31.184606804238705,
         "end": 33,
-        "text": " · maskReveal [dir:left]\nあいうえお Aiueo 0123",
+        "text": "38. ブラーイン (Blur In) · blurIn\n[radius:14]あいうえお Aiueo 0123",
         "lines": [
-          " · maskReveal [dir:left]",
-          "あいうえお Aiueo 0123"
+          "38. ブラーイン (Blur In) · blurIn",
+          "[radius:14]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "mo02_12": [
       {
-        "id": "mo02_12:page1",
+        "id": "mo02_12:single0",
         "cueId": "mo02_12",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 33,
-        "end": 34.30964467005076,
-        "text": "39. アンダーライン展開 (Underline Reveal)",
-        "lines": [
-          "39. アンダーライン展開 (Underline Reveal)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo02_12:page2",
-        "cueId": "mo02_12",
-        "kind": "page",
-        "index": 2,
-        "start": 34.30964467005076,
         "end": 36,
-        "text": " · strokeDrawOn [width:5]\nあいうえお Aiueo 0123",
+        "text": "39. フォーカスイン (Focus In) ·\ndepthBlurInあいうえお Aiueo 0123",
         "lines": [
-          " · strokeDrawOn [width:5]",
-          "あいうえお Aiueo 0123"
+          "39. フォーカスイン (Focus In) ·",
+          "depthBlurInあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2035,46 +2006,74 @@
         "index": 0,
         "start": 36,
         "end": 39,
-        "text": "40. ラインリビール (Line Reveal) · stretch\n[amount:1.8]あいうえお Aiueo 0123",
+        "text": "40. ドロップイン (Drop In) · dropBounce\n[height:0.7]あいうえお Aiueo 0123",
         "lines": [
-          "40. ラインリビール (Line Reveal) · stretch",
-          "[amount:1.8]あいうえお Aiueo 0123"
+          "40. ドロップイン (Drop In) · dropBounce",
+          "[height:0.7]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
     "mo02_14": [
       {
-        "id": "mo02_14:single0",
+        "id": "mo02_14:page1",
         "cueId": "mo02_14",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 39,
-        "end": 42,
-        "text": "41. ボックスリビール (Box Reveal) ·\nbox [soft:0.1]あいうえお Aiueo 0123",
+        "end": 40.184606804238705,
+        "text": "41. マスクリビール (Mask Reveal)",
         "lines": [
-          "41. ボックスリビール (Box Reveal) ·",
-          "box [soft:0.1]あいうえお Aiueo 0123"
+          "41. マスクリビール (Mask Reveal)"
         ],
-        "fontScale": 0.94,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo02_14:page2",
+        "cueId": "mo02_14",
+        "kind": "page",
+        "index": 2,
+        "start": 40.184606804238705,
+        "end": 42,
+        "text": " · maskReveal [dir:left]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · maskReveal [dir:left]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo02_15": [
       {
-        "id": "mo02_15:single0",
+        "id": "mo02_15:page1",
         "cueId": "mo02_15",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 42,
-        "end": 45,
-        "text": "42. ライズアップ (Rise Up) · riseUp\n[distance:0.25]あいうえお Aiueo 0123",
+        "end": 43.30964467005076,
+        "text": "42. アンダーライン展開 (Underline Reveal)",
         "lines": [
-          "42. ライズアップ (Rise Up) · riseUp",
-          "[distance:0.25]あいうえお Aiueo 0123"
+          "42. アンダーライン展開 (Underline Reveal)"
         ],
-        "fontScale": 0.9199999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo02_15:page2",
+        "cueId": "mo02_15",
+        "kind": "page",
+        "index": 2,
+        "start": 43.30964467005076,
+        "end": 45,
+        "text": " · strokeDrawOn [width:5]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · strokeDrawOn [width:5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2086,12 +2085,12 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "43. パンチイン (Punch In) · zoomIn\n[from:0.1]あいうえお Aiueo 0123",
+        "text": "43. ラインリビール (Line Reveal) · stretch\n[amount:1.8]あいうえお Aiueo 0123",
         "lines": [
-          "43. パンチイン (Punch In) · zoomIn",
-          "[from:0.1]あいうえお Aiueo 0123"
+          "43. ラインリビール (Line Reveal) · stretch",
+          "[amount:1.8]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2103,43 +2102,29 @@
         "index": 0,
         "start": 48,
         "end": 51,
-        "text": "44. スナップ (Snap to Grid) ·\nfadeあいうえお Aiueo 0123",
+        "text": "44. ボックスリビール (Box Reveal) ·\nbox [soft:0.1]あいうえお Aiueo 0123",
         "lines": [
-          "44. スナップ (Snap to Grid) ·",
-          "fadeあいうえお Aiueo 0123"
+          "44. ボックスリビール (Box Reveal) ·",
+          "box [soft:0.1]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.94,
         "pinned": false
       }
     ],
     "mo02_18": [
       {
-        "id": "mo02_18:page1",
+        "id": "mo02_18:single0",
         "cueId": "mo02_18",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 51,
-        "end": 52.2027972027972,
-        "text": "45. せり上がり (Slide Up from Bottom)",
-        "lines": [
-          "45. せり上がり (Slide Up from Bottom)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo02_18:page2",
-        "cueId": "mo02_18",
-        "kind": "page",
-        "index": 2,
-        "start": 52.2027972027972,
         "end": 54,
-        "text": " · slide [dir:down distance:0.3]\nあいうえお Aiueo 0123",
+        "text": "45. ライズアップ (Rise Up) · riseUp\n[distance:0.25]あいうえお Aiueo 0123",
         "lines": [
-          " · slide [dir:down distance:0.3]",
-          "あいうえお Aiueo 0123"
+          "45. ライズアップ (Rise Up) · riseUp",
+          "[distance:0.25]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
@@ -2151,12 +2136,12 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "46. せり下がり (Slide Down from Top) ·\nslide [distance:0.3]あいうえお Aiueo 0123",
+        "text": "46. パンチイン (Punch In) · zoomIn\n[from:0.1]あいうえお Aiueo 0123",
         "lines": [
-          "46. せり下がり (Slide Down from Top) ·",
-          "slide [distance:0.3]あいうえお Aiueo 0123"
+          "46. パンチイン (Punch In) · zoomIn",
+          "[from:0.1]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.98,
         "pinned": false
       }
     ],
@@ -2168,58 +2153,58 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "47. スタンプ (Rubber Stamp) · dropBounce\n[height:0.35]あいうえお Aiueo 0123",
+        "text": "47. スナップ (Snap to Grid) ·\nfadeあいうえお Aiueo 0123",
         "lines": [
-          "47. スタンプ (Rubber Stamp) · dropBounce",
-          "[height:0.35]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8199999999999998,
-        "pinned": false
-      }
-    ],
-    "mo02_21": [
-      {
-        "id": "mo02_21:single0",
-        "cueId": "mo02_21",
-        "kind": "single",
-        "index": 0,
-        "start": 60,
-        "end": 63,
-        "text": "48. フリップイン (Flip In) · flip\n3D [axis:y]あいうえお Aiueo 0123",
-        "lines": [
-          "48. フリップイン (Flip In) · flip",
-          "3D [axis:y]あいうえお Aiueo 0123"
+          "47. スナップ (Snap to Grid) ·",
+          "fadeあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
       }
     ],
-    "mo02_22": [
+    "mo02_21": [
       {
-        "id": "mo02_22:page1",
-        "cueId": "mo02_22",
+        "id": "mo02_21:page1",
+        "cueId": "mo02_21",
         "kind": "page",
         "index": 1,
-        "start": 63,
-        "end": 64.25563909774436,
-        "text": "49. 印鑑 (Hanko Seal / Red Stamp)",
+        "start": 60,
+        "end": 61.2027972027972,
+        "text": "48. せり上がり (Slide Up from Bottom)",
         "lines": [
-          "49. 印鑑 (Hanko Seal / Red Stamp)"
+          "48. せり上がり (Slide Up from Bottom)"
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo02_22:page2",
-        "cueId": "mo02_22",
+        "id": "mo02_21:page2",
+        "cueId": "mo02_21",
         "kind": "page",
         "index": 2,
-        "start": 64.25563909774436,
-        "end": 66,
-        "text": " · dropBounce [height:0.25]\nあいうえお Aiueo 0123",
+        "start": 61.2027972027972,
+        "end": 63,
+        "text": " · slide [dir:down distance:0.3]\nあいうえお Aiueo 0123",
         "lines": [
-          " · dropBounce [height:0.25]",
+          " · slide [dir:down distance:0.3]",
           "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo02_22": [
+      {
+        "id": "mo02_22:single0",
+        "cueId": "mo02_22",
+        "kind": "single",
+        "index": 0,
+        "start": 63,
+        "end": 66,
+        "text": "49. せり下がり (Slide Down from Top) ·\nslide [distance:0.3]あいうえお Aiueo 0123",
+        "lines": [
+          "49. せり下がり (Slide Down from Top) ·",
+          "slide [distance:0.3]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2233,12 +2218,12 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "50. スピンイン (Spin In) · rotateIn\n[angle:180]あいうえお Aiueo 0123",
+        "text": "50. スタンプ (Rubber Stamp) · dropBounce\n[height:0.35]あいうえお Aiueo 0123",
         "lines": [
-          "50. スピンイン (Spin In) · rotateIn",
-          "[angle:180]あいうえお Aiueo 0123"
+          "50. スタンプ (Rubber Stamp) · dropBounce",
+          "[height:0.35]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.96,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2250,12 +2235,12 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "51. ロールイン (Roll In) · rotateIn\n[angle:240]あいうえお Aiueo 0123",
+        "text": "51. フリップイン (Flip In) · flip\n3D [axis:y]あいうえお Aiueo 0123",
         "lines": [
-          "51. ロールイン (Roll In) · rotateIn",
-          "[angle:240]あいうえお Aiueo 0123"
+          "51. フリップイン (Flip In) · flip",
+          "3D [axis:y]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.96,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2266,10 +2251,10 @@
         "kind": "page",
         "index": 1,
         "start": 72,
-        "end": 73.42924528301887,
-        "text": "52. 解凍 (Thaw Reveal) · noiseDissolveIn",
+        "end": 73.25563909774436,
+        "text": "52. 印鑑 (Hanko Seal / Red Stamp)",
         "lines": [
-          "52. 解凍 (Thaw Reveal) · noiseDissolveIn"
+          "52. 印鑑 (Hanko Seal / Red Stamp)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2279,11 +2264,11 @@
         "cueId": "mo02_25",
         "kind": "page",
         "index": 2,
-        "start": 73.42924528301887,
+        "start": 73.25563909774436,
         "end": 75,
-        "text": "[scale:14 edgeWidth:0.12]\nあいうえお Aiueo 0123",
+        "text": " · dropBounce [height:0.25]\nあいうえお Aiueo 0123",
         "lines": [
-          "[scale:14 edgeWidth:0.12]",
+          " · dropBounce [height:0.25]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2298,12 +2283,12 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "53. スイングイン (Swing In) · rotateIn\n[angle:30]あいうえお Aiueo 0123",
+        "text": "53. スピンイン (Spin In) · rotateIn\n[angle:180]あいうえお Aiueo 0123",
         "lines": [
-          "53. スイングイン (Swing In) · rotateIn",
-          "[angle:30]あいうえお Aiueo 0123"
+          "53. スピンイン (Spin In) · rotateIn",
+          "[angle:180]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.96,
         "pinned": false
       }
     ],
@@ -2315,12 +2300,12 @@
         "index": 0,
         "start": 78,
         "end": 81,
-        "text": "54. ホイップイン (Whip In) · rotateIn\n[angle:120]あいうえお Aiueo 0123",
+        "text": "54. ロールイン (Roll In) · rotateIn\n[angle:240]あいうえお Aiueo 0123",
         "lines": [
-          "54. ホイップイン (Whip In) · rotateIn",
-          "[angle:120]あいうえお Aiueo 0123"
+          "54. ロールイン (Roll In) · rotateIn",
+          "[angle:240]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 0.96,
         "pinned": false
       }
     ]
@@ -2329,13 +2314,13 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo02_03": [
+    "mo02_06": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo02_11": [
+    "mo02_14": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"

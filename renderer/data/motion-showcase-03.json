@@ -43,11 +43,56 @@
         "id": "mo03_01",
         "start": 0,
         "end": 3,
-        "text": "55. ポップイン (Pop In) · elasticPop\nあいうえお Aiueo 0123",
+        "text": "55. 解凍 (Thaw Reveal) · noiseDissolveIn [scale:14 edgeWidth:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
           "index": 55,
+          "presetId": "te_365",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "noiseDissolveIn"
+        }
+      },
+      {
+        "id": "mo03_02",
+        "start": 3,
+        "end": 6,
+        "text": "56. スイングイン (Swing In) · rotateIn [angle:30]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 56,
+          "presetId": "te_37",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "rotateIn"
+        }
+      },
+      {
+        "id": "mo03_03",
+        "start": 6,
+        "end": 9,
+        "text": "57. ホイップイン (Whip In) · rotateIn [angle:120]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 57,
+          "presetId": "te_38",
+          "group": "entrance",
+          "phase": "enter",
+          "type": "rotateIn"
+        }
+      },
+      {
+        "id": "mo03_04",
+        "start": 9,
+        "end": 12,
+        "text": "58. ポップイン (Pop In) · elasticPop\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 58,
           "presetId": "te_4",
           "group": "entrance",
           "phase": "enter",
@@ -55,14 +100,14 @@
         }
       },
       {
-        "id": "mo03_02",
-        "start": 3,
-        "end": 6,
-        "text": "56. カーテンオープン (Curtain Open) · blind [count:8 dir:vertical soft:0.1]\nあいうえお Aiueo 0123",
+        "id": "mo03_05",
+        "start": 12,
+        "end": 15,
+        "text": "59. カーテンオープン (Curtain Open) · blind [count:8 dir:vertical soft:0.1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 56,
+          "index": 59,
           "presetId": "te_40",
           "group": "entrance",
           "phase": "enter",
@@ -70,14 +115,14 @@
         }
       },
       {
-        "id": "mo03_03",
-        "start": 6,
-        "end": 9,
-        "text": "57. アコーディオン (Accordion) · stretch [amount:2]\nあいうえお Aiueo 0123",
+        "id": "mo03_06",
+        "start": 15,
+        "end": 18,
+        "text": "60. アコーディオン (Accordion) · stretch [amount:2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 57,
+          "index": 60,
           "presetId": "te_42",
           "group": "entrance",
           "phase": "enter",
@@ -85,14 +130,14 @@
         }
       },
       {
-        "id": "mo03_04",
-        "start": 9,
-        "end": 12,
-        "text": "58. ブロックイン (Block In) · scatterIn [spread:0.3]\nあいうえお Aiueo 0123",
+        "id": "mo03_07",
+        "start": 18,
+        "end": 21,
+        "text": "61. ブロックイン (Block In) · scatterIn [spread:0.3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 58,
+          "index": 61,
           "presetId": "te_43",
           "group": "entrance",
           "phase": "enter",
@@ -100,14 +145,14 @@
         }
       },
       {
-        "id": "mo03_05",
-        "start": 12,
-        "end": 15,
-        "text": "59. ピクセルイン (Pixel In) · scatterIn [spread:0.55]\nあいうえお Aiueo 0123",
+        "id": "mo03_08",
+        "start": 21,
+        "end": 24,
+        "text": "62. ピクセルイン (Pixel In) · scatterIn [spread:0.55]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 59,
+          "index": 62,
           "presetId": "te_44",
           "group": "entrance",
           "phase": "enter",
@@ -115,14 +160,14 @@
         }
       },
       {
-        "id": "mo03_06",
-        "start": 15,
-        "end": 18,
-        "text": "60. グロウイン (Glow In) · neonFlicker\nあいうえお Aiueo 0123",
+        "id": "mo03_09",
+        "start": 24,
+        "end": 27,
+        "text": "63. グロウイン (Glow In) · neonFlicker\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 60,
+          "index": 63,
           "presetId": "te_47",
           "group": "entrance",
           "phase": "enter",
@@ -130,14 +175,14 @@
         }
       },
       {
-        "id": "mo03_07",
-        "start": 18,
-        "end": 21,
-        "text": "61. フラッシュイン (Flash In) · flickerIn\nあいうえお Aiueo 0123",
+        "id": "mo03_10",
+        "start": 27,
+        "end": 30,
+        "text": "64. フラッシュイン (Flash In) · flickerIn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 61,
+          "index": 64,
           "presetId": "te_48",
           "group": "entrance",
           "phase": "enter",
@@ -145,14 +190,14 @@
         }
       },
       {
-        "id": "mo03_08",
-        "start": 21,
-        "end": 24,
-        "text": "62. バウンスイン (Bounce In) · dropBounce\nあいうえお Aiueo 0123",
+        "id": "mo03_11",
+        "start": 30,
+        "end": 33,
+        "text": "65. バウンスイン (Bounce In) · dropBounce\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 62,
+          "index": 65,
           "presetId": "te_6",
           "group": "entrance",
           "phase": "enter",
@@ -160,14 +205,14 @@
         }
       },
       {
-        "id": "mo03_09",
-        "start": 24,
-        "end": 27,
-        "text": "63. スケールアップ (Scale Up) · zoomIn\nあいうえお Aiueo 0123",
+        "id": "mo03_12",
+        "start": 33,
+        "end": 36,
+        "text": "66. スケールアップ (Scale Up) · zoomIn\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 63,
+          "index": 66,
           "presetId": "te_9",
           "group": "entrance",
           "phase": "enter",
@@ -175,60 +220,15 @@
         }
       },
       {
-        "id": "mo03_10",
-        "start": 27,
-        "end": 30,
-        "text": "64. パースペクティブ (Perspective) · orbit3D [tilt:24 speed:0.35]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 64,
-          "presetId": "te_127",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "orbit3D"
-        }
-      },
-      {
-        "id": "mo03_11",
-        "start": 30,
-        "end": 33,
-        "text": "65. 3D回転 (3D Rotation) · orbit3D [tilt:30 speed:0.9]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 65,
-          "presetId": "te_128",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "orbit3D"
-        }
-      },
-      {
-        "id": "mo03_12",
-        "start": 33,
-        "end": 36,
-        "text": "66. Y軸回転 (Y-Axis Rotation) · orbit3D [tilt:25 speed:0.7]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 66,
-          "presetId": "te_129",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "orbit3D"
-        }
-      },
-      {
         "id": "mo03_13",
         "start": 36,
         "end": 39,
-        "text": "67. X軸回転 (X-Axis Rotation) · orbit3D [tilt:25]\nあいうえお Aiueo 0123",
+        "text": "67. パースペクティブ (Perspective) · orbit3D [tilt:24 speed:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
           "index": 67,
-          "presetId": "te_130",
+          "presetId": "te_127",
           "group": "emphasis",
           "phase": "hold",
           "type": "orbit3D"
@@ -238,12 +238,12 @@
         "id": "mo03_14",
         "start": 39,
         "end": 42,
-        "text": "68. カード反転 (Card Flip) · orbit3D [tilt:45 speed:0.35]\nあいうえお Aiueo 0123",
+        "text": "68. 3D回転 (3D Rotation) · orbit3D [tilt:30 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
           "index": 68,
-          "presetId": "te_131",
+          "presetId": "te_128",
           "group": "emphasis",
           "phase": "hold",
           "type": "orbit3D"
@@ -253,11 +253,56 @@
         "id": "mo03_15",
         "start": 42,
         "end": 45,
-        "text": "69. 押し出し (Extrusion) · kenBurns [zoom:0.22 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "text": "69. Y軸回転 (Y-Axis Rotation) · orbit3D [tilt:25 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
           "index": 69,
+          "presetId": "te_129",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "orbit3D"
+        }
+      },
+      {
+        "id": "mo03_16",
+        "start": 45,
+        "end": 48,
+        "text": "70. X軸回転 (X-Axis Rotation) · orbit3D [tilt:25]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 70,
+          "presetId": "te_130",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "orbit3D"
+        }
+      },
+      {
+        "id": "mo03_17",
+        "start": 48,
+        "end": 51,
+        "text": "71. カード反転 (Card Flip) · orbit3D [tilt:45 speed:0.35]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 71,
+          "presetId": "te_131",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "orbit3D"
+        }
+      },
+      {
+        "id": "mo03_18",
+        "start": 51,
+        "end": 54,
+        "text": "72. 押し出し (Extrusion) · kenBurns [zoom:0.22 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "03",
+          "index": 72,
           "presetId": "te_132",
           "group": "emphasis",
           "phase": "hold",
@@ -265,14 +310,14 @@
         }
       },
       {
-        "id": "mo03_16",
-        "start": 45,
-        "end": 48,
-        "text": "70. エクストルード (Extrude) · kenBurns [zoom:0.3 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "id": "mo03_19",
+        "start": 54,
+        "end": 57,
+        "text": "73. エクストルード (Extrude) · kenBurns [zoom:0.3 pan:[object Object]]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 70,
+          "index": 73,
           "presetId": "te_133",
           "group": "emphasis",
           "phase": "hold",
@@ -280,14 +325,14 @@
         }
       },
       {
-        "id": "mo03_17",
-        "start": 48,
-        "end": 51,
-        "text": "71. スターウォーズ風 (Star Wars Crawl) · sway [angle:9 speed:0.35]\nあいうえお Aiueo 0123",
+        "id": "mo03_20",
+        "start": 57,
+        "end": 60,
+        "text": "74. スターウォーズ風 (Star Wars Crawl) · sway [angle:9 speed:0.35]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 71,
+          "index": 74,
           "presetId": "te_135",
           "group": "emphasis",
           "phase": "hold",
@@ -295,14 +340,14 @@
         }
       },
       {
-        "id": "mo03_18",
-        "start": 51,
-        "end": 54,
-        "text": "72. カメラフライスルー (Camera Fly-Through) · drift [vx:0 vy:-0.1]\nあいうえお Aiueo 0123",
+        "id": "mo03_21",
+        "start": 60,
+        "end": 63,
+        "text": "75. カメラフライスルー (Camera Fly-Through) · drift [vx:0 vy:-0.1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 72,
+          "index": 75,
           "presetId": "te_136",
           "group": "emphasis",
           "phase": "hold",
@@ -310,14 +355,14 @@
         }
       },
       {
-        "id": "mo03_19",
-        "start": 54,
-        "end": 57,
-        "text": "73. パララックス (Parallax) · drift [vx:0.07 vy:-0.02]\nあいうえお Aiueo 0123",
+        "id": "mo03_22",
+        "start": 63,
+        "end": 66,
+        "text": "76. パララックス (Parallax) · drift [vx:0.07 vy:-0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 73,
+          "index": 76,
           "presetId": "te_137",
           "group": "emphasis",
           "phase": "hold",
@@ -325,14 +370,14 @@
         }
       },
       {
-        "id": "mo03_20",
-        "start": 57,
-        "end": 60,
-        "text": "74. ワイヤーフレーム (Wireframe) · opacityPulse [min:0.6 period:3 speed:0.4]\nあいうえお Aiueo 0123",
+        "id": "mo03_23",
+        "start": 66,
+        "end": 69,
+        "text": "77. ワイヤーフレーム (Wireframe) · opacityPulse [min:0.6 period:3 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 74,
+          "index": 77,
           "presetId": "te_210",
           "group": "emphasis",
           "phase": "hold",
@@ -340,14 +385,14 @@
         }
       },
       {
-        "id": "mo03_21",
-        "start": 60,
-        "end": 63,
-        "text": "75. キューブ回転 (3D Cube Rotation) · orbit3D [tilt:35 speed:1]\nあいうえお Aiueo 0123",
+        "id": "mo03_24",
+        "start": 69,
+        "end": 72,
+        "text": "78. キューブ回転 (3D Cube Rotation) · orbit3D [tilt:35 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 75,
+          "index": 78,
           "presetId": "te_274",
           "group": "emphasis",
           "phase": "hold",
@@ -355,14 +400,14 @@
         }
       },
       {
-        "id": "mo03_22",
-        "start": 63,
-        "end": 66,
-        "text": "76. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
+        "id": "mo03_25",
+        "start": 72,
+        "end": 75,
+        "text": "79. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 76,
+          "index": 79,
           "presetId": "bob",
           "group": "emphasis",
           "phase": "hold",
@@ -370,14 +415,14 @@
         }
       },
       {
-        "id": "mo03_23",
-        "start": 66,
-        "end": 69,
-        "text": "77. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
+        "id": "mo03_26",
+        "start": 75,
+        "end": 78,
+        "text": "80. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
-          "index": 77,
+          "index": 80,
           "presetId": "breathe",
           "group": "emphasis",
           "phase": "hold",
@@ -385,63 +430,18 @@
         }
       },
       {
-        "id": "mo03_24",
-        "start": 69,
-        "end": 72,
-        "text": "78. ディザループ (Dither Loop) · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 78,
-          "presetId": "ditherLoop",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "dither"
-        }
-      },
-      {
-        "id": "mo03_25",
-        "start": 72,
-        "end": 75,
-        "text": "79. ドリフト (Drift) · drift\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 79,
-          "presetId": "drift",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "drift"
-        }
-      },
-      {
-        "id": "mo03_26",
-        "start": 75,
-        "end": 78,
-        "text": "80. フェードブレス (Fade Breathe) · fade [softness:0.8 glow:0.2]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "03",
-          "index": 80,
-          "presetId": "fadeBreathe",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "fade"
-        }
-      },
-      {
         "id": "mo03_27",
         "start": 78,
         "end": 81,
-        "text": "81. ジオメトリーループ (Geometry Loop) · geometry [shape:hexagon feather:0.08 spin:30]\nあいうえお Aiueo 0123",
+        "text": "81. ディザループ (Dither Loop) · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "03",
           "index": 81,
-          "presetId": "geometryLoop",
+          "presetId": "ditherLoop",
           "group": "emphasis",
           "phase": "hold",
-          "type": "geometry"
+          "type": "dither"
         }
       }
     ],
@@ -499,12 +499,16 @@
         {
           "id": "m_mo03_01",
           "phase": "enter",
-          "type": "elasticPop",
+          "type": "noiseDissolveIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.9,
           "ease": "easeOutCubic",
-          "params": {},
+          "params": {
+            "scale": 14,
+            "edgeColor": null,
+            "edgeWidth": 0.12
+          },
           "enabled": true
         }
       ]
@@ -541,15 +545,13 @@
         {
           "id": "m_mo03_02",
           "phase": "enter",
-          "type": "blind",
+          "type": "rotateIn",
           "from": "start",
           "delay": 0,
           "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "count": 8,
-            "dir": "vertical",
-            "soft": 0.1
+            "angle": 30
           },
           "enabled": true
         }
@@ -587,14 +589,13 @@
         {
           "id": "m_mo03_03",
           "phase": "enter",
-          "type": "stretch",
+          "type": "rotateIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.5,
           "ease": "easeOutCubic",
           "params": {
-            "axis": "x",
-            "amount": 2
+            "angle": 120
           },
           "enabled": true
         }
@@ -632,14 +633,12 @@
         {
           "id": "m_mo03_04",
           "phase": "enter",
-          "type": "scatterIn",
+          "type": "elasticPop",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.6,
           "ease": "easeOutCubic",
-          "params": {
-            "spread": 0.3
-          },
+          "params": {},
           "enabled": true
         }
       ]
@@ -676,13 +675,15 @@
         {
           "id": "m_mo03_05",
           "phase": "enter",
-          "type": "scatterIn",
+          "type": "blind",
           "from": "start",
           "delay": 0,
-          "duration": 0.7,
+          "duration": 0.8,
           "ease": "easeOutCubic",
           "params": {
-            "spread": 0.55
+            "count": 8,
+            "dir": "vertical",
+            "soft": 0.1
           },
           "enabled": true
         }
@@ -720,13 +721,14 @@
         {
           "id": "m_mo03_06",
           "phase": "enter",
-          "type": "neonFlicker",
+          "type": "stretch",
           "from": "start",
           "delay": 0,
-          "duration": 0.9,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "flickers": 5
+            "axis": "x",
+            "amount": 2
           },
           "enabled": true
         }
@@ -764,13 +766,13 @@
         {
           "id": "m_mo03_07",
           "phase": "enter",
-          "type": "flickerIn",
+          "type": "scatterIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "flickers": 4
+            "spread": 0.3
           },
           "enabled": true
         }
@@ -808,13 +810,13 @@
         {
           "id": "m_mo03_08",
           "phase": "enter",
-          "type": "dropBounce",
+          "type": "scatterIn",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.7,
           "ease": "easeOutCubic",
           "params": {
-            "height": 0.5
+            "spread": 0.55
           },
           "enabled": true
         }
@@ -852,13 +854,13 @@
         {
           "id": "m_mo03_09",
           "phase": "enter",
-          "type": "zoomIn",
+          "type": "neonFlicker",
           "from": "start",
           "delay": 0,
-          "duration": 0.6,
+          "duration": 0.9,
           "ease": "easeOutCubic",
           "params": {
-            "from": 0.4
+            "flickers": 5
           },
           "enabled": true
         }
@@ -895,15 +897,14 @@
       "motions": [
         {
           "id": "m_mo03_10",
-          "phase": "hold",
-          "type": "orbit3D",
+          "phase": "enter",
+          "type": "flickerIn",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
-          "ease": "linear",
+          "duration": 0.6,
+          "ease": "easeOutCubic",
           "params": {
-            "tilt": 24,
-            "speed": 0.35
+            "flickers": 4
           },
           "enabled": true
         }
@@ -940,15 +941,14 @@
       "motions": [
         {
           "id": "m_mo03_11",
-          "phase": "hold",
-          "type": "orbit3D",
+          "phase": "enter",
+          "type": "dropBounce",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
-          "ease": "linear",
+          "duration": 0.6,
+          "ease": "easeOutCubic",
           "params": {
-            "tilt": 30,
-            "speed": 0.9
+            "height": 0.5
           },
           "enabled": true
         }
@@ -985,15 +985,14 @@
       "motions": [
         {
           "id": "m_mo03_12",
-          "phase": "hold",
-          "type": "orbit3D",
+          "phase": "enter",
+          "type": "zoomIn",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
-          "ease": "linear",
+          "duration": 0.6,
+          "ease": "easeOutCubic",
           "params": {
-            "tilt": 25,
-            "speed": 0.7
+            "from": 0.4
           },
           "enabled": true
         }
@@ -1037,8 +1036,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "tilt": 25,
-            "speed": 0.5
+            "tilt": 24,
+            "speed": 0.35
           },
           "enabled": true
         }
@@ -1082,8 +1081,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "tilt": 45,
-            "speed": 0.35
+            "tilt": 30,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -1121,17 +1120,14 @@
         {
           "id": "m_mo03_15",
           "phase": "hold",
-          "type": "kenBurns",
+          "type": "orbit3D",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "zoom": 0.22,
-            "pan": {
-              "x": 0,
-              "y": 0
-            }
+            "tilt": 25,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -1169,17 +1165,14 @@
         {
           "id": "m_mo03_16",
           "phase": "hold",
-          "type": "kenBurns",
+          "type": "orbit3D",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "zoom": 0.3,
-            "pan": {
-              "x": 0,
-              "y": 0
-            }
+            "tilt": 25,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -1217,13 +1210,13 @@
         {
           "id": "m_mo03_17",
           "phase": "hold",
-          "type": "sway",
+          "type": "orbit3D",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "angle": 9,
+            "tilt": 45,
             "speed": 0.35
           },
           "enabled": true
@@ -1262,14 +1255,17 @@
         {
           "id": "m_mo03_18",
           "phase": "hold",
-          "type": "drift",
+          "type": "kenBurns",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": -0.1
+            "zoom": 0.22,
+            "pan": {
+              "x": 0,
+              "y": 0
+            }
           },
           "enabled": true
         }
@@ -1307,14 +1303,17 @@
         {
           "id": "m_mo03_19",
           "phase": "hold",
-          "type": "drift",
+          "type": "kenBurns",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.07,
-            "vy": -0.02
+            "zoom": 0.3,
+            "pan": {
+              "x": 0,
+              "y": 0
+            }
           },
           "enabled": true
         }
@@ -1352,15 +1351,14 @@
         {
           "id": "m_mo03_20",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "sway",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.6,
-            "period": 3,
-            "speed": 0.4
+            "angle": 9,
+            "speed": 0.35
           },
           "enabled": true
         }
@@ -1398,14 +1396,14 @@
         {
           "id": "m_mo03_21",
           "phase": "hold",
-          "type": "orbit3D",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "tilt": 35,
-            "speed": 1
+            "vx": 0,
+            "vy": -0.1
           },
           "enabled": true
         }
@@ -1443,14 +1441,14 @@
         {
           "id": "m_mo03_22",
           "phase": "hold",
-          "type": "floatBob",
+          "type": "drift",
           "from": "start",
-          "delay": 0.4,
-          "duration": 1.2,
+          "delay": 0,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "speed": 0.5
+            "vx": 0.07,
+            "vy": -0.02
           },
           "enabled": true
         }
@@ -1488,13 +1486,15 @@
         {
           "id": "m_mo03_23",
           "phase": "hold",
-          "type": "breathing",
+          "type": "opacityPulse",
           "from": "start",
-          "delay": 0.4,
+          "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.03
+            "min": 0.6,
+            "period": 3,
+            "speed": 0.4
           },
           "enabled": true
         }
@@ -1532,15 +1532,14 @@
         {
           "id": "m_mo03_24",
           "phase": "hold",
-          "type": "dither",
+          "type": "orbit3D",
           "from": "start",
-          "delay": 0.3,
+          "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "levels": 3,
-            "jitter": 0.4,
-            "speed": 3
+            "tilt": 35,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1578,14 +1577,14 @@
         {
           "id": "m_mo03_25",
           "phase": "hold",
-          "type": "drift",
+          "type": "floatBob",
           "from": "start",
           "delay": 0.4,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.05,
-            "vy": 0
+            "amp": 0.02,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -1623,14 +1622,13 @@
         {
           "id": "m_mo03_26",
           "phase": "hold",
-          "type": "fade",
+          "type": "breathing",
           "from": "start",
-          "delay": 0.3,
-          "duration": 1.6,
+          "delay": 0.4,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "softness": 0.8,
-            "glow": 0.2
+            "amount": 0.03
           },
           "enabled": true
         }
@@ -1668,16 +1666,15 @@
         {
           "id": "m_mo03_27",
           "phase": "hold",
-          "type": "geometry",
+          "type": "dither",
           "from": "start",
           "delay": 0.3,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "shape": "hexagon",
-            "feather": 0.08,
-            "spin": 30,
-            "speed": 0.6
+            "levels": 3,
+            "jitter": 0.4,
+            "speed": 3
           },
           "enabled": true
         }
@@ -1757,49 +1754,49 @@
   "beats": {
     "mo03_01": [
       {
-        "id": "mo03_01:single0",
+        "id": "mo03_01:page1",
         "cueId": "mo03_01",
-        "kind": "single",
-        "index": 0,
-        "start": 0,
-        "end": 3,
-        "text": "55. ポップイン (Pop In) ·\nelasticPopあいうえお Aiueo 0123",
-        "lines": [
-          "55. ポップイン (Pop In) ·",
-          "elasticPopあいうえお Aiueo 0123"
-        ],
-        "fontScale": 1,
-        "pinned": false
-      }
-    ],
-    "mo03_02": [
-      {
-        "id": "mo03_02:page1",
-        "cueId": "mo03_02",
         "kind": "page",
         "index": 1,
-        "start": 3,
-        "end": 4.122629582806574,
-        "text": "56. カーテンオープン (Curtain Open)",
+        "start": 0,
+        "end": 1.4292452830188678,
+        "text": "55. 解凍 (Thaw Reveal) · noiseDissolveIn",
         "lines": [
-          "56. カーテンオープン (Curtain Open)"
+          "55. 解凍 (Thaw Reveal) · noiseDissolveIn"
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo03_02:page2",
-        "cueId": "mo03_02",
+        "id": "mo03_01:page2",
+        "cueId": "mo03_01",
         "kind": "page",
         "index": 2,
-        "start": 4.122629582806574,
-        "end": 6,
-        "text": " · blind [count:8 dir:vertical soft:0.1]\nあいうえお Aiueo 0123",
+        "start": 1.4292452830188678,
+        "end": 3,
+        "text": "[scale:14 edgeWidth:0.12]\nあいうえお Aiueo 0123",
         "lines": [
-          " · blind [count:8 dir:vertical soft:0.1]",
+          "[scale:14 edgeWidth:0.12]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo03_02": [
+      {
+        "id": "mo03_02:single0",
+        "cueId": "mo03_02",
+        "kind": "single",
+        "index": 0,
+        "start": 3,
+        "end": 6,
+        "text": "56. スイングイン (Swing In) · rotateIn\n[angle:30]あいうえお Aiueo 0123",
+        "lines": [
+          "56. スイングイン (Swing In) · rotateIn",
+          "[angle:30]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
@@ -1811,12 +1808,12 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "57. アコーディオン (Accordion) · stretch\n[amount:2]あいうえお Aiueo 0123",
+        "text": "57. ホイップイン (Whip In) · rotateIn\n[angle:120]あいうえお Aiueo 0123",
         "lines": [
-          "57. アコーディオン (Accordion) · stretch",
-          "[amount:2]あいうえお Aiueo 0123"
+          "57. ホイップイン (Whip In) · rotateIn",
+          "[angle:120]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -1828,29 +1825,43 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "58. ブロックイン (Block In) · scatterIn\n[spread:0.3]あいうえお Aiueo 0123",
+        "text": "58. ポップイン (Pop In) ·\nelasticPopあいうえお Aiueo 0123",
         "lines": [
-          "58. ブロックイン (Block In) · scatterIn",
-          "[spread:0.3]あいうえお Aiueo 0123"
+          "58. ポップイン (Pop In) ·",
+          "elasticPopあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "mo03_05": [
       {
-        "id": "mo03_05:single0",
+        "id": "mo03_05:page1",
         "cueId": "mo03_05",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 12,
-        "end": 15,
-        "text": "59. ピクセルイン (Pixel In) · scatterIn\n[spread:0.55]あいうえお Aiueo 0123",
+        "end": 13.122629582806574,
+        "text": "59. カーテンオープン (Curtain Open)",
         "lines": [
-          "59. ピクセルイン (Pixel In) · scatterIn",
-          "[spread:0.55]あいうえお Aiueo 0123"
+          "59. カーテンオープン (Curtain Open)"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_05:page2",
+        "cueId": "mo03_05",
+        "kind": "page",
+        "index": 2,
+        "start": 13.122629582806574,
+        "end": 15,
+        "text": " · blind [count:8 dir:vertical soft:0.1]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · blind [count:8 dir:vertical soft:0.1]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1862,12 +1873,12 @@
         "index": 0,
         "start": 15,
         "end": 18,
-        "text": "60. グロウイン (Glow In) ·\nneonFlickerあいうえお Aiueo 0123",
+        "text": "60. アコーディオン (Accordion) · stretch\n[amount:2]あいうえお Aiueo 0123",
         "lines": [
-          "60. グロウイン (Glow In) ·",
-          "neonFlickerあいうえお Aiueo 0123"
+          "60. アコーディオン (Accordion) · stretch",
+          "[amount:2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -1879,12 +1890,12 @@
         "index": 0,
         "start": 18,
         "end": 21,
-        "text": "61. フラッシュイン (Flash In) ·\nflickerInあいうえお Aiueo 0123",
+        "text": "61. ブロックイン (Block In) · scatterIn\n[spread:0.3]あいうえお Aiueo 0123",
         "lines": [
-          "61. フラッシュイン (Flash In) ·",
-          "flickerInあいうえお Aiueo 0123"
+          "61. ブロックイン (Block In) · scatterIn",
+          "[spread:0.3]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1896,12 +1907,12 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "62. バウンスイン (Bounce In) ·\ndropBounceあいうえお Aiueo 0123",
+        "text": "62. ピクセルイン (Pixel In) · scatterIn\n[spread:0.55]あいうえお Aiueo 0123",
         "lines": [
-          "62. バウンスイン (Bounce In) ·",
-          "dropBounceあいうえお Aiueo 0123"
+          "62. ピクセルイン (Pixel In) · scatterIn",
+          "[spread:0.55]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1913,10 +1924,10 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "63. スケールアップ (Scale Up) ·\nzoomInあいうえお Aiueo 0123",
+        "text": "63. グロウイン (Glow In) ·\nneonFlickerあいうえお Aiueo 0123",
         "lines": [
-          "63. スケールアップ (Scale Up) ·",
-          "zoomInあいうえお Aiueo 0123"
+          "63. グロウイン (Glow In) ·",
+          "neonFlickerあいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -1924,32 +1935,18 @@
     ],
     "mo03_10": [
       {
-        "id": "mo03_10:page1",
+        "id": "mo03_10:single0",
         "cueId": "mo03_10",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 27,
-        "end": 28.154296875,
-        "text": "64. パースペクティブ (Perspective)",
-        "lines": [
-          "64. パースペクティブ (Perspective)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo03_10:page2",
-        "cueId": "mo03_10",
-        "kind": "page",
-        "index": 2,
-        "start": 28.154296875,
         "end": 30,
-        "text": " · orbit3D [tilt:24 speed:0.35]\nあいうえお Aiueo 0123",
+        "text": "64. フラッシュイン (Flash In) ·\nflickerInあいうえお Aiueo 0123",
         "lines": [
-          " · orbit3D [tilt:24 speed:0.35]",
-          "あいうえお Aiueo 0123"
+          "64. フラッシュイン (Flash In) ·",
+          "flickerInあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -1961,12 +1958,12 @@
         "index": 0,
         "start": 30,
         "end": 33,
-        "text": "65. 3D回転 (3D Rotation) · orbit3D [\ntilt:30 speed:0.9]あいうえお Aiueo 0123",
+        "text": "65. バウンスイン (Bounce In) ·\ndropBounceあいうえお Aiueo 0123",
         "lines": [
-          "65. 3D回転 (3D Rotation) · orbit3D [",
-          "tilt:30 speed:0.9]あいうえお Aiueo 0123"
+          "65. バウンスイン (Bounce In) ·",
+          "dropBounceあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -1978,29 +1975,43 @@
         "index": 0,
         "start": 33,
         "end": 36,
-        "text": "66. Y軸回転 (Y-Axis Rotation) · orbit3D\n[tilt:25 speed:0.7]あいうえお Aiueo 0123",
+        "text": "66. スケールアップ (Scale Up) ·\nzoomInあいうえお Aiueo 0123",
         "lines": [
-          "66. Y軸回転 (Y-Axis Rotation) · orbit3D",
-          "[tilt:25 speed:0.7]あいうえお Aiueo 0123"
+          "66. スケールアップ (Scale Up) ·",
+          "zoomInあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "mo03_13": [
       {
-        "id": "mo03_13:single0",
+        "id": "mo03_13:page1",
         "cueId": "mo03_13",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 36,
-        "end": 39,
-        "text": "67. X軸回転 (X-Axis Rotation) · orbit\n3D [tilt:25]あいうえお Aiueo 0123",
+        "end": 37.154296875,
+        "text": "67. パースペクティブ (Perspective)",
         "lines": [
-          "67. X軸回転 (X-Axis Rotation) · orbit",
-          "3D [tilt:25]あいうえお Aiueo 0123"
+          "67. パースペクティブ (Perspective)"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_13:page2",
+        "cueId": "mo03_13",
+        "kind": "page",
+        "index": 2,
+        "start": 37.154296875,
+        "end": 39,
+        "text": " · orbit3D [tilt:24 speed:0.35]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · orbit3D [tilt:24 speed:0.35]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2012,105 +2023,63 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "68. カード反転 (Card Flip) · orbit3D [\ntilt:45 speed:0.35]あいうえお Aiueo 0123",
+        "text": "68. 3D回転 (3D Rotation) · orbit3D [\ntilt:30 speed:0.9]あいうえお Aiueo 0123",
         "lines": [
-          "68. カード反転 (Card Flip) · orbit3D [",
-          "tilt:45 speed:0.35]あいうえお Aiueo 0123"
+          "68. 3D回転 (3D Rotation) · orbit3D [",
+          "tilt:30 speed:0.9]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
     "mo03_15": [
       {
-        "id": "mo03_15:page1",
+        "id": "mo03_15:single0",
         "cueId": "mo03_15",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 42,
-        "end": 43.25235849056604,
-        "text": "69. 押し出し (Extrusion) · kenBurns [",
-        "lines": [
-          "69. 押し出し (Extrusion) · kenBurns ["
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo03_15:page2",
-        "cueId": "mo03_15",
-        "kind": "page",
-        "index": 2,
-        "start": 43.25235849056604,
         "end": 45,
-        "text": "zoom:0.22 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "text": "69. Y軸回転 (Y-Axis Rotation) · orbit3D\n[tilt:25 speed:0.7]あいうえお Aiueo 0123",
         "lines": [
-          "zoom:0.22 pan:[object Object]]",
-          "あいうえお Aiueo 0123"
+          "69. Y軸回転 (Y-Axis Rotation) · orbit3D",
+          "[tilt:25 speed:0.7]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo03_16": [
       {
-        "id": "mo03_16:page1",
+        "id": "mo03_16:single0",
         "cueId": "mo03_16",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 45,
-        "end": 46.23150357995227,
-        "text": "70. エクストルード (Extrude) · kenBurns",
-        "lines": [
-          "70. エクストルード (Extrude) · kenBurns"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo03_16:page2",
-        "cueId": "mo03_16",
-        "kind": "page",
-        "index": 2,
-        "start": 46.23150357995227,
         "end": 48,
-        "text": "[zoom:0.3 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "text": "70. X軸回転 (X-Axis Rotation) · orbit\n3D [tilt:25]あいうえお Aiueo 0123",
         "lines": [
-          "[zoom:0.3 pan:[object Object]]",
-          "あいうえお Aiueo 0123"
+          "70. X軸回転 (X-Axis Rotation) · orbit",
+          "3D [tilt:25]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
     "mo03_17": [
       {
-        "id": "mo03_17:page1",
+        "id": "mo03_17:single0",
         "cueId": "mo03_17",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 48,
-        "end": 49.21804511278196,
-        "text": "71. スターウォーズ風 (Star Wars Crawl)",
-        "lines": [
-          "71. スターウォーズ風 (Star Wars Crawl)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo03_17:page2",
-        "cueId": "mo03_17",
-        "kind": "page",
-        "index": 2,
-        "start": 49.21804511278196,
         "end": 51,
-        "text": " · sway [angle:9 speed:0.35]\nあいうえお Aiueo 0123",
+        "text": "71. カード反転 (Card Flip) · orbit3D [\ntilt:45 speed:0.35]あいうえお Aiueo 0123",
         "lines": [
-          " · sway [angle:9 speed:0.35]",
-          "あいうえお Aiueo 0123"
+          "71. カード反転 (Card Flip) · orbit3D [",
+          "tilt:45 speed:0.35]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2121,10 +2090,10 @@
         "kind": "page",
         "index": 1,
         "start": 51,
-        "end": 52.140376266280754,
-        "text": "72. カメラフライスルー (Camera Fly",
+        "end": 52.25235849056604,
+        "text": "72. 押し出し (Extrusion) · kenBurns [",
         "lines": [
-          "72. カメラフライスルー (Camera Fly"
+          "72. 押し出し (Extrusion) · kenBurns ["
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2134,11 +2103,11 @@
         "cueId": "mo03_18",
         "kind": "page",
         "index": 2,
-        "start": 52.140376266280754,
+        "start": 52.25235849056604,
         "end": 54,
-        "text": "-Through) · drift [vx:0 vy:-0.1]\nあいうえお Aiueo 0123",
+        "text": "zoom:0.22 pan:[object Object]]\nあいうえお Aiueo 0123",
         "lines": [
-          "-Through) · drift [vx:0 vy:-0.1]",
+          "zoom:0.22 pan:[object Object]]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2147,18 +2116,32 @@
     ],
     "mo03_19": [
       {
-        "id": "mo03_19:single0",
+        "id": "mo03_19:page1",
         "cueId": "mo03_19",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 54,
-        "end": 57,
-        "text": "73. パララックス (Parallax) · drift [\nvx:0.07 vy:-0.02]あいうえお Aiueo 0123",
+        "end": 55.23150357995227,
+        "text": "73. エクストルード (Extrude) · kenBurns",
         "lines": [
-          "73. パララックス (Parallax) · drift [",
-          "vx:0.07 vy:-0.02]あいうえお Aiueo 0123"
+          "73. エクストルード (Extrude) · kenBurns"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_19:page2",
+        "cueId": "mo03_19",
+        "kind": "page",
+        "index": 2,
+        "start": 55.23150357995227,
+        "end": 57,
+        "text": "[zoom:0.3 pan:[object Object]]\nあいうえお Aiueo 0123",
+        "lines": [
+          "[zoom:0.3 pan:[object Object]]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2169,11 +2152,10 @@
         "kind": "page",
         "index": 1,
         "start": 57,
-        "end": 58.66519823788546,
-        "text": "74. ワイヤーフレーム (Wireframe)\n · opacityPulse [min:0.",
+        "end": 58.21804511278196,
+        "text": "74. スターウォーズ風 (Star Wars Crawl)",
         "lines": [
-          "74. ワイヤーフレーム (Wireframe)",
-          " · opacityPulse [min:0."
+          "74. スターウォーズ風 (Star Wars Crawl)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2183,11 +2165,11 @@
         "cueId": "mo03_20",
         "kind": "page",
         "index": 2,
-        "start": 58.66519823788546,
+        "start": 58.21804511278196,
         "end": 60,
-        "text": "6 period:3 speed:0.4]\nあいうえお Aiueo 0123",
+        "text": " · sway [angle:9 speed:0.35]\nあいうえお Aiueo 0123",
         "lines": [
-          "6 period:3 speed:0.4]",
+          " · sway [angle:9 speed:0.35]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2201,10 +2183,10 @@
         "kind": "page",
         "index": 1,
         "start": 60,
-        "end": 61.19817536746072,
-        "text": "75. キューブ回転 (3D Cube Rotation)",
+        "end": 61.140376266280754,
+        "text": "75. カメラフライスルー (Camera Fly",
         "lines": [
-          "75. キューブ回転 (3D Cube Rotation)"
+          "75. カメラフライスルー (Camera Fly"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2214,11 +2196,11 @@
         "cueId": "mo03_21",
         "kind": "page",
         "index": 2,
-        "start": 61.19817536746072,
+        "start": 61.140376266280754,
         "end": 63,
-        "text": " · orbit3D [tilt:35 speed:1]\nあいうえお Aiueo 0123",
+        "text": "-Through) · drift [vx:0 vy:-0.1]\nあいうえお Aiueo 0123",
         "lines": [
-          " · orbit3D [tilt:35 speed:1]",
+          "-Through) · drift [vx:0 vy:-0.1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2233,29 +2215,44 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "76. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
+        "text": "76. パララックス (Parallax) · drift [\nvx:0.07 vy:-0.02]あいうえお Aiueo 0123",
         "lines": [
-          "76. ボブ (Bob) · floatBob",
-          "あいうえお Aiueo 0123"
+          "76. パララックス (Parallax) · drift [",
+          "vx:0.07 vy:-0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
     "mo03_23": [
       {
-        "id": "mo03_23:single0",
+        "id": "mo03_23:page1",
         "cueId": "mo03_23",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 66,
-        "end": 69,
-        "text": "77. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
+        "end": 67.66519823788546,
+        "text": "77. ワイヤーフレーム (Wireframe)\n · opacityPulse [min:0.",
         "lines": [
-          "77. ブレス (Breathe) · breathing",
+          "77. ワイヤーフレーム (Wireframe)",
+          " · opacityPulse [min:0."
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo03_23:page2",
+        "cueId": "mo03_23",
+        "kind": "page",
+        "index": 2,
+        "start": 67.66519823788546,
+        "end": 69,
+        "text": "6 period:3 speed:0.4]\nあいうえお Aiueo 0123",
+        "lines": [
+          "6 period:3 speed:0.4]",
           "あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2266,10 +2263,10 @@
         "kind": "page",
         "index": 1,
         "start": 69,
-        "end": 70.10225303292894,
-        "text": "78. ディザループ (Dither Loop)",
+        "end": 70.19817536746072,
+        "text": "78. キューブ回転 (3D Cube Rotation)",
         "lines": [
-          "78. ディザループ (Dither Loop)"
+          "78. キューブ回転 (3D Cube Rotation)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2279,11 +2276,11 @@
         "cueId": "mo03_24",
         "kind": "page",
         "index": 2,
-        "start": 70.10225303292894,
+        "start": 70.19817536746072,
         "end": 72,
-        "text": " · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
+        "text": " · orbit3D [tilt:35 speed:1]\nあいうえお Aiueo 0123",
         "lines": [
-          " · dither [levels:3 jitter:0.4 speed:3]",
+          " · orbit3D [tilt:35 speed:1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2298,9 +2295,9 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "79. ドリフト (Drift) · drift\nあいうえお Aiueo 0123",
+        "text": "79. ボブ (Bob) · floatBob\nあいうえお Aiueo 0123",
         "lines": [
-          "79. ドリフト (Drift) · drift",
+          "79. ボブ (Bob) · floatBob",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
@@ -2309,32 +2306,18 @@
     ],
     "mo03_26": [
       {
-        "id": "mo03_26:page1",
+        "id": "mo03_26:single0",
         "cueId": "mo03_26",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 75,
-        "end": 76.154296875,
-        "text": "80. フェードブレス (Fade Breathe)",
-        "lines": [
-          "80. フェードブレス (Fade Breathe)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo03_26:page2",
-        "cueId": "mo03_26",
-        "kind": "page",
-        "index": 2,
-        "start": 76.154296875,
         "end": 78,
-        "text": " · fade [softness:0.8 glow:0.2]\nあいうえお Aiueo 0123",
+        "text": "80. ブレス (Breathe) · breathing\nあいうえお Aiueo 0123",
         "lines": [
-          " · fade [softness:0.8 glow:0.2]",
+          "80. ブレス (Breathe) · breathing",
           "あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2345,11 +2328,10 @@
         "kind": "page",
         "index": 1,
         "start": 78,
-        "end": 79.90450054884742,
-        "text": "81. ジオメトリーループ (Geometry Loop)\n · geometry [shape:hexagon feather:0.",
+        "end": 79.10225303292894,
+        "text": "81. ディザループ (Dither Loop)",
         "lines": [
-          "81. ジオメトリーループ (Geometry Loop)",
-          " · geometry [shape:hexagon feather:0."
+          "81. ディザループ (Dither Loop)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2359,11 +2341,11 @@
         "cueId": "mo03_27",
         "kind": "page",
         "index": 2,
-        "start": 79.90450054884742,
+        "start": 79.10225303292894,
         "end": 81,
-        "text": "08 spin:30]\nあいうえお Aiueo 0123",
+        "text": " · dither [levels:3 jitter:0.4 speed:3]\nあいうえお Aiueo 0123",
         "lines": [
-          "08 spin:30]",
+          " · dither [levels:3 jitter:0.4 speed:3]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2375,19 +2357,13 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo03_02": [
+    "mo03_05": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo03_10": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo03_18": [
+    "mo03_13": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2400,12 +2376,6 @@
       }
     ],
     "mo03_24": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo03_26": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"

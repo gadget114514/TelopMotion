@@ -24,13 +24,13 @@ function motionPresets() {
   return require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'motion.js')).motionPresets();
 }
 
-test('the 424 presets split into 16 parts of 26–27 cues', () => {
+test('the 429 presets split into 16 parts of 26–27 cues', () => {
   const b = built();
-  assert.equal(b.slots.length, 424);
+  assert.equal(b.slots.length, 429);
   assert.equal(b.parts.length, 16);
   assert.deepEqual(
     b.parts.map((part) => part.entries.length),
-    [27, 27, 27, 27, 27, 27, 27, 27, 26, 26, 26, 26, 26, 26, 26, 26]
+    [27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 26, 26, 26]
   );
   for (const part of b.parts) {
     assert.equal(part.total, part.entries.length * showcase.MOTION_SECONDS);
