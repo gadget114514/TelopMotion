@@ -19,7 +19,7 @@
       staircase: 'Staircase', grid: 'Grid', stackedWords: 'Stacked words', scatter: 'Scatter', path: 'Path',
     },
     enter: {
-      fade: 'Fade', typewriter: 'Typewriter', slide: 'Slide', dropBounce: 'Drop bounce', zoomIn: 'Zoom in', blurIn: 'Blur in',
+      fade: 'Fade', typewriter: 'Typewriter', slide: 'Slide', dropBounce: 'Drop bounce', anticipation: 'Anticipation', irisOpen: 'Iris open', doubleBounce: 'Double bounce', zoomIn: 'Zoom in', blurIn: 'Blur in',
       flip3D: '3D flip', rotateIn: 'Rotate in', scatterIn: 'Scatter in', waveRise: 'Wave rise', elasticPop: 'Elastic pop',
       scramble: 'Scramble', glitchIn: 'Glitch in', neonFlicker: 'Neon flicker', strokeDrawOn: 'Stroke draw-on',
       particlesAssemble: 'Particles assemble', shatterRebuild: 'Shatter rebuild', morphFromPrevious: 'Morph from previous',
@@ -33,6 +33,7 @@
       rubberIn: 'Rubber in', chromaIn: 'Chroma in', multiIn: 'Multi in', leanIn: 'Lean in',
       tiltSettleIn: 'Tilt settle in', shakeIn: 'Shake in', circleIn: 'Circle in', circleBurstIn: 'Circle burst in',
       varyDeformIn: 'Vary deform in', blinkVaryIn: 'Vary blink in', twistIn: 'Twist in', spinPartIn: 'Part spin in',
+      pageCurl: 'Page curl',
     },
     exit: {
       fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
@@ -42,7 +43,7 @@
       rotateOut: 'Rotate out', floatUp: 'Float up', floatDown: 'Float down', shrinkDir: 'Directional shrink',
       spiralOut: 'Spiral out', radialOut: 'Radial out', warpOut: 'Warp out', evaporate: 'Evaporate',
       mosaicBreak: 'Mosaic break', fogBreak: 'Fog break', windBreak: 'Wind break',
-      windNoBreak: 'Wind drift', cloth: 'Cloth',
+      windNoBreak: 'Wind drift', cloth: 'Cloth', pageCurl: 'Page curl',
     },
     hold: {
       none: 'None', floatBob: 'Float bob', sineWave: 'Sine wave', jitter: 'Jitter', pulse: 'Pulse', opacityPulse: 'Opacity pulse', kenBurns: 'Ken Burns',
@@ -51,7 +52,7 @@
       timeDelay: 'Time delay', timeDisplacement: 'Time displacement', colorShift: 'Color shift',
       motionFlicker: 'Motion flicker', motionEcho: 'Motion echo', strokeTrail: 'Stroke trail', motionBend: 'Motion bend',
       lagTail: 'Lag tail', chromaWalk: 'Chroma walk', speedStrobe: 'Speed strobe', rainbowEcho: 'Rainbow echo',
-      neonTrail: 'Neon trail', shearDrag: 'Shear drag', rubberLead: 'Rubber lead',
+      neonTrail: 'Neon trail', shearDrag: 'Shear drag', rubberLead: 'Rubber lead', nudgeImpulse: 'Nudge impulse',
     },
     location: {
       center: 'Center', grid: 'Grid', lowerThird: 'Lower third', upperThird: 'Upper third', left: 'Left', right: 'Right', karaoke: 'Karaoke',
@@ -95,7 +96,7 @@
       r0: 'Inner radius', r1: 'Outer radius', turns: 'Turns', amp: 'Amplitude', wavelength: 'Wavelength', phase: 'Phase',
       angle: 'Angle', followAngle: 'Follow angle', step: 'Step', cols: 'Columns', gap: 'Gap', fillWidth: 'Row width',
       spread: 'Spread', safeArea: 'Safe area', points: 'Points', smooth: 'Smooth', cursor: 'Cursor', cursorColor: 'Cursor color',
-      dir: 'Direction', distance: 'Distance', height: 'Height', axis: 'Axis', charset: 'Character set', rate: 'Rate',
+      dir: 'Direction', distance: 'Distance', pullback: 'Pullback', recoilFactor: 'Recoil factor', height: 'Height', axis: 'Axis', charset: 'Character set', rate: 'Rate',
       intensity: 'Intensity', flickers: 'Flickers', width: 'Width', fillDelay: 'Fill delay', count: 'Count', kind: 'Kind', set: 'Set', mode: 'Mode', min: 'Minimum', delay: 'Delay',
       turbulence: 'Turbulence', gust: 'Gust', spin: 'Spin', scale: 'Scale', edgeColor: 'Edge color', edgeWidth: 'Edge width', gravity: 'Gravity',
       drift: 'Drift', drip: 'Drip', emberColor: 'Ember color', charColor: 'Character color', speed: 'Speed', freq: 'Frequency',
@@ -128,7 +129,7 @@
       pivotZ: 'Pivot depth', scaleFromX: 'Start scale X', scaleFromY: 'Start scale Y', scaleAxis: 'Scale axis',
       scaleAxisTo: 'Scale axis end', scaleEase: 'Scale easing', scaleOriginSeparate: 'Separate scale origin',
       scaleOrigin: 'Scale origin', scaleOriginAnchor: 'Scale origin anchor', scaleOriginOffset: 'Scale origin offset',
-      drawOrder: 'Draw order',
+      drawOrder: 'Draw order', curl: 'Curl',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -164,7 +165,7 @@
       staircase: '階段', grid: 'グリッド', stackedWords: '積み重ね語', scatter: '散布', path: 'パス',
     },
     enter: {
-      fade: 'フェード', typewriter: 'タイプライター', slide: 'スライド', dropBounce: '落下バウンド', zoomIn: 'ズームイン',
+      fade: 'フェード', typewriter: 'タイプライター', slide: 'スライド', dropBounce: '落下バウンド', anticipation: '予備動作', irisOpen: 'アイリスオープン', doubleBounce: 'ダブルバウンド', zoomIn: 'ズームイン',
       blurIn: 'ブラーイン', flip3D: '3Dフリップ', rotateIn: '回転イン', scatterIn: '散布イン', waveRise: '波立ち',
       elasticPop: 'エラスティックポップ', scramble: 'スクランブル', glitchIn: 'グリッチイン', neonFlicker: 'ネオンフリッカー',
       strokeDrawOn: 'ストローク描画', particlesAssemble: 'パーティクル集合', shatterRebuild: '粉砕再構築',
@@ -179,6 +180,7 @@
       rubberIn: 'ゴムイン', chromaIn: '色ずれイン', multiIn: '複数並びイン', leanIn: '傾きイン',
       tiltSettleIn: '出て傾く', shakeIn: '震えイン', circleIn: '中央円イン', circleBurstIn: '円＋放射イン',
       varyDeformIn: '文字ごと変形イン', blinkVaryIn: '文字ごと点滅', twistIn: 'ねじれ・もどし', spinPartIn: '部分回転イン',
+      pageCurl: 'ページめくり',
     },
     exit: {
       fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
@@ -188,7 +190,7 @@
       stripeShrink: 'ストライプ縮小', rotateOut: '回転アウト', floatUp: 'フローティング上', floatDown: 'フローティング下',
       shrinkDir: '方向縮小', spiralOut: 'らせんアウト', radialOut: '放射アウト', warpOut: 'ワープアウト',
       evaporate: '蒸発', mosaicBreak: 'モザイク分解', fogBreak: '霧分解', windBreak: '風分解',
-      windNoBreak: '風なびき', cloth: '布なびき',
+      windNoBreak: '風なびき', cloth: '布なびき', pageCurl: 'ページめくり',
     },
     hold: {
       none: 'なし', floatBob: '浮遊', sineWave: 'サイン波', jitter: 'ジッター', pulse: 'パルス', opacityPulse: '透明度パルス', kenBurns: 'ケン・バーンズ',
@@ -197,7 +199,7 @@
       timeDelay: '時間遅延', timeDisplacement: '時間置換', colorShift: 'カラーシフト',
       motionFlicker: 'フリッカー', motionEcho: 'エコー', strokeTrail: '塗りと線', motionBend: 'ベンド',
       lagTail: '遅延テール', chromaWalk: 'クロマウォーク', speedStrobe: '速度ストロボ', rainbowEcho: '虹エコー',
-      neonTrail: 'ネオントレイル', shearDrag: 'せん断ドラッグ', rubberLead: 'ゴムリード',
+      neonTrail: 'ネオントレイル', shearDrag: 'せん断ドラッグ', rubberLead: 'ゴムリード', nudgeImpulse: 'ナッジ揺れ',
     },
     location: {
       center: '中央', grid: 'グリッド', lowerThird: '下三分の一', upperThird: '上三分の一', left: '左', right: '右', karaoke: 'カラオケ',
@@ -242,7 +244,7 @@
       r0: '内側半径', r1: '外側半径', turns: '巻き数', amp: '振幅', wavelength: '波長', phase: '位相', angle: '角度',
       followAngle: '追従角度', step: '段差', cols: '列数', gap: '間隔', fillWidth: '行幅', spread: '広がり',
       safeArea: '安全領域', points: 'ポイント', smooth: 'なめらか', cursor: 'カーソル', cursorColor: 'カーソル色',
-      dir: '方向', distance: '距離', height: '高さ', axis: '軸', charset: '文字セット', rate: '頻度', intensity: '強度',
+      dir: '方向', distance: '距離', pullback: '引き戻し', recoilFactor: '跳ね返り率', height: '高さ', axis: '軸', charset: '文字セット', rate: '頻度', intensity: '強度',
       flickers: '明滅回数', width: '幅', fillDelay: '塗り開始', count: '数', kind: '種類', set: 'セット', mode: 'モード', min: '最小', delay: '遅延', turbulence: '乱流', gust: '突風', spin: 'スピン', scale: 'スケール',
       edgeColor: '縁の色', edgeWidth: '縁の幅', gravity: '重力', drift: '漂流', drip: '滴り', emberColor: '火の粉の色',
       charColor: '文字の色', speed: '速度', freq: '周波数', bpm: 'BPM', zoom: 'ズーム', pan: 'パン', vx: '横速度', vy: '縦速度',
@@ -274,7 +276,7 @@
       pivotZ: '原点の奥行き', scaleFromX: '開始倍率X', scaleFromY: '開始倍率Y', scaleAxis: '拡縮軸',
       scaleAxisTo: '拡縮軸（終了）', scaleEase: '拡縮の戻り方', scaleOriginSeparate: '拡縮の原点を別に',
       scaleOrigin: '拡縮の原点', scaleOriginAnchor: '拡縮の原点位置', scaleOriginOffset: '拡縮の原点微調整',
-      drawOrder: '描画順',
+      drawOrder: '描画順', curl: 'めくり量',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -310,7 +312,7 @@
       staircase: 'Escalera', grid: 'Cuadrícula', stackedWords: 'Palabras apiladas', scatter: 'Dispersión', path: 'Trayectoria',
     },
     enter: {
-      fade: 'Fundido', typewriter: 'Máquina de escribir', slide: 'Deslizar', dropBounce: 'Caída con rebote',
+      fade: 'Fundido', typewriter: 'Máquina de escribir', slide: 'Deslizar', dropBounce: 'Caída con rebote', anticipation: 'Anticipación', irisOpen: 'Apertura de iris', doubleBounce: 'Doble rebote',
       zoomIn: 'Acercar', blurIn: 'Desenfoque de entrada', flip3D: 'Giro 3D', rotateIn: 'Rotación de entrada',
       scatterIn: 'Dispersión de entrada', waveRise: 'Ola ascendente', elasticPop: 'Estallido elástico',
       scramble: 'Mezcla de letras', glitchIn: 'Glitch de entrada', neonFlicker: 'Parpadeo de neón',
@@ -326,6 +328,7 @@
       rubberIn: 'Goma', chromaIn: 'Desfase de color', multiIn: 'Múltiple', leanIn: 'Inclinación',
       tiltSettleIn: 'Inclinación final', shakeIn: 'Sacudida', circleIn: 'Círculo central', circleBurstIn: 'Círculo y ráfaga',
       varyDeformIn: 'Deformación variada', blinkVaryIn: 'Parpadeo variado', twistIn: 'Torsión', spinPartIn: 'Giro parcial',
+      pageCurl: 'Giro de página',
     },
     exit: {
       fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
@@ -336,7 +339,7 @@
       rotateOut: 'Rotación de salida', floatUp: 'Flotación arriba', floatDown: 'Flotación abajo',
       shrinkDir: 'Encogido direccional', spiralOut: 'Espiral de salida', radialOut: 'Salida radial',
       warpOut: 'Salida deformada', evaporate: 'Evaporar', mosaicBreak: 'Ruptura de mosaico',
-      fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela',
+      fogBreak: 'Ruptura de niebla', windBreak: 'Ruptura de viento', windNoBreak: 'Deriva de viento', cloth: 'Tela', pageCurl: 'Giro de página',
     },
     hold: {
       none: 'Ninguno', floatBob: 'Flotación', sineWave: 'Onda senoidal', jitter: 'Vibración', pulse: 'Pulso', opacityPulse: 'Pulso de opacidad',
@@ -346,7 +349,7 @@
       timeDelay: 'Retardo temporal', timeDisplacement: 'Desplazamiento temporal', colorShift: 'Cambio de color',
       motionFlicker: 'Parpadeo por movimiento', motionEcho: 'Eco de movimiento', strokeTrail: 'Estela de trazo', motionBend: 'Flexión',
       lagTail: 'Estela retardada', chromaWalk: 'Paseo cromático', speedStrobe: 'Estrobo de velocidad', rainbowEcho: 'Eco arcoíris',
-      neonTrail: 'Estela de neón', shearDrag: 'Arrastre de cizalla', rubberLead: 'Guía de goma',
+      neonTrail: 'Estela de neón', shearDrag: 'Arrastre de cizalla', rubberLead: 'Guía de goma', nudgeImpulse: 'Impulso de empuje',
     },
     location: {
       center: 'Centro', grid: 'Cuadrícula', lowerThird: 'Tercio inferior', upperThird: 'Tercio superior', left: 'Izquierda', right: 'Derecha',
@@ -394,7 +397,7 @@
       amp: 'Amplitud', wavelength: 'Longitud de onda', phase: 'Fase', angle: 'Ángulo', followAngle: 'Ángulo de seguimiento',
       step: 'Escalón', cols: 'Columnas', gap: 'Separación', fillWidth: 'Ancho de fila', spread: 'Dispersión',
       safeArea: 'Zona segura', points: 'Puntos', smooth: 'Suavizado', cursor: 'Cursor', cursorColor: 'Color del cursor',
-      dir: 'Dirección', distance: 'Distancia', height: 'Altura', axis: 'Eje', charset: 'Juego de caracteres', rate: 'Frecuencia',
+      dir: 'Dirección', distance: 'Distancia', pullback: 'Retroceso', recoilFactor: 'Factor de retroceso', height: 'Altura', axis: 'Eje', charset: 'Juego de caracteres', rate: 'Frecuencia',
       intensity: 'Intensidad', flickers: 'Parpadeos', width: 'Ancho', fillDelay: 'Retardo de relleno', count: 'Cantidad', kind: 'Clase', set: 'Conjunto', mode: 'Modo', min: 'Mínimo', delay: 'Retardo',
       turbulence: 'Turbulencia', gust: 'Ráfaga', spin: 'Giro', scale: 'Escala', edgeColor: 'Color del borde', edgeWidth: 'Ancho del borde',
       gravity: 'Gravedad', drift: 'Deriva', drip: 'Goteo', emberColor: 'Color de brasas', charColor: 'Color del texto',
@@ -428,7 +431,7 @@
       pivotZ: 'Profundidad de pivote', scaleFromX: 'Escala inicial X', scaleFromY: 'Escala inicial Y', scaleAxis: 'Eje de escala',
       scaleAxisTo: 'Eje de escala final', scaleEase: 'Retorno de escala', scaleOriginSeparate: 'Origen de escala separado',
       scaleOrigin: 'Origen de escala', scaleOriginAnchor: 'Anclaje de escala', scaleOriginOffset: 'Ajuste de escala',
-      drawOrder: 'Orden de dibujo',
+      drawOrder: 'Orden de dibujo', curl: 'Curvatura',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -465,7 +468,7 @@
       staircase: 'Escalier', grid: 'Grille', stackedWords: 'Mots empilés', scatter: 'Dispersion', path: 'Chemin',
     },
     enter: {
-      fade: 'Fondu', typewriter: 'Machine à écrire', slide: 'Glissement', dropBounce: 'Chute rebondissante', zoomIn: 'Zoom avant',
+      fade: 'Fondu', typewriter: 'Machine à écrire', slide: 'Glissement', dropBounce: 'Chute rebondissante', anticipation: 'Anticipation', irisOpen: 'Ouverture en iris', doubleBounce: 'Double rebond', zoomIn: 'Zoom avant',
       blurIn: 'Flou d’entrée', flip3D: 'Retournement 3D', rotateIn: 'Rotation d’entrée', scatterIn: 'Dispersion d’entrée',
       waveRise: 'Vague montante', elasticPop: 'Pop élastique', scramble: 'Brouillage', glitchIn: 'Glitch d’entrée',
       neonFlicker: 'Scintillement néon', strokeDrawOn: 'Tracé progressif', particlesAssemble: 'Assemblage de particules',
@@ -480,6 +483,7 @@
       rubberIn: 'Caoutchouc', chromaIn: 'Décalage chroma', multiIn: 'Multiple', leanIn: 'Inclinaison',
       tiltSettleIn: 'Inclinaison finale', shakeIn: 'Secousse', circleIn: 'Cercle central', circleBurstIn: 'Cercle et rafale',
       varyDeformIn: 'Déformation variée', blinkVaryIn: 'Clignotement varié', twistIn: 'Torsion', spinPartIn: 'Rotation partielle',
+      pageCurl: 'Page tournée',
     },
     exit: {
       fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
@@ -490,7 +494,7 @@
       floatUp: 'Flottement vers le haut', floatDown: 'Flottement vers le bas', shrinkDir: 'Rétrécissement directionnel',
       spiralOut: 'Spirale de sortie', radialOut: 'Sortie radiale', warpOut: 'Sortie déformée', evaporate: 'Évaporation',
       mosaicBreak: 'Rupture mosaïque', fogBreak: 'Rupture de brume', windBreak: 'Rupture de vent',
-      windNoBreak: 'Dérive de vent', cloth: 'Tissu',
+      windNoBreak: 'Dérive de vent', cloth: 'Tissu', pageCurl: 'Page tournée',
     },
     hold: {
       none: 'Aucun', floatBob: 'Flottement', sineWave: 'Onde sinusoïdale', jitter: 'Tremblement', pulse: 'Pulsation', opacityPulse: "Pulsation d'opacité",
@@ -500,7 +504,7 @@
       timeDelay: 'Retard temporel', timeDisplacement: 'Déplacement temporel', colorShift: 'Décalage de couleur',
       motionFlicker: 'Scintillement de mouvement', motionEcho: 'Écho de mouvement', strokeTrail: 'Traînée de tracé', motionBend: 'Flexion',
       lagTail: 'Traîne retardée', chromaWalk: 'Marche chroma', speedStrobe: 'Stroboscope de vitesse', rainbowEcho: 'Écho arc-en-ciel',
-      neonTrail: 'Traînée néon', shearDrag: 'Traînée de cisaillement', rubberLead: 'Tête en caoutchouc',
+      neonTrail: 'Traînée néon', shearDrag: 'Traînée de cisaillement', rubberLead: 'Tête en caoutchouc', nudgeImpulse: 'Impulsion de poussée',
     },
     location: {
       center: 'Centre', grid: 'Grille', lowerThird: 'Tiers inférieur', upperThird: 'Tiers supérieur', left: 'Gauche', right: 'Droite',
@@ -548,7 +552,7 @@
       r0: 'Rayon interne', r1: 'Rayon externe', turns: 'Tours', amp: 'Amplitude', wavelength: 'Longueur d’onde', phase: 'Phase',
       angle: 'Angle', followAngle: 'Angle de suivi', step: 'Marche', cols: 'Colonnes', gap: 'Écart', fillWidth: 'Largeur de ligne',
       spread: 'Dispersion', safeArea: 'Zone sûre', points: 'Points', smooth: 'Lissage', cursor: 'Curseur',
-      cursorColor: 'Couleur du curseur', dir: 'Direction', distance: 'Distance', height: 'Hauteur', axis: 'Axe',
+      cursorColor: 'Couleur du curseur', dir: 'Direction', distance: 'Distance', pullback: 'Recul', recoilFactor: 'Facteur de recul', height: 'Hauteur', axis: 'Axe',
       charset: 'Jeu de caractères', rate: 'Fréquence', intensity: 'Intensité', flickers: 'Scintillements', width: 'Largeur',
       fillDelay: 'Délai de remplissage', count: 'Nombre', kind: 'Sorte', set: 'Ensemble', mode: 'Mode', min: 'Minimum', delay: 'Délai', turbulence: 'Turbulence', gust: 'Rafale', spin: 'Rotation', scale: 'Échelle',
       edgeColor: 'Couleur du bord', edgeWidth: 'Largeur du bord', gravity: 'Gravité', drift: 'Dérive', drip: 'Coulure',
@@ -582,7 +586,7 @@
       pivotZ: 'Profondeur du pivot', scaleFromX: 'Échelle initiale X', scaleFromY: 'Échelle initiale Y', scaleAxis: 'Axe d’échelle',
       scaleAxisTo: 'Axe d’échelle final', scaleEase: 'Retour d’échelle', scaleOriginSeparate: 'Origine d’échelle séparée',
       scaleOrigin: 'Origine d’échelle', scaleOriginAnchor: 'Ancrage d’échelle', scaleOriginOffset: 'Ajustement d’échelle',
-      drawOrder: 'Ordre de tracé',
+      drawOrder: 'Ordre de tracé', curl: 'Enroulement',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -619,7 +623,7 @@
       diagonal: 'Диагональ', staircase: 'Лестница', grid: 'Сетка', stackedWords: 'Стопка слов', scatter: 'Разброс', path: 'Путь',
     },
     enter: {
-      fade: 'Растворение', typewriter: 'Печатная машинка', slide: 'Сдвиг', dropBounce: 'Падение с отскоком',
+      fade: 'Растворение', typewriter: 'Печатная машинка', slide: 'Сдвиг', dropBounce: 'Падение с отскоком', anticipation: 'Упреждение', irisOpen: 'Раскрытие диафрагмы', doubleBounce: 'Двойной отскок',
       zoomIn: 'Приближение', blurIn: 'Размытие при входе', flip3D: '3D-переворот', rotateIn: 'Вращение при входе',
       scatterIn: 'Разлёт при входе', waveRise: 'Волновой подъём', elasticPop: 'Упругий скачок', scramble: 'Перемешивание',
       glitchIn: 'Глитч при входе', neonFlicker: 'Мерцание неона', strokeDrawOn: 'Рисование обводки',
@@ -634,6 +638,7 @@
       rubberIn: 'Резина', chromaIn: 'Сдвиг цвета', multiIn: 'Несколько', leanIn: 'Наклон',
       tiltSettleIn: 'Наклон в конце', shakeIn: 'Тряска', circleIn: 'Центральный круг', circleBurstIn: 'Круг и вспышка',
       varyDeformIn: 'Разная деформация', blinkVaryIn: 'Разное мигание', twistIn: 'Скручивание', spinPartIn: 'Частичный поворот',
+      pageCurl: 'Загиб страницы',
     },
     exit: {
       fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
@@ -644,7 +649,7 @@
       floatDown: 'Погружение вниз', shrinkDir: 'Направленное сжатие', spiralOut: 'Спираль при выходе',
       radialOut: 'Радиальный выход', warpOut: 'Деформированный выход', evaporate: 'Испарение',
       mosaicBreak: 'Мозаичное разрушение', fogBreak: 'Туманное разрушение', windBreak: 'Разрушение ветром',
-      windNoBreak: 'Дрейф ветра', cloth: 'Ткань',
+      windNoBreak: 'Дрейф ветра', cloth: 'Ткань', pageCurl: 'Загиб страницы',
     },
     hold: {
       none: 'Нет', floatBob: 'Покачивание', sineWave: 'Синусоида', jitter: 'Дрожание', pulse: 'Пульсация', opacityPulse: 'Пульс прозрачности',
@@ -654,7 +659,7 @@
       timeDelay: 'Задержка во времени', timeDisplacement: 'Временное смещение', colorShift: 'Сдвиг цвета',
       motionFlicker: 'Мерцание в движении', motionEcho: 'Эхо движения', strokeTrail: 'Шлейф обводки', motionBend: 'Изгиб',
       lagTail: 'Отстающий хвост', chromaWalk: 'Прогулка цвета', speedStrobe: 'Стробоскоп скорости', rainbowEcho: 'Радужное эхо',
-      neonTrail: 'Неоновый шлейф', shearDrag: 'Сдвиговый шлейф', rubberLead: 'Резиновый лидер',
+      neonTrail: 'Неоновый шлейф', shearDrag: 'Сдвиговый шлейф', rubberLead: 'Резиновый лидер', nudgeImpulse: 'Импульс сдвига',
     },
     location: {
       center: 'Центр', grid: 'Сетка', lowerThird: 'Нижняя треть', upperThird: 'Верхняя треть', left: 'Слева', right: 'Справа',
@@ -701,7 +706,7 @@
       faceOut: 'Наружу', sweep: 'Развёртка', bulge: 'Выпуклость', r0: 'Внутренний радиус', r1: 'Внешний радиус', turns: 'Витки',
       amp: 'Амплитуда', wavelength: 'Длина волны', phase: 'Фаза', angle: 'Угол', followAngle: 'Угол следования', step: 'Шаг',
       cols: 'Колонки', gap: 'Отступ', fillWidth: 'Ширина строки', spread: 'Разлёт', safeArea: 'Безопасная зона', points: 'Точки',
-      smooth: 'Сглаживание', cursor: 'Курсор', cursorColor: 'Цвет курсора', dir: 'Направление', distance: 'Расстояние',
+      smooth: 'Сглаживание', cursor: 'Курсор', cursorColor: 'Цвет курсора', dir: 'Направление', distance: 'Расстояние', pullback: 'Откат', recoilFactor: 'Коэффициент отдачи',
       height: 'Высота', axis: 'Ось', charset: 'Набор символов', rate: 'Частота', intensity: 'Интенсивность',
       flickers: 'Мерцания', width: 'Ширина', fillDelay: 'Задержка заливки', count: 'Количество', kind: 'Вид', set: 'Набор', mode: 'Режим', min: 'Минимум', delay: 'Задержка', turbulence: 'Турбулентность', gust: 'Порыв',
       spin: 'Вращение', scale: 'Масштаб', edgeColor: 'Цвет края', edgeWidth: 'Ширина края', gravity: 'Гравитация', drift: 'Дрейф',
@@ -735,7 +740,7 @@
       pivotZ: 'Глубина опоры', scaleFromX: 'Начальный масштаб X', scaleFromY: 'Начальный масштаб Y', scaleAxis: 'Ось масштаба',
       scaleAxisTo: 'Конечная ось масштаба', scaleEase: 'Возврат масштаба', scaleOriginSeparate: 'Отдельная опора масштаба',
       scaleOrigin: 'Опора масштаба', scaleOriginAnchor: 'Точка опоры масштаба', scaleOriginOffset: 'Подстройка опоры масштаба',
-      drawOrder: 'Порядок отрисовки',
+      drawOrder: 'Порядок отрисовки', curl: 'Загиб',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',
@@ -1039,7 +1044,7 @@
       enter: { animator: 'Animator', riseIn: 'Rise in', fallIn: 'Fall in', popIn: 'Pop in', spinIn: 'Spin in', focusIn: 'Focus in', driftIn: 'Drift in', tiltIn: '3D tilt in' },
       exit: { animator: 'Animator', riseOut: 'Rise out', fallOut: 'Fall out', zoomOutSoft: 'Soft zoom out', spinOut: 'Spin out', focusOut: 'Focus out' },
       hold: {
-        animator: 'Animator', boil: 'Boil', floatLoop: 'Float loop', breatheLoop: 'Breathe loop', swayLoop: 'Sway loop', beatPulse: 'Beat pulse',
+        animator: 'Animator', boil: 'Boil', floatLoop: 'Float loop', breatheLoop: 'Breathe loop', swayLoop: 'Sway loop', beatPulse: 'Beat pulse', pendulumSwing: 'Pendulum swing',
         warpArc: 'Arc warp', warpArch: 'Arch warp', warpBulge: 'Bulge warp', warpFlag: 'Flag warp', warpWave: 'Wave warp', warpFish: 'Fish warp',
         warpFisheye: 'Fisheye warp', warpInflate: 'Inflate warp', warpRise: 'Rise warp', warpSqueeze: 'Squeeze warp', warpTwist: 'Twist warp',
         letterBend: 'Bend (letter)', letterBulge: 'Bulge (letter)', letterRipple: 'Ripple (letter)', letterFlag: 'Flag (letter)',
@@ -1082,7 +1087,7 @@
       enter: { animator: 'アニメーター', riseIn: '上昇イン', fallIn: '降下イン', popIn: 'ポップイン', spinIn: 'スピンイン', focusIn: 'フォーカスイン', driftIn: 'ドリフトイン', tiltIn: '3Dティルトイン' },
       exit: { animator: 'アニメーター', riseOut: '上昇アウト', fallOut: '降下アウト', zoomOutSoft: 'ソフトズームアウト', spinOut: 'スピンアウト', focusOut: 'フォーカスアウト' },
       hold: {
-        animator: 'アニメーター', boil: 'ボイル（煮沸）', floatLoop: '浮遊ループ', breatheLoop: '呼吸ループ', swayLoop: 'スウェイループ', beatPulse: 'ビートパルス',
+        animator: 'アニメーター', boil: 'ボイル（煮沸）', floatLoop: '浮遊ループ', breatheLoop: '呼吸ループ', swayLoop: 'スウェイループ', beatPulse: 'ビートパルス', pendulumSwing: '振り子揺れ',
         warpArc: '円弧ワープ', warpArch: 'アーチワープ', warpBulge: '膨張ワープ', warpFlag: '旗ワープ', warpWave: '波ワープ', warpFish: '魚型ワープ',
         warpFisheye: 'フィッシュアイワープ', warpInflate: 'インフレートワープ', warpRise: 'ライズワープ', warpSqueeze: 'スクイーズワープ', warpTwist: 'ツイストワープ',
         letterBend: '文字ベンド', letterBulge: '文字バルジ', letterRipple: '文字リップル', letterFlag: '文字フラッグ',
@@ -1125,7 +1130,7 @@
       enter: { animator: 'Animador', riseIn: 'Entrada ascendente', fallIn: 'Entrada descendente', popIn: 'Aparición pop', spinIn: 'Entrada girando', focusIn: 'Enfoque de entrada', driftIn: 'Entrada con deriva', tiltIn: 'Entrada con inclinación 3D' },
       exit: { animator: 'Animador', riseOut: 'Salida ascendente', fallOut: 'Salida descendente', zoomOutSoft: 'Alejamiento suave', spinOut: 'Salida girando', focusOut: 'Desenfoque de salida' },
       hold: {
-        animator: 'Animador', boil: 'Ebullición', floatLoop: 'Flotar en bucle', breatheLoop: 'Respirar en bucle', swayLoop: 'Oscilar en bucle', beatPulse: 'Pulso al ritmo',
+        animator: 'Animador', boil: 'Ebullición', floatLoop: 'Flotar en bucle', breatheLoop: 'Respirar en bucle', swayLoop: 'Oscilar en bucle', beatPulse: 'Pulso al ritmo', pendulumSwing: 'Oscilación de péndulo',
         warpArc: 'Deformar en arco', warpArch: 'Deformar en arco alto', warpBulge: 'Deformar abombando', warpFlag: 'Deformar como bandera', warpWave: 'Deformar en onda', warpFish: 'Deformar como pez',
         warpFisheye: 'Deformar ojo de pez', warpInflate: 'Inflar', warpRise: 'Elevar', warpSqueeze: 'Estrechar', warpTwist: 'Retorcer',
         letterBend: 'Curvar (letra)', letterBulge: 'Abombar (letra)', letterRipple: 'Ondulación (letra)', letterFlag: 'Bandera (letra)',
@@ -1168,7 +1173,7 @@
       enter: { animator: 'Animateur', riseIn: 'Entrée montante', fallIn: 'Entrée descendante', popIn: 'Apparition pop', spinIn: 'Entrée en rotation', focusIn: 'Mise au point d’entrée', driftIn: 'Entrée en dérive', tiltIn: 'Entrée inclinée 3D' },
       exit: { animator: 'Animateur', riseOut: 'Sortie montante', fallOut: 'Sortie descendante', zoomOutSoft: 'Zoom arrière doux', spinOut: 'Sortie en rotation', focusOut: 'Flou de sortie' },
       hold: {
-        animator: 'Animateur', boil: 'Bouillonnement', floatLoop: 'Flottement en boucle', breatheLoop: 'Respiration en boucle', swayLoop: 'Balancement en boucle', beatPulse: 'Pulsation rythmique',
+        animator: 'Animateur', boil: 'Bouillonnement', floatLoop: 'Flottement en boucle', breatheLoop: 'Respiration en boucle', swayLoop: 'Balancement en boucle', beatPulse: 'Pulsation rythmique', pendulumSwing: 'Balancement de pendule',
         warpArc: 'Déformation en arc', warpArch: 'Déformation en arche', warpBulge: 'Déformation bombée', warpFlag: 'Déformation en drapeau', warpWave: 'Déformation en vague', warpFish: 'Déformation en poisson',
         warpFisheye: 'Déformation fisheye', warpInflate: 'Gonflement', warpRise: 'Élévation', warpSqueeze: 'Compression', warpTwist: 'Torsion',
         letterBend: 'Courber (lettre)', letterBulge: 'Bomber (lettre)', letterRipple: 'Ondulation (lettre)', letterFlag: 'Drapeau (lettre)',
@@ -1211,7 +1216,7 @@
       enter: { animator: 'Аниматор', riseIn: 'Появление снизу', fallIn: 'Появление сверху', popIn: 'Появление с увеличением', spinIn: 'Появление с вращением', focusIn: 'Наведение резкости', driftIn: 'Появление со сносом', tiltIn: 'Появление с наклоном 3D' },
       exit: { animator: 'Аниматор', riseOut: 'Уход вверх', fallOut: 'Уход вниз', zoomOutSoft: 'Мягкий отъезд', spinOut: 'Уход с вращением', focusOut: 'Уход с размытием' },
       hold: {
-        animator: 'Аниматор', boil: 'Кипение', floatLoop: 'Плавание в цикле', breatheLoop: 'Дыхание в цикле', swayLoop: 'Покачивание в цикле', beatPulse: 'Пульс в такт',
+        animator: 'Аниматор', boil: 'Кипение', floatLoop: 'Плавание в цикле', breatheLoop: 'Дыхание в цикле', swayLoop: 'Покачивание в цикле', beatPulse: 'Пульс в такт', pendulumSwing: 'Качание маятника',
         warpArc: 'Дуга', warpArch: 'Арка', warpBulge: 'Выпуклость', warpFlag: 'Флаг', warpWave: 'Волна', warpFish: 'Рыба',
         warpFisheye: 'Рыбий глаз', warpInflate: 'Раздувание', warpRise: 'Подъём', warpSqueeze: 'Сжатие', warpTwist: 'Скручивание',
         letterBend: 'Изгиб (буква)', letterBulge: 'Выпуклость (буква)', letterRipple: 'Рябь (буква)', letterFlag: 'Флаг (буква)',

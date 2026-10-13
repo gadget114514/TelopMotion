@@ -698,6 +698,52 @@
   });
 
   fx.register({
+    group: 'enter',
+    type: 'pageCurl',
+    tags: ['basic', '3d'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['left', 'right', 'up', 'down'], default: 'left', random: 'any' },
+      { key: 'angle', kind: 'number', min: 0, max: 180, step: 5, default: 90 },
+      { key: 'distance', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3, unit: 'frame' },
+      { key: 'curl', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.2 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const k = 1 - progress;
+      const dir = params.dir || 'left';
+      const maxAngle = params.angle == null ? 90 : Number(params.angle);
+      const dist = (params.distance == null ? 0.3 : Number(params.distance)) * (info && info.shortSide ? info.shortSide : 100);
+      const curlAmp = (params.curl == null ? 0.2 : Number(params.curl)) * (info && info.shortSide ? info.shortSide : 100);
+
+      const curlAngle = maxAngle * k;
+      const curlOffset = dist * k;
+      const bend = Math.sin(k * Math.PI) * curlAmp;
+
+      if (dir === 'left') {
+        state.tiltY -= curlAngle;
+        state.x -= curlOffset;
+        state.y -= bend * 0.5;
+        state.skewX += Math.tan((curlAngle * 0.15) * (Math.PI / 180));
+      } else if (dir === 'right') {
+        state.tiltY += curlAngle;
+        state.x += curlOffset;
+        state.y -= bend * 0.5;
+        state.skewX -= Math.tan((curlAngle * 0.15) * (Math.PI / 180));
+      } else if (dir === 'up') {
+        state.tiltX += curlAngle;
+        state.y -= curlOffset;
+        state.x += bend * 0.5;
+      } else if (dir === 'down') {
+        state.tiltX -= curlAngle;
+        state.y += curlOffset;
+        state.x += bend * 0.5;
+      }
+
+      state.opacity *= clamp01(progress * 1.5);
+    },
+  });
+
+  fx.register({
     group: 'enter', type: 'lightReveal', tags: ['lively'],
     params: [{ key: 'glow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.8 }],
     cpu(state, p, params) {

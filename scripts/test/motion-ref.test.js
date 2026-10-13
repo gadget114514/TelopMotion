@@ -48,6 +48,24 @@ test('Motion Reference new hold effects exist and function properly', () => {
   assert.notEqual(stateNudge.rot, 0, 'nudge rotates during impulse');
 });
 
+test('pageCurl enter and exit effects exist and function properly', () => {
+  const pageCurlEnter = fx.get('enter', 'pageCurl');
+  assert.ok(pageCurlEnter, 'pageCurl enter effect registered');
+
+  const stateEnter = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1, skewX: 0, skewY: 0, rot: 0, rotY: 0 };
+  pageCurlEnter.cpu(stateEnter, 0, { dir: 'right', angle: 45, distance: 0.5, curl: 30 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateEnter.opacity, 0, 'opacity starts at 0 at progress 0');
+  assert.notEqual(stateEnter.x, 0, 'pageCurl enter alters position at start');
+
+  const pageCurlExit = fx.get('exit', 'pageCurl');
+  assert.ok(pageCurlExit, 'pageCurl exit effect registered');
+
+  const stateExit = { x: 0, y: 0, scaleX: 1, scaleY: 1, opacity: 1, skewX: 0, skewY: 0, rot: 0, rotY: 0 };
+  pageCurlExit.cpu(stateExit, 1.0, { dir: 'right', angle: 45, distance: 0.5, curl: 30 }, () => 0.5, { shortSide: 1000 });
+  assert.ok(stateExit.opacity < 0.25, 'opacity decreases significantly at progress 1');
+  assert.notEqual(stateExit.x, 0, 'pageCurl exit alters position at end');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
