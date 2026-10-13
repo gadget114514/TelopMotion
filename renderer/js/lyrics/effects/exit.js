@@ -491,6 +491,84 @@
     },
   });
 
+  function getCurlDir(dir) {
+    switch (dir) {
+      case 'bottomLeft': return { vx: -1 / Math.SQRT2, vy: 1 / Math.SQRT2 };
+      case 'topRight': return { vx: 1 / Math.SQRT2, vy: -1 / Math.SQRT2 };
+      case 'topLeft': return { vx: -1 / Math.SQRT2, vy: -1 / Math.SQRT2 };
+      case 'left': return { vx: -1, vy: 0 };
+      case 'right': return { vx: 1, vy: 0 };
+      case 'top': return { vx: 0, vy: -1 };
+      case 'bottom': return { vx: 0, vy: 1 };
+      case 'bottomRight':
+      default:
+        return { vx: 1 / Math.SQRT2, vy: 1 / Math.SQRT2 };
+    }
+  }
+
+  fx.register({
+    group: 'exit',
+    type: 'pageCurl',
+    tags: ['basic', '3d', 'deform'],
+    params: [
+      { key: 'dir', kind: 'select', options: ['bottomRight', 'bottomLeft', 'topRight', 'topLeft', 'left', 'right', 'bottom', 'top'], default: 'bottomRight' },
+      { key: 'radius', kind: 'number', min: 0.05, max: 0.8, step: 0.01, default: 0.2, unit: 'frame' },
+      { key: 'curlAngle', kind: 'number', min: 30, max: 180, step: 5, default: 90 },
+      { key: 'shadow', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const radius = params.radius == null ? 0.2 : Number(params.radius);
+      const shadow = params.shadow == null ? 0.5 : Number(params.shadow);
+      const maxAngle = params.curlAngle == null ? 90 : Number(params.curlAngle);
+
+      const center = (info && info.blockCenter) || { x: state.x, y: state.y };
+      const half = (info && info.blockHalf) || { x: (info && info.shortSide ? info.shortSide : 1080) * 0.5, y: (info && info.shortSide ? info.shortSide : 1080) * 0.5 };
+      const hx = Math.max(1, half.x);
+      const hy = Math.max(1, half.y);
+
+      const dx = info && Number.isFinite(info.letterX) ? info.letterX - center.x : 0;
+      const dy = info && Number.isFinite(info.letterY) ? info.letterY - center.y : 0;
+      const u = Math.min(1, Math.max(-1, dx / hx));
+      const v = Math.min(1, Math.max(-1, dy / hy));
+
+      const { vx, vy } = getCurlDir(params.dir);
+      const maxDist = Math.abs(vx) + Math.abs(vy);
+      const proj = u * vx + v * vy;
+      const posProj = (proj + maxDist) / (2 * maxDist);
+
+      const front = progress * (1 + 2 * radius) - radius;
+      const dist = posProj - front;
+
+      if (dist <= 0) {
+        state.opacity *= 0;
+        state.visibleFrac = 0;
+      } else if (dist <= radius) {
+        const t = dist / radius;
+        const theta = (1 - t) * Math.PI;
+        const rollAngle = (1 - Math.cos(theta)) * 0.5 * maxAngle;
+        const shortSide = (info && info.shortSide) ? info.shortSide : 1080;
+
+        const disp = (1 - Math.sin(theta)) * radius * shortSide * 0.5;
+        state.x += vx * disp;
+        state.y += vy * disp;
+
+        state.tiltX += rollAngle * (-vy);
+        state.tiltY += rollAngle * vx;
+
+        const comp = 1 - 0.25 * Math.sin(theta);
+        state.scaleX *= comp;
+        state.scaleY *= comp;
+        state.deform.push({ type: 'bend', amount: 0.4 * Math.sin(theta), time: progress, param: 0 });
+
+        if (shadow > 0) {
+          state.flash = Math.max(state.flash || 0, shadow * 0.4 * Math.sin(theta));
+        }
+        state.opacity *= clamp01(1 - (1 - t) * 0.8);
+      }
+    },
+  });
+
   fx.register({
     group: 'exit', type: 'evaporate', tags: ['showy', 'dissolve'],
     params: [

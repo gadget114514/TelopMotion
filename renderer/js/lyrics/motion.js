@@ -1717,6 +1717,7 @@
     { id: 'anticipationIn', nameJa: '予備動作イン', nameEn: 'Anticipation In', group: 'entrance', phase: 'enter', type: 'anticipation', from: 'start', delay: 0, duration: 0.7, ease: 'easeOutCubic', params: { dir: 'up', distance: 0.25, pullback: 0.12 } },
     { id: 'irisIn', nameJa: 'アイリスイン', nameEn: 'Iris In', group: 'entrance', phase: 'enter', type: 'irisOpen', from: 'start', delay: 0, duration: 0.6, ease: 'easeOutCubic', params: { soft: 0.08 } },
     { id: 'doubleBounceIn', nameJa: 'ダブルバウンド', nameEn: 'Double Bounce In', group: 'entrance', phase: 'enter', type: 'doubleBounce', from: 'start', delay: 0, duration: 0.8, ease: 'linear', params: { height: 0.4, recoilFactor: 0.3 } },
+    { id: 'pageCurlIn', nameJa: 'ページめくりイン', nameEn: 'Page Curl In', group: 'entrance', phase: 'enter', type: 'pageCurl', from: 'start', delay: 0, duration: 0.8, ease: 'easeInOutCubic', params: { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 } },
     { id: 'pulse', nameJa: 'パルス', nameEn: 'Pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'opacityPulse', nameJa: '点滅', nameEn: 'Blink', group: 'emphasis', phase: 'hold', type: 'opacityPulse', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: {} },
     { id: 'growShrink', nameJa: '伸縮', nameEn: 'Grow Shrink', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.2, duration: 1.6, ease: 'linear', params: { amount: 0.18, bpm: 90 } },
@@ -1740,6 +1741,7 @@
     { id: 'explode', nameJa: 'エクスプロード', nameEn: 'Explode', group: 'exit', phase: 'exit', type: 'explode', from: 'end', delay: -0.6, duration: 0.6, ease: 'easeInCubic', params: {} },
     { id: 'melt', nameJa: 'メルト', nameEn: 'Melt', group: 'exit', phase: 'exit', type: 'melt', from: 'end', delay: -0.8, duration: 0.8, ease: 'linear', params: {} },
     { id: 'burn', nameJa: 'バーン', nameEn: 'Burn', group: 'exit', phase: 'exit', type: 'burnAway', from: 'end', delay: -0.7, duration: 0.7, ease: 'linear', params: {} },
+    { id: 'pageCurlOut', nameJa: 'ページめくりアウト', nameEn: 'Page Curl Out', group: 'exit', phase: 'exit', type: 'pageCurl', from: 'end', delay: -0.7, duration: 0.7, ease: 'easeInOutCubic', params: { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 } },
     // The shader pack (renderer/js/lyrics/effects/shader-fx.js). Each family is
     // available in all three phases, so every one of them can be picked here and
     // then reshaped with any ADSR phase and any easing curve.
