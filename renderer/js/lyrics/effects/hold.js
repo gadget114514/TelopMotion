@@ -161,6 +161,46 @@
 
   fx.register({
     group: 'hold',
+    type: 'pendulumSwing',
+    tags: ['basic', 'lively'],
+    params: [
+      { key: 'angle', kind: 'number', min: 0, max: 45, step: 0.5, default: 18, random: [8, 25] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 3, step: 0.05, default: 0.8 },
+      { key: 'length', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1, unit: 'frame' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const theta = (params.angle == null ? 18 : params.angle) * Math.sin(TAU * (params.speed || 0.8) * h) * env;
+      const rad = (theta * Math.PI) / 180;
+      const length = (params.length == null ? 0.1 : params.length) * info.shortSide;
+      state.rot += theta;
+      state.x += length * Math.sin(rad);
+      state.y += length * (1 - Math.cos(rad));
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'nudgeImpulse',
+    tags: ['basic', 'lively'],
+    params: [
+      { key: 'amount', kind: 'number', min: 0, max: 0.2, step: 0.005, default: 0.04, unit: 'frame' },
+      { key: 'interval', kind: 'number', min: 0.5, max: 10, step: 0.1, default: 2.0 },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      const amount = (params.amount == null ? 0.04 : params.amount) * info.shortSide;
+      const interval = Math.max(0.5, params.interval == null ? 2.0 : params.interval);
+      const phase = (h % interval) / 0.3;
+      let nudge = 0;
+      if (phase < 1.0) {
+        nudge = Math.sin(phase * Math.PI * 4) * Math.exp(-phase * 3);
+      }
+      state.x += nudge * amount * env;
+      state.rot += nudge * 8 * env;
+    },
+  });
+
+  fx.register({
+    group: 'hold',
     type: 'marquee',
     params: [{ key: 'speed', kind: 'number', min: 0.05, max: 1, step: 0.01, default: 0.25 }],
     cpu(state, h, env, params, rng, info) {
