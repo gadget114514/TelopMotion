@@ -832,3 +832,37 @@ test('the Inspector descriptor exposes the new figure params and they reach the 
   const width = (list) => list.shapes.reduce((sum, shape) => sum + (shape.width || 0), 0);
   assert.ok(width(heavy) > width(hair) * 2, 'the stroke select reaches the geometry');
 });
+
+test('radialSunburst motif generates center circle and radial rays with placement, scaling and weird randomisation', () => {
+  const atCtx = ctx({ time: 3 });
+  const testBeat = [{ start: 2, end: 4, move: { in: 'pop', hold: 'drift', out: 'fade' }, variant: 0, accent: false, size: 1 }];
+
+  const centerRes = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', placement: 'center', centerRadius: 0.1, scale: 1, beats: testBeat } }, atCtx).shapes;
+  assert.ok(centerRes.length > 1, 'draws central circle and radial rays');
+  const circle = centerRes.find((s) => s.kind === 'circle');
+  assert.ok(circle != null, 'central circle present');
+  assert.equal(circle.x, FRAME.width / 2);
+  assert.equal(circle.y, FRAME.height / 2);
+
+  // Top left placement
+  const topLeftRes = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', placement: 'topLeft', centerRadius: 0.1, beats: testBeat } }, atCtx).shapes;
+  const topLeftCircle = topLeftRes.find((s) => s.kind === 'circle');
+  assert.equal(topLeftCircle.x, 0);
+  assert.equal(topLeftCircle.y, 0);
+
+  // Offscreen placement
+  const offscreenRes = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', placement: 'offscreenTop', centerRadius: 0.1, beats: testBeat } }, atCtx).shapes;
+  const offscreenCircle = offscreenRes.find((s) => s.kind === 'circle');
+  assert.equal(offscreenCircle.x, FRAME.width / 2);
+  assert.equal(offscreenCircle.y, -FRAME.height * 0.2);
+
+  // Scale test
+  const scale1 = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', scale: 1, centerRadius: 0.1, beats: testBeat } }, atCtx).shapes.find((s) => s.kind === 'circle');
+  const scale2 = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', scale: 2, centerRadius: 0.1, beats: testBeat } }, atCtx).shapes.find((s) => s.kind === 'circle');
+  assert.ok(Math.abs(scale2.r - scale1.r * 2) < 1e-5, 'circle radius scales with scale multiplier');
+
+  // Weird / rand randomisation test
+  const plainRes = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', rand: 0, seed: 10, beats: testBeat } }, atCtx).shapes;
+  const weirdRes = figures.drawList({ type: 'figure', params: { motif: 'radialSunburst', rand: 1, seed: 10, beats: testBeat } }, atCtx).shapes;
+  assert.notDeepEqual(plainRes, weirdRes, 'rand > 0 randomises sunburst ray angles, lengths, and center circle size');
+});

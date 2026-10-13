@@ -15,7 +15,7 @@
 
   const MOTIFS = [
     'orbit', 'burst', 'bars', 'rings', 'confetti', 'frame', 'underlineSweep', 'bracketsPop',
-    'polyMorph', 'ribbon', 'ticker', 'halftone',
+    'polyMorph', 'ribbon', 'ticker', 'halftone', 'radialSunburst',
     // fear / variety pack
     'cracks', 'spikes', 'eyes', 'scratches', 'drips', 'lattice', 'waves', 'comets',
   ];
@@ -70,7 +70,7 @@
   const CAMERAS_2D = ['none', 'push', 'pull', 'pan', 'roll', 'shake', 'whip', 'orbit'];
   // the plain default: flat bars / rings / frames that snap in fast. Anything
   // ornate (proc, cracks, eyes, drips ...) only appears on a weird or fearful run.
-  const PLAIN_MOTIFS = ['bars', 'rings', 'underlineSweep', 'bracketsPop', 'ticker', 'slabWipe', 'cornerBlocks', 'stripeRun', 'sideBars', 'dotGrid', 'ringDraw'];
+  const PLAIN_MOTIFS = ['bars', 'rings', 'underlineSweep', 'bracketsPop', 'ticker', 'slabWipe', 'cornerBlocks', 'stripeRun', 'sideBars', 'dotGrid', 'ringDraw', 'radialSunburst'];
   const PLAIN_INS = ['pop', 'wipe'];
   const PLAIN_HOLDS = ['drift', 'pulse'];
   const PLAIN_OUTS = ['shrink', 'fade'];
@@ -395,9 +395,11 @@
       else if (Number.isFinite(Number(opts.stroke))) params.stroke = round(strokeFactor(opts.stroke), 2);
       else params.stroke = 'med';
     }
-    for (const key of ['count', 'radius', 'aspect', 'spinRate']) {
+    for (const key of ['count', 'radius', 'aspect', 'spinRate', 'centerRadius']) {
       if (opts[key] != null && Number.isFinite(Number(opts[key]))) params[key] = Number(opts[key]);
     }
+    if (opts.placement) params.placement = String(opts.placement);
+    if (opts.edge) params.edge = String(opts.edge);
     // optional ease tuning: saved only when pinned, so an unset clip draws
     // exactly as before
     for (const key of ['inEase', 'outEase', 'holdEase', 'cameraEase']) {
@@ -2216,6 +2218,70 @@
       for (let i = 0; i < count; i += 1) {
         const angle = (i / count) * TAU + rotation * 0.05;
         shapes.push({ kind: 'capsule', x0: box.cx, y0: box.cy, x1: box.cx + Math.cos(angle) * reach, y1: box.cy + Math.sin(angle) * reach, width: box.short * 0.009 * tuning.stroke, color: colorOf(params, ctx, i), opacity: opacity * 0.85 });
+      }
+    } else if (motif === 'radialSunburst') {
+      const placement = params.placement || 'center';
+      let cx = box.cx;
+      let cy = box.cy;
+      if (placement === 'top') { cx = box.cx; cy = 0; }
+      else if (placement === 'bottom') { cx = box.cx; cy = box.height; }
+      else if (placement === 'left') { cx = 0; cy = box.cy; }
+      else if (placement === 'right') { cx = box.width; cy = box.cy; }
+      else if (placement === 'topLeft') { cx = 0; cy = 0; }
+      else if (placement === 'topRight') { cx = box.width; cy = 0; }
+      else if (placement === 'bottomLeft') { cx = 0; cy = box.height; }
+      else if (placement === 'bottomRight') { cx = box.width; cy = box.height; }
+      else if (placement === 'offscreenTop') { cx = box.cx; cy = -box.height * 0.2; }
+      else if (placement === 'offscreenBottom') { cx = box.cx; cy = box.height * 1.2; }
+      else if (placement === 'offscreenLeft') { cx = -box.width * 0.2; cy = box.cy; }
+      else if (placement === 'offscreenRight') { cx = box.width * 1.2; cy = box.cy; }
+
+      const randSeed = num(params.seed, 1) + info.index * 13;
+      const wRandom = rng.rngFor(randSeed, 'sunburst', info.index, variant);
+      const randVal = params.rand != null ? clamp01(params.rand) : 0;
+
+      const baseCenterR = params.centerRadius != null ? Number(params.centerRadius) : 0.08;
+      let cRadius = box.short * baseCenterR * scale;
+      if (randVal > 0) {
+        cRadius *= (1 + (wRandom() - 0.5) * randVal * 0.6);
+      }
+
+      const burstScale = (params.scale != null && Number.isFinite(Number(params.scale)) ? Number(params.scale) : 1);
+
+      const baseCount = countOf(Math.max(8, Math.round(12 + density * 24)), 4, 64);
+      let count = baseCount;
+      if (randVal > 0) {
+        count = Math.max(4, Math.min(64, Math.round(baseCount * (1 + (wRandom() - 0.5) * randVal * 0.8))));
+      }
+
+      const maxReach = Math.hypot(box.width, box.height) * 1.5 * burstScale;
+      const edgeMode = params.edge || 'sharp';
+
+      if (cRadius > 0.5) {
+        shapes.push({ kind: 'circle', x: cx, y: cy, r: cRadius, color: colorOf(params, ctx, 0), opacity });
+        if (edgeMode === 'doubleRing') {
+          shapes.push({ kind: 'ring', x: cx, y: cy, r: cRadius * 1.25, thickness: box.short * 0.006 * tuning.stroke, color: colorOf(params, ctx, 1), opacity: opacity * 0.8 });
+        }
+      }
+
+      const startDist = cRadius;
+      for (let i = 0; i < count; i += 1) {
+        let angle = (i / count) * TAU + rotation * 0.05;
+        if (randVal > 0) {
+          angle += (wRandom() - 0.5) * (TAU / count) * randVal * 0.5;
+        }
+        let reach = maxReach;
+        if (randVal > 0 && i % 2 === 1) {
+          reach *= (1 - 0.3 * randVal * wRandom());
+        }
+
+        const x0 = cx + Math.cos(angle) * startDist;
+        const y0 = cy + Math.sin(angle) * startDist;
+        const x1 = cx + Math.cos(angle) * reach;
+        const y1 = cy + Math.sin(angle) * reach;
+
+        const rayOpacity = edgeMode === 'soft' && i % 2 === 1 ? opacity * 0.5 : opacity * 0.85;
+        shapes.push({ kind: 'capsule', x0, y0, x1, y1, width: box.short * 0.008 * tuning.stroke * (randVal > 0 ? (0.7 + 0.6 * wRandom()) : 1), color: colorOf(params, ctx, i), opacity: rayOpacity });
       }
     } else if (motif === 'bars') {
       const bars = Math.max(5, Math.round(8 + density * 16));
