@@ -2331,6 +2331,7 @@
       editTheme: () => SA.themes.dialog(),
       layers: () => SA.layersDialog.open(),
       background: () => SA.backgroundDialog.open(),
+      maskEditor: () => SA.maskDialog && SA.maskDialog.open && SA.maskDialog.open(),
       audio: () => SA.audioDialog.open(),
       fonts: () => SA.fontsDialog.open(),
       about: aboutDialog,

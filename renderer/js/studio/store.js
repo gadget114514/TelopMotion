@@ -2432,6 +2432,56 @@ SA.store = (() => {
         },
       });
     },
+    addMask(mask) {
+      if (!mask) return;
+      dispatch({
+        label: 'add mask',
+        areas: ['masks'],
+        do(project) {
+          project.masks = project.masks || [];
+          if (project.masks.length >= 10) return;
+          project.masks.push(clone(mask));
+        },
+      });
+    },
+    removeMask(id) {
+      dispatch({
+        label: 'remove mask',
+        areas: ['masks'],
+        do(project) {
+          project.masks = (project.masks || []).filter((entry) => entry.id !== id);
+        },
+      });
+    },
+    updateMask(id, patch) {
+      if (!id || !patch) return;
+      dispatch({
+        label: 'update mask',
+        areas: ['masks'],
+        do(project) {
+          const target = (project.masks || []).find((entry) => entry.id === id);
+          if (target) Object.assign(target, clone(patch));
+        },
+      });
+    },
+    setMasks(masks) {
+      dispatch({
+        label: 'set masks',
+        areas: ['masks'],
+        do(project) {
+          project.masks = (Array.isArray(masks) ? clone(masks) : []).slice(0, 10);
+        },
+      });
+    },
+    clearMasks() {
+      dispatch({
+        label: 'clear masks',
+        areas: ['masks'],
+        do(project) {
+          project.masks = [];
+        },
+      });
+    },
     setOutput(patch) {
       dispatch({
         label: 'output',

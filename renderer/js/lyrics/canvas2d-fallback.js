@@ -74,6 +74,29 @@ SA.canvas2dFallback = (() => {
         ctx.fillStyle = base;
         ctx.fillRect(0, 0, state.width, state.height);
       }
+      const bgMasks = (project && Array.isArray(project.masks)) ? project.masks.filter((m) => m && m.targets && m.targets.background) : [];
+      if (bgMasks.length > 0) {
+        for (const mask of bgMasks) {
+          if (mask.data && typeof Image !== 'undefined') {
+            let img = mask._imgCache;
+            if (!img) {
+              img = new Image();
+              img.src = mask.data;
+              mask._imgCache = img;
+            }
+            if (img.complete && img.naturalWidth > 0) {
+              const pat = ctx.createPattern(img, 'repeat');
+              if (pat) {
+                ctx.save();
+                ctx.globalAlpha = 0.35;
+                ctx.fillStyle = pat;
+                ctx.fillRect(0, 0, state.width, state.height);
+                ctx.restore();
+              }
+            }
+          }
+        }
+      }
       const frame = { cues: [], time: t };
       if (!project) return frame;
       const fonts = state.assets.fonts || [];
@@ -203,6 +226,32 @@ SA.canvas2dFallback = (() => {
           }
           ctx.fillStyle = `rgb(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(color.b * 255)})`;
           ctx.fill(letter.path2d);
+
+          const fgMasks = (project && Array.isArray(project.masks)) ? project.masks.filter((m) => m && m.targets && m.targets.textFg) : [];
+          if (fgMasks.length > 0) {
+            for (const mask of fgMasks) {
+              if (mask.data && typeof Image !== 'undefined') {
+                let img = mask._imgCache;
+                if (!img) {
+                  img = new Image();
+                  img.src = mask.data;
+                  mask._imgCache = img;
+                }
+                if (img.complete && img.naturalWidth > 0) {
+                  const pat = ctx.createPattern(img, 'repeat');
+                  if (pat) {
+                    ctx.save();
+                    ctx.globalCompositeOperation = 'source-atop';
+                    ctx.globalAlpha = 0.45;
+                    ctx.fillStyle = pat;
+                    ctx.fill(letter.path2d);
+                    ctx.restore();
+                  }
+                }
+              }
+            }
+          }
+
           ctx.restore();
           entry.letters.push({
             path: letter.path,

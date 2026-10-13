@@ -18,7 +18,7 @@
     { id: 'mid', kind: 'backdrop', name: '後景' },
     { id: 'bg', kind: 'background', name: '背景' },
   ];
-  const BACKDROP_FILLER_TYPES = new Set(['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'sineWave', 'progress']);
+  const BACKDROP_FILLER_TYPES = new Set(['shapes', 'pattern', 'particles', 'spectrum', 'waveform', 'sineWave', 'ribbonLine', 'progress']);
 
   // The tracks the automatic direction writes into. A document saved before one
   // of them existed simply gains the empty track (the id is stable, so nothing
@@ -116,6 +116,7 @@
       keyframes: {},
       markers: [],
       layers: [],
+      masks: [],
       tracks: DEFAULT_TRACKS.map((track) => ({ ...track })),
       clips: [],
       fillers: { enabled: true, minGap: 1.5, margin: 0.25, byKind: {}, longGap: { threshold: 8, spec: null }, clips: {} },
@@ -893,6 +894,7 @@
     if (version < 7) migrateToV7(merged);
     ensureManagedTracks(merged);
     normalizeLayers(merged);
+    merged.masks = (Array.isArray(merged.masks) ? merged.masks : []).slice(0, 10);
     merged.version = VERSION;
     merged.format = FORMAT;
     // subtitle background visibility is a per-track boolean (absent = shown)

@@ -272,6 +272,84 @@
     return { shapes, texts: [] };
   }
 
+  function ribbonLineShapes(params, ctx) {
+    const width = ctx.frame.width;
+    const height = ctx.frame.height;
+    const count = Math.max(1, Math.min(10, Math.round(num(params.count, 3))));
+    const baseThickness = Math.max(1, num(params.thickness, 18)) * (height / 600);
+    const amp = height * 0.12 * Math.max(0.1, num(params.amp, 1));
+    const speed = num(params.speed, 1);
+    const opacity = clamp01(num(params.opacity, 0.85));
+    const style = params.style || 'wave';
+    const points = 64;
+    const margin = width * 0.05;
+    const span = width + margin * 2;
+    const shapes = [];
+
+    for (let r = 0; r < count; r += 1) {
+      const ribbonColor = colorAt(params, ctx, r, colorOf(params, ctx, '#8b93ff'));
+      const phase = ctx.time * speed * TAU * 0.5 + (r / Math.max(1, count)) * TAU;
+      const ribbonYOffset = height / 2 + (r - (count - 1) / 2) * (height * 0.14);
+
+      const pts = [];
+      for (let i = 0; i <= points; i += 1) {
+        const t = i / points;
+        const x = -margin + span * t;
+        let y = ribbonYOffset;
+        let w = baseThickness;
+
+        if (style === 'flow') {
+          y += Math.sin(t * TAU * 1.5 + phase) * amp + Math.cos(t * TAU * 3.0 - phase * 0.7) * (amp * 0.4);
+          w *= (0.7 + 0.6 * Math.sin(t * TAU * 2.0 + phase));
+        } else if (style === 'twist') {
+          y += Math.sin(t * TAU * 2.0 + phase) * amp;
+          w *= Math.abs(Math.cos(t * TAU * 1.5 + phase * 1.2)) + 0.2;
+        } else if (style === 'spiral') {
+          const angle = t * TAU * 2.5 + phase;
+          y += Math.sin(angle) * amp * (0.5 + 0.5 * Math.sin(t * Math.PI));
+          w *= (0.8 + 0.4 * Math.cos(angle * 0.5));
+        } else {
+          // 'wave'
+          y += Math.sin(t * TAU * 2 + phase) * amp + Math.sin(t * TAU * 4 + phase * 0.5) * (amp * 0.3);
+          w *= (0.85 + 0.3 * Math.sin(t * TAU * 3 + phase));
+        }
+
+        const derivativeY = i < points
+          ? Math.sin(((i + 1) / points) * TAU * 2 + phase) * amp - Math.sin(t * TAU * 2 + phase) * amp
+          : 0;
+        const dx = span / points;
+        const dy = derivativeY;
+        const len = Math.hypot(dx, dy) || 1;
+        const nx = -dy / len;
+        const ny = dx / len;
+
+        const topX = x + nx * (w * 0.5);
+        const topY = y + ny * (w * 0.5);
+        const botX = x - nx * (w * 0.5);
+        const botY = y - ny * (w * 0.5);
+
+        pts.push({ x, y, topX, topY, botX, botY, w });
+      }
+
+      for (let i = 0; i < points; i += 1) {
+        const p0 = pts[i];
+        const p1 = pts[i + 1];
+        shapes.push({
+          kind: 'convex',
+          points: [
+            { x: p0.topX, y: p0.topY },
+            { x: p1.topX, y: p1.topY },
+            { x: p1.botX, y: p1.botY },
+            { x: p0.botX, y: p0.botY },
+          ],
+          color: ribbonColor,
+          opacity: opacity,
+        });
+      }
+    }
+    return { shapes, texts: [] };
+  }
+
   function shapesShapes(params, ctx) {
     const width = ctx.frame.width;
     const height = ctx.frame.height;
@@ -1040,7 +1118,7 @@
     figures: 'foreground', shapes: 'foreground', waveform: 'foreground', spectrum: 'foreground',
     countdown: 'foreground', progress: 'foreground',
     instrumental: 'foreground', nextLinePreview: 'foreground', previousLineGhost: 'foreground',
-    split: 'background', pattern: 'background', particles: 'background', sineWave: 'background',
+    split: 'background', pattern: 'background', particles: 'background', sineWave: 'background', ribbonLine: 'background',
   };
 
   function layerOf(type) {
@@ -1062,6 +1140,7 @@
     if (type === 'waveform') return applyPlacement(waveformShapes(params, ctx), params, ctx, type);
     if (type === 'spectrum') return applyPlacement(spectrumShapes(params, ctx), params, ctx, type);
     if (type === 'sineWave') return applyPlacement(sineWaveShapes(params, ctx), params, ctx, type);
+    if (type === 'ribbonLine') return applyPlacement(ribbonLineShapes(params, ctx), params, ctx, type);
     if (type === 'shapes') return applyPlacement(shapesShapes(params, ctx), params, ctx, type);
     if (type === 'pattern') return applyPlacement(patternShapes(params, ctx), params, ctx, type);
     if (type === 'particles') return applyPlacement(particlesShapes(params, ctx), params, ctx, type);
@@ -1115,7 +1194,7 @@
     return list;
   }
 
-  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'textAnim', 'combo'];
+  const TYPE_ORDER = ['none', 'countdown', 'waveform', 'spectrum', 'sineWave', 'ribbonLine', 'shapes', 'pattern', 'particles', 'split', 'figures', 'nextLinePreview', 'previousLineGhost', 'progress', 'credits', 'cardPeek', 'instrumental', 'textAnim', 'combo'];
 
   const PARAMS = {
     none: [],
@@ -1129,6 +1208,16 @@
       { key: 'mode', kind: 'select', options: ['line', 'mirror', 'circle'], default: 'line' },
       { key: 'thickness', kind: 'number', min: 0.5, max: 12, step: 0.5, default: 2.5 },
       { key: 'amp', kind: 'number', min: 0.2, max: 3, step: 0.1, default: 1 },
+      { key: 'color', kind: 'color', default: null },
+      ...PLACE_ALL,
+    ],
+    ribbonLine: [
+      { key: 'count', kind: 'int', min: 1, max: 10, step: 1, default: 3 },
+      { key: 'thickness', kind: 'number', min: 1, max: 80, step: 1, default: 18 },
+      { key: 'amp', kind: 'number', min: 0.1, max: 3, step: 0.1, default: 1 },
+      { key: 'speed', kind: 'number', min: 0, max: 4, step: 0.1, default: 1 },
+      { key: 'style', kind: 'select', options: ['wave', 'flow', 'twist', 'spiral'], default: 'wave' },
+      { key: 'opacity', kind: 'number', min: 0.05, max: 1, step: 0.05, default: 0.85 },
       { key: 'color', kind: 'color', default: null },
       ...PLACE_ALL,
     ],
