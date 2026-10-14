@@ -165,6 +165,8 @@ SA.exportDialog = (() => {
         width,
         height,
         fps: settings.fps,
+        bitrate: settings.bitrate,
+        quality: settings.quality,
         range,
         format: settings.format,
         transparent: settings.transparent,
@@ -175,7 +177,6 @@ SA.exportDialog = (() => {
         renderFrame: (time) => {
           engine.renderFrame(time);
         },
-        captureCanvas: () => canvas,
         captureBitmap: () => (typeof canvas.transferToImageBitmap === 'function' ? canvas.transferToImageBitmap() : canvas),
         onProgress: (info) => {
           if (!ui) return;
