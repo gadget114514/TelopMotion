@@ -461,18 +461,18 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('recent:list', () => {
+  ipcMain.handle('recent:list', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'recent.json');
-      if (!fs.existsSync(file)) return ok([]);
-      const list = JSON.parse(fs.readFileSync(file, 'utf8'));
+      const content = await fs.promises.readFile(file, 'utf8');
+      const list = JSON.parse(content);
       return ok(Array.isArray(list) ? list : []);
     } catch {
       return ok([]);
     }
   });
 
-  ipcMain.handle('recent:add', (_event, entry) => {
+  ipcMain.handle('recent:add', async (_event, entry) => {
     try {
       if (!entry || typeof entry !== 'object' || typeof entry.name !== 'string' || !entry.name) {
         return fail(Object.assign(new Error('invalid-entry'), { code: 'invalid-entry' }));
@@ -485,14 +485,15 @@ function registerIpc() {
       const file = path.join(app.getPath('userData'), 'recent.json');
       let list = [];
       try {
-        list = JSON.parse(fs.readFileSync(file, 'utf8'));
+        const content = await fs.promises.readFile(file, 'utf8');
+        list = JSON.parse(content);
       } catch {
         list = [];
       }
       if (!Array.isArray(list)) list = [];
       list = list.filter((item) => item && item.name !== clean.name);
       list.unshift(clean);
-      fs.writeFileSync(file, JSON.stringify(list.slice(0, 8), null, 2));
+      await fs.promises.writeFile(file, JSON.stringify(list.slice(0, 8), null, 2));
       return ok(true);
     } catch (error) {
       return fail(error);
