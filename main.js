@@ -493,8 +493,8 @@ function registerIpc() {
       const file = path.join(app.getPath('userData'), 'recent.json');
       let list = [];
       try {
-        const content = await fs.promises.readFile(file, 'utf8');
-        list = JSON.parse(content);
+        const data = await fs.promises.readFile(file, 'utf8');
+        list = JSON.parse(data);
       } catch {
         list = [];
       }
@@ -545,14 +545,14 @@ function registerIpc() {
     return ok({ hasKey: !!key, source, canStore });
   });
 
-  ipcMain.handle('ai:set-key', (_event, payload) => {
+  ipcMain.handle('ai:set-key', async (_event, payload) => {
     const key = payload && typeof payload.key === 'string' ? payload.key.trim() : '';
     if (!AI_KEY_RE.test(key)) return fail(Object.assign(new Error('invalid-key'), { code: 'invalid-key' }));
     try {
       if (!safeStorage.isEncryptionAvailable()) {
         return fail(Object.assign(new Error('encryption-unavailable'), { code: 'encryption-unavailable' }));
       }
-      fs.writeFileSync(AI_KEY_FILE(), safeStorage.encryptString(key), { mode: 0o600 });
+      await fs.promises.writeFile(AI_KEY_FILE(), safeStorage.encryptString(key), { mode: 0o600 });
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -1077,7 +1077,7 @@ function createWindow() {
           }
           const shotBytes = finalImage.toPNG();
           const shotTarget = path.join(__dirname, 'snapshot', 'studio-overview.png');
-          fs.writeFileSync(shotTarget, shotBytes);
+          await fs.promises.writeFile(shotTarget, shotBytes);
           console.log(
             `SMOKE_SHOT=${shotTarget} status=${shotReport && shotReport.status} ink=${shotReport && shotReport.ink} glError=${shotReport && shotReport.glError} bytes=${shotBytes.length}`
           );
@@ -1181,9 +1181,10 @@ function createWindow() {
           const report = typeof sheet === 'string' ? JSON.parse(sheet) : sheet;
           if (report && report.status === 'ok' && report.data) {
             const base64 = String(report.data).replace(/^data:image\/png;base64,/, '');
-            fs.mkdirSync(path.dirname(demoOut), { recursive: true });
-            fs.writeFileSync(demoOut, Buffer.from(base64, 'base64'));
-            console.log(`SMOKE_FXDEMO=${demoOut} frames=${report.frames} size=${report.width}x${report.height} glError=${report.glError} bytes=${fs.statSync(demoOut).size}`);
+            const buffer = Buffer.from(base64, 'base64');
+            await fs.promises.mkdir(path.dirname(demoOut), { recursive: true });
+            await fs.promises.writeFile(demoOut, buffer);
+            console.log(`SMOKE_FXDEMO=${demoOut} frames=${report.frames} size=${report.width}x${report.height} glError=${report.glError} bytes=${buffer.length}`);
           } else {
             console.log(`SMOKE_FXDEMO_FAILED=${sheet}`);
           }

@@ -20,6 +20,7 @@
     },
     enter: {
       fade: 'Fade', typewriter: 'Typewriter', slide: 'Slide', dropBounce: 'Drop bounce', anticipation: 'Anticipation', irisOpen: 'Iris open', doubleBounce: 'Double bounce', zoomIn: 'Zoom in', blurIn: 'Blur in',
+      pageCurl: 'Page curl',
       flip3D: '3D flip', rotateIn: 'Rotate in', scatterIn: 'Scatter in', waveRise: 'Wave rise', elasticPop: 'Elastic pop',
       scramble: 'Scramble', glitchIn: 'Glitch in', neonFlicker: 'Neon flicker', strokeDrawOn: 'Stroke draw-on',
       particlesAssemble: 'Particles assemble', shatterRebuild: 'Shatter rebuild', morphFromPrevious: 'Morph from previous',
@@ -36,6 +37,7 @@
     },
     exit: {
       fade: 'Fade', slide: 'Slide', zoomOut: 'Zoom out', blurOut: 'Blur out', explode: 'Explode', gravityFall: 'Gravity fall',
+      pageCurl: 'Page curl',
       dissolve: 'Dissolve', wipe: 'Wipe', typewriterReverse: 'Typewriter reverse', shrinkToCenter: 'Shrink to center',
       particlesDisperse: 'Particles disperse', melt: 'Melt', burnAway: 'Burn away', strokeErase: 'Stroke erase',
       vanish: 'Vanish', floatOut: 'Float out', splitOut: 'Split out', stripeShrink: 'Stripe shrink',
@@ -128,7 +130,7 @@
       pivotZ: 'Pivot depth', scaleFromX: 'Start scale X', scaleFromY: 'Start scale Y', scaleAxis: 'Scale axis',
       scaleAxisTo: 'Scale axis end', scaleEase: 'Scale easing', scaleOriginSeparate: 'Separate scale origin',
       scaleOrigin: 'Scale origin', scaleOriginAnchor: 'Scale origin anchor', scaleOriginOffset: 'Scale origin offset',
-      drawOrder: 'Draw order',
+      drawOrder: 'Draw order', curlAngle: 'Curl angle',
     },
     value: {
       alternate: 'Alternate', arc: 'Arc', 'center-out': 'Center out', center: 'Center', circle: 'Circle', contain: 'Contain', corners: 'Corners',
@@ -169,6 +171,7 @@
     },
     enter: {
       fade: 'フェード', typewriter: 'タイプライター', slide: 'スライド', dropBounce: '落下バウンド', anticipation: '予備動作イン', irisOpen: 'アイリスオープン', doubleBounce: 'ダブルバウンド', zoomIn: 'ズームイン',
+      pageCurl: 'ページめくり',
       blurIn: 'ブラーイン', flip3D: '3Dフリップ', rotateIn: '回転イン', scatterIn: '散布イン', waveRise: '波立ち',
       elasticPop: 'エラスティックポップ', scramble: 'スクランブル', glitchIn: 'グリッチイン', neonFlicker: 'ネオンフリッカー',
       strokeDrawOn: 'ストローク描画', particlesAssemble: 'パーティクル集合', shatterRebuild: '粉砕再構築',
@@ -186,6 +189,7 @@
     },
     exit: {
       fade: 'フェード', slide: 'スライド', zoomOut: 'ズームアウト', blurOut: 'ブラーアウト', explode: '爆発',
+      pageCurl: 'ページめくり',
       gravityFall: '重力落下', dissolve: 'ディゾルブ', wipe: 'ワイプ', typewriterReverse: 'タイプライター逆再生',
       shrinkToCenter: '中心へ収縮', particlesDisperse: 'パーティクル拡散', melt: '溶解', burnAway: '燃え尽き',
       strokeErase: 'ストローク消去', vanish: '消える', floatOut: 'フロートアウト', splitOut: '分割',
@@ -278,7 +282,7 @@
       pivotZ: '原点の奥行き', scaleFromX: '開始倍率X', scaleFromY: '開始倍率Y', scaleAxis: '拡縮軸',
       scaleAxisTo: '拡縮軸（終了）', scaleEase: '拡縮の戻り方', scaleOriginSeparate: '拡縮の原点を別に',
       scaleOrigin: '拡縮の原点', scaleOriginAnchor: '拡縮の原点位置', scaleOriginOffset: '拡縮の原点微調整',
-      drawOrder: '描画順',
+      drawOrder: '描画順', curlAngle: 'めくり角度',
     },
     value: {
       alternate: '交互', arc: '円弧', 'center-out': '中央から外へ', center: '中央', circle: '円', contain: '収める', corners: '四隅',
@@ -319,6 +323,7 @@
     },
     enter: {
       fade: 'Fundido', typewriter: 'Máquina de escribir', slide: 'Deslizar', dropBounce: 'Caída con rebote', anticipation: 'Anticipación', irisOpen: 'Apertura de iris', doubleBounce: 'Doble rebote',
+      pageCurl: 'Rizo de página',
       zoomIn: 'Acercar', blurIn: 'Desenfoque de entrada', flip3D: 'Giro 3D', rotateIn: 'Rotación de entrada',
       scatterIn: 'Dispersión de entrada', waveRise: 'Ola ascendente', elasticPop: 'Estallido elástico',
       scramble: 'Mezcla de letras', glitchIn: 'Glitch de entrada', neonFlicker: 'Parpadeo de neón',
@@ -337,6 +342,7 @@
     },
     exit: {
       fade: 'Fundido', slide: 'Deslizar', zoomOut: 'Alejar', blurOut: 'Desenfoque de salida', explode: 'Explosión',
+      pageCurl: 'Rizo de página',
       gravityFall: 'Caída por gravedad', dissolve: 'Disolución', wipe: 'Barrido', typewriterReverse: 'Máquina de escribir inversa',
       shrinkToCenter: 'Encoger al centro', particlesDisperse: 'Dispersión de partículas', melt: 'Derretir',
       burnAway: 'Consumir por fuego', strokeErase: 'Borrado de trazo', vanish: 'Desvanecer',
@@ -436,7 +442,7 @@
       pivotZ: 'Profundidad de pivote', scaleFromX: 'Escala inicial X', scaleFromY: 'Escala inicial Y', scaleAxis: 'Eje de escala',
       scaleAxisTo: 'Eje de escala final', scaleEase: 'Retorno de escala', scaleOriginSeparate: 'Origen de escala separado',
       scaleOrigin: 'Origen de escala', scaleOriginAnchor: 'Anclaje de escala', scaleOriginOffset: 'Ajuste de escala',
-      drawOrder: 'Orden de dibujo',
+      drawOrder: 'Orden de dibujo', curlAngle: 'Ángulo de rizo',
     },
     value: {
       alternate: 'Alterno', arc: 'Arco', 'center-out': 'Del centro hacia fuera', center: 'Centro', circle: 'Círculo', contain: 'Contener',
@@ -478,6 +484,7 @@
     },
     enter: {
       fade: 'Fondu', typewriter: 'Machine à écrire', slide: 'Glissement', dropBounce: 'Chute rebondissante', anticipation: 'Anticipation', irisOpen: 'Ouverture en iris', doubleBounce: 'Double rebond', zoomIn: 'Zoom avant',
+      pageCurl: 'Page cornée',
       blurIn: 'Flou d’entrée', flip3D: 'Retournement 3D', rotateIn: 'Rotation d’entrée', scatterIn: 'Dispersion d’entrée',
       waveRise: 'Vague montante', elasticPop: 'Pop élastique', scramble: 'Brouillage', glitchIn: 'Glitch d’entrée',
       neonFlicker: 'Scintillement néon', strokeDrawOn: 'Tracé progressif', particlesAssemble: 'Assemblage de particules',
@@ -495,6 +502,7 @@
     },
     exit: {
       fade: 'Fondu', slide: 'Glissement', zoomOut: 'Zoom arrière', blurOut: 'Flou de sortie', explode: 'Explosion',
+      pageCurl: 'Page cornée',
       gravityFall: 'Chute gravitaire', dissolve: 'Dissolution', wipe: 'Balayage', typewriterReverse: 'Machine à écrire inversée',
       shrinkToCenter: 'Rétrécir au centre', particlesDisperse: 'Dispersion de particules', melt: 'Fonte', burnAway: 'Combustion',
       strokeErase: 'Effacement du tracé', vanish: 'Disparition', floatOut: 'Flottement de sortie',
@@ -594,7 +602,7 @@
       pivotZ: 'Profondeur du pivot', scaleFromX: 'Échelle initiale X', scaleFromY: 'Échelle initiale Y', scaleAxis: 'Axe d’échelle',
       scaleAxisTo: 'Axe d’échelle final', scaleEase: 'Retour d’échelle', scaleOriginSeparate: 'Origine d’échelle séparée',
       scaleOrigin: 'Origine d’échelle', scaleOriginAnchor: 'Ancrage d’échelle', scaleOriginOffset: 'Ajustement d’échelle',
-      drawOrder: 'Ordre de tracé',
+      drawOrder: 'Ordre de tracé', curlAngle: 'Angle d’enroulement',
     },
     value: {
       alternate: 'Alterné', arc: 'Arc', 'center-out': 'Du centre vers l’extérieur', center: 'Centre', circle: 'Cercle', contain: 'Contenir',
@@ -636,6 +644,7 @@
     },
     enter: {
       fade: 'Растворение', typewriter: 'Печатная машинка', slide: 'Сдвиг', dropBounce: 'Падение с отскоком', anticipation: 'Упреждение', irisOpen: 'Диафрагма', doubleBounce: 'Двойной отскок',
+      pageCurl: 'Загиб страницы',
       zoomIn: 'Приближение', blurIn: 'Размытие при входе', flip3D: '3D-переворот', rotateIn: 'Вращение при входе',
       scatterIn: 'Разлёт при входе', waveRise: 'Волновой подъём', elasticPop: 'Упругий скачок', scramble: 'Перемешивание',
       glitchIn: 'Глитч при входе', neonFlicker: 'Мерцание неона', strokeDrawOn: 'Рисование обводки',
@@ -653,6 +662,7 @@
     },
     exit: {
       fade: 'Растворение', slide: 'Сдвиг', zoomOut: 'Отдаление', blurOut: 'Размытие при выходе', explode: 'Взрыв',
+      pageCurl: 'Загиб страницы',
       gravityFall: 'Падение', dissolve: 'Диссолюция', wipe: 'Шторка', typewriterReverse: 'Печатная машинка наоборот',
       shrinkToCenter: 'Сжатие к центру', particlesDisperse: 'Разлёт частиц', melt: 'Таяние', burnAway: 'Выгорание',
       strokeErase: 'Стирание обводки', vanish: 'Исчезновение', floatOut: 'Уплывание', splitOut: 'Разделение при выходе',
@@ -751,7 +761,7 @@
       pivotZ: 'Глубина опоры', scaleFromX: 'Начальный масштаб X', scaleFromY: 'Начальный масштаб Y', scaleAxis: 'Ось масштаба',
       scaleAxisTo: 'Конечная ось масштаба', scaleEase: 'Возврат масштаба', scaleOriginSeparate: 'Отдельная опора масштаба',
       scaleOrigin: 'Опора масштаба', scaleOriginAnchor: 'Точка опоры масштаба', scaleOriginOffset: 'Подстройка опоры масштаба',
-      drawOrder: 'Порядок отрисовки',
+      drawOrder: 'Порядок отрисовки', curlAngle: 'Угол загиба',
     },
     value: {
       alternate: 'Поочерёдно', arc: 'Дуга', 'center-out': 'Из центра наружу', center: 'Центр', circle: 'Круг', contain: 'Вписать',
