@@ -1172,9 +1172,10 @@ function createWindow() {
           const report = typeof sheet === 'string' ? JSON.parse(sheet) : sheet;
           if (report && report.status === 'ok' && report.data) {
             const base64 = String(report.data).replace(/^data:image\/png;base64,/, '');
-            fs.mkdirSync(path.dirname(demoOut), { recursive: true });
-            fs.writeFileSync(demoOut, Buffer.from(base64, 'base64'));
-            console.log(`SMOKE_FXDEMO=${demoOut} frames=${report.frames} size=${report.width}x${report.height} glError=${report.glError} bytes=${fs.statSync(demoOut).size}`);
+            const buffer = Buffer.from(base64, 'base64');
+            await fs.promises.mkdir(path.dirname(demoOut), { recursive: true });
+            await fs.promises.writeFile(demoOut, buffer);
+            console.log(`SMOKE_FXDEMO=${demoOut} frames=${report.frames} size=${report.width}x${report.height} glError=${report.glError} bytes=${buffer.length}`);
           } else {
             console.log(`SMOKE_FXDEMO_FAILED=${sheet}`);
           }
