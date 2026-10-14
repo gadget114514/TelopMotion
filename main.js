@@ -430,21 +430,25 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('studio:autosave-read', () => {
+  ipcMain.handle('studio:autosave-read', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
-      if (!fs.existsSync(file)) return ok(null);
-      const stat = fs.statSync(file);
-      if (stat.size > AUTOSAVE_MAX_BYTES) {
-        return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+      try {
+        const stat = await fs.promises.stat(file);
+        if (stat.size > AUTOSAVE_MAX_BYTES) {
+          return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+        }
+      } catch {
+        return ok(null);
       }
-      return ok(JSON.parse(fs.readFileSync(file, 'utf8')));
+      const content = await fs.promises.readFile(file, 'utf8');
+      return ok(JSON.parse(content));
     } catch (error) {
       return fail(error);
     }
   });
 
-  ipcMain.handle('studio:autosave-write', (_event, payload) => {
+  ipcMain.handle('studio:autosave-write', async (_event, payload) => {
     try {
       if (!payload || typeof payload.project !== 'object' || payload.project === null) {
         return fail(Object.assign(new Error('invalid-project'), { code: 'invalid-project' }));
@@ -454,7 +458,7 @@ function registerIpc() {
         return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
       }
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
-      fs.writeFileSync(file, serialized);
+      await fs.promises.writeFile(file, serialized);
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -464,9 +468,13 @@ function registerIpc() {
   ipcMain.handle('recent:list', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'recent.json');
-      const data = await fs.promises.readFile(file, 'utf8');
-      const list = JSON.parse(data);
-      return ok(Array.isArray(list) ? list : []);
+      try {
+        const content = await fs.promises.readFile(file, 'utf8');
+        const list = JSON.parse(content);
+        return ok(Array.isArray(list) ? list : []);
+      } catch {
+        return ok([]);
+      }
     } catch {
       return ok([]);
     }
