@@ -1069,7 +1069,7 @@ function createWindow() {
           }
           const shotBytes = finalImage.toPNG();
           const shotTarget = path.join(__dirname, 'snapshot', 'studio-overview.png');
-          fs.writeFileSync(shotTarget, shotBytes);
+          await fs.promises.writeFile(shotTarget, shotBytes);
           console.log(
             `SMOKE_SHOT=${shotTarget} status=${shotReport && shotReport.status} ink=${shotReport && shotReport.ink} glError=${shotReport && shotReport.glError} bytes=${shotBytes.length}`
           );
