@@ -30,6 +30,29 @@ test('Motion Reference new enter effects exist and function properly', () => {
   const stateDb = { y: 0, opacity: 1 };
   doubleBounce.cpu(stateDb, 0.0, { height: 0.4 }, () => 0.5, { shortSide: 1000 });
   assert.ok(stateDb.y < 0, `doubleBounce starts above target: y=${stateDb.y}`);
+
+  const pageCurlEnter = fx.get('enter', 'pageCurl');
+  assert.ok(pageCurlEnter, 'pageCurl enter effect registered');
+  const stateCurlEnter0 = { x: 0, y: 0, tiltX: 0, tiltY: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1, deform: [] };
+  pageCurlEnter.cpu(stateCurlEnter0, 0.0, { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 }, () => 0.5, { shortSide: 1000, blockCenter: { x: 500, y: 500 }, blockHalf: { x: 200, y: 200 }, letterX: 500, letterY: 500 });
+  assert.equal(stateCurlEnter0.opacity, 0, 'pageCurl enter starts hidden at p=0');
+
+  const stateCurlEnter1 = { x: 0, y: 0, tiltX: 0, tiltY: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1, deform: [] };
+  pageCurlEnter.cpu(stateCurlEnter1, 1.0, { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 }, () => 0.5, { shortSide: 1000, blockCenter: { x: 500, y: 500 }, blockHalf: { x: 200, y: 200 }, letterX: 500, letterY: 500 });
+  assert.equal(stateCurlEnter1.opacity, 1, 'pageCurl enter fully visible at p=1');
+});
+
+test('Motion Reference pageCurl exit effect exists and functions properly', () => {
+  const pageCurlExit = fx.get('exit', 'pageCurl');
+  assert.ok(pageCurlExit, 'pageCurl exit effect registered');
+
+  const stateCurlExit0 = { x: 0, y: 0, tiltX: 0, tiltY: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1, deform: [] };
+  pageCurlExit.cpu(stateCurlExit0, 0.0, { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 }, () => 0.5, { shortSide: 1000, blockCenter: { x: 500, y: 500 }, blockHalf: { x: 200, y: 200 }, letterX: 500, letterY: 500 });
+  assert.equal(stateCurlExit0.opacity, 1, 'pageCurl exit fully visible at p=0');
+
+  const stateCurlExit1 = { x: 0, y: 0, tiltX: 0, tiltY: 0, scaleX: 1, scaleY: 1, opacity: 1, visibleFrac: 1, deform: [] };
+  pageCurlExit.cpu(stateCurlExit1, 1.0, { dir: 'bottomRight', radius: 0.2, curlAngle: 90, shadow: 0.5 }, () => 0.5, { shortSide: 1000, blockCenter: { x: 500, y: 500 }, blockHalf: { x: 200, y: 200 }, letterX: 500, letterY: 500 });
+  assert.equal(stateCurlExit1.opacity, 0, 'pageCurl exit fully hidden at p=1');
 });
 
 test('Motion Reference new hold effects exist and function properly', () => {
@@ -54,6 +77,8 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('anticipationIn'), 'anticipationIn preset');
   assert.ok(ids.has('irisIn'), 'irisIn preset');
   assert.ok(ids.has('doubleBounceIn'), 'doubleBounceIn preset');
+  assert.ok(ids.has('pageCurlIn'), 'pageCurlIn preset');
+  assert.ok(ids.has('pageCurlOut'), 'pageCurlOut preset');
   assert.ok(ids.has('pendulumLoop'), 'pendulumLoop preset');
   assert.ok(ids.has('nudgeLoop'), 'nudgeLoop preset');
 });

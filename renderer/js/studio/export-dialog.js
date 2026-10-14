@@ -115,6 +115,7 @@ SA.exportDialog = (() => {
         }, abortFlag);
         if (result.canceled) field('status').textContent = t('export.canceled');
         else {
+          if (field('progress')) field('progress').value = 100;
           field('status').textContent = t('export.done', { path: result.filePath || '' });
           if (result.stats) showStats(dialog, t('export.stats', result.stats));
         }
@@ -149,12 +150,13 @@ SA.exportDialog = (() => {
     const duration = doc.output && doc.output.maxDuration ? natural : Math.max(natural, audioLength || 0);
     const range = { from: 0, to: duration };
     const canvas = new OffscreenCanvas(width, height);
-    const engine = SA.lyricsEngine.createEngine({ canvas, width, height, quality: 'export', preserveDrawingBuffer: true });
+    const engine = SA.lyricsEngine.createEngine({ canvas, width, height, quality: 'export', preserveDrawingBuffer: false });
     if (!engine) throw Object.assign(new Error('webgl2-unavailable'), { code: 'webgl-unavailable' });
     try {
       engine.setProject(doc);
       engine.setAssets({ fonts: SA.lyricsFont.getActive() });
       if (typeof engine.preloadLayers === 'function') await engine.preloadLayers();
+      const hasVideoLayers = Array.isArray(doc.layers) && doc.layers.some((l) => l && l.enabled !== false && l.type === 'video' && l.src);
       const analysis = SA.preview.getAudioAnalysis ? SA.preview.getAudioAnalysis() : null;
       if (analysis && typeof engine.setAudio === 'function') engine.setAudio(analysis);
       const audioBuffer = settings.audio && !settings.transparent ? await SA.preview.getAudioBuffer() : null;
@@ -169,14 +171,15 @@ SA.exportDialog = (() => {
         audioBuffer,
         name: SA.io.fileName(doc).replace(/\.telopmotion\.json$/, ''),
         signal,
-        prepareFrame: (time) => (typeof engine.prepareLayers === 'function' ? engine.prepareLayers(time, { playback: 'export' }) : Promise.resolve(0)),
+        prepareFrame: hasVideoLayers && typeof engine.prepareLayers === 'function' ? (time) => engine.prepareLayers(time, { playback: 'export' }) : null,
         renderFrame: (time) => {
           engine.renderFrame(time);
         },
-        captureBitmap: () => canvas.transferToImageBitmap(),
+        captureCanvas: () => canvas,
+        captureBitmap: () => (typeof canvas.transferToImageBitmap === 'function' ? canvas.transferToImageBitmap() : canvas),
         onProgress: (info) => {
           if (!ui) return;
-          if (ui.progress) ui.progress.value = Math.round((info.frame / info.total) * 100);
+          if (ui.progress) ui.progress.value = Math.min(100, Math.max(0, (info.frame / info.total) * 100));
           if (ui.status) ui.status.textContent = t('export.progress', { percent: Math.round((info.frame / info.total) * 100), eta: Math.round(info.eta) });
         },
       });
