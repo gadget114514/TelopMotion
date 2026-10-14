@@ -536,14 +536,14 @@ function registerIpc() {
     return ok({ hasKey: !!key, source, canStore });
   });
 
-  ipcMain.handle('ai:set-key', (_event, payload) => {
+  ipcMain.handle('ai:set-key', async (_event, payload) => {
     const key = payload && typeof payload.key === 'string' ? payload.key.trim() : '';
     if (!AI_KEY_RE.test(key)) return fail(Object.assign(new Error('invalid-key'), { code: 'invalid-key' }));
     try {
       if (!safeStorage.isEncryptionAvailable()) {
         return fail(Object.assign(new Error('encryption-unavailable'), { code: 'encryption-unavailable' }));
       }
-      fs.writeFileSync(AI_KEY_FILE(), safeStorage.encryptString(key), { mode: 0o600 });
+      await fs.promises.writeFile(AI_KEY_FILE(), safeStorage.encryptString(key), { mode: 0o600 });
       return ok(true);
     } catch (error) {
       return fail(error);
