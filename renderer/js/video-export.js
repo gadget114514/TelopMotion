@@ -257,6 +257,7 @@ SA.videoExport = (() => {
     }
 
     const started = performance.now();
+    let lastYield = started;
     // per-stage wall time (ms), logged with opts.debug to find the slow stage
     const stageMs = { prepare: 0, render: 0, capture: 0, encodeWait: 0 };
     try {
@@ -273,17 +274,21 @@ SA.videoExport = (() => {
         lap('prepare');
         opts.renderFrame(time);
         lap('render');
-        const bitmap = opts.captureBitmap();
-        const frame = new VideoFrame(bitmap, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
-        bitmap.close();
+        const source = typeof opts.captureCanvas === 'function'
+          ? opts.captureCanvas()
+          : (typeof opts.captureFrame === 'function' ? opts.captureFrame() : opts.captureBitmap());
+        const frame = new VideoFrame(source, { timestamp: Math.round((i * 1e6) / fps), duration: Math.round(1e6 / fps) });
+        if (source && typeof source.close === 'function') source.close();
         lap('capture');
         videoEncoder.encode(frame, { keyFrame: i % (fps * 2) === 0 });
         frame.close();
-        while (videoEncoder.encodeQueueSize > 6) await once(videoEncoder, 'dequeue');
+        while (videoEncoder.encodeQueueSize > 16) await once(videoEncoder, 'dequeue');
         lap('encodeWait');
         if (encoderError) throw encoderError;
-        if (i % 5 === 0 || i === total - 1) {
-          const elapsed = (performance.now() - started) / 1000;
+        const nowMs = performance.now();
+        if (nowMs - lastYield >= 50 || i === total - 1) {
+          lastYield = nowMs;
+          const elapsed = (nowMs - started) / 1000;
           const speed = elapsed > 0 ? (i + 1) / elapsed : 0;
           onProgress({ frame: i + 1, total, speed, eta: speed > 0 ? (total - i - 1) / speed : 0 });
           await new Promise((resolve) => setTimeout(resolve, 0));
@@ -356,6 +361,7 @@ SA.videoExport = (() => {
   async function exportPngZip(options) {
     const { width, height, fps, range, total, baseName, onProgress, signal } = options;
     const entries = [];
+    let lastYield = performance.now();
     for (let i = 0; i < total; i += 1) {
       if (signal.aborted) return { ok: false, canceled: true };
       const time = range.from + i / fps;
@@ -365,18 +371,24 @@ SA.videoExport = (() => {
       if (typeof options.capturePngBlob === 'function') {
         blob = await options.capturePngBlob();
       } else {
-        const bitmap = options.captureBitmap();
+        const source = typeof options.captureCanvas === 'function'
+          ? options.captureCanvas()
+          : (typeof options.captureFrame === 'function' ? options.captureFrame() : options.captureBitmap());
         const canvas = typeof OffscreenCanvas !== 'undefined' ? new OffscreenCanvas(width, height) : null;
         if (!canvas) throw Object.assign(new Error('no-offscreen'), { code: 'no-offscreen' });
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(bitmap, 0, 0);
-        bitmap.close();
+        ctx.drawImage(source, 0, 0);
+        if (source && typeof source.close === 'function') source.close();
         blob = await canvas.convertToBlob({ type: 'image/png' });
       }
       entries.push({ name: `${baseName}_${String(i).padStart(5, '0')}.png`, bytes: new Uint8Array(await blob.arrayBuffer()) });
-      onProgress({ frame: i + 1, total, speed: 0, eta: 0 });
-      if (i % 5 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
+      const nowMs = performance.now();
+      if (nowMs - lastYield >= 50 || i === total - 1) {
+        lastYield = nowMs;
+        onProgress({ frame: i + 1, total, speed: 0, eta: 0 });
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
     }
     if (signal.aborted) return { ok: false, canceled: true };
     const zip = buildZip(entries);
