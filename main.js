@@ -1000,6 +1000,7 @@ function createWindow() {
             window.SA.studio.renderAll();
             await new Promise((resolve) => setTimeout(resolve, 600));
             // captureRGBA must re-render right before reading: WebGL clears the drawing buffer after compositing
+            const canvasEl = document.getElementById('preview-canvas');
             const capture = window.SA.preview.captureRGBA(window.SA.store.state.playhead);
             let ink = 0;
             if (capture) {
@@ -1010,7 +1011,7 @@ function createWindow() {
             const bytes = new Uint8Array(capture.data.buffer);
             let binary = '';
             for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-            const rect = document.getElementById('preview-canvas').getBoundingClientRect();
+            const rect = canvasEl ? canvasEl.getBoundingClientRect() : { x: 0, y: 0, width: 0, height: 0 };
             return JSON.stringify({
               status: 'ok',
               ink,
