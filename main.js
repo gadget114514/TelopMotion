@@ -430,21 +430,25 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('studio:autosave-read', () => {
+  ipcMain.handle('studio:autosave-read', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
-      if (!fs.existsSync(file)) return ok(null);
-      const stat = fs.statSync(file);
-      if (stat.size > AUTOSAVE_MAX_BYTES) {
-        return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+      try {
+        const stat = await fs.promises.stat(file);
+        if (stat.size > AUTOSAVE_MAX_BYTES) {
+          return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
+        }
+      } catch {
+        return ok(null);
       }
-      return ok(JSON.parse(fs.readFileSync(file, 'utf8')));
+      const content = await fs.promises.readFile(file, 'utf8');
+      return ok(JSON.parse(content));
     } catch (error) {
       return fail(error);
     }
   });
 
-  ipcMain.handle('studio:autosave-write', (_event, payload) => {
+  ipcMain.handle('studio:autosave-write', async (_event, payload) => {
     try {
       if (!payload || typeof payload.project !== 'object' || payload.project === null) {
         return fail(Object.assign(new Error('invalid-project'), { code: 'invalid-project' }));
@@ -454,25 +458,29 @@ function registerIpc() {
         return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
       }
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
-      fs.writeFileSync(file, serialized);
+      await fs.promises.writeFile(file, serialized);
       return ok(true);
     } catch (error) {
       return fail(error);
     }
   });
 
-  ipcMain.handle('recent:list', () => {
+  ipcMain.handle('recent:list', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'recent.json');
-      if (!fs.existsSync(file)) return ok([]);
-      const list = JSON.parse(fs.readFileSync(file, 'utf8'));
-      return ok(Array.isArray(list) ? list : []);
+      try {
+        const content = await fs.promises.readFile(file, 'utf8');
+        const list = JSON.parse(content);
+        return ok(Array.isArray(list) ? list : []);
+      } catch {
+        return ok([]);
+      }
     } catch {
       return ok([]);
     }
   });
 
-  ipcMain.handle('recent:add', (_event, entry) => {
+  ipcMain.handle('recent:add', async (_event, entry) => {
     try {
       if (!entry || typeof entry !== 'object' || typeof entry.name !== 'string' || !entry.name) {
         return fail(Object.assign(new Error('invalid-entry'), { code: 'invalid-entry' }));
@@ -485,14 +493,15 @@ function registerIpc() {
       const file = path.join(app.getPath('userData'), 'recent.json');
       let list = [];
       try {
-        list = JSON.parse(fs.readFileSync(file, 'utf8'));
+        const content = await fs.promises.readFile(file, 'utf8');
+        list = JSON.parse(content);
       } catch {
         list = [];
       }
       if (!Array.isArray(list)) list = [];
       list = list.filter((item) => item && item.name !== clean.name);
       list.unshift(clean);
-      fs.writeFileSync(file, JSON.stringify(list.slice(0, 8), null, 2));
+      await fs.promises.writeFile(file, JSON.stringify(list.slice(0, 8), null, 2));
       return ok(true);
     } catch (error) {
       return fail(error);
