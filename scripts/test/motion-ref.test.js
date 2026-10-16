@@ -71,6 +71,45 @@ test('Motion Reference new hold effects exist and function properly', () => {
   assert.notEqual(stateNudge.rot, 0, 'nudge rotates during impulse');
 });
 
+test('rotateIn and rotateOut with startAngle, endAngle, randomSpeed and randomPivot', () => {
+  const rotateIn = fx.get('enter', 'rotateIn');
+  assert.ok(rotateIn, 'rotateIn enter effect registered');
+
+  const stateIn0 = { rot: 0, x: 0, y: 0 };
+  rotateIn.cpu(stateIn0, 0.0, { startAngle: 90, endAngle: 0 });
+  assert.equal(stateIn0.rot, 90, 'rotateIn starts at startAngle=90');
+
+  const stateIn1 = { rot: 0, x: 0, y: 0 };
+  rotateIn.cpu(stateIn1, 1.0, { startAngle: 90, endAngle: 0 });
+  assert.equal(stateIn1.rot, 0, 'rotateIn ends at endAngle=0');
+
+  const stateInRand = { rot: 0, x: 0, y: 0 };
+  rotateIn.cpu(stateInRand, 0.5, { startAngle: -90, endAngle: 0, randomSpeed: 0.5, randomPivot: 0.5 }, () => 0.8, { shortSide: 1000 });
+  assert.notEqual(stateInRand.rot, 0, 'rotateIn computes angle with random speed');
+  assert.notEqual(stateInRand.x, 0, 'rotateIn applies random pivot offset to x');
+
+  const rotateOut = fx.get('exit', 'rotateOut');
+  assert.ok(rotateOut, 'rotateOut exit effect registered');
+
+  const stateOut0 = { rot: 0, x: 0, y: 0, opacity: 1 };
+  rotateOut.cpu(stateOut0, 0.0, { startAngle: 0, endAngle: -90 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOut0.rot, 0, 'rotateOut starts at startAngle=0');
+
+  const stateOut1 = { rot: 0, x: 0, y: 0, opacity: 1 };
+  rotateOut.cpu(stateOut1, 1.0, { startAngle: 0, endAngle: -90 }, () => 0.5, { shortSide: 1000 });
+  assert.equal(stateOut1.rot, -90, 'rotateOut ends at endAngle=-90');
+});
+
+test('circleDrawOn drawing progress animation', () => {
+  const circleDrawOn = fx.get('enter', 'circleDrawOn');
+  assert.ok(circleDrawOn, 'circleDrawOn enter effect registered');
+  const stateDraw = { visibleFrac: 1, represent: '', reprProgress: 0 };
+  circleDrawOn.cpu(stateDraw, 0.4, { circleScale: 1.3, stroke: 4 });
+  assert.equal(stateDraw.visibleFrac, 0.4, 'circleDrawOn sets visibleFrac');
+  assert.equal(stateDraw.represent, 'stroke', 'circleDrawOn sets represent to stroke');
+  assert.equal(stateDraw.reprProgress, 0.4, 'circleDrawOn animates reprProgress');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));

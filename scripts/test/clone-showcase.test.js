@@ -139,3 +139,43 @@ test('the Help menu offers the clone showcase in all five languages', () => {
     assert.notEqual(label, 'studio.help.cloneShowcase', `${code} label is missing`);
   }
 });
+
+test('clones support partial substring display configuration', () => {
+  const engine = require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'engine.js'));
+  assert.ok(engine, 'lyrics engine loaded');
+  const clone1 = { startChar: 1, visibleCount: 2 };
+  const clone2 = { startChar: 2, endChar: 4 };
+  const clone3 = { visibleFrac: 0.5 };
+  const cloneErase = { startChar: 1, endChar: 2, mode: 'erase' };
+
+  // Verification helper for range checks
+  const checkSubstring = (i, total, clone) => {
+    let start = clone.startChar != null ? Number(clone.startChar) - 1 : 0;
+    let end = clone.endChar != null ? Number(clone.endChar) - 1 : total - 1;
+    if (clone.visibleCount != null && Number(clone.visibleCount) > 0) {
+      end = Math.min(end, start + Number(clone.visibleCount) - 1);
+    }
+    if (clone.visibleFrac != null && Number(clone.visibleFrac) < 1) {
+      const span = Math.max(1, end - start + 1);
+      const count = Math.round(span * Math.max(0, Number(clone.visibleFrac)));
+      end = start + count - 1;
+    }
+    const inRange = i >= start && i <= end;
+    return clone.mode === 'erase' ? !inRange : inRange;
+  };
+
+  assert.equal(checkSubstring(0, 5, clone1), true, 'char 0 in clone1 (1..2)');
+  assert.equal(checkSubstring(1, 5, clone1), true, 'char 1 in clone1 (1..2)');
+  assert.equal(checkSubstring(2, 5, clone1), false, 'char 2 outside clone1 (1..2)');
+
+  assert.equal(checkSubstring(0, 5, clone2), false, 'char 0 outside clone2 (2..4)');
+  assert.equal(checkSubstring(1, 5, clone2), true, 'char 1 inside clone2 (2..4)');
+  assert.equal(checkSubstring(3, 5, clone2), true, 'char 3 inside clone2 (2..4)');
+
+  assert.equal(checkSubstring(0, 4, clone3), true, 'char 0 in 50% clone3');
+  assert.equal(checkSubstring(1, 4, clone3), true, 'char 1 in 50% clone3');
+  assert.equal(checkSubstring(2, 4, clone3), false, 'char 2 outside 50% clone3');
+
+  assert.equal(checkSubstring(0, 4, cloneErase), false, 'char 0 erased in cloneErase');
+  assert.equal(checkSubstring(2, 4, cloneErase), true, 'char 2 visible in cloneErase');
+});
