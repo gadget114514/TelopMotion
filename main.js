@@ -273,7 +273,7 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
-      fs.writeFileSync(result.filePath, out);
+      await fs.promises.writeFile(result.filePath, out);
       return ok({ canceled: false, filePath: result.filePath });
     } catch (error) {
       return fail(error);
