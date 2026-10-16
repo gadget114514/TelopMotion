@@ -1102,7 +1102,7 @@ function createWindow() {
           const demoOut = process.env.SA_SMOKE_FXDEMO_OUT
             ? path.resolve(process.env.SA_SMOKE_FXDEMO_OUT)
             : path.join(__dirname, 'demo', `fx800-preview-${demoLabel}.png`);
-          const demoDoc = JSON.parse(fs.readFileSync(demoFile, 'utf8'));
+          const demoDoc = JSON.parse(await fs.promises.readFile(demoFile, 'utf8'));
           win.setContentSize(1280, 900);
           win.setOpacity(1);
           win.show();
