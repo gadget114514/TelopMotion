@@ -289,7 +289,7 @@ SA.pageDialog = (() => {
     const selection = (SA.store && SA.store.state && SA.store.state.selection) || {};
     if (!root || !doc) return;
 
-    const lang = (SA.i18n && SA.i18n.currentLanguage && SA.i18n.currentLanguage()) || 'ja';
+    const lang = SA.i18n && typeof SA.i18n.lang === 'function' ? SA.i18n.lang() : 'ja';
     const isJa = lang === 'ja';
 
     // Collect all preset descriptors from SA.pageLayout
