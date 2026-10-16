@@ -397,10 +397,30 @@
 
   fx.register({
     group: 'exit', type: 'rotateOut', tags: ['modest'],
-    params: [{ key: 'angle', kind: 'number', min: -360, max: 360, step: 5, default: 90, random: [-180, 180] }],
-    cpu(state, p, params) {
+    params: [
+      { key: 'angle', kind: 'number', min: -360, max: 360, step: 5, default: 90, random: [-180, 180] },
+      { key: 'startAngle', kind: 'number', min: -360, max: 360, step: 5, default: 0, optional: true },
+      { key: 'endAngle', kind: 'number', min: -360, max: 360, step: 5, default: 90, optional: true },
+      { key: 'randomSpeed', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
+      { key: 'randomPivot', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
+    ],
+    cpu(state, p, params, rng, info) {
       const k = clamp01(p);
-      state.rot += (params.angle == null ? 90 : params.angle) * k;
+      const startAngle = params.startAngle != null ? Number(params.startAngle) : 0;
+      const endAngle = params.endAngle != null ? Number(params.endAngle) : (params.angle == null ? 90 : Number(params.angle));
+      let speedMult = 1;
+      if (params.randomSpeed && typeof rng === 'function') {
+        speedMult = 1 + (rng() * 2 - 1) * Number(params.randomSpeed);
+      }
+      const effectiveProgress = clamp01(k * speedMult);
+      const currentAngle = startAngle + (endAngle - startAngle) * effectiveProgress;
+      state.rot += currentAngle;
+
+      if (params.randomPivot && typeof rng === 'function' && info) {
+        const randPivotScale = Number(params.randomPivot) * (info.shortSide || 1080) * 0.1 * effectiveProgress;
+        state.x += (rng() * 2 - 1) * randPivotScale;
+        state.y += (rng() * 2 - 1) * randPivotScale;
+      }
       state.opacity *= 1 - k * 0.6;
     },
   });

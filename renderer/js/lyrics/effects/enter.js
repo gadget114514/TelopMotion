@@ -242,6 +242,27 @@
 
   fx.register({
     group: 'enter',
+    type: 'circleDrawOn',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'circleScale', kind: 'number', min: 0.5, max: 3, step: 0.05, default: 1.3 },
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'circle', followText: 'block', enterAnim: 'draw', drive: 'enter' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, progress);
+      if (progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'enter',
     type: 'blurIn',
     params: [{ key: 'radius', kind: 'number', min: 0, max: 40, step: 0.5, default: 12, random: [4, 20] }],
     cpu(state, p, params) {
@@ -266,9 +287,30 @@
   fx.register({
     group: 'enter',
     type: 'rotateIn',
-    params: [{ key: 'angle', kind: 'number', min: -360, max: 360, step: 5, default: 90, random: [-180, 180] }],
-    cpu(state, p, params) {
-      state.rot += (params.angle == null ? 90 : params.angle) * (1 - clamp01(p));
+    params: [
+      { key: 'angle', kind: 'number', min: -360, max: 360, step: 5, default: 90, random: [-180, 180] },
+      { key: 'startAngle', kind: 'number', min: -360, max: 360, step: 5, default: 90, optional: true },
+      { key: 'endAngle', kind: 'number', min: -360, max: 360, step: 5, default: 0, optional: true },
+      { key: 'randomSpeed', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
+      { key: 'randomPivot', kind: 'number', min: 0, max: 1, step: 0.05, default: 0, optional: true },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const startAngle = params.startAngle != null ? Number(params.startAngle) : (params.angle == null ? 90 : Number(params.angle));
+      const endAngle = params.endAngle != null ? Number(params.endAngle) : 0;
+      let speedMult = 1;
+      if (params.randomSpeed && typeof rng === 'function') {
+        speedMult = 1 + (rng() * 2 - 1) * Number(params.randomSpeed);
+      }
+      const effectiveProgress = clamp01(progress * speedMult);
+      const currentAngle = startAngle + (endAngle - startAngle) * effectiveProgress;
+      state.rot += currentAngle;
+
+      if (params.randomPivot && typeof rng === 'function' && info) {
+        const randPivotScale = Number(params.randomPivot) * (info.shortSide || 1080) * 0.1 * (1 - effectiveProgress);
+        state.x += (rng() * 2 - 1) * randPivotScale;
+        state.y += (rng() * 2 - 1) * randPivotScale;
+      }
     },
   });
 

@@ -631,6 +631,29 @@ SA.lyricsEngine = (() => {
     // --- text clones (style.clones) -----------------------------------------
     // Each clone redraws the text mask with its own offset / scale / rotation,
     // color, opacity and motion, behind the main text.
+    function isCharInCloneSubstring(i, total, clone) {
+      if (!clone) return true;
+      let start = clone.startChar != null ? Number(clone.startChar) - 1 : 0;
+      let end = clone.endChar != null ? Number(clone.endChar) - 1 : total - 1;
+      if (Array.isArray(clone.charRange)) {
+        start = Number(clone.charRange[0]) - 1;
+        end = Number(clone.charRange[1]) - 1;
+      }
+      if (clone.visibleCount != null && Number(clone.visibleCount) > 0) {
+        end = Math.min(end, start + Number(clone.visibleCount) - 1);
+      }
+      if (clone.visibleFrac != null && Number(clone.visibleFrac) < 1) {
+        const span = Math.max(1, end - start + 1);
+        const count = Math.round(span * Math.max(0, Number(clone.visibleFrac)));
+        end = start + count - 1;
+      }
+      const inRange = i >= start && i <= end;
+      if (clone.substringMode === 'erase' || clone.substringMode === 'hide' || clone.mode === 'erase' || clone.mode === 'hide') {
+        return !inRange;
+      }
+      return inRange;
+    }
+
     function cloneEnvelope(clone, t, beat) {
       const delay = Number(clone.delay) || 0;
       return Math.min(1, Math.max(0, (t - (beat.start + delay)) / 0.25));
@@ -1084,6 +1107,7 @@ SA.lyricsEngine = (() => {
       const shifted = result.letters.map((letterState, i) => {
         const v = plan[i];
         const source = letterState || {};
+        const inSub = isCharInCloneSubstring(i, n, clone);
         // textenter2 §3.2 #7 converge: cloneSpread 1 → spread out, 0 → main look
         const spread = source.cloneSpread == null ? 1 : Math.max(0, Math.min(1, Number(source.cloneSpread)));
         return {
@@ -1092,7 +1116,7 @@ SA.lyricsEngine = (() => {
           y: (source.y || 0) + v.dy * short * spread,
           rot: (source.rot || 0) + v.rotate * spread,
           skew: (source.skew || 0) - Math.tan((v.skew * spread * Math.PI) / 180),
-          opacity: (source.opacity == null ? 1 : source.opacity) * (1 - (1 - v.opacity) * spread),
+          opacity: inSub ? (source.opacity == null ? 1 : source.opacity) * (1 - (1 - v.opacity) * spread) : 0,
         };
       });
       const baseColors = cloneColors(colorSet.arrays, clone, style, project);
@@ -2984,6 +3008,17 @@ SA.lyricsEngine = (() => {
               if (restored) sdfTarget = restored;
               continue;
             }
+            const hasSub = clone.startChar != null || clone.endChar != null || clone.visibleCount != null || clone.visibleFrac != null || clone.charRange != null;
+            let cloneSdf = sdfTarget;
+            if (hasSub) {
+              const cloneLetters = result.letters.map((letterState, i) => {
+                const inSub = isCharInCloneSubstring(i, scene.letters.length, clone);
+                return inSub ? letterState : { ...letterState, opacity: 0 };
+              });
+              pipeline.text(scene, cloneLetters, variant, colorOverride);
+              pipeline.letterBlur(scene, cloneLetters);
+              cloneSdf = pipeline.sdf();
+            }
             const transform = cloneTransform(clone, t, state.width, state.height);
             pipeline.beginLayer();
             pipeline.fill(
@@ -2996,10 +3031,14 @@ SA.lyricsEngine = (() => {
                 categoryColors: project.categoryColors || {},
                 progress,
                 ...themeScope(),
-                sdfTexture: sdfTarget ? sdfTarget.texture : null,
+                sdfTexture: cloneSdf ? cloneSdf.texture : null,
               })
             );
             pipeline.commitLayer((clone.opacity == null ? 0.5 : Number(clone.opacity)) * env, transform);
+            if (hasSub) {
+              pipeline.text(scene, result.letters, variant, colorOverride);
+              pipeline.letterBlur(scene, result.letters);
+            }
           }
           if (graphicsOn) {
             pipeline.representation(scene, result.letters, 'stroke', variant, colorSet.arrays.stroke);
