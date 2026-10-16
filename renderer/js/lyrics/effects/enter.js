@@ -242,6 +242,47 @@
 
   fx.register({
     group: 'enter',
+    type: 'lineDrawOn',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'linePosition', kind: 'select', options: ['underline', 'overline', 'strike'], default: 'underline' },
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'underline', followText: 'block', enterAnim: 'draw', drive: 'enter' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, progress);
+      if (progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'enter',
+    type: 'boxDrawOn',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'box', followText: 'block', enterAnim: 'draw', drive: 'enter' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, progress);
+      if (progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'enter',
     type: 'circleDrawOn',
     tags: ['decor', 'stroke'],
     params: [

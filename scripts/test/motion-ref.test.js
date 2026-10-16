@@ -110,6 +110,53 @@ test('circleDrawOn drawing progress animation', () => {
   assert.equal(stateDraw.reprProgress, 0.4, 'circleDrawOn animates reprProgress');
 });
 
+test('primitive drawing process enter/exit effects and companions', () => {
+  const lineDrawOn = fx.get('enter', 'lineDrawOn');
+  assert.ok(lineDrawOn, 'lineDrawOn enter effect registered');
+  assert.ok(lineDrawOn.companion && lineDrawOn.companion.post, 'lineDrawOn has companion post shapeLayer');
+  const stateLineIn = { visibleFrac: 1, represent: '', reprProgress: 0 };
+  lineDrawOn.cpu(stateLineIn, 0.6, { linePosition: 'underline', stroke: 4 });
+  assert.equal(stateLineIn.visibleFrac, 0.6, 'lineDrawOn sets visibleFrac');
+  assert.equal(stateLineIn.represent, 'stroke', 'lineDrawOn sets represent to stroke');
+  assert.equal(stateLineIn.reprProgress, 0.6, 'lineDrawOn sets reprProgress');
+
+  const boxDrawOn = fx.get('enter', 'boxDrawOn');
+  assert.ok(boxDrawOn, 'boxDrawOn enter effect registered');
+  assert.ok(boxDrawOn.companion && boxDrawOn.companion.post, 'boxDrawOn has companion post shapeLayer');
+  const stateBoxIn = { visibleFrac: 1, represent: '', reprProgress: 0 };
+  boxDrawOn.cpu(stateBoxIn, 0.7, { stroke: 4 });
+  assert.equal(stateBoxIn.visibleFrac, 0.7, 'boxDrawOn sets visibleFrac');
+  assert.equal(stateBoxIn.represent, 'stroke', 'boxDrawOn sets represent to stroke');
+  assert.equal(stateBoxIn.reprProgress, 0.7, 'boxDrawOn sets reprProgress');
+
+  const circleErase = fx.get('exit', 'circleErase');
+  assert.ok(circleErase, 'circleErase exit effect registered');
+  assert.ok(circleErase.companion && circleErase.companion.post, 'circleErase has companion post shapeLayer');
+  const stateCircOut = { visibleFrac: 1, represent: '', reprProgress: 1 };
+  circleErase.cpu(stateCircOut, 0.3, { circleScale: 1.3, stroke: 4 });
+  assert.equal(stateCircOut.visibleFrac, 0.7, 'circleErase sets visibleFrac');
+  assert.equal(stateCircOut.represent, 'stroke', 'circleErase sets represent to stroke');
+  assert.equal(stateCircOut.reprProgress, 0.7, 'circleErase sets reprProgress');
+
+  const lineErase = fx.get('exit', 'lineErase');
+  assert.ok(lineErase, 'lineErase exit effect registered');
+  assert.ok(lineErase.companion && lineErase.companion.post, 'lineErase has companion post shapeLayer');
+  const stateLineOut = { visibleFrac: 1, represent: '', reprProgress: 1 };
+  lineErase.cpu(stateLineOut, 0.4, { linePosition: 'underline', stroke: 4 });
+  assert.equal(stateLineOut.visibleFrac, 0.6, 'lineErase sets visibleFrac');
+  assert.equal(stateLineOut.represent, 'stroke', 'lineErase sets represent to stroke');
+  assert.equal(stateLineOut.reprProgress, 0.6, 'lineErase sets reprProgress');
+
+  const boxErase = fx.get('exit', 'boxErase');
+  assert.ok(boxErase, 'boxErase exit effect registered');
+  assert.ok(boxErase.companion && boxErase.companion.post, 'boxErase has companion post shapeLayer');
+  const stateBoxOut = { visibleFrac: 1, represent: '', reprProgress: 1 };
+  boxErase.cpu(stateBoxOut, 0.5, { stroke: 4 });
+  assert.equal(stateBoxOut.visibleFrac, 0.5, 'boxErase sets visibleFrac');
+  assert.equal(stateBoxOut.represent, 'stroke', 'boxErase sets represent to stroke');
+  assert.equal(stateBoxOut.reprProgress, 0.5, 'boxErase sets reprProgress');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -120,4 +167,10 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('pageCurlOut'), 'pageCurlOut preset');
   assert.ok(ids.has('pendulumLoop'), 'pendulumLoop preset');
   assert.ok(ids.has('nudgeLoop'), 'nudgeLoop preset');
+  assert.ok(ids.has('circleDrawIn'), 'circleDrawIn preset');
+  assert.ok(ids.has('lineDrawIn'), 'lineDrawIn preset');
+  assert.ok(ids.has('boxDrawIn'), 'boxDrawIn preset');
+  assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
+  assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
+  assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
 });

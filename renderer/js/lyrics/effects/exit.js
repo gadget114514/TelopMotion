@@ -292,6 +292,68 @@
 
   fx.register({
     group: 'exit',
+    type: 'circleErase',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'circleScale', kind: 'number', min: 0.5, max: 3, step: 0.05, default: 1.3 },
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'circle', followText: 'block', exitAnim: 'erase', drive: 'exit' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(1 - progress));
+      if (progress > 0.001 && progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = 1 - progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'exit',
+    type: 'lineErase',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'linePosition', kind: 'select', options: ['underline', 'overline', 'strike'], default: 'underline' },
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'underline', followText: 'block', exitAnim: 'erase', drive: 'exit' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(1 - progress));
+      if (progress > 0.001 && progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = 1 - progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'exit',
+    type: 'boxErase',
+    tags: ['decor', 'stroke'],
+    params: [
+      { key: 'stroke', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 },
+    ],
+    companion: {
+      post: [{ type: 'shapeLayer', params: { shape: 'box', followText: 'block', exitAnim: 'erase', drive: 'exit' } }],
+    },
+    cpu(state, p) {
+      const progress = clamp01(p);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(1 - progress));
+      if (progress > 0.001 && progress < 0.999) {
+        state.represent = 'stroke';
+        state.reprProgress = 1 - progress;
+      }
+    },
+  });
+
+  fx.register({
+    group: 'exit',
     type: 'strokeErase',
     tags: ['stroke'],
     params: [{ key: 'width', kind: 'number', min: 0.5, max: 20, step: 0.5, default: 4 }],
