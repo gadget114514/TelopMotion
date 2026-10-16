@@ -237,19 +237,26 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
-      const readBounded = (filePath) => {
-        const stat = fs.statSync(filePath);
+      const readBounded = async (filePath) => {
+        const stat = await fs.promises.stat(filePath);
         if (!stat.isFile() || stat.size > FILE_READ_MAX_BYTES) {
           throw Object.assign(new Error('file-too-large'), { code: 'file-too-large' });
         }
-        return fs.readFileSync(filePath);
+        return fs.promises.readFile(filePath);
       };
       if (payload && payload.multiple) {
-        const files = result.filePaths.map((filePath) => ({ name: path.basename(filePath), type: '', bytes: new Uint8Array(readBounded(filePath)), path: filePath }));
+        const files = await Promise.all(
+          result.filePaths.map(async (filePath) => ({
+            name: path.basename(filePath),
+            type: '',
+            bytes: new Uint8Array(await readBounded(filePath)),
+            path: filePath,
+          }))
+        );
         return ok({ canceled: false, files });
       }
       const filePath = result.filePaths[0];
-      const buffer = readBounded(filePath);
+      const buffer = await readBounded(filePath);
       return ok({ canceled: false, name: path.basename(filePath), type: '', bytes: new Uint8Array(buffer), path: filePath });
     } catch (error) {
       return fail(error);
@@ -273,7 +280,7 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
-      fs.writeFileSync(result.filePath, out);
+      await fs.promises.writeFile(result.filePath, out);
       return ok({ canceled: false, filePath: result.filePath });
     } catch (error) {
       return fail(error);
@@ -288,7 +295,7 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('asset:read', (_event, payload) => {
+  ipcMain.handle('asset:read', async (_event, payload) => {
     try {
       const relative = String((payload && payload.path) || '').replace(/\\/g, '/');
       const normalized = path.posix.normalize(relative);
@@ -305,7 +312,8 @@ function registerIpc() {
       if (file !== base && !file.startsWith(`${base}${path.sep}`)) {
         throw Object.assign(new Error('blocked-asset'), { code: 'blocked-asset' });
       }
-      return ok(new Uint8Array(fs.readFileSync(file)));
+      const buffer = await fs.promises.readFile(file);
+      return ok(new Uint8Array(buffer));
     } catch (error) {
       return fail(error);
     }
@@ -433,13 +441,14 @@ function registerIpc() {
   ipcMain.handle('studio:autosave-read', async () => {
     try {
       const file = path.join(app.getPath('userData'), 'studio-autosave.json');
+      let stat;
       try {
-        const stat = await fs.promises.stat(file);
-        if (stat.size > AUTOSAVE_MAX_BYTES) {
-          return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
-        }
+        stat = await fs.promises.stat(file);
       } catch {
         return ok(null);
+      }
+      if (stat.size > AUTOSAVE_MAX_BYTES) {
+        return fail(Object.assign(new Error('autosave-too-large'), { code: 'autosave-too-large' }));
       }
       const content = await fs.promises.readFile(file, 'utf8');
       return ok(JSON.parse(content));
@@ -521,10 +530,15 @@ function registerIpc() {
   const AI_BODY_MAX_BYTES = 12 * 1024 * 1024;
   const AI_KEY_RE = /^[A-Za-z0-9_-]{20,300}$/;
 
-  function aiReadKey() {
+  async function aiReadKey() {
     try {
-      if (safeStorage.isEncryptionAvailable() && fs.existsSync(AI_KEY_FILE())) {
-        return { key: safeStorage.decryptString(fs.readFileSync(AI_KEY_FILE())), source: 'stored' };
+      if (safeStorage.isEncryptionAvailable()) {
+        try {
+          const buffer = await fs.promises.readFile(AI_KEY_FILE());
+          return { key: safeStorage.decryptString(buffer), source: 'stored' };
+        } catch {
+          /* unreadable or missing file: fall through */
+        }
       }
     } catch {
       /* unreadable or from another OS user: treat as not set */
@@ -534,8 +548,8 @@ function registerIpc() {
     return { key: null, source: null };
   }
 
-  ipcMain.handle('ai:status', () => {
-    const { key, source } = aiReadKey();
+  ipcMain.handle('ai:status', async () => {
+    const { key, source } = await aiReadKey();
     let canStore = false;
     try {
       canStore = safeStorage.isEncryptionAvailable();
@@ -559,9 +573,9 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('ai:clear-key', () => {
+  ipcMain.handle('ai:clear-key', async () => {
     try {
-      fs.rmSync(AI_KEY_FILE(), { force: true });
+      await fs.promises.rm(AI_KEY_FILE(), { force: true });
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -569,7 +583,7 @@ function registerIpc() {
   });
 
   ipcMain.handle('ai:request', async (_event, payload) => {
-    const { key } = aiReadKey();
+    const { key } = await aiReadKey();
     if (!key) return fail(Object.assign(new Error('no-key'), { code: 'no-key' }));
     const request = payload && typeof payload === 'object' ? payload : {};
     if (typeof request.model !== 'string' || !AI_MODEL_RE.test(request.model)) {
@@ -1102,7 +1116,7 @@ function createWindow() {
           const demoOut = process.env.SA_SMOKE_FXDEMO_OUT
             ? path.resolve(process.env.SA_SMOKE_FXDEMO_OUT)
             : path.join(__dirname, 'demo', `fx800-preview-${demoLabel}.png`);
-          const demoDoc = JSON.parse(fs.readFileSync(demoFile, 'utf8'));
+          const demoDoc = JSON.parse(await fs.promises.readFile(demoFile, 'utf8'));
           win.setContentSize(1280, 900);
           win.setOpacity(1);
           win.show();
@@ -1364,7 +1378,7 @@ function createWindow() {
           if (parsedLyrics.png) {
             const png = Buffer.from(parsedLyrics.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-lyrics-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedLyrics.png;
             console.log(`SMOKE_LYRICS_PNG=${target} bytes=${png.length}`);
           }
@@ -1524,7 +1538,7 @@ function createWindow() {
           if (parsedBeats.png) {
             const png = Buffer.from(parsedBeats.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-beats-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedBeats.png;
             console.log(`SMOKE_BEATS_PNG=${target} bytes=${png.length}`);
           }
@@ -1539,7 +1553,7 @@ function createWindow() {
           await new Promise((resolve) => setTimeout(resolve, 400));
           const shot = await win.capturePage();
           const shotPath = path.join(app.getPath('temp'), 'suno-studio-smoke.png');
-          fs.writeFileSync(shotPath, shot.toPNG());
+          await fs.promises.writeFile(shotPath, shot.toPNG());
           console.log(`SMOKE_BEATS_UI_PNG=${shotPath} bytes=${shot.toPNG().length}`);
         }
 
@@ -1649,7 +1663,7 @@ function createWindow() {
             for (const [id, dataUrl] of Object.entries(parsedMotion.pngs)) {
               const png = Buffer.from(dataUrl.split(',')[1], 'base64');
               const target = path.join(app.getPath('temp'), `suno-motion-${id}.png`);
-              fs.writeFileSync(target, png);
+              await fs.promises.writeFile(target, png);
               console.log(`SMOKE_MOTION_PNG=${target} id=${id} bytes=${png.length}`);
             }
             delete parsedMotion.pngs;
@@ -1926,8 +1940,8 @@ function createWindow() {
             if (parsed.sheet) {
               const png = Buffer.from(parsed.sheet.split(',')[1], 'base64');
               const sheetPath = path.join(__dirname, 'snapshot', 'aestage-sheet.png');
-              fs.mkdirSync(path.dirname(sheetPath), { recursive: true });
-              fs.writeFileSync(sheetPath, png);
+              await fs.promises.mkdir(path.dirname(sheetPath), { recursive: true });
+              await fs.promises.writeFile(sheetPath, png);
               parsed.sheetPath = sheetPath;
               delete parsed.sheet;
               console.log(`SMOKE_AESTAGE_PNG=${sheetPath} bytes=${png.length}`);
@@ -2023,7 +2037,7 @@ function createWindow() {
             for (const [id, dataUrl] of Object.entries(parsedShaders.pngs)) {
               const png = Buffer.from(dataUrl.split(',')[1], 'base64');
               const target = path.join(app.getPath('temp'), `suno-shader-${id}.png`);
-              fs.writeFileSync(target, png);
+              await fs.promises.writeFile(target, png);
               console.log(`SMOKE_SHADERS_PNG=${target} id=${id} bytes=${png.length}`);
             }
             delete parsedShaders.pngs;
@@ -2171,7 +2185,7 @@ function createWindow() {
           await new Promise((resolve) => setTimeout(resolve, 300));
           const shot = await win.capturePage();
           const shotPath = path.join(app.getPath('temp'), 'suno-edit-smoke.png');
-          fs.writeFileSync(shotPath, shot.toPNG());
+          await fs.promises.writeFile(shotPath, shot.toPNG());
           console.log(`SMOKE_EDIT_PNG=${shotPath} bytes=${shot.toPNG().length}`);
         }
 
@@ -2381,7 +2395,7 @@ function createWindow() {
           await new Promise((resolve) => setTimeout(resolve, 300));
           const shot = await win.capturePage();
           const shotPath = path.join(app.getPath('temp'), 'suno-timeline-smoke.png');
-          fs.writeFileSync(shotPath, shot.toPNG());
+          await fs.promises.writeFile(shotPath, shot.toPNG());
           console.log(`SMOKE_TIMELINE_PNG=${shotPath} bytes=${shot.toPNG().length}`);
         }
 
@@ -2619,14 +2633,14 @@ function createWindow() {
           if (parsedRandom.autoPng) {
             const png = Buffer.from(parsedRandom.autoPng.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-autodirect-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedRandom.autoPng;
             console.log(`SMOKE_AUTODIRECT_PNG=${target} bytes=${png.length}`);
           }
           if (parsedRandom.png) {
             const png = Buffer.from(parsedRandom.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-random-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedRandom.png;
             console.log(`SMOKE_RANDOM_PNG=${target} bytes=${png.length}`);
           }
@@ -2737,19 +2751,19 @@ function createWindow() {
             });
           })()`);
           const parsedExport = JSON.parse(exportReport);
-          const writeOut = (key, extension) => {
+          const writeOut = async (key, extension) => {
             const entry = parsedExport[key];
             if (!entry || !entry.base64) return;
             const bytes = Buffer.from(entry.base64, 'base64');
             const target = path.join(app.getPath('temp'), `suno-export-smoke.${extension}`);
-            fs.writeFileSync(target, bytes);
+            await fs.promises.writeFile(target, bytes);
             const magic = bytes.subarray(0, 8).toString('hex');
             console.log(`SMOKE_EXPORT_${key.toUpperCase()}=${target} bytes=${bytes.length} magic=${magic}`);
             entry.base64 = `${bytes.length} bytes`;
           };
-          writeOut('mp4', 'mp4');
-          writeOut('webm', 'webm');
-          writeOut('zip', 'zip');
+          await writeOut('mp4', 'mp4');
+          await writeOut('webm', 'webm');
+          await writeOut('zip', 'zip');
           console.log('SMOKE_EXPORT=' + JSON.stringify(parsedExport));
         }
 
@@ -2977,7 +2991,7 @@ function createWindow() {
           if (parsedLayers.png) {
             const png = Buffer.from(parsedLayers.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-layers-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedLayers.png;
             console.log(`SMOKE_LAYERS_PNG=${target} bytes=${png.length}`);
           }
@@ -3080,7 +3094,7 @@ function createWindow() {
           if (parsedAudio.png) {
             const png = Buffer.from(parsedAudio.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-audio-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedAudio.png;
             console.log(`SMOKE_AUDIO_PNG=${target} bytes=${png.length}`);
           }
@@ -3284,7 +3298,7 @@ function createWindow() {
           if (parsedFillers.png) {
             const png = Buffer.from(parsedFillers.png.split(',')[1], 'base64');
             const target = path.join(app.getPath('temp'), 'suno-fillers-smoke.png');
-            fs.writeFileSync(target, png);
+            await fs.promises.writeFile(target, png);
             delete parsedFillers.png;
             console.log(`SMOKE_FILLERS_PNG=${target} bytes=${png.length}`);
           }
