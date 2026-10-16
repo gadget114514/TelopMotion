@@ -521,21 +521,22 @@ function registerIpc() {
   const AI_BODY_MAX_BYTES = 12 * 1024 * 1024;
   const AI_KEY_RE = /^[A-Za-z0-9_-]{20,300}$/;
 
-  function aiReadKey() {
+  async function aiReadKey() {
     try {
-      if (safeStorage.isEncryptionAvailable() && fs.existsSync(AI_KEY_FILE())) {
-        return { key: safeStorage.decryptString(fs.readFileSync(AI_KEY_FILE())), source: 'stored' };
+      if (safeStorage.isEncryptionAvailable()) {
+        const fileData = await fs.promises.readFile(AI_KEY_FILE());
+        return { key: safeStorage.decryptString(fileData), source: 'stored' };
       }
     } catch {
-      /* unreadable or from another OS user: treat as not set */
+      /* unreadable, non-existent, or from another OS user: treat as not set */
     }
     const env = process.env.ANTHROPIC_API_KEY;
     if (env && AI_KEY_RE.test(env.trim())) return { key: env.trim(), source: 'env' };
     return { key: null, source: null };
   }
 
-  ipcMain.handle('ai:status', () => {
-    const { key, source } = aiReadKey();
+  ipcMain.handle('ai:status', async () => {
+    const { key, source } = await aiReadKey();
     let canStore = false;
     try {
       canStore = safeStorage.isEncryptionAvailable();
@@ -559,9 +560,9 @@ function registerIpc() {
     }
   });
 
-  ipcMain.handle('ai:clear-key', () => {
+  ipcMain.handle('ai:clear-key', async () => {
     try {
-      fs.rmSync(AI_KEY_FILE(), { force: true });
+      await fs.promises.rm(AI_KEY_FILE(), { force: true });
       return ok(true);
     } catch (error) {
       return fail(error);
@@ -569,7 +570,7 @@ function registerIpc() {
   });
 
   ipcMain.handle('ai:request', async (_event, payload) => {
-    const { key } = aiReadKey();
+    const { key } = await aiReadKey();
     if (!key) return fail(Object.assign(new Error('no-key'), { code: 'no-key' }));
     const request = payload && typeof payload === 'object' ? payload : {};
     if (typeof request.model !== 'string' || !AI_MODEL_RE.test(request.model)) {
