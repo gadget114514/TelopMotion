@@ -41,7 +41,7 @@
     enter: {
       animator: 0.7, fade: 0.75, typewriter: 0.8, slide: 0.7, dropBounce: 0.25, zoomIn: 0.45,
       blurIn: 0.85, flip3D: 0.35, rotateIn: 0.45, scatterIn: 0.4, waveRise: 0.5, elasticPop: 0.3,
-      scramble: 0.25, glitchIn: 0.15, neonFlicker: 0.2, flickerIn: 0.2, strokeDrawOn: 0.8,
+      scramble: 0.25, glitchIn: 0.15, neonFlicker: 0.2, flickerIn: 0.2, strokeDrawOn: 0.8, circleDrawOn: 0.8, lineDrawOn: 0.8, boxDrawOn: 0.8,
       particlesAssemble: 0.4, shatterRebuild: 0.3, morphFromPrevious: 0.6, noiseDissolveIn: 0.35,
       megaZoomIn: 0.5, rangeReveal: 0.85, tracking: 0.9, riseIn: 0.6, fallIn: 0.5, popIn: 0.35,
       spinIn: 0.4, focusIn: 0.8, driftIn: 0.6, tiltIn: 0.45, revealSweep: 0.7, revealSoft: 0.7,
@@ -50,7 +50,7 @@
     exit: {
       animator: 0.7, fade: 0.75, slide: 0.7, zoomOut: 0.45, blurOut: 0.85, explode: 0.2,
       gravityFall: 0.25, dissolve: 0.5, wipe: 0.75, typewriterReverse: 0.8, shrinkToCenter: 0.35,
-      particlesDisperse: 0.4, melt: 0.3, burnAway: 0.3, strokeErase: 0.8, creepOut: 0.5,
+      particlesDisperse: 0.4, melt: 0.3, burnAway: 0.3, strokeErase: 0.8, circleErase: 0.8, lineErase: 0.8, boxErase: 0.8, creepOut: 0.5,
       megaZoomOut: 0.5, rangeReveal: 0.85, tracking: 0.9, riseOut: 0.6, fallOut: 0.45,
       zoomOutSoft: 0.6, spinOut: 0.35, focusOut: 0.8, trackOut: 0.85,
     },
