@@ -51,7 +51,7 @@ SA.debugConsole = (() => {
 
   function render() {
     if (!listNode || !open) return;
-    listNode.innerHTML = '';
+    listNode.textContent = '';
     if (!entries.length) {
       const empty = document.createElement('div');
       empty.className = 'console-empty';
@@ -77,7 +77,7 @@ SA.debugConsole = (() => {
 
   function buildPanel() {
     if (!panel) return;
-    panel.innerHTML = '';
+    panel.textContent = '';
     const head = document.createElement('div');
     head.className = 'console-head';
     const title = document.createElement('span');
@@ -161,7 +161,7 @@ SA.debugConsole = (() => {
     }
     window.addEventListener('error', (event) => push('error', `${event.message} (${event.filename || ''}:${event.lineno || 0})`));
     window.addEventListener('unhandledrejection', (event) => push('error', `Unhandled rejection: ${format([event.reason])}`));
-    panel.innerHTML = '';
+    panel.textContent = '';
     render();
   }
 
