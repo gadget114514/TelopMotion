@@ -9,6 +9,29 @@ const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ai-key-bench-'));
 const testFile = path.join(tmpDir, 'ai-key.bin');
 const dummyKeyData = Buffer.from('mock-encrypted-key-bytes-for-benchmark-testing-1234567890');
 
+// Write test file
+fs.writeFileSync(testFile, dummyKeyData, { mode: 0o600 });
+
+function syncReadKey() {
+  try {
+    if (fs.existsSync(testFile)) {
+      return fs.readFileSync(testFile);
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+async function asyncReadKey() {
+  try {
+    return await fs.promises.readFile(testFile);
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
 async function benchmarkSync(iterations) {
   let eventLoopTicks = 0;
   const interval = setInterval(() => {
@@ -17,7 +40,7 @@ async function benchmarkSync(iterations) {
 
   const start = performance.now();
   for (let i = 0; i < iterations; i++) {
-    fs.writeFileSync(testFile, dummyKeyData, { mode: 0o600 });
+    syncReadKey();
   }
   const end = performance.now();
 
@@ -36,7 +59,7 @@ async function benchmarkAsync(iterations) {
 
   const start = performance.now();
   for (let i = 0; i < iterations; i++) {
-    await fs.promises.writeFile(testFile, dummyKeyData, { mode: 0o600 });
+    await asyncReadKey();
   }
   const end = performance.now();
 
@@ -48,18 +71,18 @@ async function benchmarkAsync(iterations) {
 }
 
 async function run() {
-  const iterations = 200;
-  console.log(`Running AI Key write benchmark (${iterations} iterations)...`);
+  const iterations = 1000;
+  console.log(`Running AI Key read benchmark (${iterations} iterations)...`);
 
   // Warmup
-  fs.writeFileSync(testFile, dummyKeyData, { mode: 0o600 });
-  await fs.promises.writeFile(testFile, dummyKeyData, { mode: 0o600 });
+  syncReadKey();
+  await asyncReadKey();
 
   const syncResult = await benchmarkSync(iterations);
   const asyncResult = await benchmarkAsync(iterations);
 
-  console.log(`Sync (fs.writeFileSync): ${syncResult.timeMs.toFixed(2)} ms | Event Loop Ticks: ${syncResult.eventLoopTicks}`);
-  console.log(`Async (fs.promises.writeFile): ${asyncResult.timeMs.toFixed(2)} ms | Event Loop Ticks: ${asyncResult.eventLoopTicks}`);
+  console.log(`Sync (fs.existsSync + fs.readFileSync): ${syncResult.timeMs.toFixed(2)} ms | Event Loop Ticks: ${syncResult.eventLoopTicks}`);
+  console.log(`Async (fs.promises.readFile): ${asyncResult.timeMs.toFixed(2)} ms | Event Loop Ticks: ${asyncResult.eventLoopTicks}`);
 
   // Cleanup
   try {
