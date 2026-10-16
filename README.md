@@ -185,6 +185,7 @@ scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-ef
 scripts/figure-showcase.js Figure showcase: every figure motif + motion axis in one project
 scripts/looks-classify.js Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
 scripts/named-effects.js Named effects: the 120 motion-prompt recipes (build / list / show / apply)
+scripts/named-effects-showcase.js Named effects showcase: every 120 motion-prompt entry in one project
 scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (223 files)
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
 scripts/test/           Unit test suite (91 test files, 1025 tests via node --test)

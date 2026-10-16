@@ -206,6 +206,7 @@ SA.menu = (() => {
         { key: 'studio.help.cloneShowcase', action: 'cloneShowcase' },
         { key: 'studio.help.letterFxShowcase', action: 'letterFxShowcase' },
         { key: 'studio.help.textShowcase', action: 'textShowcase' },
+        { key: 'studio.help.namedEffectsShowcase', action: 'namedEffectsShowcase' },
         { key: 'studio.help.shaderShowcase', action: 'shaderShowcase' },
         { key: 'studio.help.objfxShowcase', action: 'objfxShowcase' },        { key: 'studio.help.motionShowcase', action: 'motionShowcaseDialog' },
         { key: 'studio.about.item', action: 'about' },

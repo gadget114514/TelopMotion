@@ -185,6 +185,7 @@ scripts/fx800.js        FX 800：800 の番号・名前付きデモを 4 つの 
 scripts/figure-showcase.js Figure ショーケース：全 figure モチーフ＋モーション軸を 1 プロジェクトに
 scripts/looks-classify.js 800 デモを分類（モーション量、5 軸、テーマ）。Random look 用
 scripts/named-effects.js ネームドエフェクト：motion-prompt 120 種のレシピ（build / list / show / apply）
+scripts/named-effects-showcase.js ネームドエフェクトショーケース：全 120 種の演出を 1 プロジェクトに
 scripts/check.js        lib/、scripts/、renderer/js/、main.js、preload.js の node --check（223 ファイル）
 scripts/vendor.js       opentype / earcut / mp4-muxer / webm-muxer を renderer/vendor にコピー
 scripts/test/           単体テストスイート（node --test で 91 テストファイル、1025 テスト）
