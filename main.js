@@ -237,19 +237,26 @@ function registerIpc() {
         filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
-      const readBounded = (filePath) => {
-        const stat = fs.statSync(filePath);
+      const readBounded = async (filePath) => {
+        const stat = await fs.promises.stat(filePath);
         if (!stat.isFile() || stat.size > FILE_READ_MAX_BYTES) {
           throw Object.assign(new Error('file-too-large'), { code: 'file-too-large' });
         }
-        return fs.readFileSync(filePath);
+        return fs.promises.readFile(filePath);
       };
       if (payload && payload.multiple) {
-        const files = result.filePaths.map((filePath) => ({ name: path.basename(filePath), type: '', bytes: new Uint8Array(readBounded(filePath)), path: filePath }));
+        const files = await Promise.all(
+          result.filePaths.map(async (filePath) => ({
+            name: path.basename(filePath),
+            type: '',
+            bytes: new Uint8Array(await readBounded(filePath)),
+            path: filePath,
+          }))
+        );
         return ok({ canceled: false, files });
       }
       const filePath = result.filePaths[0];
-      const buffer = readBounded(filePath);
+      const buffer = await readBounded(filePath);
       return ok({ canceled: false, name: path.basename(filePath), type: '', bytes: new Uint8Array(buffer), path: filePath });
     } catch (error) {
       return fail(error);
