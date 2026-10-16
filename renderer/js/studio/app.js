@@ -2325,6 +2325,7 @@
       rerollColors,
       autoDirect,
       applyPreset: presetDialog,
+      namedEffect: () => SA.namedEffectDialog && SA.namedEffectDialog.open(),
       fitAudio,
       palettes: () => (SA.paletteDialog ? SA.paletteDialog.open() : SA.colors.paletteDialog()),
       themes: () => SA.themes.dialog(),
@@ -2463,6 +2464,9 @@
         SA.textflow.apply(store.state.project);
       }
       SA.io.startAutosave(project, autosaveEnabled ? 30 : 999999);
+      // the named-effect catalog (motion-prompt) loads in the background so the
+      // timeline can print names and meanings without the picker being opened
+      if (SA.namedEffects && SA.namedEffects.load) SA.namedEffects.load().catch(() => {});
       await step(72, 'studio.boot.fonts', 94, 20000, '');
       // fonts decide what the preview can draw: the explicit ensureFonts call
       // below is the first real load for this project (preview.init ran with

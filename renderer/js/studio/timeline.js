@@ -40,6 +40,9 @@ SA.timeline = (() => {
   // Row labels that `fitLabel` had to truncate: hovering the fixed label column
   // shows their full text in a tooltip. Recorded on every draw.
   let labelRegions = [];
+  // Canvas content tooltips (a cue's / beat's named effect): hovering the block
+  // shows `#id name — meaning`. Recorded on every draw like `labelRegions`.
+  let tipRegions = [];
   let tipSize = { w: 0, h: 0 };
   let rows = [];
   let cueRects = new Map();
@@ -886,6 +889,26 @@ SA.timeline = (() => {
     }
   }
 
+  // Named-effect display for the timeline: the stored descriptor carries the
+  // localized name (the badge / name line needs no catalog), and the catalog —
+  // when loaded — adds the meaning to the hover tooltip. ja / en follow the
+  // interface language, like every other label.
+  function namedEffectLang() {
+    return SA.i18n && typeof SA.i18n.lang === 'function' ? SA.i18n.lang() : 'ja';
+  }
+
+  function namedEffectLabel(meta) {
+    if (!meta || !SA.namedEffects) return '';
+    return SA.namedEffects.labelOf(meta, namedEffectLang());
+  }
+
+  function namedEffectTip(meta) {
+    if (!meta || !SA.namedEffects) return '';
+    const runtime = SA.namedEffects.current ? SA.namedEffects.current() : null;
+    const entry = runtime ? runtime.get(meta.id) : null;
+    return SA.namedEffects.describeOf(entry || meta, namedEffectLang());
+  }
+
   function drawCueTrack(size, projectDoc, row) {
     const y = row.y;
     const height = ROW_H - 4;
@@ -944,7 +967,16 @@ SA.timeline = (() => {
       ctx.font = '11px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
       ctx.textBaseline = 'top';
       ctx.fillText((cue.text || '').split('\n')[0], x + 6, y + 4);
+      // the cue's named effect rides under its text as a mint line, so the
+      // look reads off the timeline without opening the inspector
+      const cueMeta = SA.namedEffects ? SA.namedEffects.metaFor(projectDoc, cue.id, null) : null;
+      if (cueMeta && width > 36) {
+        ctx.fillStyle = textDimmed ? 'rgba(124, 227, 192, 0.4)' : '#7ce3c0';
+        ctx.font = '9px "Segoe UI", "Yu Gothic UI", Arial, sans-serif';
+        ctx.fillText(namedEffectLabel(cueMeta.meta), x + 6, y + 14.5);
+      }
       ctx.restore();
+      if (cueMeta) tipRegions.push({ x, y, w: width, h: height, text: namedEffectTip(cueMeta.meta), force: true });
       let beatIndex = 0;
       for (const beat of beats) {
         const bx = inner + ((beat.start - cue.start) / Math.max(0.001, cue.end - cue.start)) * innerWidth;
@@ -991,6 +1023,14 @@ SA.timeline = (() => {
           ctx.arc(bx + bw - 3, y + 5.5, 1.8, 0, Math.PI * 2);
           ctx.fill();
         }
+        // the beat's own named effect: a mint dot marks it, the tooltip names it
+        const beatMeta = beatStyles[beat.id] && beatStyles[beat.id].namedEffect;
+        if (beatMeta && beatMeta.id) {
+          ctx.fillStyle = '#7ce3c0';
+          ctx.beginPath();
+          ctx.arc(bx + 3, y + height - 4.5, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        }
         if (bw > 26) {
           ctx.save();
           ctx.beginPath();
@@ -1024,6 +1064,7 @@ SA.timeline = (() => {
           ctx.restore();
         }
         hitRegions.push({ type: 'beat', x: bx, y, w: bw, h: height, cueId: cue.id, beatId: beat.id, edgeLeft: bx, edgeRight: bx + bw, hasMotions });
+        if (beatMeta && beatMeta.id) tipRegions.push({ x: bx, y, w: bw, h: height, text: namedEffectTip(beatMeta), force: true });
         if (beatDisabled) ctx.restore();
         beatIndex += 1;
       }
@@ -1750,6 +1791,7 @@ SA.timeline = (() => {
   function draw() {
     if (!ctx) return;
     labelRegions = [];
+    tipRegions = [];
     const size = resize();
     updateZoomBounds();
     updateHScroll();
@@ -2104,16 +2146,26 @@ SA.timeline = (() => {
     return null;
   }
 
-  // Shows the full text of a truncated row label while the pointer rests on the
-  // fixed label column.
+  function contentTipAt(point) {
+    for (let i = tipRegions.length - 1; i >= 0; i -= 1) {
+      const region = tipRegions[i];
+      if (point.x < region.x || point.x > region.x + region.w) continue;
+      if (point.y < region.y || point.y > region.y + region.h) continue;
+      return region;
+    }
+    return null;
+  }
+
+  // Shows the full text of a truncated row label — or, over the canvas, the
+  // named effect of the cue / beat under the pointer — while it rests there.
   function updateLabelTip(event) {
     if (!el.tip || event.currentTarget !== el.canvas) {
       hideLabelTip();
       return;
     }
     const point = localPoint(event);
-    const region = point.x <= LABEL_W ? labelAt(point) : null;
-    if (!region || !region.clipped) {
+    const region = point.x <= LABEL_W ? labelAt(point) : contentTipAt(point);
+    if (!region || (!region.clipped && !region.force)) {
       hideLabelTip();
       return;
     }

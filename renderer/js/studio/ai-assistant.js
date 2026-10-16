@@ -42,7 +42,7 @@ SA.aiAssistant = (() => {
   }
 
   function newSession(doc) {
-    return SA.aiTools.createSession(doc, { migrate: SA.project.migrate, fx: SA.fx, resolveStyle: SA.project.resolveStyle });
+    return SA.aiTools.createSession(doc, { migrate: SA.project.migrate, fx: SA.fx, resolveStyle: SA.project.resolveStyle, namedEffects: SA.namedEffects });
   }
 
   // A JPEG of the frame at `time`, scaled down so a few of them stay cheap.
@@ -221,6 +221,9 @@ SA.aiAssistant = (() => {
       if (!text || busy) return;
       input.value = '';
       say('user', text);
+      // the named-effect tools read the catalog: make sure it is there before
+      // the model can ask for it
+      if (SA.namedEffects && SA.namedEffects.load) await SA.namedEffects.load().catch(() => null);
       session.setView({
         playhead: SA.store.state.playhead,
         selection: (SA.store.state.selection && SA.store.state.selection.paths) || [],

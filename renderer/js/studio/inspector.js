@@ -1490,6 +1490,62 @@ SA.inspector = (() => {
     body.appendChild(add);
   }
 
+  // Named effects (the 120 motion-prompt entries): the recipe attached to this
+  // cue / beat. The picker applies a new one over the old groups; the name and
+  // meaning also show on the timeline.
+  function renderNamedEffect(container) {
+    if (!container || !SA.namedEffects) return;
+    const sel = selectionInfo();
+    if (sel.kind === 'letter' || sel.kind === 'word' || sel.kind === 'line') return;
+    const doc = project();
+    if (!doc || !sel.cueId) return;
+    const found = SA.namedEffects.metaFor(doc, sel.cueId, sel.beatId);
+    const body = section(container, 'namedEffect', t('studio.namedEffect.title'));
+    const bag = sel.kind === 'beat'
+      ? (doc.beatStyles && doc.beatStyles[sel.beatId]) || null
+      : (doc.cueStyles && doc.cueStyles[sel.cueId]) || null;
+    const exact = bag && bag.namedEffect && bag.namedEffect.id ? bag.namedEffect : null;
+    const runtime = SA.namedEffects.current ? SA.namedEffects.current() : null;
+    const current = (runtime && found ? runtime.get(found.meta.id) : null) || (found && found.meta) || null;
+    if (current) {
+      const name = document.createElement('div');
+      name.className = 'insp-named-effect';
+      name.textContent = SA.namedEffects.describeOf(current, SA.i18n.lang());
+      body.appendChild(name);
+      if (found.level === 'cue' && sel.kind === 'beat') {
+        const from = document.createElement('div');
+        from.className = 'insp-inherit';
+        from.textContent = t('studio.namedEffect.fromCue');
+        body.appendChild(from);
+      }
+    } else {
+      const empty = document.createElement('div');
+      empty.className = 'insp-inherit';
+      empty.textContent = t('studio.namedEffect.none');
+      body.appendChild(empty);
+    }
+    const row = document.createElement('div');
+    row.className = 'insp-stack-head';
+    const pick = document.createElement('button');
+    pick.type = 'button';
+    pick.className = 'btn btn-mini';
+    pick.textContent = current ? t('studio.namedEffect.changeDots') : t('studio.namedEffect.applyDots');
+    pick.addEventListener('click', () => SA.namedEffectDialog.open());
+    row.appendChild(pick);
+    if (exact) {
+      const clear = document.createElement('button');
+      clear.type = 'button';
+      clear.className = 'btn btn-mini';
+      clear.textContent = t('studio.namedEffect.clear');
+      clear.addEventListener('click', () => {
+        const scope = sel.kind === 'beat' ? { beatId: sel.beatId, cueId: sel.cueId } : { cueId: sel.cueId };
+        if (SA.store.commands.clearNamedEffect(scope)) SA.studio.toast('studio.toast.namedEffectCleared');
+      });
+      row.appendChild(clear);
+    }
+    body.appendChild(row);
+  }
+
   // Clones: draw the same string several times with per-copy offsets.
   function renderClones(container) {
     const style = resolvedStyle();
@@ -4470,6 +4526,7 @@ SA.inspector = (() => {
     renderStyleSections(el.body);
     renderScopedSection(el.body);
     renderCustomMotions(el.body);
+    renderNamedEffect(el.body);
     renderClones(el.body);
     renderColor(el.body);
     renderPalette(el.body);

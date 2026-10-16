@@ -2090,6 +2090,13 @@ body {
   font-size: 11px;
 }
 
+/* the named-effect recipe attached to the cue / beat (mint, like its timeline line) */
+.insp-named-effect {
+  color: #7ce3c0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .insp-motion {
   display: flex;
   flex-direction: column;
@@ -3157,6 +3164,12 @@ body {
 .motion-badge-category {
   background: rgba(255, 255, 255, 0.08);
   color: var(--muted, #8a8d9f);
+}
+
+.motion-badge-pack {
+  background: rgba(150, 120, 255, 0.15);
+  color: #a892ff;
+  border: 1px solid rgba(150, 120, 255, 0.3);
 }
 
 .motion-card-desc {

@@ -160,6 +160,29 @@ SA.store = (() => {
     else delete project.beatWarnings[cueId];
   }
 
+  // Named effects: a recipe's style groups live in the style bag next to a
+  // `namedEffect` descriptor that remembers them, so re-applying can replace
+  // exactly the groups the previous recipe touched.
+  function styleBagAt(project, scope, create) {
+    if (!scope || scope === 'project') return { root: project, key: 'style' };
+    if (scope.beatId) {
+      const bags = project.beatStyles || (project.beatStyles = {});
+      if (create && !bags[scope.beatId]) bags[scope.beatId] = {};
+      return bags[scope.beatId] ? { root: bags, key: scope.beatId } : null;
+    }
+    if (scope.cueId) {
+      const bags = project.cueStyles || (project.cueStyles = {});
+      if (create && !bags[scope.cueId]) bags[scope.cueId] = {};
+      return bags[scope.cueId] ? { root: bags, key: scope.cueId } : null;
+    }
+    return null;
+  }
+
+  function namedEffectGroups(bag) {
+    const meta = bag && bag.namedEffect;
+    return meta && Array.isArray(meta.groups) ? meta.groups : [];
+  }
+
   // Style edits that change how the text is wrapped must re-flow the beats in
   // fill mode; the fixed mode keeps its old lazy behavior (no re-flow).
   function needsReflow(project, scope, propPath) {
@@ -3294,6 +3317,55 @@ SA.store = (() => {
           }
         },
       });
+    },
+    // --- named effects ----------------------------------------------------------
+    // The 120 motion-prompt entries, each paired with a style recipe. Applying
+    // one deletes the groups the previous recipe touched, merges the expanded
+    // recipe over the bag and leaves a `namedEffect` descriptor behind: id,
+    // pack, the touched groups and the localized name for the timeline. One
+    // apply is one undo step.
+    applyNamedEffect(scope, effect) {
+      if (!state.project) return false;
+      const runtime = typeof SA !== 'undefined' ? SA.namedEffects : null;
+      const entry = typeof effect === 'string'
+        ? (runtime && runtime.current() ? runtime.get(effect) : null)
+        : effect;
+      if (!entry || !entry.id) return false;
+      const style = runtime ? runtime.styleOf(entry) : clone(entry.style || {});
+      if (!style || !Object.keys(style).length) return false;
+      const groups = runtime ? runtime.groupsOf(entry) : Object.keys(style);
+      const id = String(entry.id).padStart(3, '0');
+      const meta = { id, pack: entry.pack || '', groups, name: clone(entry.name || {}) };
+      dispatch({
+        label: `named effect #${id}`,
+        areas: ['style'],
+        do(project) {
+          const bag = styleBagAt(project, scope, true);
+          if (!bag) return;
+          const doc = bag.root[bag.key];
+          for (const group of namedEffectGroups(doc)) delete doc[group];
+          bag.root[bag.key] = SA.project.mergeDeep(doc, style);
+          bag.root[bag.key].namedEffect = meta;
+        },
+      });
+      return true;
+    },
+    clearNamedEffect(scope) {
+      const bag = styleBagAt(state.project, scope, false);
+      if (!bag || !bag.root[bag.key] || !bag.root[bag.key].namedEffect) return false;
+      dispatch({
+        label: 'clear named effect',
+        areas: ['style'],
+        do(project) {
+          const target = styleBagAt(project, scope, false);
+          if (!target) return;
+          const doc = target.root[target.key];
+          for (const group of namedEffectGroups(doc)) delete doc[group];
+          delete doc.namedEffect;
+          if (target.root !== project && !Object.keys(doc).length) delete target.root[target.key];
+        },
+      });
+      return true;
     },
     // Style clipboard: copy the look of a beat/cue, paste it elsewhere.
     // Text and timing never travel — only the style bags, the sub-element

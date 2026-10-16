@@ -18,6 +18,7 @@ A desktop app for **lyric videos**. The app opens in the **Studio**: import lyri
 - **Simultaneous audio & video playback**: real-time synchronized playback of audio tracks and imported video layers (MP4/WebM) directly in the Studio preview, with frame-accurate scrubbing and WebCodecs export
 - **Page layout engine**: 20 publication-style layout presets (magazine, fashion, newspaper, twoColumn, manuscript, xCard, chatBubble, cafeMenu, score, poster, and more) with automatic region flow, background decor, and paper styling
 - **Searchable text effects catalog**: 376+ curated text effects searchable by name and description in English and Japanese, procedural shape decorations, scalable frame graphics (0.1×–10×), and dynamic font deformations
+- **Named effects (ネームドエフェクト)**: the 120 [motion-prompt](https://showheyohtaki.github.io/motion-prompt/) recipes (by @showheyohtaki, MIT) as one-click looks — search by name, `#id` or meaning and apply to the whole project, a cue, or a single beat; the name and meaning show on the timeline and in the inspector
 - **Theme & directing controls**: AI-assisted automatic direction following song sections, theme dialogue controls for scale randomization, repeat scaling with weird threshold (`>= 0.6`), independent background clocks, and a classified 800-look runtime pool
 - **Lyrics import & export**: SRT (tags, `{fx:}`, spans), LRC (metadata, offset, multiple tags, instrumental markers, enhanced word tags), and JSON (arrays, `cues`, Whisper `segments`, seconds/ms/time strings)
 - **Five languages**: English, Japanese, Spanish, French, Russian (auto-detected, switchable)
@@ -101,6 +102,7 @@ TelopMotion organizes visual styling across 12 effect groups:
 Animation · Layout · Page · Enter · Exit · Hold · Location · Fill · Edge · Post · Background · Color
 
 - **Searchable effect catalog**: over 376 curated text effects ([doc/text-effects-en.csv](doc/text-effects-en.csv)) searchable by English or Japanese names and visual descriptions in the Motion Presets dialog (*Inspector → Search Presets*).
+- **Named effects (ネームドエフェクト)**: 120 recipes from [motion-prompt](https://showheyohtaki.github.io/motion-prompt/) (by @showheyohtaki, MIT) stored as effect-group deltas in `renderer/data/named-effects.json` — applying one replaces only the groups of the previous recipe, and apply / change / clear work per project, cue or beat (*Generate → Named effect…*, or the Inspector). The name with its meaning shows on the timeline (cue line and beat dots) and in the inspector ([doc/named-effects.md](doc/named-effects.md)).
 - **Decomposition axes**: detailed in [doc/textdecor2.md](doc/textdecor2.md) (glyph source, contour ops, deformation, representation, texture, visibility, driver, placement, timing, duplication, layering, scope).
 - **Dynamic font size & vertex deformations**: letter blocks scale smoothly around their own center (`hold.fontSize`, `hold.fillScreen`, `enter.megaZoomIn`, `exit.megaZoomOut`). Three vertex shader deformation slots run `jelly`, `wobbleWarp`, `twist`, `breathing`, `squashStretch`, `swirl`, and `hold.warp` without clipping letter deformations.
 - **Text backgrounds & frame graphics**: scale smoothly from 0.1× to 10× with customizable per-beat randomization and base scales configurable in the Theme dialogue.
@@ -182,17 +184,18 @@ scripts/fx400mix.js     FX 400 MIX: 400 complete-look demos (headline effect + s
 scripts/fx800.js        FX 800: 800 numbered, named demos split into four 200-effect projects
 scripts/figure-showcase.js Figure showcase: every figure motif + motion axis in one project
 scripts/looks-classify.js Classifies the 800 demos (motion magnitude, five axes, themes) for Random look
+scripts/named-effects.js Named effects: the 120 motion-prompt recipes (build / list / show / apply)
 scripts/check.js        node --check over lib/, scripts/, renderer/js/, main.js, preload.js (223 files)
 scripts/vendor.js       Copies opentype/earcut/mp4-muxer/webm-muxer into renderer/vendor
 scripts/test/           Unit test suite (91 test files, 1025 tests via node --test)
 demo/                   Generated demo projects, cue lists, indexes and preview sheets
 renderer/               UI: studio.html (Studio), css/, js/
 renderer/js/            Shared: format, platform, srt, lrc, lyrics-json, lyrics-file, color
-renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, page-layout, page-scene, motion, scene, engine, looks, shape-ops, pattern-variants, text-effects-data
+renderer/js/lyrics/     Lyrics engine: font, geometry, textflow, layout, page-layout, page-scene, motion, scene, engine, looks, named-effects, shape-ops, pattern-variants, text-effects-data
 renderer/js/lyrics/effects/  Effect descriptors + CPU implementations per group (animation, layout, page, enter, exit, hold, location, fill, edge, post, background, color, text-bg, vary, repeat)
 renderer/js/lyrics/gl/  WebGL2: context, shaders, SDF, passes, layers
-renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay, page-dialog, motion-dialog, song-dialog, theme-editor, direct
-renderer/data/          Generated runtime pool: fx800.looks.json (800 classified looks for Random look)
+renderer/js/studio/     Studio: project, store, io, menu, preview, timeline, controls, inspector, overlay, page-dialog, motion-dialog, named-effect-dialog, song-dialog, theme-editor, direct
+renderer/data/          Generated runtime pool: fx800.looks.json (800 classified looks for Random look), named-effects.json (120 named-effect recipes)
 renderer/fonts/         OFL fonts + SOURCES.md + OFL.txt
 renderer/vendor/        Vendored libraries + LICENSES.txt
 ```
@@ -300,6 +303,7 @@ Comprehensive architecture, design, and effect documentation:
 - [doc/text-layer-design.md](doc/text-layer-design.md) — Layer rendering pipeline, background knockout, post-effects boundary, and layer separation
 - [doc/textdecor2.md](doc/textdecor2.md) — Full effect decomposition across 12 axes, type registry, and roadmap
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — Catalog of 376+ text effects with Japanese and English names, categories, and descriptions
+- [doc/named-effects.md](doc/named-effects.md) — Named effects: the 120 motion-prompt recipes with their effect-group mapping, CLI, and index (source: [motion-prompt](https://showheyohtaki.github.io/motion-prompt/) by @showheyohtaki, MIT)
 - [doc/repeat-design.md](doc/repeat-design.md) — Repeat arrangement design and distinct signature count
 - [doc/app-design.md](doc/app-design.md) — Overall Studio and lyric video engine architecture
 - [doc/README.claude.md](doc/README.claude.md) — Working with Claude Code: edit `.telopmotion.json` projects with Claude and load them back into the Studio

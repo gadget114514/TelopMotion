@@ -1,0 +1,6172 @@
+{
+  "format": "telopmotion-named-effects",
+  "version": 1,
+  "source": "test/motion-prompt.catalog.json",
+  "site": "https://showheyohtaki.github.io/motion-prompt/",
+  "repo": "https://github.com/showheyohtaki/motion-prompt",
+  "license": "MIT",
+  "attribution": "Named effects and their names come from motion-prompt by @showheyohtaki (MIT).",
+  "count": 120,
+  "packs": [
+    {
+      "id": "motion",
+      "order": 1,
+      "title": {
+        "ja": "モーショングラフィックスの動き",
+        "en": "Motion graphics moves"
+      },
+      "count": 24,
+      "from": "001",
+      "to": "024",
+      "categories": [
+        {
+          "slug": "entrances-text",
+          "ja": "登場・文字の演出",
+          "en": "Entrances & text"
+        },
+        {
+          "slug": "motion-polish",
+          "ja": "動きの味付け",
+          "en": "Motion polish"
+        },
+        {
+          "slug": "transitions-highlights",
+          "ja": "切り替え・見せ場",
+          "en": "Transitions & highlights"
+        }
+      ]
+    },
+    {
+      "id": "camera",
+      "order": 2,
+      "title": {
+        "ja": "カメラワークと切り替え",
+        "en": "Camera moves & transitions"
+      },
+      "count": 24,
+      "from": "025",
+      "to": "048",
+      "categories": [
+        {
+          "slug": "camera-movement",
+          "ja": "カメラの動き",
+          "en": "Camera Movement"
+        },
+        {
+          "slug": "shooting-style-time",
+          "ja": "撮り方・時間の演出",
+          "en": "Shooting Style & Time"
+        },
+        {
+          "slug": "transitions",
+          "ja": "切り替え（トランジション）",
+          "en": "Transitions"
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "order": 3,
+      "title": {
+        "ja": "UIパーツの名前",
+        "en": "UI component names"
+      },
+      "count": 24,
+      "from": "049",
+      "to": "072",
+      "categories": [
+        {
+          "slug": "open-overlay",
+          "ja": "開く・重なるパーツ",
+          "en": "Opening & overlays"
+        },
+        {
+          "slug": "select-switch",
+          "ja": "選ぶ・切り替えるパーツ",
+          "en": "Choosing & switching"
+        },
+        {
+          "slug": "navigate-status",
+          "ja": "案内する・状態を伝えるパーツ",
+          "en": "Navigation & status"
+        }
+      ]
+    },
+    {
+      "id": "lp",
+      "order": 4,
+      "title": {
+        "ja": "LP・Webサイトの演出",
+        "en": "Landing page & web effects"
+      },
+      "count": 24,
+      "from": "073",
+      "to": "096",
+      "categories": [
+        {
+          "slug": "scroll",
+          "ja": "スクロールで起きる演出",
+          "en": "Scroll effects"
+        },
+        {
+          "slug": "hover-click",
+          "ja": "マウス・クリックへの反応",
+          "en": "Hover & click interactions"
+        },
+        {
+          "slug": "loading-loops",
+          "ja": "読み込み・移動・動き続ける演出",
+          "en": "Loading, navigation & ambient loops"
+        }
+      ]
+    },
+    {
+      "id": "photo",
+      "order": 5,
+      "title": {
+        "ja": "写真の表現・光と画風",
+        "en": "Photo looks, lighting & styles"
+      },
+      "count": 24,
+      "from": "097",
+      "to": "120",
+      "categories": [
+        {
+          "slug": "lighting",
+          "ja": "光の当て方・時間帯",
+          "en": "Lighting & time of day"
+        },
+        {
+          "slug": "lens-camera",
+          "ja": "レンズ・カメラの効果",
+          "en": "Lens & camera effects"
+        },
+        {
+          "slug": "tone-finish",
+          "ja": "仕上げ・画風",
+          "en": "Tones & finishing looks"
+        }
+      ]
+    }
+  ],
+  "effects": [
+    {
+      "id": "001",
+      "pack": "motion",
+      "slug": "pop-in",
+      "category": "entrances-text",
+      "name": {
+        "ja": "ポップイン",
+        "en": "Pop-in"
+      },
+      "meaning": {
+        "ja": "ポンと弾んで現れる",
+        "en": "Pops into view with a small bounce"
+      },
+      "tags": [
+        "pop",
+        "pop-in",
+        "spring",
+        "bounce",
+        "scale",
+        "icon",
+        "badge",
+        "entrance"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.5,
+              "ease": "easeOutBack"
+            }
+          },
+          "type": "elasticPop"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 0.32,
+              "ease": "easeInBack"
+            }
+          },
+          "type": "shrinkToCenter"
+        },
+        "animation": {
+          "params": {
+            "each": 0.045
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "002",
+      "pack": "motion",
+      "slug": "stagger",
+      "category": "entrances-text",
+      "name": {
+        "ja": "スタガー",
+        "en": "Stagger"
+      },
+      "meaning": {
+        "ja": "少しずつ時間をずらして順に出す",
+        "en": "Items appear one after another, slightly offset in time"
+      },
+      "tags": [
+        "stagger",
+        "sequence",
+        "delay",
+        "cascade",
+        "bar-chart",
+        "list",
+        "entrance"
+      ],
+      "groups": [
+        "animation",
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "animation": {
+          "params": {
+            "each": 0.09,
+            "unit": "word"
+          },
+          "type": "stagger"
+        },
+        "enter": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "003",
+      "pack": "motion",
+      "slug": "burst",
+      "category": "entrances-text",
+      "name": {
+        "ja": "バースト",
+        "en": "Burst"
+      },
+      "meaning": {
+        "ja": "登場に合わせて線や粒が弾ける",
+        "en": "Lines and dots burst outward as something appears"
+      },
+      "tags": [
+        "burst",
+        "explosion",
+        "radial",
+        "like",
+        "heart",
+        "celebrate",
+        "accent",
+        "sparkle"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "spread": 0.65,
+            "circleScale": 1.35,
+            "burstDelay": 0.12
+          },
+          "type": "circleBurstIn"
+        },
+        "post": [
+          {
+            "params": {
+              "count": 22,
+              "size": 2.5
+            },
+            "type": "sparkles"
+          },
+          {
+            "params": {
+              "threshold": 0.7,
+              "intensity": 0.3,
+              "radius": 0.4
+            },
+            "type": "bloom"
+          }
+        ],
+        "exit": {
+          "type": "shrinkToCenter"
+        }
+      }
+    },
+    {
+      "id": "004",
+      "pack": "motion",
+      "slug": "line-draw",
+      "category": "entrances-text",
+      "name": {
+        "ja": "ラインドロー",
+        "en": "Line draw"
+      },
+      "meaning": {
+        "ja": "線が描かれるように伸びる",
+        "en": "A line extends as if it were being drawn"
+      },
+      "tags": [
+        "line-draw",
+        "trim-path",
+        "stroke",
+        "draw-on",
+        "chart",
+        "path",
+        "write-on"
+      ],
+      "groups": [
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.9,
+              "ease": "easeInOutSine"
+            }
+          },
+          "type": "strokeDrawOn"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 0.5,
+              "ease": "easeInOutSine"
+            }
+          },
+          "type": "strokeErase"
+        }
+      }
+    },
+    {
+      "id": "005",
+      "pack": "motion",
+      "slug": "mask-reveal",
+      "category": "entrances-text",
+      "name": {
+        "ja": "マスクリビール",
+        "en": "Mask reveal"
+      },
+      "meaning": {
+        "ja": "見えない枠の中から文字がせり上がる",
+        "en": "Text rises into view from behind an invisible edge"
+      },
+      "tags": [
+        "mask",
+        "reveal",
+        "clip",
+        "wipe",
+        "title",
+        "text",
+        "slide-up",
+        "headline"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "up"
+          },
+          "type": "maskReveal"
+        },
+        "exit": {
+          "params": {
+            "dir": "down"
+          },
+          "type": "wipe"
+        },
+        "animation": {
+          "params": {
+            "each": 0.05
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "006",
+      "pack": "motion",
+      "slug": "typewriter",
+      "category": "entrances-text",
+      "name": {
+        "ja": "タイプライター",
+        "en": "Typewriter"
+      },
+      "meaning": {
+        "ja": "1文字ずつ打たれるように出る",
+        "en": "Text appears one character at a time, as if typed"
+      },
+      "tags": [
+        "typewriter",
+        "typing",
+        "text",
+        "cursor",
+        "input",
+        "prompt",
+        "chat",
+        "type-on"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "cursor": true
+          },
+          "type": "typewriter"
+        },
+        "exit": {
+          "type": "typewriterReverse"
+        },
+        "animation": {
+          "type": "simultaneous"
+        }
+      }
+    },
+    {
+      "id": "007",
+      "pack": "motion",
+      "slug": "count-up",
+      "category": "entrances-text",
+      "name": {
+        "ja": "カウントアップ",
+        "en": "Count-up"
+      },
+      "meaning": {
+        "ja": "数字が勢いよく増えていく",
+        "en": "A number runs up quickly to its final value"
+      },
+      "tags": [
+        "count-up",
+        "counter",
+        "number",
+        "odometer",
+        "stats",
+        "kpi",
+        "progress"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "rate": 1.6
+          },
+          "type": "scramble"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "type": "simultaneous"
+        }
+      }
+    },
+    {
+      "id": "008",
+      "pack": "motion",
+      "slug": "kinetic-typography",
+      "category": "entrances-text",
+      "name": {
+        "ja": "キネティックタイポグラフィ",
+        "en": "Kinetic typography"
+      },
+      "meaning": {
+        "ja": "言葉に合わせて文字が動き回る",
+        "en": "Words move, scale and turn in time with what is said"
+      },
+      "tags": [
+        "kinetic-typography",
+        "text",
+        "typography",
+        "lyric",
+        "word",
+        "bounce",
+        "spin",
+        "slam"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "type": "varyDeformIn"
+        },
+        "hold": [
+          {
+            "params": {
+              "dy": 0.05,
+              "freq": 0.5
+            },
+            "type": "floatLoop"
+          }
+        ],
+        "exit": {
+          "type": "spinOut"
+        }
+      }
+    },
+    {
+      "id": "009",
+      "pack": "motion",
+      "slug": "easing",
+      "category": "motion-polish",
+      "name": {
+        "ja": "イージング",
+        "en": "Easing"
+      },
+      "meaning": {
+        "ja": "緩急をつけて気持ちよく動かす",
+        "en": "Motion speeds up and slows down instead of moving at one speed"
+      },
+      "tags": [
+        "easing",
+        "ease-in-out",
+        "cubic-bezier",
+        "linear",
+        "timing",
+        "curve",
+        "acceleration"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "hold"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.3
+          },
+          "motion": {
+            "in": {
+              "duration": 0.9,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 0.7,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "slide"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.02
+            },
+            "type": "breathing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "010",
+      "pack": "motion",
+      "slug": "overshoot",
+      "category": "motion-polish",
+      "name": {
+        "ja": "オーバーシュート",
+        "en": "Overshoot"
+      },
+      "meaning": {
+        "ja": "行き過ぎてから戻って止まる",
+        "en": "Goes a little past the target, then settles back"
+      },
+      "tags": [
+        "overshoot",
+        "spring",
+        "bounce",
+        "settle",
+        "elastic",
+        "gauge",
+        "meter",
+        "needle"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "overshoot": 1.3,
+            "peak": 0.6
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "easeOutBack"
+            }
+          },
+          "type": "charGrowIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.04
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "011",
+      "pack": "motion",
+      "slug": "squash-and-stretch",
+      "category": "motion-polish",
+      "name": {
+        "ja": "スクワッシュ＆ストレッチ",
+        "en": "Squash & stretch"
+      },
+      "meaning": {
+        "ja": "つぶれて伸びて弾力を出す",
+        "en": "Squashes and stretches so that it feels elastic"
+      },
+      "tags": [
+        "squash",
+        "stretch",
+        "squash-and-stretch",
+        "bounce",
+        "character",
+        "ball",
+        "animation-principle"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "type": "rubberIn"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.22
+            },
+            "type": "squashStretch"
+          }
+        ],
+        "exit": {
+          "type": "shrinkToCenter"
+        }
+      }
+    },
+    {
+      "id": "012",
+      "pack": "motion",
+      "slug": "shape-morph",
+      "category": "motion-polish",
+      "name": {
+        "ja": "モーフィング",
+        "en": "Shape morph"
+      },
+      "meaning": {
+        "ja": "形が別の形に変わる",
+        "en": "One shape turns smoothly into another"
+      },
+      "tags": [
+        "morph",
+        "morphing",
+        "shape",
+        "path",
+        "interpolate",
+        "transform",
+        "icon"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "type": "morphFromPrevious"
+        },
+        "exit": {
+          "params": {
+            "scale": 8
+          },
+          "type": "dissolve"
+        },
+        "animation": {
+          "type": "simultaneous"
+        }
+      }
+    },
+    {
+      "id": "013",
+      "pack": "motion",
+      "slug": "liquid-motion",
+      "category": "motion-polish",
+      "name": {
+        "ja": "リキッドモーション",
+        "en": "Liquid motion"
+      },
+      "meaning": {
+        "ja": "液体のようにぬるっと動く",
+        "en": "Shapes move and merge like liquid"
+      },
+      "tags": [
+        "liquid",
+        "blob",
+        "goo",
+        "gooey",
+        "metaball",
+        "fluid",
+        "organic",
+        "drip"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.35
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "bend": 0.5,
+              "animate": "sway",
+              "speed": 0.4
+            },
+            "type": "warpFish"
+          }
+        ],
+        "exit": {
+          "params": {
+            "scale": 12,
+            "edge": 0.2
+          },
+          "type": "dissolve"
+        }
+      }
+    },
+    {
+      "id": "014",
+      "pack": "motion",
+      "slug": "motion-trail",
+      "category": "motion-polish",
+      "name": {
+        "ja": "モーショントレイル",
+        "en": "Motion trail"
+      },
+      "meaning": {
+        "ja": "動いた跡に残像が尾を引く",
+        "en": "A fading trail follows a moving object"
+      },
+      "tags": [
+        "trail",
+        "motion-trail",
+        "echo",
+        "afterimage",
+        "ghost",
+        "path",
+        "speed"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.4,
+            "blur": 9
+          },
+          "type": "slideBlur"
+        },
+        "post": [
+          {
+            "params": {
+              "copies": 5,
+              "spacing": 0.07,
+              "decay": 0.55
+            },
+            "type": "echoTrail"
+          }
+        ],
+        "exit": {
+          "type": "warpOut"
+        }
+      }
+    },
+    {
+      "id": "015",
+      "pack": "motion",
+      "slug": "particles",
+      "category": "motion-polish",
+      "name": {
+        "ja": "パーティクル",
+        "en": "Particles"
+      },
+      "meaning": {
+        "ja": "粒が飛び散る",
+        "en": "Many small pieces fly out and scatter"
+      },
+      "tags": [
+        "particles",
+        "confetti",
+        "emitter",
+        "fountain",
+        "gravity",
+        "celebration",
+        "sparks"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "count": 20,
+            "turbulence": 0.35
+          },
+          "type": "particlesAssemble"
+        },
+        "post": [
+          {
+            "params": {
+              "size": 2.2
+            },
+            "type": "sparkles"
+          }
+        ],
+        "exit": {
+          "params": {
+            "count": 20,
+            "drift": 0.35
+          },
+          "type": "particlesDisperse"
+        }
+      }
+    },
+    {
+      "id": "016",
+      "pack": "motion",
+      "slug": "parallax",
+      "category": "motion-polish",
+      "name": {
+        "ja": "パララックス",
+        "en": "Parallax"
+      },
+      "meaning": {
+        "ja": "手前と奥をずらして動かし奥行きを出す",
+        "en": "Near and far layers move at different speeds to show depth"
+      },
+      "tags": [
+        "parallax",
+        "depth",
+        "layers",
+        "pan",
+        "2.5d",
+        "background",
+        "landscape"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.25
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "vx": 0.04
+            },
+            "type": "drift"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "move": "panRight",
+              "amount": 0.08,
+              "speed": 0.25
+            },
+            "type": "camera"
+          }
+        ],
+        "exit": {
+          "params": {
+            "softness": 0.25
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "017",
+      "pack": "motion",
+      "slug": "mask-transition",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "マスクトランジション",
+        "en": "Mask transition"
+      },
+      "meaning": {
+        "ja": "形の中から次の画面が現れる",
+        "en": "The next scene appears inside a growing shape"
+      },
+      "tags": [
+        "mask",
+        "transition",
+        "iris",
+        "wipe",
+        "shape-wipe",
+        "reveal",
+        "scene-change"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "type": "irisOpen"
+        },
+        "exit": {
+          "params": {
+            "circleScale": 1.4
+          },
+          "type": "circleErase"
+        },
+        "animation": {
+          "params": {
+            "each": 0.06
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "018",
+      "pack": "motion",
+      "slug": "shape-transition",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "シェイプトランジション",
+        "en": "Shape transition"
+      },
+      "meaning": {
+        "ja": "図形が画面を覆って切り替わる",
+        "en": "Shapes cover the screen and uncover the next scene"
+      },
+      "tags": [
+        "shape-transition",
+        "transition",
+        "wipe",
+        "bands",
+        "stripes",
+        "cover",
+        "scene-change"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.1
+          },
+          "type": "blind"
+        },
+        "exit": {
+          "type": "wipe"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.08,
+              "speed": 0.3
+            },
+            "type": "camera"
+          }
+        ]
+      }
+    },
+    {
+      "id": "019",
+      "pack": "motion",
+      "slug": "liquid-transition",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "リキッドトランジション",
+        "en": "Liquid transition"
+      },
+      "meaning": {
+        "ja": "液体が流れ込んで切り替わる",
+        "en": "Liquid flows in and replaces the scene"
+      },
+      "tags": [
+        "liquid",
+        "transition",
+        "drip",
+        "paint",
+        "goo",
+        "fluid",
+        "wipe",
+        "scene-change"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "edge": 0.18
+          },
+          "type": "dissolve"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 14
+            },
+            "type": "turbulentDisplace"
+          }
+        ],
+        "exit": {
+          "params": {
+            "scale": 12,
+            "edge": 0.2
+          },
+          "type": "dissolve"
+        }
+      }
+    },
+    {
+      "id": "020",
+      "pack": "motion",
+      "slug": "zoom-through",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "ズームスルー",
+        "en": "Zoom through"
+      },
+      "meaning": {
+        "ja": "物の中へ突き抜けて次へ",
+        "en": "Zooms into an object and passes through it into the next scene"
+      },
+      "tags": [
+        "zoom",
+        "zoom-through",
+        "transition",
+        "push-in",
+        "scale",
+        "tunnel",
+        "scene-change"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "from": 0.15
+          },
+          "motion": {
+            "in": {
+              "duration": 0.5,
+              "ease": "easeInExpo"
+            }
+          },
+          "type": "zoomIn"
+        },
+        "exit": {
+          "params": {
+            "to": 3
+          },
+          "motion": {
+            "out": {
+              "duration": 0.45,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "zoomOut"
+        },
+        "animation": {
+          "params": {
+            "each": 0.03
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "021",
+      "pack": "motion",
+      "slug": "flip",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "フリップ",
+        "en": "Flip"
+      },
+      "meaning": {
+        "ja": "カードのように裏返る",
+        "en": "Turns over like a card to show the other side"
+      },
+      "tags": [
+        "flip",
+        "card",
+        "3d",
+        "rotate",
+        "turn",
+        "reveal",
+        "question-answer"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "axis": "y"
+          },
+          "type": "flip3D"
+        },
+        "hold": [
+          {
+            "params": {
+              "angle": 6
+            },
+            "type": "twist"
+          }
+        ],
+        "exit": {
+          "type": "spinOut"
+        }
+      }
+    },
+    {
+      "id": "022",
+      "pack": "motion",
+      "slug": "light-sweep",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "ライトスイープ",
+        "en": "Light sweep"
+      },
+      "meaning": {
+        "ja": "光が表面を横切る",
+        "en": "A band of light crosses a surface"
+      },
+      "tags": [
+        "light-sweep",
+        "shine",
+        "sheen",
+        "glint",
+        "highlight",
+        "logo",
+        "badge",
+        "premium"
+      ],
+      "groups": [
+        "enter",
+        "edge",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2,
+            "glow": 0.2
+          },
+          "type": "fade"
+        },
+        "edge": [
+          {
+            "params": {
+              "depth": 0.5
+            },
+            "type": "bevel"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "angle": -28,
+              "width": 0.14,
+              "speed": 0.8
+            },
+            "type": "lightSweep"
+          }
+        ]
+      }
+    },
+    {
+      "id": "023",
+      "pack": "motion",
+      "slug": "glitch",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "グリッチ",
+        "en": "Glitch"
+      },
+      "meaning": {
+        "ja": "映像がバグったように乱れる",
+        "en": "The picture breaks up as if it were malfunctioning"
+      },
+      "tags": [
+        "glitch",
+        "rgb-split",
+        "chromatic-aberration",
+        "distortion",
+        "digital",
+        "error",
+        "slice"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "type": "glitchIn"
+        },
+        "post": [
+          {
+            "params": {
+              "intensity": 0.45
+            },
+            "type": "glitchBlocks"
+          },
+          {
+            "params": {
+              "amount": 4,
+              "jitter": 0.5
+            },
+            "type": "rgbShift"
+          }
+        ],
+        "exit": {
+          "params": {
+            "jitter": 0.4,
+            "speed": 2.4
+          },
+          "type": "dither"
+        }
+      }
+    },
+    {
+      "id": "024",
+      "pack": "motion",
+      "slug": "impact-shake",
+      "category": "transitions-highlights",
+      "name": {
+        "ja": "インパクトシェイク",
+        "en": "Impact shake"
+      },
+      "meaning": {
+        "ja": "着地の衝撃で画面が揺れる",
+        "en": "The whole frame shakes when something lands"
+      },
+      "tags": [
+        "shake",
+        "impact",
+        "camera-shake",
+        "slam",
+        "drop",
+        "thud",
+        "headline",
+        "emphasis"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "type": "dropBounce"
+        },
+        "hold": [
+          {
+            "params": {
+              "amp": 0.006,
+              "rate": 10
+            },
+            "type": "jitter"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "move": "zoomPunch",
+              "amount": 0.22,
+              "shake": 0.5,
+              "speed": 0.9
+            },
+            "type": "camera"
+          }
+        ]
+      }
+    },
+    {
+      "id": "025",
+      "pack": "camera",
+      "slug": "pan",
+      "category": "camera-movement",
+      "name": {
+        "ja": "パン",
+        "en": "Pan"
+      },
+      "meaning": {
+        "ja": "カメラを横に振る",
+        "en": "Pivot the camera left or right"
+      },
+      "tags": [
+        "pan",
+        "panning",
+        "yaw",
+        "rotate",
+        "horizontal",
+        "camera move",
+        "reveal"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.2,
+              "speed": 0.35
+            },
+            "type": "cameraPanLeft"
+          }
+        ],
+        "exit": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "026",
+      "pack": "camera",
+      "slug": "tilt",
+      "category": "camera-movement",
+      "name": {
+        "ja": "ティルト",
+        "en": "Tilt"
+      },
+      "meaning": {
+        "ja": "カメラを縦に振る",
+        "en": "Pivot the camera up or down"
+      },
+      "tags": [
+        "tilt",
+        "tilt up",
+        "pitch",
+        "vertical",
+        "look up",
+        "camera move"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.22
+          },
+          "type": "slide"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.15,
+              "speed": 0.35
+            },
+            "type": "cameraTilt"
+          }
+        ],
+        "exit": {
+          "params": {
+            "distance": 0.22
+          },
+          "type": "slide"
+        }
+      }
+    },
+    {
+      "id": "027",
+      "pack": "camera",
+      "slug": "dolly-in",
+      "category": "camera-movement",
+      "name": {
+        "ja": "ドリーイン",
+        "en": "Dolly in"
+      },
+      "meaning": {
+        "ja": "カメラごと被写体に近づく",
+        "en": "Move the camera toward the subject"
+      },
+      "tags": [
+        "dolly",
+        "dolly in",
+        "push in",
+        "track in",
+        "move forward",
+        "parallax",
+        "camera move"
+      ],
+      "groups": [
+        "animation",
+        "post"
+      ],
+      "style": {
+        "animation": {
+          "params": {
+            "each": 0.06
+          },
+          "type": "stagger"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.28,
+              "speed": 0.4
+            },
+            "type": "cameraPushIn"
+          }
+        ]
+      }
+    },
+    {
+      "id": "028",
+      "pack": "camera",
+      "slug": "zoom-in",
+      "category": "camera-movement",
+      "name": {
+        "ja": "ズームイン",
+        "en": "Zoom in"
+      },
+      "meaning": {
+        "ja": "レンズで寄る（位置は動かない）",
+        "en": "Magnify with the lens (camera stays put)"
+      },
+      "tags": [
+        "zoom",
+        "zoom in",
+        "focal length",
+        "lens",
+        "magnify",
+        "telephoto",
+        "camera move"
+      ],
+      "groups": [
+        "enter",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "from": 0.55
+          },
+          "type": "zoomIn"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.2,
+              "speed": 0.55
+            },
+            "type": "cameraPunch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "029",
+      "pack": "camera",
+      "slug": "tracking-shot",
+      "category": "camera-movement",
+      "name": {
+        "ja": "トラッキング",
+        "en": "Tracking shot"
+      },
+      "meaning": {
+        "ja": "被写体と並んで動く",
+        "en": "Move along with the subject"
+      },
+      "tags": [
+        "tracking",
+        "tracking shot",
+        "follow",
+        "truck",
+        "lateral",
+        "sideways",
+        "parallax",
+        "walk"
+      ],
+      "groups": [
+        "hold",
+        "post"
+      ],
+      "style": {
+        "hold": [
+          {
+            "params": {
+              "speed": 0.12
+            },
+            "type": "pathFollow"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "amount": 0.32,
+              "speed": 0.5
+            },
+            "type": "cameraPanRight"
+          }
+        ]
+      }
+    },
+    {
+      "id": "030",
+      "pack": "camera",
+      "slug": "orbit-arc-shot",
+      "category": "camera-movement",
+      "name": {
+        "ja": "オービット",
+        "en": "Orbit (Arc shot)"
+      },
+      "meaning": {
+        "ja": "被写体の周りを回り込む",
+        "en": "Circle around the subject"
+      },
+      "tags": [
+        "orbit",
+        "arc shot",
+        "circle",
+        "360",
+        "rotate around",
+        "revolve",
+        "camera move"
+      ],
+      "groups": [
+        "hold",
+        "post"
+      ],
+      "style": {
+        "hold": [
+          {
+            "params": {
+              "tilt": 12
+            },
+            "type": "orbit3D"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "amount": 0.28,
+              "speed": 0.35
+            },
+            "type": "cameraOrbit"
+          }
+        ]
+      }
+    },
+    {
+      "id": "031",
+      "pack": "camera",
+      "slug": "crane-up",
+      "category": "camera-movement",
+      "name": {
+        "ja": "クレーンアップ",
+        "en": "Crane up"
+      },
+      "meaning": {
+        "ja": "カメラが上へ昇っていく",
+        "en": "Lift the camera up"
+      },
+      "tags": [
+        "crane",
+        "crane up",
+        "jib",
+        "boom up",
+        "rise",
+        "high angle",
+        "camera move"
+      ],
+      "groups": [
+        "enter",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.3
+          },
+          "type": "riseUp"
+        },
+        "post": [
+          {
+            "params": {
+              "move": "panUp",
+              "amount": 0.24,
+              "speed": 0.35
+            },
+            "type": "camera"
+          }
+        ]
+      }
+    },
+    {
+      "id": "032",
+      "pack": "camera",
+      "slug": "dolly-zoom-vertigo",
+      "category": "camera-movement",
+      "name": {
+        "ja": "ドリーズーム",
+        "en": "Dolly zoom (Vertigo)"
+      },
+      "meaning": {
+        "ja": "人物はそのまま背景だけ伸び縮み",
+        "en": "Subject stays, background warps"
+      },
+      "tags": [
+        "dolly zoom",
+        "vertigo",
+        "zolly",
+        "push pull",
+        "background stretch",
+        "unease",
+        "camera move"
+      ],
+      "groups": [
+        "enter",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "focusIn"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.3
+            },
+            "type": "cameraPushIn"
+          },
+          {
+            "params": {
+              "k1": -0.12
+            },
+            "type": "lensDistortion"
+          }
+        ]
+      }
+    },
+    {
+      "id": "033",
+      "pack": "camera",
+      "slug": "rack-focus",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "ラックフォーカス",
+        "en": "Rack focus"
+      },
+      "meaning": {
+        "ja": "ピントを手前と奥のあいだで送る",
+        "en": "Shift focus between near and far"
+      },
+      "tags": [
+        "rack focus",
+        "focus pull",
+        "pull focus",
+        "depth of field",
+        "blur",
+        "bokeh",
+        "foreground"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "type": "focusIn"
+        },
+        "exit": {
+          "type": "focusOut"
+        },
+        "post": [
+          {
+            "params": {
+              "threshold": 0.55,
+              "intensity": 0.5,
+              "radius": 0.6
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "034",
+      "pack": "camera",
+      "slug": "handheld",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "手持ち",
+        "en": "Handheld"
+      },
+      "meaning": {
+        "ja": "手で持って撮ったように小さく揺らす（ハンドヘルド）",
+        "en": "A slight shake, as if the camera were held by hand"
+      },
+      "tags": [
+        "handheld",
+        "camera shake",
+        "shaky",
+        "documentary",
+        "wobble",
+        "noise",
+        "realism"
+      ],
+      "groups": [
+        "hold",
+        "post"
+      ],
+      "style": {
+        "hold": [
+          {
+            "params": {
+              "amp": 0.004,
+              "rate": 8
+            },
+            "type": "jitter"
+          }
+        ],
+        "post": [
+          {
+            "type": "cameraHandheld"
+          }
+        ]
+      }
+    },
+    {
+      "id": "035",
+      "pack": "camera",
+      "slug": "fpv-drone-shot",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "FPV",
+        "en": "FPV drone shot"
+      },
+      "meaning": {
+        "ja": "ドローンで突き進む疾走感",
+        "en": "Fast, immersive fly-through"
+      },
+      "tags": [
+        "fpv",
+        "drone",
+        "fly through",
+        "first person",
+        "banking",
+        "speed",
+        "aerial"
+      ],
+      "groups": [
+        "hold",
+        "post"
+      ],
+      "style": {
+        "hold": [
+          {
+            "params": {
+              "angle": 5,
+              "speed": 0.8
+            },
+            "type": "sway"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "amount": 0.5,
+              "speed": 1.2
+            },
+            "type": "camera"
+          },
+          {
+            "params": {
+              "samples": 10,
+              "shutter": 0.7
+            },
+            "type": "motionBlur"
+          }
+        ]
+      }
+    },
+    {
+      "id": "036",
+      "pack": "camera",
+      "slug": "dutch-angle",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "ダッチアングル",
+        "en": "Dutch angle"
+      },
+      "meaning": {
+        "ja": "画面を斜めに傾ける",
+        "en": "Tilt the frame diagonally"
+      },
+      "tags": [
+        "dutch angle",
+        "dutch tilt",
+        "canted angle",
+        "oblique",
+        "roll",
+        "tension",
+        "tilted horizon"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "right"
+          },
+          "type": "slide"
+        },
+        "hold": [
+          {
+            "params": {
+              "angle": 10
+            },
+            "type": "twist"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "move": "tilt",
+              "amount": 0.1,
+              "speed": 0.3
+            },
+            "type": "camera"
+          }
+        ]
+      }
+    },
+    {
+      "id": "037",
+      "pack": "camera",
+      "slug": "slow-motion",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "スローモーション",
+        "en": "Slow motion"
+      },
+      "meaning": {
+        "ja": "動きをゆっくり見せる",
+        "en": "Play the action slower"
+      },
+      "tags": [
+        "slow motion",
+        "slow-mo",
+        "slomo",
+        "high frame rate",
+        "120fps",
+        "time stretch",
+        "jump"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.3
+          },
+          "motion": {
+            "in": {
+              "duration": 1.3,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 1.2,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "slide"
+        },
+        "animation": {
+          "params": {
+            "each": 0.12,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "038",
+      "pack": "camera",
+      "slug": "speed-ramp",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "スピードランプ",
+        "en": "Speed ramp"
+      },
+      "meaning": {
+        "ja": "速い→遅いと速さを変える",
+        "en": "Change speed mid-shot"
+      },
+      "tags": [
+        "speed ramp",
+        "time remap",
+        "ramping",
+        "fast to slow",
+        "variable speed",
+        "velocity"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.4
+          },
+          "motion": {
+            "in": {
+              "duration": 0.3,
+              "ease": "easeInExpo"
+            }
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "params": {
+            "dir": "right",
+            "distance": 0.4
+          },
+          "motion": {
+            "out": {
+              "duration": 0.9,
+              "ease": "easeOutExpo"
+            }
+          },
+          "type": "slide"
+        },
+        "animation": {
+          "type": "timeWarp"
+        }
+      }
+    },
+    {
+      "id": "039",
+      "pack": "camera",
+      "slug": "time-lapse",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "タイムラプス",
+        "en": "Time-lapse"
+      },
+      "meaning": {
+        "ja": "長い時間を早送りで見せる",
+        "en": "Compress hours into seconds"
+      },
+      "tags": [
+        "time-lapse",
+        "timelapse",
+        "fast forward",
+        "time compression",
+        "sun",
+        "clouds",
+        "day to night"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.1
+          },
+          "motion": {
+            "in": {
+              "duration": 0.25,
+              "ease": "linear"
+            }
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "motion": {
+            "out": {
+              "duration": 0.25,
+              "ease": "linear"
+            }
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "fps": 10
+          },
+          "type": "stopMotion"
+        }
+      }
+    },
+    {
+      "id": "040",
+      "pack": "camera",
+      "slug": "freeze-frame",
+      "category": "shooting-style-time",
+      "name": {
+        "ja": "フリーズフレーム",
+        "en": "Freeze frame"
+      },
+      "meaning": {
+        "ja": "動きを一瞬止める",
+        "en": "Pause the action for a beat"
+      },
+      "tags": [
+        "freeze frame",
+        "still frame",
+        "pause",
+        "hold",
+        "stop motion",
+        "highlight"
+      ],
+      "groups": [
+        "animation",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "animation": {
+          "type": "simultaneous"
+        },
+        "post": [
+          {
+            "params": {
+              "move": "zoomPunch",
+              "amount": 0.1,
+              "speed": 1
+            },
+            "type": "camera"
+          }
+        ],
+        "exit": {
+          "type": "vanish"
+        }
+      }
+    },
+    {
+      "id": "041",
+      "pack": "camera",
+      "slug": "jump-cut",
+      "category": "transitions",
+      "name": {
+        "ja": "ジャンプカット",
+        "en": "Jump cut"
+      },
+      "meaning": {
+        "ja": "同じ画角のまま時間を飛ばす",
+        "en": "Same framing, skip ahead in time"
+      },
+      "tags": [
+        "jump cut",
+        "cut",
+        "time skip",
+        "same framing",
+        "vlog",
+        "ellipsis",
+        "edit"
+      ],
+      "groups": [
+        "animation",
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "animation": {
+          "type": "simultaneous"
+        },
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.08,
+              "ease": "linear"
+            }
+          },
+          "type": "appear"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 0.1,
+              "ease": "linear"
+            }
+          },
+          "type": "vanish"
+        }
+      }
+    },
+    {
+      "id": "042",
+      "pack": "camera",
+      "slug": "match-cut",
+      "category": "transitions",
+      "name": {
+        "ja": "マッチカット",
+        "en": "Match cut"
+      },
+      "meaning": {
+        "ja": "形や動きをそろえて場面を変える",
+        "en": "Cut on a matching shape or motion"
+      },
+      "tags": [
+        "match cut",
+        "graphic match",
+        "shape match",
+        "cut",
+        "transition",
+        "edit"
+      ],
+      "groups": [
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.5,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "morphFromPrevious"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.05
+          },
+          "motion": {
+            "out": {
+              "duration": 0.16,
+              "ease": "linear"
+            }
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "043",
+      "pack": "camera",
+      "slug": "whip-pan",
+      "category": "transitions",
+      "name": {
+        "ja": "ホイップパン",
+        "en": "Whip pan"
+      },
+      "meaning": {
+        "ja": "素早く振ってブレで次へ",
+        "en": "Fast pan blur into the next shot"
+      },
+      "tags": [
+        "whip pan",
+        "swish pan",
+        "motion blur",
+        "fast pan",
+        "transition",
+        "energy"
+      ],
+      "groups": [
+        "enter",
+        "post",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.5,
+            "blur": 14
+          },
+          "motion": {
+            "in": {
+              "duration": 0.35,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "slideBlur"
+        },
+        "post": [
+          {
+            "params": {
+              "samples": 10,
+              "shutter": 0.75
+            },
+            "type": "motionBlur"
+          }
+        ],
+        "exit": {
+          "params": {
+            "distance": 0.5
+          },
+          "type": "warpOut"
+        }
+      }
+    },
+    {
+      "id": "044",
+      "pack": "camera",
+      "slug": "cross-dissolve",
+      "category": "transitions",
+      "name": {
+        "ja": "クロスディゾルブ",
+        "en": "Cross dissolve"
+      },
+      "meaning": {
+        "ja": "前後の映像を重ねて溶かす",
+        "en": "Blend one shot into the next"
+      },
+      "tags": [
+        "cross dissolve",
+        "dissolve",
+        "crossfade",
+        "fade",
+        "opacity",
+        "blend",
+        "transition"
+      ],
+      "groups": [
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.3,
+            "glow": 0.15
+          },
+          "motion": {
+            "in": {
+              "duration": 0.8,
+              "ease": "easeInOutSine"
+            }
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.3,
+            "glow": 0.1
+          },
+          "motion": {
+            "out": {
+              "duration": 0.8,
+              "ease": "easeInOutSine"
+            }
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "045",
+      "pack": "camera",
+      "slug": "wipe",
+      "category": "transitions",
+      "name": {
+        "ja": "ワイプ",
+        "en": "Wipe"
+      },
+      "meaning": {
+        "ja": "境目が横切って画面が入れ替わる",
+        "en": "A moving edge replaces the shot"
+      },
+      "tags": [
+        "wipe",
+        "linear wipe",
+        "reveal",
+        "clip",
+        "edge",
+        "left to right",
+        "transition"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.06
+          },
+          "type": "wipe"
+        },
+        "exit": {
+          "type": "wipe"
+        },
+        "animation": {
+          "params": {
+            "each": 0.05
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "046",
+      "pack": "camera",
+      "slug": "smash-cut",
+      "category": "transitions",
+      "name": {
+        "ja": "スマッシュカット",
+        "en": "Smash cut"
+      },
+      "meaning": {
+        "ja": "対照的な場面へ前触れなく切り替える",
+        "en": "Abrupt cut to a contrasting scene"
+      },
+      "tags": [
+        "smash cut",
+        "hard cut",
+        "abrupt",
+        "contrast",
+        "quiet to loud",
+        "comedy",
+        "transition"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "type": "appear"
+        },
+        "exit": {
+          "type": "vanish"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.4,
+              "speed": 1.4
+            },
+            "type": "cameraPunch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "047",
+      "pack": "camera",
+      "slug": "j-cut",
+      "category": "transitions",
+      "name": {
+        "ja": "Jカット",
+        "en": "J-cut"
+      },
+      "meaning": {
+        "ja": "次の場面の音が先に聞こえる",
+        "en": "Next scene's audio starts first"
+      },
+      "tags": [
+        "j-cut",
+        "j cut",
+        "split edit",
+        "audio lead",
+        "sound first",
+        "audio transition",
+        "edit"
+      ],
+      "groups": [
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dy": 0.6,
+            "blur": 6
+          },
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "delay": 0.15,
+              "ease": "easeOutSine"
+            }
+          },
+          "type": "riseIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "048",
+      "pack": "camera",
+      "slug": "l-cut",
+      "category": "transitions",
+      "name": {
+        "ja": "Lカット",
+        "en": "L-cut"
+      },
+      "meaning": {
+        "ja": "前の場面の音が後まで残る",
+        "en": "Previous scene's audio carries over"
+      },
+      "tags": [
+        "l-cut",
+        "l cut",
+        "split edit",
+        "audio lag",
+        "sound carries over",
+        "audio transition",
+        "edit"
+      ],
+      "groups": [
+        "enter",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.35
+          },
+          "motion": {
+            "out": {
+              "duration": 1.1,
+              "ease": "easeOutSine"
+            }
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "049",
+      "pack": "ui",
+      "slug": "modal-dialog",
+      "category": "open-overlay",
+      "name": {
+        "ja": "モーダル",
+        "en": "Modal dialog"
+      },
+      "meaning": {
+        "ja": "画面を暗くして中央に窓が出る",
+        "en": "A window opens in the middle while the page behind dims"
+      },
+      "tags": [
+        "modal",
+        "modal-dialog",
+        "dialog",
+        "popup",
+        "overlay",
+        "backdrop",
+        "lightbox",
+        "confirm"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "from": 0.55
+          },
+          "motion": {
+            "in": {
+              "duration": 0.45,
+              "ease": "easeOutBack"
+            }
+          },
+          "type": "zoomIn"
+        },
+        "exit": {
+          "motion": {
+            "out": {
+              "duration": 0.3,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "zoomOut"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 10
+              },
+              "blur": 16,
+              "opacity": 0.5
+            },
+            "type": "dropShadow"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "amount": 0.55
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "050",
+      "pack": "ui",
+      "slug": "drawer",
+      "category": "open-overlay",
+      "name": {
+        "ja": "ドロワー",
+        "en": "Drawer (Off-canvas)"
+      },
+      "meaning": {
+        "ja": "横からメニューが引き出される",
+        "en": "A menu panel slides in from the side of the screen"
+      },
+      "tags": [
+        "drawer",
+        "off-canvas",
+        "offcanvas",
+        "side-menu",
+        "navigation-drawer",
+        "sheet",
+        "sidebar",
+        "slide-in"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.7
+          },
+          "motion": {
+            "in": {
+              "duration": 0.5,
+              "ease": "easeOutQuart"
+            }
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "params": {
+            "dir": "left",
+            "distance": 0.7
+          },
+          "motion": {
+            "out": {
+              "duration": 0.4,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "slide"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 8,
+                "y": 0
+              },
+              "blur": 18,
+              "opacity": 0.45
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "051",
+      "pack": "ui",
+      "slug": "bottom-sheet",
+      "category": "open-overlay",
+      "name": {
+        "ja": "ボトムシート",
+        "en": "Bottom sheet"
+      },
+      "meaning": {
+        "ja": "下からパネルがせり上がる",
+        "en": "A panel slides up from the bottom of the screen"
+      },
+      "tags": [
+        "bottom-sheet",
+        "sheet",
+        "modal-sheet",
+        "mobile",
+        "slide-up",
+        "drag-to-dismiss",
+        "panel"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.55
+          },
+          "motion": {
+            "in": {
+              "duration": 0.5,
+              "ease": "easeOutQuart"
+            }
+          },
+          "type": "riseUp"
+        },
+        "exit": {
+          "params": {
+            "distance": 0.45
+          },
+          "type": "slide"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": -6
+              },
+              "blur": 16,
+              "opacity": 0.45
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "052",
+      "pack": "ui",
+      "slug": "accordion",
+      "category": "open-overlay",
+      "name": {
+        "ja": "アコーディオン",
+        "en": "Accordion"
+      },
+      "meaning": {
+        "ja": "押すと中身が開閉する",
+        "en": "Click a heading to show or hide its content"
+      },
+      "tags": [
+        "accordion",
+        "collapsible",
+        "expand",
+        "collapse",
+        "disclosure",
+        "faq",
+        "details"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "amount": 1.3,
+            "thin": 0.3,
+            "split": 0.5
+          },
+          "type": "stretchYIn"
+        },
+        "exit": {
+          "params": {
+            "axis": "y"
+          },
+          "type": "stripeShrink"
+        },
+        "animation": {
+          "params": {
+            "each": 0.07
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "053",
+      "pack": "ui",
+      "slug": "dropdown-menu",
+      "category": "open-overlay",
+      "name": {
+        "ja": "ドロップダウン",
+        "en": "Dropdown (select)"
+      },
+      "meaning": {
+        "ja": "押すと選択肢が下に広がる",
+        "en": "Click a field to drop a list of options below it"
+      },
+      "tags": [
+        "dropdown",
+        "dropdown-menu",
+        "select",
+        "picker",
+        "combobox",
+        "options",
+        "form"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "height": 0.3
+          },
+          "motion": {
+            "in": {
+              "duration": 0.4,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "dropBounce"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 8
+              },
+              "blur": 14,
+              "opacity": 0.45
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "054",
+      "pack": "ui",
+      "slug": "tooltip",
+      "category": "open-overlay",
+      "name": {
+        "ja": "ツールチップ",
+        "en": "Tooltip"
+      },
+      "meaning": {
+        "ja": "乗せると小さな説明が出る",
+        "en": "Hover over something to show a short label"
+      },
+      "tags": [
+        "tooltip",
+        "hint",
+        "hover",
+        "help",
+        "info",
+        "title"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "from": 0.82
+          },
+          "motion": {
+            "in": {
+              "duration": 0.22,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "zoomIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "motion": {
+            "out": {
+              "duration": 0.2,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "fade"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 4
+              },
+              "blur": 8,
+              "opacity": 0.4
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "055",
+      "pack": "ui",
+      "slug": "popover",
+      "category": "open-overlay",
+      "name": {
+        "ja": "ポップオーバー",
+        "en": "Popover"
+      },
+      "meaning": {
+        "ja": "押すと吹き出しの小窓が出る",
+        "en": "Click a button to open a small panel pointing at it"
+      },
+      "tags": [
+        "popover",
+        "popup",
+        "callout",
+        "bubble",
+        "flyout",
+        "overlay"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.18,
+            "pullback": 0.3
+          },
+          "type": "anticipation"
+        },
+        "exit": {
+          "type": "shrinkToCenter"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 8
+              },
+              "blur": 14,
+              "opacity": 0.45
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "056",
+      "pack": "ui",
+      "slug": "toast",
+      "category": "open-overlay",
+      "name": {
+        "ja": "トースト",
+        "en": "Toast notification"
+      },
+      "meaning": {
+        "ja": "隅に通知が出て自動で消える",
+        "en": "A short message appears in a corner and goes away on its own"
+      },
+      "tags": [
+        "toast",
+        "snackbar",
+        "notification",
+        "alert",
+        "message",
+        "auto-dismiss"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.22
+          },
+          "motion": {
+            "in": {
+              "duration": 0.35,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "peekIn"
+        },
+        "exit": {
+          "params": {
+            "distance": 0.3
+          },
+          "motion": {
+            "out": {
+              "duration": 0.5,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "floatOut"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 6
+              },
+              "blur": 12,
+              "opacity": 0.4
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "057",
+      "pack": "ui",
+      "slug": "tabs",
+      "category": "select-switch",
+      "name": {
+        "ja": "タブ",
+        "en": "Tabs"
+      },
+      "meaning": {
+        "ja": "見出しを押して中身を切り替える",
+        "en": "Click a label to switch which panel is shown"
+      },
+      "tags": [
+        "tabs",
+        "tab-bar",
+        "tabbed",
+        "navigation",
+        "switch-view",
+        "underline"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.04
+          },
+          "type": "wipe"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.07
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "058",
+      "pack": "ui",
+      "slug": "carousel",
+      "category": "select-switch",
+      "name": {
+        "ja": "カルーセル",
+        "en": "Carousel"
+      },
+      "meaning": {
+        "ja": "横に送って順番に見せる",
+        "en": "Slides that move sideways to show one item at a time"
+      },
+      "tags": [
+        "carousel",
+        "slider",
+        "slideshow",
+        "gallery",
+        "swipe",
+        "paging-dots"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.45,
+            "blur": 7
+          },
+          "type": "slideBlur"
+        },
+        "exit": {
+          "type": "creepOut"
+        },
+        "animation": {
+          "params": {
+            "each": 0.09
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "059",
+      "pack": "ui",
+      "slug": "toggle-switch",
+      "category": "select-switch",
+      "name": {
+        "ja": "トグルスイッチ",
+        "en": "Toggle switch"
+      },
+      "meaning": {
+        "ja": "オン・オフを切り替える",
+        "en": "Flip a setting on or off"
+      },
+      "tags": [
+        "toggle",
+        "switch",
+        "toggle-switch",
+        "on-off",
+        "boolean",
+        "settings"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "right",
+            "distance": 0.12
+          },
+          "motion": {
+            "in": {
+              "duration": 0.32,
+              "ease": "easeOutBack"
+            }
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "params": {
+            "dir": "left",
+            "distance": 0.12
+          },
+          "type": "slide"
+        },
+        "animation": {
+          "type": "simultaneous"
+        }
+      }
+    },
+    {
+      "id": "060",
+      "pack": "ui",
+      "slug": "segmented-control",
+      "category": "select-switch",
+      "name": {
+        "ja": "セグメントコントロール",
+        "en": "Segmented control"
+      },
+      "meaning": {
+        "ja": "並んだボタンで表示を切り替える",
+        "en": "A row of joined buttons that switches the view"
+      },
+      "tags": [
+        "segmented-control",
+        "segmented-button",
+        "button-group",
+        "toggle-group",
+        "switcher",
+        "view-switch"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.1
+          },
+          "type": "peekIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.08
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.05,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "061",
+      "pack": "ui",
+      "slug": "filter-chips",
+      "category": "select-switch",
+      "name": {
+        "ja": "チップ",
+        "en": "Filter chips"
+      },
+      "meaning": {
+        "ja": "押して絞り込み条件を付け外し",
+        "en": "Small pills you click to add or remove a filter"
+      },
+      "tags": [
+        "chips",
+        "filter-chips",
+        "tags",
+        "filter",
+        "facets",
+        "pills"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "type": "elasticPop"
+        },
+        "exit": {
+          "type": "shrinkToCenter"
+        },
+        "animation": {
+          "params": {
+            "each": 0.08,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "062",
+      "pack": "ui",
+      "slug": "range-slider",
+      "category": "select-switch",
+      "name": {
+        "ja": "レンジスライダー",
+        "en": "Range slider"
+      },
+      "meaning": {
+        "ja": "つまみ2つで範囲を選ぶ",
+        "en": "Two handles on one track pick a minimum and a maximum"
+      },
+      "tags": [
+        "range-slider",
+        "slider",
+        "dual-thumb",
+        "min-max",
+        "price-filter",
+        "range"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "strike"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "stroke": 5
+          },
+          "type": "lineDrawOn"
+        },
+        "exit": {
+          "params": {
+            "stroke": 5
+          },
+          "type": "lineErase"
+        },
+        "strike": {
+          "type": "double",
+          "params": {
+            "thickness": 6,
+            "position": 0.5,
+            "overshoot": 0.14
+          }
+        }
+      }
+    },
+    {
+      "id": "063",
+      "pack": "ui",
+      "slug": "stepper",
+      "category": "select-switch",
+      "name": {
+        "ja": "ステッパー",
+        "en": "Stepper (+/−)"
+      },
+      "meaning": {
+        "ja": "＋/−ボタンで数を増減する",
+        "en": "Plus and minus buttons that change a number by one"
+      },
+      "tags": [
+        "stepper",
+        "quantity",
+        "number-input",
+        "increment",
+        "decrement",
+        "plus-minus",
+        "spin-button"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.1
+          },
+          "type": "slide"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.08
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.16,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "064",
+      "pack": "ui",
+      "slug": "pagination",
+      "category": "select-switch",
+      "name": {
+        "ja": "ページネーション",
+        "en": "Pagination"
+      },
+      "meaning": {
+        "ja": "番号でページを送る",
+        "en": "Numbered buttons that move between pages"
+      },
+      "tags": [
+        "pagination",
+        "pager",
+        "page-numbers",
+        "paging",
+        "next-prev",
+        "navigation"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.12
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.12
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.05,
+            "order": "center-out"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "065",
+      "pack": "ui",
+      "slug": "hamburger-menu",
+      "category": "navigate-status",
+      "name": {
+        "ja": "ハンバーガーメニュー",
+        "en": "Hamburger menu"
+      },
+      "meaning": {
+        "ja": "三本線を押すとメニューが開く",
+        "en": "A three-line icon that opens the menu"
+      },
+      "tags": [
+        "hamburger-menu",
+        "hamburger",
+        "menu-icon",
+        "nav-toggle",
+        "mobile-menu",
+        "menu"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "count": 3
+          },
+          "type": "blind"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.02
+            },
+            "type": "breathing"
+          }
+        ],
+        "exit": {
+          "params": {
+            "dir": "up"
+          },
+          "type": "wipe"
+        }
+      }
+    },
+    {
+      "id": "066",
+      "pack": "ui",
+      "slug": "breadcrumbs",
+      "category": "navigate-status",
+      "name": {
+        "ja": "パンくずリスト",
+        "en": "Breadcrumbs"
+      },
+      "meaning": {
+        "ja": "今いる場所を階層で示す",
+        "en": "A trail of links showing where the page sits in the site"
+      },
+      "tags": [
+        "breadcrumbs",
+        "breadcrumb",
+        "trail",
+        "hierarchy",
+        "navigation",
+        "path"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "distance": 0.15
+          },
+          "type": "riseUp"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.08,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "067",
+      "pack": "ui",
+      "slug": "mega-menu",
+      "category": "navigate-status",
+      "name": {
+        "ja": "メガメニュー",
+        "en": "Mega menu"
+      },
+      "meaning": {
+        "ja": "大きな一覧メニューが広がる",
+        "en": "A wide panel of grouped links that opens from the main menu"
+      },
+      "tags": [
+        "mega-menu",
+        "megamenu",
+        "dropdown-navigation",
+        "navigation",
+        "header-menu",
+        "multi-column"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.08
+          },
+          "type": "box"
+        },
+        "exit": {
+          "type": "shrinkDir"
+        },
+        "animation": {
+          "params": {
+            "each": 0.05,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "068",
+      "pack": "ui",
+      "slug": "step-indicator",
+      "category": "navigate-status",
+      "name": {
+        "ja": "ステップインジケーター",
+        "en": "Step indicator"
+      },
+      "meaning": {
+        "ja": "手続きの何番目かを示す",
+        "en": "Shows which step of a process you are on"
+      },
+      "tags": [
+        "step-indicator",
+        "stepper",
+        "steps",
+        "progress-steps",
+        "wizard",
+        "multi-step",
+        "checkout"
+      ],
+      "groups": [
+        "enter",
+        "animation",
+        "strike"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.1,
+            "unit": "word"
+          },
+          "type": "stagger"
+        },
+        "strike": {
+          "type": "line",
+          "params": {
+            "thickness": 4,
+            "position": 0.85,
+            "drawIn": "sweep",
+            "drawTime": 0.5,
+            "overshoot": 0.1
+          }
+        }
+      }
+    },
+    {
+      "id": "069",
+      "pack": "ui",
+      "slug": "skeleton-screen",
+      "category": "navigate-status",
+      "name": {
+        "ja": "スケルトン",
+        "en": "Skeleton screen"
+      },
+      "meaning": {
+        "ja": "読み込み中に灰色の枠を出す",
+        "en": "Grey shapes stand in for content while it loads"
+      },
+      "tags": [
+        "skeleton",
+        "skeleton-screen",
+        "placeholder",
+        "shimmer",
+        "loading",
+        "ghost-content"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.45
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "period": 1.4
+            },
+            "type": "opacityPulse"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "angle": 15,
+              "width": 0.3,
+              "speed": 0.9
+            },
+            "type": "lightSweep"
+          }
+        ]
+      }
+    },
+    {
+      "id": "070",
+      "pack": "ui",
+      "slug": "spinner",
+      "category": "navigate-status",
+      "name": {
+        "ja": "スピナー",
+        "en": "Spinner"
+      },
+      "meaning": {
+        "ja": "くるくる回って待ちを示す",
+        "en": "A spinning circle that means \"please wait\""
+      },
+      "tags": [
+        "spinner",
+        "loading",
+        "loader",
+        "activity-indicator",
+        "progress-circle",
+        "busy"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "radius": 0.03,
+              "speed": 1.1
+            },
+            "type": "orbit2D"
+          }
+        ],
+        "exit": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "071",
+      "pack": "ui",
+      "slug": "badge",
+      "category": "navigate-status",
+      "name": {
+        "ja": "バッジ",
+        "en": "Badge"
+      },
+      "meaning": {
+        "ja": "件数を小さな丸で示す",
+        "en": "A small dot with a number showing a count"
+      },
+      "tags": [
+        "badge",
+        "notification-badge",
+        "counter",
+        "count",
+        "dot",
+        "unread"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "location",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "overshoot": 1.3
+          },
+          "type": "charGrowIn"
+        },
+        "exit": {
+          "type": "shrinkToCenter"
+        },
+        "location": {
+          "type": "badgeAnchored"
+        },
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 3,
+                "y": 5
+              },
+              "blur": 9,
+              "opacity": 0.55
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "072",
+      "pack": "ui",
+      "slug": "empty-state",
+      "category": "navigate-status",
+      "name": {
+        "ja": "エンプティステート",
+        "en": "Empty state"
+      },
+      "meaning": {
+        "ja": "中身がないときの案内画面",
+        "en": "The screen shown when there is nothing to list yet"
+      },
+      "tags": [
+        "empty-state",
+        "no-data",
+        "zero-state",
+        "blank-state",
+        "no-results",
+        "onboarding"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.5,
+            "glow": 0.2
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.015
+            },
+            "type": "breathing"
+          }
+        ],
+        "exit": {
+          "params": {
+            "softness": 0.3
+          },
+          "type": "fade"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.3,
+              "softness": 0.6
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "073",
+      "pack": "lp",
+      "slug": "parallax-scrolling",
+      "category": "scroll",
+      "name": {
+        "ja": "パララックススクロール",
+        "en": "Parallax scrolling"
+      },
+      "meaning": {
+        "ja": "スクロールで奥の層ほどゆっくり動く",
+        "en": "On scroll, background layers move slower than the content"
+      },
+      "tags": [
+        "parallax",
+        "parallax-scrolling",
+        "scroll",
+        "depth",
+        "layers",
+        "hero",
+        "background"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.25
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "type": "drift"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "move": "panRight",
+              "amount": 0.07,
+              "speed": 0.2
+            },
+            "type": "camera"
+          }
+        ]
+      }
+    },
+    {
+      "id": "074",
+      "pack": "lp",
+      "slug": "fade-in-on-scroll",
+      "category": "scroll",
+      "name": {
+        "ja": "スクロールでフェードイン",
+        "en": "Fade-in on scroll"
+      },
+      "meaning": {
+        "ja": "画面に入った要素がふわっと現れる",
+        "en": "Elements fade in as they scroll into view"
+      },
+      "tags": [
+        "fade-in",
+        "scroll-reveal",
+        "reveal-on-scroll",
+        "intersection-observer",
+        "aos",
+        "entrance",
+        "scroll"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "riseIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.08,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "075",
+      "pack": "lp",
+      "slug": "sticky-header",
+      "category": "scroll",
+      "name": {
+        "ja": "追従ヘッダー",
+        "en": "Sticky header"
+      },
+      "meaning": {
+        "ja": "スクロールしてもヘッダーが上に残る",
+        "en": "The header stays at the top while the page scrolls"
+      },
+      "tags": [
+        "sticky",
+        "sticky-header",
+        "fixed-header",
+        "position-sticky",
+        "navigation",
+        "header",
+        "scroll"
+      ],
+      "groups": [
+        "location",
+        "enter",
+        "hold",
+        "edge"
+      ],
+      "style": {
+        "location": {
+          "type": "upperThird"
+        },
+        "enter": {
+          "params": {
+            "dir": "down",
+            "soft": 0.08
+          },
+          "type": "wipe"
+        },
+        "hold": [
+          {
+            "params": {
+              "vx": 0.02
+            },
+            "type": "drift"
+          }
+        ],
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 6
+              },
+              "blur": 12,
+              "opacity": 0.35
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "076",
+      "pack": "lp",
+      "slug": "pinning",
+      "category": "scroll",
+      "name": {
+        "ja": "ピン留め",
+        "en": "Pinning"
+      },
+      "meaning": {
+        "ja": "セクションを止めて中身だけ進める",
+        "en": "A section stays fixed while scrolling advances its content"
+      },
+      "tags": [
+        "pin",
+        "pinning",
+        "scrolltrigger",
+        "gsap",
+        "scroll-driven",
+        "steps",
+        "storytelling"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "type": "simultaneous"
+        }
+      }
+    },
+    {
+      "id": "077",
+      "pack": "lp",
+      "slug": "horizontal-scroll",
+      "category": "scroll",
+      "name": {
+        "ja": "横スクロール",
+        "en": "Horizontal scroll"
+      },
+      "meaning": {
+        "ja": "縦のスクロールで中身が横に流れる",
+        "en": "Scrolling down moves the content sideways"
+      },
+      "tags": [
+        "horizontal-scroll",
+        "sideways",
+        "scrolltrigger",
+        "pin",
+        "gallery",
+        "portfolio",
+        "scroll"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "left",
+            "distance": 0.3,
+            "blur": 6
+          },
+          "type": "slideBlur"
+        },
+        "hold": [
+          {
+            "params": {
+              "speed": 0.3
+            },
+            "type": "marquee"
+          }
+        ],
+        "exit": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        }
+      }
+    },
+    {
+      "id": "078",
+      "pack": "lp",
+      "slug": "scroll-snap",
+      "category": "scroll",
+      "name": {
+        "ja": "スクロールスナップ",
+        "en": "Scroll snap"
+      },
+      "meaning": {
+        "ja": "スクロールが区切りの位置にピタッと止まる",
+        "en": "Scrolling settles exactly on the next section"
+      },
+      "tags": [
+        "scroll-snap",
+        "snap",
+        "full-page",
+        "sections",
+        "css",
+        "mandatory",
+        "scroll"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "down",
+            "distance": 0.35
+          },
+          "motion": {
+            "in": {
+              "duration": 0.55,
+              "ease": "easeOutBack"
+            }
+          },
+          "type": "slide"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.02
+            },
+            "type": "nudgeImpulse"
+          }
+        ],
+        "exit": {
+          "params": {
+            "dir": "up"
+          },
+          "motion": {
+            "out": {
+              "duration": 0.4,
+              "ease": "easeInCubic"
+            }
+          },
+          "type": "slide"
+        }
+      }
+    },
+    {
+      "id": "079",
+      "pack": "lp",
+      "slug": "scroll-progress-bar",
+      "category": "scroll",
+      "name": {
+        "ja": "スクロールプログレスバー",
+        "en": "Scroll progress bar"
+      },
+      "meaning": {
+        "ja": "読み進めた割合を上の線で見せる",
+        "en": "A bar at the top shows how far you have read"
+      },
+      "tags": [
+        "progress-bar",
+        "reading-progress",
+        "scroll-progress",
+        "indicator",
+        "scroll-driven",
+        "article"
+      ],
+      "groups": [
+        "enter",
+        "animation",
+        "strike"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.1
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.04
+          },
+          "type": "stagger"
+        },
+        "strike": {
+          "type": "line",
+          "params": {
+            "thickness": 5,
+            "position": 0.95,
+            "drawIn": "sweep",
+            "drawTime": 0.9,
+            "overshoot": 0.05
+          }
+        }
+      }
+    },
+    {
+      "id": "080",
+      "pack": "lp",
+      "slug": "highlighter-animation",
+      "category": "scroll",
+      "name": {
+        "ja": "マーカーアニメーション",
+        "en": "Highlighter animation"
+      },
+      "meaning": {
+        "ja": "大事な言葉に蛍光ペンの線が引かれる",
+        "en": "A highlighter stroke is drawn under key words"
+      },
+      "tags": [
+        "highlighter",
+        "marker",
+        "text-highlight",
+        "emphasis",
+        "scroll-reveal",
+        "copy",
+        "underline"
+      ],
+      "groups": [
+        "enter",
+        "animation",
+        "strike"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.12
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.06,
+            "unit": "word"
+          },
+          "type": "stagger"
+        },
+        "strike": {
+          "type": "wave",
+          "params": {
+            "thickness": 16,
+            "position": 0.82,
+            "opacity": 0.55,
+            "drawIn": "sweep",
+            "drawTime": 0.5
+          }
+        }
+      }
+    },
+    {
+      "id": "081",
+      "pack": "lp",
+      "slug": "hover-lift",
+      "category": "hover-click",
+      "name": {
+        "ja": "ホバーで浮き上がる",
+        "en": "Hover lift"
+      },
+      "meaning": {
+        "ja": "カーソルを乗せると影を付けて浮く",
+        "en": "On hover, the element rises with a deeper shadow"
+      },
+      "tags": [
+        "hover",
+        "lift",
+        "float",
+        "card",
+        "shadow",
+        "translatey",
+        "interaction"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "amp": 0.015,
+              "speed": 0.4
+            },
+            "type": "floatBob"
+          }
+        ],
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 10
+              },
+              "blur": 18,
+              "opacity": 0.45
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "082",
+      "pack": "lp",
+      "slug": "image-zoom-on-hover",
+      "category": "hover-click",
+      "name": {
+        "ja": "ホバーで画像ズーム",
+        "en": "Image zoom on hover"
+      },
+      "meaning": {
+        "ja": "枠はそのままで写真だけ拡大する",
+        "en": "The photo enlarges inside a fixed frame"
+      },
+      "tags": [
+        "hover",
+        "zoom",
+        "image",
+        "scale",
+        "overflow-hidden",
+        "thumbnail",
+        "gallery"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "edge"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "zoom": 0.16,
+              "pan": {
+                "x": 0.03,
+                "y": 0
+              }
+            },
+            "type": "kenBurns"
+          }
+        ],
+        "edge": [
+          {
+            "params": {
+              "offset": {
+                "x": 0,
+                "y": 6
+              },
+              "blur": 14,
+              "opacity": 0.4
+            },
+            "type": "dropShadow"
+          }
+        ]
+      }
+    },
+    {
+      "id": "083",
+      "pack": "lp",
+      "slug": "cursor-follower",
+      "category": "hover-click",
+      "name": {
+        "ja": "マウスストーカー",
+        "en": "Cursor follower"
+      },
+      "meaning": {
+        "ja": "カーソルを丸が遅れて追いかける",
+        "en": "A shape trails the mouse pointer with a delay"
+      },
+      "tags": [
+        "cursor",
+        "custom-cursor",
+        "cursor-follower",
+        "mouse-follow",
+        "lerp",
+        "trail",
+        "interaction"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "points": [
+                {
+                  "x": 0.15,
+                  "y": 0.6
+                },
+                {
+                  "x": 0.5,
+                  "y": 0.45
+                },
+                {
+                  "x": 0.85,
+                  "y": 0.6
+                }
+              ],
+              "speed": 0.18
+            },
+            "type": "pathFollow"
+          }
+        ],
+        "animation": {
+          "params": {
+            "each": 0.05
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "084",
+      "pack": "lp",
+      "slug": "magnetic-button",
+      "category": "hover-click",
+      "name": {
+        "ja": "マグネティックボタン",
+        "en": "Magnetic button"
+      },
+      "meaning": {
+        "ja": "近づいたカーソルにボタンが吸い寄せられる",
+        "en": "The button is pulled toward a nearby cursor"
+      },
+      "tags": [
+        "magnetic",
+        "magnetic-button",
+        "hover",
+        "cursor",
+        "elastic",
+        "cta",
+        "interaction"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "type": "elasticPop"
+        },
+        "hold": [
+          {
+            "params": {
+              "amount": 0.14,
+              "freq": 1.8
+            },
+            "type": "jelly"
+          }
+        ],
+        "exit": {
+          "type": "shrinkToCenter"
+        }
+      }
+    },
+    {
+      "id": "085",
+      "pack": "lp",
+      "slug": "ripple-effect",
+      "category": "hover-click",
+      "name": {
+        "ja": "リップルエフェクト",
+        "en": "Ripple effect"
+      },
+      "meaning": {
+        "ja": "押した場所から波紋が広がる",
+        "en": "A ripple spreads from the point that was pressed"
+      },
+      "tags": [
+        "ripple",
+        "ink-ripple",
+        "material",
+        "click",
+        "tap",
+        "feedback",
+        "button"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.05
+          },
+          "type": "irisOpen"
+        },
+        "exit": {
+          "type": "circleErase"
+        },
+        "post": [
+          {
+            "params": {
+              "radius": 0.3,
+              "width": 0.07,
+              "strength": 0.5
+            },
+            "type": "shockwave"
+          }
+        ]
+      }
+    },
+    {
+      "id": "086",
+      "pack": "lp",
+      "slug": "underline-animation",
+      "category": "hover-click",
+      "name": {
+        "ja": "下線アニメーション",
+        "en": "Underline animation"
+      },
+      "meaning": {
+        "ja": "乗せたリンクの下線が左から伸びる",
+        "en": "A link's underline grows from the left on hover"
+      },
+      "tags": [
+        "underline",
+        "hover",
+        "link",
+        "navigation",
+        "menu",
+        "text-link",
+        "scalex"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "type": "lineDrawOn"
+        },
+        "exit": {
+          "type": "lineErase"
+        },
+        "animation": {
+          "params": {
+            "each": 0.09,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "087",
+      "pack": "lp",
+      "slug": "before-after-slider",
+      "category": "hover-click",
+      "name": {
+        "ja": "ビフォーアフタースライダー",
+        "en": "Before/after slider"
+      },
+      "meaning": {
+        "ja": "境目をドラッグして前と後を見比べる",
+        "en": "Drag a divider to compare before and after"
+      },
+      "tags": [
+        "before-after",
+        "image-comparison",
+        "slider",
+        "drag",
+        "compare",
+        "clip",
+        "photo"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "strike"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "axis": "vertical",
+            "distance": 0.35
+          },
+          "motion": {
+            "in": {
+              "duration": 0.7,
+              "ease": "easeInOutCubic"
+            }
+          },
+          "type": "split"
+        },
+        "exit": {
+          "params": {
+            "axis": "vertical"
+          },
+          "type": "splitOut"
+        },
+        "strike": {
+          "type": "line",
+          "params": {
+            "thickness": 4,
+            "position": 0.5,
+            "opacity": 0.5
+          }
+        }
+      }
+    },
+    {
+      "id": "088",
+      "pack": "lp",
+      "slug": "exit-intent-popup",
+      "category": "hover-click",
+      "name": {
+        "ja": "離脱防止ポップアップ",
+        "en": "Exit-intent popup"
+      },
+      "meaning": {
+        "ja": "ページを離れそうな時に出す引き止めの小窓",
+        "en": "A popup shown when the visitor is about to leave"
+      },
+      "tags": [
+        "exit-intent",
+        "popup",
+        "mouseleave",
+        "coupon",
+        "conversion",
+        "retention",
+        "lp"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "height": 0.4
+          },
+          "type": "dropBounce"
+        },
+        "exit": {
+          "params": {
+            "distance": 0.4
+          },
+          "type": "floatUp"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.15
+            },
+            "type": "cameraPunch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "089",
+      "pack": "lp",
+      "slug": "preloader",
+      "category": "loading-loops",
+      "name": {
+        "ja": "ローディング画面",
+        "en": "Preloader"
+      },
+      "meaning": {
+        "ja": "読み込み中に出す画面",
+        "en": "A screen shown while the page loads"
+      },
+      "tags": [
+        "preloader",
+        "loading-screen",
+        "loader",
+        "percentage",
+        "intro",
+        "splash",
+        "curtain"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.3
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "min": 0.4,
+              "period": 1.2
+            },
+            "type": "opacityPulse"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "feather": 0.1
+            },
+            "type": "radialWipe"
+          }
+        ]
+      }
+    },
+    {
+      "id": "090",
+      "pack": "lp",
+      "slug": "lazy-loading",
+      "category": "loading-loops",
+      "name": {
+        "ja": "遅延読み込み",
+        "en": "Lazy loading"
+      },
+      "meaning": {
+        "ja": "画面に入った画像だけを読み込む",
+        "en": "Images load only when they come into view"
+      },
+      "tags": [
+        "lazy-loading",
+        "lazy-load",
+        "images",
+        "placeholder",
+        "performance",
+        "spinner",
+        "gallery"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "animation"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dy": 0.8,
+            "blur": 4
+          },
+          "motion": {
+            "in": {
+              "duration": 0.6,
+              "ease": "easeOutCubic"
+            }
+          },
+          "type": "riseIn"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.15
+          },
+          "type": "fade"
+        },
+        "animation": {
+          "params": {
+            "each": 0.2,
+            "unit": "word"
+          },
+          "type": "stagger"
+        }
+      }
+    },
+    {
+      "id": "091",
+      "pack": "lp",
+      "slug": "infinite-scroll",
+      "category": "loading-loops",
+      "name": {
+        "ja": "無限スクロール",
+        "en": "Infinite scroll"
+      },
+      "meaning": {
+        "ja": "下まで来ると続きが自動で足される",
+        "en": "More items load automatically at the bottom"
+      },
+      "tags": [
+        "infinite-scroll",
+        "endless-scroll",
+        "load-more",
+        "feed",
+        "pagination",
+        "spinner",
+        "list"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "repeat"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "speed": 0.15
+            },
+            "type": "marquee"
+          }
+        ],
+        "repeat": {
+          "params": {
+            "copies": 3
+          },
+          "type": "rowH"
+        }
+      }
+    },
+    {
+      "id": "092",
+      "pack": "lp",
+      "slug": "page-transition",
+      "category": "loading-loops",
+      "name": {
+        "ja": "ページ遷移アニメーション",
+        "en": "Page transition"
+      },
+      "meaning": {
+        "ja": "ページを移るときの切り替えの演出",
+        "en": "An animation that bridges two pages"
+      },
+      "tags": [
+        "page-transition",
+        "transition",
+        "view-transitions",
+        "navigation",
+        "wipe",
+        "barba",
+        "spa"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "soft": 0.1
+          },
+          "type": "wipe"
+        },
+        "exit": {
+          "params": {
+            "dir": "right"
+          },
+          "type": "wipe"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.12,
+              "speed": 0.7
+            },
+            "type": "cameraPunch"
+          }
+        ]
+      }
+    },
+    {
+      "id": "093",
+      "pack": "lp",
+      "slug": "smooth-scroll",
+      "category": "loading-loops",
+      "name": {
+        "ja": "スムーススクロール",
+        "en": "Smooth scroll"
+      },
+      "meaning": {
+        "ja": "ページ内リンクでなめらかに移動する",
+        "en": "In-page links glide to their target instead of jumping"
+      },
+      "tags": [
+        "smooth-scroll",
+        "scroll-behavior",
+        "anchor-link",
+        "in-page-link",
+        "back-to-top",
+        "navigation"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "exit"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "dir": "down",
+            "distance": 0.4
+          },
+          "motion": {
+            "in": {
+              "duration": 1,
+              "ease": "easeInOutQuart"
+            }
+          },
+          "type": "slide"
+        },
+        "hold": [
+          {
+            "params": {
+              "vx": 0.015
+            },
+            "type": "drift"
+          }
+        ],
+        "exit": {
+          "params": {
+            "dir": "up",
+            "distance": 0.4
+          },
+          "motion": {
+            "out": {
+              "duration": 0.9,
+              "ease": "easeInOutQuart"
+            }
+          },
+          "type": "slide"
+        }
+      }
+    },
+    {
+      "id": "094",
+      "pack": "lp",
+      "slug": "marquee",
+      "category": "loading-loops",
+      "name": {
+        "ja": "マーキー",
+        "en": "Marquee"
+      },
+      "meaning": {
+        "ja": "文字や画像が帯で流れ続ける",
+        "en": "Text or logos scroll across in an endless band"
+      },
+      "tags": [
+        "marquee",
+        "ticker",
+        "infinite-loop",
+        "scrolling-text",
+        "logo-strip",
+        "band",
+        "loop"
+      ],
+      "groups": [
+        "enter",
+        "hold",
+        "repeat"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "blur": 8
+          },
+          "type": "slideBlur"
+        },
+        "hold": [
+          {
+            "params": {
+              "speed": 0.28
+            },
+            "type": "marquee"
+          }
+        ],
+        "repeat": {
+          "type": "rowH"
+        }
+      }
+    },
+    {
+      "id": "095",
+      "pack": "lp",
+      "slug": "animated-gradient",
+      "category": "loading-loops",
+      "name": {
+        "ja": "グラデーションアニメーション",
+        "en": "Animated gradient"
+      },
+      "meaning": {
+        "ja": "背景の色の混ざり方が動き続ける",
+        "en": "Background colours keep drifting and blending"
+      },
+      "tags": [
+        "gradient",
+        "animated-gradient",
+        "mesh-gradient",
+        "background",
+        "hero",
+        "ambient",
+        "loop"
+      ],
+      "groups": [
+        "enter",
+        "exit",
+        "fill"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "exit": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "fill": {
+          "params": {
+            "angle": 25,
+            "speed": 0.45
+          },
+          "type": "gradientSweep"
+        }
+      }
+    },
+    {
+      "id": "096",
+      "pack": "lp",
+      "slug": "floating-animation",
+      "category": "loading-loops",
+      "name": {
+        "ja": "ふわふわアニメーション",
+        "en": "Floating animation"
+      },
+      "meaning": {
+        "ja": "飾りがゆっくり上下に浮き沈みする",
+        "en": "Elements bob gently up and down"
+      },
+      "tags": [
+        "floating",
+        "float",
+        "bob",
+        "hover-animation",
+        "keyframes",
+        "translatey",
+        "decoration",
+        "loop"
+      ],
+      "groups": [
+        "enter",
+        "hold"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.2
+          },
+          "type": "fade"
+        },
+        "hold": [
+          {
+            "params": {
+              "dy": 0.1
+            },
+            "type": "floatLoop"
+          }
+        ]
+      }
+    },
+    {
+      "id": "097",
+      "pack": "photo",
+      "slug": "backlighting",
+      "category": "lighting",
+      "name": {
+        "ja": "逆光",
+        "en": "Backlighting"
+      },
+      "meaning": {
+        "ja": "被写体の真後ろから光を当てる",
+        "en": "The light source sits behind the subject"
+      },
+      "tags": [
+        "backlighting",
+        "backlit",
+        "contre-jour",
+        "sun behind",
+        "haze",
+        "glow",
+        "halo"
+      ],
+      "groups": [
+        "enter",
+        "edge",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.3
+          },
+          "type": "fade"
+        },
+        "edge": [
+          {
+            "params": {
+              "radius": 20,
+              "intensity": 0.7
+            },
+            "type": "neonGlow"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "threshold": 0.5,
+              "intensity": 0.85,
+              "radius": 0.7
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "098",
+      "pack": "photo",
+      "slug": "rim-light",
+      "category": "lighting",
+      "name": {
+        "ja": "リムライト",
+        "en": "Rim light"
+      },
+      "meaning": {
+        "ja": "後ろからの光で輪郭だけを光らせる",
+        "en": "A light from behind that outlines the subject's edge"
+      },
+      "tags": [
+        "rim light",
+        "rim lighting",
+        "edge light",
+        "backlight",
+        "kicker",
+        "outline",
+        "studio"
+      ],
+      "groups": [
+        "edge",
+        "post"
+      ],
+      "style": {
+        "edge": [
+          {
+            "params": {
+              "radius": 13,
+              "intensity": 0.9
+            },
+            "type": "neonGlow"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "threshold": 0.7,
+              "intensity": 0.4
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "099",
+      "pack": "photo",
+      "slug": "silhouette",
+      "category": "lighting",
+      "name": {
+        "ja": "シルエット",
+        "en": "Silhouette"
+      },
+      "meaning": {
+        "ja": "明るい空を背に、被写体を黒い形だけで見せる",
+        "en": "The subject shows as a black shape against a bright sky"
+      },
+      "tags": [
+        "silhouette",
+        "backlit",
+        "sunset",
+        "contre-jour",
+        "black shape",
+        "underexposed"
+      ],
+      "groups": [
+        "fill",
+        "edge",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "params": {
+            "threshold": 0.4
+          },
+          "type": "ink"
+        },
+        "edge": [
+          {
+            "params": {
+              "width": 2
+            },
+            "type": "outline"
+          }
+        ],
+        "post": [
+          {
+            "params": {
+              "softness": 0.45
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "100",
+      "pack": "photo",
+      "slug": "split-lighting",
+      "category": "lighting",
+      "name": {
+        "ja": "スプリットライティング",
+        "en": "Split lighting"
+      },
+      "meaning": {
+        "ja": "真横からの光で顔を半分ずつ明暗に分ける",
+        "en": "Light from the side splits the face into lit and dark halves"
+      },
+      "tags": [
+        "split lighting",
+        "side light",
+        "portrait lighting",
+        "half face",
+        "dramatic",
+        "chiaroscuro"
+      ],
+      "groups": [
+        "fill",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "params": {
+            "softness": 0.06
+          },
+          "type": "splitTone"
+        },
+        "post": [
+          {
+            "params": {
+              "saturation": 0.95
+            },
+            "type": "colorGrade"
+          }
+        ]
+      }
+    },
+    {
+      "id": "101",
+      "pack": "photo",
+      "slug": "rembrandt-lighting",
+      "category": "lighting",
+      "name": {
+        "ja": "レンブラントライティング",
+        "en": "Rembrandt lighting"
+      },
+      "meaning": {
+        "ja": "影側の頬に三角形の光が残る斜め上からの光",
+        "en": "High side light that leaves a lit triangle on the shadow cheek"
+      },
+      "tags": [
+        "rembrandt lighting",
+        "portrait lighting",
+        "triangle",
+        "45 degree light",
+        "chiaroscuro",
+        "painterly"
+      ],
+      "groups": [
+        "fill",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "params": {
+            "split": 0.45,
+            "softness": 0.12,
+            "angle": 45
+          },
+          "type": "splitTone"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.45
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "102",
+      "pack": "photo",
+      "slug": "butterfly-lighting",
+      "category": "lighting",
+      "name": {
+        "ja": "バタフライライティング",
+        "en": "Butterfly lighting"
+      },
+      "meaning": {
+        "ja": "正面の高い位置から当て、鼻の下に蝶形の影",
+        "en": "High frontal light that casts a butterfly shadow under the nose"
+      },
+      "tags": [
+        "butterfly lighting",
+        "paramount lighting",
+        "beauty lighting",
+        "portrait lighting",
+        "overhead light",
+        "glamour"
+      ],
+      "groups": [
+        "fill",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "params": {
+            "split": 0.62,
+            "softness": 0.2,
+            "angle": 60
+          },
+          "type": "splitTone"
+        },
+        "post": [
+          {
+            "params": {
+              "threshold": 0.65,
+              "intensity": 0.35,
+              "radius": 0.45
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "103",
+      "pack": "photo",
+      "slug": "golden-hour",
+      "category": "lighting",
+      "name": {
+        "ja": "ゴールデンアワー",
+        "en": "Golden hour"
+      },
+      "meaning": {
+        "ja": "日没前・日の出後の低く赤みのある光",
+        "en": "The low, warm light just after sunrise or before sunset"
+      },
+      "tags": [
+        "golden hour",
+        "magic hour",
+        "sunset light",
+        "warm light",
+        "long shadows",
+        "low sun"
+      ],
+      "groups": [
+        "fill",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "params": {
+            "sparkle": 0.5
+          },
+          "type": "goldFoil"
+        },
+        "post": [
+          {
+            "params": {
+              "y": 0.12,
+              "intensity": 0.5
+            },
+            "type": "lightLeak"
+          },
+          {
+            "params": {
+              "lift": 0.04,
+              "saturation": 1.15
+            },
+            "type": "colorGrade"
+          }
+        ]
+      }
+    },
+    {
+      "id": "104",
+      "pack": "photo",
+      "slug": "blue-hour",
+      "category": "lighting",
+      "name": {
+        "ja": "ブルーアワー",
+        "en": "Blue hour"
+      },
+      "meaning": {
+        "ja": "日没後・日の出前の、空が深い青になる時間",
+        "en": "The time after sunset or before sunrise when the sky turns deep blue"
+      },
+      "tags": [
+        "blue hour",
+        "twilight",
+        "dusk",
+        "night city",
+        "cityscape",
+        "deep blue sky"
+      ],
+      "groups": [
+        "fill",
+        "post"
+      ],
+      "style": {
+        "fill": {
+          "type": "chrome"
+        },
+        "post": [
+          {
+            "params": {
+              "lift": -0.12,
+              "saturation": 0.85
+            },
+            "type": "colorGrade"
+          },
+          {
+            "params": {
+              "amount": 0.35,
+              "softness": 0.6
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "105",
+      "pack": "photo",
+      "slug": "bokeh",
+      "category": "lens-camera",
+      "name": {
+        "ja": "ボケ",
+        "en": "Bokeh"
+      },
+      "meaning": {
+        "ja": "ピントの外の点光源が丸くやわらかくぼける",
+        "en": "Out-of-focus points of light melt into soft discs"
+      },
+      "tags": [
+        "bokeh",
+        "shallow depth of field",
+        "background blur",
+        "wide aperture",
+        "f/1.4",
+        "out of focus",
+        "lights"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "count": 42,
+              "size": 4
+            },
+            "type": "sparkles"
+          },
+          {
+            "params": {
+              "intensity": 0.5,
+              "radius": 0.7
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "106",
+      "pack": "photo",
+      "slug": "tilt-shift",
+      "category": "lens-camera",
+      "name": {
+        "ja": "ティルトシフト",
+        "en": "Tilt-shift"
+      },
+      "meaning": {
+        "ja": "上下をぼかして本物の町を模型のように見せる",
+        "en": "Blur top and bottom so a real scene looks like a miniature"
+      },
+      "tags": [
+        "tilt-shift",
+        "miniature",
+        "miniature effect",
+        "fake miniature",
+        "selective focus",
+        "toy town",
+        "focus band"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "k1": 0.18,
+              "chroma": 0.15
+            },
+            "type": "lensDistortion"
+          },
+          {
+            "params": {
+              "amount": 0.35,
+              "softness": 0.6
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "107",
+      "pack": "photo",
+      "slug": "long-exposure",
+      "category": "lens-camera",
+      "name": {
+        "ja": "長時間露光",
+        "en": "Long exposure"
+      },
+      "meaning": {
+        "ja": "シャッターを長く開け、動く光を線にする",
+        "en": "Keep the shutter open long so moving lights become lines"
+      },
+      "tags": [
+        "long exposure",
+        "light trails",
+        "slow shutter",
+        "night photography",
+        "car trails",
+        "motion"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "copies": 6,
+              "spacing": 0.09,
+              "decay": 0.75
+            },
+            "type": "echoTrail"
+          }
+        ]
+      }
+    },
+    {
+      "id": "108",
+      "pack": "photo",
+      "slug": "panning-shot",
+      "category": "lens-camera",
+      "name": {
+        "ja": "流し撮り",
+        "en": "Panning shot"
+      },
+      "meaning": {
+        "ja": "動く被写体を追って撮り、背景だけ流す",
+        "en": "Follow a moving subject so only the background streaks"
+      },
+      "tags": [
+        "panning",
+        "panning shot",
+        "motion blur",
+        "speed",
+        "sports photography",
+        "slow shutter"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "amount": 0.18,
+              "speed": 0.45
+            },
+            "type": "cameraPanRight"
+          },
+          {
+            "params": {
+              "samples": 12,
+              "shutter": 0.8
+            },
+            "type": "motionBlur"
+          }
+        ]
+      }
+    },
+    {
+      "id": "109",
+      "pack": "photo",
+      "slug": "lens-flare",
+      "category": "lens-camera",
+      "name": {
+        "ja": "レンズフレア",
+        "en": "Lens flare"
+      },
+      "meaning": {
+        "ja": "強い光でレンズの中に光の輪や玉が出る",
+        "en": "Rings and spots of light from a bright source in the lens"
+      },
+      "tags": [
+        "lens flare",
+        "flare",
+        "ghosting",
+        "sun flare",
+        "starburst",
+        "cinematic"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "position": {
+                "x": 0.35,
+                "y": 0.3
+              }
+            },
+            "type": "lensFlare"
+          },
+          {
+            "params": {
+              "intensity": 0.45
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "110",
+      "pack": "photo",
+      "slug": "fisheye-lens",
+      "category": "lens-camera",
+      "name": {
+        "ja": "魚眼レンズ",
+        "en": "Fisheye lens"
+      },
+      "meaning": {
+        "ja": "中心がふくらみ、直線が丸く曲がる超広角",
+        "en": "Ultra-wide lens that bulges the centre and bends straight lines"
+      },
+      "tags": [
+        "fisheye",
+        "fisheye lens",
+        "barrel distortion",
+        "ultra wide",
+        "8mm",
+        "distortion"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "power": 1.25,
+              "lensRadius": 0.75,
+              "aberration": 0.2
+            },
+            "type": "fisheye"
+          }
+        ]
+      }
+    },
+    {
+      "id": "111",
+      "pack": "photo",
+      "slug": "chromatic-aberration",
+      "category": "lens-camera",
+      "name": {
+        "ja": "色収差",
+        "en": "Chromatic aberration"
+      },
+      "meaning": {
+        "ja": "明暗の境に赤や青紫の色ずれが出る",
+        "en": "Red and blue-violet colour fringes along high-contrast edges"
+      },
+      "tags": [
+        "chromatic aberration",
+        "color fringing",
+        "rgb split",
+        "lens aberration",
+        "fringe",
+        "glitch"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "amount": 0.55,
+              "radial": 0.4
+            },
+            "type": "chromaticAberration"
+          },
+          {
+            "params": {
+              "amount": 2.5,
+              "jitter": 0.4
+            },
+            "type": "rgbShift"
+          }
+        ]
+      }
+    },
+    {
+      "id": "112",
+      "pack": "photo",
+      "slug": "vignette",
+      "category": "lens-camera",
+      "name": {
+        "ja": "周辺減光（ビネット）",
+        "en": "Vignette"
+      },
+      "meaning": {
+        "ja": "画面の四隅が暗くなり、中央に目が集まる",
+        "en": "The corners darken and draw the eye to the centre"
+      },
+      "tags": [
+        "vignette",
+        "vignetting",
+        "dark corners",
+        "edge darkening",
+        "lens falloff",
+        "focus"
+      ],
+      "groups": [
+        "enter",
+        "post"
+      ],
+      "style": {
+        "enter": {
+          "params": {
+            "softness": 0.3
+          },
+          "type": "fade"
+        },
+        "post": [
+          {
+            "params": {
+              "amount": 0.65,
+              "softness": 0.45
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "113",
+      "pack": "photo",
+      "slug": "high-key",
+      "category": "tone-finish",
+      "name": {
+        "ja": "ハイキー",
+        "en": "High-key"
+      },
+      "meaning": {
+        "ja": "明るい色だけで作る、白っぽく影の薄い写真",
+        "en": "A bright, white-toned image with very light shadows"
+      },
+      "tags": [
+        "high-key",
+        "high key",
+        "bright",
+        "white background",
+        "airy",
+        "low contrast"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "lift": 0.15,
+              "saturation": 0.75
+            },
+            "type": "colorGrade"
+          },
+          {
+            "params": {
+              "threshold": 0.7,
+              "intensity": 0.3
+            },
+            "type": "bloom"
+          }
+        ]
+      }
+    },
+    {
+      "id": "114",
+      "pack": "photo",
+      "slug": "low-key",
+      "category": "tone-finish",
+      "name": {
+        "ja": "ローキー",
+        "en": "Low-key"
+      },
+      "meaning": {
+        "ja": "暗い色が中心の、光の当たる所だけが浮かぶ写真",
+        "en": "A dark image where only the lit parts stand out"
+      },
+      "tags": [
+        "low-key",
+        "low key",
+        "dark",
+        "black background",
+        "moody",
+        "dramatic",
+        "chiaroscuro"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "lift": -0.18,
+              "saturation": 0.85
+            },
+            "type": "colorGrade"
+          },
+          {
+            "params": {
+              "amount": 0.6,
+              "softness": 0.35
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "115",
+      "pack": "photo",
+      "slug": "black-and-white",
+      "category": "tone-finish",
+      "name": {
+        "ja": "モノクロ",
+        "en": "Black and white"
+      },
+      "meaning": {
+        "ja": "色を抜いて明るさだけで見せる",
+        "en": "Remove colour and show brightness only"
+      },
+      "tags": [
+        "black and white",
+        "monochrome",
+        "b&w",
+        "grayscale",
+        "desaturated",
+        "classic"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "saturation": 0
+            },
+            "type": "colorGrade"
+          }
+        ]
+      }
+    },
+    {
+      "id": "116",
+      "pack": "photo",
+      "slug": "duotone",
+      "category": "tone-finish",
+      "name": {
+        "ja": "デュオトーン",
+        "en": "Duotone"
+      },
+      "meaning": {
+        "ja": "暗部と明部を2色だけで表す",
+        "en": "Show the image in two colours, one for darks and one for lights"
+      },
+      "tags": [
+        "duotone",
+        "two-tone",
+        "gradient map",
+        "color overlay",
+        "poster",
+        "graphic"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "duotone": "#4d8dff",
+              "saturation": 0.9
+            },
+            "type": "colorGrade"
+          }
+        ]
+      }
+    },
+    {
+      "id": "117",
+      "pack": "photo",
+      "slug": "teal-and-orange",
+      "category": "tone-finish",
+      "name": {
+        "ja": "ティール＆オレンジ",
+        "en": "Teal and orange"
+      },
+      "meaning": {
+        "ja": "影を青緑、肌や明部を橙に寄せる色調",
+        "en": "Pushes shadows to teal and skin and highlights to orange"
+      },
+      "tags": [
+        "teal and orange",
+        "orange and teal",
+        "cinematic",
+        "color grading",
+        "blockbuster",
+        "film look"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "duotone": "#ff9a3c",
+              "lift": -0.03,
+              "saturation": 1.05
+            },
+            "type": "colorGrade"
+          },
+          {
+            "params": {
+              "amount": 0.3,
+              "softness": 0.55
+            },
+            "type": "vignette"
+          }
+        ]
+      }
+    },
+    {
+      "id": "118",
+      "pack": "photo",
+      "slug": "film-grain",
+      "category": "tone-finish",
+      "name": {
+        "ja": "フィルムグレイン",
+        "en": "Film grain"
+      },
+      "meaning": {
+        "ja": "フィルム写真のような細かい粒子を乗せる",
+        "en": "Fine, film-like grain over the image"
+      },
+      "tags": [
+        "film grain",
+        "grain",
+        "noise",
+        "analog",
+        "35mm film",
+        "texture",
+        "warm tone"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "amount": 0.3,
+              "size": 1.3
+            },
+            "type": "filmGrain"
+          }
+        ]
+      }
+    },
+    {
+      "id": "119",
+      "pack": "photo",
+      "slug": "light-leak",
+      "category": "tone-finish",
+      "name": {
+        "ja": "ライトリーク",
+        "en": "Light leak"
+      },
+      "meaning": {
+        "ja": "フィルムに光がもれたような赤橙のにじみ",
+        "en": "Red-orange glow as if light leaked onto the film"
+      },
+      "tags": [
+        "light leak",
+        "film leak",
+        "vintage",
+        "analog",
+        "lomo",
+        "warm glow"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "x": 0.15,
+              "y": 0.8,
+              "intensity": 0.75
+            },
+            "type": "lightLeak"
+          }
+        ]
+      }
+    },
+    {
+      "id": "120",
+      "pack": "photo",
+      "slug": "double-exposure",
+      "category": "tone-finish",
+      "name": {
+        "ja": "二重露光（多重露光）",
+        "en": "Double exposure"
+      },
+      "meaning": {
+        "ja": "2枚の写真を1枚に重ねて写し込む",
+        "en": "Two photos layered into one frame"
+      },
+      "tags": [
+        "double exposure",
+        "multiple exposure",
+        "blend",
+        "silhouette",
+        "surreal",
+        "composite"
+      ],
+      "groups": [
+        "post"
+      ],
+      "style": {
+        "post": [
+          {
+            "params": {
+              "copies": 2,
+              "spacing": 0.22,
+              "decay": 0.85
+            },
+            "type": "echoTrail"
+          }
+        ]
+      }
+    }
+  ]
+}

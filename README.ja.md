@@ -18,6 +18,7 @@
 - **音声・映像の同時再生**: Studio プレビューで音声トラックとインポートした映像レイヤー（MP4/WebM）をリアルタイム同期再生し、フレーム精度のスクラブと WebCodecs 書き出しに対応
 - **ページレイアウトエンジン**: 雑誌風・ファッション誌風・新聞風・twoColumn・原稿用紙・xCard・chatBubble・cafeMenu・score・poster など出版スタイルのレイアウトプリセット 20 種。自動リージョンフロー、背景デコ、ペーパースタイリング付き
 - **検索可能なテキストエフェクトカタログ**: 日英の名前・説明で検索できる 376 以上の厳選テキストエフェクト、手続き型シェイプ装飾、0.1×〜10× に拡縮可能なフレームグラフィック、動的フォント変形
+- **ネームドエフェクト**: [motion-prompt](https://showheyohtaki.github.io/motion-prompt/)（作者 @showheyohtaki、MIT）の 120 種の演出をワンクリックルックとして選択 — 名前・`#id`・意味で検索し、プロジェクト全体／キュー／ビート単位で適用。名前と意味はタイムラインと Inspector に表示されます
 - **テーマ・ディレクション操作**: 楽曲セクションに追従する AI 支援の自動演出、スケールランダム化用テーマダイアログ、weird 閾値（`>= 0.6`）付きリピート拡縮、独立した背景クロック、分類済み 800 ルックのランタイムプール
 - **歌詞のインポートとエクスポート**: SRT（タグ、`{fx:}`、スパン）、LRC（メタデータ、オフセット、複数タグ、インストゥルメンタルマーカー、拡張ワードタグ）、JSON（配列、`cues`、Whisper `segments`、秒 / ms / 時刻文字列）
 - **5 言語対応**: 英語、日本語、スペイン語、フランス語、ロシア語（自動検出・切り替え可能）
@@ -101,6 +102,7 @@ TelopMotion は視覚スタイルを 12 のエフェクトグループで整理�
 Animation · Layout · Page · Enter · Exit · Hold · Location · Fill · Edge · Post · Background · Color
 
 - **検索可能なエフェクトカタログ**: 376 以上の厳選テキストエフェクト（[doc/text-effects-en.csv](doc/text-effects-en.csv））をモーションプリセットダイアログ（*Inspector → Search Presets*）で日英の名前・視覚説明から検索できます。
+- **ネームドエフェクト**: motion-prompt の 120 種（作者 @showheyohtaki、MIT）を効果レジストリへの差分（`renderer/data/named-effects.json`）として収録。適用すると直前のレシピのグループだけを置き換え、プロジェクト／キュー／ビート単位で適用・変更・クリアできます（*Generate → ネームドエフェクト…* または Inspector）。名前と意味はタイムライン（キュー行・ビートドット）と Inspector に表示（[doc/named-effects.md](doc/named-effects.md)）。
 - **分解軸**: 詳細は [doc/textdecor2.md](doc/textdecor2.md)（グリフ源、輪郭操作、変形、表現、テクスチャ、可視性、ドライバ、配置、タイミング、複製、重ね合わせ、スコープ）。
 - **動的フォントサイズと頂点変形**: 文字ブロックは自身の中心を基準に滑らかに拡縮します（`hold.fontSize`、`hold.fillScreen`、`enter.megaZoomIn`、`exit.megaZoomOut`）。3 つの頂点シェーダー変形スロットで `jelly`、`wobbleWarp`、`twist`、`breathing`、`squashStretch`、`swirl`、`hold.warp` を文字変形のクリップなしで実行します。
 - **テキスト背景とフレームグラフィック**: 0.1×〜10× に滑らかに拡縮し、ビートごとのランダム化と基準スケールをテーマダイアログで設定できます。
@@ -182,17 +184,18 @@ scripts/fx400mix.js     FX 400 MIX：400 の完全ルックデモ（主役エフ
 scripts/fx800.js        FX 800：800 の番号・名前付きデモを 4 つの 200 エフェクトプロジェクトに分割
 scripts/figure-showcase.js Figure ショーケース：全 figure モチーフ＋モーション軸を 1 プロジェクトに
 scripts/looks-classify.js 800 デモを分類（モーション量、5 軸、テーマ）。Random look 用
+scripts/named-effects.js ネームドエフェクト：motion-prompt 120 種のレシピ（build / list / show / apply）
 scripts/check.js        lib/、scripts/、renderer/js/、main.js、preload.js の node --check（223 ファイル）
 scripts/vendor.js       opentype / earcut / mp4-muxer / webm-muxer を renderer/vendor にコピー
 scripts/test/           単体テストスイート（node --test で 91 テストファイル、1025 テスト）
 demo/                   生成デモプロジェクト、キューリスト、索引、プレビューシート
 renderer/               UI：studio.html（Studio）、css/、js/
 renderer/js/            共有：format、platform、srt、lrc、lyrics-json、lyrics-file、color
-renderer/js/lyrics/     歌詞エンジン：font、geometry、textflow、layout、page-layout、page-scene、motion、scene、engine、looks、shape-ops、pattern-variants、text-effects-data
+renderer/js/lyrics/     歌詞エンジン：font、geometry、textflow、layout、page-layout、page-scene、motion、scene、engine、looks、named-effects、shape-ops、pattern-variants、text-effects-data
 renderer/js/lyrics/effects/  グループ別エフェクト記述子＋ CPU 実装（animation、layout、page、enter、exit、hold、location、fill、edge、post、background、color、text-bg、vary、repeat）
 renderer/js/lyrics/gl/  WebGL2：context、shaders、SDF、passes、layers
-renderer/js/studio/     Studio：project、store、io、menu、preview、timeline、controls、inspector、overlay、page-dialog、motion-dialog、song-dialog、theme-editor、direct
-renderer/data/          生成ランタイムプール：fx800.looks.json（Random look 用 800 分類ルック）
+renderer/js/studio/     Studio：project、store、io、menu、preview、timeline、controls、inspector、overlay、page-dialog、motion-dialog、named-effect-dialog、song-dialog、theme-editor、direct
+renderer/data/          生成ランタイムプール：fx800.looks.json（Random look 用 800 分類ルック）、named-effects.json（ネームドエフェクト 120 種のレシピ）
 renderer/fonts/         OFL フォント＋ SOURCES.md ＋ OFL.txt
 renderer/vendor/        同梱ライブラリ＋ LICENSES.txt
 ```
@@ -300,6 +303,7 @@ Studio の *Random look* ボタン（Generate メニュー、タイムライン 
 - [doc/text-layer-design.md](doc/text-layer-design.md) — レイヤー描画パイプライン、背景くり抜き、後処理境界、レイヤー分離
 - [doc/textdecor2.md](doc/textdecor2.md) — 12 軸での完全エフェクト分解、タイプレジストリ、ロードマップ
 - [doc/text-effects-en.csv](doc/text-effects-en.csv) — 日英名・カテゴリ・説明付き 376 以上のテキストエフェクトカタログ
+- [doc/named-effects.md](doc/named-effects.md) — ネームドエフェクト：motion-prompt 120 種の効果グループ割り当て・CLI・一覧（出典：[motion-prompt](https://showheyohtaki.github.io/motion-prompt/)・作者 @showheyohtaki、MIT）
 - [doc/repeat-design.md](doc/repeat-design.md) — リピート配置設計と固有署名カウント
 - [doc/app-design.md](doc/app-design.md) — Studio・歌詞動画エンジン全体アーキテクチャ
 - [doc/README.claude.ja.md](doc/README.claude.ja.md) — Claude Code との進め方：`.telopmotion.json` を Claude に編集させ、Studio に読み込み直す手順

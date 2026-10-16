@@ -157,6 +157,101 @@
     return out;
   }
 
+  // --- named effects (the 120 motion-prompt entries) --------------------------
+  // The tools mirror the Studio command: the previous recipe's groups are
+  // replaced, the new recipe merges over the bag and a `namedEffect`
+  // descriptor lands next to it. Everything is built as plain ops, so the
+  // session keeps its working-copy model.
+
+  const isPlainObject = (value) => !!value && typeof value === 'object' && !Array.isArray(value);
+
+  // same shape as SA.project.mergeDeep (ai-tools stays a leaf module)
+  function deepMerge(base, patch) {
+    if (!isPlainObject(patch)) return patch === undefined ? clone(base) : clone(patch);
+    const result = isPlainObject(base) ? { ...base } : {};
+    for (const [key, value] of Object.entries(patch)) {
+      result[key] = isPlainObject(value) && isPlainObject(result[key]) ? deepMerge(result[key], value) : clone(value);
+    }
+    return result;
+  }
+
+  const pointerSegment = (value) => String(value).replace(/~/g, '~0').replace(/\//g, '~1');
+
+  // `project` / `cue:<cueId>` / `cue:<cueId>/beat:<beatId>`; empty falls back to
+  // the selection (beat beats cue) and then to the cue under the playhead.
+  function parseNamedTarget(work, view, raw) {
+    let value = typeof raw === 'string' ? raw.trim() : '';
+    if (!value && view) {
+      const first = (view.selection || []).map(String).find((path) => path.startsWith('cue:')) || '';
+      const cueId = (/cue:([^/]+)/.exec(first) || [])[1] || null;
+      const beatId = (/beat:([^/]+)/.exec(first) || [])[1] || null;
+      if (cueId) value = beatId ? `cue:${cueId}/beat:${beatId}` : `cue:${cueId}`;
+      if (!value) {
+        const time = Number(view.playhead) || 0;
+        const cue = ((work.script && work.script.cues) || []).find((entry) => time >= entry.start && time < entry.end);
+        if (cue) value = `cue:${cue.id}`;
+      }
+    }
+    if (!value || value === 'project') {
+      return { scope: 'project', bagPath: '/style', bag: work.style || {}, label: 'project' };
+    }
+    const cueId = (/cue:([^/]+)/.exec(value) || [])[1] || null;
+    const beatId = (/beat:([^/]+)/.exec(value) || [])[1] || null;
+    if (!cueId) throw new Error(`bad named-effect target: ${value}`);
+    if (beatId) {
+      return { scope: 'beat', bagPath: `/beatStyles/${pointerSegment(beatId)}`, bag: (work.beatStyles && work.beatStyles[beatId]) || {}, label: `beat ${beatId}` };
+    }
+    return { scope: 'cue', bagPath: `/cueStyles/${pointerSegment(cueId)}`, bag: (work.cueStyles && work.cueStyles[cueId]) || {}, label: `cue ${cueId}` };
+  }
+
+  function namedRuntime(namedEffects) {
+    return namedEffects && typeof namedEffects.current === 'function' ? namedEffects.current() : null;
+  }
+
+  function listNamedEffects(namedEffects, query, pack, limit) {
+    const runtime = namedRuntime(namedEffects);
+    if (!runtime) return { error: 'named effect catalog not loaded' };
+    const list = runtime.search(query || '', { pack: pack || 'all' });
+    const max = Math.max(1, Math.min(200, Number(limit) || 40));
+    return {
+      total: runtime.count(),
+      count: list.length,
+      effects: list.slice(0, max).map((entry) => ({
+        id: entry.id,
+        pack: entry.pack,
+        name: { en: (entry.name && entry.name.en) || '', ja: (entry.name && entry.name.ja) || '' },
+        meaning: { en: (entry.meaning && entry.meaning.en) || '', ja: (entry.meaning && entry.meaning.ja) || '' },
+        tags: entry.tags || [],
+      })),
+    };
+  }
+
+  // The ops that apply one named effect, in the same order the Studio command
+  // runs: drop what the previous recipe wrote, merge the recipe into the bag
+  // (groups the previous recipe also wrote start from the recipe alone) and
+  // record the descriptor.
+  function namedEffectOps(work, namedEffects, input, view) {
+    const runtime = namedRuntime(namedEffects);
+    if (!runtime) throw new Error('named effect catalog not loaded');
+    const entry = runtime.get(String((input && input.id) || '').trim());
+    if (!entry) throw new Error(`unknown named effect: ${input && input.id}`);
+    const target = parseNamedTarget(work, view, input && input.target);
+    const style = namedEffects.styleOf(entry);
+    const groups = namedEffects.groupsOf(entry);
+    const prev = target.bag.namedEffect;
+    const prevGroups = prev && Array.isArray(prev.groups) ? prev.groups : [];
+    const ops = [];
+    for (const group of prevGroups) {
+      if (!groups.includes(group) && target.bag[group] !== undefined) ops.push({ op: 'remove', path: `${target.bagPath}/${group}` });
+    }
+    for (const group of groups) {
+      const base = prevGroups.includes(group) ? {} : target.bag[group] || {};
+      ops.push({ op: 'set', path: `${target.bagPath}/${group}`, value: deepMerge(base, style[group]) });
+    }
+    ops.push({ op: 'set', path: `${target.bagPath}/namedEffect`, value: { id: entry.id, pack: entry.pack, groups, name: clone(entry.name || {}) } });
+    return { ops, entry, target };
+  }
+
   const TOOLS = [
     {
       name: 'get_overview',
@@ -179,6 +274,18 @@
       input_schema: { type: 'object', properties: { group: { type: 'string' } } },
     },
     {
+      name: 'list_named_effects',
+      description: 'List the named effects (the 120 motion-prompt looks: 5 packs of 24). query matches id, pack, slug, names, meanings and tags; pack is motion | camera | ui | lp | photo. Each entry shows what it means; apply one with apply_named_effect.',
+      input_schema: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Whitespace-separated terms; every term must match.' },
+          pack: { type: 'string' },
+          limit: { type: 'number', description: 'Max entries to return (default 40).' },
+        },
+      },
+    },
+    {
       name: 'apply_patch',
       description: 'Edit the working copy of the project. Ops are applied in order and validated as a whole; on error nothing is changed. op: set | remove | insert; path is a JSON pointer ("-" appends to an array). format, version, media and dataset cannot be written.',
       input_schema: {
@@ -197,6 +304,11 @@
         required: ['ops'],
       },
     },
+    {
+      name: 'apply_named_effect',
+      description: 'Apply a named effect (see list_named_effects) to one element. The style groups the previous named effect wrote are replaced, the recipe merges over the look and the element records it. target: project | cue:<cueId> | cue:<cueId>/beat:<beatId>; omit for the selection, else the cue at the playhead.',
+      input_schema: { type: 'object', properties: { id: { type: 'string' }, target: { type: 'string' } }, required: ['id'] },
+    },
   ];
 
   // A working session over one project. `migrate` is SA.project.migrate: every
@@ -205,6 +317,7 @@
     const migrate = deps && deps.migrate;
     const fx = deps && deps.fx;
     const resolveStyle = deps && deps.resolveStyle;
+    const namedEffects = deps && deps.namedEffects;
     let view = null;
     let work = clone(project);
     const applied = []; // every accepted op, in order
@@ -222,6 +335,19 @@
           return { ok: true, result: text === undefined ? null : text.length > READ_MAX ? `${text.slice(0, READ_MAX)}...(truncated, ${text.length} chars)` : JSON.parse(text) };
         }
         if (name === 'list_effects') return { ok: true, result: listEffects(fx, input && input.group) };
+        if (name === 'list_named_effects') return { ok: true, result: listNamedEffects(namedEffects, input && input.query, input && input.pack, input && input.limit) };
+        if (name === 'apply_named_effect') {
+          const { ops, entry, target } = namedEffectOps(work, namedEffects, input, view);
+          const next = applyOps(clone(work), ops);
+          if (migrate) {
+            const verdict = migrate(clone(next));
+            if (!verdict || !verdict.ok) throw new Error(`project invalid after patch: ${(verdict && verdict.error) || 'unknown'}`);
+          }
+          work = next;
+          applied.push(...ops);
+          summaries.push(`named effect #${entry.id} -> ${target.label}`);
+          return { ok: true, result: { applied: ops.length, id: entry.id, target: target.label } };
+        }
         if (name === 'apply_patch') {
           const ops = input && input.ops;
           const next = applyOps(clone(work), ops);
@@ -250,5 +376,5 @@
     };
   }
 
-  return { TOOLS, PROTECTED, applyOps, readPath, digest, focus, listEffects, createSession };
+  return { TOOLS, PROTECTED, applyOps, readPath, digest, focus, listEffects, listNamedEffects, namedEffectOps, parseNamedTarget, createSession };
 });
