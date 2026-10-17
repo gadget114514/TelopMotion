@@ -157,6 +157,39 @@ test('primitive drawing process enter/exit effects and companions', () => {
   assert.equal(stateBoxOut.reprProgress, 0.5, 'boxErase sets reprProgress');
 });
 
+test('bulletHoles and particlesOnText enter and exit effects exist and function properly', () => {
+  const bulletEnter = fx.get('enter', 'bulletHoles');
+  assert.ok(bulletEnter, 'bulletHoles enter effect registered');
+  const stateBulletIn = { x: 0, y: 0, rot: 0, opacity: 1, represent: '', dust: null };
+  bulletEnter.cpu(stateBulletIn, 0.5, { count: 3, recoil: 0.3, dust: 0.5 }, () => 0.7, { shortSide: 1000 });
+  assert.equal(stateBulletIn.represent, 'dust', 'bulletHoles enter sets represent to dust');
+  assert.ok(stateBulletIn.dust, 'bulletHoles enter configures dust parameters');
+  assert.ok(stateBulletIn.opacity > 0 && stateBulletIn.opacity <= 1, 'bulletHoles enter sets opacity');
+
+  const bulletExit = fx.get('exit', 'bulletHoles');
+  assert.ok(bulletExit, 'bulletHoles exit effect registered');
+  const stateBulletOut = { x: 0, y: 0, rot: 0, opacity: 1, represent: '', dust: null };
+  bulletExit.cpu(stateBulletOut, 0.5, { count: 3, recoil: 0.3, dust: 0.5 }, () => 0.7, { shortSide: 1000 });
+  assert.equal(stateBulletOut.represent, 'dust', 'bulletHoles exit sets represent to dust');
+  assert.ok(stateBulletOut.dust, 'bulletHoles exit configures dust parameters');
+  assert.equal(stateBulletOut.opacity, 0.5, 'bulletHoles exit reduces opacity at p=0.5');
+
+  const partEnter = fx.get('enter', 'particlesOnText');
+  assert.ok(partEnter, 'particlesOnText enter effect registered');
+  const statePartIn = { x: 0, y: 0, opacity: 1, scaleX: 1, scaleY: 1, represent: '', reprProgress: 0 };
+  partEnter.cpu(statePartIn, 0.5, { count: 24, spread: 0.4, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.equal(statePartIn.represent, 'particles', 'particlesOnText enter sets represent to particles');
+  assert.equal(statePartIn.reprProgress, 0.5, 'particlesOnText enter sets reprProgress');
+
+  const partExit = fx.get('exit', 'particlesOnText');
+  assert.ok(partExit, 'particlesOnText exit effect registered');
+  const statePartOut = { x: 0, y: 0, opacity: 1, rot: 0, represent: '', reprProgress: 1 };
+  partExit.cpu(statePartOut, 0.5, { count: 24, spread: 0.4, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.equal(statePartOut.represent, 'particles', 'particlesOnText exit sets represent to particles');
+  assert.equal(statePartOut.reprProgress, 0.5, 'particlesOnText exit sets reprProgress to 1-p');
+  assert.equal(statePartOut.opacity, 0.5, 'particlesOnText exit reduces opacity');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -170,7 +203,11 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('circleDrawIn'), 'circleDrawIn preset');
   assert.ok(ids.has('lineDrawIn'), 'lineDrawIn preset');
   assert.ok(ids.has('boxDrawIn'), 'boxDrawIn preset');
+  assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
+  assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
+  assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
+  assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
 });
