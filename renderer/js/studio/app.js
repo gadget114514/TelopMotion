@@ -1101,6 +1101,16 @@
     }
   }
 
+  // the named effects showcase: 120 motion-prompt catalogue entries as
+  // ready-made looks.
+  async function namedEffectsShowcaseProject() {
+    try {
+      await openShowcaseAsset('data/named-effects-showcase.json');
+    } catch {
+      toast('studio.toast.invalidProject');
+    }
+  }
+
   // the shader-break families' own showcase: mosaic / fog / wind / drift /
   // cloth, each in enter / hold / exit. The ids are language-independent, so
   // no re-labelling is needed.
@@ -2301,6 +2311,7 @@
       cloneShowcase: cloneShowcaseProject,
       letterFxShowcase: letterFxShowcaseProject,
       textShowcase: textShowcaseProject,
+      namedEffectsShowcase: namedEffectsShowcaseProject,
       shaderShowcase: shaderShowcaseProject,
       objfxShowcase: objfxShowcaseProject,
       motionShowcase: motionShowcaseProject,
