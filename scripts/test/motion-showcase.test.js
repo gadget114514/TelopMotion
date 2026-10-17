@@ -1,6 +1,6 @@
 'use strict';
 
-// The motion showcase: all 424 gallery presets must reach the 16 sequential
+// The motion showcase: all 443 gallery presets must reach the 16 sequential
 // parts, survive the migration with their single custom motion, match the
 // committed files byte for byte, and open from Help in all five languages
 // (16 parts plus the interruptible play-all run).
@@ -24,13 +24,13 @@ function motionPresets() {
   return require(path.join(ROOT, 'renderer', 'js', 'lyrics', 'motion.js')).motionPresets();
 }
 
-test('the 429 presets split into 16 parts of 26–27 cues', () => {
+test('the 443 presets split into 16 parts of 27–28 cues', () => {
   const b = built();
-  assert.equal(b.slots.length, 429);
+  assert.equal(b.slots.length, 443);
   assert.equal(b.parts.length, 16);
   assert.deepEqual(
     b.parts.map((part) => part.entries.length),
-    [27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 26, 26, 26]
+    [28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 27, 27, 27, 27, 27]
   );
   for (const part of b.parts) {
     assert.equal(part.total, part.entries.length * showcase.MOTION_SECONDS);

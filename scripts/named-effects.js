@@ -760,11 +760,13 @@ function catalogMarkdown(data) {
   lines.push('https://showheyohtaki.github.io/motion-prompt/ の 120 種の演出（5 パック × 24）に、TelopMotion の効果レシピを 1 対 1 で割り当てた一覧です。');
   lines.push('レシピは効果レジストリのグループ（登場・退場・保持・後処理・塗り・縁取り・レター罫線・配置・リピート・アニメーション）への差分で、適用時に `SA.looks.expand` が既定値込みのスタイルへ戻します。');
   lines.push('データは `renderer/data/named-effects.json`、ビルドは `node scripts/named-effects.js build` です。');
+  lines.push('全 120 種を通しで確認するレビュープロジェクトは **Help → ネームドエフェクト見本** （`renderer/data/named-effects-showcase.json`、[demo/named-effects-showcase.md](named-effects-showcase.md)）から開けます。');
   lines.push('');
   lines.push('```');
   lines.push('node scripts/named-effects.js list [--pack motion]');
   lines.push('node scripts/named-effects.js show 12');
   lines.push('node scripts/named-effects.js apply 12 --project <file> --cue 3 [--beat <id>] [--out <file>]');
+  lines.push('npm run named-effects-showcase -- build');
   lines.push('```');
   lines.push('');
   lines.push('出典: motion-prompt（作者 @showheyohtaki、MIT ライセンス）。名前・意味・タグは公式カタログから取得しています。');

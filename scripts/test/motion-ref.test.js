@@ -188,6 +188,71 @@ test('tiltHold and tiltSpinHold effects exist and function properly', () => {
 
   const tiltSpinHoldSub = fx.get('hold', 'tiltSpinHoldSubstring');
   assert.ok(tiltSpinHoldSub, 'tiltSpinHoldSubstring registered');
+test('bulletHoles and particlesOnText enter and exit effects exist and function properly', () => {
+  const bulletEnter = fx.get('enter', 'bulletHoles');
+  assert.ok(bulletEnter, 'bulletHoles enter effect registered');
+  const stateBulletIn = { x: 0, y: 0, rot: 0, opacity: 1, represent: '', dust: null };
+  bulletEnter.cpu(stateBulletIn, 0.5, { count: 3, recoil: 0.3, dust: 0.5 }, () => 0.7, { shortSide: 1000 });
+  assert.equal(stateBulletIn.represent, 'dust', 'bulletHoles enter sets represent to dust');
+  assert.ok(stateBulletIn.dust, 'bulletHoles enter configures dust parameters');
+  assert.ok(stateBulletIn.opacity > 0 && stateBulletIn.opacity <= 1, 'bulletHoles enter sets opacity');
+
+  const bulletExit = fx.get('exit', 'bulletHoles');
+  assert.ok(bulletExit, 'bulletHoles exit effect registered');
+  const stateBulletOut = { x: 0, y: 0, rot: 0, opacity: 1, represent: '', dust: null };
+  bulletExit.cpu(stateBulletOut, 0.5, { count: 3, recoil: 0.3, dust: 0.5 }, () => 0.7, { shortSide: 1000 });
+  assert.equal(stateBulletOut.represent, 'dust', 'bulletHoles exit sets represent to dust');
+  assert.ok(stateBulletOut.dust, 'bulletHoles exit configures dust parameters');
+  assert.equal(stateBulletOut.opacity, 0.5, 'bulletHoles exit reduces opacity at p=0.5');
+
+  const partEnter = fx.get('enter', 'particlesOnText');
+  assert.ok(partEnter, 'particlesOnText enter effect registered');
+  const statePartIn = { x: 0, y: 0, opacity: 1, scaleX: 1, scaleY: 1, represent: '', reprProgress: 0 };
+  partEnter.cpu(statePartIn, 0.5, { count: 24, spread: 0.4, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.equal(statePartIn.represent, 'particles', 'particlesOnText enter sets represent to particles');
+  assert.equal(statePartIn.reprProgress, 0.5, 'particlesOnText enter sets reprProgress');
+
+  const partExit = fx.get('exit', 'particlesOnText');
+  assert.ok(partExit, 'particlesOnText exit effect registered');
+  const statePartOut = { x: 0, y: 0, opacity: 1, rot: 0, represent: '', reprProgress: 1 };
+  partExit.cpu(statePartOut, 0.5, { count: 24, spread: 0.4, speed: 1.0 }, () => 0.5, { shortSide: 1000, i: 0 });
+  assert.equal(statePartOut.represent, 'particles', 'particlesOnText exit sets represent to particles');
+  assert.equal(statePartOut.reprProgress, 0.5, 'particlesOnText exit sets reprProgress to 1-p');
+  assert.equal(statePartOut.opacity, 0.5, 'particlesOnText exit reduces opacity');
+});
+
+test('checkerboard enter and exit effects exist and function properly', () => {
+  const checkerIn = fx.get('enter', 'checkerboard');
+  assert.ok(checkerIn, 'checkerboard enter effect registered');
+  const stateInStart = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInStart, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateInStart.visibleFrac, 0, 'checkerboard enter hides letters at p=0');
+  assert.equal(stateInStart.wipeMode, 0, 'checkerboard enter uses the horizontal wipe on even letters');
+  const stateInOdd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInOdd, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 1 });
+  assert.equal(stateInOdd.wipeMode, 2, 'checkerboard enter uses the vertical wipe on odd letters');
+  const stateInEnd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInEnd, 1, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateInEnd.visibleFrac, 1, 'checkerboard enter fully reveals at p=1');
+
+  const checkerOut = fx.get('exit', 'checkerboard');
+  assert.ok(checkerOut, 'checkerboard exit effect registered');
+  const stateOutStart = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(stateOutStart, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateOutStart.visibleFrac, 1, 'checkerboard exit keeps letters visible at p=0');
+  assert.equal(stateOutStart.wipeMode, 0, 'checkerboard exit keeps the even-letter wipe axis');
+  const stateOutEnd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(stateOutEnd, 1, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateOutEnd.visibleFrac, 0, 'checkerboard exit hides letters at p=1');
+
+  // the parity phase shifts every `cells` letters, staggering the checker rows
+  const earlyOut = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(earlyOut, 0.4, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  const lateOut = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(lateOut, 0.4, { cells: 4, soft: 0.05 }, () => 0.5, { i: 5 });
+  assert.equal(earlyOut.visibleFrac, 1, 'checkerboard exit keeps phase-0 letters fully visible mid-wipe');
+  assert.ok(lateOut.visibleFrac > 0 && lateOut.visibleFrac < 1, 'checkerboard exit staggers later rows');
+  assert.ok(lateOut.scaleX < 1 && lateOut.scaleY < 1, 'checkerboard exit shrinks letters mid-wipe');
 });
 
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
@@ -203,7 +268,13 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('circleDrawIn'), 'circleDrawIn preset');
   assert.ok(ids.has('lineDrawIn'), 'lineDrawIn preset');
   assert.ok(ids.has('boxDrawIn'), 'boxDrawIn preset');
+  assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
+  assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
+  assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
+  assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
+  assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
+  assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
 });

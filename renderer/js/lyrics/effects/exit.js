@@ -167,6 +167,31 @@
     },
   });
 
+  // The entrance's checkerboard, run backwards: letters alternate between the
+  // two wipe axes and every row of `cells` letters shifts its phase by half, so
+  // the block empties in a staggered checker pattern.
+  fx.register({
+    group: 'exit',
+    type: 'checkerboard',
+    tags: ['basic', 'mask'],
+    params: [
+      { key: 'cells', kind: 'int', min: 2, max: 8, step: 1, default: 4 },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const cells = Math.max(2, params.cells == null ? 4 : params.cells);
+      const i = info ? info.i : 0;
+      const parity = (i % 2) + ((Math.floor(i / cells) % 2) * 0.5);
+      state.wipeMode = (i % 2 === 0) ? 0 : 2;
+      state.wipeSoft = params.soft == null ? 0.05 : params.soft;
+      const local = clamp01((1 - clamp01(p)) * 2 - parity * 0.5);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(local));
+      const k = 1 - clamp01(local);
+      state.scaleX *= 1 - 0.12 * k;
+      state.scaleY *= 1 - 0.12 * k;
+    },
+  });
+
   fx.register({
     group: 'exit',
     type: 'typewriterReverse',
@@ -662,6 +687,75 @@
       state.y -= (params.rise == null ? 0.25 : params.rise) * info.shortSide * k;
       state.dissolve = { scale: params.grain == null ? 2.4 : params.grain, progress: 1 - k, edge: 0.2 };
       state.opacity *= 1 - k * 0.5;
+    },
+  });
+
+  fx.register({
+    group: 'exit',
+    type: 'bulletHoles',
+    tags: ['lively', 'particles'],
+    cost: 2,
+    params: [
+      { key: 'count', kind: 'int', min: 1, max: 10, step: 1, default: 3 },
+      { key: 'recoil', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.3 },
+      { key: 'dust', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.5 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const recoilScale = (params.recoil == null ? 0.3 : params.recoil) * (info && info.shortSide ? info.shortSide : 1080) * 0.05;
+      const count = Math.max(1, params.count == null ? 3 : params.count);
+      const impactPhase = (progress * count) % 1;
+
+      if (progress > 0.001) {
+        const rand = typeof rng === 'function' ? rng : () => 0.5;
+        const jx = (rand() * 2 - 1) * recoilScale * Math.exp(-impactPhase * 3) * progress;
+        const jy = (rand() * 2 - 1) * recoilScale * Math.exp(-impactPhase * 3) * progress;
+        state.x += jx;
+        state.y += jy;
+        state.rot += (rand() * 2 - 1) * 12 * progress;
+        if (impactPhase < 0.25 && progress < 0.95) {
+          state.flash = Math.max(state.flash || 0, 0.7 * (1 - impactPhase / 0.25));
+        }
+
+        state.represent = 'dust';
+        state.dust = {
+          amount: (params.dust == null ? 0.5 : params.dust) * progress,
+          windX: (rand() * 2 - 1) * 0.3,
+          windY: 0.4,
+          size: 3.5,
+          turbulence: 0.5,
+          spread: 0.6,
+        };
+      }
+      state.opacity *= Math.max(0, 1 - progress);
+    },
+  });
+
+  fx.register({
+    group: 'exit',
+    type: 'particlesOnText',
+    tags: ['particles'],
+    cost: 2,
+    params: [
+      { key: 'count', kind: 'int', min: 4, max: 64, step: 1, default: 24 },
+      { key: 'spread', kind: 'number', min: 0, max: 1, step: 0.01, default: 0.4, random: [0.2, 0.7] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 3, step: 0.1, default: 1.0 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const spread = (params.spread == null ? 0.4 : params.spread) * (info && info.shortSide ? info.shortSide : 1080);
+      const speed = params.speed == null ? 1.0 : params.speed;
+      const idx = info && info.i != null ? info.i : 0;
+
+      if (progress > 0.001 && progress < 0.999) {
+        state.represent = 'particles';
+        state.reprProgress = 1 - progress;
+      }
+      const rand = typeof rng === 'function' ? rng : () => 0.5;
+      state.x += Math.sin(progress * Math.PI * 2 * speed + idx * 0.7) * spread * 0.3 * progress;
+      state.y -= Math.cos(progress * Math.PI * 2 * speed + idx * 0.7) * spread * 0.3 * progress;
+      state.rot += (rand() * 2 - 1) * 40 * progress;
+      state.opacity *= Math.max(0, 1 - progress);
     },
   });
 
