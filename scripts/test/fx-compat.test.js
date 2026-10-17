@@ -24,7 +24,7 @@ test('text-premised types are excluded, generic ones stay', () => {
   for (const type of ['fade', 'slide', 'zoomIn', 'rotateIn', 'elasticPop', 'glitchIn', 'slideBlur', 'shakeIn', 'spinPartIn']) {
     assert.equal(fxCompat.isCompatible('enter', type), true, `enter ${type}`);
   }
-  for (const type of ['dissolve', 'wipe', 'typewriterReverse', 'strokeErase', 'sandCrumble', 'blurOut']) {
+  for (const type of ['dissolve', 'wipe', 'checkerboard', 'typewriterReverse', 'strokeErase', 'sandCrumble', 'blurOut']) {
     assert.equal(fxCompat.isCompatible('exit', type), false, `exit ${type}`);
   }
   for (const type of ['fade', 'floatOut', 'shrinkDir', 'spiralOut', 'vanish', 'rotateOut']) {

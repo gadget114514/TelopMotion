@@ -43,57 +43,57 @@
         "id": "mo12_01",
         "start": 0,
         "end": 3,
-        "text": "298. 物理シミュレーション (Rigid Body Physics) · jelly [amount:0.15 freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "309. 振り子 (Hanging Pendulum) · sway [angle:10 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 298,
-          "presetId": "te_341",
+          "index": 309,
+          "presetId": "te_345",
           "group": "emphasis",
           "phase": "hold",
-          "type": "jelly"
+          "type": "sway"
         }
       },
       {
         "id": "mo12_02",
         "start": 3,
         "end": 6,
-        "text": "299. 磁石 (Magnetic Attraction) · drift [vx:-0.08]\nあいうえお Aiueo 0123",
+        "text": "310. バネ揺れ (Spring Oscillation) · jelly [amount:0.14 freq:1.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 299,
-          "presetId": "te_342",
+          "index": 310,
+          "presetId": "te_346",
           "group": "emphasis",
           "phase": "hold",
-          "type": "drift"
+          "type": "jelly"
         }
       },
       {
         "id": "mo12_03",
         "start": 6,
         "end": 9,
-        "text": "300. 風 (Wind Gust) · drift [vx:0.18 vy:-0.02]\nあいうえお Aiueo 0123",
+        "text": "311. ロープ吊り (Rope Signboard) · sway [angle:8 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 300,
-          "presetId": "te_343",
+          "index": 311,
+          "presetId": "te_347",
           "group": "emphasis",
           "phase": "hold",
-          "type": "drift"
+          "type": "sway"
         }
       },
       {
         "id": "mo12_04",
         "start": 9,
         "end": 12,
-        "text": "301. 吹き飛び (Blast Away) · drift [vx:0.25]\nあいうえお Aiueo 0123",
+        "text": "312. クロス (Cloth Simulation) · drift [vx:0.08 vy:0.04]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 301,
-          "presetId": "te_344",
+          "index": 312,
+          "presetId": "te_348",
           "group": "emphasis",
           "phase": "hold",
           "type": "drift"
@@ -103,27 +103,27 @@
         "id": "mo12_05",
         "start": 12,
         "end": 15,
-        "text": "302. 振り子 (Hanging Pendulum) · sway [angle:10 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "313. ウォーターフォール (Text Waterfall) · drift [vx:0 vy:0.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 302,
-          "presetId": "te_345",
+          "index": 313,
+          "presetId": "te_349",
           "group": "emphasis",
           "phase": "hold",
-          "type": "sway"
+          "type": "drift"
         }
       },
       {
         "id": "mo12_06",
         "start": 15,
         "end": 18,
-        "text": "303. バネ揺れ (Spring Oscillation) · jelly [amount:0.14 freq:1.6]\nあいうえお Aiueo 0123",
+        "text": "314. スライムリビール (Slime Reveal) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 303,
-          "presetId": "te_346",
+          "index": 314,
+          "presetId": "te_350",
           "group": "emphasis",
           "phase": "hold",
           "type": "jelly"
@@ -133,71 +133,11 @@
         "id": "mo12_07",
         "start": 18,
         "end": 21,
-        "text": "304. ロープ吊り (Rope Signboard) · sway [angle:8 speed:0.4]\nあいうえお Aiueo 0123",
+        "text": "315. インクドロップ (Ink Drop Diffusion) · drift [vx:0 vy:0.1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 304,
-          "presetId": "te_347",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "sway"
-        }
-      },
-      {
-        "id": "mo12_08",
-        "start": 21,
-        "end": 24,
-        "text": "305. クロス (Cloth Simulation) · drift [vx:0.08 vy:0.04]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 305,
-          "presetId": "te_348",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "drift"
-        }
-      },
-      {
-        "id": "mo12_09",
-        "start": 24,
-        "end": 27,
-        "text": "306. ウォーターフォール (Text Waterfall) · drift [vx:0 vy:0.2]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 306,
-          "presetId": "te_349",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "drift"
-        }
-      },
-      {
-        "id": "mo12_10",
-        "start": 27,
-        "end": 30,
-        "text": "307. スライムリビール (Slime Reveal) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 307,
-          "presetId": "te_350",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jelly"
-        }
-      },
-      {
-        "id": "mo12_11",
-        "start": 30,
-        "end": 33,
-        "text": "308. インクドロップ (Ink Drop Diffusion) · drift [vx:0 vy:0.1]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 308,
+          "index": 315,
           "presetId": "te_351",
           "group": "emphasis",
           "phase": "hold",
@@ -205,14 +145,14 @@
         }
       },
       {
-        "id": "mo12_12",
-        "start": 33,
-        "end": 36,
-        "text": "309. パスアニメーション (Path Animation) · pathFollow\nあいうえお Aiueo 0123",
+        "id": "mo12_08",
+        "start": 21,
+        "end": 24,
+        "text": "316. パスアニメーション (Path Animation) · pathFollow\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 309,
+          "index": 316,
           "presetId": "te_79",
           "group": "emphasis",
           "phase": "hold",
@@ -220,15 +160,75 @@
         }
       },
       {
-        "id": "mo12_13",
-        "start": 36,
-        "end": 39,
-        "text": "310. スクロール (Scroll) · marquee\nあいうえお Aiueo 0123",
+        "id": "mo12_09",
+        "start": 24,
+        "end": 27,
+        "text": "317. スクロール (Scroll) · marquee\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 310,
+          "index": 317,
           "presetId": "te_84",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "marquee"
+        }
+      },
+      {
+        "id": "mo12_10",
+        "start": 27,
+        "end": 30,
+        "text": "318. 横スクロール (Horizontal Scroll) · marquee [speed:0.35]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 318,
+          "presetId": "te_85",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "marquee"
+        }
+      },
+      {
+        "id": "mo12_11",
+        "start": 30,
+        "end": 33,
+        "text": "319. クロール (Crawl) · marquee [speed:0.18]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 319,
+          "presetId": "te_86",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "marquee"
+        }
+      },
+      {
+        "id": "mo12_12",
+        "start": 33,
+        "end": 36,
+        "text": "320. エンドロール (End Credits) · drift [vx:0 vy:-0.08]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 320,
+          "presetId": "te_87",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "drift"
+        }
+      },
+      {
+        "id": "mo12_13",
+        "start": 36,
+        "end": 39,
+        "text": "321. ティッカー (News Ticker) · marquee [speed:0.3]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 321,
+          "presetId": "te_88",
           "group": "emphasis",
           "phase": "hold",
           "type": "marquee"
@@ -238,12 +238,12 @@
         "id": "mo12_14",
         "start": 39,
         "end": 42,
-        "text": "311. 横スクロール (Horizontal Scroll) · marquee [speed:0.35]\nあいうえお Aiueo 0123",
+        "text": "322. マーキー (Marquee) · marquee [speed:0.22]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 311,
-          "presetId": "te_85",
+          "index": 322,
+          "presetId": "te_89",
           "group": "emphasis",
           "phase": "hold",
           "type": "marquee"
@@ -253,71 +253,11 @@
         "id": "mo12_15",
         "start": 42,
         "end": 45,
-        "text": "312. クロール (Crawl) · marquee [speed:0.18]\nあいうえお Aiueo 0123",
+        "text": "323. ベベル (Bevel) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 312,
-          "presetId": "te_86",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "marquee"
-        }
-      },
-      {
-        "id": "mo12_16",
-        "start": 45,
-        "end": 48,
-        "text": "313. エンドロール (End Credits) · drift [vx:0 vy:-0.08]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 313,
-          "presetId": "te_87",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "drift"
-        }
-      },
-      {
-        "id": "mo12_17",
-        "start": 48,
-        "end": 51,
-        "text": "314. ティッカー (News Ticker) · marquee [speed:0.3]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 314,
-          "presetId": "te_88",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "marquee"
-        }
-      },
-      {
-        "id": "mo12_18",
-        "start": 51,
-        "end": 54,
-        "text": "315. マーキー (Marquee) · marquee [speed:0.22]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 315,
-          "presetId": "te_89",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "marquee"
-        }
-      },
-      {
-        "id": "mo12_19",
-        "start": 54,
-        "end": 57,
-        "text": "316. ベベル (Bevel) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "12",
-          "index": 316,
+          "index": 323,
           "presetId": "te_134",
           "group": "emphasis",
           "phase": "hold",
@@ -325,14 +265,14 @@
         }
       },
       {
-        "id": "mo12_20",
-        "start": 57,
-        "end": 60,
-        "text": "317. ドロップシャドウ (Drop Shadow) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "id": "mo12_16",
+        "start": 45,
+        "end": 48,
+        "text": "324. ドロップシャドウ (Drop Shadow) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 317,
+          "index": 324,
           "presetId": "te_138",
           "group": "emphasis",
           "phase": "hold",
@@ -340,14 +280,14 @@
         }
       },
       {
-        "id": "mo12_21",
-        "start": 60,
-        "end": 63,
-        "text": "318. ロングシャドウ (Long Shadow) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "id": "mo12_17",
+        "start": 48,
+        "end": 51,
+        "text": "325. ロングシャドウ (Long Shadow) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 318,
+          "index": 325,
           "presetId": "te_139",
           "group": "emphasis",
           "phase": "hold",
@@ -355,15 +295,75 @@
         }
       },
       {
-        "id": "mo12_22",
-        "start": 63,
-        "end": 66,
-        "text": "319. インナーシャドウ (Inner Shadow) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "id": "mo12_18",
+        "start": 51,
+        "end": 54,
+        "text": "326. インナーシャドウ (Inner Shadow) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 319,
+          "index": 326,
           "presetId": "te_140",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo12_19",
+        "start": 54,
+        "end": 57,
+        "text": "327. グロー (Glow) · opacityPulse [min:0.5 period:2]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 327,
+          "presetId": "te_141",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "opacityPulse"
+        }
+      },
+      {
+        "id": "mo12_20",
+        "start": 57,
+        "end": 60,
+        "text": "328. ネオン (Neon) · opacityPulse [min:0.45 period:1.8]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 328,
+          "presetId": "te_142",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "opacityPulse"
+        }
+      },
+      {
+        "id": "mo12_21",
+        "start": 60,
+        "end": 63,
+        "text": "329. ネオン点灯 (Neon Flicker-On) · opacityPulse [period:0.9 speed:1]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 329,
+          "presetId": "te_143",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "opacityPulse"
+        }
+      },
+      {
+        "id": "mo12_22",
+        "start": 63,
+        "end": 66,
+        "text": "330. アウトライン (Outline) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "12",
+          "index": 330,
+          "presetId": "te_144",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -373,42 +373,42 @@
         "id": "mo12_23",
         "start": 66,
         "end": 69,
-        "text": "320. グロー (Glow) · opacityPulse [min:0.5 period:2]\nあいうえお Aiueo 0123",
+        "text": "331. 縁取り (Stroke / Border) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 320,
-          "presetId": "te_141",
+          "index": 331,
+          "presetId": "te_145",
           "group": "emphasis",
           "phase": "hold",
-          "type": "opacityPulse"
+          "type": "breathing"
         }
       },
       {
         "id": "mo12_24",
         "start": 69,
         "end": 72,
-        "text": "321. ネオン (Neon) · opacityPulse [min:0.45 period:1.8]\nあいうえお Aiueo 0123",
+        "text": "332. 二重縁 (Double Border) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 321,
-          "presetId": "te_142",
+          "index": 332,
+          "presetId": "te_146",
           "group": "emphasis",
           "phase": "hold",
-          "type": "opacityPulse"
+          "type": "breathing"
         }
       },
       {
         "id": "mo12_25",
         "start": 72,
         "end": 75,
-        "text": "322. ネオン点灯 (Neon Flicker-On) · opacityPulse [period:0.9 speed:1]\nあいうえお Aiueo 0123",
+        "text": "333. グラデーション (Gradient) · opacityPulse [min:0.6 period:2.5 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 322,
-          "presetId": "te_143",
+          "index": 333,
+          "presetId": "te_147",
           "group": "emphasis",
           "phase": "hold",
           "type": "opacityPulse"
@@ -418,12 +418,12 @@
         "id": "mo12_26",
         "start": 75,
         "end": 78,
-        "text": "323. アウトライン (Outline) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "text": "334. ストライプ (Stripes) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 323,
-          "presetId": "te_144",
+          "index": 334,
+          "presetId": "te_160",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -433,15 +433,15 @@
         "id": "mo12_27",
         "start": 78,
         "end": 81,
-        "text": "324. 縁取り (Stroke / Border) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "335. シャイン (Shine) · opacityPulse [min:0.4 period:1.2 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "12",
-          "index": 324,
-          "presetId": "te_145",
+          "index": 335,
+          "presetId": "te_161",
           "group": "emphasis",
           "phase": "hold",
-          "type": "breathing"
+          "type": "opacityPulse"
         }
       }
     ],
@@ -499,14 +499,14 @@
         {
           "id": "m_mo12_01",
           "phase": "hold",
-          "type": "jelly",
+          "type": "sway",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.15,
-            "freq": 1.5
+            "angle": 10,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -544,14 +544,14 @@
         {
           "id": "m_mo12_02",
           "phase": "hold",
-          "type": "drift",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": -0.08,
-            "vy": 0
+            "amount": 0.14,
+            "freq": 1.6
           },
           "enabled": true
         }
@@ -589,14 +589,14 @@
         {
           "id": "m_mo12_03",
           "phase": "hold",
-          "type": "drift",
+          "type": "sway",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.18,
-            "vy": -0.02
+            "angle": 8,
+            "speed": 0.4
           },
           "enabled": true
         }
@@ -640,8 +640,8 @@
           "duration": 1.6,
           "ease": "linear",
           "params": {
-            "vx": 0.25,
-            "vy": 0
+            "vx": 0.08,
+            "vy": 0.04
           },
           "enabled": true
         }
@@ -679,14 +679,14 @@
         {
           "id": "m_mo12_05",
           "phase": "hold",
-          "type": "sway",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.8,
           "ease": "linear",
           "params": {
-            "angle": 10,
-            "speed": 0.5
+            "vx": 0,
+            "vy": 0.2
           },
           "enabled": true
         }
@@ -730,8 +730,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.14,
-            "freq": 1.6
+            "amount": 0.18,
+            "freq": 1
           },
           "enabled": true
         }
@@ -769,14 +769,14 @@
         {
           "id": "m_mo12_07",
           "phase": "hold",
-          "type": "sway",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "angle": 8,
-            "speed": 0.4
+            "vx": 0,
+            "vy": 0.1
           },
           "enabled": true
         }
@@ -814,14 +814,27 @@
         {
           "id": "m_mo12_08",
           "phase": "hold",
-          "type": "drift",
+          "type": "pathFollow",
           "from": "start",
           "delay": 0,
           "duration": 1.6,
           "ease": "linear",
           "params": {
-            "vx": 0.08,
-            "vy": 0.04
+            "points": [
+              {
+                "x": 0.2,
+                "y": 0.5
+              },
+              {
+                "x": 0.5,
+                "y": 0.42
+              },
+              {
+                "x": 0.8,
+                "y": 0.5
+              }
+            ],
+            "speed": 0.1
           },
           "enabled": true
         }
@@ -859,14 +872,13 @@
         {
           "id": "m_mo12_09",
           "phase": "hold",
-          "type": "drift",
+          "type": "marquee",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 2.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": 0.2
+            "speed": 0.25
           },
           "enabled": true
         }
@@ -904,14 +916,13 @@
         {
           "id": "m_mo12_10",
           "phase": "hold",
-          "type": "jelly",
+          "type": "marquee",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 2.2,
           "ease": "linear",
           "params": {
-            "amount": 0.18,
-            "freq": 1
+            "speed": 0.35
           },
           "enabled": true
         }
@@ -949,14 +960,13 @@
         {
           "id": "m_mo12_11",
           "phase": "hold",
-          "type": "drift",
+          "type": "marquee",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 2.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": 0.1
+            "speed": 0.18
           },
           "enabled": true
         }
@@ -994,27 +1004,14 @@
         {
           "id": "m_mo12_12",
           "phase": "hold",
-          "type": "pathFollow",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 2,
           "ease": "linear",
           "params": {
-            "points": [
-              {
-                "x": 0.2,
-                "y": 0.5
-              },
-              {
-                "x": 0.5,
-                "y": 0.42
-              },
-              {
-                "x": 0.8,
-                "y": 0.5
-              }
-            ],
-            "speed": 0.1
+            "vx": 0,
+            "vy": -0.08
           },
           "enabled": true
         }
@@ -1058,7 +1055,7 @@
           "duration": 2.2,
           "ease": "linear",
           "params": {
-            "speed": 0.25
+            "speed": 0.3
           },
           "enabled": true
         }
@@ -1102,7 +1099,7 @@
           "duration": 2.2,
           "ease": "linear",
           "params": {
-            "speed": 0.35
+            "speed": 0.22
           },
           "enabled": true
         }
@@ -1140,13 +1137,13 @@
         {
           "id": "m_mo12_15",
           "phase": "hold",
-          "type": "marquee",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
-          "duration": 2.2,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 0.18
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1184,14 +1181,13 @@
         {
           "id": "m_mo12_16",
           "phase": "hold",
-          "type": "drift",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
-          "duration": 2,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": -0.08
+            "amount": 0.015
           },
           "enabled": true
         }
@@ -1229,13 +1225,13 @@
         {
           "id": "m_mo12_17",
           "phase": "hold",
-          "type": "marquee",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
-          "duration": 2.2,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 0.3
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1273,13 +1269,13 @@
         {
           "id": "m_mo12_18",
           "phase": "hold",
-          "type": "marquee",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
-          "duration": 2.2,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "speed": 0.22
+            "amount": 0.025
           },
           "enabled": true
         }
@@ -1317,13 +1313,15 @@
         {
           "id": "m_mo12_19",
           "phase": "hold",
-          "type": "breathing",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "min": 0.5,
+            "period": 2,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -1361,13 +1359,15 @@
         {
           "id": "m_mo12_20",
           "phase": "hold",
-          "type": "breathing",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.015
+            "min": 0.45,
+            "period": 1.8,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -1405,13 +1405,15 @@
         {
           "id": "m_mo12_21",
           "phase": "hold",
-          "type": "breathing",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "min": 0.35,
+            "period": 0.9,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1455,7 +1457,7 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.025
+            "amount": 0.015
           },
           "enabled": true
         }
@@ -1493,15 +1495,13 @@
         {
           "id": "m_mo12_23",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.5,
-            "period": 2,
-            "speed": 0.8
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1539,15 +1539,13 @@
         {
           "id": "m_mo12_24",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.45,
-            "period": 1.8,
-            "speed": 0.8
+            "amount": 0.025
           },
           "enabled": true
         }
@@ -1591,9 +1589,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 0.9,
-            "speed": 1
+            "min": 0.6,
+            "period": 2.5,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1637,7 +1635,7 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.015
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1675,13 +1673,15 @@
         {
           "id": "m_mo12_27",
           "phase": "hold",
-          "type": "breathing",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "min": 0.4,
+            "period": 1.2,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -1761,49 +1761,49 @@
   "beats": {
     "mo12_01": [
       {
-        "id": "mo12_01:page1",
+        "id": "mo12_01:single0",
         "cueId": "mo12_01",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 0,
-        "end": 1.1266039349871686,
-        "text": "298. 物理シミュレーション (Rigid Body",
-        "lines": [
-          "298. 物理シミュレーション (Rigid Body"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo12_01:page2",
-        "cueId": "mo12_01",
-        "kind": "page",
-        "index": 2,
-        "start": 1.1266039349871686,
         "end": 3,
-        "text": "Physics) · jelly [amount:0.15 freq:1.5]\nあいうえお Aiueo 0123",
+        "text": "309. 振り子 (Hanging Pendulum) · sway [\nangle:10 speed:0.5]あいうえお Aiueo 0123",
         "lines": [
-          "Physics) · jelly [amount:0.15 freq:1.5]",
-          "あいうえお Aiueo 0123"
+          "309. 振り子 (Hanging Pendulum) · sway [",
+          "angle:10 speed:0.5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo12_02": [
       {
-        "id": "mo12_02:single0",
+        "id": "mo12_02:page1",
         "cueId": "mo12_02",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 3,
-        "end": 6,
-        "text": "299. 磁石 (Magnetic Attraction) ·\ndrift [vx:-0.08]あいうえお Aiueo 0123",
+        "end": 4.189655172413794,
+        "text": "310. バネ揺れ (Spring Oscillation)",
         "lines": [
-          "299. 磁石 (Magnetic Attraction) ·",
-          "drift [vx:-0.08]あいうえお Aiueo 0123"
+          "310. バネ揺れ (Spring Oscillation)"
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo12_02:page2",
+        "cueId": "mo12_02",
+        "kind": "page",
+        "index": 2,
+        "start": 4.189655172413794,
+        "end": 6,
+        "text": " · jelly [amount:0.14 freq:1.6]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · jelly [amount:0.14 freq:1.6]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1815,12 +1815,12 @@
         "index": 0,
         "start": 6,
         "end": 9,
-        "text": "300. 風 (Wind Gust) · drift [vx:0\n.18 vy:-0.02]あいうえお Aiueo 0123",
+        "text": "311. ロープ吊り (Rope Signboard) · sway\n[angle:8 speed:0.4]あいうえお Aiueo 0123",
         "lines": [
-          "300. 風 (Wind Gust) · drift [vx:0",
-          ".18 vy:-0.02]あいうえお Aiueo 0123"
+          "311. ロープ吊り (Rope Signboard) · sway",
+          "[angle:8 speed:0.4]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1832,12 +1832,12 @@
         "index": 0,
         "start": 9,
         "end": 12,
-        "text": "301. 吹き飛び (Blast Away) · drift\n[vx:0.25]あいうえお Aiueo 0123",
+        "text": "312. クロス (Cloth Simulation) · drift\n[vx:0.08 vy:0.04]あいうえお Aiueo 0123",
         "lines": [
-          "301. 吹き飛び (Blast Away) · drift",
-          "[vx:0.25]あいうえお Aiueo 0123"
+          "312. クロス (Cloth Simulation) · drift",
+          "[vx:0.08 vy:0.04]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1849,12 +1849,12 @@
         "index": 0,
         "start": 12,
         "end": 15,
-        "text": "302. 振り子 (Hanging Pendulum) · sway [\nangle:10 speed:0.5]あいうえお Aiueo 0123",
+        "text": "313. ウォーターフォール (Text Waterfall) ·\ndrift [vx:0 vy:0.2]あいうえお Aiueo 0123",
         "lines": [
-          "302. 振り子 (Hanging Pendulum) · sway [",
-          "angle:10 speed:0.5]あいうえお Aiueo 0123"
+          "313. ウォーターフォール (Text Waterfall) ·",
+          "drift [vx:0 vy:0.2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1865,10 +1865,10 @@
         "kind": "page",
         "index": 1,
         "start": 15,
-        "end": 16.189655172413794,
-        "text": "303. バネ揺れ (Spring Oscillation)",
+        "end": 16.183183183183182,
+        "text": "314. スライムリビール (Slime Reveal)",
         "lines": [
-          "303. バネ揺れ (Spring Oscillation)"
+          "314. スライムリビール (Slime Reveal)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1878,11 +1878,11 @@
         "cueId": "mo12_06",
         "kind": "page",
         "index": 2,
-        "start": 16.189655172413794,
+        "start": 16.183183183183182,
         "end": 18,
-        "text": " · jelly [amount:0.14 freq:1.6]\nあいうえお Aiueo 0123",
+        "text": " · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "lines": [
-          " · jelly [amount:0.14 freq:1.6]",
+          " · jelly [amount:0.18 freq:1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1897,12 +1897,12 @@
         "index": 0,
         "start": 18,
         "end": 21,
-        "text": "304. ロープ吊り (Rope Signboard) · sway\n[angle:8 speed:0.4]あいうえお Aiueo 0123",
+        "text": "315. インクドロップ (Ink Drop Diffusion) ·\ndrift [vx:0 vy:0.1]あいうえお Aiueo 0123",
         "lines": [
-          "304. ロープ吊り (Rope Signboard) · sway",
-          "[angle:8 speed:0.4]あいうえお Aiueo 0123"
+          "315. インクドロップ (Ink Drop Diffusion) ·",
+          "drift [vx:0 vy:0.1]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1914,10 +1914,10 @@
         "index": 0,
         "start": 21,
         "end": 24,
-        "text": "305. クロス (Cloth Simulation) · drift\n[vx:0.08 vy:0.04]あいうえお Aiueo 0123",
+        "text": "316. パスアニメーション (Path Animation\n) · pathFollowあいうえお Aiueo 0123",
         "lines": [
-          "305. クロス (Cloth Simulation) · drift",
-          "[vx:0.08 vy:0.04]あいうえお Aiueo 0123"
+          "316. パスアニメーション (Path Animation",
+          ") · pathFollowあいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
         "pinned": false
@@ -1931,41 +1931,27 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "306. ウォーターフォール (Text Waterfall) ·\ndrift [vx:0 vy:0.2]あいうえお Aiueo 0123",
+        "text": "317. スクロール (Scroll) ·\nmarqueeあいうえお Aiueo 0123",
         "lines": [
-          "306. ウォーターフォール (Text Waterfall) ·",
-          "drift [vx:0 vy:0.2]あいうえお Aiueo 0123"
+          "317. スクロール (Scroll) ·",
+          "marqueeあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
     "mo12_10": [
       {
-        "id": "mo12_10:page1",
+        "id": "mo12_10:single0",
         "cueId": "mo12_10",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 27,
-        "end": 28.183183183183182,
-        "text": "307. スライムリビール (Slime Reveal)",
-        "lines": [
-          "307. スライムリビール (Slime Reveal)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo12_10:page2",
-        "cueId": "mo12_10",
-        "kind": "page",
-        "index": 2,
-        "start": 28.183183183183182,
         "end": 30,
-        "text": " · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
+        "text": "318. 横スクロール (Horizontal Scroll) ·\nmarquee [speed:0.35]あいうえお Aiueo 0123",
         "lines": [
-          " · jelly [amount:0.18 freq:1]",
-          "あいうえお Aiueo 0123"
+          "318. 横スクロール (Horizontal Scroll) ·",
+          "marquee [speed:0.35]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1979,12 +1965,12 @@
         "index": 0,
         "start": 30,
         "end": 33,
-        "text": "308. インクドロップ (Ink Drop Diffusion) ·\ndrift [vx:0 vy:0.1]あいうえお Aiueo 0123",
+        "text": "319. クロール (Crawl) · marquee [\nspeed:0.18]あいうえお Aiueo 0123",
         "lines": [
-          "308. インクドロップ (Ink Drop Diffusion) ·",
-          "drift [vx:0 vy:0.1]あいうえお Aiueo 0123"
+          "319. クロール (Crawl) · marquee [",
+          "speed:0.18]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -1996,10 +1982,10 @@
         "index": 0,
         "start": 33,
         "end": 36,
-        "text": "309. パスアニメーション (Path Animation\n) · pathFollowあいうえお Aiueo 0123",
+        "text": "320. エンドロール (End Credits) · drift\n[vx:0 vy:-0.08]あいうえお Aiueo 0123",
         "lines": [
-          "309. パスアニメーション (Path Animation",
-          ") · pathFollowあいうえお Aiueo 0123"
+          "320. エンドロール (End Credits) · drift",
+          "[vx:0 vy:-0.08]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
         "pinned": false
@@ -2013,12 +1999,12 @@
         "index": 0,
         "start": 36,
         "end": 39,
-        "text": "310. スクロール (Scroll) ·\nmarqueeあいうえお Aiueo 0123",
+        "text": "321. ティッカー (News Ticker) · marquee\n[speed:0.3]あいうえお Aiueo 0123",
         "lines": [
-          "310. スクロール (Scroll) ·",
-          "marqueeあいうえお Aiueo 0123"
+          "321. ティッカー (News Ticker) · marquee",
+          "[speed:0.3]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -2030,12 +2016,12 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "311. 横スクロール (Horizontal Scroll) ·\nmarquee [speed:0.35]あいうえお Aiueo 0123",
+        "text": "322. マーキー (Marquee) · marquee\n[speed:0.22]あいうえお Aiueo 0123",
         "lines": [
-          "311. 横スクロール (Horizontal Scroll) ·",
-          "marquee [speed:0.35]あいうえお Aiueo 0123"
+          "322. マーキー (Marquee) · marquee",
+          "[speed:0.22]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2047,10 +2033,10 @@
         "index": 0,
         "start": 42,
         "end": 45,
-        "text": "312. クロール (Crawl) · marquee [\nspeed:0.18]あいうえお Aiueo 0123",
+        "text": "323. ベベル (Bevel) · breathing [\namount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "312. クロール (Crawl) · marquee [",
-          "speed:0.18]あいうえお Aiueo 0123"
+          "323. ベベル (Bevel) · breathing [",
+          "amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 1,
         "pinned": false
@@ -2058,52 +2044,94 @@
     ],
     "mo12_16": [
       {
-        "id": "mo12_16:single0",
+        "id": "mo12_16:page1",
         "cueId": "mo12_16",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 45,
-        "end": 48,
-        "text": "313. エンドロール (End Credits) · drift\n[vx:0 vy:-0.08]あいうえお Aiueo 0123",
+        "end": 46.18561001042753,
+        "text": "324. ドロップシャドウ (Drop Shadow)",
         "lines": [
-          "313. エンドロール (End Credits) · drift",
-          "[vx:0 vy:-0.08]あいうえお Aiueo 0123"
+          "324. ドロップシャドウ (Drop Shadow)"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo12_16:page2",
+        "cueId": "mo12_16",
+        "kind": "page",
+        "index": 2,
+        "start": 46.18561001042753,
+        "end": 48,
+        "text": " · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.015]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo12_17": [
       {
-        "id": "mo12_17:single0",
+        "id": "mo12_17:page1",
         "cueId": "mo12_17",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 48,
-        "end": 51,
-        "text": "314. ティッカー (News Ticker) · marquee\n[speed:0.3]あいうえお Aiueo 0123",
+        "end": 49.18206086492258,
+        "text": "325. ロングシャドウ (Long Shadow)",
         "lines": [
-          "314. ティッカー (News Ticker) · marquee",
-          "[speed:0.3]あいうえお Aiueo 0123"
+          "325. ロングシャドウ (Long Shadow)"
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo12_17:page2",
+        "cueId": "mo12_17",
+        "kind": "page",
+        "index": 2,
+        "start": 49.18206086492258,
+        "end": 51,
+        "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.02]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo12_18": [
       {
-        "id": "mo12_18:single0",
+        "id": "mo12_18:page1",
         "cueId": "mo12_18",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 51,
-        "end": 54,
-        "text": "315. マーキー (Marquee) · marquee\n[speed:0.22]あいうえお Aiueo 0123",
+        "end": 52.19502074688797,
+        "text": "326. インナーシャドウ (Inner Shadow)",
         "lines": [
-          "315. マーキー (Marquee) · marquee",
-          "[speed:0.22]あいうえお Aiueo 0123"
+          "326. インナーシャドウ (Inner Shadow)"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo12_18:page2",
+        "cueId": "mo12_18",
+        "kind": "page",
+        "index": 2,
+        "start": 52.19502074688797,
+        "end": 54,
+        "text": " · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.025]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2115,43 +2143,29 @@
         "index": 0,
         "start": 54,
         "end": 57,
-        "text": "316. ベベル (Bevel) · breathing [\namount:0.02]あいうえお Aiueo 0123",
+        "text": "327. グロー (Glow) · opacityPulse [\nmin:0.5 period:2]あいうえお Aiueo 0123",
         "lines": [
-          "316. ベベル (Bevel) · breathing [",
-          "amount:0.02]あいうえお Aiueo 0123"
+          "327. グロー (Glow) · opacityPulse [",
+          "min:0.5 period:2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
     "mo12_20": [
       {
-        "id": "mo12_20:page1",
+        "id": "mo12_20:single0",
         "cueId": "mo12_20",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 57,
-        "end": 58.18561001042753,
-        "text": "317. ドロップシャドウ (Drop Shadow)",
-        "lines": [
-          "317. ドロップシャドウ (Drop Shadow)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo12_20:page2",
-        "cueId": "mo12_20",
-        "kind": "page",
-        "index": 2,
-        "start": 58.18561001042753,
         "end": 60,
-        "text": " · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "text": "328. ネオン (Neon) · opacityPulse [min\n:0.45 period:1.8]あいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.015]",
-          "あいうえお Aiueo 0123"
+          "328. ネオン (Neon) · opacityPulse [min",
+          ":0.45 period:1.8]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -2162,10 +2176,10 @@
         "kind": "page",
         "index": 1,
         "start": 60,
-        "end": 61.18206086492258,
-        "text": "318. ロングシャドウ (Long Shadow)",
+        "end": 61.147570218457425,
+        "text": "329. ネオン点灯 (Neon Flicker-On)",
         "lines": [
-          "318. ロングシャドウ (Long Shadow)"
+          "329. ネオン点灯 (Neon Flicker-On)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2175,11 +2189,11 @@
         "cueId": "mo12_21",
         "kind": "page",
         "index": 2,
-        "start": 61.18206086492258,
+        "start": 61.147570218457425,
         "end": 63,
-        "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": " · opacityPulse [period:0.9 speed:1]\nあいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.02]",
+          " · opacityPulse [period:0.9 speed:1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2188,32 +2202,18 @@
     ],
     "mo12_22": [
       {
-        "id": "mo12_22:page1",
+        "id": "mo12_22:single0",
         "cueId": "mo12_22",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 63,
-        "end": 64.19502074688796,
-        "text": "319. インナーシャドウ (Inner Shadow)",
-        "lines": [
-          "319. インナーシャドウ (Inner Shadow)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo12_22:page2",
-        "cueId": "mo12_22",
-        "kind": "page",
-        "index": 2,
-        "start": 64.19502074688796,
         "end": 66,
-        "text": " · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "330. アウトライン (Outline) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.025]",
-          "あいうえお Aiueo 0123"
+          "330. アウトライン (Outline) · breathing",
+          "[amount:0.015]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -2225,12 +2225,12 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "320. グロー (Glow) · opacityPulse [\nmin:0.5 period:2]あいうえお Aiueo 0123",
+        "text": "331. 縁取り (Stroke / Border) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "320. グロー (Glow) · opacityPulse [",
-          "min:0.5 period:2]あいうえお Aiueo 0123"
+          "331. 縁取り (Stroke / Border) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2242,12 +2242,12 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "321. ネオン (Neon) · opacityPulse [min\n:0.45 period:1.8]あいうえお Aiueo 0123",
+        "text": "332. 二重縁 (Double Border) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
         "lines": [
-          "321. ネオン (Neon) · opacityPulse [min",
-          ":0.45 period:1.8]あいうえお Aiueo 0123"
+          "332. 二重縁 (Double Border) · breathing",
+          "[amount:0.025]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -2258,10 +2258,11 @@
         "kind": "page",
         "index": 1,
         "start": 72,
-        "end": 73.14757021845742,
-        "text": "322. ネオン点灯 (Neon Flicker-On)",
+        "end": 73.61437908496733,
+        "text": "333. グラデーション (Gradient)\n · opacityPulse [min:0.",
         "lines": [
-          "322. ネオン点灯 (Neon Flicker-On)"
+          "333. グラデーション (Gradient)",
+          " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2271,11 +2272,11 @@
         "cueId": "mo12_25",
         "kind": "page",
         "index": 2,
-        "start": 73.14757021845742,
+        "start": 73.61437908496733,
         "end": 75,
-        "text": " · opacityPulse [period:0.9 speed:1]\nあいうえお Aiueo 0123",
+        "text": "6 period:2.5 speed:0.6]\nあいうえお Aiueo 0123",
         "lines": [
-          " · opacityPulse [period:0.9 speed:1]",
+          "6 period:2.5 speed:0.6]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2290,27 +2291,41 @@
         "index": 0,
         "start": 75,
         "end": 78,
-        "text": "323. アウトライン (Outline) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
+        "text": "334. ストライプ (Stripes) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "323. アウトライン (Outline) · breathing",
-          "[amount:0.015]あいうえお Aiueo 0123"
+          "334. ストライプ (Stripes) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
     "mo12_27": [
       {
-        "id": "mo12_27:single0",
+        "id": "mo12_27:page1",
         "cueId": "mo12_27",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 78,
-        "end": 81,
-        "text": "324. 縁取り (Stroke / Border) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "end": 79.23150357995226,
+        "text": "335. シャイン (Shine) · opacityPulse",
         "lines": [
-          "324. 縁取り (Stroke / Border) · breathing",
-          "[amount:0.02]あいうえお Aiueo 0123"
+          "335. シャイン (Shine) · opacityPulse"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo12_27:page2",
+        "cueId": "mo12_27",
+        "kind": "page",
+        "index": 2,
+        "start": 79.23150357995226,
+        "end": 81,
+        "text": "[min:0.4 period:1.2 speed:0.9]\nあいうえお Aiueo 0123",
+        "lines": [
+          "[min:0.4 period:1.2 speed:0.9]",
+          "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2321,7 +2336,7 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo12_01": [
+    "mo12_02": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2333,31 +2348,25 @@
         "message": "The cue is too fast to read"
       }
     ],
-    "mo12_10": [
+    "mo12_16": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo12_20": [
+    "mo12_17": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo12_18": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
     "mo12_21": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo12_22": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo12_25": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2376,6 +2385,7 @@
     }
   ],
   "layers": [],
+  "masks": [],
   "tracks": [
     {
       "id": "fg",

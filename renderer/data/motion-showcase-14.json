@@ -43,71 +43,11 @@
         "id": "mo14_01",
         "start": 0,
         "end": 3,
-        "text": "352. ピクセレート (Pixelate) · jitter [amp:0.02 rate:4]\nあいうえお Aiueo 0123",
+        "text": "363. ブレンドモード合成 (Blend Mode Composite) · opacityPulse [min:0.55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 352,
-          "presetId": "te_209",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jitter"
-        }
-      },
-      {
-        "id": "mo14_02",
-        "start": 3,
-        "end": 6,
-        "text": "353. ブループリント (Blueprint) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "14",
-          "index": 353,
-          "presetId": "te_211",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "breathing"
-        }
-      },
-      {
-        "id": "mo14_03",
-        "start": 6,
-        "end": 9,
-        "text": "354. ゴースト (Ghost Afterimage) · opacityPulse [period:2.8 speed:0.5]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "14",
-          "index": 354,
-          "presetId": "te_259",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "opacityPulse"
-        }
-      },
-      {
-        "id": "mo14_04",
-        "start": 9,
-        "end": 12,
-        "text": "355. ダブルエクスポージャー (Double Exposure) · opacityPulse [min:0.55 period:2.2 speed:0.6]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "14",
-          "index": 355,
-          "presetId": "te_266",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "opacityPulse"
-        }
-      },
-      {
-        "id": "mo14_05",
-        "start": 12,
-        "end": 15,
-        "text": "356. ブレンドモード合成 (Blend Mode Composite) · opacityPulse [min:0.55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "14",
-          "index": 356,
+          "index": 363,
           "presetId": "te_267",
           "group": "emphasis",
           "phase": "hold",
@@ -115,14 +55,14 @@
         }
       },
       {
-        "id": "mo14_06",
-        "start": 15,
-        "end": 18,
-        "text": "357. HUD風 (Sci-Fi HUD) · sway [angle:2 speed:1.2]\nあいうえお Aiueo 0123",
+        "id": "mo14_02",
+        "start": 3,
+        "end": 6,
+        "text": "364. HUD風 (Sci-Fi HUD) · sway [angle:2 speed:1.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 357,
+          "index": 364,
           "presetId": "te_294",
           "group": "emphasis",
           "phase": "hold",
@@ -130,14 +70,14 @@
         }
       },
       {
-        "id": "mo14_07",
-        "start": 18,
-        "end": 21,
-        "text": "358. SFインターフェース (Sci-Fi Interface) · drift [vx:0.02]\nあいうえお Aiueo 0123",
+        "id": "mo14_03",
+        "start": 6,
+        "end": 9,
+        "text": "365. SFインターフェース (Sci-Fi Interface) · drift [vx:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 358,
+          "index": 365,
           "presetId": "te_295",
           "group": "emphasis",
           "phase": "hold",
@@ -145,14 +85,14 @@
         }
       },
       {
-        "id": "mo14_08",
-        "start": 21,
-        "end": 24,
-        "text": "359. ターミナル風 (Terminal Console) · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
+        "id": "mo14_04",
+        "start": 9,
+        "end": 12,
+        "text": "366. ターミナル風 (Terminal Console) · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 359,
+          "index": 366,
           "presetId": "te_296",
           "group": "emphasis",
           "phase": "hold",
@@ -160,14 +100,14 @@
         }
       },
       {
-        "id": "mo14_09",
-        "start": 24,
-        "end": 27,
-        "text": "360. マトリックス (Matrix Rain) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
+        "id": "mo14_05",
+        "start": 12,
+        "end": 15,
+        "text": "367. マトリックス (Matrix Rain) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 360,
+          "index": 367,
           "presetId": "te_297",
           "group": "emphasis",
           "phase": "hold",
@@ -175,14 +115,14 @@
         }
       },
       {
-        "id": "mo14_10",
-        "start": 27,
-        "end": 30,
-        "text": "361. コードレイン (Code Rain) · drift [vx:0 vy:0.12]\nあいうえお Aiueo 0123",
+        "id": "mo14_06",
+        "start": 15,
+        "end": 18,
+        "text": "368. コードレイン (Code Rain) · drift [vx:0 vy:0.12]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 361,
+          "index": 368,
           "presetId": "te_298",
           "group": "emphasis",
           "phase": "hold",
@@ -190,14 +130,14 @@
         }
       },
       {
-        "id": "mo14_11",
-        "start": 30,
-        "end": 33,
-        "text": "362. ロード中表示 (Loading State) · opacityPulse [min:0.4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "id": "mo14_07",
+        "start": 18,
+        "end": 21,
+        "text": "369. ロード中表示 (Loading State) · opacityPulse [min:0.4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 362,
+          "index": 369,
           "presetId": "te_299",
           "group": "emphasis",
           "phase": "hold",
@@ -205,14 +145,14 @@
         }
       },
       {
-        "id": "mo14_12",
-        "start": 33,
-        "end": 36,
-        "text": "363. テープ貼り (Washi Tape) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "id": "mo14_08",
+        "start": 21,
+        "end": 24,
+        "text": "370. テープ貼り (Washi Tape) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 363,
+          "index": 370,
           "presetId": "te_311",
           "group": "emphasis",
           "phase": "hold",
@@ -220,14 +160,14 @@
         }
       },
       {
-        "id": "mo14_13",
-        "start": 36,
-        "end": 39,
-        "text": "364. ラベル (Tag Label) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "id": "mo14_09",
+        "start": 24,
+        "end": 27,
+        "text": "371. ラベル (Tag Label) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 364,
+          "index": 371,
           "presetId": "te_312",
           "group": "emphasis",
           "phase": "hold",
@@ -235,14 +175,14 @@
         }
       },
       {
-        "id": "mo14_14",
-        "start": 39,
-        "end": 42,
-        "text": "365. カラーバー (Color Bars) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "id": "mo14_10",
+        "start": 27,
+        "end": 30,
+        "text": "372. カラーバー (Color Bars) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 365,
+          "index": 372,
           "presetId": "te_313",
           "group": "emphasis",
           "phase": "hold",
@@ -250,14 +190,14 @@
         }
       },
       {
-        "id": "mo14_15",
-        "start": 42,
-        "end": 45,
-        "text": "366. インク滲み (Ink Bleed) · wobbleWarp [amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
+        "id": "mo14_11",
+        "start": 30,
+        "end": 33,
+        "text": "373. インク滲み (Ink Bleed) · wobbleWarp [amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 366,
+          "index": 373,
           "presetId": "te_352",
           "group": "emphasis",
           "phase": "hold",
@@ -265,14 +205,14 @@
         }
       },
       {
-        "id": "mo14_16",
-        "start": 45,
-        "end": 48,
-        "text": "367. 水彩 (Watercolor Bleed) · wobbleWarp [scale:3 speed:0.4]\nあいうえお Aiueo 0123",
+        "id": "mo14_12",
+        "start": 33,
+        "end": 36,
+        "text": "374. 水彩 (Watercolor Bleed) · wobbleWarp [scale:3 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 367,
+          "index": 374,
           "presetId": "te_353",
           "group": "emphasis",
           "phase": "hold",
@@ -280,14 +220,14 @@
         }
       },
       {
-        "id": "mo14_17",
-        "start": 48,
-        "end": 51,
-        "text": "368. 墨流し (Suminagashi Marbling) · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
+        "id": "mo14_13",
+        "start": 36,
+        "end": 39,
+        "text": "375. 墨流し (Suminagashi Marbling) · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 368,
+          "index": 375,
           "presetId": "te_354",
           "group": "emphasis",
           "phase": "hold",
@@ -295,14 +235,14 @@
         }
       },
       {
-        "id": "mo14_18",
-        "start": 51,
-        "end": 54,
-        "text": "369. かすれ (Dry Brush Distress) · shiver [amount:0.5]\nあいうえお Aiueo 0123",
+        "id": "mo14_14",
+        "start": 39,
+        "end": 42,
+        "text": "376. かすれ (Dry Brush Distress) · shiver [amount:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 369,
+          "index": 376,
           "presetId": "te_355",
           "group": "emphasis",
           "phase": "hold",
@@ -310,14 +250,14 @@
         }
       },
       {
-        "id": "mo14_19",
-        "start": 54,
-        "end": 57,
-        "text": "370. グランジ (Grunge Distress) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
+        "id": "mo14_15",
+        "start": 42,
+        "end": 45,
+        "text": "377. グランジ (Grunge Distress) · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 370,
+          "index": 377,
           "presetId": "te_356",
           "group": "emphasis",
           "phase": "hold",
@@ -325,14 +265,14 @@
         }
       },
       {
-        "id": "mo14_20",
-        "start": 57,
-        "end": 60,
-        "text": "371. エイジング (Vintage Aging) · shiver [interval:3.5]\nあいうえお Aiueo 0123",
+        "id": "mo14_16",
+        "start": 45,
+        "end": 48,
+        "text": "378. エイジング (Vintage Aging) · shiver [interval:3.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 371,
+          "index": 378,
           "presetId": "te_357",
           "group": "emphasis",
           "phase": "hold",
@@ -340,15 +280,75 @@
         }
       },
       {
-        "id": "mo14_21",
-        "start": 60,
-        "end": 63,
-        "text": "372. 石 (Stone Carving) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "id": "mo14_17",
+        "start": 48,
+        "end": 51,
+        "text": "379. 石 (Stone Carving) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 372,
+          "index": 379,
           "presetId": "te_358",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_18",
+        "start": 51,
+        "end": 54,
+        "text": "380. 金属 (Metallic Surface) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 380,
+          "presetId": "te_359",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_19",
+        "start": 54,
+        "end": 57,
+        "text": "381. クローム (Liquid Chrome) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 381,
+          "presetId": "te_360",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_20",
+        "start": 57,
+        "end": 60,
+        "text": "382. ゴールド (Metallic Gold) · breathing\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 382,
+          "presetId": "te_361",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_21",
+        "start": 60,
+        "end": 63,
+        "text": "383. ガラス (Frosted Glass) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 383,
+          "presetId": "te_362",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -358,12 +358,12 @@
         "id": "mo14_22",
         "start": 63,
         "end": 66,
-        "text": "373. 金属 (Metallic Surface) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "text": "384. 氷 (Frost & Ice) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 373,
-          "presetId": "te_359",
+          "index": 384,
+          "presetId": "te_363",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -373,57 +373,72 @@
         "id": "mo14_23",
         "start": 66,
         "end": 69,
-        "text": "374. クローム (Liquid Chrome) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "385. 凍結 (Freeze Over) · shiver [amount:0.3 interval:5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 374,
-          "presetId": "te_360",
+          "index": 385,
+          "presetId": "te_364",
           "group": "emphasis",
           "phase": "hold",
-          "type": "breathing"
+          "type": "shiver"
         }
       },
       {
         "id": "mo14_24",
         "start": 69,
         "end": 72,
-        "text": "375. ゴールド (Metallic Gold) · breathing\nあいうえお Aiueo 0123",
+        "text": "386. バルーン (Inflatable Balloon) · jelly [freq:1.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 375,
-          "presetId": "te_361",
+          "index": 386,
+          "presetId": "te_366",
           "group": "emphasis",
           "phase": "hold",
-          "type": "breathing"
+          "type": "jelly"
         }
       },
       {
         "id": "mo14_25",
         "start": 72,
         "end": 75,
-        "text": "376. ガラス (Frosted Glass) · breathing [amount:0.015]\nあいうえお Aiueo 0123",
+        "text": "387. ぷっくり (Puffy 3D / Gel) · jelly [amount:0.18 freq:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 376,
-          "presetId": "te_362",
+          "index": 387,
+          "presetId": "te_367",
           "group": "emphasis",
           "phase": "hold",
-          "type": "breathing"
+          "type": "jelly"
         }
       },
       {
         "id": "mo14_26",
         "start": 75,
         "end": 78,
-        "text": "377. 氷 (Frost & Ice) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "388. クレイ (Claymation / Plasticine) · breathing [amount:0.025]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "14",
-          "index": 377,
-          "presetId": "te_363",
+          "index": 388,
+          "presetId": "te_368",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo14_27",
+        "start": 78,
+        "end": 81,
+        "text": "389. ペーパークラフト (Papercraft Cutout) · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "14",
+          "index": 389,
+          "presetId": "te_369",
           "group": "emphasis",
           "phase": "hold",
           "type": "breathing"
@@ -484,14 +499,15 @@
         {
           "id": "m_mo14_01",
           "phase": "hold",
-          "type": "jitter",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.02,
-            "rate": 4
+            "min": 0.55,
+            "period": 2.4,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -529,13 +545,14 @@
         {
           "id": "m_mo14_02",
           "phase": "hold",
-          "type": "breathing",
+          "type": "sway",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "angle": 2,
+            "speed": 1.2
           },
           "enabled": true
         }
@@ -573,15 +590,14 @@
         {
           "id": "m_mo14_03",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "min": 0.35,
-            "period": 2.8,
-            "speed": 0.5
+            "vx": 0.02,
+            "vy": 0
           },
           "enabled": true
         }
@@ -619,15 +635,14 @@
         {
           "id": "m_mo14_04",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.55,
-            "period": 2.2,
-            "speed": 0.6
+            "amp": 0.003,
+            "rate": 30
           },
           "enabled": true
         }
@@ -665,15 +680,14 @@
         {
           "id": "m_mo14_05",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.8,
           "ease": "linear",
           "params": {
-            "min": 0.55,
-            "period": 2.4,
-            "speed": 0.5
+            "vx": 0,
+            "vy": 0.15
           },
           "enabled": true
         }
@@ -711,14 +725,14 @@
         {
           "id": "m_mo14_06",
           "phase": "hold",
-          "type": "sway",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.8,
           "ease": "linear",
           "params": {
-            "angle": 2,
-            "speed": 1.2
+            "vx": 0,
+            "vy": 0.12
           },
           "enabled": true
         }
@@ -756,14 +770,15 @@
         {
           "id": "m_mo14_07",
           "phase": "hold",
-          "type": "drift",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0.02,
-            "vy": 0
+            "min": 0.4,
+            "period": 1,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -801,14 +816,13 @@
         {
           "id": "m_mo14_08",
           "phase": "hold",
-          "type": "jitter",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.003,
-            "rate": 30
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -846,14 +860,13 @@
         {
           "id": "m_mo14_09",
           "phase": "hold",
-          "type": "drift",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": 0.15
+            "amount": 0.025
           },
           "enabled": true
         }
@@ -891,14 +904,15 @@
         {
           "id": "m_mo14_10",
           "phase": "hold",
-          "type": "drift",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
-          "duration": 1.8,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": 0.12
+            "min": 0.5,
+            "period": 1,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -936,15 +950,15 @@
         {
           "id": "m_mo14_11",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.4,
-            "period": 1,
-            "speed": 0.9
+            "amount": 0.08,
+            "scale": 2.5,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -982,13 +996,15 @@
         {
           "id": "m_mo14_12",
           "phase": "hold",
-          "type": "breathing",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "amount": 0.06,
+            "scale": 3,
+            "speed": 0.4
           },
           "enabled": true
         }
@@ -1026,13 +1042,15 @@
         {
           "id": "m_mo14_13",
           "phase": "hold",
-          "type": "breathing",
+          "type": "wobbleWarp",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.025
+            "amount": 0.1,
+            "scale": 2,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1070,15 +1088,14 @@
         {
           "id": "m_mo14_14",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.5,
-            "period": 1,
-            "speed": 0.9
+            "amount": 0.5,
+            "interval": 3
           },
           "enabled": true
         }
@@ -1116,15 +1133,14 @@
         {
           "id": "m_mo14_15",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.08,
-            "scale": 2.5,
-            "speed": 0.5
+            "amount": 0.7,
+            "interval": 2.5
           },
           "enabled": true
         }
@@ -1162,15 +1178,14 @@
         {
           "id": "m_mo14_16",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06,
-            "scale": 3,
-            "speed": 0.4
+            "amount": 0.6,
+            "interval": 3.5
           },
           "enabled": true
         }
@@ -1208,15 +1223,13 @@
         {
           "id": "m_mo14_17",
           "phase": "hold",
-          "type": "wobbleWarp",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.1,
-            "scale": 2,
-            "speed": 0.6
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1254,14 +1267,13 @@
         {
           "id": "m_mo14_18",
           "phase": "hold",
-          "type": "shiver",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.5,
-            "interval": 3
+            "amount": 0.025
           },
           "enabled": true
         }
@@ -1299,14 +1311,13 @@
         {
           "id": "m_mo14_19",
           "phase": "hold",
-          "type": "shiver",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.7,
-            "interval": 2.5
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1344,14 +1355,13 @@
         {
           "id": "m_mo14_20",
           "phase": "hold",
-          "type": "shiver",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.6,
-            "interval": 3.5
+            "amount": 0.03
           },
           "enabled": true
         }
@@ -1395,7 +1405,7 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "amount": 0.015
           },
           "enabled": true
         }
@@ -1439,7 +1449,7 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.025
+            "amount": 0.02
           },
           "enabled": true
         }
@@ -1477,13 +1487,14 @@
         {
           "id": "m_mo14_23",
           "phase": "hold",
-          "type": "breathing",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.02
+            "amount": 0.3,
+            "interval": 5
           },
           "enabled": true
         }
@@ -1521,13 +1532,14 @@
         {
           "id": "m_mo14_24",
           "phase": "hold",
-          "type": "breathing",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.03
+            "amount": 0.12,
+            "freq": 1.5
           },
           "enabled": true
         }
@@ -1565,13 +1577,14 @@
         {
           "id": "m_mo14_25",
           "phase": "hold",
-          "type": "breathing",
+          "type": "jelly",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.015
+            "amount": 0.18,
+            "freq": 1
           },
           "enabled": true
         }
@@ -1608,6 +1621,50 @@
       "motions": [
         {
           "id": "m_mo14_26",
+          "phase": "hold",
+          "type": "breathing",
+          "from": "start",
+          "delay": 0,
+          "duration": 1.2,
+          "ease": "linear",
+          "params": {
+            "amount": 0.025
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo14_27": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo14_27",
           "phase": "hold",
           "type": "breathing",
           "from": "start",
@@ -1695,80 +1752,67 @@
   "beats": {
     "mo14_01": [
       {
-        "id": "mo14_01:single0",
+        "id": "mo14_01:page1",
         "cueId": "mo14_01",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 0,
-        "end": 3,
-        "text": "352. ピクセレート (Pixelate) · jitter\n[amp:0.02 rate:4]あいうえお Aiueo 0123",
+        "end": 1.7693761814744802,
+        "text": "363. ブレンドモード合成 (Blend Mode\nComposite) · opacityPulse [min:0.",
         "lines": [
-          "352. ピクセレート (Pixelate) · jitter",
-          "[amp:0.02 rate:4]あいうえお Aiueo 0123"
+          "363. ブレンドモード合成 (Blend Mode",
+          "Composite) · opacityPulse [min:0."
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo14_01:page2",
+        "cueId": "mo14_01",
+        "kind": "page",
+        "index": 2,
+        "start": 1.7693761814744802,
+        "end": 3,
+        "text": "55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
+        "lines": [
+          "55 period:2.4 speed:0.5]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo14_02": [
       {
-        "id": "mo14_02:page1",
+        "id": "mo14_02:single0",
         "cueId": "mo14_02",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 3,
-        "end": 4.1624392876416625,
-        "text": "353. ブループリント (Blueprint)",
-        "lines": [
-          "353. ブループリント (Blueprint)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo14_02:page2",
-        "cueId": "mo14_02",
-        "kind": "page",
-        "index": 2,
-        "start": 4.1624392876416625,
         "end": 6,
-        "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "text": "364. HUD風 (Sci-Fi HUD) · sway [angle\n:2 speed:1.2]あいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.02]",
-          "あいうえお Aiueo 0123"
+          "364. HUD風 (Sci-Fi HUD) · sway [angle",
+          ":2 speed:1.2]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8799999999999999,
         "pinned": false
       }
     ],
     "mo14_03": [
       {
-        "id": "mo14_03:page1",
+        "id": "mo14_03:single0",
         "cueId": "mo14_03",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 6,
-        "end": 7.1387808041504535,
-        "text": "354. ゴースト (Ghost Afterimage)",
-        "lines": [
-          "354. ゴースト (Ghost Afterimage)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo14_03:page2",
-        "cueId": "mo14_03",
-        "kind": "page",
-        "index": 2,
-        "start": 7.1387808041504535,
         "end": 9,
-        "text": " · opacityPulse [period:2.8 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "365. SFインターフェース (Sci-Fi Interface\n) · drift [vx:0.02]あいうえお Aiueo 0123",
         "lines": [
-          " · opacityPulse [period:2.8 speed:0.5]",
-          "あいうえお Aiueo 0123"
+          "365. SFインターフェース (Sci-Fi Interface",
+          ") · drift [vx:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1779,11 +1823,10 @@
         "kind": "page",
         "index": 1,
         "start": 9,
-        "end": 10.733463035019454,
-        "text": "355. ダブルエクスポージャー (Double\nExposure) · opacityPulse [min:0.",
+        "end": 10.202970297029703,
+        "text": "366. ターミナル風 (Terminal Console)",
         "lines": [
-          "355. ダブルエクスポージャー (Double",
-          "Exposure) · opacityPulse [min:0."
+          "366. ターミナル風 (Terminal Console)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1793,11 +1836,11 @@
         "cueId": "mo14_04",
         "kind": "page",
         "index": 2,
-        "start": 10.733463035019454,
+        "start": 10.202970297029703,
         "end": 12,
-        "text": "55 period:2.2 speed:0.6]\nあいうえお Aiueo 0123",
+        "text": " · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
         "lines": [
-          "55 period:2.2 speed:0.6]",
+          " · jitter [amp:0.003 rate:30]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1806,33 +1849,18 @@
     ],
     "mo14_05": [
       {
-        "id": "mo14_05:page1",
+        "id": "mo14_05:single0",
         "cueId": "mo14_05",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 12,
-        "end": 13.769376181474481,
-        "text": "356. ブレンドモード合成 (Blend Mode\nComposite) · opacityPulse [min:0.",
-        "lines": [
-          "356. ブレンドモード合成 (Blend Mode",
-          "Composite) · opacityPulse [min:0."
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo14_05:page2",
-        "cueId": "mo14_05",
-        "kind": "page",
-        "index": 2,
-        "start": 13.769376181474481,
         "end": 15,
-        "text": "55 period:2.4 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "367. マトリックス (Matrix Rain) · drift\n[vx:0 vy:0.15]あいうえお Aiueo 0123",
         "lines": [
-          "55 period:2.4 speed:0.5]",
-          "あいうえお Aiueo 0123"
+          "367. マトリックス (Matrix Rain) · drift",
+          "[vx:0 vy:0.15]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
@@ -1844,60 +1872,61 @@
         "index": 0,
         "start": 15,
         "end": 18,
-        "text": "357. HUD風 (Sci-Fi HUD) · sway [angle\n:2 speed:1.2]あいうえお Aiueo 0123",
+        "text": "368. コードレイン (Code Rain) · drift\n[vx:0 vy:0.12]あいうえお Aiueo 0123",
         "lines": [
-          "357. HUD風 (Sci-Fi HUD) · sway [angle",
-          ":2 speed:1.2]あいうえお Aiueo 0123"
+          "368. コードレイン (Code Rain) · drift",
+          "[vx:0 vy:0.12]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8799999999999999,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
     "mo14_07": [
       {
-        "id": "mo14_07:single0",
+        "id": "mo14_07:page1",
         "cueId": "mo14_07",
-        "kind": "single",
-        "index": 0,
-        "start": 18,
-        "end": 21,
-        "text": "358. SFインターフェース (Sci-Fi Interface\n) · drift [vx:0.02]あいうえお Aiueo 0123",
-        "lines": [
-          "358. SFインターフェース (Sci-Fi Interface",
-          ") · drift [vx:0.02]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8199999999999998,
-        "pinned": false
-      }
-    ],
-    "mo14_08": [
-      {
-        "id": "mo14_08:page1",
-        "cueId": "mo14_08",
         "kind": "page",
         "index": 1,
-        "start": 21,
-        "end": 22.202970297029704,
-        "text": "359. ターミナル風 (Terminal Console)",
+        "start": 18,
+        "end": 19.707889125799575,
+        "text": "369. ロード中表示 (Loading State)\n · opacityPulse [min:0.",
         "lines": [
-          "359. ターミナル風 (Terminal Console)"
+          "369. ロード中表示 (Loading State)",
+          " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo14_08:page2",
-        "cueId": "mo14_08",
+        "id": "mo14_07:page2",
+        "cueId": "mo14_07",
         "kind": "page",
         "index": 2,
-        "start": 22.202970297029704,
-        "end": 24,
-        "text": " · jitter [amp:0.003 rate:30]\nあいうえお Aiueo 0123",
+        "start": 19.707889125799575,
+        "end": 21,
+        "text": "4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "lines": [
-          " · jitter [amp:0.003 rate:30]",
+          "4 period:1 speed:0.9]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo14_08": [
+      {
+        "id": "mo14_08:single0",
+        "cueId": "mo14_08",
+        "kind": "single",
+        "index": 0,
+        "start": 21,
+        "end": 24,
+        "text": "370. テープ貼り (Washi Tape) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "lines": [
+          "370. テープ貼り (Washi Tape) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1909,29 +1938,44 @@
         "index": 0,
         "start": 24,
         "end": 27,
-        "text": "360. マトリックス (Matrix Rain) · drift\n[vx:0 vy:0.15]あいうえお Aiueo 0123",
+        "text": "371. ラベル (Tag Label) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
         "lines": [
-          "360. マトリックス (Matrix Rain) · drift",
-          "[vx:0 vy:0.15]あいうえお Aiueo 0123"
+          "371. ラベル (Tag Label) · breathing",
+          "[amount:0.025]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8599999999999999,
+        "fontScale": 0.94,
         "pinned": false
       }
     ],
     "mo14_10": [
       {
-        "id": "mo14_10:single0",
+        "id": "mo14_10:page1",
         "cueId": "mo14_10",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 27,
-        "end": 30,
-        "text": "361. コードレイン (Code Rain) · drift\n[vx:0 vy:0.12]あいうえお Aiueo 0123",
+        "end": 28.65033407572383,
+        "text": "372. カラーバー (Color Bars)\n · opacityPulse [min:0.",
         "lines": [
-          "361. コードレイン (Code Rain) · drift",
-          "[vx:0 vy:0.12]あいうえお Aiueo 0123"
+          "372. カラーバー (Color Bars)",
+          " · opacityPulse [min:0."
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo14_10:page2",
+        "cueId": "mo14_10",
+        "kind": "page",
+        "index": 2,
+        "start": 28.65033407572383,
+        "end": 30,
+        "text": "5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "lines": [
+          "5 period:1 speed:0.9]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -1942,11 +1986,10 @@
         "kind": "page",
         "index": 1,
         "start": 30,
-        "end": 31.707889125799575,
-        "text": "362. ロード中表示 (Loading State)\n · opacityPulse [min:0.",
+        "end": 31.249443207126948,
+        "text": "373. インク滲み (Ink Bleed) · wobbleWarp",
         "lines": [
-          "362. ロード中表示 (Loading State)",
-          " · opacityPulse [min:0."
+          "373. インク滲み (Ink Bleed) · wobbleWarp"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1956,11 +1999,11 @@
         "cueId": "mo14_11",
         "kind": "page",
         "index": 2,
-        "start": 31.707889125799575,
+        "start": 31.249443207126948,
         "end": 33,
-        "text": "4 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": "[amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
         "lines": [
-          "4 period:1 speed:0.9]",
+          "[amount:0.08 scale:2.5 speed:0.5]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1975,61 +2018,60 @@
         "index": 0,
         "start": 33,
         "end": 36,
-        "text": "363. テープ貼り (Washi Tape) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "374. 水彩 (Watercolor Bleed) · wobbleWarp\n[scale:3 speed:0.4]あいうえお Aiueo 0123",
         "lines": [
-          "363. テープ貼り (Washi Tape) · breathing",
-          "[amount:0.02]あいうえお Aiueo 0123"
+          "374. 水彩 (Watercolor Bleed) · wobbleWarp",
+          "[scale:3 speed:0.4]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo14_13": [
       {
-        "id": "mo14_13:single0",
+        "id": "mo14_13:page1",
         "cueId": "mo14_13",
-        "kind": "single",
-        "index": 0,
-        "start": 36,
-        "end": 39,
-        "text": "364. ラベル (Tag Label) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
-        "lines": [
-          "364. ラベル (Tag Label) · breathing",
-          "[amount:0.025]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.94,
-        "pinned": false
-      }
-    ],
-    "mo14_14": [
-      {
-        "id": "mo14_14:page1",
-        "cueId": "mo14_14",
         "kind": "page",
         "index": 1,
-        "start": 39,
-        "end": 40.65033407572383,
-        "text": "365. カラーバー (Color Bars)\n · opacityPulse [min:0.",
+        "start": 36,
+        "end": 37.17201935767708,
+        "text": "375. 墨流し (Suminagashi Marbling)",
         "lines": [
-          "365. カラーバー (Color Bars)",
-          " · opacityPulse [min:0."
+          "375. 墨流し (Suminagashi Marbling)"
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo14_14:page2",
-        "cueId": "mo14_14",
+        "id": "mo14_13:page2",
+        "cueId": "mo14_13",
         "kind": "page",
         "index": 2,
-        "start": 40.65033407572383,
-        "end": 42,
-        "text": "5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "start": 37.17201935767708,
+        "end": 39,
+        "text": " · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
         "lines": [
-          "5 period:1 speed:0.9]",
+          " · wobbleWarp [amount:0.1 speed:0.6]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo14_14": [
+      {
+        "id": "mo14_14:single0",
+        "cueId": "mo14_14",
+        "kind": "single",
+        "index": 0,
+        "start": 39,
+        "end": 42,
+        "text": "376. かすれ (Dry Brush Distress) ·\nshiver [amount:0.5]あいうえお Aiueo 0123",
+        "lines": [
+          "376. かすれ (Dry Brush Distress) ·",
+          "shiver [amount:0.5]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2040,10 +2082,10 @@
         "kind": "page",
         "index": 1,
         "start": 42,
-        "end": 43.24944320712695,
-        "text": "366. インク滲み (Ink Bleed) · wobbleWarp",
+        "end": 43.143767060964514,
+        "text": "377. グランジ (Grunge Distress)",
         "lines": [
-          "366. インク滲み (Ink Bleed) · wobbleWarp"
+          "377. グランジ (Grunge Distress)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2053,11 +2095,11 @@
         "cueId": "mo14_15",
         "kind": "page",
         "index": 2,
-        "start": 43.24944320712695,
+        "start": 43.143767060964514,
         "end": 45,
-        "text": "[amount:0.08 scale:2.5 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": " · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
         "lines": [
-          "[amount:0.08 scale:2.5 speed:0.5]",
+          " · shiver [amount:0.7 interval:2.5]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2072,43 +2114,29 @@
         "index": 0,
         "start": 45,
         "end": 48,
-        "text": "367. 水彩 (Watercolor Bleed) · wobbleWarp\n[scale:3 speed:0.4]あいうえお Aiueo 0123",
+        "text": "378. エイジング (Vintage Aging) · shiver\n[interval:3.5]あいうえお Aiueo 0123",
         "lines": [
-          "367. 水彩 (Watercolor Bleed) · wobbleWarp",
-          "[scale:3 speed:0.4]あいうえお Aiueo 0123"
+          "378. エイジング (Vintage Aging) · shiver",
+          "[interval:3.5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo14_17": [
       {
-        "id": "mo14_17:page1",
+        "id": "mo14_17:single0",
         "cueId": "mo14_17",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 48,
-        "end": 49.17201935767708,
-        "text": "368. 墨流し (Suminagashi Marbling)",
-        "lines": [
-          "368. 墨流し (Suminagashi Marbling)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo14_17:page2",
-        "cueId": "mo14_17",
-        "kind": "page",
-        "index": 2,
-        "start": 49.17201935767708,
         "end": 51,
-        "text": " · wobbleWarp [amount:0.1 speed:0.6]\nあいうえお Aiueo 0123",
+        "text": "379. 石 (Stone Carving) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          " · wobbleWarp [amount:0.1 speed:0.6]",
-          "あいうえお Aiueo 0123"
+          "379. 石 (Stone Carving) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
@@ -2120,10 +2148,10 @@
         "index": 0,
         "start": 51,
         "end": 54,
-        "text": "369. かすれ (Dry Brush Distress) ·\nshiver [amount:0.5]あいうえお Aiueo 0123",
+        "text": "380. 金属 (Metallic Surface) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
         "lines": [
-          "369. かすれ (Dry Brush Distress) ·",
-          "shiver [amount:0.5]あいうえお Aiueo 0123"
+          "380. 金属 (Metallic Surface) · breathing",
+          "[amount:0.025]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8199999999999998,
         "pinned": false
@@ -2131,30 +2159,16 @@
     ],
     "mo14_19": [
       {
-        "id": "mo14_19:page1",
+        "id": "mo14_19:single0",
         "cueId": "mo14_19",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 54,
-        "end": 55.143767060964514,
-        "text": "370. グランジ (Grunge Distress)",
-        "lines": [
-          "370. グランジ (Grunge Distress)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo14_19:page2",
-        "cueId": "mo14_19",
-        "kind": "page",
-        "index": 2,
-        "start": 55.143767060964514,
         "end": 57,
-        "text": " · shiver [amount:0.7 interval:2.5]\nあいうえお Aiueo 0123",
+        "text": "381. クローム (Liquid Chrome) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          " · shiver [amount:0.7 interval:2.5]",
-          "あいうえお Aiueo 0123"
+          "381. クローム (Liquid Chrome) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2168,12 +2182,12 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "371. エイジング (Vintage Aging) · shiver\n[interval:3.5]あいうえお Aiueo 0123",
+        "text": "382. ゴールド (Metallic Gold) ·\nbreathingあいうえお Aiueo 0123",
         "lines": [
-          "371. エイジング (Vintage Aging) · shiver",
-          "[interval:3.5]あいうえお Aiueo 0123"
+          "382. ゴールド (Metallic Gold) ·",
+          "breathingあいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -2185,12 +2199,12 @@
         "index": 0,
         "start": 60,
         "end": 63,
-        "text": "372. 石 (Stone Carving) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "383. ガラス (Frosted Glass) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
         "lines": [
-          "372. 石 (Stone Carving) · breathing",
-          "[amount:0.02]あいうえお Aiueo 0123"
+          "383. ガラス (Frosted Glass) · breathing",
+          "[amount:0.015]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.9199999999999999,
+        "fontScale": 0.8399999999999999,
         "pinned": false
       }
     ],
@@ -2202,12 +2216,12 @@
         "index": 0,
         "start": 63,
         "end": 66,
-        "text": "373. 金属 (Metallic Surface) · breathing\n[amount:0.025]あいうえお Aiueo 0123",
+        "text": "384. 氷 (Frost & Ice) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
         "lines": [
-          "373. 金属 (Metallic Surface) · breathing",
-          "[amount:0.025]あいうえお Aiueo 0123"
+          "384. 氷 (Frost & Ice) · breathing",
+          "[amount:0.02]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.98,
         "pinned": false
       }
     ],
@@ -2219,12 +2233,12 @@
         "index": 0,
         "start": 66,
         "end": 69,
-        "text": "374. クローム (Liquid Chrome) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "text": "385. 凍結 (Freeze Over) · shiver [amount\n:0.3 interval:5]あいうえお Aiueo 0123",
         "lines": [
-          "374. クローム (Liquid Chrome) · breathing",
-          "[amount:0.02]あいうえお Aiueo 0123"
+          "385. 凍結 (Freeze Over) · shiver [amount",
+          ":0.3 interval:5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2236,12 +2250,12 @@
         "index": 0,
         "start": 69,
         "end": 72,
-        "text": "375. ゴールド (Metallic Gold) ·\nbreathingあいうえお Aiueo 0123",
+        "text": "386. バルーン (Inflatable Balloon) ·\njelly [freq:1.5]あいうえお Aiueo 0123",
         "lines": [
-          "375. ゴールド (Metallic Gold) ·",
-          "breathingあいうえお Aiueo 0123"
+          "386. バルーン (Inflatable Balloon) ·",
+          "jelly [freq:1.5]あいうえお Aiueo 0123"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -2253,29 +2267,74 @@
         "index": 0,
         "start": 72,
         "end": 75,
-        "text": "376. ガラス (Frosted Glass) · breathing\n[amount:0.015]あいうえお Aiueo 0123",
+        "text": "387. ぷっくり (Puffy 3D / Gel) · jelly [\namount:0.18 freq:1]あいうえお Aiueo 0123",
         "lines": [
-          "376. ガラス (Frosted Glass) · breathing",
-          "[amount:0.015]あいうえお Aiueo 0123"
+          "387. ぷっくり (Puffy 3D / Gel) · jelly [",
+          "amount:0.18 freq:1]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
     "mo14_26": [
       {
-        "id": "mo14_26:single0",
+        "id": "mo14_26:page1",
         "cueId": "mo14_26",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 75,
-        "end": 78,
-        "text": "377. 氷 (Frost & Ice) · breathing\n[amount:0.02]あいうえお Aiueo 0123",
+        "end": 76.31884057971014,
+        "text": "388. クレイ (Claymation / Plasticine)",
         "lines": [
-          "377. 氷 (Frost & Ice) · breathing",
-          "[amount:0.02]あいうえお Aiueo 0123"
+          "388. クレイ (Claymation / Plasticine)"
         ],
-        "fontScale": 0.98,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo14_26:page2",
+        "cueId": "mo14_26",
+        "kind": "page",
+        "index": 2,
+        "start": 76.31884057971014,
+        "end": 78,
+        "text": " · breathing [amount:0.025]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.025]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo14_27": [
+      {
+        "id": "mo14_27:page1",
+        "cueId": "mo14_27",
+        "kind": "page",
+        "index": 1,
+        "start": 78,
+        "end": 79.31435643564356,
+        "text": "389. ペーパークラフト (Papercraft Cutout)",
+        "lines": [
+          "389. ペーパークラフト (Papercraft Cutout)"
+        ],
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo14_27:page2",
+        "cueId": "mo14_27",
+        "kind": "page",
+        "index": 2,
+        "start": 79.31435643564356,
+        "end": 81,
+        "text": " · breathing [amount:0.02]\nあいうえお Aiueo 0123",
+        "lines": [
+          " · breathing [amount:0.02]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ]
@@ -2284,25 +2343,13 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo14_02": [
+    "mo14_13": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo14_03": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo14_17": [
-      {
-        "code": "tooFast",
-        "message": "The cue is too fast to read"
-      }
-    ],
-    "mo14_19": [
+    "mo14_15": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2321,6 +2368,7 @@
     }
   ],
   "layers": [],
+  "masks": [],
   "tracks": [
     {
       "id": "fg",

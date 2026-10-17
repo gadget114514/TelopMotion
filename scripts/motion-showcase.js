@@ -1,6 +1,6 @@
 'use strict';
 
-// MOTION SHOWCASE: the motion gallery (SA.motion.motionPresets(), 424 entries)
+// MOTION SHOWCASE: the motion gallery (SA.motion.motionPresets(), 443 entries)
 // split into 16 sequential parts, so every part stays around 80 seconds and
 // can be reviewed on its own from Help → Motion showcase.
 //
@@ -295,9 +295,9 @@ function indexMarkdown(built) {
   const lines = [];
   lines.push('# モーション見本 (motion showcase)');
   lines.push('');
-  lines.push('モーションギャラリーのプリセットを1キューずつ並べた見本です。各キューは同じサンプル文に1モーションだけを載せています（`cueStyles.motions`）。424件を16ファイルに分け、1ファイルが約80秒です。');
+  lines.push('モーションギャラリーのプリセットを1キューずつ並べた見本です。各キューは同じサンプル文に1モーションだけを載せています（`cueStyles.motions`）。443件を16ファイルに分け、1ファイルが約80秒です。');
   lines.push('');
-  lines.push('- 1モーション = 1キュー（3秒）、1ファイル = 26〜27キュー');
+  lines.push('- 1モーション = 1キュー（3秒）、1ファイル = 27〜28キュー');
   lines.push('- cue名末尾の `[key:value …]` は設定値（デフォルト以外）。タイピング系5件は base enter の typewriter＋stagger、バックスペースは base exit の typewriterReverse＋stagger で順次動作を見せている');
   lines.push('- 開くには Studio の *Help → モーション見本 → Motion 01/16 … 16/16*、または *File → Open project…* を使います');
   lines.push('- すべて通しで見るには *Help → モーション見本 → すべて連続再生* を使います（中断可）');

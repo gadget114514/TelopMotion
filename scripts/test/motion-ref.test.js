@@ -190,6 +190,40 @@ test('bulletHoles and particlesOnText enter and exit effects exist and function 
   assert.equal(statePartOut.opacity, 0.5, 'particlesOnText exit reduces opacity');
 });
 
+test('checkerboard enter and exit effects exist and function properly', () => {
+  const checkerIn = fx.get('enter', 'checkerboard');
+  assert.ok(checkerIn, 'checkerboard enter effect registered');
+  const stateInStart = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInStart, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateInStart.visibleFrac, 0, 'checkerboard enter hides letters at p=0');
+  assert.equal(stateInStart.wipeMode, 0, 'checkerboard enter uses the horizontal wipe on even letters');
+  const stateInOdd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInOdd, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 1 });
+  assert.equal(stateInOdd.wipeMode, 2, 'checkerboard enter uses the vertical wipe on odd letters');
+  const stateInEnd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerIn.cpu(stateInEnd, 1, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateInEnd.visibleFrac, 1, 'checkerboard enter fully reveals at p=1');
+
+  const checkerOut = fx.get('exit', 'checkerboard');
+  assert.ok(checkerOut, 'checkerboard exit effect registered');
+  const stateOutStart = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(stateOutStart, 0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateOutStart.visibleFrac, 1, 'checkerboard exit keeps letters visible at p=0');
+  assert.equal(stateOutStart.wipeMode, 0, 'checkerboard exit keeps the even-letter wipe axis');
+  const stateOutEnd = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(stateOutEnd, 1, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateOutEnd.visibleFrac, 0, 'checkerboard exit hides letters at p=1');
+
+  // the parity phase shifts every `cells` letters, staggering the checker rows
+  const earlyOut = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(earlyOut, 0.4, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  const lateOut = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerOut.cpu(lateOut, 0.4, { cells: 4, soft: 0.05 }, () => 0.5, { i: 5 });
+  assert.equal(earlyOut.visibleFrac, 1, 'checkerboard exit keeps phase-0 letters fully visible mid-wipe');
+  assert.ok(lateOut.visibleFrac > 0 && lateOut.visibleFrac < 1, 'checkerboard exit staggers later rows');
+  assert.ok(lateOut.scaleX < 1 && lateOut.scaleY < 1, 'checkerboard exit shrinks letters mid-wipe');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));
@@ -205,9 +239,11 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('boxDrawIn'), 'boxDrawIn preset');
   assert.ok(ids.has('bulletHolesIn'), 'bulletHolesIn preset');
   assert.ok(ids.has('particlesOnTextIn'), 'particlesOnTextIn preset');
+  assert.ok(ids.has('checkerboardIn'), 'checkerboardIn preset');
   assert.ok(ids.has('circleEraseOut'), 'circleEraseOut preset');
   assert.ok(ids.has('lineEraseOut'), 'lineEraseOut preset');
   assert.ok(ids.has('boxEraseOut'), 'boxEraseOut preset');
   assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
   assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
+  assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
 });

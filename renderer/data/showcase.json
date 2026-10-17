@@ -1362,6 +1362,17 @@
         "id": "fx_095",
         "start": 358,
         "end": 361,
+        "text": "退場 / チェッカーボード / checkerboard",
+        "meta": {
+          "kind": "showcase",
+          "group": "exit",
+          "type": "checkerboard"
+        }
+      },
+      {
+        "id": "fx_096",
+        "start": 361,
+        "end": 364,
         "text": "退場 / タイプライター逆再生 / typewriterReverse",
         "meta": {
           "kind": "showcase",
@@ -1370,9 +1381,9 @@
         }
       },
       {
-        "id": "fx_096",
-        "start": 361,
-        "end": 364,
+        "id": "fx_097",
+        "start": 364,
+        "end": 367,
         "text": "退場 / 中心へ収縮 / shrinkToCenter",
         "meta": {
           "kind": "showcase",
@@ -1381,9 +1392,9 @@
         }
       },
       {
-        "id": "fx_097",
-        "start": 364,
-        "end": 367,
+        "id": "fx_098",
+        "start": 367,
+        "end": 370,
         "text": "退場 / パーティクル拡散 / particlesDisperse",
         "meta": {
           "kind": "showcase",
@@ -1392,9 +1403,9 @@
         }
       },
       {
-        "id": "fx_098",
-        "start": 367,
-        "end": 370,
+        "id": "fx_099",
+        "start": 370,
+        "end": 373,
         "text": "退場 / 砂になって崩れる / sandCrumble",
         "meta": {
           "kind": "showcase",
@@ -1403,9 +1414,9 @@
         }
       },
       {
-        "id": "fx_099",
-        "start": 370,
-        "end": 373,
+        "id": "fx_100",
+        "start": 373,
+        "end": 376,
         "text": "退場 / 溶解 / melt",
         "meta": {
           "kind": "showcase",
@@ -1414,9 +1425,9 @@
         }
       },
       {
-        "id": "fx_100",
-        "start": 373,
-        "end": 376,
+        "id": "fx_101",
+        "start": 376,
+        "end": 379,
         "text": "退場 / 燃え尽き / burnAway",
         "meta": {
           "kind": "showcase",
@@ -1425,9 +1436,9 @@
         }
       },
       {
-        "id": "fx_101",
-        "start": 376,
-        "end": 379,
+        "id": "fx_102",
+        "start": 379,
+        "end": 382,
         "text": "退場 / 円消去 / circleErase",
         "meta": {
           "kind": "showcase",
@@ -1436,9 +1447,9 @@
         }
       },
       {
-        "id": "fx_102",
-        "start": 379,
-        "end": 382,
+        "id": "fx_103",
+        "start": 382,
+        "end": 385,
         "text": "退場 / 直線消去 / lineErase",
         "meta": {
           "kind": "showcase",
@@ -1447,9 +1458,9 @@
         }
       },
       {
-        "id": "fx_103",
-        "start": 382,
-        "end": 385,
+        "id": "fx_104",
+        "start": 385,
+        "end": 388,
         "text": "退場 / 枠線消去 / boxErase",
         "meta": {
           "kind": "showcase",
@@ -1458,9 +1469,9 @@
         }
       },
       {
-        "id": "fx_104",
-        "start": 385,
-        "end": 388,
+        "id": "fx_105",
+        "start": 388,
+        "end": 391,
         "text": "退場 / ストローク消去 / strokeErase",
         "meta": {
           "kind": "showcase",
@@ -1469,9 +1480,9 @@
         }
       },
       {
-        "id": "fx_105",
-        "start": 388,
-        "end": 391,
+        "id": "fx_106",
+        "start": 391,
+        "end": 394,
         "text": "退場 / 這い出し退場 / creepOut",
         "meta": {
           "kind": "showcase",
@@ -1480,9 +1491,9 @@
         }
       },
       {
-        "id": "fx_106",
-        "start": 391,
-        "end": 394,
+        "id": "fx_107",
+        "start": 394,
+        "end": 397,
         "text": "退場 / 消える / vanish",
         "meta": {
           "kind": "showcase",
@@ -1491,9 +1502,9 @@
         }
       },
       {
-        "id": "fx_107",
-        "start": 394,
-        "end": 397,
+        "id": "fx_108",
+        "start": 397,
+        "end": 400,
         "text": "退場 / フロートアウト / floatOut",
         "meta": {
           "kind": "showcase",
@@ -1502,9 +1513,9 @@
         }
       },
       {
-        "id": "fx_108",
-        "start": 397,
-        "end": 400,
+        "id": "fx_109",
+        "start": 400,
+        "end": 403,
         "text": "退場 / 分割 / splitOut",
         "meta": {
           "kind": "showcase",
@@ -1513,9 +1524,9 @@
         }
       },
       {
-        "id": "fx_109",
-        "start": 400,
-        "end": 403,
+        "id": "fx_110",
+        "start": 403,
+        "end": 406,
         "text": "退場 / ストライプ縮小 / stripeShrink",
         "meta": {
           "kind": "showcase",
@@ -1524,9 +1535,9 @@
         }
       },
       {
-        "id": "fx_110",
-        "start": 403,
-        "end": 406,
+        "id": "fx_111",
+        "start": 406,
+        "end": 409,
         "text": "退場 / 回転アウト / rotateOut",
         "meta": {
           "kind": "showcase",
@@ -1535,9 +1546,9 @@
         }
       },
       {
-        "id": "fx_111",
-        "start": 406,
-        "end": 409,
+        "id": "fx_112",
+        "start": 409,
+        "end": 412,
         "text": "退場 / フローティング上 / floatUp",
         "meta": {
           "kind": "showcase",
@@ -1546,9 +1557,9 @@
         }
       },
       {
-        "id": "fx_112",
-        "start": 409,
-        "end": 412,
+        "id": "fx_113",
+        "start": 412,
+        "end": 415,
         "text": "退場 / フローティング下 / floatDown",
         "meta": {
           "kind": "showcase",
@@ -1557,9 +1568,9 @@
         }
       },
       {
-        "id": "fx_113",
-        "start": 412,
-        "end": 415,
+        "id": "fx_114",
+        "start": 415,
+        "end": 418,
         "text": "退場 / 方向縮小 / shrinkDir",
         "meta": {
           "kind": "showcase",
@@ -1568,9 +1579,9 @@
         }
       },
       {
-        "id": "fx_114",
-        "start": 415,
-        "end": 418,
+        "id": "fx_115",
+        "start": 418,
+        "end": 421,
         "text": "退場 / らせんアウト / spiralOut",
         "meta": {
           "kind": "showcase",
@@ -1579,9 +1590,9 @@
         }
       },
       {
-        "id": "fx_115",
-        "start": 418,
-        "end": 421,
+        "id": "fx_116",
+        "start": 421,
+        "end": 424,
         "text": "退場 / 放射アウト / radialOut",
         "meta": {
           "kind": "showcase",
@@ -1590,9 +1601,9 @@
         }
       },
       {
-        "id": "fx_116",
-        "start": 421,
-        "end": 424,
+        "id": "fx_117",
+        "start": 424,
+        "end": 427,
         "text": "退場 / ワープアウト / warpOut",
         "meta": {
           "kind": "showcase",
@@ -1601,9 +1612,9 @@
         }
       },
       {
-        "id": "fx_117",
-        "start": 424,
-        "end": 427,
+        "id": "fx_118",
+        "start": 427,
+        "end": 430,
         "text": "退場 / ページめくり / pageCurl",
         "meta": {
           "kind": "showcase",
@@ -1612,9 +1623,9 @@
         }
       },
       {
-        "id": "fx_118",
-        "start": 427,
-        "end": 430,
+        "id": "fx_119",
+        "start": 430,
+        "end": 433,
         "text": "退場 / 蒸発 / evaporate",
         "meta": {
           "kind": "showcase",
@@ -1623,9 +1634,9 @@
         }
       },
       {
-        "id": "fx_119",
-        "start": 430,
-        "end": 433,
+        "id": "fx_120",
+        "start": 433,
+        "end": 436,
         "text": "退場 / 弾痕 / bulletHoles",
         "meta": {
           "kind": "showcase",
@@ -1634,9 +1645,9 @@
         }
       },
       {
-        "id": "fx_120",
-        "start": 433,
-        "end": 436,
+        "id": "fx_121",
+        "start": 436,
+        "end": 439,
         "text": "退場 / 文字上にパーティクル / particlesOnText",
         "meta": {
           "kind": "showcase",
@@ -1645,9 +1656,9 @@
         }
       },
       {
-        "id": "fx_121",
-        "start": 436,
-        "end": 439,
+        "id": "fx_122",
+        "start": 439,
+        "end": 442,
         "text": "保持 / 浮遊 / floatBob",
         "meta": {
           "kind": "showcase",
@@ -1656,9 +1667,9 @@
         }
       },
       {
-        "id": "fx_122",
-        "start": 439,
-        "end": 442,
+        "id": "fx_123",
+        "start": 442,
+        "end": 445,
         "text": "保持 / サイン波 / sineWave",
         "meta": {
           "kind": "showcase",
@@ -1667,9 +1678,9 @@
         }
       },
       {
-        "id": "fx_123",
-        "start": 442,
-        "end": 445,
+        "id": "fx_124",
+        "start": 445,
+        "end": 448,
         "text": "保持 / ジッター / jitter",
         "meta": {
           "kind": "showcase",
@@ -1678,9 +1689,9 @@
         }
       },
       {
-        "id": "fx_124",
-        "start": 445,
-        "end": 448,
+        "id": "fx_125",
+        "start": 448,
+        "end": 451,
         "text": "保持 / パルス / pulse",
         "meta": {
           "kind": "showcase",
@@ -1689,9 +1700,9 @@
         }
       },
       {
-        "id": "fx_125",
-        "start": 448,
-        "end": 451,
+        "id": "fx_126",
+        "start": 451,
+        "end": 454,
         "text": "保持 / 透明度パルス / opacityPulse",
         "meta": {
           "kind": "showcase",
@@ -1700,9 +1711,9 @@
         }
       },
       {
-        "id": "fx_126",
-        "start": 451,
-        "end": 454,
+        "id": "fx_127",
+        "start": 454,
+        "end": 457,
         "text": "保持 / ケン・バーンズ / kenBurns",
         "meta": {
           "kind": "showcase",
@@ -1711,9 +1722,9 @@
         }
       },
       {
-        "id": "fx_127",
-        "start": 454,
-        "end": 457,
+        "id": "fx_128",
+        "start": 457,
+        "end": 460,
         "text": "保持 / ドリフト / drift",
         "meta": {
           "kind": "showcase",
@@ -1722,9 +1733,9 @@
         }
       },
       {
-        "id": "fx_128",
-        "start": 457,
-        "end": 460,
+        "id": "fx_129",
+        "start": 460,
+        "end": 463,
         "text": "保持 / 振り子揺れ / pendulumSwing",
         "meta": {
           "kind": "showcase",
@@ -1733,9 +1744,9 @@
         }
       },
       {
-        "id": "fx_129",
-        "start": 460,
-        "end": 463,
+        "id": "fx_130",
+        "start": 463,
+        "end": 466,
         "text": "保持 / ナッジインパルス / nudgeImpulse",
         "meta": {
           "kind": "showcase",
@@ -1744,9 +1755,9 @@
         }
       },
       {
-        "id": "fx_130",
-        "start": 463,
-        "end": 466,
+        "id": "fx_131",
+        "start": 466,
+        "end": 469,
         "text": "保持 / マーキー / marquee",
         "meta": {
           "kind": "showcase",
@@ -1755,9 +1766,9 @@
         }
       },
       {
-        "id": "fx_131",
-        "start": 466,
-        "end": 469,
+        "id": "fx_132",
+        "start": 469,
+        "end": 472,
         "text": "保持 / ゼリー / jelly",
         "meta": {
           "kind": "showcase",
@@ -1766,9 +1777,9 @@
         }
       },
       {
-        "id": "fx_132",
-        "start": 469,
-        "end": 472,
+        "id": "fx_133",
+        "start": 472,
+        "end": 475,
         "text": "保持 / うねりワープ / wobbleWarp",
         "meta": {
           "kind": "showcase",
@@ -1777,9 +1788,9 @@
         }
       },
       {
-        "id": "fx_133",
-        "start": 472,
-        "end": 475,
+        "id": "fx_134",
+        "start": 475,
+        "end": 478,
         "text": "保持 / ツイスト / twist",
         "meta": {
           "kind": "showcase",
@@ -1788,9 +1799,9 @@
         }
       },
       {
-        "id": "fx_134",
-        "start": 475,
-        "end": 478,
+        "id": "fx_135",
+        "start": 478,
+        "end": 481,
         "text": "保持 / ブリージング / breathing",
         "meta": {
           "kind": "showcase",
@@ -1799,9 +1810,9 @@
         }
       },
       {
-        "id": "fx_135",
-        "start": 478,
-        "end": 481,
+        "id": "fx_136",
+        "start": 481,
+        "end": 484,
         "text": "保持 / 3Dオービット / orbit3D",
         "meta": {
           "kind": "showcase",
@@ -1810,9 +1821,9 @@
         }
       },
       {
-        "id": "fx_136",
-        "start": 481,
-        "end": 484,
+        "id": "fx_137",
+        "start": 484,
+        "end": 487,
         "text": "保持 / 円運動 / orbit2D",
         "meta": {
           "kind": "showcase",
@@ -1821,9 +1832,9 @@
         }
       },
       {
-        "id": "fx_137",
-        "start": 484,
-        "end": 487,
+        "id": "fx_138",
+        "start": 487,
+        "end": 490,
         "text": "保持 / パス追従 / pathFollow",
         "meta": {
           "kind": "showcase",
@@ -1832,9 +1843,9 @@
         }
       },
       {
-        "id": "fx_138",
-        "start": 487,
-        "end": 490,
+        "id": "fx_139",
+        "start": 490,
+        "end": 493,
         "text": "保持 / 鼓動 / heartbeat",
         "meta": {
           "kind": "showcase",
@@ -1843,9 +1854,9 @@
         }
       },
       {
-        "id": "fx_139",
-        "start": 490,
-        "end": 493,
+        "id": "fx_140",
+        "start": 493,
+        "end": 496,
         "text": "保持 / 震え / shiver",
         "meta": {
           "kind": "showcase",
@@ -1854,9 +1865,9 @@
         }
       },
       {
-        "id": "fx_140",
-        "start": 493,
-        "end": 496,
+        "id": "fx_141",
+        "start": 496,
+        "end": 499,
         "text": "保持 / ディゾルブ / dissolve",
         "meta": {
           "kind": "showcase",
@@ -1865,9 +1876,9 @@
         }
       },
       {
-        "id": "fx_141",
-        "start": 496,
-        "end": 499,
+        "id": "fx_142",
+        "start": 499,
+        "end": 502,
         "text": "位置 / 中央 / center",
         "meta": {
           "kind": "showcase",
@@ -1876,9 +1887,9 @@
         }
       },
       {
-        "id": "fx_142",
-        "start": 499,
-        "end": 502,
+        "id": "fx_143",
+        "start": 502,
+        "end": 505,
         "text": "位置 / 下三分の一 / lowerThird",
         "meta": {
           "kind": "showcase",
@@ -1887,9 +1898,9 @@
         }
       },
       {
-        "id": "fx_143",
-        "start": 502,
-        "end": 505,
+        "id": "fx_144",
+        "start": 505,
+        "end": 508,
         "text": "位置 / 上三分の一 / upperThird",
         "meta": {
           "kind": "showcase",
@@ -1898,9 +1909,9 @@
         }
       },
       {
-        "id": "fx_144",
-        "start": 505,
-        "end": 508,
+        "id": "fx_145",
+        "start": 508,
+        "end": 511,
         "text": "位置 / 左 / left",
         "meta": {
           "kind": "showcase",
@@ -1909,9 +1920,9 @@
         }
       },
       {
-        "id": "fx_145",
-        "start": 508,
-        "end": 511,
+        "id": "fx_146",
+        "start": 511,
+        "end": 514,
         "text": "位置 / 右 / right",
         "meta": {
           "kind": "showcase",
@@ -1920,9 +1931,9 @@
         }
       },
       {
-        "id": "fx_146",
-        "start": 511,
-        "end": 514,
+        "id": "fx_147",
+        "start": 514,
+        "end": 517,
         "text": "位置 / カラオケ / karaoke",
         "meta": {
           "kind": "showcase",
@@ -1931,9 +1942,9 @@
         }
       },
       {
-        "id": "fx_147",
-        "start": 514,
-        "end": 517,
+        "id": "fx_148",
+        "start": 517,
+        "end": 520,
         "text": "位置 / 積み重ね / stacked",
         "meta": {
           "kind": "showcase",
@@ -1942,9 +1953,9 @@
         }
       },
       {
-        "id": "fx_148",
-        "start": 517,
-        "end": 520,
+        "id": "fx_149",
+        "start": 520,
+        "end": 523,
         "text": "位置 / ランダム（安全領域） / randomSafe",
         "meta": {
           "kind": "showcase",
@@ -1953,9 +1964,9 @@
         }
       },
       {
-        "id": "fx_149",
-        "start": 520,
-        "end": 523,
+        "id": "fx_150",
+        "start": 523,
+        "end": 526,
         "text": "位置 / バッジ固定 / badgeAnchored",
         "meta": {
           "kind": "showcase",
@@ -1964,9 +1975,9 @@
         }
       },
       {
-        "id": "fx_150",
-        "start": 523,
-        "end": 526,
+        "id": "fx_151",
+        "start": 526,
+        "end": 529,
         "text": "位置 / カスタム / custom",
         "meta": {
           "kind": "showcase",
@@ -1975,9 +1986,9 @@
         }
       },
       {
-        "id": "fx_151",
-        "start": 526,
-        "end": 529,
+        "id": "fx_152",
+        "start": 529,
+        "end": 532,
         "text": "塗り / グラデーションスイープ / gradientSweep",
         "meta": {
           "kind": "showcase",
@@ -1986,9 +1997,9 @@
         }
       },
       {
-        "id": "fx_152",
-        "start": 529,
-        "end": 532,
+        "id": "fx_153",
+        "start": 532,
+        "end": 535,
         "text": "塗り / レインボーフロー / rainbowFlow",
         "meta": {
           "kind": "showcase",
@@ -1997,9 +2008,9 @@
         }
       },
       {
-        "id": "fx_153",
-        "start": 532,
-        "end": 535,
+        "id": "fx_154",
+        "start": 535,
+        "end": 538,
         "text": "塗り / ホログラフィック / holographic",
         "meta": {
           "kind": "showcase",
@@ -2008,9 +2019,9 @@
         }
       },
       {
-        "id": "fx_154",
-        "start": 535,
-        "end": 538,
+        "id": "fx_155",
+        "start": 538,
+        "end": 541,
         "text": "塗り / クローム / chrome",
         "meta": {
           "kind": "showcase",
@@ -2019,9 +2030,9 @@
         }
       },
       {
-        "id": "fx_155",
-        "start": 538,
-        "end": 541,
+        "id": "fx_156",
+        "start": 541,
+        "end": 544,
         "text": "塗り / 金箔 / goldFoil",
         "meta": {
           "kind": "showcase",
@@ -2030,9 +2041,9 @@
         }
       },
       {
-        "id": "fx_156",
-        "start": 541,
-        "end": 544,
+        "id": "fx_157",
+        "start": 544,
+        "end": 547,
         "text": "塗り / 炎 / fire",
         "meta": {
           "kind": "showcase",
@@ -2041,9 +2052,9 @@
         }
       },
       {
-        "id": "fx_157",
-        "start": 544,
-        "end": 547,
+        "id": "fx_158",
+        "start": 547,
+        "end": 550,
         "text": "塗り / コースティクス / caustics",
         "meta": {
           "kind": "showcase",
@@ -2052,9 +2063,9 @@
         }
       },
       {
-        "id": "fx_158",
-        "start": 547,
-        "end": 550,
+        "id": "fx_159",
+        "start": 550,
+        "end": 553,
         "text": "塗り / 大理石 / marble",
         "meta": {
           "kind": "showcase",
@@ -2063,9 +2074,9 @@
         }
       },
       {
-        "id": "fx_159",
-        "start": 550,
-        "end": 553,
+        "id": "fx_160",
+        "start": 553,
+        "end": 556,
         "text": "塗り / ガラス / glass",
         "meta": {
           "kind": "showcase",
@@ -2074,9 +2085,9 @@
         }
       },
       {
-        "id": "fx_160",
-        "start": 553,
-        "end": 556,
+        "id": "fx_161",
+        "start": 556,
+        "end": 559,
         "text": "塗り / テクスチャ / textureFill",
         "meta": {
           "kind": "showcase",
@@ -2085,9 +2096,9 @@
         }
       },
       {
-        "id": "fx_161",
-        "start": 556,
-        "end": 559,
+        "id": "fx_162",
+        "start": 559,
+        "end": 562,
         "text": "塗り / カラオケワイプ / karaokeWipe",
         "meta": {
           "kind": "showcase",
@@ -2096,9 +2107,9 @@
         }
       },
       {
-        "id": "fx_162",
-        "start": 559,
-        "end": 562,
+        "id": "fx_163",
+        "start": 562,
+        "end": 565,
         "text": "塗り / 墨 / ink",
         "meta": {
           "kind": "showcase",
@@ -2107,9 +2118,9 @@
         }
       },
       {
-        "id": "fx_163",
-        "start": 562,
-        "end": 565,
+        "id": "fx_164",
+        "start": 565,
+        "end": 568,
         "text": "縁取り / 縁取り / outline",
         "meta": {
           "kind": "showcase",
@@ -2118,9 +2129,9 @@
         }
       },
       {
-        "id": "fx_164",
-        "start": 565,
-        "end": 568,
+        "id": "fx_165",
+        "start": 568,
+        "end": 571,
         "text": "縁取り / ネオン / neonGlow",
         "meta": {
           "kind": "showcase",
@@ -2129,9 +2140,9 @@
         }
       },
       {
-        "id": "fx_165",
-        "start": 568,
-        "end": 571,
+        "id": "fx_166",
+        "start": 571,
+        "end": 574,
         "text": "縁取り / 内側グロー / innerGlow",
         "meta": {
           "kind": "showcase",
@@ -2140,9 +2151,9 @@
         }
       },
       {
-        "id": "fx_166",
-        "start": 571,
-        "end": 574,
+        "id": "fx_167",
+        "start": 574,
+        "end": 577,
         "text": "縁取り / ベベル / bevel",
         "meta": {
           "kind": "showcase",
@@ -2151,9 +2162,9 @@
         }
       },
       {
-        "id": "fx_167",
-        "start": 574,
-        "end": 577,
+        "id": "fx_168",
+        "start": 577,
+        "end": 580,
         "text": "縁取り / 押し出し / extrude",
         "meta": {
           "kind": "showcase",
@@ -2162,9 +2173,9 @@
         }
       },
       {
-        "id": "fx_168",
-        "start": 577,
-        "end": 580,
+        "id": "fx_169",
+        "start": 580,
+        "end": 583,
         "text": "縁取り / ロングシャドウ / longShadow",
         "meta": {
           "kind": "showcase",
@@ -2173,9 +2184,9 @@
         }
       },
       {
-        "id": "fx_169",
-        "start": 580,
-        "end": 583,
+        "id": "fx_170",
+        "start": 583,
+        "end": 586,
         "text": "縁取り / ドロップシャドウ / dropShadow",
         "meta": {
           "kind": "showcase",
@@ -2184,9 +2195,9 @@
         }
       },
       {
-        "id": "fx_170",
-        "start": 583,
-        "end": 586,
+        "id": "fx_171",
+        "start": 586,
+        "end": 589,
         "text": "縁取り / 滴り / drip",
         "meta": {
           "kind": "showcase",
@@ -2195,9 +2206,9 @@
         }
       },
       {
-        "id": "fx_171",
-        "start": 586,
-        "end": 589,
+        "id": "fx_172",
+        "start": 589,
+        "end": 592,
         "text": "後処理［グリッチ/文字］ グリッチブロック / glitchBlocks",
         "meta": {
           "kind": "showcase",
@@ -2208,9 +2219,9 @@
         }
       },
       {
-        "id": "fx_172",
-        "start": 589,
-        "end": 592,
+        "id": "fx_173",
+        "start": 592,
+        "end": 595,
         "text": "後処理［グリッチ/文字］ RGBシフト / rgbShift",
         "meta": {
           "kind": "showcase",
@@ -2221,9 +2232,9 @@
         }
       },
       {
-        "id": "fx_173",
-        "start": 592,
-        "end": 595,
+        "id": "fx_174",
+        "start": 595,
+        "end": 598,
         "text": "後処理［グリッチ/文字］ スキャンティア / scanTear",
         "meta": {
           "kind": "showcase",
@@ -2234,9 +2245,9 @@
         }
       },
       {
-        "id": "fx_174",
-        "start": 595,
-        "end": 598,
+        "id": "fx_175",
+        "start": 598,
+        "end": 601,
         "text": "後処理［グリッチ/文字］ VHSトラッキング / vhsTracking",
         "meta": {
           "kind": "showcase",
@@ -2247,9 +2258,9 @@
         }
       },
       {
-        "id": "fx_175",
-        "start": 598,
-        "end": 601,
+        "id": "fx_176",
+        "start": 601,
+        "end": 604,
         "text": "後処理［グリッチ/文字］ データスミア / dataSmear",
         "meta": {
           "kind": "showcase",
@@ -2260,9 +2271,9 @@
         }
       },
       {
-        "id": "fx_176",
-        "start": 601,
-        "end": 604,
+        "id": "fx_177",
+        "start": 604,
+        "end": 607,
         "text": "後処理［グリッチ/文字］ デジタルノイズ / digitalNoise",
         "meta": {
           "kind": "showcase",
@@ -2273,9 +2284,9 @@
         }
       },
       {
-        "id": "fx_177",
-        "start": 604,
-        "end": 607,
+        "id": "fx_178",
+        "start": 607,
+        "end": 610,
         "text": "後処理［グリッチ/文字］ グリッチスライス / glitchSlice",
         "meta": {
           "kind": "showcase",
@@ -2286,9 +2297,9 @@
         }
       },
       {
-        "id": "fx_178",
-        "start": 607,
-        "end": 610,
+        "id": "fx_179",
+        "start": 610,
+        "end": 613,
         "text": "後処理［ディゾルブ/文字］ ノイズディゾルブ / noiseDissolve",
         "meta": {
           "kind": "showcase",
@@ -2299,9 +2310,9 @@
         }
       },
       {
-        "id": "fx_179",
-        "start": 610,
-        "end": 613,
+        "id": "fx_180",
+        "start": 613,
+        "end": 616,
         "text": "後処理［ディゾルブ/文字］ 方向ディゾルブ / directionalDissolve",
         "meta": {
           "kind": "showcase",
@@ -2312,9 +2323,9 @@
         }
       },
       {
-        "id": "fx_180",
-        "start": 613,
-        "end": 616,
+        "id": "fx_181",
+        "start": 616,
+        "end": 619,
         "text": "後処理［ディゾルブ/文字］ ピクセルディゾルブ / pixelDissolve",
         "meta": {
           "kind": "showcase",
@@ -2325,9 +2336,9 @@
         }
       },
       {
-        "id": "fx_181",
-        "start": 616,
-        "end": 619,
+        "id": "fx_182",
+        "start": 619,
+        "end": 622,
         "text": "後処理［ディゾルブ/文字］ 燃焼ディゾルブ / burnDissolve",
         "meta": {
           "kind": "showcase",
@@ -2338,9 +2349,9 @@
         }
       },
       {
-        "id": "fx_182",
-        "start": 619,
-        "end": 622,
+        "id": "fx_183",
+        "start": 622,
+        "end": 625,
         "text": "後処理［ディゾルブ/文字］ ハーフトーンディゾルブ / halftoneDissolve",
         "meta": {
           "kind": "showcase",
@@ -2351,9 +2362,9 @@
         }
       },
       {
-        "id": "fx_183",
-        "start": 622,
-        "end": 625,
+        "id": "fx_184",
+        "start": 625,
+        "end": 628,
         "text": "後処理［ディゾルブ/文字］ パーティクルディゾルブ / particleDissolve",
         "meta": {
           "kind": "showcase",
@@ -2364,9 +2375,9 @@
         }
       },
       {
-        "id": "fx_184",
-        "start": 625,
-        "end": 628,
+        "id": "fx_185",
+        "start": 628,
+        "end": 631,
         "text": "後処理［ブラー・残像/画面］ 衝撃波 / shockwave",
         "meta": {
           "kind": "showcase",
@@ -2377,9 +2388,9 @@
         }
       },
       {
-        "id": "fx_185",
-        "start": 628,
-        "end": 631,
+        "id": "fx_186",
+        "start": 631,
+        "end": 634,
         "text": "後処理［ブラー・残像/画面］ ズームブラー / zoomBlur",
         "meta": {
           "kind": "showcase",
@@ -2390,9 +2401,9 @@
         }
       },
       {
-        "id": "fx_186",
-        "start": 631,
-        "end": 634,
+        "id": "fx_187",
+        "start": 634,
+        "end": 637,
         "text": "後処理［ブラー・残像/画面］ モーションブラー / motionBlur",
         "meta": {
           "kind": "showcase",
@@ -2403,9 +2414,9 @@
         }
       },
       {
-        "id": "fx_187",
-        "start": 634,
-        "end": 637,
+        "id": "fx_188",
+        "start": 637,
+        "end": 640,
         "text": "後処理［ブラー・残像/画面］ エコートレイル / echoTrail",
         "meta": {
           "kind": "showcase",
@@ -2416,9 +2427,9 @@
         }
       },
       {
-        "id": "fx_188",
-        "start": 637,
-        "end": 640,
+        "id": "fx_189",
+        "start": 640,
+        "end": 643,
         "text": "後処理［変形・反転/画面］ 万華鏡 / kaleidoscope",
         "meta": {
           "kind": "showcase",
@@ -2429,9 +2440,9 @@
         }
       },
       {
-        "id": "fx_189",
-        "start": 640,
-        "end": 643,
+        "id": "fx_190",
+        "start": 643,
+        "end": 646,
         "text": "後処理［変形・反転/画面］ ミラー / mirror",
         "meta": {
           "kind": "showcase",
@@ -2442,9 +2453,9 @@
         }
       },
       {
-        "id": "fx_190",
-        "start": 643,
-        "end": 646,
+        "id": "fx_191",
+        "start": 646,
+        "end": 649,
         "text": "後処理［変形・反転/画面］ ピクセルソート / pixelSort",
         "meta": {
           "kind": "showcase",
@@ -2455,9 +2466,9 @@
         }
       },
       {
-        "id": "fx_191",
-        "start": 646,
-        "end": 649,
+        "id": "fx_192",
+        "start": 649,
+        "end": 652,
         "text": "後処理［変形・反転/画面］ レンズ歪み / lensDistortion",
         "meta": {
           "kind": "showcase",
@@ -2468,9 +2479,9 @@
         }
       },
       {
-        "id": "fx_192",
-        "start": 649,
-        "end": 652,
+        "id": "fx_193",
+        "start": 652,
+        "end": 655,
         "text": "後処理［変形・反転/画面］ 変位マップ / displacementMap",
         "meta": {
           "kind": "showcase",
@@ -2481,9 +2492,9 @@
         }
       },
       {
-        "id": "fx_193",
-        "start": 652,
-        "end": 655,
+        "id": "fx_194",
+        "start": 655,
+        "end": 658,
         "text": "後処理［変形・反転/画面］ 陽炎 / heatHaze",
         "meta": {
           "kind": "showcase",
@@ -2494,9 +2505,9 @@
         }
       },
       {
-        "id": "fx_194",
-        "start": 655,
-        "end": 658,
+        "id": "fx_195",
+        "start": 658,
+        "end": 661,
         "text": "後処理［光/文字］ ゴッドレイ / godRays",
         "meta": {
           "kind": "showcase",
@@ -2507,9 +2518,9 @@
         }
       },
       {
-        "id": "fx_195",
-        "start": 658,
-        "end": 661,
+        "id": "fx_196",
+        "start": 661,
+        "end": 664,
         "text": "後処理［光/文字］ ライトスイープ / lightSweep",
         "meta": {
           "kind": "showcase",
@@ -2520,9 +2531,9 @@
         }
       },
       {
-        "id": "fx_196",
-        "start": 661,
-        "end": 664,
+        "id": "fx_197",
+        "start": 664,
+        "end": 667,
         "text": "後処理［光/画面］ ブルーム / bloom",
         "meta": {
           "kind": "showcase",
@@ -2533,9 +2544,9 @@
         }
       },
       {
-        "id": "fx_197",
-        "start": 664,
-        "end": 667,
+        "id": "fx_198",
+        "start": 667,
+        "end": 670,
         "text": "後処理［光/画面］ ライトリーク / lightLeak",
         "meta": {
           "kind": "showcase",
@@ -2546,9 +2557,9 @@
         }
       },
       {
-        "id": "fx_198",
-        "start": 667,
-        "end": 670,
+        "id": "fx_199",
+        "start": 670,
+        "end": 673,
         "text": "後処理［光/文字］ スパークル / sparkles",
         "meta": {
           "kind": "showcase",
@@ -2559,9 +2570,9 @@
         }
       },
       {
-        "id": "fx_199",
-        "start": 670,
-        "end": 673,
+        "id": "fx_200",
+        "start": 673,
+        "end": 676,
         "text": "後処理［光/画面］ レンズフレア / lensFlare",
         "meta": {
           "kind": "showcase",
@@ -2572,9 +2583,9 @@
         }
       },
       {
-        "id": "fx_200",
-        "start": 673,
-        "end": 676,
+        "id": "fx_201",
+        "start": 676,
+        "end": 679,
         "text": "後処理［色・質感/画面］ カラーグレード / colorGrade",
         "meta": {
           "kind": "showcase",
@@ -2585,9 +2596,9 @@
         }
       },
       {
-        "id": "fx_201",
-        "start": 676,
-        "end": 679,
+        "id": "fx_202",
+        "start": 679,
+        "end": 682,
         "text": "後処理［色・質感/画面］ 色収差 / chromaticAberration",
         "meta": {
           "kind": "showcase",
@@ -2598,9 +2609,9 @@
         }
       },
       {
-        "id": "fx_202",
-        "start": 679,
-        "end": 682,
+        "id": "fx_203",
+        "start": 682,
+        "end": 685,
         "text": "後処理［色・質感/画面］ CRT / crt",
         "meta": {
           "kind": "showcase",
@@ -2611,9 +2622,9 @@
         }
       },
       {
-        "id": "fx_203",
-        "start": 682,
-        "end": 685,
+        "id": "fx_204",
+        "start": 685,
+        "end": 688,
         "text": "後処理［色・質感/画面］ フィルムグレイン / filmGrain",
         "meta": {
           "kind": "showcase",
@@ -2624,9 +2635,9 @@
         }
       },
       {
-        "id": "fx_204",
-        "start": 685,
-        "end": 688,
+        "id": "fx_205",
+        "start": 688,
+        "end": 691,
         "text": "後処理［色・質感/画面］ ハーフトーン / halftone",
         "meta": {
           "kind": "showcase",
@@ -2637,9 +2648,9 @@
         }
       },
       {
-        "id": "fx_205",
-        "start": 688,
-        "end": 691,
+        "id": "fx_206",
+        "start": 691,
+        "end": 694,
         "text": "後処理［色・質感/画面］ ピクセル化 / pixelate",
         "meta": {
           "kind": "showcase",
@@ -2650,9 +2661,9 @@
         }
       },
       {
-        "id": "fx_206",
-        "start": 691,
-        "end": 694,
+        "id": "fx_207",
+        "start": 694,
+        "end": 697,
         "text": "後処理［色・質感/画面］ ビネット / vignette",
         "meta": {
           "kind": "showcase",
@@ -2663,9 +2674,9 @@
         }
       },
       {
-        "id": "fx_207",
-        "start": 694,
-        "end": 697,
+        "id": "fx_208",
+        "start": 697,
+        "end": 700,
         "text": "背景 / 単色 / solid",
         "meta": {
           "kind": "showcase",
@@ -2674,9 +2685,9 @@
         }
       },
       {
-        "id": "fx_208",
-        "start": 697,
-        "end": 700,
+        "id": "fx_209",
+        "start": 700,
+        "end": 703,
         "text": "背景 / ベタ塗り / plain",
         "meta": {
           "kind": "showcase",
@@ -2685,9 +2696,9 @@
         }
       },
       {
-        "id": "fx_209",
-        "start": 700,
-        "end": 703,
+        "id": "fx_210",
+        "start": 703,
+        "end": 706,
         "text": "背景 / グラデーション（8方向） / gradient",
         "meta": {
           "kind": "showcase",
@@ -2696,9 +2707,9 @@
         }
       },
       {
-        "id": "fx_210",
-        "start": 703,
-        "end": 706,
+        "id": "fx_211",
+        "start": 706,
+        "end": 709,
         "text": "背景 / ノイズグラデーション / noiseGradient",
         "meta": {
           "kind": "showcase",
@@ -2707,9 +2718,9 @@
         }
       },
       {
-        "id": "fx_211",
-        "start": 706,
-        "end": 709,
+        "id": "fx_212",
+        "start": 709,
+        "end": 712,
         "text": "背景 / 実績カード / card",
         "meta": {
           "kind": "showcase",
@@ -2718,9 +2729,9 @@
         }
       },
       {
-        "id": "fx_212",
-        "start": 709,
-        "end": 712,
+        "id": "fx_213",
+        "start": 712,
+        "end": 715,
         "text": "背景 / 楽曲カバー / cover",
         "meta": {
           "kind": "showcase",
@@ -2729,9 +2740,9 @@
         }
       },
       {
-        "id": "fx_213",
-        "start": 712,
-        "end": 715,
+        "id": "fx_214",
+        "start": 715,
+        "end": 718,
         "text": "背景 / 画像 / image",
         "meta": {
           "kind": "showcase",
@@ -2740,9 +2751,9 @@
         }
       },
       {
-        "id": "fx_214",
-        "start": 715,
-        "end": 718,
+        "id": "fx_215",
+        "start": 718,
+        "end": 721,
         "text": "背景 / パターン / pattern",
         "meta": {
           "kind": "showcase",
@@ -2751,9 +2762,9 @@
         }
       },
       {
-        "id": "fx_215",
-        "start": 718,
-        "end": 721,
+        "id": "fx_216",
+        "start": 721,
+        "end": 724,
         "text": "背景 / 図形 / shapes",
         "meta": {
           "kind": "showcase",
@@ -2762,9 +2773,9 @@
         }
       },
       {
-        "id": "fx_216",
-        "start": 721,
-        "end": 724,
+        "id": "fx_217",
+        "start": 724,
+        "end": 727,
         "text": "文字背景 / なし / none",
         "meta": {
           "kind": "showcase",
@@ -2773,9 +2784,9 @@
         }
       },
       {
-        "id": "fx_217",
-        "start": 724,
-        "end": 727,
+        "id": "fx_218",
+        "start": 727,
+        "end": 730,
         "text": "文字背景 / 四角 / square",
         "meta": {
           "kind": "showcase",
@@ -2784,9 +2795,9 @@
         }
       },
       {
-        "id": "fx_218",
-        "start": 727,
-        "end": 730,
+        "id": "fx_219",
+        "start": 730,
+        "end": 733,
         "text": "文字背景の塗り / グラデーションスイープ / gradientSweep",
         "meta": {
           "kind": "showcase",
@@ -2795,9 +2806,9 @@
         }
       },
       {
-        "id": "fx_219",
-        "start": 730,
-        "end": 733,
+        "id": "fx_220",
+        "start": 733,
+        "end": 736,
         "text": "文字背景の塗り / レインボーフロー / rainbowFlow",
         "meta": {
           "kind": "showcase",
@@ -2806,9 +2817,9 @@
         }
       },
       {
-        "id": "fx_220",
-        "start": 733,
-        "end": 736,
+        "id": "fx_221",
+        "start": 736,
+        "end": 739,
         "text": "文字背景の塗り / ホログラフィック / holographic",
         "meta": {
           "kind": "showcase",
@@ -2817,9 +2828,9 @@
         }
       },
       {
-        "id": "fx_221",
-        "start": 736,
-        "end": 739,
+        "id": "fx_222",
+        "start": 739,
+        "end": 742,
         "text": "文字背景の塗り / クローム / chrome",
         "meta": {
           "kind": "showcase",
@@ -2828,9 +2839,9 @@
         }
       },
       {
-        "id": "fx_222",
-        "start": 739,
-        "end": 742,
+        "id": "fx_223",
+        "start": 742,
+        "end": 745,
         "text": "文字背景の塗り / 金箔 / goldFoil",
         "meta": {
           "kind": "showcase",
@@ -2839,9 +2850,9 @@
         }
       },
       {
-        "id": "fx_223",
-        "start": 742,
-        "end": 745,
+        "id": "fx_224",
+        "start": 745,
+        "end": 748,
         "text": "文字背景の塗り / 炎 / fire",
         "meta": {
           "kind": "showcase",
@@ -2850,9 +2861,9 @@
         }
       },
       {
-        "id": "fx_224",
-        "start": 745,
-        "end": 748,
+        "id": "fx_225",
+        "start": 748,
+        "end": 751,
         "text": "文字背景の塗り / コースティクス / caustics",
         "meta": {
           "kind": "showcase",
@@ -2861,9 +2872,9 @@
         }
       },
       {
-        "id": "fx_225",
-        "start": 748,
-        "end": 751,
+        "id": "fx_226",
+        "start": 751,
+        "end": 754,
         "text": "文字背景の塗り / 大理石 / marble",
         "meta": {
           "kind": "showcase",
@@ -2872,9 +2883,9 @@
         }
       },
       {
-        "id": "fx_226",
-        "start": 751,
-        "end": 754,
+        "id": "fx_227",
+        "start": 754,
+        "end": 757,
         "text": "文字背景の塗り / ガラス / glass",
         "meta": {
           "kind": "showcase",
@@ -2883,9 +2894,9 @@
         }
       },
       {
-        "id": "fx_227",
-        "start": 754,
-        "end": 757,
+        "id": "fx_228",
+        "start": 757,
+        "end": 760,
         "text": "文字背景の塗り / テクスチャ / textureFill",
         "meta": {
           "kind": "showcase",
@@ -2894,9 +2905,9 @@
         }
       },
       {
-        "id": "fx_228",
-        "start": 757,
-        "end": 760,
+        "id": "fx_229",
+        "start": 760,
+        "end": 763,
         "text": "文字背景の塗り / カラオケワイプ / karaokeWipe",
         "meta": {
           "kind": "showcase",
@@ -2905,9 +2916,9 @@
         }
       },
       {
-        "id": "fx_229",
-        "start": 760,
-        "end": 763,
+        "id": "fx_230",
+        "start": 763,
+        "end": 766,
         "text": "文字背景の塗り / 墨 / ink",
         "meta": {
           "kind": "showcase",
@@ -2916,9 +2927,9 @@
         }
       },
       {
-        "id": "fx_230",
-        "start": 763,
-        "end": 766,
+        "id": "fx_231",
+        "start": 766,
+        "end": 769,
         "text": "文字背景の縁取り / 縁取り / outline",
         "meta": {
           "kind": "showcase",
@@ -2927,9 +2938,9 @@
         }
       },
       {
-        "id": "fx_231",
-        "start": 766,
-        "end": 769,
+        "id": "fx_232",
+        "start": 769,
+        "end": 772,
         "text": "文字背景の縁取り / ネオン / neonGlow",
         "meta": {
           "kind": "showcase",
@@ -2938,9 +2949,9 @@
         }
       },
       {
-        "id": "fx_232",
-        "start": 769,
-        "end": 772,
+        "id": "fx_233",
+        "start": 772,
+        "end": 775,
         "text": "文字背景の縁取り / 内側グロー / innerGlow",
         "meta": {
           "kind": "showcase",
@@ -2949,9 +2960,9 @@
         }
       },
       {
-        "id": "fx_233",
-        "start": 772,
-        "end": 775,
+        "id": "fx_234",
+        "start": 775,
+        "end": 778,
         "text": "文字背景の縁取り / ベベル / bevel",
         "meta": {
           "kind": "showcase",
@@ -2960,9 +2971,9 @@
         }
       },
       {
-        "id": "fx_234",
-        "start": 775,
-        "end": 778,
+        "id": "fx_235",
+        "start": 778,
+        "end": 781,
         "text": "文字背景の縁取り / 押し出し / extrude",
         "meta": {
           "kind": "showcase",
@@ -2971,9 +2982,9 @@
         }
       },
       {
-        "id": "fx_235",
-        "start": 778,
-        "end": 781,
+        "id": "fx_236",
+        "start": 781,
+        "end": 784,
         "text": "文字背景の縁取り / ロングシャドウ / longShadow",
         "meta": {
           "kind": "showcase",
@@ -2982,9 +2993,9 @@
         }
       },
       {
-        "id": "fx_236",
-        "start": 781,
-        "end": 784,
+        "id": "fx_237",
+        "start": 784,
+        "end": 787,
         "text": "文字背景の縁取り / ドロップシャドウ / dropShadow",
         "meta": {
           "kind": "showcase",
@@ -2993,9 +3004,9 @@
         }
       },
       {
-        "id": "fx_237",
-        "start": 784,
-        "end": 787,
+        "id": "fx_238",
+        "start": 787,
+        "end": 790,
         "text": "文字背景の縁取り / 滴り / drip",
         "meta": {
           "kind": "showcase",
@@ -3004,9 +3015,9 @@
         }
       },
       {
-        "id": "fx_238",
-        "start": 787,
-        "end": 790,
+        "id": "fx_239",
+        "start": 790,
+        "end": 793,
         "text": "文字背景の動き / 文字に追従 / follow",
         "meta": {
           "kind": "showcase",
@@ -3015,9 +3026,9 @@
         }
       },
       {
-        "id": "fx_239",
-        "start": 790,
-        "end": 793,
+        "id": "fx_240",
+        "start": 793,
+        "end": 796,
         "text": "文字背景の動き / フェード / fade",
         "meta": {
           "kind": "showcase",
@@ -3026,9 +3037,9 @@
         }
       },
       {
-        "id": "fx_240",
-        "start": 793,
-        "end": 796,
+        "id": "fx_241",
+        "start": 796,
+        "end": 799,
         "text": "文字背景の動き / ポップ / pop",
         "meta": {
           "kind": "showcase",
@@ -3037,9 +3048,9 @@
         }
       },
       {
-        "id": "fx_241",
-        "start": 796,
-        "end": 799,
+        "id": "fx_242",
+        "start": 799,
+        "end": 802,
         "text": "文字背景の動き / スタンプ / stamp",
         "meta": {
           "kind": "showcase",
@@ -3048,9 +3059,9 @@
         }
       },
       {
-        "id": "fx_242",
-        "start": 799,
-        "end": 802,
+        "id": "fx_243",
+        "start": 802,
+        "end": 805,
         "text": "文字背景の動き / ワイプ / wipe",
         "meta": {
           "kind": "showcase",
@@ -3059,9 +3070,9 @@
         }
       },
       {
-        "id": "fx_243",
-        "start": 802,
-        "end": 805,
+        "id": "fx_244",
+        "start": 805,
+        "end": 808,
         "text": "文字背景の動き / 回転 / spin",
         "meta": {
           "kind": "showcase",
@@ -3070,9 +3081,9 @@
         }
       },
       {
-        "id": "fx_244",
-        "start": 805,
-        "end": 808,
+        "id": "fx_245",
+        "start": 808,
+        "end": 811,
         "text": "文字背景の動き / 伸びる / grow",
         "meta": {
           "kind": "showcase",
@@ -3081,9 +3092,9 @@
         }
       },
       {
-        "id": "fx_245",
-        "start": 808,
-        "end": 811,
+        "id": "fx_246",
+        "start": 811,
+        "end": 814,
         "text": "文字背景の動き / なし / none",
         "meta": {
           "kind": "showcase",
@@ -3092,9 +3103,9 @@
         }
       },
       {
-        "id": "fx_246",
-        "start": 811,
-        "end": 814,
+        "id": "fx_247",
+        "start": 814,
+        "end": 817,
         "text": "文字背景の動き / ちらつき / flicker",
         "meta": {
           "kind": "showcase",
@@ -3103,9 +3114,9 @@
         }
       },
       {
-        "id": "fx_247",
-        "start": 814,
-        "end": 817,
+        "id": "fx_248",
+        "start": 817,
+        "end": 820,
         "text": "文字背景の動き / にじみ / bleed",
         "meta": {
           "kind": "showcase",
@@ -3114,9 +3125,9 @@
         }
       },
       {
-        "id": "fx_248",
-        "start": 817,
-        "end": 820,
+        "id": "fx_249",
+        "start": 820,
+        "end": 823,
         "text": "文字背景の動き / 浮かぶ / float",
         "meta": {
           "kind": "showcase",
@@ -3125,9 +3136,9 @@
         }
       },
       {
-        "id": "fx_249",
-        "start": 820,
-        "end": 823,
+        "id": "fx_250",
+        "start": 823,
+        "end": 826,
         "text": "文字背景の動き / 落下 / fall",
         "meta": {
           "kind": "showcase",
@@ -3136,9 +3147,9 @@
         }
       },
       {
-        "id": "fx_250",
-        "start": 823,
-        "end": 826,
+        "id": "fx_251",
+        "start": 826,
+        "end": 829,
         "text": "繰り返し / 縦積み / stackV",
         "meta": {
           "kind": "showcase",
@@ -3147,9 +3158,9 @@
         }
       },
       {
-        "id": "fx_251",
-        "start": 826,
-        "end": 829,
+        "id": "fx_252",
+        "start": 829,
+        "end": 832,
         "text": "繰り返し / 横並び / rowH",
         "meta": {
           "kind": "showcase",
@@ -3158,9 +3169,9 @@
         }
       },
       {
-        "id": "fx_252",
-        "start": 829,
-        "end": 832,
+        "id": "fx_253",
+        "start": 832,
+        "end": 835,
         "text": "繰り返し / 斜め / diagonal",
         "meta": {
           "kind": "showcase",
@@ -3169,9 +3180,9 @@
         }
       },
       {
-        "id": "fx_253",
-        "start": 832,
-        "end": 835,
+        "id": "fx_254",
+        "start": 835,
+        "end": 838,
         "text": "繰り返し / グリッド / grid",
         "meta": {
           "kind": "showcase",
@@ -3180,9 +3191,9 @@
         }
       },
       {
-        "id": "fx_254",
-        "start": 835,
-        "end": 838,
+        "id": "fx_255",
+        "start": 838,
+        "end": 841,
         "text": "繰り返し / 放射 / radial",
         "meta": {
           "kind": "showcase",
@@ -3191,9 +3202,9 @@
         }
       },
       {
-        "id": "fx_255",
-        "start": 838,
-        "end": 841,
+        "id": "fx_256",
+        "start": 841,
+        "end": 844,
         "text": "繰り返し / 扇 / fan",
         "meta": {
           "kind": "showcase",
@@ -3202,9 +3213,9 @@
         }
       },
       {
-        "id": "fx_256",
-        "start": 841,
-        "end": 844,
+        "id": "fx_257",
+        "start": 844,
+        "end": 847,
         "text": "繰り返し / トンネル / tunnel",
         "meta": {
           "kind": "showcase",
@@ -3213,9 +3224,9 @@
         }
       },
       {
-        "id": "fx_257",
-        "start": 844,
-        "end": 847,
+        "id": "fx_258",
+        "start": 847,
+        "end": 850,
         "text": "繰り返し / 散らし / scatter",
         "meta": {
           "kind": "showcase",
@@ -3224,9 +3235,9 @@
         }
       },
       {
-        "id": "fx_258",
-        "start": 847,
-        "end": 850,
+        "id": "fx_259",
+        "start": 850,
+        "end": 853,
         "text": "繰り返し / レンガ / brick",
         "meta": {
           "kind": "showcase",
@@ -3235,9 +3246,9 @@
         }
       },
       {
-        "id": "fx_259",
-        "start": 850,
-        "end": 853,
+        "id": "fx_260",
+        "start": 853,
+        "end": 856,
         "text": "繰り返し / 敷き詰め / fill",
         "meta": {
           "kind": "showcase",
@@ -5429,6 +5440,22 @@
     },
     "fx_095": {
       "exit": {
+        "type": "checkerboard",
+        "enabled": true,
+        "params": {
+          "cells": 7,
+          "soft": 0.38
+        },
+        "motion": {
+          "out": {
+            "duration": 1,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_096": {
+      "exit": {
         "type": "typewriterReverse",
         "enabled": true,
         "params": {},
@@ -5440,7 +5467,7 @@
         }
       }
     },
-    "fx_096": {
+    "fx_097": {
       "exit": {
         "type": "shrinkToCenter",
         "enabled": true,
@@ -5453,7 +5480,7 @@
         }
       }
     },
-    "fx_097": {
+    "fx_098": {
       "exit": {
         "type": "particlesDisperse",
         "enabled": true,
@@ -5469,7 +5496,7 @@
         }
       }
     },
-    "fx_098": {
+    "fx_099": {
       "exit": {
         "type": "sandCrumble",
         "enabled": true,
@@ -5489,7 +5516,7 @@
         }
       }
     },
-    "fx_099": {
+    "fx_100": {
       "exit": {
         "type": "melt",
         "enabled": true,
@@ -5504,7 +5531,7 @@
         }
       }
     },
-    "fx_100": {
+    "fx_101": {
       "exit": {
         "type": "burnAway",
         "enabled": true,
@@ -5521,7 +5548,7 @@
         }
       }
     },
-    "fx_101": {
+    "fx_102": {
       "exit": {
         "type": "circleErase",
         "enabled": true,
@@ -5537,7 +5564,7 @@
         }
       }
     },
-    "fx_102": {
+    "fx_103": {
       "exit": {
         "type": "lineErase",
         "enabled": true,
@@ -5553,7 +5580,7 @@
         }
       }
     },
-    "fx_103": {
+    "fx_104": {
       "exit": {
         "type": "boxErase",
         "enabled": true,
@@ -5568,7 +5595,7 @@
         }
       }
     },
-    "fx_104": {
+    "fx_105": {
       "exit": {
         "type": "strokeErase",
         "enabled": true,
@@ -5583,7 +5610,7 @@
         }
       }
     },
-    "fx_105": {
+    "fx_106": {
       "exit": {
         "type": "creepOut",
         "enabled": true,
@@ -5598,7 +5625,7 @@
         }
       }
     },
-    "fx_106": {
+    "fx_107": {
       "exit": {
         "type": "vanish",
         "enabled": true,
@@ -5611,7 +5638,7 @@
         }
       }
     },
-    "fx_107": {
+    "fx_108": {
       "exit": {
         "type": "floatOut",
         "enabled": true,
@@ -5627,7 +5654,7 @@
         }
       }
     },
-    "fx_108": {
+    "fx_109": {
       "exit": {
         "type": "splitOut",
         "enabled": true,
@@ -5642,7 +5669,7 @@
         }
       }
     },
-    "fx_109": {
+    "fx_110": {
       "exit": {
         "type": "stripeShrink",
         "enabled": true,
@@ -5657,7 +5684,7 @@
         }
       }
     },
-    "fx_110": {
+    "fx_111": {
       "exit": {
         "type": "rotateOut",
         "enabled": true,
@@ -5672,7 +5699,7 @@
         }
       }
     },
-    "fx_111": {
+    "fx_112": {
       "exit": {
         "type": "floatUp",
         "enabled": true,
@@ -5687,7 +5714,7 @@
         }
       }
     },
-    "fx_112": {
+    "fx_113": {
       "exit": {
         "type": "floatDown",
         "enabled": true,
@@ -5702,7 +5729,7 @@
         }
       }
     },
-    "fx_113": {
+    "fx_114": {
       "exit": {
         "type": "shrinkDir",
         "enabled": true,
@@ -5717,7 +5744,7 @@
         }
       }
     },
-    "fx_114": {
+    "fx_115": {
       "exit": {
         "type": "spiralOut",
         "enabled": true,
@@ -5733,7 +5760,7 @@
         }
       }
     },
-    "fx_115": {
+    "fx_116": {
       "exit": {
         "type": "radialOut",
         "enabled": true,
@@ -5748,7 +5775,7 @@
         }
       }
     },
-    "fx_116": {
+    "fx_117": {
       "exit": {
         "type": "warpOut",
         "enabled": true,
@@ -5763,7 +5790,7 @@
         }
       }
     },
-    "fx_117": {
+    "fx_118": {
       "exit": {
         "type": "pageCurl",
         "enabled": true,
@@ -5781,7 +5808,7 @@
         }
       }
     },
-    "fx_118": {
+    "fx_119": {
       "exit": {
         "type": "evaporate",
         "enabled": true,
@@ -5797,7 +5824,7 @@
         }
       }
     },
-    "fx_119": {
+    "fx_120": {
       "exit": {
         "type": "bulletHoles",
         "enabled": true,
@@ -5814,7 +5841,7 @@
         }
       }
     },
-    "fx_120": {
+    "fx_121": {
       "exit": {
         "type": "particlesOnText",
         "enabled": true,
@@ -5831,7 +5858,7 @@
         }
       }
     },
-    "fx_121": {
+    "fx_122": {
       "hold": [
         {
           "type": "floatBob",
@@ -5868,7 +5895,7 @@
         }
       }
     },
-    "fx_122": {
+    "fx_123": {
       "hold": [
         {
           "type": "sineWave",
@@ -5906,7 +5933,7 @@
         }
       }
     },
-    "fx_123": {
+    "fx_124": {
       "hold": [
         {
           "type": "jitter",
@@ -5943,7 +5970,7 @@
         }
       }
     },
-    "fx_124": {
+    "fx_125": {
       "hold": [
         {
           "type": "pulse",
@@ -5981,7 +6008,7 @@
         }
       }
     },
-    "fx_125": {
+    "fx_126": {
       "hold": [
         {
           "type": "opacityPulse",
@@ -6019,7 +6046,7 @@
         }
       }
     },
-    "fx_126": {
+    "fx_127": {
       "hold": [
         {
           "type": "kenBurns",
@@ -6059,7 +6086,7 @@
         }
       }
     },
-    "fx_127": {
+    "fx_128": {
       "hold": [
         {
           "type": "drift",
@@ -6096,7 +6123,7 @@
         }
       }
     },
-    "fx_128": {
+    "fx_129": {
       "hold": [
         {
           "type": "pendulumSwing",
@@ -6134,7 +6161,7 @@
         }
       }
     },
-    "fx_129": {
+    "fx_130": {
       "hold": [
         {
           "type": "nudgeImpulse",
@@ -6171,7 +6198,7 @@
         }
       }
     },
-    "fx_130": {
+    "fx_131": {
       "hold": [
         {
           "type": "marquee",
@@ -6207,7 +6234,7 @@
         }
       }
     },
-    "fx_131": {
+    "fx_132": {
       "hold": [
         {
           "type": "jelly",
@@ -6244,7 +6271,7 @@
         }
       }
     },
-    "fx_132": {
+    "fx_133": {
       "hold": [
         {
           "type": "wobbleWarp",
@@ -6282,7 +6309,7 @@
         }
       }
     },
-    "fx_133": {
+    "fx_134": {
       "hold": [
         {
           "type": "twist",
@@ -6318,7 +6345,7 @@
         }
       }
     },
-    "fx_134": {
+    "fx_135": {
       "hold": [
         {
           "type": "breathing",
@@ -6354,7 +6381,7 @@
         }
       }
     },
-    "fx_135": {
+    "fx_136": {
       "hold": [
         {
           "type": "orbit3D",
@@ -6391,7 +6418,7 @@
         }
       }
     },
-    "fx_136": {
+    "fx_137": {
       "hold": [
         {
           "type": "orbit2D",
@@ -6431,7 +6458,7 @@
         }
       }
     },
-    "fx_137": {
+    "fx_138": {
       "hold": [
         {
           "type": "pathFollow",
@@ -6481,7 +6508,7 @@
         }
       }
     },
-    "fx_138": {
+    "fx_139": {
       "hold": [
         {
           "type": "heartbeat",
@@ -6519,7 +6546,7 @@
         }
       }
     },
-    "fx_139": {
+    "fx_140": {
       "hold": [
         {
           "type": "shiver",
@@ -6556,7 +6583,7 @@
         }
       }
     },
-    "fx_140": {
+    "fx_141": {
       "hold": [
         {
           "type": "dissolve",
@@ -6593,7 +6620,7 @@
         }
       }
     },
-    "fx_141": {
+    "fx_142": {
       "location": {
         "type": "center",
         "enabled": true,
@@ -6633,7 +6660,7 @@
         }
       }
     },
-    "fx_142": {
+    "fx_143": {
       "location": {
         "type": "lowerThird",
         "enabled": true,
@@ -6673,7 +6700,7 @@
         }
       }
     },
-    "fx_143": {
+    "fx_144": {
       "location": {
         "type": "upperThird",
         "enabled": true,
@@ -6713,7 +6740,7 @@
         }
       }
     },
-    "fx_144": {
+    "fx_145": {
       "location": {
         "type": "left",
         "enabled": true,
@@ -6753,7 +6780,7 @@
         }
       }
     },
-    "fx_145": {
+    "fx_146": {
       "location": {
         "type": "right",
         "enabled": true,
@@ -6793,7 +6820,7 @@
         }
       }
     },
-    "fx_146": {
+    "fx_147": {
       "location": {
         "type": "karaoke",
         "enabled": true,
@@ -6833,7 +6860,7 @@
         }
       }
     },
-    "fx_147": {
+    "fx_148": {
       "location": {
         "type": "stacked",
         "enabled": true,
@@ -6873,7 +6900,7 @@
         }
       }
     },
-    "fx_148": {
+    "fx_149": {
       "location": {
         "type": "randomSafe",
         "enabled": true,
@@ -6913,7 +6940,7 @@
         }
       }
     },
-    "fx_149": {
+    "fx_150": {
       "location": {
         "type": "badgeAnchored",
         "enabled": true,
@@ -6953,7 +6980,7 @@
         }
       }
     },
-    "fx_150": {
+    "fx_151": {
       "location": {
         "type": "custom",
         "enabled": true,
@@ -6995,7 +7022,7 @@
         }
       }
     },
-    "fx_151": {
+    "fx_152": {
       "fill": {
         "type": "gradientSweep",
         "enabled": true,
@@ -7041,7 +7068,7 @@
         }
       }
     },
-    "fx_152": {
+    "fx_153": {
       "fill": {
         "type": "rainbowFlow",
         "enabled": true,
@@ -7089,7 +7116,7 @@
         }
       }
     },
-    "fx_153": {
+    "fx_154": {
       "fill": {
         "type": "holographic",
         "enabled": true,
@@ -7136,7 +7163,7 @@
         }
       }
     },
-    "fx_154": {
+    "fx_155": {
       "fill": {
         "type": "chrome",
         "enabled": true,
@@ -7182,7 +7209,7 @@
         }
       }
     },
-    "fx_155": {
+    "fx_156": {
       "fill": {
         "type": "goldFoil",
         "enabled": true,
@@ -7229,7 +7256,7 @@
         }
       }
     },
-    "fx_156": {
+    "fx_157": {
       "fill": {
         "type": "fire",
         "enabled": true,
@@ -7276,7 +7303,7 @@
         }
       }
     },
-    "fx_157": {
+    "fx_158": {
       "fill": {
         "type": "caustics",
         "enabled": true,
@@ -7324,7 +7351,7 @@
         }
       }
     },
-    "fx_158": {
+    "fx_159": {
       "fill": {
         "type": "marble",
         "enabled": true,
@@ -7372,7 +7399,7 @@
         }
       }
     },
-    "fx_159": {
+    "fx_160": {
       "fill": {
         "type": "glass",
         "enabled": true,
@@ -7419,7 +7446,7 @@
         }
       }
     },
-    "fx_160": {
+    "fx_161": {
       "fill": {
         "type": "textureFill",
         "enabled": true,
@@ -7469,7 +7496,7 @@
         }
       }
     },
-    "fx_161": {
+    "fx_162": {
       "fill": {
         "type": "karaokeWipe",
         "enabled": true,
@@ -7516,7 +7543,7 @@
         }
       }
     },
-    "fx_162": {
+    "fx_163": {
       "fill": {
         "type": "ink",
         "enabled": true,
@@ -7563,7 +7590,7 @@
         }
       }
     },
-    "fx_163": {
+    "fx_164": {
       "edge": [
         {
           "type": "outline",
@@ -7618,7 +7645,7 @@
         }
       }
     },
-    "fx_164": {
+    "fx_165": {
       "edge": [
         {
           "type": "neonGlow",
@@ -7668,7 +7695,7 @@
         }
       }
     },
-    "fx_165": {
+    "fx_166": {
       "edge": [
         {
           "type": "innerGlow",
@@ -7717,7 +7744,7 @@
         }
       }
     },
-    "fx_166": {
+    "fx_167": {
       "edge": [
         {
           "type": "bevel",
@@ -7767,7 +7794,7 @@
         }
       }
     },
-    "fx_167": {
+    "fx_168": {
       "edge": [
         {
           "type": "extrude",
@@ -7817,7 +7844,7 @@
         }
       }
     },
-    "fx_168": {
+    "fx_169": {
       "edge": [
         {
           "type": "longShadow",
@@ -7867,7 +7894,7 @@
         }
       }
     },
-    "fx_169": {
+    "fx_170": {
       "edge": [
         {
           "type": "dropShadow",
@@ -7920,7 +7947,7 @@
         }
       }
     },
-    "fx_170": {
+    "fx_171": {
       "edge": [
         {
           "type": "drip",
@@ -7970,7 +7997,7 @@
         }
       }
     },
-    "fx_171": {
+    "fx_172": {
       "post": [
         {
           "type": "glitchBlocks",
@@ -8023,7 +8050,7 @@
         }
       }
     },
-    "fx_172": {
+    "fx_173": {
       "post": [
         {
           "type": "rgbShift",
@@ -8075,7 +8102,7 @@
         }
       }
     },
-    "fx_173": {
+    "fx_174": {
       "post": [
         {
           "type": "scanTear",
@@ -8127,7 +8154,7 @@
         }
       }
     },
-    "fx_174": {
+    "fx_175": {
       "post": [
         {
           "type": "vhsTracking",
@@ -8179,7 +8206,7 @@
         }
       }
     },
-    "fx_175": {
+    "fx_176": {
       "post": [
         {
           "type": "dataSmear",
@@ -8231,7 +8258,7 @@
         }
       }
     },
-    "fx_176": {
+    "fx_177": {
       "post": [
         {
           "type": "digitalNoise",
@@ -8282,7 +8309,7 @@
         }
       }
     },
-    "fx_177": {
+    "fx_178": {
       "post": [
         {
           "type": "glitchSlice",
@@ -8334,7 +8361,7 @@
         }
       }
     },
-    "fx_178": {
+    "fx_179": {
       "post": [
         {
           "type": "noiseDissolve",
@@ -8386,7 +8413,7 @@
         }
       }
     },
-    "fx_179": {
+    "fx_180": {
       "post": [
         {
           "type": "directionalDissolve",
@@ -8438,7 +8465,7 @@
         }
       }
     },
-    "fx_180": {
+    "fx_181": {
       "post": [
         {
           "type": "pixelDissolve",
@@ -8488,7 +8515,7 @@
         }
       }
     },
-    "fx_181": {
+    "fx_182": {
       "post": [
         {
           "type": "burnDissolve",
@@ -8540,7 +8567,7 @@
         }
       }
     },
-    "fx_182": {
+    "fx_183": {
       "post": [
         {
           "type": "halftoneDissolve",
@@ -8591,7 +8618,7 @@
         }
       }
     },
-    "fx_183": {
+    "fx_184": {
       "post": [
         {
           "type": "particleDissolve",
@@ -8642,7 +8669,7 @@
         }
       }
     },
-    "fx_184": {
+    "fx_185": {
       "post": [
         {
           "type": "shockwave",
@@ -8698,7 +8725,7 @@
         }
       }
     },
-    "fx_185": {
+    "fx_186": {
       "post": [
         {
           "type": "zoomBlur",
@@ -8752,7 +8779,7 @@
         }
       }
     },
-    "fx_186": {
+    "fx_187": {
       "post": [
         {
           "type": "motionBlur",
@@ -8804,7 +8831,7 @@
         }
       }
     },
-    "fx_187": {
+    "fx_188": {
       "post": [
         {
           "type": "echoTrail",
@@ -8857,7 +8884,7 @@
         }
       }
     },
-    "fx_188": {
+    "fx_189": {
       "post": [
         {
           "type": "kaleidoscope",
@@ -8908,7 +8935,7 @@
         }
       }
     },
-    "fx_189": {
+    "fx_190": {
       "post": [
         {
           "type": "mirror",
@@ -8959,7 +8986,7 @@
         }
       }
     },
-    "fx_190": {
+    "fx_191": {
       "post": [
         {
           "type": "pixelSort",
@@ -9011,7 +9038,7 @@
         }
       }
     },
-    "fx_191": {
+    "fx_192": {
       "post": [
         {
           "type": "lensDistortion",
@@ -9063,7 +9090,7 @@
         }
       }
     },
-    "fx_192": {
+    "fx_193": {
       "post": [
         {
           "type": "displacementMap",
@@ -9114,7 +9141,7 @@
         }
       }
     },
-    "fx_193": {
+    "fx_194": {
       "post": [
         {
           "type": "heatHaze",
@@ -9165,7 +9192,7 @@
         }
       }
     },
-    "fx_194": {
+    "fx_195": {
       "post": [
         {
           "type": "godRays",
@@ -9221,7 +9248,7 @@
         }
       }
     },
-    "fx_195": {
+    "fx_196": {
       "post": [
         {
           "type": "lightSweep",
@@ -9274,7 +9301,7 @@
         }
       }
     },
-    "fx_196": {
+    "fx_197": {
       "post": [
         {
           "type": "bloom",
@@ -9326,7 +9353,7 @@
         }
       }
     },
-    "fx_197": {
+    "fx_198": {
       "post": [
         {
           "type": "lightLeak",
@@ -9379,7 +9406,7 @@
         }
       }
     },
-    "fx_198": {
+    "fx_199": {
       "post": [
         {
           "type": "sparkles",
@@ -9432,7 +9459,7 @@
         }
       }
     },
-    "fx_199": {
+    "fx_200": {
       "post": [
         {
           "type": "lensFlare",
@@ -9486,7 +9513,7 @@
         }
       }
     },
-    "fx_200": {
+    "fx_201": {
       "post": [
         {
           "type": "colorGrade",
@@ -9539,7 +9566,7 @@
         }
       }
     },
-    "fx_201": {
+    "fx_202": {
       "post": [
         {
           "type": "chromaticAberration",
@@ -9591,7 +9618,7 @@
         }
       }
     },
-    "fx_202": {
+    "fx_203": {
       "post": [
         {
           "type": "crt",
@@ -9643,7 +9670,7 @@
         }
       }
     },
-    "fx_203": {
+    "fx_204": {
       "post": [
         {
           "type": "filmGrain",
@@ -9694,7 +9721,7 @@
         }
       }
     },
-    "fx_204": {
+    "fx_205": {
       "post": [
         {
           "type": "halftone",
@@ -9745,7 +9772,7 @@
         }
       }
     },
-    "fx_205": {
+    "fx_206": {
       "post": [
         {
           "type": "pixelate",
@@ -9795,7 +9822,7 @@
         }
       }
     },
-    "fx_206": {
+    "fx_207": {
       "post": [
         {
           "type": "vignette",
@@ -9817,43 +9844,6 @@
             "radius": 0.08,
             "speed": 0.6,
             "spread": 0.06
-          },
-          "enabled": true
-        }
-      ],
-      "enter": {
-        "type": "fade",
-        "enabled": true,
-        "params": {
-          "softness": 0.4
-        },
-        "motion": {
-          "in": {
-            "duration": 0.6,
-            "ease": "cubicOut"
-          }
-        }
-      },
-      "exit": {
-        "type": "fade",
-        "enabled": true,
-        "params": {},
-        "motion": {
-          "out": {
-            "duration": 0.5,
-            "ease": "cubicIn"
-          }
-        }
-      }
-    },
-    "fx_207": {
-      "hold": [
-        {
-          "type": "orbit2D",
-          "params": {
-            "radius": 0.05,
-            "speed": 0.35,
-            "spread": 0.05
           },
           "enabled": true
         }
@@ -10180,6 +10170,43 @@
       }
     },
     "fx_216": {
+      "hold": [
+        {
+          "type": "orbit2D",
+          "params": {
+            "radius": 0.05,
+            "speed": 0.35,
+            "spread": 0.05
+          },
+          "enabled": true
+        }
+      ],
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {
+          "softness": 0.4
+        },
+        "motion": {
+          "in": {
+            "duration": 0.6,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.5,
+            "ease": "cubicIn"
+          }
+        }
+      }
+    },
+    "fx_217": {
       "bgShape": {
         "type": "none",
         "enabled": true,
@@ -10240,7 +10267,7 @@
         }
       }
     },
-    "fx_217": {
+    "fx_218": {
       "bgShape": {
         "type": "square",
         "enabled": true,
@@ -10301,7 +10328,7 @@
         }
       }
     },
-    "fx_218": {
+    "fx_219": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10358,7 +10385,7 @@
         }
       }
     },
-    "fx_219": {
+    "fx_220": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10417,7 +10444,7 @@
         }
       }
     },
-    "fx_220": {
+    "fx_221": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10475,7 +10502,7 @@
         }
       }
     },
-    "fx_221": {
+    "fx_222": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10532,7 +10559,7 @@
         }
       }
     },
-    "fx_222": {
+    "fx_223": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10590,7 +10617,7 @@
         }
       }
     },
-    "fx_223": {
+    "fx_224": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10648,7 +10675,7 @@
         }
       }
     },
-    "fx_224": {
+    "fx_225": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10707,7 +10734,7 @@
         }
       }
     },
-    "fx_225": {
+    "fx_226": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10766,7 +10793,7 @@
         }
       }
     },
-    "fx_226": {
+    "fx_227": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10824,7 +10851,7 @@
         }
       }
     },
-    "fx_227": {
+    "fx_228": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10885,7 +10912,7 @@
         }
       }
     },
-    "fx_228": {
+    "fx_229": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -10943,7 +10970,7 @@
         }
       }
     },
-    "fx_229": {
+    "fx_230": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11001,7 +11028,7 @@
         }
       }
     },
-    "fx_230": {
+    "fx_231": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11067,7 +11094,7 @@
         }
       }
     },
-    "fx_231": {
+    "fx_232": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11128,7 +11155,7 @@
         }
       }
     },
-    "fx_232": {
+    "fx_233": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11188,7 +11215,7 @@
         }
       }
     },
-    "fx_233": {
+    "fx_234": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11249,7 +11276,7 @@
         }
       }
     },
-    "fx_234": {
+    "fx_235": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11310,7 +11337,7 @@
         }
       }
     },
-    "fx_235": {
+    "fx_236": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11371,7 +11398,7 @@
         }
       }
     },
-    "fx_236": {
+    "fx_237": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11435,7 +11462,7 @@
         }
       }
     },
-    "fx_237": {
+    "fx_238": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11496,7 +11523,7 @@
         }
       }
     },
-    "fx_238": {
+    "fx_239": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11558,7 +11585,7 @@
         }
       }
     },
-    "fx_239": {
+    "fx_240": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11620,7 +11647,7 @@
         }
       }
     },
-    "fx_240": {
+    "fx_241": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11683,7 +11710,7 @@
         }
       }
     },
-    "fx_241": {
+    "fx_242": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11746,7 +11773,7 @@
         }
       }
     },
-    "fx_242": {
+    "fx_243": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11809,7 +11836,7 @@
         }
       }
     },
-    "fx_243": {
+    "fx_244": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11872,7 +11899,7 @@
         }
       }
     },
-    "fx_244": {
+    "fx_245": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11935,7 +11962,7 @@
         }
       }
     },
-    "fx_245": {
+    "fx_246": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -11997,7 +12024,7 @@
         }
       }
     },
-    "fx_246": {
+    "fx_247": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -12060,7 +12087,7 @@
         }
       }
     },
-    "fx_247": {
+    "fx_248": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -12123,7 +12150,7 @@
         }
       }
     },
-    "fx_248": {
+    "fx_249": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -12186,7 +12213,7 @@
         }
       }
     },
-    "fx_249": {
+    "fx_250": {
       "bgShape": {
         "type": "rounded",
         "params": {
@@ -12249,7 +12276,7 @@
         }
       }
     },
-    "fx_250": {
+    "fx_251": {
       "repeat": {
         "type": "stackV",
         "enabled": true,
@@ -12314,7 +12341,7 @@
         }
       }
     },
-    "fx_251": {
+    "fx_252": {
       "repeat": {
         "type": "rowH",
         "enabled": true,
@@ -12379,7 +12406,7 @@
         }
       }
     },
-    "fx_252": {
+    "fx_253": {
       "repeat": {
         "type": "diagonal",
         "enabled": true,
@@ -12444,7 +12471,7 @@
         }
       }
     },
-    "fx_253": {
+    "fx_254": {
       "repeat": {
         "type": "grid",
         "enabled": true,
@@ -12508,7 +12535,7 @@
         }
       }
     },
-    "fx_254": {
+    "fx_255": {
       "repeat": {
         "type": "radial",
         "enabled": true,
@@ -12573,7 +12600,7 @@
         }
       }
     },
-    "fx_255": {
+    "fx_256": {
       "repeat": {
         "type": "fan",
         "enabled": true,
@@ -12638,7 +12665,7 @@
         }
       }
     },
-    "fx_256": {
+    "fx_257": {
       "repeat": {
         "type": "tunnel",
         "enabled": true,
@@ -12703,7 +12730,7 @@
         }
       }
     },
-    "fx_257": {
+    "fx_258": {
       "repeat": {
         "type": "scatter",
         "enabled": true,
@@ -12767,7 +12794,7 @@
         }
       }
     },
-    "fx_258": {
+    "fx_259": {
       "repeat": {
         "type": "brick",
         "enabled": true,
@@ -12831,7 +12858,7 @@
         }
       }
     },
-    "fx_259": {
+    "fx_260": {
       "repeat": {
         "type": "fill",
         "enabled": true,
@@ -14865,10 +14892,10 @@
         "index": 0,
         "start": 358,
         "end": 361,
-        "text": "退場 / タイプライター\n逆再生 / typewriterReverse",
+        "text": "退場 / チェッカーボード\n/ checkerboard",
         "lines": [
-          "退場 / タイプライター",
-          "逆再生 / typewriterReverse"
+          "退場 / チェッカーボード",
+          "/ checkerboard"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14882,9 +14909,10 @@
         "index": 0,
         "start": 361,
         "end": 364,
-        "text": "退場 / 中心へ収縮 / shrinkToCenter",
+        "text": "退場 / タイプライター\n逆再生 / typewriterReverse",
         "lines": [
-          "退場 / 中心へ収縮 / shrinkToCenter"
+          "退場 / タイプライター",
+          "逆再生 / typewriterReverse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14898,10 +14926,9 @@
         "index": 0,
         "start": 364,
         "end": 367,
-        "text": "退場 / パーティクル\n拡散 / particlesDisperse",
+        "text": "退場 / 中心へ収縮 / shrinkToCenter",
         "lines": [
-          "退場 / パーティクル",
-          "拡散 / particlesDisperse"
+          "退場 / 中心へ収縮 / shrinkToCenter"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14915,10 +14942,10 @@
         "index": 0,
         "start": 367,
         "end": 370,
-        "text": "退場 / 砂になって\n崩れる / sandCrumble",
+        "text": "退場 / パーティクル\n拡散 / particlesDisperse",
         "lines": [
-          "退場 / 砂になって",
-          "崩れる / sandCrumble"
+          "退場 / パーティクル",
+          "拡散 / particlesDisperse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14932,9 +14959,10 @@
         "index": 0,
         "start": 370,
         "end": 373,
-        "text": "退場 / 溶解 / melt",
+        "text": "退場 / 砂になって\n崩れる / sandCrumble",
         "lines": [
-          "退場 / 溶解 / melt"
+          "退場 / 砂になって",
+          "崩れる / sandCrumble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14948,9 +14976,9 @@
         "index": 0,
         "start": 373,
         "end": 376,
-        "text": "退場 / 燃え尽き / burnAway",
+        "text": "退場 / 溶解 / melt",
         "lines": [
-          "退場 / 燃え尽き / burnAway"
+          "退場 / 溶解 / melt"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14964,9 +14992,9 @@
         "index": 0,
         "start": 376,
         "end": 379,
-        "text": "退場 / 円消去 / circleErase",
+        "text": "退場 / 燃え尽き / burnAway",
         "lines": [
-          "退場 / 円消去 / circleErase"
+          "退場 / 燃え尽き / burnAway"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14980,9 +15008,9 @@
         "index": 0,
         "start": 379,
         "end": 382,
-        "text": "退場 / 直線消去 / lineErase",
+        "text": "退場 / 円消去 / circleErase",
         "lines": [
-          "退場 / 直線消去 / lineErase"
+          "退場 / 円消去 / circleErase"
         ],
         "fontScale": 1,
         "pinned": false
@@ -14996,9 +15024,9 @@
         "index": 0,
         "start": 382,
         "end": 385,
-        "text": "退場 / 枠線消去 / boxErase",
+        "text": "退場 / 直線消去 / lineErase",
         "lines": [
-          "退場 / 枠線消去 / boxErase"
+          "退場 / 直線消去 / lineErase"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15012,10 +15040,9 @@
         "index": 0,
         "start": 385,
         "end": 388,
-        "text": "退場 / ストローク\n消去 / strokeErase",
+        "text": "退場 / 枠線消去 / boxErase",
         "lines": [
-          "退場 / ストローク",
-          "消去 / strokeErase"
+          "退場 / 枠線消去 / boxErase"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15029,9 +15056,10 @@
         "index": 0,
         "start": 388,
         "end": 391,
-        "text": "退場 / 這い出し退場 / creepOut",
+        "text": "退場 / ストローク\n消去 / strokeErase",
         "lines": [
-          "退場 / 這い出し退場 / creepOut"
+          "退場 / ストローク",
+          "消去 / strokeErase"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15045,9 +15073,9 @@
         "index": 0,
         "start": 391,
         "end": 394,
-        "text": "退場 / 消える / vanish",
+        "text": "退場 / 這い出し退場 / creepOut",
         "lines": [
-          "退場 / 消える / vanish"
+          "退場 / 這い出し退場 / creepOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15061,9 +15089,9 @@
         "index": 0,
         "start": 394,
         "end": 397,
-        "text": "退場 / フロートアウト / floatOut",
+        "text": "退場 / 消える / vanish",
         "lines": [
-          "退場 / フロートアウト / floatOut"
+          "退場 / 消える / vanish"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15077,9 +15105,9 @@
         "index": 0,
         "start": 397,
         "end": 400,
-        "text": "退場 / 分割 / splitOut",
+        "text": "退場 / フロートアウト / floatOut",
         "lines": [
-          "退場 / 分割 / splitOut"
+          "退場 / フロートアウト / floatOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15093,10 +15121,9 @@
         "index": 0,
         "start": 400,
         "end": 403,
-        "text": "退場 / ストライプ\n縮小 / stripeShrink",
+        "text": "退場 / 分割 / splitOut",
         "lines": [
-          "退場 / ストライプ",
-          "縮小 / stripeShrink"
+          "退場 / 分割 / splitOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15110,9 +15137,10 @@
         "index": 0,
         "start": 403,
         "end": 406,
-        "text": "退場 / 回転アウト / rotateOut",
+        "text": "退場 / ストライプ\n縮小 / stripeShrink",
         "lines": [
-          "退場 / 回転アウト / rotateOut"
+          "退場 / ストライプ",
+          "縮小 / stripeShrink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15126,9 +15154,9 @@
         "index": 0,
         "start": 406,
         "end": 409,
-        "text": "退場 / フローティング上 / floatUp",
+        "text": "退場 / 回転アウト / rotateOut",
         "lines": [
-          "退場 / フローティング上 / floatUp"
+          "退場 / 回転アウト / rotateOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15142,10 +15170,9 @@
         "index": 0,
         "start": 409,
         "end": 412,
-        "text": "退場 / フローティング\n下 / floatDown",
+        "text": "退場 / フローティング上 / floatUp",
         "lines": [
-          "退場 / フローティング",
-          "下 / floatDown"
+          "退場 / フローティング上 / floatUp"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15159,9 +15186,10 @@
         "index": 0,
         "start": 412,
         "end": 415,
-        "text": "退場 / 方向縮小 / shrinkDir",
+        "text": "退場 / フローティング\n下 / floatDown",
         "lines": [
-          "退場 / 方向縮小 / shrinkDir"
+          "退場 / フローティング",
+          "下 / floatDown"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15175,9 +15203,9 @@
         "index": 0,
         "start": 415,
         "end": 418,
-        "text": "退場 / らせんアウト / spiralOut",
+        "text": "退場 / 方向縮小 / shrinkDir",
         "lines": [
-          "退場 / らせんアウト / spiralOut"
+          "退場 / 方向縮小 / shrinkDir"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15191,9 +15219,9 @@
         "index": 0,
         "start": 418,
         "end": 421,
-        "text": "退場 / 放射アウト / radialOut",
+        "text": "退場 / らせんアウト / spiralOut",
         "lines": [
-          "退場 / 放射アウト / radialOut"
+          "退場 / らせんアウト / spiralOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15207,9 +15235,9 @@
         "index": 0,
         "start": 421,
         "end": 424,
-        "text": "退場 / ワープアウト / warpOut",
+        "text": "退場 / 放射アウト / radialOut",
         "lines": [
-          "退場 / ワープアウト / warpOut"
+          "退場 / 放射アウト / radialOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15223,9 +15251,9 @@
         "index": 0,
         "start": 424,
         "end": 427,
-        "text": "退場 / ページめくり / pageCurl",
+        "text": "退場 / ワープアウト / warpOut",
         "lines": [
-          "退場 / ページめくり / pageCurl"
+          "退場 / ワープアウト / warpOut"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15239,9 +15267,9 @@
         "index": 0,
         "start": 427,
         "end": 430,
-        "text": "退場 / 蒸発 / evaporate",
+        "text": "退場 / ページめくり / pageCurl",
         "lines": [
-          "退場 / 蒸発 / evaporate"
+          "退場 / ページめくり / pageCurl"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15255,9 +15283,9 @@
         "index": 0,
         "start": 430,
         "end": 433,
-        "text": "退場 / 弾痕 / bulletHoles",
+        "text": "退場 / 蒸発 / evaporate",
         "lines": [
-          "退場 / 弾痕 / bulletHoles"
+          "退場 / 蒸発 / evaporate"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15271,10 +15299,9 @@
         "index": 0,
         "start": 433,
         "end": 436,
-        "text": "退場 / 文字上にパーティクル\n/ particlesOnText",
+        "text": "退場 / 弾痕 / bulletHoles",
         "lines": [
-          "退場 / 文字上にパーティクル",
-          "/ particlesOnText"
+          "退場 / 弾痕 / bulletHoles"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15288,9 +15315,10 @@
         "index": 0,
         "start": 436,
         "end": 439,
-        "text": "保持 / 浮遊 / floatBob",
+        "text": "退場 / 文字上にパーティクル\n/ particlesOnText",
         "lines": [
-          "保持 / 浮遊 / floatBob"
+          "退場 / 文字上にパーティクル",
+          "/ particlesOnText"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15304,9 +15332,9 @@
         "index": 0,
         "start": 439,
         "end": 442,
-        "text": "保持 / サイン波 / sineWave",
+        "text": "保持 / 浮遊 / floatBob",
         "lines": [
-          "保持 / サイン波 / sineWave"
+          "保持 / 浮遊 / floatBob"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15320,9 +15348,9 @@
         "index": 0,
         "start": 442,
         "end": 445,
-        "text": "保持 / ジッター / jitter",
+        "text": "保持 / サイン波 / sineWave",
         "lines": [
-          "保持 / ジッター / jitter"
+          "保持 / サイン波 / sineWave"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15336,9 +15364,9 @@
         "index": 0,
         "start": 445,
         "end": 448,
-        "text": "保持 / パルス / pulse",
+        "text": "保持 / ジッター / jitter",
         "lines": [
-          "保持 / パルス / pulse"
+          "保持 / ジッター / jitter"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15352,9 +15380,9 @@
         "index": 0,
         "start": 448,
         "end": 451,
-        "text": "保持 / 透明度パルス / opacityPulse",
+        "text": "保持 / パルス / pulse",
         "lines": [
-          "保持 / 透明度パルス / opacityPulse"
+          "保持 / パルス / pulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15368,9 +15396,9 @@
         "index": 0,
         "start": 451,
         "end": 454,
-        "text": "保持 / ケン・バーンズ / kenBurns",
+        "text": "保持 / 透明度パルス / opacityPulse",
         "lines": [
-          "保持 / ケン・バーンズ / kenBurns"
+          "保持 / 透明度パルス / opacityPulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15384,9 +15412,9 @@
         "index": 0,
         "start": 454,
         "end": 457,
-        "text": "保持 / ドリフト / drift",
+        "text": "保持 / ケン・バーンズ / kenBurns",
         "lines": [
-          "保持 / ドリフト / drift"
+          "保持 / ケン・バーンズ / kenBurns"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15400,9 +15428,9 @@
         "index": 0,
         "start": 457,
         "end": 460,
-        "text": "保持 / 振り子揺れ / pendulumSwing",
+        "text": "保持 / ドリフト / drift",
         "lines": [
-          "保持 / 振り子揺れ / pendulumSwing"
+          "保持 / ドリフト / drift"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15416,10 +15444,9 @@
         "index": 0,
         "start": 460,
         "end": 463,
-        "text": "保持 / ナッジインパルス\n/ nudgeImpulse",
+        "text": "保持 / 振り子揺れ / pendulumSwing",
         "lines": [
-          "保持 / ナッジインパルス",
-          "/ nudgeImpulse"
+          "保持 / 振り子揺れ / pendulumSwing"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15433,9 +15460,10 @@
         "index": 0,
         "start": 463,
         "end": 466,
-        "text": "保持 / マーキー / marquee",
+        "text": "保持 / ナッジインパルス\n/ nudgeImpulse",
         "lines": [
-          "保持 / マーキー / marquee"
+          "保持 / ナッジインパルス",
+          "/ nudgeImpulse"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15449,9 +15477,9 @@
         "index": 0,
         "start": 466,
         "end": 469,
-        "text": "保持 / ゼリー / jelly",
+        "text": "保持 / マーキー / marquee",
         "lines": [
-          "保持 / ゼリー / jelly"
+          "保持 / マーキー / marquee"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15465,9 +15493,9 @@
         "index": 0,
         "start": 469,
         "end": 472,
-        "text": "保持 / うねりワープ / wobbleWarp",
+        "text": "保持 / ゼリー / jelly",
         "lines": [
-          "保持 / うねりワープ / wobbleWarp"
+          "保持 / ゼリー / jelly"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15481,9 +15509,9 @@
         "index": 0,
         "start": 472,
         "end": 475,
-        "text": "保持 / ツイスト / twist",
+        "text": "保持 / うねりワープ / wobbleWarp",
         "lines": [
-          "保持 / ツイスト / twist"
+          "保持 / うねりワープ / wobbleWarp"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15497,9 +15525,9 @@
         "index": 0,
         "start": 475,
         "end": 478,
-        "text": "保持 / ブリージング / breathing",
+        "text": "保持 / ツイスト / twist",
         "lines": [
-          "保持 / ブリージング / breathing"
+          "保持 / ツイスト / twist"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15513,9 +15541,9 @@
         "index": 0,
         "start": 478,
         "end": 481,
-        "text": "保持 / 3Dオービット / orbit3D",
+        "text": "保持 / ブリージング / breathing",
         "lines": [
-          "保持 / 3Dオービット / orbit3D"
+          "保持 / ブリージング / breathing"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15529,9 +15557,9 @@
         "index": 0,
         "start": 481,
         "end": 484,
-        "text": "保持 / 円運動 / orbit2D",
+        "text": "保持 / 3Dオービット / orbit3D",
         "lines": [
-          "保持 / 円運動 / orbit2D"
+          "保持 / 3Dオービット / orbit3D"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15545,9 +15573,9 @@
         "index": 0,
         "start": 484,
         "end": 487,
-        "text": "保持 / パス追従 / pathFollow",
+        "text": "保持 / 円運動 / orbit2D",
         "lines": [
-          "保持 / パス追従 / pathFollow"
+          "保持 / 円運動 / orbit2D"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15561,9 +15589,9 @@
         "index": 0,
         "start": 487,
         "end": 490,
-        "text": "保持 / 鼓動 / heartbeat",
+        "text": "保持 / パス追従 / pathFollow",
         "lines": [
-          "保持 / 鼓動 / heartbeat"
+          "保持 / パス追従 / pathFollow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15577,9 +15605,9 @@
         "index": 0,
         "start": 490,
         "end": 493,
-        "text": "保持 / 震え / shiver",
+        "text": "保持 / 鼓動 / heartbeat",
         "lines": [
-          "保持 / 震え / shiver"
+          "保持 / 鼓動 / heartbeat"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15593,9 +15621,9 @@
         "index": 0,
         "start": 493,
         "end": 496,
-        "text": "保持 / ディゾルブ / dissolve",
+        "text": "保持 / 震え / shiver",
         "lines": [
-          "保持 / ディゾルブ / dissolve"
+          "保持 / 震え / shiver"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15609,9 +15637,9 @@
         "index": 0,
         "start": 496,
         "end": 499,
-        "text": "位置 / 中央 / center",
+        "text": "保持 / ディゾルブ / dissolve",
         "lines": [
-          "位置 / 中央 / center"
+          "保持 / ディゾルブ / dissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15625,9 +15653,9 @@
         "index": 0,
         "start": 499,
         "end": 502,
-        "text": "位置 / 下三分の一 / lowerThird",
+        "text": "位置 / 中央 / center",
         "lines": [
-          "位置 / 下三分の一 / lowerThird"
+          "位置 / 中央 / center"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15641,9 +15669,9 @@
         "index": 0,
         "start": 502,
         "end": 505,
-        "text": "位置 / 上三分の一 / upperThird",
+        "text": "位置 / 下三分の一 / lowerThird",
         "lines": [
-          "位置 / 上三分の一 / upperThird"
+          "位置 / 下三分の一 / lowerThird"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15657,9 +15685,9 @@
         "index": 0,
         "start": 505,
         "end": 508,
-        "text": "位置 / 左 / left",
+        "text": "位置 / 上三分の一 / upperThird",
         "lines": [
-          "位置 / 左 / left"
+          "位置 / 上三分の一 / upperThird"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15673,9 +15701,9 @@
         "index": 0,
         "start": 508,
         "end": 511,
-        "text": "位置 / 右 / right",
+        "text": "位置 / 左 / left",
         "lines": [
-          "位置 / 右 / right"
+          "位置 / 左 / left"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15689,9 +15717,9 @@
         "index": 0,
         "start": 511,
         "end": 514,
-        "text": "位置 / カラオケ / karaoke",
+        "text": "位置 / 右 / right",
         "lines": [
-          "位置 / カラオケ / karaoke"
+          "位置 / 右 / right"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15705,9 +15733,9 @@
         "index": 0,
         "start": 514,
         "end": 517,
-        "text": "位置 / 積み重ね / stacked",
+        "text": "位置 / カラオケ / karaoke",
         "lines": [
-          "位置 / 積み重ね / stacked"
+          "位置 / カラオケ / karaoke"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15721,10 +15749,9 @@
         "index": 0,
         "start": 517,
         "end": 520,
-        "text": "位置 / ランダム（安全\n領域） / randomSafe",
+        "text": "位置 / 積み重ね / stacked",
         "lines": [
-          "位置 / ランダム（安全",
-          "領域） / randomSafe"
+          "位置 / 積み重ね / stacked"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15738,9 +15765,10 @@
         "index": 0,
         "start": 520,
         "end": 523,
-        "text": "位置 / バッジ固定 / badgeAnchored",
+        "text": "位置 / ランダム（安全\n領域） / randomSafe",
         "lines": [
-          "位置 / バッジ固定 / badgeAnchored"
+          "位置 / ランダム（安全",
+          "領域） / randomSafe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15754,9 +15782,9 @@
         "index": 0,
         "start": 523,
         "end": 526,
-        "text": "位置 / カスタム / custom",
+        "text": "位置 / バッジ固定 / badgeAnchored",
         "lines": [
-          "位置 / カスタム / custom"
+          "位置 / バッジ固定 / badgeAnchored"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15770,10 +15798,9 @@
         "index": 0,
         "start": 526,
         "end": 529,
-        "text": "塗り / グラデーションスイープ\n/ gradientSweep",
+        "text": "位置 / カスタム / custom",
         "lines": [
-          "塗り / グラデーションスイープ",
-          "/ gradientSweep"
+          "位置 / カスタム / custom"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15787,10 +15814,10 @@
         "index": 0,
         "start": 529,
         "end": 532,
-        "text": "塗り / レインボーフロー\n/ rainbowFlow",
+        "text": "塗り / グラデーションスイープ\n/ gradientSweep",
         "lines": [
-          "塗り / レインボーフロー",
-          "/ rainbowFlow"
+          "塗り / グラデーションスイープ",
+          "/ gradientSweep"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15804,10 +15831,10 @@
         "index": 0,
         "start": 532,
         "end": 535,
-        "text": "塗り / ホログラフィック\n/ holographic",
+        "text": "塗り / レインボーフロー\n/ rainbowFlow",
         "lines": [
-          "塗り / ホログラフィック",
-          "/ holographic"
+          "塗り / レインボーフロー",
+          "/ rainbowFlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15821,9 +15848,10 @@
         "index": 0,
         "start": 535,
         "end": 538,
-        "text": "塗り / クローム / chrome",
+        "text": "塗り / ホログラフィック\n/ holographic",
         "lines": [
-          "塗り / クローム / chrome"
+          "塗り / ホログラフィック",
+          "/ holographic"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15837,9 +15865,9 @@
         "index": 0,
         "start": 538,
         "end": 541,
-        "text": "塗り / 金箔 / goldFoil",
+        "text": "塗り / クローム / chrome",
         "lines": [
-          "塗り / 金箔 / goldFoil"
+          "塗り / クローム / chrome"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15853,9 +15881,9 @@
         "index": 0,
         "start": 541,
         "end": 544,
-        "text": "塗り / 炎 / fire",
+        "text": "塗り / 金箔 / goldFoil",
         "lines": [
-          "塗り / 炎 / fire"
+          "塗り / 金箔 / goldFoil"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15869,9 +15897,9 @@
         "index": 0,
         "start": 544,
         "end": 547,
-        "text": "塗り / コースティクス / caustics",
+        "text": "塗り / 炎 / fire",
         "lines": [
-          "塗り / コースティクス / caustics"
+          "塗り / 炎 / fire"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15885,9 +15913,9 @@
         "index": 0,
         "start": 547,
         "end": 550,
-        "text": "塗り / 大理石 / marble",
+        "text": "塗り / コースティクス / caustics",
         "lines": [
-          "塗り / 大理石 / marble"
+          "塗り / コースティクス / caustics"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15901,9 +15929,9 @@
         "index": 0,
         "start": 550,
         "end": 553,
-        "text": "塗り / ガラス / glass",
+        "text": "塗り / 大理石 / marble",
         "lines": [
-          "塗り / ガラス / glass"
+          "塗り / 大理石 / marble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15917,9 +15945,9 @@
         "index": 0,
         "start": 553,
         "end": 556,
-        "text": "塗り / テクスチャ / textureFill",
+        "text": "塗り / ガラス / glass",
         "lines": [
-          "塗り / テクスチャ / textureFill"
+          "塗り / ガラス / glass"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15933,10 +15961,9 @@
         "index": 0,
         "start": 556,
         "end": 559,
-        "text": "塗り / カラオケワイプ\n/ karaokeWipe",
+        "text": "塗り / テクスチャ / textureFill",
         "lines": [
-          "塗り / カラオケワイプ",
-          "/ karaokeWipe"
+          "塗り / テクスチャ / textureFill"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15950,9 +15977,10 @@
         "index": 0,
         "start": 559,
         "end": 562,
-        "text": "塗り / 墨 / ink",
+        "text": "塗り / カラオケワイプ\n/ karaokeWipe",
         "lines": [
-          "塗り / 墨 / ink"
+          "塗り / カラオケワイプ",
+          "/ karaokeWipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15966,9 +15994,9 @@
         "index": 0,
         "start": 562,
         "end": 565,
-        "text": "縁取り / 縁取り / outline",
+        "text": "塗り / 墨 / ink",
         "lines": [
-          "縁取り / 縁取り / outline"
+          "塗り / 墨 / ink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15982,9 +16010,9 @@
         "index": 0,
         "start": 565,
         "end": 568,
-        "text": "縁取り / ネオン / neonGlow",
+        "text": "縁取り / 縁取り / outline",
         "lines": [
-          "縁取り / ネオン / neonGlow"
+          "縁取り / 縁取り / outline"
         ],
         "fontScale": 1,
         "pinned": false
@@ -15998,9 +16026,9 @@
         "index": 0,
         "start": 568,
         "end": 571,
-        "text": "縁取り / 内側グロー / innerGlow",
+        "text": "縁取り / ネオン / neonGlow",
         "lines": [
-          "縁取り / 内側グロー / innerGlow"
+          "縁取り / ネオン / neonGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16014,9 +16042,9 @@
         "index": 0,
         "start": 571,
         "end": 574,
-        "text": "縁取り / ベベル / bevel",
+        "text": "縁取り / 内側グロー / innerGlow",
         "lines": [
-          "縁取り / ベベル / bevel"
+          "縁取り / 内側グロー / innerGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16030,9 +16058,9 @@
         "index": 0,
         "start": 574,
         "end": 577,
-        "text": "縁取り / 押し出し / extrude",
+        "text": "縁取り / ベベル / bevel",
         "lines": [
-          "縁取り / 押し出し / extrude"
+          "縁取り / ベベル / bevel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16046,10 +16074,9 @@
         "index": 0,
         "start": 577,
         "end": 580,
-        "text": "縁取り / ロングシャドウ\n/ longShadow",
+        "text": "縁取り / 押し出し / extrude",
         "lines": [
-          "縁取り / ロングシャドウ",
-          "/ longShadow"
+          "縁取り / 押し出し / extrude"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16063,10 +16090,10 @@
         "index": 0,
         "start": 580,
         "end": 583,
-        "text": "縁取り / ドロップシャドウ\n/ dropShadow",
+        "text": "縁取り / ロングシャドウ\n/ longShadow",
         "lines": [
-          "縁取り / ドロップシャドウ",
-          "/ dropShadow"
+          "縁取り / ロングシャドウ",
+          "/ longShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16080,9 +16107,10 @@
         "index": 0,
         "start": 583,
         "end": 586,
-        "text": "縁取り / 滴り / drip",
+        "text": "縁取り / ドロップシャドウ\n/ dropShadow",
         "lines": [
-          "縁取り / 滴り / drip"
+          "縁取り / ドロップシャドウ",
+          "/ dropShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16096,10 +16124,9 @@
         "index": 0,
         "start": 586,
         "end": 589,
-        "text": "後処理［グリッチ/文字］\nグリッチブロック / glitchBlocks",
+        "text": "縁取り / 滴り / drip",
         "lines": [
-          "後処理［グリッチ/文字］",
-          "グリッチブロック / glitchBlocks"
+          "縁取り / 滴り / drip"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16113,10 +16140,10 @@
         "index": 0,
         "start": 589,
         "end": 592,
-        "text": "後処理［グリッチ/文字］\nRGBシフト / rgbShift",
+        "text": "後処理［グリッチ/文字］\nグリッチブロック / glitchBlocks",
         "lines": [
           "後処理［グリッチ/文字］",
-          "RGBシフト / rgbShift"
+          "グリッチブロック / glitchBlocks"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16130,10 +16157,10 @@
         "index": 0,
         "start": 592,
         "end": 595,
-        "text": "後処理［グリッチ/文字］\nスキャンティア / scanTear",
+        "text": "後処理［グリッチ/文字］\nRGBシフト / rgbShift",
         "lines": [
           "後処理［グリッチ/文字］",
-          "スキャンティア / scanTear"
+          "RGBシフト / rgbShift"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16147,10 +16174,10 @@
         "index": 0,
         "start": 595,
         "end": 598,
-        "text": "後処理［グリッチ/文字］ VHS\nトラッキング / vhsTracking",
+        "text": "後処理［グリッチ/文字］\nスキャンティア / scanTear",
         "lines": [
-          "後処理［グリッチ/文字］ VHS",
-          "トラッキング / vhsTracking"
+          "後処理［グリッチ/文字］",
+          "スキャンティア / scanTear"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16164,10 +16191,10 @@
         "index": 0,
         "start": 598,
         "end": 601,
-        "text": "後処理［グリッチ/文字］\nデータスミア / dataSmear",
+        "text": "後処理［グリッチ/文字］ VHS\nトラッキング / vhsTracking",
         "lines": [
-          "後処理［グリッチ/文字］",
-          "データスミア / dataSmear"
+          "後処理［グリッチ/文字］ VHS",
+          "トラッキング / vhsTracking"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16181,10 +16208,10 @@
         "index": 0,
         "start": 601,
         "end": 604,
-        "text": "後処理［グリッチ/文字］\nデジタルノイズ / digitalNoise",
+        "text": "後処理［グリッチ/文字］\nデータスミア / dataSmear",
         "lines": [
           "後処理［グリッチ/文字］",
-          "デジタルノイズ / digitalNoise"
+          "データスミア / dataSmear"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16198,10 +16225,10 @@
         "index": 0,
         "start": 604,
         "end": 607,
-        "text": "後処理［グリッチ/文字］\nグリッチスライス / glitchSlice",
+        "text": "後処理［グリッチ/文字］\nデジタルノイズ / digitalNoise",
         "lines": [
           "後処理［グリッチ/文字］",
-          "グリッチスライス / glitchSlice"
+          "デジタルノイズ / digitalNoise"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16215,10 +16242,10 @@
         "index": 0,
         "start": 607,
         "end": 610,
-        "text": "後処理［ディゾルブ/文字］\nノイズディゾルブ / noiseDissolve",
+        "text": "後処理［グリッチ/文字］\nグリッチスライス / glitchSlice",
         "lines": [
-          "後処理［ディゾルブ/文字］",
-          "ノイズディゾルブ / noiseDissolve"
+          "後処理［グリッチ/文字］",
+          "グリッチスライス / glitchSlice"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16232,10 +16259,10 @@
         "index": 0,
         "start": 610,
         "end": 613,
-        "text": "後処理［ディゾルブ/文字］ 方向\nディゾルブ / directionalDissolve",
+        "text": "後処理［ディゾルブ/文字］\nノイズディゾルブ / noiseDissolve",
         "lines": [
-          "後処理［ディゾルブ/文字］ 方向",
-          "ディゾルブ / directionalDissolve"
+          "後処理［ディゾルブ/文字］",
+          "ノイズディゾルブ / noiseDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16249,10 +16276,10 @@
         "index": 0,
         "start": 613,
         "end": 616,
-        "text": "後処理［ディゾルブ/文字］\nピクセルディゾルブ / pixelDissolve",
+        "text": "後処理［ディゾルブ/文字］ 方向\nディゾルブ / directionalDissolve",
         "lines": [
-          "後処理［ディゾルブ/文字］",
-          "ピクセルディゾルブ / pixelDissolve"
+          "後処理［ディゾルブ/文字］ 方向",
+          "ディゾルブ / directionalDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16266,10 +16293,10 @@
         "index": 0,
         "start": 616,
         "end": 619,
-        "text": "後処理［ディゾルブ/文字］ 燃焼\nディゾルブ / burnDissolve",
+        "text": "後処理［ディゾルブ/文字］\nピクセルディゾルブ / pixelDissolve",
         "lines": [
-          "後処理［ディゾルブ/文字］ 燃焼",
-          "ディゾルブ / burnDissolve"
+          "後処理［ディゾルブ/文字］",
+          "ピクセルディゾルブ / pixelDissolve"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16283,12 +16310,12 @@
         "index": 0,
         "start": 619,
         "end": 622,
-        "text": "後処理［ディゾルブ/文字］\nハーフトーンディゾルブ / halftoneDissolve",
+        "text": "後処理［ディゾルブ/文字］ 燃焼\nディゾルブ / burnDissolve",
         "lines": [
-          "後処理［ディゾルブ/文字］",
-          "ハーフトーンディゾルブ / halftoneDissolve"
+          "後処理［ディゾルブ/文字］ 燃焼",
+          "ディゾルブ / burnDissolve"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -16300,10 +16327,10 @@
         "index": 0,
         "start": 622,
         "end": 625,
-        "text": "後処理［ディゾルブ/文字］\nパーティクルディゾルブ / particleDissolve",
+        "text": "後処理［ディゾルブ/文字］\nハーフトーンディゾルブ / halftoneDissolve",
         "lines": [
           "後処理［ディゾルブ/文字］",
-          "パーティクルディゾルブ / particleDissolve"
+          "ハーフトーンディゾルブ / halftoneDissolve"
         ],
         "fontScale": 0.8199999999999998,
         "pinned": false
@@ -16317,12 +16344,12 @@
         "index": 0,
         "start": 625,
         "end": 628,
-        "text": "後処理［ブラー・残像/\n画面］ 衝撃波 / shockwave",
+        "text": "後処理［ディゾルブ/文字］\nパーティクルディゾルブ / particleDissolve",
         "lines": [
-          "後処理［ブラー・残像/",
-          "画面］ 衝撃波 / shockwave"
+          "後処理［ディゾルブ/文字］",
+          "パーティクルディゾルブ / particleDissolve"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -16334,10 +16361,10 @@
         "index": 0,
         "start": 628,
         "end": 631,
-        "text": "後処理［ブラー・残像/画面］\nズームブラー / zoomBlur",
+        "text": "後処理［ブラー・残像/\n画面］ 衝撃波 / shockwave",
         "lines": [
-          "後処理［ブラー・残像/画面］",
-          "ズームブラー / zoomBlur"
+          "後処理［ブラー・残像/",
+          "画面］ 衝撃波 / shockwave"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16351,10 +16378,10 @@
         "index": 0,
         "start": 631,
         "end": 634,
-        "text": "後処理［ブラー・残像/画面］\nモーションブラー / motionBlur",
+        "text": "後処理［ブラー・残像/画面］\nズームブラー / zoomBlur",
         "lines": [
           "後処理［ブラー・残像/画面］",
-          "モーションブラー / motionBlur"
+          "ズームブラー / zoomBlur"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16368,10 +16395,10 @@
         "index": 0,
         "start": 634,
         "end": 637,
-        "text": "後処理［ブラー・残像/画面］\nエコートレイル / echoTrail",
+        "text": "後処理［ブラー・残像/画面］\nモーションブラー / motionBlur",
         "lines": [
           "後処理［ブラー・残像/画面］",
-          "エコートレイル / echoTrail"
+          "モーションブラー / motionBlur"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16385,10 +16412,10 @@
         "index": 0,
         "start": 637,
         "end": 640,
-        "text": "後処理［変形・反転/画面\n］ 万華鏡 / kaleidoscope",
+        "text": "後処理［ブラー・残像/画面］\nエコートレイル / echoTrail",
         "lines": [
-          "後処理［変形・反転/画面",
-          "］ 万華鏡 / kaleidoscope"
+          "後処理［ブラー・残像/画面］",
+          "エコートレイル / echoTrail"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16402,10 +16429,10 @@
         "index": 0,
         "start": 640,
         "end": 643,
-        "text": "後処理［変形・反転/\n画面］ ミラー / mirror",
+        "text": "後処理［変形・反転/画面\n］ 万華鏡 / kaleidoscope",
         "lines": [
-          "後処理［変形・反転/",
-          "画面］ ミラー / mirror"
+          "後処理［変形・反転/画面",
+          "］ 万華鏡 / kaleidoscope"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16419,10 +16446,10 @@
         "index": 0,
         "start": 643,
         "end": 646,
-        "text": "後処理［変形・反転/画面］\nピクセルソート / pixelSort",
+        "text": "後処理［変形・反転/\n画面］ ミラー / mirror",
         "lines": [
-          "後処理［変形・反転/画面］",
-          "ピクセルソート / pixelSort"
+          "後処理［変形・反転/",
+          "画面］ ミラー / mirror"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16436,10 +16463,10 @@
         "index": 0,
         "start": 646,
         "end": 649,
-        "text": "後処理［変形・反転/画面］\nレンズ歪み / lensDistortion",
+        "text": "後処理［変形・反転/画面］\nピクセルソート / pixelSort",
         "lines": [
           "後処理［変形・反転/画面］",
-          "レンズ歪み / lensDistortion"
+          "ピクセルソート / pixelSort"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16453,10 +16480,10 @@
         "index": 0,
         "start": 649,
         "end": 652,
-        "text": "後処理［変形・反転/画面］ 変位\nマップ / displacementMap",
+        "text": "後処理［変形・反転/画面］\nレンズ歪み / lensDistortion",
         "lines": [
-          "後処理［変形・反転/画面］ 変位",
-          "マップ / displacementMap"
+          "後処理［変形・反転/画面］",
+          "レンズ歪み / lensDistortion"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16470,10 +16497,10 @@
         "index": 0,
         "start": 652,
         "end": 655,
-        "text": "後処理［変形・反転/\n画面］ 陽炎 / heatHaze",
+        "text": "後処理［変形・反転/画面］ 変位\nマップ / displacementMap",
         "lines": [
-          "後処理［変形・反転/",
-          "画面］ 陽炎 / heatHaze"
+          "後処理［変形・反転/画面］ 変位",
+          "マップ / displacementMap"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16487,10 +16514,10 @@
         "index": 0,
         "start": 655,
         "end": 658,
-        "text": "後処理［光/文字］\nゴッドレイ / godRays",
+        "text": "後処理［変形・反転/\n画面］ 陽炎 / heatHaze",
         "lines": [
-          "後処理［光/文字］",
-          "ゴッドレイ / godRays"
+          "後処理［変形・反転/",
+          "画面］ 陽炎 / heatHaze"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16504,10 +16531,10 @@
         "index": 0,
         "start": 658,
         "end": 661,
-        "text": "後処理［光/文字］\nライトスイープ / lightSweep",
+        "text": "後処理［光/文字］\nゴッドレイ / godRays",
         "lines": [
           "後処理［光/文字］",
-          "ライトスイープ / lightSweep"
+          "ゴッドレイ / godRays"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16521,9 +16548,10 @@
         "index": 0,
         "start": 661,
         "end": 664,
-        "text": "後処理［光/画面］ ブルーム / bloom",
+        "text": "後処理［光/文字］\nライトスイープ / lightSweep",
         "lines": [
-          "後処理［光/画面］ ブルーム / bloom"
+          "後処理［光/文字］",
+          "ライトスイープ / lightSweep"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16537,10 +16565,9 @@
         "index": 0,
         "start": 664,
         "end": 667,
-        "text": "後処理［光/画面］\nライトリーク / lightLeak",
+        "text": "後処理［光/画面］ ブルーム / bloom",
         "lines": [
-          "後処理［光/画面］",
-          "ライトリーク / lightLeak"
+          "後処理［光/画面］ ブルーム / bloom"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16554,10 +16581,10 @@
         "index": 0,
         "start": 667,
         "end": 670,
-        "text": "後処理［光/文字］\nスパークル / sparkles",
+        "text": "後処理［光/画面］\nライトリーク / lightLeak",
         "lines": [
-          "後処理［光/文字］",
-          "スパークル / sparkles"
+          "後処理［光/画面］",
+          "ライトリーク / lightLeak"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16571,10 +16598,10 @@
         "index": 0,
         "start": 670,
         "end": 673,
-        "text": "後処理［光/画面］\nレンズフレア / lensFlare",
+        "text": "後処理［光/文字］\nスパークル / sparkles",
         "lines": [
-          "後処理［光/画面］",
-          "レンズフレア / lensFlare"
+          "後処理［光/文字］",
+          "スパークル / sparkles"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16588,10 +16615,10 @@
         "index": 0,
         "start": 673,
         "end": 676,
-        "text": "後処理［色・質感/画面］\nカラーグレード / colorGrade",
+        "text": "後処理［光/画面］\nレンズフレア / lensFlare",
         "lines": [
-          "後処理［色・質感/画面］",
-          "カラーグレード / colorGrade"
+          "後処理［光/画面］",
+          "レンズフレア / lensFlare"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16605,10 +16632,10 @@
         "index": 0,
         "start": 676,
         "end": 679,
-        "text": "後処理［色・質感/画面］ 色収\n差 / chromaticAberration",
+        "text": "後処理［色・質感/画面］\nカラーグレード / colorGrade",
         "lines": [
-          "後処理［色・質感/画面］ 色収",
-          "差 / chromaticAberration"
+          "後処理［色・質感/画面］",
+          "カラーグレード / colorGrade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16622,9 +16649,10 @@
         "index": 0,
         "start": 679,
         "end": 682,
-        "text": "後処理［色・質感/画面］ CRT / crt",
+        "text": "後処理［色・質感/画面］ 色収\n差 / chromaticAberration",
         "lines": [
-          "後処理［色・質感/画面］ CRT / crt"
+          "後処理［色・質感/画面］ 色収",
+          "差 / chromaticAberration"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16638,10 +16666,9 @@
         "index": 0,
         "start": 682,
         "end": 685,
-        "text": "後処理［色・質感/画面］\nフィルムグレイン / filmGrain",
+        "text": "後処理［色・質感/画面］ CRT / crt",
         "lines": [
-          "後処理［色・質感/画面］",
-          "フィルムグレイン / filmGrain"
+          "後処理［色・質感/画面］ CRT / crt"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16655,10 +16682,10 @@
         "index": 0,
         "start": 685,
         "end": 688,
-        "text": "後処理［色・質感/画面］\nハーフトーン / halftone",
+        "text": "後処理［色・質感/画面］\nフィルムグレイン / filmGrain",
         "lines": [
           "後処理［色・質感/画面］",
-          "ハーフトーン / halftone"
+          "フィルムグレイン / filmGrain"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16672,10 +16699,10 @@
         "index": 0,
         "start": 688,
         "end": 691,
-        "text": "後処理［色・質感/画面］\nピクセル化 / pixelate",
+        "text": "後処理［色・質感/画面］\nハーフトーン / halftone",
         "lines": [
           "後処理［色・質感/画面］",
-          "ピクセル化 / pixelate"
+          "ハーフトーン / halftone"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16689,10 +16716,10 @@
         "index": 0,
         "start": 691,
         "end": 694,
-        "text": "後処理［色・質感/画面\n］ ビネット / vignette",
+        "text": "後処理［色・質感/画面］\nピクセル化 / pixelate",
         "lines": [
-          "後処理［色・質感/画面",
-          "］ ビネット / vignette"
+          "後処理［色・質感/画面］",
+          "ピクセル化 / pixelate"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16706,9 +16733,10 @@
         "index": 0,
         "start": 694,
         "end": 697,
-        "text": "背景 / 単色 / solid",
+        "text": "後処理［色・質感/画面\n］ ビネット / vignette",
         "lines": [
-          "背景 / 単色 / solid"
+          "後処理［色・質感/画面",
+          "］ ビネット / vignette"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16722,9 +16750,9 @@
         "index": 0,
         "start": 697,
         "end": 700,
-        "text": "背景 / ベタ塗り / plain",
+        "text": "背景 / 単色 / solid",
         "lines": [
-          "背景 / ベタ塗り / plain"
+          "背景 / 単色 / solid"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16738,10 +16766,9 @@
         "index": 0,
         "start": 700,
         "end": 703,
-        "text": "背景 / グラデーション\n（8方向） / gradient",
+        "text": "背景 / ベタ塗り / plain",
         "lines": [
-          "背景 / グラデーション",
-          "（8方向） / gradient"
+          "背景 / ベタ塗り / plain"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16755,10 +16782,10 @@
         "index": 0,
         "start": 703,
         "end": 706,
-        "text": "背景 / ノイズグラデーション\n/ noiseGradient",
+        "text": "背景 / グラデーション\n（8方向） / gradient",
         "lines": [
-          "背景 / ノイズグラデーション",
-          "/ noiseGradient"
+          "背景 / グラデーション",
+          "（8方向） / gradient"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16772,9 +16799,10 @@
         "index": 0,
         "start": 706,
         "end": 709,
-        "text": "背景 / 実績カード / card",
+        "text": "背景 / ノイズグラデーション\n/ noiseGradient",
         "lines": [
-          "背景 / 実績カード / card"
+          "背景 / ノイズグラデーション",
+          "/ noiseGradient"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16788,9 +16816,9 @@
         "index": 0,
         "start": 709,
         "end": 712,
-        "text": "背景 / 楽曲カバー / cover",
+        "text": "背景 / 実績カード / card",
         "lines": [
-          "背景 / 楽曲カバー / cover"
+          "背景 / 実績カード / card"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16804,9 +16832,9 @@
         "index": 0,
         "start": 712,
         "end": 715,
-        "text": "背景 / 画像 / image",
+        "text": "背景 / 楽曲カバー / cover",
         "lines": [
-          "背景 / 画像 / image"
+          "背景 / 楽曲カバー / cover"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16820,9 +16848,9 @@
         "index": 0,
         "start": 715,
         "end": 718,
-        "text": "背景 / パターン / pattern",
+        "text": "背景 / 画像 / image",
         "lines": [
-          "背景 / パターン / pattern"
+          "背景 / 画像 / image"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16836,9 +16864,9 @@
         "index": 0,
         "start": 718,
         "end": 721,
-        "text": "背景 / 図形 / shapes",
+        "text": "背景 / パターン / pattern",
         "lines": [
-          "背景 / 図形 / shapes"
+          "背景 / パターン / pattern"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16852,9 +16880,9 @@
         "index": 0,
         "start": 721,
         "end": 724,
-        "text": "文字背景 / なし / none",
+        "text": "背景 / 図形 / shapes",
         "lines": [
-          "文字背景 / なし / none"
+          "背景 / 図形 / shapes"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16868,9 +16896,9 @@
         "index": 0,
         "start": 724,
         "end": 727,
-        "text": "文字背景 / 四角 / square",
+        "text": "文字背景 / なし / none",
         "lines": [
-          "文字背景 / 四角 / square"
+          "文字背景 / なし / none"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16884,12 +16912,11 @@
         "index": 0,
         "start": 727,
         "end": 730,
-        "text": "文字背景の塗り / \nグラデーションスイープ / gradientSweep",
+        "text": "文字背景 / 四角 / square",
         "lines": [
-          "文字背景の塗り / ",
-          "グラデーションスイープ / gradientSweep"
+          "文字背景 / 四角 / square"
         ],
-        "fontScale": 0.8999999999999999,
+        "fontScale": 1,
         "pinned": false
       }
     ],
@@ -16901,12 +16928,12 @@
         "index": 0,
         "start": 730,
         "end": 733,
-        "text": "文字背景の塗り / \nレインボーフロー / rainbowFlow",
+        "text": "文字背景の塗り / \nグラデーションスイープ / gradientSweep",
         "lines": [
           "文字背景の塗り / ",
-          "レインボーフロー / rainbowFlow"
+          "グラデーションスイープ / gradientSweep"
         ],
-        "fontScale": 1,
+        "fontScale": 0.8999999999999999,
         "pinned": false
       }
     ],
@@ -16918,10 +16945,10 @@
         "index": 0,
         "start": 733,
         "end": 736,
-        "text": "文字背景の塗り / \nホログラフィック / holographic",
+        "text": "文字背景の塗り / \nレインボーフロー / rainbowFlow",
         "lines": [
           "文字背景の塗り / ",
-          "ホログラフィック / holographic"
+          "レインボーフロー / rainbowFlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16935,9 +16962,10 @@
         "index": 0,
         "start": 736,
         "end": 739,
-        "text": "文字背景の塗り / クローム / chrome",
+        "text": "文字背景の塗り / \nホログラフィック / holographic",
         "lines": [
-          "文字背景の塗り / クローム / chrome"
+          "文字背景の塗り / ",
+          "ホログラフィック / holographic"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16951,9 +16979,9 @@
         "index": 0,
         "start": 739,
         "end": 742,
-        "text": "文字背景の塗り / 金箔 / goldFoil",
+        "text": "文字背景の塗り / クローム / chrome",
         "lines": [
-          "文字背景の塗り / 金箔 / goldFoil"
+          "文字背景の塗り / クローム / chrome"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16967,9 +16995,9 @@
         "index": 0,
         "start": 742,
         "end": 745,
-        "text": "文字背景の塗り / 炎 / fire",
+        "text": "文字背景の塗り / 金箔 / goldFoil",
         "lines": [
-          "文字背景の塗り / 炎 / fire"
+          "文字背景の塗り / 金箔 / goldFoil"
         ],
         "fontScale": 1,
         "pinned": false
@@ -16983,10 +17011,9 @@
         "index": 0,
         "start": 745,
         "end": 748,
-        "text": "文字背景の塗り / \nコースティクス / caustics",
+        "text": "文字背景の塗り / 炎 / fire",
         "lines": [
-          "文字背景の塗り / ",
-          "コースティクス / caustics"
+          "文字背景の塗り / 炎 / fire"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17000,9 +17027,10 @@
         "index": 0,
         "start": 748,
         "end": 751,
-        "text": "文字背景の塗り / 大理石 / marble",
+        "text": "文字背景の塗り / \nコースティクス / caustics",
         "lines": [
-          "文字背景の塗り / 大理石 / marble"
+          "文字背景の塗り / ",
+          "コースティクス / caustics"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17016,9 +17044,9 @@
         "index": 0,
         "start": 751,
         "end": 754,
-        "text": "文字背景の塗り / ガラス / glass",
+        "text": "文字背景の塗り / 大理石 / marble",
         "lines": [
-          "文字背景の塗り / ガラス / glass"
+          "文字背景の塗り / 大理石 / marble"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17032,10 +17060,9 @@
         "index": 0,
         "start": 754,
         "end": 757,
-        "text": "文字背景の塗り / \nテクスチャ / textureFill",
+        "text": "文字背景の塗り / ガラス / glass",
         "lines": [
-          "文字背景の塗り / ",
-          "テクスチャ / textureFill"
+          "文字背景の塗り / ガラス / glass"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17049,10 +17076,10 @@
         "index": 0,
         "start": 757,
         "end": 760,
-        "text": "文字背景の塗り / \nカラオケワイプ / karaokeWipe",
+        "text": "文字背景の塗り / \nテクスチャ / textureFill",
         "lines": [
           "文字背景の塗り / ",
-          "カラオケワイプ / karaokeWipe"
+          "テクスチャ / textureFill"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17066,9 +17093,10 @@
         "index": 0,
         "start": 760,
         "end": 763,
-        "text": "文字背景の塗り / 墨 / ink",
+        "text": "文字背景の塗り / \nカラオケワイプ / karaokeWipe",
         "lines": [
-          "文字背景の塗り / 墨 / ink"
+          "文字背景の塗り / ",
+          "カラオケワイプ / karaokeWipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17082,10 +17110,9 @@
         "index": 0,
         "start": 763,
         "end": 766,
-        "text": "文字背景の縁取り / \n縁取り / outline",
+        "text": "文字背景の塗り / 墨 / ink",
         "lines": [
-          "文字背景の縁取り / ",
-          "縁取り / outline"
+          "文字背景の塗り / 墨 / ink"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17099,10 +17126,10 @@
         "index": 0,
         "start": 766,
         "end": 769,
-        "text": "文字背景の縁取り / \nネオン / neonGlow",
+        "text": "文字背景の縁取り / \n縁取り / outline",
         "lines": [
           "文字背景の縁取り / ",
-          "ネオン / neonGlow"
+          "縁取り / outline"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17116,10 +17143,10 @@
         "index": 0,
         "start": 769,
         "end": 772,
-        "text": "文字背景の縁取り / \n内側グロー / innerGlow",
+        "text": "文字背景の縁取り / \nネオン / neonGlow",
         "lines": [
           "文字背景の縁取り / ",
-          "内側グロー / innerGlow"
+          "ネオン / neonGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17133,9 +17160,10 @@
         "index": 0,
         "start": 772,
         "end": 775,
-        "text": "文字背景の縁取り / ベベル / bevel",
+        "text": "文字背景の縁取り / \n内側グロー / innerGlow",
         "lines": [
-          "文字背景の縁取り / ベベル / bevel"
+          "文字背景の縁取り / ",
+          "内側グロー / innerGlow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17149,10 +17177,9 @@
         "index": 0,
         "start": 775,
         "end": 778,
-        "text": "文字背景の縁取り / \n押し出し / extrude",
+        "text": "文字背景の縁取り / ベベル / bevel",
         "lines": [
-          "文字背景の縁取り / ",
-          "押し出し / extrude"
+          "文字背景の縁取り / ベベル / bevel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17166,10 +17193,10 @@
         "index": 0,
         "start": 778,
         "end": 781,
-        "text": "文字背景の縁取り / \nロングシャドウ / longShadow",
+        "text": "文字背景の縁取り / \n押し出し / extrude",
         "lines": [
           "文字背景の縁取り / ",
-          "ロングシャドウ / longShadow"
+          "押し出し / extrude"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17183,10 +17210,10 @@
         "index": 0,
         "start": 781,
         "end": 784,
-        "text": "文字背景の縁取り / \nドロップシャドウ / dropShadow",
+        "text": "文字背景の縁取り / \nロングシャドウ / longShadow",
         "lines": [
           "文字背景の縁取り / ",
-          "ドロップシャドウ / dropShadow"
+          "ロングシャドウ / longShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17200,9 +17227,10 @@
         "index": 0,
         "start": 784,
         "end": 787,
-        "text": "文字背景の縁取り / 滴り / drip",
+        "text": "文字背景の縁取り / \nドロップシャドウ / dropShadow",
         "lines": [
-          "文字背景の縁取り / 滴り / drip"
+          "文字背景の縁取り / ",
+          "ドロップシャドウ / dropShadow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17216,10 +17244,9 @@
         "index": 0,
         "start": 787,
         "end": 790,
-        "text": "文字背景の動き / \n文字に追従 / follow",
+        "text": "文字背景の縁取り / 滴り / drip",
         "lines": [
-          "文字背景の動き / ",
-          "文字に追従 / follow"
+          "文字背景の縁取り / 滴り / drip"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17233,9 +17260,10 @@
         "index": 0,
         "start": 790,
         "end": 793,
-        "text": "文字背景の動き / フェード / fade",
+        "text": "文字背景の動き / \n文字に追従 / follow",
         "lines": [
-          "文字背景の動き / フェード / fade"
+          "文字背景の動き / ",
+          "文字に追従 / follow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17249,9 +17277,9 @@
         "index": 0,
         "start": 793,
         "end": 796,
-        "text": "文字背景の動き / ポップ / pop",
+        "text": "文字背景の動き / フェード / fade",
         "lines": [
-          "文字背景の動き / ポップ / pop"
+          "文字背景の動き / フェード / fade"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17265,9 +17293,9 @@
         "index": 0,
         "start": 796,
         "end": 799,
-        "text": "文字背景の動き / スタンプ / stamp",
+        "text": "文字背景の動き / ポップ / pop",
         "lines": [
-          "文字背景の動き / スタンプ / stamp"
+          "文字背景の動き / ポップ / pop"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17281,9 +17309,9 @@
         "index": 0,
         "start": 799,
         "end": 802,
-        "text": "文字背景の動き / ワイプ / wipe",
+        "text": "文字背景の動き / スタンプ / stamp",
         "lines": [
-          "文字背景の動き / ワイプ / wipe"
+          "文字背景の動き / スタンプ / stamp"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17297,9 +17325,9 @@
         "index": 0,
         "start": 802,
         "end": 805,
-        "text": "文字背景の動き / 回転 / spin",
+        "text": "文字背景の動き / ワイプ / wipe",
         "lines": [
-          "文字背景の動き / 回転 / spin"
+          "文字背景の動き / ワイプ / wipe"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17313,9 +17341,9 @@
         "index": 0,
         "start": 805,
         "end": 808,
-        "text": "文字背景の動き / 伸びる / grow",
+        "text": "文字背景の動き / 回転 / spin",
         "lines": [
-          "文字背景の動き / 伸びる / grow"
+          "文字背景の動き / 回転 / spin"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17329,9 +17357,9 @@
         "index": 0,
         "start": 808,
         "end": 811,
-        "text": "文字背景の動き / なし / none",
+        "text": "文字背景の動き / 伸びる / grow",
         "lines": [
-          "文字背景の動き / なし / none"
+          "文字背景の動き / 伸びる / grow"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17345,10 +17373,9 @@
         "index": 0,
         "start": 811,
         "end": 814,
-        "text": "文字背景の動き / \nちらつき / flicker",
+        "text": "文字背景の動き / なし / none",
         "lines": [
-          "文字背景の動き / ",
-          "ちらつき / flicker"
+          "文字背景の動き / なし / none"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17362,9 +17389,10 @@
         "index": 0,
         "start": 814,
         "end": 817,
-        "text": "文字背景の動き / にじみ / bleed",
+        "text": "文字背景の動き / \nちらつき / flicker",
         "lines": [
-          "文字背景の動き / にじみ / bleed"
+          "文字背景の動き / ",
+          "ちらつき / flicker"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17378,9 +17406,9 @@
         "index": 0,
         "start": 817,
         "end": 820,
-        "text": "文字背景の動き / 浮かぶ / float",
+        "text": "文字背景の動き / にじみ / bleed",
         "lines": [
-          "文字背景の動き / 浮かぶ / float"
+          "文字背景の動き / にじみ / bleed"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17394,9 +17422,9 @@
         "index": 0,
         "start": 820,
         "end": 823,
-        "text": "文字背景の動き / 落下 / fall",
+        "text": "文字背景の動き / 浮かぶ / float",
         "lines": [
-          "文字背景の動き / 落下 / fall"
+          "文字背景の動き / 浮かぶ / float"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17410,9 +17438,9 @@
         "index": 0,
         "start": 823,
         "end": 826,
-        "text": "繰り返し / 縦積み / stackV",
+        "text": "文字背景の動き / 落下 / fall",
         "lines": [
-          "繰り返し / 縦積み / stackV"
+          "文字背景の動き / 落下 / fall"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17426,9 +17454,9 @@
         "index": 0,
         "start": 826,
         "end": 829,
-        "text": "繰り返し / 横並び / rowH",
+        "text": "繰り返し / 縦積み / stackV",
         "lines": [
-          "繰り返し / 横並び / rowH"
+          "繰り返し / 縦積み / stackV"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17442,9 +17470,9 @@
         "index": 0,
         "start": 829,
         "end": 832,
-        "text": "繰り返し / 斜め / diagonal",
+        "text": "繰り返し / 横並び / rowH",
         "lines": [
-          "繰り返し / 斜め / diagonal"
+          "繰り返し / 横並び / rowH"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17458,9 +17486,9 @@
         "index": 0,
         "start": 832,
         "end": 835,
-        "text": "繰り返し / グリッド / grid",
+        "text": "繰り返し / 斜め / diagonal",
         "lines": [
-          "繰り返し / グリッド / grid"
+          "繰り返し / 斜め / diagonal"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17474,9 +17502,9 @@
         "index": 0,
         "start": 835,
         "end": 838,
-        "text": "繰り返し / 放射 / radial",
+        "text": "繰り返し / グリッド / grid",
         "lines": [
-          "繰り返し / 放射 / radial"
+          "繰り返し / グリッド / grid"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17490,9 +17518,9 @@
         "index": 0,
         "start": 838,
         "end": 841,
-        "text": "繰り返し / 扇 / fan",
+        "text": "繰り返し / 放射 / radial",
         "lines": [
-          "繰り返し / 扇 / fan"
+          "繰り返し / 放射 / radial"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17506,9 +17534,9 @@
         "index": 0,
         "start": 841,
         "end": 844,
-        "text": "繰り返し / トンネル / tunnel",
+        "text": "繰り返し / 扇 / fan",
         "lines": [
-          "繰り返し / トンネル / tunnel"
+          "繰り返し / 扇 / fan"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17522,9 +17550,9 @@
         "index": 0,
         "start": 844,
         "end": 847,
-        "text": "繰り返し / 散らし / scatter",
+        "text": "繰り返し / トンネル / tunnel",
         "lines": [
-          "繰り返し / 散らし / scatter"
+          "繰り返し / トンネル / tunnel"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17538,9 +17566,9 @@
         "index": 0,
         "start": 847,
         "end": 850,
-        "text": "繰り返し / レンガ / brick",
+        "text": "繰り返し / 散らし / scatter",
         "lines": [
-          "繰り返し / レンガ / brick"
+          "繰り返し / 散らし / scatter"
         ],
         "fontScale": 1,
         "pinned": false
@@ -17554,6 +17582,22 @@
         "index": 0,
         "start": 850,
         "end": 853,
+        "text": "繰り返し / レンガ / brick",
+        "lines": [
+          "繰り返し / レンガ / brick"
+        ],
+        "fontScale": 1,
+        "pinned": false
+      }
+    ],
+    "fx_260": [
+      {
+        "id": "fx_260:single0",
+        "cueId": "fx_260",
+        "kind": "single",
+        "index": 0,
+        "start": 853,
+        "end": 856,
         "text": "繰り返し / 敷き詰め / fill",
         "lines": [
           "繰り返し / 敷き詰め / fill"
@@ -17594,67 +17638,67 @@
       "label": "退場 (exit)"
     },
     {
-      "t": 436,
+      "t": 439,
       "label": "保持 (hold)"
     },
     {
-      "t": 496,
+      "t": 499,
       "label": "位置 (location)"
     },
     {
-      "t": 526,
+      "t": 529,
       "label": "塗り (fill)"
     },
     {
-      "t": 562,
+      "t": 565,
       "label": "縁取り (edge)"
     },
     {
-      "t": 586,
+      "t": 589,
       "label": "後処理［グリッチ］ (post/glitch)"
     },
     {
-      "t": 607,
+      "t": 610,
       "label": "後処理［ディゾルブ］ (post/dissolve)"
     },
     {
-      "t": 625,
+      "t": 628,
       "label": "後処理［ブラー・残像］ (post/blur)"
     },
     {
-      "t": 637,
+      "t": 640,
       "label": "後処理［変形・反転］ (post/warp)"
     },
     {
-      "t": 655,
+      "t": 658,
       "label": "後処理［光］ (post/light)"
     },
     {
-      "t": 673,
+      "t": 676,
       "label": "後処理［色・質感］ (post/color)"
     },
     {
-      "t": 694,
+      "t": 697,
       "label": "背景 (background)"
     },
     {
-      "t": 721,
+      "t": 724,
       "label": "文字背景 (bgShape)"
     },
     {
-      "t": 727,
+      "t": 730,
       "label": "文字背景の塗り (bgFill)"
     },
     {
-      "t": 763,
+      "t": 766,
       "label": "文字背景の縁取り (bgEdge)"
     },
     {
-      "t": 787,
+      "t": 790,
       "label": "文字背景の動き (bgMotion)"
     },
     {
-      "t": 823,
+      "t": 826,
       "label": "繰り返し (repeat)"
     }
   ],
@@ -17696,8 +17740,8 @@
     {
       "id": "clip_post_plate",
       "trackId": "bg",
-      "start": 586,
-      "end": 694,
+      "start": 589,
+      "end": 697,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17726,8 +17770,8 @@
     {
       "id": "clip_bg_0",
       "trackId": "bg",
-      "start": 693.88,
-      "end": 697.12,
+      "start": 696.88,
+      "end": 700.12,
       "spec": {
         "type": "solid",
         "params": {
@@ -17742,8 +17786,8 @@
     {
       "id": "clip_bg_1",
       "trackId": "bg",
-      "start": 696.88,
-      "end": 700.12,
+      "start": 699.88,
+      "end": 703.12,
       "spec": {
         "type": "plain",
         "params": {
@@ -17758,8 +17802,8 @@
     {
       "id": "clip_bg_2",
       "trackId": "bg",
-      "start": 699.88,
-      "end": 703.12,
+      "start": 702.88,
+      "end": 706.12,
       "spec": {
         "type": "gradient",
         "params": {
@@ -17790,8 +17834,8 @@
     {
       "id": "clip_bg_3",
       "trackId": "bg",
-      "start": 702.88,
-      "end": 706.12,
+      "start": 705.88,
+      "end": 709.12,
       "spec": {
         "type": "noiseGradient",
         "params": {
@@ -17808,8 +17852,8 @@
     {
       "id": "clip_bg_4",
       "trackId": "bg",
-      "start": 705.88,
-      "end": 709.12,
+      "start": 708.88,
+      "end": 712.12,
       "spec": {
         "type": "card",
         "params": {
@@ -17828,8 +17872,8 @@
     {
       "id": "clip_bg_5",
       "trackId": "bg",
-      "start": 708.88,
-      "end": 712.12,
+      "start": 711.88,
+      "end": 715.12,
       "spec": {
         "type": "cover",
         "params": {
@@ -17847,8 +17891,8 @@
     {
       "id": "clip_bg_6",
       "trackId": "bg",
-      "start": 711.88,
-      "end": 715.12,
+      "start": 714.88,
+      "end": 718.12,
       "spec": {
         "type": "image",
         "params": {
@@ -17866,8 +17910,8 @@
     {
       "id": "clip_bg_7",
       "trackId": "bg",
-      "start": 714.88,
-      "end": 718.12,
+      "start": 717.88,
+      "end": 721.12,
       "spec": {
         "type": "pattern",
         "params": {
@@ -17887,8 +17931,8 @@
     {
       "id": "clip_bg_8",
       "trackId": "bg",
-      "start": 717.88,
-      "end": 721.12,
+      "start": 720.88,
+      "end": 724.12,
       "spec": {
         "type": "shapes",
         "params": {

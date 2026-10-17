@@ -43,41 +43,11 @@
         "id": "mo10_01",
         "start": 0,
         "end": 3,
-        "text": "244. 文字ごとバウンス (Character Bounce) · jelly [amount:0.14 freq:2.2]\nあいうえお Aiueo 0123",
+        "text": "253. 文字ごと回転 (Character Rotate) · orbit3D [tilt:28 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 244,
-          "presetId": "te_108",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jelly"
-        }
-      },
-      {
-        "id": "mo10_02",
-        "start": 3,
-        "end": 6,
-        "text": "245. 文字ごとスケール (Character Scale) · pulse [amount:0.12 bpm:110]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 245,
-          "presetId": "te_109",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "pulse"
-        }
-      },
-      {
-        "id": "mo10_03",
-        "start": 6,
-        "end": 9,
-        "text": "246. 文字ごと回転 (Character Rotate) · orbit3D [tilt:28 speed:0.9]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 246,
+          "index": 253,
           "presetId": "te_110",
           "group": "emphasis",
           "phase": "hold",
@@ -85,14 +55,14 @@
         }
       },
       {
-        "id": "mo10_04",
-        "start": 9,
-        "end": 12,
-        "text": "247. ランダム順表示 (Random Order Appear) · jitter [amp:0.014 rate:20]\nあいうえお Aiueo 0123",
+        "id": "mo10_02",
+        "start": 3,
+        "end": 6,
+        "text": "254. ランダム順表示 (Random Order Appear) · jitter [amp:0.014 rate:20]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 247,
+          "index": 254,
           "presetId": "te_111",
           "group": "emphasis",
           "phase": "hold",
@@ -100,14 +70,14 @@
         }
       },
       {
-        "id": "mo10_05",
-        "start": 12,
-        "end": 15,
-        "text": "248. 中央から外へ (Center Out) · sineWave [amp:0.045 freq:0.005 speed:0.5]\nあいうえお Aiueo 0123",
+        "id": "mo10_03",
+        "start": 6,
+        "end": 9,
+        "text": "255. 中央から外へ (Center Out) · sineWave [amp:0.045 freq:0.005 speed:0.5]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 248,
+          "index": 255,
           "presetId": "te_112",
           "group": "emphasis",
           "phase": "hold",
@@ -115,14 +85,14 @@
         }
       },
       {
-        "id": "mo10_06",
-        "start": 15,
-        "end": 18,
-        "text": "249. 外から中央へ (Outside In) · sineWave [amp:0.045 freq:0.005 speed:0.7]\nあいうえお Aiueo 0123",
+        "id": "mo10_04",
+        "start": 9,
+        "end": 12,
+        "text": "256. 外から中央へ (Outside In) · sineWave [amp:0.045 freq:0.005 speed:0.7]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 249,
+          "index": 256,
           "presetId": "te_113",
           "group": "emphasis",
           "phase": "hold",
@@ -130,14 +100,14 @@
         }
       },
       {
-        "id": "mo10_07",
-        "start": 18,
-        "end": 21,
-        "text": "250. 大文字小文字切替 (Case Toggle) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "id": "mo10_05",
+        "start": 12,
+        "end": 15,
+        "text": "257. 大文字小文字切替 (Case Toggle) · opacityPulse [min:0.5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 250,
+          "index": 257,
           "presetId": "te_332",
           "group": "emphasis",
           "phase": "hold",
@@ -145,14 +115,14 @@
         }
       },
       {
-        "id": "mo10_08",
-        "start": 21,
-        "end": 24,
-        "text": "251. ランダムフォント (Random Font Mix) · jitter [rate:20]\nあいうえお Aiueo 0123",
+        "id": "mo10_06",
+        "start": 15,
+        "end": 18,
+        "text": "258. ランダムフォント (Random Font Mix) · jitter [rate:20]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 251,
+          "index": 258,
           "presetId": "te_333",
           "group": "emphasis",
           "phase": "hold",
@@ -160,14 +130,14 @@
         }
       },
       {
-        "id": "mo10_09",
-        "start": 24,
-        "end": 27,
-        "text": "252. サイズ強弱 (Dynamic Font Scale) · breathing [amount:0.06]\nあいうえお Aiueo 0123",
+        "id": "mo10_07",
+        "start": 18,
+        "end": 21,
+        "text": "259. サイズ強弱 (Dynamic Font Scale) · breathing [amount:0.06]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 252,
+          "index": 259,
           "presetId": "te_334",
           "group": "emphasis",
           "phase": "hold",
@@ -175,15 +145,45 @@
         }
       },
       {
-        "id": "mo10_10",
-        "start": 27,
-        "end": 30,
-        "text": "253. ベースラインシフト (Baseline Shift) · sineWave [amp:0.05 freq:0.003 speed:0.4]\nあいうえお Aiueo 0123",
+        "id": "mo10_08",
+        "start": 21,
+        "end": 24,
+        "text": "260. ベースラインシフト (Baseline Shift) · sineWave [amp:0.05 freq:0.003 speed:0.4]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 253,
+          "index": 260,
           "presetId": "te_335",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "sineWave"
+        }
+      },
+      {
+        "id": "mo10_09",
+        "start": 24,
+        "end": 27,
+        "text": "261. 文字ごとバラバラ (Scattered Letters) · jitter [amp:0.015]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 261,
+          "presetId": "te_336",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "jitter"
+        }
+      },
+      {
+        "id": "mo10_10",
+        "start": 27,
+        "end": 30,
+        "text": "262. 文字拡散 (Character Scatter) · sineWave [amp:0.06 freq:0.005]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 262,
+          "presetId": "te_337",
           "group": "emphasis",
           "phase": "hold",
           "type": "sineWave"
@@ -193,41 +193,11 @@
         "id": "mo10_11",
         "start": 30,
         "end": 33,
-        "text": "254. 文字ごとバラバラ (Scattered Letters) · jitter [amp:0.015]\nあいうえお Aiueo 0123",
+        "text": "263. 文字収束 (Character Convergence) · breathing [amount:0.08]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 254,
-          "presetId": "te_336",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "jitter"
-        }
-      },
-      {
-        "id": "mo10_12",
-        "start": 33,
-        "end": 36,
-        "text": "255. 文字拡散 (Character Scatter) · sineWave [amp:0.06 freq:0.005]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 255,
-          "presetId": "te_337",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "sineWave"
-        }
-      },
-      {
-        "id": "mo10_13",
-        "start": 36,
-        "end": 39,
-        "text": "256. 文字収束 (Character Convergence) · breathing [amount:0.08]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 256,
+          "index": 263,
           "presetId": "te_338",
           "group": "emphasis",
           "phase": "hold",
@@ -235,14 +205,14 @@
         }
       },
       {
-        "id": "mo10_14",
-        "start": 39,
-        "end": 42,
-        "text": "257. 文字落下 (Character Gravity Fall) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
+        "id": "mo10_12",
+        "start": 33,
+        "end": 36,
+        "text": "264. 文字落下 (Character Gravity Fall) · drift [vx:0 vy:0.15]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 257,
+          "index": 264,
           "presetId": "te_339",
           "group": "emphasis",
           "phase": "hold",
@@ -250,15 +220,45 @@
         }
       },
       {
-        "id": "mo10_15",
-        "start": 42,
-        "end": 45,
-        "text": "258. ランダムシャッフル (Random Shuffle) · jitter [amp:0.012 rate:10]\nあいうえお Aiueo 0123",
+        "id": "mo10_13",
+        "start": 36,
+        "end": 39,
+        "text": "265. ランダムシャッフル (Random Shuffle) · jitter [amp:0.012 rate:10]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 258,
+          "index": 265,
           "presetId": "te_97",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "jitter"
+        }
+      },
+      {
+        "id": "mo10_14",
+        "start": 39,
+        "end": 42,
+        "text": "266. デコード (Decode) · jitter [amp:0.01 rate:14]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 266,
+          "presetId": "te_98",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "jitter"
+        }
+      },
+      {
+        "id": "mo10_15",
+        "start": 42,
+        "end": 45,
+        "text": "267. スクランブル (Scramble) · jitter [amp:0.014 rate:8]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 267,
+          "presetId": "te_99",
           "group": "emphasis",
           "phase": "hold",
           "type": "jitter"
@@ -268,42 +268,42 @@
         "id": "mo10_16",
         "start": 45,
         "end": 48,
-        "text": "259. デコード (Decode) · jitter [amp:0.01 rate:14]\nあいうえお Aiueo 0123",
+        "text": "268. リリックモーション (Lyric Motion) · sineWave [amp:0.035 freq:0.005 speed:0.8]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 259,
-          "presetId": "te_98",
+          "index": 268,
+          "presetId": "te_242",
           "group": "emphasis",
           "phase": "hold",
-          "type": "jitter"
+          "type": "sineWave"
         }
       },
       {
         "id": "mo10_17",
         "start": 48,
         "end": 51,
-        "text": "260. スクランブル (Scramble) · jitter [amp:0.014 rate:8]\nあいうえお Aiueo 0123",
+        "text": "269. キネティックタイポグラフィ (Kinetic Typography) · sineWave [amp:0.05 freq:0.007 speed:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 260,
-          "presetId": "te_99",
+          "index": 269,
+          "presetId": "te_243",
           "group": "emphasis",
           "phase": "hold",
-          "type": "jitter"
+          "type": "sineWave"
         }
       },
       {
         "id": "mo10_18",
         "start": 51,
         "end": 54,
-        "text": "261. リリックモーション (Lyric Motion) · sineWave [amp:0.035 freq:0.005 speed:0.8]\nあいうえお Aiueo 0123",
+        "text": "270. タイポグラフィモーション (Typography Motion) · sineWave\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 261,
-          "presetId": "te_242",
+          "index": 270,
+          "presetId": "te_244",
           "group": "emphasis",
           "phase": "hold",
           "type": "sineWave"
@@ -313,42 +313,42 @@
         "id": "mo10_19",
         "start": 54,
         "end": 57,
-        "text": "262. キネティックタイポグラフィ (Kinetic Typography) · sineWave [amp:0.05 freq:0.007 speed:1]\nあいうえお Aiueo 0123",
+        "text": "271. ワードプレス (Word Press) · pulse [amount:0.1 bpm:130]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 262,
-          "presetId": "te_243",
+          "index": 271,
+          "presetId": "te_245",
           "group": "emphasis",
           "phase": "hold",
-          "type": "sineWave"
+          "type": "pulse"
         }
       },
       {
         "id": "mo10_20",
         "start": 57,
         "end": 60,
-        "text": "263. タイポグラフィモーション (Typography Motion) · sineWave\nあいうえお Aiueo 0123",
+        "text": "272. ビート同期 (Beat Sync) · heartbeat [amount:0.09]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 263,
-          "presetId": "te_244",
+          "index": 272,
+          "presetId": "te_246",
           "group": "emphasis",
           "phase": "hold",
-          "type": "sineWave"
+          "type": "heartbeat"
         }
       },
       {
         "id": "mo10_21",
         "start": 60,
         "end": 63,
-        "text": "264. ワードプレス (Word Press) · pulse [amount:0.1 bpm:130]\nあいうえお Aiueo 0123",
+        "text": "273. オーディオリアクティブ (Audio Reactive) · pulse [amount:0.08 bpm:140]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 264,
-          "presetId": "te_245",
+          "index": 273,
+          "presetId": "te_247",
           "group": "emphasis",
           "phase": "hold",
           "type": "pulse"
@@ -358,27 +358,27 @@
         "id": "mo10_22",
         "start": 63,
         "end": 66,
-        "text": "265. ビート同期 (Beat Sync) · heartbeat [amount:0.09]\nあいうえお Aiueo 0123",
+        "text": "274. スペクトラム連動 (Audio Spectrum) · sineWave [amp:0.04 freq:0.008 speed:1.2]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 265,
-          "presetId": "te_246",
+          "index": 274,
+          "presetId": "te_248",
           "group": "emphasis",
           "phase": "hold",
-          "type": "heartbeat"
+          "type": "sineWave"
         }
       },
       {
         "id": "mo10_23",
         "start": 66,
         "end": 69,
-        "text": "266. オーディオリアクティブ (Audio Reactive) · pulse [amount:0.08 bpm:140]\nあいうえお Aiueo 0123",
+        "text": "275. イコライザーバー (Equalizer Bars) · pulse [amount:0.12 bpm:150]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 266,
-          "presetId": "te_247",
+          "index": 275,
+          "presetId": "te_249",
           "group": "emphasis",
           "phase": "hold",
           "type": "pulse"
@@ -388,41 +388,11 @@
         "id": "mo10_24",
         "start": 69,
         "end": 72,
-        "text": "267. スペクトラム連動 (Audio Spectrum) · sineWave [amp:0.04 freq:0.008 speed:1.2]\nあいうえお Aiueo 0123",
+        "text": "276. ワードスマッシュ (Word Smash) · pulse [amount:0.15 bpm:160]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 267,
-          "presetId": "te_248",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "sineWave"
-        }
-      },
-      {
-        "id": "mo10_25",
-        "start": 72,
-        "end": 75,
-        "text": "268. イコライザーバー (Equalizer Bars) · pulse [amount:0.12 bpm:150]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 268,
-          "presetId": "te_249",
-          "group": "emphasis",
-          "phase": "hold",
-          "type": "pulse"
-        }
-      },
-      {
-        "id": "mo10_26",
-        "start": 75,
-        "end": 78,
-        "text": "269. ワードスマッシュ (Word Smash) · pulse [amount:0.15 bpm:160]\nあいうえお Aiueo 0123",
-        "meta": {
-          "kind": "motion-showcase",
-          "part": "10",
-          "index": 269,
+          "index": 276,
           "presetId": "te_250",
           "group": "emphasis",
           "phase": "hold",
@@ -430,18 +400,63 @@
         }
       },
       {
-        "id": "mo10_27",
-        "start": 78,
-        "end": 81,
-        "text": "270. スマッシュカット (Smash Cut) · shiver [amount:0.9 interval:1]\nあいうえお Aiueo 0123",
+        "id": "mo10_25",
+        "start": 72,
+        "end": 75,
+        "text": "277. スマッシュカット (Smash Cut) · shiver [amount:0.9 interval:1]\nあいうえお Aiueo 0123",
         "meta": {
           "kind": "motion-showcase",
           "part": "10",
-          "index": 270,
+          "index": 277,
           "presetId": "te_251",
           "group": "emphasis",
           "phase": "hold",
           "type": "shiver"
+        }
+      },
+      {
+        "id": "mo10_26",
+        "start": 75,
+        "end": 78,
+        "text": "278. テキストスタック (Text Stack) · breathing [amount:0.04]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 278,
+          "presetId": "te_252",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "breathing"
+        }
+      },
+      {
+        "id": "mo10_27",
+        "start": 78,
+        "end": 81,
+        "text": "279. テキストパターン (Text Pattern) · sineWave [freq:0.006 speed:0.7]\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 279,
+          "presetId": "te_253",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "sineWave"
+        }
+      },
+      {
+        "id": "mo10_28",
+        "start": 81,
+        "end": 84,
+        "text": "280. リピート (Repeat / Multiply) · marquee\nあいうえお Aiueo 0123",
+        "meta": {
+          "kind": "motion-showcase",
+          "part": "10",
+          "index": 280,
+          "presetId": "te_254",
+          "group": "emphasis",
+          "phase": "hold",
+          "type": "marquee"
         }
       }
     ],
@@ -499,14 +514,14 @@
         {
           "id": "m_mo10_01",
           "phase": "hold",
-          "type": "jelly",
+          "type": "orbit3D",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.14,
-            "freq": 2.2
+            "tilt": 28,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -544,15 +559,14 @@
         {
           "id": "m_mo10_02",
           "phase": "hold",
-          "type": "pulse",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.12,
-            "bpm": 110,
-            "axis": "both"
+            "amp": 0.014,
+            "rate": 20
           },
           "enabled": true
         }
@@ -590,14 +604,15 @@
         {
           "id": "m_mo10_03",
           "phase": "hold",
-          "type": "orbit3D",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "tilt": 28,
-            "speed": 0.9
+            "amp": 0.045,
+            "freq": 0.005,
+            "speed": 0.5
           },
           "enabled": true
         }
@@ -635,14 +650,15 @@
         {
           "id": "m_mo10_04",
           "phase": "hold",
-          "type": "jitter",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.014,
-            "rate": 20
+            "amp": 0.045,
+            "freq": 0.005,
+            "speed": 0.7
           },
           "enabled": true
         }
@@ -680,15 +696,15 @@
         {
           "id": "m_mo10_05",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "opacityPulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.045,
-            "freq": 0.005,
-            "speed": 0.5
+            "min": 0.5,
+            "period": 1,
+            "speed": 0.9
           },
           "enabled": true
         }
@@ -726,15 +742,14 @@
         {
           "id": "m_mo10_06",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.045,
-            "freq": 0.005,
-            "speed": 0.7
+            "amp": 0.008,
+            "rate": 20
           },
           "enabled": true
         }
@@ -772,15 +787,13 @@
         {
           "id": "m_mo10_07",
           "phase": "hold",
-          "type": "opacityPulse",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "min": 0.5,
-            "period": 1,
-            "speed": 0.9
+            "amount": 0.06
           },
           "enabled": true
         }
@@ -818,14 +831,15 @@
         {
           "id": "m_mo10_08",
           "phase": "hold",
-          "type": "jitter",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.008,
-            "rate": 20
+            "amp": 0.05,
+            "freq": 0.003,
+            "speed": 0.4
           },
           "enabled": true
         }
@@ -863,13 +877,14 @@
         {
           "id": "m_mo10_09",
           "phase": "hold",
-          "type": "breathing",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.06
+            "amp": 0.015,
+            "rate": 12
           },
           "enabled": true
         }
@@ -913,9 +928,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.05,
-            "freq": 0.003,
-            "speed": 0.4
+            "amp": 0.06,
+            "freq": 0.005,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -953,14 +968,13 @@
         {
           "id": "m_mo10_11",
           "phase": "hold",
-          "type": "jitter",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.015,
-            "rate": 12
+            "amount": 0.08
           },
           "enabled": true
         }
@@ -998,15 +1012,14 @@
         {
           "id": "m_mo10_12",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "drift",
           "from": "start",
           "delay": 0,
-          "duration": 1.2,
+          "duration": 1.6,
           "ease": "linear",
           "params": {
-            "amp": 0.06,
-            "freq": 0.005,
-            "speed": 0.6
+            "vx": 0,
+            "vy": 0.15
           },
           "enabled": true
         }
@@ -1044,13 +1057,14 @@
         {
           "id": "m_mo10_13",
           "phase": "hold",
-          "type": "breathing",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.08
+            "amp": 0.012,
+            "rate": 10
           },
           "enabled": true
         }
@@ -1088,14 +1102,14 @@
         {
           "id": "m_mo10_14",
           "phase": "hold",
-          "type": "drift",
+          "type": "jitter",
           "from": "start",
           "delay": 0,
-          "duration": 1.6,
+          "duration": 1.2,
           "ease": "linear",
           "params": {
-            "vx": 0,
-            "vy": 0.15
+            "amp": 0.01,
+            "rate": 14
           },
           "enabled": true
         }
@@ -1139,8 +1153,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.012,
-            "rate": 10
+            "amp": 0.014,
+            "rate": 8
           },
           "enabled": true
         }
@@ -1178,14 +1192,15 @@
         {
           "id": "m_mo10_16",
           "phase": "hold",
-          "type": "jitter",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.01,
-            "rate": 14
+            "amp": 0.035,
+            "freq": 0.005,
+            "speed": 0.8
           },
           "enabled": true
         }
@@ -1223,14 +1238,15 @@
         {
           "id": "m_mo10_17",
           "phase": "hold",
-          "type": "jitter",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.014,
-            "rate": 8
+            "amp": 0.05,
+            "freq": 0.007,
+            "speed": 1
           },
           "enabled": true
         }
@@ -1274,9 +1290,9 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.035,
-            "freq": 0.005,
-            "speed": 0.8
+            "amp": 0.03,
+            "freq": 0.004,
+            "speed": 0.6
           },
           "enabled": true
         }
@@ -1314,15 +1330,15 @@
         {
           "id": "m_mo10_19",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.05,
-            "freq": 0.007,
-            "speed": 1
+            "amount": 0.1,
+            "bpm": 130,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -1360,15 +1376,15 @@
         {
           "id": "m_mo10_20",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "heartbeat",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.03,
-            "freq": 0.004,
-            "speed": 0.6
+            "amount": 0.09,
+            "bpm": "72",
+            "axis": "both"
           },
           "enabled": true
         }
@@ -1412,8 +1428,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.1,
-            "bpm": 130,
+            "amount": 0.08,
+            "bpm": 140,
             "axis": "both"
           },
           "enabled": true
@@ -1452,15 +1468,15 @@
         {
           "id": "m_mo10_22",
           "phase": "hold",
-          "type": "heartbeat",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.09,
-            "bpm": "72",
-            "axis": "both"
+            "amp": 0.04,
+            "freq": 0.008,
+            "speed": 1.2
           },
           "enabled": true
         }
@@ -1504,8 +1520,8 @@
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.08,
-            "bpm": 140,
+            "amount": 0.12,
+            "bpm": 150,
             "axis": "both"
           },
           "enabled": true
@@ -1544,15 +1560,15 @@
         {
           "id": "m_mo10_24",
           "phase": "hold",
-          "type": "sineWave",
+          "type": "pulse",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amp": 0.04,
-            "freq": 0.008,
-            "speed": 1.2
+            "amount": 0.15,
+            "bpm": 160,
+            "axis": "both"
           },
           "enabled": true
         }
@@ -1590,15 +1606,14 @@
         {
           "id": "m_mo10_25",
           "phase": "hold",
-          "type": "pulse",
+          "type": "shiver",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.12,
-            "bpm": 150,
-            "axis": "both"
+            "amount": 0.9,
+            "interval": 1
           },
           "enabled": true
         }
@@ -1636,15 +1651,13 @@
         {
           "id": "m_mo10_26",
           "phase": "hold",
-          "type": "pulse",
+          "type": "breathing",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.15,
-            "bpm": 160,
-            "axis": "both"
+            "amount": 0.04
           },
           "enabled": true
         }
@@ -1682,14 +1695,59 @@
         {
           "id": "m_mo10_27",
           "phase": "hold",
-          "type": "shiver",
+          "type": "sineWave",
           "from": "start",
           "delay": 0,
           "duration": 1.2,
           "ease": "linear",
           "params": {
-            "amount": 0.9,
-            "interval": 1
+            "amp": 0.03,
+            "freq": 0.006,
+            "speed": 0.7
+          },
+          "enabled": true
+        }
+      ]
+    },
+    "mo10_28": {
+      "animation": {
+        "type": "simultaneous",
+        "enabled": true,
+        "params": {}
+      },
+      "enter": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "in": {
+            "duration": 0.4,
+            "ease": "cubicOut"
+          }
+        }
+      },
+      "exit": {
+        "type": "fade",
+        "enabled": true,
+        "params": {},
+        "motion": {
+          "out": {
+            "duration": 0.4,
+            "ease": "cubicIn"
+          }
+        }
+      },
+      "motions": [
+        {
+          "id": "m_mo10_28",
+          "phase": "hold",
+          "type": "marquee",
+          "from": "start",
+          "delay": 0,
+          "duration": 2.2,
+          "ease": "linear",
+          "params": {
+            "speed": 0.25
           },
           "enabled": true
         }
@@ -1774,10 +1832,10 @@
         "kind": "page",
         "index": 1,
         "start": 0,
-        "end": 1.2169811320754715,
-        "text": "244. 文字ごとバウンス (Character Bounce)",
+        "end": 1.1953239162201656,
+        "text": "253. 文字ごと回転 (Character Rotate)",
         "lines": [
-          "244. 文字ごとバウンス (Character Bounce)"
+          "253. 文字ごと回転 (Character Rotate)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1787,11 +1845,11 @@
         "cueId": "mo10_01",
         "kind": "page",
         "index": 2,
-        "start": 1.2169811320754715,
+        "start": 1.1953239162201656,
         "end": 3,
-        "text": " · jelly [amount:0.14 freq:2.2]\nあいうえお Aiueo 0123",
+        "text": " · orbit3D [tilt:28 speed:0.9]\nあいうえお Aiueo 0123",
         "lines": [
-          " · jelly [amount:0.14 freq:2.2]",
+          " · orbit3D [tilt:28 speed:0.9]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1805,10 +1863,10 @@
         "kind": "page",
         "index": 1,
         "start": 3,
-        "end": 4.2101449275362315,
-        "text": "245. 文字ごとスケール (Character Scale)",
+        "end": 4.287735849056604,
+        "text": "254. ランダム順表示 (Random Order Appear)",
         "lines": [
-          "245. 文字ごとスケール (Character Scale)"
+          "254. ランダム順表示 (Random Order Appear)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1818,11 +1876,11 @@
         "cueId": "mo10_02",
         "kind": "page",
         "index": 2,
-        "start": 4.2101449275362315,
+        "start": 4.287735849056604,
         "end": 6,
-        "text": " · pulse [amount:0.12 bpm:110]\nあいうえお Aiueo 0123",
+        "text": " · jitter [amp:0.014 rate:20]\nあいうえお Aiueo 0123",
         "lines": [
-          " · pulse [amount:0.12 bpm:110]",
+          " · jitter [amp:0.014 rate:20]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1836,10 +1894,10 @@
         "kind": "page",
         "index": 1,
         "start": 6,
-        "end": 7.195323916220166,
-        "text": "246. 文字ごと回転 (Character Rotate)",
+        "end": 7.263513513513513,
+        "text": "255. 中央から外へ (Center Out) · sineWave",
         "lines": [
-          "246. 文字ごと回転 (Character Rotate)"
+          "255. 中央から外へ (Center Out) · sineWave"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1849,11 +1907,11 @@
         "cueId": "mo10_03",
         "kind": "page",
         "index": 2,
-        "start": 7.195323916220166,
+        "start": 7.263513513513513,
         "end": 9,
-        "text": " · orbit3D [tilt:28 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": "[amp:0.045 freq:0.005 speed:0.5]\nあいうえお Aiueo 0123",
         "lines": [
-          " · orbit3D [tilt:28 speed:0.9]",
+          "[amp:0.045 freq:0.005 speed:0.5]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1867,10 +1925,10 @@
         "kind": "page",
         "index": 1,
         "start": 9,
-        "end": 10.287735849056604,
-        "text": "247. ランダム順表示 (Random Order Appear)",
+        "end": 10.263513513513514,
+        "text": "256. 外から中央へ (Outside In) · sineWave",
         "lines": [
-          "247. ランダム順表示 (Random Order Appear)"
+          "256. 外から中央へ (Outside In) · sineWave"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1880,11 +1938,11 @@
         "cueId": "mo10_04",
         "kind": "page",
         "index": 2,
-        "start": 10.287735849056604,
+        "start": 10.263513513513514,
         "end": 12,
-        "text": " · jitter [amp:0.014 rate:20]\nあいうえお Aiueo 0123",
+        "text": "[amp:0.045 freq:0.005 speed:0.7]\nあいうえお Aiueo 0123",
         "lines": [
-          " · jitter [amp:0.014 rate:20]",
+          "[amp:0.045 freq:0.005 speed:0.7]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1898,10 +1956,11 @@
         "kind": "page",
         "index": 1,
         "start": 12,
-        "end": 13.263513513513514,
-        "text": "248. 中央から外へ (Center Out) · sineWave",
+        "end": 13.707889125799573,
+        "text": "257. 大文字小文字切替 (Case Toggle)\n · opacityPulse [min:0.",
         "lines": [
-          "248. 中央から外へ (Center Out) · sineWave"
+          "257. 大文字小文字切替 (Case Toggle)",
+          " · opacityPulse [min:0."
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1911,11 +1970,11 @@
         "cueId": "mo10_05",
         "kind": "page",
         "index": 2,
-        "start": 13.263513513513514,
+        "start": 13.707889125799573,
         "end": 15,
-        "text": "[amp:0.045 freq:0.005 speed:0.5]\nあいうえお Aiueo 0123",
+        "text": "5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
         "lines": [
-          "[amp:0.045 freq:0.005 speed:0.5]",
+          "5 period:1 speed:0.9]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1924,32 +1983,18 @@
     ],
     "mo10_06": [
       {
-        "id": "mo10_06:page1",
+        "id": "mo10_06:single0",
         "cueId": "mo10_06",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 15,
-        "end": 16.263513513513512,
-        "text": "249. 外から中央へ (Outside In) · sineWave",
-        "lines": [
-          "249. 外から中央へ (Outside In) · sineWave"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo10_06:page2",
-        "cueId": "mo10_06",
-        "kind": "page",
-        "index": 2,
-        "start": 16.263513513513512,
         "end": 18,
-        "text": "[amp:0.045 freq:0.005 speed:0.7]\nあいうえお Aiueo 0123",
+        "text": "258. ランダムフォント (Random Font Mix) ·\njitter [rate:20]あいうえお Aiueo 0123",
         "lines": [
-          "[amp:0.045 freq:0.005 speed:0.7]",
-          "あいうえお Aiueo 0123"
+          "258. ランダムフォント (Random Font Mix) ·",
+          "jitter [rate:20]あいうえお Aiueo 0123"
         ],
-        "fontScale": 0.8,
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -1960,11 +2005,10 @@
         "kind": "page",
         "index": 1,
         "start": 18,
-        "end": 19.707889125799575,
-        "text": "250. 大文字小文字切替 (Case Toggle)\n · opacityPulse [min:0.",
+        "end": 19.271573604060915,
+        "text": "259. サイズ強弱 (Dynamic Font Scale)",
         "lines": [
-          "250. 大文字小文字切替 (Case Toggle)",
-          " · opacityPulse [min:0."
+          "259. サイズ強弱 (Dynamic Font Scale)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -1974,11 +2018,11 @@
         "cueId": "mo10_07",
         "kind": "page",
         "index": 2,
-        "start": 19.707889125799575,
+        "start": 19.271573604060915,
         "end": 21,
-        "text": "5 period:1 speed:0.9]\nあいうえお Aiueo 0123",
+        "text": " · breathing [amount:0.06]\nあいうえお Aiueo 0123",
         "lines": [
-          "5 period:1 speed:0.9]",
+          " · breathing [amount:0.06]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -1987,18 +2031,33 @@
     ],
     "mo10_08": [
       {
-        "id": "mo10_08:single0",
+        "id": "mo10_08:page1",
         "cueId": "mo10_08",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 21,
-        "end": 24,
-        "text": "251. ランダムフォント (Random Font Mix) ·\njitter [rate:20]あいうえお Aiueo 0123",
+        "end": 22.65495867768595,
+        "text": "260. ベースラインシフト (\nBaseline Shift) · sineWave [amp:0.",
         "lines": [
-          "251. ランダムフォント (Random Font Mix) ·",
-          "jitter [rate:20]あいうえお Aiueo 0123"
+          "260. ベースラインシフト (",
+          "Baseline Shift) · sineWave [amp:0."
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo10_08:page2",
+        "cueId": "mo10_08",
+        "kind": "page",
+        "index": 2,
+        "start": 22.65495867768595,
+        "end": 24,
+        "text": "05 freq:0.003 speed:0.4]\nあいうえお Aiueo 0123",
+        "lines": [
+          "05 freq:0.003 speed:0.4]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2009,10 +2068,10 @@
         "kind": "page",
         "index": 1,
         "start": 24,
-        "end": 25.271573604060915,
-        "text": "252. サイズ強弱 (Dynamic Font Scale)",
+        "end": 25.146067415730336,
+        "text": "261. 文字ごとバラバラ (Scattered",
         "lines": [
-          "252. サイズ強弱 (Dynamic Font Scale)"
+          "261. 文字ごとバラバラ (Scattered"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2022,11 +2081,11 @@
         "cueId": "mo10_09",
         "kind": "page",
         "index": 2,
-        "start": 25.271573604060915,
+        "start": 25.146067415730336,
         "end": 27,
-        "text": " · breathing [amount:0.06]\nあいうえお Aiueo 0123",
+        "text": "Letters) · jitter [amp:0.015]\nあいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.06]",
+          "Letters) · jitter [amp:0.015]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2040,11 +2099,10 @@
         "kind": "page",
         "index": 1,
         "start": 27,
-        "end": 28.65495867768595,
-        "text": "253. ベースラインシフト (\nBaseline Shift) · sineWave [amp:0.",
+        "end": 28.170391061452513,
+        "text": "262. 文字拡散 (Character Scatter)",
         "lines": [
-          "253. ベースラインシフト (",
-          "Baseline Shift) · sineWave [amp:0."
+          "262. 文字拡散 (Character Scatter)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2054,11 +2112,11 @@
         "cueId": "mo10_10",
         "kind": "page",
         "index": 2,
-        "start": 28.65495867768595,
+        "start": 28.170391061452513,
         "end": 30,
-        "text": "05 freq:0.003 speed:0.4]\nあいうえお Aiueo 0123",
+        "text": " · sineWave [amp:0.06 freq:0.005]\nあいうえお Aiueo 0123",
         "lines": [
-          "05 freq:0.003 speed:0.4]",
+          " · sineWave [amp:0.06 freq:0.005]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2072,10 +2130,10 @@
         "kind": "page",
         "index": 1,
         "start": 30,
-        "end": 31.146067415730336,
-        "text": "254. 文字ごとバラバラ (Scattered",
+        "end": 31.314356435643564,
+        "text": "263. 文字収束 (Character Convergence)",
         "lines": [
-          "254. 文字ごとバラバラ (Scattered"
+          "263. 文字収束 (Character Convergence)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2085,11 +2143,11 @@
         "cueId": "mo10_11",
         "kind": "page",
         "index": 2,
-        "start": 31.146067415730336,
+        "start": 31.314356435643564,
         "end": 33,
-        "text": "Letters) · jitter [amp:0.015]\nあいうえお Aiueo 0123",
+        "text": " · breathing [amount:0.08]\nあいうえお Aiueo 0123",
         "lines": [
-          "Letters) · jitter [amp:0.015]",
+          " · breathing [amount:0.08]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2098,30 +2156,16 @@
     ],
     "mo10_12": [
       {
-        "id": "mo10_12:page1",
+        "id": "mo10_12:single0",
         "cueId": "mo10_12",
-        "kind": "page",
-        "index": 1,
+        "kind": "single",
+        "index": 0,
         "start": 33,
-        "end": 34.17039106145251,
-        "text": "255. 文字拡散 (Character Scatter)",
-        "lines": [
-          "255. 文字拡散 (Character Scatter)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo10_12:page2",
-        "cueId": "mo10_12",
-        "kind": "page",
-        "index": 2,
-        "start": 34.17039106145251,
         "end": 36,
-        "text": " · sineWave [amp:0.06 freq:0.005]\nあいうえお Aiueo 0123",
+        "text": "264. 文字落下 (Character Gravity Fall) ·\ndrift [vx:0 vy:0.15]あいうえお Aiueo 0123",
         "lines": [
-          " · sineWave [amp:0.06 freq:0.005]",
-          "あいうえお Aiueo 0123"
+          "264. 文字落下 (Character Gravity Fall) ·",
+          "drift [vx:0 vy:0.15]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2134,10 +2178,10 @@
         "kind": "page",
         "index": 1,
         "start": 36,
-        "end": 37.31435643564357,
-        "text": "256. 文字収束 (Character Convergence)",
+        "end": 37.224938875305625,
+        "text": "265. ランダムシャッフル (Random Shuffle)",
         "lines": [
-          "256. 文字収束 (Character Convergence)"
+          "265. ランダムシャッフル (Random Shuffle)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2147,11 +2191,11 @@
         "cueId": "mo10_13",
         "kind": "page",
         "index": 2,
-        "start": 37.31435643564357,
+        "start": 37.224938875305625,
         "end": 39,
-        "text": " · breathing [amount:0.08]\nあいうえお Aiueo 0123",
+        "text": " · jitter [amp:0.012 rate:10]\nあいうえお Aiueo 0123",
         "lines": [
-          " · breathing [amount:0.08]",
+          " · jitter [amp:0.012 rate:10]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2166,103 +2210,55 @@
         "index": 0,
         "start": 39,
         "end": 42,
-        "text": "257. 文字落下 (Character Gravity Fall) ·\ndrift [vx:0 vy:0.15]あいうえお Aiueo 0123",
+        "text": "266. デコード (Decode) · jitter [amp\n:0.01 rate:14]あいうえお Aiueo 0123",
         "lines": [
-          "257. 文字落下 (Character Gravity Fall) ·",
-          "drift [vx:0 vy:0.15]あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo10_15": [
-      {
-        "id": "mo10_15:page1",
-        "cueId": "mo10_15",
-        "kind": "page",
-        "index": 1,
-        "start": 42,
-        "end": 43.224938875305625,
-        "text": "258. ランダムシャッフル (Random Shuffle)",
-        "lines": [
-          "258. ランダムシャッフル (Random Shuffle)"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      },
-      {
-        "id": "mo10_15:page2",
-        "cueId": "mo10_15",
-        "kind": "page",
-        "index": 2,
-        "start": 43.224938875305625,
-        "end": 45,
-        "text": " · jitter [amp:0.012 rate:10]\nあいうえお Aiueo 0123",
-        "lines": [
-          " · jitter [amp:0.012 rate:10]",
-          "あいうえお Aiueo 0123"
-        ],
-        "fontScale": 0.8,
-        "pinned": false
-      }
-    ],
-    "mo10_16": [
-      {
-        "id": "mo10_16:single0",
-        "cueId": "mo10_16",
-        "kind": "single",
-        "index": 0,
-        "start": 45,
-        "end": 48,
-        "text": "259. デコード (Decode) · jitter [amp\n:0.01 rate:14]あいうえお Aiueo 0123",
-        "lines": [
-          "259. デコード (Decode) · jitter [amp",
+          "266. デコード (Decode) · jitter [amp",
           ":0.01 rate:14]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.9199999999999999,
         "pinned": false
       }
     ],
-    "mo10_17": [
+    "mo10_15": [
       {
-        "id": "mo10_17:single0",
-        "cueId": "mo10_17",
+        "id": "mo10_15:single0",
+        "cueId": "mo10_15",
         "kind": "single",
         "index": 0,
-        "start": 48,
-        "end": 51,
-        "text": "260. スクランブル (Scramble) · jitter [\namp:0.014 rate:8]あいうえお Aiueo 0123",
+        "start": 42,
+        "end": 45,
+        "text": "267. スクランブル (Scramble) · jitter [\namp:0.014 rate:8]あいうえお Aiueo 0123",
         "lines": [
-          "260. スクランブル (Scramble) · jitter [",
+          "267. スクランブル (Scramble) · jitter [",
           "amp:0.014 rate:8]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8599999999999999,
         "pinned": false
       }
     ],
-    "mo10_18": [
+    "mo10_16": [
       {
-        "id": "mo10_18:page1",
-        "cueId": "mo10_18",
+        "id": "mo10_16:page1",
+        "cueId": "mo10_16",
         "kind": "page",
         "index": 1,
-        "start": 51,
-        "end": 52.609603340292274,
-        "text": "261. リリックモーション (\nLyric Motion) · sineWave [amp:0.",
+        "start": 45,
+        "end": 46.609603340292274,
+        "text": "268. リリックモーション (\nLyric Motion) · sineWave [amp:0.",
         "lines": [
-          "261. リリックモーション (",
+          "268. リリックモーション (",
           "Lyric Motion) · sineWave [amp:0."
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo10_18:page2",
-        "cueId": "mo10_18",
+        "id": "mo10_16:page2",
+        "cueId": "mo10_16",
         "kind": "page",
         "index": 2,
-        "start": 52.609603340292274,
-        "end": 54,
+        "start": 46.609603340292274,
+        "end": 48,
         "text": "035 freq:0.005 speed:0.8]\nあいうえお Aiueo 0123",
         "lines": [
           "035 freq:0.005 speed:0.8]",
@@ -2272,35 +2268,69 @@
         "pinned": false
       }
     ],
-    "mo10_19": [
+    "mo10_17": [
       {
-        "id": "mo10_19:page1",
-        "cueId": "mo10_19",
+        "id": "mo10_17:page1",
+        "cueId": "mo10_17",
         "kind": "page",
         "index": 1,
-        "start": 54,
-        "end": 55.79182879377432,
-        "text": "262. キネティックタイポグラフィ (\nKinetic Typography) · sineWave [amp:0.",
+        "start": 48,
+        "end": 49.79182879377432,
+        "text": "269. キネティックタイポグラフィ (\nKinetic Typography) · sineWave [amp:0.",
         "lines": [
-          "262. キネティックタイポグラフィ (",
+          "269. キネティックタイポグラフィ (",
           "Kinetic Typography) · sineWave [amp:0."
         ],
         "fontScale": 0.8,
         "pinned": false
       },
       {
-        "id": "mo10_19:page2",
-        "cueId": "mo10_19",
+        "id": "mo10_17:page2",
+        "cueId": "mo10_17",
         "kind": "page",
         "index": 2,
-        "start": 55.79182879377432,
-        "end": 57,
+        "start": 49.79182879377432,
+        "end": 51,
         "text": "05 freq:0.007 speed:1]\nあいうえお Aiueo 0123",
         "lines": [
           "05 freq:0.007 speed:1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo10_18": [
+      {
+        "id": "mo10_18:single0",
+        "cueId": "mo10_18",
+        "kind": "single",
+        "index": 0,
+        "start": 51,
+        "end": 54,
+        "text": "270. タイポグラフィモーション (Typography\nMotion) · sineWaveあいうえお Aiueo 0123",
+        "lines": [
+          "270. タイポグラフィモーション (Typography",
+          "Motion) · sineWaveあいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8399999999999999,
+        "pinned": false
+      }
+    ],
+    "mo10_19": [
+      {
+        "id": "mo10_19:single0",
+        "cueId": "mo10_19",
+        "kind": "single",
+        "index": 0,
+        "start": 54,
+        "end": 57,
+        "text": "271. ワードプレス (Word Press) · pulse [\namount:0.1 bpm:130]あいうえお Aiueo 0123",
+        "lines": [
+          "271. ワードプレス (Word Press) · pulse [",
+          "amount:0.1 bpm:130]あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8199999999999998,
         "pinned": false
       }
     ],
@@ -2312,10 +2342,10 @@
         "index": 0,
         "start": 57,
         "end": 60,
-        "text": "263. タイポグラフィモーション (Typography\nMotion) · sineWaveあいうえお Aiueo 0123",
+        "text": "272. ビート同期 (Beat Sync) · heartbeat\n[amount:0.09]あいうえお Aiueo 0123",
         "lines": [
-          "263. タイポグラフィモーション (Typography",
-          "Motion) · sineWaveあいうえお Aiueo 0123"
+          "272. ビート同期 (Beat Sync) · heartbeat",
+          "[amount:0.09]あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8399999999999999,
         "pinned": false
@@ -2323,35 +2353,64 @@
     ],
     "mo10_21": [
       {
-        "id": "mo10_21:single0",
+        "id": "mo10_21:page1",
         "cueId": "mo10_21",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 60,
-        "end": 63,
-        "text": "264. ワードプレス (Word Press) · pulse [\namount:0.1 bpm:130]あいうえお Aiueo 0123",
+        "end": 61.09399477806789,
+        "text": "273. オーディオリアクティブ (Audio",
         "lines": [
-          "264. ワードプレス (Word Press) · pulse [",
-          "amount:0.1 bpm:130]あいうえお Aiueo 0123"
+          "273. オーディオリアクティブ (Audio"
         ],
-        "fontScale": 0.8199999999999998,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo10_21:page2",
+        "cueId": "mo10_21",
+        "kind": "page",
+        "index": 2,
+        "start": 61.09399477806789,
+        "end": 63,
+        "text": "Reactive) · pulse [amount:0.08 bpm:140]\nあいうえお Aiueo 0123",
+        "lines": [
+          "Reactive) · pulse [amount:0.08 bpm:140]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
     "mo10_22": [
       {
-        "id": "mo10_22:single0",
+        "id": "mo10_22:page1",
         "cueId": "mo10_22",
-        "kind": "single",
-        "index": 0,
+        "kind": "page",
+        "index": 1,
         "start": 63,
-        "end": 66,
-        "text": "265. ビート同期 (Beat Sync) · heartbeat\n[amount:0.09]あいうえお Aiueo 0123",
+        "end": 64.62658227848101,
+        "text": "274. スペクトラム連動 (Audio\nSpectrum) · sineWave [amp:0.",
         "lines": [
-          "265. ビート同期 (Beat Sync) · heartbeat",
-          "[amount:0.09]あいうえお Aiueo 0123"
+          "274. スペクトラム連動 (Audio",
+          "Spectrum) · sineWave [amp:0."
         ],
-        "fontScale": 0.8399999999999999,
+        "fontScale": 0.8,
+        "pinned": false
+      },
+      {
+        "id": "mo10_22:page2",
+        "cueId": "mo10_22",
+        "kind": "page",
+        "index": 2,
+        "start": 64.62658227848101,
+        "end": 66,
+        "text": "04 freq:0.008 speed:1.2]\nあいうえお Aiueo 0123",
+        "lines": [
+          "04 freq:0.008 speed:1.2]",
+          "あいうえお Aiueo 0123"
+        ],
+        "fontScale": 0.8,
         "pinned": false
       }
     ],
@@ -2362,10 +2421,10 @@
         "kind": "page",
         "index": 1,
         "start": 66,
-        "end": 67.09399477806788,
-        "text": "266. オーディオリアクティブ (Audio",
+        "end": 67.19532391622016,
+        "text": "275. イコライザーバー (Equalizer Bars)",
         "lines": [
-          "266. オーディオリアクティブ (Audio"
+          "275. イコライザーバー (Equalizer Bars)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2375,11 +2434,11 @@
         "cueId": "mo10_23",
         "kind": "page",
         "index": 2,
-        "start": 67.09399477806788,
+        "start": 67.19532391622016,
         "end": 69,
-        "text": "Reactive) · pulse [amount:0.08 bpm:140]\nあいうえお Aiueo 0123",
+        "text": " · pulse [amount:0.12 bpm:150]\nあいうえお Aiueo 0123",
         "lines": [
-          "Reactive) · pulse [amount:0.08 bpm:140]",
+          " · pulse [amount:0.12 bpm:150]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2393,11 +2452,10 @@
         "kind": "page",
         "index": 1,
         "start": 69,
-        "end": 70.62658227848101,
-        "text": "267. スペクトラム連動 (Audio\nSpectrum) · sineWave [amp:0.",
+        "end": 70.15946348733235,
+        "text": "276. ワードスマッシュ (Word Smash)",
         "lines": [
-          "267. スペクトラム連動 (Audio",
-          "Spectrum) · sineWave [amp:0."
+          "276. ワードスマッシュ (Word Smash)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2407,11 +2465,11 @@
         "cueId": "mo10_24",
         "kind": "page",
         "index": 2,
-        "start": 70.62658227848101,
+        "start": 70.15946348733235,
         "end": 72,
-        "text": "04 freq:0.008 speed:1.2]\nあいうえお Aiueo 0123",
+        "text": " · pulse [amount:0.15 bpm:160]\nあいうえお Aiueo 0123",
         "lines": [
-          "04 freq:0.008 speed:1.2]",
+          " · pulse [amount:0.15 bpm:160]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2425,10 +2483,10 @@
         "kind": "page",
         "index": 1,
         "start": 72,
-        "end": 73.19532391622016,
-        "text": "268. イコライザーバー (Equalizer Bars)",
+        "end": 73.13567362428843,
+        "text": "277. スマッシュカット (Smash Cut)",
         "lines": [
-          "268. イコライザーバー (Equalizer Bars)"
+          "277. スマッシュカット (Smash Cut)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2438,11 +2496,11 @@
         "cueId": "mo10_25",
         "kind": "page",
         "index": 2,
-        "start": 73.19532391622016,
+        "start": 73.13567362428843,
         "end": 75,
-        "text": " · pulse [amount:0.12 bpm:150]\nあいうえお Aiueo 0123",
+        "text": " · shiver [amount:0.9 interval:1]\nあいうえお Aiueo 0123",
         "lines": [
-          " · pulse [amount:0.12 bpm:150]",
+          " · shiver [amount:0.9 interval:1]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2456,10 +2514,10 @@
         "kind": "page",
         "index": 1,
         "start": 75,
-        "end": 76.15946348733235,
-        "text": "269. ワードスマッシュ (Word Smash)",
+        "end": 76.18206086492259,
+        "text": "278. テキストスタック (Text Stack)",
         "lines": [
-          "269. ワードスマッシュ (Word Smash)"
+          "278. テキストスタック (Text Stack)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2469,11 +2527,11 @@
         "cueId": "mo10_26",
         "kind": "page",
         "index": 2,
-        "start": 76.15946348733235,
+        "start": 76.18206086492259,
         "end": 78,
-        "text": " · pulse [amount:0.15 bpm:160]\nあいうえお Aiueo 0123",
+        "text": " · breathing [amount:0.04]\nあいうえお Aiueo 0123",
         "lines": [
-          " · pulse [amount:0.15 bpm:160]",
+          " · breathing [amount:0.04]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
@@ -2487,10 +2545,10 @@
         "kind": "page",
         "index": 1,
         "start": 78,
-        "end": 79.13567362428843,
-        "text": "270. スマッシュカット (Smash Cut)",
+        "end": 79.15692590888173,
+        "text": "279. テキストパターン (Text Pattern)",
         "lines": [
-          "270. スマッシュカット (Smash Cut)"
+          "279. テキストパターン (Text Pattern)"
         ],
         "fontScale": 0.8,
         "pinned": false
@@ -2500,14 +2558,31 @@
         "cueId": "mo10_27",
         "kind": "page",
         "index": 2,
-        "start": 79.13567362428843,
+        "start": 79.15692590888173,
         "end": 81,
-        "text": " · shiver [amount:0.9 interval:1]\nあいうえお Aiueo 0123",
+        "text": " · sineWave [freq:0.006 speed:0.7]\nあいうえお Aiueo 0123",
         "lines": [
-          " · shiver [amount:0.9 interval:1]",
+          " · sineWave [freq:0.006 speed:0.7]",
           "あいうえお Aiueo 0123"
         ],
         "fontScale": 0.8,
+        "pinned": false
+      }
+    ],
+    "mo10_28": [
+      {
+        "id": "mo10_28:single0",
+        "cueId": "mo10_28",
+        "kind": "single",
+        "index": 0,
+        "start": 81,
+        "end": 84,
+        "text": "280. リピート (Repeat / Multiply)\n · marqueeあいうえお Aiueo 0123",
+        "lines": [
+          "280. リピート (Repeat / Multiply)",
+          " · marqueeあいうえお Aiueo 0123"
+        ],
+        "fontScale": 1,
         "pinned": false
       }
     ]
@@ -2516,25 +2591,37 @@
   "beatCandidates": {},
   "candidatePool": {},
   "beatWarnings": {
-    "mo10_03": [
+    "mo10_01": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo10_11": [
+    "mo10_09": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
-    "mo10_12": [
+    "mo10_10": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo10_21": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
       }
     ],
     "mo10_23": [
+      {
+        "code": "tooFast",
+        "message": "The cue is too fast to read"
+      }
+    ],
+    "mo10_24": [
       {
         "code": "tooFast",
         "message": "The cue is too fast to read"
@@ -2571,6 +2658,7 @@
     }
   ],
   "layers": [],
+  "masks": [],
   "tracks": [
     {
       "id": "fg",

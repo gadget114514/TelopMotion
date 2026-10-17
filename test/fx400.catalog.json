@@ -3,7 +3,7 @@
   "version": 2,
   "seed": 400400,
   "total": 400,
-  "typeCount": 256,
+  "typeCount": 257,
   "sample": "今日はとてもいい天気ですね、散歩でもしましょうか",
   "verification": {
     "motion": [
@@ -48,8 +48,8 @@
     },
     {
       "group": "exit",
-      "types": 34,
-      "entries": 66
+      "types": 35,
+      "entries": 68
     },
     {
       "group": "hold",
@@ -64,7 +64,7 @@
     {
       "group": "fill",
       "types": 14,
-      "entries": 20
+      "entries": 18
     },
     {
       "group": "edge",
@@ -7370,6 +7370,51 @@
     },
     {
       "n": 178,
+      "id": "exit.checkerboard.v1",
+      "group": "exit",
+      "type": "checkerboard",
+      "variant": 1,
+      "label": "退場 / チェッカーボード（代表1）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "cells",
+          "from": 4,
+          "to": 7
+        },
+        {
+          "key": "soft",
+          "from": 0.05,
+          "to": 0.38
+        },
+        {
+          "key": "motion.out",
+          "from": "(既定)",
+          "to": "0.2s/cubicIn"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.401,
+      "notes": [],
+      "style": {
+        "exit": {
+          "type": "checkerboard",
+          "enabled": true,
+          "params": {
+            "cells": 7,
+            "soft": 0.38
+          },
+          "motion": {
+            "out": {
+              "duration": 0.2,
+              "ease": "cubicIn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 179,
       "id": "exit.typewriterReverse.v1",
       "group": "exit",
       "type": "typewriterReverse",
@@ -7401,7 +7446,7 @@
       }
     },
     {
-      "n": 179,
+      "n": 180,
       "id": "exit.shrinkToCenter.v1",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -7433,7 +7478,7 @@
       }
     },
     {
-      "n": 180,
+      "n": 181,
       "id": "exit.particlesDisperse.v1",
       "group": "exit",
       "type": "particlesDisperse",
@@ -7462,7 +7507,7 @@
       }
     },
     {
-      "n": 181,
+      "n": 182,
       "id": "exit.sandCrumble.v1",
       "group": "exit",
       "type": "sandCrumble",
@@ -7511,7 +7556,7 @@
       }
     },
     {
-      "n": 182,
+      "n": 183,
       "id": "exit.melt.v1",
       "group": "exit",
       "type": "melt",
@@ -7539,7 +7584,7 @@
       }
     },
     {
-      "n": 183,
+      "n": 184,
       "id": "exit.burnAway.v1",
       "group": "exit",
       "type": "burnAway",
@@ -7585,7 +7630,7 @@
       }
     },
     {
-      "n": 184,
+      "n": 185,
       "id": "exit.circleErase.v1",
       "group": "exit",
       "type": "circleErase",
@@ -7630,7 +7675,7 @@
       }
     },
     {
-      "n": 185,
+      "n": 186,
       "id": "exit.lineErase.v1",
       "group": "exit",
       "type": "lineErase",
@@ -7675,7 +7720,7 @@
       }
     },
     {
-      "n": 186,
+      "n": 187,
       "id": "exit.boxErase.v1",
       "group": "exit",
       "type": "boxErase",
@@ -7714,7 +7759,7 @@
       }
     },
     {
-      "n": 187,
+      "n": 188,
       "id": "exit.strokeErase.v1",
       "group": "exit",
       "type": "strokeErase",
@@ -7753,7 +7798,7 @@
       }
     },
     {
-      "n": 188,
+      "n": 189,
       "id": "exit.creepOut.v1",
       "group": "exit",
       "type": "creepOut",
@@ -7792,7 +7837,7 @@
       }
     },
     {
-      "n": 189,
+      "n": 190,
       "id": "exit.vanish.v1",
       "group": "exit",
       "type": "vanish",
@@ -7824,7 +7869,7 @@
       }
     },
     {
-      "n": 190,
+      "n": 191,
       "id": "exit.floatOut.v1",
       "group": "exit",
       "type": "floatOut",
@@ -7853,7 +7898,7 @@
       }
     },
     {
-      "n": 191,
+      "n": 192,
       "id": "exit.splitOut.v1",
       "group": "exit",
       "type": "splitOut",
@@ -7887,7 +7932,7 @@
       }
     },
     {
-      "n": 192,
+      "n": 193,
       "id": "exit.stripeShrink.v1",
       "group": "exit",
       "type": "stripeShrink",
@@ -7921,7 +7966,7 @@
       }
     },
     {
-      "n": 193,
+      "n": 194,
       "id": "exit.rotateOut.v1",
       "group": "exit",
       "type": "rotateOut",
@@ -7949,7 +7994,7 @@
       }
     },
     {
-      "n": 194,
+      "n": 195,
       "id": "exit.floatUp.v1",
       "group": "exit",
       "type": "floatUp",
@@ -7977,7 +8022,7 @@
       }
     },
     {
-      "n": 195,
+      "n": 196,
       "id": "exit.floatDown.v1",
       "group": "exit",
       "type": "floatDown",
@@ -8005,7 +8050,7 @@
       }
     },
     {
-      "n": 196,
+      "n": 197,
       "id": "exit.shrinkDir.v1",
       "group": "exit",
       "type": "shrinkDir",
@@ -8039,7 +8084,7 @@
       }
     },
     {
-      "n": 197,
+      "n": 198,
       "id": "exit.spiralOut.v1",
       "group": "exit",
       "type": "spiralOut",
@@ -8068,7 +8113,7 @@
       }
     },
     {
-      "n": 198,
+      "n": 199,
       "id": "exit.radialOut.v1",
       "group": "exit",
       "type": "radialOut",
@@ -8096,7 +8141,7 @@
       }
     },
     {
-      "n": 199,
+      "n": 200,
       "id": "exit.warpOut.v1",
       "group": "exit",
       "type": "warpOut",
@@ -8124,7 +8169,7 @@
       }
     },
     {
-      "n": 200,
+      "n": 201,
       "id": "exit.pageCurl.v1",
       "group": "exit",
       "type": "pageCurl",
@@ -8155,7 +8200,7 @@
       }
     },
     {
-      "n": 201,
+      "n": 202,
       "id": "exit.evaporate.v1",
       "group": "exit",
       "type": "evaporate",
@@ -8195,7 +8240,7 @@
       }
     },
     {
-      "n": 202,
+      "n": 203,
       "id": "exit.bulletHoles.v1",
       "group": "exit",
       "type": "bulletHoles",
@@ -8225,7 +8270,7 @@
       }
     },
     {
-      "n": 203,
+      "n": 204,
       "id": "exit.particlesOnText.v1",
       "group": "exit",
       "type": "particlesOnText",
@@ -8255,7 +8300,7 @@
       }
     },
     {
-      "n": 204,
+      "n": 205,
       "id": "exit.fade.v2",
       "group": "exit",
       "type": "fade",
@@ -8300,7 +8345,7 @@
       }
     },
     {
-      "n": 205,
+      "n": 206,
       "id": "exit.slide.v2",
       "group": "exit",
       "type": "slide",
@@ -8335,7 +8380,7 @@
       }
     },
     {
-      "n": 206,
+      "n": 207,
       "id": "exit.zoomOut.v2",
       "group": "exit",
       "type": "zoomOut",
@@ -8374,7 +8419,7 @@
       }
     },
     {
-      "n": 207,
+      "n": 208,
       "id": "exit.blurOut.v2",
       "group": "exit",
       "type": "blurOut",
@@ -8408,7 +8453,7 @@
       }
     },
     {
-      "n": 208,
+      "n": 209,
       "id": "exit.explode.v2",
       "group": "exit",
       "type": "explode",
@@ -8448,7 +8493,7 @@
       }
     },
     {
-      "n": 209,
+      "n": 210,
       "id": "exit.gravityFall.v2",
       "group": "exit",
       "type": "gravityFall",
@@ -8488,7 +8533,7 @@
       }
     },
     {
-      "n": 210,
+      "n": 211,
       "id": "exit.wipe.v2",
       "group": "exit",
       "type": "wipe",
@@ -8527,7 +8572,42 @@
       }
     },
     {
-      "n": 211,
+      "n": 212,
+      "id": "exit.checkerboard.v2",
+      "group": "exit",
+      "type": "checkerboard",
+      "variant": 2,
+      "label": "退場 / チェッカーボード（代表2）",
+      "apply": "style",
+      "changes": [
+        {
+          "key": "motion.out",
+          "from": "(既定)",
+          "to": "1s/backIn"
+        }
+      ],
+      "verified": "motion",
+      "score": 1.41,
+      "notes": [],
+      "style": {
+        "exit": {
+          "type": "checkerboard",
+          "enabled": true,
+          "params": {
+            "cells": 4,
+            "soft": 0.05
+          },
+          "motion": {
+            "out": {
+              "duration": 1,
+              "ease": "backIn"
+            }
+          }
+        }
+      }
+    },
+    {
+      "n": 213,
       "id": "exit.shrinkToCenter.v2",
       "group": "exit",
       "type": "shrinkToCenter",
@@ -8559,7 +8639,7 @@
       }
     },
     {
-      "n": 212,
+      "n": 214,
       "id": "exit.particlesDisperse.v2",
       "group": "exit",
       "type": "particlesDisperse",
@@ -8599,7 +8679,7 @@
       }
     },
     {
-      "n": 213,
+      "n": 215,
       "id": "exit.sandCrumble.v2",
       "group": "exit",
       "type": "sandCrumble",
@@ -8648,7 +8728,7 @@
       }
     },
     {
-      "n": 214,
+      "n": 216,
       "id": "exit.melt.v2",
       "group": "exit",
       "type": "melt",
@@ -8687,7 +8767,7 @@
       }
     },
     {
-      "n": 215,
+      "n": 217,
       "id": "exit.burnAway.v2",
       "group": "exit",
       "type": "burnAway",
@@ -8733,7 +8813,7 @@
       }
     },
     {
-      "n": 216,
+      "n": 218,
       "id": "exit.circleErase.v2",
       "group": "exit",
       "type": "circleErase",
@@ -8778,7 +8858,7 @@
       }
     },
     {
-      "n": 217,
+      "n": 219,
       "id": "exit.lineErase.v2",
       "group": "exit",
       "type": "lineErase",
@@ -8823,7 +8903,7 @@
       }
     },
     {
-      "n": 218,
+      "n": 220,
       "id": "exit.boxErase.v2",
       "group": "exit",
       "type": "boxErase",
@@ -8862,7 +8942,7 @@
       }
     },
     {
-      "n": 219,
+      "n": 221,
       "id": "exit.strokeErase.v2",
       "group": "exit",
       "type": "strokeErase",
@@ -8901,7 +8981,7 @@
       }
     },
     {
-      "n": 220,
+      "n": 222,
       "id": "exit.creepOut.v2",
       "group": "exit",
       "type": "creepOut",
@@ -8940,7 +9020,7 @@
       }
     },
     {
-      "n": 221,
+      "n": 223,
       "id": "exit.vanish.v2",
       "group": "exit",
       "type": "vanish",
@@ -8972,7 +9052,7 @@
       }
     },
     {
-      "n": 222,
+      "n": 224,
       "id": "exit.floatOut.v2",
       "group": "exit",
       "type": "floatOut",
@@ -9012,7 +9092,7 @@
       }
     },
     {
-      "n": 223,
+      "n": 225,
       "id": "exit.splitOut.v2",
       "group": "exit",
       "type": "splitOut",
@@ -9051,7 +9131,7 @@
       }
     },
     {
-      "n": 224,
+      "n": 226,
       "id": "exit.stripeShrink.v2",
       "group": "exit",
       "type": "stripeShrink",
@@ -9090,7 +9170,7 @@
       }
     },
     {
-      "n": 225,
+      "n": 227,
       "id": "exit.rotateOut.v2",
       "group": "exit",
       "type": "rotateOut",
@@ -9129,7 +9209,7 @@
       }
     },
     {
-      "n": 226,
+      "n": 228,
       "id": "exit.floatUp.v2",
       "group": "exit",
       "type": "floatUp",
@@ -9168,7 +9248,7 @@
       }
     },
     {
-      "n": 227,
+      "n": 229,
       "id": "exit.floatDown.v2",
       "group": "exit",
       "type": "floatDown",
@@ -9207,7 +9287,7 @@
       }
     },
     {
-      "n": 228,
+      "n": 230,
       "id": "exit.shrinkDir.v2",
       "group": "exit",
       "type": "shrinkDir",
@@ -9246,7 +9326,7 @@
       }
     },
     {
-      "n": 229,
+      "n": 231,
       "id": "exit.spiralOut.v2",
       "group": "exit",
       "type": "spiralOut",
@@ -9286,7 +9366,7 @@
       }
     },
     {
-      "n": 230,
+      "n": 232,
       "id": "exit.radialOut.v2",
       "group": "exit",
       "type": "radialOut",
@@ -9325,7 +9405,7 @@
       }
     },
     {
-      "n": 231,
+      "n": 233,
       "id": "exit.warpOut.v2",
       "group": "exit",
       "type": "warpOut",
@@ -9364,7 +9444,7 @@
       }
     },
     {
-      "n": 232,
+      "n": 234,
       "id": "exit.pageCurl.v2",
       "group": "exit",
       "type": "pageCurl",
@@ -9406,7 +9486,7 @@
       }
     },
     {
-      "n": 233,
+      "n": 235,
       "id": "exit.evaporate.v2",
       "group": "exit",
       "type": "evaporate",
@@ -9451,7 +9531,7 @@
       }
     },
     {
-      "n": 234,
+      "n": 236,
       "id": "exit.bulletHoles.v2",
       "group": "exit",
       "type": "bulletHoles",
@@ -9492,7 +9572,7 @@
       }
     },
     {
-      "n": 235,
+      "n": 237,
       "id": "exit.particlesOnText.v2",
       "group": "exit",
       "type": "particlesOnText",
@@ -9533,7 +9613,7 @@
       }
     },
     {
-      "n": 236,
+      "n": 238,
       "id": "hold.floatBob.v1",
       "group": "hold",
       "type": "floatBob",
@@ -9559,7 +9639,7 @@
       }
     },
     {
-      "n": 237,
+      "n": 239,
       "id": "hold.sineWave.v1",
       "group": "hold",
       "type": "sineWave",
@@ -9586,7 +9666,7 @@
       }
     },
     {
-      "n": 238,
+      "n": 240,
       "id": "hold.jitter.v1",
       "group": "hold",
       "type": "jitter",
@@ -9612,7 +9692,7 @@
       }
     },
     {
-      "n": 239,
+      "n": 241,
       "id": "hold.pulse.v1",
       "group": "hold",
       "type": "pulse",
@@ -9650,7 +9730,7 @@
       }
     },
     {
-      "n": 240,
+      "n": 242,
       "id": "hold.opacityPulse.v1",
       "group": "hold",
       "type": "opacityPulse",
@@ -9677,7 +9757,7 @@
       }
     },
     {
-      "n": 241,
+      "n": 243,
       "id": "hold.kenBurns.v1",
       "group": "hold",
       "type": "kenBurns",
@@ -9712,7 +9792,7 @@
       }
     },
     {
-      "n": 242,
+      "n": 244,
       "id": "hold.drift.v1",
       "group": "hold",
       "type": "drift",
@@ -9738,7 +9818,7 @@
       }
     },
     {
-      "n": 243,
+      "n": 245,
       "id": "hold.pendulumSwing.v1",
       "group": "hold",
       "type": "pendulumSwing",
@@ -9765,7 +9845,7 @@
       }
     },
     {
-      "n": 244,
+      "n": 246,
       "id": "hold.nudgeImpulse.v1",
       "group": "hold",
       "type": "nudgeImpulse",
@@ -9802,7 +9882,7 @@
       }
     },
     {
-      "n": 245,
+      "n": 247,
       "id": "hold.marquee.v1",
       "group": "hold",
       "type": "marquee",
@@ -9833,7 +9913,7 @@
       }
     },
     {
-      "n": 246,
+      "n": 248,
       "id": "hold.jelly.v1",
       "group": "hold",
       "type": "jelly",
@@ -9870,7 +9950,7 @@
       }
     },
     {
-      "n": 247,
+      "n": 249,
       "id": "hold.wobbleWarp.v1",
       "group": "hold",
       "type": "wobbleWarp",
@@ -9908,7 +9988,7 @@
       }
     },
     {
-      "n": 248,
+      "n": 250,
       "id": "hold.twist.v1",
       "group": "hold",
       "type": "twist",
@@ -9933,7 +10013,7 @@
       }
     },
     {
-      "n": 249,
+      "n": 251,
       "id": "hold.breathing.v1",
       "group": "hold",
       "type": "breathing",
@@ -9964,7 +10044,7 @@
       }
     },
     {
-      "n": 250,
+      "n": 252,
       "id": "hold.orbit3D.v1",
       "group": "hold",
       "type": "orbit3D",
@@ -9990,7 +10070,7 @@
       }
     },
     {
-      "n": 251,
+      "n": 253,
       "id": "hold.orbit2D.v1",
       "group": "hold",
       "type": "orbit2D",
@@ -10019,7 +10099,7 @@
       }
     },
     {
-      "n": 252,
+      "n": 254,
       "id": "hold.pathFollow.v1",
       "group": "hold",
       "type": "pathFollow",
@@ -10064,7 +10144,7 @@
       }
     },
     {
-      "n": 253,
+      "n": 255,
       "id": "hold.heartbeat.v1",
       "group": "hold",
       "type": "heartbeat",
@@ -10102,7 +10182,7 @@
       }
     },
     {
-      "n": 254,
+      "n": 256,
       "id": "hold.shiver.v1",
       "group": "hold",
       "type": "shiver",
@@ -10134,7 +10214,7 @@
       }
     },
     {
-      "n": 255,
+      "n": 257,
       "id": "hold.dissolve.v1",
       "group": "hold",
       "type": "dissolve",
@@ -10171,7 +10251,7 @@
       }
     },
     {
-      "n": 256,
+      "n": 258,
       "id": "hold.floatBob.v2",
       "group": "hold",
       "type": "floatBob",
@@ -10203,7 +10283,7 @@
       }
     },
     {
-      "n": 257,
+      "n": 259,
       "id": "hold.sineWave.v2",
       "group": "hold",
       "type": "sineWave",
@@ -10236,7 +10316,7 @@
       }
     },
     {
-      "n": 258,
+      "n": 260,
       "id": "hold.jitter.v2",
       "group": "hold",
       "type": "jitter",
@@ -10268,7 +10348,7 @@
       }
     },
     {
-      "n": 259,
+      "n": 261,
       "id": "hold.opacityPulse.v2",
       "group": "hold",
       "type": "opacityPulse",
@@ -10301,7 +10381,7 @@
       }
     },
     {
-      "n": 260,
+      "n": 262,
       "id": "hold.kenBurns.v2",
       "group": "hold",
       "type": "kenBurns",
@@ -10336,7 +10416,7 @@
       }
     },
     {
-      "n": 261,
+      "n": 263,
       "id": "hold.drift.v2",
       "group": "hold",
       "type": "drift",
@@ -10368,7 +10448,7 @@
       }
     },
     {
-      "n": 262,
+      "n": 264,
       "id": "hold.pendulumSwing.v2",
       "group": "hold",
       "type": "pendulumSwing",
@@ -10401,7 +10481,7 @@
       }
     },
     {
-      "n": 263,
+      "n": 265,
       "id": "hold.nudgeImpulse.v2",
       "group": "hold",
       "type": "nudgeImpulse",
@@ -10438,7 +10518,7 @@
       }
     },
     {
-      "n": 264,
+      "n": 266,
       "id": "hold.marquee.v2",
       "group": "hold",
       "type": "marquee",
@@ -10463,7 +10543,7 @@
       }
     },
     {
-      "n": 265,
+      "n": 267,
       "id": "hold.jelly.v2",
       "group": "hold",
       "type": "jelly",
@@ -10495,7 +10575,7 @@
       }
     },
     {
-      "n": 266,
+      "n": 268,
       "id": "hold.wobbleWarp.v2",
       "group": "hold",
       "type": "wobbleWarp",
@@ -10528,7 +10608,7 @@
       }
     },
     {
-      "n": 267,
+      "n": 269,
       "id": "hold.twist.v2",
       "group": "hold",
       "type": "twist",
@@ -10559,7 +10639,7 @@
       }
     },
     {
-      "n": 268,
+      "n": 270,
       "id": "hold.breathing.v2",
       "group": "hold",
       "type": "breathing",
@@ -10584,7 +10664,7 @@
       }
     },
     {
-      "n": 269,
+      "n": 271,
       "id": "hold.orbit3D.v2",
       "group": "hold",
       "type": "orbit3D",
@@ -10621,7 +10701,7 @@
       }
     },
     {
-      "n": 270,
+      "n": 272,
       "id": "hold.orbit2D.v2",
       "group": "hold",
       "type": "orbit2D",
@@ -10656,7 +10736,7 @@
       }
     },
     {
-      "n": 271,
+      "n": 273,
       "id": "hold.pathFollow.v2",
       "group": "hold",
       "type": "pathFollow",
@@ -10695,7 +10775,7 @@
       }
     },
     {
-      "n": 272,
+      "n": 274,
       "id": "hold.shiver.v2",
       "group": "hold",
       "type": "shiver",
@@ -10732,7 +10812,7 @@
       }
     },
     {
-      "n": 273,
+      "n": 275,
       "id": "hold.dissolve.v2",
       "group": "hold",
       "type": "dissolve",
@@ -10764,7 +10844,7 @@
       }
     },
     {
-      "n": 274,
+      "n": 276,
       "id": "location.center.v1",
       "group": "location",
       "type": "center",
@@ -10799,7 +10879,7 @@
       }
     },
     {
-      "n": 275,
+      "n": 277,
       "id": "location.lowerThird.v1",
       "group": "location",
       "type": "lowerThird",
@@ -10828,7 +10908,7 @@
       }
     },
     {
-      "n": 276,
+      "n": 278,
       "id": "location.upperThird.v1",
       "group": "location",
       "type": "upperThird",
@@ -10857,7 +10937,7 @@
       }
     },
     {
-      "n": 277,
+      "n": 279,
       "id": "location.left.v1",
       "group": "location",
       "type": "left",
@@ -10892,7 +10972,7 @@
       }
     },
     {
-      "n": 278,
+      "n": 280,
       "id": "location.right.v1",
       "group": "location",
       "type": "right",
@@ -10927,7 +11007,7 @@
       }
     },
     {
-      "n": 279,
+      "n": 281,
       "id": "location.karaoke.v1",
       "group": "location",
       "type": "karaoke",
@@ -10962,7 +11042,7 @@
       }
     },
     {
-      "n": 280,
+      "n": 282,
       "id": "location.stacked.v1",
       "group": "location",
       "type": "stacked",
@@ -10991,7 +11071,7 @@
       }
     },
     {
-      "n": 281,
+      "n": 283,
       "id": "location.randomSafe.v1",
       "group": "location",
       "type": "randomSafe",
@@ -11020,7 +11100,7 @@
       }
     },
     {
-      "n": 282,
+      "n": 284,
       "id": "location.badgeAnchored.v1",
       "group": "location",
       "type": "badgeAnchored",
@@ -11057,7 +11137,7 @@
       }
     },
     {
-      "n": 283,
+      "n": 285,
       "id": "location.custom.v1",
       "group": "location",
       "type": "custom",
@@ -11094,7 +11174,7 @@
       }
     },
     {
-      "n": 284,
+      "n": 286,
       "id": "location.center.v2",
       "group": "location",
       "type": "center",
@@ -11129,7 +11209,7 @@
       }
     },
     {
-      "n": 285,
+      "n": 287,
       "id": "location.lowerThird.v2",
       "group": "location",
       "type": "lowerThird",
@@ -11164,7 +11244,7 @@
       }
     },
     {
-      "n": 286,
+      "n": 288,
       "id": "location.upperThird.v2",
       "group": "location",
       "type": "upperThird",
@@ -11199,7 +11279,7 @@
       }
     },
     {
-      "n": 287,
+      "n": 289,
       "id": "location.left.v2",
       "group": "location",
       "type": "left",
@@ -11234,7 +11314,7 @@
       }
     },
     {
-      "n": 288,
+      "n": 290,
       "id": "location.right.v2",
       "group": "location",
       "type": "right",
@@ -11269,7 +11349,7 @@
       }
     },
     {
-      "n": 289,
+      "n": 291,
       "id": "location.karaoke.v2",
       "group": "location",
       "type": "karaoke",
@@ -11304,7 +11384,7 @@
       }
     },
     {
-      "n": 290,
+      "n": 292,
       "id": "location.stacked.v2",
       "group": "location",
       "type": "stacked",
@@ -11339,7 +11419,7 @@
       }
     },
     {
-      "n": 291,
+      "n": 293,
       "id": "location.randomSafe.v2",
       "group": "location",
       "type": "randomSafe",
@@ -11374,7 +11454,7 @@
       }
     },
     {
-      "n": 292,
+      "n": 294,
       "id": "location.badgeAnchored.v2",
       "group": "location",
       "type": "badgeAnchored",
@@ -11411,7 +11491,7 @@
       }
     },
     {
-      "n": 293,
+      "n": 295,
       "id": "location.custom.v2",
       "group": "location",
       "type": "custom",
@@ -11448,7 +11528,7 @@
       }
     },
     {
-      "n": 294,
+      "n": 296,
       "id": "fill.gradientSweep.v1",
       "group": "fill",
       "type": "gradientSweep",
@@ -11478,7 +11558,7 @@
       }
     },
     {
-      "n": 295,
+      "n": 297,
       "id": "fill.rainbowFlow.v1",
       "group": "fill",
       "type": "rainbowFlow",
@@ -11510,7 +11590,7 @@
       }
     },
     {
-      "n": 296,
+      "n": 298,
       "id": "fill.holographic.v1",
       "group": "fill",
       "type": "holographic",
@@ -11546,7 +11626,7 @@
       }
     },
     {
-      "n": 297,
+      "n": 299,
       "id": "fill.chrome.v1",
       "group": "fill",
       "type": "chrome",
@@ -11576,7 +11656,7 @@
       }
     },
     {
-      "n": 298,
+      "n": 300,
       "id": "fill.goldFoil.v1",
       "group": "fill",
       "type": "goldFoil",
@@ -11607,7 +11687,7 @@
       }
     },
     {
-      "n": 299,
+      "n": 301,
       "id": "fill.fire.v1",
       "group": "fill",
       "type": "fire",
@@ -11643,7 +11723,7 @@
       }
     },
     {
-      "n": 300,
+      "n": 302,
       "id": "fill.caustics.v1",
       "group": "fill",
       "type": "caustics",
@@ -11675,7 +11755,7 @@
       }
     },
     {
-      "n": 301,
+      "n": 303,
       "id": "fill.marble.v1",
       "group": "fill",
       "type": "marble",
@@ -11712,7 +11792,7 @@
       }
     },
     {
-      "n": 302,
+      "n": 304,
       "id": "fill.glass.v1",
       "group": "fill",
       "type": "glass",
@@ -11743,7 +11823,7 @@
       }
     },
     {
-      "n": 303,
+      "n": 305,
       "id": "fill.textureFill.v1",
       "group": "fill",
       "type": "textureFill",
@@ -11779,7 +11859,7 @@
       }
     },
     {
-      "n": 304,
+      "n": 306,
       "id": "fill.karaokeWipe.v1",
       "group": "fill",
       "type": "karaokeWipe",
@@ -11810,7 +11890,7 @@
       }
     },
     {
-      "n": 305,
+      "n": 307,
       "id": "fill.ink.v1",
       "group": "fill",
       "type": "ink",
@@ -11846,7 +11926,7 @@
       }
     },
     {
-      "n": 306,
+      "n": 308,
       "id": "fill.gradientSweep.v2",
       "group": "fill",
       "type": "gradientSweep",
@@ -11876,7 +11956,7 @@
       }
     },
     {
-      "n": 307,
+      "n": 309,
       "id": "fill.rainbowFlow.v2",
       "group": "fill",
       "type": "rainbowFlow",
@@ -11908,7 +11988,7 @@
       }
     },
     {
-      "n": 308,
+      "n": 310,
       "id": "fill.holographic.v2",
       "group": "fill",
       "type": "holographic",
@@ -11944,7 +12024,7 @@
       }
     },
     {
-      "n": 309,
+      "n": 311,
       "id": "fill.chrome.v2",
       "group": "fill",
       "type": "chrome",
@@ -11997,7 +12077,7 @@
       }
     },
     {
-      "n": 310,
+      "n": 312,
       "id": "fill.goldFoil.v2",
       "group": "fill",
       "type": "goldFoil",
@@ -12051,7 +12131,7 @@
       }
     },
     {
-      "n": 311,
+      "n": 313,
       "id": "fill.fire.v2",
       "group": "fill",
       "type": "fire",
@@ -12081,103 +12161,6 @@
             "scale": 2,
             "speed": 1.05,
             "colors": null
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 312,
-      "id": "fill.caustics.v2",
-      "group": "fill",
-      "type": "caustics",
-      "variant": 2,
-      "label": "塗り / コースティクス（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "colorA",
-          "from": null,
-          "to": "#ff8a3d"
-        },
-        {
-          "key": "colorB",
-          "from": null,
-          "to": "#ff8a3d"
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "fill": {
-          "type": "caustics",
-          "enabled": true,
-          "params": {
-            "scale": 2,
-            "speed": 0.4,
-            "colorA": "#ff8a3d",
-            "colorB": "#ff8a3d"
-          },
-          "motion": {}
-        }
-      }
-    },
-    {
-      "n": 313,
-      "id": "fill.marble.v2",
-      "group": "fill",
-      "type": "marble",
-      "variant": 2,
-      "label": "塗り / 大理石（代表2）",
-      "apply": "style",
-      "changes": [
-        {
-          "key": "colors",
-          "from": null,
-          "to": [
-            {
-              "pos": 0,
-              "color": "#ff8a3d"
-            },
-            {
-              "pos": 1,
-              "color": "#4dc8ff"
-            }
-          ]
-        },
-        {
-          "key": "scale",
-          "from": 2,
-          "to": 2.4
-        },
-        {
-          "key": "veins",
-          "from": 6,
-          "to": 5
-        }
-      ],
-      "verified": "static",
-      "score": null,
-      "notes": [],
-      "style": {
-        "fill": {
-          "type": "marble",
-          "enabled": true,
-          "params": {
-            "scale": 2.4,
-            "veins": 5,
-            "veinWidth": 0.06,
-            "colors": [
-              {
-                "pos": 0,
-                "color": "#ff8a3d"
-              },
-              {
-                "pos": 1,
-                "color": "#4dc8ff"
-              }
-            ]
           },
           "motion": {}
         }

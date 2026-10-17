@@ -44,6 +44,7 @@
   const TEXT_EXIT = new Set([
     'dissolve', // dissolve のみ (opacity すら触らない)
     'wipe', // vF のみ
+    'checkerboard', // wipeMode/vF 本体
     'typewriterReverse', // vF のみ
     'strokeErase', // vF + represent:stroke
     'sandCrumble', // represent:sand 本体
