@@ -55,6 +55,30 @@ test('Motion Reference pageCurl exit effect exists and functions properly', () =
   assert.equal(stateCurlExit1.opacity, 0, 'pageCurl exit fully hidden at p=1');
 });
 
+test('checkerboard enter and exit effects exist and function properly', () => {
+  const checkerEnter = fx.get('enter', 'checkerboard');
+  assert.ok(checkerEnter, 'checkerboard enter effect registered');
+
+  const stateEnter0 = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerEnter.cpu(stateEnter0, 0.0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateEnter0.visibleFrac, 0, 'checkerboard enter starts at visibleFrac=0 at p=0');
+
+  const stateEnter1 = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerEnter.cpu(stateEnter1, 1.0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateEnter1.visibleFrac, 1, 'checkerboard enter ends at visibleFrac=1 at p=1');
+
+  const checkerExit = fx.get('exit', 'checkerboard');
+  assert.ok(checkerExit, 'checkerboard exit effect registered');
+
+  const stateExit0 = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerExit.cpu(stateExit0, 0.0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateExit0.visibleFrac, 1, 'checkerboard exit starts at visibleFrac=1 at p=0');
+
+  const stateExit1 = { visibleFrac: 1, scaleX: 1, scaleY: 1 };
+  checkerExit.cpu(stateExit1, 1.0, { cells: 4, soft: 0.05 }, () => 0.5, { i: 0 });
+  assert.equal(stateExit1.visibleFrac, 0, 'checkerboard exit ends at visibleFrac=0 at p=1');
+});
+
 test('Motion Reference new hold effects exist and function properly', () => {
   const pendulum = fx.get('hold', 'pendulumSwing');
   assert.ok(pendulum, 'pendulumSwing hold effect registered');

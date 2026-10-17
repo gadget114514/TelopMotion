@@ -168,6 +168,27 @@
   });
 
   fx.register({
+    group: 'exit', type: 'checkerboard', tags: ['basic', 'mask'],
+    params: [
+      { key: 'cells', kind: 'int', min: 2, max: 8, step: 1, default: 4 },
+      { key: 'soft', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+    ],
+    cpu(state, p, params, rng, info) {
+      const cells = Math.max(2, params.cells == null ? 4 : params.cells);
+      const i = info ? info.i : 0;
+      const parity = (i % 2) + ((Math.floor(i / cells) % 2) * 0.5);
+      state.wipeMode = (i % 2 === 0) ? 0 : 2;
+      state.wipeSoft = params.soft == null ? 0.05 : params.soft;
+      const localProgress = clamp01(p);
+      const local = clamp01((1 - localProgress) * 2 - parity * 0.5);
+      state.visibleFrac = Math.min(state.visibleFrac == null ? 1 : state.visibleFrac, clamp01(local));
+      const k = 1 - clamp01(local);
+      state.scaleX *= 1 - 0.12 * k;
+      state.scaleY *= 1 - 0.12 * k;
+    },
+  });
+
+  fx.register({
     group: 'exit',
     type: 'typewriterReverse',
     tags: ['text'],
