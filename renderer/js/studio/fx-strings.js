@@ -832,6 +832,8 @@
         heartbeat: 'Heartbeat', shiver: 'Shiver',
         fontSize: 'Font size', fillScreen: 'Fill screen', squashStretch: 'Squash & stretch', swirl: 'Swirl',
         warp: 'Warp', letterWarp: 'Letter warp',
+        tiltHold: 'Tilt hold', tiltHoldSubstring: 'Substring tilt hold',
+        tiltSpinHold: 'Tilt spin hold', tiltSpinHoldSubstring: 'Substring tilt spin hold',
       },
       text: {
         span: 'Letter attributes',
@@ -849,6 +851,7 @@
       seedShift: 'Seed shift', spikes: 'Spikes', jag: 'Jaggedness', tail: 'Tail side', body: 'Bubble body',
       lead: 'Lead', exit: 'Exit', exitDuration: 'Exit duration',
       holdAmount: 'Hold amount', overshoot: 'Overshoot', turns: 'Turns', axis: 'Axis', roughness: 'Roughness', rise: 'Rise',
+      holdTime: 'Hold time', spinAxis: 'Spin axis', spinTime: 'Spin time',
       pattern: 'Pattern', dashLength: 'Dash length', gapRatio: 'Gap ratio', flow: 'Flow', cursorShape: 'Cursor shape',
       blink: 'Blink', cursorAfter: 'Cursor after', interval: 'Interval', shift: 'Shift', height: 'Height', points: 'Points',
       thickness: 'Thickness', wobble: 'Wobble', skip: 'Skip', grow: 'Grow', shape: 'Shape', fade: 'Fade', duration: 'Duration', pulse: 'Pulse', hold: 'Hold',
@@ -908,6 +911,8 @@
         heartbeat: '鼓動', shiver: '震え',
         fontSize: '文字サイズ', fillScreen: '画面いっぱい', squashStretch: '伸び縮み', swirl: '渦変形',
         warp: 'ワープ', letterWarp: '文字ワープ',
+        tiltHold: '傾けて保持・戻す', tiltHoldSubstring: '部分文字列傾け保持・戻す',
+        tiltSpinHold: '傾けて一回転・戻す', tiltSpinHoldSubstring: '部分文字列傾け一回転・戻す',
       },
       text: {
         span: '文字ごとの属性',
@@ -925,6 +930,7 @@
       seedShift: '乱数シフト', spikes: 'トゲ', jag: 'ギザギザ', tail: 'しっぽの向き', body: 'ふきだしの本体',
       lead: '先行', exit: '消え方', exitDuration: '消える長さ',
       holdAmount: 'ゆらぎ量', overshoot: '行き過ぎ', turns: '回転数', axis: '軸', roughness: '粗さ', rise: '浮き上がり',
+      holdTime: '静止時間', spinAxis: '回転軸', spinTime: '回転時間',
       pattern: '線種', dashLength: '破線の長さ', gapRatio: '隙間の割合', flow: '流れ', cursorShape: 'カーソルの形',
       blink: '点滅', cursorAfter: '完了後', interval: '間隔', shift: 'ずれ', height: '高さ', points: '頂点数',
       thickness: '太さ', wobble: '揺れ', skip: '間引き', grow: '伸び', shape: '形', fade: 'フェード', duration: '長さ', pulse: 'パルス', hold: '保持',

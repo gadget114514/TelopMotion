@@ -157,6 +157,39 @@ test('primitive drawing process enter/exit effects and companions', () => {
   assert.equal(stateBoxOut.reprProgress, 0.5, 'boxErase sets reprProgress');
 });
 
+test('tiltHold and tiltSpinHold effects exist and function properly', () => {
+  const tiltHold = fx.get('hold', 'tiltHold');
+  assert.ok(tiltHold, 'tiltHold registered');
+  const stateTH0 = { tiltY: 0 };
+  tiltHold.cpu(stateTH0, 0.0, 1.0, { angle: 30, period: 2.0, holdTime: 0.5, stagger: 0 }, () => 0.5, { i: 0 });
+  assert.equal(stateTH0.tiltY, 0, 'tiltHold starts at 0 tilt');
+
+  const stateTH1 = { tiltY: 0 };
+  tiltHold.cpu(stateTH1, 1.0, 1.0, { angle: 30, period: 2.0, holdTime: 0.5, stagger: 0 }, () => 0.5, { i: 0 });
+  assert.equal(stateTH1.tiltY, 30, 'tiltHold holds peak angle during hold time');
+
+  const tiltHoldSub = fx.get('hold', 'tiltHoldSubstring');
+  assert.ok(tiltHoldSub, 'tiltHoldSubstring registered');
+  const stateTHS = { tiltY: 0 };
+  tiltHoldSub.cpu(stateTHS, 1.0, 1.0, { angle: 30, period: 2.0, holdTime: 0.5, pivot: 'letter' }, () => 0.5, { i: 0 });
+  assert.equal(stateTHS.tiltY, 30, 'tiltHoldSubstring tilts selected letters');
+
+  const tiltSpinHold = fx.get('hold', 'tiltSpinHold');
+  assert.ok(tiltSpinHold, 'tiltSpinHold registered');
+  const stateTSH_hold = { tiltY: 0, rot: 0 };
+  tiltSpinHold.cpu(stateTSH_hold, 0.8, 1.0, { angle: 30, period: 2.5, holdTime: 0.5, spinTime: 0.8, turns: 1, spinAxis: 'z', stagger: 0 }, () => 0.5, { i: 0 });
+  assert.equal(stateTSH_hold.tiltY, 30, 'tiltSpinHold holds peak tilt before spin');
+  assert.equal(stateTSH_hold.rot, 0, 'tiltSpinHold has not spun yet during tilt hold');
+
+  const stateTSH_spin = { tiltY: 0, rot: 0 };
+  tiltSpinHold.cpu(stateTSH_spin, 1.5, 1.0, { angle: 30, period: 2.5, holdTime: 0.5, spinTime: 0.8, turns: 1, spinAxis: 'z', stagger: 0 }, () => 0.5, { i: 0 });
+  assert.equal(stateTSH_spin.tiltY, 30, 'tiltSpinHold maintains tilt during spin');
+  assert.ok(stateTSH_spin.rot > 0, `tiltSpinHold spins during spin phase: rot=${stateTSH_spin.rot}`);
+
+  const tiltSpinHoldSub = fx.get('hold', 'tiltSpinHoldSubstring');
+  assert.ok(tiltSpinHoldSub, 'tiltSpinHoldSubstring registered');
+});
+
 test('Motion Reference new presets are registered in MOTION_PRESETS and motionPresets()', () => {
   const presets = motion.motionPresets();
   const ids = new Set(presets.map((p) => p.id));

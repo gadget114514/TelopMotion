@@ -522,5 +522,273 @@
     },
   });
 
+  function scopeApi() {
+    if (typeof module === 'object' && module.exports) return require('../scope');
+    return typeof self !== 'undefined' && self.SA ? self.SA.scope : null;
+  }
+
+  function substringMask(info, matchText) {
+    if (!matchText) return null;
+    const words = String(matchText)
+      .split(/[,、，/]/)
+      .map((value) => value.trim())
+      .filter((value) => value.length);
+    const api = scopeApi();
+    if (!words.length || !api || !info || !info.scene) return null;
+    const mask = api.scopeMask(info.scene, { kind: 'keyword', match: words });
+    return mask && mask.some((flag) => flag) ? mask : null;
+  }
+
+  function applyTiltAxis(state, axis, angle, pivot, info, env) {
+    if (!angle || !env) return;
+    const a = angle * env;
+    if (pivot === 'block' || pivot === 'line') {
+      const O = (pivot === 'line' && info && info.lineBox && info.lineBox.center)
+        ? info.lineBox.center
+        : ((info && info.blockCenter) ? info.blockCenter : { x: state.x, y: state.y });
+      if (axis === 'z') {
+        const rad = (a * Math.PI) / 180;
+        const cos = Math.cos(rad);
+        const sin = Math.sin(rad);
+        const dx = state.x - O.x;
+        const dy = state.y - O.y;
+        state.x = O.x + dx * cos - dy * sin;
+        state.y = O.y + dx * sin + dy * cos;
+        state.rot += a;
+      } else if (axis === 'y') {
+        const rad = (a * Math.PI) / 180;
+        const dx = state.x - O.x;
+        const P = 1200;
+        const z = dx * Math.sin(rad);
+        const w = P / (P + z);
+        state.x = O.x + dx * Math.cos(rad) * w;
+        state.tiltY += a;
+        state.scaleX *= w;
+        state.scaleY *= w;
+      } else {
+        const rad = (a * Math.PI) / 180;
+        const dy = state.y - O.y;
+        const P = 1200;
+        const z = dy * Math.sin(rad);
+        const w = P / (P + z);
+        state.y = O.y + dy * Math.cos(rad) * w;
+        state.tiltX += a;
+        state.scaleX *= w;
+        state.scaleY *= w;
+      }
+    } else {
+      if (axis === 'x') state.tiltX += a;
+      else if (axis === 'z') state.rot += a;
+      else state.tiltY += a;
+    }
+  }
+
+  fx.register({
+    group: 'hold',
+    type: 'tiltHold',
+    tags: ['basic', '3d'],
+    params: [
+      { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 30, random: [-45, 45] },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'z'], default: 'y' },
+      { key: 'holdTime', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.5 },
+      { key: 'period', kind: 'number', min: 0.2, max: 10, step: 0.1, default: 2.0 },
+      { key: 'stagger', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+      { key: 'alternate', kind: 'bool', default: false },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      if (env <= 0.0001) return;
+      const angle = (params && params.alternate && info && info.i % 2 === 1 ? -1 : 1) * (params && params.angle == null ? 30 : Number(params.angle));
+      const period = Math.max(0.1, params && params.period == null ? 2.0 : Number(params.period));
+      const stagger = params && params.stagger == null ? 0.05 : Number(params.stagger);
+      const holdTime = Math.max(0, params && params.holdTime == null ? 0.5 : Number(params.holdTime));
+      const time = h + (info ? info.i : 0) * stagger;
+      const u = ((time / period) % 1 + 1) % 1;
+
+      const holdRatio = clamp01(holdTime / period);
+      const rem = Math.max(0.05, 1 - holdRatio);
+      const tiltDur = rem / 2;
+
+      let currentAngle = 0;
+      if (u < tiltDur) {
+        const t = u / tiltDur;
+        currentAngle = angle * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else if (u < tiltDur + holdRatio) {
+        currentAngle = angle;
+      } else {
+        const t = (u - tiltDur - holdRatio) / tiltDur;
+        currentAngle = angle * (0.5 + 0.5 * Math.cos(Math.PI * t));
+      }
+
+      applyTiltAxis(state, (params && params.axis) || 'y', currentAngle, 'letter', info, env);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'tiltHoldSubstring',
+    tags: ['basic', '3d', 'text'],
+    params: [
+      { key: 'matchText', kind: 'text', default: '' },
+      { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 30, random: [-45, 45] },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'z'], default: 'y' },
+      { key: 'holdTime', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.5 },
+      { key: 'period', kind: 'number', min: 0.2, max: 10, step: 0.1, default: 2.0 },
+      { key: 'stagger', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0 },
+      { key: 'pivot', kind: 'select', options: ['letter', 'line', 'block'], default: 'block' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      if (env <= 0.0001) return;
+      const mask = substringMask(info, params && params.matchText);
+      if (mask && info && !mask[info.i]) return;
+
+      const angle = params && params.angle == null ? 30 : Number(params.angle);
+      const period = Math.max(0.1, params && params.period == null ? 2.0 : Number(params.period));
+      const stagger = params && params.stagger == null ? 0 : Number(params.stagger);
+      const holdTime = Math.max(0, params && params.holdTime == null ? 0.5 : Number(params.holdTime));
+      const time = h + (info ? info.i : 0) * stagger;
+      const u = ((time / period) % 1 + 1) % 1;
+
+      const holdRatio = clamp01(holdTime / period);
+      const rem = Math.max(0.05, 1 - holdRatio);
+      const tiltDur = rem / 2;
+
+      let currentAngle = 0;
+      if (u < tiltDur) {
+        const t = u / tiltDur;
+        currentAngle = angle * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else if (u < tiltDur + holdRatio) {
+        currentAngle = angle;
+      } else {
+        const t = (u - tiltDur - holdRatio) / tiltDur;
+        currentAngle = angle * (0.5 + 0.5 * Math.cos(Math.PI * t));
+      }
+
+      applyTiltAxis(state, (params && params.axis) || 'y', currentAngle, (params && params.pivot) || 'block', info, env);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'tiltSpinHold',
+    tags: ['basic', '3d'],
+    params: [
+      { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 30, random: [-45, 45] },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'z'], default: 'y' },
+      { key: 'spinAxis', kind: 'select', options: ['x', 'y', 'z'], default: 'z' },
+      { key: 'turns', kind: 'int', min: 1, max: 5, step: 1, default: 1 },
+      { key: 'holdTime', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.3 },
+      { key: 'spinTime', kind: 'number', min: 0.1, max: 3, step: 0.05, default: 0.8 },
+      { key: 'period', kind: 'number', min: 0.2, max: 10, step: 0.1, default: 2.5 },
+      { key: 'stagger', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.05 },
+      { key: 'alternate', kind: 'bool', default: false },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      if (env <= 0.0001) return;
+      const angle = (params && params.alternate && info && info.i % 2 === 1 ? -1 : 1) * (params && params.angle == null ? 30 : Number(params.angle));
+      const period = Math.max(0.1, params && params.period == null ? 2.5 : Number(params.period));
+      const stagger = params && params.stagger == null ? 0.05 : Number(params.stagger);
+      const holdTime = Math.max(0, params && params.holdTime == null ? 0.3 : Number(params.holdTime));
+      const spinTime = Math.max(0.05, params && params.spinTime == null ? 0.8 : Number(params.spinTime));
+      const turns = Math.max(1, params && params.turns == null ? 1 : Number(params.turns));
+      const time = h + (info ? info.i : 0) * stagger;
+      const u = ((time / period) % 1 + 1) % 1;
+
+      let holdRatio = clamp01(holdTime / period);
+      let spinRatio = clamp01(spinTime / period);
+      if (holdRatio + spinRatio >= 0.95) {
+        const factor = 0.9 / (holdRatio + spinRatio);
+        holdRatio *= factor;
+        spinRatio *= factor;
+      }
+      const rem = Math.max(0.05, 1 - holdRatio - spinRatio);
+      const tiltDur = rem / 2;
+
+      let tilt = 0;
+      let spin = 0;
+
+      if (u < tiltDur) {
+        const t = u / tiltDur;
+        tilt = angle * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else if (u < tiltDur + holdRatio) {
+        tilt = angle;
+      } else if (u < tiltDur + holdRatio + spinRatio) {
+        const t = (u - tiltDur - holdRatio) / spinRatio;
+        tilt = angle;
+        spin = turns * 360 * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else {
+        const t = (u - tiltDur - holdRatio - spinRatio) / tiltDur;
+        tilt = angle * (0.5 + 0.5 * Math.cos(Math.PI * t));
+        spin = turns * 360;
+      }
+
+      applyTiltAxis(state, (params && params.axis) || 'y', tilt, 'letter', info, env);
+      applyTiltAxis(state, (params && params.spinAxis) || 'z', spin, 'letter', info, env);
+    },
+  });
+
+  fx.register({
+    group: 'hold',
+    type: 'tiltSpinHoldSubstring',
+    tags: ['basic', '3d', 'text'],
+    params: [
+      { key: 'matchText', kind: 'text', default: '' },
+      { key: 'angle', kind: 'number', min: -180, max: 180, step: 1, default: 30, random: [-45, 45] },
+      { key: 'axis', kind: 'select', options: ['x', 'y', 'z'], default: 'y' },
+      { key: 'spinAxis', kind: 'select', options: ['x', 'y', 'z'], default: 'z' },
+      { key: 'turns', kind: 'int', min: 1, max: 5, step: 1, default: 1 },
+      { key: 'holdTime', kind: 'number', min: 0, max: 3, step: 0.05, default: 0.3 },
+      { key: 'spinTime', kind: 'number', min: 0.1, max: 3, step: 0.05, default: 0.8 },
+      { key: 'period', kind: 'number', min: 0.2, max: 10, step: 0.1, default: 2.5 },
+      { key: 'stagger', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0 },
+      { key: 'pivot', kind: 'select', options: ['letter', 'line', 'block'], default: 'block' },
+    ],
+    cpu(state, h, env, params, rng, info) {
+      if (env <= 0.0001) return;
+      const mask = substringMask(info, params && params.matchText);
+      if (mask && info && !mask[info.i]) return;
+
+      const angle = params && params.angle == null ? 30 : Number(params.angle);
+      const period = Math.max(0.1, params && params.period == null ? 2.5 : Number(params.period));
+      const stagger = params && params.stagger == null ? 0 : Number(params.stagger);
+      const holdTime = Math.max(0, params && params.holdTime == null ? 0.3 : Number(params.holdTime));
+      const spinTime = Math.max(0.05, params && params.spinTime == null ? 0.8 : Number(params.spinTime));
+      const turns = Math.max(1, params && params.turns == null ? 1 : Number(params.turns));
+      const pivot = (params && params.pivot) || 'block';
+      const time = h + (info ? info.i : 0) * stagger;
+      const u = ((time / period) % 1 + 1) % 1;
+
+      let holdRatio = clamp01(holdTime / period);
+      let spinRatio = clamp01(spinTime / period);
+      if (holdRatio + spinRatio >= 0.95) {
+        const factor = 0.9 / (holdRatio + spinRatio);
+        holdRatio *= factor;
+        spinRatio *= factor;
+      }
+      const rem = Math.max(0.05, 1 - holdRatio - spinRatio);
+      const tiltDur = rem / 2;
+
+      let tilt = 0;
+      let spin = 0;
+
+      if (u < tiltDur) {
+        const t = u / tiltDur;
+        tilt = angle * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else if (u < tiltDur + holdRatio) {
+        tilt = angle;
+      } else if (u < tiltDur + holdRatio + spinRatio) {
+        const t = (u - tiltDur - holdRatio) / spinRatio;
+        tilt = angle;
+        spin = turns * 360 * (0.5 - 0.5 * Math.cos(Math.PI * t));
+      } else {
+        const t = (u - tiltDur - holdRatio - spinRatio) / tiltDur;
+        tilt = angle * (0.5 + 0.5 * Math.cos(Math.PI * t));
+        spin = turns * 360;
+      }
+
+      applyTiltAxis(state, (params && params.axis) || 'y', tilt, pivot, info, env);
+      applyTiltAxis(state, (params && params.spinAxis) || 'z', spin, pivot, info, env);
+    },
+  });
+
   return fx;
 });
