@@ -1721,6 +1721,8 @@
     { id: 'circleDrawIn', nameJa: '円描画イン', nameEn: 'Circle Draw In', group: 'entrance', phase: 'enter', type: 'circleDrawOn', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { circleScale: 1.3, stroke: 4 } },
     { id: 'lineDrawIn', nameJa: '直線描画イン', nameEn: 'Line Draw In', group: 'entrance', phase: 'enter', type: 'lineDrawOn', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { linePosition: 'underline', stroke: 4 } },
     { id: 'boxDrawIn', nameJa: '枠線描画イン', nameEn: 'Box Draw In', group: 'entrance', phase: 'enter', type: 'boxDrawOn', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { stroke: 4 } },
+    { id: 'bulletHolesIn', nameJa: '弾痕イン', nameEn: 'Bullet Holes In', group: 'entrance', phase: 'enter', type: 'bulletHoles', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
+    { id: 'particlesOnTextIn', nameJa: '文字上にパーティクルイン', nameEn: 'Particles on Text In', group: 'entrance', phase: 'enter', type: 'particlesOnText', from: 'start', delay: 0, duration: 0.8, ease: 'easeOutCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     { id: 'pulse', nameJa: 'パルス', nameEn: 'Pulse', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.4, duration: 1.2, ease: 'linear', params: {} },
     { id: 'opacityPulse', nameJa: '点滅', nameEn: 'Blink', group: 'emphasis', phase: 'hold', type: 'opacityPulse', from: 'start', delay: 0.3, duration: 1.4, ease: 'linear', params: {} },
     { id: 'growShrink', nameJa: '伸縮', nameEn: 'Grow Shrink', group: 'emphasis', phase: 'hold', type: 'pulse', from: 'start', delay: 0.2, duration: 1.6, ease: 'linear', params: { amount: 0.18, bpm: 90 } },
@@ -1748,6 +1750,8 @@
     { id: 'circleEraseOut', nameJa: '円消去アウト', nameEn: 'Circle Erase Out', group: 'exit', phase: 'exit', type: 'circleErase', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { circleScale: 1.3, stroke: 4 } },
     { id: 'lineEraseOut', nameJa: '直線消去アウト', nameEn: 'Line Erase Out', group: 'exit', phase: 'exit', type: 'lineErase', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { linePosition: 'underline', stroke: 4 } },
     { id: 'boxEraseOut', nameJa: '枠線消去アウト', nameEn: 'Box Erase Out', group: 'exit', phase: 'exit', type: 'boxErase', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { stroke: 4 } },
+    { id: 'bulletHolesOut', nameJa: '弾痕アウト', nameEn: 'Bullet Holes Out', group: 'exit', phase: 'exit', type: 'bulletHoles', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 3, recoil: 0.3, dust: 0.5 } },
+    { id: 'particlesOnTextOut', nameJa: '文字上にパーティクルアウト', nameEn: 'Particles on Text Out', group: 'exit', phase: 'exit', type: 'particlesOnText', from: 'end', delay: -0.8, duration: 0.8, ease: 'easeInCubic', params: { count: 24, spread: 0.4, speed: 1.0 } },
     // The shader pack (renderer/js/lyrics/effects/shader-fx.js). Each family is
     // available in all three phases, so every one of them can be picked here and
     // then reshaped with any ADSR phase and any easing curve.
