@@ -227,6 +227,40 @@ async function fetchImageDataUrl(rawUrl) {
   return `data:${verified};base64,${buffer.toString('base64')}`;
 }
 
+const DEFAULT_FILTERS = [{ name: 'All files', extensions: ['*'] }];
+const EXTENSION_RE = /^[a-zA-Z0-9_.-]{1,32}$/;
+
+function validateFilters(filters) {
+  if (!Array.isArray(filters) || filters.length === 0) {
+    return DEFAULT_FILTERS;
+  }
+  const clean = [];
+  for (const item of filters) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    let name = typeof item.name === 'string' ? item.name.trim().slice(0, 128) : '';
+    if (!Array.isArray(item.extensions)) continue;
+    const validExtensions = [];
+    for (const rawExt of item.extensions) {
+      if (typeof rawExt !== 'string') continue;
+      let ext = rawExt.trim();
+      if (ext.startsWith('*.')) ext = ext.slice(2).trim();
+      else if (ext.startsWith('.')) ext = ext.slice(1).trim();
+      if (ext === '*' || EXTENSION_RE.test(ext)) {
+        if (!validExtensions.includes(ext) && validExtensions.length < 32) {
+          validExtensions.push(ext);
+        }
+      }
+    }
+    if (validExtensions.length > 0) {
+      if (!name) {
+        name = validExtensions.includes('*') ? 'All files' : `${validExtensions.join(', ').toUpperCase()} files`;
+      }
+      clean.push({ name, extensions: validExtensions });
+    }
+  }
+  return clean.length > 0 ? clean : DEFAULT_FILTERS;
+}
+
 function registerIpc() {
   ipcMain.handle('file:open', async (event, payload) => {
     try {
@@ -234,7 +268,7 @@ function registerIpc() {
       const result = await dialog.showOpenDialog(owner, {
         title: (payload && payload.title) || 'Open file',
         properties: payload && payload.multiple ? ['openFile', 'multiSelections'] : ['openFile'],
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePaths.length) return ok({ canceled: true });
       const readBounded = async (filePath) => {
@@ -277,7 +311,7 @@ function registerIpc() {
       const result = await dialog.showSaveDialog(owner, {
         title: (payload && payload.title) || 'Save file',
         defaultPath: (payload && payload.defaultName) || 'file',
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
       await fs.promises.writeFile(result.filePath, out);
@@ -324,7 +358,7 @@ function registerIpc() {
       const result = await dialog.showSaveDialog(owner, {
         title: (payload && payload.title) || 'Export video',
         defaultPath: (payload && payload.defaultName) || 'video.mp4',
-        filters: (payload && payload.filters) || [{ name: 'All files', extensions: ['*'] }],
+        filters: validateFilters(payload && payload.filters),
       });
       if (result.canceled || !result.filePath) return ok({ canceled: true });
       const fd = fs.openSync(result.filePath, 'w');
