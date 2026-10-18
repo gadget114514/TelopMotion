@@ -759,5 +759,28 @@
     },
   });
 
+  fx.register({
+    group: 'exit',
+    type: 'pendulumSwing',
+    tags: ['basic', 'lively'],
+    params: [
+      { key: 'angle', kind: 'number', min: 0, max: 45, step: 0.5, default: 25, random: [10, 35] },
+      { key: 'speed', kind: 'number', min: 0.1, max: 3, step: 0.05, default: 1.0 },
+      { key: 'length', kind: 'number', min: 0, max: 0.5, step: 0.01, default: 0.1, unit: 'frame' },
+    ],
+    cpu(state, p, params, rng, info) {
+      const progress = clamp01(p);
+      const speed = params && params.speed != null ? params.speed : 1.0;
+      const angleMax = params && params.angle != null ? params.angle : 25;
+      const theta = angleMax * Math.sin(Math.PI * 2 * speed * progress) * progress;
+      const rad = (theta * Math.PI) / 180;
+      const length = (params && params.length != null ? params.length : 0.1) * (info && info.shortSide ? info.shortSide : 1080);
+      state.rot += theta;
+      state.x += length * Math.sin(rad);
+      state.y += length * (1 - Math.cos(rad));
+      state.opacity *= Math.max(0, 1 - progress);
+    },
+  });
+
   return fx;
 });
