@@ -188,6 +188,8 @@ test('tiltHold and tiltSpinHold effects exist and function properly', () => {
 
   const tiltSpinHoldSub = fx.get('hold', 'tiltSpinHoldSubstring');
   assert.ok(tiltSpinHoldSub, 'tiltSpinHoldSubstring registered');
+});
+
 test('bulletHoles and particlesOnText enter and exit effects exist and function properly', () => {
   const bulletEnter = fx.get('enter', 'bulletHoles');
   assert.ok(bulletEnter, 'bulletHoles enter effect registered');
@@ -277,4 +279,45 @@ test('Motion Reference new presets are registered in MOTION_PRESETS and motionPr
   assert.ok(ids.has('bulletHolesOut'), 'bulletHolesOut preset');
   assert.ok(ids.has('particlesOnTextOut'), 'particlesOnTextOut preset');
   assert.ok(ids.has('checkerboardOut'), 'checkerboardOut preset');
+});
+
+test('splitFontIn and splitFontOut enter and exit effects exist and function properly', () => {
+  const splitIn = fx.get('enter', 'splitFontIn');
+  assert.ok(splitIn, 'splitFontIn enter effect registered');
+
+  const stateTopIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateTopIn, 0.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 400,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateTopIn.y < 0, `splitFontIn top half moves up: y=${stateTopIn.y}`);
+
+  const stateBottomIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateBottomIn, 0.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 600,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateBottomIn.y > 0, `splitFontIn bottom half moves down: y=${stateBottomIn.y}`);
+
+  const stateLeftIn = { x: 0, y: 0, opacity: 1 };
+  splitIn.cpu(stateLeftIn, 0.0, { mode: 'leftRight', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterX: 300,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateLeftIn.x < 0, `splitFontIn left half moves left: x=${stateLeftIn.x}`);
+
+  const splitOut = fx.get('exit', 'splitFontOut');
+  assert.ok(splitOut, 'splitFontOut exit effect registered');
+
+  const stateTopOut = { x: 0, y: 0, opacity: 1 };
+  splitOut.cpu(stateTopOut, 1.0, { mode: 'topBottom', shift: 0.2, delay: 0.1 }, () => 0.5, {
+    shortSide: 1000,
+    letterY: 400,
+    blockCenter: { x: 500, y: 500 },
+  });
+  assert.ok(stateTopOut.y < 0, `splitFontOut top half splits upwards at p=1: y=${stateTopOut.y}`);
+  assert.equal(stateTopOut.opacity, 0, 'splitFontOut top half fades out at p=1');
 });
